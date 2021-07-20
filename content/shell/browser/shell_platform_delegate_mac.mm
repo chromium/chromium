@@ -333,7 +333,7 @@ void ShellPlatformDelegate::ActivateContents(Shell* shell,
   [NSApp activateIgnoringOtherApps:YES];
 }
 
-void ShellPlatformDelegate::DidNavigateMainFramePostCommit(
+void ShellPlatformDelegate::DidNavigatePrimaryMainFramePostCommit(
     Shell* shell,
     WebContents* contents) {}
 

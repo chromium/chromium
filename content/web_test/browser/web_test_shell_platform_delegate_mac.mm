@@ -179,11 +179,12 @@ void WebTestShellPlatformDelegate::ActivateContents(Shell* shell,
   activated_headless_shell_ = shell;
 }
 
-void WebTestShellPlatformDelegate::DidNavigateMainFramePostCommit(
+void WebTestShellPlatformDelegate::DidNavigatePrimaryMainFramePostCommit(
     Shell* shell,
     WebContents* contents) {
   if (!IsHeadless()) {
-    ShellPlatformDelegate::DidNavigateMainFramePostCommit(shell, contents);
+    ShellPlatformDelegate::DidNavigatePrimaryMainFramePostCommit(shell,
+                                                                 contents);
     return;
   }
 

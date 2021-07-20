@@ -42,7 +42,8 @@ class WebTestShellPlatformDelegate : public ShellPlatformDelegate {
   void ResizeWebContent(Shell* shell, const gfx::Size& content_size) override;
 #if defined(OS_MAC)
   void ActivateContents(Shell* shell, WebContents* top_contents) override;
-  void DidNavigateMainFramePostCommit(Shell*, WebContents* contents) override;
+  void DidNavigatePrimaryMainFramePostCommit(Shell*,
+                                             WebContents* contents) override;
   bool HandleKeyboardEvent(Shell* shell,
                            WebContents* source,
                            const NativeWebKeyboardEvent& event) override;

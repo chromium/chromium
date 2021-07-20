@@ -295,7 +295,7 @@ class RenderViewSizeObserver : public content::WebContentsObserver {
 
   // Cache the sizes of RenderWidgetHostView and WebContentsView when the
   // navigation entry is committed, which is before
-  // WebContentsDelegate::DidNavigateMainFramePostCommit is called.
+  // WebContentsDelegate::DidNavigatePrimaryMainFramePostCommit is called.
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& details) override {
     content::RenderViewHost* rvh =
@@ -2448,7 +2448,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, GetSizeForNewRenderView) {
   // should be the same as when it was first created.
   EXPECT_EQ(rwhv_create_size0, rwhv_commit_size0);
   // Sizes of the current RenderWidgetHostView and WebContentsView should not
-  // change before and after WebContentsDelegate::DidNavigateMainFramePostCommit
+  // change before and after
+  // WebContentsDelegate::DidNavigatePrimaryMainFramePostCommit
   // (implemented by Browser); we obtain the sizes before PostCommit via
   // WebContentsObserver::NavigationEntryCommitted (implemented by
   // RenderViewSizeObserver).

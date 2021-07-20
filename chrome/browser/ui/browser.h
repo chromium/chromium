@@ -822,7 +822,7 @@ class Browser : public TabStripModelObserver,
   void RendererResponsive(
       content::WebContents* source,
       content::RenderWidgetHost* render_widget_host) override;
-  void DidNavigateMainFramePostCommit(
+  void DidNavigatePrimaryMainFramePostCommit(
       content::WebContents* web_contents) override;
   content::JavaScriptDialogManager* GetJavaScriptDialogManager(
       content::WebContents* source) override;

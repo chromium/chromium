@@ -5517,17 +5517,23 @@ void WebContentsImpl::DidNavigateMainFramePostCommit(
     RenderFrameHostImpl* render_frame_host,
     const LoadCommittedDetails& details,
     const mojom::DidCommitProvisionalLoadParams& params) {
+  // The render_frame_host is always a main frame.
+  DCHECK(render_frame_host->is_main_frame());
   OPTIONAL_TRACE_EVENT1("content,navigation",
                         "WebContentsImpl::DidNavigateMainFramePostCommit",
                         "render_frame_host", render_frame_host);
+  bool is_primary_main_frame = render_frame_host->IsInPrimaryMainFrame();
+
   if (details.is_navigation_to_different_page()) {
-    // Clear the status bubble. This is a workaround for a bug where WebKit
-    // doesn't let us know that the cursor left an element during a
-    // transition (this is also why the mouse cursor remains as a hand after
-    // clicking on a link); see bugs 1184641 and 980803. We don't want to
-    // clear the bubble when a user navigates to a named anchor in the same
-    // page.
-    ClearTargetURL();
+    if (is_primary_main_frame) {
+      // Clear the status bubble. This is a workaround for a bug where WebKit
+      // doesn't let us know that the cursor left an element during a
+      // transition (this is also why the mouse cursor remains as a hand after
+      // clicking on a link); see bugs 1184641 and 980803. We don't want to
+      // clear the bubble when a user navigates to a named anchor in the same
+      // page.
+      ClearTargetURL();
+    }
 
     RenderWidgetHostViewBase* rwhvb = static_cast<RenderWidgetHostViewBase*>(
         render_frame_host->GetMainFrame()->GetView());
@@ -5535,8 +5541,8 @@ void WebContentsImpl::DidNavigateMainFramePostCommit(
       rwhvb->OnDidNavigateMainFrameToNewPage();
   }
 
-  if (delegate_)
-    delegate_->DidNavigateMainFramePostCommit(this);
+  if (is_primary_main_frame && delegate_)
+    delegate_->DidNavigatePrimaryMainFramePostCommit(this);
 
   PageImpl& page = render_frame_host->GetPage();
   if (page.IsPrimary()) {

@@ -47,6 +47,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
+#include "content/public/test/background_color_change_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -57,6 +58,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/theme_change_waiter.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -79,6 +81,8 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "url/gurl.h"
+
+using ::testing::Exactly;
 
 namespace content {
 namespace {
@@ -3707,5 +3711,75 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, TriggeredPrerenderUkm) {
       ukm::builders::PrerenderPageLoad::kTriggeredPrerenderName, 1);
 }
 
+// Tests that background color in a prerendered page does not affect
+// the primary page.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ColorSchemeDarkInNonPrimaryPage) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/color-scheme-dark.html");
+
+  // Expect initial page background color to be white.
+  content::BackgroundColorChangeWaiter empty_page_background_waiter(
+      web_contents());
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  // Wait for the page background to change to white.
+  empty_page_background_waiter.Wait();
+
+  {
+    // Now set up a mock observer for BackgroundColorChanged, to test if the
+    // mocked observer executes BackgroundColorChanged for the prerendered page.
+    testing::NiceMock<MockWebContentsObserver> background_color_observer(
+        web_contents());
+    EXPECT_CALL(background_color_observer, OnBackgroundColorChanged())
+        .Times(Exactly(0));
+
+    AddPrerender(kPrerenderingUrl);
+  }
+
+  content::BackgroundColorChangeWaiter prerendered_page_background_waiter(
+      web_contents());
+  // Now set up a mock observer for BackgroundColorChanged, to test if the
+  // mocked observer executes BackgroundColorChanged when activating the
+  // prerendered page.
+  testing::NiceMock<MockWebContentsObserver> background_color_observer(
+      web_contents());
+  EXPECT_CALL(background_color_observer, OnBackgroundColorChanged())
+      .Times(Exactly(1));
+  NavigatePrimaryPage(kPrerenderingUrl);
+  ASSERT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  // Wait for the page background to change.
+  prerendered_page_background_waiter.Wait();
+}
+
+// Tests that theme color in a prerendered page does not affect
+// the primary page.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       ThemeColorSchemeChangeInNonPrimaryPage) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/theme_color.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  {
+    // Now set up a mock observer for DidChangeThemeColor, to test if the
+    // mocked observer executes DidChangeThemeColor for the prerendered page.
+    testing::NiceMock<MockWebContentsObserver> theme_color_observer(
+        web_contents());
+    EXPECT_CALL(theme_color_observer, DidChangeThemeColor()).Times(Exactly(0));
+
+    AddPrerender(kPrerenderingUrl);
+  }
+
+  content::ThemeChangeWaiter theme_change_waiter(web_contents());
+  testing::NiceMock<MockWebContentsObserver> theme_color_observer(
+      web_contents());
+  EXPECT_CALL(theme_color_observer, DidChangeThemeColor()).Times(Exactly(1));
+
+  NavigatePrimaryPage(kPrerenderingUrl);
+  ASSERT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  theme_change_waiter.Wait();
+}
 }  // namespace
 }  // namespace content

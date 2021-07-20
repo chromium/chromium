@@ -141,7 +141,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   JavaScriptDialogManager* GetJavaScriptDialogManager(
       WebContents* source) override;
 #if defined(OS_MAC)
-  void DidNavigateMainFramePostCommit(WebContents* contents) override;
+  void DidNavigatePrimaryMainFramePostCommit(WebContents* contents) override;
   bool HandleKeyboardEvent(WebContents* source,
                            const NativeWebKeyboardEvent& event) override;
 #endif

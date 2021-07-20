@@ -558,8 +558,8 @@ JavaScriptDialogManager* Shell::GetJavaScriptDialogManager(
 }
 
 #if defined(OS_MAC)
-void Shell::DidNavigateMainFramePostCommit(WebContents* contents) {
-  g_platform->DidNavigateMainFramePostCommit(this, contents);
+void Shell::DidNavigatePrimaryMainFramePostCommit(WebContents* contents) {
+  g_platform->DidNavigatePrimaryMainFramePostCommit(this, contents);
 }
 
 bool Shell::HandleKeyboardEvent(WebContents* source,

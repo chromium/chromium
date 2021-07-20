@@ -78,7 +78,8 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
   // content::WebContentsDelegate implementation:
   void CloseContents(content::WebContents* source) override;
   bool ShouldSuppressDialogs(content::WebContents* source) override;
-  void DidNavigateMainFramePostCommit(content::WebContents* tab) override;
+  void DidNavigatePrimaryMainFramePostCommit(
+      content::WebContents* tab) override;
   void AddNewContents(content::WebContents* source,
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
