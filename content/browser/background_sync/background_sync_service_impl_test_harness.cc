@@ -18,6 +18,7 @@
 #include "content/public/test/background_sync_test_util.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/test/storage_partition_test_helpers.h"
 #include "content/test/test_background_sync_context.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -142,8 +143,9 @@ void BackgroundSyncServiceImplTestHarness::CreateStoragePartition() {
   // Creates a StoragePartition so that the BackgroundSyncManager can
   // use it to access the BrowserContext.
   storage_partition_impl_ = StoragePartitionImpl::Create(
-      embedded_worker_helper_->browser_context(), /* in_memory= */ true,
-      base::FilePath(), /* partition_domain= */ "");
+      embedded_worker_helper_->browser_context(),
+      CreateStoragePartitionConfigForTesting(/*in_memory=*/true),
+      base::FilePath() /* relative_partition_path */);
   storage_partition_impl_->Initialize();
   embedded_worker_helper_->context_wrapper()->set_storage_partition(
       storage_partition_impl_.get());

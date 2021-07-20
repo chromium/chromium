@@ -9,6 +9,7 @@
 
 namespace content {
 class StoragePartition;
+class StoragePartitionConfig;
 
 // Replaces the SharedWorkerService implementation with a test-specific one that
 // tracks running shared workers.
@@ -19,6 +20,11 @@ void InjectTestSharedWorkerService(StoragePartition* storage_partition);
 // has stopped. Can only be used if InjectTestSharedWorkerService() was called.
 void TerminateAllSharedWorkers(StoragePartition* storage_partition,
                                base::OnceClosure callback);
+
+StoragePartitionConfig CreateStoragePartitionConfigForTesting(
+    bool in_memory = false,
+    const std::string& partition_domain = "",
+    const std::string& partition_name = "");
 
 }  // namespace content
 

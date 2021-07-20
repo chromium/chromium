@@ -7,6 +7,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/browser/worker_host/test_shared_worker_service_impl.h"
+#include "content/public/browser/storage_partition_config.h"
 
 namespace content {
 
@@ -26,6 +27,13 @@ void TerminateAllSharedWorkers(StoragePartition* storage_partition,
   static_cast<TestSharedWorkerServiceImpl*>(
       storage_partition->GetSharedWorkerService())
       ->TerminateAllWorkers(std::move(callback));
+}
+
+StoragePartitionConfig CreateStoragePartitionConfigForTesting(
+    bool in_memory,
+    const std::string& partition_domain,
+    const std::string& partition_name) {
+  return StoragePartitionConfig(partition_domain, partition_name, in_memory);
 }
 
 }  // namespace content

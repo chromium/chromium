@@ -48,6 +48,7 @@
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/trust_tokens.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -130,6 +131,9 @@ class CONTENT_EXPORT StoragePartitionImpl
       BackgroundSyncContextImpl* background_sync_context);
   void OverrideSharedWorkerServiceForTesting(
       std::unique_ptr<SharedWorkerServiceImpl> shared_worker_service);
+
+  // Returns the StoragePartitionConfig that represents this StoragePartition.
+  const StoragePartitionConfig& GetConfig();
 
   // StoragePartition interface.
   base::FilePath GetPath() override;
@@ -444,15 +448,13 @@ class CONTENT_EXPORT StoragePartitionImpl
   // Initialize() must be called on the StoragePartitionImpl before using it.
   static std::unique_ptr<StoragePartitionImpl> Create(
       BrowserContext* context,
-      bool in_memory,
-      const base::FilePath& relative_partition_path,
-      const std::string& partition_domain);
+      const StoragePartitionConfig& config,
+      const base::FilePath& relative_partition_path);
 
   StoragePartitionImpl(BrowserContext* browser_context,
+                       const StoragePartitionConfig& config,
                        const base::FilePath& partition_path,
-                       bool is_in_memory,
                        const base::FilePath& relative_partition_path,
-                       const std::string& partition_domain,
                        storage::SpecialStoragePolicy* special_storage_policy);
 
   // This must be called before calling any members of the StoragePartitionImpl
@@ -492,6 +494,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   // first called or there is an error.
   void InitNetworkContext();
 
+  bool is_in_memory() { return config_.in_memory(); }
+
   network::mojom::URLLoaderFactory*
   GetURLLoaderFactoryForBrowserProcessInternal(bool corb_enabled);
 
@@ -513,12 +517,10 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   const base::FilePath partition_path_;
 
-  // |is_in_memory_|, |relative_partition_path_| and |partition_domain_| are
-  // cached from |StoragePartitionImpl::Create()| in order to re-create
-  // |NetworkContext|.
-  const bool is_in_memory_;
+  // |config_| and |relative_partition_path_| are cached from
+  // |StoragePartitionImpl::Create()| in order to re-create |NetworkContext|.
+  const StoragePartitionConfig config_;
   const base::FilePath relative_partition_path_;
-  const std::string partition_domain_;
 
   // Until a StoragePartitionImpl is initialized using Initialize(), only
   // querying its path abd BrowserContext is allowed.

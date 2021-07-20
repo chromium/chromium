@@ -346,9 +346,8 @@ StoragePartitionImpl* StoragePartitionImplMap::Get(
                                   : nullptr;
 
   std::unique_ptr<StoragePartitionImpl> partition_ptr(
-      StoragePartitionImpl::Create(
-          browser_context_, partition_config.in_memory(),
-          relative_partition_path, partition_config.partition_domain()));
+      StoragePartitionImpl::Create(browser_context_, partition_config,
+                                   relative_partition_path));
   StoragePartitionImpl* partition = partition_ptr.get();
   partitions_[partition_config] = std::move(partition_ptr);
   partition->Initialize(fallback_for_blob_urls);

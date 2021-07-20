@@ -1056,16 +1056,14 @@ class StoragePartitionImpl::ServiceWorkerCookieAccessObserver
 
 StoragePartitionImpl::StoragePartitionImpl(
     BrowserContext* browser_context,
+    const StoragePartitionConfig& config,
     const base::FilePath& partition_path,
-    bool is_in_memory,
     const base::FilePath& relative_partition_path,
-    const std::string& partition_domain,
     storage::SpecialStoragePolicy* special_storage_policy)
     : browser_context_(browser_context),
       partition_path_(partition_path),
-      is_in_memory_(is_in_memory),
+      config_(config),
       relative_partition_path_(relative_partition_path),
-      partition_domain_(partition_domain),
       special_storage_policy_(special_storage_policy),
       deletion_helpers_running_(0) {}
 
@@ -1125,9 +1123,8 @@ StoragePartitionImpl::~StoragePartitionImpl() {
 // static
 std::unique_ptr<StoragePartitionImpl> StoragePartitionImpl::Create(
     BrowserContext* context,
-    bool in_memory,
-    const base::FilePath& relative_partition_path,
-    const std::string& partition_domain) {
+    const StoragePartitionConfig& config,
+    const base::FilePath& relative_partition_path) {
   // Ensure that these methods are called on the UI thread, except for
   // unittests where a UI thread might not have been created.
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
@@ -1137,8 +1134,8 @@ std::unique_ptr<StoragePartitionImpl> StoragePartitionImpl::Create(
       context->GetPath().Append(relative_partition_path);
 
   return base::WrapUnique(new StoragePartitionImpl(
-      context, partition_path, in_memory, relative_partition_path,
-      partition_domain, context->GetSpecialStoragePolicy()));
+      context, config, partition_path, relative_partition_path,
+      context->GetSpecialStoragePolicy()));
 }
 
 void StoragePartitionImpl::Initialize(
@@ -1155,7 +1152,7 @@ void StoragePartitionImpl::Initialize(
   // all together here prior to handing out a reference to anything
   // that utilizes the QuotaManager.
   quota_context_ = base::MakeRefCounted<QuotaContext>(
-      is_in_memory_, partition_path_,
+      is_in_memory(), partition_path_,
       browser_context_->GetSpecialStoragePolicy(),
       base::BindRepeating(&StoragePartitionImpl::GetQuotaSettings,
                           weak_factory_.GetWeakPtr()));
@@ -1188,10 +1185,10 @@ void StoragePartitionImpl::Initialize(
   // Each consumer is responsible for registering its QuotaClient during
   // its construction.
   filesystem_context_ = CreateFileSystemContext(
-      browser_context_, partition_path_, is_in_memory_, quota_manager_proxy);
+      browser_context_, partition_path_, is_in_memory(), quota_manager_proxy);
 
   database_tracker_ = storage::DatabaseTracker::Create(
-      partition_path_, is_in_memory_,
+      partition_path_, is_in_memory(),
       browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy);
 
   dom_storage_context_ = DOMStorageContextWrapper::Create(
@@ -1212,7 +1209,7 @@ void StoragePartitionImpl::Initialize(
       file_system_access_context;
   file_system_access_manager_->BindInternalsReceiver(
       file_system_access_context.InitWithNewPipeAndPassReceiver());
-  base::FilePath path = is_in_memory_ ? base::FilePath() : partition_path_;
+  base::FilePath path = is_in_memory() ? base::FilePath() : partition_path_;
   indexed_db_control_wrapper_ = std::make_unique<IndexedDBControlWrapper>(
       path, browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy,
       base::DefaultClock::GetInstance(),
@@ -1304,7 +1301,7 @@ void StoragePartitionImpl::Initialize(
   bucket_context_->Initialize();
 
   // The Conversion Measurement API is not available in Incognito mode.
-  if (!is_in_memory_ &&
+  if (!is_in_memory() &&
       base::FeatureList::IsEnabled(blink::features::kConversionMeasurement)) {
     conversion_manager_ = std::make_unique<ConversionManagerImpl>(
         this, path, special_storage_policy_);
@@ -1312,7 +1309,7 @@ void StoragePartitionImpl::Initialize(
 
   if (base::FeatureList::IsEnabled(blink::features::kFledgeInterestGroups)) {
     interest_group_manager_ =
-        std::make_unique<InterestGroupManager>(path, is_in_memory_);
+        std::make_unique<InterestGroupManager>(path, is_in_memory());
   }
 
   GeneratedCodeCacheSettings settings =
@@ -1322,12 +1319,12 @@ void StoragePartitionImpl::Initialize(
   // For Incognito mode, we should not persist anything on the disk so
   // we do not create a code cache. Caching the generated code in memory
   // is not useful, since V8 already maintains one copy in memory.
-  if (!is_in_memory_ && settings.enabled()) {
+  if (!is_in_memory() && settings.enabled()) {
     generated_code_cache_context_ =
         base::MakeRefCounted<GeneratedCodeCacheContext>();
 
     base::FilePath code_cache_path;
-    if (partition_domain_.empty()) {
+    if (config_.partition_domain().empty()) {
       code_cache_path = settings.path().AppendASCII("Code Cache");
     } else {
       // For site isolated partitions use the config directory.
@@ -1353,6 +1350,10 @@ void StoragePartitionImpl::OnStorageServiceDisconnected() {
     client.second->ResetStorageAreaAndNamespaceConnections();
 }
 
+const StoragePartitionConfig& StoragePartitionImpl::GetConfig() {
+  return config_;
+}
+
 base::FilePath StoragePartitionImpl::GetPath() {
   return partition_path_;
 }
@@ -1362,7 +1363,7 @@ base::FilePath StoragePartitionImpl::GetBucketBasePath() {
 }
 
 std::string StoragePartitionImpl::GetPartitionDomain() {
-  return partition_domain_;
+  return config_.partition_domain();
 }
 
 network::mojom::NetworkContext* StoragePartitionImpl::GetNetworkContext() {
@@ -1641,7 +1642,7 @@ StoragePartitionImpl::GetProtoDatabaseProvider() {
   if (!proto_database_provider_) {
     proto_database_provider_ =
         std::make_unique<leveldb_proto::ProtoDatabaseProvider>(partition_path_,
-                                                               is_in_memory_);
+                                                               is_in_memory());
   }
   return proto_database_provider_.get();
 }
@@ -2530,7 +2531,7 @@ BrowserContext* StoragePartitionImpl::browser_context() const {
 storage::mojom::Partition* StoragePartitionImpl::GetStorageServicePartition() {
   if (!remote_partition_) {
     absl::optional<base::FilePath> storage_path;
-    if (!is_in_memory_) {
+    if (!is_in_memory()) {
       storage_path =
           browser_context_->GetPath().Append(relative_partition_path_);
     }
@@ -2621,7 +2622,7 @@ void StoragePartitionImpl::InitNetworkContext() {
       cert_verifier_creation_params =
           cert_verifier::mojom::CertVerifierCreationParams::New();
   GetContentClient()->browser()->ConfigureNetworkContextParams(
-      browser_context_, is_in_memory_, relative_partition_path_,
+      browser_context_, is_in_memory(), relative_partition_path_,
       context_params.get(), cert_verifier_creation_params.get());
   devtools_instrumentation::ApplyNetworkContextParamsOverrides(
       browser_context_, context_params.get());

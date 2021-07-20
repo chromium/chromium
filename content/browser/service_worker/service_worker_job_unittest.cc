@@ -39,6 +39,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/test/fake_network.h"
+#include "content/test/storage_partition_test_helpers.h"
 #include "ipc/ipc_test_sink.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -1493,8 +1494,9 @@ class ServiceWorkerUpdateJobTest : public ServiceWorkerJobTest {
     // Create a StoragePartition with the testing browser context so that the
     // ServiceWorkerUpdateChecker can find the BrowserContext through it.
     storage_partition_impl_ = StoragePartitionImpl::Create(
-        helper_->browser_context(), /* in_memory= */ true, base::FilePath(),
-        /* partition_domain= */ "");
+        helper_->browser_context(),
+        CreateStoragePartitionConfigForTesting(/*in_memory=*/true),
+        base::FilePath() /* relative_partition_path */);
     storage_partition_impl_->Initialize();
     helper_->context_wrapper()->set_storage_partition(
         storage_partition_impl_.get());

@@ -19,6 +19,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/fake_mojo_message_dispatch_context.h"
+#include "content/test/storage_partition_test_helpers.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
@@ -345,9 +346,9 @@ class CookieStoreManagerTest
                                         CHECK(success) << "Initialize failed";
                                       }));
     storage_partition_impl_ = StoragePartitionImpl::Create(
-        worker_test_helper_->browser_context(), true /* in_memory */,
-        base::FilePath() /* relative_partition_path */,
-        std::string() /* partition_domain */);
+        worker_test_helper_->browser_context(),
+        CreateStoragePartitionConfigForTesting(/*in_memory=*/true),
+        base::FilePath() /* relative_partition_path */);
     storage_partition_impl_->Initialize();
     ::network::mojom::NetworkContext* network_context =
         storage_partition_impl_->GetNetworkContext();

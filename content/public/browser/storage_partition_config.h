@@ -84,6 +84,10 @@ class CONTENT_EXPORT StoragePartitionConfig {
   bool operator!=(const StoragePartitionConfig& rhs) const;
 
  private:
+  friend StoragePartitionConfig CreateStoragePartitionConfigForTesting(
+      bool,
+      const std::string&,
+      const std::string&);
   FRIEND_TEST_ALL_PREFIXES(StoragePartitionConfigTest, OperatorLess);
 
   StoragePartitionConfig(const std::string& partition_domain,
