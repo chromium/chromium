@@ -207,10 +207,6 @@ source_set("host_resolver") {
     "//components/cronet/*",
     "//net/*",
     "//services/network/*",
-
-    # The proxy resolution service uses its own host cache and HostResolver Mojo
-    # wrapper.
-    "//services/proxy_resolver/*",
   ]
 
   sources = [

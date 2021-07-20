@@ -15,7 +15,6 @@
 #include "net/base/address_family.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/network_isolation_key.h"
-#include "net/dns/host_resolver.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
 #include "services/proxy_resolver/host_resolver_mojo.h"
