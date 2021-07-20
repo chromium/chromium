@@ -1055,6 +1055,16 @@ void IconLoadingPipeline::CompleteWithIconValue(apps::mojom::IconValuePtr iv) {
     return;
   }
 
+  if (iv->uncompressed.isNull()) {
+    // In browser tests, CompleteWithIconValue might be called by the system
+    // shutdown process, but the apply icon effect process hasn't finished, so
+    // the icon might be null. Return early here if the image is null, to
+    // prevent calling MakeThreadSafe, which might cause the system crash due to
+    // DCHECK error on image.
+    CompleteWithCompressed(std::vector<uint8_t>());
+    return;
+  }
+
   iv->uncompressed.MakeThreadSafe();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
