@@ -353,9 +353,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPasswordProtectionChangePasswordURL,
     prefs::kPasswordProtectionChangePasswordURL,
     base::Value::Type::STRING },
-  { key::kSafeSitesFilterBehavior,
-    policy_prefs::kSafeSitesFilterBehavior,
-    base::Value::Type::INTEGER },
   { key::kAmbientAuthenticationInPrivateModesEnabled,
     prefs::kAmbientAuthenticationInPrivateModesEnabled,
     base::Value::Type::INTEGER },
@@ -1570,6 +1567,12 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           key::kWindowOcclusionEnabled,
           policy::policy_prefs::kNativeWindowOcclusionEnabled,
           base::Value::Type::BOOLEAN)));
+  handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
+      key::kSafeSitesFilterBehavior,
+      policy_prefs::kSafeSitesFilterBehavior,
+      static_cast<int>(SafeSitesFilterBehavior::kSafeSitesFilterDisabled),
+      static_cast<int>(SafeSitesFilterBehavior::kSafeSitesFilterEnabled),
+      true));
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
       key::kSafeBrowsingAllowlistDomains, prefs::kSafeBrowsingAllowlistDomains,
       base::Value::Type::LIST));

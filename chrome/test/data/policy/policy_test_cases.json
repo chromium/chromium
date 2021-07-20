@@ -10586,12 +10586,54 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "value for disabled",
         "policies": {
           "SafeSitesFilterBehavior": 0
         },
         "prefs": {
           "policy.safe_sites_filter_behavior": {
             "value": 0
+          }
+        }
+      },
+      {
+        "note": "value for enabled",
+        "policies": {
+          "SafeSitesFilterBehavior": 1
+        },
+        "prefs": {
+          "policy.safe_sites_filter_behavior": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "note": "invalid value should be clamped",
+        "policies": {
+          "SafeSitesFilterBehavior": 2
+        },
+        "prefs": {
+          "policy.safe_sites_filter_behavior": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "note": "invalid value should be clamped",
+        "policies": {
+          "SafeSitesFilterBehavior": -1
+        },
+        "prefs": {
+          "policy.safe_sites_filter_behavior": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "policy.safe_sites_filter_behavior": {
+            "default_value": 0
           }
         }
       }
