@@ -777,7 +777,6 @@
         result.typeProperties = {
           cellular: {
             activationState: mojom.ActivationStateType.kUnknown,
-            allowRoaming: false,
             signalStrength: 0,
             simLocked: false,
             supportNetworkScan: false,

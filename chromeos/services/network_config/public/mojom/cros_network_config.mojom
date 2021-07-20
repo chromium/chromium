@@ -321,6 +321,10 @@ struct ApnProperties {
   string? attach;
 };
 
+struct RoamingProperties {
+  bool allow_roaming;
+};
+
 struct CellularProviderProperties {
   string name;
   string code;
@@ -558,7 +562,7 @@ struct ManagedCellularProperties {
   ActivationStateType activation_state;
   // Note: |sim_locked| field is not part of ONC spec.
   bool sim_locked = false;
-  bool allow_roaming = false;
+  ManagedBoolean? allow_roaming;
   ManagedApnList? apn_list;
   ManagedBoolean? auto_connect;
   // List of user-entered custom APN entries. Note: This field is not
@@ -772,6 +776,9 @@ struct OpenVPNConfigProperties {
 // TODO(stevenjb): Make these a union.
 struct CellularConfigProperties {
   ApnProperties? apn;
+  // If not provided the default allow_roaming behavior will be used for the
+  // network.
+  RoamingProperties? roaming;
 };
 
 struct EthernetConfigProperties {

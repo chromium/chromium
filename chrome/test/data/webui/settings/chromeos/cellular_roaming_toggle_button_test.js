@@ -40,21 +40,21 @@ suite('CellularRoamingToggleButton', function() {
         cellularRoamingToggleButton.getCellularRoamingToggle();
 
     setManagedProperties(
-        /* allowRoaming= */ false, /* roamingState= */ null);
+        /* allowRoaming= */ {activeValue: false}, /* roamingState= */ null);
 
     assertEquals(
         cellularRoamingToggleButton.i18n('networkAllowDataRoamingDisabled'),
         cellularRoamingToggle.subLabel);
 
     setManagedProperties(
-        /* allowRoaming= */ true, /* roamingState= */ 'Home');
+        /* allowRoaming= */ {activeValue: true}, /* roamingState= */ 'Home');
 
     assertEquals(
         cellularRoamingToggleButton.i18n('networkAllowDataRoamingEnabledHome'),
         cellularRoamingToggle.subLabel);
 
     setManagedProperties(
-        /* allowRoaming= */ true, /* roamingState= */ 'Roaming');
+        /* allowRoaming= */ {activeValue: true}, /* roamingState= */ 'Roaming');
 
     assertEquals(
         cellularRoamingToggleButton.i18n(

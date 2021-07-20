@@ -95,6 +95,8 @@ bool NetworkState::PropertyChanged(const std::string& key,
     return GetStringValue(key, value, &activation_state_);
   } else if (key == shill::kRoamingStateProperty) {
     return GetStringValue(key, value, &roaming_);
+  } else if (key == shill::kCellularAllowRoamingProperty) {
+    return GetBooleanValue(key, value, &allow_roaming_);
   } else if (key == shill::kPaymentPortalProperty) {
     if (!value.is_dict())
       return false;

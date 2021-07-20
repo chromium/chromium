@@ -306,6 +306,7 @@ const OncFieldSignature sim_lock_status_fields[] = {
 
 const OncFieldSignature cellular_fields[] = {
     {::onc::kRecommended, &kRecommendedSignature},
+    {::onc::cellular::kAllowRoaming, &kBoolSignature},
     {::onc::cellular::kAPN, &kCellularApnSignature},
     {::onc::cellular::kAPNList, &kCellularApnListSignature},
     {::onc::cellular::kAutoConnect, &kBoolSignature},
@@ -314,7 +315,6 @@ const OncFieldSignature cellular_fields[] = {
 const OncFieldSignature cellular_with_state_fields[] = {
     {::onc::cellular::kActivationType, &kStringSignature},
     {::onc::cellular::kActivationState, &kStringSignature},
-    {::onc::cellular::kAllowRoaming, &kBoolSignature},
     {::onc::cellular::kESN, &kStringSignature},
     {::onc::cellular::kFamily, &kStringSignature},
     {::onc::cellular::kFirmwareRevision, &kStringSignature},

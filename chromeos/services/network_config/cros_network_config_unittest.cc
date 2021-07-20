@@ -1274,6 +1274,33 @@ TEST_F(CrosNetworkConfigTest, UnrecognizedAttachApnValue) {
                                                ->attach);
 }
 
+TEST_F(CrosNetworkConfigTest, AllowRoaming) {
+  const char* kGUID = "cellular_guid";
+  mojom::ManagedPropertiesPtr properties = GetManagedProperties(kGUID);
+
+  ASSERT_TRUE(properties->type_properties->get_cellular()->allow_roaming);
+  ASSERT_FALSE(
+      properties->type_properties->get_cellular()->allow_roaming->active_value);
+
+  auto config = mojom::ConfigProperties::New();
+  auto cellular_config = mojom::CellularConfigProperties::New();
+  auto new_roaming = mojom::RoamingProperties::New();
+
+  new_roaming->allow_roaming = true;
+  cellular_config->roaming = std::move(new_roaming);
+  config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
+      std::move(cellular_config));
+  ASSERT_TRUE(SetProperties(kGUID, std::move(config)));
+
+  properties = GetManagedProperties(kGUID);
+
+  ASSERT_TRUE(properties);
+  ASSERT_EQ(kGUID, properties->guid);
+  ASSERT_TRUE(properties->type_properties->is_cellular());
+  ASSERT_TRUE(
+      properties->type_properties->get_cellular()->allow_roaming->active_value);
+}
+
 TEST_F(CrosNetworkConfigTest, ConfigureNetwork) {
   // Note: shared = false requires a UserManager instance.
   bool shared = true;

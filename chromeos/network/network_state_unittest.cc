@@ -248,6 +248,13 @@ TEST_F(NetworkStateTest, VPNArcProvider) {
   EXPECT_EQ(network_state_.vpn_provider()->id, "package.name.foo");
 }
 
+TEST_F(NetworkStateTest, AllowRoaming) {
+  EXPECT_FALSE(network_state_.allow_roaming());
+  EXPECT_TRUE(SetProperty(shill::kCellularAllowRoamingProperty,
+                          std::make_unique<base::Value>(true)));
+  EXPECT_TRUE(network_state_.allow_roaming());
+}
+
 TEST_F(NetworkStateTest, Visible) {
   EXPECT_FALSE(network_state_.visible());
 

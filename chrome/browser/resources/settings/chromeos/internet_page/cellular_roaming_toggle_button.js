@@ -67,7 +67,8 @@ Polymer({
    * @private
    */
   getRoamingDetails_() {
-    if (!this.managedProperties.typeProperties.cellular.allowRoaming) {
+    if (!OncMojo.getActiveValue(
+            this.managedProperties.typeProperties.cellular.allowRoaming)) {
       return this.i18n('networkAllowDataRoamingDisabled');
     }
     return this.managedProperties.typeProperties.cellular.roamingState ===
