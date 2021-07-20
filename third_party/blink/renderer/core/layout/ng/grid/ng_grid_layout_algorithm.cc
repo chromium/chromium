@@ -760,10 +760,6 @@ void NGGridLayoutAlgorithm::GridItems::Append(
   item_data.emplace_back(new_item_data);
 }
 
-bool NGGridLayoutAlgorithm::GridItems::IsEmpty() const {
-  return item_data.IsEmpty();
-}
-
 const NGGridLayoutAlgorithm::SetGeometry&
 NGGridLayoutAlgorithm::GridGeometry::Geometry(
     GridTrackSizingDirection track_direction) const {

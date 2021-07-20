@@ -146,6 +146,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     OutOfFlowItemPlacement row_placement;
   };
 
+  using GridItemVector = Vector<GridItemData*, 16>;
+
   struct CORE_EXPORT GridItems {
     DISALLOW_NEW();
 
@@ -190,7 +192,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
     void Append(const GridItemData& new_item_data);
 
-    bool IsEmpty() const;
+    wtf_size_t Size() const { return item_data.size(); }
+    bool IsEmpty() const { return item_data.IsEmpty(); }
 
     // Grid items are appended in document order, but we want to rearrange them
     // in order-modified document order since auto-placement and painting rely
