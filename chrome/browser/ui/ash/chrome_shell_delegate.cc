@@ -44,6 +44,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "components/full_restore/app_launch_info.h"
@@ -57,6 +59,7 @@
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "url/gurl.h"
@@ -97,8 +100,27 @@ std::vector<GURL> GetURLsIfApplicable(TabStripModel* tab_strip_model) {
   return urls;
 }
 
-// Returns true if |window| is supported in desk templates feature.
-bool IsWindowSupportedForDeskTemplate(aura::Window* window) {
+// Returns the app id for `window`, which is used for looking up AppRestoreData
+// in FullRestoreSaveHandler. Progressive web apps use the chrome browser
+// app id. System web apps are saved under their own app id key.
+std::string GetAppId(aura::Window* window, Profile* user_profile) {
+  const std::string* const app_id_ptr = window->GetProperty(ash::kAppIDKey);
+  if (!app_id_ptr)
+    return std::string();
+
+  const std::string app_id = *app_id_ptr;
+  if (!window->GetProperty(full_restore::kAppTypeBrowser))
+    return app_id;
+
+  const bool is_system_web_app = web_app::WebAppProvider::Get(user_profile)
+                                     ->system_web_app_manager()
+                                     .IsSystemWebApp(app_id);
+  return is_system_web_app ? app_id : extension_misc::kChromeAppId;
+}
+
+// Returns true if `window` is supported in desk templates feature.
+bool IsWindowSupportedForDeskTemplate(aura::Window* window,
+                                      Profile* user_profile) {
   // For now we'll ignore ARC, crostini and lacros windows in desk template.
   const ash::AppType app_type =
       static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
@@ -107,10 +129,13 @@ bool IsWindowSupportedForDeskTemplate(aura::Window* window) {
       app_type != ash::AppType::SYSTEM_APP) {
     return false;
   }
+
+  DCHECK(user_profile);
   // Exclude window that does not asscociate with an app id.
-  const std::string* const app_id = window->GetProperty(ash::kAppIDKey);
-  if (!app_id)
+  const std::string app_id = GetAppId(window, user_profile);
+  if (app_id.empty())
     return false;
+
   // Exclude incognito browser window.
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForNativeWindow(window);
@@ -334,9 +359,6 @@ base::FilePath ChromeShellDelegate::GetPrimaryUserDownloadsFolder() const {
 std::unique_ptr<full_restore::AppLaunchInfo>
 ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
     aura::Window* window) const {
-  if (!IsWindowSupportedForDeskTemplate(window))
-    return nullptr;
-
   const user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
   DCHECK(active_user);
@@ -345,18 +367,22 @@ ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
   if (!user_profile)
     return nullptr;
 
+  if (!IsWindowSupportedForDeskTemplate(window, user_profile))
+    return nullptr;
+
   // Get |full_restore_data| from FullRestoreSaveHandler which contains all
   // restoring information for all apps running on the device.
-  const ::full_restore::RestoreData* full_restore_data =
-      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetRestoreData(
+  const full_restore::RestoreData* full_restore_data =
+      full_restore::FullRestoreSaveHandler::GetInstance()->GetRestoreData(
           user_profile->GetPath());
   DCHECK(full_restore_data);
 
-  const std::string* const app_id = window->GetProperty(ash::kAppIDKey);
-  DCHECK(app_id);
+  const std::string app_id = GetAppId(window, user_profile);
+  DCHECK(!app_id.empty());
+
   const int32_t window_id = window->GetProperty(full_restore::kWindowIdKey);
   std::unique_ptr<full_restore::AppLaunchInfo> app_launch_info =
-      std::make_unique<full_restore::AppLaunchInfo>(*app_id, window_id);
+      std::make_unique<full_restore::AppLaunchInfo>(app_id, window_id);
   auto* tab_strip_model = GetTabstripModelForWindowIfAny(window);
   if (tab_strip_model) {
     app_launch_info->urls = GetURLsIfApplicable(tab_strip_model);
@@ -366,8 +392,9 @@ ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
   // Read all other relevant app launching information from
   // |app_restore_data| to |app_launch_info|.
   const full_restore::AppRestoreData* app_restore_data =
-      full_restore_data->GetAppRestoreData(*app_id, window_id);
+      full_restore_data->GetAppRestoreData(app_id, window_id);
   if (app_restore_data) {
+    app_launch_info->app_type_browser = app_restore_data->app_type_browser;
     app_launch_info->event_flag = app_restore_data->event_flag;
     app_launch_info->container = app_restore_data->container;
     app_launch_info->disposition = app_restore_data->disposition;
