@@ -164,10 +164,10 @@ void RemoveStaleApplications(
 template <class UnaryFunction>
 void EnumerateAndTrimIncompatibleApplications(UnaryFunction function) {
   std::vector<std::string> stale_application_names;
-  for (const auto& item : g_browser_process->local_state()
-                              ->FindPreference(prefs::kIncompatibleApplications)
-                              ->GetValue()
-                              ->DictItems()) {
+  for (const auto item : g_browser_process->local_state()
+                             ->FindPreference(prefs::kIncompatibleApplications)
+                             ->GetValue()
+                             ->DictItems()) {
     auto application =
         ConvertToIncompatibleApplication(item.first, item.second);
 
