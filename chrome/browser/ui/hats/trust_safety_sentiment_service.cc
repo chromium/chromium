@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 
 #include "base/containers/cxx20_erase.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -212,7 +213,8 @@ void TrustSafetySentimentService::OpenedNewTabPage() {
       /*success_callback=*/base::DoNothing(),
       /*failure_callback=*/base::DoNothing(),
       winning_area_iterator->second.product_specific_data);
-
+  base::UmaHistogramEnumeration("Feedback.TrustSafetySentiment.SurveyRequested",
+                                winning_area_iterator->first);
   pending_triggers_.clear();
 }
 
@@ -383,6 +385,9 @@ void TrustSafetySentimentService::TriggerOccurred(
   if (!ProbabilityCheck(feature_area))
     return;
 
+  base::UmaHistogramEnumeration("Feedback.TrustSafetySentiment.TriggerOccurred",
+                                feature_area);
+
   // This will overwrite any previous trigger for this feature area. We are
   // only interested in the most recent trigger, so this is acceptable.
   pending_triggers_[feature_area] =
@@ -392,6 +397,9 @@ void TrustSafetySentimentService::TriggerOccurred(
 void TrustSafetySentimentService::PerformedIneligibleAction() {
   pending_triggers_[FeatureArea::kIneligible] =
       PendingTrigger(GetMaxRequiredNtpCount());
+
+  base::UmaHistogramEnumeration("Feedback.TrustSafetySentiment.TriggerOccurred",
+                                FeatureArea::kIneligible);
 }
 
 /*static*/ bool TrustSafetySentimentService::ShouldBlockSurvey(

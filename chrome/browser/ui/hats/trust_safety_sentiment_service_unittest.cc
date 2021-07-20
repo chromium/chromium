@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -69,6 +70,25 @@ class TrustSafetySentimentServiceTest : public testing::Test {
         });
   }
 
+  void CheckHistograms(
+      const std::set<TrustSafetySentimentService::FeatureArea>& triggered_areas,
+      const std::set<TrustSafetySentimentService::FeatureArea>&
+          surveyed_areas) {
+    std::map<std::string, std::set<TrustSafetySentimentService::FeatureArea>>
+        histogram_to_expected = {
+            {"Feedback.TrustSafetySentiment.TriggerOccurred", triggered_areas},
+            {"Feedback.TrustSafetySentiment.SurveyRequested", surveyed_areas}};
+
+    for (const auto& histogram_expected : histogram_to_expected) {
+      const auto& histogram_name = histogram_expected.first;
+      const auto& expected = histogram_expected.second;
+      histogram_tester()->ExpectTotalCount(histogram_name, expected.size());
+      for (auto area : expected) {
+        histogram_tester()->ExpectBucketCount(histogram_name, area, 1);
+      }
+    }
+  }
+
   TrustSafetySentimentService* service() {
     return TrustSafetySentimentServiceFactory::GetForProfile(profile());
   }
@@ -76,6 +96,7 @@ class TrustSafetySentimentServiceTest : public testing::Test {
     return &task_environment_;
   }
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
   MockHatsService* mock_hats_service() { return mock_hats_service_; }
   TestingProfile* profile() { return &profile_; }
 
@@ -84,6 +105,7 @@ class TrustSafetySentimentServiceTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile profile_;
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
   MockHatsService* mock_hats_service_;
 };
 
@@ -112,6 +134,10 @@ TEST_F(TrustSafetySentimentServiceTest, Eligibility_NtpOpens) {
   // it still has 1 NTP to open.
   service()->OpenedNewTabPage();
   testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+
+  CheckHistograms({TrustSafetySentimentService::FeatureArea::kPrivacySettings,
+                   TrustSafetySentimentService::FeatureArea::kTrustedSurface},
+                  {});
 
   // The next NTP should be eligible for a survey.
   EXPECT_CALL(*mock_hats_service(),
@@ -151,6 +177,10 @@ TEST_F(TrustSafetySentimentServiceTest, Eligibility_Time) {
               LaunchSurvey(kHatsSurveyTriggerTrustSafetyTrustedSurface,
                            testing::_, testing::_, testing::_));
   service()->OpenedNewTabPage();
+
+  CheckHistograms({TrustSafetySentimentService::FeatureArea::kPrivacySettings,
+                   TrustSafetySentimentService::FeatureArea::kTrustedSurface},
+                  {TrustSafetySentimentService::FeatureArea::kTrustedSurface});
 }
 
 TEST_F(TrustSafetySentimentServiceTest, TriggerProbability) {
@@ -167,6 +197,7 @@ TEST_F(TrustSafetySentimentServiceTest, TriggerProbability) {
   service()->TriggerOccurred(
       TrustSafetySentimentService::FeatureArea::kTrustedSurface, {});
   service()->OpenedNewTabPage();
+  CheckHistograms({}, {});
 }
 
 TEST_F(TrustSafetySentimentServiceTest, TriggersClearOnLaunch) {
@@ -174,6 +205,7 @@ TEST_F(TrustSafetySentimentServiceTest, TriggersClearOnLaunch) {
   FeatureParams params;
   params.trusted_surface_probability = "1.0";
   params.privacy_settings_probability = "1.0";
+  params.transactions_probability = "1.0";
   params.min_time_to_prompt = "0s";
   params.ntp_visits_min_range = "0";
   params.ntp_visits_max_range = "0";
@@ -184,11 +216,21 @@ TEST_F(TrustSafetySentimentServiceTest, TriggersClearOnLaunch) {
   service()->TriggerOccurred(
       TrustSafetySentimentService::FeatureArea::kTrustedSurface, {});
 
+  CheckHistograms({TrustSafetySentimentService::FeatureArea::kPrivacySettings,
+                   TrustSafetySentimentService::FeatureArea::kTrustedSurface},
+                  {});
+
   // The launched survey will be randomly selected from the two triggers.
+  std::string requested_survey_trigger;
   EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(testing::_, testing::_, testing::_, testing::_));
+              LaunchSurvey(testing::_, testing::_, testing::_, testing::_))
+      .WillOnce(testing::SaveArg<0>(&requested_survey_trigger));
   service()->OpenedNewTabPage();
   testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+  auto surveyed_feature_area =
+      requested_survey_trigger == kHatsSurveyTriggerTrustSafetyPrivacySettings
+          ? TrustSafetySentimentService::FeatureArea::kPrivacySettings
+          : TrustSafetySentimentService::FeatureArea::kTrustedSurface;
 
   // The trigger which did not result in a survey should no longer be
   // considered.
@@ -200,11 +242,17 @@ TEST_F(TrustSafetySentimentServiceTest, TriggersClearOnLaunch) {
 
   // Repeated triggers post survey launch should however be considered.
   EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(kHatsSurveyTriggerTrustSafetyTrustedSurface,
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyTransactions,
                            testing::_, testing::_, testing::_));
   service()->TriggerOccurred(
-      TrustSafetySentimentService::FeatureArea::kTrustedSurface, {});
+      TrustSafetySentimentService::FeatureArea::kTransactions, {});
   service()->OpenedNewTabPage();
+
+  CheckHistograms({TrustSafetySentimentService::FeatureArea::kPrivacySettings,
+                   TrustSafetySentimentService::FeatureArea::kTrustedSurface,
+                   TrustSafetySentimentService::FeatureArea::kTransactions},
+                  {surveyed_feature_area,
+                   TrustSafetySentimentService::FeatureArea::kTransactions});
 }
 
 TEST_F(TrustSafetySentimentServiceTest, SettingsWatcher_PrivacySettings) {
@@ -485,6 +533,9 @@ TEST_F(TrustSafetySentimentServiceTest, ActiveIncognitoPreventsSurvey) {
               LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings,
                            testing::_, testing::_, testing::_));
   service()->OpenedNewTabPage();
+  CheckHistograms({TrustSafetySentimentService::FeatureArea::kPrivacySettings,
+                   TrustSafetySentimentService::FeatureArea::kIneligible},
+                  {TrustSafetySentimentService::FeatureArea::kPrivacySettings});
 }
 
 TEST_F(TrustSafetySentimentServiceTest, ClosingIncognitoDelaysSurvey) {
@@ -516,6 +567,10 @@ TEST_F(TrustSafetySentimentServiceTest, ClosingIncognitoDelaysSurvey) {
   // result in a survey, as the maximum of the range is 2.
   service()->OpenedNewTabPage();
 
+  CheckHistograms({TrustSafetySentimentService::FeatureArea::kPrivacySettings,
+                   TrustSafetySentimentService::FeatureArea::kIneligible},
+                  {});
+
   // The second visit to the NTP should not trigger a survey if it takes place
   // less than the minimum time to prompt after closing an incognito session.
   task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(30));
@@ -532,4 +587,8 @@ TEST_F(TrustSafetySentimentServiceTest, ClosingIncognitoDelaysSurvey) {
   // minimum time has passed, should trigger a survey.
   task_environment()->AdvanceClock(base::TimeDelta::FromMinutes(1));
   service()->OpenedNewTabPage();
+
+  CheckHistograms({TrustSafetySentimentService::FeatureArea::kPrivacySettings,
+                   TrustSafetySentimentService::FeatureArea::kIneligible},
+                  {TrustSafetySentimentService::FeatureArea::kPrivacySettings});
 }

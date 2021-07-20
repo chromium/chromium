@@ -81584,6 +81584,13 @@ Full version information for the fingerprint enum values:
   <int value="3" label="Digital assetlinks verification failure"/>
 </enum>
 
+<enum name="TrustSafetySentimentFeatureArea">
+  <int value="0" label="Ineligible"/>
+  <int value="1" label="Privacy Settings"/>
+  <int value="2" label="Trusted Surface"/>
+  <int value="3" label="Transactions"/>
+</enum>
+
 <enum name="TrustTokenRequestHelperFactoryOutcome">
   <int value="0" label="Successfully created an issuance helper"/>
   <int value="1" label="Successfully created a redemption helper"/>
