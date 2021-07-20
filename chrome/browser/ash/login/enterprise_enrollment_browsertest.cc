@@ -92,8 +92,6 @@ constexpr char kAdDomainJoinUnlockedConfig[] = R"!!!(
 constexpr char kEnrollmentUI[] = "enterprise-enrollment";
 constexpr char kAdDialog[] = "step-ad-join";
 
-const test::UIPath kBackButton = {kEnrollmentUI, "step-signin",
-                                  "signin-back-button"};
 const test::UIPath kAdRetryButton = {kEnrollmentUI, "adRetryButton"};
 const test::UIPath kWebview = {kEnrollmentUI, "step-signin", "signin-frame"};
 
@@ -180,9 +178,7 @@ class EnterpriseEnrollmentTestBase : public OobeBaseTest {
 
   // Setup the enrollment screen.
   void ShowEnrollmentScreen() {
-    LoginDisplayHost* host = LoginDisplayHost::default_host();
-    ASSERT_TRUE(host != nullptr);
-    host->StartWizard(EnrollmentScreenView::kScreenId);
+    host()->StartWizard(EnrollmentScreenView::kScreenId);
     OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
     ASSERT_TRUE(enrollment_screen() != nullptr);
     ASSERT_TRUE(WizardController::default_controller() != nullptr);
@@ -197,6 +193,12 @@ class EnterpriseEnrollmentTestBase : public OobeBaseTest {
  protected:
   test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};
   test::EnrollmentHelperMixin enrollment_helper_{&mixin_host_};
+
+  LoginDisplayHost* host() {
+    LoginDisplayHost* host = LoginDisplayHost::default_host();
+    EXPECT_NE(host, nullptr);
+    return host;
+  }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(EnterpriseEnrollmentTestBase);
@@ -497,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest, StoragePartitionUpdated) {
   // Cancel button is enabled when the authenticator is ready. Do it manually
   // instead of waiting for it.
   test::ExecuteOobeJS("$('enterprise-enrollment').isCancelDisabled = false");
-  test::OobeJS().ClickOnPath(kBackButton);
+  host()->HandleAccelerator(ash::LoginAcceleratorAction::kCancelScreenAction);
 
   // Simulate navigating over the enrollment screen a second time.
   ShowEnrollmentScreen();

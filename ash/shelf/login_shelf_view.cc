@@ -92,6 +92,7 @@ constexpr LoginShelfView::ButtonId kButtonIds[] = {
     LoginShelfView::kBrowseAsGuest,
     LoginShelfView::kAddUser,
     LoginShelfView::kEnterpriseEnrollment,
+    LoginShelfView::kSignIn,
     LoginShelfView::kOsInstall,
 };
 
@@ -295,6 +296,7 @@ class LoginShelfButton : public views::LabelButton {
 bool ShutdownButtonHidden(OobeDialogState state) {
   return state == OobeDialogState::MIGRATION ||
          state == OobeDialogState::ENROLLMENT ||
+         state == OobeDialogState::ENROLLMENT_CANCEL_ENABLED ||
          state == OobeDialogState::ONBOARDING ||
          state == OobeDialogState::KIOSK_LAUNCH ||
          state == OobeDialogState::PASSWORD_CHANGED;
@@ -571,6 +573,12 @@ LoginShelfView::LoginShelfView(
                  base::Unretained(Shell::Get()->login_screen_controller()),
                  ash::LoginAcceleratorAction::kStartEnrollment),
              IDS_ASH_ENTERPRISE_ENROLLMENT_BUTTON, chromeos::kEnterpriseIcon);
+  add_button(kSignIn,
+             base::BindRepeating(
+                 &LoginScreenController::HandleAccelerator,
+                 base::Unretained(Shell::Get()->login_screen_controller()),
+                 ash::LoginAcceleratorAction::kCancelScreenAction),
+             IDS_ASH_SHELF_SIGNIN_BUTTON, kShelfAddPersonButtonIcon);
   add_button(kOsInstall,
              base::BindRepeating(
                  &LoginScreenController::ShowOsInstallScreen,
@@ -830,6 +838,7 @@ void LoginShelfView::UpdateUi() {
   GetViewByID(kBrowseAsGuest)->SetVisible(ShouldShowGuestButton());
   GetViewByID(kEnterpriseEnrollment)
       ->SetVisible(ShouldShowEnterpriseEnrollmentButton());
+  GetViewByID(kSignIn)->SetVisible(ShouldShowSignInButton());
 
   // Show add user button when it's in login screen and Oobe UI dialog is not
   // visible. The button should not appear if the device is not connected to a
@@ -869,6 +878,7 @@ void LoginShelfView::UpdateButtonsColors() {
   static_cast<LoginShelfButton*>(GetViewByID(kAddUser))->UpdateButtonColors();
   static_cast<LoginShelfButton*>(GetViewByID(kEnterpriseEnrollment))
       ->UpdateButtonColors();
+  static_cast<LoginShelfButton*>(GetViewByID(kSignIn))->UpdateButtonColors();
   static_cast<LoginShelfButton*>(GetViewByID(kOsInstall))->UpdateButtonColors();
   kiosk_apps_button_->UpdateButtonColors();
 }
@@ -937,6 +947,13 @@ bool LoginShelfView::ShouldShowEnterpriseEnrollmentButton() const {
       Shell::Get()->session_controller()->GetSessionState();
   return session_state == SessionState::OOBE &&
          dialog_state_ == OobeDialogState::USER_CREATION;
+}
+
+bool LoginShelfView::ShouldShowSignInButton() const {
+  const SessionState session_state =
+      Shell::Get()->session_controller()->GetSessionState();
+  return session_state == SessionState::OOBE &&
+         dialog_state_ == OobeDialogState::ENROLLMENT_CANCEL_ENABLED;
 }
 
 bool LoginShelfView::ShouldShowAppsButton() const {

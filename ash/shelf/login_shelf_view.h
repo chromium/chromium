@@ -58,6 +58,7 @@ class ASH_EXPORT LoginShelfView : public views::View,
     kApps,                  // Show list of available kiosk apps.
     kParentAccess,          // Unlock child device with Parent Access Code.
     kEnterpriseEnrollment,  // Start enterprise enrollment flow.
+    kSignIn,                // Start signin.
     kOsInstall,             // Start OS Install flow.
   };
 
@@ -173,6 +174,8 @@ class ASH_EXPORT LoginShelfView : public views::View,
   bool ShouldShowGuestButton() const;
 
   bool ShouldShowEnterpriseEnrollmentButton() const;
+
+  bool ShouldShowSignInButton() const;
 
   bool ShouldShowAppsButton() const;
 

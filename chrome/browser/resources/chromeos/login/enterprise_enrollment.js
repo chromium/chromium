@@ -295,10 +295,8 @@ Polymer({
         'flow' in data ? (data.flow == 'enterpriseLicense') : false;
 
     cr.ui.login.invokePolymerMethod(this.$["step-ad-join"], 'onBeforeShow');
-    if (!this.uiStep) {
-      this.showStep(this.isAutoEnroll_ ?
-          ENROLLMENT_STEP.WORKING : ENROLLMENT_STEP.SIGNIN);
-    }
+    this.showStep(
+        this.isAutoEnroll_ ? ENROLLMENT_STEP.WORKING : ENROLLMENT_STEP.SIGNIN);
   },
 
   /**
@@ -359,6 +357,7 @@ Polymer({
    * Switches between the different steps in the enrollment flow.
    * @param {string} step the steps to show, one of "signin", "working",
    * "attribute-prompt", "error", "success".
+   * @suppress {missingProperties} setOobeUIState() exists
    */
   showStep(step) {
     this.setUIStep(step);
@@ -369,7 +368,14 @@ Polymer({
     }
     this.isCancelDisabled =
         (step === ENROLLMENT_STEP.SIGNIN && !this.isManualEnrollment_) ||
-        step === ENROLLMENT_STEP.AD_JOIN || step === ENROLLMENT_STEP.WORKING;
+        step === ENROLLMENT_STEP.AD_JOIN || step === ENROLLMENT_STEP.WORKING ||
+        step === ENROLLMENT_STEP.CHECKING || step === ENROLLMENT_STEP.SUCCESS;
+    if (this.isCancelDisabled) {
+      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.ENROLLMENT);
+    } else {
+      Oobe.getInstance().setOobeUIState(
+          OOBE_UI_STATE.ENROLLMENT_CANCEL_ENABLED);
+    }
   },
 
   doReload() {

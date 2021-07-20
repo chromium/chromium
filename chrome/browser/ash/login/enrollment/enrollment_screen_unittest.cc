@@ -221,7 +221,7 @@ class ZeroTouchEnrollmentScreenUnitTest : public EnrollmentScreenUnitTest {
     SetUpEnrollmentScreenForFallback();
 
     // Once we fallback we show a sign in screen for manual enrollment.
-    EXPECT_CALL(*GetMockScreenView(), ShowSigninScreen()).Times(1);
+    EXPECT_CALL(*GetMockScreenView(), Show()).Times(2);
 
     // Start enrollment.
     enrollment_screen_->Show(wizard_context_.get());

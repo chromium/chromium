@@ -105,6 +105,7 @@ class EnrollmentScreen
   bool MaybeSkip(WizardContext* context) override;
   void ShowImpl() override;
   void HideImpl() override;
+  bool HandleAccelerator(LoginAcceleratorAction action) override;
 
   // Expose the exit_callback to test screen overrides.
   ScreenExitCallback* exit_callback() { return &exit_callback_; }

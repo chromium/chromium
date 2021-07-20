@@ -46,6 +46,14 @@ Polymer({
     },
 
     /**
+     * Whether to hide back button if form can't go back.
+     */
+    hideBackButtonIfCantGoBack: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
      * Used to display SAML notice.
      * @private
      */
@@ -333,6 +341,16 @@ Polymer({
    */
   isButtonEnabled_(navigationEnabled, buttonEnabled) {
     return navigationEnabled && buttonEnabled;
+  },
+
+  /**
+   * Whether the back button is hidden.
+   * @param {boolean} hideBackButtonIfCantGoBack - whether it should be hidden.
+   * @param {boolean} canGoBack - whether the form can go back.
+   * @private
+   */
+  isBackButtonHidden(hideBackButtonIfCantGoBack, canGoBack) {
+    return hideBackButtonIfCantGoBack && !canGoBack;
   },
 
   /**
