@@ -58,7 +58,7 @@ namespace base {
 // used) if UnderlyingType doesn't support them.
 //
 // StrongAlias only directly exposes comparison operators (for convenient use in
-// ordered containers) and a hash function (for unordered_map/set). It's
+// ordered containers) and a Hasher struct (for unordered_map/set). It's
 // impossible, without reflection, to expose all methods of the UnderlyingType
 // in StrongAlias's interface. It's also potentially unwanted (ex. you don't
 // want to be able to add two StrongAliases that represent socket handles).
@@ -117,6 +117,16 @@ class StrongAlias {
   }
 
   // Hasher to use in std::unordered_map, std::unordered_set, etc.
+  //
+  // Example usage:
+  //     using MyType = base::StrongAlias<...>;
+  //     using MySet = std::unordered_set<MyType, typename MyType::Hasher>;
+  //
+  // https://google.github.io/styleguide/cppguide.html#std_hash asks to avoid
+  // defining specializations of `std::hash` - this is why the hasher needs to
+  // be explicitly specified and why the following code will *not* work:
+  //     using MyType = base::StrongAlias<...>;
+  //     using MySet = std::unordered_set<MyType>;  // This won't work.
   struct Hasher {
     using argument_type = StrongAlias;
     using result_type = std::size_t;

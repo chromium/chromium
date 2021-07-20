@@ -35,7 +35,8 @@ namespace base {
 //             a default/null value other than zero.
 //
 // IdType32<Foo> behaves just like an int32_t in the following aspects:
-// - it can be used as a key in std::map and/or std::unordered_map;
+// - it can be used as a key in std::map;
+// - it can be used as a key in std::unordered_map (see StrongAlias::Hasher);
 // - it can be used as an argument to DCHECK_EQ or streamed to LOG(ERROR);
 // - it has the same memory footprint and runtime overhead as int32_t;
 // - it can be copied by memcpy.
@@ -44,7 +45,7 @@ namespace base {
 // IdType32<Foo> has the following differences from a bare int32_t:
 // - it forces coercions to go through the explicit constructor and value()
 //   getter;
-// - it restricts the set of available operations (i.e. no multiplication);
+// - it restricts the set of available operations (e.g. no multiplication);
 // - it default-constructs to a null value and allows checking against the null
 //   value via is_null method.
 template <typename TypeMarker,
