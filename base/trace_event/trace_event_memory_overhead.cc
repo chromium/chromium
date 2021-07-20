@@ -114,7 +114,7 @@ void TraceEventMemoryOverhead::AddValue(const Value& value) {
 
     case Value::Type::DICTIONARY:
       Add(kBaseValue, sizeof(Value));
-      for (const auto& pair : value.DictItems()) {
+      for (const auto pair : value.DictItems()) {
         AddString(pair.first);
         AddValue(pair.second);
       }

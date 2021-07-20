@@ -54,7 +54,7 @@ std::unique_ptr<protocol::Value> toProtocolValue(
   if (value->is_dict()) {
     std::unique_ptr<protocol::DictionaryValue> result =
         protocol::DictionaryValue::create();
-    for (const auto& it : value->DictItems()) {
+    for (const auto it : value->DictItems()) {
       std::unique_ptr<protocol::Value> converted =
           toProtocolValue(&it.second, depth - 1);
       if (converted)

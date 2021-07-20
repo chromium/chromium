@@ -24,6 +24,7 @@ config("tflite_flags") {
     # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
     "-Wno-sign-compare",
     "-Wno-gnu-inline-cpp-without-extern",
+    "-Wno-loop-analysis",
   ]
 
   defines = [
@@ -471,9 +472,9 @@ static_library("tflite") {
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
-    ":tflite_flags",
     "//build/config/compiler:no_chromium_code",
     "//third_party/eigen3:eigen_includes",
+    ":tflite_flags",
   ]
 
   public_configs = [ ":tflite_config" ]

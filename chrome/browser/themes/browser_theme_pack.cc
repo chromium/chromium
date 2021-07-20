@@ -1244,7 +1244,7 @@ void BrowserThemePack::ReadColorsFromJSON(const base::Value* colors_value,
   DCHECK(colors_value);
   DCHECK(colors_value->is_dict());
   // Parse the incoming data from |colors_value| into an intermediary structure.
-  for (const auto& iter : colors_value->DictItems()) {
+  for (const auto iter : colors_value->DictItems()) {
     if (!iter.second.is_list())
       continue;
     base::Value::ConstListView color_list = iter.second.GetList();

@@ -65,7 +65,7 @@ bool LoadColors(const base::Value* theme_value,
       theme_value->FindDictPath(keys::kThemeColors);
   if (colors_value) {
     // Validate that the colors are RGB or RGBA lists.
-    for (const auto& it : colors_value->DictItems()) {
+    for (const auto it : colors_value->DictItems()) {
       if (!it.second.is_list()) {
         *error = base::ASCIIToUTF16(errors::kInvalidThemeColors);
         return false;
