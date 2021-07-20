@@ -23,6 +23,7 @@
 #include "net/cookies/cookie_store.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/http_cache.h"
+#include "net/http/http_network_session.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/socket/ssl_client_socket_impl.h"
 #include "net/url_request/url_request.h"
@@ -69,8 +70,8 @@ URLRequestContext::~URLRequestContext() {
       this);
 }
 
-const HttpNetworkSession::Params* URLRequestContext::GetNetworkSessionParams(
-    ) const {
+const HttpNetworkSessionParams* URLRequestContext::GetNetworkSessionParams()
+    const {
   HttpTransactionFactory* transaction_factory = http_transaction_factory();
   if (!transaction_factory)
     return nullptr;
@@ -80,7 +81,7 @@ const HttpNetworkSession::Params* URLRequestContext::GetNetworkSessionParams(
   return &network_session->params();
 }
 
-const HttpNetworkSession::Context* URLRequestContext::GetNetworkSessionContext()
+const HttpNetworkSessionContext* URLRequestContext::GetNetworkSessionContext()
     const {
   HttpTransactionFactory* transaction_factory = http_transaction_factory();
   if (!transaction_factory)

@@ -846,10 +846,10 @@ TEST_F(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
         ConfiguredProxyResolutionService::CreateFixedFromPacResult(
             "QUIC bad:99; DIRECT", TRAFFIC_ANNOTATION_FOR_TESTS);
 
-    HttpNetworkSession::Params session_params;
+    HttpNetworkSessionParams session_params;
     session_params.enable_quic = true;
 
-    HttpNetworkSession::Context session_context;
+    HttpNetworkSessionContext session_context;
     SSLConfigServiceDefaults ssl_config_service;
     HttpServerProperties http_server_properties;
     MockClientSocketFactory socket_factory;
@@ -990,7 +990,7 @@ TEST_F(HttpStreamFactoryTest, UsePreConnectIfNoZeroRTT) {
             "http_proxy", TRAFFIC_ANNOTATION_FOR_TESTS));
 
     // Setup params to disable preconnect, but QUIC doesn't 0RTT.
-    HttpNetworkSession::Params session_params =
+    HttpNetworkSessionParams session_params =
         SpdySessionDependencies::CreateSessionParams(&session_deps);
     session_params.enable_quic = true;
 
@@ -1006,7 +1006,7 @@ TEST_F(HttpStreamFactoryTest, UsePreConnectIfNoZeroRTT) {
         server, NetworkIsolationKey(), alternative_service, expiration,
         DefaultSupportedQuicVersions());
 
-    HttpNetworkSession::Context session_context =
+    HttpNetworkSessionContext session_context =
         SpdySessionDependencies::CreateSessionContext(&session_deps);
     session_context.http_server_properties = &http_server_properties;
 
@@ -2016,7 +2016,7 @@ class HttpStreamFactoryBidirectionalQuicTest
     quic_context_.params()->headers_include_h2_stream_dependency =
         client_headers_include_h2_stream_dependency_;
 
-    HttpNetworkSession::Context session_context;
+    HttpNetworkSessionContext session_context;
     session_context.http_server_properties = &http_server_properties_;
     session_context.quic_context = &quic_context_;
 
@@ -2098,7 +2098,7 @@ class HttpStreamFactoryBidirectionalQuicTest
   MockHostResolver host_resolver_;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   std::unique_ptr<SSLConfigServiceDefaults> ssl_config_service_;
-  HttpNetworkSession::Params params_;
+  HttpNetworkSessionParams params_;
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
@@ -3521,8 +3521,8 @@ class ProcessAlternativeServicesTest : public TestWithTaskEnvironment {
   }
 
  protected:
-  HttpNetworkSession::Params session_params_;
-  HttpNetworkSession::Context session_context_;
+  HttpNetworkSessionParams session_params_;
+  HttpNetworkSessionContext session_context_;
   std::unique_ptr<HttpNetworkSession> session_;
   HttpServerProperties http_server_properties_;
   QuicContext quic_context_;

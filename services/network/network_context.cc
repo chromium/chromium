@@ -2217,7 +2217,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
 
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
-  net::HttpNetworkSession::Params session_params;
+  net::HttpNetworkSessionParams session_params;
   bool is_quic_force_disabled = false;
   if (network_service_ && network_service_->quic_disabled())
     is_quic_force_disabled = true;

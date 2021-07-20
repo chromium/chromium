@@ -74,12 +74,12 @@ class TestURLRequestContext : public URLRequestContext {
   }
 
   void set_http_network_session_params(
-      std::unique_ptr<HttpNetworkSession::Params> session_params) {
+      std::unique_ptr<HttpNetworkSessionParams> session_params) {
     http_network_session_params_ = std::move(session_params);
   }
 
   void set_http_network_session_context(
-      std::unique_ptr<HttpNetworkSession::Context> session_context) {
+      std::unique_ptr<HttpNetworkSessionContext> session_context) {
     http_network_session_context_ = std::move(session_context);
   }
 
@@ -104,10 +104,10 @@ class TestURLRequestContext : public URLRequestContext {
   bool initialized_ = false;
 
   // Optional parameters to override default values.  Note that values in the
-  // HttpNetworkSession::Context that point to other objects the
+  // HttpNetworkSessionContext that point to other objects the
   // TestURLRequestContext creates will be overwritten.
-  std::unique_ptr<HttpNetworkSession::Params> http_network_session_params_;
-  std::unique_ptr<HttpNetworkSession::Context> http_network_session_context_;
+  std::unique_ptr<HttpNetworkSessionParams> http_network_session_params_;
+  std::unique_ptr<HttpNetworkSessionContext> http_network_session_context_;
 
   // Not owned:
   ClientSocketFactory* client_socket_factory_ = nullptr;

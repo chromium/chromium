@@ -21,6 +21,7 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/quic_simple_test_server.h"
@@ -58,7 +59,7 @@ class BidirectionalStreamTestURLRequestContextGetter
       verify_result.is_issued_by_known_root = true;
       mock_cert_verifier_->AddResultForCert(test_cert, verify_result, net::OK);
 
-      auto params = std::make_unique<net::HttpNetworkSession::Params>();
+      auto params = std::make_unique<net::HttpNetworkSessionParams>();
       params->enable_quic = true;
       params->enable_http2 = true;
       request_context_->set_cert_verifier(mock_cert_verifier_.get());

@@ -150,7 +150,7 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
   }
 
   HttpNetworkSession* CreateNetworkSession() {
-    HttpNetworkSession::Context session_context;
+    HttpNetworkSessionContext session_context;
     session_context.host_resolver = &host_resolver_;
     session_context.cert_verifier = &cert_verifier_;
     session_context.transport_security_state = &transport_security_state_;
@@ -162,8 +162,7 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
         http_auth_handler_factory_.get();
     session_context.http_server_properties = &http_server_properties_;
     session_context.quic_context = &quic_context_;
-    return new HttpNetworkSession(HttpNetworkSession::Params(),
-                                  session_context);
+    return new HttpNetworkSession(HttpNetworkSessionParams(), session_context);
   }
 
  protected:

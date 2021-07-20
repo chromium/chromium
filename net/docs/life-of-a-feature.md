@@ -92,7 +92,7 @@ configuration of proxies, but which requires it be supplied as part of the
 `URLRequestContextGetter` building, if proxies are going to be supported.
 
 An example of injecting configuration flags can be seen in the
-`HttpNetworkSession::Params` structure, which is used to provide much of
+`HttpNetworkSessionParams` structure, which is used to provide much of
 the initialization parameters for the HTTP layer.
 
 The ideal form of injection is to pass ownership of the injected object,

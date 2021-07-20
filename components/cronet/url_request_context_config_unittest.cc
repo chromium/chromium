@@ -1058,7 +1058,7 @@ TEST(URLRequestContextConfigTest, SetQuicHostWhitelist) {
       std::make_unique<net::ProxyConfigServiceFixed>(
           net::ProxyConfigWithAnnotation::CreateDirect()));
   std::unique_ptr<net::URLRequestContext> context(builder.Build());
-  const net::HttpNetworkSession::Params* params =
+  const net::HttpNetworkSessionParams* params =
       context->GetNetworkSessionParams();
 
   EXPECT_TRUE(base::Contains(params->quic_host_allowlist, "www.example.com"));
@@ -1268,7 +1268,7 @@ TEST(URLURLRequestContextConfigTest, TurningOffQuic) {
       std::make_unique<net::ProxyConfigServiceFixed>(
           net::ProxyConfigWithAnnotation::CreateDirect()));
   std::unique_ptr<net::URLRequestContext> context(builder.Build());
-  const net::HttpNetworkSession::Params* params =
+  const net::HttpNetworkSessionParams* params =
       context->GetNetworkSessionParams();
   EXPECT_EQ(false, params->enable_quic);
 }
@@ -1286,7 +1286,7 @@ TEST(URLURLRequestContextConfigTest, DefaultEnableQuic) {
       std::make_unique<net::ProxyConfigServiceFixed>(
           net::ProxyConfigWithAnnotation::CreateDirect()));
   std::unique_ptr<net::URLRequestContext> context(builder.Build());
-  const net::HttpNetworkSession::Params* params =
+  const net::HttpNetworkSessionParams* params =
       context->GetNetworkSessionParams();
   EXPECT_EQ(true, params->enable_quic);
 }

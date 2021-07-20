@@ -122,7 +122,7 @@ net::URLRequestContext* WebViewURLRequestContextGetter::GetURLRequestContext() {
         net::HttpAuthHandlerFactory::CreateDefault());
     storage_->set_host_resolver(std::move(host_resolver));
 
-    net::HttpNetworkSession::Context network_session_context;
+    net::HttpNetworkSessionContext network_session_context;
     network_session_context.cert_verifier =
         url_request_context_->cert_verifier();
     network_session_context.transport_security_state =
@@ -151,7 +151,7 @@ net::URLRequestContext* WebViewURLRequestContextGetter::GetURLRequestContext() {
 
     storage_->set_http_network_session(
         std::make_unique<net::HttpNetworkSession>(
-            net::HttpNetworkSession::Params(), network_session_context));
+            net::HttpNetworkSessionParams(), network_session_context));
     storage_->set_http_transaction_factory(std::make_unique<net::HttpCache>(
         storage_->http_network_session(), std::move(main_backend),
         true /* set_up_quic_server_info */));

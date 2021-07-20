@@ -809,7 +809,7 @@ TEST_F(NetworkContextTest, DefaultHttpNetworkSessionParams) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
-  const net::HttpNetworkSession::Params& params =
+  const net::HttpNetworkSessionParams& params =
       network_context->url_request_context()
           ->http_transaction_factory()
           ->GetSession()
@@ -837,7 +837,7 @@ TEST_F(NetworkContextTest, FixedHttpPort) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
-  const net::HttpNetworkSession::Params& params =
+  const net::HttpNetworkSessionParams& params =
       network_context->url_request_context()
           ->http_transaction_factory()
           ->GetSession()

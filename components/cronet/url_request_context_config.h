@@ -15,12 +15,13 @@
 #include "base/values.h"
 #include "net/base/hash_value.h"
 #include "net/cert/cert_verifier.h"
-#include "net/http/http_network_session.h"
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/origin.h"
 
 namespace net {
 class CertVerifier;
+struct HttpNetworkSessionParams;
 struct QuicParams;
 class URLRequestContextBuilder;
 }  // namespace net
@@ -203,7 +204,7 @@ struct URLRequestContextConfig {
   // the URLRequestContextConfig and URLRequestContextBuilder.
   void ParseAndSetExperimentalOptions(
       net::URLRequestContextBuilder* context_builder,
-      net::HttpNetworkSession::Params* session_params,
+      net::HttpNetworkSessionParams* session_params,
       net::QuicParams* quic_params);
 
   // Experimental options encoded as a string in a JSON format containing

@@ -57,6 +57,7 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_network_session.h"
 #include "net/http/http_response_info.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
@@ -567,7 +568,7 @@ class URLLoaderTest : public testing::Test {
   }
 
   void SetUp() override {
-    net::HttpNetworkSession::Params params;
+    net::HttpNetworkSessionParams params;
     auto quic_context = std::make_unique<net::QuicContext>();
     quic_context->params()->origins_to_force_quic_on.insert(
         net::HostPortPair(net::QuicSimpleTestServer::GetHost(),

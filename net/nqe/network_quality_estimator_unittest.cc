@@ -2134,8 +2134,7 @@ TEST_F(NetworkQualityEstimatorTest, MAYBE_TestTCPSocketRTT) {
   TestURLRequestContext context(true);
   context.set_network_quality_estimator(&estimator);
 
-  std::unique_ptr<HttpNetworkSession::Context> session_context(
-      new HttpNetworkSession::Context);
+  auto session_context = std::make_unique<HttpNetworkSessionContext>();
   // |estimator| should be notified of TCP RTT observations.
   session_context->socket_performance_watcher_factory =
       estimator.GetSocketPerformanceWatcherFactory();

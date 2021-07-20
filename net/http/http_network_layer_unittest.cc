@@ -50,7 +50,7 @@ class HttpNetworkLayerTest : public PlatformTest, public WithTaskEnvironment {
     cert_verifier_ = std::make_unique<MockCertVerifier>();
     transport_security_state_ = std::make_unique<TransportSecurityState>();
     proxy_resolution_service_ = std::move(proxy_resolution_service);
-    HttpNetworkSession::Context session_context;
+    HttpNetworkSessionContext session_context;
     session_context.client_socket_factory = &mock_socket_factory_;
     session_context.host_resolver = &host_resolver_;
     session_context.cert_verifier = cert_verifier_.get();
@@ -61,7 +61,7 @@ class HttpNetworkLayerTest : public PlatformTest, public WithTaskEnvironment {
     session_context.http_server_properties = &http_server_properties_;
     session_context.quic_context = &quic_context_;
     network_session_ = std::make_unique<HttpNetworkSession>(
-        HttpNetworkSession::Params(), session_context);
+        HttpNetworkSessionParams(), session_context);
     factory_ = std::make_unique<HttpNetworkLayer>(network_session_.get());
   }
 

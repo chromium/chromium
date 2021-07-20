@@ -124,8 +124,7 @@ class URLRequestQuicTest
     QuicEnableVersion(version());
     StartQuicServer(version());
 
-    std::unique_ptr<HttpNetworkSession::Params> params(
-        new HttpNetworkSession::Params);
+    auto params = std::make_unique<HttpNetworkSessionParams>();
     CertVerifyResult verify_result;
     verify_result.verified_cert = ImportCertFromFile(
         GetTestCertsDirectory(), "quic-chain.pem");

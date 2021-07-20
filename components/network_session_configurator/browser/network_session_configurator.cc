@@ -25,6 +25,7 @@
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_switches.h"
 #include "net/base/host_mapping_rules.h"
+#include "net/http/http_network_session.h"
 #include "net/http/http_stream_factory.h"
 #include "net/quic/platform/impl/quic_flags_impl.h"
 #include "net/quic/quic_context.h"
@@ -114,7 +115,7 @@ int ConfigureSpdySessionMaxQueuedCappedFrames(
 void ConfigureHttp2Params(const base::CommandLine& command_line,
                           base::StringPiece http2_trial_group,
                           const VariationParameters& http2_trial_params,
-                          net::HttpNetworkSession::Params* params) {
+                          net::HttpNetworkSessionParams* params) {
   if (GetVariationParam(http2_trial_params, "http2_enabled") == "false") {
     params->enable_http2 = false;
     return;
@@ -521,7 +522,7 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
                          const VariationParameters& quic_trial_params,
                          bool is_quic_force_disabled,
                          const std::string& quic_user_agent_id,
-                         net::HttpNetworkSession::Params* params,
+                         net::HttpNetworkSessionParams* params,
                          net::QuicParams* quic_params) {
   if (ShouldDisableQuic(quic_trial_group, quic_trial_params,
                         is_quic_force_disabled)) {
@@ -668,7 +669,7 @@ namespace network_session_configurator {
 void ParseCommandLineAndFieldTrials(const base::CommandLine& command_line,
                                     bool is_quic_force_disabled,
                                     const std::string& quic_user_agent_id,
-                                    net::HttpNetworkSession::Params* params,
+                                    net::HttpNetworkSessionParams* params,
                                     net::QuicParams* quic_params) {
   is_quic_force_disabled |= command_line.HasSwitch(switches::kDisableQuic);
 

@@ -37,6 +37,7 @@
 #include "net/third_party/quiche/src/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quic/core/quic_tag.h"
 #include "net/url_request/url_request_context_builder.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_REPORTING)
 #include "net/reporting/reporting_policy.h"
@@ -272,7 +273,7 @@ URLRequestContextConfig::~URLRequestContextConfig() {}
 
 void URLRequestContextConfig::ParseAndSetExperimentalOptions(
     net::URLRequestContextBuilder* context_builder,
-    net::HttpNetworkSession::Params* session_params,
+    net::HttpNetworkSessionParams* session_params,
     net::QuicParams* quic_params) {
   if (experimental_options.empty())
     return;
@@ -781,7 +782,7 @@ void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
   }
   context_builder->set_accept_language(accept_language);
   context_builder->set_user_agent(user_agent);
-  net::HttpNetworkSession::Params session_params;
+  net::HttpNetworkSessionParams session_params;
   session_params.enable_http2 = enable_spdy;
   session_params.enable_quic = enable_quic;
   auto quic_context = std::make_unique<net::QuicContext>();

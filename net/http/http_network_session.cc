@@ -79,7 +79,7 @@ spdy::SettingsMap AddDefaultHttp2Settings(spdy::SettingsMap http2_settings) {
 
 }  // unnamed namespace
 
-HttpNetworkSession::Params::Params()
+HttpNetworkSessionParams::HttpNetworkSessionParams()
     : enable_server_push_cancellation(false),
       ignore_certificate_errors(false),
       testing_fixed_http_port(0),
@@ -102,11 +102,12 @@ HttpNetworkSession::Params::Params()
       base::FeatureList::IsEnabled(features::kEnableTLS13EarlyData);
 }
 
-HttpNetworkSession::Params::Params(const Params& other) = default;
+HttpNetworkSessionParams::HttpNetworkSessionParams(
+    const HttpNetworkSessionParams& other) = default;
 
-HttpNetworkSession::Params::~Params() = default;
+HttpNetworkSessionParams::~HttpNetworkSessionParams() = default;
 
-HttpNetworkSession::Context::Context()
+HttpNetworkSessionContext::HttpNetworkSessionContext()
     : client_socket_factory(nullptr),
       host_resolver(nullptr),
       cert_verifier(nullptr),
@@ -130,13 +131,14 @@ HttpNetworkSession::Context::Context()
           QuicCryptoClientStreamFactory::GetDefaultFactory()) {
 }
 
-HttpNetworkSession::Context::Context(const Context& other) = default;
+HttpNetworkSessionContext::HttpNetworkSessionContext(
+    const HttpNetworkSessionContext& other) = default;
 
-HttpNetworkSession::Context::~Context() = default;
+HttpNetworkSessionContext::~HttpNetworkSessionContext() = default;
 
 // TODO(mbelshe): Move the socket factories into HttpStreamFactory.
-HttpNetworkSession::HttpNetworkSession(const Params& params,
-                                       const Context& context)
+HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
+                                       const HttpNetworkSessionContext& context)
     : net_log_(context.net_log),
       http_server_properties_(context.http_server_properties),
       cert_verifier_(context.cert_verifier),

@@ -59,9 +59,10 @@ const char kResponseBody[] = "some arbitrary response body";
 class TestTransactionFactory : public HttpTransactionFactory {
  public:
   explicit TestTransactionFactory(
-      const HttpNetworkSession::Params& session_params,
-      const HttpNetworkSession::Context& session_context)
-      : session_(new HttpNetworkSession(session_params, session_context)) {}
+      const HttpNetworkSessionParams& session_params,
+      const HttpNetworkSessionContext& session_context)
+      : session_(std::make_unique<HttpNetworkSession>(session_params,
+                                                      session_context)) {}
 
   ~TestTransactionFactory() override {}
 
@@ -219,8 +220,8 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   std::unique_ptr<HttpAuthHandlerFactory> auth_handler_factory_;
   HttpServerProperties http_server_properties_;
-  HttpNetworkSession::Params session_params_;
-  HttpNetworkSession::Context session_context_;
+  HttpNetworkSessionParams session_params_;
+  HttpNetworkSessionContext session_context_;
   std::unique_ptr<TestTransactionFactory> transaction_factory_;
   HttpRequestInfo request_;
   std::string request_body_;

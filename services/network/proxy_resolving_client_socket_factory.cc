@@ -19,7 +19,7 @@ ProxyResolvingClientSocketFactory::ProxyResolvingClientSocketFactory(
     : request_context_(request_context) {
   DCHECK(request_context);
 
-  net::HttpNetworkSession::Context session_context;
+  net::HttpNetworkSessionContext session_context;
   session_context.client_socket_factory =
       request_context->GetNetworkSessionContext()->client_socket_factory;
   session_context.host_resolver = request_context->host_resolver();
@@ -40,9 +40,9 @@ ProxyResolvingClientSocketFactory::ProxyResolvingClientSocketFactory(
   session_context.quic_context = request_context->quic_context();
   session_context.net_log = request_context->net_log();
 
-  const net::HttpNetworkSession::Params* reference_params =
+  const net::HttpNetworkSessionParams* reference_params =
       request_context->GetNetworkSessionParams();
-  net::HttpNetworkSession::Params session_params;
+  net::HttpNetworkSessionParams session_params;
   if (reference_params) {
     // TODO(mmenke):  Just copying specific parameters seems highly regression
     // prone.  Should have a better way to do this.

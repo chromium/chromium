@@ -238,9 +238,9 @@ class HttpStreamFactoryJobControllerTest : public TestWithTaskEnvironment {
         test_proxy_delegate_.get());
 
     session_deps_.net_log = net_log_.bound().net_log();
-    HttpNetworkSession::Params params =
+    HttpNetworkSessionParams params =
         SpdySessionDependencies::CreateSessionParams(&session_deps_);
-    HttpNetworkSession::Context session_context =
+    HttpNetworkSessionContext session_context =
         SpdySessionDependencies::CreateSessionContext(&session_deps_);
 
     session_context.quic_crypto_client_stream_factory =

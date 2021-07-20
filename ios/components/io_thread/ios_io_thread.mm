@@ -325,8 +325,7 @@ void IOSIOThread::ClearHostCache() {
     host_cache->clear();
 }
 
-const net::HttpNetworkSession::Params& IOSIOThread::NetworkSessionParams()
-    const {
+const net::HttpNetworkSessionParams& IOSIOThread::NetworkSessionParams() const {
   return params_;
 }
 
@@ -340,7 +339,7 @@ void IOSIOThread::ChangedToOnTheRecordOnIOThread() {
 
 net::URLRequestContext* IOSIOThread::ConstructSystemRequestContext(
     IOSIOThread::Globals* globals,
-    const net::HttpNetworkSession::Params& params,
+    const net::HttpNetworkSessionParams& params,
     net::NetLog* net_log) {
   net::URLRequestContext* context = new SystemURLRequestContext;
   context->set_net_log(net_log);
@@ -367,7 +366,7 @@ net::URLRequestContext* IOSIOThread::ConstructSystemRequestContext(
   context->set_http_server_properties(globals->http_server_properties.get());
   context->set_quic_context(globals->quic_context.get());
 
-  net::HttpNetworkSession::Context system_context;
+  net::HttpNetworkSessionContext system_context;
   net::URLRequestContextBuilder::SetHttpNetworkSessionComponents(
       context, &system_context);
 

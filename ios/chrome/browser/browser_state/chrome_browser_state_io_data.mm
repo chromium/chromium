@@ -400,7 +400,7 @@ ChromeBrowserStateIOData::CreateHttpNetworkSession(
 
   IOSChromeIOThread* const io_thread = profile_params.io_thread;
 
-  net::HttpNetworkSession::Context session_context;
+  net::HttpNetworkSessionContext session_context;
   net::URLRequestContextBuilder::SetHttpNetworkSessionComponents(
       context, &session_context);
 

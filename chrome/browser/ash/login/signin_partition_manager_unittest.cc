@@ -28,6 +28,8 @@
 #include "net/base/network_isolation_key.h"
 #include "net/cookies/cookie_store.h"
 #include "net/http/http_auth.h"
+#include "net/http/http_auth_cache.h"
+#include "net/http/http_network_session.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/url_request/url_request_context.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"

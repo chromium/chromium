@@ -133,11 +133,11 @@ void TestURLRequestContext::Init() {
     // Make sure we haven't been passed an object we're not going to use.
     EXPECT_FALSE(client_socket_factory_);
   } else {
-    HttpNetworkSession::Params session_params;
+    HttpNetworkSessionParams session_params;
     if (http_network_session_params_)
       session_params = *http_network_session_params_;
 
-    HttpNetworkSession::Context session_context;
+    HttpNetworkSessionContext session_context;
     if (http_network_session_context_)
       session_context = *http_network_session_context_;
     session_context.client_socket_factory = client_socket_factory();

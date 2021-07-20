@@ -10,12 +10,13 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
-#include "net/http/http_network_session.h"
 
 namespace net {
 
 class ClientSocketPoolManager;
 class HttpStreamFactory;
+class HttpNetworkSession;
+struct HttpNetworkSessionParams;
 
 class NET_EXPORT_PRIVATE HttpNetworkSessionPeer {
  public:
@@ -29,7 +30,7 @@ class NET_EXPORT_PRIVATE HttpNetworkSessionPeer {
   void SetHttpStreamFactory(
       std::unique_ptr<HttpStreamFactory> http_stream_factory);
 
-  HttpNetworkSession::Params* params();
+  HttpNetworkSessionParams* params();
 
  private:
   HttpNetworkSession* const session_;

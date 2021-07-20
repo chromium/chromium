@@ -29,6 +29,7 @@ class WaitableEvent;
 
 namespace net {
 class CookieStore;
+class HttpNetworkSession;
 class NetLog;
 class FileNetLogObserver;
 }  // namespace net

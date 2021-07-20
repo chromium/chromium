@@ -144,7 +144,7 @@ class IOSIOThread : public web::WebThreadDelegate {
   // called on the IO thread.
   void ClearHostCache();
 
-  const net::HttpNetworkSession::Params& NetworkSessionParams() const;
+  const net::HttpNetworkSessionParams& NetworkSessionParams() const;
 
  protected:
   // A string describing the current application version. For example: "stable"
@@ -176,7 +176,7 @@ class IOSIOThread : public web::WebThreadDelegate {
 
   static net::URLRequestContext* ConstructSystemRequestContext(
       Globals* globals,
-      const net::HttpNetworkSession::Params& params,
+      const net::HttpNetworkSessionParams& params,
       net::NetLog* net_log);
 
   // The NetLog is owned by the application context, to allow logging from other
@@ -193,7 +193,7 @@ class IOSIOThread : public web::WebThreadDelegate {
 
   Globals* globals_;
 
-  net::HttpNetworkSession::Params params_;
+  net::HttpNetworkSessionParams params_;
 
   // Observer that logs network changes to the NetLog.
   std::unique_ptr<net::LoggingNetworkChangeObserver> network_change_observer_;

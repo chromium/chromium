@@ -374,8 +374,8 @@ std::unique_ptr<HttpNetworkSession>
 SpdySessionDependencies::SpdyCreateSessionWithSocketFactory(
     SpdySessionDependencies* session_deps,
     ClientSocketFactory* factory) {
-  HttpNetworkSession::Params session_params = CreateSessionParams(session_deps);
-  HttpNetworkSession::Context session_context =
+  HttpNetworkSessionParams session_params = CreateSessionParams(session_deps);
+  HttpNetworkSessionContext session_context =
       CreateSessionContext(session_deps);
   session_context.client_socket_factory = factory;
   auto http_session =
@@ -386,9 +386,9 @@ SpdySessionDependencies::SpdyCreateSessionWithSocketFactory(
 }
 
 // static
-HttpNetworkSession::Params SpdySessionDependencies::CreateSessionParams(
+HttpNetworkSessionParams SpdySessionDependencies::CreateSessionParams(
     SpdySessionDependencies* session_deps) {
-  HttpNetworkSession::Params params;
+  HttpNetworkSessionParams params;
   params.enable_spdy_ping_based_connection_checking = session_deps->enable_ping;
   params.enable_user_alternate_protocol_ports =
       session_deps->enable_user_alternate_protocol_ports;
@@ -417,9 +417,9 @@ HttpNetworkSession::Params SpdySessionDependencies::CreateSessionParams(
   return params;
 }
 
-HttpNetworkSession::Context SpdySessionDependencies::CreateSessionContext(
+HttpNetworkSessionContext SpdySessionDependencies::CreateSessionContext(
     SpdySessionDependencies* session_deps) {
-  HttpNetworkSession::Context context;
+  HttpNetworkSessionContext context;
   context.client_socket_factory = session_deps->socket_factory.get();
   context.host_resolver = session_deps->GetHostResolver();
   context.cert_verifier = session_deps->cert_verifier.get();
@@ -458,10 +458,10 @@ SpdyURLRequestContext::SpdyURLRequestContext() : storage_(this) {
   storage_.set_http_server_properties(std::make_unique<HttpServerProperties>());
   storage_.set_quic_context(std::make_unique<QuicContext>());
   storage_.set_job_factory(std::make_unique<URLRequestJobFactory>());
-  HttpNetworkSession::Params session_params;
+  HttpNetworkSessionParams session_params;
   session_params.enable_spdy_ping_based_connection_checking = false;
 
-  HttpNetworkSession::Context session_context;
+  HttpNetworkSessionContext session_context;
   session_context.client_socket_factory = &socket_factory_;
   session_context.host_resolver = host_resolver();
   session_context.cert_verifier = cert_verifier();
