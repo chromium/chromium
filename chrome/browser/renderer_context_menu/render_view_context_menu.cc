@@ -1720,7 +1720,8 @@ void RenderViewContextMenu::AppendLinkToTextItems() {
   if (link_to_text_menu_observer_)
     return;
 
-  link_to_text_menu_observer_ = LinkToTextMenuObserver::Create(this);
+  link_to_text_menu_observer_ =
+      LinkToTextMenuObserver::Create(this, GetRenderFrameHost());
   if (link_to_text_menu_observer_) {
     observers_.AddObserver(link_to_text_menu_observer_.get());
     link_to_text_menu_observer_->InitMenu(params_);

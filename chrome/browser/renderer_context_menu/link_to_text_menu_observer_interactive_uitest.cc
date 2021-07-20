@@ -19,6 +19,7 @@
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,7 +70,8 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest,
 
   void Reset(bool incognito) {
     menu_ = std::make_unique<MockRenderViewContextMenu>(incognito);
-    observer_ = LinkToTextMenuObserver::Create(menu_.get());
+    observer_ =
+        LinkToTextMenuObserver::Create(menu_.get(), getRenderFrameHost());
     menu_->SetObserver(observer_.get());
   }
 
@@ -82,6 +84,11 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest,
   ~LinkToTextMenuObserverTest() override;
   MockRenderViewContextMenu* menu() { return menu_.get(); }
   LinkToTextMenuObserver* observer() { return observer_.get(); }
+
+  content::RenderFrameHost* getRenderFrameHost() {
+    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    return web_contents->GetMainFrame();
+  }
 
  private:
   std::unique_ptr<LinkToTextMenuObserver> observer_;
@@ -238,7 +245,7 @@ IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, HiddenForExtensions) {
   menu()->set_web_contents(web_contents);
 
   std::unique_ptr<LinkToTextMenuObserver> observer =
-      LinkToTextMenuObserver::Create(menu());
+      LinkToTextMenuObserver::Create(menu(), getRenderFrameHost());
   EXPECT_EQ(nullptr, observer);
 }
 

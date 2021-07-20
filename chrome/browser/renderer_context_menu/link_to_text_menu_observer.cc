@@ -33,7 +33,8 @@ constexpr base::TimeDelta kTimeoutMs = base::TimeDelta::FromMilliseconds(500);
 
 // static
 std::unique_ptr<LinkToTextMenuObserver> LinkToTextMenuObserver::Create(
-    RenderViewContextMenuProxy* proxy) {
+    RenderViewContextMenuProxy* proxy,
+    content::RenderFrameHost* render_frame_host) {
   // WebContents can be null in tests.
   content::WebContents* web_contents = proxy->GetWebContents();
   if (web_contents && extensions::ProcessManager::Get(
@@ -43,12 +44,16 @@ std::unique_ptr<LinkToTextMenuObserver> LinkToTextMenuObserver::Create(
     return nullptr;
   }
 
-  return base::WrapUnique(new LinkToTextMenuObserver(proxy));
+  DCHECK(render_frame_host);
+  return base::WrapUnique(new LinkToTextMenuObserver(proxy, render_frame_host));
 }
 
 LinkToTextMenuObserver::LinkToTextMenuObserver(
-    RenderViewContextMenuProxy* proxy)
-    : proxy_(proxy) {}
+    RenderViewContextMenuProxy* proxy,
+    content::RenderFrameHost* render_frame_host) {
+  proxy_ = proxy;
+  render_frame_host_ = render_frame_host;
+}
 LinkToTextMenuObserver::~LinkToTextMenuObserver() = default;
 
 void LinkToTextMenuObserver::InitMenu(
@@ -193,13 +198,10 @@ void LinkToTextMenuObserver::RequestLinkGeneration() {
 }
 
 void LinkToTextMenuObserver::CopyLinkToClipboard() {
-  content::RenderFrameHost* main_frame =
-      proxy_->GetWebContents()->GetMainFrame();
-
   std::unique_ptr<ui::DataTransferEndpoint> data_transfer_endpoint =
-      main_frame && !main_frame->GetBrowserContext()->IsOffTheRecord()
+      !render_frame_host_->GetBrowserContext()->IsOffTheRecord()
           ? std::make_unique<ui::DataTransferEndpoint>(
-                main_frame->GetLastCommittedOrigin())
+                render_frame_host_->GetLastCommittedOrigin())
           : nullptr;
 
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
@@ -237,13 +239,10 @@ void LinkToTextMenuObserver::ReshareLink() {
 
 void LinkToTextMenuObserver::OnGetExistingSelectorsComplete(
     const std::vector<std::string>& selectors) {
-  content::RenderFrameHost* main_frame =
-      proxy_->GetWebContents()->GetMainFrame();
-
   std::unique_ptr<ui::DataTransferEndpoint> data_transfer_endpoint =
-      main_frame && !main_frame->GetBrowserContext()->IsOffTheRecord()
+      !render_frame_host_->GetBrowserContext()->IsOffTheRecord()
           ? std::make_unique<ui::DataTransferEndpoint>(
-                main_frame->GetLastCommittedOrigin())
+                render_frame_host_->GetLastCommittedOrigin())
           : nullptr;
 
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
@@ -266,9 +265,7 @@ void LinkToTextMenuObserver::RemoveHighlight() {
 mojo::Remote<blink::mojom::TextFragmentReceiver>&
 LinkToTextMenuObserver::GetRemote() {
   if (!remote_.is_bound()) {
-    content::RenderFrameHost* main_frame =
-        proxy_->GetWebContents()->GetMainFrame();
-    main_frame->GetRemoteInterfaces()->GetInterface(
+    render_frame_host_->GetRemoteInterfaces()->GetInterface(
         remote_.BindNewPipeAndPassReceiver());
   }
   return remote_;

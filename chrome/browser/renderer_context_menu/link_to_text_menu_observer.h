@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_LINK_TO_TEXT_MENU_OBSERVER_H_
 
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
+#include "content/public/browser/render_frame_host.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
 #include "url/gurl.h"
@@ -17,7 +18,8 @@ class RenderViewContextMenuProxy;
 class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
  public:
   static std::unique_ptr<LinkToTextMenuObserver> Create(
-      RenderViewContextMenuProxy* proxy);
+      RenderViewContextMenuProxy* proxy,
+      content::RenderFrameHost* render_frame_host);
 
   LinkToTextMenuObserver(const LinkToTextMenuObserver&) = delete;
   LinkToTextMenuObserver& operator=(const LinkToTextMenuObserver&) = delete;
@@ -34,7 +36,8 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   void OverrideGeneratedSelectorForTesting(const std::string& selector);
 
  private:
-  explicit LinkToTextMenuObserver(RenderViewContextMenuProxy* proxy);
+  explicit LinkToTextMenuObserver(RenderViewContextMenuProxy* proxy,
+                                  content::RenderFrameHost* render_frame_host);
   // Returns true if the link should be generated from the constructor, vs
   // determined when executed.
   bool ShouldPreemptivelyGenerateLink();
@@ -72,6 +75,7 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   RenderViewContextMenuProxy* proxy_;
   GURL url_;
   GURL raw_url_;
+  content::RenderFrameHost* render_frame_host_;
 
   // True when the context menu was opened with text selected.
   bool link_needs_generation_ = false;
