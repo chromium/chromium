@@ -758,25 +758,27 @@ VisitDatabase::GetGoogleDomainVisitsFromSearchesInRange(base::Time begin_time,
                                                         base::Time end_time) {
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
+      // clang-format off
       "SELECT "
-      "  visit_time, "
-      "  u.url "
-      "FROM  "
-      "  urls u JOIN visits v ON u.id = v.url "
-      "WHERE "
-      // Pre-filtering to limit the number of entries to process in
-      // C++. The url column is indexed so this makes the query more
-      // efficient. We then confirm in C++ that the domain of an entry
-      // is a valid Google domain before counting the visit.
-      "  (u.url LIKE \"https://www.google.__/search%\" OR "
-      "   u.url LIKE \"https://www.google.___/search%\" OR "
-      "   u.url LIKE \"https://www.google.__.__/search%\" OR "
-      "   u.url LIKE \"https://www.google.___.__/search%\") AND "
-      // Restrict to visits that are more recent than the specified start
-      // time.
-      "  visit_time >= ? AND "
-      // Restrict to visits that are older than the specified end time.
-      "  visit_time < ? "));
+          "visit_time,"
+          "u.url "
+          "FROM "
+              "urls u JOIN visits v ON u.id=v.url "
+          "WHERE "
+              // Pre-filtering to limit the number of entries to process in
+              // C++. The url column is indexed so this makes the query more
+              // efficient. We then confirm in C++ that the domain of an entry
+              // is a valid Google domain before counting the visit.
+              "(u.url LIKE 'https://www.google.__/search%' OR "
+               "u.url LIKE 'https://www.google.___/search%' OR "
+               "u.url LIKE 'https://www.google.__.__/search%' OR "
+               "u.url LIKE 'https://www.google.___.__/search%') AND "
+              // Restrict to visits that are more recent than the specified
+              // start time.
+              "visit_time >= ? AND "
+              // Restrict to visits that are older than the specified end time.
+              "visit_time < ?"));
+  // clang-format on
   statement.BindTime(0, begin_time);
   statement.BindTime(1, end_time);
   std::vector<DomainVisit> domain_visits;

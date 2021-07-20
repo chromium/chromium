@@ -654,7 +654,7 @@ URLDatabase::GetMostRecentNormalizedKeywordSearchTerms(
             kv.keyword_id = ?
             AND u.last_visit_time > ?
             AND kv.normalized_term IS NOT NULL
-            AND kv.normalized_term != ""
+            AND kv.normalized_term != ''
           GROUP BY normalized_term, rnd_last_visit_time
         )
       GROUP BY normalized_term

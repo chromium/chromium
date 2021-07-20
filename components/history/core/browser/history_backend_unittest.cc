@@ -1959,15 +1959,15 @@ TEST_F(HistoryBackendTest, MigrationVisitSource) {
   int cur_version = HistoryDatabase::GetCurrentVersion();
   sql::Database db;
   ASSERT_TRUE(db.Open(new_history_file));
-  sql::Statement s(db.GetUniqueStatement(
-      "SELECT value FROM meta WHERE key = 'version'"));
+  sql::Statement s(
+      db.GetUniqueStatement("SELECT value FROM meta WHERE key='version'"));
   ASSERT_TRUE(s.Step());
   int file_version = s.ColumnInt(0);
   EXPECT_EQ(cur_version, file_version);
 
   // Check visit_source table is created and empty.
   s.Assign(db.GetUniqueStatement(
-      "SELECT name FROM sqlite_master WHERE name=\"visit_source\""));
+      "SELECT name FROM sqlite_master WHERE name='visit_source'"));
   ASSERT_TRUE(s.Step());
   s.Assign(db.GetUniqueStatement("SELECT * FROM visit_source LIMIT 10"));
   EXPECT_FALSE(s.Step());
