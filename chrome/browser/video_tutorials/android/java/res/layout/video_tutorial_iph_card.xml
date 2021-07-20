@@ -17,12 +17,15 @@
         android:paddingStart="12dp"
         android:paddingBottom="12dp" >
 
-        <RelativeLayout
+        <androidx.cardview.widget.CardView
             android:id="@+id/thumbnail_wrapper"
-            android:layout_width="80dp"
+            android:layout_width="77dp"
             android:layout_height="58dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginTop="12dp" >
+            android:layout_marginTop="12dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@android:color/transparent">
 
             <org.chromium.components.browser_ui.widget.async_image.AsyncImageView
                 android:id="@+id/thumbnail"
@@ -33,37 +36,7 @@
                 app:waitingSrc="@color/image_loading_color"
                 app:roundedfillColor="@color/modern_grey_300" />
 
-            <ImageView
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_alignParentStart="true"
-                android:importantForAccessibility="no"
-                app:srcCompat="@drawable/corner_top_start"/>
-
-            <ImageView
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentStart="true"
-                android:importantForAccessibility="no"
-                app:srcCompat="@drawable/corner_bottom_start"/>
-
-            <ImageView
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_alignParentEnd="true"
-                android:importantForAccessibility="no"
-                app:srcCompat="@drawable/corner_top_end"/>
-
-            <ImageView
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:importantForAccessibility="no"
-                app:srcCompat="@drawable/corner_bottom_end"/>
-
-        </RelativeLayout>
+        </androidx.cardview.widget.CardView>
 
         <TextView
             android:id="@+id/video_length"
