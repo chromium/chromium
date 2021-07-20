@@ -1113,21 +1113,14 @@ class DeviceTestRunner(TestRunner):
     ]
     args = []
     gtest_filter = []
-    kif_filter = []
 
     if test_app.included_tests:
-      kif_filter = test_apps.get_kif_test_filter(test_app.included_tests,
-                                                 invert=False)
       gtest_filter = test_apps.get_gtest_filter(test_app.included_tests,
                                                 invert=False)
     elif test_app.excluded_tests:
-      kif_filter = test_apps.get_kif_test_filter(test_app.excluded_tests,
-                                                 invert=True)
       gtest_filter = test_apps.get_gtest_filter(test_app.excluded_tests,
                                                 invert=True)
 
-    if kif_filter:
-      cmd.extend(['-D', 'GKIF_SCENARIO_FILTER=%s' % kif_filter])
     if gtest_filter:
       args.append('--gtest_filter=%s' % gtest_filter)
 

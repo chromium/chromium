@@ -17,31 +17,6 @@ _MODULE_NAME = 'test_app'
 _XCTEST_PATH = '/PlugIns/boringssl_ssl_tests_module.xctest'
 
 
-class GetKIFTestFilterTest(test_runner_test.TestCase):
-  """Tests for test_runner.get_kif_test_filter."""
-
-  def test_correct(self):
-    """Ensures correctness of filter."""
-    tests = [
-      'KIF.test1',
-      'KIF.test2',
-    ]
-    expected = 'NAME:test1|test2'
-
-    self.assertEqual(expected, test_apps.get_kif_test_filter(tests))
-
-  def test_correct_inverted(self):
-    """Ensures correctness of inverted filter."""
-    tests = [
-      'KIF.test1',
-      'KIF.test2',
-    ]
-    expected = '-NAME:test1|test2'
-
-    self.assertEqual(expected,
-                    test_apps.get_kif_test_filter(tests, invert=True))
-
-
 class GetGTestFilterTest(test_runner_test.TestCase):
   """Tests for test_runner.get_gtest_filter."""
 

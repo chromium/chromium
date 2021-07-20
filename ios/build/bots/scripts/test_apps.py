@@ -15,27 +15,6 @@ import test_runner
 OUTPUT_DISABLED_TESTS_TEST_ARG = '--write-compiled-tests-json-to-writable-path'
 
 
-#TODO(crbug.com/1046911): Remove usage of KIF filters.
-def get_kif_test_filter(tests, invert=False):
-  """Returns the KIF test filter to filter the given test cases.
-
-  Args:
-    tests: List of test cases to filter.
-    invert: Whether to invert the filter or not. Inverted, the filter will match
-      everything except the given test cases.
-
-  Returns:
-    A string which can be supplied to GKIF_SCENARIO_FILTER.
-  """
-  # A pipe-separated list of test cases with the "KIF." prefix omitted.
-  # e.g. NAME:a|b|c matches KIF.a, KIF.b, KIF.c.
-  # e.g. -NAME:a|b|c matches everything except KIF.a, KIF.b, KIF.c.
-  test_filter = '|'.join(test.split('KIF.', 1)[-1] for test in tests)
-  if invert:
-    return '-NAME:%s' % test_filter
-  return 'NAME:%s' % test_filter
-
-
 def get_gtest_filter(tests, invert=False):
   """Returns the GTest filter to filter the given test cases.
 
@@ -183,18 +162,13 @@ class GTestsApp(object):
           'DYLD_INSERT_LIBRARIES'] = ':'.join(self.inserted_libs)
 
     xctestrun_data = {module: module_data}
-    kif_filter = []
     gtest_filter = []
 
     if self.included_tests:
-      kif_filter = get_kif_test_filter(self.included_tests, invert=False)
       gtest_filter = get_gtest_filter(self.included_tests, invert=False)
     elif self.excluded_tests:
-      kif_filter = get_kif_test_filter(self.excluded_tests, invert=True)
       gtest_filter = get_gtest_filter(self.excluded_tests, invert=True)
 
-    if kif_filter:
-      self.env_vars['GKIF_SCENARIO_FILTER'] = gtest_filter
     if gtest_filter:
       # Removed previous gtest-filter if exists.
       self.test_args = [el for el in self.test_args
