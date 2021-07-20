@@ -27,6 +27,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_utils.h"
+#include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -292,6 +293,22 @@ void AshColorProvider::DecorateFloatingIconButton(views::ImageButton* button,
                                                   const gfx::VectorIcon& icon) {
   DecorateIconButton(button, icon, /*toggled=*/false,
                      GetDefaultSizeOfVectorIcon(icon));
+}
+
+void AshColorProvider::DecorateInkDrop(views::InkDropHost* host,
+                                       int ink_drop_config_flags,
+                                       SkColor bg_color) {
+  const AshColorProvider::RippleAttributes ripple_attributes =
+      GetRippleAttributes(bg_color);
+
+  if (ink_drop_config_flags & kConfigBaseColor)
+    host->SetBaseColor(ripple_attributes.base_color);
+
+  if (ink_drop_config_flags & kConfigVisibleOpacity)
+    host->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
+
+  if (ink_drop_config_flags & kConfigHighlightOpacity)
+    host->SetHighlightOpacity(ripple_attributes.highlight_opacity);
 }
 
 void AshColorProvider::DecorateIconButton(views::ImageButton* button,

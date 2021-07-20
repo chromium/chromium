@@ -113,13 +113,12 @@ void SystemLabelButton::SetBackgroundAndFont(bool alert_mode) {
   SkColor effective_background_color = color_utils::GetResultingPaintColor(
       background_color_,
       AshColorProvider::Get()->GetBaseLayerColor(kBubbleLayerType));
-  const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes(effective_background_color);
-  views::InkDrop::Get(this)->SetBaseColor(ripple_attributes.base_color);
-  views::InkDrop::Get(this)->SetVisibleOpacity(
-      ripple_attributes.inkdrop_opacity);
-  views::InkDrop::Get(this)->SetHighlightOpacity(
-      ripple_attributes.highlight_opacity);
+  AshColorProvider::Get()->DecorateInkDrop(
+      views::InkDrop::Get(this),
+      AshColorProvider::kConfigBaseColor |
+          AshColorProvider::kConfigHighlightOpacity |
+          AshColorProvider::kConfigVisibleOpacity,
+      effective_background_color);
 }
 
 }  // namespace ash
