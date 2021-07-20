@@ -77,10 +77,14 @@ class GpoEditorWriter(template_writer.TemplateWriter):
     for group in policy_list:
       if group['type'] != 'group':
         continue
-      # TODO(nicolaso): Remove empty groups
       group['policies'] = [
           p for p in group['policies'] if p['name'] not in policies_to_remove
       ]
+
+    # Remove empty groups.
+    policy_list[:] = [
+        p for p in policy_list if p['type'] != 'group' or p['policies']
+    ]
 
   def _MovePolicyGroup(self, policy_list, predicate, policy_desc, group):
     '''Remove policies from |policy_list| that satisfy |predicate| and add them
