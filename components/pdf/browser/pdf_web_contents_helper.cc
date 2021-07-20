@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "components/pdf/browser/pdf_web_contents_helper_client.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -159,11 +160,17 @@ void PDFWebContentsHelper::SelectBetweenCoordinates(const gfx::PointF& base,
                                          ConvertFromRoot(extent));
 }
 
-void PDFWebContentsHelper::OnSelectionEvent(ui::SelectionEventType event) {}
+void PDFWebContentsHelper::OnSelectionEvent(ui::SelectionEventType event) {
+  // Should be handled by `TouchSelectionControllerClientAura`.
+  NOTREACHED();
+}
 
 void PDFWebContentsHelper::OnDragUpdate(
     const ui::TouchSelectionDraggable::Type type,
-    const gfx::PointF& position) {}
+    const gfx::PointF& position) {
+  // Should be handled by `TouchSelectionControllerClientAura`.
+  NOTREACHED();
+}
 
 std::unique_ptr<ui::TouchHandleDrawable>
 PDFWebContentsHelper::CreateDrawable() {
