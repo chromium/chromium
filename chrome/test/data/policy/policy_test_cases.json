@@ -9161,13 +9161,34 @@
       "chromeos",
       "android"
     ],
+    "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
         "policies": {
           "SafeBrowsingExtendedReportingEnabled": true
         },
         "prefs": {
-          "safebrowsing.scout_reporting_enabled": {}
+          "safebrowsing.scout_reporting_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "SafeBrowsingExtendedReportingEnabled": false
+        },
+        "prefs": {
+          "safebrowsing.scout_reporting_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "safebrowsing.scout_reporting_enabled": {
+            "default_value": false
+          }
         }
       }
     ]
