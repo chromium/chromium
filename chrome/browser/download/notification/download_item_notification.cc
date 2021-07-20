@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -268,6 +269,15 @@ void DownloadItemNotification::OnDownloadDestroyed() {
 void DownloadItemNotification::DisablePopup() {
   if (notification_->priority() == message_center::LOW_PRIORITY)
     return;
+
+  // When the `notification_` is `suppressed_`, it is sufficient to simply
+  // update priority. Since the `notification_` should not be displayed to
+  // the user, no interaction with the `NotificationDisplayService` is needed.
+  if (suppressed_) {
+    notification_->set_priority(message_center::LOW_PRIORITY);
+    return;
+  }
+
   // Hides a notification from popup notifications if it's a pop-up, by
   // decreasing its priority and reshowing itself. Low-priority notifications
   // doesn't pop-up itself so this logic works as disabling pop-up.
@@ -280,6 +290,11 @@ void DownloadItemNotification::DisablePopup() {
 }
 
 void DownloadItemNotification::Close(bool by_user) {
+  if (suppressed_) {
+    DCHECK(!by_user);
+    return;
+  }
+
   closed_ = true;
 
   if (item_ && item_->IsDangerous() && !item_->IsDone()) {
@@ -431,6 +446,20 @@ void DownloadItemNotification::Update() {
 void DownloadItemNotification::UpdateNotificationData(bool display,
                                                       bool force_pop_up) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // When holding space in-progress downloads integration is enabled,
+  // download in-progress notifications should be suppressed so long as they
+  // do not `force_pop_up`, such as is done in the case of dangerous or mixed
+  // content downloads.
+  suppressed_ =
+      display && !force_pop_up &&
+      ash::features::IsHoldingSpaceInProgressDownloadsIntegrationEnabled() &&
+      item_->GetState() == download::DownloadItem::IN_PROGRESS;
+
+  if (suppressed_) {
+    CloseNotification();
+    return;
+  }
 
   if (item_->GetState() == download::DownloadItem::CANCELLED) {
     // Confirms that a download is cancelled by user action.
