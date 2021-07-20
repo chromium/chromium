@@ -126,15 +126,6 @@
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #endif
 
-#if defined(TOOLKIT_VIEWS) && defined(USE_AURA)
-#include "ui/events/base_event_utils.h"
-#include "ui/events/event.h"
-#include "ui/events/gesture_event_details.h"
-#include "ui/events/types/event_type.h"
-#include "ui/views/touchui/touch_selection_menu_views.h"
-#include "ui/views/widget/any_widget_observer.h"
-#endif  // defined(TOOLKIT_VIEWS) && defined(USE_AURA)
-
 using content::AXInspectFactory;
 using content::WebContents;
 using extensions::ExtensionsAPIClient;
@@ -144,6 +135,9 @@ using guest_view::TestGuestViewManagerFactory;
 using ui::AXTreeFormatter;
 
 namespace {
+
+using ::pdf_extension_test_util::ConvertPageCoordToScreenCoord;
+
 const int kNumberLoadTestParts = 10;
 
 // `base::test::WithFeatureOverride` for `chrome_pdf::features::kPdfUnseasoned`.
@@ -312,47 +306,6 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
         "    {type: 'getSelectedText'});",
         &success));
     ASSERT_EQ(expect_success, success);
-  }
-
-  void ConvertPageCoordToScreenCoord(WebContents* contents, gfx::Point* point) {
-    ASSERT_TRUE(contents);
-    ASSERT_TRUE(content::ExecuteScript(
-        contents,
-        "var visiblePage = viewer.viewport.getMostVisiblePage();"
-        "var visiblePageDimensions ="
-        "    viewer.viewport.getPageScreenRect(visiblePage);"
-        "var viewportPosition = viewer.viewport.position;"
-        "var offsetParent = viewer.shadowRoot.querySelector('#container');"
-        "var scrollParent = viewer.shadowRoot.querySelector('#main');"
-        "var screenOffsetX = visiblePageDimensions.x - viewportPosition.x +"
-        "    scrollParent.offsetLeft + offsetParent.offsetLeft;"
-        "var screenOffsetY = visiblePageDimensions.y - viewportPosition.y +"
-        "    scrollParent.offsetTop + offsetParent.offsetTop;"
-        "var linkScreenPositionX ="
-        "    Math.floor(" +
-            base::NumberToString(point->x()) +
-            " * viewer.viewport.internalZoom_" +
-            " + screenOffsetX);"
-            "var linkScreenPositionY ="
-            "    Math.floor(" +
-            base::NumberToString(point->y()) +
-            " * viewer.viewport.internalZoom_" +
-            " +"
-            "    screenOffsetY);"));
-
-    int x;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-        contents,
-        "window.domAutomationController.send(linkScreenPositionX);",
-        &x));
-
-    int y;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-        contents,
-        "window.domAutomationController.send(linkScreenPositionY);",
-        &y));
-
-    point->SetPoint(x, y);
   }
 
   WebContents* GetActiveWebContents() {
@@ -1795,9 +1748,7 @@ class PDFExtensionLinkClickTest : public PDFExtensionTest {
   // This performs the [a] to [b] transformation, since that is the coordinate
   // space content::SimulateMouseClickAt() needs.
   gfx::Point GetLinkPosition() {
-    gfx::Point link_position(110, 110);
-    ConvertPageCoordToScreenCoord(guest_contents_, &link_position);
-    return link_position;
+    return ConvertPageCoordToScreenCoord(guest_contents_, {110, 110});
   }
 
   void SetGuestContents(WebContents* guest_contents) {
@@ -2035,9 +1986,7 @@ class PDFExtensionInternalLinkClickTest : public PDFExtensionTest {
 
   gfx::Point GetLinkPosition() {
     // The whole first page is a link.
-    gfx::Point link_position(100, 100);
-    ConvertPageCoordToScreenCoord(guest_contents_, &link_position);
-    return link_position;
+    return ConvertPageCoordToScreenCoord(guest_contents_, {100, 100});
   }
 
   content::WebContents* GetWebContentsForInputRouting() {
@@ -2161,9 +2110,7 @@ class PDFExtensionClipboardTest : public PDFExtensionTest,
   // space coordinates. See PDFExtensionLinkClickTest::GetLinkPosition() for
   // more information on all the coordinate systems involved.
   gfx::Point GetEditableComboBoxLeftPosition() {
-    gfx::Point position(136, 318);
-    ConvertPageCoordToScreenCoord(guest_contents_, &position);
-    return position;
+    return ConvertPageCoordToScreenCoord(guest_contents_, {136, 318});
   }
 
   void ClickLeftSideOfEditableComboBox() {
@@ -2643,61 +2590,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, ContextMenuCoordinates) {
   // message is sent with the same coordinates as in the
   // UntrustworthyContextMenuParams.
 }
-
-#if defined(TOOLKIT_VIEWS) && defined(USE_AURA)
-// On text selection, a touch selection menu should pop up. On clicking ellipsis
-// icon on the menu, the context menu should open up.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
-                       ContextMenuOpensFromTouchSelectionMenu) {
-  const GURL url = embedded_test_server()->GetURL("/pdf/text_large.pdf");
-  WebContents* const guest_contents = LoadPdfGetGuestContents(url);
-  ASSERT_TRUE(guest_contents);
-  content::WaitForHitTestData(guest_contents);
-
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "TouchSelectionMenuViews");
-  gfx::Point text_selection_position(12, 12);
-  ConvertPageCoordToScreenCoord(guest_contents, &text_selection_position);
-  content::SimulateTouchEventAt(GetActiveWebContents(), ui::ET_TOUCH_PRESSED,
-                                text_selection_position);
-  bool success = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetActiveWebContents(),
-      "window.addEventListener('message', function(event) {"
-      "  if (event.data.type == 'touchSelectionOccurred')"
-      "    window.domAutomationController.send(true);"
-      "});",
-      &success));
-  ASSERT_TRUE(success);
-  content::SimulateTouchEventAt(GetActiveWebContents(), ui::ET_TOUCH_RELEASED,
-                                text_selection_position);
-  views::Widget* widget = waiter.WaitIfNeededAndGet();
-  ASSERT_TRUE(widget);
-  views::View* menu = widget->GetContentsView();
-  ASSERT_TRUE(menu);
-  views::View* ellipsis_button = menu->GetViewByID(
-      views::TouchSelectionMenuViews::ButtonViewId::kEllipsisButton);
-  ASSERT_TRUE(ellipsis_button);
-  ContextMenuWaiter context_menu_observer;
-  ui::GestureEvent tap(0, 0, 0, ui::EventTimeForNow(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-  ellipsis_button->OnGestureEvent(&tap);
-  context_menu_observer.WaitForMenuOpenAndClose();
-
-  // Verify that the expected context menu items are present.
-  //
-  // Note that the assertion below doesn't use exact matching via
-  // testing::ElementsAre, because some platforms may include unexpected extra
-  // elements (e.g. an extra separator and IDC=100 has been observed on some Mac
-  // bots).
-  EXPECT_THAT(
-      context_menu_observer.GetCapturedCommandIds(),
-      testing::IsSupersetOf(
-          {IDC_CONTENT_CONTEXT_COPY, IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
-           IDC_PRINT, IDC_CONTENT_CONTEXT_ROTATECW,
-           IDC_CONTENT_CONTEXT_ROTATECCW, IDC_CONTENT_CONTEXT_INSPECTELEMENT}));
-}
-#endif  // defined(TOOLKIT_VIEWS) && defined(USE_AURA)
 
 // The plugin document and the mime handler should both use the same background
 // color.

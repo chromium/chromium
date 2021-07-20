@@ -14,26 +14,78 @@ testing::AssertionResult EnsurePDFHasLoaded(
   bool load_success = false;
   if (!content::ExecuteScriptAndExtractBool(
           frame,
-          "window.addEventListener('message', event => {"
-          "  if (event.origin !=="
-          "          'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai') {"
-          "    return;"
-          "  }"
-          "  if (event.data.type === 'documentLoaded') {"
-          "    window.domAutomationController.send("
-          "        event.data.load_state === 'success');"
-          "  } else if (event.data.type === 'passwordPrompted') {"
-          "    window.domAutomationController.send(true);"
-          "  }"
-          "});"
-          "document.getElementsByTagName('embed')[0].postMessage("
-          "    {type: 'initialize'});",
+          R"(window.addEventListener('message', event => {
+            if (event.origin !==
+                    'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai') {
+              return;
+            }
+            if (event.data.type === 'documentLoaded') {
+              window.domAutomationController.send(
+                  event.data.load_state === 'success');
+            } else if (event.data.type === 'passwordPrompted') {
+              window.domAutomationController.send(true);
+            }
+          });
+          document.getElementsByTagName('embed')[0].postMessage(
+              {type: 'initialize'});)",
           &load_success)) {
     return testing::AssertionFailure()
            << "Cannot communicate with PDF extension.";
   }
   return load_success ? testing::AssertionSuccess()
                       : (testing::AssertionFailure() << "Load failed.");
+}
+
+gfx::Point ConvertPageCoordToScreenCoord(content::WebContents* contents,
+                                         const gfx::Point& point) {
+  if (!contents) {
+    ADD_FAILURE() << "contents needs to be non-null";
+    return point;
+  }
+  if (!content::ExecuteScript(
+          contents,
+          "var visiblePage = viewer.viewport.getMostVisiblePage();"
+          "var visiblePageDimensions ="
+          "    viewer.viewport.getPageScreenRect(visiblePage);"
+          "var viewportPosition = viewer.viewport.position;"
+          "var offsetParent = viewer.shadowRoot.querySelector('#container');"
+          "var scrollParent = viewer.shadowRoot.querySelector('#main');"
+          "var screenOffsetX = visiblePageDimensions.x - viewportPosition.x +"
+          "    scrollParent.offsetLeft + offsetParent.offsetLeft;"
+          "var screenOffsetY = visiblePageDimensions.y - viewportPosition.y +"
+          "    scrollParent.offsetTop + offsetParent.offsetTop;"
+          "var linkScreenPositionX ="
+          "    Math.floor(" +
+              base::NumberToString(point.x()) +
+              " * viewer.viewport.internalZoom_" +
+              " + screenOffsetX);"
+              "var linkScreenPositionY ="
+              "    Math.floor(" +
+              base::NumberToString(point.y()) +
+              " * viewer.viewport.internalZoom_" +
+              " +"
+              "    screenOffsetY);")) {
+    ADD_FAILURE() << "Error executing script";
+    return point;
+  }
+
+  int x;
+  if (!content::ExecuteScriptAndExtractInt(
+          contents, "window.domAutomationController.send(linkScreenPositionX);",
+          &x)) {
+    ADD_FAILURE() << "error getting linkScreenPositionX";
+    return point;
+  }
+
+  int y;
+  if (!content::ExecuteScriptAndExtractInt(
+          contents, "window.domAutomationController.send(linkScreenPositionY);",
+          &y)) {
+    ADD_FAILURE() << "error getting linkScreenPositionY";
+    return point;
+  }
+
+  return {x, y};
 }
 
 }  // namespace pdf_extension_test_util
