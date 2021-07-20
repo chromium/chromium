@@ -1526,6 +1526,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING_PROBLEM_MEDIA_FAILURE" desc="Error message shown when a connection cannot be established to the video conferencing media servers">
         Unable to connect to media servers
       </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_IP_CONFIG_INFO_DRAWER_MAC_ADDRESS" desc="Label for `MAC Address` data-point in `IP Configuration` drawer.">
+        MAC Address
+      </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_IP_CONFIG_INFO_DRAWER_TITLE" desc="This element is the header for a collapsible content area responsible to showcasing IP related configuration data." >
         IP Configuration
       </message>

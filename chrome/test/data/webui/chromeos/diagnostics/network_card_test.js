@@ -8,7 +8,7 @@ import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeW
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
@@ -86,11 +86,16 @@ export function networkCardTestSuite() {
                     networkCardElement.$$('#troubleConnectingContainer')))));
   });
 
-  test('IpConfigInfoDrawerAdded', () => {
-    // Ensure ip-config-info-drawer in UI and displays in correct slot.
+  test('CardDrawerInitializedCorrectly', () => {
+    // Ensure ip-config-info-drawer displays in correct slot and based on
+    // current network.
     return initializeNetworkCard('wifiGuid').then(() => {
+      const ipConfigInfoDrawerElement =
+          /** @type {!IpConfigInfoDrawerElement} */ (
+              networkCardElement.$$('#ipConfigInfoDrawer[slot=routines]'));
       assertTrue(
-          !!(networkCardElement.$$('#ipConfigInfoDrawer[slot=routines]')));
+          isVisible(/** @type {!HTMLElement} */ (ipConfigInfoDrawerElement)));
+      assertDeepEquals(fakeWifiNetwork, ipConfigInfoDrawerElement.network);
     });
   });
 }

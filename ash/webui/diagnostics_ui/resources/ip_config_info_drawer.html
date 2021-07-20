@@ -4,5 +4,11 @@
   <span aria-hidden="true">[[i18n('ipConfigInfoDrawerTitle')]]</span>
 </cr-expand-button>
 <template is="dom-if" if="[[expanded_]]">
-  <div id="ipConfigInfoElement"></div>
+  <div id="ipConfigInfoElement" class="horizontal-data-point-container">
+    <div class="data-point-container">
+      <data-point id="macAddress"
+        header="[[i18n('ipConfigInfoDrawerMacAddress')]]"
+        value="[[macAddress_]]" orientation="horizontal"></data-point>
+    </div>
+  </div>
 </template>

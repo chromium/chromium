@@ -110,6 +110,8 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"httpFirewallRoutineText", IDS_NETWORK_DIAGNOSTICS_HTTP_FIREWALL},
       {"httpsFirewallRoutineText", IDS_NETWORK_DIAGNOSTICS_HTTPS_FIREWALL},
       {"httpsLatencyRoutineText", IDS_NETWORK_DIAGNOSTICS_HTTPS_LATENCY},
+      {"ipConfigInfoDrawerMacAddress",
+       IDS_NETWORK_DIAGNOSTICS_IP_CONFIG_INFO_DRAWER_MAC_ADDRESS},
       {"ipConfigInfoDrawerTitle",
        IDS_NETWORK_DIAGNOSTICS_IP_CONFIG_INFO_DRAWER_TITLE},
       {"lanConnectivityRoutineText", IDS_NETWORK_DIAGNOSTICS_LAN_CONNECTIVITY},

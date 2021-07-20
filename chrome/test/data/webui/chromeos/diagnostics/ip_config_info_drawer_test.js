@@ -4,7 +4,9 @@
 
 import 'chrome://diagnostics/ip_config_info_drawer.js';
 
-import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {Network} from 'chrome://diagnostics/diagnostics_types.js';
+import {fakeEthernetNetwork} from 'chrome://diagnostics/fake_data.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
@@ -22,12 +24,30 @@ export function ipConfigInfoDrawerTestSuite() {
     ipConfigInfoDrawerElement = null;
   });
 
-  function initializeIpConfigInfoDrawerElement() {
+  /**
+   * @param {!Network=} network
+   */
+  function initializeIpConfigInfoDrawerElement(network = fakeEthernetNetwork) {
     ipConfigInfoDrawerElement = /** @type {!IpConfigInfoDrawerElement} */ (
         document.createElement('ip-config-info-drawer'));
+    ipConfigInfoDrawerElement.network = network;
     document.body.appendChild(ipConfigInfoDrawerElement);
     assertTrue(!!ipConfigInfoDrawerElement);
     return flushTasks();
+  }
+
+  /**
+   * @param {string} selector
+   * @param {string} headerText
+   * @param {string} valueText
+   */
+  function assertDataPointHasExpectedHeaderAndValue(
+      selector, headerText, valueText) {
+    const dataPoint =
+        dx_utils.getDataPoint(ipConfigInfoDrawerElement, selector);
+    assertTrue(isVisible(dataPoint));
+    assertEquals(headerText, dataPoint.header);
+    assertEquals(valueText, dataPoint.value);
   }
 
   /**
@@ -51,14 +71,10 @@ export function ipConfigInfoDrawerTestSuite() {
 
   test('IpConfigInfoDrawerInitialized', () => {
     return initializeIpConfigInfoDrawerElement().then(() => {
-      const expectedDrawerHeader =
-          ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerTitle');
-      const toggleButtonLabel = /** @type {HTMLElement} */ (
-          ipConfigInfoDrawerElement.$$('cr-expand-button > span'));
-
-      assertTrue(isVisible(getDrawerToggle()));
       dx_utils.assertElementContainsText(
-          toggleButtonLabel, expectedDrawerHeader);
+          /** @type {HTMLElement} */ (
+              ipConfigInfoDrawerElement.$$('cr-expand-button > span')),
+          ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerTitle'));
     });
   });
 
@@ -73,6 +89,18 @@ export function ipConfigInfoDrawerTestSuite() {
         .then(() => {
           // Confirm expanded state visibility is correctly updated.
           assertTrue(!!(getDrawerContentContainer()));
+        });
+  });
+
+  test('ConfigDrawerOpenDisplaysMacAddressBasedOnNetwork', () => {
+    return initializeIpConfigInfoDrawerElement()
+        // Opening drawer to test visibility and content of data points.
+        .then(() => getDrawerToggle().click())
+        .then(() => {
+          assertDataPointHasExpectedHeaderAndValue(
+              '#macAddress',
+              ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerMacAddress'),
+              `${fakeEthernetNetwork.macAddress}`);
         });
   });
 }
