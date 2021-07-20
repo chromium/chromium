@@ -56,19 +56,12 @@ class GTestsApp(object):
     test_app: full path to an app.
   """
 
-  def __init__(self,
-               test_app,
-               included_tests=None,
-               excluded_tests=None,
-               test_args=None,
-               env_vars=None,
-               release=False,
-               host_app_path=None,
-               inserted_libs=None):
+  def __init__(self, test_app, **kwargs):
     """Initialize Egtests.
 
     Args:
       test_app: (str) full path to egtests app.
+      (Following are potential args in **kwargs)
       included_tests: (list) Specific tests to run
          E.g.
           [ 'TestCaseClass1/testMethod1', 'TestCaseClass2/testMethod2']
@@ -88,18 +81,18 @@ class GTestsApp(object):
       raise test_runner.AppNotFoundError(test_app)
     self.test_app_path = test_app
     self.project_path = os.path.dirname(self.test_app_path)
-    self.test_args = test_args or []
+    self.test_args = kwargs.get('test_args') or []
     self.env_vars = {}
-    for env_var in env_vars or []:
+    for env_var in kwargs.get('env_vars') or []:
       env_var = env_var.split('=', 1)
       self.env_vars[env_var[0]] = None if len(env_var) == 1 else env_var[1]
-    self.included_tests = included_tests or []
-    self.excluded_tests = excluded_tests or []
+    self.included_tests = kwargs.get('included_tests') or []
+    self.excluded_tests = kwargs.get('excluded_tests') or []
     self.disabled_tests = []
     self.module_name = os.path.splitext(os.path.basename(test_app))[0]
-    self.release = release
-    self.host_app_path = host_app_path
-    self.inserted_libs = inserted_libs or []
+    self.release = kwargs.get('release')
+    self.host_app_path = kwargs.get('host_app_path')
+    self.inserted_libs = kwargs.get('inserted_libs') or []
 
   def fill_xctest_run(self, out_dir):
     """Fills xctestrun file by egtests.
@@ -258,19 +251,12 @@ class EgtestsApp(GTestsApp):
     excluded_tests: List of tests not to run.
   """
 
-  def __init__(self,
-               egtests_app,
-               included_tests=None,
-               excluded_tests=None,
-               test_args=None,
-               env_vars=None,
-               release=False,
-               host_app_path=None,
-               inserted_libs=None):
+  def __init__(self, egtests_app, **kwargs):
     """Initialize Egtests.
 
     Args:
       egtests_app: (str) full path to egtests app.
+      (Following are potential args in **kwargs)
       included_tests: (list) Specific tests to run
          E.g.
           [ 'TestCaseClass1/testMethod1', 'TestCaseClass2/testMethod2']
@@ -286,12 +272,11 @@ class EgtestsApp(GTestsApp):
     Raises:
       AppNotFoundError: If the given app does not exist
     """
-    inserted_libs = list(inserted_libs or [])
+    inserted_libs = list(kwargs.get('inserted_libs') or [])
     inserted_libs.append('__PLATFORMS__/iPhoneSimulator.platform/Developer/'
                          'usr/lib/libXCTestBundleInject.dylib')
-    super(EgtestsApp,
-          self).__init__(egtests_app, included_tests, excluded_tests, test_args,
-                         env_vars, release, host_app_path, inserted_libs)
+    kwargs['inserted_libs'] = inserted_libs
+    super(EgtestsApp, self).__init__(egtests_app, **kwargs)
 
   def _xctest_path(self):
     """Gets xctest-file from egtests/PlugIns folder.
@@ -359,17 +344,12 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
     excluded_tests: List of tests not to run.
   """
 
-  def __init__(self,
-               tests_app,
-               included_tests=None,
-               excluded_tests=None,
-               test_args=None,
-               env_vars=None,
-               release=False):
+  def __init__(self, tests_app, **kwargs):
     """Initialize the class.
 
     Args:
       tests_app: (str) full path to tests app.
+      (Following are potential args in **kwargs)
       included_tests: (list) Specific tests to run
          E.g.
           [ 'TestCaseClass1/testMethod1', 'TestCaseClass2/testMethod2']
@@ -383,11 +363,11 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
     Raises:
       AppNotFoundError: If the given app does not exist
     """
-    test_args = list(test_args or [])
+    test_args = list(kwargs.get('test_args') or [])
     test_args.append('--enable-run-ios-unittests-with-xctest')
-    super(DeviceXCTestUnitTestsApp,
-          self).__init__(tests_app, included_tests, excluded_tests, test_args,
-                         env_vars, release, None)
+    kwargs['test_args'] = test_args
+
+    super(DeviceXCTestUnitTestsApp, self).__init__(tests_app, **kwargs)
 
   # TODO(crbug.com/1077277): Refactor class structure and remove duplicate code.
   def _xctest_path(self):
@@ -475,17 +455,12 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
     excluded_tests: List of tests not to run.
   """
 
-  def __init__(self,
-               tests_app,
-               included_tests=None,
-               excluded_tests=None,
-               test_args=None,
-               env_vars=None,
-               release=False):
+  def __init__(self, tests_app, **kwargs):
     """Initialize the class.
 
     Args:
       tests_app: (str) full path to tests app.
+      (Following are potential args in **kwargs)
       included_tests: (list) Specific tests to run
          E.g.
           [ 'TestCaseClass1/testMethod1', 'TestCaseClass2/testMethod2']
@@ -499,11 +474,10 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
     Raises:
       AppNotFoundError: If the given app does not exist
     """
-    test_args = list(test_args or [])
+    test_args = list(kwargs.get('test_args') or [])
     test_args.append('--enable-run-ios-unittests-with-xctest')
-    super(SimulatorXCTestUnitTestsApp,
-          self).__init__(tests_app, included_tests, excluded_tests, test_args,
-                         env_vars, release, None)
+    kwargs['test_args'] = test_args
+    super(SimulatorXCTestUnitTestsApp, self).__init__(tests_app, **kwargs)
 
   # TODO(crbug.com/1077277): Refactor class structure and remove duplicate code.
   def _xctest_path(self):

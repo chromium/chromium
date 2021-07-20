@@ -259,20 +259,8 @@ class LaunchCommand(object):
 class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
   """Class for running simulator tests using xCode."""
 
-  def __init__(self,
-               app_path,
-               host_app_path,
-               iossim_path,
-               version,
-               platform,
-               out_dir,
-               release=False,
-               retries=1,
-               shards=1,
-               test_cases=None,
-               test_args=None,
-               use_clang_coverage=False,
-               env_vars=None):
+  def __init__(self, app_path, host_app_path, iossim_path, version, platform,
+               out_dir, **kwargs):
     """Initializes a new instance of SimulatorParallelTestRunner class.
 
     Args:
@@ -283,6 +271,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       version: (str) iOS version to run simulator on.
       platform: (str) Name of device.
       out_dir: (str) A directory to emit test data into.
+      (Following are potential args in **kwargs)
       release: (bool) Whether this test runner is running for a release build.
       retries: (int) A number to retry test run, will re-run only failed tests.
       shards: (int) A number of shards. Default is 1.
@@ -299,26 +288,17 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       XcodeVersionNotFoundError: If the given Xcode version does not exist.
       XCTestPlugInNotFoundError: If the .xctest PlugIn does not exist.
     """
-    super(SimulatorParallelTestRunner, self).__init__(
-        app_path,
-        iossim_path,
-        platform,
-        version,
-        out_dir,
-        env_vars=env_vars,
-        retries=retries or 1,
-        shards=shards or 1,
-        test_args=test_args,
-        test_cases=test_cases,
-        use_clang_coverage=use_clang_coverage,
-        xctest=False)
+    kwargs['retries'] = kwargs.get('retries') or 1
+    super(SimulatorParallelTestRunner,
+          self).__init__(app_path, iossim_path, platform, version, out_dir,
+                         **kwargs)
     self.set_up()
     self.host_app_path = None
     if host_app_path != 'NO_PATH':
       self.host_app_path = os.path.abspath(host_app_path)
     self._init_sharding_data()
     self.logs = collections.OrderedDict()
-    self.release = release
+    self.release = kwargs.get('release') or False
     self.test_results['path_delimiter'] = '/'
     # Do not enable parallel testing when code coverage is enabled, because raw
     # coverage data won't be produced with parallel testing.
@@ -496,23 +476,14 @@ class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
                             test_runner.DeviceTestRunner):
   """Class for running tests on real device using xCode."""
 
-  def __init__(
-      self,
-      app_path,
-      host_app_path,
-      out_dir,
-      release=False,
-      retries=1,
-      test_cases=None,
-      test_args=None,
-      env_vars=None,
-  ):
+  def __init__(self, app_path, host_app_path, out_dir, **kwargs):
     """Initializes a new instance of DeviceXcodeTestRunner class.
 
     Args:
       app_path: (str) A path to egtests_app.
       host_app_path: (str) A path to the host app for EG2.
       out_dir: (str) A directory to emit test data into.
+      (Following are potential args in **kwargs)
       retries: (int) A number to retry test run, will re-run only failed tests.
       test_cases: (list) List of tests to be included in the test run.
                   None or [] to include all tests.
@@ -527,15 +498,7 @@ class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
       XcodeVersionNotFoundError: If the given Xcode version does not exist.
       XCTestPlugInNotFoundError: If the .xctest PlugIn does not exist.
     """
-    test_runner.DeviceTestRunner.__init__(
-        self,
-        app_path,
-        out_dir,
-        env_vars=env_vars,
-        retries=retries,
-        test_args=test_args,
-        test_cases=test_cases,
-    )
+    test_runner.DeviceTestRunner.__init__(self, app_path, out_dir, **kwargs)
     self.shards = 1  # For tests on real devices shards=1
     self.version = None
     self.platform = None
@@ -543,7 +506,7 @@ class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
     if host_app_path != 'NO_PATH':
       self.host_app_path = os.path.abspath(host_app_path)
     self.homedir = ''
-    self.release = release
+    self.release = kwargs.get('release') or False
     self.set_up()
     self._init_sharding_data()
     self.start_time = time.strftime('%Y-%m-%d-%H%M%S', time.localtime())

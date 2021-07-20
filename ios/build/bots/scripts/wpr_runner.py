@@ -46,23 +46,8 @@ class WprToolsNotFoundError(test_runner.TestRunnerError):
 class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
   """Class for running simulator tests with WPR against saved website replays"""
 
-  def __init__(
-      self,
-      app_path,
-      host_app_path,
-      iossim_path,
-      replay_path,
-      platform,
-      version,
-      wpr_tools_path,
-      out_dir,
-      env_vars=None,
-      retries=None,
-      shards=None,
-      test_args=None,
-      test_cases=None,
-      xctest=False,
-  ):
+  def __init__(self, app_path, host_app_path, iossim_path, replay_path,
+               platform, version, wpr_tools_path, out_dir, **kwargs):
     """Initializes a new instance of this class.
 
     Args:
@@ -76,6 +61,7 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
         can be found by running "iossim -l". e.g. "9.3", "8.2", "7.1".
       wpr_tools_path: Path to pre-installed (from CIPD) WPR-related tools
       out_dir: Directory to emit test data into.
+      (Following are potential args in **kwargs)
       env_vars: List of environment variables to pass to the test itself.
       retries: Number of times to retry failed test cases.
       test_args: List of strings to pass as arguments to the test when
@@ -89,20 +75,9 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
       ReplayPathNotFoundError: If the replay path was not found.
       WprToolsNotFoundError: If wpr_tools_path is not specified.
     """
-    super(WprProxySimulatorTestRunner, self).__init__(
-        app_path,
-        iossim_path,
-        platform,
-        version,
-        out_dir,
-        env_vars=env_vars,
-        retries=retries,
-        shards=shards,
-        test_args=test_args,
-        test_cases=test_cases,
-        wpr_tools_path=wpr_tools_path,
-        xctest=xctest,
-    )
+    super(WprProxySimulatorTestRunner,
+          self).__init__(app_path, iossim_path, platform, version, out_dir,
+                         **kwargs)
     self.host_app_path = None
     if host_app_path is not None and host_app_path != 'NO_PATH':
       self.host_app_path = os.path.abspath(host_app_path)
@@ -120,6 +95,7 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
 
     if not os.path.exists(wpr_tools_path):
       raise WprToolsNotFoundError(wpr_tools_path)
+    self.wpr_tools_path = wpr_tools_path
 
     self.proxy_process = None
     self.wprgo_process = None
