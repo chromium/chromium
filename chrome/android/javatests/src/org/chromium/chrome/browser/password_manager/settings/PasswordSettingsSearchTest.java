@@ -54,7 +54,6 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.test.espresso.Espresso;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matcher;
@@ -67,6 +66,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -97,8 +97,8 @@ public class PasswordSettingsSearchTest {
     private static final long UI_UPDATING_TIMEOUT_MS = 3000;
 
     @Rule
-    public IntentsTestRule<HistoryActivity> mHistoryActivityTestRule =
-            new IntentsTestRule<>(HistoryActivity.class, false, false);
+    public BaseActivityTestRule<HistoryActivity> mHistoryActivityTestRule =
+            new BaseActivityTestRule<>(HistoryActivity.class);
 
     @Rule
     public SettingsActivityTestRule<PasswordSettings> mSettingsActivityTestRule =

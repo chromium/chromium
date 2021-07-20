@@ -98,6 +98,9 @@ public class PriceAlertsMessageCardTest {
 
     @Before
     public void setUp() {
+        // Since we don't use IntentsTestRule to start an Activity, we have to call init() here.
+        // IntentsTestRule will call release() regardless of whether an Activity was started.
+        Intents.init();
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
         mMockNotificationManager = new MockNotificationManagerProxy();
         PriceDropNotificationManager.setNotificationManagerForTesting(mMockNotificationManager);
@@ -223,7 +226,6 @@ public class PriceAlertsMessageCardTest {
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testReviewMessage_AppNotificationsDisabled() {
-        Intents.init();
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mMockNotificationManager.setNotificationsEnabled(false);
 
@@ -240,7 +242,6 @@ public class PriceAlertsMessageCardTest {
             intended(hasAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS));
         }
         assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
-        Intents.release();
     }
 
     @Test
