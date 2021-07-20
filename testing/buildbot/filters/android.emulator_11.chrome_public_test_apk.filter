@@ -70,3 +70,15 @@
 
 # crbug.com/1225754
 -org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testGetLoadUrlParamsForOpeningMhtmlFileUrl
+
+# crbug.com/1231219
+-org.chromium.chrome.browser.bookmarks.BookmarkTest.testReadingListDeletion
+-org.chromium.chrome.browser.bookmarks.BookmarkTest.testSearchReadingList_Deletion
+-org.chromium.chrome.browser.bookmarks.BookmarkTest.testShowInFolder_*
+
+# crbug.com/1231227
+-org.chromium.chrome.browser.webapps.WebappDisplayModeTest.*
+
+# crbug.com/1231259
+-org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessoryIntegrationTest.testFillsSuggestionOnClick
+-org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessoryIntegrationTest.testFillsSuggestionOnClick
