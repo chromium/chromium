@@ -79,7 +79,6 @@
 #include "third_party/blink/renderer/core/frame/screen_metrics_emulator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
-#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/battery_savings.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
@@ -116,7 +115,6 @@
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator_dispatcher_impl.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_mutator_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue.h"
@@ -2026,13 +2024,6 @@ void WebFrameWidgetImpl::BeginCommitCompositorFrame() {
 void WebFrameWidgetImpl::EndCommitCompositorFrame(
     base::TimeTicks commit_start_time) {
   DCHECK(commit_compositor_frame_start_time_.has_value());
-  if (ForTopMostMainFrame()) {
-    Document* doc = local_root_->GetFrame()->GetDocument();
-    if (doc->GetSettings()->GetViewportMetaEnabled() &&
-        !LayerTreeHost()->IsMobileOptimized()) {
-      UseCounter::Count(doc, WebFeature::kTapDelayEnabled);
-    }
-  }
   if (ForMainFrame()) {
     View()->DidCommitCompositorFrameForLocalMainFrame();
     View()->UpdatePreferredSize();
