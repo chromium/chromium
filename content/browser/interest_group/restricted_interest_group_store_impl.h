@@ -27,7 +27,7 @@ class CONTENT_EXPORT RestrictedInterestGroupStoreImpl final
           receiver);
 
   // blink::mojom::RestrictedInterestGroupStore.
-  void JoinInterestGroup(blink::mojom::InterestGroupPtr group) override;
+  void JoinInterestGroup(const blink::InterestGroup& group) override;
   void LeaveInterestGroup(const url::Origin& owner,
                           const std::string& name) override;
 

@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 
 namespace content {
@@ -25,8 +26,7 @@ InterestGroupManager::InterestGroupManager(const base::FilePath& path,
 
 InterestGroupManager::~InterestGroupManager() = default;
 
-void InterestGroupManager::JoinInterestGroup(
-    blink::mojom::InterestGroupPtr group) {
+void InterestGroupManager::JoinInterestGroup(blink::InterestGroup group) {
   impl_.AsyncCall(&InterestGroupStorage::JoinInterestGroup)
       .WithArgs(std::move(group));
 }

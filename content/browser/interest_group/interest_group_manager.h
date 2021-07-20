@@ -13,6 +13,7 @@
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 
 namespace content {
 
@@ -37,7 +38,7 @@ class CONTENT_EXPORT InterestGroupManager {
   // is created based on the provided group information. If the interest group
   // exists, the existing interest group is overwritten. In either case a join
   // record for this interest group is created.
-  void JoinInterestGroup(blink::mojom::InterestGroupPtr group);
+  void JoinInterestGroup(blink::InterestGroup group);
   // Remove the interest group if it exists.
   void LeaveInterestGroup(const url::Origin& owner, const std::string& name);
   // Updates the interest group of the same name based on the information in

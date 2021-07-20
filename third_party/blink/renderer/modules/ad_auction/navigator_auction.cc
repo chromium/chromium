@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/ad_auction/navigator_auction.h"
 
+#include <utility>
+
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -93,7 +95,8 @@ scoped_refptr<const SecurityOrigin> ParseOrigin(const String& origin_string) {
 
 // joinAdInterestGroup() copy functions.
 
-bool CopyOwnerFromIdlToMojo(ExceptionState& exception_state,
+bool CopyOwnerFromIdlToMojo(const ExecutionContext& execution_context,
+                            ExceptionState& exception_state,
                             const AuctionAdInterestGroup& input,
                             mojom::blink::InterestGroup& output) {
   scoped_refptr<const SecurityOrigin> owner = ParseOrigin(input.owner());
@@ -104,6 +107,16 @@ bool CopyOwnerFromIdlToMojo(ExceptionState& exception_state,
         input.owner().Utf8().c_str(), input.name().Utf8().c_str()));
     return false;
   }
+
+  if (!execution_context.GetSecurityOrigin()->IsSameOriginWith(owner.get())) {
+    exception_state.ThrowTypeError(String::Format(
+        "owner '%s' for AuctionAdInterestGroup with name '%s' match frame "
+        "origin '%s'.",
+        input.owner().Utf8().c_str(), input.name().Utf8().c_str(),
+        owner->ToString().Utf8().c_str()));
+    return false;
+  }
+
   output.owner = std::move(owner);
   return true;
 }
@@ -393,7 +406,7 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
   auto mojo_group = mojom::blink::InterestGroup::New();
   mojo_group->expiry =
       base::Time::Now() + base::TimeDelta::FromSecondsD(duration_seconds);
-  if (!CopyOwnerFromIdlToMojo(exception_state, *group, *mojo_group))
+  if (!CopyOwnerFromIdlToMojo(*context, exception_state, *group, *mojo_group))
     return;
   mojo_group->name = group->name();
   if (!CopyBiddingLogicUrlFromIdlToMojo(*context, exception_state, *group,
@@ -423,7 +436,6 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
   String error_field_value;
   String error;
   if (!ValidateBlinkInterestGroup(
-          *ExecutionContext::From(script_state)->GetSecurityOrigin(),
           *mojo_group, error_field_name, error_field_value, error)) {
     exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
         *group, error_field_name, error_field_value, error));

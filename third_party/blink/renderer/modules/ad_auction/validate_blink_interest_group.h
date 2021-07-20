@@ -11,12 +11,11 @@
 
 namespace blink {
 
-class SecurityOrigin;
-
-// Checks that the specified mojom::blink::InterestGroup can be added by
-// `origin`. Returns false if it cannot be. When it returns false, writes
-// information about the error to `error_field_name`, `error_field_value`, and
-// `error`.
+// Checks that the specified mojom::blink::InterestGroup is valid. Invalid
+// interest groups contain auction or update URLs cross-origin to the owner, or
+// URLs that contain disallowed components (e.g., user/pass). When it returns
+// false, writes information about the error to `error_field_name`,
+// `error_field_value`, and `error`.
 //
 // Checks all provided URLs. Does no validation of expiration time. Does no
 // validation of values expected to be in JSON, since ValidateInterestGroup()
@@ -25,7 +24,6 @@ class SecurityOrigin;
 // used to validate InterestGroups received from a less trusted renderer
 // process.
 MODULES_EXPORT bool ValidateBlinkInterestGroup(
-    const SecurityOrigin& origin,
     const mojom::blink::InterestGroup& group,
     String& error_field_name,
     String& error_field_value,

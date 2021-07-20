@@ -28,6 +28,7 @@
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/origin.h"
 
@@ -38,7 +39,6 @@ namespace {
 using auction_worklet::mojom::BiddingBrowserSignalsPtr;
 using auction_worklet::mojom::BiddingInterestGroupPtr;
 using auction_worklet::mojom::PreviousWinPtr;
-using blink::mojom::InterestGroupAdPtr;
 using blink::mojom::InterestGroupPtr;
 
 const base::FilePath::CharType kDatabasePath[] =
@@ -99,42 +99,42 @@ absl::optional<GURL> DeserializeURL(const std::string& serialized_url) {
   return result;
 }
 
-base::Value ToValue(const ::blink::mojom::InterestGroupAd& ad) {
+base::Value ToValue(const blink::InterestGroup::Ad& ad) {
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("url", ad.render_url.spec());
   if (ad.metadata)
     dict.SetStringKey("metadata", ad.metadata.value());
   return dict;
 }
-InterestGroupAdPtr FromInterestGroupAdPtrValue(const base::Value& value) {
-  InterestGroupAdPtr result = blink::mojom::InterestGroupAd::New();
-  const std::string* maybe_url = value.FindStringKey("url");
+blink::InterestGroup::Ad FromInterestGroupAdValue(const base::Value* value) {
+  blink::InterestGroup::Ad result;
+  const std::string* maybe_url = value->FindStringKey("url");
   if (maybe_url)
-    result->render_url = GURL(*maybe_url);
-  const std::string* maybe_metadata = value.FindStringKey("metadata");
+    result.render_url = GURL(*maybe_url);
+  const std::string* maybe_metadata = value->FindStringKey("metadata");
   if (maybe_metadata)
-    result->metadata = *maybe_metadata;
+    result.metadata = *maybe_metadata;
   return result;
 }
 
 std::string Serialize(
-    const absl::optional<std::vector<InterestGroupAdPtr>>& ads) {
+    const absl::optional<std::vector<blink::InterestGroup::Ad>>& ads) {
   if (!ads)
     return std::string();
   base::Value list(base::Value::Type::LIST);
   for (const auto& ad : ads.value()) {
-    list.Append(ToValue(*ad));
+    list.Append(ToValue(ad));
   }
   return Serialize(list);
 }
-absl::optional<std::vector<InterestGroupAdPtr>>
-DeserializeInterestGroupAdPtrVector(const std::string& serialized_ads) {
-  std::vector<InterestGroupAdPtr> result;
+absl::optional<std::vector<blink::InterestGroup::Ad>>
+DeserializeInterestGroupAdVector(const std::string& serialized_ads) {
   std::unique_ptr<base::Value> ads_value = DeserializeValue(serialized_ads);
   if (!ads_value || !ads_value->is_list())
     return absl::nullopt;
+  std::vector<blink::InterestGroup::Ad> result;
   for (const auto& ad_value : ads_value->GetList()) {
-    result.push_back(FromInterestGroupAdPtrValue(ad_value));
+    result.emplace_back(FromInterestGroupAdValue(&ad_value));
   }
   return result;
 }
@@ -263,7 +263,7 @@ bool CreateV1Schema(sql::Database& db) {
 }
 
 bool DoJoinInterestGroup(sql::Database& db,
-                         const InterestGroupPtr& data,
+                         const blink::InterestGroup& data,
                          base::Time last_updated) {
   sql::Transaction transaction(&db);
   if (!transaction.Begin())
@@ -289,20 +289,20 @@ bool DoJoinInterestGroup(sql::Database& db,
     return false;
 
   join_group.Reset(true);
-  join_group.BindTime(0, data->expiry);
+  join_group.BindTime(0, data.expiry);
   join_group.BindTime(1, last_updated);
-  join_group.BindString(2, Serialize(data->owner));
-  join_group.BindString(3, data->name);
-  join_group.BindString(4, Serialize(data->bidding_url));
-  join_group.BindString(5, Serialize(data->update_url));
-  join_group.BindString(6, Serialize(data->trusted_bidding_signals_url));
-  join_group.BindString(7, Serialize(data->trusted_bidding_signals_keys));
-  if (data->user_bidding_signals) {
-    join_group.BindString(8, data->user_bidding_signals.value());
+  join_group.BindString(2, Serialize(data.owner));
+  join_group.BindString(3, data.name);
+  join_group.BindString(4, Serialize(data.bidding_url));
+  join_group.BindString(5, Serialize(data.update_url));
+  join_group.BindString(6, Serialize(data.trusted_bidding_signals_url));
+  join_group.BindString(7, Serialize(data.trusted_bidding_signals_keys));
+  if (data.user_bidding_signals) {
+    join_group.BindString(8, data.user_bidding_signals.value());
   } else {
     join_group.BindNull(8);
   }
-  join_group.BindString(9, Serialize(data->ads));
+  join_group.BindString(9, Serialize(data.ads));
 
   if (!join_group.Run())
     return false;
@@ -318,8 +318,8 @@ bool DoJoinInterestGroup(sql::Database& db,
     return false;
 
   join_hist.Reset(true);
-  join_hist.BindString(0, Serialize(data->owner));
-  join_hist.BindString(1, data->name);
+  join_hist.BindString(0, Serialize(data.owner));
+  join_hist.BindString(1, data.name);
   join_hist.BindTime(2, last_updated);
 
   if (!join_hist.Run())
@@ -635,8 +635,8 @@ DoGetInterestGroupsForOwner(sql::Database& db,
   while (load.Step()) {
     BiddingInterestGroupPtr bidding_interest_group =
         auction_worklet::mojom::BiddingInterestGroup::New();
-    InterestGroupPtr interest_group = blink::mojom::InterestGroup::New();
 
+    blink::InterestGroup* interest_group = &bidding_interest_group->group;
     interest_group->expiry = load.ColumnTime(0);
     interest_group->owner = DeserializeOrigin(load.ColumnString(2));
     interest_group->name = load.ColumnString(3);
@@ -649,8 +649,7 @@ DoGetInterestGroupsForOwner(sql::Database& db,
     if (load.GetColumnType(8) != sql::ColumnType::kNull)
       interest_group->user_bidding_signals = load.ColumnString(8);
     interest_group->ads =
-        DeserializeInterestGroupAdPtrVector(load.ColumnString(9));
-    bidding_interest_group->group = std::move(interest_group);
+        DeserializeInterestGroupAdVector(load.ColumnString(9));
 
     bidding_interest_group->signals =
         auction_worklet::mojom::BiddingBrowserSignals::New();
@@ -662,21 +661,21 @@ DoGetInterestGroupsForOwner(sql::Database& db,
   // These queries are in separate loops to improve locality of the database
   // access.
   for (auto& bidding_interest_group : result) {
-    if (!GetJoinCount(db, owner, bidding_interest_group->group->name,
+    if (!GetJoinCount(db, owner, bidding_interest_group->group.name,
                       now - InterestGroupStorage::kHistoryLength,
                       bidding_interest_group)) {
       return absl::nullopt;
     }
   }
   for (auto& bidding_interest_group : result) {
-    if (!GetBidCount(db, owner, bidding_interest_group->group->name,
+    if (!GetBidCount(db, owner, bidding_interest_group->group.name,
                      now - InterestGroupStorage::kHistoryLength,
                      bidding_interest_group)) {
       return absl::nullopt;
     }
   }
   for (auto& bidding_interest_group : result) {
-    if (!GetPreviousWins(db, owner, bidding_interest_group->group->name,
+    if (!GetPreviousWins(db, owner, bidding_interest_group->group.name,
                          now - InterestGroupStorage::kHistoryLength,
                          bidding_interest_group)) {
       return absl::nullopt;
@@ -714,7 +713,7 @@ bool DoDeleteInterestGroupData(
       return false;
     for (const auto& bidding_interest_group : maybe_interest_groups.value()) {
       if (!DoLeaveInterestGroup(db, affected_origin,
-                                bidding_interest_group->group->name))
+                                bidding_interest_group->group.name))
         return false;
     }
   }
@@ -947,7 +946,8 @@ bool InterestGroupStorage::InitializeSchema() {
   return true;
 }
 
-void InterestGroupStorage::JoinInterestGroup(const InterestGroupPtr group) {
+void InterestGroupStorage::JoinInterestGroup(
+    const blink::InterestGroup& group) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
     return;

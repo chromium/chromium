@@ -32,6 +32,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 
 namespace content {
 namespace {
@@ -529,10 +530,10 @@ class MockAuctionProcessManager
     // Make sure this request came over the right pipe.
     EXPECT_EQ(receiver_display_name_map_[receiver_set_.current_receiver()],
               ComputeDisplayName(AuctionProcessManager::WorkletType::kBidder,
-                                 bidding_interest_group->group->owner));
+                                 bidding_interest_group->group.owner));
 
-    InterestGroupId interest_group_id(bidding_interest_group->group->owner,
-                                      bidding_interest_group->group->name);
+    InterestGroupId interest_group_id(bidding_interest_group->group.owner,
+                                      bidding_interest_group->group.name);
     EXPECT_EQ(0u, bidder_worklets_.count(interest_group_id));
     bidder_worklets_.emplace(std::make_pair(
         interest_group_id,
@@ -758,15 +759,15 @@ class AuctionRunnerTest : public testing::Test, public AuctionRunner::Delegate {
     // Add previous wins and bids to the interest group manager.
     for (auto& bidder : bidders) {
       for (int i = 0; i < bidder->signals->join_count; i++) {
-        interest_group_manager_->JoinInterestGroup(bidder->group.Clone());
+        interest_group_manager_->JoinInterestGroup(bidder->group);
       }
       for (int i = 0; i < bidder->signals->bid_count; i++) {
-        interest_group_manager_->RecordInterestGroupBid(bidder->group->owner,
-                                                        bidder->group->name);
+        interest_group_manager_->RecordInterestGroupBid(bidder->group.owner,
+                                                        bidder->group.name);
       }
       for (const auto& prev_win : bidder->signals->prev_wins) {
         interest_group_manager_->RecordInterestGroupWin(
-            bidder->group->owner, bidder->group->name, prev_win->ad_json);
+            bidder->group.owner, bidder->group.name, prev_win->ad_json);
         // Add some time between interest group wins, so that they'll be added
         // to the database in the order they appear. Their times will *not*
         // match those in `prev_wins`.
@@ -823,8 +824,8 @@ class AuctionRunnerTest : public testing::Test, public AuctionRunner::Delegate {
       std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
           bidding_interest_groups) {
     for (auto& bidder : bidding_interest_groups) {
-      if (bidder->group->owner == kBidder1 &&
-          bidder->group->name == kBidder1Name) {
+      if (bidder->group.owner == kBidder1 &&
+          bidder->group.name == kBidder1Name) {
         result_.bidder1_bid_count = bidder->signals->bid_count;
         result_.bidder1_prev_wins = std::move(bidder->signals->prev_wins);
         SortPrevWins(result_.bidder1_prev_wins);
@@ -840,8 +841,8 @@ class AuctionRunnerTest : public testing::Test, public AuctionRunner::Delegate {
       std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
           bidding_interest_groups) {
     for (auto& bidder : bidding_interest_groups) {
-      if (bidder->group->owner == kBidder2 &&
-          bidder->group->name == kBidder2Name) {
+      if (bidder->group.owner == kBidder2 &&
+          bidder->group.name == kBidder2Name) {
         result_.bidder2_bid_count = bidder->signals->bid_count;
         result_.bidder2_prev_wins = std::move(bidder->signals->prev_wins);
         SortPrevWins(result_.bidder2_prev_wins);
@@ -853,20 +854,19 @@ class AuctionRunnerTest : public testing::Test, public AuctionRunner::Delegate {
   }
 
   auction_worklet::mojom::BiddingInterestGroupPtr MakeInterestGroup(
-      const url::Origin& owner,
-      const std::string& name,
-      const GURL& bidding_url,
-      const absl::optional<GURL>& trusted_bidding_signals_url,
-      const std::vector<std::string>& trusted_bidding_signals_keys,
-      const GURL& ad_url) {
-    std::vector<blink::mojom::InterestGroupAdPtr> ads;
+      url::Origin owner,
+      std::string name,
+      GURL bidding_url,
+      absl::optional<GURL> trusted_bidding_signals_url,
+      std::vector<std::string> trusted_bidding_signals_keys,
+      GURL ad_url) {
+    std::vector<blink::InterestGroup::Ad> ads;
     // Give only kBidder1 an InterestGroupAd ad with non-empty metadata, to
     // better test the `ad_metadata` output.
     if (owner == kBidder1) {
-      ads.push_back(
-          blink::mojom::InterestGroupAd::New(ad_url, R"({"ads": true})"));
+      ads.emplace_back(blink::InterestGroup::Ad(ad_url, R"({"ads": true})"));
     } else {
-      ads.push_back(blink::mojom::InterestGroupAd::New(ad_url, absl::nullopt));
+      ads.emplace_back(blink::InterestGroup::Ad(ad_url, absl::nullopt));
     }
 
     // Create fake previous wins. The time of these wins is ignored, since the
@@ -880,10 +880,12 @@ class AuctionRunnerTest : public testing::Test, public AuctionRunner::Delegate {
         base::Time::Now(), R"({"winner": -2})"));
 
     return auction_worklet::mojom::BiddingInterestGroup::New(
-        blink::mojom::InterestGroup::New(
-            base::Time::Max(), owner, name, bidding_url,
-            GURL() /* update_url */, trusted_bidding_signals_url,
-            trusted_bidding_signals_keys, absl::nullopt, std::move(ads)),
+        blink::InterestGroup(base::Time::Max(), std::move(owner),
+                             std::move(name), std::move(bidding_url),
+                             /* update_url = */ GURL(),
+                             std::move(trusted_bidding_signals_url),
+                             std::move(trusted_bidding_signals_keys),
+                             absl::nullopt, std::move(ads)),
         auction_worklet::mojom::BiddingBrowserSignals::New(
             3, 5, std::move(previous_wins)));
   }

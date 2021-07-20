@@ -18,6 +18,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace blink {
+struct InterestGroup;
+}
+
 namespace content {
 
 // InterestGroupStorage controls access to the Interest Group Database. All
@@ -45,7 +49,7 @@ class CONTENT_EXPORT InterestGroupStorage {
   // is created based on the provided group information. If the interest group
   // exists, the existing interest group is overwritten. In either case a join
   // record for this interest group is created.
-  void JoinInterestGroup(blink::mojom::InterestGroupPtr group);
+  void JoinInterestGroup(const blink::InterestGroup& group);
   // Remove the interest group if it exists.
   void LeaveInterestGroup(const url::Origin& owner, const std::string& name);
   // Updates the interest group of the same name based on the information in

@@ -38,26 +38,16 @@ bool IsUrlAllowed(const KURL& url, const mojom::blink::InterestGroup& group) {
 
 }  // namespace
 
-// The logic in this method must be kept in sync with ValidateInterestGroup in
-// blink/common/interest_group/.
-bool ValidateBlinkInterestGroup(const SecurityOrigin& origin,
-                                const mojom::blink::InterestGroup& group,
+// The logic in this method must be kept in sync with InterestGroup::IsValid()
+// in blink/common/interest_group/.
+bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
                                 String& error_field_name,
                                 String& error_field_value,
                                 String& error) {
-  // This likely shouldn't be hit, but handle it to keep in sync with non-blink
-  // validation.
-  if (origin.Protocol() != url::kHttpsScheme) {
-    error_field_name = String::FromUTF8("frame origin");
-    error_field_value = origin.ToString();
-    error = String::FromUTF8("frame origin must be HTTPS.");
-    return false;
-  }
-
-  if (!origin.IsSameOriginWith(group.owner.get())) {
+  if (group.owner->Protocol() != url::kHttpsScheme) {
     error_field_name = String::FromUTF8("owner");
     error_field_value = group.owner->ToString();
-    error = String::FromUTF8("frame origin must match owner origin.");
+    error = String::FromUTF8("owner origin must be HTTPS.");
     return false;
   }
 

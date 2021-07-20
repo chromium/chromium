@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/restricted_interest_group_store.mojom.h"
 #include "url/gurl.h"
@@ -94,7 +95,7 @@ class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
 
   int GetJoinCount(const url::Origin& owner, const std::string& name) {
     for (const auto& interest_group : GetInterestGroupsForOwner(owner)) {
-      if (interest_group->group->name == name) {
+      if (interest_group->group.name == name) {
         return interest_group->signals->join_count;
       }
     }
@@ -110,14 +111,13 @@ class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
   // RestrictedInterestGroupStoreImpl only handles one site (cross site navs use
   // different RestrictedInterestGroupStoreImpls, and generally use different
   // RFHs as well).
-  void JoinInterestGroupAndFlush(
-      blink::mojom::InterestGroupPtr interest_group) {
+  void JoinInterestGroupAndFlush(const blink::InterestGroup& interest_group) {
     mojo::Remote<blink::mojom::RestrictedInterestGroupStore> interest_service;
     RestrictedInterestGroupStoreImpl::CreateMojoService(
         web_contents()->GetMainFrame(),
         interest_service.BindNewPipeAndPassReceiver());
 
-    interest_service->JoinInterestGroup(std::move(interest_group));
+    interest_service->JoinInterestGroup(interest_group);
     interest_service.FlushForTesting();
   }
 
@@ -136,12 +136,12 @@ class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
 
   // Helper to create a valid interest group with only an origin and name. All
   // URLs are nullopt.
-  blink::mojom::InterestGroupPtr CreateInterestGroup() {
-    auto interest_group = blink::mojom::InterestGroup::New();
-    interest_group->expiry =
+  blink::InterestGroup CreateInterestGroup() {
+    blink::InterestGroup interest_group;
+    interest_group.expiry =
         base::Time::Now() + base::TimeDelta::FromSeconds(300);
-    interest_group->name = kInterestGroupName;
-    interest_group->owner = kOriginA;
+    interest_group.name = kInterestGroupName;
+    interest_group.owner = kOriginA;
     return interest_group;
   }
 
@@ -160,16 +160,15 @@ class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
 
 // Check basic success case.
 TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestGroupBasic) {
-  blink::mojom::InterestGroupPtr interest_group = CreateInterestGroup();
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   // Several tests assume interest group API are also allowed on kOriginB, so
   // make sure that's enabled correctly.
   NavigateAndCommit(kUrlB);
-  interest_group = CreateInterestGroup();
-  interest_group->owner = kOriginB;
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.owner = kOriginB;
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
 }
 
@@ -181,18 +180,18 @@ TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestGroupOriginNotHttps) {
   const GURL kHttpUrlA = GURL("http://a.test/");
   const url::Origin kHttpOriginA = url::Origin::Create(kHttpUrlA);
   NavigateAndCommit(kHttpUrlA);
-  blink::mojom::InterestGroupPtr interest_group = CreateInterestGroup();
-  interest_group->owner = kHttpOriginA;
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.owner = kHttpOriginA;
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(0, GetJoinCount(kHttpOriginA, kInterestGroupName));
 }
 
 // Test one origin trying to add an interest group for another.
 TEST_F(RestrictedInterestGroupStoreImplTest,
        JoinInterestGroupWrongOwnerOrigin) {
-  blink::mojom::InterestGroupPtr interest_group = CreateInterestGroup();
-  interest_group->owner = kOriginB;
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.owner = kOriginB;
+  JoinInterestGroupAndFlush(interest_group);
   // Interest group should not be added for either origin.
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
   EXPECT_EQ(0, GetJoinCount(kOriginB, kInterestGroupName));
@@ -208,21 +207,21 @@ TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestGroupCrossSiteUrls) {
   const GURL kBadUrl = GURL("https://user:pass@a.test/");
 
   // Test `bidding_url`.
-  blink::mojom::InterestGroupPtr interest_group = CreateInterestGroup();
-  interest_group->bidding_url = kBadUrl;
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kBadUrl;
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
 
   // Test `update_url`.
   interest_group = CreateInterestGroup();
-  interest_group->update_url = kBadUrl;
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.update_url = kBadUrl;
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
 
   // Test `trusted_bidding_signals_url`.
   interest_group = CreateInterestGroup();
-  interest_group->trusted_bidding_signals_url = kBadUrl;
-  JoinInterestGroupAndFlush(std::move(interest_group));
+  interest_group.trusted_bidding_signals_url = kBadUrl;
+  JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
 }
 

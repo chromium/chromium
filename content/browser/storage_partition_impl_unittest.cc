@@ -63,6 +63,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
@@ -224,12 +225,11 @@ class RemoveInterestGroupTester {
 
   void AddInterestGroup(const url::Origin& origin) {
     EXPECT_TRUE(storage_partition_->GetInterestGroupManager());
-    blink::mojom::InterestGroupPtr group = blink::mojom::InterestGroup::New();
-    group->owner = origin;
-    group->name = "Name";
-    group->expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
-    storage_partition_->GetInterestGroupManager()->JoinInterestGroup(
-        std::move(group));
+    blink::InterestGroup group;
+    group.owner = origin;
+    group.name = "Name";
+    group.expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
+    storage_partition_->GetInterestGroupManager()->JoinInterestGroup(group);
   }
 
  private:

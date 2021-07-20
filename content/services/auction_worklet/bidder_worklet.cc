@@ -102,7 +102,7 @@ BidderWorklet::BidderWorklet(
         load_bidder_worklet_and_generate_bid_callback)
     : v8_helper_(v8_helper),
       script_source_url_(
-          bidding_interest_group->group->bidding_url.value_or(GURL())),
+          bidding_interest_group->group.bidding_url.value_or(GURL())),
       load_bidder_worklet_and_generate_bid_callback_(
           std::move(load_bidder_worklet_and_generate_bid_callback)),
       bidding_interest_group_(std::move(bidding_interest_group)),
@@ -127,17 +127,15 @@ BidderWorklet::BidderWorklet(
       base::BindOnce(&BidderWorklet::OnScriptDownloaded,
                      base::Unretained(this)));
 
-  if (bidding_interest_group_->group->trusted_bidding_signals_url.has_value() &&
-      bidding_interest_group_->group->trusted_bidding_signals_keys
-          .has_value() &&
-      !bidding_interest_group_->group->trusted_bidding_signals_keys->empty()) {
+  if (bidding_interest_group_->group.trusted_bidding_signals_url.has_value() &&
+      bidding_interest_group_->group.trusted_bidding_signals_keys.has_value() &&
+      !bidding_interest_group_->group.trusted_bidding_signals_keys->empty()) {
     trusted_bidding_signals_loading_ = true;
     trusted_bidding_signals_ = std::make_unique<TrustedBiddingSignals>(
         url_loader_factory.get(),
-        *bidding_interest_group_->group->trusted_bidding_signals_keys,
+        *bidding_interest_group_->group.trusted_bidding_signals_keys,
         browser_signal_top_window_origin.host(),
-        *bidding_interest_group_->group->trusted_bidding_signals_url,
-        v8_helper_,
+        *bidding_interest_group_->group.trusted_bidding_signals_url, v8_helper_,
         base::BindOnce(&BidderWorklet::OnTrustedBiddingSignalsDownloaded,
                        base::Unretained(this)));
   }
@@ -183,9 +181,9 @@ void BidderWorklet::ReportWin(
                                 browser_signal_top_window_hostname_) ||
       !browser_signals_dict.Set(
           "interestGroupOwner",
-          bidding_interest_group_->group->owner.Serialize()) ||
+          bidding_interest_group_->group.owner.Serialize()) ||
       !browser_signals_dict.Set("interestGroupName",
-                                bidding_interest_group_->group->name) ||
+                                bidding_interest_group_->group.name) ||
       !browser_signals_dict.Set("renderUrl",
                                 browser_signal_render_url.spec()) ||
       !browser_signals_dict.Set("adRenderFingerprint",
@@ -253,8 +251,7 @@ void BidderWorklet::GenerateBidIfReady() {
   if (trusted_bidding_signals_loading_ || !worklet_script_)
     return;
 
-  const blink::mojom::InterestGroup& interest_group =
-      *bidding_interest_group_->group;
+  const blink::InterestGroup& interest_group = bidding_interest_group_->group;
   // Can't make a bid without any ads.
   if (!interest_group.ads) {
     InvokeBidCallbackOnError();
@@ -287,9 +284,9 @@ void BidderWorklet::GenerateBidIfReady() {
   for (const auto& ad : *interest_group.ads) {
     v8::Local<v8::Object> ad_object = v8::Object::New(isolate);
     gin::Dictionary ad_dict(isolate, ad_object);
-    if (!ad_dict.Set("renderUrl", ad->render_url.spec()) ||
-        (ad->metadata && !v8_helper_->InsertJsonValue(
-                             context, "metadata", *ad->metadata, ad_object))) {
+    if (!ad_dict.Set("renderUrl", ad.render_url.spec()) ||
+        (ad.metadata && !v8_helper_->InsertJsonValue(
+                            context, "metadata", *ad.metadata, ad_object))) {
       InvokeBidCallbackOnError();
       return;
     }
@@ -403,7 +400,7 @@ void BidderWorklet::GenerateBidIfReady() {
 
   // `render_url` must be in `ad_render_urls`.
   for (const auto& ad : *interest_group.ads) {
-    if (render_url == ad->render_url) {
+    if (render_url == ad.render_url) {
       if (trusted_bidding_signals_error_msg_) {
         errors_out.emplace_back(
             std::move(trusted_bidding_signals_error_msg_).value());
