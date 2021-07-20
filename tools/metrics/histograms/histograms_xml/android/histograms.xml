@@ -65,7 +65,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name=".AddToHomescreenIPH"/>
   <variant name=".ChromeSurvey"/>
   <variant name=".GeneratedPasswordSaved"/>
+  <variant name=".GroupedPermission"/>
   <variant name=".MerchantTrust"/>
+  <variant name=".PermissionUpdate"/>
   <variant name=".PopupBlocked"/>
   <variant name=".ReaderMode"/>
   <variant name=".SafetyTip"/>

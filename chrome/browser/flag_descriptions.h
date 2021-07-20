@@ -1880,11 +1880,17 @@ extern const char
 extern const char kMessagesForAndroidChromeSurveyName[];
 extern const char kMessagesForAndroidChromeSurveyDescription[];
 
+extern const char kMessagesForAndroidGroupedPermissionName[];
+extern const char kMessagesForAndroidGroupedPermissionDescription[];
+
 extern const char kMessagesForAndroidInfrastructureName[];
 extern const char kMessagesForAndroidInfrastructureDescription[];
 
 extern const char kMessagesForAndroidPasswordsName[];
 extern const char kMessagesForAndroidPasswordsDescription[];
+
+extern const char kMessagesForAndroidPermissionUpdateName[];
+extern const char kMessagesForAndroidPermissionUpdateDescription[];
 
 extern const char kMessagesForAndroidPopupBlockedName[];
 extern const char kMessagesForAndroidPopupBlockedDescription[];

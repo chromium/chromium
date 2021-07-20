@@ -13,6 +13,10 @@ namespace messages {
 // Infobars infrastructure.
 extern const base::Feature kMessagesForAndroidChromeSurvey;
 
+// Feature that controls whether grouped permission prompts use Messages or
+// Infobars infrastructure.
+extern const base::Feature kMessagesForAndroidGroupedPermission;
+
 // Feature that controls whether Messages for Android infrastucture components
 // are initialized. When this feature is disabled all individual message
 // implementations also fallback to Infobar implementations.
@@ -21,6 +25,10 @@ extern const base::Feature kMessagesForAndroidInfrastructure;
 // Feature that controls whether "save password" and "saved password
 // confirmation" prompts use Messages or Infobars infrastructure.
 extern const base::Feature kMessagesForAndroidPasswords;
+
+// Feature that controls whether permission update prompts use Messages or
+// Infobars infrastructure.
+extern const base::Feature kMessagesForAndroidPermissionUpdate;
 
 // Feature that controls whether "popup blocked" prompts use Messages or
 // Infobars infrastructure.
@@ -42,7 +50,11 @@ extern const base::Feature kMessagesForAndroidSaveCard;
 // Infobars infrastructure.
 extern const base::Feature kMessagesForAndroidUpdatePassword;
 
+bool IsGroupedPermissionMessagesUiEnabled();
+
 bool IsPasswordMessagesUiEnabled();
+
+bool IsPermissionUpdateMessagesUiEnabled();
 
 bool IsPopupBlockedMessagesUiEnabled();
 

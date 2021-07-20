@@ -83,6 +83,8 @@ enum class MessageIdentifier {
   READER_MODE = 10,
   CHROME_SURVEY = 11,
   SAVE_CARD = 12,
+  GROUPED_PERMISSION = 13,
+  PERMISSION_UPDATE = 14,
 
   // Insert new values before this line.
   COUNT

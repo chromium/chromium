@@ -3280,6 +3280,11 @@ const char kMessagesForAndroidChromeSurveyName[] = "Chrome Survey Messages UI";
 const char kMessagesForAndroidChromeSurveyDescription[] =
     "When enabled, survey prompt will use the new Messages UI.";
 
+const char kMessagesForAndroidGroupedPermissionName[] =
+    "Grouped Permission Messages UI";
+const char kMessagesForAndroidGroupedPermissionDescription[] =
+    "When enabled, grouped permission prompt will use the new Messages UI.";
+
 const char kMessagesForAndroidInfrastructureName[] = "Messages infrastructure";
 const char kMessagesForAndroidInfrastructureDescription[] =
     "When enabled, will initialize Messages UI infrastructure";
@@ -3287,6 +3292,11 @@ const char kMessagesForAndroidInfrastructureDescription[] =
 const char kMessagesForAndroidPasswordsName[] = "Passwords Messages UI";
 const char kMessagesForAndroidPasswordsDescription[] =
     "When enabled, password prompt will use the new Messages UI.";
+
+const char kMessagesForAndroidPermissionUpdateName[] =
+    "Permission Update Messages UI";
+const char kMessagesForAndroidPermissionUpdateDescription[] =
+    "When enabled, permission update prompt will use the new Messages UI.";
 
 const char kMessagesForAndroidPopupBlockedName[] = "Popup Blocked Messages UI";
 const char kMessagesForAndroidPopupBlockedDescription[] =

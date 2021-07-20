@@ -9,11 +9,17 @@ namespace messages {
 const base::Feature kMessagesForAndroidChromeSurvey{
     "MessagesForAndroidChromeSurvey", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kMessagesForAndroidGroupedPermission{
+    "MessagesForAndroidGroupedPermission", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kMessagesForAndroidInfrastructure{
     "MessagesForAndroidInfrastructure", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidPasswords{
     "MessagesForAndroidPasswords", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kMessagesForAndroidPermissionUpdate{
+    "MessagesForAndroidPermissionUpdate", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidPopupBlocked{
     "MessagesForAndroidPopupBlocked", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -53,6 +59,16 @@ bool IsSaveCardMessagesUiEnabled() {
 bool IsUpdatePasswordMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidUpdatePassword);
+}
+
+bool IsGroupedPermissionMessagesUiEnabled() {
+  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
+         base::FeatureList::IsEnabled(kMessagesForAndroidGroupedPermission);
+}
+
+bool IsPermissionUpdateMessagesUiEnabled() {
+  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
+         base::FeatureList::IsEnabled(kMessagesForAndroidPermissionUpdate);
 }
 
 }  // namespace messages

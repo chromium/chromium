@@ -85,6 +85,10 @@ public class MessagesMetrics {
                 return "SaveCard";
             case MessageIdentifier.CHROME_SURVEY:
                 return "ChromeSurvey";
+            case MessageIdentifier.GROUPED_PERMISSION:
+                return "GroupedPermission";
+            case MessageIdentifier.PERMISSION_UPDATE:
+                return "PermissionUpdate";
             default:
                 return "Unknown";
         }

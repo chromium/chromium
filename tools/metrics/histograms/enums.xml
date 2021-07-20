@@ -47950,6 +47950,7 @@ from previous Chrome versions.
   <int value="-787238455" label="OmniboxZeroSuggestionsOnSERP:disabled"/>
   <int value="-784199026" label="EnableFilesAppCopyImage:enabled"/>
   <int value="-780798969" label="disable-single-click-autofill"/>
+  <int value="-779392840" label="MessagesForAndroidGroupedPermission:disabled"/>
   <int value="-778126349" label="DownloadsLocationChange:enabled"/>
   <int value="-778098896" label="EnableAggregatedMlSearchRanking:disabled"/>
   <int value="-778047974" label="CrostiniUseBusterImage:disabled"/>
@@ -48577,6 +48578,7 @@ from previous Chrome versions.
   <int value="-250721831" label="AndroidAutofillAccessibility:disabled"/>
   <int value="-250543540" label="DeferAllScript:enabled"/>
   <int value="-249415830" label="FilteringScrollPrediction:disabled"/>
+  <int value="-249332966" label="MessagesForAndroidGroupedPermission:enabled"/>
   <int value="-248223420" label="AutofillKeyboardAccessory:disabled"/>
   <int value="-247542772" label="CheckOfflineCapability:enabled"/>
   <int value="-245342115" label="PermissionChip:enabled"/>
@@ -49056,6 +49058,7 @@ from previous Chrome versions.
   <int value="151101719" label="HtmlBaseUsernameDetector:enabled"/>
   <int value="151173516" label="CellularUseAttachApn:enabled"/>
   <int value="151630887" label="WebUIA11yEnhancements:disabled"/>
+  <int value="151825088" label="MessagesForAndroidPermissionUpdate:enabled"/>
   <int value="153347646" label="SmartDimModelV3:disabled"/>
   <int value="155977192" label="EnableFileManagerFormatDialog:disabled"/>
   <int value="157217034" label="enable-tab-for-desktop-share"/>
@@ -50083,6 +50086,7 @@ from previous Chrome versions.
       label="AutofillUseImprovedLabelDisambiguation:disabled"/>
   <int value="1009437086" label="AutofillEnableOfferNotification:disabled"/>
   <int value="1009976778" label="SidePanel:disabled"/>
+  <int value="1011550878" label="MessagesForAndroidPermissionUpdate:disabled"/>
   <int value="1012942422" label="HorizontalTabSwitcherAndroid:disabled"/>
   <int value="1015012662" label="ChromeOSDirectVideoDecoder:enabled"/>
   <int value="1015895665" label="drop-sync-credential:enabled"/>
@@ -54516,6 +54520,8 @@ Called by update_use_counter_css.py.-->
   <int value="10" label="ReaderMode"/>
   <int value="11" label="ChromeSurvey"/>
   <int value="12" label="SaveCard"/>
+  <int value="13" label="GroupedPermission"/>
+  <int value="14" label="PermissionUpdate"/>
 </enum>
 
 <enum name="MessageLoopProblems">
