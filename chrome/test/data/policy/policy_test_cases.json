@@ -7725,11 +7725,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "crostini.usage_reporting_enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
         "policies": {
           "ReportCrostiniUsageEnabled": false
         },
         "prefs": {
-          "crostini.usage_reporting_enabled": {}
+          "crostini.usage_reporting_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ReportCrostiniUsageEnabled": true
+        },
+        "prefs": {
+          "crostini.usage_reporting_enabled": {
+            "value": true
+          }
         }
       }
     ]
@@ -9232,11 +9252,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "crostini.user_allowed_by_policy": {
+            "default_value": true
+          }
+        }
+      },
+      {
         "policies": {
           "CrostiniAllowed": false
         },
         "prefs": {
-          "crostini.user_allowed_by_policy": {}
+          "crostini.user_allowed_by_policy": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "CrostiniAllowed": true
+        },
+        "prefs": {
+          "crostini.user_allowed_by_policy": {
+            "value": true
+          }
         }
       }
     ]
@@ -9250,11 +9290,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "crostini.user_export_import_ui_allowed_by_policy": {
+            "default_value": true
+          }
+        }
+      },
+      {
         "policies": {
           "CrostiniExportImportUIAllowed": false
         },
         "prefs": {
-          "crostini.user_export_import_ui_allowed_by_policy": {}
+          "crostini.user_export_import_ui_allowed_by_policy": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "CrostiniExportImportUIAllowed": true
+        },
+        "prefs": {
+          "crostini.user_export_import_ui_allowed_by_policy": {
+            "value": true
+          }
         }
       }
     ]
@@ -9265,11 +9325,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "crostini.user_root_access_allowed_by_policy": {
+            "default_value": true
+          }
+        }
+      },
+      {
         "policies": {
           "CrostiniRootAccessAllowed": false
         },
         "prefs": {
-          "crostini.user_root_access_allowed_by_policy": {}
+          "crostini.user_root_access_allowed_by_policy": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "CrostiniRootAccessAllowed": true
+        },
+        "prefs": {
+          "crostini.user_root_access_allowed_by_policy": {
+            "value": true
+          }
         }
       }
     ]
@@ -9322,11 +9402,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "crostini.port_forwarding_allowed_by_policy": {
+            "default_value": true
+          }
+        }
+      },
+      {
         "policies": {
           "CrostiniPortForwardingAllowed": false
         },
         "prefs": {
-          "crostini.port_forwarding_allowed_by_policy": {}
+          "crostini.port_forwarding_allowed_by_policy": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "CrostiniPortForwardingAllowed": true
+        },
+        "prefs": {
+          "crostini.port_forwarding_allowed_by_policy": {
+            "value": true
+          }
         }
       }
     ]
