@@ -16,7 +16,7 @@ namespace base {
 class Clock;
 }
 
-namespace chromeos {
+namespace ash {
 
 class OfflineSigninLimiter;
 
@@ -47,12 +47,6 @@ class OfflineSigninLimiterFactory : public BrowserContextKeyedServiceFactory {
   DISALLOW_COPY_AND_ASSIGN(OfflineSigninLimiterFactory);
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::OfflineSigninLimiterFactory;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_OFFLINE_SIGNIN_LIMITER_FACTORY_H_

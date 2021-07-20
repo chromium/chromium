@@ -22,7 +22,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 
-namespace chromeos {
+namespace ash {
 
 OAuth2LoginManager::OAuth2LoginManager(Profile* user_profile)
     : user_profile_(user_profile),
@@ -32,7 +32,7 @@ OAuth2LoginManager::OAuth2LoginManager(Profile* user_profile)
   // For telemetry, we mark session restore completed to avoid warnings from
   // MergeSessionThrottle.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kDisableGaiaServices)) {
+          switches::kDisableGaiaServices)) {
     SetSessionRestoreState(SESSION_RESTORE_DONE);
   }
 }
@@ -276,4 +276,4 @@ void OAuth2LoginManager::SetSessionRestoreStartForTesting(
   session_restore_start_ = time;
 }
 
-}  // namespace chromeos
+}  // namespace ash

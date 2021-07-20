@@ -13,6 +13,7 @@
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+namespace ash {
 namespace {
 
 const char kTokenHandlePref[] = "PasswordTokenHandle";
@@ -251,3 +252,5 @@ void TokenHandleUtil::TokenDelegate::OnGetTokenInfoResponse(
   std::move(callback_).Run(account_id_, outcome);
   NotifyDone();
 }
+
+}  // namespace ash

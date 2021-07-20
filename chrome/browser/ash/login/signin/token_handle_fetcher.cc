@@ -22,7 +22,9 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+namespace ash {
 namespace {
+
 const int kMaxRetries = 3;
 const char kAccessTokenFetchId[] = "token_handle_fetcher";
 
@@ -109,7 +111,7 @@ void TokenHandleFetcher::OnAccessTokenFetchComplete(
 
 void TokenHandleFetcher::FillForNewUser(const std::string& access_token,
                                         TokenFetchingCallback callback) {
-  profile_ = chromeos::ProfileHelper::Get()->GetSigninProfile();
+  profile_ = ProfileHelper::Get()->GetSigninProfile();
   callback_ = std::move(callback);
   FillForAccessToken(access_token);
 }
@@ -149,3 +151,5 @@ void TokenHandleFetcher::OnGetTokenInfoResponse(
 void TokenHandleFetcher::OnProfileDestroyed() {
   std::move(callback_).Run(account_id_, false);
 }
+
+}  // namespace ash

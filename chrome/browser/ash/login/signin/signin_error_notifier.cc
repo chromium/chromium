@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/signin/signin_error_notifier_ash.h"
+#include "chrome/browser/ash/login/signin/signin_error_notifier.h"
 
 #include <memory>
 #include <string>
@@ -53,6 +53,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
+namespace ash {
 namespace {
 
 constexpr char kProfileSigninNotificationId[] = "chrome://settings/signin/";
@@ -128,7 +129,7 @@ void SigninErrorNotifier::OnTokenHandleCheck(
     TokenHandleUtil::TokenHandleStatus status) {
   if (status != TokenHandleUtil::INVALID)
     return;
-  RecordReauthReason(account_id, chromeos::ReauthReason::INVALID_TOKEN_HANDLE);
+  RecordReauthReason(account_id, ReauthReason::INVALID_TOKEN_HANDLE);
   HandleDeviceAccountError();
 }
 
@@ -170,10 +171,10 @@ void SigninErrorNotifier::OnErrorChanged() {
 
   const AccountId account_id =
       multi_user_util::GetAccountIdFromProfile(profile_);
-  if (!ash::IsAccountManagerAvailable(profile_)) {
+  if (!IsAccountManagerAvailable(profile_)) {
     // If this flag is disabled, Chrome OS does not have a concept of Secondary
     // Accounts. Preserve existing behavior.
-    RecordReauthReason(account_id, chromeos::ReauthReason::SYNC_FAILED);
+    RecordReauthReason(account_id, ReauthReason::SYNC_FAILED);
     HandleDeviceAccountError();
     return;
   }
@@ -182,7 +183,7 @@ void SigninErrorNotifier::OnErrorChanged() {
   const CoreAccountId primary_account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (error_account_id == primary_account_id) {
-    RecordReauthReason(account_id, chromeos::ReauthReason::SYNC_FAILED);
+    RecordReauthReason(account_id, ReauthReason::SYNC_FAILED);
     HandleDeviceAccountError();
   } else {
     HandleSecondaryAccountError(error_account_id);
@@ -219,7 +220,7 @@ void SigninErrorNotifier::HandleDeviceAccountError() {
       multi_user_util::GetAccountIdFromProfile(profile_).GetUserEmail();
 
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           device_account_notification_id_,
           l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_BUBBLE_VIEW_TITLE),
@@ -275,7 +276,7 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
                 IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_MIGRATION_BUBBLE_VIEW_MESSAGE);
 
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           secondary_account_notification_id_, message_title, message_body,
           l10n_util::GetStringUTF16(
@@ -301,15 +302,14 @@ void SigninErrorNotifier::HandleSecondaryAccountReauthNotificationClick(
     absl::optional<int> button_index) {
   if (profile_->IsChild() && !profile_->GetPrefs()->GetBoolean(
                                  prefs::kEduCoexistenceArcMigrationCompleted)) {
-    if (!chromeos::AccountManagerWelcomeDialog::
-            ShowIfRequiredForEduCoexistence()) {
+    if (!AccountManagerWelcomeDialog::ShowIfRequiredForEduCoexistence()) {
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
           profile_, chromeos::settings::mojom::kMyAccountsSubpagePath);
     }
     return;
   }
 
-  if (!chromeos::AccountManagerWelcomeDialog::ShowIfRequired()) {
+  if (!AccountManagerWelcomeDialog::ShowIfRequired()) {
     // The welcome dialog was not shown (because it has been shown too many
     // times already). Take users to Account Manager UI directly.
     // Note: If the welcome dialog was shown, we don't need to do anything.
@@ -349,3 +349,5 @@ std::u16string SigninErrorNotifier::GetMessageBody(
           IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE);
   }
 }
+
+}  // namespace ash

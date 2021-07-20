@@ -11,7 +11,7 @@
 #include "chrome/common/chrome_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace chromeos {
+namespace ash {
 
 OAuth2TokenInitializer::OAuth2TokenInitializer() {}
 
@@ -57,4 +57,4 @@ void OAuth2TokenInitializer::OnOAuth2TokensFetchFailed() {
   std::move(callback_).Run(false, user_context_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

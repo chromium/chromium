@@ -21,6 +21,8 @@ namespace base {
 class DictionaryValue;
 }
 
+namespace ash {
+
 // This class is responsible for operations with External Token Handle.
 // Handle is an extra token associated with OAuth refresh token that have
 // exactly same lifetime. It is not secure, and it's only purpose is checking
@@ -100,5 +102,13 @@ class TokenHandleUtil {
 
   DISALLOW_COPY_AND_ASSIGN(TokenHandleUtil);
 };
+
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::TokenHandleUtil;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_TOKEN_HANDLE_UTIL_H_

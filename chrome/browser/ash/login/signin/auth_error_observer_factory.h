@@ -11,8 +11,7 @@
 
 class Profile;
 
-namespace chromeos {
-
+namespace ash {
 class AuthErrorObserver;
 
 // Singleton that owns all AuthErrorObserver and associates them with
@@ -40,6 +39,6 @@ class AuthErrorObserverFactory : public BrowserContextKeyedServiceFactory {
   DISALLOW_COPY_AND_ASSIGN(AuthErrorObserverFactory);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_AUTH_ERROR_OBSERVER_FACTORY_H_

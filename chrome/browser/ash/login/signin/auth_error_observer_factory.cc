@@ -10,7 +10,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 AuthErrorObserverFactory::AuthErrorObserverFactory()
     : BrowserContextKeyedServiceFactory(
@@ -42,4 +42,4 @@ KeyedService* AuthErrorObserverFactory::BuildServiceInstanceFor(
   return new AuthErrorObserver(profile);
 }
 
-}  // namespace chromeos
+}  // namespace ash

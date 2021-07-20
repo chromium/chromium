@@ -19,7 +19,7 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
-namespace chromeos {
+namespace ash {
 
 // OAuth2TokenFetcher is used to convert authenticated cookie jar from the
 // authentication profile into OAuth2 tokens and GAIA credentials that will be
@@ -69,6 +69,6 @@ class OAuth2TokenFetcher : public base::SupportsWeakPtr<OAuth2TokenFetcher>,
   DISALLOW_COPY_AND_ASSIGN(OAuth2TokenFetcher);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_OAUTH2_TOKEN_FETCHER_H_

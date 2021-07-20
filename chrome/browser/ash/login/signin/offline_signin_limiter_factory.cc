@@ -11,7 +11,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
-namespace chromeos {
+namespace ash {
 
 base::Clock* OfflineSigninLimiterFactory::clock_for_testing_ = NULL;
 
@@ -45,4 +45,4 @@ KeyedService* OfflineSigninLimiterFactory::BuildServiceInstanceFor(
                                   clock_for_testing_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

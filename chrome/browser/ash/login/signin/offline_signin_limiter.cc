@@ -31,7 +31,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 void OfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
   PrefService* prefs = profile_->GetPrefs();
@@ -415,4 +415,4 @@ void OfflineSigninLimiter::UpdateOnlineSigninData(
   user_manager::known_user::SetOfflineSigninLimit(user->GetAccountId(), limit);
 }
 
-}  // namespace chromeos
+}  // namespace ash

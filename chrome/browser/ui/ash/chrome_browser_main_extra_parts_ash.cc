@@ -15,7 +15,7 @@
 #include "base/command_line.h"
 #include "base/scoped_observation.h"
 #include "base/task/post_task.h"
-#include "chrome/browser/ash/login/signin/signin_error_notifier_factory_ash.h"
+#include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/night_light/night_light_client.h"
 #include "chrome/browser/ash/policy/display/display_resolution_handler.h"
 #include "chrome/browser/ash/policy/display/display_rotation_default_handler.h"
@@ -327,7 +327,7 @@ class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver
     if (chromeos::ProfileHelper::IsRegularProfile(profile) &&
         !profile->IsGuestSession()) {
       // Start the error notifier services to show auth/sync notifications.
-      SigninErrorNotifierFactory::GetForProfile(profile);
+      ash::SigninErrorNotifierFactory::GetForProfile(profile);
       SyncErrorNotifierFactory::GetForProfile(profile);
     }
 

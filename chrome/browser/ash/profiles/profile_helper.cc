@@ -49,7 +49,6 @@ namespace {
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
 namespace login = ::chromeos::login;
-using ::chromeos::OAuth2LoginManager;
 
 // This array contains a subset of the explicitly allowlisted extensions that
 // are defined in extensions/common/api/_behavior_features.json. The extension
@@ -443,9 +442,8 @@ void ProfileHelperImpl::ProfileStartup(Profile* profile) {
   if (!IsSigninProfile(profile) &&
       user_manager::UserManager::Get()->IsLoggedInAsUserWithGaiaAccount() &&
       !user_manager::UserManager::Get()->IsLoggedInAsStub()) {
-    chromeos::OAuth2LoginManager* login_manager =
-        chromeos::OAuth2LoginManagerFactory::GetInstance()->GetForProfile(
-            profile);
+    auto* login_manager =
+        OAuth2LoginManagerFactory::GetInstance()->GetForProfile(profile);
     if (login_manager)
       login_manager->AddObserver(this);
   }
@@ -675,9 +673,8 @@ void ProfileHelperImpl::OnSessionRestoreStateChanged(
   if (state == OAuth2LoginManager::SESSION_RESTORE_DONE ||
       state == OAuth2LoginManager::SESSION_RESTORE_FAILED ||
       state == OAuth2LoginManager::SESSION_RESTORE_CONNECTION_FAILED) {
-    chromeos::OAuth2LoginManager* login_manager =
-        chromeos::OAuth2LoginManagerFactory::GetInstance()->GetForProfile(
-            user_profile);
+    auto* login_manager =
+        OAuth2LoginManagerFactory::GetInstance()->GetForProfile(user_profile);
     login_manager->RemoveObserver(this);
     ClearSigninProfile(base::OnceClosure());
   }

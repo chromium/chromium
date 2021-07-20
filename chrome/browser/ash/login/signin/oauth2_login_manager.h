@@ -20,7 +20,7 @@
 class GoogleServiceAuthError;
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 // This class is responsible for restoring authenticated web sessions out of
 // OAuth2 refresh tokens or pre-authenticated cookie jar.
@@ -192,12 +192,12 @@ class OAuth2LoginManager : public KeyedService,
   DISALLOW_COPY_AND_ASSIGN(OAuth2LoginManager);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::OAuth2LoginManager;
-}  // namespace ash
+namespace chromeos {
+using ::ash::OAuth2LoginManager;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_OAUTH2_LOGIN_MANAGER_H_

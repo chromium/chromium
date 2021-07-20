@@ -18,13 +18,14 @@ namespace content {
 class NavigationHandle;
 }
 
+namespace ash {
+
 // Used to delay a navigation while merge session process (cookie
 // reconstruction from OAuth2 refresh token in ChromeOS login) is still in
 // progress while we are attempting to load a google property. It will resume
 // the navigation once merge session is done, or after 10 seconds.
-class MergeSessionNavigationThrottle
-    : public content::NavigationThrottle,
-      public chromeos::OAuth2LoginManager::Observer {
+class MergeSessionNavigationThrottle : public content::NavigationThrottle,
+                                       public OAuth2LoginManager::Observer {
  public:
   static std::unique_ptr<content::NavigationThrottle> Create(
       content::NavigationHandle* handle);
@@ -42,7 +43,7 @@ class MergeSessionNavigationThrottle
   // OAuth2LoginManager::Observer implementation:
   void OnSessionRestoreStateChanged(
       Profile* user_profile,
-      chromeos::OAuth2LoginManager::SessionRestoreState state) override;
+      OAuth2LoginManager::SessionRestoreState state) override;
 
   // Sets up timer and OAuth2LoginManager Observer, should be called before
   // deferring. Returns true if the Observer was set up correctly and the
@@ -53,13 +54,14 @@ class MergeSessionNavigationThrottle
   // navigation.
   void Proceed();
 
-  base::ScopedObservation<chromeos::OAuth2LoginManager,
-                          chromeos::OAuth2LoginManager::Observer>
+  base::ScopedObservation<OAuth2LoginManager, OAuth2LoginManager::Observer>
       login_manager_observation_{this};
 
   base::OneShotTimer proceed_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(MergeSessionNavigationThrottle);
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_MERGE_SESSION_NAVIGATION_THROTTLE_H_

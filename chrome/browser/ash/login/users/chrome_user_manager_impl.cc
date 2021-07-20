@@ -121,9 +121,7 @@
 namespace ash {
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after the classes are migrated
-using ::chromeos::AuthErrorObserver;
-using ::chromeos::AuthErrorObserverFactory;
+// TODO(https://crbug.com/1164001): remove after the class is migrated
 using ::chromeos::ProxyConfigServiceImpl;
 using ::content::BrowserThread;
 

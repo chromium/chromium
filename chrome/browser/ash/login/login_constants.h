@@ -57,6 +57,8 @@ using ::chromeos::constants::kDefaultSAMLOfflineSigninTimeLimit;
 using ::chromeos::constants::kDefaultSamlPasswordExpirationAdvanceWarningDays;
 using ::chromeos::constants::kDefaultSamlInSessionPasswordChangeEnabled;
 using ::chromeos::constants::kDefaultSamlLockScreenOfflineSigninTimeLimitDays;
+using ::chromeos::constants::kLockScreenOfflineSigninTimeLimitDaysMatchLogin;
+using ::chromeos::constants::kOfflineSigninTimeLimitNotSet;
 }  // namespace constants
 }  // namespace ash
 

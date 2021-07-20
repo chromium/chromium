@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/signin/signin_error_notifier_ash.h"
+#include "chrome/browser/ash/login/signin/signin_error_notifier.h"
 
 #include <stddef.h>
 
@@ -12,7 +12,7 @@
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/login/signin/signin_error_notifier_factory_ash.h"
+#include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -30,6 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/public/cpp/notification.h"
 
+namespace ash {
 namespace {
 
 const char kTestEmail[] = "email@example.com";
@@ -47,7 +48,7 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    mock_user_manager_ = new ash::MockUserManager();
+    mock_user_manager_ = new MockUserManager();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(mock_user_manager_));
 
@@ -84,7 +85,7 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
 
  protected:
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  ash::MockUserManager* mock_user_manager_;  // Not owned.
+  MockUserManager* mock_user_manager_;  // Not owned.
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
@@ -292,3 +293,4 @@ TEST_F(SigninErrorNotifierTest, ChildSecondaryAccountMigrationTest) {
 }
 
 }  // namespace
+}  // namespace ash

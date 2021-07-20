@@ -12,9 +12,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-using content::BrowserThread;
+namespace ash {
 
-namespace chromeos {
+using ::content::BrowserThread;
 
 OAuth2LoginVerifier::OAuth2LoginVerifier(
     OAuth2LoginVerifier::Delegate* delegate,
@@ -97,4 +97,4 @@ void OAuth2LoginVerifier::OnAccountsInCookieUpdated(
   delegate_->OnListAccountsFailure(error.IsTransientError());
 }
 
-}  // namespace chromeos
+}  // namespace ash

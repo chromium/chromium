@@ -9,7 +9,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 OAuth2LoginManagerFactory::OAuth2LoginManagerFactory()
     : BrowserContextKeyedServiceFactory(
@@ -39,4 +39,4 @@ KeyedService* OAuth2LoginManagerFactory::BuildServiceInstanceFor(
   return service;
 }
 
-}  // namespace chromeos
+}  // namespace ash

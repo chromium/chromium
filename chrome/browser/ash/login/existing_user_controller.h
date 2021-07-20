@@ -26,6 +26,8 @@
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/signin/oauth2_token_initializer.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
 // TODO(https://crbug.com/1164001): move CrosSettings to forward declaration
 // when moved to chrome/browser/ash/.
@@ -51,7 +53,6 @@ class ListValue;
 
 namespace chromeos {
 class LoginDisplay;
-class OAuth2TokenInitializer;
 
 namespace login {
 class NetworkStateHelper;

@@ -69,14 +69,13 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using net::test_server::BasicHttpResponse;
-using net::test_server::HttpRequest;
-using net::test_server::HttpResponse;
-using net::test_server::HungResponse;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::net::test_server::BasicHttpResponse;
+using ::net::test_server::HttpRequest;
+using ::net::test_server::HttpResponse;
+using ::net::test_server::HungResponse;
 
 // Email of owner account for test.
 const char kTestGaiaId[] = "12345";
@@ -310,8 +309,8 @@ class OAuth2Test : public OobeBaseTest {
     // Try login.  Primary profile has changed.
     AccountId account_id =
         AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId);
-    ash::LoginScreenTestApi::SubmitPassword(account_id, kTestAccountPassword,
-                                            true /*check_if_submittable */);
+    LoginScreenTestApi::SubmitPassword(account_id, kTestAccountPassword,
+                                       true /*check_if_submittable */);
     test::WaitForPrimaryUserSessionStart();
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
 
@@ -567,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, PRE_MergeSession) {
 IN_PROC_BROWSER_TEST_F(OAuth2Test, MergeSession) {
   SimulateNetworkOnline();
 
-  EXPECT_EQ(1, ash::LoginScreenTestApi::GetUsersCount());
+  EXPECT_EQ(1, LoginScreenTestApi::GetUsersCount());
 
   // PickAccountId does not work at this point as the primary user profile has
   // not yet been created.
@@ -1224,4 +1223,4 @@ INSTANTIATE_TEST_SUITE_P(All, MergeSessionTest, testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(All, MergeSessionTimeoutTest, testing::Bool());
 
-}  // namespace chromeos
+}  // namespace ash

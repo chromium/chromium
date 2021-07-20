@@ -30,7 +30,7 @@ class RenderProcessHost;
 // The RendererUpdater is responsible for updating renderers about state change.
 class RendererUpdater : public KeyedService,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-                        public chromeos::OAuth2LoginManager::Observer,
+                        public ash::OAuth2LoginManager::Observer,
 #endif
                         public signin::IdentityManager::Observer {
  public:
@@ -53,10 +53,10 @@ class RendererUpdater : public KeyedService,
   GetRendererConfiguration(content::RenderProcessHost* render_process_host);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // chromeos::OAuth2LoginManager::Observer:
+  // ash::OAuth2LoginManager::Observer:
   void OnSessionRestoreStateChanged(
       Profile* user_profile,
-      chromeos::OAuth2LoginManager::SessionRestoreState state) override;
+      ash::OAuth2LoginManager::SessionRestoreState state) override;
 #endif
 
   // IdentityManager::Observer:
@@ -74,7 +74,7 @@ class RendererUpdater : public KeyedService,
   Profile* profile_;
   PrefChangeRegistrar pref_change_registrar_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::OAuth2LoginManager* oauth2_login_manager_;
+  ash::OAuth2LoginManager* oauth2_login_manager_;
   bool merge_session_running_;
   std::vector<mojo::Remote<chrome::mojom::ChromeOSListener>>
       chromeos_listeners_;

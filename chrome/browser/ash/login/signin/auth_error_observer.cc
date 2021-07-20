@@ -18,7 +18,7 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 bool AuthErrorObserver::ShouldObserve(Profile* profile) {
@@ -100,4 +100,4 @@ void AuthErrorObserver::HandleAuthError(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

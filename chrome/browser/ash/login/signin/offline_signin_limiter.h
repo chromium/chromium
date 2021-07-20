@@ -22,7 +22,7 @@ namespace base {
 class Clock;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Enforces a limit on the length of time for which a user authenticated via
 // Gaia without SAML or with SAML can use offline authentication against a
@@ -97,12 +97,6 @@ class OfflineSigninLimiter : public KeyedService,
   DISALLOW_COPY_AND_ASSIGN(OfflineSigninLimiter);
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::OfflineSigninLimiter;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_OFFLINE_SIGNIN_LIMITER_H_

@@ -23,12 +23,12 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "url/gurl.h"
 
-using content::BrowserThread;
-using content::WebContents;
-
+namespace ash {
 namespace merge_session_throttling_utils {
-
 namespace {
+
+using ::content::BrowserThread;
+using ::content::WebContents;
 
 const int64_t kMaxSessionRestoreTimeInSec = 60;
 
@@ -125,14 +125,13 @@ bool ShouldDelayRequestForProfile(Profile* profile) {
   if (!profile)
     return false;
 
-  chromeos::OAuth2LoginManager* login_manager =
-      chromeos::OAuth2LoginManagerFactory::GetInstance()->GetForProfile(
-          profile);
+  auto* login_manager =
+      OAuth2LoginManagerFactory::GetInstance()->GetForProfile(profile);
   if (!login_manager)
     return false;
 
   switch (login_manager->state()) {
-    case chromeos::OAuth2LoginManager::SESSION_RESTORE_NOT_STARTED:
+    case OAuth2LoginManager::SESSION_RESTORE_NOT_STARTED:
       // The session restore for this profile hasn't even started yet. Don't
       // block for now.
       // In theory this should not happen since we should
@@ -144,8 +143,8 @@ bool ShouldDelayRequestForProfile(Profile* profile) {
                      << "session restore?";
       }
       return false;
-    case chromeos::OAuth2LoginManager::SESSION_RESTORE_PREPARING:
-    case chromeos::OAuth2LoginManager::SESSION_RESTORE_IN_PROGRESS: {
+    case OAuth2LoginManager::SESSION_RESTORE_PREPARING:
+    case OAuth2LoginManager::SESSION_RESTORE_IN_PROGRESS: {
       // Check if the session restore has been going on for a while already.
       // If so, don't attempt to block page loading.
       if ((base::Time::Now() - login_manager->session_restore_start())
@@ -159,9 +158,9 @@ bool ShouldDelayRequestForProfile(Profile* profile) {
       BlockProfile(profile);
       return true;
     }
-    case chromeos::OAuth2LoginManager::SESSION_RESTORE_DONE:
-    case chromeos::OAuth2LoginManager::SESSION_RESTORE_FAILED:
-    case chromeos::OAuth2LoginManager::SESSION_RESTORE_CONNECTION_FAILED: {
+    case OAuth2LoginManager::SESSION_RESTORE_DONE:
+    case OAuth2LoginManager::SESSION_RESTORE_FAILED:
+    case OAuth2LoginManager::SESSION_RESTORE_CONNECTION_FAILED: {
       UnblockProfile(profile);
       return false;
     }
@@ -193,14 +192,13 @@ bool IsSessionRestorePending(Profile* profile) {
   if (!profile)
     return false;
 
-  chromeos::OAuth2LoginManager* login_manager =
-      chromeos::OAuth2LoginManagerFactory::GetInstance()->GetForProfile(
-          profile);
+  auto* login_manager =
+      OAuth2LoginManagerFactory::GetInstance()->GetForProfile(profile);
   bool pending_session_restore = false;
   if (login_manager) {
     switch (login_manager->state()) {
-      case chromeos::OAuth2LoginManager::SESSION_RESTORE_PREPARING:
-      case chromeos::OAuth2LoginManager::SESSION_RESTORE_IN_PROGRESS:
+      case OAuth2LoginManager::SESSION_RESTORE_PREPARING:
+      case OAuth2LoginManager::SESSION_RESTORE_IN_PROGRESS:
         pending_session_restore = true;
         break;
 
@@ -213,3 +211,4 @@ bool IsSessionRestorePending(Profile* profile) {
 }
 
 }  // namespace merge_session_throttling_utils
+}  // namespace ash

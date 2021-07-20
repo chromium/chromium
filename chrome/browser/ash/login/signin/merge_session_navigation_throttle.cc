@@ -11,13 +11,13 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
+namespace ash {
 namespace {
 
 // Maximum wait time for merge session process.
 constexpr base::TimeDelta kTotalWaitTime = base::TimeDelta::FromSeconds(10);
 
-chromeos::OAuth2LoginManager* GetOAuth2LoginManager(
-    content::WebContents* web_contents) {
+OAuth2LoginManager* GetOAuth2LoginManager(content::WebContents* web_contents) {
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
   if (!browser_context)
     return nullptr;
@@ -26,9 +26,9 @@ chromeos::OAuth2LoginManager* GetOAuth2LoginManager(
   if (!profile)
     return nullptr;
 
-  return chromeos::OAuth2LoginManagerFactory::GetInstance()->GetForProfile(
-      profile);
+  return OAuth2LoginManagerFactory::GetInstance()->GetForProfile(profile);
 }
+
 }  // namespace
 
 // static
@@ -75,17 +75,15 @@ const char* MergeSessionNavigationThrottle::GetNameForLogging() {
 
 void MergeSessionNavigationThrottle::OnSessionRestoreStateChanged(
     Profile* user_profile,
-    chromeos::OAuth2LoginManager::SessionRestoreState state) {
-  chromeos::OAuth2LoginManager* manager =
-      GetOAuth2LoginManager(navigation_handle()->GetWebContents());
+    OAuth2LoginManager::SessionRestoreState state) {
+  auto* manager = GetOAuth2LoginManager(navigation_handle()->GetWebContents());
   if (!manager->ShouldBlockTabLoading()) {
     Proceed();
   }
 }
 
 bool MergeSessionNavigationThrottle::BeforeDefer() {
-  chromeos::OAuth2LoginManager* manager =
-      GetOAuth2LoginManager(navigation_handle()->GetWebContents());
+  auto* manager = GetOAuth2LoginManager(navigation_handle()->GetWebContents());
   if (manager && manager->ShouldBlockTabLoading()) {
     login_manager_observation_.Observe(manager);
     proceed_timer_.Start(FROM_HERE, kTotalWaitTime, this,
@@ -97,11 +95,12 @@ bool MergeSessionNavigationThrottle::BeforeDefer() {
 
 void MergeSessionNavigationThrottle::Proceed() {
   proceed_timer_.Stop();
-  chromeos::OAuth2LoginManager* manager =
-      GetOAuth2LoginManager(navigation_handle()->GetWebContents());
+  auto* manager = GetOAuth2LoginManager(navigation_handle()->GetWebContents());
   if (manager) {
     DCHECK(login_manager_observation_.IsObservingSource(manager));
     login_manager_observation_.Reset();
   }
   Resume();
 }
+
+}  // namespace ash

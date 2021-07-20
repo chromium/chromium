@@ -57,7 +57,6 @@ class GURL;
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
-class TokenHandleFetcher;
 class TurnSyncOnHelper;
 
 namespace user_manager {
@@ -67,6 +66,7 @@ class User;
 namespace ash {
 class LoginDisplayHost;
 class OnboardingUserActivityCounter;
+class TokenHandleFetcher;
 
 namespace test {
 class UserSessionManagerTestApi;

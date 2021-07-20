@@ -13,7 +13,7 @@
 class GoogleServiceAuthError;
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 // This class is responsible for detecting authentication problems reported
 // by sync service and SigninErrorController on a user profile.
@@ -54,6 +54,6 @@ class AuthErrorObserver : public KeyedService,
   DISALLOW_COPY_AND_ASSIGN(AuthErrorObserver);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_AUTH_ERROR_OBSERVER_H_

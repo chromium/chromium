@@ -30,14 +30,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-using testing::Mock;
-using testing::Return;
-using testing::Sequence;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::testing::_;
+using ::testing::Mock;
+using ::testing::Return;
+using ::testing::Sequence;
 
 const char kTestGaiaUser[] = "user@example.com";
 const char kTestSAMLUser[] = "user@saml.example.com";
@@ -1356,4 +1355,4 @@ TEST_F(OfflineSigninLimiterTest, SAMLLogInOfflineWithOnLockReauth) {
   EXPECT_FALSE(timer_->IsRunning());
 }
 
-}  //  namespace chromeos
+}  //  namespace ash

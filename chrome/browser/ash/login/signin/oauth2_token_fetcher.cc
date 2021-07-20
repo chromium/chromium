@@ -16,9 +16,10 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-using content::BrowserThread;
-
+namespace ash {
 namespace {
+
+using ::content::BrowserThread;
 
 // OAuth token request max retry count.
 const int kMaxRequestAttemptCount = 5;
@@ -26,8 +27,6 @@ const int kMaxRequestAttemptCount = 5;
 const int kRequestRestartDelay = 3000;
 
 }  // namespace
-
-namespace chromeos {
 
 OAuth2TokenFetcher::OAuth2TokenFetcher(
     OAuth2TokenFetcher::Delegate* delegate,
@@ -87,4 +86,4 @@ void OAuth2TokenFetcher::RetryOnError(const GoogleServiceAuthError& error,
   std::move(error_handler).Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

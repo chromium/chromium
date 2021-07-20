@@ -304,7 +304,7 @@
 #include "chrome/browser/ash/login/screens/reset_screen.h"
 #include "chrome/browser/ash/login/security_token_session_controller.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/login/signin/signin_error_notifier_ash.h"
+#include "chrome/browser/ash/login/signin/signin_error_notifier.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_sync_observer.h"
@@ -1281,7 +1281,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   SecondaryAccountConsentLogger::RegisterPrefs(registry);
   ash::EduCoexistenceConsentInvalidationController::RegisterProfilePrefs(
       registry);
-  SigninErrorNotifier::RegisterPrefs(registry);
+  ash::SigninErrorNotifier::RegisterPrefs(registry);
   ash::ServicesCustomizationDocument::RegisterProfilePrefs(registry);
   chromeos::settings::OSSettingsUI::RegisterProfilePrefs(registry);
   chromeos::StartupUtils::RegisterOobeProfilePrefs(registry);

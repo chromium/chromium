@@ -11,7 +11,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 class OAuth2LoginManager;
 
@@ -40,12 +40,12 @@ class OAuth2LoginManagerFactory : public BrowserContextKeyedServiceFactory {
   DISALLOW_COPY_AND_ASSIGN(OAuth2LoginManagerFactory);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::OAuth2LoginManagerFactory;
+namespace chromeos {
+using ::ash::OAuth2LoginManagerFactory;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_OAUTH2_LOGIN_MANAGER_FACTORY_H_

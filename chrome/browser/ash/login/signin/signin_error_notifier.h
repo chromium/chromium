@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_SIGNIN_SIGNIN_ERROR_NOTIFIER_ASH_H_
-#define CHROME_BROWSER_ASH_LOGIN_SIGNIN_SIGNIN_ERROR_NOTIFIER_ASH_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_SIGNIN_SIGNIN_ERROR_NOTIFIER_H_
+#define CHROME_BROWSER_ASH_LOGIN_SIGNIN_SIGNIN_ERROR_NOTIFIER_H_
 
 #include <string>
 #include <vector>
@@ -21,13 +21,12 @@
 class Profile;
 class PrefRegistrySimple;
 
-namespace ash {
-class AccountManager;
-}
-
 namespace signin {
 class IdentityManager;
 }  // namespace signin.
+
+namespace ash {
+class AccountManager;
 
 // Shows signin-related errors as notifications in Ash.
 class SigninErrorNotifier : public SigninErrorController::Observer,
@@ -95,4 +94,12 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   DISALLOW_COPY_AND_ASSIGN(SigninErrorNotifier);
 };
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_SIGNIN_ERROR_NOTIFIER_ASH_H_
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::SigninErrorNotifier;
+}
+
+#endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_SIGNIN_ERROR_NOTIFIER_H_

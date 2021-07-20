@@ -15,7 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 // Given GCMS and primary account id, this class verifies GAIA credentials
 // (SAPISID) and rebuild current session's cookie jar for the primary account.
@@ -71,6 +71,6 @@ class OAuth2LoginVerifier : public signin::IdentityManager::Observer {
   DISALLOW_COPY_AND_ASSIGN(OAuth2LoginVerifier);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_OAUTH2_LOGIN_VERIFIER_H_

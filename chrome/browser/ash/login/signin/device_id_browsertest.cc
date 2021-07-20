@@ -29,6 +29,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 
+namespace ash {
 namespace {
 
 char kRefreshToken1[] = "refresh_token_1";
@@ -43,8 +44,6 @@ char kSecondUserRefreshToken1[] = "refresh_token_second_user_1";
 char kSecondUserRefreshToken2[] = "refresh_token_second_user_2";
 
 }  // namespace
-
-namespace chromeos {
 
 class DeviceIDTest : public OobeBaseTest,
                      public user_manager::UserManager::Observer {
@@ -120,14 +119,14 @@ class DeviceIDTest : public OobeBaseTest,
   }
 
   void SignInOffline(const std::string& user_id, const std::string& password) {
-    ash::LoginScreenTestApi::SubmitPassword(AccountId::FromUserEmail(user_id),
-                                            FakeGaiaMixin::kFakeUserPassword,
-                                            false /* check_if_submittable */);
+    LoginScreenTestApi::SubmitPassword(AccountId::FromUserEmail(user_id),
+                                       FakeGaiaMixin::kFakeUserPassword,
+                                       false /* check_if_submittable */);
     test::WaitForPrimaryUserSessionStart();
   }
 
   void RemoveUser(const AccountId& account_id) {
-    ASSERT_TRUE(ash::LoginScreenTestApi::RemoveUser(account_id));
+    ASSERT_TRUE(LoginScreenTestApi::RemoveUser(account_id));
     user_removal_loop_->Run();
   }
 
@@ -190,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_PRE_PRE_PRE_NewUsers) {
   EXPECT_FALSE(device_id.empty());
   EXPECT_EQ(device_id, GetDeviceIdFromGAIA(kRefreshToken1));
 
-  ASSERT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
+  ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   SignInOnline(FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserPassword,
                kRefreshToken2, FakeGaiaMixin::kFakeUserGaiaId);
   CheckDeviceIDIsConsistent(
@@ -221,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_PRE_PRE_NewUsers) {
 
 // Add the second user.
 IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_PRE_NewUsers) {
-  ASSERT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
+  ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   SignInOnline(kSecondUserEmail, kSecondUserPassword, kSecondUserRefreshToken1,
                kSecondUserGaiaId);
   CheckDeviceIDIsConsistent(AccountId::FromUserEmail(kSecondUserEmail),
@@ -236,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_NewUsers) {
 // Add the second user back. Verify that device ID has been changed.
 IN_PROC_BROWSER_TEST_F(DeviceIDTest, NewUsers) {
   EXPECT_TRUE(GetDeviceId(AccountId::FromUserEmail(kSecondUserEmail)).empty());
-  ASSERT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
+  ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   SignInOnline(kSecondUserEmail, kSecondUserPassword, kSecondUserRefreshToken2,
                kSecondUserGaiaId);
   CheckDeviceIDIsConsistent(AccountId::FromUserEmail(kSecondUserEmail),
@@ -310,4 +309,4 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, LegacyUsers) {
       AccountId::FromUserEmail(FakeGaiaMixin::kFakeUserEmail), std::string());
 }
 
-}  // namespace chromeos
+}  // namespace ash

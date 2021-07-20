@@ -44,4 +44,10 @@ class AccountManagerWelcomeDialog : public SystemWebDialogDelegate {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::AccountManagerWelcomeDialog;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_WELCOME_DIALOG_H_
