@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_edit_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_edit_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ios_unittest.h"
-#import "ios/chrome/browser/ui/commands/bookmark_page_command.h"
+#import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/generate_qr_code_command.h"
@@ -293,17 +293,18 @@ TEST_F(SharingCoordinatorTest, AddBookmark_EditViaSnackbar) {
 
     GURL test_url("https://wwww.chromium.org");
     NSString* test_title = @"Test Title";
-    BookmarkPageCommand* command =
-        [[BookmarkPageCommand alloc] initWithURL:test_url title:test_title];
+    BookmarkAddCommand* command =
+        [[BookmarkAddCommand alloc] initWithURL:test_url title:test_title];
 
-    ASSERT_EQ(nil,
-              bookmark_model_->GetMostRecentlyAddedUserNodeForURL(command.URL));
+    ASSERT_EQ(nil, bookmark_model_->GetMostRecentlyAddedUserNodeForURL(
+                       command.URLs.firstObject.URL));
 
     auto handler = static_cast<id<BookmarksCommands>>(coordinator);
     [handler bookmarkPage:command];
 
     const BookmarkNode* bookmark =
-        bookmark_model_->GetMostRecentlyAddedUserNodeForURL(command.URL);
+        bookmark_model_->GetMostRecentlyAddedUserNodeForURL(
+            command.URLs.firstObject.URL);
 
     ASSERT_NE(nil, bookmark);
     EXPECT_EQ(test_url, bookmark->url());
@@ -336,12 +337,12 @@ TEST_F(SharingCoordinatorTest, EditExistingBookmark) {
         AddBookmark(bookmark_model_->mobile_node(), @"Some Other Title");
 
     NSString* test_title = @"Test Title";
-    BookmarkPageCommand* command =
-        [[BookmarkPageCommand alloc] initWithURL:bookmark->url()
-                                           title:test_title];
+    BookmarkAddCommand* command =
+        [[BookmarkAddCommand alloc] initWithURL:bookmark->url()
+                                          title:test_title];
 
-    ASSERT_EQ(bookmark,
-              bookmark_model_->GetMostRecentlyAddedUserNodeForURL(command.URL));
+    ASSERT_EQ(bookmark, bookmark_model_->GetMostRecentlyAddedUserNodeForURL(
+                            command.URLs.firstObject.URL));
 
     auto handler = static_cast<id<BookmarksCommands>>(coordinator);
 

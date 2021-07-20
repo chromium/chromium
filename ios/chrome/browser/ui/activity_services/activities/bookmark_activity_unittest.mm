@@ -10,8 +10,9 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "ios/chrome/browser/ui/bookmarks/bookmark_ios_unittest.h"
-#include "ios/chrome/browser/ui/commands/bookmark_page_command.h"
+#include "ios/chrome/browser/ui/commands/bookmark_add_command.h"
 #include "ios/chrome/browser/ui/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/ui/util/url_with_title.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -115,14 +116,14 @@ TEST_F(BookmarkActivityTest, ActivityTitle_EditBookmark) {
   EXPECT_TRUE([editBookmarkString isEqualToString:activity.activityTitle]);
 }
 
-TEST_F(BookmarkActivityTest, PerformActivity_BookmarkPageCommand) {
+TEST_F(BookmarkActivityTest, PerformActivity_BookmarkAddCommand) {
   GURL testUrl("https://example.com/");
   BookmarkActivity* activity = CreateActivity(testUrl);
 
   [[mocked_handler_ expect]
-      bookmarkPage:[OCMArg checkWithBlock:^BOOL(BookmarkPageCommand* value) {
-        EXPECT_EQ(testUrl, value.URL);
-        EXPECT_EQ(kTestTitle, value.title);
+      bookmarkPage:[OCMArg checkWithBlock:^BOOL(BookmarkAddCommand* value) {
+        EXPECT_EQ(testUrl, value.URLs.firstObject.URL);
+        EXPECT_EQ(kTestTitle, value.URLs.firstObject.title);
         return YES;
       }]];
 

@@ -77,6 +77,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/bookmarks:test_support",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/ui/util:url_with_title",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

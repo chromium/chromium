@@ -8,15 +8,16 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/commands/bookmark_page_command.h"
+#import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
 
 @class ReadingListAddCommand;
 
 // Protocol for commands arounds Bookmarks manipulation.
 @protocol BookmarksCommands <NSObject>
 
-// Bookmarks the page detailed in |command|'s data.
-- (void)bookmarkPage:(BookmarkPageCommand*)command;
+// Bookmarks the page detailed in |command|'s data unless it's already
+// bookmarked, in that case the "edit bookmark" flow will be triggered.
+- (void)bookmarkPage:(BookmarkAddCommand*)command;
 
 @end
 

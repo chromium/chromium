@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_presentation.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_edit_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
-#import "ios/chrome/browser/ui/commands/bookmark_page_command.h"
+#import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
@@ -144,9 +144,11 @@ using bookmarks::BookmarkNode;
 
 #pragma mark - BookmarksCommands
 
-- (void)bookmarkPage:(BookmarkPageCommand*)command {
+- (void)bookmarkPage:(BookmarkAddCommand*)command {
   DCHECK(command);
-  DCHECK(command.URL.is_valid());
+  GURL URL = command.URLs.firstObject.URL;
+  NSString* title = command.URLs.firstObject.title;
+  DCHECK(URL.is_valid());
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   bookmarks::BookmarkModel* bookmarkModel =
@@ -156,7 +158,7 @@ using bookmarks::BookmarkNode;
   }
 
   const BookmarkNode* node =
-      bookmarkModel->GetMostRecentlyAddedUserNodeForURL(command.URL);
+      bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
   if (node) {
     // Trigger the Edit bookmark scenario.
     [self editBookmark:node];
@@ -174,7 +176,7 @@ using bookmarks::BookmarkNode;
       }
 
       const BookmarkNode* newNode =
-          bookmarkModel->GetMostRecentlyAddedUserNodeForURL(command.URL);
+          bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
       DCHECK(newNode);
       if (newNode) {
         [weakSelf editBookmark:newNode];
@@ -182,9 +184,7 @@ using bookmarks::BookmarkNode;
     };
 
     MDCSnackbarMessage* snackbarMessage =
-        [mediator addBookmarkWithTitle:command.title
-                                   URL:command.URL
-                            editAction:editAction];
+        [mediator addBookmarkWithTitle:title URL:URL editAction:editAction];
     [handler showSnackbarMessage:snackbarMessage];
   }
 }
