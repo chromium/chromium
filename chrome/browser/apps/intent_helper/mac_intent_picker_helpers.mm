@@ -9,7 +9,6 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "net/base/mac/url_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 
 namespace apps {
@@ -39,7 +38,9 @@ IntentPickerAppInfo AppInfoForAppUrl(NSURL* app_url) {
                              base::SysNSStringToUTF8(app_name));
 }
 
-absl::optional<IntentPickerAppInfo> AppInfoForUrl(const GURL& url) {
+}  // namespace
+
+absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url) {
   if (@available(macOS 10.15, *)) {
     NSURL* nsurl = net::NSURLWithGURL(url);
     if (!nsurl)
@@ -54,8 +55,6 @@ absl::optional<IntentPickerAppInfo> AppInfoForUrl(const GURL& url) {
   return absl::nullopt;
 }
 
-}  // namespace
-
 void LaunchMacApp(const GURL& url, const std::string& launch_name) {
   [[NSWorkspace sharedWorkspace]
                   openURLs:@[ net::NSURLWithGURL(url) ]
@@ -64,17 +63,6 @@ void LaunchMacApp(const GURL& url, const std::string& launch_name) {
                    options:0
              configuration:@{}
                      error:nil];
-}
-
-std::vector<IntentPickerAppInfo> FindMacAppsForUrl(
-    content::WebContents* web_contents,
-    const GURL& url,
-    std::vector<IntentPickerAppInfo> apps) {
-  // First, the Universal Link, if there is one.
-  if (auto app_info = AppInfoForUrl(url))
-    apps.push_back(std::move(app_info.value()));
-
-  return apps;
 }
 
 }  // namespace apps

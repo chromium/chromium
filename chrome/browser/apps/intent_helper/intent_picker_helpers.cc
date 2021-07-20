@@ -31,7 +31,9 @@ std::vector<IntentPickerAppInfo> FindAppsForUrl(
     const GURL& url,
     std::vector<IntentPickerAppInfo> apps) {
 #if defined(OS_MAC)
-  apps = FindMacAppsForUrl(web_contents, url, std::move(apps));
+  // On the Mac, if there is a Universal Link, it goes first.
+  if (absl::optional<IntentPickerAppInfo> mac_app = FindMacAppForUrl(url))
+    apps.push_back(std::move(mac_app.value()));
 #endif
   return FindPwaForUrl(web_contents, url, std::move(apps));
 }
