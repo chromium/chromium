@@ -272,23 +272,6 @@
       light:"$google_grey_100",
       dark:"$google_grey_900",
     },
-
-    /*
-     * One_offs.
-     *
-     * List your project's one_off colors below here. If a semantic color comes
-     * up repeatedly, consider speaking to UX about pulling out a common
-     * variable above.
-     */
-
-    /* OS Settings */
-    error_color: "$google_red_700",
-    success_color: "$google_green_700",
-
-    search_page_question_icon_color: "$google_grey_600",
-    app_management_permission_icon_color: "$google_grey_600",
-
-    user_icon_color_secondary: "rgb(210, 210, 212)",
   },
   opacities: {
     disabled_opacity: 0.38,
