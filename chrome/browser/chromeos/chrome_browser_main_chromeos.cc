@@ -810,7 +810,10 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
   web_kiosk_app_manager_ = std::make_unique<WebKioskAppManager>();
 
   if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
-    DeviceNameStore::Initialize(g_browser_process->local_state());
+    DeviceNameStore::Initialize(g_browser_process->local_state(),
+                                g_browser_process->platform_part()
+                                    ->browser_policy_connector_chromeos()
+                                    ->GetDeviceNamePolicyHandler());
   }
 
   if (base::FeatureList::IsEnabled(features::kEnableLocalSearchService)) {

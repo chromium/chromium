@@ -7,23 +7,29 @@
 
 #include "chrome/browser/chromeos/device_name_store.h"
 
-class PrefService;
+#include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 
 namespace chromeos {
 
 // DeviceNameStore implementation which uses a PrefService to store the device
 // name.
-class DeviceNameStoreImpl : public DeviceNameStore {
+class DeviceNameStoreImpl : public DeviceNameStore,
+                            public policy::DeviceNamePolicyHandler::Observer {
  public:
-  explicit DeviceNameStoreImpl(PrefService* prefs);
+  DeviceNameStoreImpl(PrefService* prefs,
+                      policy::DeviceNamePolicyHandler* handler);
   ~DeviceNameStoreImpl() override;
 
  private:
   // DeviceNameStore:
   std::string GetDeviceName() const override;
 
+  // policy::DeviceNamePolicyHandler::Observer:
+  void OnHostnamePolicyChanged() override;
+
   // Provides access and persistence for the device name value.
   PrefService* prefs_;
+  policy::DeviceNamePolicyHandler* handler_;
 };
 
 }  // namespace chromeos

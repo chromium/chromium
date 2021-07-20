@@ -33,11 +33,12 @@ void DeviceNameStore::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 }
 
 // static
-void DeviceNameStore::Initialize(PrefService* prefs) {
+void DeviceNameStore::Initialize(PrefService* prefs,
+                                 policy::DeviceNamePolicyHandler* handler) {
   CHECK(base::FeatureList::IsEnabled(features::kEnableHostnameSetting));
   CHECK(!g_instance);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  g_instance = new DeviceNameStoreImpl(prefs);
+  g_instance = new DeviceNameStoreImpl(prefs, handler);
 }
 
 // static

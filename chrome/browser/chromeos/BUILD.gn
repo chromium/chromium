@@ -3503,6 +3503,8 @@ static_library("test_support") {
     "../ash/policy/core/user_policy_test_helper.h",
     "../ash/policy/dlp/dlp_content_manager_test_helper.cc",
     "../ash/policy/dlp/dlp_content_manager_test_helper.h",
+    "../ash/policy/handlers/fake_device_name_policy_handler.cc",
+    "../ash/policy/handlers/fake_device_name_policy_handler.h",
     "../ash/policy/handlers/minimum_version_policy_test_helpers.cc",
     "../ash/policy/handlers/minimum_version_policy_test_helpers.h",
     "../ash/policy/remote_commands/future_value.h",

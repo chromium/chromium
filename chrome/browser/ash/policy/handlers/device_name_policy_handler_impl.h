@@ -60,8 +60,8 @@ class DeviceNamePolicyHandlerImpl
   // administrator.
   std::string GenerateHostname(const std::string& hostname_template) const;
 
-  // Sets new device name policy value if different from the current policy
-  // value .
+  // Sets new device name and policy if different from the current device name
+  // and/or policy.
   void SetDeviceNamePolicy(DeviceNamePolicy policy, std::string& new_hostname);
 
   ash::CrosSettings* cros_settings_;

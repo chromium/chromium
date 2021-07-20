@@ -12,6 +12,10 @@
 class PrefRegistrySimple;
 class PrefService;
 
+namespace policy {
+class DeviceNamePolicyHandler;
+}  // namespace policy
+
 namespace chromeos {
 
 // DeviceNameStore is a device-persistent model of the device name which
@@ -39,7 +43,8 @@ class DeviceNameStore {
   // creates a new device name and persists it. Must be called before any other
   // non-static method on DeviceNameStore.
   // |prefs| is the PrefService used to persist and read the device name value.
-  static void Initialize(PrefService* prefs);
+  static void Initialize(PrefService* prefs,
+                         policy::DeviceNamePolicyHandler* handler);
 
   // Shutdown() should be called to destroy the instance once its clients no
   // longer need it.

@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/policy/handlers/fake_device_name_policy_handler.h"
 #include "chrome/browser/chromeos/device_name_store.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -46,7 +47,8 @@ class DeviceNameHandlerTest : public testing::Test {
 
     local_state()->SetString(prefs::kDeviceName, "TestDeviceName");
     feature_list_.InitAndEnableFeature(ash::features::kEnableHostnameSetting);
-    DeviceNameStore::Initialize(&local_state_);
+    DeviceNameStore::Initialize(&local_state_,
+                                &fake_device_name_policy_handler_);
   }
 
   void TearDown() override { DeviceNameStore::Shutdown(); }
@@ -62,6 +64,7 @@ class DeviceNameHandlerTest : public testing::Test {
   // Test backing store for prefs.
   TestingPrefServiceSimple local_state_;
 
+  policy::FakeDeviceNamePolicyHandler fake_device_name_policy_handler_;
   content::TestWebUI web_ui_;
   std::unique_ptr<TestDeviceNameHandler> handler_;
   base::test::ScopedFeatureList feature_list_;

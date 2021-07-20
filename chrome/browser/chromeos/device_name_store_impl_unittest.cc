@@ -7,6 +7,10 @@
 #include "ash/constants/ash_features.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/handlers/fake_device_name_policy_handler.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -31,12 +35,15 @@ class DeviceNameStoreImplTest : public ::testing::Test {
       feature_list_.InitAndDisableFeature(
           ash::features::kEnableHostnameSetting);
     }
-    DeviceNameStore::Initialize(&local_state_);
+    DeviceNameStore::Initialize(&local_state_,
+                                &fake_device_name_policy_handler_);
   }
 
   std::string GetDeviceNameFromPrefs() const {
     return local_state_.GetString(prefs::kDeviceName);
   }
+
+  policy::FakeDeviceNamePolicyHandler fake_device_name_policy_handler_;
 
  private:
   // Run on the UI thread.
@@ -72,6 +79,19 @@ TEST_F(DeviceNameStoreImplTest, DefaultDeviceName) {
   DeviceNameStore* device_name_store_ = DeviceNameStore::GetInstance();
   EXPECT_EQ(device_name_store_->GetDeviceName(), "ChromeOS");
   EXPECT_EQ(GetDeviceNameFromPrefs(), "ChromeOS");
+}
+
+// Verifies the device name is the template chosen by admin if device name
+// policy is set to kPolicyHostnameChosenByAdmin.
+TEST_F(DeviceNameStoreImplTest, DeviceNameChosenByAdmin) {
+  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true);
+  DeviceNameStore* device_name_store_ = DeviceNameStore::GetInstance();
+  const std::string template_set_by_admin = "AdminTemplate";
+  fake_device_name_policy_handler_.SetPolicyState(
+      policy::DeviceNamePolicyHandler::DeviceNamePolicy::
+          kPolicyHostnameChosenByAdmin,
+      template_set_by_admin);
+  EXPECT_EQ(device_name_store_->GetDeviceName(), template_set_by_admin);
 }
 
 }  // namespace chromeos
