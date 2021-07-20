@@ -61,6 +61,9 @@ class AutofillWebDataBackendImpl
   void SetAutofillProfileChangedCallback(
       base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
           change_cb);
+  void SetCardArtImagesChangedCallback(
+      base::RepeatingCallback<void(const std::vector<std::string>&)>
+          on_card_art_image_change_callback);
 
   // AutofillWebDataBackend implementation.
   void AddObserver(
@@ -74,6 +77,8 @@ class AutofillWebDataBackendImpl
   void NotifyOfMultipleAutofillChanges() override;
   void NotifyOfAddressConversionCompleted() override;
   void NotifyThatSyncHasStarted(syncer::ModelType model_type) override;
+  void NotifyOfCreditCardArtImagesChanged(
+      const std::vector<std::string>& server_ids) override;
   void CommitChanges() override;
 
   // Returns a SupportsUserData object that may be used to store data accessible
@@ -260,9 +265,10 @@ class AutofillWebDataBackendImpl
   base::RepeatingClosure on_changed_callback_;
   base::RepeatingClosure on_address_conversion_completed_callback_;
   base::RepeatingCallback<void(syncer::ModelType)> on_sync_started_callback_;
-
   base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
       on_autofill_profile_changed_cb_;
+  base::RepeatingCallback<void(const std::vector<std::string>&)>
+      on_card_art_image_change_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(AutofillWebDataBackendImpl);
 };

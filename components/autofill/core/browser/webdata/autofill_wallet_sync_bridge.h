@@ -134,6 +134,12 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   // processor so that it can start tracking changes.
   void LoadMetadata();
 
+  // Checks whether any virtual card metadata for new_data is new and make
+  // corresponding changes.
+  void ProcessVirtualCardMetadataChanges(
+      const std::vector<std::unique_ptr<CreditCard>>& old_data,
+      const std::vector<CreditCard>& new_data);
+
   // AutofillProfileSyncBridge is owned by |web_data_backend_| through
   // SupportsUserData, so it's guaranteed to outlive |this|.
   AutofillWebDataBackend* const web_data_backend_;
