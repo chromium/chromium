@@ -84,17 +84,53 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Quota.EvictedBucketAccessCount" units="units"
+    expires_after="2022-01-19">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The number of times the evicted bucket was accessed. Logged when the bucket
+    is evicted. Replaces Quota.EvictedOriginAccessCount when eviction was per
+    origin.
+  </summary>
+</histogram>
+
+<histogram name="Quota.EvictedBucketDaysSinceAccess" units="units"
+    expires_after="2022-01-19">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The number of days since the evicted bucket was last accessed. Logged when
+    the bucket is evicted. Replaces Quota.EvictedOriginDaysSinceAccess when
+    eviction was per origin.
+  </summary>
+</histogram>
+
+<histogram name="Quota.EvictedBucketPerHour" units="units"
+    expires_after="2022-01-19">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Number of evicted buckets in an hour. Replaces Quota.EvictedOriginPerHour
+    when eviction was per origin.
+  </summary>
+</histogram>
+
 <histogram name="Quota.EvictedBytesPerRound" units="MB"
     expires_after="2021-12-14">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    Amount of usage used by evicted origins in an eviction round.
+    Amount of usage used by evicted buckets in an eviction round. Prior to M94,
+    evictions were based on per origin instead of per bucket.
   </summary>
 </histogram>
 
 <histogram name="Quota.EvictedOriginAccessCount" units="units"
     expires_after="2021-09-19">
+  <obsolete>
+    Removed as of 2021/07. Replaced by Quota.EvictedBucketAccessCount.
+  </obsolete>
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -107,6 +143,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Quota.EvictedOriginDaysSinceAccess" units="units"
     expires_after="2021-09-19">
+  <obsolete>
+    Removed as of 2021/07. Replaced by Quota.EvictedBucketDaysSinceAccess.
+  </obsolete>
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -119,6 +158,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Quota.EvictedOriginsPerHour" units="units"
     expires_after="2021-09-05">
+  <obsolete>
+    Removed as of 2021/07. Replaced by Quota.EvictedBucketPerHour.
+  </obsolete>
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -156,8 +198,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Global usage of temporary storage.</summary>
 </histogram>
 
+<histogram name="Quota.NumberOfEvictedBucketsPerRound" units="units"
+    expires_after="2022-05-18">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>Number of evicted buckets per round.</summary>
+</histogram>
+
 <histogram name="Quota.NumberOfEvictedOriginsPerRound" units="units"
     expires_after="2022-05-18">
+  <obsolete>
+    Removed as of 2021/07. Replaced by Quota.NumberOfEvictedBucketsPerRound.
+  </obsolete>
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

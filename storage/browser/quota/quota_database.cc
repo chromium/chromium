@@ -56,9 +56,6 @@ const int kCommitIntervalMs = 30000;
 
 }  // anonymous namespace
 
-// static
-const char QuotaDatabase::kDefaultBucketName[] = "default";
-
 const QuotaDatabase::TableSchema QuotaDatabase::kTables[] = {
     {kHostQuotaTable,
      "(host TEXT NOT NULL,"
@@ -515,63 +512,20 @@ bool QuotaDatabase::DeleteBucketInfo(const BucketId bucket_id) {
   return true;
 }
 
-bool QuotaDatabase::GetLRUStorageKey(
+QuotaErrorOr<BucketInfo> QuotaDatabase::GetLRUBucket(
     StorageType type,
-    const std::set<StorageKey>& exceptions,
-    SpecialStoragePolicy* special_storage_policy,
-    absl::optional<StorageKey>* storage_key) {
+    const std::set<StorageKey>& storage_key_exceptions,
+    const std::set<BucketId>& bucket_exceptions,
+    SpecialStoragePolicy* special_storage_policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(storage_key);
-  if (LazyOpen(LazyOpenMode::kFailIfNotFound) != QuotaError::kNone)
-    return false;
+  QuotaError open_error = LazyOpen(LazyOpenMode::kFailIfNotFound);
+  if (open_error != QuotaError::kNone)
+    return open_error;
 
+  // clang-format off
   static constexpr char kSql[] =
-      // clang-format off
-      "SELECT origin FROM buckets "
-        "WHERE type = ? AND name = ? "
-        "ORDER BY last_accessed";
-  // clang-format on
-
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt(0, static_cast<int>(type));
-  statement.BindString(1, kDefaultBucketName);
-
-  while (statement.Step()) {
-    absl::optional<StorageKey> read_storage_key =
-        StorageKey::Deserialize(statement.ColumnString(0));
-    if (!read_storage_key.has_value())
-      continue;
-
-    if (base::Contains(exceptions, *read_storage_key))
-      continue;
-
-    GURL read_gurl = read_storage_key->origin().GetURL();
-    if (special_storage_policy &&
-        (special_storage_policy->IsStorageDurable(read_gurl) ||
-         special_storage_policy->IsStorageUnlimited(read_gurl))) {
-      continue;
-    }
-
-    *storage_key = std::move(read_storage_key).value();
-    return true;
-  }
-
-  storage_key->reset();
-  return statement.Succeeded();
-}
-
-bool QuotaDatabase::GetLRUBucket(StorageType type,
-                                 const std::set<StorageKey>& exceptions,
-                                 SpecialStoragePolicy* special_storage_policy,
-                                 absl::optional<BucketId>* bucket_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(bucket_id);
-  if (LazyOpen(LazyOpenMode::kFailIfNotFound) != QuotaError::kNone)
-    return false;
-
-  static constexpr char kSql[] =
-      // clang-format off
-      "SELECT id, origin FROM buckets "
+      "SELECT id, origin, name, expiration, quota "
+        "FROM buckets "
         "WHERE type = ? "
         "ORDER BY last_accessed";
   // clang-format on
@@ -580,13 +534,19 @@ bool QuotaDatabase::GetLRUBucket(StorageType type,
   statement.BindInt(0, static_cast<int>(type));
 
   while (statement.Step()) {
-    int64_t read_bucket_id = statement.ColumnInt64(0);
     absl::optional<StorageKey> read_storage_key =
         StorageKey::Deserialize(statement.ColumnString(1));
     if (!read_storage_key.has_value())
       continue;
 
-    if (base::Contains(exceptions, *read_storage_key))
+    std::string read_bucket_name = statement.ColumnString(2);
+    if (base::Contains(storage_key_exceptions, *read_storage_key) &&
+        read_bucket_name == kDefaultBucketName) {
+      continue;
+    }
+
+    BucketId read_bucket_id = BucketId(statement.ColumnInt64(0));
+    if (base::Contains(bucket_exceptions, read_bucket_id))
       continue;
 
     // TODO(crbug/1176774): Once BucketTable holds bucket durability info,
@@ -597,13 +557,11 @@ bool QuotaDatabase::GetLRUBucket(StorageType type,
          special_storage_policy->IsStorageUnlimited(read_gurl))) {
       continue;
     }
-
-    *bucket_id = BucketId(read_bucket_id);
-    return true;
+    return BucketInfo(read_bucket_id, std::move(read_storage_key).value(), type,
+                      read_bucket_name, statement.ColumnTime(3),
+                      statement.ColumnInt(4));
   }
-
-  bucket_id->reset();
-  return statement.Succeeded();
+  return QuotaError::kNotFound;
 }
 
 bool QuotaDatabase::GetStorageKeysModifiedBetween(

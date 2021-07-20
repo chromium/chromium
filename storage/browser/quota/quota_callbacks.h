@@ -15,6 +15,7 @@
 
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 
@@ -45,8 +46,8 @@ using GetStorageKeysCallback =
     base::OnceCallback<void(const std::set<blink::StorageKey>& storage_keys,
                             blink::mojom::StorageType type)>;
 using GetUsageInfoCallback = base::OnceCallback<void(UsageInfoEntries)>;
-using GetStorageKeyCallback = base::OnceCallback<void(
-    const absl::optional<blink::StorageKey>& storage_key)>;
+using GetBucketCallback =
+    base::OnceCallback<void(const absl::optional<BucketInfo>& bucket_info)>;
 
 // Simple template wrapper for a callback queue.
 template <typename CallbackType, typename... Args>

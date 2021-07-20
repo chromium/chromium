@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -37,8 +38,6 @@ static const blink::mojom::StorageType kTemp =
     blink::mojom::StorageType::kTemporary;
 static const blink::mojom::StorageType kPerm =
     blink::mojom::StorageType::kPersistent;
-
-const char kDefaultBucketName[] = "default";
 
 }  // namespace
 
@@ -299,101 +298,26 @@ TEST_F(QuotaDatabaseTest, GetBucketWithOpenDatabaseError) {
 }
 #endif  // !defined(OS_FUCHSIA)
 
-TEST_P(QuotaDatabaseTest, StorageKeyLastAccessTimeLRU) {
-  QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
-  EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
-
-  std::set<StorageKey> exceptions;
-  absl::optional<StorageKey> storage_key;
-  EXPECT_TRUE(db.GetLRUStorageKey(kTemp, exceptions, nullptr, &storage_key));
-  EXPECT_FALSE(storage_key.has_value());
-
-  const StorageKey kStorageKey1 =
-      StorageKey::CreateFromStringForTesting("http://a/");
-  const StorageKey kStorageKey2 =
-      StorageKey::CreateFromStringForTesting("http://b/");
-  const StorageKey kStorageKey3 =
-      StorageKey::CreateFromStringForTesting("http://c/");
-  const StorageKey kStorageKey4 =
-      StorageKey::CreateFromStringForTesting("http://p/");
-
-  // Adding three temporary storages, and
-  EXPECT_TRUE(db.SetStorageKeyLastAccessTime(kStorageKey1, kTemp,
-                                             base::Time::FromJavaTime(10)));
-  EXPECT_TRUE(db.SetStorageKeyLastAccessTime(kStorageKey2, kTemp,
-                                             base::Time::FromJavaTime(20)));
-  EXPECT_TRUE(db.SetStorageKeyLastAccessTime(kStorageKey3, kTemp,
-                                             base::Time::FromJavaTime(30)));
-
-  // one persistent.
-  EXPECT_TRUE(db.SetStorageKeyLastAccessTime(kStorageKey4, kPerm,
-                                             base::Time::FromJavaTime(40)));
-
-  EXPECT_TRUE(db.GetLRUStorageKey(kTemp, exceptions, nullptr, &storage_key));
-  EXPECT_EQ(kStorageKey1, storage_key.value());
-
-  // Test that unlimited origins are excluded from eviction, but
-  // protected origins are not excluded.
-  scoped_refptr<MockSpecialStoragePolicy> policy(new MockSpecialStoragePolicy);
-  policy->AddUnlimited(kStorageKey1.origin().GetURL());
-  policy->AddProtected(kStorageKey2.origin().GetURL());
-  EXPECT_TRUE(
-      db.GetLRUStorageKey(kTemp, exceptions, policy.get(), &storage_key));
-  EXPECT_EQ(kStorageKey2, storage_key.value());
-
-  // Test that durable origins are excluded from eviction.
-  policy->AddDurable(kStorageKey2.origin().GetURL());
-  EXPECT_TRUE(
-      db.GetLRUStorageKey(kTemp, exceptions, policy.get(), &storage_key));
-  EXPECT_EQ(kStorageKey3, storage_key.value());
-
-  exceptions.insert(kStorageKey1);
-  EXPECT_TRUE(db.GetLRUStorageKey(kTemp, exceptions, nullptr, &storage_key));
-  EXPECT_EQ(kStorageKey2, storage_key.value());
-
-  exceptions.insert(kStorageKey2);
-  EXPECT_TRUE(db.GetLRUStorageKey(kTemp, exceptions, nullptr, &storage_key));
-  EXPECT_EQ(kStorageKey3, storage_key.value());
-
-  exceptions.insert(kStorageKey3);
-  EXPECT_TRUE(db.GetLRUStorageKey(kTemp, exceptions, nullptr, &storage_key));
-  EXPECT_FALSE(storage_key.has_value());
-
-  EXPECT_TRUE(
-      db.SetStorageKeyLastAccessTime(kStorageKey1, kTemp, base::Time::Now()));
-
-  // Delete StorageKey/type last access time information.
-  EXPECT_TRUE(db.DeleteStorageKeyInfo(kStorageKey3, kTemp));
-
-  // Querying again to see if the deletion has worked.
-  exceptions.clear();
-  EXPECT_TRUE(db.GetLRUStorageKey(kTemp, exceptions, nullptr, &storage_key));
-  EXPECT_EQ(kStorageKey2, storage_key.value());
-
-  exceptions.insert(kStorageKey1);
-  exceptions.insert(kStorageKey2);
-  EXPECT_TRUE(db.GetLRUStorageKey(kTemp, exceptions, nullptr, &storage_key));
-  EXPECT_FALSE(storage_key.has_value());
-}
-
 TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
 
-  std::set<StorageKey> exceptions;
-  absl::optional<BucketId> bucket_id;
-  EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, nullptr, &bucket_id));
-  EXPECT_FALSE(bucket_id.has_value());
+  std::set<StorageKey> storage_key_exceptions;
+  std::set<BucketId> bucket_exceptions;
+  QuotaErrorOr<BucketInfo> result = db.GetLRUBucket(
+      kTemp, storage_key_exceptions, bucket_exceptions, nullptr);
+  EXPECT_FALSE(result.ok());
+  EXPECT_EQ(result.error(), QuotaError::kNotFound);
 
   // Insert bucket entries into BucketTable.
   base::Time now = base::Time::Now();
   using Entry = QuotaDatabase::BucketTableEntry;
   Entry bucket1 = Entry(
       BucketId(1), StorageKey::CreateFromStringForTesting("http://example-a/"),
-      kTemp, "bucket_a", 99, now, now);
+      kTemp, kDefaultBucketName, 99, now, now);
   Entry bucket2 = Entry(
       BucketId(2), StorageKey::CreateFromStringForTesting("http://example-b/"),
-      kTemp, "bucket_b", 0, now, now);
+      kTemp, kDefaultBucketName, 0, now, now);
   Entry bucket3 = Entry(
       BucketId(3), StorageKey::CreateFromStringForTesting("http://example-c/"),
       kTemp, "bucket_c", 1, now, now);
@@ -415,33 +339,54 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   EXPECT_TRUE(db.SetBucketLastAccessTime(bucket4.bucket_id,
                                          base::Time::FromJavaTime(40)));
 
-  EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, nullptr, &bucket_id));
-  EXPECT_EQ(bucket1.bucket_id, bucket_id);
+  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
+                           nullptr);
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(bucket1.bucket_id, result.value().id);
 
   // Test that unlimited origins are excluded from eviction, but
   // protected origins are not excluded.
   scoped_refptr<MockSpecialStoragePolicy> policy(new MockSpecialStoragePolicy);
   policy->AddUnlimited(bucket1.storage_key.origin().GetURL());
   policy->AddProtected(bucket2.storage_key.origin().GetURL());
-  EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, policy.get(), &bucket_id));
-  EXPECT_EQ(bucket2.bucket_id, bucket_id);
+  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
+                           policy.get());
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(bucket2.bucket_id, result.value().id);
 
   // Test that durable origins are excluded from eviction.
   policy->AddDurable(bucket2.storage_key.origin().GetURL());
-  EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, policy.get(), &bucket_id));
-  EXPECT_EQ(bucket3.bucket_id, bucket_id);
+  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
+                           policy.get());
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(bucket3.bucket_id, result.value().id);
 
-  exceptions.insert(bucket1.storage_key);
-  EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, nullptr, &bucket_id));
-  EXPECT_EQ(bucket2.bucket_id, bucket_id);
+  // Test storage key exceptions exclude storage key default buckets.
+  storage_key_exceptions.insert(bucket1.storage_key);
+  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
+                           nullptr);
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(bucket2.bucket_id, result.value().id);
 
-  exceptions.insert(bucket2.storage_key);
-  EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, nullptr, &bucket_id));
-  EXPECT_EQ(bucket3.bucket_id, bucket_id);
+  storage_key_exceptions.insert(bucket2.storage_key);
+  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
+                           nullptr);
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(bucket3.bucket_id, result.value().id);
 
-  exceptions.insert(bucket3.storage_key);
-  EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, nullptr, &bucket_id));
-  EXPECT_FALSE(bucket_id.has_value());
+  // Storage key exceptions does not exclude non-default buckets.
+  storage_key_exceptions.insert(bucket3.storage_key);
+  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
+                           nullptr);
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(bucket3.bucket_id, result.value().id);
+
+  // Bucket exceptions exclude specified buckets.
+  bucket_exceptions.insert(bucket3.bucket_id);
+  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
+                           nullptr);
+  EXPECT_FALSE(result.ok());
+  EXPECT_EQ(result.error(), QuotaError::kNotFound);
 
   EXPECT_TRUE(db.SetBucketLastAccessTime(bucket1.bucket_id, base::Time::Now()));
 
@@ -449,14 +394,18 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   EXPECT_TRUE(db.DeleteBucketInfo(bucket3.bucket_id));
 
   // Querying again to see if the deletion has worked.
-  exceptions.clear();
-  EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, nullptr, &bucket_id));
-  EXPECT_EQ(bucket2.bucket_id, bucket_id);
+  storage_key_exceptions.clear();
+  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
+                           nullptr);
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(bucket2.bucket_id, result.value().id);
 
-  exceptions.insert(bucket1.storage_key);
-  exceptions.insert(bucket2.storage_key);
-  EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, nullptr, &bucket_id));
-  EXPECT_FALSE(bucket_id.has_value());
+  storage_key_exceptions.insert(bucket1.storage_key);
+  storage_key_exceptions.insert(bucket2.storage_key);
+  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
+                           nullptr);
+  EXPECT_FALSE(result.ok());
+  EXPECT_EQ(result.error(), QuotaError::kNotFound);
 }
 
 TEST_P(QuotaDatabaseTest, StorageKeyLastModifiedBetween) {

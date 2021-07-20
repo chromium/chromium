@@ -79,7 +79,7 @@ bool QuotaDatabaseMigrations::MigrateFromVersion5ToVersion7(
   // clang-format on
   sql::Statement import_origin_info_statement(
       db->GetCachedStatement(SQL_FROM_HERE, kImportOriginInfoSql));
-  import_origin_info_statement.BindString(0, QuotaDatabase::kDefaultBucketName);
+  import_origin_info_statement.BindString(0, kDefaultBucketName);
   import_origin_info_statement.BindTime(1, base::Time::Max());
   if (!import_origin_info_statement.Run())
     return false;

@@ -19,11 +19,20 @@ BucketInfo::BucketInfo(BucketId bucket_id,
       expiration(std::move(expiration)),
       quota(quota) {}
 
+BucketInfo::BucketInfo() = default;
 BucketInfo::~BucketInfo() = default;
 
 BucketInfo::BucketInfo(const BucketInfo&) = default;
 BucketInfo::BucketInfo(BucketInfo&&) noexcept = default;
 BucketInfo& BucketInfo::operator=(const BucketInfo&) = default;
 BucketInfo& BucketInfo::operator=(BucketInfo&&) noexcept = default;
+
+bool operator==(const BucketInfo& lhs, const BucketInfo& rhs) {
+  return lhs.id == rhs.id;
+}
+
+bool operator!=(const BucketInfo& lhs, const BucketInfo& rhs) {
+  return !(lhs == rhs);
+}
 
 }  // namespace storage

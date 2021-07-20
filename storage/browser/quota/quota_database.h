@@ -22,6 +22,7 @@
 #include "base/types/id_type.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -154,25 +155,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   // Deletes the specified bucket.
   bool DeleteBucketInfo(BucketId bucket_id);
 
-  // TODO(crbug.com/1202167): Remove once all usages have been updated to use
-  // GetLRUBucket. Sets `storage_key` to the least recently used storage key of
-  // storage keys not included in `exceptions` and not granted the special
-  // unlimited storage right. Returns false when it fails in accessing the
-  // database. `storage_key` is set to nullopt when there is no matching storage
-  // key. This is limited to the storage key's default bucket.
-  bool GetLRUStorageKey(blink::mojom::StorageType type,
-                        const std::set<blink::StorageKey>& exceptions,
-                        SpecialStoragePolicy* special_storage_policy,
-                        absl::optional<blink::StorageKey>* storage_key);
-
-  // Sets `bucket_id` to the least recently used bucket from storage keys not
-  // included in `exceptions` and not granted special unlimited storage right.
-  // Returns false when it fails in accessing the database. `bucket_id` is
-  // set to nullopt when there is no matching bucket.
-  bool GetLRUBucket(blink::mojom::StorageType type,
-                    const std::set<blink::StorageKey>& exceptions,
-                    SpecialStoragePolicy* special_storage_policy,
-                    absl::optional<BucketId>* bucket_id);
+  // Returns the BucketInfo for the least recently used bucket. Will exclude
+  // default buckets included in `storage_key_exceptions`, buckets with ids
+  // in `bucket_exceptions` and origins that have the special unlimited storage
+  // policy. Returns a QuotaError if the operation has failed.
+  // TODO(crbug.com/1199417): `storage_key_exceptions` should be removed once
+  // QuotaClient is migrated to operate per bucket.
+  QuotaErrorOr<BucketInfo> GetLRUBucket(
+      blink::mojom::StorageType type,
+      const std::set<blink::StorageKey>& storage_key_exceptions,
+      const std::set<BucketId>& bucket_exceptions,
+      SpecialStoragePolicy* special_storage_policy);
 
   // TODO(crbug.com/1202167): Remove once all usages have been updated to use
   // GetBucketsModifiedBetween. Populates `storage_keys` with the ones that have
@@ -273,7 +266,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   friend class QuotaDatabaseMigrationsTest;
   friend class QuotaManagerImpl;
 
-  static const char kDefaultBucketName[];
   static const TableSchema kTables[];
   static const size_t kTableCount;
   static const IndexSchema kIndexes[];

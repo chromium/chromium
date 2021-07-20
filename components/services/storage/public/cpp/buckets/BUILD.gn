@@ -4,9 +4,13 @@ component("buckets") {
   public = [
     "bucket_id.h",
     "bucket_info.h",
+    "constants.h",
   ]
 
-  sources = [ "bucket_info.cc" ]
+  sources = [
+    "bucket_info.cc",
+    "constants.cc",
+  ]
 
   public_deps = [
     "//base",

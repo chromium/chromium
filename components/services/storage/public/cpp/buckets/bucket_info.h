@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "url/origin.h"
@@ -14,6 +15,7 @@
 namespace storage {
 
 struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInfo {
+  BucketInfo();
   BucketInfo(BucketId bucket_id,
              blink::StorageKey storage_key,
              blink::mojom::StorageType type,
@@ -28,12 +30,20 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInfo {
   BucketInfo& operator=(const BucketInfo&);
   BucketInfo& operator=(BucketInfo&&) noexcept;
 
+  COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
+  friend bool operator==(const BucketInfo& lhs, const BucketInfo& rhs);
+
+  COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
+  friend bool operator!=(const BucketInfo& lhs, const BucketInfo& rhs);
+
+  bool is_default() const { return name == kDefaultBucketName; }
+
   BucketId id;
   blink::StorageKey storage_key;
   blink::mojom::StorageType type = blink::mojom::StorageType::kUnknown;
   std::string name;
   base::Time expiration;
-  int64_t quota;
+  int64_t quota = 0;
 };
 
 }  // namespace storage
