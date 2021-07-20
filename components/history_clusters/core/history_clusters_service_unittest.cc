@@ -47,7 +47,7 @@ class TestClusteringBackend : public ClusteringBackend {
     std::move(callback_).Run(clusters);
   }
 
-  const std::vector<history::AnnotatedVisit>& LastClusteredVisits() const {
+  const std::vector<history::AnnotatedVisit>& last_clustered_visits() const {
     return last_clustered_visits_;
   }
 
@@ -83,7 +83,6 @@ class HistoryClustersServiceTest : public testing::Test {
         history::CreateHistoryService(history_dir_.GetPath(), true);
     history_clusters_service_ = std::make_unique<HistoryClustersService>(
         history_service_.get(), nullptr);
-
     history_clusters_service_test_api_ =
         std::make_unique<HistoryClustersServiceTestApi>(
             history_clusters_service_.get(), history_service_.get());
@@ -97,8 +96,6 @@ class HistoryClustersServiceTest : public testing::Test {
   HistoryClustersServiceTest& operator=(const HistoryClustersServiceTest&) =
       delete;
 
-  // Add hardcoded completed visits with context annotations to the history
-  // database.
   void AddHardcodedTestDataToHistoryService() {
     history::ContextID context_id = reinterpret_cast<history::ContextID>(1);
 
@@ -131,25 +128,10 @@ class HistoryClustersServiceTest : public testing::Test {
     }
   }
 
-  // Add an incomplete visit context annotations to the in memory incomplete
-  // visit map. Does not touch the history database.
-  void AddIncompleteVisit(history::URLID url_id, history::VisitID visit_id) {
-    // It's not possible to have an incomplete visit with URL or visit set but
-    // not the other.
-    ASSERT_FALSE(url_id ^ visit_id);
-    auto& incomplete_visit_context_annotations =
-        history_clusters_service_->GetOrCreateIncompleteVisitContextAnnotations(
-            next_navigation_id_);
-    incomplete_visit_context_annotations.url_row.set_id(url_id);
-    incomplete_visit_context_annotations.visit_row.visit_id = visit_id;
-    incomplete_visit_context_annotations.status.history_rows = url_id;
-    next_navigation_id_++;
-  }
-
   // Verifies that the hardcoded visits were passed to the clustering backend.
   void VerifyTestClusteringBackendRequest() {
     std::vector<history::AnnotatedVisit> visits =
-        test_clustering_backend_->LastClusteredVisits();
+        test_clustering_backend_->last_clustered_visits();
     ASSERT_EQ(visits.size(), 2u);
     auto& visit = visits[0];
     EXPECT_EQ(visit.visit_row.visit_id, 2);
@@ -202,7 +184,7 @@ TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
   AddHardcodedTestDataToHistoryService();
 
   history_clusters_service_->QueryClusters(
-      /*query=*/"", /*end_time=*/base::Time::Now(), /* max_count=*/0,
+      /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
       // This "expect" block is not run until after the fake response is sent
       // further down in this method.
       base::BindLambdaForTesting(
@@ -255,35 +237,6 @@ TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
   run_loop_.Run();
 }
 
-TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
-  // Create persisted visits 1 and 2.
-  AddHardcodedTestDataToHistoryService();
-
-  // Create incomplete visits 3, 4, and a pending navigation for whom we haven't
-  // yet retrieved the history rows for.
-  AddIncompleteVisit(3, 3);
-  AddIncompleteVisit(0, 0);
-  AddIncompleteVisit(4, 4);
-
-  history_clusters_service_->QueryClusters(
-      /*query=*/"", /*end_time=*/base::Time::Now(), /* max_count=*/0,
-      base::DoNothing(),  // Only need to verify the correct request is sent.
-      &task_tracker_);
-
-  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-
-  // Persisted visits are ordered before incomplete visits. Persisted visits are
-  // ordered newest first. Incomplete visits are ordered the same as they were
-  // sent to the `HistoryClustersService`.
-  std::vector<history::AnnotatedVisit> visits =
-      test_clustering_backend_->LastClusteredVisits();
-  ASSERT_EQ(visits.size(), 4u);
-  EXPECT_EQ(visits[0].visit_row.visit_id, 2);
-  EXPECT_EQ(visits[1].visit_row.visit_id, 1);
-  EXPECT_EQ(visits[2].visit_row.visit_id, 3);
-  EXPECT_EQ(visits[3].visit_row.visit_id, 4);
-}
-
 TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
   AddHardcodedTestDataToHistoryService();
 
@@ -316,7 +269,7 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
     auto run_loop_quit = run_loop.QuitClosure();
 
     history_clusters_service_->QueryClusters(
-        test_data[i].query, /*end_time=*/base::Time::Now(),
+        test_data[i].query, /*max_time=*/base::Time::Now(),
         /* max_count=*/0,
         // This "expect" block is not run until after the fake response is sent
         // further down in this method.

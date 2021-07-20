@@ -26,8 +26,6 @@
 
 namespace history_clusters {
 
-using IncompleteVisitMap = std::map<int64_t, IncompleteVisitContextAnnotations>;
-
 // This Service is the API for UIs to fetch Chrome Memories.
 class HistoryClustersService : public KeyedService {
  public:
@@ -112,6 +110,9 @@ class HistoryClustersService : public KeyedService {
 
  private:
   friend class HistoryClustersServiceTestApi;
+
+  using IncompleteVisitMap =
+      std::map<int64_t, IncompleteVisitContextAnnotations>;
 
   // This is a callback used for the `QueryClusters()` call from
   // `DoesQueryMatchAnyCluster()`. Populates the cluster keyword cache from the

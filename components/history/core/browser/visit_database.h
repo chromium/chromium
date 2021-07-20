@@ -157,8 +157,7 @@ class VisitDatabase {
                             GURL* to_url);
 
   // Similar to the above function except finds a redirect going to a given
-  // `to_visit`; or, if there is no such redirect, finds the referral going to
-  // the given `to_visit`.
+  // `to_visit`.
   bool GetRedirectToVisit(VisitID to_visit,
                           VisitID* from_visit,
                           GURL* from_url);

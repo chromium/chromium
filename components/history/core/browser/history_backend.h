@@ -437,14 +437,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   std::vector<Cluster> GetClusters(int max_results);
 
-  // Finds the 1st visit in the redirect chain containing `visit`. Similar to
-  // `GetRedirectsToSpecificVisit()`, except 1) only returns the 1st visit of
-  // the redirect chain instead of the entire chain, and 2) ignores referrals.
-  // May return an invalid `VisitRow` if there's something wrong with the DB.
-  // The caller is responsible for identifying, by looking at `visit_id`, and
-  // handling this case.
-  VisitRow GetRedirectChainStart(VisitRow visit);
-
   // Observers -----------------------------------------------------------------
 
   void AddObserver(HistoryBackendObserver* observer);
@@ -633,10 +625,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   void GetRedirectsFromSpecificVisit(VisitID cur_visit,
                                      RedirectList* redirects);
 
-  // Similar to the above function except returns a redirect-or-referral list
-  // ending at `cur_visit`. E.g. if visit A redirected to visit B, which
-  // referred to visit C, then the return list for visit E would include all 3
-  // visits.
+  // Similar to the above function except returns a redirect list ending
+  // at `cur_visit`.
   void GetRedirectsToSpecificVisit(VisitID cur_visit, RedirectList* redirects);
 
   // Updates the visit_duration information in visits table.

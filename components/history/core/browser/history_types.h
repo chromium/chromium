@@ -715,8 +715,7 @@ struct AnnotatedVisit {
   AnnotatedVisit(URLRow url_row,
                  VisitRow visit_row,
                  VisitContextAnnotations context_annotations,
-                 VisitContentAnnotations content_annotations,
-                 VisitID referring_visit_of_redirect_chain_start);
+                 VisitContentAnnotations content_annotations);
   AnnotatedVisit(const AnnotatedVisit&);
   AnnotatedVisit& operator=(const AnnotatedVisit&);
   ~AnnotatedVisit();
@@ -725,13 +724,6 @@ struct AnnotatedVisit {
   VisitRow visit_row;
   VisitContextAnnotations context_annotations;
   VisitContentAnnotations content_annotations;
-  // The `VisitRow::referring_visit` of the 1st visit in the redirect chain that
-  // includes this visit. If this visit is not part of a redirect chain or is
-  // the 1st visit in a redirect chain, then it will be
-  // `visit_row.referring_visit`. Using the collapsed referring visit is
-  // important because redirect visits are omitted from AnnotatedVisits, so
-  // the uncollapsed referring visit could refer to an omitted visit.
-  VisitID referring_visit_of_redirect_chain_start;
 };
 
 // A minimal representation of `AnnotationVisit` used when retrieving them from

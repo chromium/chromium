@@ -49,8 +49,7 @@ proto::GetClustersRequest CreateRequestProto(
         visit.context_annotations.page_end_reason);
     request_visit->set_page_transition(
         static_cast<int>(visit.visit_row.transition));
-    request_visit->set_referring_visit_id(
-        visit.referring_visit_of_redirect_chain_start);
+    request_visit->set_referring_visit_id(visit.visit_row.referring_visit);
 
     if (debug_logger) {
       base::DictionaryValue debug_visit;
