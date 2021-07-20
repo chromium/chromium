@@ -27,7 +27,8 @@
   <span slot="label"></span>
   <div slot="settings">
     <div id="checkboxDiv" on-click="onCheckboxClick_">
-      <cr-checkbox class="no-label" checked="{{multiPageScanChecked}}">
+      <cr-checkbox class="no-label" checked="{{multiPageScanChecked}}"
+          disabled="[[disabled]]">
       </cr-checkbox>
       <span id="checkboxText">[[i18n('multiPageCheckboxText')]]</span>
     </div>

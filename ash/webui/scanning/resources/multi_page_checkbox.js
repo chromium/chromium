@@ -25,6 +25,9 @@ Polymer({
       type: Boolean,
       notify: true,
     },
+
+    /** @type {boolean} */
+    disabled: Boolean,
   },
 
   /** @private */

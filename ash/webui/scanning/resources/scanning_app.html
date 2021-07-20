@@ -196,8 +196,10 @@
           <file-type-select id="fileTypeSelect"
               disabled="[[settingsDisabled_]]"
               selected-file-type="{{selectedFileType}}"></file-type-select>
-          <multi-page-checkbox id="multiPageCheckbox" hidden="[[!showMultiPageCheckbox_]]"
-              multi-page-scan-checked="{{multiPageScanChecked}}">
+          <multi-page-checkbox id="multiPageCheckbox"
+              hidden="[[!showMultiPageCheckbox_]]"
+              multi-page-scan-checked="{{multiPageScanChecked}}"
+              disabled="[[settingsDisabled_]]">
           </multi-page-checkbox>
           <div id="more-settings-line-separator"></div>
           <cr-button id="moreSettingsButton" on-click="toggleClicked_"
