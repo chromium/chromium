@@ -323,8 +323,6 @@ static_library("test_support") {
     "mock_overscroll_observer.h",
     "mock_platform_notification_service.cc",
     "mock_platform_notification_service.h",
-    "mock_raw_clipboard_host.cc",
-    "mock_raw_clipboard_host.h",
     "mock_render_widget_host_delegate.cc",
     "mock_render_widget_host_delegate.h",
     "mock_ssl_host_state_delegate.cc",

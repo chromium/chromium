@@ -75,7 +75,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/core/clipboard/raw_system_clipboard.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
@@ -420,7 +419,6 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(smooth_scroll_sequencer_);
   visitor->Trace(content_capture_manager_);
   visitor->Trace(system_clipboard_);
-  visitor->Trace(raw_system_clipboard_);
   visitor->Trace(virtual_keyboard_overlay_changed_observers_);
   visitor->Trace(pause_handle_receivers_);
 #if defined(OS_MAC)
@@ -818,7 +816,6 @@ void LocalFrame::SetDOMWindow(LocalDOMWindow* dom_window) {
     // LocalDOMWindow was set, we need to create new SystemClipboard and
     // RawSystemClipboard.
     system_clipboard_ = nullptr;
-    raw_system_clipboard_ = nullptr;
   }
   GetWindowProxyManager()->ClearForNavigation();
   dom_window_ = dom_window;
@@ -2658,13 +2655,6 @@ SystemClipboard* LocalFrame::GetSystemClipboard() {
     system_clipboard_ = MakeGarbageCollected<SystemClipboard>(this);
 
   return system_clipboard_.Get();
-}
-
-RawSystemClipboard* LocalFrame::GetRawSystemClipboard() {
-  if (!raw_system_clipboard_)
-    raw_system_clipboard_ = MakeGarbageCollected<RawSystemClipboard>(this);
-
-  return raw_system_clipboard_.Get();
 }
 
 void LocalFrame::WasAttachedAsLocalMainFrame() {

@@ -38,7 +38,6 @@
 #include "content/browser/renderer_host/media/media_devices_dispatcher_host.h"
 #include "content/browser/renderer_host/media/media_stream_dispatcher_host.h"
 #include "content/browser/renderer_host/media/video_capture_host.h"
-#include "content/browser/renderer_host/raw_clipboard_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/service_worker_host.h"
@@ -995,8 +994,6 @@ void PopulateBinderMapWithContext(
 
   map->Add<blink::mojom::ClipboardHost>(
       base::BindRepeating(&ClipboardHostImpl::Create));
-  map->Add<blink::mojom::RawClipboardHost>(
-      base::BindRepeating(&RawClipboardHostImpl::Create));
   map->Add<blink::mojom::SpeculationHost>(
       base::BindRepeating(&SpeculationHostImpl::Bind));
   GetContentClient()->browser()->RegisterBrowserInterfaceBindersForFrame(host,

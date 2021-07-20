@@ -6,7 +6,6 @@
 
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
-#include "third_party/blink/public/mojom/clipboard/raw_clipboard.mojom-blink.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -261,9 +260,6 @@ ClipboardWriter::~ClipboardWriter() {
 // static
 bool ClipboardWriter::IsValidType(const String& type,
                                   bool is_custom_format_type) {
-  if (is_custom_format_type)
-    return type.length() < mojom::blink::RawClipboardHost::kMaxFormatSize;
-
   if (type == kMimeTypeImageSvg)
     return RuntimeEnabledFeatures::ClipboardSvgEnabled();
 

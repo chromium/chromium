@@ -40,7 +40,6 @@ mojom("mojom_platform") {
     "choosers/file_chooser.mojom",
     "choosers/popup_menu.mojom",
     "clipboard/clipboard.mojom",
-    "clipboard/raw_clipboard.mojom",
     "commit_result/commit_result.mojom",
     "compute_pressure/compute_pressure.mojom",
     "content_index/content_index.mojom",

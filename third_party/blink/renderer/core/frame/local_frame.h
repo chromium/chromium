@@ -128,7 +128,6 @@ class NodeTraversal;
 class PerformanceMonitor;
 class PolicyContainer;
 class PluginData;
-class RawSystemClipboard;
 class SystemClipboard;
 class SmoothScrollSequencer;
 class SpellChecker;
@@ -653,7 +652,6 @@ class CORE_EXPORT LocalFrame final : public Frame,
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect_in_dips);
 
   SystemClipboard* GetSystemClipboard();
-  RawSystemClipboard* GetRawSystemClipboard();
 
   // Indicate that this frame was attached as a MainFrame.
   void WasAttachedAsLocalMainFrame();
@@ -915,8 +913,6 @@ class CORE_EXPORT LocalFrame final : public Frame,
 
   // Access to the global sanitized system clipboard.
   Member<SystemClipboard> system_clipboard_;
-  // Access to the global raw/unsanitized system clipboard
-  Member<RawSystemClipboard> raw_system_clipboard_;
 
   // Access to background-color paint image generator. Initialized per local
   // root and reused among sub frames.
