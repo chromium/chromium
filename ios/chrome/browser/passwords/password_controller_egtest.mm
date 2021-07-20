@@ -109,13 +109,8 @@ BOOL WaitForKeyboardToAppear() {
 #pragma mark - Tests
 
 // Tests that save password prompt is shown on new login.
-- (void)testSavePromptAppearsOnFormSubmission {
-#if TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1194134): Reenable this test.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (test is flaky)");
-  }
-#endif
+// TODO(crbug.com/1192446): Reenable this test.
+- (void)DISABLED_testSavePromptAppearsOnFormSubmission {
   [self loadLoginPage];
 
   // Simulate user interacting with fields.
