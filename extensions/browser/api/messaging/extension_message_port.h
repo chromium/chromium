@@ -14,6 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "extensions/browser/api/messaging/message_port.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/messaging/port_id.h"
@@ -64,7 +65,16 @@ class ExtensionMessagePort : public MessagePort {
       const std::string& extension_id,
       const ChannelEndpoint& endpoint);
 
+  ExtensionMessagePort(base::WeakPtr<ChannelDelegate> channel_delegate,
+                       const PortId& port_id,
+                       const ExtensionId& extension_id,
+                       content::BrowserContext* browser_context,
+                       base::PassKey<ExtensionMessagePort>);
+
+  ExtensionMessagePort(const ExtensionMessagePort&) = delete;
   ~ExtensionMessagePort() override;
+
+  ExtensionMessagePort& operator=(const ExtensionMessagePort&) = delete;
 
   // MessagePort:
   void RemoveCommonFrames(const MessagePort& port) override;
@@ -90,11 +100,6 @@ class ExtensionMessagePort : public MessagePort {
  private:
   class FrameTracker;
   struct IPCTarget;
-
-  ExtensionMessagePort(base::WeakPtr<ChannelDelegate> channel_delegate,
-                       const PortId& port_id,
-                       const ExtensionId& extension_id,
-                       content::BrowserContext* browser_context);
 
   // Clears the `frames_` set.
   void ClearFrames();
@@ -176,8 +181,6 @@ class ExtensionMessagePort : public MessagePort {
   // Used in IncrementLazyKeepaliveCount
   ExtensionHost* background_host_ptr_ = nullptr;
   std::unique_ptr<FrameTracker> frame_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMessagePort);
 };
 
 }  // namespace extensions

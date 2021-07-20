@@ -29,7 +29,11 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 
+namespace extensions {
+
 namespace {
+
+using PassKey = base::PassKey<ExtensionMessagePort>;
 
 bool IsExtensionMessageSupported() {
   if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled())
@@ -107,8 +111,6 @@ RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(MessagePortStatePerRenderDocument)
 
 }  // namespace
 
-namespace extensions {
-
 const char kReceivingEndDoesntExistError[] =
     // TODO(lazyboy): Test these in service worker implementation.
     "Could not establish connection. Receiving end does not exist.";
@@ -118,7 +120,7 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
                                            public ProcessManagerObserver {
  public:
   explicit FrameTracker(ExtensionMessagePort* port) : port_(port) {}
-  ~FrameTracker() override {}
+  ~FrameTracker() override = default;
 
   void TrackExtensionProcessFrames() {
     pm_observation_.Observe(ProcessManager::Get(port_->browser_context_));
@@ -179,8 +181,6 @@ ExtensionMessagePort::ExtensionMessagePort(
       port_id_(port_id),
       extension_id_(extension_id),
       browser_context_(rfh->GetProcess()->GetBrowserContext()),
-      did_create_port_(false),
-      background_host_ptr_(nullptr),
       frame_tracker_(new FrameTracker(this)) {
   content::WebContents* tab = content::WebContents::FromRenderFrameHost(rfh);
   CHECK(tab);
@@ -204,8 +204,8 @@ std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForExtension(
     const PortId& port_id,
     const ExtensionId& extension_id,
     content::BrowserContext* browser_context) {
-  std::unique_ptr<ExtensionMessagePort> port(new ExtensionMessagePort(
-      channel_delegate, port_id, extension_id, browser_context));
+  auto port = std::make_unique<ExtensionMessagePort>(
+      channel_delegate, port_id, extension_id, browser_context, PassKey());
   port->frame_tracker_ = std::make_unique<FrameTracker>(port.get());
   port->frame_tracker_->TrackExtensionProcessFrames();
 
@@ -225,16 +225,6 @@ std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForExtension(
   return port;
 }
 
-ExtensionMessagePort::ExtensionMessagePort(
-    base::WeakPtr<ChannelDelegate> channel_delegate,
-    const PortId& port_id,
-    const ExtensionId& extension_id,
-    content::BrowserContext* browser_context)
-    : weak_channel_delegate_(channel_delegate),
-      port_id_(port_id),
-      extension_id_(extension_id),
-      browser_context_(browser_context) {}
-
 // static
 std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForEndpoint(
     base::WeakPtr<ChannelDelegate> channel_delegate,
@@ -248,13 +238,25 @@ std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForEndpoint(
   }
   // NOTE: We don't want all the workers within the extension, so we cannot
   // reuse other constructor from above.
-  std::unique_ptr<ExtensionMessagePort> port(new ExtensionMessagePort(
-      channel_delegate, port_id, extension_id, endpoint.browser_context()));
+  auto port = std::make_unique<ExtensionMessagePort>(
+      channel_delegate, port_id, extension_id, endpoint.browser_context(),
+      PassKey());
   port->frame_tracker_ = std::make_unique<FrameTracker>(port.get());
   port->frame_tracker_->TrackExtensionProcessFrames();
   port->RegisterWorker(endpoint.GetWorkerId());
   return port;
 }
+
+ExtensionMessagePort::ExtensionMessagePort(
+    base::WeakPtr<ChannelDelegate> channel_delegate,
+    const PortId& port_id,
+    const ExtensionId& extension_id,
+    content::BrowserContext* browser_context,
+    PassKey)
+    : weak_channel_delegate_(channel_delegate),
+      port_id_(port_id),
+      extension_id_(extension_id),
+      browser_context_(browser_context) {}
 
 ExtensionMessagePort::~ExtensionMessagePort() {
   ClearFrames();
