@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
@@ -349,7 +350,6 @@ void MenuScrollViewContainer::CreateBorder() {
 
 void MenuScrollViewContainer::CreateDefaultBorder() {
   DCHECK_EQ(arrow_, BubbleBorder::NONE);
-  bubble_border_ = nullptr;
 
   const MenuConfig& menu_config = MenuConfig::instance();
   corner_radius_ = menu_config.CornerRadiusForMenu(
@@ -386,14 +386,14 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
                             ? GetNativeTheme()->GetSystemColor(
                                   ui::NativeTheme::kColorId_MenuBackgroundColor)
                             : gfx::kPlaceholderColor;
-  bubble_border_ =
-      new BubbleBorder(arrow_, BubbleBorder::STANDARD_SHADOW, color);
+  auto bubble_border = std::make_unique<BubbleBorder>(
+      arrow_, BubbleBorder::STANDARD_SHADOW, color);
   if (content_view_->GetMenuItem()
           ->GetMenuController()
           ->use_touchable_layout()) {
     const MenuConfig& menu_config = MenuConfig::instance();
-    bubble_border_->SetCornerRadius(menu_config.touchable_corner_radius);
-    bubble_border_->set_md_shadow_elevation(
+    bubble_border->SetCornerRadius(menu_config.touchable_corner_radius);
+    bubble_border->set_md_shadow_elevation(
         menu_config.touchable_menu_shadow_elevation);
     gfx::Insets insets(menu_config.vertical_touchable_menu_item_padding, 0);
     if (GetFootnote())
@@ -401,10 +401,10 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
     scroll_view_->GetContents()->SetBorder(CreateEmptyBorder(insets));
   }
 
-  corner_radius_ = bubble_border_->corner_radius();
+  corner_radius_ = bubble_border->corner_radius();
 
-  SetBorder(std::unique_ptr<Border>(bubble_border_));
-  SetBackground(std::make_unique<BubbleBackground>(bubble_border_));
+  SetBackground(std::make_unique<BubbleBackground>(bubble_border.get()));
+  SetBorder(std::move(bubble_border));
 }
 
 BubbleBorder::Arrow MenuScrollViewContainer::BubbleBorderTypeFromAnchor(

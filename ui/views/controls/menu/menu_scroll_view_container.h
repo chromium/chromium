@@ -78,9 +78,6 @@ class MenuScrollViewContainer : public View {
   // If set the currently set border is a bubble border.
   BubbleBorder::Arrow arrow_ = BubbleBorder::NONE;
 
-  // Weak reference to the currently set border.
-  BubbleBorder* bubble_border_ = nullptr;
-
   // Corner radius of the background.
   int corner_radius_ = 0;
 
