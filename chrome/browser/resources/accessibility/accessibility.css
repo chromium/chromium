@@ -7,8 +7,7 @@
 body {
   font-family: Arial, sans-serif;
   font-size: 12px;
-  margin: 10px 20px;
-  min-width: 47em;
+  margin: 10px 0 10px 20px;
   padding-block-end: 65px;
 }
 
@@ -25,11 +24,13 @@ img {
 }
 
 .url {
-  color: #696969;
+  color: #000;
+  opacity: 0.60;
 }
 
 p {
-  line-height: 1.2em;
+  line-height: 1.5em;
+  margin-inline-end: 20px;
 }
 
 .columns {
@@ -53,8 +54,9 @@ p {
 }
 
 .secondary {
-  color: #696969;
-  margin: 0 0 12px 32px;
+  color: #000;
+  margin: 0 20px 12px 32px;
+  opacity: 0.60;
 }
 
 .hidden {
@@ -74,9 +76,35 @@ label {
 }
 
 label.disabled {
-  color: #696969;
+  color: #000;
+  opacity: 0.38;
 }
 
-label input[type='checkbox'] {
+input[type='checkbox'] {
   margin-inline-end: 6px;
+}
+
+/* For mobile phones we want to use a one column layout */
+@media only screen and (max-width: 768px) {
+  .column {
+    flex-basis: 100%;
+  }
+
+  .columns {
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+
+  body {
+    font-size: 15px;
+  }
+
+  pre div {
+    margin-bottom: .5em;
+  }
+
+  input[type='checkbox'] {
+    height: 16px;
+    width: 16px;
+  }
 }

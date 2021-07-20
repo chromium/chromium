@@ -7,6 +7,7 @@ found in the LICENSE file.
 -->
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Accessibility Internals</title>
   <link rel="stylesheet" href="chrome://resources/css/chrome_shared.css">
   <link rel="stylesheet" href="accessibility.css">
@@ -112,11 +113,11 @@ found in the LICENSE file.
     <div class="column">
       <h2>Accessibility tree viewing options:</h2>
       <div class="checkbox-row">
-        <span class="checkbox-wrapper">
-          <input type="checkbox" id="internal"
-                 aria-describedby="internal_secondary">
-        </span>
-        <label for="internal">
+        <label>
+          <span class="checkbox-wrapper">
+            <input type="checkbox" id="internal"
+                   aria-describedby="internal_secondary">
+          </span>
           Internal
         </label>
       </div>
@@ -190,6 +191,7 @@ found in the LICENSE file.
       Set a delay, in milliseconds, before getting the native accessibility
       tree:
     </label>
+    <div></div>
     <input id="native-ui-delay" type="number" value="0"> ms
   </div>
 
