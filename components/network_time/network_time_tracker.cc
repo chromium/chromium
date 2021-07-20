@@ -13,8 +13,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -169,7 +168,7 @@ double RandomQueryProbability() {
 }
 
 void RecordFetchValidHistogram(bool valid) {
-  UMA_HISTOGRAM_BOOLEAN("NetworkTimeTracker.UpdateTimeFetchValid", valid);
+  LOCAL_HISTOGRAM_BOOLEAN("NetworkTimeTracker.UpdateTimeFetchValid", valid);
 }
 
 }  // namespace
@@ -359,7 +358,7 @@ NetworkTimeTracker::NetworkTimeResult NetworkTimeTracker::GetNetworkTime(
   base::TimeDelta time_delta = clock_->Now() - time_at_last_measurement_;
   if (time_delta.InMilliseconds() < 0) {  // Has wall clock run backward?
     DVLOG(1) << "Discarding network time due to wall clock running backward";
-    UMA_HISTOGRAM_CUSTOM_TIMES(
+    LOCAL_HISTOGRAM_CUSTOM_TIMES(
         "NetworkTimeTracker.WallClockRanBackwards", time_delta.magnitude(),
         base::TimeDelta::FromSeconds(1), base::TimeDelta::FromDays(7), 50);
     network_time_at_last_measurement_ = base::Time();
@@ -378,11 +377,11 @@ NetworkTimeTracker::NetworkTimeResult NetworkTimeTracker::GetNetworkTime(
     // without causing the buckets to change and making data from
     // old/new clients incompatible.
     if (divergence.InMilliseconds() < 0) {
-      UMA_HISTOGRAM_CUSTOM_TIMES(
+      LOCAL_HISTOGRAM_CUSTOM_TIMES(
           "NetworkTimeTracker.ClockDivergence.Negative", divergence.magnitude(),
           base::TimeDelta::FromSeconds(60), base::TimeDelta::FromDays(7), 50);
     } else {
-      UMA_HISTOGRAM_CUSTOM_TIMES(
+      LOCAL_HISTOGRAM_CUSTOM_TIMES(
           "NetworkTimeTracker.ClockDivergence.Positive", divergence.magnitude(),
           base::TimeDelta::FromSeconds(60), base::TimeDelta::FromDays(7), 50);
     }
@@ -501,8 +500,10 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
     DVLOG(1) << "fetch failed code=" << response_code;
     // The error code is negated because net errors are negative, but
     // the corresponding histogram enum is positive.
-    base::UmaHistogramSparse("NetworkTimeTracker.UpdateTimeFetchFailed",
-                             -time_fetcher_->NetError());
+    const int kPositiveError = -time_fetcher_->NetError();
+    DCHECK_LE(kPositiveError, 10000);
+    LOCAL_HISTOGRAM_COUNTS_10000("NetworkTimeTracker.UpdateTimeFetchFailed",
+                                 kPositiveError);
     return false;
   }
 
@@ -547,12 +548,12 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
   // Record histograms for the latency of the time query and the time delta
   // between time fetches.
   base::TimeDelta latency = tick_clock_->NowTicks() - fetch_started_;
-  UMA_HISTOGRAM_TIMES("NetworkTimeTracker.TimeQueryLatency", latency);
+  LOCAL_HISTOGRAM_TIMES("NetworkTimeTracker.TimeQueryLatency", latency);
   if (!last_fetched_time_.is_null()) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("NetworkTimeTracker.TimeBetweenFetches",
-                               current_time - last_fetched_time_,
-                               base::TimeDelta::FromHours(1),
-                               base::TimeDelta::FromDays(7), 50);
+    LOCAL_HISTOGRAM_CUSTOM_TIMES("NetworkTimeTracker.TimeBetweenFetches",
+                                 current_time - last_fetched_time_,
+                                 base::TimeDelta::FromHours(1),
+                                 base::TimeDelta::FromDays(7), 50);
   }
   last_fetched_time_ = current_time;
 
