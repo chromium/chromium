@@ -294,8 +294,16 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 }
 
+// TODO(crbug.com/1230771) Flaky on Linux-ozone
+#if defined(OS_LINUX) && defined(USE_OZONE)
+#define MAYBE_TabEntersPresentationModeFromWindowed \
+  DISABLED_TabEntersPresentationModeFromWindowed
+#else
+#define MAYBE_TabEntersPresentationModeFromWindowed \
+  TabEntersPresentationModeFromWindowed
+#endif
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       TabEntersPresentationModeFromWindowed) {
+                       MAYBE_TabEntersPresentationModeFromWindowed) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   AddTabAtIndex(0, GURL(url::kAboutBlankURL), PAGE_TRANSITION_TYPED);
