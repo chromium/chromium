@@ -27,6 +27,16 @@
 namespace chromeos {
 namespace network_diagnostics {
 
+namespace {
+
+mojom::RoutineResultPtr CreateResult(mojom::RoutineVerdict verdict,
+                                     mojom::RoutineProblemsPtr problems) {
+  return mojom::RoutineResult::New(verdict, std::move(problems),
+                                   base::Time::Now());
+}
+
+}  // namespace
+
 NetworkDiagnostics::NetworkDiagnostics(
     chromeos::DebugDaemonClient* debug_daemon_client) {
   DCHECK(debug_daemon_client);
@@ -219,6 +229,7 @@ void NetworkDiagnostics::VideoConferencing(
     routine =
         std::make_unique<VideoConferencingRoutine>(stun_server_name.value());
   }
+
   auto* const routine_ptr = routine.get();
   // RunRoutine() takes a lambda callback that takes ownership of the routine.
   // This ensures that the routine stays alive when it makes asynchronous mojo
@@ -231,6 +242,152 @@ void NetworkDiagnostics::VideoConferencing(
         std::move(callback).Run(verdict, problems, support_details);
       },
       std::move(routine), std::move(callback)));
+}
+
+void NetworkDiagnostics::RunLanConnectivity(
+    RunLanConnectivityCallback callback) {
+  LanConnectivity(base::BindOnce(
+      [](RunLanConnectivityCallback callback, mojom::RoutineVerdict verdict) {
+        std::vector<mojom::LanConnectivityProblem> problems;
+        if (verdict == mojom::RoutineVerdict::kProblem)
+          problems.push_back(mojom::LanConnectivityProblem::kNoLanConnectivity);
+
+        std::move(callback).Run(CreateResult(
+            verdict, mojom::RoutineProblems::NewLanConnectivityProblems(
+                         std::move(problems))));
+      },
+      std::move(callback)));
+}
+
+void NetworkDiagnostics::RunSignalStrength(RunSignalStrengthCallback callback) {
+  SignalStrength(base::BindOnce(
+      [](RunSignalStrengthCallback callback, mojom::RoutineVerdict verdict,
+         const std::vector<mojom::SignalStrengthProblem>& problems) {
+        std::move(callback).Run(CreateResult(
+            verdict, mojom::RoutineProblems::NewSignalStrengthProblems(
+                         std::move(problems))));
+      },
+      std::move(callback)));
+}
+
+void NetworkDiagnostics::RunGatewayCanBePinged(
+    RunGatewayCanBePingedCallback callback) {
+  GatewayCanBePinged(base::BindOnce(
+      [](RunGatewayCanBePingedCallback callback, mojom::RoutineVerdict verdict,
+         const std::vector<mojom::GatewayCanBePingedProblem>& problems) {
+        std::move(callback).Run(CreateResult(
+            verdict, mojom::RoutineProblems::NewGatewayCanBePingedProblems(
+                         std::move(problems))));
+      },
+      std::move(callback)));
+}
+
+void NetworkDiagnostics::RunHttpFirewall(RunHttpFirewallCallback callback) {
+  HttpFirewall(base::BindOnce(
+      [](RunHttpFirewallCallback callback, mojom::RoutineVerdict verdict,
+         const std::vector<mojom::HttpFirewallProblem>& problems) {
+        std::move(callback).Run(CreateResult(
+            verdict, mojom::RoutineProblems::NewHttpFirewallProblems(
+                         std::move(problems))));
+      },
+      std::move(callback)));
+}
+
+void NetworkDiagnostics::RunHttpsFirewall(RunHttpsFirewallCallback callback) {
+  HttpsFirewall(base::BindOnce(
+      [](RunHttpsFirewallCallback callback, mojom::RoutineVerdict verdict,
+         const std::vector<mojom::HttpsFirewallProblem>& problems) {
+        std::move(callback).Run(CreateResult(
+            verdict, mojom::RoutineProblems::NewHttpsFirewallProblems(
+                         std::move(problems))));
+      },
+      std::move(callback)));
+}
+
+void NetworkDiagnostics::RunHasSecureWiFiConnection(
+    RunHasSecureWiFiConnectionCallback callback) {
+  HasSecureWiFiConnection(base::BindOnce(
+      [](RunHasSecureWiFiConnectionCallback callback,
+         mojom::RoutineVerdict verdict,
+         const std::vector<mojom::HasSecureWiFiConnectionProblem>& problems) {
+        std::move(callback).Run(CreateResult(
+            verdict, mojom::RoutineProblems::NewHasSecureWifiConnectionProblems(
+                         std::move(problems))));
+      },
+      std::move(callback)));
+}
+
+void NetworkDiagnostics::RunDnsResolverPresent(
+    RunDnsResolverPresentCallback callback) {
+  DnsResolverPresent(base::BindOnce(
+      [](RunDnsResolverPresentCallback callback, mojom::RoutineVerdict verdict,
+         const std::vector<mojom::DnsResolverPresentProblem>& problems) {
+        std::move(callback).Run(CreateResult(
+            verdict, mojom::RoutineProblems::NewDnsResolverPresentProblems(
+                         std::move(problems))));
+      },
+      std::move(callback)));
+}
+
+void NetworkDiagnostics::RunDnsLatency(RunDnsLatencyCallback callback) {
+  DnsLatency(base::BindOnce(
+      [](RunDnsLatencyCallback callback, mojom::RoutineVerdict verdict,
+         const std::vector<mojom::DnsLatencyProblem>& problems) {
+        std::move(callback).Run(
+            CreateResult(verdict, mojom::RoutineProblems::NewDnsLatencyProblems(
+                                      std::move(problems))));
+      },
+      std::move(callback)));
+}
+
+void NetworkDiagnostics::RunDnsResolution(RunDnsResolutionCallback callback) {
+  DnsResolution(base::BindOnce(
+      [](RunDnsResolutionCallback callback, mojom::RoutineVerdict verdict,
+         const std::vector<mojom::DnsResolutionProblem>& problems) {
+        std::move(callback).Run(CreateResult(
+            verdict, mojom::RoutineProblems::NewDnsResolutionProblems(
+                         std::move(problems))));
+      },
+      std::move(callback)));
+}
+
+void NetworkDiagnostics::RunCaptivePortal(RunCaptivePortalCallback callback) {
+  CaptivePortal(base::BindOnce(
+      [](RunCaptivePortalCallback callback, mojom::RoutineVerdict verdict,
+         const std::vector<mojom::CaptivePortalProblem>& problems) {
+        std::move(callback).Run(CreateResult(
+            verdict, mojom::RoutineProblems::NewCaptivePortalProblems(
+                         std::move(problems))));
+      },
+      std::move(callback)));
+}
+
+void NetworkDiagnostics::RunHttpsLatency(RunHttpsLatencyCallback callback) {
+  HttpsLatency(base::BindOnce(
+      [](RunHttpsLatencyCallback callback, mojom::RoutineVerdict verdict,
+         const std::vector<mojom::HttpsLatencyProblem>& problems) {
+        std::move(callback).Run(CreateResult(
+            verdict, mojom::RoutineProblems::NewHttpsLatencyProblems(
+                         std::move(problems))));
+      },
+      std::move(callback)));
+}
+
+void NetworkDiagnostics::RunVideoConferencing(
+    const absl::optional<std::string>& stun_server_name,
+    RunVideoConferencingCallback callback) {
+  VideoConferencing(
+      stun_server_name,
+      base::BindOnce(
+          [](RunVideoConferencingCallback callback,
+             mojom::RoutineVerdict verdict,
+             const std::vector<mojom::VideoConferencingProblem>& problems,
+             const absl::optional<std::string>& support_details) {
+            std::move(callback).Run(CreateResult(
+                verdict, mojom::RoutineProblems::NewVideoConferencingProblems(
+                             std::move(problems))));
+          },
+          std::move(callback)));
 }
 
 }  // namespace network_diagnostics

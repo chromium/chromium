@@ -258,6 +258,55 @@ class MockNetworkDiagnosticsRoutines : public NetworkDiagnosticsRoutines {
               (const absl::optional<std::string>&,
                NetworkDiagnosticsRoutines::VideoConferencingCallback),
               (override));
+  MOCK_METHOD(void,
+              RunLanConnectivity,
+              (NetworkDiagnosticsRoutines::RunLanConnectivityCallback),
+              (override));
+  MOCK_METHOD(void,
+              RunSignalStrength,
+              (NetworkDiagnosticsRoutines::RunSignalStrengthCallback),
+              (override));
+  MOCK_METHOD(void,
+              RunGatewayCanBePinged,
+              (NetworkDiagnosticsRoutines::RunGatewayCanBePingedCallback),
+              (override));
+  MOCK_METHOD(void,
+              RunHasSecureWiFiConnection,
+              (NetworkDiagnosticsRoutines::RunHasSecureWiFiConnectionCallback),
+              (override));
+  MOCK_METHOD(void,
+              RunDnsResolverPresent,
+              (NetworkDiagnosticsRoutines::RunDnsResolverPresentCallback),
+              (override));
+  MOCK_METHOD(void,
+              RunDnsLatency,
+              (NetworkDiagnosticsRoutines::RunDnsLatencyCallback),
+              (override));
+  MOCK_METHOD(void,
+              RunDnsResolution,
+              (NetworkDiagnosticsRoutines::RunDnsResolutionCallback),
+              (override));
+  MOCK_METHOD(void,
+              RunCaptivePortal,
+              (NetworkDiagnosticsRoutines::RunCaptivePortalCallback),
+              (override));
+  MOCK_METHOD(void,
+              RunHttpFirewall,
+              (NetworkDiagnosticsRoutines::RunHttpFirewallCallback),
+              (override));
+  MOCK_METHOD(void,
+              RunHttpsFirewall,
+              (NetworkDiagnosticsRoutines::RunHttpsFirewallCallback),
+              (override));
+  MOCK_METHOD(void,
+              RunHttpsLatency,
+              (NetworkDiagnosticsRoutines::RunHttpsLatencyCallback),
+              (override));
+  MOCK_METHOD(void,
+              RunVideoConferencing,
+              (const absl::optional<std::string>&,
+               NetworkDiagnosticsRoutines::RunVideoConferencingCallback),
+              (override));
 
   mojo::PendingRemote<NetworkDiagnosticsRoutines> pending_remote() {
     if (receiver_.is_bound()) {

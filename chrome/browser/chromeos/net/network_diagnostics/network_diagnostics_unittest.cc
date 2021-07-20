@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
+#include "base/test/bind.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
@@ -371,6 +372,92 @@ TEST_F(NetworkDiagnosticsTest, DnsResolverPresentReachability) {
   EXPECT_EQ(received_verdict, mojom::RoutineVerdict::kNoProblem);
   std::vector<mojom::DnsResolverPresentProblem> no_problems;
   EXPECT_EQ(received_problems, no_problems);
+}
+
+// Test whether NetworkDiagnostics can successfully invoke the
+// LanConnectivity routine through RunLanConnectivity.
+TEST_F(NetworkDiagnosticsTest, RunLanConnectivityReachability) {
+  base::RunLoop run_loop;
+  mojom::RoutineResultPtr result;
+  network_diagnostics()->RunLanConnectivity(
+      base::BindLambdaForTesting([&](mojom::RoutineResultPtr response) {
+        result = std::move(response);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  EXPECT_EQ(result->verdict, mojom::RoutineVerdict::kNoProblem);
+  std::vector<mojom::LanConnectivityProblem> no_problems;
+  EXPECT_EQ(result->problems->get_lan_connectivity_problems(), no_problems);
+}
+
+// Test whether NetworkDiagnostics can successfully invoke the
+// SignalStrength routine through RunSignalStrength.
+TEST_F(NetworkDiagnosticsTest, RunSignalStrengthReachability) {
+  base::RunLoop run_loop;
+  mojom::RoutineResultPtr result;
+  network_diagnostics()->RunSignalStrength(
+      base::BindLambdaForTesting([&](mojom::RoutineResultPtr response) {
+        result = std::move(response);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  EXPECT_EQ(result->verdict, mojom::RoutineVerdict::kNoProblem);
+  std::vector<mojom::SignalStrengthProblem> no_problems;
+  EXPECT_EQ(result->problems->get_signal_strength_problems(), no_problems);
+}
+
+// Test whether NetworkDiagnostics can successfully invoke the
+// GatewayCanBePinged routine through RunGatewayCanBePinged.
+TEST_F(NetworkDiagnosticsTest, RunGatewayCanBePingedReachability) {
+  test_debug_daemon_client()->set_icmp_output(kFakeValidICMPOutput);
+  base::RunLoop run_loop;
+  mojom::RoutineResultPtr result;
+  network_diagnostics()->RunGatewayCanBePinged(
+      base::BindLambdaForTesting([&](mojom::RoutineResultPtr response) {
+        result = std::move(response);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  EXPECT_EQ(result->verdict, mojom::RoutineVerdict::kNoProblem);
+  std::vector<mojom::GatewayCanBePingedProblem> no_problems;
+  EXPECT_EQ(result->problems->get_gateway_can_be_pinged_problems(),
+            no_problems);
+}
+
+// Test whether NetworkDiagnostics can successfully invoke the
+// HasSecureWiFiConnection routine through RuneHasSecureWiFiConnection.
+TEST_F(NetworkDiagnosticsTest, RunHasSecureWiFiConnectionReachability) {
+  base::RunLoop run_loop;
+  mojom::RoutineResultPtr result;
+  network_diagnostics()->RunHasSecureWiFiConnection(
+      base::BindLambdaForTesting([&](mojom::RoutineResultPtr response) {
+        result = std::move(response);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  EXPECT_EQ(result->verdict, mojom::RoutineVerdict::kNoProblem);
+  std::vector<mojom::HasSecureWiFiConnectionProblem> no_problems;
+  EXPECT_EQ(result->problems->get_has_secure_wifi_connection_problems(),
+            no_problems);
+}
+
+// Test whether NetworkDiagnostics can successfully invoke the
+// DnsResolverPresent routine through RunDnsResolverPresent.
+TEST_F(NetworkDiagnosticsTest, RunDnsResolverPresentReachability) {
+  // Attach nameservers to the IPConfigs.
+  SetUpNameServers(kWellFormedDnsServers);
+
+  base::RunLoop run_loop;
+  mojom::RoutineResultPtr result;
+  network_diagnostics()->RunDnsResolverPresent(
+      base::BindLambdaForTesting([&](mojom::RoutineResultPtr response) {
+        result = std::move(response);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  EXPECT_EQ(result->verdict, mojom::RoutineVerdict::kNoProblem);
+  std::vector<mojom::DnsResolverPresentProblem> no_problems;
+  EXPECT_EQ(result->problems->get_dns_resolver_present_problems(), no_problems);
 }
 
 // TODO(khegde): Test whether NetworkDiagnostics can successfully invoke the

@@ -44,6 +44,20 @@ class NetworkDiagnostics : public mojom::NetworkDiagnosticsRoutines {
   void HttpsLatency(HttpsLatencyCallback callback) override;
   void VideoConferencing(const absl::optional<std::string>& stun_server_name,
                          VideoConferencingCallback callback) override;
+  void RunLanConnectivity(RunLanConnectivityCallback callback) override;
+  void RunSignalStrength(RunSignalStrengthCallback callback) override;
+  void RunGatewayCanBePinged(RunGatewayCanBePingedCallback callback) override;
+  void RunHttpFirewall(RunHttpFirewallCallback callback) override;
+  void RunHttpsFirewall(RunHttpsFirewallCallback callback) override;
+  void RunHasSecureWiFiConnection(
+      RunHasSecureWiFiConnectionCallback callback) override;
+  void RunDnsResolverPresent(RunDnsResolverPresentCallback callback) override;
+  void RunDnsLatency(RunDnsLatencyCallback callback) override;
+  void RunDnsResolution(RunDnsResolutionCallback callback) override;
+  void RunCaptivePortal(RunCaptivePortalCallback callback) override;
+  void RunHttpsLatency(RunHttpsLatencyCallback callback) override;
+  void RunVideoConferencing(const absl::optional<std::string>& stun_server_name,
+                            RunVideoConferencingCallback callback) override;
 
  private:
   // An unowned pointer to the DebugDaemonClient instance.

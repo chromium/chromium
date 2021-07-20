@@ -28,11 +28,9 @@ the copy in the Chromium OS repo:
 
 After a routine has completed running, it provides:
 1. A [RoutineVerdict].
-2. A list of problems detected by the routine.
-  1. The LanConnectivity routine does not provide a list of problems. It only
-     provides a `RoutineVerdict`.
-  2. If a routine does not run, the associated list of problems (if provided) is
-     empty.
+1. A list of routine specific problems detected.
+    * If a routine does not run, the associated list of problems is empty.
+1. A timestamp of when the routine completed.
 
 ## Breaking down the routines by connectivity level
 

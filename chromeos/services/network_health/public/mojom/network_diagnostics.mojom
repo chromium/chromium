@@ -7,6 +7,8 @@
 
 module chromeos.network_diagnostics.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+
 // Each routine can result in one of the possible verdicts.
 [Extensible]
 enum RoutineVerdict {
@@ -16,6 +18,12 @@ enum RoutineVerdict {
   kProblem,
   // Routine has not been run.
   kNotRun,
+};
+
+// Problems related to the LanConnectivity routine.
+[Extensible]
+enum LanConnectivityProblem {
+  kNoLanConnectivity,
 };
 
 // Problems related to the SignalStrength routine.
@@ -138,64 +146,127 @@ enum VideoConferencingProblem {
   kMediaFailure,
 };
 
+// Union of all possible routine problems. See each problem enum definition for
+// more details.
+union RoutineProblems {
+  array<LanConnectivityProblem> lan_connectivity_problems;
+  array<SignalStrengthProblem> signal_strength_problems;
+  array<GatewayCanBePingedProblem> gateway_can_be_pinged_problems;
+  array<HasSecureWiFiConnectionProblem> has_secure_wifi_connection_problems;
+  array<DnsResolverPresentProblem> dns_resolver_present_problems;
+  array<DnsLatencyProblem> dns_latency_problems;
+  array<DnsResolutionProblem> dns_resolution_problems;
+  array<CaptivePortalProblem> captive_portal_problems;
+  array<HttpFirewallProblem> http_firewall_problems;
+  array<HttpsFirewallProblem> https_firewall_problems;
+  array<HttpsLatencyProblem> https_latency_problems;
+  array<VideoConferencingProblem> video_conferencing_problems;
+};
+
+// A single routine's result.
+struct RoutineResult {
+  // The result of the routine.
+  RoutineVerdict verdict;
+  // The list of detected problems, if any.
+  RoutineProblems problems;
+  // The timestamp when the routine was completed.
+  mojo_base.mojom.Time timestamp;
+};
+
 // This interface is to be used by any clients that need to run specific
 // network-related diagnostics. Expected clients of this interface are
 // NetworkHealth, cros_healthd, and a connectivity diagnostics Web UI (to name
 // a few). The bound implementation is intended to live in the browser process.
 interface NetworkDiagnosticsRoutines {
+  // DEPRECATED: See RunLanConnectivity
+  LanConnectivity() => (RoutineVerdict verdict);
+
+  // DEPRECATED: See RunSignalStrength
+  SignalStrength() => (RoutineVerdict verdict,
+      array<SignalStrengthProblem> problems);
+
+  // DEPRECATED: See RunGatewayCanBePinged
+  GatewayCanBePinged() => (RoutineVerdict verdict,
+      array<GatewayCanBePingedProblem> problems);
+
+  // DEPRECATED: See RunHasSecureWiFiConnection
+  HasSecureWiFiConnection() => (RoutineVerdict verdict,
+      array<HasSecureWiFiConnectionProblem> problems);
+
+  // DEPRECATED: See RunDnsResolverPresent
+  DnsResolverPresent() => (RoutineVerdict verdict,
+      array<DnsResolverPresentProblem> problems);
+
+  // DEPRECATED: See RunDnsLatency
+  DnsLatency() => (RoutineVerdict verdict,
+      array<DnsLatencyProblem> problem);
+
+  // DEPRECATED: See RunDnsResolution
+  DnsResolution() => (RoutineVerdict verdict,
+      array<DnsResolutionProblem> problems);
+
+  // DEPRECATED: See RunCaptivePortal
+  CaptivePortal() => (RoutineVerdict verdict,
+      array<CaptivePortalProblem> problems);
+
+  // DEPRECATED: See RunHttpFirewall
+  HttpFirewall() => (RoutineVerdict verdict,
+      array<HttpFirewallProblem> problems);
+
+  // DEPRECATED: See RunHttpsFirewall
+  HttpsFirewall() => (RoutineVerdict verdict,
+      array<HttpsFirewallProblem> problems);
+
+  // DEPRECATED: See RunHttpsLatency
+  HttpsLatency() => (RoutineVerdict verdict,
+      array<HttpsLatencyProblem> problems);
+
+  // DEPRECATED: See RunVideoConferencing
+  VideoConferencing(string? stun_server_hostname) => (RoutineVerdict verdict,
+      array<VideoConferencingProblem> problems, string? support_details);
+
   // Tests whether the device is connected to a LAN. It is possible that the
   // device may be trapped in a captive portal yet pass this test successfully.
   // Captive portal checks are done separately and are outside of the scope of
   // this routine. See CaptivePortal() below.
-  LanConnectivity() => (RoutineVerdict verdict);
+  RunLanConnectivity() => (RoutineResult result);
 
   // Tests whether there is an acceptable signal strength on wireless networks.
-  SignalStrength() => (RoutineVerdict verdict,
-      array<SignalStrengthProblem> problems);
+  RunSignalStrength() => (RoutineResult result);
 
   // Tests whether the gateway of connected networks is pingable.
-  GatewayCanBePinged() => (RoutineVerdict verdict,
-      array<GatewayCanBePingedProblem> problems);
+  RunGatewayCanBePinged() => (RoutineResult result);
 
   // Tests whether the WiFi connection is secure. Note that if WiFi is not
   // connected, the routine will result in a |kNotRun| verdict.
-  HasSecureWiFiConnection() => (RoutineVerdict verdict,
-      array<HasSecureWiFiConnectionProblem> problems);
+  RunHasSecureWiFiConnection() => (RoutineResult result);
 
   // Tests whether a DNS resolver is available to the browser.
-  DnsResolverPresent() => (RoutineVerdict verdict,
-      array<DnsResolverPresentProblem> problems);
+  RunDnsResolverPresent() => (RoutineResult result);
 
   // Tests whether the DNS latency is below an acceptable threshold.
-  DnsLatency() => (RoutineVerdict verdict,
-      array<DnsLatencyProblem> problem);
+  RunDnsLatency() => (RoutineResult result);
 
   // Tests whether a DNS resolution can be completed successfully.
-  DnsResolution() => (RoutineVerdict verdict,
-      array<DnsResolutionProblem> problems);
+  RunDnsResolution() => (RoutineResult result);
 
   // Tests whether the internet connection is behind a captive portal.
-  CaptivePortal() => (RoutineVerdict verdict,
-      array<CaptivePortalProblem> problems);
+  RunCaptivePortal() => (RoutineResult result);
 
   // Tests whether a firewall is blocking HTTP port 80.
-  HttpFirewall() => (RoutineVerdict verdict,
-      array<HttpFirewallProblem> problems);
+  RunHttpFirewall() => (RoutineResult result);
 
   // Tests whether a firewall is blocking HTTPS port 443.
-  HttpsFirewall() => (RoutineVerdict verdict,
-      array<HttpsFirewallProblem> problems);
+  RunHttpsFirewall() => (RoutineResult result);
 
   // Tests whether the HTTPS latency is within established tolerance levels for
   // the system.
-  HttpsLatency() => (RoutineVerdict verdict,
-      array<HttpsLatencyProblem> problems);
+  RunHttpsLatency() => (RoutineResult result);
 
-  // Tests the device's video conferencing capabalities by testing whether the
+  // Tests the device's video conferencing capabilities by testing whether the
   // device can:
   // (1) Contact either a default or specified STUN server via UDP.
   // (2) Contact either a default or specified STUN server via TCP.
   // (3) Reach common media endpoints.
-  VideoConferencing(string? stun_server_hostname) => (RoutineVerdict verdict,
-      array<VideoConferencingProblem> problems, string? support_details);
+  RunVideoConferencing(string? stun_server_hostname) => (RoutineResult result);
 };
