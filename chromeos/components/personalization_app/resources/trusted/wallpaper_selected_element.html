@@ -63,29 +63,15 @@
     display: flex;
   }
 
-  #wallpaperOptions > div {
-    display: flex;
-    padding: 8px;
-    margin-right: 8px;
-    border: 1px solid var(--google-grey-refresh-300);
-    border-radius: 16px;
-    cursor: pointer;
-  }
-
   #wallpaperOptions .text,
   #collectionOptions .text {
-    margin-left: 8px;
+    margin-inline-start: 8px;
   }
 
-  #wallpaperOptions #fill.selected,
-  #wallpaperOptions #center.selected {
-    color: var(--cros-toggle-color);
-    pointer-events: none;
-  }
-
+  #wallpaperOptions > cr-button,
   #collectionOptions > cr-button {
     padding: 16px;
-    margin-right: 8px;
+    margin-inline-end: 8px;
     border-radius: 16px;
   }
 </style>
@@ -105,16 +91,17 @@
       </dom-repeat>
       <div id="wallpaperOptions">
         <template is="dom-if" if="[[showWallpaperOptions_]]">
-            <div id="fill" data-layout="FILL" on-click="onClickLayoutIcon_"
-                class$="[[computeFillOptionClass_(image_)]]">
-              <!-- TODO(b/178105894) add icon -->
-              <div class="text">[[i18n('fill')]]</div>
-            </div>
-            <div id="center" data-layout="CENTER" on-click="onClickLayoutIcon_"
-                class$="[[computeCenterOptionClass_(image_)]]">
-              <!-- TODO(b/178105894) add icon -->
-              <div class="text">[[i18n('center')]]</div>
-            </div>
+          <cr-button id="fill" data-layout="FILL" on-click="onClickLayoutIcon_"
+              aria-selected$=[[getFillAriaSelected_(image_)]]>
+            <iron-icon icon="[[fillIcon_]]"></iron-icon>
+            <div class="text">[[i18n('fill')]]</div>
+          </cr-button>
+          <cr-button id="center" data-layout="CENTER"
+              on-click="onClickLayoutIcon_"
+              aria-selected$="[[getCenterAriaSelected_(image_)]]">
+            <iron-icon icon="[[centerIcon_]]"></iron-icon>
+            <div class="text">[[i18n('center')]]</div>
+          </cr-button>
         </template>
       </div>
       <div id="collectionOptions">

@@ -150,6 +150,18 @@ export class WallpaperSelected extends WithPersonalizationStore {
         type: String,
         computed: 'computeAriaPressed_(collectionId,dailyRefreshCollectionId_)',
       },
+
+      /** @private */
+      fillIcon_: {
+        type: String,
+        computed: 'computeFillIcon_(image_)',
+      },
+
+      /** @private */
+      centerIcon_: {
+        type: String,
+        computed: 'computeCenterIcon_(image_)',
+      },
     };
   }
 
@@ -250,10 +262,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @return {string}
    * @private
    */
-  computeCenterOptionClass_(image) {
-    if (image.layout === WallpaperLayout.kCenter)
-      return 'selected';
-    return '';
+  getCenterAriaSelected_(image) {
+    return (!!image && image.layout === WallpaperLayout.kCenter).toString();
   }
 
   /**
@@ -261,10 +271,31 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @return {string}
    * @private
    */
-  computeFillOptionClass_(image) {
-    if (image.layout === WallpaperLayout.kCenterCropped)
-      return 'selected';
-    return '';
+  getFillAriaSelected_(image) {
+    return (!!image && image.layout === WallpaperLayout.kCenterCropped)
+        .toString();
+  }
+
+  /**
+   * @param {!chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @return {string}
+   * @private
+   */
+  computeFillIcon_(image) {
+    if (!!image && image.layout === WallpaperLayout.kCenterCropped)
+      return 'personalization:checkmark';
+    return 'personalization:layout_fill';
+  }
+
+  /**
+   * @param {!chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @return {string}
+   * @private
+   */
+  computeCenterIcon_(image) {
+    if (!!image && image.layout === WallpaperLayout.kCenter)
+      return 'personalization:checkmark';
+    return 'personalization:layout_center';
   }
 
   /**
