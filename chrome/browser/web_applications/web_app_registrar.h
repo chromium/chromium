@@ -80,23 +80,22 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Returns the AppIds and URLs of apps externally installed from
   // |install_source|.
-  virtual std::map<AppId, GURL> GetExternallyInstalledApps(
+  std::map<AppId, GURL> GetExternallyInstalledApps(
       ExternalInstallSource install_source) const;
 
   // Returns the app id for |install_url| if the WebAppRegistrar is aware of an
   // externally installed app for it. Note that the |install_url| is the URL
   // that the app was installed from, which may not necessarily match the app's
   // current start URL.
-  virtual absl::optional<AppId> LookupExternalAppId(
-      const GURL& install_url) const;
+  absl::optional<AppId> LookupExternalAppId(const GURL& install_url) const;
 
   // Returns whether the WebAppRegistrar has an externally installed app with
   // |app_id| from any |install_source|.
-  virtual bool HasExternalApp(const AppId& app_id) const;
+  bool HasExternalApp(const AppId& app_id) const;
 
   // Returns whether the WebAppRegistrar has an externally installed app with
   // |app_id| from |install_source|.
-  virtual bool HasExternalAppWithInstallSource(
+  bool HasExternalAppWithInstallSource(
       const AppId& app_id,
       ExternalInstallSource install_source) const;
 
