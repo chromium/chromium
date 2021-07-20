@@ -78,6 +78,11 @@ class StringUploadDataPipeGetter : public mojom::DataPipeGetter {
  public:
   explicit StringUploadDataPipeGetter(const std::string& upload_string)
       : upload_string_(upload_string) {}
+
+  StringUploadDataPipeGetter(const StringUploadDataPipeGetter&) = delete;
+  StringUploadDataPipeGetter& operator=(const StringUploadDataPipeGetter&) =
+      delete;
+
   ~StringUploadDataPipeGetter() override = default;
 
   // Returns a mojo::PendingRemote<mojom::DataPipeGetter> for a new upload
@@ -178,8 +183,6 @@ class StringUploadDataPipeGetter : public mojom::DataPipeGetter {
   size_t write_position_ = 0;
 
   const std::string upload_string_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringUploadDataPipeGetter);
 };
 
 class BodyHandler;
@@ -189,6 +192,10 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
  public:
   SimpleURLLoaderImpl(std::unique_ptr<ResourceRequest> resource_request,
                       const net::NetworkTrafficAnnotationTag& annotation_tag);
+
+  SimpleURLLoaderImpl(const SimpleURLLoaderImpl&) = delete;
+  SimpleURLLoaderImpl& operator=(const SimpleURLLoaderImpl&) = delete;
+
   ~SimpleURLLoaderImpl() override;
 
   // SimpleURLLoader implementation.
@@ -384,8 +391,6 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SimpleURLLoaderImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleURLLoaderImpl);
 };
 
 // Utility class to drive the pipe reading a response body. Can be created on
@@ -396,6 +401,9 @@ class BodyReader {
   class Delegate {
    public:
     Delegate() {}
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
 
     // The specified amount of data was read from the pipe. The Delegate should
     // return net::OK to continue reading, or a value indicating an error if the
@@ -415,16 +423,16 @@ class BodyReader {
     virtual void OnDone(net::Error error, int64_t total_bytes) = 0;
 
    protected:
-    virtual ~Delegate() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
+    virtual ~Delegate() = default;
   };
 
   BodyReader(Delegate* delegate, int64_t max_body_size)
       : delegate_(delegate), max_body_size_(max_body_size) {
     DCHECK_GE(max_body_size_, 0);
   }
+
+  BodyReader(const BodyReader&) = delete;
+  BodyReader& operator=(const BodyReader&) = delete;
 
   // Makes the reader start reading from |body_data_pipe|. May only be called
   // once. The reader will continuously to try to read from the pipe (without
@@ -568,8 +576,6 @@ class BodyReader {
   net::Error pending_error_ = net::OK;
 
   base::WeakPtrFactory<BodyReader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BodyReader);
 };
 
 // Class to drive the pipe for reading the body, handle the results of the body
@@ -583,7 +589,11 @@ class BodyHandler {
               bool want_download_progress)
       : simple_url_loader_(simple_url_loader),
         want_download_progress_(want_download_progress) {}
-  virtual ~BodyHandler() {}
+
+  BodyHandler(const BodyHandler&) = delete;
+  BodyHandler& operator=(const BodyHandler&) = delete;
+
+  virtual ~BodyHandler() = default;
 
   // Called by SimpleURLLoader with the data pipe received from the URLLoader.
   // The BodyHandler is responsible for reading from it and monitoring it for
@@ -621,8 +631,6 @@ class BodyHandler {
  private:
   SimpleURLLoaderImpl* const simple_url_loader_;
   bool const want_download_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(BodyHandler);
 };
 
 // BodyHandler implementation for consuming the response as a string.
@@ -638,7 +646,10 @@ class SaveToStringBodyHandler : public BodyHandler,
         max_body_size_(max_body_size),
         body_as_string_callback_(std::move(body_as_string_callback)) {}
 
-  ~SaveToStringBodyHandler() override {}
+  SaveToStringBodyHandler(const SaveToStringBodyHandler&) = delete;
+  SaveToStringBodyHandler& operator=(const SaveToStringBodyHandler&) = delete;
+
+  ~SaveToStringBodyHandler() override = default;
 
   // BodyHandler implementation:
 
@@ -691,8 +702,6 @@ class SaveToStringBodyHandler : public BodyHandler,
   SimpleURLLoader::BodyAsStringCallback body_as_string_callback_;
 
   std::unique_ptr<BodyReader> body_reader_;
-
-  DISALLOW_COPY_AND_ASSIGN(SaveToStringBodyHandler);
 };
 
 // BodyHandler that discards the response body.
@@ -704,7 +713,10 @@ class HeadersOnlyBodyHandler : public BodyHandler, public BodyReader::Delegate {
       : BodyHandler(simple_url_loader, false /* no download progress */),
         headers_only_callback_(std::move(headers_only_callback)) {}
 
-  ~HeadersOnlyBodyHandler() override {}
+  HeadersOnlyBodyHandler(const HeadersOnlyBodyHandler&) = delete;
+  HeadersOnlyBodyHandler& operator=(const HeadersOnlyBodyHandler&) = delete;
+
+  ~HeadersOnlyBodyHandler() override = default;
 
   // BodyHandler implementation
   void OnStartLoadingResponseBody(
@@ -743,8 +755,6 @@ class HeadersOnlyBodyHandler : public BodyHandler, public BodyReader::Delegate {
 
   SimpleURLLoader::HeadersOnlyCallback headers_only_callback_;
   std::unique_ptr<BodyReader> body_reader_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadersOnlyBodyHandler);
 };
 
 // BodyHandler implementation for saving the response to a file
@@ -775,6 +785,9 @@ class SaveToFileBodyHandler : public BodyHandler {
                                   weak_ptr_factory_.GetWeakPtr())
             : base::RepeatingCallback<void(int64_t)>());
   }
+
+  SaveToFileBodyHandler(const SaveToFileBodyHandler&) = delete;
+  SaveToFileBodyHandler& operator=(const SaveToFileBodyHandler&) = delete;
 
   ~SaveToFileBodyHandler() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -869,6 +882,9 @@ class SaveToFileBodyHandler : public BodyHandler {
       DCHECK(body_handler_task_runner_->RunsTasksInCurrentSequence());
       DCHECK(create_temp_file_ || !path_.empty());
     }
+
+    FileWriter(const FileWriter&) = delete;
+    FileWriter& operator=(const FileWriter&) = delete;
 
     // Starts reading from |body_data_pipe| and writing to the file.
     void StartWriting(mojo::ScopedDataPipeConsumerHandle body_data_pipe,
@@ -1040,8 +1056,6 @@ class SaveToFileBodyHandler : public BodyHandler {
     // True if a file was successfully created. Set to false when the file is
     // destroyed.
     bool owns_file_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(FileWriter);
   };
 
   // Called by FileWriter::Destroy after deleting a partially downloaded file.
@@ -1068,8 +1082,6 @@ class SaveToFileBodyHandler : public BodyHandler {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SaveToFileBodyHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SaveToFileBodyHandler);
 };
 
 // Class to handle streaming data to the consumer as it arrives
@@ -1082,7 +1094,11 @@ class DownloadAsStreamBodyHandler : public BodyHandler,
       : BodyHandler(simple_url_loader, want_download_progress),
         stream_consumer_(stream_consumer) {}
 
-  ~DownloadAsStreamBodyHandler() override {}
+  DownloadAsStreamBodyHandler(const DownloadAsStreamBodyHandler&) = delete;
+  DownloadAsStreamBodyHandler& operator=(const DownloadAsStreamBodyHandler&) =
+      delete;
+
+  ~DownloadAsStreamBodyHandler() override = default;
 
   // BodyHandler implementation:
 
@@ -1153,8 +1169,6 @@ class DownloadAsStreamBodyHandler : public BodyHandler,
   bool in_recursive_call_ = false;
 
   base::WeakPtrFactory<DownloadAsStreamBodyHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadAsStreamBodyHandler);
 };
 
 SimpleURLLoaderImpl::SimpleURLLoaderImpl(
