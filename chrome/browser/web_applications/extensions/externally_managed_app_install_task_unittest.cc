@@ -184,8 +184,13 @@ class TestExternallyManagedAppInstallFinalizer : public InstallFinalizer {
             }));
   }
 
-  void FinalizeUninstallAfterSync(const AppId& app_id,
-                                  UninstallWebAppCallback callback) override {
+  void UninstallFromSyncBeforeRegistryUpdate(
+      std::vector<AppId> web_apps) override {
+    NOTREACHED();
+  }
+  void UninstallFromSyncAfterRegistryUpdate(
+      std::vector<std::unique_ptr<WebApp>> web_apps,
+      RepeatingUninstallCallback callback) override {
     NOTREACHED();
   }
 

@@ -52,17 +52,26 @@ class TestWebAppRegistryController : public SyncInstallDelegate {
   void SetInstallWebAppsAfterSyncDelegate(
       InstallWebAppsAfterSyncDelegate delegate);
 
-  using UninstallWebAppsAfterSyncDelegate = base::RepeatingCallback<void(
-      std::vector<std::unique_ptr<WebApp>> web_apps,
-      RepeatingUninstallCallback callback)>;
-  void SetUninstallWebAppsAfterSyncDelegate(
-      UninstallWebAppsAfterSyncDelegate delegate);
+  using UninstallFromSyncBeforeRegistryUpdateDelegate =
+      base::RepeatingCallback<void(std::vector<AppId> web_apps)>;
+  void SetUninstallFromSyncBeforeRegistryUpdateDelegate(
+      UninstallFromSyncBeforeRegistryUpdateDelegate delegate);
+
+  using UninstallFromSyncAfterRegistryUpdateDelegate =
+      base::RepeatingCallback<void(
+          std::vector<std::unique_ptr<WebApp>> web_apps,
+          RepeatingUninstallCallback callback)>;
+  void SetUninstallFromSyncAfterRegistryUpdateDelegate(
+      UninstallFromSyncAfterRegistryUpdateDelegate delegate);
 
   // SyncInstallDelegate:
   void InstallWebAppsAfterSync(std::vector<WebApp*> web_apps,
                                RepeatingInstallCallback callback) override;
-  void UninstallWebAppsAfterSync(std::vector<std::unique_ptr<WebApp>> web_apps,
-                                 RepeatingUninstallCallback callback) override;
+  void UninstallFromSyncBeforeRegistryUpdate(
+      std::vector<AppId> web_apps) override;
+  void UninstallFromSyncAfterRegistryUpdate(
+      std::vector<std::unique_ptr<WebApp>> web_apps,
+      RepeatingUninstallCallback callback) override;
 
   void DestroySubsystems();
 
@@ -77,7 +86,10 @@ class TestWebAppRegistryController : public SyncInstallDelegate {
 
  private:
   InstallWebAppsAfterSyncDelegate install_web_apps_after_sync_delegate_;
-  UninstallWebAppsAfterSyncDelegate uninstall_web_apps_after_sync_delegate_;
+  UninstallFromSyncBeforeRegistryUpdateDelegate
+      uninstall_from_sync_before_registry_update_delegate_;
+  UninstallFromSyncAfterRegistryUpdateDelegate
+      uninstall_from_sync_after_registry_update_delegate_;
 
   std::unique_ptr<TestWebAppDatabaseFactory> database_factory_;
   std::unique_ptr<WebAppRegistrarMutable> mutable_registrar_;

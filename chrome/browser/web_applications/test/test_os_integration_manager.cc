@@ -107,7 +107,8 @@ void TestOsIntegrationManager::UninstallOsHooks(
 void TestOsIntegrationManager::UninstallAllOsHooks(
     const AppId& app_id,
     UninstallOsHooksCallback callback) {
-  OsHooksResults os_hooks_results{true};
+  OsHooksResults os_hooks_results;
+  os_hooks_results.set();
   UninstallOsHooks(app_id, os_hooks_results, std::move(callback));
 }
 

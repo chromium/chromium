@@ -37,7 +37,8 @@ class AppIconManager;
 class TestOsIntegrationManager;
 class WebAppUiManager;
 
-// OsHooksResults contains the result of all Os hook deployments
+// OsHooksResults contains the result of all Os hook deployments.
+// If a bit is set to `true`, then an error did not occur.
 using OsHooksResults = std::bitset<OsHookType::kMaxValue + 1>;
 
 // Used to pass install options configured from upstream caller.

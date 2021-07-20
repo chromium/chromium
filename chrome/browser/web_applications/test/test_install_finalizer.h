@@ -30,8 +30,6 @@ class TestInstallFinalizer final : public InstallFinalizer {
   void FinalizeInstall(const WebApplicationInfo& web_app_info,
                        const FinalizeOptions& options,
                        InstallFinalizedCallback callback) override;
-  void FinalizeUninstallAfterSync(const AppId& app_id,
-                                  UninstallWebAppCallback callback) override;
   void FinalizeUpdate(const WebApplicationInfo& web_app_info,
                       content::WebContents* web_contents,
                       InstallFinalizedCallback callback) override;
@@ -43,6 +41,11 @@ class TestInstallFinalizer final : public InstallFinalizer {
       const GURL& app_url,
       webapps::WebappUninstallSource external_install_source,
       UninstallWebAppCallback callback) override;
+  void UninstallFromSyncBeforeRegistryUpdate(
+      std::vector<AppId> web_apps) override;
+  void UninstallFromSyncAfterRegistryUpdate(
+      std::vector<std::unique_ptr<WebApp>> web_apps,
+      RepeatingUninstallCallback callback) override;
   bool CanUserUninstallWebApp(const AppId& app_id) const override;
   void UninstallWebApp(const AppId& app_id,
                        webapps::WebappUninstallSource uninstall_source,

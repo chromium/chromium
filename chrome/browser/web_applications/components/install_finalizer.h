@@ -29,6 +29,7 @@ enum class ExternalInstallSource;
 enum class InstallResultCode;
 class WebAppRegistrar;
 class AppRegistryController;
+class WebApp;
 class WebAppUiManager;
 class OsIntegrationManager;
 
@@ -40,6 +41,8 @@ class InstallFinalizer {
   using InstallFinalizedCallback =
       base::OnceCallback<void(const AppId& app_id, InstallResultCode code)>;
   using UninstallWebAppCallback = base::OnceCallback<void(bool uninstalled)>;
+  using RepeatingUninstallCallback =
+      base::RepeatingCallback<void(const AppId& app_id, bool uninstalled)>;
 
   struct FinalizeOptions {
     FinalizeOptions();
@@ -58,10 +61,6 @@ class InstallFinalizer {
   virtual void FinalizeInstall(const WebApplicationInfo& web_app_info,
                                const FinalizeOptions& options,
                                InstallFinalizedCallback callback) = 0;
-
-  // Delete app data from disk (icon .png files). |app_id| must be unregistered.
-  virtual void FinalizeUninstallAfterSync(const AppId& app_id,
-                                          UninstallWebAppCallback callback) = 0;
 
   // Write the new WebApp data to disk and update the app.
   // TODO(https://crbug.com/1196051): Chrome fails to update the manifest
@@ -93,6 +92,23 @@ class InstallFinalizer {
       const AppId& app_id,
       webapps::WebappUninstallSource webapp_uninstall_source,
       UninstallWebAppCallback callback) = 0;
+
+  // Sync-initiated uninstall. Copied from WebAppInstallSyncInstallDelegate.
+  // Called before the web apps are removed from the registry. Begins process of
+  // uninstalling OS hooks, which initially requires the registrar to still
+  // contain the web app data. Also notify observers of WebAppWillBeUninstalled.
+  // TODO(dmurph): After migration to WebApp* from the registry, this could
+  // potentially just be done in one step, after removal from registry, as os
+  // hooks information could be passed.
+  virtual void UninstallFromSyncBeforeRegistryUpdate(
+      std::vector<AppId> web_apps) = 0;
+  // Delete non-database app data from disk (icon .png files). |app_id| must be
+  // unregistered. Observers are notified of WebAppUninstalled and the
+  // |callback| is called after the app data is fully deleted & os hooks
+  // uninstalled.
+  virtual void UninstallFromSyncAfterRegistryUpdate(
+      std::vector<std::unique_ptr<WebApp>> web_apps,
+      RepeatingUninstallCallback callback) = 0;
 
   // Returns true if the app with |app_id| was previously uninstalled by the
   // user. For example, if a user uninstalls a default app ('default apps' are

@@ -36,7 +36,6 @@ void TestWebAppRegistryController::SetUp(Profile* profile) {
   sync_bridge_ = std::make_unique<WebAppSyncBridge>(
       profile, database_factory_.get(), mutable_registrar_.get(), this,
       mock_processor_.CreateForwardingProcessor());
-  sync_bridge_->SetSubsystems(os_integration_manager_.get());
 
   ON_CALL(processor(), IsTrackingMetadata())
       .WillByDefault(testing::Return(true));
@@ -136,9 +135,16 @@ void TestWebAppRegistryController::SetInstallWebAppsAfterSyncDelegate(
   install_web_apps_after_sync_delegate_ = delegate;
 }
 
-void TestWebAppRegistryController::SetUninstallWebAppsAfterSyncDelegate(
-    UninstallWebAppsAfterSyncDelegate delegate) {
-  uninstall_web_apps_after_sync_delegate_ = delegate;
+void TestWebAppRegistryController::
+    SetUninstallFromSyncBeforeRegistryUpdateDelegate(
+        UninstallFromSyncBeforeRegistryUpdateDelegate delegate) {
+  uninstall_from_sync_before_registry_update_delegate_ = delegate;
+}
+
+void TestWebAppRegistryController::
+    SetUninstallFromSyncAfterRegistryUpdateDelegate(
+        UninstallFromSyncAfterRegistryUpdateDelegate delegate) {
+  uninstall_from_sync_after_registry_update_delegate_ = delegate;
 }
 
 void TestWebAppRegistryController::InstallWebAppsAfterSync(
@@ -152,11 +158,20 @@ void TestWebAppRegistryController::InstallWebAppsAfterSync(
   }
 }
 
-void TestWebAppRegistryController::UninstallWebAppsAfterSync(
+void TestWebAppRegistryController::UninstallFromSyncBeforeRegistryUpdate(
+    std::vector<AppId> web_apps) {
+  if (uninstall_from_sync_before_registry_update_delegate_) {
+    uninstall_from_sync_before_registry_update_delegate_.Run(
+        std::move(web_apps));
+  }
+}
+
+void TestWebAppRegistryController::UninstallFromSyncAfterRegistryUpdate(
     std::vector<std::unique_ptr<WebApp>> web_apps,
     RepeatingUninstallCallback callback) {
-  if (uninstall_web_apps_after_sync_delegate_) {
-    uninstall_web_apps_after_sync_delegate_.Run(std::move(web_apps), callback);
+  if (uninstall_from_sync_after_registry_update_delegate_) {
+    uninstall_from_sync_after_registry_update_delegate_.Run(std::move(web_apps),
+                                                            callback);
   } else {
     for (const std::unique_ptr<WebApp>& web_app : web_apps)
       callback.Run(web_app->app_id(), /*uninstalled=*/true);

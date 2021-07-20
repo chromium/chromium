@@ -318,7 +318,6 @@ void WebAppProvider::ConnectSubsystems() {
   os_integration_manager_->SetSubsystems(registrar_.get(), ui_manager_.get(),
                                          icon_manager_.get());
   registrar_->SetSubsystems(os_integration_manager_.get());
-  registry_controller_->SetSubsystems(os_integration_manager_.get());
 
   connected_ = true;
 }

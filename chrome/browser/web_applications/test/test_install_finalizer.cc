@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "components/crx_file/id_util.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 
@@ -46,12 +47,6 @@ void TestInstallFinalizer::FinalizeUpdate(
            std::move(callback));
 }
 
-void TestInstallFinalizer::FinalizeUninstallAfterSync(
-    const AppId& app_id,
-    UninstallWebAppCallback callback) {
-  NOTREACHED();
-}
-
 void TestInstallFinalizer::UninstallExternalWebApp(
     const AppId& app_id,
     webapps::WebappUninstallSource webapp_uninstall_source,
@@ -76,6 +71,16 @@ void TestInstallFinalizer::UninstallExternalWebAppByUrl(
                        next_uninstall_external_web_app_results_.erase(app_url);
                        std::move(callback).Run(result);
                      }));
+}
+
+void TestInstallFinalizer::UninstallFromSyncBeforeRegistryUpdate(
+    std::vector<AppId> web_apps) {
+  NOTREACHED();
+}
+void TestInstallFinalizer::UninstallFromSyncAfterRegistryUpdate(
+    std::vector<std::unique_ptr<WebApp>> web_apps,
+    RepeatingUninstallCallback callback) {
+  NOTREACHED();
 }
 
 bool TestInstallFinalizer::CanUserUninstallWebApp(const AppId& app_id) const {

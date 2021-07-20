@@ -16,7 +16,6 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
@@ -587,14 +586,12 @@ void WebAppSyncBridge::ApplySyncChangesToRegistrar(
     registrar_->NotifyWebAppsWillBeUpdatedFromSync(new_apps_state);
   }
 
-  // Notify observers that web apps will be uninstalled. |apps_to_delete| are
-  // still registered at this stage.
-  for (const AppId& app_id : update_local_data->apps_to_delete) {
-    registrar_->NotifyWebAppWillBeUninstalled(app_id);
-    // TODO(https://crbug.com/1162349): Have the
-    // InstallDelegate::UninstallWebAppsAfterSync occur after OS hooks are
-    // uninstalled.
-    os_integration_manager().UninstallAllOsHooks(app_id, base::DoNothing());
+  // Initiate any uninstall actions that need to happen before the app is
+  // removed from the registry. This includes starting ot uninstall os hooks,
+  // and notify observers WebAppWillBeUninstalled.
+  if (!update_local_data->apps_to_delete.empty()) {
+    install_delegate_->UninstallFromSyncBeforeRegistryUpdate(
+        update_local_data->apps_to_delete);
   }
 
   std::vector<WebApp*> apps_to_install;
@@ -615,13 +612,11 @@ void WebAppSyncBridge::ApplySyncChangesToRegistrar(
   // locally and not needed by other sources. We need to clean up disk data
   // (icons).
   if (!apps_unregistered.empty()) {
-    // TODO(https://crbug.com/1162349): Instead of calling this now, have this
-    // call occur after OS hooks are uninstalled.
     for (const auto& web_app : apps_unregistered) {
       apps_in_sync_uninstall_.insert(web_app->app_id());
     }
 
-    install_delegate_->UninstallWebAppsAfterSync(
+    install_delegate_->UninstallFromSyncAfterRegistryUpdate(
         std::move(apps_unregistered),
         base::BindRepeating(&WebAppSyncBridge::WebAppUninstalled,
                             weak_ptr_factory_.GetWeakPtr()));

@@ -841,7 +841,7 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppsAfterSync_Fallback) {
   EXPECT_EQ(*expected_app, *app);
 }
 
-TEST_P(WebAppInstallManagerTest, UninstallWebAppsAfterSync) {
+TEST_P(WebAppInstallManagerTest, UninstallFromSyncAfterRegistryUpdate) {
   std::unique_ptr<WebApp> app =
       CreateWebApp(GURL("https://example.com/path"), Source::kSync,
                    /*user_display_mode=*/DisplayMode::kStandalone);
@@ -852,41 +852,60 @@ TEST_P(WebAppInstallManagerTest, UninstallWebAppsAfterSync) {
   file_utils().SetNextDeleteFileRecursivelyResult(true);
 
   enum Event {
+    kUninstallFromSyncBeforeRegistryUpdate,
     kObserver_OnWebAppWillBeUninstalled,
-    kUninstallWebAppsAfterSync_Callback
+    kObserver_OnWebAppUninstalled,
+    kUninstallFromSyncAfterRegistryUpdate_Callback
   };
   std::vector<Event> event_order;
 
   WebAppInstallObserver observer(&registrar());
-  observer.SetWebAppUninstalledDelegate(
+  observer.SetWebAppWillBeUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& uninstalled_app_id) {
         EXPECT_EQ(uninstalled_app_id, app_id);
         event_order.push_back(Event::kObserver_OnWebAppWillBeUninstalled);
       }));
+  observer.SetWebAppUninstalledDelegate(
+      base::BindLambdaForTesting([&](const AppId& uninstalled_app_id) {
+        EXPECT_EQ(uninstalled_app_id, app_id);
+        event_order.push_back(Event::kObserver_OnWebAppUninstalled);
+      }));
+
+  controller().SetUninstallFromSyncBeforeRegistryUpdateDelegate(
+      base::BindLambdaForTesting([&](std::vector<AppId> apps_to_uninstall) {
+        ASSERT_FALSE(apps_to_uninstall.empty());
+        EXPECT_EQ(apps_to_uninstall[0], app_id);
+        event_order.push_back(Event::kUninstallFromSyncBeforeRegistryUpdate);
+        install_manager().UninstallFromSyncBeforeRegistryUpdate(
+            std::move(apps_to_uninstall));
+      }));
 
   base::RunLoop run_loop;
-
-  controller().SetUninstallWebAppsAfterSyncDelegate(base::BindLambdaForTesting(
-      [&](std::vector<std::unique_ptr<WebApp>> apps_unregistered,
-          SyncInstallDelegate::RepeatingUninstallCallback callback) {
-        install_manager().UninstallWebAppsAfterSync(
-            std::move(apps_unregistered),
-            base::BindLambdaForTesting([&](const AppId& uninstalled_app_id,
-                                           bool uninstalled) {
-              EXPECT_EQ(uninstalled_app_id, app_id);
-              EXPECT_TRUE(uninstalled);
-              event_order.push_back(Event::kUninstallWebAppsAfterSync_Callback);
-              run_loop.Quit();
-            }));
-      }));
+  controller().SetUninstallFromSyncAfterRegistryUpdateDelegate(
+      base::BindLambdaForTesting(
+          [&](std::vector<std::unique_ptr<WebApp>> apps_unregistered,
+              SyncInstallDelegate::RepeatingUninstallCallback callback) {
+            install_manager().UninstallFromSyncAfterRegistryUpdate(
+                std::move(apps_unregistered),
+                base::BindLambdaForTesting([&](const AppId& uninstalled_app_id,
+                                               bool uninstalled) {
+                  EXPECT_EQ(uninstalled_app_id, app_id);
+                  EXPECT_TRUE(uninstalled);
+                  event_order.push_back(
+                      Event::kUninstallFromSyncAfterRegistryUpdate_Callback);
+                  run_loop.Quit();
+                }));
+          }));
 
   // The sync server sends a change to delete the app.
   controller().ApplySyncChanges_DeleteApps({app_id});
   run_loop.Run();
 
   const std::vector<Event> expected_event_order{
+      Event::kUninstallFromSyncBeforeRegistryUpdate,
       Event::kObserver_OnWebAppWillBeUninstalled,
-      Event::kUninstallWebAppsAfterSync_Callback};
+      Event::kObserver_OnWebAppUninstalled,
+      Event::kUninstallFromSyncAfterRegistryUpdate_Callback};
   EXPECT_EQ(expected_event_order, event_order);
 }
 

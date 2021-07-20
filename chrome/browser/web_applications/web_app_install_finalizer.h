@@ -44,8 +44,6 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
   void FinalizeInstall(const WebApplicationInfo& web_app_info,
                        const FinalizeOptions& options,
                        InstallFinalizedCallback callback) override;
-  void FinalizeUninstallAfterSync(const AppId& app_id,
-                                  UninstallWebAppCallback callback) override;
   void FinalizeUpdate(const WebApplicationInfo& web_app_info,
                       content::WebContents* web_contents,
                       InstallFinalizedCallback callback) override;
@@ -58,6 +56,13 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
   void UninstallWebApp(const AppId& app_id,
                        webapps::WebappUninstallSource external_install_source,
                        UninstallWebAppCallback callback) override;
+
+  void UninstallFromSyncBeforeRegistryUpdate(
+      std::vector<AppId> web_apps) override;
+  void UninstallFromSyncAfterRegistryUpdate(
+      std::vector<std::unique_ptr<WebApp>> web_apps,
+      RepeatingUninstallCallback callback) override;
+
   bool CanUserUninstallWebApp(const AppId& app_id) const override;
   bool WasPreinstalledWebAppUninstalled(const AppId& app_id) const override;
   void Start() override;
@@ -77,6 +82,13 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
   void UninstallExternalWebAppOrRemoveSource(const AppId& app_id,
                                              Source::Type source,
                                              UninstallWebAppCallback callback);
+
+  void OnSyncUninstallOsHooksUninstall(AppId app_id, OsHooksResults);
+  void OnSyncUninstallAppDataDeleted(AppId app_id, bool success);
+  // Sync uninstall only finishes once both the hooks are uninstalled
+  // (OnSyncUninstallOsHooksUninstall) and app data is deleted
+  // (OnSyncUninstallAppDataDeleted).
+  void MaybeFinishSyncUninstall(AppId app_id);
 
   void SetWebAppManifestFieldsAndWriteData(
       const WebApplicationInfo& web_app_info,
@@ -128,6 +140,18 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
   WebAppIconManager* const icon_manager_;
   WebAppPolicyManager* policy_manager_;
   bool started_ = false;
+
+  struct SyncUninstallState {
+    SyncUninstallState();
+    ~SyncUninstallState();
+    std::unique_ptr<WebApp> web_app;
+    UninstallWebAppCallback callback;
+    bool hooks_uninstalled = false;
+    bool app_data_deleted = false;
+    bool success = true;
+  };
+  base::flat_map<AppId, std::unique_ptr<SyncUninstallState>>
+      pending_sync_uninstalls_;
 
   std::unique_ptr<FileHandlersPermissionHelper> file_handlers_helper_;
 

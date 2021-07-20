@@ -54,16 +54,6 @@ bool TaskExpectsAppId(const WebAppInstallTask* task, const AppId& app_id) {
          task->app_id_to_expect().value() == app_id;
 }
 
-// For the new USS-based system only:
-void OnWebAppUninstalledAfterSync(
-    std::unique_ptr<WebApp> web_app,
-    InstallManager::OnceUninstallCallback callback,
-    bool uninstalled) {
-  UMA_HISTOGRAM_BOOLEAN("Webapp.SyncInitiatedUninstallResult", uninstalled);
-  std::move(callback).Run(web_app->app_id(), uninstalled);
-  // web_app data is destroyed here.
-}
-
 }  // namespace
 
 WebAppInstallManager::WebAppInstallManager(Profile* profile)
@@ -323,18 +313,18 @@ void WebAppInstallManager::InstallWebAppsAfterSync(
   }
 }
 
-void WebAppInstallManager::UninstallWebAppsAfterSync(
+void WebAppInstallManager::UninstallFromSyncBeforeRegistryUpdate(
+    std::vector<AppId> web_apps) {
+  DCHECK(started_);
+  finalizer()->UninstallFromSyncBeforeRegistryUpdate(std::move(web_apps));
+}
+
+void WebAppInstallManager::UninstallFromSyncAfterRegistryUpdate(
     std::vector<std::unique_ptr<WebApp>> web_apps,
     RepeatingUninstallCallback callback) {
   DCHECK(started_);
-
-  for (std::unique_ptr<WebApp>& web_app : web_apps) {
-    const AppId& app_id = web_app->app_id();
-
-    finalizer()->FinalizeUninstallAfterSync(
-        app_id, base::BindOnce(&OnWebAppUninstalledAfterSync,
-                               std::move(web_app), callback));
-  }
+  finalizer()->UninstallFromSyncAfterRegistryUpdate(std::move(web_apps),
+                                                    std::move(callback));
 }
 
 void WebAppInstallManager::SetDataRetrieverFactoryForTesting(
