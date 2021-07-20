@@ -51,6 +51,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/test_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/download_protection/check_file_system_access_write_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_unittest_util.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/download_protection/ppapi_download_request.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
@@ -476,22 +477,6 @@ class DownloadProtectionServiceTestBase
     RunLoop().RunUntilIdle();
   }
 
-  // Reads a single PEM-encoded certificate from the testdata directory.
-  // Returns nullptr on failure.
-  scoped_refptr<net::X509Certificate> ReadTestCertificate(
-      const std::string& filename) {
-    std::string cert_data;
-    if (!base::ReadFileToString(testdata_path_.AppendASCII(filename),
-                                &cert_data)) {
-      return nullptr;
-    }
-    net::CertificateList certs =
-        net::X509Certificate::CreateCertificateListFromBytes(
-            base::as_bytes(base::make_span(cert_data)),
-            net::X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
-    return certs.empty() ? nullptr : certs[0];
-  }
-
   const ClientDownloadRequest* GetClientDownloadRequest() const {
     return last_client_download_request_.get();
   }
@@ -775,8 +760,7 @@ class DeepScanningDownloadTest : public DownloadProtectionServiceTestBase,
 class EnhancedProtectionDownloadTest
     : public DownloadProtectionServiceTestBase {
  public:
-  EnhancedProtectionDownloadTest() {
-  }
+  EnhancedProtectionDownloadTest() {}
 };
 
 void DownloadProtectionServiceTestBase::CheckClientDownloadReportCorruptArchive(
@@ -1072,7 +1056,7 @@ TEST_F(DownloadProtectionServiceTest,
 
   // Setup trusted and allowlisted certificates for test cases (5) and (6).
   scoped_refptr<net::X509Certificate> test_cert(
-      ReadTestCertificate("test_cn.pem"));
+      ReadTestCertificate(testdata_path_, "test_cn.pem"));
   ASSERT_TRUE(test_cert.get());
   std::string test_cert_der(
       net::x509_util::CryptoBufferAsStringPiece(test_cert->cert_buffer()));
