@@ -1088,6 +1088,7 @@ public class InstantStartTest {
         ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group", IMMEDIATE_RETURN_PARAMS +
         "/start_surface_variation/single/omnibox_focused_on_new_tab/true"})
+    @DisabledTest(message = "https://crbug.com/1192559")
     public void testNewTabFromLauncher() throws IOException {
         // clang-format on
         testNewTabFromLauncherImpl();
