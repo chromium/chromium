@@ -31,6 +31,13 @@
     <!-- Semantic names that support dynamic colors. -->
     <attr name="divider_line_bg_color" format="color"/>
 
+    <attr name="default_icon_color" format="color" />
+    <attr name="default_icon_color_inverse" format="color" />
+    <attr name="default_icon_color_blue" format="color" />
+    <attr name="default_icon_color_secondary" format="color" />
+    <attr name="default_icon_color_disabled" format="color" />
+    <attr name="default_icon_color_disabled_inverse" format="color" />
+
     <declare-styleable name="ButtonCompat">
         <!-- The color of the button background. -->
         <attr name="buttonColor" format="color"/>
