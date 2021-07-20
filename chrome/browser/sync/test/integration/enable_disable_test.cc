@@ -434,6 +434,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, ResetsPrefsIfClearData) {
   ASSERT_NE("", first_cache_guid);
 
   GetClient(0)->StopSyncServiceAndClearData();
+  base::RunLoop().RunUntilIdle();
   // Sync should have restarted in transport mode, creating a new cache GUID.
   EXPECT_NE("", prefs.GetCacheGuid());
   EXPECT_NE(first_cache_guid, prefs.GetCacheGuid());

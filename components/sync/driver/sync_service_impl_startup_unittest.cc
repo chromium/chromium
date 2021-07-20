@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
 #include "components/sync/driver/sync_service_impl.h"
 
 #include "base/bind.h"
@@ -180,6 +181,7 @@ TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
             sync_service()->GetTransportState());
 
   SimulateTestUserSignin();
+  base::RunLoop().RunUntilIdle();
 
   // Now we're signed in, so the engine can start. Engine initialization is
   // immediate in this test, so we bypass the INITIALIZING state.
@@ -225,6 +227,7 @@ TEST_F(SyncServiceImplStartupTest, StartNoCredentials) {
 
   CreateSyncService(SyncServiceImpl::MANUAL_START);
   sync_service()->Initialize();
+  base::RunLoop().RunUntilIdle();
 
   // SyncServiceImpl should now be active, but of course not have an access
   // token.
@@ -331,6 +334,7 @@ TEST_F(SyncServiceImplStartupTest, StartInvalidCredentials) {
   // Prevent automatic (and successful) completion of engine initialization.
   component_factory()->AllowFakeEngineInitCompletion(false);
   sync_service()->Initialize();
+  base::RunLoop().RunUntilIdle();
   // Simulate an auth error while downloading control types.
   engine()->TriggerInitializationCompletion(/*success=*/false);
 
@@ -358,6 +362,7 @@ TEST_F(SyncServiceImplStartupTest, StartCrosNoCredentials) {
   // Calling Initialize should cause the service to immediately create and
   // initialize the engine, and configure the DataTypeManager.
   sync_service()->Initialize();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
 
   // Sync should be considered active, even though there is no refresh token.
@@ -379,6 +384,7 @@ TEST_F(SyncServiceImplStartupTest, StartCrosFirstTime) {
   // a refresh token.
   UpdateCredentials();
   sync_service()->Initialize();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
 }
@@ -396,6 +402,7 @@ TEST_F(SyncServiceImplStartupTest, StartNormal) {
   // configure the DataTypeManager. In this test, all of these operations are
   // synchronous.
   sync_service()->Initialize();
+  base::RunLoop().RunUntilIdle();
   EXPECT_NE(nullptr, data_type_manager());
   EXPECT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
@@ -408,6 +415,7 @@ TEST_F(SyncServiceImplStartupTest, StopSync) {
   SimulateTestUserSignin();
 
   sync_service()->Initialize();
+  base::RunLoop().RunUntilIdle();
   ASSERT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
@@ -415,6 +423,7 @@ TEST_F(SyncServiceImplStartupTest, StopSync) {
   // On SetSyncRequested(false), the sync service will immediately start up
   // again in transport mode.
   sync_service()->GetUserSettings()->SetSyncRequested(false);
+  base::RunLoop().RunUntilIdle();
 
   // Sync-the-feature is still considered off.
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
@@ -431,6 +440,7 @@ TEST_F(SyncServiceImplStartupTest, DisableSync) {
   CreateSyncService(SyncServiceImpl::MANUAL_START);
 
   sync_service()->Initialize();
+  base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(sync_service()->IsSyncFeatureActive());
   ASSERT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
@@ -439,6 +449,7 @@ TEST_F(SyncServiceImplStartupTest, DisableSync) {
   // On StopAndClear(), the sync service will immediately start up again in
   // transport mode.
   sync_service()->StopAndClear();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
@@ -450,6 +461,7 @@ TEST_F(SyncServiceImplStartupTest, DisableSync) {
   // Call StopAndClear() again while the sync service is already in transport
   // mode. It should immediately start up again in transport mode.
   sync_service()->StopAndClear();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
@@ -525,6 +537,7 @@ TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
   // Initialize() should be enough to kick off Sync startup (which is instant in
   // this test).
   sync_service()->Initialize();
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(sync_service()->IsEngineInitialized());
   EXPECT_EQ(SyncService::DisableReasonSet(),
             sync_service()->GetDisableReasons());
@@ -536,6 +549,8 @@ TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
 
   // The service should stop when switching to managed mode.
   sync_prefs()->SetManagedForTest(true);
+  // Give re-startup a chance to happen (it shouldn't!).
+  base::RunLoop().RunUntilIdle();
   // Sync was disabled due to the policy, setting SyncRequested to false and
   // causing DISABLE_REASON_USER_CHOICE.
   ASSERT_EQ(SyncService::DisableReasonSet(
@@ -548,12 +563,12 @@ TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(sync_service()->IsSyncFeatureActive());
   EXPECT_EQ(1, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
-  // Note that PSS no longer references |data_type_manager| after stopping.
 
   // When switching back to unmanaged, Sync-the-transport should start up
   // automatically, which causes (re)creation of SyncEngine and
   // DataTypeManager.
   sync_prefs()->SetManagedForTest(false);
+  base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(
       SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
@@ -578,6 +593,7 @@ TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
   // Prevent automatic (and successful) completion of engine initialization.
   component_factory()->AllowFakeEngineInitCompletion(false);
   sync_service()->Initialize();
+  base::RunLoop().RunUntilIdle();
 
   // Simulate a failure while downloading control types.
   engine()->TriggerInitializationCompletion(/*success=*/false);
@@ -618,13 +634,14 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // Sync-the-feature still doesn't start until the user says they want it.
   component_factory()->AllowFakeEngineInitCompletion(false);
   SimulateTestUserSignin();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
       SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
       sync_service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::INITIALIZING,
             sync_service()->GetTransportState());
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
-  EXPECT_TRUE(engine());
+  ASSERT_TRUE(engine());
 
   // Initiate Sync (the feature) setup before the engine initializes itself in
   // transport mode.

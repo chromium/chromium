@@ -53,6 +53,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using testing::_;
+using testing::AnyNumber;
 using testing::ByMove;
 using testing::Not;
 using testing::Return;
@@ -183,12 +184,20 @@ class SyncServiceImplTest : public ::testing::Test {
     sync_prefs.SetFirstSetupComplete();
   }
 
-  void InitializeForNthSync() {
+  void InitializeForNthSync(bool run_until_idle = true) {
     PopulatePrefsForNthSync();
     service_->Initialize();
+    if (run_until_idle) {
+      task_environment_.RunUntilIdle();
+    }
   }
 
-  void InitializeForFirstSync() { service_->Initialize(); }
+  void InitializeForFirstSync(bool run_until_idle = true) {
+    service_->Initialize();
+    if (run_until_idle) {
+      task_environment_.RunUntilIdle();
+    }
+  }
 
   void TriggerPassphraseRequired() {
     service_->GetEncryptionObserverForTest()->OnPassphraseRequired(
@@ -302,6 +311,7 @@ TEST_F(SyncServiceImplTest, NeedsConfirmation) {
   EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
 
   // Sync should immediately start up in transport mode.
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   EXPECT_FALSE(service()->IsSyncFeatureActive());
@@ -318,7 +328,8 @@ TEST_F(SyncServiceImplTest, ModelTypesForTransportMode) {
   ASSERT_FALSE(service()->IsSyncFeatureActive());
   ASSERT_FALSE(service()->IsSyncFeatureEnabled());
 
-  // Sync-the-transport is still active.
+  // Sync-the-transport should become active again.
+  base::RunLoop().RunUntilIdle();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
@@ -411,6 +422,7 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInitThenPolicyRemoved) {
   EXPECT_EQ(
       SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
       service()->GetDisableReasons());
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
@@ -419,6 +431,7 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInitThenPolicyRemoved) {
   service()->GetUserSettings()->SetSyncRequested(true);
   service()->GetUserSettings()->SetFirstSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   EXPECT_TRUE(service()->GetDisableReasons().Empty());
@@ -461,7 +474,8 @@ TEST_F(SyncServiceImplTest,
   service()->SetSyncAllowedByPlatform(false);
   EXPECT_FALSE(service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(service()->IsSyncFeatureActive());
-  // Sync-the-transport should be still active.
+  // Sync-the-transport should become active again.
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 }
@@ -498,6 +512,7 @@ TEST_F(SyncServiceImplTest, EarlyRequestStop) {
   EXPECT_EQ(
       SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
       service()->GetDisableReasons());
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   EXPECT_FALSE(service()->IsSyncFeatureActive());
@@ -506,6 +521,7 @@ TEST_F(SyncServiceImplTest, EarlyRequestStop) {
   // Request start. Now Sync-the-feature should start again.
   service()->GetUserSettings()->SetSyncRequested(true);
   EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   EXPECT_TRUE(service()->IsSyncFeatureActive());
@@ -532,6 +548,7 @@ TEST_F(SyncServiceImplTest, DisableAndEnableSyncTemporarily) {
   EXPECT_EQ(
       SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
       service()->GetDisableReasons());
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   EXPECT_FALSE(service()->IsSyncFeatureActive());
@@ -540,6 +557,7 @@ TEST_F(SyncServiceImplTest, DisableAndEnableSyncTemporarily) {
   service()->GetUserSettings()->SetSyncRequested(true);
   EXPECT_TRUE(sync_prefs.IsSyncRequested());
   EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   EXPECT_TRUE(service()->IsSyncFeatureActive());
@@ -615,17 +633,19 @@ TEST_F(SyncServiceImplTest, SyncRequestedSetToFalseIfStartsSignedOut) {
 TEST_F(SyncServiceImplTest, GetSyncTokenStatus) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
-  InitializeForNthSync();
+  InitializeForNthSync(/*run_until_idle=*/false);
 
-  // Initial status.
+  // Initial status: The Sync engine startup has not begun yet; no token request
+  // has been sent.
   SyncTokenStatus token_status = service()->GetSyncTokenStatusForDebugging();
   ASSERT_EQ(CONNECTION_NOT_ATTEMPTED, token_status.connection_status);
   ASSERT_TRUE(token_status.connection_status_update_time.is_null());
-  ASSERT_FALSE(token_status.token_request_time.is_null());
+  ASSERT_TRUE(token_status.token_request_time.is_null());
   ASSERT_TRUE(token_status.token_response_time.is_null());
   ASSERT_FALSE(token_status.has_token);
 
-  // The token request will take the form of a posted task.  Run it.
+  // Sync engine startup as well as the actual token request take the form of
+  // posted tasks. Run them.
   base::RunLoop().RunUntilIdle();
 
   // Now we should have an access token.
@@ -791,6 +811,7 @@ TEST_F(SyncServiceImplTest, StopAndClearWillClearDataAndSwitchToTransportMode) {
 
   // Even though Sync-the-feature is disabled, there's still an (unconsented)
   // signed-in account, so Sync-the-transport should still be running.
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   EXPECT_FALSE(service()->IsSyncFeatureEnabled());
@@ -1004,6 +1025,7 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
       service()->GetDisableReasons());
   // Since ChromeOS doesn't support signout and so the account is still there
   // and available, Sync will restart in standalone transport mode.
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 #else
@@ -1201,7 +1223,8 @@ TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
 TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
        ShouldActivateSyncInvalidationsServiceOnSignIn) {
   CreateService(SyncServiceImpl::MANUAL_START);
-  EXPECT_CALL(*sync_invalidations_service(), SetActive(false));
+  EXPECT_CALL(*sync_invalidations_service(), SetActive(false))
+      .Times(AnyNumber());
   InitializeForFirstSync();
   EXPECT_CALL(*sync_invalidations_service(), SetActive(true));
   SignIn();

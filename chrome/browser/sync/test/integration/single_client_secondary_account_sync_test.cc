@@ -82,8 +82,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
   // transport mode.
   secondary_account_helper::SignInSecondaryAccount(
       profile(), &test_url_loader_factory_, "user@email.com");
-  EXPECT_EQ(syncer::SyncService::TransportState::INITIALIZING,
-            GetSyncService(0)->GetTransportState());
 
   EXPECT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 

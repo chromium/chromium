@@ -8,12 +8,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/command_line.h"
-#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_service_impl.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,13 +18,9 @@ namespace syncer {
 
 class StartupControllerTest : public testing::Test {
  public:
-  StartupControllerTest()
-      : preferred_types_(UserTypes()), should_start_(false), started_(false) {}
+  StartupControllerTest() = default;
 
   void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kSyncDeferredStartupTimeoutSeconds, "0");
-
     policy_service_ = CreatePolicyService();
     controller_ = std::make_unique<StartupController>(
         base::BindRepeating(&StartupControllerTest::GetPreferredDataTypes,
@@ -55,17 +48,20 @@ class StartupControllerTest : public testing::Test {
   void SetShouldStart(bool should_start) { should_start_ = should_start; }
 
   void ExpectStarted() {
+    task_environment_.RunUntilIdle();
     EXPECT_TRUE(started());
     EXPECT_EQ(StartupController::State::STARTED, controller()->GetState());
   }
 
   void ExpectStartDeferred() {
+    task_environment_.RunUntilIdle();
     EXPECT_FALSE(started());
     EXPECT_EQ(StartupController::State::STARTING_DEFERRED,
               controller()->GetState());
   }
 
   void ExpectNotStarted() {
+    task_environment_.RunUntilIdle();
     EXPECT_FALSE(started());
     EXPECT_EQ(StartupController::State::NOT_STARTED, controller()->GetState());
   }
@@ -75,16 +71,19 @@ class StartupControllerTest : public testing::Test {
   StartupController* controller() { return controller_.get(); }
   policy::PolicyService* policy_service() { return policy_service_.get(); }
 
+  void RunDeferredTasks() { task_environment_.FastForwardUntilNoTasksRemain(); }
+
  private:
   ModelTypeSet GetPreferredDataTypes() { return preferred_types_; }
   bool ShouldStart() { return should_start_; }
   void FakeStartBackend() { started_ = true; }
 
-  ModelTypeSet preferred_types_;
-  bool should_start_;
-  bool started_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  ModelTypeSet preferred_types_ = UserTypes();
+  bool should_start_ = false;
+  bool started_ = false;
   std::unique_ptr<policy::PolicyService> policy_service_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<StartupController> controller_;
 };
 
@@ -124,7 +123,7 @@ TEST_F(StartupControllerTest, DataTypeTriggerInterruptsDeferral) {
   // The fallback timer shouldn't result in another invocation of the closure
   // we passed to the StartupController.
   clear_started();
-  base::RunLoop().RunUntilIdle();
+  RunDeferredTasks();
   EXPECT_FALSE(started());
 }
 
@@ -135,7 +134,7 @@ TEST_F(StartupControllerTest, FallbackTimer) {
   controller()->TryStart(/*force_immediate=*/false);
   ExpectStartDeferred();
 
-  base::RunLoop().RunUntilIdle();
+  RunDeferredTasks();
   ExpectStarted();
 }
 
@@ -159,7 +158,7 @@ TEST_F(StartupControllerTest, NoDeferralWithoutSessionsSync) {
 TEST_F(StartupControllerTest, FallbackTimerWaits) {
   controller()->TryStart(/*force_immediate=*/false);
   ExpectNotStarted();
-  base::RunLoop().RunUntilIdle();
+  RunDeferredTasks();
   ExpectNotStarted();
 }
 

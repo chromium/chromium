@@ -107,6 +107,15 @@ void StartupController::StartUp(StartUpDeferredOption deferred_option) {
 }
 
 void StartupController::TryStart(bool force_immediate) {
+  // Post a task instead of running the startup checks directly, to guarantee
+  // that |start_engine_callback_| is never called synchronously from
+  // TryStart().
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&StartupController::TryStartImpl,
+                                weak_factory_.GetWeakPtr(), force_immediate));
+}
+
+void StartupController::TryStartImpl(bool force_immediate) {
   // Try starting up the sync engine if all policies are ready, otherwise wait
   // at most |switches::kSyncPolicyLoadTimeout|.
   if (!ArePoliciesReady()) {

@@ -1761,7 +1761,6 @@ void SyncServiceImpl::OverrideNetworkForTest(
 
   if (restart) {
     startup_controller_->TryStart(/*force_immediate=*/true);
-    DCHECK(engine_);
   }
 }
 
