@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './shortcut_input.js';
 
-import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
+import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {KeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
@@ -23,8 +23,7 @@ interface RepeaterEvent<T> extends CustomEvent {
 }
 
 const ExtensionsKeyboardShortcutsElementBase =
-    mixinBehaviors([CrContainerShadowBehavior], PolymerElement) as
-    {new (): PolymerElement};
+    CrContainerShadowMixin(PolymerElement) as {new (): PolymerElement};
 
 // The UI to display and manage keyboard shortcuts set for extension commands.
 class ExtensionsKeyboardShortcutsElement extends

@@ -62,6 +62,17 @@ TEST_F('CrElementsContainerShadowBehaviorV3Test', 'All', function() {
   mocha.run();
 });
 
+// eslint-disable-next-line no-var
+var CrElementsContainerShadowMixinTest = class extends CrElementsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_container_shadow_mixin_test.js';
+  }
+};
+
+TEST_F('CrElementsContainerShadowMixinTest', 'All', function() {
+  mocha.run();
+});
 
 // eslint-disable-next-line no-var
 var CrElementsDialogV3Test = class extends CrElementsV3BrowserTest {

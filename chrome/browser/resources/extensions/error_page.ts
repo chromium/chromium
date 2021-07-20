@@ -14,12 +14,12 @@ import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './code_section.js';
 import './shared_style.js';
 
-import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
+import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigation, Page} from './navigation_helper.js';
 
@@ -82,8 +82,7 @@ interface ExtensionsErrorPageElement {
 }
 
 const ExtensionsErrorPageElementBase =
-    mixinBehaviors([CrContainerShadowBehavior], PolymerElement) as
-    {new (): PolymerElement};
+    CrContainerShadowMixin(PolymerElement) as {new (): PolymerElement};
 
 class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
   static get is() {

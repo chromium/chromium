@@ -21,6 +21,7 @@ js_type_check("closure_compile") {
     ":cr_card_radio_button_test",
     ":cr_checkbox_test",
     ":cr_container_shadow_behavior_test",
+    ":cr_container_shadow_mixin_test",
     ":cr_dialog_test",
     ":cr_drawer_tests",
     ":cr_expand_button_tests",
@@ -96,6 +97,15 @@ js_library("cr_container_shadow_behavior_test") {
     "..:chai_assert",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_container_shadow_behavior.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("cr_container_shadow_mixin_test") {
+  deps = [
+    "..:chai_assert",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements:cr_container_shadow_mixin",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
