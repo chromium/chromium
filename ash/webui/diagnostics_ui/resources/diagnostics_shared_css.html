@@ -26,6 +26,19 @@
       margin-left: 20px;
     }
 
+    data-point[orientation=horizontal] {
+      margin: 9px 0;
+      width: 300px;
+    }
+
+    data-point[orientation=horizontal]:first-of-type {
+      margin-top: 8px;
+    }
+
+    data-point[orientation=horizontal]:last-of-type {
+      margin-bottom: 8px;
+    }
+
     paper-tooltip {
       --paper-tooltip-min-width: auto;
       line-height: 18px;
@@ -65,8 +78,8 @@
     .divider-horizontal {
       align-self: center;
       border-left: 1px solid var(--google-grey-200);
-      height: 94px;
-      margin: 10px 0;;
+      height: var(--divider-horizontal-height, 94px);
+      margin: 10px 20px;
     }
 
     .grey-container {
@@ -76,9 +89,13 @@
     }
 
     .horizontal-data-point-container {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 12px;
+      display: grid;
+      margin: 20px 0;
+      grid-template-columns: 300px 40px 300px;
+    }
+
+    .horizontal-data-point-container .data-point-container {
+      width: fit-content;
     }
 
     .link-text {
