@@ -2046,9 +2046,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
   EXPECT_EQ(GURL(kTargetUrl), web_contents->GetVisibleURL());
 }
 
-// TODO(crbug.com/1226532): This test is flaky on Windows 7 debug builds.
-// Fix and reenable it.
-#if defined(OS_WIN) && defined(_DEBUG)
+// TODO(crbug.com/1226532): This test is flaky on Windows. Fix and reenable it.
+#if defined(OS_WIN)
 #define MAYBE_MultipleProfiles_DialogAccepted_WebAppLaunch_InScopeUrl \
   DISABLED_MultipleProfiles_DialogAccepted_WebAppLaunch_InScopeUrl
 #else
