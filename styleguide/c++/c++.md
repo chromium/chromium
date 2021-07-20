@@ -35,7 +35,7 @@ status of Chromium's C++ support is covered in more detail in
   * "Chromium" is the name of the project, not the product, and should never
     appear in code, variable names, API names etc. Use "Chrome" instead.
 
-## Test-only Code
+## Tests and Test-only Code
 
   * Functions used only for testing should be restricted to test-only usages
     with the testing suffixes supported by
@@ -49,6 +49,11 @@ status of Chromium's C++ support is covered in more detail in
   * The code for `testonly` targets should be placed in a `test/` subdirectory.
     For test classes used across multiple directories, it might make sense to
     move them into a nested `test` namespace for clarity.
+  * Despite the Google C++ style guide
+    [deprecating](https://google.github.io/styleguide/cppguide.html#File_Names)
+    the `_unittest.cc` suffix for unit test files, in Chromium we still use this
+    suffix to distinguish unit tests from browser tests, which are written in
+    files with the `_browsertest.cc` suffix.
 
 ## Code formatting
 
