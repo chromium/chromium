@@ -99,6 +99,10 @@ const base::Feature kNtpModulesRedesigned{"NtpModulesRedesigned",
 const base::Feature kNtpDriveModule{"NtpDriveModule",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, Google Photos module will be shown.
+const base::Feature kNtpPhotosModule{"NtpPhotosModule",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, modules will be able to be reordered via dragging and dropping
 const base::Feature kNtpModulesDragAndDrop{"NtpModulesDragAndDrop",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
