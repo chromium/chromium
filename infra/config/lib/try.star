@@ -168,7 +168,7 @@ def try_builder(
             fail("Try Windows builder {} must disable ATS".format(name))
 
     # TODO(crbug.com/1143122): remove this after migration.
-    experiments["chromium.chromium_tests.use_rbe_cas"] = 0
+    experiments["chromium.chromium_tests.use_rbe_cas"] = 5
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
