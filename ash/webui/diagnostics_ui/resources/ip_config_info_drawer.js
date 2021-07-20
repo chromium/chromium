@@ -11,6 +11,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network} from './diagnostics_types.js';
+import {getSubnetMaskFromRoutingPrefix} from './diagnostics_utils.js';
 
 /**
  * @fileoverview
@@ -56,6 +57,15 @@ Polymer({
     network: {
       type: Object,
     },
+
+    /**
+     * @protected
+     * @type {string}
+     */
+    subnetMask_: {
+      type: String,
+      computed: 'computeSubnetMask_(network.ipConfig.routingPrefix)',
+    },
   },
 
   /**
@@ -75,5 +85,17 @@ Polymer({
    */
   computeMacAddress_() {
     return this.network.macAddress || '';
+  },
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  computeSubnetMask_() {
+    if (this.network.ipConfig && this.network.ipConfig.routingPrefix) {
+      return getSubnetMaskFromRoutingPrefix(
+          this.network.ipConfig.routingPrefix);
+    }
+    return '';
   },
 });

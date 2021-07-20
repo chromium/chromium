@@ -115,4 +115,17 @@ export function ipConfigInfoDrawerTestSuite() {
               `${fakeWifiNetwork.ipConfig.gateway}`);
         });
   });
+
+  test('ConfigDrawerOpenDisplaysSubnetMaskBasedOnNetwork', () => {
+    const expectedSubnetMask = '255.255.255.0';
+    return initializeIpConfigInfoDrawerElement(fakeWifiNetwork)
+        // Opening drawer to test visibility and content of data points.
+        .then(() => getDrawerToggle().click())
+        .then(() => {
+          assertDataPointHasExpectedHeaderAndValue(
+              '#subnetMask',
+              ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerSubnetMask'),
+              expectedSubnetMask);
+        });
+  });
 }
