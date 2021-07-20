@@ -1008,7 +1008,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
-                       KeepAliveRegistryPendingNotificationEvent) {
+                       KeepAliveRegistryPendingNotificationClickEvent) {
   RequestAndAcceptPermission();
 
   std::string script_result;
@@ -1044,6 +1044,45 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   ASSERT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::PENDING_NOTIFICATION_CLICK_EVENT));
+}
+
+IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
+                       KeepAliveRegistryPendingNotificationCloseEvent) {
+  RequestAndAcceptPermission();
+
+  std::string script_result;
+  ASSERT_TRUE(RunScript("DisplayPersistentNotification('action_none')",
+                        &script_result));
+  EXPECT_EQ("ok", script_result);
+
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications(true /* is_persistent */);
+  ASSERT_EQ(1u, notifications.size());
+
+  ASSERT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  NotificationDisplayServiceImpl* display_service =
+      NotificationDisplayServiceImpl::GetForProfile(browser()->profile());
+  NotificationHandler* handler = display_service->GetNotificationHandler(
+      NotificationHandler::Type::WEB_PERSISTENT);
+  ASSERT_TRUE(handler);
+
+  base::RunLoop run_loop;
+  handler->OnClose(browser()->profile(), notifications[0].origin_url(),
+                   notifications[0].id(), true /* by_user */,
+                   run_loop.QuitClosure());
+
+  // The asynchronous part of the close event will still be in progress, but
+  // the keep alive registration should have been created.
+  ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  // Finish the close event.
+  run_loop.Run();
+
+  ASSERT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
 }
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 

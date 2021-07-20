@@ -86,7 +86,11 @@ enum class ProfileKeepAliveOrigin {
   // This profile is being created (and is used to render GAIA sign-in flow).
   kProfileCreationFlow = 19,
 
-  kMaxValue = kProfileCreationFlow,
+  // The user just closed a notification. This might cause writing to the
+  // profile's NotificationDatabase, so wait for the event to finish processing.
+  kPendingNotificationCloseEvent = 20,
+
+  kMaxValue = kPendingNotificationCloseEvent,
 };
 
 std::ostream& operator<<(std::ostream& out,

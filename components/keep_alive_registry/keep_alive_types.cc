@@ -40,6 +40,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "NOTIFICATION";
     case KeepAliveOrigin::PENDING_NOTIFICATION_CLICK_EVENT:
       return out << "PENDING_NOTIFICATION_CLICK_EVENT";
+    case KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT:
+      return out << "PENDING_NOTIFICATION_CLOSE_EVENT";
     case KeepAliveOrigin::IN_FLIGHT_PUSH_MESSAGE:
       return out << "IN_FLIGHT_PUSH_MESSAGE";
     case KeepAliveOrigin::APP_LIST_SERVICE_VIEWS:

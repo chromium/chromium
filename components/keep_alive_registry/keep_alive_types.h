@@ -46,6 +46,7 @@ enum class KeepAliveOrigin {
   // c/b/notifications
   NOTIFICATION,
   PENDING_NOTIFICATION_CLICK_EVENT,
+  PENDING_NOTIFICATION_CLOSE_EVENT,
 
   // c/b/push_messaging
   IN_FLIGHT_PUSH_MESSAGE,

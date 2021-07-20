@@ -466,6 +466,7 @@ bool BackgroundModeManager::IsBackgroundWithoutWindows() const {
       // are in that mode.
       KeepAliveOrigin::NOTIFICATION,
       KeepAliveOrigin::PENDING_NOTIFICATION_CLICK_EVENT,
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT,
       KeepAliveOrigin::IN_FLIGHT_PUSH_MESSAGE,
   });
 }
