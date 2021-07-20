@@ -833,22 +833,19 @@ TEST_F(ExtendedDesktopTest, KeyEventsOnLockScreen) {
   ui::test::EventGenerator* event_generator = GetEventGenerator();
 
   event_generator->set_current_target(root_windows[0]);
-  event_generator->PressKey(ui::VKEY_A, 0);
-  event_generator->ReleaseKey(ui::VKEY_A, 0);
+  event_generator->PressAndReleaseKey(ui::VKEY_A);
   EXPECT_EQ(lock_widget->GetNativeView(), focus_client->GetFocusedWindow());
   EXPECT_EQ("a", base::UTF16ToASCII(textfield->GetText()));
 
   event_generator->set_current_target(root_windows[1]);
-  event_generator->PressKey(ui::VKEY_B, 0);
-  event_generator->ReleaseKey(ui::VKEY_B, 0);
+  event_generator->PressAndReleaseKey(ui::VKEY_B);
   EXPECT_EQ(lock_widget->GetNativeView(), focus_client->GetFocusedWindow());
   EXPECT_EQ("ab", base::UTF16ToASCII(textfield->GetText()));
 
   // Deleting 2nd display. The lock window still should get the events.
   UpdateDisplay("100x100");
   event_generator->set_current_target(root_windows[0]);
-  event_generator->PressKey(ui::VKEY_C, 0);
-  event_generator->ReleaseKey(ui::VKEY_C, 0);
+  event_generator->PressAndReleaseKey(ui::VKEY_C);
   EXPECT_EQ(lock_widget->GetNativeView(), focus_client->GetFocusedWindow());
   EXPECT_EQ("abc", base::UTF16ToASCII(textfield->GetText()));
 
@@ -857,14 +854,12 @@ TEST_F(ExtendedDesktopTest, KeyEventsOnLockScreen) {
   UpdateDisplay("100x100,200x200");
   root_windows = Shell::GetAllRootWindows();
   event_generator->set_current_target(root_windows[0]);
-  event_generator->PressKey(ui::VKEY_D, 0);
-  event_generator->ReleaseKey(ui::VKEY_D, 0);
+  event_generator->PressAndReleaseKey(ui::VKEY_D);
   EXPECT_EQ(lock_widget->GetNativeView(), focus_client->GetFocusedWindow());
   EXPECT_EQ("abcd", base::UTF16ToASCII(textfield->GetText()));
 
   event_generator->set_current_target(root_windows[1]);
-  event_generator->PressKey(ui::VKEY_E, 0);
-  event_generator->ReleaseKey(ui::VKEY_E, 0);
+  event_generator->PressAndReleaseKey(ui::VKEY_E);
   EXPECT_EQ(lock_widget->GetNativeView(), focus_client->GetFocusedWindow());
   EXPECT_EQ("abcde", base::UTF16ToASCII(textfield->GetText()));
 }

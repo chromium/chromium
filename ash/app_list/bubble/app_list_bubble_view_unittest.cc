@@ -104,12 +104,6 @@ class AppListBubbleViewTest : public AshTestBase {
   // Shows the app list on the primary display.
   void ShowAppList() { GetBubblePresenter()->Show(GetPrimaryDisplay().id()); }
 
-  // Simulates typing a key.
-  void PressAndReleaseKey(ui::KeyboardCode key) {
-    GetEventGenerator()->PressKey(key, ui::EF_NONE);
-    GetEventGenerator()->ReleaseKey(key, ui::EF_NONE);
-  }
-
   void ClickButton(views::Button* button) {
     GetEventGenerator()->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
     GetEventGenerator()->ClickLeftButton();

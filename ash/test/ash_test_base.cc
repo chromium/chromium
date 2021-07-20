@@ -466,6 +466,10 @@ bool AshTestBase::TestIfMouseWarpsAt(ui::test::EventGenerator* event_generator,
              .id();
 }
 
+void AshTestBase::PressAndReleaseKey(ui::KeyboardCode key_code, int flags) {
+  GetEventGenerator()->PressAndReleaseKey(key_code, flags);
+}
+
 void AshTestBase::SimulateMouseClickAt(
     ui::test::EventGenerator* event_generator,
     const views::View* target_view) {

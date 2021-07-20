@@ -3762,12 +3762,6 @@ class AppListPresenterHomeLauncherTest
            app_list_controller->GetTargetVisibility(absl::nullopt);
   }
 
-  void PressAndReleaseKey(ui::KeyboardCode key) {
-    GetEventGenerator()->PressKey(key, ui::EF_NONE);
-    GetEventGenerator()->ReleaseKey(key, ui::EF_NONE);
-    base::RunLoop().RunUntilIdle();
-  }
-
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<WallpaperControllerTestApi> wallpaper_test_api_;
@@ -4069,6 +4063,7 @@ TEST_P(AppListPresenterHomeLauncherTest,
   EXPECT_TRUE(IsAppListVisible());
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsAppListVisible());
 }
 
@@ -4077,6 +4072,7 @@ TEST_P(AppListPresenterHomeLauncherTest, BackKeyInNonTabletModeClosesLauncher) {
   EXPECT_TRUE(IsAppListVisible());
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_BROWSER_BACK);
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsAppListVisible());
 }
 
@@ -4086,6 +4082,7 @@ TEST_P(AppListPresenterHomeLauncherTest,
   EXPECT_TRUE(IsAppListVisible());
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_BROWSER_SEARCH);
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsAppListVisible());
 }
 
@@ -4095,6 +4092,7 @@ TEST_P(AppListPresenterHomeLauncherTest,
   EXPECT_TRUE(IsAppListVisible());
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsAppListVisible());
 }
 
@@ -4104,6 +4102,7 @@ TEST_P(AppListPresenterHomeLauncherTest,
   EXPECT_TRUE(IsAppListVisible());
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_BROWSER_BACK);
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsAppListVisible());
 }
 
@@ -4113,6 +4112,7 @@ TEST_P(AppListPresenterHomeLauncherTest,
   EXPECT_TRUE(IsAppListVisible());
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_BROWSER_SEARCH);
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsAppListVisible());
 }
 

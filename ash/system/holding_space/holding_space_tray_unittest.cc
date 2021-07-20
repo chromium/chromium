@@ -106,15 +106,6 @@ void LongPress(const views::View* view) {
   event_generator.Dispatch(&gesture_end);
 }
 
-void PressAndReleaseKey(const views::View* view,
-                        ui::KeyboardCode key_code,
-                        int flags = ui::EF_NONE) {
-  auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
-  ui::test::EventGenerator event_generator(root_window);
-  event_generator.PressKey(key_code, flags);
-  event_generator.ReleaseKey(key_code, flags);
-}
-
 bool PressTabUntilFocused(const views::View* view, int max_count = 10) {
   auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
   ui::test::EventGenerator event_generator(root_window);
@@ -2000,7 +1991,7 @@ TEST_F(HoldingSpaceTrayTest, EnterKeyOpensDownloads) {
   // app. There should be *no* attempts to open an holding space items.
   EXPECT_CALL(*client(), OpenItems).Times(0);
   EXPECT_CALL(*client(), OpenDownloads);
-  PressAndReleaseKey(downloads_section_header, ui::KeyboardCode::VKEY_RETURN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
 }
 
 // User should be able to launch selected holding space items by pressing the
@@ -2027,7 +2018,7 @@ TEST_F(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
 
   // Press the enter key. The client should *not* attempt to open any items.
   EXPECT_CALL(*client(), OpenItems).Times(0);
-  PressAndReleaseKey(item_views[0], ui::KeyboardCode::VKEY_RETURN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   testing::Mock::VerifyAndClearExpectations(client());
 
   // Click an item. The view should be selected.
@@ -2039,7 +2030,7 @@ TEST_F(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
   // Press the enter key. We expect the client to open the selected item.
   EXPECT_CALL(*client(), OpenItems(testing::ElementsAre(item_views[0]->item()),
                                    testing::_));
-  PressAndReleaseKey(item_views[0], ui::KeyboardCode::VKEY_RETURN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   testing::Mock::VerifyAndClearExpectations(client());
 
   // Shift-click on the second item. Both views should be selected.
@@ -2051,7 +2042,7 @@ TEST_F(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
   EXPECT_CALL(*client(), OpenItems(testing::ElementsAre(item_views[0]->item(),
                                                         item_views[1]->item()),
                                    testing::_));
-  PressAndReleaseKey(item_views[1], ui::KeyboardCode::VKEY_RETURN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   testing::Mock::VerifyAndClearExpectations(client());
 
   // Tab traverse to the last item.
@@ -2061,7 +2052,7 @@ TEST_F(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
   // it was *not* selected prior to pressing the enter key.
   EXPECT_CALL(*client(), OpenItems(testing::ElementsAre(item_views[2]->item()),
                                    testing::_));
-  PressAndReleaseKey(item_views[2], ui::KeyboardCode::VKEY_RETURN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   EXPECT_FALSE(item_views[0]->selected());
   EXPECT_FALSE(item_views[1]->selected());
   EXPECT_TRUE(item_views[2]->selected());
@@ -2278,7 +2269,7 @@ TEST_F(HoldingSpaceTrayTest, MultiselectInTouchMode) {
 
   // Close the context menu. The view that was long pressed should still be
   // selected.
-  PressAndReleaseKey(item_views[0], ui::KeyboardCode::VKEY_ESCAPE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
   EXPECT_FALSE(views::MenuController::GetActiveInstance());
   EXPECT_TRUE(item_views[0]->selected());
   EXPECT_FALSE(item_views[1]->selected());
@@ -2294,7 +2285,7 @@ TEST_F(HoldingSpaceTrayTest, MultiselectInTouchMode) {
 
   // Close the context menu. Both views that were long pressed should still be
   // selected.
-  PressAndReleaseKey(item_views[0], ui::KeyboardCode::VKEY_ESCAPE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
   EXPECT_FALSE(views::MenuController::GetActiveInstance());
   EXPECT_TRUE(item_views[0]->selected());
   EXPECT_TRUE(item_views[1]->selected());

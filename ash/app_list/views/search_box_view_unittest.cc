@@ -1121,11 +1121,6 @@ class SearchBoxViewAppListBubbleTest : public AshTestBase {
   }
   ~SearchBoxViewAppListBubbleTest() override = default;
 
-  void PressAndReleaseKey(ui::KeyboardCode key) {
-    GetEventGenerator()->PressKey(key, ui::EF_NONE);
-    GetEventGenerator()->ReleaseKey(key, ui::EF_NONE);
-  }
-
   static void AddSearchResult(const std::string& id,
                               const std::u16string& title) {
     SearchModel::SearchResults* search_results =

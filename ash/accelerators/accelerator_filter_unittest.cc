@@ -34,13 +34,11 @@ TEST_F(AcceleratorFilterTest, TestFilterWithoutFocus) {
   const TestScreenshotDelegate* delegate = GetScreenshotDelegate();
   EXPECT_EQ(0, delegate->handle_take_screenshot_count());
 
-  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
   // VKEY_SNAPSHOT opens capture mode when the feature is enabled. Otherwise,
   // AcceleratorController calls ScreenshotDelegate::HandleTakeScreenshot() when
   // VKEY_SNAPSHOT is pressed. See kAcceleratorData[] in
   // accelerator_controller.cc.
-  generator.PressKey(ui::VKEY_SNAPSHOT, 0);
-  generator.ReleaseKey(ui::VKEY_SNAPSHOT, 0);
+  PressAndReleaseKey(ui::VKEY_SNAPSHOT);
   if (features::IsCaptureModeEnabled())
     EXPECT_TRUE(CaptureModeController::Get()->IsActive());
   else
@@ -59,9 +57,7 @@ TEST_F(AcceleratorFilterTest, TestFilterWithFocus) {
 
   // AcceleratorFilter should ignore the key events since the root window is
   // not focused.
-  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
-  generator.PressKey(ui::VKEY_SNAPSHOT, 0);
-  generator.ReleaseKey(ui::VKEY_SNAPSHOT, 0);
+  PressAndReleaseKey(ui::VKEY_SNAPSHOT);
   if (features::IsCaptureModeEnabled())
     EXPECT_FALSE(CaptureModeController::Get()->IsActive());
   else
@@ -76,9 +72,7 @@ TEST_F(AcceleratorFilterTest, TestCapsLockMask) {
   const TestScreenshotDelegate* delegate = GetScreenshotDelegate();
   EXPECT_EQ(0, delegate->handle_take_screenshot_count());
 
-  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
-  generator.PressKey(ui::VKEY_SNAPSHOT, 0);
-  generator.ReleaseKey(ui::VKEY_SNAPSHOT, 0);
+  PressAndReleaseKey(ui::VKEY_SNAPSHOT);
   const bool capture_mode_enabled = features::IsCaptureModeEnabled();
   auto* controller = CaptureModeController::Get();
   if (capture_mode_enabled) {
@@ -90,8 +84,7 @@ TEST_F(AcceleratorFilterTest, TestCapsLockMask) {
 
   // Check if AcceleratorFilter ignores the mask for Caps Lock. Note that there
   // is no ui::EF_ mask for Num Lock.
-  generator.PressKey(ui::VKEY_SNAPSHOT, ui::EF_CAPS_LOCK_ON);
-  generator.ReleaseKey(ui::VKEY_SNAPSHOT, ui::EF_CAPS_LOCK_ON);
+  PressAndReleaseKey(ui::VKEY_SNAPSHOT, ui::EF_CAPS_LOCK_ON);
   if (capture_mode_enabled)
     EXPECT_TRUE(controller->IsActive());
   else
@@ -148,11 +141,8 @@ TEST_F(AcceleratorFilterTest, SearchKeyShortcutsAreAlwaysHandled) {
       Shell::Get()->session_controller();
   EXPECT_FALSE(session_controller->IsScreenLocked());
 
-  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
-
   // We can lock the screen (Search+L) if a window is not present.
-  generator.PressKey(ui::VKEY_L, ui::EF_COMMAND_DOWN);
-  generator.ReleaseKey(ui::VKEY_L, ui::EF_COMMAND_DOWN);
+  PressAndReleaseKey(ui::VKEY_L, ui::EF_COMMAND_DOWN);
   GetSessionControllerClient()->FlushForTest();  // LockScreen is an async call.
   EXPECT_TRUE(session_controller->IsScreenLocked());
   UnblockUserSession();
@@ -161,8 +151,7 @@ TEST_F(AcceleratorFilterTest, SearchKeyShortcutsAreAlwaysHandled) {
   // Search+L is processed when the app_list target visibility is false.
   GetAppListTestHelper()->DismissAndRunLoop();
   GetAppListTestHelper()->CheckVisibility(false);
-  generator.PressKey(ui::VKEY_L, ui::EF_COMMAND_DOWN);
-  generator.ReleaseKey(ui::VKEY_L, ui::EF_COMMAND_DOWN);
+  PressAndReleaseKey(ui::VKEY_L, ui::EF_COMMAND_DOWN);
   GetSessionControllerClient()->FlushForTest();  // LockScreen is an async call.
   EXPECT_TRUE(session_controller->IsScreenLocked());
   UnblockUserSession();
@@ -173,8 +162,7 @@ TEST_F(AcceleratorFilterTest, SearchKeyShortcutsAreAlwaysHandled) {
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
       &window_delegate, 0, gfx::Rect(200, 200)));
   window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
-  generator.PressKey(ui::VKEY_L, ui::EF_COMMAND_DOWN);
-  generator.ReleaseKey(ui::VKEY_L, ui::EF_COMMAND_DOWN);
+  PressAndReleaseKey(ui::VKEY_L, ui::EF_COMMAND_DOWN);
   GetSessionControllerClient()->FlushForTest();  // LockScreen is an async call.
   EXPECT_TRUE(session_controller->IsScreenLocked());
   UnblockUserSession();

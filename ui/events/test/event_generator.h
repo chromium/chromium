@@ -436,6 +436,11 @@ class EventGenerator {
                   int flags,
                   int source_device_id = ED_UNKNOWN_DEVICE);
 
+  // Calls PressKey() then ReleaseKey() to simulate typing one character.
+  void PressAndReleaseKey(KeyboardCode key_code,
+                          int flags = EF_NONE,
+                          int source_device_id = ED_UNKNOWN_DEVICE);
+
   // Dispatch the event to the WindowEventDispatcher.
   void Dispatch(Event* event);
 

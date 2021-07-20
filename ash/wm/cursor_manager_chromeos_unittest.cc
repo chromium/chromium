@@ -16,8 +16,7 @@ TEST_F(CursorManagerChromeosTest, VerifyVisibilityAfterKeyCommands) {
   ASSERT_TRUE(cursor_manager->IsCursorVisible());
 
   // Pressing the normal key should hide the cursor.
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_C, ui::EF_NONE);
-  GetEventGenerator()->ReleaseKey(ui::KeyboardCode::VKEY_C, ui::EF_NONE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_C);
   EXPECT_FALSE(cursor_manager->IsCursorVisible());
 
   // Move the mouse and the cursor should show.
@@ -25,20 +24,15 @@ TEST_F(CursorManagerChromeosTest, VerifyVisibilityAfterKeyCommands) {
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 
   // The command key commands should not hide the cursor.
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_C, ui::EF_COMMAND_DOWN);
-  GetEventGenerator()->ReleaseKey(ui::KeyboardCode::VKEY_C,
-                                  ui::EF_COMMAND_DOWN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_C, ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 
   // The alt key commands should not hide the cursor.
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_C, ui::EF_ALT_DOWN);
-  GetEventGenerator()->ReleaseKey(ui::KeyboardCode::VKEY_C, ui::EF_ALT_DOWN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_C, ui::EF_ALT_DOWN);
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 
   // The control key commands should not hide the cursor.
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_C, ui::EF_CONTROL_DOWN);
-  GetEventGenerator()->ReleaseKey(ui::KeyboardCode::VKEY_C,
-                                  ui::EF_CONTROL_DOWN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_C, ui::EF_CONTROL_DOWN);
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 }
 

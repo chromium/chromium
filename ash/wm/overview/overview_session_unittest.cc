@@ -1678,11 +1678,7 @@ TEST_F(OverviewSessionTest, AcceleratorInOverviewSession) {
   StubForTest(ewh);
   EXPECT_FALSE(is_ui_shown(ewh));
 
-  ui::test::EventGenerator event_generator(Shell::GetPrimaryRootWindow());
-  event_generator.PressKey(ui::VKEY_Q, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-  event_generator.ReleaseKey(ui::VKEY_Q,
-                             ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-
+  PressAndReleaseKey(ui::VKEY_Q, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
   EXPECT_TRUE(is_ui_shown(ewh));
 }
 

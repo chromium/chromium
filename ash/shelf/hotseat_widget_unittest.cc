@@ -1422,8 +1422,7 @@ TEST_P(HotseatWidgetTest, SwipeDownOnFocusedHotseat) {
   EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
 
   // Focus to the next element in the hotseat. The hotseat should show again.
-  GetEventGenerator()->PressKey(ui::VKEY_TAB, 0);
-  GetEventGenerator()->ReleaseKey(ui::VKEY_TAB, 0);
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
 }
 

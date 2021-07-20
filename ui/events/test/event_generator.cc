@@ -604,6 +604,13 @@ void EventGenerator::ReleaseKey(ui::KeyboardCode key_code,
   DispatchKeyEvent(false, key_code, flags, source_device_id);
 }
 
+void EventGenerator::PressAndReleaseKey(KeyboardCode key_code,
+                                        int flags,
+                                        int source_device_id) {
+  PressKey(key_code, flags, source_device_id);
+  ReleaseKey(key_code, flags, source_device_id);
+}
+
 void EventGenerator::Dispatch(ui::Event* event) {
   if (event->IsTouchEvent()) {
     ui::TouchEvent* touch_event = static_cast<ui::TouchEvent*>(event);

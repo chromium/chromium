@@ -283,9 +283,7 @@ TEST_F(PartialScreenshotControllerTest, MouseWarpTest) {
 TEST_F(PartialScreenshotControllerTest, CursorVisibilityTest) {
   aura::client::CursorClient* client = Shell::Get()->cursor_manager();
 
-  GetEventGenerator()->PressKey(ui::VKEY_A, 0);
-  GetEventGenerator()->ReleaseKey(ui::VKEY_A, 0);
-
+  PressAndReleaseKey(ui::VKEY_A);
   EXPECT_FALSE(client->IsCursorVisible());
 
   StartPartialScreenshotSession();
@@ -336,18 +334,15 @@ TEST_F(PartialScreenshotControllerTest, LargeCursor) {
 }
 
 TEST_F(WindowScreenshotControllerTest, KeyboardOperation) {
-  ui::test::EventGenerator* generator = GetEventGenerator();
   TestScreenshotDelegate* test_delegate = GetScreenshotDelegate();
 
   StartWindowScreenshotSession();
-  generator->PressKey(ui::VKEY_ESCAPE, 0);
-  generator->ReleaseKey(ui::VKEY_ESCAPE, 0);
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
   EXPECT_FALSE(IsActive());
   EXPECT_FALSE(test_delegate->GetSelectedWindowAndReset());
 
   StartWindowScreenshotSession();
-  generator->PressKey(ui::VKEY_RETURN, 0);
-  generator->ReleaseKey(ui::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_FALSE(IsActive());
   EXPECT_FALSE(test_delegate->GetSelectedWindowAndReset());
 
@@ -355,14 +350,12 @@ TEST_F(WindowScreenshotControllerTest, KeyboardOperation) {
       CreateSelectableWindow(gfx::Rect(5, 5, 20, 20)));
   wm::ActivateWindow(window1.get());
   StartWindowScreenshotSession();
-  generator->PressKey(ui::VKEY_ESCAPE, 0);
-  generator->ReleaseKey(ui::VKEY_ESCAPE, 0);
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
   EXPECT_FALSE(IsActive());
   EXPECT_FALSE(test_delegate->GetSelectedWindowAndReset());
 
   StartWindowScreenshotSession();
-  generator->PressKey(ui::VKEY_RETURN, 0);
-  generator->ReleaseKey(ui::VKEY_RETURN, 0);
+  PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_FALSE(IsActive());
   EXPECT_EQ(window1.get(), test_delegate->GetSelectedWindowAndReset());
   // Make sure it's properly reset.

@@ -318,11 +318,8 @@ class AcceleratorControllerTest : public AshTestBase {
   }
 
   void TriggerRotateScreenShortcut() {
-    ui::test::EventGenerator* generator = GetEventGenerator();
-    generator->PressKey(ui::VKEY_BROWSER_REFRESH,
-                        ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-    generator->ReleaseKey(ui::VKEY_BROWSER_REFRESH,
-                          ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+    PressAndReleaseKey(ui::VKEY_BROWSER_REFRESH,
+                       ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
     if (IsConfirmationDialogOpen()) {
       AcceptConfirmationDialog();
       base::RunLoop().RunUntilIdle();
@@ -801,16 +798,13 @@ TEST_F(AcceleratorControllerTest, RotateScreen) {
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   display::Display::Rotation initial_rotation =
       GetActiveDisplayRotation(display.id());
-  ui::test::EventGenerator* generator = GetEventGenerator();
   AccessibilityControllerImpl* accessibility_controller =
       Shell::Get()->accessibility_controller();
 
   EXPECT_FALSE(accessibility_controller
                    ->HasDisplayRotationAcceleratorDialogBeenAccepted());
-  generator->PressKey(ui::VKEY_BROWSER_REFRESH,
-                      ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-  generator->ReleaseKey(ui::VKEY_BROWSER_REFRESH,
-                        ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_BROWSER_REFRESH,
+                     ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
   // Dialog should be open.
   EXPECT_TRUE(IsConfirmationDialogOpen());
   // Cancel on the dialog should have no effect.
@@ -825,10 +819,8 @@ TEST_F(AcceleratorControllerTest, RotateScreen) {
   EXPECT_EQ(initial_rotation, rotation_after_cancel);
 
   // Use short cut again.
-  generator->PressKey(ui::VKEY_BROWSER_REFRESH,
-                      ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-  generator->ReleaseKey(ui::VKEY_BROWSER_REFRESH,
-                        ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_BROWSER_REFRESH,
+                     ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
   EXPECT_TRUE(IsConfirmationDialogOpen());
   AcceptConfirmationDialog();
   base::RunLoop().RunUntilIdle();
@@ -1033,15 +1025,12 @@ TEST_F(AcceleratorControllerTest, AutoRepeat) {
 }
 
 TEST_F(AcceleratorControllerTest, Previous) {
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_VOLUME_MUTE, ui::EF_NONE);
-  generator->ReleaseKey(ui::VKEY_VOLUME_MUTE, ui::EF_NONE);
+  PressAndReleaseKey(ui::VKEY_VOLUME_MUTE, ui::EF_NONE);
 
   EXPECT_EQ(ui::VKEY_VOLUME_MUTE, GetPreviousAccelerator().key_code());
   EXPECT_EQ(ui::EF_NONE, GetPreviousAccelerator().modifiers());
 
-  generator->PressKey(ui::VKEY_TAB, ui::EF_CONTROL_DOWN);
-  generator->ReleaseKey(ui::VKEY_TAB, ui::EF_CONTROL_DOWN);
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_CONTROL_DOWN);
 
   EXPECT_EQ(ui::VKEY_TAB, GetPreviousAccelerator().key_code());
   EXPECT_EQ(ui::EF_CONTROL_DOWN, GetPreviousAccelerator().modifiers());
@@ -1395,9 +1384,7 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppListFullscreen) {
                                     ++toggle_count_total);
   histogram_tester.ExpectBucketCount("Apps.AppListShowSource", kSearchKey,
                                      ++toggle_count_regular);
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_0, ui::EF_NONE);
-  generator->ReleaseKey(ui::VKEY_0, ui::EF_NONE);
+  PressAndReleaseKey(ui::VKEY_0);
   base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);

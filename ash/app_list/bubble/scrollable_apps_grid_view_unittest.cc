@@ -66,12 +66,6 @@ class ScrollableAppsGridViewTest : public AshTestBase {
     GetScrollableAppsGridView()->OnKeyReleased(key_event);
   }
 
-  // Simulates typing a key.
-  void PressAndReleaseKey(ui::KeyboardCode key) {
-    GetEventGenerator()->PressKey(key, ui::EF_NONE);
-    GetEventGenerator()->ReleaseKey(key, ui::EF_NONE);
-  }
-
   void ShowAppList() { GetAppListTestHelper()->ShowAppList(); }
 
   ScrollableAppsGridView* GetScrollableAppsGridView() {

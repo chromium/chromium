@@ -836,8 +836,7 @@ TEST_F(DockedMagnifierTest, TextInputFieldEvents) {
 
   // Simulate typing by pressing some keys while focus is in the text field. The
   // transformed caret center should always go to the viewport center.
-  GetEventGenerator()->PressKey(ui::VKEY_A, 0);
-  GetEventGenerator()->ReleaseKey(ui::VKEY_A, 0);
+  PressAndReleaseKey(ui::VKEY_A);
   gfx::Point new_caret_center(text_input_helper.GetCaretBounds().CenterPoint());
   gfx::Point new_caret_screen_point =
       controller()->GetLastCaretScreenPointForTesting();

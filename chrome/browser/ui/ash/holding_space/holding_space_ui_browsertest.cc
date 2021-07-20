@@ -185,8 +185,7 @@ void MoveMouseTo(const views::View* view, size_t count = 1u) {
 void PressAndReleaseKey(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
   auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
   ui::test::EventGenerator event_generator(root_window);
-  event_generator.PressKey(key_code, flags);
-  event_generator.ReleaseKey(key_code, flags);
+  event_generator.PressAndReleaseKey(key_code, flags);
 }
 
 // Performs a right click on `view` with the specified `flags`.

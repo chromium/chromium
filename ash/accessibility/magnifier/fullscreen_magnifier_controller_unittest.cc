@@ -654,9 +654,7 @@ TEST_F(FullscreenMagnifierControllerTest, FollowTextInputFieldKeyPress) {
   // Press keys on text input simulate typing on text field and the caret
   // moves beyond the caret right panning margin. The viewport is moved to the
   // place where caret's x coordinate is centered at the new viewport.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->PressKey(ui::VKEY_A, 0);
-  event_generator->ReleaseKey(ui::VKEY_A, 0);
+  PressAndReleaseKey(ui::VKEY_A);
   gfx::Rect caret_bounds = text_input_helper_.GetCaretBounds();
   EXPECT_LT(view_port.right() - kCaretPanningMargin / kScale,
             text_input_helper_.GetCaretBounds().x());
@@ -694,9 +692,7 @@ TEST_F(FullscreenMagnifierControllerTest, CenterTextCaretNotInsideViewport) {
 
   // Press keys on text input simulate typing on text field and the viewport
   // should be moved to keep the caret centered.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->PressKey(ui::VKEY_A, 0);
-  event_generator->ReleaseKey(ui::VKEY_A, 0);
+  PressAndReleaseKey(ui::VKEY_A);
   base::RunLoop().RunUntilIdle();
   gfx::Rect new_caret_bounds = text_input_helper_.GetCaretBounds();
   EXPECT_NE(caret_bounds, new_caret_bounds);

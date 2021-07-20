@@ -28,6 +28,7 @@
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/env.h"
 #include "ui/display/display.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 
 namespace aura {
@@ -188,6 +189,9 @@ class AshTestBase : public testing::Test {
   // display.
   bool TestIfMouseWarpsAt(ui::test::EventGenerator* event_generator,
                           const gfx::Point& point_in_screen);
+
+  // Presses and releases a key to simulate typing one character.
+  void PressAndReleaseKey(ui::KeyboardCode key_code, int flags = ui::EF_NONE);
 
   // Moves the mouse to the center of the view and generates a left button click
   // event.

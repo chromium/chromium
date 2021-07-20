@@ -522,8 +522,6 @@ TEST_F(ShellTest, EnvPreTargetHandler) {
 TEST_F(ShellTest, NoWindowTabFocus) {
   ExpectAllContainers();
 
-  auto* generator = GetEventGenerator();
-
   StatusAreaWidget* status_area_widget =
       GetPrimaryShelf()->status_area_widget();
   ShelfNavigationWidget* home_button = GetPrimaryShelf()->navigation_widget();
@@ -533,15 +531,13 @@ TEST_F(ShellTest, NoWindowTabFocus) {
 
   // Hit tab with window open, and expect that focus is not on the navigation
   // widget or status widget.
-  generator->PressKey(ui::VKEY_TAB, ui::EF_NONE);
-  generator->ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_FALSE(home_button->GetNativeView()->HasFocus());
   EXPECT_FALSE(status_area_widget->GetNativeView()->HasFocus());
 
   // Minimize the window, hit tab and expect that focus is on the launcher.
   widget->Minimize();
-  generator->PressKey(ui::VKEY_TAB, ui::EF_NONE);
-  generator->ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(home_button->GetNativeView()->HasFocus());
 
   // Show (to steal focus back before continuing testing) and close the window.
@@ -553,14 +549,12 @@ TEST_F(ShellTest, NoWindowTabFocus) {
   // button. Tab should be handled by overview mode and not hit the shell event
   // handler.
   EnterOverview();
-  generator->PressKey(ui::VKEY_TAB, ui::EF_NONE);
-  generator->ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_FALSE(home_button->GetNativeView()->HasFocus());
   ExitOverview();
 
   // Hit shift tab and expect that focus is on status widget.
-  generator->PressKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  generator->ReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_TRUE(status_area_widget->GetNativeView()->HasFocus());
 }
 

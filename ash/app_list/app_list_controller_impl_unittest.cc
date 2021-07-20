@@ -360,16 +360,14 @@ TEST_F(AppListControllerImplTest, VirtualKeyboardNotShownWhenUserStartsTyping) {
   // keyboard is not shown.
   ShowAppListNow(AppListViewState::kPeeking);
   EXPECT_EQ(AppListViewState::kPeeking, GetAppListView()->app_list_state());
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->PressKey(ui::KeyboardCode::VKEY_0, 0);
-  event_generator->ReleaseKey(ui::KeyboardCode::VKEY_0, 0);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
   EXPECT_EQ(AppListViewState::kHalf, GetAppListView()->app_list_state());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetVirtualKeyboardWindow()->IsVisible());
 
   // The keyboard should get shown if the user taps on the search box.
-  event_generator->GestureTapAt(
+  GetEventGenerator()->GestureTapAt(
       GetAppListView()->search_box_view()->GetBoundsInScreen().CenterPoint());
   ASSERT_TRUE(keyboard::WaitUntilShown());
 
