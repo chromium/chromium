@@ -122,6 +122,7 @@ source_set("platform_base") {
   sources = [
     "src/cpp/platform/base/base64_utils.cc",
     "src/cpp/platform/base/bluetooth_utils.cc",
+    "src/cpp/platform/base/input_stream.cc",
     "src/cpp/platform/base/prng.cc",
   ]
   public = [
