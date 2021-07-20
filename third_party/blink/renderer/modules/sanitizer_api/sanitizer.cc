@@ -133,7 +133,12 @@ Element* Sanitizer::sanitizeFor(ScriptState* script_state,
   if (baseline_drop_elements_.Contains(local_name.LowerASCII()))
     return nullptr;
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
-  Element* element = window->document()->CreateElementForBinding(
+  Document* inert_document = DocumentInit::Create()
+                                 .WithURL(window->Url())
+                                 .WithTypeFrom("text/html")
+                                 .WithExecutionContext(window)
+                                 .CreateDocument();
+  Element* element = inert_document->CreateElementForBinding(
       AtomicString(local_name), exception_state);
   if (exception_state.HadException()) {
     exception_state.ClearException();

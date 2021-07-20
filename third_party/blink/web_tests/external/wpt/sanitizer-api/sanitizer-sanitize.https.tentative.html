@@ -53,17 +53,6 @@
       assert_node_equals(expected, sanitized);
     }, "Sanitizer.sanitze(Document)");
 
-
-    async_test(t => {
-      let s = new Sanitizer();
-      fragment = s.sanitize(getFragment("<img src='http://bla/'>"));
-      t.step_timeout(_ => {
-        assert_equals(performance.getEntriesByName("http://bla/").length, 0);
-        t.done();
-      }, 1000);
-    }, "SanitizerAPI sanitize function shouldn't load the image.");
-
-
     testcases.forEach(c => test(t => {
         let s = new Sanitizer(c.config_input);
         var dom = new DOMParser().parseFromString("<!DOCTYPE html><body>" + c.value, "text/html");

@@ -42,6 +42,15 @@
       }, `Sanitizer.sanitizeFor("${context}", ...) should ${should_fail ? "fail" : "pass"}.`);
     }
 
+    async_test(t => {
+      let s = new Sanitizer();
+      s.sanitizeFor("div", "<img src='https://bla/'>");
+      t.step_timeout(_ => {
+        assert_equals(performance.getEntriesByName("https://bla/").length, 0);
+        t.done();
+      }, 1000);
+    }, "Sanitizer.sanitizeFor function shouldn't load the image.");
+
     test(t => {
       const probe = `<a href="about:blank">hello</a><script>con` +
           `sole.log("world!");<` + `/script>`;
