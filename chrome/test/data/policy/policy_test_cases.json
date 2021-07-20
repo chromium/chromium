@@ -9535,12 +9535,16 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {
-          "SafeBrowsingAllowlistDomains": [
+          "SafeBrowsingWhitelistDomains": [
             "google.com"
           ]
         },
         "prefs": {
-          "safebrowsing.safe_browsing_whitelist_domains": {}
+          "safebrowsing.safe_browsing_whitelist_domains": {
+            "value": [
+              "google.com"
+            ]
+          }
         }
       }
     ]
@@ -9560,7 +9564,38 @@
           ]
         },
         "prefs": {
-          "safebrowsing.safe_browsing_whitelist_domains": {}
+          "safebrowsing.safe_browsing_whitelist_domains": {
+            "value": [
+              "google.com"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "safebrowsing.safe_browsing_whitelist_domains": {
+            "default_value": [
+            ]
+          }
+        }
+      },
+      {
+        "note": "SafeBrowsingWhitelistDomains has been deprecated, and the new name should take precedence.",
+        "policies": {
+          "SafeBrowsingWhitelistDomains": [
+            "old.name.com"
+          ],
+          "SafeBrowsingAllowlistDomains": [
+            "new.name.com"
+          ]
+        },
+        "prefs": {
+          "safebrowsing.safe_browsing_whitelist_domains": {
+            "value": [
+              "new.name.com"
+            ]
+          }
         }
       }
     ]
