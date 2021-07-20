@@ -47,12 +47,12 @@ Status ParseBoolean(
 Status ParseString(std::string* to_set,
                    const base::Value& option,
                    Capabilities* capabilities) {
-  std::string str;
-  if (!option.GetAsString(&str))
+  const std::string* str = option.GetIfString();
+  if (!str)
     return Status(kInvalidArgument, "must be a string");
-  if (str.empty())
+  if (str->empty())
     return Status(kInvalidArgument, "cannot be empty");
-  *to_set = str;
+  *to_set = *str;
   return Status(kOk);
 }
 
@@ -111,8 +111,9 @@ Status IgnoreCapability(const base::Value& option, Capabilities* capabilities) {
 }
 
 Status ParseLogPath(const base::Value& option, Capabilities* capabilities) {
-  if (!option.GetAsString(&capabilities->log_path))
+  if (!option.is_string())
     return Status(kInvalidArgument, "must be a string");
+  capabilities->log_path = option.GetString();
   return Status(kOk);
 }
 
@@ -199,8 +200,9 @@ Status ParseMobileEmulation(const base::Value& option,
 
 Status ParsePageLoadStrategy(const base::Value& option,
                              Capabilities* capabilities) {
-  if (!option.GetAsString(&capabilities->page_load_strategy))
+  if (!option.is_string())
     return Status(kInvalidArgument, "'pageLoadStrategy' must be a string");
+  capabilities->page_load_strategy = option.GetString();
   if (capabilities->page_load_strategy == PageLoadStrategy::kNone ||
       capabilities->page_load_strategy == PageLoadStrategy::kEager ||
       capabilities->page_load_strategy == PageLoadStrategy::kNormal)
@@ -210,9 +212,11 @@ Status ParsePageLoadStrategy(const base::Value& option,
 
 Status ParseUnhandledPromptBehavior(const base::Value& option,
                                     Capabilities* capabilities) {
-  if (!option.GetAsString(&capabilities->unhandled_prompt_behavior))
+  if (!option.is_string()) {
     return Status(kInvalidArgument,
                   "'unhandledPromptBehavior' must be a string");
+  }
+  capabilities->unhandled_prompt_behavior = option.GetString();
   if (capabilities->unhandled_prompt_behavior == kDismiss ||
       capabilities->unhandled_prompt_behavior == kAccept ||
       capabilities->unhandled_prompt_behavior == kDismissAndNotify ||
@@ -322,13 +326,13 @@ Status ParseProxy(bool w3c_compliant,
           option_value->is_none()) {
         continue;
       }
-      std::string value;
-      if (!option_value->GetAsString(&value)) {
+      if (!option_value->is_string()) {
         return Status(
             kInvalidArgument,
             base::StringPrintf("'%s' must be a string",
                                proxy_servers_options[i][0]));
       }
+      std::string value = option_value->GetString();
       if (proxy_servers_options[i][0] == kSocksProxy) {
         int socksVersion;
         if (!proxy_dict->GetInteger("socksVersion", &socksVersion))
@@ -422,10 +426,9 @@ Status ParsePortNumber(int* to_set,
 Status ParseNetAddress(NetAddress* to_set,
                        const base::Value& option,
                        Capabilities* capabilities) {
-  std::string server_addr;
-  if (!option.GetAsString(&server_addr))
+  if (!option.is_string())
     return Status(kInvalidArgument, "must be 'host:port'");
-
+  std::string server_addr = option.GetString();
   std::vector<std::string> values;
   if (base::StartsWith(server_addr, "[")) {
     size_t ipv6_terminator_pos = server_addr.find(']');
@@ -465,9 +468,8 @@ Status ParseLoggingPrefs(const base::Value& option,
        !pref.IsAtEnd(); pref.Advance()) {
     std::string type = pref.key();
     Log::Level level;
-    std::string level_name;
-    if (!pref.value().GetAsString(&level_name) ||
-        !WebDriverLog::NameToLevel(level_name, &level)) {
+    const std::string* level_name = pref.value().GetIfString();
+    if (!level_name || !WebDriverLog::NameToLevel(*level_name, &level)) {
       return Status(kInvalidArgument,
                     "invalid log level for '" + type + "' log");
     }

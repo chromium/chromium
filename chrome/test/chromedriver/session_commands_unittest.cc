@@ -338,8 +338,8 @@ TEST(SessionCommandsTest, FileUpload) {
   params.SetString("file", kBase64ZipEntry);
   Status status = ExecuteUploadFile(&session, params, &value);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  std::string path;
-  ASSERT_TRUE(value->GetAsString(&path));
+  ASSERT_TRUE(value->is_string());
+  std::string path = value->GetString();
   ASSERT_TRUE(base::PathExists(base::FilePath::FromUTF8Unsafe(path)));
   std::string data;
   ASSERT_TRUE(

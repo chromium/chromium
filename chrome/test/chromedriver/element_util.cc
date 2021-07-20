@@ -207,10 +207,11 @@ Status GetElementEffectiveStyle(
       args, &result);
   if (status.IsError())
     return status;
-  if (!result->GetAsString(value)) {
+  if (!result->is_string()) {
     return Status(kUnknownError,
                   "failed to parse value of GET_EFFECTIVE_STYLE");
   }
+  *value = result->GetString();
   return Status(kOk);
 }
 
@@ -495,9 +496,9 @@ Status IsElementAttributeEqualToIgnoreCase(
       session, web_view, element_id, attribute_name, &result);
   if (status.IsError())
     return status;
-  std::string actual_value;
-  if (result->GetAsString(&actual_value)) {
-    *is_equal = base::LowerCaseEqualsASCII(actual_value, attribute_value);
+  if (result->is_string()) {
+    *is_equal =
+        base::LowerCaseEqualsASCII(result->GetString(), attribute_value);
   } else {
     *is_equal = false;
   }
@@ -632,8 +633,9 @@ Status GetElementTagName(
       args, &result);
   if (status.IsError())
     return status;
-  if (!result->GetAsString(name))
+  if (!result->is_string())
     return Status(kUnknownError, "failed to get element tag name");
+  *name = result->GetString();
   return Status(kOk);
 }
 

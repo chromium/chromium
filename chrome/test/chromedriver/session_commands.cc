@@ -799,10 +799,9 @@ Status ExecuteSwitchToWindow(Session* session,
           std::string(), kGetWindowNameScript, args, &result);
       if (status.IsError())
         return status;
-      std::string window_name;
-      if (!result->GetAsString(&window_name))
+      if (!result->is_string())
         return Status(kUnknownError, "failed to get window name");
-      if (window_name == name) {
+      if (result->GetString() == name) {
         web_view_id = *it;
         found = true;
         break;

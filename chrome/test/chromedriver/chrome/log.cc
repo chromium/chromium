@@ -42,7 +42,6 @@ std::unique_ptr<base::Value> SmartDeepCopy(const base::Value* value) {
   const size_t kMaxChildren = 20;
   const base::ListValue* list = NULL;
   const base::DictionaryValue* dict = NULL;
-  std::string data;
   if (value->GetAsDictionary(&dict)) {
     std::unique_ptr<base::DictionaryValue> dict_copy(
         new base::DictionaryValue());
@@ -70,7 +69,8 @@ std::unique_ptr<base::Value> SmartDeepCopy(const base::Value* value) {
       list_copy->Append(SmartDeepCopy(child));
     }
     return std::move(list_copy);
-  } else if (value->GetAsString(&data)) {
+  } else if (value->is_string()) {
+    std::string data = value->GetString();
     TruncateString(&data);
     return std::make_unique<base::Value>(data);
   }

@@ -15,11 +15,8 @@ DevToolsEventsLogger::DevToolsEventsLogger(Log* log, const base::Value& prefs)
 inline DevToolsEventsLogger::~DevToolsEventsLogger() {}
 
 Status DevToolsEventsLogger::OnConnected(DevToolsClient* client) {
-  for (const auto& entry : prefs_.GetList()) {
-    std::string event;
-    entry.GetAsString(&event);
-    events_.insert(event);
-  }
+  for (const auto& entry : prefs_.GetList())
+    events_.insert(entry.is_string() ? entry.GetString() : std::string());
   return Status(kOk);
 }
 

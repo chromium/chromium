@@ -40,9 +40,9 @@ MessageResponse StructuredMessageHandler::HandleMessage(
     return InternalError("Could parse automation JSON: " + json + " because " +
                          parsed_json.error_message);
 
-  std::string temp;
-  if (!parsed_json.value->GetAsString(&temp))
+  if (!parsed_json.value->is_string())
     return InternalError("Message was not a string: " + json);
+  std::string temp = parsed_json.value->GetString();
 
   parsed_json = base::JSONReader::ReadAndReturnValueWithError(
       temp, base::JSON_ALLOW_TRAILING_COMMAS);

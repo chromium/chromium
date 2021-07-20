@@ -238,8 +238,8 @@ Status ExecuteClickElement(Session* session,
       if (status.IsError())
         return status;
       std::string element_type;
-      if (get_element_type->GetAsString(&element_type))
-        element_type = base::ToLowerASCII(element_type);
+      if (get_element_type->is_string())
+        element_type = base::ToLowerASCII(get_element_type->GetString());
       if (element_type == "file")
         return Status(kInvalidArgument);
     }
@@ -384,7 +384,6 @@ Status ExecuteClearElement(Session* session,
   status = GetElementTagName(session, web_view, element_id, &tag_name);
   if (status.IsError())
     return status;
-  std::string element_type;
   bool is_input_control = false;
 
   if (tag_name == "input") {
@@ -393,8 +392,10 @@ Status ExecuteClearElement(Session* session,
                                  &get_element_type);
     if (status.IsError())
       return status;
-    if (get_element_type->GetAsString(&element_type))
-      element_type = base::ToLowerASCII(element_type);
+
+    std::string element_type;
+    if (get_element_type->is_string())
+      element_type = base::ToLowerASCII(get_element_type->GetString());
 
     is_input_control =
         inputControlTypes.find(element_type) != inputControlTypes.end();
@@ -494,8 +495,8 @@ Status ExecuteSendKeysToElement(Session* session,
   if (status.IsError())
     return status;
   std::string element_type;
-  if (get_element_type->GetAsString(&element_type))
-    element_type = base::ToLowerASCII(element_type);
+  if (get_element_type->is_string())
+    element_type = base::ToLowerASCII(get_element_type->GetString());
   bool is_file = element_type == "file";
   bool is_nontypeable = nontypeableControlTypes.find(element_type) !=
                         nontypeableControlTypes.end();

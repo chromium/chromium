@@ -107,8 +107,9 @@ Status GetUrl(WebView* web_view, const std::string& frame, std::string* url) {
       frame, "function() { return document.URL; }", args, &value);
   if (status.IsError())
     return status;
-  if (!value->GetAsString(url))
+  if (!value->is_string())
     return Status(kUnknownError, "javascript failed to return the url");
+  *url = value->GetString();
   return Status(kOk);
 }
 
@@ -604,7 +605,6 @@ Status ParsePageRanges(const base::DictionaryValue& params,
   }
 
   std::vector<std::string> ranges;
-  std::string pages_str;
   for (const base::Value& page_range : page_range_list->GetList()) {
     if (page_range.is_int()) {
       if (page_range.GetInt() < 0) {
@@ -612,8 +612,8 @@ Status ParsePageRanges(const base::DictionaryValue& params,
                       "a Number entry in 'pageRanges' must not be less than 0");
       }
       ranges.push_back(base::NumberToString(page_range.GetInt()));
-    } else if (page_range.GetAsString(&pages_str)) {
-      ranges.push_back(pages_str);
+    } else if (page_range.is_string()) {
+      ranges.push_back(page_range.GetString());
     } else {
       return Status(kInvalidArgument,
                     "an entry in 'pageRanges' must be a Number or String");
