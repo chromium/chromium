@@ -382,8 +382,6 @@
 	</array>
 	<key>NSUserNotificationAlertStyle</key>
 	<string>banner</string>
-	<key>NSRequiresAquaSystemAppearance</key>
-	<false/>
 	<key>GPUEjectPolicy</key>
 	<string>wait</string>
 </dict>
