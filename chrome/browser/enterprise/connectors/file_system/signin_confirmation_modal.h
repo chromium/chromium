@@ -8,23 +8,26 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace enterprise_connectors {
+class SigninExperienceTestObserver;
+
 class FileSystemConfirmationModal : public views::DialogDelegate {
  public:
   using Callback = base::OnceCallback<void(bool)>;
   ~FileSystemConfirmationModal() override;
 
   static void Show(gfx::NativeWindow context,
-                   std::u16string title,
-                   std::u16string message,
-                   std::u16string cancel_button,
-                   std::u16string accept_button,
-                   Callback callback);
+                   const std::u16string& title,
+                   const std::u16string& message,
+                   const std::u16string& cancel_button,
+                   const std::u16string& accept_button,
+                   Callback callback,
+                   SigninExperienceTestObserver* observer = nullptr);
 
  private:
-  FileSystemConfirmationModal(std::u16string title,
-                              std::u16string message,
-                              std::u16string cancel_button,
-                              std::u16string accept_button,
+  FileSystemConfirmationModal(const std::u16string& title,
+                              const std::u16string& message,
+                              const std::u16string& cancel_button,
+                              const std::u16string& accept_button,
                               Callback callback);
 
   // WidgetDelegate:

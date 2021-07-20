@@ -10,6 +10,7 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item_rename_handler.h"
+#include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -25,6 +26,7 @@ namespace enterprise_connectors {
 
 class AccessTokenFetcher;
 class BoxUploader;
+class SigninExperienceTestObserver;
 
 // An implementation of download::DownloadItemRenameHandler that sends a
 // download item file to a cloud-based storage provider as specified in the
@@ -34,10 +36,32 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
   static std::unique_ptr<download::DownloadItemRenameHandler> CreateIfNeeded(
       download::DownloadItem* download_item);
 
+  class TestObserver : public base::CheckedObserver {
+   public:
+    explicit TestObserver(FileSystemRenameHandler* rename_handler);
+    ~TestObserver() override;
+
+    enum Status { kNotStarted, kInProgress, kSucceeded, kFailed };
+
+    virtual void OnFetchAccessTokenStart() {}
+    virtual void OnAccessTokenFetched(const GoogleServiceAuthError& status) {}
+    virtual void OnDestruction();
+
+    static BoxUploader* GetBoxUploader(FileSystemRenameHandler* rename_handler);
+
+   private:
+    base::WeakPtr<FileSystemRenameHandler> rename_handler_;
+  };
+
   FileSystemRenameHandler(download::DownloadItem* download_item,
                           FileSystemSettings settings);
   explicit FileSystemRenameHandler(download::DownloadItem* download_item);
   ~FileSystemRenameHandler() override;
+
+  base::WeakPtr<FileSystemRenameHandler> RegisterSigninObserverForTesting(
+      SigninExperienceTestObserver* observer);
+  void UnregisterSigninObserverForTesting(
+      SigninExperienceTestObserver* observer);
 
  protected:
   // download::DownloadItemRenameHandler interface.
@@ -66,6 +90,9 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
                             const std::string& refresh_token);
 
  private:
+  static absl::optional<FileSystemSettings> IsEnabled(
+      download::DownloadItem* download_item);
+
   void StartInternal(std::string access_token = std::string());
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* context);
@@ -90,7 +117,28 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
   std::unique_ptr<AccessTokenFetcher> token_fetcher_;
   // Main uploader that manages the entire API call flow of file upload.
   std::unique_ptr<BoxUploader> uploader_;
+  base::ObserverList<TestObserver> observers_;
+  SigninExperienceTestObserver* signin_observer_ = nullptr;
   base::WeakPtrFactory<FileSystemRenameHandler> weak_factory_{this};
+};
+
+class BoxFetchAccessTokenTestObserver
+    : public FileSystemRenameHandler::TestObserver {
+ public:
+  explicit BoxFetchAccessTokenTestObserver(
+      FileSystemRenameHandler* rename_handler);
+  ~BoxFetchAccessTokenTestObserver() override = default;
+
+  // RenameHandlerObserver methods
+  void OnFetchAccessTokenStart() override;
+  void OnAccessTokenFetched(const GoogleServiceAuthError& status) override;
+
+  bool WaitForFetch();
+
+ private:
+  Status status_ = Status::kNotStarted;
+  GoogleServiceAuthError fetch_token_err_;
+  base::RunLoop run_loop_;
 };
 
 }  // namespace enterprise_connectors
