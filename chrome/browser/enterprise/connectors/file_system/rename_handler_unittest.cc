@@ -33,19 +33,7 @@ using testing::Return;
 namespace enterprise_connectors {
 
 const char kBox[] = "box";
-constexpr char kWildcardSendDownloadToCloudPref[] = R"([
-  {
-    "service_provider": "box",
-    "enterprise_id": "1234567890",
-    "enable": [
-      {
-        "url_list": ["*"],
-        "mime_types": ["text/plain", "image/png", "application/zip"]
-      }
-    ]
-  }
-])";
-
+// Also kWildcardSendDownloadToCloudPref in test_helper.h.
 constexpr char kRenameSendDownloadToCloudPref[] = R"([
   {
     "service_provider": "box",

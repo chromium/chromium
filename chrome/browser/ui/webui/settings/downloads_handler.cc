@@ -9,6 +9,9 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/file_system/service_settings.h"
+#include "chrome/browser/enterprise/connectors/file_system/signin_experience.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/common/pref_names.h"
@@ -25,6 +28,7 @@
 #endif
 
 using base::UserMetricsAction;
+namespace ec = enterprise_connectors;
 
 namespace settings {
 
@@ -56,6 +60,11 @@ void DownloadsHandler::RegisterMessages() {
       base::BindRepeating(&DownloadsHandler::HandleGetDownloadLocationText,
                           base::Unretained(this)));
 #endif
+
+  web_ui()->RegisterMessageCallback(
+      "setDownloadsConnectionAccountLink",
+      base::BindRepeating(&DownloadsHandler::SetDownloadsConnectionAccountLink,
+                          base::Unretained(this)));
 }
 
 void DownloadsHandler::OnJavascriptAllowed() {
@@ -64,6 +73,11 @@ void DownloadsHandler::OnJavascriptAllowed() {
       prefs::kDownloadExtensionsToOpen,
       base::BindRepeating(&DownloadsHandler::SendAutoOpenDownloadsToJavascript,
                           base::Unretained(this)));
+  pref_registrar_.Add(
+      enterprise_connectors::kSendDownloadToCloudPref,
+      base::BindRepeating(
+          &DownloadsHandler::SendDownloadsConnectionPolicyToJavascript,
+          base::Unretained(this)));
 }
 
 void DownloadsHandler::OnJavascriptDisallowed() {
@@ -72,6 +86,7 @@ void DownloadsHandler::OnJavascriptDisallowed() {
 
 void DownloadsHandler::HandleInitialize(const base::ListValue* args) {
   AllowJavascript();
+  SendDownloadsConnectionPolicyToJavascript();
   SendAutoOpenDownloadsToJavascript();
 }
 
@@ -141,5 +156,73 @@ void DownloadsHandler::HandleGetDownloadLocationText(
           file_manager::util::GetPathDisplayTextForSettings(profile_, path)));
 }
 #endif
+
+using enterprise_connectors::FileSystemSigninDialogDelegate;
+
+bool DownloadsHandler::IsDownloadsConnectionPolicyEnabled() const {
+  return ec::GetFileSystemSettings(profile_).has_value();
+}
+
+void DownloadsHandler::SendDownloadsConnectionPolicyToJavascript() {
+  bool routing_enabled = IsDownloadsConnectionPolicyEnabled();
+  if (routing_enabled)
+    SendDownloadsConnectionInfoToJavascript();
+  FireWebUIListener("downloads-connection-policy-changed",
+                    base::Value(routing_enabled));
+}
+
+bool linked = true;
+// TODO(https://crbug.com/1168812): check whether an account has been linked.
+
+void DownloadsHandler::SetDownloadsConnectionAccountLink(
+    const base::ListValue* args) {
+  DCHECK(IsDownloadsConnectionPolicyEnabled());
+  CHECK_EQ(2U, args->GetSize());
+  bool enable_link = args[1].GetBool();
+
+  // Early erturn if linked status already match the desired state.
+  if (linked == enable_link) {
+    OnDownloadsConnectionAccountLinkSet(true);
+    return;
+  }
+
+  // Early erturn after quick clearing function calls.
+  if (linked) {
+    bool success = ec::ClearFileSystemConnectorLinkedAccount(
+        ec::GetFileSystemSettings(profile_).value(), profile_->GetPrefs());
+    OnDownloadsConnectionAccountLinkSet(success);
+    return;
+  }
+
+  // This shows dialogs for the sign-in experience that the user needs to
+  // interact with, so the process is async.
+  ec::StartFileSystemConnectorSigninExperienceForSettingsPage(
+      profile_,
+      base::BindOnce(&DownloadsHandler::OnDownloadsConnectionAccountLinkSet,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void DownloadsHandler::OnDownloadsConnectionAccountLinkSet(bool success) {
+  if (success) {
+    linked = !linked;
+  } else {
+    DLOG(ERROR) << "Failed to set downloads connection account link";
+  }
+  SendDownloadsConnectionInfoToJavascript();
+}
+
+void DownloadsHandler::SendDownloadsConnectionInfoToJavascript() {
+  base::DictionaryValue account_info;
+  account_info.SetBoolKey("linked", linked);
+  if (linked) {
+    account_info.SetStringKey("account.name", "Jane Doe");
+    account_info.SetStringKey("account.login", "janedoe@example.com");
+    account_info.SetStringKey("folder.link",
+                              "https://example.com/folder/12345");
+    account_info.SetStringKey("folder.name", "ChromeDownloads");
+    // TODO(https://crbug.com/1168812): retrieve them from prefs.
+  }
+  FireWebUIListener("downloads-connection-link-changed", account_info);
+}
 
 }  // namespace settings

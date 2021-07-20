@@ -53,6 +53,41 @@ class SettingsDownloadsPageElement extends SettingsDownloadsPageElementBase {
       },
 
       /** @private */
+      showConnection_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      connectionLearnMoreLink_: {
+        type: String,
+        value:
+            'https://chromeenterprise.google/policies/?policy=SendDownloadToCloudEnterpriseConnector',
+      },
+
+      /**
+       * @private
+       * The connection account info object. The definition is based on
+       * chrome/browser/enterprise/connectors/file_system/signin_experience.cc:
+       * GetFileSystemConnectorLinkedAccountInfoForSettingsPage()
+       * @type {{
+       *  linked: boolean,
+       *  account: {name: string, login: string},
+       *  folder: {name: string, link: string},
+       * }}
+       */
+      connectionAccountInfo_: {
+        type: Object,
+        notify: true,
+      },
+
+      /** @private */
+      connectionSetupInProgress_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
       autoOpenDownloads_: {
         type: Boolean,
         value: false,
@@ -71,7 +106,6 @@ class SettingsDownloadsPageElement extends SettingsDownloadsPageElementBase {
   static get observers() {
     return [
       'handleDownloadLocationChanged_(prefs.download.default_directory.value)'
-
     ];
   }
   // </if>
@@ -92,7 +126,29 @@ class SettingsDownloadsPageElement extends SettingsDownloadsPageElementBase {
       this.autoOpenDownloads_ = autoOpen;
     });
 
+    this.addWebUIListener(
+        'downloads-connection-policy-changed', downloadsConnectionEnabled => {
+          this.showConnection_ = downloadsConnectionEnabled;
+        });
+
+    this.addWebUIListener('downloads-connection-link-changed', accountInfo => {
+      this.connectionAccountInfo_ = accountInfo;
+      this.connectionSetupInProgress_ = false;
+    });
+
     this.browserProxy_.initializeDownloads();
+  }
+
+  /** @private */
+  onLinkDownloadsConnectionClick_() {
+    this.connectionSetupInProgress_ = true;
+    this.browserProxy_.setDownloadsConnectionAccountLink(true);
+  }
+
+  /** @private */
+  onUnlinkDownloadsConnectionClick_() {
+    this.connectionSetupInProgress_ = true;
+    this.browserProxy_.setDownloadsConnectionAccountLink(false);
   }
 
   /** @private */

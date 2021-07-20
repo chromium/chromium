@@ -57,11 +57,24 @@ class DownloadsHandler : public SettingsPageUIHandler,
   void HandleGetDownloadLocationText(const base::ListValue* args);
 #endif
 
+  bool IsDownloadsConnectionPolicyEnabled() const;
+  void SendDownloadsConnectionPolicyToJavascript();
+
+  // Callback for the "SetDownloadsConnectionAccountLink" message. If there was
+  // no account linked, this prompts the user to sign in; otherwise, this
+  // removes the linked account info and stored authentication tokens.
+  void SetDownloadsConnectionAccountLink(const base::ListValue* args);
+  void OnDownloadsConnectionAccountLinkSet(bool success);
+  void SendDownloadsConnectionInfoToJavascript();
+
   Profile* profile_;
 
   PrefChangeRegistrar pref_registrar_;
 
   scoped_refptr<ui::SelectFileDialog> select_folder_dialog_;
+
+  bool has_linked_account_ = false;
+  base::WeakPtrFactory<DownloadsHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DownloadsHandler);
 };

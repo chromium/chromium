@@ -16,6 +16,19 @@ namespace enterprise_connectors {
 // 1994-04-27 00:00:00.001 GMT+2 (South Africa Standard Time)
 const base::Time::Exploded kTestDateTime = {1994, 4, 2, 27, 0, 0, 0, 1};
 
+constexpr char kWildcardSendDownloadToCloudPref[] = R"([
+  {
+    "service_provider": "box",
+    "enterprise_id": "1234567890",
+    "enable": [
+      {
+        "url_list": ["*"],
+        "mime_types": ["text/plain", "image/png", "application/zip"]
+      }
+    ]
+  }
+])";
+
 class DownloadItemForTest : public content::FakeDownloadItem {
  public:
   explicit DownloadItemForTest(base::FilePath::StringPieceType file_name,
