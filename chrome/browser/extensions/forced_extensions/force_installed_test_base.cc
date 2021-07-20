@@ -114,9 +114,11 @@ scoped_refptr<const Extension> ForceInstalledTestBase::CreateNewExtension(
     case ForceInstalledTracker::ExtensionStatus::kFailed:
       break;
     case ForceInstalledTracker::ExtensionStatus::kLoaded:
+      registry()->AddEnabled(ext.get());
       force_installed_tracker()->OnExtensionLoaded(profile(), ext.get());
       break;
     case ForceInstalledTracker::ExtensionStatus::kReady:
+      registry()->AddEnabled(ext.get());
       force_installed_tracker()->OnExtensionLoaded(profile(), ext.get());
       force_installed_tracker()->OnExtensionReady(profile(), ext.get());
   }

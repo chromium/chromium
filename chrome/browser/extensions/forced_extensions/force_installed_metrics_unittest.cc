@@ -436,9 +436,7 @@ TEST_F(ForceInstalledMetricsTest,
   ExtensionPrefs::Get(profile())->AddDisableReason(
       kExtensionId1, disable_reason::DisableReason::DISABLE_NOT_VERIFIED);
   scoped_refptr<const Extension> ext2 = CreateNewExtension(
-      kExtensionName2, kExtensionId2, ExtensionStatus::kPending);
-  registry()->AddEnabled(ext2.get());
-  force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
+      kExtensionName2, kExtensionId2, ExtensionStatus::kLoaded);
   // ForceInstalledMetrics should still keep running as kExtensionId1 is
   // installed but not loaded.
   EXPECT_TRUE(fake_timer_->IsRunning());
@@ -460,9 +458,7 @@ TEST_F(ForceInstalledMetricsTest,
       disable_reason::DisableReason::DISABLE_NOT_VERIFIED |
           disable_reason::DisableReason::DISABLE_UNSUPPORTED_REQUIREMENT);
   scoped_refptr<const Extension> ext2 = CreateNewExtension(
-      kExtensionName2, kExtensionId2, ExtensionStatus::kPending);
-  registry()->AddEnabled(ext2.get());
-  force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
+      kExtensionName2, kExtensionId2, ExtensionStatus::kLoaded);
   // ForceInstalledMetrics should still keep running as kExtensionId1 is
   // installed but not loaded.
   EXPECT_TRUE(fake_timer_->IsRunning());
@@ -482,9 +478,7 @@ TEST_F(ForceInstalledMetricsTest,
       kExtensionName1, kExtensionId1, ExtensionStatus::kPending);
   registry()->AddEnabled(ext1.get());
   scoped_refptr<const Extension> ext2 = CreateNewExtension(
-      kExtensionName2, kExtensionId2, ExtensionStatus::kPending);
-  registry()->AddEnabled(ext2.get());
-  force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
+      kExtensionName2, kExtensionId2, ExtensionStatus::kLoaded);
   // ForceInstalledMetrics should still keep running as kExtensionId1 is
   // installed but not loaded.
   EXPECT_TRUE(fake_timer_->IsRunning());
@@ -503,8 +497,6 @@ TEST_F(ForceInstalledMetricsTest,
 
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
       kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
-  registry()->AddEnabled(ext1.get());
-  force_installed_tracker()->OnExtensionLoaded(profile(), ext1.get());
   install_stage_tracker()->ReportInstallationStage(
       kExtensionId2, InstallStageTracker::Stage::CREATED);
   install_stage_tracker()->ReportInstallCreationStage(
@@ -532,9 +524,7 @@ TEST_F(ForceInstalledMetricsTest, ExtensionForceInstalledAndBlocklisted) {
       kExtensionName1, kExtensionId1, ExtensionStatus::kPending);
   registry()->AddBlocklisted(ext1.get());
   scoped_refptr<const Extension> ext2 = CreateNewExtension(
-      kExtensionName2, kExtensionId2, ExtensionStatus::kPending);
-  registry()->AddEnabled(ext2.get());
-  force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
+      kExtensionName2, kExtensionId2, ExtensionStatus::kLoaded);
   // ForceInstalledMetrics should still keep running as kExtensionId1 is
   // installed but not loaded.
   EXPECT_TRUE(fake_timer_->IsRunning());
@@ -642,9 +632,7 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsCrxHeaderInvalidFromCache) {
       CrxInstallError(SandboxedUnpackerFailureReason::CRX_HEADER_INVALID,
                       std::u16string()));
   scoped_refptr<const Extension> ext2 = CreateNewExtension(
-      kExtensionName2, kExtensionId2, ExtensionStatus::kPending);
-  registry()->AddEnabled(ext2.get());
-  force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
+      kExtensionName2, kExtensionId2, ExtensionStatus::kLoaded);
   // ForceInstalledMetrics shuts down timer because all extension are either
   // loaded or failed.
   EXPECT_FALSE(fake_timer_->IsRunning());
@@ -668,9 +656,7 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsCrxHeaderInvalidNotFromCache) {
       CrxInstallError(SandboxedUnpackerFailureReason::CRX_HEADER_INVALID,
                       std::u16string()));
   scoped_refptr<const Extension> ext2 = CreateNewExtension(
-      kExtensionName2, kExtensionId2, ExtensionStatus::kPending);
-  registry()->AddEnabled(ext2.get());
-  force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
+      kExtensionName2, kExtensionId2, ExtensionStatus::kLoaded);
   // ForceInstalledMetrics shuts down timer because all extension are either
   // loaded or failed.
   EXPECT_FALSE(fake_timer_->IsRunning());
@@ -695,9 +681,7 @@ TEST_F(ForceInstalledMetricsTest,
       CrxInstallError(SandboxedUnpackerFailureReason::CRX_HEADER_INVALID,
                       std::u16string()));
   scoped_refptr<const Extension> ext2 = CreateNewExtension(
-      kExtensionName2, kExtensionId2, ExtensionStatus::kPending);
-  registry()->AddEnabled(ext2.get());
-  force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
+      kExtensionName2, kExtensionId2, ExtensionStatus::kLoaded);
   // ForceInstalledMetrics shuts down timer because all extension are either
   // loaded or failed.
   EXPECT_FALSE(fake_timer_->IsRunning());
@@ -721,9 +705,7 @@ TEST_F(ForceInstalledMetricsTest,
       kExtensionId1,
       InstallStageTracker::FailureReason::REPLACED_BY_SYSTEM_APP);
   scoped_refptr<const Extension> ext2 = CreateNewExtension(
-      kExtensionName2, kExtensionId2, ExtensionStatus::kPending);
-  registry()->AddEnabled(ext2.get());
-  force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
+      kExtensionName2, kExtensionId2, ExtensionStatus::kLoaded);
   // ForceInstalledMetrics shuts down timer because all extension are either
   // loaded or failed.
   EXPECT_FALSE(fake_timer_->IsRunning());
@@ -983,8 +965,6 @@ TEST_F(ForceInstalledMetricsTest,
 
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
       kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
-  registry()->AddEnabled(ext1.get());
-  force_installed_tracker()->OnExtensionLoaded(profile(), ext1.get());
   install_stage_tracker()->ReportInstallationStage(
       kExtensionId2, InstallStageTracker::Stage::CREATED);
   install_stage_tracker()->ReportInstallCreationStage(
