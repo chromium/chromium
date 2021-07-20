@@ -193,6 +193,9 @@ crbug.com/dawn/773 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,m
 crbug.com/dawn/773 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map:remapped_for_write:* [ Failure Crash ]
 crbug.com/dawn/773 wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,buffers,map:remapped_for_write:* [ Failure Crash ]
 
+crbug.com/1231108 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map:mapAsync,read:* [ Failure ]
+crbug.com/1231108 wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,buffers,map:mapAsync,read:* [ Failure ]
+
 crbug.com/dawn/746 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,shader_module,compilation_info:offset_and_length:valid=false;unicode=true [ Failure ]
 
 crbug.com/dawn/129 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_must_have_correct_dimension:viewDimension="1d";* [ Failure ]
