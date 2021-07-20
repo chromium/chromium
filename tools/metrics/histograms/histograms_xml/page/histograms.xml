@@ -2233,7 +2233,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that has
     occurred in a {Window}. The gap between two consecutive shifts in a window
     is not bigger than {Gap} and the maximum window size is {MaxWindowSize}.
-    This metric's integral value is 100x the fractional cumulative layout shift
+    This metric's integral value is 10x the fractional cumulative layout shift
     score described in the explainer. If {Bfcache} is triggered, we record the
     metric when the user navigates away or closes the page after the page was
     restored from back-forward cache. Otherwise, we record it at the end of the
