@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/android/autofill/save_card_message_controller_android.h"
 
+#include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -32,7 +35,8 @@ class SaveCardMessageControllerAndroidTest
   void EnqueueMessage(AutofillClient::UploadSaveCardPromptCallback
                           upload_save_card_prompt_callback,
                       AutofillClient::LocalSaveCardPromptCallback
-                          local_save_card_prompt_callback);
+                          local_save_card_prompt_callback,
+                      AutofillClient::SaveCreditCardOptions options);
 
   void DismissMessage();
 
@@ -42,8 +46,36 @@ class SaveCardMessageControllerAndroidTest
     return controller_.message_.get();
   }
 
+  void OnNameConfirmed() {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    controller_.OnNameConfirmed(
+        env, nullptr,
+        base::android::JavaParamRef<jstring>(
+            env,
+            base::android::ConvertUTF8ToJavaString(env, "test").Release()));
+  }
+
+  void OnDateConfirmed() {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    controller_.OnDateConfirmed(
+        env, nullptr,
+        base::android::JavaParamRef<jstring>(
+            env, base::android::ConvertUTF8ToJavaString(env, "12").Release()),
+        base::android::JavaParamRef<jstring>(
+            env, base::android::ConvertUTF8ToJavaString(env, "25").Release()));
+  }
+
+  void OnPromoDismissed() {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    controller_.PromptDismissed(env, nullptr);
+  }
+
+  bool IsDateConfirmed() { return controller_.is_date_confirmed_for_testing_; }
+
+  bool IsNameConfirmed() { return controller_.is_name_confirmed_for_testing_; }
+
  private:
-  autofill::SaveCardMessageControllerAndroid controller_;
+  SaveCardMessageControllerAndroid controller_;
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
   std::unique_ptr<TestPersonalDataManager> personal_data_;
 };
@@ -73,10 +105,13 @@ void SaveCardMessageControllerAndroidTest::TearDown() {
 void SaveCardMessageControllerAndroidTest::EnqueueMessage(
     AutofillClient::UploadSaveCardPromptCallback
         upload_save_card_prompt_callback,
-    AutofillClient::LocalSaveCardPromptCallback
-        local_save_card_prompt_callback) {
-  controller_.Show(web_contents(), AutofillClient::SaveCreditCardOptions(),
-                   CreditCard(), std::move(upload_save_card_prompt_callback),
+    AutofillClient::LocalSaveCardPromptCallback local_save_card_prompt_callback,
+    AutofillClient::SaveCreditCardOptions options) {
+  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage)
+      .WillOnce(testing::Return(true));
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+  controller_.Show(web_contents(), options, CreditCard(), {}, u"",
+                   std::move(upload_save_card_prompt_callback),
                    std::move(local_save_card_prompt_callback));
 }
 
@@ -92,7 +127,7 @@ void SaveCardMessageControllerAndroidTest::DismissMessage() {
         message->HandleDismissCallback(base::android::AttachCurrentThread(),
                                        static_cast<int>(dismiss_reason));
       });
-  controller_.DismissInternal();
+  controller_.DismissMessage();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
@@ -101,8 +136,7 @@ TEST_F(SaveCardMessageControllerAndroidTest, DismissOnPrimaryButtonClickLocal) {
   base::MockOnceCallback<void(
       AutofillClient::SaveCardOfferUserDecision user_decision)>
       mock_local_callback_receiver;
-
-  EnqueueMessage({}, mock_local_callback_receiver.Get());
+  EnqueueMessage({}, mock_local_callback_receiver.Get(), {});
   EXPECT_CALL(mock_local_callback_receiver, Run(AutofillClient::ACCEPTED));
   TriggerPrimaryButtonClick();
   DismissMessage();
@@ -113,22 +147,47 @@ TEST_F(SaveCardMessageControllerAndroidTest, DismissOnDeclineLocal) {
       AutofillClient::SaveCardOfferUserDecision user_decision)>
       mock_local_callback_receiver;
 
-  EnqueueMessage({}, mock_local_callback_receiver.Get());
+  EnqueueMessage({}, mock_local_callback_receiver.Get(), {});
   EXPECT_CALL(mock_local_callback_receiver, Run(AutofillClient::DECLINED));
   DismissMessage();
 }
 
 // --- server save test ---
 TEST_F(SaveCardMessageControllerAndroidTest,
-       DismissOnPrimaryButtonClickUpload) {
+       DismissOnPrimaryButtonClickConfirmDateUpload) {
+  base::MockOnceCallback<void(AutofillClient::SaveCardOfferUserDecision,
+                              const AutofillClient::UserProvidedCardDetails&)>
+      mock_upload_callback_receiver;
+  EnqueueMessage(mock_upload_callback_receiver.Get(), {}, {});
+  TriggerPrimaryButtonClick();
+  EXPECT_TRUE(IsDateConfirmed());
+  DismissMessage();
+}
+
+TEST_F(SaveCardMessageControllerAndroidTest,
+       DismissOnPrimaryButtonClickRequestDateUpload) {
+  base::MockOnceCallback<void(AutofillClient::SaveCardOfferUserDecision,
+                              const AutofillClient::UserProvidedCardDetails&)>
+      mock_upload_callback_receiver;
+  AutofillClient::SaveCreditCardOptions options;
+  options.should_request_expiration_date_from_user = true;
+  EnqueueMessage(mock_upload_callback_receiver.Get(), {}, options);
+  TriggerPrimaryButtonClick();
+  EXPECT_TRUE(IsDateConfirmed());
+  DismissMessage();
+}
+
+TEST_F(SaveCardMessageControllerAndroidTest,
+       DismissOnPrimaryButtonClickConfirmNameUpload) {
   base::MockOnceCallback<void(AutofillClient::SaveCardOfferUserDecision,
                               const AutofillClient::UserProvidedCardDetails&)>
       mock_upload_callback_receiver;
 
-  EnqueueMessage(mock_upload_callback_receiver.Get(), {});
-  EXPECT_CALL(mock_upload_callback_receiver,
-              Run(AutofillClient::ACCEPTED, testing::_));
+  AutofillClient::SaveCreditCardOptions options;
+  options.should_request_name_from_user = true;
+  EnqueueMessage(mock_upload_callback_receiver.Get(), {}, options);
   TriggerPrimaryButtonClick();
+  EXPECT_TRUE(IsNameConfirmed());
   DismissMessage();
 }
 
@@ -136,11 +195,9 @@ TEST_F(SaveCardMessageControllerAndroidTest, DismissOnDeclineUpload) {
   base::MockOnceCallback<void(AutofillClient::SaveCardOfferUserDecision,
                               const AutofillClient::UserProvidedCardDetails&)>
       mock_upload_callback_receiver;
-
-  EnqueueMessage(mock_upload_callback_receiver.Get(), {});
+  EnqueueMessage(mock_upload_callback_receiver.Get(), {}, {});
   EXPECT_CALL(mock_upload_callback_receiver,
               Run(AutofillClient::DECLINED, testing::_));
   DismissMessage();
 }
-
 }  // namespace autofill

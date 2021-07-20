@@ -479,6 +479,10 @@ static_library("browser") {
     ]
   }
 
+  if (is_android) {
+    deps += [ "//components/messages/android:feature_flags" ]
+  }
+
   if (!is_android && !is_ios) {
     sources += [
       "payments/local_card_migration_manager.cc",

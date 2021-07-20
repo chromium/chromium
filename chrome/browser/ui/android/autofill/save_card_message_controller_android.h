@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_SAVE_CARD_MESSAGE_CONTROLLER_ANDROID_H_
 #define CHROME_BROWSER_UI_ANDROID_AUTOFILL_SAVE_CARD_MESSAGE_CONTROLLER_ANDROID_H_
 
+#include "chrome/browser/ui/android/autofill/save_card_message_confirm_controller.h"
+#include "chrome/browser/ui/android/autofill/save_card_message_confirm_delegate.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 #include "content/public/browser/web_contents.h"
@@ -17,7 +18,7 @@ class CreditCard;
 
 // Message controller to show a save card message on Android, which
 // is destined to replace the save card infobar UI.
-class SaveCardMessageControllerAndroid {
+class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
  public:
   SaveCardMessageControllerAndroid();
   ~SaveCardMessageControllerAndroid();
@@ -36,6 +37,8 @@ class SaveCardMessageControllerAndroid {
   void Show(content::WebContents* web_contents,
             AutofillClient::SaveCreditCardOptions options,
             const CreditCard& card,
+            const LegalMessageLines& legal_message_lines,
+            std::u16string inferred_name,
             AutofillClient::UploadSaveCardPromptCallback
                 upload_save_card_prompt_callback,
             AutofillClient::LocalSaveCardPromptCallback
@@ -44,9 +47,33 @@ class SaveCardMessageControllerAndroid {
  private:
   friend class SaveCardMessageControllerAndroidTest;
 
-  void HandleDismiss(messages::DismissReason dismiss_reason);
-  void HandleAction();
-  void DismissInternal();
+  void HandleMessageDismiss(messages::DismissReason dismiss_reason);
+  void HandleMessageAction();
+  void DismissMessage();
+
+  void ConfirmDate(const int month, const int year);
+  void ConfirmDate();
+  void ConfirmName(const std::u16string& inferred_cardholder_name);
+
+  // SaveCardMessageConfirmDelegate
+  void OnNameConfirmed(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jstring>& name) override;
+  void OnDateConfirmed(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jstring>& month,
+      const base::android::JavaParamRef<jstring>& year) override;
+  void PromptDismissed(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj) override;
+  void OnLegalMessageLinkClicked(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jstring>& url) override;
+
+  void MaybeShowDialog();
 
   bool IsGooglePayBrandingEnabled() const;
 
@@ -87,6 +114,19 @@ class SaveCardMessageControllerAndroid {
 
   // Delegate of a toast style popup showing in the top of the screen.
   std::unique_ptr<messages::MessageWrapper> message_;
+
+  std::unique_ptr<SaveCardMessageConfirmController>
+      save_card_message_confirm_controller_;
+
+  std::u16string inferred_name_;
+
+  // Whether we need to request users to fill in more info
+  bool promo_continue_;
+  int expiration_date_year_;
+  int expiration_date_month_;
+
+  bool is_name_confirmed_for_testing_ = false;
+  bool is_date_confirmed_for_testing_ = false;
 };
 
 }  // namespace autofill

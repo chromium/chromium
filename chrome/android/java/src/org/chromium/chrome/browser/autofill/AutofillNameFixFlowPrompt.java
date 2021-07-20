@@ -7,7 +7,12 @@ package org.chromium.chrome.browser.autofill;
 import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -48,6 +53,46 @@ public class AutofillNameFixFlowPrompt implements TextWatcher, ModalDialogProper
          * @param name Card holder name.
          */
         void onUserAccept(String name);
+
+        /**
+         * Called when link in legal lines is clicked.
+         */
+        void onLinkClicked(String url);
+    }
+
+    /**
+     * Create a dialog prompt for the use of infobar. This prompt does not include legal lines.
+     *
+     * @param context The current context.
+     * @param delegate A {@link AutofillNameFixFlowPromptDelegate} to handle events.
+     * @param title Title of the prompt.
+     * @param inferredName Name inferred from the account. Empty string for user to fill in.
+     * @param confirmButtonLabel Label for the confirm button.
+     * @param drawableId Drawable id on the title.
+     * @return A {@link AutofillNameFixFlowPrompt} to confirm name.
+     */
+    public static AutofillNameFixFlowPrompt createAsInfobarFixFlowPrompt(Context context,
+            AutofillNameFixFlowPromptDelegate delegate, String title, String inferredName,
+            String confirmButtonLabel, int drawableId) {
+        return new AutofillNameFixFlowPrompt(
+                context, delegate, title, inferredName, confirmButtonLabel, drawableId, false);
+    }
+
+    /**
+     * Create a dialog prompt for the use of message. This prompt should include legal lines.
+     *
+     * @param context The current context.
+     * @param delegate A {@link AutofillNameFixFlowPromptDelegate} to handle events.
+     * @param title Title of the prompt.
+     * @param inferredName Name inferred from the account. Empty string for user to fill in.
+     * @param confirmButtonLabel Label for the confirm button.
+     * @return A {@link AutofillNameFixFlowPrompt} to confirm name.
+     */
+    public static AutofillNameFixFlowPrompt createAsMessageFixFlowPrompt(Context context,
+            AutofillNameFixFlowPromptDelegate delegate, String title, String inferredName,
+            String confirmButtonLabel, String cardLabel) {
+        return new AutofillNameFixFlowPrompt(
+                context, delegate, title, inferredName, confirmButtonLabel, cardLabel);
     }
 
     private final AutofillNameFixFlowPromptDelegate mDelegate;
@@ -64,8 +109,9 @@ public class AutofillNameFixFlowPrompt implements TextWatcher, ModalDialogProper
     /**
      * Fix flow prompt to confirm user name before saving the card to Google.
      */
-    public AutofillNameFixFlowPrompt(Context context, AutofillNameFixFlowPromptDelegate delegate,
-            String title, String inferredName, String confirmButtonLabel, int drawableId) {
+    private AutofillNameFixFlowPrompt(Context context, AutofillNameFixFlowPromptDelegate delegate,
+            String title, String inferredName, String confirmButtonLabel, int drawableId,
+            boolean filledConfirmButton) {
         mDelegate = delegate;
         LayoutInflater inflater = LayoutInflater.from(context);
         mDialogView = inflater.inflate(R.layout.autofill_name_fixflow, null);
@@ -73,7 +119,13 @@ public class AutofillNameFixFlowPrompt implements TextWatcher, ModalDialogProper
         mUserNameInput = (EditText) mDialogView.findViewById(R.id.cc_name_edit);
         mUserNameInput.setText(inferredName, BufferType.EDITABLE);
         mNameFixFlowTooltipIcon = (ImageView) mDialogView.findViewById(R.id.cc_name_tooltip_icon);
-        mNameFixFlowTooltipIcon.setOnClickListener((view) -> onTooltipIconClicked());
+
+        // Do not show tooltip if inferred name is empty.
+        if (TextUtils.isEmpty(inferredName)) {
+            mNameFixFlowTooltipIcon.setVisibility(View.GONE);
+        } else {
+            mNameFixFlowTooltipIcon.setOnClickListener((view) -> onTooltipIconClicked());
+        }
 
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -85,7 +137,8 @@ public class AutofillNameFixFlowPrompt implements TextWatcher, ModalDialogProper
                                 R.string.cancel)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED,
-                                inferredName.isEmpty());
+                                inferredName.isEmpty())
+                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, filledConfirmButton);
         if (drawableId != 0) {
             builder.with(ModalDialogProperties.TITLE_ICON, context, drawableId);
         }
@@ -104,6 +157,14 @@ public class AutofillNameFixFlowPrompt implements TextWatcher, ModalDialogProper
         });
     }
 
+    private AutofillNameFixFlowPrompt(Context context, AutofillNameFixFlowPromptDelegate delegate,
+            String title, String inferredName, String confirmButtonLabel, String cardLabel) {
+        this(context, delegate, title, inferredName, confirmButtonLabel, /*drawableId=*/0, true);
+        mDialogView.findViewById(R.id.cc_details).setVisibility(View.VISIBLE);
+        TextView detailsMasked = mDialogView.findViewById(R.id.cc_details_masked);
+        detailsMasked.setText(cardLabel);
+    }
+
     /**
      * Show the dialog.
      *
@@ -117,6 +178,23 @@ public class AutofillNameFixFlowPrompt implements TextWatcher, ModalDialogProper
         mModalDialogManager = modalDialogManager;
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
         mUserNameInput.addTextChangedListener(this);
+    }
+
+    public void setLegalMessageLine(LegalMessageLine line) {
+        SpannableString text = new SpannableString(line.text);
+        for (final LegalMessageLine.Link link : line.links) {
+            String url = link.url;
+            text.setSpan(new ClickableSpan() {
+                @Override
+                public void onClick(View view) {
+                    mDelegate.onLinkClicked(url);
+                }
+            }, link.start, link.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        }
+        TextView legalMessage = mDialogView.findViewById(R.id.legal_message);
+        legalMessage.setText(text);
+        legalMessage.setMovementMethod(LinkMovementMethod.getInstance());
+        legalMessage.setVisibility(View.VISIBLE);
     }
 
     protected void dismiss(@DialogDismissalCause int dismissalCause) {

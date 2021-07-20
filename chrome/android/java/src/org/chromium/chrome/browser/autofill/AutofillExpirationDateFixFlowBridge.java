@@ -67,6 +67,10 @@ final class AutofillExpirationDateFixFlowBridge
                 AutofillExpirationDateFixFlowBridge.this);
     }
 
+    /* no-op. Legal lines aren't set. */
+    @Override
+    public void onLinkClicked(String url) {}
+
     /**
      * Shows a prompt for expiration date fix flow.
      */
@@ -80,8 +84,9 @@ final class AutofillExpirationDateFixFlowBridge
             return;
         }
 
-        mExpirationDateFixFlowPrompt = new AutofillExpirationDateFixFlowPrompt(
-                activity, this, mTitle, mConfirmButtonLabel, mIconId, mCardLabel);
+        mExpirationDateFixFlowPrompt =
+                AutofillExpirationDateFixFlowPrompt.createAsInfobarFixFlowPrompt(
+                        activity, this, mTitle, mConfirmButtonLabel, mIconId, mCardLabel);
         mExpirationDateFixFlowPrompt.show(activity, windowAndroid.getModalDialogManager());
     }
 

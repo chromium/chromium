@@ -431,6 +431,7 @@ void ChromeAutofillClient::OfferVirtualCardOptions(
 #else  // defined(OS_ANDROID)
 void ChromeAutofillClient::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {
+  DCHECK(!messages::IsSaveCardMessagesUiEnabled());
   CardNameFixFlowViewAndroid* card_name_fix_flow_view_android =
       new CardNameFixFlowViewAndroid(&card_name_fix_flow_controller_,
                                      web_contents());
@@ -443,6 +444,7 @@ void ChromeAutofillClient::ConfirmExpirationDateFixFlow(
     const CreditCard& card,
     base::OnceCallback<void(const std::u16string&, const std::u16string&)>
         callback) {
+  DCHECK(!messages::IsSaveCardMessagesUiEnabled());
   CardExpirationDateFixFlowViewAndroid*
       card_expiration_date_fix_flow_view_android =
           new CardExpirationDateFixFlowViewAndroid(
@@ -461,7 +463,8 @@ void ChromeAutofillClient::ConfirmSaveCreditCardLocally(
   DCHECK(options.show_prompt);
   if (messages::IsSaveCardMessagesUiEnabled()) {
     save_card_message_controller_android_.Show(
-        web_contents(), options, card,
+        web_contents(), options, card, /*legal_message_lines=*/{},
+        GetAccountHolderName(),
         /*upload_save_card_callback=*/{},
         /*local_save_card_callback=*/std::move(callback));
     return;
@@ -491,6 +494,8 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
   DCHECK(options.show_prompt);
   if (messages::IsSaveCardMessagesUiEnabled()) {
     save_card_message_controller_android_.Show(web_contents(), options, card,
+                                               legal_message_lines,
+                                               GetAccountHolderName(),
                                                /*upload_save_card_callback=*/
                                                std::move(callback),
                                                /*local_save_card_callback=*/{});

@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.LegalMessageLine;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 import org.chromium.components.infobars.ConfirmInfoBar;
@@ -35,62 +36,6 @@ import java.util.List;
  * An infobar for saving credit card information.
  */
 public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
-    /**
-     * Legal message line with links to show in the infobar.
-     */
-    public static class LegalMessageLine {
-        /**
-         * A link in the legal message line.
-         */
-        public static class Link {
-            /**
-             * The starting inclusive index of the link position in the text.
-             */
-            public int start;
-
-            /**
-             * The ending exclusive index of the link position in the text.
-             */
-            public int end;
-
-            /**
-             * The URL of the link.
-             */
-            public String url;
-
-            /**
-             * Creates a new instance of the link.
-             *
-             * @param start The starting inclusive index of the link position in the text.
-             * @param end The ending exclusive index of the link position in the text.
-             * @param url The URL of the link.
-             */
-            public Link(int start, int end, String url) {
-                this.start = start;
-                this.end = end;
-                this.url = url;
-            }
-        }
-
-        /**
-         * The plain text legal message line.
-         */
-        public String text;
-
-        /**
-         * A collection of links in the legal message line.
-         */
-        public final List<Link> links = new LinkedList<Link>();
-
-        /**
-         * Creates a new instance of the legal message line.
-         *
-         * @param text The plain text legal message.
-         */
-        public LegalMessageLine(String text) {
-            this.text = text;
-        }
-    }
 
     private final @Nullable String mAccountFooterEmail;
     private final @Nullable Bitmap mAccountFooterAvatar;

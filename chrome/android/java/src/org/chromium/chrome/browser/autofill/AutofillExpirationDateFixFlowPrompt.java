@@ -7,7 +7,11 @@ package org.chromium.chrome.browser.autofill;
 import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -51,6 +55,47 @@ public class AutofillExpirationDateFixFlowPrompt
          * prompt or it was dismissed by native code.
          */
         void onUserDismiss();
+
+        /**
+         * Called when link in legal lines is clicked.
+         */
+        void onLinkClicked(String url);
+    }
+
+    /**
+     * Create a prompt dialog for the use of infobar. This dialog does not include legal lines.
+     *
+     * @param context The current context.
+     * @param delegate A {@link AutofillExpirationDateFixFlowPromptDelegate} to handle events.
+     * @param title Title of the dialog prompt.
+     * @param confirmButtonLabel Label for the confirm button.
+     * @param cardLabel Label representing a card which will be saved.
+     * @return The prompt to confirm expiration data.
+     */
+    public static AutofillExpirationDateFixFlowPrompt createAsInfobarFixFlowPrompt(Context context,
+            AutofillExpirationDateFixFlowPromptDelegate delegate, String title,
+            String confirmButtonLabel, int drawableId, String cardLabel) {
+        return new AutofillExpirationDateFixFlowPrompt(
+                context, delegate, title, confirmButtonLabel, drawableId, cardLabel, false);
+    }
+
+    /**
+     * Create a dialog prompt for the use of message. This dialog prompt includes legal lines.
+     *
+     * @param context The current context.
+     * @param delegate A {@link AutofillExpirationDateFixFlowPromptDelegate} to handle events.
+     * @param month Default value for month field. Empty string for users to fill in.
+     * @param year Default value for year field. Empty string for users to fill in.
+     * @param title Title of the dialog prompt.
+     * @param confirmButtonLabel Label for the confirm button.
+     * @param cardLabel Label representing a card which will be saved.
+     * @return The prompt to confirm expiration data.
+     */
+    public static AutofillExpirationDateFixFlowPrompt createAsMessageFixFlowPrompt(Context context,
+            AutofillExpirationDateFixFlowPromptDelegate delegate, String month, String year,
+            String title, String confirmButtonLabel, String cardLabel) {
+        return new AutofillExpirationDateFixFlowPrompt(
+                context, delegate, month, year, title, confirmButtonLabel, cardLabel);
     }
 
     private final AutofillExpirationDateFixFlowPromptDelegate mDelegate;
@@ -71,15 +116,18 @@ public class AutofillExpirationDateFixFlowPrompt
     /**
      * Fix flow prompt to confirm expiration date before saving the card to Google.
      */
-    public AutofillExpirationDateFixFlowPrompt(Context context,
+    private AutofillExpirationDateFixFlowPrompt(Context context,
             AutofillExpirationDateFixFlowPromptDelegate delegate, String title,
-            String confirmButtonLabel, int drawableId, String cardLabel) {
+            String confirmButtonLabel, int drawableId, String cardLabel,
+            boolean filledConfirmButton) {
         mDelegate = delegate;
         LayoutInflater inflater = LayoutInflater.from(context);
         mDialogView = inflater.inflate(R.layout.autofill_expiration_date_fix_flow, null);
         mErrorMessage = (TextView) mDialogView.findViewById(R.id.error_message);
         mCardDetailsMasked = (TextView) mDialogView.findViewById(R.id.cc_details_masked);
         mCardDetailsMasked.setText(cardLabel);
+        mDialogView.findViewById(R.id.message_divider).setVisibility(View.GONE);
+        mDialogView.findViewById(R.id.google_pay_logo).setVisibility(View.GONE);
 
         mMonthInput = (EditText) mDialogView.findViewById(R.id.cc_month_edit);
         mMonthInput.addTextChangedListener(this);
@@ -102,11 +150,24 @@ public class AutofillExpirationDateFixFlowPrompt
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, context.getResources(),
                                 R.string.cancel)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
+                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, filledConfirmButton);
         if (drawableId != 0) {
             builder.with(ModalDialogProperties.TITLE_ICON, context, drawableId);
         }
         mDialogModel = builder.build();
+        mContext = context;
+    }
+
+    private AutofillExpirationDateFixFlowPrompt(Context context,
+            AutofillExpirationDateFixFlowPromptDelegate delegate, String month, String year,
+            String title, String confirmButtonLabel, String cardLabel) {
+        // Set drawable id as 0 to remove the icon on the title.
+        this(context, delegate, title, confirmButtonLabel, /*drawableId=*/0, cardLabel, true);
+        mDialogView.findViewById(R.id.message_divider).setVisibility(View.VISIBLE);
+        mDialogView.findViewById(R.id.google_pay_logo).setVisibility(View.VISIBLE);
+        mYearInput.setText(year);
+        mMonthInput.setText(month);
     }
 
     /**
@@ -121,6 +182,23 @@ public class AutofillExpirationDateFixFlowPrompt
         mContext = activity;
         mModalDialogManager = modalDialogManager;
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
+    }
+
+    public void setLegalMessageLine(LegalMessageLine line) {
+        SpannableString text = new SpannableString(line.text);
+        for (final LegalMessageLine.Link link : line.links) {
+            String url = link.url;
+            text.setSpan(new ClickableSpan() {
+                @Override
+                public void onClick(View view) {
+                    mDelegate.onLinkClicked(url);
+                }
+            }, link.start, link.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        }
+        TextView legalMessage = mDialogView.findViewById(R.id.legal_message);
+        legalMessage.setText(text);
+        legalMessage.setMovementMethod(LinkMovementMethod.getInstance());
+        legalMessage.setVisibility(View.VISIBLE);
     }
 
     protected void dismiss(@DialogDismissalCause int dismissalCause) {
