@@ -52,6 +52,10 @@ class PrintBackendServiceManager {
       mojom::PrintBackendService::FetchCapabilitiesCallback callback);
   void GetDefaultPrinterName(
       mojom::PrintBackendService::GetDefaultPrinterNameCallback callback);
+  void GetPrinterSemanticCapsAndDefaults(
+      const std::string& printer_name,
+      mojom::PrintBackendService::GetPrinterSemanticCapsAndDefaultsCallback
+          callback);
 
   // Query if printer driver has been found to require elevated privilege in
   // order to have print queries/commands succeed.
@@ -109,6 +113,8 @@ class PrintBackendServiceManager {
       RemoteSavedCallbacks<mojom::PrinterCapsAndInfoResult>;
   using RemoteSavedGetDefaultPrinterNameCallbacks =
       RemoteSavedCallbacks<mojom::DefaultPrinterNameResult>;
+  using RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks =
+      RemoteSavedCallbacks<mojom::PrinterSemanticCapsAndDefaultsResult>;
 
   PrintBackendServiceManager();
   ~PrintBackendServiceManager();
@@ -139,6 +145,8 @@ class PrintBackendServiceManager {
   GetRemoteSavedFetchCapabilitiesCallbacks(bool sandboxed);
   RemoteSavedGetDefaultPrinterNameCallbacks&
   GetRemoteSavedGetDefaultPrinterNameCallbacks(bool sandboxed);
+  RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks&
+  GetRemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks(bool sandboxed);
 
   // Helper function to save outstanding callbacks.
   template <class T>
@@ -169,6 +177,11 @@ class PrintBackendServiceManager {
       const std::string& remote_id,
       const base::UnguessableToken& saved_callback_id,
       mojom::DefaultPrinterNameResultPtr printer_name);
+  void GetPrinterSemanticCapsAndDefaultsDone(
+      bool sandboxed,
+      const std::string& remote_id,
+      const base::UnguessableToken& saved_callback_id,
+      mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps);
 
   // Helper function to run outstanding callbacks when a remote has become
   // disconnected.
@@ -204,6 +217,10 @@ class PrintBackendServiceManager {
       sandboxed_saved_get_default_printer_name_callbacks_;
   RemoteSavedGetDefaultPrinterNameCallbacks
       unsandboxed_saved_get_default_printer_name_callbacks_;
+  RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks
+      sandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_;
+  RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks
+      unsandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_;
 
   // Track if next service started should be sandboxed.
   bool is_sandboxed_service_ = true;
