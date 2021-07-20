@@ -9,7 +9,7 @@
 #include "base/strings/string_util.h"
 #include "net/cert/x509_certificate.h"
 
-namespace chromeos {
+namespace ash {
 namespace metrics {
 namespace {
 
@@ -86,4 +86,4 @@ void RecordSAMLProvider(const std::string& x509certificate) {
 }
 
 }  // namespace metrics
-}  // namespace chromeos
+}  // namespace ash

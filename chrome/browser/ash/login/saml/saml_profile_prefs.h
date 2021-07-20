@@ -7,11 +7,17 @@
 
 class PrefRegistrySimple;
 
-namespace chromeos {
+namespace ash {
 
 // Registers all Saml-related profile prefs.
 void RegisterSamlProfilePrefs(PrefRegistrySimple* registry);
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::RegisterSamlProfilePrefs;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SAML_SAML_PROFILE_PREFS_H_

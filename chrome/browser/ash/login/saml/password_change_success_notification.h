@@ -11,7 +11,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 // Utility functions to show a password change success notification.
 class PasswordChangeSuccessNotification {
@@ -20,6 +20,6 @@ class PasswordChangeSuccessNotification {
   static void Show(Profile* profile);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_CHANGE_SUCCESS_NOTIFICATION_H_

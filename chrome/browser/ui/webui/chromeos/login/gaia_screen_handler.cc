@@ -349,7 +349,7 @@ void GaiaScreenHandler::LoadGaia(const login::GaiaContext& context) {
     if (user && user->using_saml() &&
         user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
       public_saml_url_fetcher_ =
-          std::make_unique<chromeos::PublicSamlUrlFetcher>(account_id);
+          std::make_unique<PublicSamlUrlFetcher>(account_id);
       public_saml_url_fetcher_->Fetch(std::move(partition_call));
       return;
     }

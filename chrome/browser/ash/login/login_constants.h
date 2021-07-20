@@ -46,4 +46,18 @@ const bool kDefaultLockScreenReauthenticationEnabled = false;
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace constants {
+using ::chromeos::constants::kDefaultGaiaLockScreenOfflineSigninTimeLimitDays;
+using ::chromeos::constants::kDefaultGaiaOfflineSigninTimeLimitDays;
+using ::chromeos::constants::kDefaultLockScreenReauthenticationEnabled;
+using ::chromeos::constants::kDefaultSAMLOfflineSigninTimeLimit;
+using ::chromeos::constants::kDefaultSamlPasswordExpirationAdvanceWarningDays;
+using ::chromeos::constants::kDefaultSamlInSessionPasswordChangeEnabled;
+using ::chromeos::constants::kDefaultSamlLockScreenOfflineSigninTimeLimitDays;
+}  // namespace constants
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_CONSTANTS_H_

@@ -17,8 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // Name of the "RelayState" URL parameter from the SAML specification.
@@ -132,4 +131,4 @@ GURL TestClientCertSamlIdpMixin::GetGaiaSamlAssertionUrl(
   return assertion_url;
 }
 
-}  // namespace chromeos
+}  // namespace ash

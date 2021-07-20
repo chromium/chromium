@@ -108,8 +108,8 @@ void LockScreenStartReauthDialog::OnDialogClosed(
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetActiveUser();
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
-  InSessionPasswordSyncManager* password_sync_manager =
-      chromeos::InSessionPasswordSyncManagerFactory::GetForProfile(profile);
+  auto* password_sync_manager =
+      InSessionPasswordSyncManagerFactory::GetForProfile(profile);
   password_sync_manager->ResetDialog();
 }
 

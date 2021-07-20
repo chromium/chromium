@@ -31,9 +31,9 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
 const test::UIPath kSamlContainer = {"main-element", "body"};
 const test::UIPath kMainVerifyButton = {"main-element",
                                         "nextButtonVerifyScreen"};
@@ -43,6 +43,7 @@ const std::string kSigninFrame = "signin-frame";
 constexpr char kTestAuthSIDCookie1[] = "fake-auth-SID-cookie-1";
 constexpr char kTestAuthLSIDCookie1[] = "fake-auth-LSID-cookie-1";
 constexpr char kTestRefreshToken[] = "fake-refresh-token";
+
 }  // namespace
 
 class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
@@ -58,8 +59,7 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
   ~LockscreenWebUiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        chromeos::switches::kAllowFailedPolicyFetchForTest);
+    command_line->AppendSwitch(switches::kAllowFailedPolicyFetchForTest);
     // TODO(crbug.com/1177416) - Fix this with a proper SSL solution.
     command_line->AppendSwitch(::switches::kIgnoreCertificateErrors);
 
@@ -173,7 +173,7 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 
  private:
-  chromeos::InSessionPasswordSyncManager* password_sync_manager_ = nullptr;
+  InSessionPasswordSyncManager* password_sync_manager_ = nullptr;
   chromeos::LockScreenStartReauthDialog* reauth_dialog_ = nullptr;
   LockScreenStartReauthUI* reauth_webui_controller_ = nullptr;
   LockScreenReauthHandler* main_handler_ = nullptr;
@@ -218,4 +218,4 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, DISABLED_Login) {
   ScreenLockerTester().WaitForUnlock();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -14,6 +14,10 @@
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/login/auth/cryptohome_authenticator.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/login/auth/extended_authenticator.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -24,11 +28,9 @@ namespace user_manager {
 class User;
 }
 
-namespace chromeos {
-class CryptohomeAuthenticator;
-class ExtendedAuthenticator;
+namespace ash {
 
-using PasswordChangedCallback = base::RepeatingClosure;
+using PasswordChangedCallback = ::base::RepeatingClosure;
 
 // Manages SAML password sync for multiple customer devices. Handles online
 // re-auth requests triggered by online signin policy or by checking validity
@@ -150,6 +152,12 @@ class InSessionPasswordSyncManager
   base::WeakPtrFactory<InSessionPasswordSyncManager> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::InSessionPasswordSyncManager;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SAML_IN_SESSION_PASSWORD_SYNC_MANAGER_H_

@@ -16,7 +16,7 @@
 #include "components/account_id/account_id.h"
 #include "net/base/backoff_entry.h"
 
-namespace chromeos {
+namespace ash {
 
 // Verifies local copy of the password sync token by executing API call. If
 // token is invalid calls InSessionPasswordSyncManager to request online re-auth
@@ -78,12 +78,12 @@ class PasswordSyncTokenLoginChecker
   base::WeakPtrFactory<PasswordSyncTokenLoginChecker> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::PasswordSyncTokenLoginChecker;
+namespace chromeos {
+using ::ash::PasswordSyncTokenLoginChecker;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_SYNC_TOKEN_LOGIN_CHECKER_H_

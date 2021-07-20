@@ -7,12 +7,13 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/online_login_helper.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/cookies/cookie_access_result.h"
 
 namespace chromeos {
-class InSessionPasswordSyncManager;
 
 class LockScreenReauthHandler : public content::WebUIMessageHandler {
  public:
@@ -98,5 +99,11 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::LockScreenReauthHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_REAUTH_HANDLER_H_

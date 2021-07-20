@@ -25,8 +25,11 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
-namespace em = enterprise_management;
+namespace ash {
 namespace {
+
+namespace em = ::enterprise_management;
+
 std::string GetDeviceId() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
@@ -35,7 +38,7 @@ std::string GetDeviceId() {
 
 std::string GetAccountId(std::string user_id) {
   std::vector<policy::DeviceLocalAccount> device_local_accounts =
-      policy::GetDeviceLocalAccounts(chromeos::CrosSettings::Get());
+      policy::GetDeviceLocalAccounts(CrosSettings::Get());
   for (auto account : device_local_accounts) {
     if (account.user_id == user_id) {
       return account.account_id;
@@ -43,9 +46,9 @@ std::string GetAccountId(std::string user_id) {
   }
   return std::string();
 }
+
 }  // namespace
 
-namespace chromeos {
 PublicSamlUrlFetcher::PublicSamlUrlFetcher(AccountId account_id)
     : account_id_(GetAccountId(account_id.GetUserEmail())) {}
 
@@ -71,9 +74,8 @@ void PublicSamlUrlFetcher::Fetch(base::OnceClosure callback) {
       service,
       policy::DeviceManagementService::JobConfiguration::TYPE_REQUEST_SAML_URL,
       GetDeviceId(), /*critical=*/false,
-      policy::DMAuth::FromDMToken(chromeos::DeviceSettingsService::Get()
-                                      ->policy_data()
-                                      ->request_token()),
+      policy::DMAuth::FromDMToken(
+          DeviceSettingsService::Get()->policy_data()->request_token()),
       /*oauth_token=*/absl::nullopt,
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
@@ -123,4 +125,4 @@ void PublicSamlUrlFetcher::OnPublicSamlUrlReceived(
   std::move(callback_).Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

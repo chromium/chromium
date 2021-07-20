@@ -21,8 +21,7 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const char kSAMLUserId1[] = "12345";
@@ -311,4 +310,4 @@ TEST_F(InSessionPasswordSyncManagerTest, PolicyNotSet) {
   EXPECT_FALSE(manager_->IsLockReauthEnabled());
 }
 
-}  // namespace chromeos
+}  // namespace ash

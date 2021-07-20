@@ -62,12 +62,12 @@ bool ShouldDoSamlRedirect(const std::string& email) {
   return user && user->using_saml();
 }
 
-chromeos::InSessionPasswordSyncManager* GetInSessionPasswordSyncManager() {
+InSessionPasswordSyncManager* GetInSessionPasswordSyncManager() {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetActiveUser();
   Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
 
-  return chromeos::InSessionPasswordSyncManagerFactory::GetForProfile(profile);
+  return InSessionPasswordSyncManagerFactory::GetForProfile(profile);
 }
 
 const char kMainElement[] = "$(\'main-element\').";
@@ -210,8 +210,7 @@ void LockScreenReauthHandler::UpdateOrientationAndWidth() {
   bool is_horizontal = display.width() >= display.height();
   CallJavascript("setOrientation", base::Value(is_horizontal));
 
-  chromeos::InSessionPasswordSyncManager* password_sync_manager =
-      GetInSessionPasswordSyncManager();
+  auto* password_sync_manager = GetInSessionPasswordSyncManager();
   int width = password_sync_manager->GetDialogWidth();
   CallJavascript("setWidth", base::Value(width));
 }
@@ -277,8 +276,7 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
 
 void LockScreenReauthHandler::OnCookieWaitTimeout() {
   NOTREACHED() << "Cookie has timed out while attempting to login in.";
-  chromeos::InSessionPasswordSyncManager* password_sync_manager =
-      GetInSessionPasswordSyncManager();
+  auto* password_sync_manager = GetInSessionPasswordSyncManager();
   password_sync_manager->DismissDialog();
 }
 
@@ -300,7 +298,7 @@ void LockScreenReauthHandler::CheckCredentials(
       base::BindRepeating(&LockScreenReauthHandler::ShowPasswordChangedScreen,
                           weak_factory_.GetWeakPtr());
   password_sync_manager_ =
-      chromeos::InSessionPasswordSyncManagerFactory::GetForProfile(profile);
+      InSessionPasswordSyncManagerFactory::GetForProfile(profile);
   password_sync_manager_->CheckCredentials(user_context,
                                            password_changed_callback);
 }

@@ -9,7 +9,7 @@
 #include "chromeos/login/auth/saml_password_attributes.h"
 #include "components/prefs/pref_registry_simple.h"
 
-namespace chromeos {
+namespace ash {
 
 void RegisterSamlProfilePrefs(PrefRegistrySimple* registry) {
   // All SAML prefs are not syncable by default. In order to make a new pref
@@ -47,4 +47,4 @@ void RegisterSamlProfilePrefs(PrefRegistrySimple* registry) {
   SamlPasswordAttributes::RegisterProfilePrefs(registry);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -1276,7 +1276,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::parent_access::ParentAccessService::RegisterProfilePrefs(registry);
   chromeos::quick_answers::prefs::RegisterProfilePrefs(registry);
   ash::quick_unlock::RegisterProfilePrefs(registry);
-  chromeos::RegisterSamlProfilePrefs(registry);
+  ash::RegisterSamlProfilePrefs(registry);
   ash::ScreenTimeController::RegisterProfilePrefs(registry);
   SecondaryAccountConsentLogger::RegisterPrefs(registry);
   ash::EduCoexistenceConsentInvalidationController::RegisterProfilePrefs(

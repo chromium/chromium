@@ -14,11 +14,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using message_center::Notification;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::message_center::Notification;
 
 inline std::u16string utf16(const char* ascii) {
   return base::ASCIIToUTF16(ascii);
@@ -48,4 +47,4 @@ TEST_F(PasswordChangeSuccessNotificationTest, ShowPasswordChangeSuccess) {
             Notification()->message());
 }
 
-}  // namespace chromeos
+}  // namespace ash

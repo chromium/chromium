@@ -14,7 +14,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 InSessionPasswordSyncManagerFactory*
@@ -25,7 +25,7 @@ InSessionPasswordSyncManagerFactory::GetInstance() {
 // static
 InSessionPasswordSyncManager*
 InSessionPasswordSyncManagerFactory::GetForProfile(Profile* profile) {
-  if (!ash::features::IsSamlReauthenticationOnLockscreenEnabled())
+  if (!features::IsSamlReauthenticationOnLockscreenEnabled())
     return nullptr;
 
   return static_cast<InSessionPasswordSyncManager*>(
@@ -51,4 +51,4 @@ KeyedService* InSessionPasswordSyncManagerFactory::BuildServiceInstanceFor(
   return new InSessionPasswordSyncManager(profile);
 }
 
-}  // namespace chromeos
+}  // namespace ash

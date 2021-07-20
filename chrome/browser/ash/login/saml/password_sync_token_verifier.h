@@ -22,7 +22,7 @@ namespace user_manager {
 class User;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Verifies local copy of the password sync token by executing API call. If
 // token is invalid calls InSessionPasswordSyncManager to request online re-auth
@@ -75,12 +75,6 @@ class PasswordSyncTokenVerifier : public KeyedService,
   friend class PasswordSyncTokenVerifierTest;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::PasswordSyncTokenVerifier;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_SYNC_TOKEN_VERIFIER_H_

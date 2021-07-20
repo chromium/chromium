@@ -90,4 +90,12 @@ class UrgentPasswordExpiryNotificationDialog : public BasePasswordDialog {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::ConfirmPasswordChangeDialog;
+using ::chromeos::PasswordChangeDialog;
+using ::chromeos::UrgentPasswordExpiryNotificationDialog;
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_PASSWORD_CHANGE_DIALOGS_H_

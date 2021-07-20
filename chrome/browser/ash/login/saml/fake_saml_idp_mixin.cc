@@ -18,13 +18,12 @@
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using net::test_server::BasicHttpResponse;
-using net::test_server::HttpRequest;
-using net::test_server::HttpResponse;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::net::test_server::BasicHttpResponse;
+using ::net::test_server::HttpRequest;
+using ::net::test_server::HttpResponse;
 
 // The header that the server returns in a HTTP response to ask the client to
 // authenticate.
@@ -346,4 +345,4 @@ void FakeSamlIdpMixin::ClearChallengeResponse() {
   challenge_response_.reset();
 }
 
-}  // namespace chromeos
+}  // namespace ash

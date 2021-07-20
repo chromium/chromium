@@ -9,18 +9,17 @@
 #include <string>
 
 #include "base/files/file_path.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-
-class FakeGaiaMixin;
+namespace ash {
 
 class FakeSamlIdpMixin final : public InProcessBrowserTestMixin {
  public:
@@ -111,6 +110,6 @@ class FakeSamlIdpMixin final : public InProcessBrowserTestMixin {
   absl::optional<std::string> challenge_response_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SAML_FAKE_SAML_IDP_MIXIN_H_

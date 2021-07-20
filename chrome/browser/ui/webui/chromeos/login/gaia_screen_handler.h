@@ -13,6 +13,8 @@
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/saml/public_saml_url_fetcher.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
@@ -40,9 +42,7 @@ class NSSTempCertsCacheChromeOS;
 }
 
 namespace chromeos {
-
 class SigninScreenHandler;
-class PublicSamlUrlFetcher;
 
 class GaiaView {
  public:
@@ -391,7 +391,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
   std::unique_ptr<LoginClientCertUsageObserver>
       extension_provided_client_cert_usage_observer_;
 
-  std::unique_ptr<chromeos::PublicSamlUrlFetcher> public_saml_url_fetcher_;
+  std::unique_ptr<PublicSamlUrlFetcher> public_saml_url_fetcher_;
 
   // State of the security token PIN dialogs:
 

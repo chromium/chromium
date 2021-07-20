@@ -17,12 +17,12 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-using net::test_server::BasicHttpResponse;
-using net::test_server::HttpMethod;
-using net::test_server::HttpRequest;
-using net::test_server::HttpResponse;
+namespace ash {
 
-namespace chromeos {
+using ::net::test_server::BasicHttpResponse;
+using ::net::test_server::HttpMethod;
+using ::net::test_server::HttpRequest;
+using ::net::test_server::HttpResponse;
 
 constexpr char kPasswordChangePageTemplate[] =
     "<html><body onload='document.forms[0].submit();'>"
@@ -207,4 +207,4 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeSuccessDetectionTest, DetectPingSuccess) {
   WaitForPasswordChangeDetected();
 }
 
-}  // namespace chromeos
+}  // namespace ash

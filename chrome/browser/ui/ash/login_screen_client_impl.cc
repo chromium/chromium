@@ -356,8 +356,8 @@ void LoginScreenClientImpl::ShowGaiaSigninInternal(
         user_manager::UserManager::Get()->FindUser(prefilled_account);
     Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
     DCHECK(session_manager::SessionManager::Get()->IsScreenLocked());
-    chromeos::InSessionPasswordSyncManager* password_sync_manager =
-        chromeos::InSessionPasswordSyncManagerFactory::GetForProfile(profile);
+    auto* password_sync_manager =
+        ash::InSessionPasswordSyncManagerFactory::GetForProfile(profile);
     if (password_sync_manager) {
       password_sync_manager->CreateAndShowDialog();
     }

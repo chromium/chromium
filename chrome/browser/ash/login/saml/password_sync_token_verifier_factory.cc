@@ -14,7 +14,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 PasswordSyncTokenVerifierFactory*
@@ -51,4 +51,4 @@ KeyedService* PasswordSyncTokenVerifierFactory::BuildServiceInstanceFor(
   return new PasswordSyncTokenVerifier(profile);
 }
 
-}  // namespace chromeos
+}  // namespace ash

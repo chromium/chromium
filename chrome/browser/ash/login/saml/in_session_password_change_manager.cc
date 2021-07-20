@@ -29,8 +29,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 using PasswordSource = InSessionPasswordChangeManager::PasswordSource;
@@ -197,7 +196,7 @@ InSessionPasswordChangeManager::InSessionPasswordChangeManager(
   DCHECK(primary_user_);
 
   // Add `this` as a SessionActivationObserver to see when the screen is locked.
-  auto* session_controller = ash::SessionController::Get();
+  auto* session_controller = SessionController::Get();
   if (session_controller) {
     session_controller->AddSessionActivationObserverForAccountId(
         primary_user_->GetAccountId(), this);
@@ -206,7 +205,7 @@ InSessionPasswordChangeManager::InSessionPasswordChangeManager(
 
 InSessionPasswordChangeManager::~InSessionPasswordChangeManager() {
   // Remove `this` as a SessionActivationObserver.
-  auto* session_controller = ash::SessionController::Get();
+  auto* session_controller = SessionController::Get();
   if (session_controller) {
     session_controller->RemoveSessionActivationObserverForAccountId(
         primary_user_->GetAccountId(), this);
@@ -413,7 +412,7 @@ void InSessionPasswordChangeManager::OnAuthSuccess(
   DismissExpiryNotification();
   PasswordChangeDialog::Dismiss();
   ConfirmPasswordChangeDialog::Dismiss();
-  if (ash::features::IsSamlNotificationOnPasswordChangeSuccessEnabled()) {
+  if (features::IsSamlNotificationOnPasswordChangeSuccessEnabled()) {
     PasswordChangeSuccessNotification::Show(primary_profile_);
   }
   // We request a new sync token. It will be updated locally and signal the fact
@@ -478,4 +477,4 @@ void InSessionPasswordChangeManager::NotifyObservers(Event event) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

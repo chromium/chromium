@@ -24,11 +24,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using message_center::Notification;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::message_center::Notification;
 
 constexpr base::TimeDelta kOneHour = base::TimeDelta::FromHours(1);
 constexpr base::TimeDelta kOneDay = base::TimeDelta::FromDays(1);
@@ -304,4 +303,4 @@ TEST_F(InSessionPasswordChangeManagerTest, DontReshowWhenDismissed) {
   EXPECT_TRUE(Notification().has_value());
 }
 
-}  // namespace chromeos
+}  // namespace ash

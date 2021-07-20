@@ -26,7 +26,7 @@
 #include "components/user_manager/user_manager_base.h"
 #include "content/public/browser/storage_partition.h"
 
-namespace chromeos {
+namespace ash {
 
 InSessionPasswordSyncManager::InSessionPasswordSyncManager(
     Profile* primary_profile)
@@ -285,4 +285,4 @@ int InSessionPasswordSyncManager::GetDialogWidth() {
   return lock_screen_start_reauth_dialog_->GetDialogWidth();
 }
 
-}  // namespace chromeos
+}  // namespace ash

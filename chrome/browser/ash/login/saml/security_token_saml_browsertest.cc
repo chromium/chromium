@@ -42,8 +42,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // Pattern for the DeviceLoginScreenAutoSelectCertificateForUrls admin policy
@@ -76,7 +75,7 @@ std::string GetActiveUserEmail() {
 
 // Returns the profile into which login-screen extensions are force-installed.
 Profile* GetOriginalSigninProfile() {
-  return chromeos::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
+  return ProfileHelper::GetSigninProfile()->GetOriginalProfile();
 }
 
 }  // namespace
@@ -122,8 +121,7 @@ class SecurityTokenSamlTest : public OobeBaseTest {
     command_line->AppendSwitch(switches::kOobeSkipPostLogin);
     // Avoid aborting the user sign-in due to the user policy requests not being
     // faked in the test.
-    command_line->AppendSwitch(
-        chromeos::switches::kAllowFailedPolicyFetchForTest);
+    command_line->AppendSwitch(switches::kAllowFailedPolicyFetchForTest);
   }
 
   void SetUpOnMainThread() override {
@@ -266,4 +264,4 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenSamlTest, NEVER_ENABLED_Basic) {
   EXPECT_EQ(1, pin_dialog_shown_count());
 }
 
-}  // namespace chromeos
+}  // namespace ash

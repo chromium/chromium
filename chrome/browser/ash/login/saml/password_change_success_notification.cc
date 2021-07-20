@@ -19,17 +19,16 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
-using message_center::Notification;
-using message_center::NotificationDelegate;
-using message_center::NotificationType;
-using message_center::NotifierId;
-using message_center::NotifierType;
-using message_center::RichNotificationData;
-using message_center::SystemNotificationWarningLevel;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::message_center::Notification;
+using ::message_center::NotificationDelegate;
+using ::message_center::NotificationType;
+using ::message_center::NotifierId;
+using ::message_center::NotifierType;
+using ::message_center::RichNotificationData;
+using ::message_center::SystemNotificationWarningLevel;
 
 // Unique ID for this notification.
 const char kNotificationId[] = "saml.password-change-success-notification";
@@ -57,7 +56,7 @@ void PasswordChangeSuccessNotification::Show(Profile* profile) {
 
   // NotifierId for histogram reporting.
   static const base::NoDestructor<NotifierId> kNotifierId(
-      message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId);
+      NotifierType::SYSTEM_COMPONENT, kNotificationId);
 
   // Leaving this empty means the notification is attributed to the system -
   // ie "Chromium OS" or similar.
@@ -74,10 +73,10 @@ void PasswordChangeSuccessNotification::Show(Profile* profile) {
 
   RichNotificationData rich_notification_data;
 
-  const scoped_refptr<message_center::NotificationDelegate> delegate =
-      base::MakeRefCounted<message_center::NotificationDelegate>();
+  const scoped_refptr<NotificationDelegate> delegate =
+      base::MakeRefCounted<NotificationDelegate>();
 
-  std::unique_ptr<Notification> notification = ash::CreateSystemNotification(
+  std::unique_ptr<Notification> notification = CreateSystemNotification(
       kNotificationType, kNotificationId, title, body, *kEmptyDisplaySource,
       *kEmptyOriginUrl, *kNotifierId, rich_notification_data, delegate, kIcon,
       kWarningLevel);
@@ -90,4 +89,4 @@ void PasswordChangeSuccessNotification::Show(Profile* profile) {
   nds->Display(kNotificationHandlerType, *notification, /*metadata=*/nullptr);
 }
 
-}  // namespace chromeos
+}  // namespace ash

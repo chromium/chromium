@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/login/saml/mock_lock_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 MockLockHandler::MockLockHandler() = default;
 
 MockLockHandler::~MockLockHandler() = default;
 
-}  // namespace chromeos
+}  // namespace ash

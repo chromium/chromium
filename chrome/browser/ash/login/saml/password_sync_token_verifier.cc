@@ -13,10 +13,11 @@
 #include "components/user_manager/known_user.h"
 #include "content/public/browser/storage_partition.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
 const char dummy_token[] = "dummy-token";
+
 }
 
 const net::BackoffEntry::Policy
@@ -183,4 +184,4 @@ void PasswordSyncTokenVerifier::OnApiCallFailed(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

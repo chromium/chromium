@@ -10,7 +10,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
-
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -118,19 +117,17 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-namespace em = enterprise_management;
-
-using base::test::RunOnceCallback;
-
-using testing::_;
-using testing::Invoke;
-using testing::NiceMock;
-using testing::Return;
-using testing::WithArgs;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+namespace em = ::enterprise_management;
+
+using ::base::test::RunOnceCallback;
+using ::testing::_;
+using ::testing::Invoke;
+using ::testing::NiceMock;
+using ::testing::Return;
+using ::testing::WithArgs;
 
 const test::UIPath kPasswordInput = {"saml-confirm-password", "passwordInput"};
 const test::UIPath kPasswordConfirmInput = {"saml-confirm-password",
@@ -214,8 +211,7 @@ class SamlTest : public OobeBaseTest {
     OobeBaseTest::SetUpCommandLine(command_line);
 
     command_line->AppendSwitch(switches::kOobeSkipPostLogin);
-    command_line->AppendSwitch(
-        chromeos::switches::kAllowFailedPolicyFetchForTest);
+    command_line->AppendSwitch(switches::kAllowFailedPolicyFetchForTest);
 
     // TODO(crbug.com/1177416) - Fix this with a proper SSL solution.
     command_line->AppendSwitch(::switches::kIgnoreCertificateErrors);
@@ -312,9 +308,9 @@ class SamlTest : public OobeBaseTest {
   void ExpectFatalErrorMessage(const std::string& error_message) {
     OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
 
-    EXPECT_TRUE(ash::LoginScreenTestApi::IsShutdownButtonShown());
-    EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-    EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+    EXPECT_TRUE(LoginScreenTestApi::IsShutdownButtonShown());
+    EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+    EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
     test::OobeJS().ExpectElementText(error_message,
                                      {"signin-fatal-error", "subtitle"});
@@ -1068,7 +1064,7 @@ void SAMLPolicyTest::ShowGAIALoginForm() {
       "$('gaia-signin').authenticator_.addEventListener('ready', function() {"
       "  window.domAutomationController.send('ready');"
       "});"));
-  ASSERT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
+  ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   std::string message;
   do {
     ASSERT_TRUE(message_queue.WaitForMessage(&message));
@@ -1077,7 +1073,7 @@ void SAMLPolicyTest::ShowGAIALoginForm() {
 
 void SAMLPolicyTest::ShowSAMLInterstitial() {
   WaitForOobeUI();
-  ASSERT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
+  ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   test::OobeJS()
       .CreateVisibilityWaiter(true, {"gaia-signin", "saml-interstitial"})
       ->Wait();
@@ -1127,7 +1123,7 @@ std::string SAMLPolicyTest::GetCookieValue(const std::string& name) {
 }
 
 void SAMLPolicyTest::GetCookies() {
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUserUnsafe(
+  Profile* profile = ProfileHelper::Get()->GetProfileByUserUnsafe(
       user_manager::UserManager::Get()->GetActiveUser());
   ASSERT_TRUE(profile);
   base::RunLoop run_loop;
@@ -1165,7 +1161,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_NoSAML) {
 // authenticated without SAML.
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, NoSAML) {
   // Verify that offline login is allowed.
-  ash::LoginScreenTestApi::SubmitPassword(
+  LoginScreenTestApi::SubmitPassword(
       AccountId::FromUserEmail(kNonSAMLUserEmail), "password",
       true /* check_if_submittable */);
   test::WaitForPrimaryUserSessionStart();
@@ -1184,7 +1180,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_SAMLNoLimit) {
 // authenticated with SAML is allowed to log in offline.
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLNoLimit) {
   // Verify that offline login is allowed.
-  ash::LoginScreenTestApi::SubmitPassword(
+  LoginScreenTestApi::SubmitPassword(
       AccountId::FromUserEmail(saml_test_users::kFirstUserCorpExampleComEmail),
       "password", true /* check_if_submittable */);
   test::WaitForPrimaryUserSessionStart();
@@ -1203,9 +1199,8 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_SAMLZeroLimit) {
 // authenticated via SAML, that user is forced to log in online the next time.
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLZeroLimit) {
   // Verify that offline login is not allowed.
-  ASSERT_TRUE(
-      ash::LoginScreenTestApi::IsForcedOnlineSignin(AccountId::FromUserEmail(
-          saml_test_users::kFirstUserCorpExampleComEmail)));
+  ASSERT_TRUE(LoginScreenTestApi::IsForcedOnlineSignin(AccountId::FromUserEmail(
+      saml_test_users::kFirstUserCorpExampleComEmail)));
 }
 
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_PRE_TransferCookiesAffiliated) {
@@ -1329,8 +1324,8 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, DISABLED_SAMLInterstitialNext) {
   ShowSAMLInterstitial();
   ClickBackOnSAMLInterstitialPage();
   // Back button should hide OOBE dialog.
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsAddUserButtonShown());
 
   ShowSAMLInterstitial();
   ClickNextOnSAMLInterstitialPage();
@@ -1520,7 +1515,7 @@ class SAMLDeviceAttestationTest : public SamlTest {
  protected:
   void SetAllowedUrlsPolicy(const std::vector<std::string>& allowed_urls);
 
-  chromeos::ScopedTestingCrosSettings settings_helper_;
+  ScopedTestingCrosSettings settings_helper_;
   StubCrosSettingsProvider* settings_provider_ = nullptr;
 
   attestation::MockMachineCertificateUploader mock_cert_uploader_;
@@ -1760,4 +1755,4 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, TimeoutError) {
       attestation::TpmChallengeKeyResultCode::kTimeoutError, 1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -19,7 +19,7 @@ namespace enterprise_management {
 class DeviceManagementResponse;
 }  // namespace enterprise_management
 
-namespace chromeos {
+namespace ash {
 
 // This class handles sending request for public SAML session URL to DM
 // server, waits for the response and retrieves the redirect URL from it.
@@ -62,6 +62,12 @@ class PublicSamlUrlFetcher {
   DISALLOW_COPY_AND_ASSIGN(PublicSamlUrlFetcher);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::PublicSamlUrlFetcher;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SAML_PUBLIC_SAML_URL_FETCHER_H_

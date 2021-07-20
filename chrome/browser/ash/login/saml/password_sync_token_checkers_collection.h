@@ -15,6 +15,10 @@
 #include "net/base/backoff_entry.h"
 
 namespace chromeos {
+class ExistingUserControllerForcedOnlineAuthTest;
+}
+
+namespace ash {
 
 // Helper class to handle PasswordSyncTokenLoginChecker objects for all users
 // on the login screen.
@@ -41,8 +45,8 @@ class PasswordSyncTokenCheckersCollection
   void OnInvalidSyncToken(const AccountId& account_id) override;
 
  private:
+  friend class chromeos::ExistingUserControllerForcedOnlineAuthTest;
   friend class PasswordSyncTokenLoginCheckerTest;
-  friend class ExistingUserControllerForcedOnlineAuthTest;
 
   std::unordered_map<std::string,
                      std::unique_ptr<PasswordSyncTokenLoginChecker>>
@@ -50,12 +54,12 @@ class PasswordSyncTokenCheckersCollection
   net::BackoffEntry sync_token_retry_backoff_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::PasswordSyncTokenCheckersCollection;
+namespace chromeos {
+using ::ash::PasswordSyncTokenCheckersCollection;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_SYNC_TOKEN_CHECKERS_COLLECTION_H_

@@ -14,8 +14,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const char kSAMLUserId[] = "12345";
@@ -120,4 +119,4 @@ TEST_F(PasswordSyncTokenLoginCheckerTest, ValidateSyncTokenHistogram) {
       "ChromeOS.SAML.InSessionPasswordSyncEvent", 1, 1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

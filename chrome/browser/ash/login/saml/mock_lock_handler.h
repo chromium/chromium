@@ -11,7 +11,7 @@
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 // Mock implementation of proximity_auth::ScreenlockBridge::LockHandler.
 class MockLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
@@ -48,6 +48,6 @@ class MockLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
                const std::string& key_label));
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SAML_MOCK_LOCK_HANDLER_H_

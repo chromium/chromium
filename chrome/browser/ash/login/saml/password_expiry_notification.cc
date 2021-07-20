@@ -36,21 +36,17 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
-using message_center::ButtonInfo;
-using message_center::HandleNotificationClickDelegate;
-using message_center::Notification;
-using message_center::NotificationDelegate;
-using message_center::NotificationObserver;
-using message_center::NotificationType;
-using message_center::NotifierId;
-using message_center::NotifierType;
-using message_center::RichNotificationData;
-using message_center::SystemNotificationWarningLevel;
-using message_center::ThunkNotificationDelegate;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::message_center::ButtonInfo;
+using ::message_center::Notification;
+using ::message_center::NotificationDelegate;
+using ::message_center::NotificationType;
+using ::message_center::NotifierId;
+using ::message_center::NotifierType;
+using ::message_center::RichNotificationData;
+using ::message_center::SystemNotificationWarningLevel;
 
 // Unique ID for this notification.
 const char kNotificationId[] = "saml.password-expiry-notification";
@@ -92,7 +88,7 @@ class PasswordExpiryNotificationDelegate : public NotificationDelegate {
  protected:
   ~PasswordExpiryNotificationDelegate() override;
 
-  // message_center::NotificationDelegate:
+  // NotificationDelegate:
   void Close(bool by_user) override;
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override;
@@ -128,7 +124,7 @@ void PasswordExpiryNotification::Show(Profile* profile,
 
   // NotifierId for histogram reporting.
   static const base::NoDestructor<NotifierId> kNotifierId(
-      message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId);
+      NotifierType::SYSTEM_COMPONENT, kNotificationId);
 
   // Leaving this empty means the notification is attributed to the system -
   // ie "Chromium OS" or similar.
@@ -143,7 +139,7 @@ void PasswordExpiryNotification::Show(Profile* profile,
   const scoped_refptr<PasswordExpiryNotificationDelegate> delegate =
       base::MakeRefCounted<PasswordExpiryNotificationDelegate>();
 
-  std::unique_ptr<Notification> notification = ash::CreateSystemNotification(
+  std::unique_ptr<Notification> notification = CreateSystemNotification(
       kNotificationType, kNotificationId, title, body, *kEmptyDisplaySource,
       *kEmptyOriginUrl, *kNotifierId, rich_notification_data, delegate, kIcon,
       kWarningLevel);
@@ -176,4 +172,4 @@ void PasswordExpiryNotification::Dismiss(Profile* profile) {
       kNotificationHandlerType, kNotificationId);
 }
 
-}  // namespace chromeos
+}  // namespace ash
