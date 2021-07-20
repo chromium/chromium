@@ -152,16 +152,16 @@ class FormForest {
     // used by FrameData sets.
     struct CompareByFrameToken {
       using is_transparent = void;
-      constexpr bool operator()(const std::unique_ptr<FrameData>& f,
-                                const std::unique_ptr<FrameData>& g) const {
+      bool operator()(const std::unique_ptr<FrameData>& f,
+                      const std::unique_ptr<FrameData>& g) const {
         return f && g ? f->frame_token < g->frame_token : f.get() < g.get();
       }
-      constexpr bool operator()(const std::unique_ptr<FrameData>& f,
-                                const LocalFrameToken& g) const {
+      bool operator()(const std::unique_ptr<FrameData>& f,
+                      const LocalFrameToken& g) const {
         return f ? f->frame_token < g : true;
       }
-      constexpr bool operator()(const LocalFrameToken& f,
-                                const std::unique_ptr<FrameData>& g) const {
+      bool operator()(const LocalFrameToken& f,
+                      const std::unique_ptr<FrameData>& g) const {
         return g ? f < g->frame_token : false;
       }
     };
