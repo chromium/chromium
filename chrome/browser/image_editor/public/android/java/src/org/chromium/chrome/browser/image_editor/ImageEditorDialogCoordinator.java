@@ -14,6 +14,6 @@ import org.chromium.chrome.browser.tab.Tab;
  * Interface to interact with the image editor dialog.
  */
 public interface ImageEditorDialogCoordinator {
-    public void launchEditor(Activity activity, Bitmap image, Tab mTab,
+    public void launchEditor(Activity activity, Bitmap image, Tab mTab, String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback);
 }
