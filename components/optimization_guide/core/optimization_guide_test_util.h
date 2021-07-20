@@ -11,6 +11,11 @@
 
 namespace optimization_guide {
 
+// File paths that can be used in testing, handling platform differences, namely
+// C:\ in Windows.
+extern const char kTestAbsoluteFilePath[];
+extern const char kTestRelativeFilePath[];
+
 // Returns a decision tree model with |threshold|, |weight|, and a single
 // uninitialized node.
 std::unique_ptr<proto::PredictionModel> GetMinimalDecisionTreePredictionModel(

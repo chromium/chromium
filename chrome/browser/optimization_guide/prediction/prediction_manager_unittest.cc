@@ -11,6 +11,7 @@
 
 #include "base/base64.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,6 +27,7 @@
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "components/optimization_guide/core/prediction_model.h"
@@ -312,9 +314,7 @@ class TestPredictionModelFetcher : public PredictionModelFetcher {
 
   void SetCheckExpectedVersion() { check_expected_version_ = true; }
 
-  void Reset() {
-    models_fetched_ = false;
-  }
+  void Reset() { models_fetched_ = false; }
 
   bool models_fetched() const { return models_fetched_; }
 
@@ -844,6 +844,8 @@ TEST_F(PredictionManagerTest,
 #endif
 }
 
+// See crbug/1227996.
+#if !defined(OS_WIN)
 TEST_F(PredictionManagerTest,
        AddObserverForOptimizationTargetModelCommandLineOverride) {
   optimization_guide::proto::Any metadata;
@@ -853,7 +855,8 @@ TEST_F(PredictionManagerTest,
   base::Base64Encode(encoded_metadata, &encoded_metadata);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kModelOverride,
-      "OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:somefilepath:" + encoded_metadata);
+      base::StringPrintf("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:%s:%s",
+                         kTestAbsoluteFilePath, encoded_metadata.c_str()));
 
   CreatePredictionManager();
 
@@ -887,7 +890,7 @@ TEST_F(PredictionManagerTest,
                 .last_received_model_for_target(
                     proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
                 ->second.value(),
-            FILE_PATH_LITERAL("somefilepath"));
+            FILE_PATH_LITERAL(kTestAbsoluteFilePath));
 
   // Now reset observer. New model downloads should not update the observer.
   observer.Reset();
@@ -906,6 +909,7 @@ TEST_F(PredictionManagerTest,
                        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
                    .has_value());
 }
+#endif
 
 TEST_F(PredictionManagerTest,
        NoPredictionModelForRegisteredOptimizationTarget) {
@@ -1046,12 +1050,12 @@ TEST_F(PredictionManagerTest, UpdateModelWithSameVersion) {
   prediction_manager()->UpdatePredictionModelsForTesting(
       get_models_response.get());
 
-    TestPredictionModel* stored_prediction_model =
-        static_cast<TestPredictionModel*>(
-            prediction_manager()->GetPredictionModelForTesting(
-                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
-    EXPECT_TRUE(stored_prediction_model);
-    EXPECT_EQ(3, stored_prediction_model->GetVersion());
+  TestPredictionModel* stored_prediction_model =
+      static_cast<TestPredictionModel*>(
+          prediction_manager()->GetPredictionModelForTesting(
+              proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  EXPECT_TRUE(stored_prediction_model);
+  EXPECT_EQ(3, stored_prediction_model->GetVersion());
   histogram_tester.ExpectBucketCount("OptimizationGuide.IsPredictionModelValid",
                                      true, 2);
 }
@@ -1279,11 +1283,11 @@ TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTarget) {
   prediction_manager()->UpdatePredictionModelsForTesting(
       get_models_response.get());
 
-    TestPredictionModel* test_prediction_model =
-        static_cast<TestPredictionModel*>(
-            prediction_manager()->GetPredictionModelForTesting(
-                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
-    EXPECT_FALSE(test_prediction_model);
+  TestPredictionModel* test_prediction_model =
+      static_cast<TestPredictionModel*>(
+          prediction_manager()->GetPredictionModelForTesting(
+              proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  EXPECT_FALSE(test_prediction_model);
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionManager.PredictionModelsStored", 1);

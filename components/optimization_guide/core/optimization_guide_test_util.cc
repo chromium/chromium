@@ -4,7 +4,17 @@
 
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
 
+#include "build/build_config.h"
+
 namespace optimization_guide {
+
+#if defined(OS_WIN)
+const char kTestAbsoluteFilePath[] = "C:\\absolute/file/path";
+const char kTestRelativeFilePath[] = "relative/file/path";
+#else
+const char kTestAbsoluteFilePath[] = "/absolutefilepath";
+const char kTestRelativeFilePath[] = "relativefilepath";
+#endif
 
 std::unique_ptr<proto::PredictionModel> GetMinimalDecisionTreePredictionModel(
     double threshold,
