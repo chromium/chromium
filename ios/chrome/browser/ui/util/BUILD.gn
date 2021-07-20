@@ -8,14 +8,10 @@ import("//ios/build/chrome_build.gni")
 source_set("util") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "CRUILabel+AttributeUtils.h",
-    "CRUILabel+AttributeUtils.mm",
     "accessibility_close_menu_button.h",
     "accessibility_close_menu_button.mm",
     "animation_util.h",
     "animation_util.mm",
-    "core_text_util.h",
-    "core_text_util.mm",
     "dynamic_type_util.h",
     "dynamic_type_util.mm",
     "force_touch_long_press_gesture_recognizer.h",
@@ -24,14 +20,8 @@ source_set("util") {
     "i18n_string.mm",
     "keyboard_observer_helper.h",
     "keyboard_observer_helper.mm",
-    "label_link_controller.h",
-    "label_link_controller.mm",
-    "label_observer.h",
-    "label_observer.mm",
     "layout_guide_names.h",
     "layout_guide_names.mm",
-    "manual_text_framer.h",
-    "manual_text_framer.mm",
     "named_guide.h",
     "named_guide.mm",
     "named_guide_util.h",
@@ -48,10 +38,6 @@ source_set("util") {
     "reversed_animation.mm",
     "rtl_geometry.h",
     "rtl_geometry.mm",
-    "text_frame.h",
-    "text_frame.mm",
-    "text_region_mapper.h",
-    "text_region_mapper.mm",
     "top_view_controller.h",
     "top_view_controller.mm",
     "transparent_link_button.h",
@@ -116,17 +102,11 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "CRUILabel+AttributeUtils_unittest.mm",
-    "core_text_util_unittest.mm",
     "force_touch_long_press_gesture_recognizer_unittest.mm",
-    "label_link_controller_unittest.mm",
-    "label_observer_unittest.mm",
-    "manual_text_framer_unittest.mm",
     "named_guide_unittest.mm",
     "optional_property_animator_unittest.mm",
     "pasteboard_util_unittest.mm",
     "terms_util_unittest.mm",
-    "text_region_mapper_unittest.mm",
     "ui_util_unittest.mm",
     "uikit_ui_util_unittest.mm",
   ]

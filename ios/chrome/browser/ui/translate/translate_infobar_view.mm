@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/translate/translate_infobar_language_tab_strip_view_delegate.h"
 #import "ios/chrome/browser/ui/translate/translate_infobar_view_constants.h"
 #import "ios/chrome/browser/ui/translate/translate_infobar_view_delegate.h"
-#import "ios/chrome/browser/ui/util/label_link_controller.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
