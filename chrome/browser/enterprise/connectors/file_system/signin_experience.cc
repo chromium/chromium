@@ -7,6 +7,7 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
+#include "chrome/browser/enterprise/connectors/file_system/rename_handler.h"
 #include "chrome/browser/enterprise/connectors/file_system/service_settings.h"
 #include "chrome/browser/enterprise/connectors/file_system/signin_confirmation_modal.h"
 #include "chrome/browser/ui/browser.h"
@@ -103,6 +104,7 @@ void OnConfirmationModalClosed(gfx::NativeWindow context,
                                content::BrowserContext* browser_context,
                                const FileSystemSettings& settings,
                                AuthorizationCompletedCallback callback,
+                               SigninExperienceTestObserver* observer,
                                bool user_confirmed_to_proceed) {
   if (!user_confirmed_to_proceed) {
     return ReturnCancellation(std::move(callback));
@@ -111,6 +113,7 @@ void OnConfirmationModalClosed(gfx::NativeWindow context,
   std::unique_ptr<FileSystemSigninDialogDelegate> delegate =
       std::make_unique<FileSystemSigninDialogDelegate>(
           browser_context, settings, std::move(callback));
+  content::WebContents* dialog_web_contents = delegate->web_contents();
 
   // We want a dialog whose lifetime is independent from that of |web_contents|,
   // therefore using FindMostRelevantContextWindow() as context, instead of
@@ -118,13 +121,18 @@ void OnConfirmationModalClosed(gfx::NativeWindow context,
   // top-level window.
   auto* widget = views::DialogDelegate::CreateDialogWidget(
       std::move(delegate), context, /* parent = */ nullptr);
+
+  if (observer)
+    observer->OnSignInDialogCreated(dialog_web_contents, widget);
+
   widget->Show();
 }
 
 void StartFileSystemConnectorSigninExperienceForDownloadItem(
     content::WebContents* web_contents,
     const FileSystemSettings& settings,
-    AuthorizationCompletedCallback callback) {
+    AuthorizationCompletedCallback callback,
+    SigninExperienceTestObserver* observer) {
   gfx::NativeWindow context = FindMostRelevantContextWindow(web_contents);
   DCHECK(context);
 
@@ -134,7 +142,7 @@ void StartFileSystemConnectorSigninExperienceForDownloadItem(
 
   base::OnceCallback<void(bool)> confirmed_to_sign_in = base::BindOnce(
       &OnConfirmationModalClosed, context, web_contents->GetBrowserContext(),
-      settings, std::move(callback));
+      settings, std::move(callback), observer);
   FileSystemConfirmationModal::Show(
       context,
       l10n_util::GetStringFUTF16(
@@ -145,7 +153,7 @@ void StartFileSystemConnectorSigninExperienceForDownloadItem(
           IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_REQUIRED_CANCEL_BUTTON),
       l10n_util::GetStringUTF16(
           IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_REQUIRED_ACCEPT_BUTTON),
-      std::move(confirmed_to_sign_in));
+      std::move(confirmed_to_sign_in), observer);
 }
 
 void OnConfirmationModalClosedForSettingsPage(
@@ -163,7 +171,8 @@ void OnConfirmationModalClosedForSettingsPage(
       },
       std::move(settings_page_callback));
   OnConfirmationModalClosed(context, browser_context, settings,
-                            std::move(converted_cb), user_confirmed_to_proceed);
+                            std::move(converted_cb), nullptr,
+                            user_confirmed_to_proceed);
 }
 
 void StartFileSystemConnectorSigninExperienceForSettingsPage(
@@ -206,6 +215,19 @@ void ReturnCancellation(AuthorizationCompletedCallback callback) {
   std::move(callback).Run(
       GoogleServiceAuthError{GoogleServiceAuthError::State::REQUEST_CANCELED},
       std::string(), std::string());
+}
+
+// SigninExperienceTestObserver
+SigninExperienceTestObserver::SigninExperienceTestObserver(
+    FileSystemRenameHandler* rename_handler) {
+  rename_handler_ = rename_handler->RegisterSigninObserverForTesting(this);
+}
+
+SigninExperienceTestObserver::~SigninExperienceTestObserver() {
+  if (rename_handler_) {
+    rename_handler_->UnregisterSigninObserverForTesting(this);
+    rename_handler_.reset();
+  }
 }
 
 }  // namespace enterprise_connectors

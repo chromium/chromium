@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
+#include "chrome/browser/enterprise/connectors/file_system/signin_dialog_delegate.h"
 #include "chrome/browser/enterprise/connectors/file_system/signin_experience.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -82,7 +83,10 @@ FileSystemRenameHandler::FileSystemRenameHandler(
     : download::DownloadItemRenameHandler(download_item),
       uploader_(BoxUploader::Create(download_item)) {}
 
-FileSystemRenameHandler::~FileSystemRenameHandler() = default;
+FileSystemRenameHandler::~FileSystemRenameHandler() {
+  for (auto& observer : observers_)
+    observer.OnDestruction();
+}
 
 void FileSystemRenameHandler::Start(ProgressUpdateCallback progress_update_cb,
                                     DownloadCallback upload_complete_cb) {
@@ -103,7 +107,8 @@ void FileSystemRenameHandler::PromptUserSignInForAuthorization(
   StartFileSystemConnectorSigninExperienceForDownloadItem(
       contents, settings_,
       base::BindOnce(&FileSystemRenameHandler::OnAuthorization,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr()),
+      signin_observer_);
 }
 
 void FileSystemRenameHandler::FetchAccessToken(
@@ -115,6 +120,8 @@ void FileSystemRenameHandler::FetchAccessToken(
       kOAuthConsumerName,
       base::BindOnce(&FileSystemRenameHandler::OnAccessTokenFetched,
                      weak_factory_.GetWeakPtr()));
+  for (auto& observer : observers_)
+    observer.OnFetchAccessTokenStart();
   token_fetcher_->Start(settings_.client_id, settings_.client_secret,
                         settings_.scopes);
 }
@@ -226,6 +233,9 @@ void FileSystemRenameHandler::OnAccessTokenFetched(
     const GoogleServiceAuthError& status,
     const std::string& access_token,
     const std::string& refresh_token) {
+  for (auto& observer : observers_)
+    observer.OnAccessTokenFetched(status);
+
   // Case 1d or 3c:
   const net::Error net_error = static_cast<net::Error>(status.network_error());
   if (net_error) {
@@ -283,6 +293,68 @@ void FileSystemRenameHandler::OnApiAuthenticationError() {
 
 PrefService* FileSystemRenameHandler::GetPrefs() {
   return PrefsFromDownloadItem(download_item());
+}
+
+base::WeakPtr<FileSystemRenameHandler>
+FileSystemRenameHandler::RegisterSigninObserverForTesting(
+    SigninExperienceTestObserver* observer) {
+  // The FileSystemRenameHandler should open trigger the Box signin workflow
+  // once. The observer should be set only once, otherwise one observer will
+  // forcibly detach another observer.
+  DCHECK(signin_observer_ == nullptr);
+  signin_observer_ = observer;
+  return weak_factory_.GetWeakPtr();
+}
+
+void FileSystemRenameHandler::UnregisterSigninObserverForTesting(
+    SigninExperienceTestObserver* observer) {
+  DCHECK(observer == signin_observer_);
+  signin_observer_ = nullptr;
+}
+
+// FileSystemRenameHandler::TestObserver
+FileSystemRenameHandler::TestObserver::TestObserver(
+    FileSystemRenameHandler* rename_handler)
+    : rename_handler_(rename_handler->weak_factory_.GetWeakPtr()) {
+  rename_handler->observers_.AddObserver(this);
+}
+
+FileSystemRenameHandler::TestObserver::~TestObserver() {
+  if (rename_handler_)
+    rename_handler_->observers_.RemoveObserver(this);
+}
+
+void FileSystemRenameHandler::TestObserver::OnDestruction() {
+  rename_handler_.reset();
+}
+
+// static
+BoxUploader* FileSystemRenameHandler::TestObserver::GetBoxUploader(
+    FileSystemRenameHandler* rename_handler) {
+  return rename_handler->uploader_.get();
+}
+
+// BoxFetchAccessTokenTestObserver
+BoxFetchAccessTokenTestObserver::BoxFetchAccessTokenTestObserver(
+    FileSystemRenameHandler* rename_handler)
+    : FileSystemRenameHandler::TestObserver(rename_handler) {}
+
+void BoxFetchAccessTokenTestObserver::OnFetchAccessTokenStart() {
+  status_ = Status::kInProgress;
+}
+
+void BoxFetchAccessTokenTestObserver::OnAccessTokenFetched(
+    const GoogleServiceAuthError& status) {
+  fetch_token_err_ = status;
+  status_ = Status::kSucceeded;
+  if (run_loop_.running())
+    run_loop_.Quit();
+}
+
+bool BoxFetchAccessTokenTestObserver::WaitForFetch() {
+  if (status_ != Status::kSucceeded)
+    run_loop_.Run();
+  return fetch_token_err_.state() == GoogleServiceAuthError::State::NONE;
 }
 
 }  // namespace enterprise_connectors

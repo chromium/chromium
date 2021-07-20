@@ -13,6 +13,22 @@ class WebContents;
 }
 
 namespace enterprise_connectors {
+class FileSystemRenameHandler;
+
+class SigninExperienceTestObserver {
+ public:
+  explicit SigninExperienceTestObserver(
+      FileSystemRenameHandler* rename_handler);
+  ~SigninExperienceTestObserver();
+
+  virtual void OnConfirmationDialogCreated(
+      views::DialogDelegate* dialog_delegate) {}
+  virtual void OnSignInDialogCreated(content::WebContents* dialog_web_content,
+                                     views::Widget* dialog_widget) {}
+
+ private:
+  base::WeakPtr<FileSystemRenameHandler> rename_handler_;
+};
 
 // Retrieve FileSystemSettings for |profile|; null if connector is disabled.
 absl::optional<FileSystemSettings> GetFileSystemSettings(Profile* profile);
@@ -29,7 +45,8 @@ using AuthorizationCompletedCallback =
 void StartFileSystemConnectorSigninExperienceForDownloadItem(
     content::WebContents* web_contents,
     const FileSystemSettings& settings,
-    AuthorizationCompletedCallback callback);
+    AuthorizationCompletedCallback callback,
+    SigninExperienceTestObserver* observer = nullptr);
 
 // Start the sign in experience as triggered by the settings page.
 void StartFileSystemConnectorSigninExperienceForSettingsPage(
