@@ -31,6 +31,15 @@ struct StreamModelUpdateRequest;
 // An in-memory stream model.
 class StreamModel {
  public:
+  // Information about the context to pass to this model.
+  struct Context {
+    Context();
+    ~Context();
+    Context(const Context&) = delete;
+    Context& operator=(const Context&) = delete;
+    ContentRevision::Generator revision_generator;
+  };
+
   // Information about an update to the model.
   struct UiUpdate {
     struct SharedStateInfo {
@@ -80,7 +89,7 @@ class StreamModel {
     virtual void OnStoreChange(StoreUpdate update) = 0;
   };
 
-  StreamModel();
+  explicit StreamModel(Context* context);
   ~StreamModel();
 
   StreamModel(const StreamModel& src) = delete;
