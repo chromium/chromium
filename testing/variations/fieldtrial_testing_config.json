@@ -7493,6 +7493,25 @@
             ]
         }
     ],
+    "SettingsLandingPageRedesign": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SettingsLandingPageRedesign"
+                    ]
+                }
+            ]
+        }
+    ],
     "SettingsRefresh": [
         {
             "platforms": [

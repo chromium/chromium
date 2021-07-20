@@ -6,6 +6,7 @@
 
 // clang-format off
 import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {pageVisibility, Router, routes} from 'chrome://settings/settings.js';
 // clang-format on
@@ -151,9 +152,12 @@ suite('SettingsMenuReset', function() {
       assertEquals(
           expectedHidden,
           settingsMenu.shadowRoot.querySelector('#reset').hidden);
-      assertEquals(
-          expectedHidden,
-          settingsMenu.shadowRoot.querySelector('#safetyCheck').hidden);
+
+      if (!loadTimeData.getBoolean('enableLandingPageRedesign')) {
+        assertEquals(
+            expectedHidden,
+            settingsMenu.shadowRoot.querySelector('#safetyCheck').hidden);
+      }
 
       if (!isChromeOS && !isLacros) {
         assertEquals(
