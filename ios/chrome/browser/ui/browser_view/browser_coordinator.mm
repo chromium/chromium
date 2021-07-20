@@ -401,7 +401,6 @@
                          browser:self.browser];
   self.formInputAccessoryCoordinator.navigator = self;
   [self.formInputAccessoryCoordinator start];
-  self.viewController.inputViewProvider = self.formInputAccessoryCoordinator;
 
   if (base::FeatureList::IsEnabled(kDownloadMobileConfigFile)) {
     self.mobileConfigCoordinator = [[MobileConfigCoordinator alloc]
@@ -647,6 +646,7 @@
 }
 
 - (void)showAddCreditCard {
+  [self.formInputAccessoryCoordinator reset];
   [self.addCreditCardCoordinator start];
 }
 
