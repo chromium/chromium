@@ -1013,6 +1013,9 @@ extern const char kOmniboxDisableCGIParamMatchingDescription[];
 extern const char kOmniboxDefaultTypedNavigationsToHttpsName[];
 extern const char kOmniboxDefaultTypedNavigationsToHttpsDescription[];
 
+extern const char kOmniboxDocumentProviderAsoName[];
+extern const char kOmniboxDocumentProviderAsoDescription[];
+
 extern const char kOmniboxKeywordSpaceTriggeringSettingName[];
 extern const char kOmniboxKeywordSpaceTriggeringSettingDescription[];
 
@@ -1021,6 +1024,9 @@ extern const char kOmniboxExperimentalSuggestScoringDescription[];
 
 extern const char kOmniboxMostVisitedTilesName[];
 extern const char kOmniboxMostVisitedTilesDescription[];
+
+extern const char kOmniboxPreserveLongerShortcutsTextName[];
+extern const char kOmniboxPreserveLongerShortcutsTextDescription[];
 
 extern const char kOmniboxRichAutocompletionName[];
 extern const char kOmniboxRichAutocompletionDescription[];

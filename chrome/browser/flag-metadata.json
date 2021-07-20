@@ -4111,6 +4111,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "omnibox-document-provider-aso",
+    "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 96
+  },
+  {
     "name": "omnibox-drive-suggestions",
     "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 95
@@ -4209,6 +4214,11 @@
     "name": "omnibox-pedals-default-icon-colored",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 95
+  },
+  {
+    "name": "omnibox-preserve-longer-shortcuts-text",
+    "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 96
   },
   {
     "name": "omnibox-rich-autocompletion",

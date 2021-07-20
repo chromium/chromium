@@ -1767,6 +1767,11 @@ const char kOmniboxDefaultTypedNavigationsToHttpsDescription[] =
     "can't determine the availability of the HTTPS URL within the timeout, it "
     "will fall back to the HTTP URL.";
 
+const char kOmniboxDocumentProviderAsoName[] = "Omnibox Document Provider ASO";
+const char kOmniboxDocumentProviderAsoDescription[] =
+    "If document suggestions are enabled, swaps the backend from cloudsearch "
+    "to ASO (Apps Search Overlay) search.";
+
 const char kOmniboxExperimentalSuggestScoringName[] =
     "Omnibox Experimental Suggest Scoring";
 const char kOmniboxExperimentalSuggestScoringDescription[] =
@@ -1783,6 +1788,12 @@ const char kOmniboxMostVisitedTilesName[] = "Omnibox Most Visited Tiles";
 const char kOmniboxMostVisitedTilesDescription[] =
     "Display a list of frquently visited pages from history as a single row "
     "with a carousel instead of one URL per line.";
+
+const char kOmniboxPreserveLongerShortcutsTextName[] =
+    "Omnibox Preserve Longer Shortcuts Text";
+const char kOmniboxPreserveLongerShortcutsTextDescription[] =
+    "When disabled, updating shortcuts truncates its text to the user input. "
+    "When enabled, 3 additional characters are preserved.";
 
 const char kOmniboxTrendingZeroPrefixSuggestionsOnNTPName[] =
     "Omnibox Trending Zero Prefix Suggestions";
