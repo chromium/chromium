@@ -25,9 +25,6 @@ extern const char kCompressedBase64TestSeedData[];
 extern const char kBase64TestSeedSignature[];
 extern const char kTestSeedStudyName[];
 
-// Returns a base64-encoded compressed serialized form of a VariationsSeed.
-std::string GetTestSeedForPrefs();
-
 // Disables the use of the field trial testing config to exercise
 // VariationsFieldTrialCreator::CreateTrialsFromSeed().
 void DisableTestingConfig();

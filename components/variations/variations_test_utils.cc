@@ -32,18 +32,6 @@ const char kBase64TestSeedSignature[] =
 
 const char kTestSeedStudyName[] = "UMA-Uniformity-Trial-10-Percent";
 
-std::string GetTestSeedForPrefs() {
-  std::string serialized_seed;
-  base::Base64Decode(kUncompressedBase64TestSeedData, &serialized_seed);
-
-  std::string compressed_seed_data;
-  compression::GzipCompress(serialized_seed, &compressed_seed_data);
-
-  std::string base64_seed_data;
-  base::Base64Encode(compressed_seed_data, &base64_seed_data);
-  return base64_seed_data;
-}
-
 void DisableTestingConfig() {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableFieldTrialTestingConfig);

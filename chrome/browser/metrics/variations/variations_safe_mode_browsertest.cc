@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// The tests in this file verify the behavior of variations safe mode. The tests
+// should be kept in sync with those in ios/chrome/browser/variations/
+// variations_safe_mode_egtest.mm.
+
 #include <string>
 
 #include "base/metrics/field_trial.h"
@@ -27,7 +31,7 @@ void StoreTestSeedAndSignature(PrefService* local_state,
   const std::string seed_pref = use_safe_seed_prefs
                                     ? prefs::kVariationsSafeCompressedSeed
                                     : prefs::kVariationsCompressedSeed;
-  local_state->SetString(seed_pref, GetTestSeedForPrefs());
+  local_state->SetString(seed_pref, kCompressedBase64TestSeedData);
 
   const std::string signature_pref = use_safe_seed_prefs
                                          ? prefs::kVariationsSafeSeedSignature
