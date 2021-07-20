@@ -76,8 +76,9 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
       gfx::Rect* bounds,
       ui::WindowShowState* show_state) const override {
     DCHECK(show_state);
-    // Applications are always restored with the same position.
-    if (browser_ && (browser_->is_type_app() || browser_->is_type_app_popup()))
+    // Applications and devtools are always restored with the same position.
+    if (browser_ && (browser_->is_type_app() || browser_->is_type_app_popup() ||
+                     browser_->is_type_devtools()))
       return false;
 
     // If a reference browser is set, use its window. Otherwise find last
