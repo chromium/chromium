@@ -693,9 +693,9 @@ void FeedStream::SetForcedStreamUpdateForDebugging(
   forced_stream_update_for_debugging_ = stream_update;
 }
 
-base::Time FeedStream::GetLastFetchTime() {
+base::Time FeedStream::GetLastFetchTime(const StreamType& stream_type) {
   const base::Time fetch_time =
-      profile_prefs_->GetTime(feed::prefs::kLastFetchAttemptTime);
+      feedstore::GetLastFetchTime(metadata_, stream_type);
   // Ignore impossible time values.
   if (fetch_time > base::Time::Now())
     return base::Time();
@@ -1008,7 +1008,8 @@ bool FeedStream::HasUnreadContent(const StreamType& stream_type) {
 }
 
 void FeedStream::ClearAll() {
-  metrics_reporter_->OnClearAll(base::Time::Now() - GetLastFetchTime());
+  metrics_reporter_->OnClearAll(base::Time::Now() -
+                                GetLastFetchTime(kForYouStream));
   clear_all_in_progress_ = true;
   task_queue_.AddTask(std::make_unique<ClearAllTask>(this));
 }

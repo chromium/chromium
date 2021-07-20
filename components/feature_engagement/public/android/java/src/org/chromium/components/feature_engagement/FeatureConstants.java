@@ -48,7 +48,7 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE, FeatureConstants.FEED_CARD_MENU_FEATURE,
         FeatureConstants.IDENTITY_DISC_FEATURE, FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE,
         FeatureConstants.QUIET_NOTIFICATION_PROMPTS_FEATURE,
-        FeatureConstants.FEED_HEADER_MENU_FEATURE,
+        FeatureConstants.FEED_HEADER_MENU_FEATURE, FeatureConstants.FEED_SWIPE_REFRESH_FEATURE,
         FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE,
         FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE,
         FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE,
@@ -213,6 +213,11 @@ public @interface FeatureConstants {
      * An IPH feature to show on a card menu on the FeedNewTabPage.
      */
     String FEED_CARD_MENU_FEATURE = "IPH_FeedCardMenu";
+
+    /**
+     * An IPH feature to prompt users to pull-to-refresh feed.
+     */
+    String FEED_SWIPE_REFRESH_FEATURE = "IPH_FeedSwipeRefresh";
 
     /**
      * An IPH feature prompting user to tap on identity disc to navigate to "Sync and Google

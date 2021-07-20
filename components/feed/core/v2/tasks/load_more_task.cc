@@ -136,12 +136,13 @@ void LoadMoreTask::ProcessNetworkResponse(
   result_.loaded_new_content_from_network =
       !translated_response.model_update_request->stream_structures.empty();
 
-  absl::optional<feedstore::Metadata> updated_metadata =
-      feedstore::MaybeUpdateSessionId(stream_.GetMetadata(),
-                                      translated_response.session_id);
-  if (updated_metadata) {
-    stream_.SetMetadata(std::move(*updated_metadata));
+  auto updated_metadata = stream_.GetMetadata();
+  SetLastFetchTime(updated_metadata, stream_type_, base::Time::Now());
+  if (translated_response.session_id) {
+    feedstore::MaybeUpdateSessionId(updated_metadata,
+                                    translated_response.session_id);
   }
+  stream_.SetMetadata(std::move(updated_metadata));
 
   result_.model_update_request =
       std::move(translated_response.model_update_request);

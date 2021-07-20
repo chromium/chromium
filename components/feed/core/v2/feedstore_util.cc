@@ -69,19 +69,15 @@ void SetContentLifetime(
   *stream_metadata.mutable_content_lifetime() = std::move(content_lifetime);
 }
 
-absl::optional<Metadata> MaybeUpdateSessionId(
-    const Metadata& metadata,
-    absl::optional<std::string> token) {
+void MaybeUpdateSessionId(Metadata& metadata,
+                          absl::optional<std::string> token) {
   if (token && metadata.session_id().token() != *token) {
     base::Time expiry_time =
         token->empty()
             ? base::Time()
             : base::Time::Now() + feed::GetFeedConfig().session_id_max_age;
-    auto new_metadata = metadata;
-    SetSessionId(new_metadata, *token, expiry_time);
-    return new_metadata;
+    SetSessionId(metadata, *token, expiry_time);
   }
-  return absl::nullopt;
 }
 
 absl::optional<Metadata> MaybeUpdateConsistencyToken(
@@ -140,6 +136,21 @@ bool IsKnownStale(const Metadata& metadata, const StreamType& stream_type) {
   const Metadata::StreamMetadata* sm =
       FindMetadataForStream(metadata, stream_type);
   return sm ? sm->is_known_stale() : false;
+}
+
+base::Time GetLastFetchTime(const Metadata& metadata,
+                            const feed::StreamType& stream_type) {
+  const Metadata::StreamMetadata* sm =
+      FindMetadataForStream(metadata, stream_type);
+  return sm ? FromTimestampMillis(sm->last_fetch_time_millis()) : base::Time();
+}
+
+void SetLastFetchTime(Metadata& metadata,
+                      const StreamType& stream_type,
+                      const base::Time& fetch_time) {
+  Metadata::StreamMetadata& stream_metadata =
+      MetadataForStream(metadata, stream_type);
+  stream_metadata.set_last_fetch_time_millis(ToTimestampMillis(fetch_time));
 }
 
 feedstore::Metadata MakeMetadata(const std::string& gaia) {

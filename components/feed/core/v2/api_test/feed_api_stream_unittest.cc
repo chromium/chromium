@@ -2040,7 +2040,7 @@ TEST_F(FeedApiTest, ClearAllResetsSessionId) {
 
   // Initialize a session id.
   feedstore::Metadata metadata = stream_->GetMetadata();
-  metadata = *feedstore::MaybeUpdateSessionId(metadata, "session-id");
+  feedstore::MaybeUpdateSessionId(metadata, "session-id");
   stream_->SetMetadata(metadata);
 
   // Trigger a ClearAll.

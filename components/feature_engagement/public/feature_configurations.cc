@@ -189,6 +189,22 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                     k10YearsInDays, k10YearsInDays);
     return config;
   }
+  if (kIPHFeedSwipeRefresh.name == feature->name) {
+    // A config that allows the feed swipe refresh message IPH to be shown:
+    // * Once per 15 days
+    // * Up to 2 times but only if unused in the last 15 days.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger = EventConfig("feed_swipe_refresh_iph_trigger",
+                                  Comparator(LESS_THAN, 2), 90, 90);
+    config->used =
+        EventConfig("feed_swipe_refresh_shown", Comparator(EQUAL, 0), 90, 90);
+    config->event_configs.insert(EventConfig("feed_swipe_refresh_iph_trigger",
+                                             Comparator(EQUAL, 0), 15, 90));
+    return config;
+  }
   if (kIPHTabSwitcherButtonFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

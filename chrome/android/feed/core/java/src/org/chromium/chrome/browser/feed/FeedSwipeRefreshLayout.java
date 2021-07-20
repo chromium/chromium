@@ -5,12 +5,19 @@
 package org.chromium.chrome.browser.feed;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.Activity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 
+import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.third_party.android.swiperefresh.CircleImageView;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 
@@ -19,14 +26,35 @@ import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
  * of direct child.
  */
 public class FeedSwipeRefreshLayout extends SwipeRefreshLayout {
+    public static final int IPH_WAIT_TIME_MS = 5 * 1000;
+
+    private final Activity mActivity;
     private View mTarget; // the target of the gesture.
-    private int mTouchSlop;
+    private final int mTouchSlop;
     private float mLastMotionY;
     private boolean mIsBeingDragged;
 
-    FeedSwipeRefreshLayout(Context context) {
-        super(context);
-        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+    FeedSwipeRefreshLayout(Activity activity) {
+        super(activity);
+        mActivity = activity;
+        mTouchSlop = ViewConfiguration.get(activity).getScaledTouchSlop();
+    }
+
+    /** Shows an IPH. */
+    public void showIPH(UserEducationHelper helper) {
+        ViewGroup contentContainer = mActivity.findViewById(android.R.id.content);
+        if (contentContainer == null) return;
+        View toolbarView = contentContainer.findViewById(org.chromium.chrome.R.id.toolbar);
+        if (toolbarView == null) return;
+        helper.requestShowIPH(new IPHCommandBuilder(getContext().getResources(),
+                FeatureConstants.FEED_SWIPE_REFRESH_FEATURE, R.string.feed_swipe_refresh_iph,
+                R.string.accessibility_feed_swipe_refresh_iph)
+                                      .setAnchorView(toolbarView)
+                                      .setHighlightParams(
+                                              new HighlightParams(HighlightShape.CIRCLE))
+                                      .setDismissOnTouch(true)
+                                      .setAutoDismissTimeout(IPH_WAIT_TIME_MS)
+                                      .build());
     }
 
     private void ensureTarget() {

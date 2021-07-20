@@ -30,47 +30,18 @@ public class HeaderIphScrollListener implements ScrollListener {
     private static final float MIN_SCROLL_FRACTION = 0.1f;
     private static final float MAX_HEADER_POS_FRACTION = 0.35f;
 
-    /**
-     * Delegate to handle actions that are out of the scope of the listener.
-     */
-    public interface Delegate {
-        /**
-         * Gets the feature engagement tracker.
-         */
-        Tracker getFeatureEngagementTracker();
-
-        /**
-         * Shows the menu IPH.
-         */
-        void showMenuIph();
-
-        /**
-         * Determines whether the feed is expanded (turned on).
-         */
-        boolean isFeedExpanded();
-
-        /**
-         * Determines whether the user is signed in.
-         */
-        boolean isSignedIn();
-
-        /**
-         * Determines whether the position of the feed header in the NTP container is suitable for
-         * showing the IPH.
-         */
-        boolean isFeedHeaderPositionInContainerSuitableForIPH(float headerMaxPosFraction);
-    }
-
-    private Delegate mDelegate;
-    private ScrollableContainerDelegate mScrollableContainerDelegate;
+    private final FeedIPHDelegate mDelegate;
+    private final ScrollableContainerDelegate mScrollableContainerDelegate;
+    private final Runnable mShowIPHRunnable;
 
     private float mMinScrollFraction;
     private float mHeaderMaxPosFraction;
 
-    HeaderIphScrollListener(
-            Delegate delegate, ScrollableContainerDelegate scrollableContainerDelegate) {
+    HeaderIphScrollListener(FeedIPHDelegate delegate,
+            ScrollableContainerDelegate scrollableContainerDelegate, Runnable showIPHRunnable) {
         mDelegate = delegate;
         mScrollableContainerDelegate = scrollableContainerDelegate;
+        mShowIPHRunnable = showIPHRunnable;
 
         mMinScrollFraction = MIN_SCROLL_FRACTION;
         mHeaderMaxPosFraction = MAX_HEADER_POS_FRACTION;
@@ -105,11 +76,6 @@ public class HeaderIphScrollListener implements ScrollListener {
             return;
         }
 
-        // Don't do any calculation if the IPH cannot be triggered to avoid wasting efforts.
-        if (!tracker.wouldTriggerHelpUI(featureForIph)) {
-            return;
-        }
-
         // Check whether the feed is expanded.
         if (!mDelegate.isFeedExpanded()) return;
 
@@ -127,6 +93,6 @@ public class HeaderIphScrollListener implements ScrollListener {
             return;
         }
 
-        mDelegate.showMenuIph();
+        mShowIPHRunnable.run();
     }
 }

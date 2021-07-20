@@ -162,6 +162,8 @@ const base::Feature kIPHExploreSitesTileFeature{
     "IPH_ExploreSitesTile", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHFeedHeaderMenuFeature{"IPH_FeedHeaderMenu",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHFeedSwipeRefresh{"IPH_FeedSwipeRefresh",
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHChromeReengagementNotification1Feature{
     "IPH_ChromeReengagementNotification1", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHChromeReengagementNotification2Feature{

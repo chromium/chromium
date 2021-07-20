@@ -151,6 +151,7 @@ class FeedStream : public FeedApi,
   void ReportStreamScrollStart() override;
   void ReportOtherUserAction(const StreamType& stream_type,
                              FeedUserActionType action_type) override;
+  base::Time GetLastFetchTime(const StreamType& stream_type) override;
 
   // offline_pages::TaskQueue::Delegate.
   void OnTaskQueueIsIdle() override;
@@ -199,9 +200,6 @@ class FeedStream : public FeedApi,
   MetricsReporter& GetMetricsReporter() const { return *metrics_reporter_; }
 
   void PrefetchImage(const GURL& url);
-
-  // Returns the time of the last content fetch.
-  base::Time GetLastFetchTime();
 
   bool IsSignedIn() const { return !delegate_->GetSyncSignedInGaia().empty(); }
   std::string GetSyncSignedInGaia() const {

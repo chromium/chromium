@@ -45,25 +45,22 @@ public final class HeaderIphScrollListenerTest {
             List<ParameterSet> parameters = new ArrayList<>();
             // Trigger IPH.
             parameters.add(new ParameterSet().value(true, ScrollState.IDLE,
-                    TriggerState.HAS_NOT_BEEN_DISPLAYED, true, 10, true, true, true));
+                    TriggerState.HAS_NOT_BEEN_DISPLAYED, 10, true, true, true));
             // Don't trigger the IPH because the state is not set to has been displayed.
             parameters.add(new ParameterSet().value(false, ScrollState.IDLE,
-                    TriggerState.HAS_BEEN_DISPLAYED, true, 10, true, true, true));
-            // Don't trigger the IPH because because the tracker would not trigger.
-            parameters.add(new ParameterSet().value(false, ScrollState.IDLE,
-                    TriggerState.HAS_NOT_BEEN_DISPLAYED, false, 10, true, true, true));
+                    TriggerState.HAS_BEEN_DISPLAYED, 10, true, true, true));
             // Don't trigger the IPH because there was not enough scroll done.
             parameters.add(new ParameterSet().value(false, ScrollState.IDLE,
-                    TriggerState.HAS_NOT_BEEN_DISPLAYED, true, 1, true, true, true));
+                    TriggerState.HAS_NOT_BEEN_DISPLAYED, 1, true, true, true));
             // Don't trigger the IPH because the position in the stream is not suitable for the IPH.
             parameters.add(new ParameterSet().value(false, ScrollState.IDLE,
-                    TriggerState.HAS_NOT_BEEN_DISPLAYED, true, 10, false, true, true));
+                    TriggerState.HAS_NOT_BEEN_DISPLAYED, 10, false, true, true));
             // Don't trigger the IPH because the feed is not expanded.
             parameters.add(new ParameterSet().value(false, ScrollState.IDLE,
-                    TriggerState.HAS_NOT_BEEN_DISPLAYED, true, 10, false, false, true));
+                    TriggerState.HAS_NOT_BEEN_DISPLAYED, 10, false, false, true));
             // Don't trigger the IPH because the user is not signed in.
             parameters.add(new ParameterSet().value(false, ScrollState.IDLE,
-                    TriggerState.HAS_NOT_BEEN_DISPLAYED, true, 10, false, true, false));
+                    TriggerState.HAS_NOT_BEEN_DISPLAYED, 10, false, true, false));
             return parameters;
         }
     }
@@ -78,7 +75,7 @@ public final class HeaderIphScrollListenerTest {
             }
             // Don't trigger the IPH because the scroll state is not IDLE.
             parameters.add(new ParameterSet().value(false, ScrollState.DRAGGING,
-                    TriggerState.HAS_NOT_BEEN_DISPLAYED, true, 10, true, true, true));
+                    TriggerState.HAS_NOT_BEEN_DISPLAYED, 10, true, true, true));
             return parameters;
         }
     }
@@ -93,7 +90,7 @@ public final class HeaderIphScrollListenerTest {
             }
             // Don't trigger the IPH because the vertical offset is 0.
             parameters.add(new ParameterSet().value(false, ScrollState.IDLE,
-                    TriggerState.HAS_NOT_BEEN_DISPLAYED, true, 0, true, true, true));
+                    TriggerState.HAS_NOT_BEEN_DISPLAYED, 0, true, true, true));
             return parameters;
         }
     }
@@ -119,23 +116,17 @@ public final class HeaderIphScrollListenerTest {
     @Feature({"Feed"})
     @ParameterAnnotations.UseMethodParameter(TestParamsForOnScroll.class)
     public void onScrollStateChanged_triggerIph(boolean expectEnabled, int scrollState,
-            int triggerState, boolean wouldTriggerHelpUI, int verticalScrollOffset,
+            int triggerState, int verticalScrollOffset,
             boolean isFeedHeaderPositionInRecyclerViewSuitableForIPH, boolean isFeedExpanded,
             boolean isSignedIn) {
         // Set Tracker mock.
         when(mTracker.getTriggerState(FeatureConstants.FEED_HEADER_MENU_FEATURE))
                 .thenReturn(triggerState);
-        when(mTracker.wouldTriggerHelpUI(FeatureConstants.FEED_HEADER_MENU_FEATURE))
-                .thenReturn(wouldTriggerHelpUI);
 
-        HeaderIphScrollListener.Delegate iphDelegate = new HeaderIphScrollListener.Delegate() {
+        FeedIPHDelegate iphDelegate = new FeedIPHDelegate() {
             @Override
             public Tracker getFeatureEngagementTracker() {
                 return mTracker;
-            }
-            @Override
-            public void showMenuIph() {
-                mHasShownMenuIph = true;
             }
             @Override
             public boolean isFeedExpanded() {
@@ -149,6 +140,18 @@ public final class HeaderIphScrollListenerTest {
             public boolean isFeedHeaderPositionInContainerSuitableForIPH(
                     float headerMaxPosFraction) {
                 return isFeedHeaderPositionInRecyclerViewSuitableForIPH;
+            }
+            @Override
+            public long getCurrentTimeMs() {
+                return 0;
+            }
+            @Override
+            public long getLastFetchTimeMs() {
+                return 0;
+            }
+            @Override
+            public boolean canScrollUp() {
+                return false;
             }
         };
 
@@ -173,8 +176,8 @@ public final class HeaderIphScrollListenerTest {
                 };
 
         // Trigger IPH through the scroll listener.
-        HeaderIphScrollListener listener =
-                new HeaderIphScrollListener(iphDelegate, scrollableContainerDelegate);
+        HeaderIphScrollListener listener = new HeaderIphScrollListener(
+                iphDelegate, scrollableContainerDelegate, () -> { mHasShownMenuIph = true; });
         listener.onScrollStateChanged(scrollState);
 
         if (expectEnabled) {
@@ -189,23 +192,17 @@ public final class HeaderIphScrollListenerTest {
     @Feature({"Feed"})
     @ParameterAnnotations.UseMethodParameter(TestParamsForOnOffsetChanged.class)
     public void onScrollStateChanged_onHeaderOffsetChanged(boolean expectEnabled, int scrollState,
-            int triggerState, boolean wouldTriggerHelpUI, int verticalScrollOffset,
+            int triggerState, int verticalScrollOffset,
             boolean isFeedHeaderPositionInRecyclerViewSuitableForIPH, boolean isFeedExpanded,
             boolean isSignedIn) {
         // Set Tracker mock.
         when(mTracker.getTriggerState(FeatureConstants.FEED_HEADER_MENU_FEATURE))
                 .thenReturn(triggerState);
-        when(mTracker.wouldTriggerHelpUI(FeatureConstants.FEED_HEADER_MENU_FEATURE))
-                .thenReturn(wouldTriggerHelpUI);
 
-        HeaderIphScrollListener.Delegate iphDelegate = new HeaderIphScrollListener.Delegate() {
+        FeedIPHDelegate iphDelegate = new FeedIPHDelegate() {
             @Override
             public Tracker getFeatureEngagementTracker() {
                 return mTracker;
-            }
-            @Override
-            public void showMenuIph() {
-                mHasShownMenuIph = true;
             }
             @Override
             public boolean isFeedExpanded() {
@@ -219,6 +216,18 @@ public final class HeaderIphScrollListenerTest {
             public boolean isFeedHeaderPositionInContainerSuitableForIPH(
                     float headerMaxPosFraction) {
                 return isFeedHeaderPositionInRecyclerViewSuitableForIPH;
+            }
+            @Override
+            public long getCurrentTimeMs() {
+                return 0;
+            }
+            @Override
+            public long getLastFetchTimeMs() {
+                return 0;
+            }
+            @Override
+            public boolean canScrollUp() {
+                return false;
             }
         };
 
@@ -243,8 +252,8 @@ public final class HeaderIphScrollListenerTest {
                 };
 
         // Trigger IPH through the scroll listener.
-        HeaderIphScrollListener listener =
-                new HeaderIphScrollListener(iphDelegate, scrollableContainerDelegate);
+        HeaderIphScrollListener listener = new HeaderIphScrollListener(
+                iphDelegate, scrollableContainerDelegate, () -> { mHasShownMenuIph = true; });
         listener.onHeaderOffsetChanged(-verticalScrollOffset);
 
         if (expectEnabled) {

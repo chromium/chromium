@@ -14,9 +14,6 @@ namespace feed {
 
 namespace prefs {
 
-// The pref name for the last time when a background fetch was attempted.
-extern const char kLastFetchAttemptTime[];
-
 // The pref name for the feed host override.
 extern const char kHostOverrideHost[];
 // The pref name for the feed host override auth token.
