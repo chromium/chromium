@@ -746,6 +746,11 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                     base::Value(container.report_session_status()), nullptr);
     }
+    if (container.has_report_os_update_status()) {
+      policies->Set(key::kReportDeviceOsUpdateStatus, POLICY_LEVEL_MANDATORY,
+                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                    base::Value(container.report_os_update_status()), nullptr);
+    }
     if (container.has_report_graphics_status()) {
       policies->Set(key::kReportDeviceGraphicsStatus, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
