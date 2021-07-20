@@ -17,7 +17,9 @@ using message_center::Notification;
 
 namespace {
 
-const char kNotifierFastPair[] = "ash.fastpair";
+const message_center::NotifierId kNotifierFastPair =
+    message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                               "ash.fastpair");
 const char kFastPairErrorNotificationId[] =
     "cros_fast_pair_error_notification_id";
 const char kFastPairDiscoveryNotificationId[] =
@@ -32,7 +34,12 @@ const int kInfiniteLoadingProgressValue = -1;
 // Creates an empty Fast Pair notification with the given id and uses the
 // Bluetooth icon and FastPair notifierID.
 std::unique_ptr<message_center::Notification> CreateNotification(
-    const std::string& id) {
+    const std::string& id,
+    message_center::SystemNotificationWarningLevel warning_level) {
+  // Remove any existing Fast Pair notifications so only one appears at a time,
+  // since there isn't a case where all of them should be showing.
+  MessageCenter::Get()->RemoveNotificationsForNotifierId(kNotifierFastPair);
+
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
@@ -40,15 +47,11 @@ std::unique_ptr<message_center::Notification> CreateNotification(
           /*title=*/std::u16string(),
           /*message=*/std::u16string(),
           /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
-          /*notifier_id=*/
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierFastPair),
+          /*notifier_id=*/kNotifierFastPair,
           /*optional_fields=*/{},
           /*delegate=*/nullptr,
           /*small_image=*/ash::kNotificationBluetoothIcon,
-          /*warning_level=*/
-          message_center::SystemNotificationWarningLevel::NORMAL);
+          /*warning_level=*/warning_level);
 
   notification->set_never_timeout(true);
   notification->set_priority(
@@ -102,11 +105,13 @@ void FastPairNotificationController::ShowErrorNotification(
     base::OnceClosure launch_bluetooth_pairing,
     base::OnceCallback<void(bool)> on_close) {
   std::unique_ptr<message_center::Notification> error_notification =
-      CreateNotification(kFastPairErrorNotificationId);
+      CreateNotification(
+          kFastPairErrorNotificationId,
+          message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
   error_notification->set_title(l10n_util::GetStringFUTF16(
       IDS_FAST_PAIR_CONNECTION_ERROR_TITLE, device_name));
-  error_notification->set_message(l10n_util::GetStringFUTF16(
-      IDS_FAST_PAIR_CONNECTION_ERROR_MESSAGE, std::u16string()));
+  error_notification->set_message(
+      l10n_util::GetStringUTF16(IDS_FAST_PAIR_CONNECTION_ERROR_MESSAGE));
 
   message_center::ButtonInfo settings_button(
       l10n_util::GetStringUTF16(IDS_FAST_PAIR_SETTINGS_BUTTON));
@@ -114,8 +119,6 @@ void FastPairNotificationController::ShowErrorNotification(
 
   error_notification->set_delegate(base::MakeRefCounted<NotificationDelegate>(
       std::move(launch_bluetooth_pairing), std::move(on_close)));
-  error_notification->set_system_notification_warning_level(
-      message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
   error_notification->set_image(device_image);
 
   MessageCenter::Get()->AddNotification(std::move(error_notification));
@@ -127,7 +130,9 @@ void FastPairNotificationController::ShowDiscoveryNotification(
     base::OnceClosure on_connect_clicked,
     base::OnceCallback<void(bool)> on_close) {
   std::unique_ptr<message_center::Notification> discovery_notification =
-      CreateNotification(kFastPairDiscoveryNotificationId);
+      CreateNotification(
+          kFastPairDiscoveryNotificationId,
+          message_center::SystemNotificationWarningLevel::NORMAL);
   discovery_notification->set_title(l10n_util::GetStringFUTF16(
       IDS_FAST_PAIR_DISCOVERY_NOTIFICATION_TITLE, device_name));
   discovery_notification->set_message(l10n_util::GetStringFUTF16(
@@ -151,7 +156,9 @@ void FastPairNotificationController::ShowPairingNotification(
     base::OnceClosure on_cancel_clicked,
     base::OnceCallback<void(bool)> on_close) {
   std::unique_ptr<message_center::Notification> pairing_notification =
-      CreateNotification(kFastPairPairingNotificationId);
+      CreateNotification(
+          kFastPairPairingNotificationId,
+          message_center::SystemNotificationWarningLevel::NORMAL);
   pairing_notification->set_title(l10n_util::GetStringFUTF16(
       IDS_FAST_PAIR_PAIRING_NOTIFICATION_TITLE, device_name));
 
