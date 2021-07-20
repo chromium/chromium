@@ -93,6 +93,7 @@
 #include "cc/trees/latency_info_swap_promise_monitor.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "cc/trees/mobile_optimized_viewport_util.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/presentation_time_callback_buffer.h"
 #include "cc/trees/render_frame_metadata.h"
@@ -142,11 +143,6 @@ using ScrollThread = cc::InputHandler::ScrollThread;
 namespace cc {
 namespace {
 
-// Used to accommodate finite precision when comparing scaled viewport and
-// content widths. While this value may seem large, width=device-width on an N7
-// V1 saw errors of ~0.065 between computed window and content widths.
-const float kMobileViewportWidthEpsilon = 0.15f;
-
 // In BuildHitTestData we iterate all layers to find all layers that overlap
 // OOPIFs, but when the number of layers is greater than
 // |kAssumeOverlapThreshold|, it can be inefficient to accumulate layer bounds
@@ -161,25 +157,13 @@ static_assert(kContainsSrgbCacheSize ==
                   gfx::DisplayColorSpaces::kConfigCount / 2,
               "sRGB cache must match the size of DisplayColorSpaces");
 
-bool HasFixedPageScale(LayerTreeImpl* active_tree) {
-  return active_tree->min_page_scale_factor() ==
-         active_tree->max_page_scale_factor();
-}
-
-bool HasMobileViewport(LayerTreeImpl* active_tree) {
-  float window_width_dip = active_tree->current_page_scale_factor() *
-                           active_tree->ScrollableViewportSize().width();
-  float content_width_css = active_tree->ScrollableSize().width();
-  return content_width_css <= window_width_dip + kMobileViewportWidthEpsilon;
-}
-
 bool IsMobileOptimized(LayerTreeImpl* active_tree) {
-  bool has_mobile_viewport = HasMobileViewport(active_tree);
-  bool has_fixed_page_scale = HasFixedPageScale(active_tree);
-  return has_fixed_page_scale || has_mobile_viewport ||
-         (base::FeatureList::IsEnabled(
-              ::features::kRemoveMobileViewportDoubleTap) &&
-          active_tree->viewport_mobile_optimized());
+  return util::IsMobileOptimized(active_tree->min_page_scale_factor(),
+                                 active_tree->max_page_scale_factor(),
+                                 active_tree->current_page_scale_factor(),
+                                 active_tree->ScrollableViewportSize(),
+                                 active_tree->ScrollableSize(),
+                                 active_tree->viewport_mobile_optimized());
 }
 
 viz::ResourceFormat TileRasterBufferFormat(

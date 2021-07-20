@@ -3274,6 +3274,7 @@ enum WebFeature {
   kV8URLPattern_Constructor = 3959,
   kV8URLPattern_Test_Method = 3960,
   kV8URLPattern_Exec_Method = 3961,
+  kTapDelayEnabled = 3962,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

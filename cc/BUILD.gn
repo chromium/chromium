@@ -373,6 +373,8 @@ cc_component("cc") {
     "trees/layer_tree_settings.h",
     "trees/managed_memory_policy.cc",
     "trees/managed_memory_policy.h",
+    "trees/mobile_optimized_viewport_util.cc",
+    "trees/mobile_optimized_viewport_util.h",
     "trees/mutator_host.h",
     "trees/mutator_host_client.h",
     "trees/occlusion.cc",

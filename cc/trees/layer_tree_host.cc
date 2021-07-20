@@ -56,6 +56,7 @@
 #include "cc/trees/layer_tree_host_client.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "cc/trees/mobile_optimized_viewport_util.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/property_tree_builder.h"
@@ -157,6 +158,35 @@ LayerTreeHost::LayerTreeHost(InitParams params, CompositorMode mode)
 
   rendering_stats_instrumentation_->set_record_rendering_stats(
       debug_state_.RecordRenderingStats());
+}
+
+bool LayerTreeHost::IsMobileOptimized() const {
+  gfx::SizeF scrollable_viewport_size;
+  auto* inner_node =
+      property_trees()->scroll_tree.Node(viewport_property_ids_.inner_scroll);
+  if (!inner_node)
+    scrollable_viewport_size = gfx::SizeF();
+  else
+    scrollable_viewport_size = gfx::ScaleSize(
+        gfx::SizeF(inner_node->container_bounds),
+        1.0f / (external_page_scale_factor_ * page_scale_factor()));
+
+  gfx::SizeF scrollable_size;
+  auto* scroll_node =
+      property_trees()->scroll_tree.Node(viewport_property_ids_.outer_scroll);
+  if (!scroll_node) {
+    DCHECK(!inner_node);
+    scrollable_size = gfx::SizeF();
+  } else {
+    const auto& scroll_tree = property_trees()->scroll_tree;
+    auto size = scroll_tree.scroll_bounds(scroll_node->id);
+    size.SetToMax(gfx::SizeF(scroll_tree.container_bounds(scroll_node->id)));
+    scrollable_size = size;
+  }
+
+  return util::IsMobileOptimized(
+      min_page_scale_factor(), max_page_scale_factor(), page_scale_factor(),
+      scrollable_viewport_size, scrollable_size, is_viewport_mobile_optimized_);
 }
 
 void LayerTreeHost::InitializeThreaded(
