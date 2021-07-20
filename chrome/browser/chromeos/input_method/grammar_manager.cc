@@ -110,7 +110,15 @@ bool GrammarManager::OnKeyEvent(const ui::KeyEvent& event) {
           SetButtonHighlighted(suggestion_button_, false);
           return true;
         case ui::DomCode::ENTER:
-          AcceptSuggestion();
+          // SetComposingRange and CommitText in AcceptSuggestion will not be
+          // executed immediately if we are in middle of handling a key event,
+          // instead they will be delayed and CommitText will always be executed
+          // first. So we need to call AcceptSuggestion in a post task.
+          // TODO(crbug.com/1230961): remove PostTask after we remove the delay
+          // logics.
+          base::SequencedTaskRunnerHandle::Get()->PostTask(
+              FROM_HERE, base::BindOnce(&GrammarManager::AcceptSuggestion,
+                                        base::Unretained(this)));
           return true;
         default:
           break;

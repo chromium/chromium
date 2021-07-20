@@ -321,6 +321,7 @@ TEST_F(GrammarManagerTest, HighlightsAndCommitsGrammarSuggestionWithTab) {
   manager.OnKeyEvent(CreateKeyEvent(ui::DomCode::TAB));
   EXPECT_CALL(mock_suggestion_handler, DismissSuggestion(1, _));
   manager.OnKeyEvent(CreateKeyEvent(ui::DomCode::ENTER));
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(200));
 
   EXPECT_EQ(
       mock_ime_input_context_handler_.delete_surrounding_text_call_count(), 1);
@@ -361,6 +362,7 @@ TEST_F(GrammarManagerTest, HighlightsAndCommitsGrammarSuggestionWithUpArrow) {
   manager.OnKeyEvent(CreateKeyEvent(ui::DomCode::ARROW_UP));
   EXPECT_CALL(mock_suggestion_handler, DismissSuggestion(1, _));
   manager.OnKeyEvent(CreateKeyEvent(ui::DomCode::ENTER));
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(200));
 
   EXPECT_EQ(
       mock_ime_input_context_handler_.delete_surrounding_text_call_count(), 1);
