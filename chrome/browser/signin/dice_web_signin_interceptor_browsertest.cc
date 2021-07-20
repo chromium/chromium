@@ -170,8 +170,7 @@ Profile* InterceptAndWaitProfileCreation(content::WebContents* contents,
 
 // Checks that the interception histograms were correctly recorded.
 void CheckHistograms(const base::HistogramTester& histogram_tester,
-                     SigninInterceptionHeuristicOutcome outcome,
-                     bool intercept_to_guest = false) {
+                     SigninInterceptionHeuristicOutcome outcome) {
   int profile_switch_count =
       outcome == SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch ||
               outcome == SigninInterceptionHeuristicOutcome::
@@ -193,18 +192,6 @@ void CheckHistograms(const base::HistogramTester& histogram_tester,
                                     profile_creation_count);
   histogram_tester.ExpectTotalCount("Signin.Intercept.ProfileSwitchDuration",
                                     profile_switch_count);
-  histogram_tester.ExpectTotalCount(
-      "Signin.Intercept.SessionStartupDuration.Multilogin",
-      profile_creation_count);
-  histogram_tester.ExpectTotalCount(
-      "Signin.Intercept.SessionStartupDuration.Reconcilor",
-      profile_switch_count);
-  histogram_tester.ExpectUniqueSample(
-      "Signin.Intercept.SessionStartupResult",
-      profile_switch_count
-          ? DiceInterceptedSessionStartupHelper::Result::kReconcilorSuccess
-          : DiceInterceptedSessionStartupHelper::Result::kMultiloginSuccess,
-      1);
 }
 
 }  // namespace

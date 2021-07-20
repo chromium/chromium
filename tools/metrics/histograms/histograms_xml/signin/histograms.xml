@@ -597,6 +597,9 @@ prefs when the profile is loaded.  -->
 
 <histogram name="Signin.Intercept.SessionStartupDuration.{Method}" units="ms"
     expires_after="2021-08-12">
+  <obsolete>
+    Removed 2021-07.
+  </obsolete>
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -611,6 +614,9 @@ prefs when the profile is loaded.  -->
 
 <histogram name="Signin.Intercept.SessionStartupReconcileError"
     enum="BooleanPresent" expires_after="2021-12-19">
+  <obsolete>
+    Removed 2021-07.
+  </obsolete>
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -622,6 +628,9 @@ prefs when the profile is loaded.  -->
 
 <histogram name="Signin.Intercept.SessionStartupResult"
     enum="SigninInterceptSessionStartupResult" expires_after="2021-08-12">
+  <obsolete>
+    Removed 2021-07.
+  </obsolete>
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
