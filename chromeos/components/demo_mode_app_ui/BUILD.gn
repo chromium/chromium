@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//chrome/test/base/js2gtest.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos, "Demo Mode App is Chrome OS only")
@@ -12,15 +14,29 @@ static_library("demo_mode_app_ui") {
   sources = [
     "demo_mode_app_ui.cc",
     "demo_mode_app_ui.h",
+    "demo_mode_page_handler.cc",
+    "demo_mode_page_handler.h",
     "url_constants.cc",
     "url_constants.h",
   ]
 
   deps = [
+    "//chromeos/components/demo_mode_app_ui/mojom",
     "//chromeos/resources:demo_mode_app_resources",
     "//content/public/browser",
+    "//ui/views",
     "//ui/webui",
   ]
+}
+
+js_type_check("closure_compile") {
+  deps = [ ":app" ]
+  closure_flags = default_closure_args + mojom_js_args
+}
+
+js_library("app") {
+  sources = [ "resources/page_handler.js" ]
+  deps = [ "//chromeos/components/demo_mode_app_ui/mojom:mojom_webui_js" ]
 }
 
 js2gtest("browser_tests_js") {
@@ -31,14 +47,27 @@ js2gtest("browser_tests_js") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }
 
+grd_prefix = "chromeos_demo_mode_app"
+mojo_grdp_file = "$target_gen_dir/demo_mode_app_mojo_resources.grdp"
+
+generate_grd("build_mojo_grdp") {
+  out_grd = mojo_grdp_file
+  grd_prefix = grd_prefix
+  deps = [ "//chromeos/components/demo_mode_app_ui/mojom:mojom_webui_js" ]
+  input_files = [ "chromeos/components/demo_mode_app_ui/mojom/demo_mode_app_ui.mojom-webui.js" ]
+  input_files_base_dir = rebase_path("$root_gen_dir/mojom-webui", "//")
+}
+
 generate_grd("build_grd") {
   input_files_base_dir = rebase_path("resources", "//")
+  deps = [ ":build_mojo_grdp" ]
   input_files = [
     "app_icon_192.png",
     "demo_mode_app.js",
     "demo_mode_app.html",
+    "page_handler.js",
   ]
-  manifest_files = []
-  grd_prefix = "chromeos_demo_mode_app"
+  grd_prefix = grd_prefix
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  grdp_files = [ mojo_grdp_file ]
 }

@@ -8,9 +8,14 @@
   <title>Demo Mode App Title</title>
 </head>
 <body>
-  <h1 id="header">Hello World</h1>
+  <h1 id="header">Demo Mode App</h1>
+  <button id="toggle-fullscreen">Toggle Fullscreen</button>
+  <button id="enter-fullscreen">Enter Fullscreen</button>
+  <button id="exit-fullscreen">Exit Fullscreen</button>
+  <!-- Test button that changes color of header if the Web Platform fullscreen state is active.
+    Its purpose is to show that the native window fullscreen (triggered via Mojo API) and the standard
+    element.requestFullscreen() are different -->
+  <button id="change-color">Change Color if WP Fullscreen Enabled</button>
 </body>
-  <script src="demo_mode_app.js" type="module"></script>
-<!-- Below mojo script required to run browser tests -->
-<script src="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js"></script>
+<script src="demo_mode_app.js" type="module"></script>
 </html>

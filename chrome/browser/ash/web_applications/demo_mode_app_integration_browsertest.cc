@@ -7,6 +7,7 @@
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chromeos/components/demo_mode_app_ui/url_constants.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/widget/widget.h"
 
 class DemoModeAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
@@ -23,6 +24,24 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest, DemoModeApp) {
   const GURL url(chromeos::kChromeUIDemoModeAppURL);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
       web_app::SystemAppType::DEMO_MODE, url, "Demo Mode App"));
+}
+
+// Test that Demo Mode app starts in fullscreen from initial call to
+// ToggleFullscreen() Mojo API, and subsequent call exits fullscreen
+IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
+                       DemoModeAppToggleFullscreen) {
+  WaitForTestSystemAppInstall();
+  Browser* browser;
+  content::WebContents* web_contents =
+      LaunchApp(web_app::SystemAppType::DEMO_MODE, &browser);
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+      web_contents->GetTopLevelNativeWindow());
+  EXPECT_TRUE(widget->IsFullscreen());
+
+  bool success = content::ExecuteScript(
+      web_contents, "window.pageHandler.toggleFullscreen();");
+  EXPECT_TRUE(success);
+  EXPECT_FALSE(widget->IsFullscreen());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(
