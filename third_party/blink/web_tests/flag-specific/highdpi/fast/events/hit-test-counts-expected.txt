@@ -8,7 +8,6 @@ Initial: 0+0
 MouseMove: 1+0
 MouseDown: 2+1
 MouseUp: 1+0
-Wheel: 0+1
 TouchStart: 2+0
 TouchMove: 0+0
 TouchEnd: 0+0
@@ -26,13 +25,12 @@ Initial: 0+0 0+0 0+0
 MouseMove: 1+0 1+0 1+0
 MouseDown: 1+1 1+1 1+2
 MouseUp: 0+0 0+0 0+1
-Wheel: 0+1 0+1 1+0
 TouchStart: 2+0 2+0 1+1
 TouchMove: 0+0 0+0 0+0
 TouchEnd: 0+0 0+0 0+0
 GestureTapDown: 1+0 1+0 0+1
 GestureShowPress: 1+0 1+0 0+1
-GestureTap: 1+0 1+0 0+3
+GestureTap: 1+0 1+0 1+2
 GestureTapCancel: 1+0 1+0 0+1
 DoubleFingerTouch: 3+0 3+0 3+0
 TouchScroll: 0+0 0+0 0+0
@@ -44,7 +42,6 @@ Initial: 0+0 0+0 0+0
 MouseMove: 1+0 1+0 0+0
 MouseDown: 1+1 2+1 0+0
 MouseUp: 0+0 1+0 0+0
-Wheel: 1+0 0+1 0+0
 TouchStart: 2+0 2+0 1+0
 TouchMove: 0+0 0+0 0+0
 TouchEnd: 0+0 0+0 0+0
@@ -54,7 +51,7 @@ GestureTap: 1+0 1+2 0+0
 GestureTapCancel: 1+0 0+1 0+0
 DoubleFingerTouch: 3+0 3+0 2+0
 TouchScroll: 0+0 0+0 0+0
-MouseWheelScroll: 0+2 2+0 0+0
+MouseWheelScroll: 1+1 2+0 0+0
 
 Event on a simple div (desktop viewport)
 ---------------------
@@ -62,7 +59,6 @@ Initial: 0+0
 MouseMove: 1+0
 MouseDown: 2+1
 MouseUp: 1+0
-Wheel: 0+1
 TouchStart: 2+0
 TouchMove: 0+0
 TouchEnd: 0+0

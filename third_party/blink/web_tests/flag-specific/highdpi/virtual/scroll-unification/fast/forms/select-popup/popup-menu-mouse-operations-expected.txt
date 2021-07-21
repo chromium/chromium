@@ -6,7 +6,7 @@ FAIL picker._selectElement.value should be 1. Was 2.
 PASS menuElement.value is "bar"
 FAIL picker._selectElement.value should be 1. Was 2.
 PASS menuElement.value is "bar"
-FAIL Unexpected error: Uncaught TypeError: Cannot read property 'frameElement' of null
+FAIL Unexpected error: Uncaught TypeError: Cannot read properties of null (reading 'frameElement')
 FAIL successfullyParsed should be true. Was false.
 
 TEST COMPLETE

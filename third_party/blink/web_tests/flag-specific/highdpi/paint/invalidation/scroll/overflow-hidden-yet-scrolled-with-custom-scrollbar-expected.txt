@@ -11,7 +11,7 @@
       "bounds": [453, 453],
       "backfaceVisibility": "hidden",
       "invalidations": [
-        [1, 301, 151, 151]
+        [2, 302, 150, 150]
       ],
       "transform": 1
     }

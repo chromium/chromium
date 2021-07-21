@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Hit-test of <text> does not hit-test the "background" (w/ small font size) assert_equals: 71,28 expected Element node <text x="9.4" y="17.80">SELECT</text> but got Element node <svg font-family="Ahem" font-size="1.6" fill="blue" width...
+Harness: the test ran to completion.
+
