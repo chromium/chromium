@@ -69,7 +69,7 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
 
   generated_wasm_code_cache_ = {
       new GeneratedCodeCache(path.AppendASCII("wasm"), max_bytes,
-                             GeneratedCodeCache::CodeCacheType::kJavaScript),
+                             GeneratedCodeCache::CodeCacheType::kWebAssembly),
       base::OnTaskRunnerDeleter(task_runner_)};
 }
 
