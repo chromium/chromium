@@ -4,6 +4,7 @@
 
 #import "chrome/browser/notifications/stub_alert_dispatcher_mac.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -11,116 +12,79 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/mac/scoped_nsobject.h"
-#include "base/strings/sys_string_conversions.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
+#include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 
-@implementation StubAlertDispatcher {
-  base::scoped_nsobject<NSMutableArray> _alerts;
+StubNotificationDispatcherMac::StubNotificationDispatcherMac() = default;
+
+StubNotificationDispatcherMac::~StubNotificationDispatcherMac() = default;
+
+void StubNotificationDispatcherMac::DisplayNotification(
+    NotificationHandler::Type notification_type,
+    Profile* profile,
+    const message_center::Notification& notification) {
+  notifications_.push_back(
+      CreateMacNotification(notification_type, profile, notification));
 }
 
-- (instancetype)init {
-  if ((self = [super init])) {
-    _alerts.reset([[NSMutableArray alloc] init]);
+void StubNotificationDispatcherMac::CloseNotificationWithId(
+    const MacNotificationIdentifier& identifier) {
+  notifications_.erase(
+      std::remove_if(notifications_.begin(), notifications_.end(),
+                     [&identifier](const auto& notification) {
+                       const auto& notification_id = notification->meta->id->id;
+                       const auto& profile = notification->meta->id->profile;
+                       return notification_id == identifier.notification_id &&
+                              profile->id == identifier.profile_id &&
+                              profile->incognito == identifier.incognito;
+                     }),
+      notifications_.end());
+}
+
+void StubNotificationDispatcherMac::CloseNotificationsWithProfileId(
+    const std::string& profile_id,
+    bool incognito) {
+  notifications_.erase(
+      std::remove_if(notifications_.begin(), notifications_.end(),
+                     [&profile_id, incognito](const auto& notification) {
+                       const auto& profile = notification->meta->id->profile;
+                       return profile->id == profile_id &&
+                              profile->incognito == incognito;
+                     }),
+      notifications_.end());
+}
+
+void StubNotificationDispatcherMac::CloseAllNotifications() {
+  notifications_.clear();
+}
+
+void StubNotificationDispatcherMac::GetDisplayedNotificationsForProfileId(
+    const std::string& profile_id,
+    bool incognito,
+    GetDisplayedNotificationsCallback callback) {
+  std::set<std::string> notifications;
+  for (const auto& notification : notifications_) {
+    const auto& notification_id = notification->meta->id->id;
+    const auto& profile = notification->meta->id->profile;
+    if (profile->id == profile_id && profile->incognito == incognito)
+      notifications.insert(notification_id);
   }
-  return self;
-}
-
-- (void)dispatchNotification:(NSDictionary*)data {
-  [_alerts addObject:data];
-}
-
-- (void)closeNotificationWithId:(NSString*)notificationId
-                      profileId:(NSString*)profileId
-                      incognito:(BOOL)incognito {
-  DCHECK(profileId);
-  DCHECK(notificationId);
-  for (NSDictionary* toast in _alerts.get()) {
-    NSString* toastId = toast[notification_constants::kNotificationId];
-    NSString* toastProfileId =
-        toast[notification_constants::kNotificationProfileId];
-    BOOL toastIncognito =
-        [toast[notification_constants::kNotificationIncognito] boolValue];
-
-    if ([notificationId isEqualToString:toastId] &&
-        [profileId isEqualToString:toastProfileId] &&
-        incognito == toastIncognito) {
-      [_alerts removeObject:toast];
-      break;
-    }
-  }
-}
-
-- (void)closeNotificationsWithProfileId:(NSString*)profileId
-                              incognito:(BOOL)incognito {
-  DCHECK(profileId);
-  [_alerts
-      filterUsingPredicate:
-          [NSPredicate predicateWithBlock:^BOOL(
-                           NSDictionary* toast,
-                           NSDictionary<NSString*, id>* _Nullable bindings) {
-            NSString* toastProfileId =
-                toast[notification_constants::kNotificationProfileId];
-            BOOL toastIncognito =
-                [toast[notification_constants::kNotificationIncognito]
-                    boolValue];
-
-            return ![profileId isEqualToString:toastProfileId] ||
-                   incognito != toastIncognito;
-          }]];
-}
-
-- (void)closeAllNotifications {
-  [_alerts removeAllObjects];
-}
-
-- (void)
-getDisplayedAlertsForProfileId:(NSString*)profileId
-                     incognito:(BOOL)incognito
-                      callback:(GetDisplayedNotificationsCallback)callback {
-  std::set<std::string> alerts;
-
-  for (NSDictionary* toast in _alerts.get()) {
-    NSString* toastProfileId =
-        toast[notification_constants::kNotificationProfileId];
-    BOOL toastIncognito =
-        [toast[notification_constants::kNotificationIncognito] boolValue];
-
-    if ([profileId isEqualToString:toastProfileId] &&
-        incognito == toastIncognito) {
-      alerts.insert(base::SysNSStringToUTF8(
-          toast[notification_constants::kNotificationId]));
-    }
-  }
-
-  std::move(callback).Run(std::move(alerts),
+  std::move(callback).Run(std::move(notifications),
                           /*supports_synchronization=*/true);
 }
 
-- (void)getAllDisplayedAlertsWithCallback:
-    (GetAllDisplayedNotificationsCallback)callback {
-  std::vector<MacNotificationIdentifier> alertIds;
-  alertIds.reserve([_alerts count]);
+void StubNotificationDispatcherMac::GetAllDisplayedNotifications(
+    GetAllDisplayedNotificationsCallback callback) {
+  std::vector<MacNotificationIdentifier> notification_ids;
 
-  for (NSDictionary* toast in _alerts.get()) {
-    std::string notificationId =
-        base::SysNSStringToUTF8(toast[notification_constants::kNotificationId]);
-    std::string profileId = base::SysNSStringToUTF8(
-        toast[notification_constants::kNotificationProfileId]);
-    bool incognito =
-        [toast[notification_constants::kNotificationIncognito] boolValue];
-
-    alertIds.push_back(
-        {std::move(notificationId), std::move(profileId), incognito});
+  for (const auto& notification : notifications_) {
+    const auto& notification_id = notification->meta->id->id;
+    const auto& profile = notification->meta->id->profile;
+    notification_ids.push_back(
+        {notification_id, profile->id, profile->incognito});
   }
 
   // Create set from std::vector to avoid N^2 insertion runtime.
-  base::flat_set<MacNotificationIdentifier> alertSet(std::move(alertIds));
-  std::move(callback).Run(std::move(alertSet));
+  base::flat_set<MacNotificationIdentifier> notification_set(
+      std::move(notification_ids));
+  std::move(callback).Run(std::move(notification_set));
 }
-
-- (NSArray*)alerts {
-  return [[_alerts copy] autorelease];
-}
-
-@end

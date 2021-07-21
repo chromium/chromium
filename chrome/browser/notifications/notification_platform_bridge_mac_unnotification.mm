@@ -65,9 +65,9 @@ API_AVAILABLE(macosx(10.14))
 NotificationPlatformBridgeMacUNNotification::
     NotificationPlatformBridgeMacUNNotification(
         UNUserNotificationCenter* notification_center,
-        id<AlertDispatcher> alert_dispatcher)
+        std::unique_ptr<NotificationDispatcherMac> alert_dispatcher)
     : notification_center_([notification_center retain]),
-      alert_dispatcher_([alert_dispatcher retain]),
+      alert_dispatcher_(std::move(alert_dispatcher)),
       delivered_notifications_([[NSMutableDictionary alloc] init]),
       category_manager_(notification_center) {
   delegate_.reset([[UNNotificationCenterDelegate alloc]
@@ -87,7 +87,7 @@ NotificationPlatformBridgeMacUNNotification::
     ~NotificationPlatformBridgeMacUNNotification() {
   [notification_center_ setDelegate:nil];
   [notification_center_ removeAllDeliveredNotifications];
-  [alert_dispatcher_ closeAllNotifications];
+  alert_dispatcher_->CloseAllNotifications();
 }
 
 void NotificationPlatformBridgeMacUNNotification::Display(
@@ -160,8 +160,8 @@ void NotificationPlatformBridgeMacUNNotification::Display(
 
   if (is_alert) {
     LogMacNotificationDelivered(is_alert, /*success=*/true);
-    NSDictionary* dict = [builder buildDictionary];
-    [alert_dispatcher_ dispatchNotification:dict];
+    alert_dispatcher_->DisplayNotification(notification_type, profile,
+                                           notification);
     [builder setClosedFromAlert:YES];
     DeliveredSuccessfully(system_notification_id, std::move(builder));
     return;
@@ -262,11 +262,9 @@ void NotificationPlatformBridgeMacUNNotification::GetDisplayed(
   GetDisplayedNotificationsCallback alerts_callback = base::BindOnce(
       &NotificationPlatformBridgeMacUNNotification::DidGetDisplayedAlerts,
       weak_factory_.GetWeakPtr(), profile, std::move(callback));
-  [alert_dispatcher_
-      getDisplayedAlertsForProfileId:base::SysUTF8ToNSString(
-                                         GetProfileId(profile))
-                           incognito:profile && profile->IsOffTheRecord()
-                            callback:std::move(alerts_callback)];
+  alert_dispatcher_->GetDisplayedNotificationsForProfileId(
+      GetProfileId(profile), profile && profile->IsOffTheRecord(),
+      std::move(alerts_callback));
 }
 
 void NotificationPlatformBridgeMacUNNotification::SetReadyCallback(
@@ -304,13 +302,8 @@ void NotificationPlatformBridgeMacUNNotification::DoCloseAlert(
     Profile* profile,
     const std::string& notification_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  NSString* notificationId = base::SysUTF8ToNSString(notification_id);
-  NSString* profileId = base::SysUTF8ToNSString(GetProfileId(profile));
-  bool incognito = profile->IsOffTheRecord();
-
-  [alert_dispatcher_ closeNotificationWithId:notificationId
-                                   profileId:profileId
-                                   incognito:incognito];
+  alert_dispatcher_->CloseNotificationWithId(
+      {notification_id, GetProfileId(profile), profile->IsOffTheRecord()});
 }
 
 void NotificationPlatformBridgeMacUNNotification::OnNotificationClosed(
@@ -348,14 +341,9 @@ void NotificationPlatformBridgeMacUNNotification::MaybeStartSynchronization() {
 
 void NotificationPlatformBridgeMacUNNotification::SynchronizeNotifications() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // TODO(crbug.com/1127306): Skip the |alert_dispatcher_| if it is using the
-  // NSUserNotification API as it can handle close events.
-  [alert_dispatcher_
-      getAllDisplayedAlertsWithCallback:
-          base::BindOnce(&NotificationPlatformBridgeMacUNNotification::
-                             DidGetAllDisplayedAlerts,
-                         weak_factory_.GetWeakPtr())];
+  alert_dispatcher_->GetAllDisplayedNotifications(base::BindOnce(
+      &NotificationPlatformBridgeMacUNNotification::DidGetAllDisplayedAlerts,
+      weak_factory_.GetWeakPtr()));
 }
 
 void NotificationPlatformBridgeMacUNNotification::DoSynchronizeNotifications(
@@ -467,8 +455,8 @@ void NotificationPlatformBridgeMacUNNotification::
   NSString* profile_id = base::SysUTF8ToNSString(GetProfileId(profile));
   bool incognito = profile->IsOffTheRecord();
 
-  [alert_dispatcher_ closeNotificationsWithProfileId:profile_id
-                                           incognito:incognito];
+  alert_dispatcher_->CloseNotificationsWithProfileId(GetProfileId(profile),
+                                                     incognito);
 
   // Filter and close banner notifications for the profile.
   [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(

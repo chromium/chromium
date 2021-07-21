@@ -7,8 +7,14 @@
 
 #include <string>
 
+#import <Foundation/Foundation.h>
+
 #include "chrome/browser/notifications/notification_common.h"
+#include "chrome/browser/notifications/notification_handler.h"
+#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "ui/message_center/public/cpp/notification.h"
+
+class Profile;
 
 namespace message_center {
 class Notification;
@@ -31,9 +37,17 @@ bool VerifyMacNotificationData(NSDictionary* response) WARN_UNUSED_RESULT;
 
 // Processes a notification response generated from a user action
 // (click close, etc.).
+// TODO(knollr): Remove the NSDictionary* variant.
 void ProcessMacNotificationResponse(NSDictionary* response);
+void ProcessMacNotificationResponse(
+    mac_notifications::mojom::NotificationActionInfoPtr info);
 
 // Returns if the given |notification| should be shown as an alert.
 bool IsAlertNotificationMac(const message_center::Notification& notification);
+
+mac_notifications::mojom::NotificationPtr CreateMacNotification(
+    NotificationHandler::Type notification_type,
+    Profile* profile,
+    const message_center::Notification& notification);
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_UTILS_H_

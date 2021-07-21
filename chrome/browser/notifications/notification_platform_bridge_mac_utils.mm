@@ -6,11 +6,14 @@
 
 #include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
+#include "base/process/process_handle.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
+#include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_metrics.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
@@ -228,8 +231,70 @@ void ProcessMacNotificationResponse(NSDictionary* response) {
                      absl::nullopt /* reply */, true /* byUser */));
 }
 
+void ProcessMacNotificationResponse(
+    mac_notifications::mojom::NotificationActionInfoPtr info) {
+  NSDictionary* dict = @{
+    notification_constants::
+    kNotificationId : base::SysUTF8ToNSString(info->meta->id->id),
+    notification_constants::kNotificationProfileId :
+        base::SysUTF8ToNSString(info->meta->id->profile->id),
+    notification_constants::
+    kNotificationIncognito : @(info->meta->id->profile->incognito),
+    notification_constants::kNotificationOrigin :
+        base::SysUTF8ToNSString(info->meta->origin_url.spec()),
+    notification_constants::kNotificationType : @(info->meta->type),
+    notification_constants::
+    kNotificationCreatorPid : @(info->meta->creator_pid),
+    notification_constants::
+    kNotificationOperation : @(static_cast<int>(info->operation)),
+    notification_constants::kNotificationButtonIndex : @(info->button_index),
+    notification_constants::kNotificationIsAlert : @YES,
+  };
+  ProcessMacNotificationResponse(dict);
+}
+
 bool IsAlertNotificationMac(const message_center::Notification& notification) {
   // Check if the |notification| should be shown as alert.
   return notification.never_timeout() ||
          notification.type() == message_center::NOTIFICATION_TYPE_PROGRESS;
+}
+
+mac_notifications::mojom::NotificationPtr CreateMacNotification(
+    NotificationHandler::Type notification_type,
+    Profile* profile,
+    const message_center::Notification& notification) {
+  auto profile_identifier = mac_notifications::mojom::ProfileIdentifier::New(
+      NotificationPlatformBridge::GetProfileId(profile),
+      profile->IsOffTheRecord());
+  auto notification_identifier =
+      mac_notifications::mojom::NotificationIdentifier::New(
+          notification.id(), std::move(profile_identifier));
+
+  auto meta = mac_notifications::mojom::NotificationMetadata::New(
+      std::move(notification_identifier), static_cast<int>(notification_type),
+      notification.origin_url(), base::GetCurrentProcId());
+
+  std::vector<mac_notifications::mojom::NotificationActionButtonPtr> buttons;
+  for (const message_center::ButtonInfo& button : notification.buttons()) {
+    buttons.push_back(mac_notifications::mojom::NotificationActionButton::New(
+        button.title, button.placeholder));
+  }
+
+  bool is_alert = IsAlertNotificationMac(notification);
+  bool requires_attribution =
+      notification.context_message().empty() &&
+      notification_type != NotificationHandler::Type::EXTENSION;
+
+  std::u16string body = notification.items().empty()
+                            ? notification.message()
+                            : (notification.items().at(0).title + u" - " +
+                               notification.items().at(0).message);
+
+  return mac_notifications::mojom::Notification::New(
+      std::move(meta), CreateMacNotificationTitle(notification),
+      CreateMacNotificationContext(is_alert, notification,
+                                   requires_attribution),
+      std::move(body), notification.renotify(),
+      notification.should_show_settings_button(), std::move(buttons),
+      notification.icon().AsImageSkia());
 }

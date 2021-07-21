@@ -34,7 +34,7 @@ class API_AVAILABLE(macosx(10.14)) NotificationPlatformBridgeMacUNNotification
  public:
   NotificationPlatformBridgeMacUNNotification(
       UNUserNotificationCenter* notification_center,
-      id<AlertDispatcher> alert_dispatcher);
+      std::unique_ptr<NotificationDispatcherMac> alert_dispatcher);
   NotificationPlatformBridgeMacUNNotification(
       const NotificationPlatformBridgeMacUNNotification&) = delete;
   NotificationPlatformBridgeMacUNNotification& operator=(
@@ -99,7 +99,7 @@ class API_AVAILABLE(macosx(10.14)) NotificationPlatformBridgeMacUNNotification
   base::scoped_nsobject<UNUserNotificationCenter> notification_center_;
 
   // The object in charge of dispatching alert notifications.
-  base::scoped_nsprotocol<id<AlertDispatcher>> alert_dispatcher_;
+  std::unique_ptr<NotificationDispatcherMac> alert_dispatcher_;
 
   // An object that keeps temp files alive long enough for macOS to pick up.
   NotificationImageRetainer image_retainer_;

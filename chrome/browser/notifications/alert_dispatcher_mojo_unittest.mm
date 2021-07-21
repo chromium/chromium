@@ -7,13 +7,15 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
-#import "chrome/browser/notifications/mac_notification_provider_factory.h"
+#include "chrome/browser/notifications/mac_notification_provider_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -61,12 +63,13 @@ class MockNotificationProvider
 
 std::vector<mac_notifications::mojom::NotificationIdentifierPtr>
 CreateOneNotificationList() {
-  std::vector<mac_notifications::mojom::NotificationIdentifierPtr> alerts;
+  std::vector<mac_notifications::mojom::NotificationIdentifierPtr>
+      notifications;
   auto profile_id = mac_notifications::mojom::ProfileIdentifier::New(
       "profileId", /*incognito=*/true);
-  alerts.push_back(mac_notifications::mojom::NotificationIdentifier::New(
+  notifications.push_back(mac_notifications::mojom::NotificationIdentifier::New(
       "notificationId", std::move(profile_id)));
-  return alerts;
+  return notifications;
 }
 
 class FakeMacNotificationProviderFactory
@@ -117,22 +120,37 @@ class FakeMacNotificationProviderFactory
       handler_remote_;
 };
 
+message_center::Notification CreateNotification() {
+  return message_center::Notification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, "notification_id", u"title",
+      u"message", /*icon=*/gfx::Image(),
+      /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
+      message_center::NotifierId(), message_center::RichNotificationData(),
+      base::MakeRefCounted<message_center::NotificationDelegate>());
+}
+
 }  // namespace
 
-class AlertDispatcherMojoTest : public testing::Test {
+class NotificationDispatcherMojoTest : public testing::Test {
  public:
-  AlertDispatcherMojoTest() {
+  NotificationDispatcherMojoTest() {
     auto provider_factory =
         std::make_unique<FakeMacNotificationProviderFactory>(
             on_disconnect_.Get());
     provider_factory_ = provider_factory.get();
-    alert_dispatcher_.reset([[AlertDispatcherMojo alloc]
-        initWithProviderFactory:std::move(provider_factory)]);
+    notification_dispatcher_ = std::make_unique<NotificationDispatcherMojo>(
+        std::move(provider_factory));
   }
 
-  ~AlertDispatcherMojoTest() override {
+  ~NotificationDispatcherMojoTest() override {
     provider_factory_->disconnect();
     task_environment_.RunUntilIdle();
+  }
+
+  // testing::Test:
+  void SetUp() override {
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
+    profile_ = testing_profile_manager_.CreateTestingProfile("profile");
   }
 
   MockNotificationService& service() { return provider_factory_->service(); }
@@ -154,7 +172,7 @@ class AlertDispatcherMojoTest : public testing::Test {
         .WillOnce([](mac_notifications::mojom::ProfileIdentifierPtr profile,
                      MockNotificationService::GetDisplayedNotificationsCallback
                          callback) {
-          // Emulate an empty list of alerts.
+          // Emulate an empty list of notifications.
           std::move(callback).Run({});
         });
   }
@@ -173,12 +191,15 @@ class AlertDispatcherMojoTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TestingProfileManager testing_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
+  Profile* profile_;
   base::MockOnceClosure on_disconnect_;
-  base::scoped_nsobject<AlertDispatcherMojo> alert_dispatcher_;
+  std::unique_ptr<NotificationDispatcherMojo> notification_dispatcher_;
   FakeMacNotificationProviderFactory* provider_factory_ = nullptr;
 };
 
-TEST_F(AlertDispatcherMojoTest, CloseNotificationAndDisconnect) {
+TEST_F(NotificationDispatcherMojoTest, CloseNotificationAndDisconnect) {
   base::RunLoop run_loop;
   // Expect that we disconnect after closing the last notification.
   ExpectDisconnect(run_loop.QuitClosure());
@@ -190,37 +211,37 @@ TEST_F(AlertDispatcherMojoTest, CloseNotificationAndDisconnect) {
             EXPECT_TRUE(identifier->profile->incognito);
           });
   EmulateNoNotifications();
-  [alert_dispatcher_ closeNotificationWithId:@"notificationId"
-                                   profileId:@"profileId"
-                                   incognito:YES];
+  notification_dispatcher_->CloseNotificationWithId(
+      {"notificationId", "profileId", /*incognito=*/true});
   run_loop.Run();
 }
 
-TEST_F(AlertDispatcherMojoTest, CloseNotificationAndKeepConnected) {
+TEST_F(NotificationDispatcherMojoTest, CloseNotificationAndKeepConnected) {
   base::RunLoop run_loop;
   // Expect that we continue running if there are remaining notifications.
   EXPECT_CALL(service(), CloseNotification);
   EmulateOneNotification(run_loop.QuitClosure());
-  [alert_dispatcher_ closeNotificationWithId:@"notificationId"
-                                   profileId:@"profileId"
-                                   incognito:YES];
+  notification_dispatcher_->CloseNotificationWithId(
+      {"notificationId", "profileId", /*incognito=*/true});
   run_loop.Run();
   ExpectKeepConnected();
 }
 
-TEST_F(AlertDispatcherMojoTest, CloseThenDispatchNotificationAndKeepConnected) {
+TEST_F(NotificationDispatcherMojoTest,
+       CloseThenDispatchNotificationAndKeepConnected) {
   base::RunLoop run_loop;
   // Expect that we continue running when showing a new notification just after
   // closing the last one.
   EXPECT_CALL(service(), CloseNotification);
   EmulateNoNotifications();
-  [alert_dispatcher_ closeNotificationWithId:@"notificationId"
-                                   profileId:@"profileId"
-                                   incognito:YES];
+  notification_dispatcher_->CloseNotificationWithId(
+      {"notificationId", "profileId", /*incognito=*/true});
 
   EXPECT_CALL(service(), DisplayNotification)
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
-  [alert_dispatcher_ dispatchNotification:@{}];
+  notification_dispatcher_->DisplayNotification(
+      NotificationHandler::Type::WEB_PERSISTENT, profile_,
+      CreateNotification());
 
   run_loop.Run();
   ExpectKeepConnected();
@@ -229,11 +250,11 @@ TEST_F(AlertDispatcherMojoTest, CloseThenDispatchNotificationAndKeepConnected) {
   // Expect that we disconnect after closing all notifications.
   ExpectDisconnect(run_loop2.QuitClosure());
   EXPECT_CALL(service(), CloseAllNotifications);
-  [alert_dispatcher_ closeAllNotifications];
+  notification_dispatcher_->CloseAllNotifications();
   run_loop2.Run();
 }
 
-TEST_F(AlertDispatcherMojoTest, CloseProfileNotificationsAndDisconnect) {
+TEST_F(NotificationDispatcherMojoTest, CloseProfileNotificationsAndDisconnect) {
   base::RunLoop run_loop;
   // Expect that we disconnect after closing the last notification.
   ExpectDisconnect(run_loop.QuitClosure());
@@ -243,16 +264,18 @@ TEST_F(AlertDispatcherMojoTest, CloseProfileNotificationsAndDisconnect) {
         EXPECT_TRUE(profile->incognito);
       });
   EmulateNoNotifications();
-  [alert_dispatcher_ closeNotificationsWithProfileId:@"profileId"
-                                           incognito:YES];
+  notification_dispatcher_->CloseNotificationsWithProfileId("profileId",
+                                                            /*incognito=*/true);
   run_loop.Run();
 }
 
-TEST_F(AlertDispatcherMojoTest, CloseAndDisconnectTiming) {
+TEST_F(NotificationDispatcherMojoTest, CloseAndDisconnectTiming) {
   base::HistogramTester histograms;
   // Show a new notification.
   EXPECT_CALL(service(), DisplayNotification);
-  [alert_dispatcher_ dispatchNotification:@{}];
+  notification_dispatcher_->DisplayNotification(
+      NotificationHandler::Type::WEB_PERSISTENT, profile_,
+      CreateNotification());
 
   // Wait for 30 seconds and close the notification.
   auto delay = base::TimeDelta::FromSeconds(30);
@@ -263,9 +286,8 @@ TEST_F(AlertDispatcherMojoTest, CloseAndDisconnectTiming) {
   ExpectDisconnect(run_loop.QuitClosure());
   EmulateNoNotifications();
   EXPECT_CALL(service(), CloseNotification);
-  [alert_dispatcher_ closeNotificationWithId:@"notificationId"
-                                   profileId:@"profileId"
-                                   incognito:YES];
+  notification_dispatcher_->CloseNotificationWithId(
+      {"notificationId", "profileId", /*incognito=*/true});
 
   // Verify that we log the runtime length and no unexpected kill.
   run_loop.Run();
@@ -275,11 +297,13 @@ TEST_F(AlertDispatcherMojoTest, CloseAndDisconnectTiming) {
                               /*count=*/0);
 }
 
-TEST_F(AlertDispatcherMojoTest, KillServiceTiming) {
+TEST_F(NotificationDispatcherMojoTest, KillServiceTiming) {
   base::HistogramTester histograms;
   // Show a new notification.
   EXPECT_CALL(service(), DisplayNotification);
-  [alert_dispatcher_ dispatchNotification:@{}];
+  notification_dispatcher_->DisplayNotification(
+      NotificationHandler::Type::WEB_PERSISTENT, profile_,
+      CreateNotification());
 
   // Wait for 30 seconds and terminate the service.
   auto delay = base::TimeDelta::FromSeconds(30);

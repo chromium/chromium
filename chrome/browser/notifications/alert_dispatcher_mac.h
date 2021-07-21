@@ -8,11 +8,14 @@
 #include <string>
 #include <tuple>
 
-#import <Foundation/Foundation.h>
-
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
+#include "chrome/browser/notifications/notification_handler.h"
+#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
+#include "ui/message_center/public/cpp/notification.h"
+
+class Profile;
 
 // Uniquely identifies a notification from any profile on a device.
 struct MacNotificationIdentifier {
@@ -26,40 +29,47 @@ struct MacNotificationIdentifier {
   }
 };
 
-// Callback to get all alerts shown on the system for all profiles.
-using GetAllDisplayedNotificationsCallback =
-    base::OnceCallback<void(base::flat_set<MacNotificationIdentifier>)>;
+// Interface to interact with notifications on macOS. It is responsible for one
+// style of notifications, either banners or alerts, across multiple profiles.
+class NotificationDispatcherMac {
+ public:
+  // Callback to get all notifications shown on the system for all profiles.
+  using GetAllDisplayedNotificationsCallback =
+      base::OnceCallback<void(base::flat_set<MacNotificationIdentifier>)>;
 
-// Interface to communicate with the Alert Notification service.
-@protocol AlertDispatcher<NSObject>
+  NotificationDispatcherMac() = default;
+  NotificationDispatcherMac(const NotificationDispatcherMac&) = delete;
+  NotificationDispatcherMac& operator=(const NotificationDispatcherMac&) =
+      delete;
+  virtual ~NotificationDispatcherMac() = default;
 
-// Deliver a notification to be displayed as an alert.
-- (void)dispatchNotification:(NSDictionary*)data;
+  // Display the given |notification| for |profile|.
+  virtual void DisplayNotification(
+      NotificationHandler::Type notification_type,
+      Profile* profile,
+      const message_center::Notification& notification) = 0;
 
-// Close a notification for a given |notificationId|, |profileId| and
-// |incognito|.
-- (void)closeNotificationWithId:(NSString*)notificationId
-                      profileId:(NSString*)profileId
-                      incognito:(BOOL)incognito;
+  // Close a notification with the given |identifier|.
+  virtual void CloseNotificationWithId(
+      const MacNotificationIdentifier& identifier) = 0;
 
-// Close all notifications for a given |profileId| and |incognito|.
-- (void)closeNotificationsWithProfileId:(NSString*)profileId
-                              incognito:(BOOL)incognito;
+  // Close all notifications for a given |profile_id| and |incognito|.
+  virtual void CloseNotificationsWithProfileId(const std::string& profile_id,
+                                               bool incognito) = 0;
 
-// Close all notifications.
-- (void)closeAllNotifications;
+  // Close all notifications for all profiles.
+  virtual void CloseAllNotifications() = 0;
 
-// Get currently displayed notifications for |profileId| and |incognito|. The
-// returned ids are scoped to the passed profile and are not globally unique.
-- (void)
-getDisplayedAlertsForProfileId:(NSString*)profileId
-                     incognito:(BOOL)incognito
-                      callback:(GetDisplayedNotificationsCallback)callback;
+  // Get the currently displayed notifications for |profile_id| and |incognito|.
+  // The ids are scoped to the passed in profile and are not globally unique.
+  virtual void GetDisplayedNotificationsForProfileId(
+      const std::string& profile_id,
+      bool incognito,
+      GetDisplayedNotificationsCallback callback) = 0;
 
-// Get all currently displayed notifications.
-- (void)getAllDisplayedAlertsWithCallback:
-    (GetAllDisplayedNotificationsCallback)callback;
-
-@end
+  // Get all currently displayed notifications for all profiles.
+  virtual void GetAllDisplayedNotifications(
+      GetAllDisplayedNotificationsCallback callback) = 0;
+};
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_ALERT_DISPATCHER_MAC_H_

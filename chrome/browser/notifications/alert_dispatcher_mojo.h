@@ -5,20 +5,68 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_ALERT_DISPATCHER_MOJO_H_
 #define CHROME_BROWSER_NOTIFICATIONS_ALERT_DISPATCHER_MOJO_H_
 
-#import <Foundation/Foundation.h>
-
 #include <memory>
+#include <string>
+#include <tuple>
 
-#import "chrome/browser/notifications/alert_dispatcher_mac.h"
-#include "chrome/browser/notifications/mac_notification_provider_factory.h"
+#include "base/callback_forward.h"
+#include "base/cancelable_callback.h"
+#include "base/containers/flat_set.h"
+#include "base/time/time.h"
+#include "chrome/browser/notifications/alert_dispatcher_mac.h"
+#include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
+#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
-// Implementation of the AlertDispatcher interface to display notifications via
-// a Mojo Service running in a helper process.
-@interface AlertDispatcherMojo : NSObject <AlertDispatcher>
+class MacNotificationProviderFactory;
 
-- (instancetype)initWithProviderFactory:
-    (std::unique_ptr<MacNotificationProviderFactory>)providerFactory;
+// Connects to the macOS notification service via mojo to manage notifications.
+class NotificationDispatcherMojo : public NotificationDispatcherMac {
+ public:
+  explicit NotificationDispatcherMojo(
+      std::unique_ptr<MacNotificationProviderFactory> provider_factory);
+  NotificationDispatcherMojo(const NotificationDispatcherMojo&) = delete;
+  NotificationDispatcherMojo& operator=(const NotificationDispatcherMojo&) =
+      delete;
+  ~NotificationDispatcherMojo() override;
 
-@end
+  // NotificationDispatcherMac:
+  void DisplayNotification(
+      NotificationHandler::Type notification_type,
+      Profile* profile,
+      const message_center::Notification& notification) override;
+  void CloseNotificationWithId(
+      const MacNotificationIdentifier& identifier) override;
+  void CloseNotificationsWithProfileId(const std::string& profile_id,
+                                       bool incognito) override;
+  void CloseAllNotifications() override;
+  void GetDisplayedNotificationsForProfileId(
+      const std::string& profile_id,
+      bool incognito,
+      GetDisplayedNotificationsCallback callback) override;
+  void GetAllDisplayedNotifications(
+      GetAllDisplayedNotificationsCallback callback) override;
+
+ private:
+  void CheckIfNotificationsRemaining();
+  void OnServiceDisconnectedGracefully(bool gracefully);
+
+  mac_notifications::mojom::MacNotificationService* GetOrCreateService();
+
+  void DispatchGetNotificationsReply(
+      GetDisplayedNotificationsCallback callback,
+      std::vector<mac_notifications::mojom::NotificationIdentifierPtr>
+          notifications);
+  void DispatchGetAllNotificationsReply(
+      GetAllDisplayedNotificationsCallback callback,
+      std::vector<mac_notifications::mojom::NotificationIdentifierPtr>
+          notifications);
+
+  std::unique_ptr<MacNotificationProviderFactory> provider_factory_;
+  mojo::Remote<mac_notifications::mojom::MacNotificationProvider> provider_;
+  mojo::Remote<mac_notifications::mojom::MacNotificationService> service_;
+  base::CancelableOnceClosure no_notifications_checker_;
+  base::TimeTicks service_start_time_;
+};
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_ALERT_DISPATCHER_MOJO_H_

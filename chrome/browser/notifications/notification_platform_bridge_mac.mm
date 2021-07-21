@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/notifications/notification_platform_bridge_mac.h"
-#include "chrome/browser/notifications/notification_platform_bridge_mac_unnotification.h"
 
 #import <UserNotifications/UserNotifications.h>
 
@@ -20,11 +19,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#import "chrome/browser/notifications/alert_dispatcher_mojo.h"
+#include "chrome/browser/notifications/alert_dispatcher_mojo.h"
 #include "chrome/browser/notifications/mac_notification_provider_factory.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_metrics.h"
+#include "chrome/browser/notifications/notification_platform_bridge_mac_unnotification.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -53,10 +53,10 @@
 // /////////////////////////////////////////////////////////////////////////////
 NotificationPlatformBridgeMac::NotificationPlatformBridgeMac(
     NSUserNotificationCenter* notification_center,
-    id<AlertDispatcher> alert_dispatcher)
+    std::unique_ptr<NotificationDispatcherMac> alert_dispatcher)
     : delegate_([NotificationCenterDelegate alloc]),
       notification_center_([notification_center retain]),
-      alert_dispatcher_([alert_dispatcher retain]) {
+      alert_dispatcher_(std::move(alert_dispatcher)) {
   [notification_center_ setDelegate:delegate_.get()];
 }
 
@@ -65,28 +65,26 @@ NotificationPlatformBridgeMac::~NotificationPlatformBridgeMac() {
 
   // TODO(miguelg) do not remove banners if possible.
   [notification_center_ removeAllDeliveredNotifications];
-  [alert_dispatcher_ closeAllNotifications];
+  alert_dispatcher_->CloseAllNotifications();
 }
 
 // static
 std::unique_ptr<NotificationPlatformBridge>
 NotificationPlatformBridge::Create() {
-  auto provider_factory = std::make_unique<MacNotificationProviderFactory>();
-  base::scoped_nsobject<NSObject<AlertDispatcher>> alert_dispatcher(
-      [[AlertDispatcherMojo alloc]
-          initWithProviderFactory:std::move(provider_factory)]);
+  auto alert_dispatcher = std::make_unique<NotificationDispatcherMojo>(
+      std::make_unique<MacNotificationProviderFactory>());
 
   if (@available(macOS 10.14, *)) {
     if (base::FeatureList::IsEnabled(features::kNewMacNotificationAPI)) {
       return std::make_unique<NotificationPlatformBridgeMacUNNotification>(
           [UNUserNotificationCenter currentNotificationCenter],
-          alert_dispatcher.get());
+          std::move(alert_dispatcher));
     }
   }
 
   return std::make_unique<NotificationPlatformBridgeMac>(
       [NSUserNotificationCenter defaultUserNotificationCenter],
-      alert_dispatcher.get());
+      std::move(alert_dispatcher));
 }
 
 // static
@@ -100,6 +98,17 @@ void NotificationPlatformBridgeMac::Display(
     Profile* profile,
     const message_center::Notification& notification,
     std::unique_ptr<NotificationCommon::Metadata> metadata) {
+  bool is_alert = IsAlertNotificationMac(notification);
+  LogMacNotificationDelivered(is_alert, /*success=*/true);
+
+  // Send alert notifications to the alert dispatcher. Chrome itself can only
+  // display banners.
+  if (is_alert) {
+    alert_dispatcher_->DisplayNotification(notification_type, profile,
+                                           notification);
+    return;
+  }
+
   base::scoped_nsobject<NotificationBuilder> builder(
       [[NotificationBuilder alloc]
       initWithCloseLabel:l10n_util::GetNSString(IDS_NOTIFICATION_BUTTON_CLOSE)
@@ -122,8 +131,6 @@ void NotificationPlatformBridgeMac::Display(
       notification.context_message().empty() &&
       notification_type != NotificationHandler::Type::EXTENSION;
 
-  bool is_alert = IsAlertNotificationMac(notification);
-  LogMacNotificationDelivered(is_alert, /*sucess=*/true);
 
   [builder setSubTitle:base::SysUTF16ToNSString(CreateMacNotificationContext(
                            is_alert, notification, requires_attribution))];
@@ -163,15 +170,8 @@ void NotificationPlatformBridgeMac::Display(
   [builder setCreatorPid:@(static_cast<NSInteger>(getpid()))];
   [builder setNotificationType:@(static_cast<NSInteger>(notification_type))];
 
-  // Send alert notifications to the alert dispatcher. Chrome itself can only
-  // display banners.
-  if (is_alert) {
-    NSDictionary* dict = [builder buildDictionary];
-    [alert_dispatcher_ dispatchNotification:dict];
-  } else {
-    NSUserNotification* toast = [builder buildUserNotification];
-    [notification_center_ deliverNotification:toast];
-  }
+  NSUserNotification* toast = [builder buildUserNotification];
+  [notification_center_ deliverNotification:toast];
 }
 
 void NotificationPlatformBridgeMac::Close(Profile* profile,
@@ -200,9 +200,8 @@ void NotificationPlatformBridgeMac::Close(Profile* profile,
 
   // If no banner existed with that ID try to see if there is an alert
   // in the alert dispatcher.
-  [alert_dispatcher_ closeNotificationWithId:notificationId
-                                   profileId:profileId
-                                   incognito:incognito];
+  alert_dispatcher_->CloseNotificationWithId(
+      {notification_id, GetProfileId(profile), incognito});
 }
 
 void NotificationPlatformBridgeMac::GetDisplayed(
@@ -237,9 +236,8 @@ void NotificationPlatformBridgeMac::GetDisplayed(
       },
       std::move(callback), std::move(banners));
 
-  [alert_dispatcher_ getDisplayedAlertsForProfileId:profileId
-                                          incognito:incognito
-                                           callback:std::move(alerts_callback)];
+  alert_dispatcher_->GetDisplayedNotificationsForProfileId(
+      GetProfileId(profile), incognito, std::move(alerts_callback));
 }
 
 void NotificationPlatformBridgeMac::SetReadyCallback(
@@ -263,8 +261,8 @@ void NotificationPlatformBridgeMac::CloseAllNotificationsForProfile(
   NSString* profile_id = base::SysUTF8ToNSString(GetProfileId(profile));
   bool incognito = profile->IsOffTheRecord();
 
-  [alert_dispatcher_ closeNotificationsWithProfileId:profile_id
-                                           incognito:incognito];
+  alert_dispatcher_->CloseNotificationsWithProfileId(GetProfileId(profile),
+                                                     incognito);
 
   // Close banner notifications for the profile.
   for (NSUserNotification* toast in
