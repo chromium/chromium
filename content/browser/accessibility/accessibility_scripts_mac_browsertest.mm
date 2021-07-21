@@ -154,41 +154,6 @@ void AccessibilityScriptsMacBrowserTest::AssertOutputMatchesExpectations() {
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(AccessibilityScriptsMacBrowserTest,
-                       SetSelectedTextMarkerRange_TextArea) {
-  LoadFile("set-selection-textarea.html");
-
-  // Select the 3rd word.
-  {
-    AttributeInvoker textarea = GetInvokerAndAssertRole(":3", "AXTextArea");
-    OptionalNSObject text_range =
-        textarea.GetValue("AXTextMarkerRangeForUIElement",
-                          GetNodeAndAssertRole(":3", "AXTextArea"));
-
-    OptionalNSObject marker_0 = a11y::TextMarkerRangeGetStartMarker(text_range);
-    OptionalNSObject marker_1 =
-        textarea.GetValue("AXNextWordEndTextMarkerForTextMarker", marker_0);
-    OptionalNSObject marker_2 =
-        textarea.GetValue("AXNextWordEndTextMarkerForTextMarker", marker_1);
-    OptionalNSObject marker_3 =
-        textarea.GetValue("AXNextWordEndTextMarkerForTextMarker", marker_2);
-    OptionalNSObject marker_4 = textarea.GetValue(
-        "AXPreviousWordStartTextMarkerForTextMarker", marker_3);
-    OptionalNSObject target_selected_marker_range =
-        textarea.GetValue("AXTextMarkerRangeForUnorderedTextMarkers",
-                          a11y::MakePairArray(marker_3, marker_4));
-    textarea.SetValue("AXSelectedTextMarkerRange",
-                      target_selected_marker_range);
-
-    WaitForEvent(ax::mojom::Event::kTextSelectionChanged);
-
-    OptionalNSObject selected_text = textarea.GetValue("AXSelectedText");
-    Print(selected_text);
-  }
-
-  AssertOutputMatchesExpectations();
-}
-
-IN_PROC_BROWSER_TEST_F(AccessibilityScriptsMacBrowserTest,
                        SetSelectedTextRange_ContentEditable) {
   LoadFile("set-selectedtextrange-contenteditable.html");
 

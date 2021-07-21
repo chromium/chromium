@@ -1,0 +1,10 @@
+text_range={anchor: {:3, 0, down}, focus: {:3, 45, down}}
+marker_0={:3, 0, down}
+marker_1={:3, 3, down}
+marker_2={:3, 9, down}
+marker_3={:3, 15, down}
+marker_4={:3, 10, down}
+target_selected_marker_range={anchor: {:3, 10, down}, focus: {:3, 15, down}}
+AXSelectedTextChanged on AXTextArea AXValue="The quick brown fox jumps over the lazy dog
+" AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
+textarea.AXSelectedText='brown'

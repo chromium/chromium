@@ -158,13 +158,17 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXPressButton) {
   RunMacActionTest(FILE_PATH_LITERAL("ax-press-button.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXSelectAllTextarea) {
-  RunMacSelectionTest(FILE_PATH_LITERAL("ax-selectall-textarea.html"));
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SelectAllTextarea) {
+  RunMacSelectionTest(FILE_PATH_LITERAL("selectall-textarea.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        SetSelectionContenteditable) {
   RunMacSelectionTest(FILE_PATH_LITERAL("set-selection-contenteditable.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SetSelectionTextarea) {
+  RunMacSelectionTest(FILE_PATH_LITERAL("set-selection-textarea.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,

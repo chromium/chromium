@@ -329,8 +329,8 @@ OptionalNSObject AttributeInvoker::ParamByPropertyNode(
     const AXPropertyNode& property_node) const {
   // NSAccessibility attributes always take a single parameter.
   if (property_node.arguments.size() != 1) {
-    LOG(ERROR) << "Failed to parse " << property_node.original_property
-               << ": single parameter is expected";
+    LOG(ERROR) << "Failed to parse '" << property_node.ToFlatString()
+               << "': single parameter is expected";
     return OptionalNSObject::Error();
   }
 
