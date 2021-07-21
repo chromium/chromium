@@ -133,7 +133,7 @@ std::unique_ptr<FrameNodeImpl> PerformanceManagerImpl::CreateFrameNode(
     int frame_tree_node_id,
     int render_frame_id,
     const blink::LocalFrameToken& frame_token,
-    int32_t browsing_instance_id,
+    content::BrowsingInstanceId browsing_instance_id,
     int32_t site_instance_id,
     FrameNodeCreationCallback creation_callback) {
   return CreateNodeImpl<FrameNodeImpl>(

@@ -89,6 +89,7 @@ source_set("browser_sources") {
     "browsing_data_filter_builder.h",
     "browsing_data_remover.h",
     "browsing_data_remover_delegate.h",
+    "browsing_instance_id.h",
     "cdm_registry.h",
     "certificate_request_result_type.h",
     "child_process_data.cc",

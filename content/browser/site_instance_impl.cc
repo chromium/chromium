@@ -745,7 +745,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
 
 // static
 scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForGuest(
-    content::BrowserContext* browser_context,
+    BrowserContext* browser_context,
     const GURL& guest_site_url) {
   DCHECK(browser_context);
   DCHECK_NE(guest_site_url, GetDefaultSiteURL());
@@ -804,13 +804,8 @@ int32_t SiteInstanceImpl::GetId() {
   return id_;
 }
 
-int32_t SiteInstanceImpl::GetBrowsingInstanceId() {
-  // This is being vended out as an opaque ID, and it is always defined for
-  // a BrowsingInstance affiliated IsolationContext, so it's safe to call
-  // "GetUnsafeValue" and expose the inner value directly.
-  return browsing_instance_->isolation_context()
-      .browsing_instance_id()
-      .GetUnsafeValue();
+BrowsingInstanceId SiteInstanceImpl::GetBrowsingInstanceId() {
+  return browsing_instance_->isolation_context().browsing_instance_id();
 }
 
 const IsolationContext& SiteInstanceImpl::GetIsolationContext() {
@@ -1316,7 +1311,7 @@ scoped_refptr<SiteInstance> SiteInstance::CreateForURL(
 
 // static
 scoped_refptr<SiteInstance> SiteInstance::CreateForGuest(
-    content::BrowserContext* browser_context,
+    BrowserContext* browser_context,
     const GURL& guest_site_url) {
   DCHECK(browser_context);
   return SiteInstanceImpl::CreateForGuest(browser_context, guest_site_url);
@@ -1832,7 +1827,7 @@ void SiteInstance::StartIsolatingSite(
 void SiteInstanceImpl::WriteIntoTrace(perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("id", GetId());
-  dict.Add("browsing_instance_id", GetBrowsingInstanceId());
+  dict.Add("browsing_instance_id", GetBrowsingInstanceId().value());
   dict.Add("is_default", IsDefaultSiteInstance());
   dict.Add("site_info", site_info_);
   dict.Add("active_frame_count", active_frame_count_);

@@ -429,13 +429,15 @@ namespace {
 //   |browsing_instance_id| in the given |process_node|.
 // - v8_process_memory is the total V8 memory usage of all frames in the given
 //   |process_node|.
-double GetBrowsingInstanceV8BytesFraction(const ProcessNode* process_node,
-                                          int32_t browsing_instance_id) {
+double GetBrowsingInstanceV8BytesFraction(
+    const ProcessNode* process_node,
+    content::BrowsingInstanceId browsing_instance_id) {
   uint64_t bytes_used = 0;
   uint64_t total_bytes_used = 0;
   process_node->VisitFrameNodes(base::BindRepeating(
-      [](absl::optional<int32_t> browsing_instance_id, uint64_t* bytes_used,
-         uint64_t* total_bytes_used, const FrameNode* frame_node) {
+      [](absl::optional<content::BrowsingInstanceId> browsing_instance_id,
+         uint64_t* bytes_used, uint64_t* total_bytes_used,
+         const FrameNode* frame_node) {
         const auto* data =
             V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
         if (data) {
@@ -462,7 +464,8 @@ WebMemoryAggregator::AggregateMeasureMemoryResult() {
   std::vector<const FrameNode*> top_frames;
   main_process_node_->VisitFrameNodes(base::BindRepeating(
       [](std::vector<const FrameNode*>* top_frames,
-         int32_t browsing_instance_id, const FrameNode* node) {
+         content::BrowsingInstanceId browsing_instance_id,
+         const FrameNode* node) {
         if (node->GetBrowsingInstanceId() == browsing_instance_id &&
             !node->GetParentFrameNode() && !GetOrigin(node).opaque()) {
           top_frames->push_back(node);

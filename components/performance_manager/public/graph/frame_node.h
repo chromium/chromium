@@ -13,6 +13,7 @@
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
+#include "content/public/browser/browsing_instance_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/gfx/geometry/rect.h"
@@ -99,7 +100,7 @@ class FrameNode : public Node {
 
   // Gets the ID of the browsing instance to which this frame belongs. This is a
   // constant over the lifetime of the frame.
-  virtual int32_t GetBrowsingInstanceId() const = 0;
+  virtual content::BrowsingInstanceId GetBrowsingInstanceId() const = 0;
 
   // Gets the ID of the site instance to which this frame belongs. This is a
   // constant over the lifetime of the frame.

@@ -18,6 +18,7 @@
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/web_memory.mojom.h"
 #include "components/performance_manager/public/render_frame_host_proxy.h"
+#include "content/public/browser/browsing_instance_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -71,7 +72,7 @@ class FrameNodeImpl
                 int frame_tree_node_id,
                 int render_frame_id,
                 const blink::LocalFrameToken& frame_token,
-                int32_t browsing_instance_id,
+                content::BrowsingInstanceId browsing_instance_id,
                 int32_t site_instance_id);
 
   ~FrameNodeImpl() override;
@@ -102,7 +103,7 @@ class FrameNodeImpl
   int frame_tree_node_id() const;
   int render_frame_id() const;
   const blink::LocalFrameToken& frame_token() const;
-  int32_t browsing_instance_id() const;
+  content::BrowsingInstanceId browsing_instance_id() const;
   int32_t site_instance_id() const;
   const RenderFrameHostProxy& render_frame_host_proxy() const;
 
@@ -183,7 +184,7 @@ class FrameNodeImpl
   const ProcessNode* GetProcessNode() const override;
   int GetFrameTreeNodeId() const override;
   const blink::LocalFrameToken& GetFrameToken() const override;
-  int32_t GetBrowsingInstanceId() const override;
+  content::BrowsingInstanceId GetBrowsingInstanceId() const override;
   int32_t GetSiteInstanceId() const override;
   bool VisitChildFrameNodes(const FrameNodeVisitor& visitor) const override;
   const base::flat_set<const FrameNode*> GetChildFrameNodes() const override;
@@ -285,7 +286,7 @@ class FrameNodeImpl
   // same BrowsingInstance are allowed to script each other at least
   // asynchronously (if cross-site), and sometimes synchronously (if same-site,
   // and thus same SiteInstance).
-  const int32_t browsing_instance_id_;
+  const content::BrowsingInstanceId browsing_instance_id_;
   // The unique ID of the SiteInstance this frame belongs to. Frames in the
   // same SiteInstance may sychronously script each other. Frames with the
   // same |site_instance_id_| will also have the same |browsing_instance_id_|.

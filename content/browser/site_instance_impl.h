@@ -453,7 +453,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
       const UrlInfo& url_info,
       const WebExposedIsolationInfo& web_exposed_isolation_info);
   static scoped_refptr<SiteInstanceImpl> CreateForGuest(
-      content::BrowserContext* browser_context,
+      BrowserContext* browser_context,
       const GURL& guest_site_url);
 
   // Creates a SiteInstance that will be use for a service worker.
@@ -501,7 +501,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
 
   // SiteInstance interface overrides.
   int32_t GetId() override;
-  int32_t GetBrowsingInstanceId() override;
+  BrowsingInstanceId GetBrowsingInstanceId() override;
   bool HasProcess() override;
   RenderProcessHost* GetProcess() override;
   BrowserContext* GetBrowserContext() override;

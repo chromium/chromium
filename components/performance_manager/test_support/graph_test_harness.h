@@ -82,7 +82,8 @@ struct TestNodeWrapper<FrameNodeImpl>::Factory {
       int frame_tree_node_id,
       int render_frame_id,
       const blink::LocalFrameToken& frame_token = blink::LocalFrameToken(),
-      int32_t browsing_instance_id = 0,
+      content::BrowsingInstanceId browsing_instance_id =
+          content::BrowsingInstanceId(0),
       int32_t site_instance_id = 0) {
     return std::make_unique<FrameNodeImpl>(
         process_node, page_node, parent_frame_node, frame_tree_node_id,

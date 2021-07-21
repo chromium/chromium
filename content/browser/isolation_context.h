@@ -8,11 +8,9 @@
 #include "base/types/id_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_or_resource_context.h"
+#include "content/public/browser/browsing_instance_id.h"
 
 namespace content {
-
-class BrowsingInstance;
-using BrowsingInstanceId = base::IdType32<BrowsingInstance>;
 
 // This class is used to specify the context in which process model decisions
 // need to be made.  For example, dynamically added isolated origins only take

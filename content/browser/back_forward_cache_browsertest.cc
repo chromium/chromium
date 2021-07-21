@@ -5839,7 +5839,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithSameSiteDisabled,
   EXPECT_TRUE(NavigateToURL(shell(), url_a1));
   RenderFrameHostImpl* rfh_a1 = current_frame_host();
   RenderFrameDeletedObserver delete_rfh_a1(rfh_a1);
-  int browsing_instance_id = rfh_a1->GetSiteInstance()->GetBrowsingInstanceId();
+  auto browsing_instance_id =
+      rfh_a1->GetSiteInstance()->GetBrowsingInstanceId();
 
   // 2) Navigate same-site and same-origin to A2.
   EXPECT_TRUE(NavigateToURL(shell(), url_a2));
@@ -5909,7 +5910,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SameSiteNavigationCaching) {
   EXPECT_TRUE(NavigateToURL(shell(), url_a1));
   RenderFrameHostImpl* rfh_a1 = current_frame_host();
   RenderFrameDeletedObserver delete_rfh_a1(rfh_a1);
-  int browsing_instance_id = rfh_a1->GetSiteInstance()->GetBrowsingInstanceId();
+  auto browsing_instance_id =
+      rfh_a1->GetSiteInstance()->GetBrowsingInstanceId();
 
   // 2) Navigate to A2.
   EXPECT_TRUE(NavigateToURL(shell(), url_a2));
@@ -6974,7 +6976,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebPreferences) {
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* rfh_a = current_frame_host();
-  int browsing_instance_id = rfh_a->GetSiteInstance()->GetBrowsingInstanceId();
+  auto browsing_instance_id = rfh_a->GetSiteInstance()->GetBrowsingInstanceId();
 
   // A should prefer light color scheme (which is the default).
   EXPECT_EQ(

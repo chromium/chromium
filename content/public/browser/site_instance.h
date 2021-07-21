@@ -10,6 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/site_instance_process_assignment.h"
 #include "url/gurl.h"
@@ -97,7 +98,7 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   // Returns a unique ID for the BrowsingInstance (i.e., group of related
   // browsing contexts) to which this SiteInstance belongs. This allows callers
   // to identify which SiteInstances can asynchronously script each other.
-  virtual int32_t GetBrowsingInstanceId() = 0;
+  virtual BrowsingInstanceId GetBrowsingInstanceId() = 0;
 
   // Whether this SiteInstance has a running process associated with it.
   // This may return true before the first call to GetProcess(), in cases where
@@ -114,11 +115,11 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   // For sites that require process-per-site mode (e.g., NTP), this will
   // ensure only one RenderProcessHost for the site exists within the
   // BrowserContext.
-  virtual content::RenderProcessHost* GetProcess() = 0;
+  virtual RenderProcessHost* GetProcess() = 0;
 
   // Browser context to which this SiteInstance (and all related
   // SiteInstances) belongs.
-  virtual content::BrowserContext* GetBrowserContext() = 0;
+  virtual BrowserContext* GetBrowserContext() = 0;
 
   // Get the web site that this SiteInstance is rendering pages for. This
   // includes the scheme and registered domain, but not the port.
@@ -186,8 +187,7 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   //
   // The render process host factory may be nullptr.  See SiteInstance
   // constructor.
-  static scoped_refptr<SiteInstance> Create(
-      content::BrowserContext* browser_context);
+  static scoped_refptr<SiteInstance> Create(BrowserContext* browser_context);
 
   // Factory method to get the appropriate SiteInstance for the given URL, in
   // a new BrowsingInstance.  Use this instead of Create when you know the URL,
@@ -196,14 +196,14 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   // default SiteInstance for sites that don't require a dedicated process on
   // Android).
   static scoped_refptr<SiteInstance> CreateForURL(
-      content::BrowserContext* browser_context,
+      BrowserContext* browser_context,
       const GURL& url);
 
   // Factory method to create a SiteInstance for a <webview> guest in a new
   // BrowsingInstance.
   // TODO(734722): Replace this method once SecurityPrincipal is available.
   static scoped_refptr<SiteInstance> CreateForGuest(
-      content::BrowserContext* browser_context,
+      BrowserContext* browser_context,
       const GURL& guest_site_url);
 
   // Determine if a URL should "use up" a site.  URLs such as about:blank or

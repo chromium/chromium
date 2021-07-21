@@ -74,7 +74,7 @@ base::Value FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.SetIntKey("frame_tree_node_id", impl->frame_tree_node_id_);
   ret.SetIntKey("render_frame_id", impl->render_frame_id_);
   ret.SetStringKey("frame_token", impl->frame_token_.value().ToString());
-  ret.SetIntKey("browsing_instance_id", impl->browsing_instance_id_);
+  ret.SetIntKey("browsing_instance_id", impl->browsing_instance_id_.value());
   ret.SetIntKey("site_instance_id", impl->site_instance_id_);
   ret.SetStringKey("lifecycle_state",
                    MojoEnumToString(impl->lifecycle_state_.value()));
