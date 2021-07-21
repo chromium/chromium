@@ -96,6 +96,7 @@
 #include "components/history_clusters/core/memories_features.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/language/core/common/language_experiments.h"
+#include "components/lens/lens_features.h"
 #include "components/lookalikes/core/features.h"
 #include "components/messages/android/messages_feature.h"
 #include "components/nacl/common/buildflags.h"
@@ -7374,6 +7375,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSuggestVirtualCardsOnIncompleteForm)},
+
+    {"enable-lens-region-search",
+     flag_descriptions::kEnableLensRegionSearchName,
+     flag_descriptions::kEnableLensRegionSearchDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensRegionSearch)},
 
     {"enable-penetrating-image-selection",
      flag_descriptions::kEnablePenetratingImageSelectionName,

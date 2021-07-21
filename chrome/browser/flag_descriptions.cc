@@ -1148,6 +1148,11 @@ const char kMemlogStackModeNative[] = "Native";
 const char kMemlogStackModeNativeWithThreadNames[] = "Native with thread names";
 const char kMemlogStackModePseudo[] = "Trace events";
 
+const char kEnableLensRegionSearchName[] = "Enable Lens Region Search";
+const char kEnableLensRegionSearchDescription[] =
+    "Enables a context menu option allowing the user to search a selected"
+    "area of the page with Google Lens.";
+
 const char kEnableLoginDetectionName[] = "Enable login detection";
 const char kEnableLoginDetectionDescription[] =
     "Allow user sign-in to be detected based on heuristics.";

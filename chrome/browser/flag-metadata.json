@@ -2127,6 +2127,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-lens-region-search",
+    "owners": [ "stanfield@google.com", "benwgold@google.com", "juanmojica@google.com" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "enable-lite-video",
     "owners": [ "//components/data_reduction_proxy/OWNERS" ],
     // This flag is used for frequent manual testing and should not be removed.

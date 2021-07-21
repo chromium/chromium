@@ -46261,6 +46261,7 @@ from previous Chrome versions.
   <int value="-2146979021" label="OmniboxMaxURLMatches:enabled"/>
   <int value="-2146832142" label="SyncPseudoUSSSearchEngines:enabled"/>
   <int value="-2146613579" label="V8Future:disabled"/>
+  <int value="-2146263880" label="LensRegionSearch:disabled"/>
   <int value="-2145472146" label="OfflinePagesResourceBasedSnapshot:disabled"/>
   <int value="-2144796781" label="TurnOffStreamingMediaCachingAlways:enabled"/>
   <int value="-2143961262" label="D3DVsync:disabled"/>
@@ -46957,6 +46958,7 @@ from previous Chrome versions.
   <int value="-1605567628" label="disable-overlay-scrollbar"/>
   <int value="-1604051051" label="SpecialLocale:disabled"/>
   <int value="-1603404046" label="V8VmFuture:disabled"/>
+  <int value="-1603074997" label="LensRegionSearch:enabled"/>
   <int value="-1603026968"
       label="AlignFontDisplayAutoTimeoutWithLCPGoal:disabled"/>
   <int value="-1601374850" label="DialMediaRouteProvider:disabled"/>
