@@ -58,8 +58,9 @@ void MessagePortCoreWithTaskRunner::AcceptOnSequence(Message message) {
   DCHECK(task_runner_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&MessagePortCoreWithTaskRunner::AcceptInternal,
-                                base::Unretained(this), std::move(message)));
+      FROM_HERE,
+      base::BindOnce(&MessagePortCoreWithTaskRunner::AcceptInternal,
+                     weak_factory_.GetWeakPtr(), std::move(message)));
 }
 
 void MessagePortCoreWithTaskRunner::AcceptResultOnSequence(bool result) {
