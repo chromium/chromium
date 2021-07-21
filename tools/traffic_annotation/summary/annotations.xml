@@ -242,6 +242,7 @@ Refer to README.md for content description and update process.
  <item id="permission_reporting" added_in_milestone="62" hash_code="131741641" type="0" deprecated="2018-03-06" content_hash_code="7213535" file_path=""/>
  <item id="permission_request_creator" added_in_milestone="62" hash_code="43206794" type="0" deprecated="2019-07-30" content_hash_code="73571699" file_path=""/>
  <item id="persist_blob_to_indexed_db" added_in_milestone="62" hash_code="32030464" type="0" deprecated="2018-08-13" content_hash_code="35410079" file_path=""/>
+ <item id="photos_service" added_in_milestone="94" hash_code="100936478" type="0" content_hash_code="91467634" os_list="linux,windows" file_path="chrome/browser/new_tab_page/modules/photos/photos_service.cc"/>
  <item id="plugins_resource_service" added_in_milestone="62" hash_code="49601082" type="0" content_hash_code="6877335" os_list="linux,windows" file_path="chrome/browser/plugins/plugins_resource_service.cc"/>
  <item id="popular_sites_fetch" added_in_milestone="62" hash_code="50755044" type="0" content_hash_code="6910083" os_list="linux,windows" file_path="components/ntp_tiles/popular_sites_impl.cc"/>
  <item id="port_forwarding_controller_socket" added_in_milestone="65" hash_code="95075845" type="0" content_hash_code="122163428" os_list="linux,windows" file_path="chrome/browser/devtools/device/port_forwarding_controller.cc"/>
