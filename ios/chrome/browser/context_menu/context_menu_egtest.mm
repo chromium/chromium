@@ -18,8 +18,10 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#include "ios/web/common/features.h"
 #include "ios/web/public/test/element_selector.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -415,13 +417,25 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       // Tap the tools menu to dismiss the popover.
       [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
           performAction:grey_tap()];
+    } else if (web::features::UseWebViewNativeContextMenuSystem()) {
+      // Tap the drop shadow to dismiss the popover.
+      chrome_test_util::TapAtOffsetOf(nil, 0, CGVectorMake(0.5, 0.95));
     } else {
       TapOnContextMenuButton(chrome_test_util::CancelButton());
     }
 
     // Make sure the context menu disappeared.
-    [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
-        assertWithMatcher:grey_nil()];
+    ConditionBlock condition = ^{
+      NSError* error = nil;
+      [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
+          assertWithMatcher:grey_nil()
+                      error:&error];
+      return error == nil;
+    };
+
+    GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                   base::test::ios::kWaitForUIElementTimeout, condition),
+               @"Waiting for the context menu to disappear");
   }
 
   // Display the context menu one last time.
@@ -449,17 +463,22 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ButtonWithAccessibilityLabelId(
-                     IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)]
+                     web::features::UseWebViewNativeContextMenuSystem()
+                         ? IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE
+                         : IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_CONTEXT_COPY)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     web::features::UseWebViewNativeContextMenuSystem()
+                         ? IDS_IOS_COPY_LINK_ACTION_TITLE
+                         : IDS_IOS_CONTENT_CONTEXT_COPY)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  if (![ChromeEarlGrey isIPadIdiom]) {
+  if (![ChromeEarlGrey isIPadIdiom] &&
+      !web::features::UseWebViewNativeContextMenuSystem()) {
     [[EarlGrey selectElementWithMatcher:
                    chrome_test_util::ButtonWithAccessibilityLabelId(IDS_CANCEL)]
         assertWithMatcher:grey_sufficientlyVisible()];
