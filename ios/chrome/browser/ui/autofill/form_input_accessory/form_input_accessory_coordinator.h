@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_FORM_INPUT_ACCESSORY_FORM_INPUT_ACCESSORY_COORDINATOR_H_
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
-#import "ios/web/common/crw_input_view_provider.h"
 
 @class ManualFillInjectionHandler;
 @class ReauthenticationModule;
@@ -28,11 +27,22 @@
 // Creates and manages a custom input accessory view while the user is
 // interacting with a form. Also handles hiding and showing the default
 // accessory view elements.
-@interface FormInputAccessoryCoordinator
-    : ChromeCoordinator <CRWResponderInputView>
+@interface FormInputAccessoryCoordinator : ChromeCoordinator
 
 // The delegate for the coordinator. Must be set before it starts.
 @property(nonatomic, weak) id<FormInputAccessoryCoordinatorNavigator> navigator;
+
+// Creates a coordinator that uses a |viewController| a |browserState| and
+// a |webStateList|.
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
+
+// This resets the input accessory to a clean state.
+- (void)reset;
 
 @end
 
