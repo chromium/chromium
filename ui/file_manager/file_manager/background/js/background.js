@@ -142,6 +142,10 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
       this.initContextMenu_();
       this.crostini.initEnabled();
 
+      // Force disable of system notifications if the SWA feature flag is on.
+      if (!window.isSWA && util.isSwaEnabled()) {
+        xfm.notifications.setSystemNotificationEnabled(false);
+      }
       volumeManagerFactory.getInstance().then(volumeManager => {
         volumeManager.addEventListener(
             VolumeManagerCommon.VOLUME_ALREADY_MOUNTED,
@@ -577,7 +581,6 @@ const DIALOG_ID_PREFIX = 'dialog#';
  * @type {number}
  */
 let nextFileManagerDialogID = 0;
-
 
 /** @const {!string} */
 const GPLUS_PHOTOS_APP_ORIGIN =

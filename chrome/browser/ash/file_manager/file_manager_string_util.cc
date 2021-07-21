@@ -998,6 +998,8 @@ void AddFileManagerFeatureStrings(const std::string& locale,
                    crostini::CrostiniFeatures::Get()->IsEnabled(profile));
   dict->SetBoolKey("PLUGIN_VM_ENABLED",
                    plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile));
+  dict->SetBoolKey("FILES_SWA",
+                   base::FeatureList::IsEnabled(chromeos::features::kFilesSWA));
   dict->SetBoolKey("FILES_TRASH_ENABLED", base::FeatureList::IsEnabled(
                                               chromeos::features::kFilesTrash));
   dict->SetBoolKey("ZIP_MOUNT", base::FeatureList::IsEnabled(

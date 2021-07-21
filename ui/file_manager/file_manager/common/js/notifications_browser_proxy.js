@@ -38,6 +38,11 @@ export class NotificationsBrowserProxy {
    * @param {function(boolean)} callback
    */
   update(notificationId, options, callback) {}
+
+  /**
+   * @param {boolean} enabled
+   */
+  setSystemNotificationEnabled(enabled) {}
 }
 
 /**
@@ -54,13 +59,13 @@ const NotificationEventTypes = {
 Object.freeze(NotificationEventTypes);
 
 class SystemNotificationEvent {
-  constructor(eventType, generateSystemNotifications) {
+  constructor(eventType, systemNotificationEnabled) {
     this.eventType = eventType;
-    this.generateSystemNotifications = generateSystemNotifications;
+    this.systemNotificationEnabled = systemNotificationEnabled;
   }
 
   addListener(callback) {
-    if (this.generateSystemNotifications) {
+    if (this.systemNotificationEnabled) {
       switch (this.eventType) {
         case NotificationEventTypes.CLICKED:
           chrome.notifications.onClicked.addListener(callback);
@@ -80,49 +85,54 @@ class SystemNotificationEvent {
  * @implements {NotificationsBrowserProxy}
  */
 export class NotificationsBrowserProxyImpl {
-  constructor(generateSystemNotifications) {
-    this.generateSystemNotifications = generateSystemNotifications;
+  constructor(systemNotificationEnabled) {
+    this.systemNotificationEnabled = systemNotificationEnabled;
     this.onClicked =
-        new SystemNotificationEvent('onClicked', generateSystemNotifications);
+        new SystemNotificationEvent('onClicked', systemNotificationEnabled);
     this.onButtonClicked = new SystemNotificationEvent(
-        'onButtonClicked', generateSystemNotifications);
+        'onButtonClicked', systemNotificationEnabled);
     this.onClosed =
-        new SystemNotificationEvent('onClosed', generateSystemNotifications);
+        new SystemNotificationEvent('onClosed', systemNotificationEnabled);
   }
 
   /** @override */
   clear(notificationId, callback) {
-    if (this.generateSystemNotifications) {
+    if (this.systemNotificationEnabled) {
       chrome.notifications.clear(notificationId, callback);
     }
   }
 
   /** @override */
   create(notificationId, options, callback) {
-    if (this.generateSystemNotifications) {
+    if (this.systemNotificationEnabled) {
       chrome.notifications.create(notificationId, options, callback);
     }
   }
 
   /** @override */
   getAll(callback) {
-    if (this.generateSystemNotifications) {
+    if (this.systemNotificationEnabled) {
       chrome.notifications.getAll(callback);
     }
   }
 
   /** @override */
   getPermissionLevel(callback) {
-    if (this.generateSystemNotifications) {
+    if (this.systemNotificationEnabled) {
       chrome.notifications.getPermissionLevel(callback);
     }
   }
 
   /** @override */
   update(notificationId, options, callback) {
-    if (this.generateSystemNotifications) {
+    if (this.systemNotificationEnabled) {
       chrome.notifications.update(notificationId, options, callback);
     }
+  }
+
+  /** @override */
+  setSystemNotificationEnabled(enabled) {
+    this.systemNotificationEnabled = enabled;
   }
 }
 

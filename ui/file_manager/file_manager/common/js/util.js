@@ -1485,6 +1485,14 @@ util.isRecentsFilterEnabled = () => {
 };
 
 /**
+ * Returns true if Files SWA feature flag is enabled.
+ * @return {boolean}
+ */
+util.isSwaEnabled = () => {
+  return loadTimeData.getBoolean('FILES_SWA');
+};
+
+/**
  * Returns true when FilesZipMount feature is enabled.
  * TODO(crbug.com/912236) Remove once transition to new ZIP system is finished.
  * @return {boolean}
