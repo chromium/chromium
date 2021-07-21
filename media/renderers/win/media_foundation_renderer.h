@@ -94,7 +94,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   HRESULT SetDCompModeInternal(bool enabled);
   HRESULT GetDCompSurfaceInternal(HANDLE* surface_handle);
   HRESULT SetSourceOnMediaEngine();
-  HRESULT SetOutputParamsInternal(const gfx::Rect& output_rect);
+  HRESULT UpdateVideoStream(const gfx::Rect& rect);
 
   // Renderer methods are running in the same sequence.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -118,6 +118,9 @@ class MEDIA_EXPORT MediaFoundationRenderer
 
   // This is the same as "natural_size" in Chromium.
   gfx::Size native_video_size_;
+
+  // The actual output Rect for video.
+  gfx::Rect output_rect_;
 
   // Keep the last volume value being set.
   float volume_ = 1.0;
