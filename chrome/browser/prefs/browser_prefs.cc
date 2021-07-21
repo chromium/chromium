@@ -644,6 +644,12 @@ const char kUserAgentClientHintsEnabled[] =
 const char kExtensionCheckupOnStartup[] = "extensions.checkup_on_startup";
 #endif
 
+#if !defined(OS_ANDROID)
+// Deprecated 07/2021
+const char kCloudPrintDeprecationWarningsSuppressed[] =
+    "cloud_print.deprecation_warnings_suppressed";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -829,6 +835,11 @@ void RegisterProfilePrefsForMigration(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   registry->RegisterBooleanPref(kExtensionCheckupOnStartup, false);
+#endif
+
+#if !defined(OS_ANDROID)
+  registry->RegisterBooleanPref(kCloudPrintDeprecationWarningsSuppressed,
+                                false);
 #endif
 }
 
@@ -1625,6 +1636,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 2021/07.
   guest_os::GuestOsMimeTypesService::MigrateVerboseMimeTypePrefs(profile_prefs);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !defined(OS_ANDROID)
+  // Added 2021/07
+  profile_prefs->ClearPref(kCloudPrintDeprecationWarningsSuppressed);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
