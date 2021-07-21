@@ -65,7 +65,7 @@ void AccuracyWebContentsObserver::OnAccuracyStatusObtained(
   if (result == AccuracyTipStatus::kNone)
     return;
 
-  // We are not on this site anymore.
+  // We are not on this site any more, so the result is invalid.
   if (url != web_contents()->GetLastCommittedURL())
     return;
 

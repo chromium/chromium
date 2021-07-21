@@ -10,7 +10,13 @@
 namespace accuracy_tips {
 
 // Additional parameters for safe_browsing::kAccuracyTipsFeature.
+
+// URL that always triggers an AccuracyTip for testing purposes.
 extern const base::FeatureParam<std::string> kSampleUrl;
+
+// Disables the UI but still queries SB and records metrics. Used for
+// dark-launch and to create a control group.
+extern const base::FeatureParam<bool> kDisableUi;
 
 }  // namespace accuracy_tips
 

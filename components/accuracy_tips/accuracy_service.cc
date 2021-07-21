@@ -16,7 +16,6 @@
 #include "components/accuracy_tips/accuracy_tip_status.h"
 #include "components/accuracy_tips/accuracy_tip_ui.h"
 #include "components/accuracy_tips/features.h"
-#include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "url/gurl.h"
 
 namespace accuracy_tips {
@@ -63,6 +62,8 @@ void AccuracyService::CheckAccuracyStatus(const GURL& url,
     return;
   }
 
+  // TODO(crbug.com/1210891): Implement rate limiting and opt-out.
+
   io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -72,7 +73,12 @@ void AccuracyService::CheckAccuracyStatus(const GURL& url,
 
 void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  // TODO(crbug.com/1210891): Implement rate limiting.
+  if (kDisableUi.Get()) {
+    OnAccuracyTipClosed(base::TimeTicks(),
+                        AccuracyTipUI::Interaction::kDisabledByExperiment);
+    return;
+  }
+
   ui_->ShowAccuracyTip(
       web_contents, AccuracyTipStatus::kShowAccuracyTip,
       base::BindOnce(&AccuracyService::OnAccuracyTipClosed,
@@ -85,8 +91,10 @@ void AccuracyService::OnAccuracyTipClosed(
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   base::UmaHistogramEnumeration("Privacy.AccuracyTip.AccuracyTipInteraction",
                                 interaction);
-  base::UmaHistogramMediumTimes("Privacy.AccuracyTip.AccuracyTipTimeOpen",
-                                base::TimeTicks::Now() - time_opened);
+  if (!time_opened.is_null()) {
+    base::UmaHistogramMediumTimes("Privacy.AccuracyTip.AccuracyTipTimeOpen",
+                                  base::TimeTicks::Now() - time_opened);
+  }
 }
 
 void AccuracyService::SetSampleUrlForTesting(const GURL& url) {

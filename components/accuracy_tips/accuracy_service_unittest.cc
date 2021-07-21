@@ -141,4 +141,12 @@ TEST_F(AccuracyServiceTest, ShowUI) {
   service()->MaybeShowAccuracyTip(nullptr);
 }
 
+TEST_F(AccuracyServiceTest, ShowUIWithUiDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      safe_browsing::kAccuracyTipsFeature, {{kDisableUi.name, "true"}});
+  EXPECT_CALL(*ui(), ShowAccuracyTip(_, _, _)).Times(0);
+  service()->MaybeShowAccuracyTip(nullptr);
+}
+
 }  // namespace accuracy_tips

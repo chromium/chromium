@@ -36,8 +36,10 @@ class AccuracyTipUI {
     kIgnorePressed = 3,
     // Learn more button pressed.
     kLearnMorePressed = 4,
+    // Logged when the UI was not actually shown.
+    kDisabledByExperiment = 5,
 
-    kMaxValue = kLearnMorePressed,
+    kMaxValue = kDisabledByExperiment,
   };
 
   // Shows AccuracyTip UI using the specified information if it is not already

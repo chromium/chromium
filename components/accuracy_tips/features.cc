@@ -13,4 +13,7 @@ namespace accuracy_tips {
 const base::FeatureParam<std::string> kSampleUrl{
     &safe_browsing::kAccuracyTipsFeature, "sampleUrl", ""};
 
+const base::FeatureParam<bool> kDisableUi{&safe_browsing::kAccuracyTipsFeature,
+                                          "disableUI", false};
+
 }  // namespace accuracy_tips
