@@ -395,18 +395,17 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Statements ----------------------------------------------------------------
 
-  // Executes the given SQL string, returning true on success. This is
-  // normally used for simple, 1-off statements that don't take any bound
-  // parameters and don't return any data (e.g. CREATE TABLE).
+  // Executes a SQL statement. Returns true for success, and false for failure.
   //
-  // This will DCHECK if the |sql| contains errors.
+  // `sql` should be a single SQL statement. Production code should not execute
+  // multiple SQL statements at once, to facilitate crash debugging.
   //
-  // Do not use ignore_result() to ignore all errors.  Use
-  // ExecuteAndReturnErrorCode() and ignore only specific errors.
+  // TODO(crbug.com/1230443): Migrate testing code that executes multiple SQL
+  // statements to a separate method.
+  //
+  // `sql` cannot have parameters. Statements with parameters can be handled by
+  // sql::Statement. See GetCachedStatement() and GetUniqueStatement().
   bool Execute(const char* sql) WARN_UNUSED_RESULT;
-
-  // Like Execute(), but returns the error code given by SQLite.
-  int ExecuteAndReturnErrorCode(const char* sql) WARN_UNUSED_RESULT;
 
   // Returns a statement for the given SQL using the statement cache. It can
   // take a nontrivial amount of work to parse and compile a statement, so
@@ -694,6 +693,12 @@ class COMPONENT_EXPORT(SQL) Database {
   // Unfortunately, transactions are not generally restartable, so
   // this did not work out.
   int OnSqliteError(int err, Statement* stmt, const char* sql) const;
+
+  // Like Execute(), but returns the error code given by SQLite.
+  //
+  // This is only exposed to the Database implementation. Code that uses
+  // sql::Database should not be concerned with SQLite error codes.
+  int ExecuteAndReturnErrorCode(const char* sql) WARN_UNUSED_RESULT;
 
   // Like |Execute()|, but retries if the database is locked.
   bool ExecuteWithTimeout(const char* sql,

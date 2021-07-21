@@ -1518,8 +1518,7 @@ bool Database::OpenInternal(const std::string& file_name,
   //
   // TODO(crbug.com/1120969): Remove support for non-exclusive mode.
   if (!options_.exclusive_locking) {
-    err = ExecuteAndReturnErrorCode("PRAGMA locking_mode=NORMAL");
-    if (err != SQLITE_OK)
+    if (!Execute("PRAGMA locking_mode=NORMAL"))
       return false;
   }
 
@@ -1762,11 +1761,9 @@ std::string Database::GetDiagnosticInfo(int extended_error,
   // The following queries must be executed after CollectErrorInfo() above, so
   // if they result in their own errors, they don't interfere with
   // CollectErrorInfo().
-  const bool has_valid_header =
-      (ExecuteAndReturnErrorCode("PRAGMA auto_vacuum") == SQLITE_OK);
+  const bool has_valid_header = Execute("PRAGMA auto_vacuum");
   const bool select_sqlite_master_result =
-      (ExecuteAndReturnErrorCode("SELECT COUNT(*) FROM sqlite_master") ==
-       SQLITE_OK);
+      Execute("SELECT COUNT(*) FROM sqlite_master");
 
   // Restore the original error callback.
   error_callback_ = std::move(original_callback);

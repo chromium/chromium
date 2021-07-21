@@ -181,17 +181,13 @@ TEST_P(SQLDatabaseTest, Execute) {
   EXPECT_EQ(SQLITE_OK, db_->GetErrorCode());
 
   // Invalid statement should fail.
-  ASSERT_EQ(SQLITE_ERROR,
-            db_->ExecuteAndReturnErrorCode("CREATE TAB foo (a, b"));
+  {
+    sql::test::ScopedErrorExpecter error_expecter;
+    error_expecter.ExpectError(SQLITE_ERROR);
+    EXPECT_FALSE(db_->Execute("CREATE TAB foo (a, b"));
+    EXPECT_TRUE(error_expecter.SawExpectedErrors());
+  }
   EXPECT_EQ(SQLITE_ERROR, db_->GetErrorCode());
-}
-
-TEST_P(SQLDatabaseTest, ExecuteWithErrorCode) {
-  ASSERT_EQ(SQLITE_OK,
-            db_->ExecuteAndReturnErrorCode("CREATE TABLE foo (a, b)"));
-  ASSERT_EQ(SQLITE_ERROR, db_->ExecuteAndReturnErrorCode("CREATE TABLE TABLE"));
-  ASSERT_EQ(SQLITE_ERROR, db_->ExecuteAndReturnErrorCode(
-                              "INSERT INTO foo(a, b) VALUES (1, 2, 3, 4)"));
 }
 
 TEST_P(SQLDatabaseTest, CachedStatement) {
@@ -894,7 +890,6 @@ TEST_P(SQLDatabaseTest, RazeAndCloseDiagnostics) {
   db_->Preload();
   ASSERT_TRUE(db_->DoesTableExist("foo"));
   ASSERT_TRUE(db_->IsSQLValid(kSimpleSql));
-  ASSERT_EQ(SQLITE_OK, db_->ExecuteAndReturnErrorCode(kSimpleSql));
   ASSERT_TRUE(db_->Execute(kSimpleSql));
   ASSERT_TRUE(db_->is_open());
   {
@@ -916,7 +911,6 @@ TEST_P(SQLDatabaseTest, RazeAndCloseDiagnostics) {
   db_->Preload();
   ASSERT_FALSE(db_->DoesTableExist("foo"));
   ASSERT_FALSE(db_->IsSQLValid(kSimpleSql));
-  ASSERT_EQ(SQLITE_ERROR, db_->ExecuteAndReturnErrorCode(kSimpleSql));
   ASSERT_FALSE(db_->Execute(kSimpleSql));
   ASSERT_FALSE(db_->is_open());
   {

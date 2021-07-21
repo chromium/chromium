@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
@@ -31,13 +32,6 @@ namespace {
 using sql::test::ExecuteWithResult;
 using sql::test::ExecuteWithResults;
 
-void CaptureErrorCallback(int* error_pointer, std::string* sql_text,
-                          int error, sql::Statement* stmt) {
-  *error_pointer = error;
-  const char* text = stmt ? stmt->GetSQLStatement() : nullptr;
-  *sql_text = text ? text : "no statement available";
-}
-
 }  // namespace
 
 class SQLiteFeaturesTest : public testing::Test {
@@ -48,17 +42,6 @@ class SQLiteFeaturesTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_path_ = temp_dir_.GetPath().AppendASCII("sqlite_features_test.sqlite");
     ASSERT_TRUE(db_.Open(db_path_));
-
-    // The error delegate will set |error_| and |sql_text_| when any sqlite
-    // statement operation returns an error code.
-    db_.set_error_callback(
-        base::BindRepeating(&CaptureErrorCallback, &error_, &sql_text_));
-  }
-
-  void TearDown() override {
-    // If any error happened the original sql statement can be found in
-    // |sql_text_|.
-    EXPECT_EQ(SQLITE_OK, error_) << sql_text_;
   }
 
   bool Reopen() {
@@ -80,20 +63,24 @@ class SQLiteFeaturesTest : public testing::Test {
 // Do not include fts1 support, it is not useful, and nobody is
 // looking at it.
 TEST_F(SQLiteFeaturesTest, NoFTS1) {
-  ASSERT_EQ(SQLITE_ERROR, db_.ExecuteAndReturnErrorCode(
-                              "CREATE VIRTUAL TABLE foo USING fts1(x)"));
+  sql::test::ScopedErrorExpecter expecter;
+  expecter.ExpectError(SQLITE_ERROR);
+  EXPECT_FALSE(db_.Execute("CREATE VIRTUAL TABLE foo USING fts1(x)"));
+  EXPECT_TRUE(expecter.SawExpectedErrors());
 }
 
 // Do not include fts2 support, it is not useful, and nobody is
 // looking at it.
 TEST_F(SQLiteFeaturesTest, NoFTS2) {
-  ASSERT_EQ(SQLITE_ERROR, db_.ExecuteAndReturnErrorCode(
-                              "CREATE VIRTUAL TABLE foo USING fts2(x)"));
+  sql::test::ScopedErrorExpecter expecter;
+  expecter.ExpectError(SQLITE_ERROR);
+  EXPECT_FALSE(db_.Execute("CREATE VIRTUAL TABLE foo USING fts2(x)"));
+  EXPECT_TRUE(expecter.SawExpectedErrors());
 }
 
 // fts3 is exposed in WebSQL.
 TEST_F(SQLiteFeaturesTest, FTS3) {
-  ASSERT_TRUE(db_.Execute("CREATE VIRTUAL TABLE foo USING fts3(x)"));
+  EXPECT_TRUE(db_.Execute("CREATE VIRTUAL TABLE foo USING fts3(x)"));
 }
 
 // Originally history used fts2, which Chromium patched to treat "foo*" as a
@@ -142,9 +129,12 @@ TEST_F(SQLiteFeaturesTest, ForeignKeySupport) {
 
   // Inserting without a matching parent should fail with constraint violation.
   EXPECT_EQ("", ExecuteWithResult(&db_, kSelectParentsSql));
-  const int insert_error =
-      db_.ExecuteAndReturnErrorCode("INSERT INTO children VALUES (10, 1)");
-  EXPECT_EQ(SQLITE_CONSTRAINT | SQLITE_CONSTRAINT_FOREIGNKEY, insert_error);
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_CONSTRAINT | SQLITE_CONSTRAINT_FOREIGNKEY);
+    EXPECT_FALSE(db_.Execute("INSERT INTO children VALUES (10, 1)"));
+    EXPECT_TRUE(expecter.SawExpectedErrors());
+  }
   EXPECT_EQ("", ExecuteWithResult(&db_, kSelectChildrenSql));
 
   // Inserting with a matching parent should work.
