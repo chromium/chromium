@@ -10,11 +10,25 @@ declare_args() {
 }
 
 declare_args() {
-  # Set to true to enable dcheck in Release builds.
-  dcheck_always_on = dcheck_is_configurable
+  # Set to false to disable DCHECK in Release builds. This is enabled by default
+  # for non-official builds on the below platforms.
+  # Note: If you are here to revert because DCHECKs are failing on a specific OS
+  # please prefer excluding OSes rather than reverting . I.e. if Mac builds
+  # break badly but other platforms are reasonably stable, add "&& !is_mac"
+  # instead of reverting.
+  # TODO(crbug.com/1225701): Once this sticks, try to expand this to all
+  # platforms (incl. Fuchsia + any OS added here during rollout) and reduce it
+  # down to !is_official_builds || dcheck_is_configurable.
+  dcheck_always_on = (!is_official_build && !is_fuchsia && !is_chromeos) ||
+                     dcheck_is_configurable
 }
 
 declare_args() {
   # Set to false to disable EXPENSIVE_DCHECK()s.
+  # TODO(crbug.com/1225701): Hash out whether expensive DCHECKs need to be
+  # disabled for developers by default. There's concern that disabling these
+  # globally by default effectively reduces them to zero coverage. This is
+  # in place so that you can disable expensive DCHECKs while retaining some
+  # DCHECK coverage, which is especially important in user-facing builds.
   enable_expensive_dchecks = is_debug || dcheck_always_on
 }
