@@ -44,6 +44,7 @@
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -62,6 +63,12 @@ namespace {
 // Maximum number of lines that a title label occupies.
 constexpr int kHoverCardTitleMaxLines = 2;
 
+constexpr int kHorizontalMargin = 18;
+constexpr int kVerticalMargin = 10;
+constexpr int kFootnoteVerticalMargin = 8;
+constexpr gfx::Insets kTitleMargins(kVerticalMargin, kHorizontalMargin);
+constexpr gfx::Insets kAlertMargins(kFootnoteVerticalMargin, kHorizontalMargin);
+
 bool CustomShadowsSupported() {
 #if defined(OS_WIN)
   return ui::win::IsAeroGlassEnabled();
@@ -70,7 +77,7 @@ bool CustomShadowsSupported() {
 #endif
 }
 
-std::unique_ptr<views::View> CreateAlertView(const TabAlertState& state) {
+std::unique_ptr<views::Label> CreateAlertView(const TabAlertState& state) {
   auto alert_state_label = std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_PRIMARY);
@@ -505,16 +512,12 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   layout->SetCollapseMargins(true);
 
-  constexpr int kHorizontalMargin = 18;
-  constexpr int kVerticalMargin = 10;
-
-  gfx::Insets title_margins(kVerticalMargin, kHorizontalMargin);
-
   // In some browser types (e.g. ChromeOS terminal app) we hide the domain
   // label. In those cases, we need to adjust the bottom margin of the title
   // element because it is no longer above another text element and needs a
   // bottom margin.
   const bool show_domain = tab->controller()->ShowDomainInHoverCards();
+  gfx::Insets title_margins = kTitleMargins;
   domain_label_->SetVisible(show_domain);
   if (show_domain) {
     title_margins.set_bottom(0);
@@ -534,10 +537,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   views::BubbleDialogDelegateView::CreateBubble(this);
   set_adjust_if_offscreen(true);
 
-  constexpr int kFootnoteVerticalMargin = 8;
-  GetBubbleFrameView()->SetFootnoteMargins(
-      gfx::Insets(kFootnoteVerticalMargin, kHorizontalMargin,
-                  kFootnoteVerticalMargin, kHorizontalMargin));
+  GetBubbleFrameView()->SetFootnoteMargins(kAlertMargins);
   GetBubbleFrameView()->SetPreferredArrowAdjustment(
       views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
   GetBubbleFrameView()->set_hit_test_transparent(true);
@@ -615,18 +615,42 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   }
   title_label_->SetText(title, is_filename);
 
+  const bool alternate_layout = UseAlternateHoverCardFormat();
   if (alert_state_ != old_alert_state) {
-    GetBubbleFrameView()->SetFootnoteView(
-        alert_state_.has_value() ? CreateAlertView(*alert_state_) : nullptr);
-  }
+    std::unique_ptr<views::Label> alert_label =
+        alert_state_.has_value() ? CreateAlertView(*alert_state_) : nullptr;
+    if (alternate_layout) {
+      if (alert_label) {
+        // Simulate the same look as the footnote view.
+        // TODO(dfried): should we add this as a variation of
+        // FootnoteContainerView? Currently it's only used here.
+        alert_label->SetBackground(
+            views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
+                ui::NativeTheme::kColorId_BubbleFooterBackground)));
+        alert_label->SetBorder(views::CreatePaddedBorder(
+            views::CreateSolidSidedBorder(
+                0, 0, 1, 0,
+                GetNativeTheme()->GetSystemColor(
+                    ui::NativeTheme::kColorId_FootnoteContainerBorder)),
+            kAlertMargins));
+      }
+      GetBubbleFrameView()->SetHeaderView(std::move(alert_label));
+    } else {
+      GetBubbleFrameView()->SetFootnoteView(std::move(alert_label));
+    }
 
-  // We only clip the corners of the fade image when there isn't a footer.
-  if (thumbnail_view_ && !UseAlternateHoverCardFormat()) {
-    thumbnail_view_->SetRoundedCorners(
-        GetBubbleFrameView()->GetFootnoteView()
-            ? ThumbnailView::RoundedCorners::kNone
-            : ThumbnailView::RoundedCorners::kBottomCorners,
-        corner_radius_.value_or(0));
+    if (thumbnail_view_) {
+      // We only clip the corners of the fade image when there isn't a header
+      // or footer.
+      ThumbnailView::RoundedCorners corners =
+          ThumbnailView::RoundedCorners::kNone;
+      if (!alert_state_.has_value()) {
+        corners = alternate_layout
+                      ? ThumbnailView::RoundedCorners::kTopCorners
+                      : ThumbnailView::RoundedCorners::kBottomCorners;
+      }
+      thumbnail_view_->SetRoundedCorners(corners, corner_radius_.value_or(0));
+    }
   }
 
   domain_label_->SetText(domain, absl::nullopt);
