@@ -62,6 +62,19 @@ SANDBOX_EXPORT intptr_t SIGSYSPtraceFailure(const arch_seccomp_data& args,
 // sched_setparam(), sched_setscheduler()
 SANDBOX_EXPORT intptr_t SIGSYSSchedHandler(const arch_seccomp_data& args,
                                            void* aux);
+// If the fstatat() syscall is functionally equivalent to an fstat() syscall,
+// then rewrite the syscall to the equivalent fstat() syscall which can be
+// adequately sandboxed.
+// If the fstatat() is not functionally equivalent to an fstat() syscall, we
+// fail with -fs_denied_errno.
+// If the syscall is not an fstatat() at all, crash in the same way as
+// CrashSIGSYS_Handler.
+// This is necessary because glibc and musl have started rewriting fstat(fd,
+// stat_buf) as fstatat(fd, "", stat_buf, AT_EMPTY_PATH). We rewrite the latter
+// back to the former, which is actually sandboxable.
+SANDBOX_EXPORT intptr_t
+SIGSYSFstatatHandler(const struct arch_seccomp_data& args,
+                     void* fs_denied_errno);
 
 // Variants of the above functions for use with bpf_dsl.
 SANDBOX_EXPORT bpf_dsl::ResultExpr CrashSIGSYS();
@@ -72,6 +85,7 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr CrashSIGSYSKill();
 SANDBOX_EXPORT bpf_dsl::ResultExpr CrashSIGSYSFutex();
 SANDBOX_EXPORT bpf_dsl::ResultExpr CrashSIGSYSPtrace();
 SANDBOX_EXPORT bpf_dsl::ResultExpr RewriteSchedSIGSYS();
+SANDBOX_EXPORT bpf_dsl::ResultExpr RewriteFstatatSIGSYS(int fs_denied_errno);
 
 // Allocates a crash key so that Seccomp information can be recorded.
 void AllocateCrashKeys();
