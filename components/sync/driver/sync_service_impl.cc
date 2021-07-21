@@ -383,14 +383,14 @@ void SyncServiceImpl::CredentialsChanged() {
   // then shut down. This happens when the user signs out on the web, i.e. we're
   // in the "Sync paused" state.
   if (!IsEngineAllowedToRun()) {
-    // If the engine currently exists, then ShutdownImpl() will notify observers
+    // If the engine currently exists, then ResetEngine() will notify observers
     // anyway. Otherwise, notify them here. (One relevant case is when entering
     // the PAUSED state before the engine was created, e.g. during deferred
     // startup.)
     if (!engine_) {
       NotifyObservers();
     }
-    ShutdownImpl(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
+    ResetEngine(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
     return;
   }
 
@@ -514,7 +514,7 @@ void SyncServiceImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   NotifyShutdown();
-  ShutdownImpl(ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA);
+  ResetEngine(ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA);
 
   DCHECK(!data_type_manager_);
   data_type_controllers_.clear();
@@ -534,7 +534,7 @@ void SyncServiceImpl::Shutdown() {
   auth_manager_.reset();
 }
 
-void SyncServiceImpl::ShutdownImpl(ShutdownReason reason) {
+void SyncServiceImpl::ResetEngine(ShutdownReason reason) {
   if (!engine_) {
     // If the engine hasn't started or is already shut down when a DISABLE_SYNC
     // happens, the Directory needs to be cleaned up here.
@@ -544,9 +544,13 @@ void SyncServiceImpl::ShutdownImpl(ShutdownReason reason) {
     return;
   }
 
-  if (reason == ShutdownReason::STOP_SYNC_AND_KEEP_DATA ||
-      reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
-    RemoveClientFromServer();
+  switch (reason) {
+    case ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
+    case ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
+      RemoveClientFromServer();
+      break;
+    case ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
+      break;
   }
 
   // First, we spin down the engine to stop change processing as soon as
@@ -589,13 +593,31 @@ void SyncServiceImpl::ShutdownImpl(ShutdownReason reason) {
   }
 
   NotifyObservers();
+
+  // Now that everything is shut down, try to start up again.
+  switch (reason) {
+    case ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
+    case ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
+      // If Sync is being stopped (either temporarily or permanently),
+      // immediately try to start up again. Note that this might start only the
+      // transport mode, or it might not start anything at all if something is
+      // preventing Sync startup (e.g. the user signed out).
+      // Note that TryStart() is guaranteed to *not* have a synchronous effect
+      // (it posts a task).
+      startup_controller_->TryStart(/*force_immediate=*/true);
+      break;
+    case ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
+      // The only exception is browser shutdown: In this case, there's clearly
+      // no point in starting up again.
+      break;
+  }
 }
 
 void SyncServiceImpl::StopAndClearImpl() {
   ClearUnrecoverableError();
-  ShutdownImpl(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
-  // Note: ShutdownImpl(DISABLE_SYNC) does *not* clear prefs which are
-  // directly user-controlled such as the set of selected types here, so
+  ResetEngine(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
+  // Note: ResetEngine(DISABLE_SYNC_AND_CLEAR_DATA) does *not* clear prefs which
+  // are directly user-controlled such as the set of selected types here, so
   // that if the user ever chooses to enable Sync again, they start off
   // with their previous settings by default. We do however require going
   // through first-time setup again and set SyncRequested to false.
@@ -655,18 +677,16 @@ SyncService::TransportState SyncServiceImpl::GetTransportState() const {
 
   if (!IsEngineAllowedToRun()) {
     // We generally shouldn't have an engine while in a disabled state, but it
-    // can happen if this method gets called during ShutdownImpl().
+    // can happen if this method gets called during ResetEngine().
     return auth_manager_->IsSyncPaused() ? TransportState::PAUSED
                                          : TransportState::DISABLED;
   }
 
   if (!engine_ || !engine_->IsInitialized()) {
     switch (startup_controller_->GetState()) {
-        // TODO(crbug.com/935523): If the engine is allowed to start, then we
-        // should generally have kicked off the startup process already, so
-        // NOT_STARTED should be impossible. But we can temporarily be in this
-        // state between shutting down and starting up again (e.g. during the
-        // NotifyObservers() call in ShutdownImpl()).
+        // Note: If the engine is allowed to run, then we should generally have
+        // kicked off the startup process already, so NOT_STARTED should be
+        // impossible here. But it can happen during browser shutdown.
       case StartupController::State::NOT_STARTED:
       case StartupController::State::STARTING_DEFERRED:
         DCHECK(!engine_);
@@ -738,7 +758,10 @@ void SyncServiceImpl::OnUnrecoverableErrorImpl(
   LOG(ERROR) << "Unrecoverable error detected at " << from_here.ToString()
              << " -- SyncServiceImpl unusable: " << message;
 
-  ShutdownImpl(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
+  // Shut the Sync machinery down. The existence of
+  // |unrecoverable_error_reason_| and thus |DISABLE_REASON_UNRECOVERABLE_ERROR|
+  // will prevent Sync from starting up again (even in transport-only mode).
+  ResetEngine(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
 }
 
 void SyncServiceImpl::DataTypePreconditionChanged(ModelType type) {
@@ -880,9 +903,8 @@ void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
         UMA_HISTOGRAM_ENUMERATION("Sync.StopSource", BIRTHDAY_ERROR,
                                   STOP_SOURCE_LIMIT);
       }
-      // Note: Here we explicitly want StopAndClear (rather than
-      // StopAndClearImpl), so that IsSyncRequested gets set to false, and Sync
-      // won't start again on the next browser startup.
+      // Note: StopAndClear sets IsSyncRequested to false, which ensures that
+      // Sync-the-feature remains off.
       StopAndClear();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
       // On every platform except ChromeOS, revoke the Sync consent in
@@ -905,11 +927,10 @@ void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
     case STOP_SYNC_FOR_DISABLED_ACCOUNT:
       // Sync disabled by domain admin. Stop syncing until next restart.
       sync_disabled_by_admin_ = true;
-      ShutdownImpl(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
+      ResetEngine(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
       break;
     case RESET_LOCAL_SYNC_DATA:
-      ShutdownImpl(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
-      startup_controller_->TryStart(/*force_immediate=*/true);
+      ResetEngine(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
       break;
     case UNKNOWN_ACTION:
       NOTREACHED();
@@ -1308,7 +1329,7 @@ std::unique_ptr<base::Value> SyncServiceImpl::GetTypeStatusMapForDebugging() {
   auto result = std::make_unique<base::ListValue>();
 
   if (!engine_ || !engine_->IsInitialized()) {
-    return std::move(result);
+    return result;
   }
 
   const SyncStatus& detailed_status = engine_->GetDetailedStatus();
@@ -1364,7 +1385,7 @@ std::unique_ptr<base::Value> SyncServiceImpl::GetTypeStatusMapForDebugging() {
 
     result->Append(std::move(type_status));
   }
-  return std::move(result);
+  return result;
 }
 
 void SyncServiceImpl::GetEntityCountsForDebugging(
@@ -1451,10 +1472,7 @@ void SyncServiceImpl::OnSyncRequestedPrefChange(bool is_sync_requested) {
     // This will notify the observers.
     // TODO(crbug.com/856179): Evaluate whether we can get away without a
     // full restart in this case (i.e. just reconfigure).
-    ShutdownImpl(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
-
-    // Try to start up again (in transport-only mode).
-    startup_controller_->TryStart(/*force_immediate=*/true);
+    ResetEngine(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   }
 }
 
@@ -1663,10 +1681,10 @@ void SyncServiceImpl::AddTrustedVaultRecoveryMethodFromWeb(
 void SyncServiceImpl::StopAndClear() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // TODO(crbug.com/1229171): StopAndClearImpl() also sets SyncRequested to
+  // false, so it should be trivial to merge these two methods.
   SetSyncRequestedAndIgnoreNotification(false);
   StopAndClearImpl();
-  // Try to start up again (in transport-only mode).
-  startup_controller_->TryStart(/*force_immediate=*/true);
 }
 
 void SyncServiceImpl::SetSyncAllowedByPlatform(bool allowed) {
@@ -1677,12 +1695,10 @@ void SyncServiceImpl::SetSyncAllowedByPlatform(bool allowed) {
 
   sync_allowed_by_platform_ = allowed;
   if (!sync_allowed_by_platform_) {
-    ShutdownImpl(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
-    // Try to start up again (in transport-only mode).
     // TODO(crbug.com/856179): Evaluate whether we can get away without a full
     // restart (i.e. just reconfigure). See also similar comment in
     // OnSyncRequestedPrefChange().
-    startup_controller_->TryStart(/*force_immediate=*/true);
+    ResetEngine(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   }
 }
 
@@ -1742,7 +1758,9 @@ void SyncServiceImpl::OverrideNetworkForTest(
   // callback in the ctor instead of adding it retroactively.
   bool restart = false;
   if (engine_) {
-    ShutdownImpl(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
+    // Use BROWSER_SHUTDOWN_AND_KEEP_DATA to prevent the engine from immediately
+    // restarting.
+    ResetEngine(ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA);
     restart = true;
   }
   DCHECK(!engine_);

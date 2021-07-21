@@ -295,9 +295,11 @@ class SyncServiceImpl : public SyncService,
 
   void UpdateDataTypesForInvalidations();
 
-  // Shuts down the engine sync components.
-  // |reason| dictates if sync metadata should be kept or not.
-  void ShutdownImpl(ShutdownReason reason);
+  // Shuts down and destroys the engine. |reason| dictates if sync metadata
+  // should be kept or not.
+  // If the engine is still allowed to run (per IsEngineAllowedToRun()), it will
+  // soon start up again (possibly in transport-only mode).
+  void ResetEngine(ShutdownReason reason);
 
   // Helper for OnUnrecoverableError.
   void OnUnrecoverableErrorImpl(const base::Location& from_here,
