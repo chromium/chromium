@@ -91,8 +91,7 @@ class TestQuietNotificationPermissionUiSelector
 class ContentSettingImageModelTest : public BrowserWithTestWindowTest {
  public:
   ContentSettingImageModelTest()
-      : request_(u"test1",
-                 permissions::RequestType::kNotifications,
+      : request_(permissions::RequestType::kNotifications,
                  permissions::PermissionRequestGestureType::GESTURE) {}
   ~ContentSettingImageModelTest() override {}
 

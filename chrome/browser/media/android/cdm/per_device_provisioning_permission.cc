@@ -77,39 +77,27 @@ class PerDeviceProvisioningPermissionRequest
   PerDeviceProvisioningPermissionRequest(
       const url::Origin& origin,
       base::OnceCallback<void(bool)> callback)
-      : origin_(origin), callback_(std::move(callback)) {}
+      : PermissionRequest(
+            origin.GetURL(),
+            permissions::RequestType::kProtectedMediaIdentifier,
+            /*has_gesture=*/false,
+            base::BindOnce(
+                &PerDeviceProvisioningPermissionRequest::PermissionDecided,
+                base::Unretained(this)),
+            base::BindOnce(
+                &PerDeviceProvisioningPermissionRequest::DeleteRequest,
+                base::Unretained(this))),
+        origin_(origin),
+        callback_(std::move(callback)) {}
 
-  permissions::RequestType GetRequestType() const final {
-    return permissions::RequestType::kProtectedMediaIdentifier;
-  }
-
-  std::u16string GetMessageText() const final {
-    // Note that the string is specific to per-device provisioning.
-    return l10n_util::GetStringFUTF16(
-        IDS_PROTECTED_MEDIA_IDENTIFIER_PER_DEVICE_PROVISIONING_INFOBAR_TEXT,
-        url_formatter::FormatUrlForSecurityDisplay(
-            GetOrigin(), url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-  }
-
-  GURL GetOrigin() const final { return origin_.GetURL(); }
-
-  void PermissionGranted(bool is_one_time) final {
+  void PermissionDecided(ContentSetting result, bool is_one_time) {
     DCHECK(!is_one_time);
-    UpdateLastResponse(true);
-    std::move(callback_).Run(true);
+    const bool granted = result == ContentSetting::CONTENT_SETTING_ALLOW;
+    UpdateLastResponse(granted);
+    std::move(callback_).Run(granted);
   }
 
-  void PermissionDenied() final {
-    UpdateLastResponse(false);
-    std::move(callback_).Run(false);
-  }
-
-  void Cancelled() final {
-    UpdateLastResponse(false);
-    std::move(callback_).Run(false);
-  }
-
-  void RequestFinished() final {
+  void DeleteRequest() {
     // The |callback_| may not have run if the prompt was ignored, e.g. the tab
     // was closed while the prompt was displayed. Don't save this result as the
     // last response since it wasn't really a user action.
@@ -120,7 +108,7 @@ class PerDeviceProvisioningPermissionRequest
   }
 
  private:
-  // Can only be self-destructed. See RequestFinished().
+  // Can only be self-destructed. See DeleteRequest().
   ~PerDeviceProvisioningPermissionRequest() final = default;
 
   void UpdateLastResponse(bool allowed) {
@@ -167,7 +155,7 @@ void RequestPerDeviceProvisioningPermission(
   }
 
   // The created PerDeviceProvisioningPermissionRequest deletes itself once
-  // complete. See PerDeviceProvisioningPermissionRequest::RequestFinished().
+  // complete. See PerDeviceProvisioningPermissionRequest::DeleteRequest().
   permission_request_manager->AddRequest(
       render_frame_host,
       new PerDeviceProvisioningPermissionRequest(

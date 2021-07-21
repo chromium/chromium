@@ -4,6 +4,7 @@
 
 #include "chrome/browser/download/download_permission_request.h"
 
+#include "build/build_config.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/request_type.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -18,55 +19,37 @@
 
 DownloadPermissionRequest::DownloadPermissionRequest(
     base::WeakPtr<DownloadRequestLimiter::TabDownloadState> host,
-    const url::Origin& request_origin)
-    : host_(host), request_origin_(request_origin) {}
+    const url::Origin& requesting_origin)
+    : PermissionRequest(
+          requesting_origin.GetURL(),
+          permissions::RequestType::kMultipleDownloads,
+          /*has_gesture=*/false,
+          base::BindOnce(&DownloadPermissionRequest::PermissionDecided,
+                         base::Unretained(this)),
+          base::BindOnce(&DownloadPermissionRequest::DeleteRequest,
+                         base::Unretained(this))),
+      host_(host),
+      requesting_origin_(requesting_origin) {}
 
 DownloadPermissionRequest::~DownloadPermissionRequest() {}
 
-permissions::RequestType DownloadPermissionRequest::GetRequestType() const {
-  return permissions::RequestType::kMultipleDownloads;
-}
-
-#if defined(OS_ANDROID)
-std::u16string DownloadPermissionRequest::GetMessageText() const {
-  return l10n_util::GetStringFUTF16(
-      IDS_MULTI_DOWNLOAD_WARNING, url_formatter::FormatOriginForSecurityDisplay(
-                                      request_origin_,
-                                      /*scheme_display = */ url_formatter::
-                                          SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-}
-#else
-std::u16string DownloadPermissionRequest::GetMessageTextFragment() const {
-  return l10n_util::GetStringUTF16(IDS_MULTI_DOWNLOAD_PERMISSION_FRAGMENT);
-}
-#endif
-
-GURL DownloadPermissionRequest::GetOrigin() const {
-  return request_origin_.GetURL();
-}
-
-void DownloadPermissionRequest::PermissionGranted(bool is_one_time) {
+void DownloadPermissionRequest::PermissionDecided(ContentSetting result,
+                                                  bool is_one_time) {
   DCHECK(!is_one_time);
-  if (host_) {
-    // This may invalidate |host_|.
-    host_->Accept(request_origin_);
+  if (!host_)
+    return;
+
+  // This may invalidate |host_|.
+  if (result == ContentSetting::CONTENT_SETTING_ALLOW) {
+    host_->Accept(requesting_origin_);
+  } else if (result == ContentSetting::CONTENT_SETTING_BLOCK) {
+    host_->Cancel(requesting_origin_);
+  } else {
+    DCHECK_EQ(CONTENT_SETTING_DEFAULT, result);
+    host_->CancelOnce(requesting_origin_);
   }
 }
 
-void DownloadPermissionRequest::PermissionDenied() {
-  if (host_) {
-    // This may invalidate |host_|.
-    host_->Cancel(request_origin_);
-  }
-}
-
-void DownloadPermissionRequest::Cancelled() {
-  if (host_) {
-    // This may invalidate |host_|.
-    host_->CancelOnce(request_origin_);
-  }
-}
-
-void DownloadPermissionRequest::RequestFinished() {
+void DownloadPermissionRequest::DeleteRequest() {
   delete this;
 }

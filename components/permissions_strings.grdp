@@ -63,8 +63,11 @@
     <message name="IDS_MEDIA_CAPTURE_AUDIO_AND_VIDEO_INFOBAR_TEXT" desc="Text requesting permission for a site to access the computer's microphone and camera.">
       <ph name="HOST">$1<ex>html5rocks.com</ex></ph> wants to use your camera and microphone
     </message>
+      <message name="IDS_MULTI_DOWNLOAD_WARNING" desc="Warning invoked if multiple downloads are attempted without user interaction.">
+      <ph name="ORIGIN">$1<ex>https://backgroundfetch.com</ex></ph> wants to download multiple files
+    </message>
   </if>
-  <if expr="is_android or chromeos">
+  <if expr="is_android or chromeos or lacros or is_win">
     <message name="IDS_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's protected media identifier.">
       Know your unique device identifier
     </message>
@@ -99,9 +102,6 @@
   <message name="IDS_CLIPBOARD_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to read data from the system clipboard. Follows a prompt: 'This site would like to:'">
     See text and images copied to the clipboard
   </message>
-  <message name="IDS_NFC_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to use NFC. Follows a prompt: 'This site would like to:'">
-    Use NFC devices
-  </message>
   <message name="IDS_VR_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to use VR. Follows a prompt: 'This site would like to:">
     Use virtual reality devices and data
   </message>
@@ -124,6 +124,12 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   </message>
   <message name="IDS_IDLE_DETECTION_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to monitor when the user is interacting with their device. Follows a prompt: 'This site would like to:'">
     Know when you're actively using this device
+  </message>
+  <message name="IDS_MULTI_DOWNLOAD_PERMISSION_FRAGMENT" desc="Permission request shown if multiple downloads are attempted without user interaction and there are multiple permissions requested. Follows a prompt: 'This site would like to:'">
+    Download multiple files
+  </message>
+  <message name="IDS_SECURITY_KEY_ATTESTATION_PERMISSION_FRAGMENT" desc="A permission prompt shown to a user when a website wants to see information that identifies the user's Security Key, such as make and model number. The text '[website URL] wants to:' precedes this string. The 'make' of a device is the brand name of the manufacturer, e.g. Yubikey is a make of Security Key. The 'model' of a device is the specific product, e.g. Yubikey Neo is a model of Security Key.">
+    See the make and model of your Security Key
   </message>
   <message name="IDS_PERMISSION_ALLOW" desc="Label on button to allow a permissions request.">
     Allow

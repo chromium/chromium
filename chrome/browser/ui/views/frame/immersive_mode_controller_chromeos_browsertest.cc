@@ -28,6 +28,7 @@
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
+#include "components/permissions/request_type.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/base_event_utils.h"
@@ -341,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   // Add a permission bubble using the test api.
   test_api->AddSimpleRequest(
       browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      ContentSettingsType::GEOLOCATION);
+      permissions::RequestType::kGeolocation);
 
   // The permission prompt is shown asynchronously. Without immersive mode
   // enabled the anchor should exist.

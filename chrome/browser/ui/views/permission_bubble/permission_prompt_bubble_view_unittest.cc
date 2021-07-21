@@ -19,27 +19,14 @@ namespace {
 
 class TestDelegate : public permissions::PermissionPrompt::Delegate {
  public:
-  explicit TestDelegate(const std::vector<ContentSettingsType> content_types) {
+  explicit TestDelegate(
+      const GURL& origin,
+      const std::vector<permissions::RequestType> request_types) {
     std::transform(
-        content_types.begin(), content_types.end(),
-        std::back_inserter(requests_), [&](auto& content_type) {
+        request_types.begin(), request_types.end(),
+        std::back_inserter(requests_), [&](auto& request_type) {
           return std::make_unique<permissions::MockPermissionRequest>(
-              base::UTF8ToUTF16(
-                  permissions::PermissionUtil::GetPermissionString(
-                      content_type)),
-              content_type);
-        });
-    std::transform(requests_.begin(), requests_.end(),
-                   std::back_inserter(raw_requests_),
-                   [](auto& req) { return req.get(); });
-  }
-
-  TestDelegate(const GURL& origin, const std::vector<std::u16string> names) {
-    std::transform(
-        names.begin(), names.end(), std::back_inserter(requests_),
-        [&](auto& name) {
-          return std::make_unique<permissions::MockPermissionRequest>(
-              name, permissions::RequestType::kGeolocation, origin);
+              origin, request_type);
         });
     std::transform(requests_.begin(), requests_.end(),
                    std::back_inserter(raw_requests_),
@@ -51,7 +38,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   }
 
   GURL GetRequestingOrigin() const override {
-    return raw_requests_.front()->GetOrigin();
+    return raw_requests_.front()->requesting_origin();
   }
 
   GURL GetEmbeddingOrigin() const override {
@@ -70,50 +57,51 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   std::vector<permissions::PermissionRequest*> raw_requests_;
 };
 
-TEST_F(PermissionPromptBubbleViewTest, AccessibleTitleMentionsPermissions) {
-  TestDelegate delegate(GURL("https://test.origin"), {u"foo", u"bar"});
-  auto bubble = std::make_unique<PermissionPromptBubbleView>(
-      nullptr, &delegate, base::TimeTicks::Now(),
+std::unique_ptr<PermissionPromptBubbleView> CreateBubble(
+    TestDelegate* delegate) {
+  return std::make_unique<PermissionPromptBubbleView>(
+      nullptr, delegate, base::TimeTicks::Now(),
       PermissionPromptStyle::kBubbleOnly);
-
-  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "foo",
-                      base::UTF16ToUTF8(bubble->GetAccessibleWindowTitle()));
-  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "bar",
-                      base::UTF16ToUTF8(bubble->GetAccessibleWindowTitle()));
 }
 
-TEST_F(PermissionPromptBubbleViewTest, AccessibleTitleMentionsOrigin) {
-  TestDelegate delegate(GURL("https://test.origin"), {u"foo", u"bar"});
-  auto bubble = std::make_unique<PermissionPromptBubbleView>(
-      nullptr, &delegate, base::TimeTicks::Now(),
-      PermissionPromptStyle::kBubbleOnly);
+}  // namespace
 
-  // Note that the scheme is not usually included.
+TEST_F(PermissionPromptBubbleViewTest,
+       AccessibleTitleMentionsOriginAndPermissions) {
+  TestDelegate delegate(GURL("https://test.origin"),
+                        {permissions::RequestType::kMicStream,
+                         permissions::RequestType::kCameraStream});
+  auto bubble = CreateBubble(&delegate);
+
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "microphone",
+                      base::UTF16ToUTF8(bubble->GetAccessibleWindowTitle()));
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "camera",
+                      base::UTF16ToUTF8(bubble->GetAccessibleWindowTitle()));
+  // The scheme is not included.
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, "test.origin",
                       base::UTF16ToUTF8(bubble->GetAccessibleWindowTitle()));
 }
 
 TEST_F(PermissionPromptBubbleViewTest,
        AccessibleTitleDoesNotMentionTooManyPermissions) {
-  TestDelegate delegate(GURL("https://test.origin"),
-                        {u"foo", u"bar", u"baz", u"quxx"});
-  auto bubble = std::make_unique<PermissionPromptBubbleView>(
-      nullptr, &delegate, base::TimeTicks::Now(),
-      PermissionPromptStyle::kBubbleOnly);
+  TestDelegate delegate(GURL(), {permissions::RequestType::kGeolocation,
+                                 permissions::RequestType::kNotifications,
+                                 permissions::RequestType::kMicStream,
+                                 permissions::RequestType::kCameraStream});
+  auto bubble = CreateBubble(&delegate);
 
   const auto title = base::UTF16ToUTF8(bubble->GetAccessibleWindowTitle());
-  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "foo", title);
-  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "bar", title);
-  EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "baz", title);
-  EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "quxx", title);
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "location", title);
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "notifications", title);
+  EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "microphone", title);
+  EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "camera", title);
 }
 
 TEST_F(PermissionPromptBubbleViewTest,
        AccessibleTitleFileSchemeMentionsThisFile) {
-  TestDelegate delegate(GURL("file:///tmp/index.html"), {u"foo", u"bar"});
-  auto bubble = std::make_unique<PermissionPromptBubbleView>(
-      nullptr, &delegate, base::TimeTicks::Now(),
-      PermissionPromptStyle::kBubbleOnly);
+  TestDelegate delegate(GURL("file:///tmp/index.html"),
+                        {permissions::RequestType::kMicStream});
+  auto bubble = CreateBubble(&delegate);
 
   EXPECT_PRED_FORMAT2(::testing::IsSubstring,
                       base::UTF16ToUTF8(l10n_util::GetStringUTF16(
@@ -123,17 +111,13 @@ TEST_F(PermissionPromptBubbleViewTest,
 
 TEST_F(PermissionPromptBubbleViewTest,
        AccessibleTitleIncludesOnlyVisiblePermissions) {
-  TestDelegate delegate({ContentSettingsType::MEDIASTREAM_MIC,
-                         ContentSettingsType::MEDIASTREAM_CAMERA,
-                         ContentSettingsType::CAMERA_PAN_TILT_ZOOM});
-  auto bubble = std::make_unique<PermissionPromptBubbleView>(
-      nullptr, &delegate, base::TimeTicks::Now(),
-      PermissionPromptStyle::kBubbleOnly);
+  TestDelegate delegate(GURL(), {permissions::RequestType::kMicStream,
+                                 permissions::RequestType::kCameraStream,
+                                 permissions::RequestType::kCameraPanTiltZoom});
+  auto bubble = CreateBubble(&delegate);
 
   const auto title = base::UTF16ToUTF8(bubble->GetAccessibleWindowTitle());
-  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "AudioCapture", title);
-  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "CameraPanTiltZoom", title);
-  EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "VideoCapture", title);
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "microphone", title);
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "move your camera", title);
+  EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "use your camera", title);
 }
-
-}  // namespace

@@ -74,8 +74,8 @@ namespace {
 // have one of the lowest acceptance, hence they have the lowest priority and
 // will be shown the last.
 bool IsLowPriorityRequest(PermissionRequest* request) {
-  return request->GetRequestType() == RequestType::kNotifications ||
-         request->GetRequestType() == RequestType::kGeolocation;
+  return request->request_type() == RequestType::kNotifications ||
+         request->request_type() == RequestType::kGeolocation;
 }
 
 // In case of multiple permission requests that use chip UI, a newly added
@@ -111,18 +111,17 @@ bool IsArOrCameraRequest(RequestType type) {
 }
 
 bool ShouldGroupRequests(PermissionRequest* a, PermissionRequest* b) {
-  if (a->GetOrigin() != b->GetOrigin())
+  if (a->requesting_origin() != b->requesting_origin())
     return false;
 
   // Group if both requests are media requests.
-  if (IsMediaRequest(a->GetRequestType()) &&
-      IsMediaRequest(b->GetRequestType())) {
+  if (IsMediaRequest(a->request_type()) && IsMediaRequest(b->request_type())) {
     return true;
   }
 
   // Group if the requests are an AR and a Camera Access request.
-  if (IsArOrCameraRequest(a->GetRequestType()) &&
-      IsArOrCameraRequest(b->GetRequestType())) {
+  if (IsArOrCameraRequest(a->request_type()) &&
+      IsArOrCameraRequest(b->request_type())) {
     return true;
   }
 
@@ -196,12 +195,12 @@ void PermissionRequestManager::AddRequest(
       PermissionUtil::GetLastCommittedOriginAsURL(web_contents());
   bool is_main_frame =
       url::Origin::Create(main_frame_origin)
-          .IsSameOriginWith(url::Origin::Create(request->GetOrigin()));
+          .IsSameOriginWith(url::Origin::Create(request->requesting_origin()));
 
   absl::optional<url::Origin> auto_approval_origin =
       PermissionsClient::Get()->GetAutoApprovalOrigin();
   if (auto_approval_origin) {
-    if (url::Origin::Create(request->GetOrigin()) ==
+    if (url::Origin::Create(request->requesting_origin()) ==
         auto_approval_origin.value()) {
       request->PermissionGranted(/*is_one_time=*/false);
     }
@@ -443,10 +442,10 @@ const std::vector<PermissionRequest*>& PermissionRequestManager::Requests() {
 
 GURL PermissionRequestManager::GetRequestingOrigin() const {
   CHECK(!requests_.empty());
-  GURL origin = requests_.front()->GetOrigin();
+  GURL origin = requests_.front()->requesting_origin();
   if (DCHECK_IS_ON()) {
     for (auto* request : requests_)
-      DCHECK_EQ(origin, request->GetOrigin());
+      DCHECK_EQ(origin, request->requesting_origin());
   }
   return origin;
 }
@@ -598,7 +597,7 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
          selector_index < permission_ui_selectors_.size(); ++selector_index) {
       if (permission_ui_selectors_[selector_index]
               ->IsPermissionRequestSupported(
-                  requests_.front()->GetRequestType())) {
+                  requests_.front()->request_type())) {
         permission_ui_selectors_[selector_index]->SelectUiToUse(
             requests_.front(),
             base::BindOnce(
@@ -734,20 +733,20 @@ void PermissionRequestManager::FinalizeCurrentRequests(
       continue;
 
     PermissionsClient::Get()->OnPromptResolved(
-        browser_context, request->GetRequestType(), permission_action,
-        request->GetOrigin(), quiet_ui_reason);
+        browser_context, request->request_type(), permission_action,
+        request->requesting_origin(), quiet_ui_reason);
 
     PermissionEmbargoStatus embargo_status =
         PermissionEmbargoStatus::NOT_EMBARGOED;
     if (permission_action == PermissionAction::DISMISSED) {
       if (autoblocker->RecordDismissAndEmbargo(
-              request->GetOrigin(), request->GetContentSettingsType(),
+              request->requesting_origin(), request->GetContentSettingsType(),
               ShouldCurrentRequestUseQuietUI())) {
         embargo_status = PermissionEmbargoStatus::REPEATED_DISMISSALS;
       }
     } else if (permission_action == PermissionAction::IGNORED) {
       if (autoblocker->RecordIgnoreAndEmbargo(
-              request->GetOrigin(), request->GetContentSettingsType(),
+              request->requesting_origin(), request->GetContentSettingsType(),
               ShouldCurrentRequestUseQuietUI())) {
         embargo_status = PermissionEmbargoStatus::REPEATED_IGNORES;
       }

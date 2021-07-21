@@ -101,12 +101,11 @@ static bool IsValidMediaRequestGroup(
   if (requests.size() < 2)
     return false;
   return (
-      (requests[0]->GetRequestType() == permissions::RequestType::kMicStream &&
-       requests[1]->GetRequestType() ==
+      (requests[0]->request_type() == permissions::RequestType::kMicStream &&
+       requests[1]->request_type() ==
            permissions::RequestType::kCameraStream) ||
-      (requests[0]->GetRequestType() ==
-           permissions::RequestType::kCameraStream &&
-       requests[1]->GetRequestType() == permissions::RequestType::kMicStream));
+      (requests[0]->request_type() == permissions::RequestType::kCameraStream &&
+       requests[1]->request_type() == permissions::RequestType::kMicStream));
 }
 
 static bool IsValidARCameraAccessRequestGroup(
@@ -114,12 +113,11 @@ static bool IsValidARCameraAccessRequestGroup(
   if (requests.size() < 2)
     return false;
   return (
-      (requests[0]->GetRequestType() == permissions::RequestType::kArSession &&
-       requests[1]->GetRequestType() ==
+      (requests[0]->request_type() == permissions::RequestType::kArSession &&
+       requests[1]->request_type() ==
            permissions::RequestType::kCameraStream) ||
-      (requests[0]->GetRequestType() ==
-           permissions::RequestType::kCameraStream &&
-       requests[1]->GetRequestType() == permissions::RequestType::kArSession));
+      (requests[0]->request_type() == permissions::RequestType::kCameraStream &&
+       requests[1]->request_type() == permissions::RequestType::kArSession));
 }
 
 // Grouped permission requests can only be Mic+Camera, Camera+Mic,
@@ -135,7 +133,7 @@ int PermissionPromptAndroid::GetIconId() const {
   const std::vector<permissions::PermissionRequest*>& requests =
       delegate_->Requests();
   if (requests.size() == 1)
-    return permissions::GetIconId(requests[0]->GetRequestType());
+    return permissions::GetIconId(requests[0]->request_type());
   CheckValidRequestGroup(requests);
   return IDR_ANDROID_INFOBAR_MEDIA_STREAM_CAMERA;
 }
@@ -144,7 +142,7 @@ std::u16string PermissionPromptAndroid::GetMessageText() const {
   const std::vector<permissions::PermissionRequest*>& requests =
       delegate_->Requests();
   if (requests.size() == 1) {
-    if (requests[0]->GetRequestType() ==
+    if (requests[0]->request_type() ==
         permissions::RequestType::kStorageAccess) {
       return l10n_util::GetStringFUTF16(
           IDS_STORAGE_ACCESS_INFOBAR_TEXT,
@@ -155,7 +153,7 @@ std::u16string PermissionPromptAndroid::GetMessageText() const {
               delegate_->GetEmbeddingOrigin(),
               url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
     } else {
-      return requests[0]->GetMessageText();
+      return requests[0]->GetDialogMessageText();
     }
   }
   CheckValidRequestGroup(requests);

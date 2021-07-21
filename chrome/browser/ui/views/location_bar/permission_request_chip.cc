@@ -40,13 +40,13 @@ const gfx::VectorIcon& GetPermissionIconId(
   DCHECK(delegate);
   auto requests = delegate->Requests();
   if (requests.size() == 1)
-    return permissions::GetIconId(requests[0]->GetRequestType());
+    return permissions::GetIconId(requests[0]->request_type());
 
   // When we have two requests, it must be microphone & camera. Then we need to
   // use the icon from the camera request.
-  return IsCameraPermission(requests[0]->GetRequestType())
-             ? permissions::GetIconId(requests[0]->GetRequestType())
-             : permissions::GetIconId(requests[1]->GetRequestType());
+  return IsCameraPermission(requests[0]->request_type())
+             ? permissions::GetIconId(requests[0]->request_type())
+             : permissions::GetIconId(requests[1]->request_type());
 }
 
 std::u16string GetPermissionMessage(
@@ -72,9 +72,9 @@ void VerifyCameraAndMicRequest(
   // update delegate to contain only one request at a time.
   DCHECK(requests.size() == 1u || requests.size() == 2u);
   if (requests.size() == 2) {
-    DCHECK(IsCameraOrMicPermission(requests[0]->GetRequestType()));
-    DCHECK(IsCameraOrMicPermission(requests[1]->GetRequestType()));
-    DCHECK_NE(requests[0]->GetRequestType(), requests[1]->GetRequestType());
+    DCHECK(IsCameraOrMicPermission(requests[0]->request_type()));
+    DCHECK(IsCameraOrMicPermission(requests[1]->request_type()));
+    DCHECK_NE(requests[0]->request_type(), requests[1]->request_type());
   }
 }
 
@@ -98,7 +98,7 @@ bool ShouldBubbleStartOpen(permissions::PermissionPrompt::Delegate* delegate) {
     auto requests = delegate->Requests();
     const bool is_geolocation_or_notifications =
         std::any_of(requests.begin(), requests.end(), [](auto* request) {
-          auto request_type = request->GetRequestType();
+          auto request_type = request->request_type();
           return request_type == permissions::RequestType::kNotifications ||
                  request_type == permissions::RequestType::kGeolocation;
         });

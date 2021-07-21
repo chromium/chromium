@@ -96,8 +96,7 @@ TEST_F(PrefNotificationPermissionUiSelectorTest, FeatureAndPrefCombinations) {
                               QuitMessageLoop(&callback_loop)));
 
     permissions::MockPermissionRequest mock_request(
-        std::u16string(), permissions::RequestType::kNotifications,
-        GURL("http://example.com"));
+        GURL("http://example.com"), permissions::RequestType::kNotifications);
     pref_selector()->SelectUiToUse(&mock_request, mock_callback.Get());
     callback_loop.Run();
     testing::Mock::VerifyAndClearExpectations(&mock_callback);

@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 enum class ContentSettingsType;
 
@@ -67,6 +68,9 @@ typedef const gfx::VectorIcon& IconId;
 
 RequestType ContentSettingsTypeToRequestType(
     ContentSettingsType content_settings_type);
+
+absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
+    RequestType request_type);
 
 // Returns the icon to display.
 IconId GetIconId(RequestType type);

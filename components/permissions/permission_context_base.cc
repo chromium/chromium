@@ -22,11 +22,11 @@
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_id.h"
-#include "components/permissions/permission_request_impl.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/request_type.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -226,12 +226,12 @@ PermissionContextBase::CreatePermissionRequest(
     ContentSettingsType content_settings_type,
     bool has_gesture,
     content::WebContents* web_contents,
-    PermissionRequestImpl::PermissionDecidedCallback
-        permission_decided_callback,
+    PermissionRequest::PermissionDecidedCallback permission_decided_callback,
     base::OnceClosure delete_callback) const {
-  return std::make_unique<PermissionRequestImpl>(
-      request_origin, content_settings_type, has_gesture,
-      std::move(permission_decided_callback), std::move(delete_callback));
+  return std::make_unique<PermissionRequest>(
+      request_origin, ContentSettingsTypeToRequestType(content_settings_type),
+      has_gesture, std::move(permission_decided_callback),
+      std::move(delete_callback));
 }
 
 PermissionResult PermissionContextBase::GetPermissionStatus(

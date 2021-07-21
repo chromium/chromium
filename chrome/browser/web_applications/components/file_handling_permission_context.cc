@@ -31,11 +31,12 @@ FileHandlingPermissionContext::CreatePermissionRequest(
     ContentSettingsType content_settings_type,
     bool has_gesture,
     content::WebContents* web_contents,
-    permissions::PermissionRequestImpl::PermissionDecidedCallback
+    permissions::PermissionRequest::PermissionDecidedCallback
         permission_decided_callback,
     base::OnceClosure delete_callback) const {
+  DCHECK_EQ(ContentSettingsType::FILE_HANDLING, content_settings_type);
   return std::make_unique<permissions::FileHandlingPermissionRequestImpl>(
-      request_origin, content_settings_type, has_gesture, web_contents,
+      request_origin, has_gesture, web_contents,
       std::move(permission_decided_callback), std::move(delete_callback));
 }
 

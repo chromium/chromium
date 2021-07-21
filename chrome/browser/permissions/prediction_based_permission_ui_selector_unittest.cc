@@ -53,7 +53,7 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
     base::RunLoop run_loop;
 
     permissions::MockPermissionRequest request(
-        u"request", permissions::RequestType::kNotifications,
+        permissions::RequestType::kNotifications,
         permissions::PermissionRequestGestureType::GESTURE);
 
     selector->SelectUiToUse(

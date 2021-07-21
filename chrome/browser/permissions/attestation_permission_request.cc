@@ -17,32 +17,31 @@
 //
 // PermissionRequestManager has a reference to this object and so this object
 // must outlive it. Since attestation requests are never canceled,
-// PermissionRequestManager guarentees that |RequestFinished| will always,
-// eventually, be called. This object uses that fact to delete itself during
-// |RequestFinished| and thus owns itself.
+// PermissionRequestManager guarantees that `PermissionRequest::RequestFinished`
+// will always, eventually, be called. This object uses that fact to delete
+// itself during `DeleteRequest` and thus owns itself.
 class AttestationPermissionRequest : public permissions::PermissionRequest {
  public:
-  AttestationPermissionRequest(const url::Origin& origin,
+  AttestationPermissionRequest(const url::Origin& requesting_origin,
                                base::OnceCallback<void(bool)> callback)
-      : origin_(origin), callback_(std::move(callback)) {}
+      : PermissionRequest(
+            requesting_origin.GetURL(),
+            permissions::RequestType::kSecurityAttestation,
+            /*has_gesture=*/false,
+            base::BindOnce(&AttestationPermissionRequest::PermissionDecided,
+                           base::Unretained(this)),
+            base::BindOnce(&AttestationPermissionRequest::DeleteRequest,
+                           base::Unretained(this))),
+        callback_(std::move(callback)) {}
 
-  permissions::RequestType GetRequestType() const override {
-    return permissions::RequestType::kSecurityAttestation;
-  }
+  ~AttestationPermissionRequest() override = default;
 
-  std::u16string GetMessageTextFragment() const override {
-    return l10n_util::GetStringUTF16(
-        IDS_SECURITY_KEY_ATTESTATION_PERMISSION_FRAGMENT);
-  }
-  GURL GetOrigin() const override { return origin_.GetURL(); }
-  void PermissionGranted(bool is_one_time) override {
+  void PermissionDecided(ContentSetting result, bool is_one_time) {
     DCHECK(!is_one_time);
-    std::move(callback_).Run(true);
+    std::move(callback_).Run(result == CONTENT_SETTING_ALLOW);
   }
-  void PermissionDenied() override { std::move(callback_).Run(false); }
-  void Cancelled() override { std::move(callback_).Run(false); }
 
-  void RequestFinished() override {
+  void DeleteRequest() {
     // callback_ may not have run if the prompt was ignored. (I.e. the tab was
     // closed while the prompt was displayed.)
     if (callback_)
@@ -51,9 +50,6 @@ class AttestationPermissionRequest : public permissions::PermissionRequest {
   }
 
  private:
-  ~AttestationPermissionRequest() override = default;
-
-  const url::Origin origin_;
   base::OnceCallback<void(bool)> callback_;
 
   DISALLOW_COPY_AND_ASSIGN(AttestationPermissionRequest);

@@ -94,7 +94,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   callback_ = std::move(callback);
   last_request_grant_likelihood_ = absl::nullopt;
 
-  if (!IsAllowedToUseAssistedPrompts(request->GetRequestType())) {
+  if (!IsAllowedToUseAssistedPrompts(request->request_type())) {
     VLOG(1) << "[CPSS] Configuration either does not allows CPSS requests or "
                "the request was held back";
     std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
@@ -158,7 +158,7 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
     permissions::PermissionRequest* request) {
   permissions::PredictionRequestFeatures features;
   features.gesture = request->GetGestureType();
-  features.type = request->GetRequestType();
+  features.type = request->request_type();
 
   base::Time cutoff = base::Time::Now() - kPermissionActionCutoffAge;
 

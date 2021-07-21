@@ -7,8 +7,10 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_enums.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,48 +29,71 @@ enum class RequestType;
 // requests, or depending on the situation, not shown at all.
 class PermissionRequest {
  public:
-  PermissionRequest();
-  virtual ~PermissionRequest() {}
+  // If `result` is CONTENT_SETTING_ALLOW, the permission was granted by the
+  // user. If it's CONTENT_SETTING_BLOCK, the permission was blocked by the
+  // user. If it's CONTENT_SETTING_DEFAULT, the permission was ignored or
+  // dismissed without an explicit decision. No other ContentSetting value will
+  // be passed into this callback.
+  // If `is_one_time` is true, the decision will last until all tabs of
+  // `requesting_origin_` are closed or navigated away from.
+  using PermissionDecidedCallback =
+      base::OnceCallback<void(ContentSetting /*result*/, bool /*is_one_time*/)>;
 
-  // The type of this request.
-  virtual RequestType GetRequestType() const = 0;
+  // `permission_decided_callback` is called when the permission request is
+  // resolved by the user (see comment on PermissionDecidedCallback above).
+  // `delete_callback` is called when the permission request is no longer needed
+  // by the permission system. Therefore, it is safe to delete `this` inside
+  // `delete_callback`. It will always be called eventually by the permission
+  // system.
+  // `delete_callback` may be called before `permission_decided_callback`, for
+  // example if the tab is closed without user interaction. In this case, the
+  // javascript promise from the requesting origin will not be resolved.
+  PermissionRequest(const GURL& requesting_origin,
+                    RequestType request_type,
+                    bool has_gesture,
+                    PermissionDecidedCallback permission_decided_callback,
+                    base::OnceClosure delete_callback);
+
+  PermissionRequest(const PermissionRequest&) = delete;
+  PermissionRequest& operator=(const PermissionRequest&) = delete;
+
+  virtual ~PermissionRequest();
+
+  GURL requesting_origin() const { return requesting_origin_; }
+  RequestType request_type() const { return request_type_; }
 
   // Whether |this| and |other_request| are duplicates and therefore don't both
   // need to be shown in the UI.
   virtual bool IsDuplicateOf(PermissionRequest* other_request) const;
 
 #if defined(OS_ANDROID)
-  // Returns the full prompt text for this permission. This is currently only
-  // used on Android.
-  virtual std::u16string GetMessageText() const = 0;
+  // Returns prompt text appropriate for displaying in an Android dialog.
+  virtual std::u16string GetDialogMessageText() const;
 #endif
 
 #if !defined(OS_ANDROID)
-  // Returns the short text for the chip button related to this permission.
-  virtual absl::optional<std::u16string> GetChipText() const;
+  // Returns prompt text appropriate for displaying on the chip button in the
+  // location bar.
+  absl::optional<std::u16string> GetChipText() const;
 
-  // Returns the shortened prompt text for this permission. The permission
-  // bubble may coalesce different requests, and if it does, this text will
-  // be displayed next to an image and indicate the user grants the permission.
-  virtual std::u16string GetMessageTextFragment() const = 0;
+  // Returns prompt text appropriate for displaying under the dialog title
+  // "[domain] wants to:".
+  virtual std::u16string GetMessageTextFragment() const;
 #endif
 
-  // Get the origin on whose behalf this permission request is being made.
-  virtual GURL GetOrigin() const = 0;
-
   // Called when the user has granted the requested permission.
-  // If is_one_time is true the permission will last until all tabs of a given
-  // |origin| are closed or navigated away from. The permission will
+  // If |is_one_time| is true the permission will last until all tabs of
+  // |origin| are closed or navigated away from, and then the permission will
   // automatically expire after 1 day.
-  virtual void PermissionGranted(bool is_one_time) = 0;
+  void PermissionGranted(bool is_one_time);
 
   // Called when the user has denied the requested permission.
-  virtual void PermissionDenied() = 0;
+  void PermissionDenied();
 
   // Called when the user has cancelled the permission request. This
   // corresponds to a denial, but is segregated in case the context needs to
   // be able to distinguish between an active refusal or an implicit refusal.
-  virtual void Cancelled() = 0;
+  void Cancelled();
 
   // The UI this request was associated with was answered by the user.
   // It is safe for the request to be deleted at this point -- it will receive
@@ -77,19 +102,33 @@ class PermissionRequest {
   // It is ok to call this method without actually resolving the request via
   // PermissionGranted(), PermissionDenied() or Canceled(). However, it will not
   // resolve the javascript promise from the requesting origin.
-  virtual void RequestFinished() = 0;
+  void RequestFinished();
 
   // Used to record UMA for whether requests are associated with a user gesture.
   // To keep things simple this metric is only recorded for the most popular
   // request types.
-  virtual PermissionRequestGestureType GetGestureType() const;
+  PermissionRequestGestureType GetGestureType() const;
 
   // Used on Android to determine what Android OS permissions are needed for
   // this permission request.
-  virtual ContentSettingsType GetContentSettingsType() const;
+  ContentSettingsType GetContentSettingsType() const;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(PermissionRequest);
+  // The origin on whose behalf this permission request is being made.
+  GURL requesting_origin_;
+
+  // The type of this request.
+  RequestType request_type_;
+
+  // Whether the request was associated with a user gesture.
+  bool has_gesture_;
+
+  // Called once a decision is made about the permission.
+  PermissionDecidedCallback permission_decided_callback_;
+
+  // Called when the request is no longer in use so it can be deleted by the
+  // caller.
+  base::OnceClosure delete_callback_;
 };
 
 }  // namespace permissions

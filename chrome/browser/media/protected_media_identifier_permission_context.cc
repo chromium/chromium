@@ -32,8 +32,9 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/dbus/constants/dbus_switches.h"  // nogncheck
 #include "chromeos/settings/cros_settings_names.h"
-#include "components/permissions/permission_request_impl.h"
+#include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/request_type.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/user_prefs/user_prefs.h"
 #endif

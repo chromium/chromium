@@ -30,7 +30,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_context_base.h"
-#include "components/permissions/permission_request_impl.h"
+#include "components/permissions/permission_request.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
@@ -669,16 +669,14 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   // First add a quiet permission request. Ensure that this request is decided
   // by the end of this test.
   permissions::MockPermissionRequest request_quiet(
-      u"quiet", permissions::RequestType::kNotifications,
-      permissions::PermissionRequestGestureType::UNKNOWN);
+      permissions::RequestType::kNotifications);
   GetPermissionRequestManager()->AddRequest(source_frame, &request_quiet);
   base::RunLoop().RunUntilIdle();
 
   // Add a second permission request. This ones should cause the initial
   // request to be cancelled.
   permissions::MockPermissionRequest request_loud(
-      u"loud", permissions::RequestType::kGeolocation,
-      permissions::PermissionRequestGestureType::UNKNOWN);
+      permissions::RequestType::kGeolocation);
   GetPermissionRequestManager()->AddRequest(source_frame, &request_loud);
   base::RunLoop().RunUntilIdle();
 
@@ -699,8 +697,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   permissions::MockPermissionRequest request_quiet(
-      u"quiet", permissions::RequestType::kNotifications,
-      permissions::PermissionRequestGestureType::UNKNOWN);
+      permissions::RequestType::kNotifications);
   GetPermissionRequestManager()->AddRequest(web_contents->GetMainFrame(),
                                             &request_quiet);
 
@@ -726,8 +723,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   permissions::MockPermissionRequest request_quiet(
-      u"quiet", permissions::RequestType::kNotifications,
-      permissions::PermissionRequestGestureType::UNKNOWN);
+      permissions::RequestType::kNotifications);
   GetPermissionRequestManager()->AddRequest(web_contents->GetMainFrame(),
                                             &request_quiet);
 
@@ -787,8 +783,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
     content::WebContentsConsoleObserver console_observer(web_contents);
 
     permissions::MockPermissionRequest request_quiet(
-        u"quiet", permissions::RequestType::kNotifications,
-        permissions::PermissionRequestGestureType::UNKNOWN);
+        permissions::RequestType::kNotifications);
     GetPermissionRequestManager()->AddRequest(web_contents->GetMainFrame(),
                                               &request_quiet);
 
@@ -820,14 +815,12 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
                        LoudPendingRequestsQueued) {
   content::RenderFrameHost* source_frame = GetActiveMainFrame();
   permissions::MockPermissionRequest request1(
-      u"request1", permissions::RequestType::kClipboard,
-      permissions::PermissionRequestGestureType::UNKNOWN);
+      permissions::RequestType::kClipboard);
   GetPermissionRequestManager()->AddRequest(source_frame, &request1);
   base::RunLoop().RunUntilIdle();
 
   permissions::MockPermissionRequest request2(
-      u"request2", permissions::RequestType::kMicStream,
-      permissions::PermissionRequestGestureType::UNKNOWN);
+      permissions::RequestType::kMicStream);
   GetPermissionRequestManager()->AddRequest(source_frame, &request2);
   base::RunLoop().RunUntilIdle();
 
@@ -871,7 +864,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
   EXPECT_EQ(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-  permissions::MockPermissionRequest req;
+  permissions::MockPermissionRequest req(
+      permissions::RequestType::kNotifications);
   GetPermissionRequestManager()->AddRequest(rfh_a.get(), &req);
 
   base::RunLoop().RunUntilIdle();
@@ -902,13 +896,13 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
   // have different urls in the navigations above but use the same (default) url
   // for the MockPermissionRequest here.
   permissions::MockPermissionRequest req_a_1(
-      u"req_a_1", permissions::RequestType::kCameraPanTiltZoom,
+      permissions::RequestType::kCameraPanTiltZoom,
       permissions::PermissionRequestGestureType::GESTURE);
   permissions::MockPermissionRequest req_b_1(
-      u"req_b_1", permissions::RequestType::kCameraStream,
+      permissions::RequestType::kCameraStream,
       permissions::PermissionRequestGestureType::GESTURE);
   permissions::MockPermissionRequest req_b_2(
-      u"req_b_2", permissions::RequestType::kMicStream,
+      permissions::RequestType::kMicStream,
       permissions::PermissionRequestGestureType::GESTURE);
   GetPermissionRequestManager()->AddRequest(rfh_a.get(),
                                             &req_a_1);  // Should be skipped
@@ -1045,7 +1039,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithPrerenderingTest,
   EXPECT_NE(prerender_frame, nullptr);
 
   content::RenderFrameDeletedObserver deleted_observer(prerender_frame);
-  permissions::MockPermissionRequest request;
+  permissions::MockPermissionRequest request(
+      permissions::RequestType::kNotifications);
   bubble_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
   GetPermissionRequestManager()->AddRequest(prerender_frame, &request);
@@ -1072,19 +1067,20 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithPrerenderingTest,
   EXPECT_NE(prerender_frame, nullptr);
 
   content::RenderFrameDeletedObserver deleted_observer(prerender_frame);
-  permissions::MockPermissionRequest request_1(u"text");
-  permissions::MockPermissionRequest request_2(u"text");
+  permissions::MockPermissionRequest request_1(
+      permissions::RequestType::kNotifications);
+  auto request_2 = request_1.CreateDuplicateRequest();
   bubble_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
   GetPermissionRequestManager()->AddRequest(GetActiveMainFrame(), &request_1);
-  GetPermissionRequestManager()->AddRequest(prerender_frame, &request_2);
+  GetPermissionRequestManager()->AddRequest(prerender_frame, request_2.get());
 
   base::RunLoop().RunUntilIdle();
 
   // Permission request from main frame should be granted, similar request from
   // prerender should be denied.
   EXPECT_TRUE(request_1.granted());
-  EXPECT_TRUE(request_2.cancelled());
+  EXPECT_TRUE(request_2->cancelled());
   EXPECT_TRUE(deleted_observer.deleted());
 }
 
@@ -1096,8 +1092,10 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithPrerenderingTest,
   ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
   ASSERT_EQ(GetActiveMainFrame()->GetLastCommittedURL(), initial_url);
 
-  permissions::MockPermissionRequest request_1(u"one");
-  permissions::MockPermissionRequest request_2(u"two");
+  permissions::MockPermissionRequest request_1(
+      permissions::RequestType::kNotifications);
+  permissions::MockPermissionRequest request_2(
+      permissions::RequestType::kGeolocation);
   GetPermissionRequestManager()->AddRequest(GetActiveMainFrame(), &request_1);
   GetPermissionRequestManager()->AddRequest(GetActiveMainFrame(), &request_2);
 

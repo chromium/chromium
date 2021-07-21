@@ -9,6 +9,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -45,7 +46,7 @@ class PermissionPromptAndroidTest : public ChromeRenderViewHostTestHarness {
 TEST_F(PermissionPromptAndroidTest, TabCloseMiniInfoBarClosesCleanly) {
   // Create a notification request. This causes an infobar to appear.
   permissions::MockPermissionRequest request(
-      u"test", ContentSettingsType::NOTIFICATIONS);
+      permissions::RequestType::kNotifications);
   permission_request_manager()->AddRequest(web_contents()->GetMainFrame(),
                                            &request);
 
@@ -68,7 +69,7 @@ TEST_F(PermissionPromptAndroidTest, TabCloseMiniInfoBarClosesCleanly) {
 TEST_F(PermissionPromptAndroidTest, RemoveAllInfoBarsWithOtherObservers) {
   // Create a notification request. This causes an infobar to appear.
   permissions::MockPermissionRequest request(
-      u"test", ContentSettingsType::NOTIFICATIONS);
+      permissions::RequestType::kNotifications);
   permission_request_manager()->AddRequest(web_contents()->GetMainFrame(),
                                            &request);
 

@@ -70,8 +70,6 @@ source_set("permissions") {
     "permission_request.h",
     "permission_request_id.cc",
     "permission_request_id.h",
-    "permission_request_impl.cc",
-    "permission_request_impl.h",
     "permission_request_manager.cc",
     "permission_request_manager.h",
     "permission_result.cc",

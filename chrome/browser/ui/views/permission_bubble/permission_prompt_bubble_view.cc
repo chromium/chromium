@@ -179,7 +179,7 @@ bool PermissionPromptBubbleView::ShouldShowRequest(
     // Hide camera request if camera PTZ request is present as well.
     auto requests = delegate_->Requests();
     return std::find_if(requests.begin(), requests.end(), [](auto* request) {
-             return request->GetRequestType() ==
+             return request->request_type() ==
                     permissions::RequestType::kCameraPanTiltZoom;
            }) == requests.end();
   }
@@ -190,7 +190,7 @@ std::vector<permissions::PermissionRequest*>
 PermissionPromptBubbleView::GetVisibleRequests() const {
   std::vector<permissions::PermissionRequest*> visible_requests;
   for (permissions::PermissionRequest* request : delegate_->Requests()) {
-    if (ShouldShowRequest(request->GetRequestType()))
+    if (ShouldShowRequest(request->request_type()))
       visible_requests.push_back(request);
   }
   return visible_requests;
@@ -210,7 +210,7 @@ void PermissionPromptBubbleView::AddRequestLine(
   constexpr int kPermissionIconSize = 18;
   auto* icon = line_container->AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          permissions::GetIconId(request->GetRequestType()),
+          permissions::GetIconId(request->request_type()),
           ui::NativeTheme::kColorId_DefaultIconColor, kPermissionIconSize)));
   icon->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
 
@@ -334,7 +334,7 @@ bool PermissionPromptBubbleView::GetDisplayNameIsOrigin() const {
 
 absl::optional<std::u16string> PermissionPromptBubbleView::GetExtraText()
     const {
-  switch (delegate_->Requests()[0]->GetRequestType()) {
+  switch (delegate_->Requests()[0]->request_type()) {
     case permissions::RequestType::kStorageAccess:
       return l10n_util::GetStringFUTF16(
           IDS_STORAGE_ACCESS_PERMISSION_EXPLANATION,
@@ -391,7 +391,7 @@ bool PermissionPromptBubbleView::GetShowAllowThisTimeButton() const {
   if (delegate_->Requests().size() > 1)
     return false;
   CHECK_GT(delegate_->Requests().size(), 0u);
-  return delegate_->Requests()[0]->GetRequestType() ==
+  return delegate_->Requests()[0]->request_type() ==
          permissions::RequestType::kGeolocation;
 }
 

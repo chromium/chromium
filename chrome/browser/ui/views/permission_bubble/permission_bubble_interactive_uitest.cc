@@ -18,6 +18,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
+#include "components/permissions/request_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/test/ui_controls.h"
@@ -72,7 +73,7 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
 
     test_api_->AddSimpleRequest(
         browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-        ContentSettingsType::GEOLOCATION);
+        permissions::RequestType::kGeolocation);
 
     EXPECT_TRUE(browser()->window()->IsActive());
 

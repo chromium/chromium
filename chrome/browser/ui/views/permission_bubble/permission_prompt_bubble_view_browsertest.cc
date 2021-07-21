@@ -31,7 +31,7 @@
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
-#include "components/permissions/permission_request_impl.h"
+#include "components/permissions/permission_request.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
@@ -202,16 +202,18 @@ class PermissionPromptBubbleViewBrowserTest
       case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:  // ChromeOS only.
       case ContentSettingsType::PPAPI_BROKER:
       case ContentSettingsType::STORAGE_ACCESS:
-        test_api_->AddSimpleRequest(source_frame, it->type);
+        test_api_->AddSimpleRequest(
+            source_frame,
+            permissions::ContentSettingsTypeToRequestType(it->type));
         break;
       case ContentSettingsType::DEFAULT:
         // Permissions to request for a "multiple" request. Only mic/camera
         // requests are grouped together.
         EXPECT_EQ(kMultipleName, name);
         test_api_->AddSimpleRequest(source_frame,
-                                    ContentSettingsType::MEDIASTREAM_MIC);
+                                    permissions::RequestType::kMicStream);
         test_api_->AddSimpleRequest(source_frame,
-                                    ContentSettingsType::MEDIASTREAM_CAMERA);
+                                    permissions::RequestType::kCameraStream);
         break;
       default:
         ADD_FAILURE() << "Not a permission type, or one that doesn't prompt.";
@@ -437,8 +439,7 @@ IN_PROC_BROWSER_TEST_P(QuietUIPromoBrowserTest, InvokeUi_QuietUIPromo) {
     GURL requesting_origin(origin_spec);
     ui_test_utils::NavigateToURL(browser(), requesting_origin);
     permissions::MockPermissionRequest notification_request(
-        u"request", permissions::RequestType::kNotifications,
-        requesting_origin);
+        requesting_origin, permissions::RequestType::kNotifications);
     test_api_->manager()->AddRequest(GetActiveMainFrame(),
                                      &notification_request);
     base::RunLoop().RunUntilIdle();
@@ -459,7 +460,7 @@ IN_PROC_BROWSER_TEST_P(QuietUIPromoBrowserTest, InvokeUi_QuietUIPromo) {
   GURL notification("http://www.notification1.com/");
   ui_test_utils::NavigateToURL(browser(), notification);
   permissions::MockPermissionRequest notification_request(
-      u"request", permissions::RequestType::kNotifications, notification);
+      notification, permissions::RequestType::kNotifications);
   test_api_->manager()->AddRequest(GetActiveMainFrame(), &notification_request);
   base::RunLoop().RunUntilIdle();
 
@@ -503,7 +504,7 @@ IN_PROC_BROWSER_TEST_P(QuietUIPromoBrowserTest, InvokeUi_QuietUIPromo) {
   GURL notification2("http://www.notification2.com/");
   ui_test_utils::NavigateToURL(browser(), notification2);
   permissions::MockPermissionRequest notification_request2(
-      u"request", permissions::RequestType::kNotifications, notification2);
+      notification2, permissions::RequestType::kNotifications);
   test_api_->manager()->AddRequest(GetActiveMainFrame(),
                                    &notification_request2);
   base::RunLoop().RunUntilIdle();

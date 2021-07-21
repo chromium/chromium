@@ -30,7 +30,7 @@ class FileHandlingPermissionContext
       ContentSettingsType content_settings_type,
       bool has_gesture,
       content::WebContents* web_contents,
-      permissions::PermissionRequestImpl::PermissionDecidedCallback
+      permissions::PermissionRequest::PermissionDecidedCallback
           permission_decided_callback,
       base::OnceClosure delete_callback) const override;
   void NotifyPermissionSet(const permissions::PermissionRequestID& id,

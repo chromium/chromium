@@ -8662,14 +8662,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Failed To Create Data Directory
       </message>
 
-      <!-- Multiple download warning-->
-      <message name="IDS_MULTI_DOWNLOAD_WARNING" desc="Warning invoked if multiple downloads are attempted without user interaction.">
-        <ph name="ORIGIN">$1<ex>https://backgroundfetch.com</ex></ph> wants to download multiple files
-      </message>
-      <message name="IDS_MULTI_DOWNLOAD_PERMISSION_FRAGMENT" desc="Permission request shown if multiple downloads are attempted without user interaction and there are multiple permissions requested. Follows a prompt: 'This site would like to:'">
-        Download multiple files
-      </message>
-
       <if expr="use_titlecase">
         <message name="IDS_RECENT_TABS_MENU" desc="In Title Case: The title of the Recent Tabs menu in the wrench menu.">
           Recent Tabs
@@ -10805,9 +10797,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
     <!-- Security Key permission -->
-    <message name="IDS_SECURITY_KEY_ATTESTATION_PERMISSION_FRAGMENT" desc="A permission prompt shown to a user when a website wants to see information that identifies the user's Security Key, such as make and model number. The text '[website URL] wants to:' precedes this string. The 'make' of a device is the brand name of the manufacturer, e.g. Yubikey is a make of Security Key. The 'model' of a device is the specific product, e.g. Yubikey Neo is a model of Security Key.">
-      See the make and model of your Security Key
-    </message>
     <if expr="is_android">
       <message name="IDS_SECURITY_KEY_ATTESTATION_INFOBAR_QUESTION" desc="An infobar prompt shown to a user when a website wants to see information that identifies the user's Security Key, such as make and model number. The 'make' of a device is the brand name of the manufacturer, e.g. Yubikey is a make of Security Key. The 'model' of a device is the specific product, e.g. Yubikey Neo is a model of Security Key.">
         <ph name="URL">

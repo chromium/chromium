@@ -36,7 +36,7 @@ const gfx::VectorIcon& GetPermissionIconId(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
 
-  if (delegate->Requests()[0]->GetRequestType() ==
+  if (delegate->Requests()[0]->request_type() ==
       permissions::RequestType::kNotifications) {
     return vector_icons::kNotificationsOffIcon;
   }
@@ -49,7 +49,7 @@ std::u16string GetPermissionMessage(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
 
-  if (delegate->Requests()[0]->GetRequestType() ==
+  if (delegate->Requests()[0]->request_type() ==
       permissions::RequestType::kNotifications) {
     return l10n_util::GetStringUTF16(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
   }

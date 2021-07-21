@@ -168,7 +168,7 @@ void RecordEngagementMetric(const std::vector<PermissionRequest*>& requests,
                             content::WebContents* web_contents,
                             const std::string& action) {
   RequestTypeForUma type =
-      GetUmaValueForRequestType(requests[0]->GetRequestType());
+      GetUmaValueForRequestType(requests[0]->request_type());
   if (requests.size() > 1)
     type = RequestTypeForUma::MULTIPLE;
 
@@ -178,7 +178,7 @@ void RecordEngagementMetric(const std::vector<PermissionRequest*>& requests,
                      GetPermissionRequestString(type);
 
   double engagement_score = PermissionsClient::Get()->GetSiteEngagementScore(
-      web_contents->GetBrowserContext(), requests[0]->GetOrigin());
+      web_contents->GetBrowserContext(), requests[0]->requesting_origin());
   base::UmaHistogramPercentageObsoleteDoNotUse(name, engagement_score);
 }
 
@@ -424,7 +424,7 @@ void PermissionUmaUtil::PermissionPromptShown(
   PermissionRequestGestureType gesture_type =
       PermissionRequestGestureType::UNKNOWN;
   if (requests.size() == 1) {
-    request_type = GetUmaValueForRequestType(requests[0]->GetRequestType());
+    request_type = GetUmaValueForRequestType(requests[0]->request_type());
     gesture_type = requests[0]->GetGestureType();
   }
 
@@ -469,14 +469,13 @@ void PermissionUmaUtil::PermissionPromptResolved(
 
   for (PermissionRequest* request : requests) {
     ContentSettingsType permission = request->GetContentSettingsType();
-    // TODO(timloh): We only record these metrics for permissions which use
-    // PermissionRequestImpl as the other subclasses don't support
-    // GetGestureType and GetContentSettingsType.
+    // TODO(timloh): We only record these metrics for permissions which have a
+    // ContentSettingsType, as otherwise they don't support GetGestureType.
     if (permission == ContentSettingsType::DEFAULT)
       continue;
 
     PermissionRequestGestureType gesture_type = request->GetGestureType();
-    const GURL& requesting_origin = request->GetOrigin();
+    const GURL& requesting_origin = request->requesting_origin();
 
     RecordPermissionAction(
         permission, permission_action, PermissionSourceUI::PROMPT, gesture_type,
@@ -774,7 +773,7 @@ void PermissionUmaUtil::RecordPromptDecided(
   PermissionRequestGestureType gesture_type =
       PermissionRequestGestureType::UNKNOWN;
   if (requests.size() == 1) {
-    request_type = GetUmaValueForRequestType(requests[0]->GetRequestType());
+    request_type = GetUmaValueForRequestType(requests[0]->request_type());
     gesture_type = requests[0]->GetGestureType();
   }
 

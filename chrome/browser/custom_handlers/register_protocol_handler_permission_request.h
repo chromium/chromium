@@ -31,19 +31,15 @@ class RegisterProtocolHandlerPermissionRequest
 
  private:
   // permissions::PermissionRequest:
-  permissions::RequestType GetRequestType() const override;
   bool IsDuplicateOf(
       permissions::PermissionRequest* other_request) const override;
   std::u16string GetMessageTextFragment() const override;
-  GURL GetOrigin() const override;
-  void PermissionGranted(bool is_one_time) override;
-  void PermissionDenied() override;
-  void Cancelled() override;
-  void RequestFinished() override;
+
+  void PermissionDecided(ContentSetting result, bool is_one_time);
+  void DeleteRequest();
 
   ProtocolHandlerRegistry* registry_;
   ProtocolHandler handler_;
-  GURL origin_;
   // Fullscreen will be blocked for the duration of the lifetime of this block.
   // TODO(avi): Move to either permissions::PermissionRequest or the
   // PermissionRequestManager?

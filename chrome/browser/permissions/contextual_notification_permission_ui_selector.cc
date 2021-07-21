@@ -147,7 +147,7 @@ void ContextualNotificationPermissionUiSelector::SelectUiToUse(
   // Even if the quiet UI is enabled on all sites, the crowd deny and abuse
   // trigger conditions must be evaluated first, so that the corresponding,
   // less prominent UI and the strings are shown on blocklisted origins.
-  EvaluatePerSiteTriggers(url::Origin::Create(request->GetOrigin()));
+  EvaluatePerSiteTriggers(url::Origin::Create(request->requesting_origin()));
 }
 
 void ContextualNotificationPermissionUiSelector::Cancel() {

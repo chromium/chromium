@@ -173,8 +173,7 @@ void ContentSettingBubbleDialogTest::TriggerQuietNotificationPermissionRequest(
           simulated_reason_for_quiet_ui));
   DCHECK(!notification_permission_request_);
   notification_permission_request_.emplace(
-      u"notifications", permissions::RequestType::kNotifications,
-      GURL("https://example.com"));
+      GURL("https://example.com"), permissions::RequestType::kNotifications);
   permission_request_manager->AddRequest(web_contents->GetMainFrame(),
                                          &*notification_permission_request_);
   base::RunLoop().RunUntilIdle();

@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/request_type.h"
 
 class Browser;
 
@@ -32,10 +33,10 @@ class PermissionRequestManagerTestApi {
   permissions::PermissionRequestManager* manager() { return manager_; }
 
   // Add a "simple" permission request originating from the given frame. One
-  // that uses PermissionRequestImpl, such as for ContentSettingsType including
-  // MIDI_SYSEX, PUSH_MESSAGING, NOTIFICATIONS, GEOLOCATON, or PLUGINS.
+  // that uses base PermissionRequest, such as for RequestType kMidiSysex,
+  // kNotifications, or kGeolocation.
   void AddSimpleRequest(content::RenderFrameHost* source_frame,
-                        ContentSettingsType type);
+                        permissions::RequestType type);
 
   // Return the Widget for the permission prompt bubble, or nullptr if
   // there is no prompt currently showing.

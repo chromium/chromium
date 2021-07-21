@@ -166,6 +166,57 @@ RequestType ContentSettingsTypeToRequestType(
   }
 }
 
+absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
+    RequestType request_type) {
+  switch (request_type) {
+    case RequestType::kAccessibilityEvents:
+      return ContentSettingsType::ACCESSIBILITY_EVENTS;
+    case RequestType::kArSession:
+      return ContentSettingsType::AR;
+#if !defined(OS_ANDROID)
+    case RequestType::kCameraPanTiltZoom:
+      return ContentSettingsType::CAMERA_PAN_TILT_ZOOM;
+#endif
+    case RequestType::kCameraStream:
+      return ContentSettingsType::MEDIASTREAM_CAMERA;
+    case RequestType::kClipboard:
+      return ContentSettingsType::CLIPBOARD_READ_WRITE;
+#if !defined(OS_ANDROID)
+    case RequestType::kFontAccess:
+      return ContentSettingsType::FONT_ACCESS;
+#endif
+    case RequestType::kGeolocation:
+      return ContentSettingsType::GEOLOCATION;
+    case RequestType::kIdleDetection:
+      return ContentSettingsType::IDLE_DETECTION;
+    case RequestType::kMicStream:
+      return ContentSettingsType::MEDIASTREAM_MIC;
+    case RequestType::kMidiSysex:
+      return ContentSettingsType::MIDI_SYSEX;
+#if defined(OS_ANDROID)
+    case RequestType::kNfcDevice:
+      return ContentSettingsType::NFC;
+#endif
+    case RequestType::kNotifications:
+      return ContentSettingsType::NOTIFICATIONS;
+#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_WIN)
+    case RequestType::kProtectedMediaIdentifier:
+      return ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER;
+#endif
+    case RequestType::kStorageAccess:
+      return ContentSettingsType::STORAGE_ACCESS;
+    case RequestType::kVrSession:
+      return ContentSettingsType::VR;
+#if !defined(OS_ANDROID)
+    case RequestType::kWindowPlacement:
+      return ContentSettingsType::WINDOW_PLACEMENT;
+#endif
+    default:
+      // Not associated with a ContentSettingsType.
+      return absl::nullopt;
+  }
+}
+
 IconId GetIconId(RequestType type) {
   IconId override_id = PermissionsClient::Get()->GetOverrideIconId(type);
 #if defined(OS_ANDROID)

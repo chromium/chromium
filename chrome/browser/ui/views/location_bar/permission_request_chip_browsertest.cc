@@ -36,7 +36,7 @@ class PermissionRequestChipBrowserTest : public UiBrowserTest {
         std::make_unique<test::PermissionRequestManagerTestApi>(browser());
     EXPECT_TRUE(test_api_->manager());
     test_api_->AddSimpleRequest(GetActiveMainFrame(),
-                                ContentSettingsType::GEOLOCATION);
+                                permissions::RequestType::kGeolocation);
 
     base::RunLoop().RunUntilIdle();
 

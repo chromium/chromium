@@ -32,8 +32,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/permissions/permission_request_impl.h"
+#include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/request_type.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -1366,8 +1367,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestPermissionBubble) {
   // Fire a geolocation permission request, which should show a permission
   // request bubble resulting in top chrome unhiding.
   auto decided = [](ContentSetting, bool) {};
-  permissions::PermissionRequestImpl permission_request(
-      url, ContentSettingsType::GEOLOCATION, true /* user_gesture */,
+  permissions::PermissionRequest permission_request(
+      url, permissions::RequestType::kGeolocation, true /* user_gesture */,
       base::BindOnce(decided), base::DoNothing() /* delete_callback */);
   auto* permission_manager =
       permissions::PermissionRequestManager::FromWebContents(active_contents);
