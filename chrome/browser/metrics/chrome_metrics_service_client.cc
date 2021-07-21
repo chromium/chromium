@@ -1058,17 +1058,21 @@ void ChromeMetricsServiceClient::OnHistoryDeleted() {
     ukm_service_->Purge();
 }
 
-void ChromeMetricsServiceClient::OnUkmAllowedStateChanged(bool must_purge) {
+void ChromeMetricsServiceClient::OnUkmAllowedStateChanged(bool total_purge) {
   if (!ukm_service_)
     return;
-  if (must_purge) {
+
+  if (total_purge) {
     ukm_service_->Purge();
     ukm_service_->ResetClientState(ukm::ResetReason::kOnUkmAllowedStateChanged);
-  } else if (!IsUkmAllowedWithExtensionsForAllProfiles()) {
-    ukm_service_->PurgeExtensions();
+  } else {
+    if (!IsUkmAllowedWithExtensionsForAllProfiles())
+      ukm_service_->PurgeExtensionsData();
+    if (!IsUkmAllowedWithAppsForAllProfiles())
+      ukm_service_->PurgeAppsData();
   }
 
-  // Signal service manager to enable/disable UKM based on new state.
+  // Signal service manager to enable/disable UKM based on new states.
   UpdateRunningServices();
 }
 
@@ -1128,6 +1132,10 @@ void ChromeMetricsServiceClient::SetIsProcessRunningForTesting(
 
 bool ChromeMetricsServiceClient::IsUkmAllowedForAllProfiles() {
   return UkmConsentStateObserver::IsUkmAllowedForAllProfiles();
+}
+
+bool ChromeMetricsServiceClient::IsUkmAllowedWithAppsForAllProfiles() {
+  return UkmConsentStateObserver::IsUkmAllowedWithAppsForAllProfiles();
 }
 
 bool ChromeMetricsServiceClient::IsUkmAllowedWithExtensionsForAllProfiles() {

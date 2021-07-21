@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/task_environment.h"
+#include "components/ukm/scheme_constants.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
@@ -114,7 +115,7 @@ TEST(UkmRecorderImplTest, PurgeExtensionRecordings) {
   EXPECT_EQ(4U, recorder.sources().size());
   EXPECT_EQ(2U, recorder.entries().size());
 
-  recorder.PurgeExtensionRecordings();
+  recorder.PurgeRecordingsWithUrlScheme(kExtensionScheme);
 
   // Recorded sources of extension scheme and related events have been cleared.
   EXPECT_EQ(2U, recorder.sources().size());

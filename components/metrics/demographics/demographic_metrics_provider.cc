@@ -18,12 +18,9 @@ namespace {
 bool CanUploadDemographicsToGoogle(syncer::SyncService* sync_service) {
   DCHECK(sync_service);
 
-  // Require that the user has opted into sync the feature, without just relying
-  // on PRIORITY_PREFERENCES start sync-ing.
-  if (!sync_service->IsSyncFeatureEnabled()) {
-    return false;
-  }
-
+  // PRIORITY_PREFERENCES is the sync datatype used to propagate demographics
+  // information to the client. In its absence, demographics info is unavailable
+  // thus cannot be uploaded.
   switch (GetUploadToGoogleState(sync_service, syncer::PRIORITY_PREFERENCES)) {
     case syncer::UploadState::NOT_ACTIVE:
       return false;
@@ -117,7 +114,7 @@ void DemographicMetricsProvider::LogUserDemographicsStatusInHistogram(
       base::UmaHistogramEnumeration("UMA.UserDemographics.Status", status);
       // If the user demographics data was retrieved successfully, then the user
       // must be between the ages of |kUserDemographicsMinAgeInYears|+1=21 and
-      // |kUserDemographicsMaxAgeinYears|=85, so the user is not a minor.
+      // |kUserDemographicsMaxAgeInYears|=85, so the user is not a minor.
       base::UmaHistogramBoolean("UMA.UserDemographics.IsNoisedAgeOver21Under85",
                                 status == UserDemographicsStatus::kSuccess);
       return;

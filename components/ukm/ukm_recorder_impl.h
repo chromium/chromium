@@ -67,11 +67,16 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // True if sampling is enabled.
   bool IsSamplingEnabled() const;
 
-  // Deletes stored recordings.
+  // Deletes all stored recordings.
   void Purge();
 
-  // Deletes stored recordings related to Chrome extensions.
-  void PurgeExtensionRecordings();
+  // Deletes stored Sources containing URLs of the given scheme and events
+  // attributed with these Sources.
+  void PurgeRecordingsWithUrlScheme(const std::string& url_scheme);
+
+  // Deletes stored Sources with the given Source id type and events
+  // attributed with these Sources.
+  void PurgeRecordingsWithSourceIdType(ukm::SourceIdType source_id_type);
 
   // Marks a source as no longer needed to be kept alive in memory. The source
   // with given id will be removed from in-memory recordings at the next
@@ -112,6 +117,10 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
 
   // Writes recordings into a report proto, and clears recordings.
   void StoreRecordingsInReport(Report* report);
+
+  // Deletes Sources and Events with these source_ids.
+  void PurgeSourcesAndEventsBySourceIds(
+      const std::unordered_set<SourceId>& source_ids);
 
   const std::map<SourceId, std::unique_ptr<UkmSource>>& sources() const {
     return recordings_.sources;
