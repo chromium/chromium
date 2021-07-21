@@ -76,7 +76,7 @@ public class LanguageItem {
     /**
      * @return Whether Chrome supports translate for this language.
      */
-    public boolean isSupported() {
+    public boolean isTranslateSupported() {
         return mSupportTranslate;
     }
 
@@ -120,7 +120,7 @@ public class LanguageItem {
 
     /**
      * Return the hashCode of the language code for this LanguageItem. The language code can be
-     * used for the hash since two LanguageItems with equal langauge codes are equal.
+     * used for the hash since two LanguageItems with equal language codes are equal.
      */
     @Override
     public int hashCode() {

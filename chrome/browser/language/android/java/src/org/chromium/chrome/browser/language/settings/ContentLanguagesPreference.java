@@ -64,7 +64,7 @@ public class ContentLanguagesPreference extends Preference {
                         : R.drawable.ic_check_googblue_24dp;
                 ListItem item = buildMenuListItemWithEndIcon(
                         R.string.languages_item_option_offer_to_translate, 0, endIconResId,
-                        info.isSupported());
+                        info.isTranslateSupported());
                 item.model.set(
                         ListMenuItemProperties.TINT_COLOR_ID, R.color.default_icon_color_blue);
 
