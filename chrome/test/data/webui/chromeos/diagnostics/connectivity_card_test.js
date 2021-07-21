@@ -10,7 +10,7 @@ import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_healt
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setNetworkHealthProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
@@ -107,5 +107,18 @@ export function connectivityCardTestSuite() {
     return initializeConnectivityCard(
                'ethernetGuid', [fakeEthernetNetwork], true)
         .then(() => assertTrue(connectivityCardElement.isTestRunning));
+  });
+
+  test('CardIpConfigurationDrawerInitializedCorrectly', () => {
+    return initializeConnectivityCard('ethernetGuid', [fakeEthernetNetwork])
+        .then(() => {
+          const ipConfigInfoDrawerElement =
+              /** @type IpConfigInfoDrawerElement */ (
+                  connectivityCardElement.$$('#ipConfigInfoDrawer'));
+          assertTrue(isVisible(
+              /** @type {!HTMLElement} */ (ipConfigInfoDrawerElement)));
+          assertDeepEquals(
+              fakeEthernetNetwork, ipConfigInfoDrawerElement.network);
+        });
   });
 }
