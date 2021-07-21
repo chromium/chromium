@@ -22,7 +22,7 @@ NullExecutionContext::NullExecutionContext()
     : ExecutionContext(
           v8::Isolate::GetCurrent(),
           MakeGarbageCollected<Agent>(v8::Isolate::GetCurrent(),
-                                      base::UnguessableToken::Null())),
+                                      base::UnguessableToken::Create())),
       scheduler_(scheduler::CreateDummyFrameScheduler()) {}
 
 NullExecutionContext::~NullExecutionContext() {}

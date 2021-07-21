@@ -8,9 +8,12 @@
 
 namespace blink {
 
-void FakeBlobURLStore::Register(mojo::PendingRemote<mojom::blink::Blob> blob,
-                                const KURL& url,
-                                RegisterCallback callback) {
+void FakeBlobURLStore::Register(
+    mojo::PendingRemote<mojom::blink::Blob> blob,
+    const KURL& url,
+    // TODO(https://crbug.com/1224926): Remove this once experiment is over.
+    const base::UnguessableToken& unsafe_agent_cluster_id,
+    RegisterCallback callback) {
   registrations.insert(url, mojo::Remote<mojom::blink::Blob>(std::move(blob)));
   std::move(callback).Run();
 }

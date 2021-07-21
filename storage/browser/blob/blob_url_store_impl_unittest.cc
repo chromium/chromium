@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -80,7 +81,8 @@ class BlobURLStoreImplTest : public testing::Test {
                    mojo::PendingRemote<blink::mojom::Blob> blob,
                    const GURL& url) {
     base::RunLoop loop;
-    store->Register(std::move(blob), url, loop.QuitClosure());
+    store->Register(std::move(blob), url, base::UnguessableToken::Create(),
+                    loop.QuitClosure());
     loop.Run();
   }
 

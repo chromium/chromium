@@ -16,7 +16,11 @@ interface BlobURLStore {
   // all URLs registered through it will be revoked.
   // TODO(kinuko,mek): This should probably create and return a new blob: URL rather
   // than letting the caller in the renderer provide one.
-  [Sync] Register(pending_remote<blink.mojom.Blob> blob, url.mojom.Url url) => ();
+  [Sync] Register(
+      pending_remote<blink.mojom.Blob> blob,
+      url.mojom.Url url,
+      // TODO(https://crbug.com/1224926): Remove this once experiment is over.
+      mojo_base.mojom.UnguessableToken unsafe_agent_cluster_id) => ();
 
   // Revokes a public Blob URL.
   Revoke(url.mojom.Url url);

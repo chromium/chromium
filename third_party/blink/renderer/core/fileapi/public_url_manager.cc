@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
@@ -77,7 +78,8 @@ String PublicURLManager::RegisterURL(URLRegistrable* registrable) {
     mojo::PendingRemote<mojom::blink::Blob> blob_remote;
     mojo::PendingReceiver<mojom::blink::Blob> blob_receiver =
         blob_remote.InitWithNewPipeAndPassReceiver();
-    url_store_->Register(std::move(blob_remote), url);
+    url_store_->Register(std::move(blob_remote), url,
+                         GetExecutionContext()->GetAgentClusterID());
     mojo_urls_.insert(url_string);
     registrable->CloneMojoBlob(std::move(blob_receiver));
   } else {

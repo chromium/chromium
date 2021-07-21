@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -200,7 +201,8 @@ class BlobURLTest : public testing::Test {
         blob_remote.InitWithNewPipeAndPassReceiver());
 
     base::RunLoop loop;
-    url_store.Register(std::move(blob_remote), url, loop.QuitClosure());
+    url_store.Register(std::move(blob_remote), url,
+                       base::UnguessableToken::Create(), loop.QuitClosure());
     loop.Run();
 
     mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;

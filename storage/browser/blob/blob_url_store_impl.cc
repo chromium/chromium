@@ -69,9 +69,12 @@ BlobURLStoreImpl::~BlobURLStoreImpl() {
   }
 }
 
-void BlobURLStoreImpl::Register(mojo::PendingRemote<blink::mojom::Blob> blob,
-                                const GURL& url,
-                                RegisterCallback callback) {
+void BlobURLStoreImpl::Register(
+    mojo::PendingRemote<blink::mojom::Blob> blob,
+    const GURL& url,
+    // TODO(https://crbug.com/1224926): Remove this once experiment is over.
+    const base::UnguessableToken& unsafe_agent_cluster_id,
+    RegisterCallback callback) {
   if (!url.SchemeIsBlob()) {
     mojo::ReportBadMessage("Invalid scheme passed to BlobURLStore::Register");
     std::move(callback).Run();
@@ -91,7 +94,7 @@ void BlobURLStoreImpl::Register(mojo::PendingRemote<blink::mojom::Blob> blob,
   }
 
   if (registry_)
-    registry_->AddUrlMapping(url, std::move(blob));
+    registry_->AddUrlMapping(url, std::move(blob), unsafe_agent_cluster_id);
   urls_.insert(url);
   std::move(callback).Run();
 }
