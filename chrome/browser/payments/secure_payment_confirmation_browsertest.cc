@@ -298,11 +298,17 @@ class SecurePaymentConfirmationCreationTest
  public:
   enum Event : int {
     AUTHENTICATOR_REQUEST,
+    ENROLLMENT_DIALOG_OPENED,
     WEB_CONTENTS_DESTROYED,
   };
 
   void RespondToFutureEnrollments(bool confirm) {
+    respond_to_future_enrollments_ = true;
     confirm_enroll_ = confirm;
+    ObserveEnrollmentController();
+  }
+
+  void ObserveEnrollmentController() {
     PaymentCredentialEnrollmentController::CreateForWebContents(
         GetActiveWebContents());
     PaymentCredentialEnrollmentController::FromWebContents(
@@ -312,10 +318,15 @@ class SecurePaymentConfirmationCreationTest
 
   // PaymentCredentialEnrollmentController::ObserverForTest
   void OnDialogOpened() override {
-    auto* controller = PaymentCredentialEnrollmentController::FromWebContents(
-        GetActiveWebContents());
-    EXPECT_EQ(nullptr, controller->GetTokenIfAvailable());
-    controller->OnResponse(confirm_enroll_);
+    if (event_waiter_)
+      event_waiter_->OnEvent(Event::ENROLLMENT_DIALOG_OPENED);
+
+    if (respond_to_future_enrollments_) {
+      auto* controller = PaymentCredentialEnrollmentController::FromWebContents(
+          GetActiveWebContents());
+      EXPECT_EQ(nullptr, controller->GetTokenIfAvailable());
+      controller->OnResponse(confirm_enroll_);
+    }
   }
 
   // PaymentCredential creation uses the normal Web Authentication code path
@@ -466,6 +477,7 @@ class SecurePaymentConfirmationCreationTest
   }
 
   base::HistogramTester histogram_tester_;
+  bool respond_to_future_enrollments_ = false;
   bool confirm_enroll_ = false;
   std::unique_ptr<autofill::EventWaiter<Event>> event_waiter_;
 };
@@ -512,6 +524,26 @@ class SecurePaymentConfirmationCreationTestWithParameter
 INSTANTIATE_TEST_SUITE_P(APIV2,
                          SecurePaymentConfirmationCreationTestWithParameter,
                          testing::Values(true, false));
+
+// Closing the page while the browser enrollment dialog is opened should not
+// crash.
+IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
+                       WebContentsClosedDuringEnrollmentBrowserPrompt) {
+  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+  ObserveEnrollmentController();
+
+  ObserveEvent(Event::ENROLLMENT_DIALOG_OPENED);
+  ASSERT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("createPaymentCredential($1)", GetDefaultIconURL()),
+      content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  event_waiter_->Wait();
+
+  ObserveWebContentsDestroyed();
+  GetActiveWebContents()->Close();
+  event_waiter_->Wait();
+}
 
 IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                        CredentialType) {
@@ -849,18 +881,21 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       WebContentsClosedDuringEnrollment) {
+                       WebContentsClosedDuringEnrollmentOSPrompt) {
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true, /*should_hang=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   RespondToFutureEnrollments(/*confirm=*/true);
 
-  ObserveEvent(AUTHENTICATOR_REQUEST);
+  event_waiter_ =
+      std::make_unique<autofill::EventWaiter<Event>>(std::list<Event>{
+          Event::ENROLLMENT_DIALOG_OPENED, Event::AUTHENTICATOR_REQUEST});
   ExecuteScriptAsync(
       GetActiveWebContents(),
       content::JsReplace("createPaymentCredential($1)", GetDefaultIconURL()));
   event_waiter_->Wait();
 
-  // Expect no crash when the web contents is destroyed during enrollment.
+  // Expect no crash when the web contents is destroyed during enrollment while
+  // the OS enrollment prompt is showing.
   ObserveWebContentsDestroyed();
   GetActiveWebContents()->Close();
   event_waiter_->Wait();

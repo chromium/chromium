@@ -74,8 +74,8 @@ void PaymentCredentialEnrollmentController::CloseDialog() {
   RecordFirstCloseReason(SecurePaymentConfirmationEnrollDialogResult::kClosed);
 
   if (bridge_) {
-    bridge_->CloseDialog();
-    bridge_.reset();
+    auto bridge = std::move(bridge_);
+    bridge->CloseDialog();
   }
 }
 
