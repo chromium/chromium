@@ -241,9 +241,21 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       InitializeSwitchableGPUs(
           gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
     }
-  } else if (gl::GetGLImplementation() == gl::kGLImplementationSwiftShaderGL &&
+  // If SwiftShader/SwANGLE is in use, set the flag gl_use_swiftshader so GPU
+  // initialization will take a software rendering path. Do not do this if
+  // SwiftShader/SwANGLE are explicitly requested via flags, because the flags
+  // are meant to specify running SwiftShader/SwANGLE on the hardware GPU path.
+  } else if (gl::GetGLImplementationParts() ==
+                 gl::GetLegacySoftwareGLImplementation() &&
              command_line->GetSwitchValueASCII(switches::kUseGL) !=
                  gl::kGLImplementationSwiftShaderName) {
+    gl_use_swiftshader_ = true;
+  } else if (gl::GetGLImplementationParts() ==
+                 gl::GetSoftwareGLImplementation() &&
+             (command_line->GetSwitchValueASCII(switches::kUseGL) !=
+                  gl::kGLImplementationANGLEName ||
+              command_line->GetSwitchValueASCII(switches::kUseANGLE) !=
+                  gl::kANGLEImplementationSwiftShaderName)) {
     gl_use_swiftshader_ = true;
   }
 
@@ -359,7 +371,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
         gpu_preferences_.disable_software_rasterizer, needs_more_info);
   }
   if (gl_initialized && gl_use_swiftshader_ &&
-      gl::GetGLImplementation() != gl::kGLImplementationSwiftShaderGL) {
+      !gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts())) {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
     VLOG(1) << "Quit GPU process launch to fallback to SwiftShader cleanly "
             << "on Linux";
@@ -441,7 +453,9 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     LOG_IF(ERROR, !gpu_info_.passthrough_cmd_decoder)
 #endif
         << "Passthrough is not supported, GL is "
-        << gl::GetGLImplementationGLName(gl::GetGLImplementationParts());
+        << gl::GetGLImplementationGLName(gl::GetGLImplementationParts())
+        << ", ANGLE is "
+        << gl::GetGLImplementationANGLEName(gl::GetGLImplementationParts());
   } else {
     gpu_info_.passthrough_cmd_decoder = false;
   }

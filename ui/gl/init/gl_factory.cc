@@ -158,8 +158,7 @@ GLImplementationParts GetSoftwareGLForTestsImplementation() {
 #if defined(OS_WIN) || defined(OS_LINUX)
 #if defined(USE_OZONE)
   if (!features::IsUsingOzonePlatform() ||
-      ((ui::OzonePlatform::GetPlatformNameForTest() != "wayland") &&
-       (ui::OzonePlatform::GetPlatformNameForTest() != "headless")))
+      (ui::OzonePlatform::GetPlatformNameForTest() != "wayland"))
 #endif
   {
     return GetSoftwareGLImplementation();

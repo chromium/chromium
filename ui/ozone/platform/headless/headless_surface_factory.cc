@@ -227,7 +227,8 @@ HeadlessSurfaceFactory::~HeadlessSurfaceFactory() = default;
 std::vector<gl::GLImplementationParts>
 HeadlessSurfaceFactory::GetAllowedGLImplementations() {
   return std::vector<gl::GLImplementationParts>{
-      gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL)};
+      gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL),
+      gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader)};
 }
 
 GLOzone* HeadlessSurfaceFactory::GetGLOzone(
@@ -235,7 +236,9 @@ GLOzone* HeadlessSurfaceFactory::GetGLOzone(
   switch (implementation.gl) {
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationSwiftShaderGL:
+    case gl::kGLImplementationEGLANGLE:
       return swiftshader_implementation_.get();
+
     default:
       return nullptr;
   }

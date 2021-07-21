@@ -169,8 +169,14 @@ bool LoadDefaultEGLGLES2Bindings(
     return false;
 #endif
   } else if (implementation.gl == gl::kGLImplementationEGLANGLE) {
-    glesv2_path = base::FilePath(kAngleGlesSoname);
-    egl_path = base::FilePath(kAngleEglSoname);
+    base::FilePath module_path;
+#if !defined(OS_FUCHSIA)
+    if (!base::PathService::Get(base::DIR_MODULE, &module_path))
+      return false;
+#endif
+
+    glesv2_path = module_path.Append(kAngleGlesSoname);
+    egl_path = module_path.Append(kAngleEglSoname);
   } else {
     glesv2_path = base::FilePath(kDefaultGlesSoname);
     egl_path = base::FilePath(kDefaultEglSoname);

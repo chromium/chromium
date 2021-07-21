@@ -269,7 +269,7 @@ const char* GetGLImplementationANGLEName(GLImplementationParts implementation) {
       return name_pair.angle_name;
   }
 
-  return "";
+  return "not defined";
 }
 
 void SetGLImplementationParts(const GLImplementationParts& implementation) {
