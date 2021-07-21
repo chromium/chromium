@@ -924,7 +924,7 @@ const base::Feature kInterestCohortFeaturePolicy{
 // Changes the default background color of the Text Fragment from
 // bright yellow rgb(255, 255, 0) to light purple rgb(233, 210, 253)
 const base::Feature kTextFragmentColorChange{"TextFragmentColorChange",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDisableDocumentDomainByDefault{
     "DisableDocumentDomainByDefault", base::FEATURE_DISABLED_BY_DEFAULT};
