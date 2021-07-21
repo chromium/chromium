@@ -119,15 +119,19 @@ class ASH_EXPORT AppsContainerView : public AppListPage {
                         const TransformAnimator& animator,
                         float default_offset) override;
 
-  SuggestionChipContainerView* suggestion_chip_container_view_for_test() {
-    return suggestion_chip_container_view_;
-  }
   PagedAppsGridView* apps_grid_view() { return apps_grid_view_; }
   FolderBackgroundView* folder_background_view() {
     return folder_background_view_;
   }
   AppListFolderView* app_list_folder_view() { return app_list_folder_view_; }
   PageSwitcher* page_switcher() { return page_switcher_; }
+
+  views::View* sort_button_container_for_test() {
+    return sort_button_container_;
+  }
+  SuggestionChipContainerView* suggestion_chip_container_view_for_test() {
+    return suggestion_chip_container_view_;
+  }
 
   // Called by app list view when the app list config changes.
   void OnAppListConfigUpdated();
@@ -198,6 +202,7 @@ class ASH_EXPORT AppsContainerView : public AppListPage {
   AppListFolderView* app_list_folder_view_ = nullptr;
   PageSwitcher* page_switcher_ = nullptr;
   FolderBackgroundView* folder_background_view_ = nullptr;
+  views::View* sort_button_container_ = nullptr;
 
   ShowState show_state_ = SHOW_NONE;
 

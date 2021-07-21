@@ -20,13 +20,17 @@
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/suggestion_chip_container_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animator.h"
@@ -37,7 +41,10 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
@@ -60,6 +67,100 @@ constexpr float kNonAppsStateOpacity = 0.1;
 
 // The margins within the apps container for app list folder view.
 constexpr int kFolderMargin = 8;
+
+// The space between sort buttons.
+constexpr int kSortButtonSpacing = 10;
+
+// The preferred size of a sort button.
+constexpr int kSortButtonPreferredSize = 20;
+
+// SortButton ------------------------------------------------------------------
+
+// A button for sorting the app icons on the launcher. Shown only when the
+// launcher apps sort is enabled.
+class SortButton : public views::ImageButton {
+ public:
+  METADATA_HEADER(SortButton);
+
+  explicit SortButton(bool is_alphabetical)
+      : is_alphabetical_(is_alphabetical) {
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+    SetPreferredSize(
+        gfx::Size(kSortButtonPreferredSize, kSortButtonPreferredSize));
+
+    // This view is used behind the feature flag and is immature. Therefore
+    // ignore it in a11y for now.
+    GetViewAccessibility().OverrideIsIgnored(true);
+  }
+  SortButton(const SortButton&) = delete;
+  SortButton& operator=(const SortButton&) = delete;
+  ~SortButton() override = default;
+
+  // views::View:
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    AshColorProvider::Get()->DecorateIconButton(
+        /*button=*/this,
+        is_alphabetical_ ? kOverflowShelfRightIcon : kOverflowShelfLeftIcon,
+        /*toggled=*/false, GetPreferredSize().width());
+
+    auto* inkdrop_host = views::InkDrop::Get(this);
+    AshColorProvider::Get()->DecorateInkDrop(
+        inkdrop_host, AshColorProvider::kConfigBaseColor |
+                          AshColorProvider::kConfigHighlightOpacity |
+                          AshColorProvider::kConfigHighlightOpacity);
+    views::InstallFixedSizeCircleHighlightPathGenerator(
+        this, kSortButtonPreferredSize / 2);
+    views::InkDrop::UseInkDropForFloodFillRipple(inkdrop_host,
+                                                 /*highlight_on_hover=*/true,
+                                                 /*highlight_on_focus=*/true);
+  }
+
+ private:
+  // If true, apps are sorted by the app name alphabetical order; otherwise,
+  // apps are sorted by the app name reverse alphabetical order.
+  const bool is_alphabetical_;
+};
+
+BEGIN_METADATA(SortButton, views::View)
+END_METADATA
+
+// SortButtonContainer ---------------------------------------------------------
+
+class SortButtonContainer : public views::View {
+ public:
+  METADATA_HEADER(SortButtonContainer);
+
+  SortButtonContainer() {
+    // The layer is required in animation.
+    SetPaintToLayer(ui::LayerType::LAYER_NOT_DRAWN);
+
+    // Configure the layout.
+    auto box_layout = std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal,
+        /*inside_border_insets=*/gfx::Insets(),
+        /*between_child_spacing=*/kSortButtonSpacing);
+    box_layout->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+    box_layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+    SetLayoutManager(std::move(box_layout));
+
+    // Add children.
+    AddChildView(std::make_unique<SortButton>(/*is_alphabetical_=*/false));
+    AddChildView(std::make_unique<SortButton>(/*is_alphabetical_=*/true));
+
+    GetViewAccessibility().OverrideIsIgnored(true);
+  }
+  SortButtonContainer(const SortButtonContainer&) = delete;
+  SortButtonContainer& operator=(const SortButtonContainer&) = delete;
+  ~SortButtonContainer() override = default;
+};
+
+BEGIN_METADATA(SortButtonContainer, views::View)
+END_METADATA
 
 }  // namespace
 
@@ -94,6 +195,11 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
   app_list_folder_view_ = AddChildView(std::move(app_list_folder_view));
   // The folder view is initially hidden.
   app_list_folder_view_->SetVisible(false);
+
+  if (features::IsLauncherAppSortEnabled()) {
+    sort_button_container_ =
+        AddChildView(std::make_unique<SortButtonContainer>());
+  }
 
   apps_grid_view_->SetModel(model);
   apps_grid_view_->SetItemList(model->top_level_item_list());
@@ -236,6 +342,11 @@ void AppsContainerView::AnimateYPosition(AppListViewState target_view_state,
   suggestion_chip_container_view_->SetY(target_suggestion_chip_y);
   animator.Run(offset, suggestion_chip_container_view_->layer());
 
+  if (features::IsLauncherAppSortEnabled()) {
+    sort_button_container_->SetY(target_suggestion_chip_y);
+    animator.Run(offset, sort_button_container_->layer());
+  }
+
   apps_grid_view_->SetY(suggestion_chip_container_view_->y() +
                         chip_grid_y_distance_);
   animator.Run(offset, apps_grid_view_->layer());
@@ -310,9 +421,23 @@ void AppsContainerView::Layout() {
 
   // Layout page switcher.
   const int page_switcher_width = page_switcher_->GetPreferredSize().width();
-  page_switcher_->SetBoundsRect(gfx::Rect(
+  const gfx::Rect page_switcher_bounds(
       grid_rect.right() + GetAppListConfig().grid_to_page_switcher_margin(),
-      grid_rect.y(), page_switcher_width, grid_rect.height()));
+      grid_rect.y(), page_switcher_width, grid_rect.height());
+  page_switcher_->SetBoundsRect(page_switcher_bounds);
+
+  if (features::IsLauncherAppSortEnabled()) {
+    // Align `sort_button_container_` with `suggestion_chip_container_view_`
+    // horizontally; align `sort_button_container_` with `page_switcher_bounds`
+    // vertically on the right edge.
+    const int sort_button_container_width =
+        sort_button_container_->GetPreferredSize().width();
+    gfx::Rect sort_button_container_rect(
+        page_switcher_bounds.right() - sort_button_container_width,
+        suggestion_chip_container_view_->y(), sort_button_container_width,
+        chip_container_rect.height());
+    sort_button_container_->SetBoundsRect(sort_button_container_rect);
+  }
 
   switch (show_state_) {
     case SHOW_APPS:

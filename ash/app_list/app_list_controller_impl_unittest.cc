@@ -22,6 +22,7 @@
 #include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/app_list/views/suggestion_chip_container_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/test_ime_controller_client.h"
@@ -96,8 +97,12 @@ aura::Window* GetVirtualKeyboardWindow() {
       ->GetKeyboardWindow();
 }
 
+AppsContainerView* GetAppsContainerView() {
+  return GetContentsView()->apps_container_view();
+}
+
 AppsGridView* GetAppsGridView() {
-  return GetContentsView()->apps_container_view()->apps_grid_view();
+  return GetAppsContainerView()->apps_grid_view();
 }
 
 void ShowAppListNow(AppListViewState state) {
@@ -1300,6 +1305,46 @@ TEST_F(AppListControllerImplAppListBubbleTest, EnteringTabletModeClosesBubble) {
   EnableTabletMode();
 
   EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+}
+
+class AppListSortTest : public AshTestBase {
+ public:
+  AppListSortTest() {
+    feature_list_.InitAndEnableFeature(ash::features::kLauncherAppSort);
+  }
+  ~AppListSortTest() override = default;
+
+  views::View* GetLeftSortButton() {
+    return GetAppsContainerView()
+        ->sort_button_container_for_test()
+        ->children()[0];
+  }
+
+  views::View* GetRightSortButton() {
+    return GetAppsContainerView()
+        ->sort_button_container_for_test()
+        ->children()[1];
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies basic UI elements for the app list sort.
+TEST_F(AppListSortTest, BasicUI) {
+  // Verify sort buttons in the peeking state.
+  ShowAppListNow(AppListViewState::kPeeking);
+  ASSERT_EQ(AppListViewState::kPeeking, GetAppListView()->app_list_state());
+  EXPECT_TRUE(GetLeftSortButton()->GetVisible());
+  EXPECT_TRUE(GetRightSortButton()->GetVisible());
+  DismissAppListNow();
+
+  // Verify sort buttons in the full screen state.
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
+  ASSERT_EQ(AppListViewState::kFullscreenAllApps,
+            GetAppListView()->app_list_state());
+  EXPECT_TRUE(GetLeftSortButton()->GetVisible());
+  EXPECT_TRUE(GetRightSortButton()->GetVisible());
 }
 
 }  // namespace ash
