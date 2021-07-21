@@ -98,8 +98,19 @@ gles2::Texture* SharedImageRepresentationGLOzone::GetTexture() {
 }
 
 bool SharedImageRepresentationGLOzone::BeginAccess(GLenum mode) {
-  // TODO(hob): Synchronize access to the dma-buf by waiting on all semaphores
-  // tracked by SharedImageBackingOzone.
+  DCHECK(!current_access_mode_);
+  current_access_mode_ = mode;
+  std::vector<gfx::GpuFenceHandle> fences;
+  ozone_backing()->BeginAccess(&fences);
+
+  if (ozone_backing()->NeedsSynchronization()) {
+    for (auto& fence : fences) {
+      gfx::GpuFence gpu_fence = gfx::GpuFence(std::move(fence));
+      std::unique_ptr<gl::GLFence> gl_fence =
+          gl::GLFence::CreateFromGpuFence(gpu_fence);
+      gl_fence->ServerWait();
+    }
+  }
 
   // We must call VaapiWrapper::SyncSurface() to ensure all VA-API work is done
   // prior to using the buffer in a graphics API.
@@ -107,8 +118,15 @@ bool SharedImageRepresentationGLOzone::BeginAccess(GLenum mode) {
 }
 
 void SharedImageRepresentationGLOzone::EndAccess() {
-  // TODO(hob): Synchronize access to the dma-buf by signaling completion via
-  // glSignalSemaphoreEXT.
+  gfx::GpuFenceHandle fence;
+  if (ozone_backing()->NeedsSynchronization()) {
+    auto gl_fence = gl::GLFence::CreateForGpuFence();
+    DCHECK(gl_fence);
+    fence = gl_fence->GetGpuFence()->GetGpuFenceHandle().Clone();
+  }
+  bool readonly =
+      current_access_mode_ != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
+  ozone_backing()->EndAccess(readonly, std::move(fence));
 }
 
 }  // namespace gpu

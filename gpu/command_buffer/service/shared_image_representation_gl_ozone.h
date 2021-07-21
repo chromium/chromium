@@ -45,10 +45,12 @@ class SharedImageRepresentationGLOzone
                                    MemoryTypeTracker* tracker,
                                    gles2::Texture* texture);
 
-  gles2::Texture* texture_;
   SharedImageBackingOzone* ozone_backing() {
     return static_cast<SharedImageBackingOzone*>(backing());
   }
+
+  gles2::Texture* texture_;
+  GLenum current_access_mode_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedImageRepresentationGLOzone);
 };

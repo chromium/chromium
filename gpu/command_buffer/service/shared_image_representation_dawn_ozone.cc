@@ -56,8 +56,10 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   }
   DCHECK(pixmap_->GetNumberOfPlanes() == 1)
       << "Multi-plane formats are not supported.";
-  // TODO(hob): Synchronize access to the dma-buf by waiting on all semaphores
-  // tracked by SharedImageBackingOzone.
+
+  std::vector<gfx::GpuFenceHandle> fences;
+  ozone_backing()->BeginAccess(&fences);
+
   gfx::Size pixmap_size = pixmap_->GetBufferSize();
   WGPUTextureDescriptor texture_descriptor = {};
   texture_descriptor.nextInChain = nullptr;
@@ -72,6 +74,7 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   dawn_native::vulkan::ExternalImageDescriptorDmaBuf descriptor = {};
   descriptor.cTextureDescriptor = &texture_descriptor;
   descriptor.isInitialized = IsCleared();
+
   // Import the dma-buf into Dawn via the Vulkan backend. As per the Vulkan
   // documentation, importing memory from a file descriptor transfers
   // ownership of the fd from the application to the Vulkan implementation.
@@ -82,6 +85,12 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   descriptor.stride = pixmap_->GetDmaBufPitch(0);
   descriptor.drmModifier = pixmap_->GetBufferFormatModifier();
   descriptor.waitFDs = {};
+
+  if (ozone_backing()->NeedsSynchronization()) {
+    for (auto& fence : fences) {
+      descriptor.waitFDs.push_back(fence.owned_fd.release());
+    }
+  }
 
   texture_ = dawn_native::vulkan::WrapVulkanImage(device_, &descriptor);
   if (!texture_) {
@@ -106,8 +115,11 @@ void SharedImageRepresentationDawnOzone::EndAccess() {
       SetCleared();
     }
 
-    // TODO(hob): Synchronize access to the dma-buf by waiting on
-    // |export_info.semaphoreHandles|
+    // TODO(hob): Handle waiting on multiple semaphores from dawn.
+    DCHECK(export_info.semaphoreHandles.size() == 1);
+    gfx::GpuFenceHandle fence;
+    fence.owned_fd = base::ScopedFD(export_info.semaphoreHandles[0]);
+    ozone_backing()->EndAccess(false /* readonly */, std::move(fence));
   }
   dawn_procs_->data.textureDestroy(texture_);
   dawn_procs_->data.textureRelease(texture_);

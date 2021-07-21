@@ -94,11 +94,18 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
 
   bool VaSync();
 
+  bool NeedsSynchronization() const;
+
+  void BeginAccess(std::vector<gfx::GpuFenceHandle>* fences);
+  void EndAccess(bool readonly, gfx::GpuFenceHandle fence);
+
   // Indicates if this backing produced a VASurface that may have pending work.
   bool has_pending_va_writes_ = false;
   std::unique_ptr<VaapiDependencies> vaapi_deps_;
   scoped_refptr<gfx::NativePixmap> pixmap_;
   scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
+  gfx::GpuFenceHandle write_fence_;
+  std::vector<gfx::GpuFenceHandle> read_fences_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedImageBackingOzone);
 };

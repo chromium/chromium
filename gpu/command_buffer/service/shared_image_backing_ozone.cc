@@ -247,4 +247,39 @@ bool SharedImageBackingOzone::VaSync() {
     has_pending_va_writes_ = !vaapi_deps_->SyncSurface();
   return !has_pending_va_writes_;
 }
+
+bool SharedImageBackingOzone::NeedsSynchronization() const {
+  return usage() & SHARED_IMAGE_USAGE_WEBGPU;
+}
+
+void SharedImageBackingOzone::BeginAccess(
+    std::vector<gfx::GpuFenceHandle>* fences) {
+  if (NeedsSynchronization()) {
+    // Technically, we don't need to wait on other read fences when performing
+    // a read access, but like in the case of |ExternalVkImageBacking|, reading
+    // repeatedly without a write access will cause us to run out of FDs.
+    // TODO(penghuang): Avoid waiting on read semaphores.
+    *fences = std::move(read_fences_);
+    read_fences_.clear();
+    if (!write_fence_.is_null()) {
+      fences->push_back(std::move(write_fence_));
+      write_fence_ = gfx::GpuFenceHandle();
+    }
+  }
+}
+
+void SharedImageBackingOzone::EndAccess(bool readonly,
+                                        gfx::GpuFenceHandle fence) {
+  if (NeedsSynchronization()) {
+    DCHECK(!fence.is_null());
+    if (readonly) {
+      read_fences_.push_back(std::move(fence));
+    } else {
+      DCHECK(write_fence_.is_null());
+      DCHECK(read_fences_.empty());
+      write_fence_ = std::move(fence);
+    }
+  }
+}
+
 }  // namespace gpu
