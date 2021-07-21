@@ -2243,11 +2243,6 @@ const char kContentSettingsRedesignName[] = "Content settings page redesign";
 const char kContentSettingsRedesignDescription[] =
     "Enables a new content settings page UI.";
 
-const char kRawClipboardName[] = "Raw Clipboard";
-const char kRawClipboardDescription[] =
-    "Allows raw / unsanitized clipboard content to be read and written. "
-    "See https://github.com/WICG/raw-clipboard-access.";
-
 const char kReadLaterNewBadgePromoName[] = "Reading list 'New' badge promo";
 const char kReadLaterNewBadgePromoDescription[] =
     "Causes a 'New' badge to appear on the entry point for adding to the "

@@ -223,10 +223,6 @@ const base::Feature kPurgeRendererMemoryWhenBackgrounded {
 #endif
 };
 
-// Enables Raw Clipboard. https://crbug.com/897289.
-const base::Feature kRawClipboard{"RawClipboard",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Kill switch for getCurrentBrowsingContextMedia(), which allows capturing of
 // web content from the tab from which it is called. (crbug.com/1136940)
 const base::Feature kRTCGetCurrentBrowsingContextMedia{

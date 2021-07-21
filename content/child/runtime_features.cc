@@ -392,7 +392,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"OriginIsolationHeader", features::kOriginIsolationHeader},
           {"PrefersColorSchemeClientHintHeader",
            features::kPrefersColorSchemeClientHintHeader},
-          {"RawClipboard", blink::features::kRawClipboard},
           {"SanitizerAPI", blink::features::kSanitizerAPI},
           {"StorageAccessAPI", blink::features::kStorageAccessAPI},
           {"TargetBlankImpliesNoOpener",

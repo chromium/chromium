@@ -1275,9 +1275,6 @@ extern const char kAbusiveNotificationPermissionRevocationDescription[];
 extern const char kContentSettingsRedesignName[];
 extern const char kContentSettingsRedesignDescription[];
 
-extern const char kRawClipboardName[];
-extern const char kRawClipboardDescription[];
-
 extern const char kReadLaterFlagId[];
 extern const char kReadLaterName[];
 extern const char kReadLaterDescription[];
