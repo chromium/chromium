@@ -1960,7 +1960,6 @@ void CrasAudioHandler::HandleGetDefaultOutputBufferSize(
 }
 
 bool CrasAudioHandler::noise_cancellation_supported() const {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
   return noise_cancellation_supported_;
 }
 
