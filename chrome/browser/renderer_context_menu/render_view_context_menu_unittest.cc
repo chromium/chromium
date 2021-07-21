@@ -19,10 +19,12 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
@@ -31,6 +33,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -429,6 +432,12 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     registry_ = std::make_unique<ProtocolHandlerRegistry>(profile(), nullptr);
+
+    TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        profile(),
+        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+    template_url_service_ = TemplateURLServiceFactory::GetForProfile(profile());
+    search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service_);
   }
 
   void TearDown() override {
@@ -457,8 +466,18 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
     menu->AppendImageItems();
   }
 
+  void SetUserSelectedDefaultSearchProvider(const std::string& base_url) {
+    TemplateURLData data;
+    data.SetShortName(u"t");
+    data.SetURL(base_url + "?q={searchTerms}");
+    TemplateURL* template_url =
+        template_url_service_->Add(std::make_unique<TemplateURL>(data));
+    template_url_service_->SetUserSelectedDefaultSearchProvider(template_url);
+  }
+
  private:
   std::unique_ptr<ProtocolHandlerRegistry> registry_;
+  TemplateURLService* template_url_service_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderViewContextMenuPrefsTest);
 };
@@ -696,16 +715,30 @@ TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswordsIncognito) {
 TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearch) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(lens::features::kLensRegionSearch);
+  SetUserSelectedDefaultSearchProvider("https://www.google.com");
   std::unique_ptr<TestRenderViewContextMenu> menu(CreateContextMenu());
 
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 }
 
+// Verify that the Lens Region Search menu item is disabled when the user's
+// default browser is not Google.
+TEST_F(RenderViewContextMenuPrefsTest,
+       LensRegionSearchNonGoogleDefaultSearchEngine) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensRegionSearch);
+  SetUserSelectedDefaultSearchProvider("https://www.search.com");
+  std::unique_ptr<TestRenderViewContextMenu> menu(CreateContextMenu());
+
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
+}
+
 // Verify that the Lens Region Search menu item is disabled when the feature
 // is disabled.
-TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchDisabled) {
+TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchExperimentDisabled) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(lens::features::kLensRegionSearch);
+  SetUserSelectedDefaultSearchProvider("https://www.google.com");
   std::unique_ptr<TestRenderViewContextMenu> menu(CreateContextMenu());
 
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
