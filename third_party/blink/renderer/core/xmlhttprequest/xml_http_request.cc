@@ -93,6 +93,7 @@
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -799,7 +800,8 @@ void XMLHttpRequest::send(const V8UnionDocumentOrXMLHttpRequestBodyInit* body,
 
 bool XMLHttpRequest::AreMethodAndURLValidForSend() {
   return method_ != http_names::kGET && method_ != http_names::kHEAD &&
-         url_.ProtocolIsInHTTPFamily();
+         SchemeRegistry::ShouldTreatURLSchemeAsSupportingFetchAPI(
+             url_.Protocol());
 }
 
 void XMLHttpRequest::send(Document* document, ExceptionState& exception_state) {
