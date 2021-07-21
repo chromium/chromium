@@ -252,8 +252,8 @@ void DWriteFontProxyImpl::GetFontFiles(uint32_t family_index,
     }
 
     uint32_t dummy_ttc_index = 0;
-    if (!AddFilesForFont(font.Get(), windows_fonts_path_, &path_set,
-                         &custom_font_path_set, &dummy_ttc_index)) {
+    if (FAILED(AddFilesForFont(font.Get(), windows_fonts_path_, &path_set,
+                               &custom_font_path_set, &dummy_ttc_index))) {
       if (IsLastResortFallbackFont(family_index))
         LogMessageFilterError(
             MessageFilterError::LAST_RESORT_FONT_ADD_FILES_FAILED);
