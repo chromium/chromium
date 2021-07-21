@@ -443,6 +443,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kThirdPartyStoragePartitioning;
 
 BLINK_COMMON_EXPORT extern const base::Feature kDesktopPWAsSubApps;
 
+// When enabled, we report all JavaScript frameworks via a manual traversal to
+// detect the properties and attributes required.
+BLINK_COMMON_EXPORT extern const base::Feature kReportAllJavascriptFrameworks;
+
 }  // namespace features
 }  // namespace blink
 

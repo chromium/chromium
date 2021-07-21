@@ -54,6 +54,16 @@ enum LoadingBehaviorFlag {
   kLoadingBehaviorSapperFrameworkUsed = 1 << 13,
   // Indicates that the page uses the Gatsby JavaScript framework.
   kLoadingBehaviorGatsbyFrameworkUsed = 1 << 14,
+  // Indicates that the page uses the Angular JavaScript framework.
+  kLoadingBehaviorAngularFrameworkUsed = 1 << 15,
+  // Indicates that the page uses the Vue JavaScript framework.
+  kLoadingBehaviorVueFrameworkUsed = 1 << 16,
+  // Indicates that the page uses the Svelte JavaScript framework.
+  kLoadingBehaviorSvelteFrameworkUsed = 1 << 17,
+  // Indicates that the page uses the Preact JavaScript framework.
+  kLoadingBehaviorPreactFrameworkUsed = 1 << 18,
+  // Indicates that the page uses the React JavaScript framework.
+  kLoadingBehaviorReactFrameworkUsed = 1 << 19,
 };
 
 }  // namespace blink

@@ -4,8 +4,11 @@
 
 #include "chrome/browser/page_load_metrics/observers/javascript_frameworks_ukm_observer.h"
 
+#include "base/feature_list.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 
 JavascriptFrameworksUkmObserver::JavascriptFrameworksUkmObserver() = default;
 
@@ -56,5 +59,28 @@ void JavascriptFrameworksUkmObserver::RecordJavascriptFrameworkPageLoad() {
           (frameworks_detected_ &
            blink::LoadingBehaviorFlag::kLoadingBehaviorVuePressFrameworkUsed) !=
           0);
+  if (base::FeatureList::IsEnabled(
+          blink::features::kReportAllJavascriptFrameworks)) {
+    builder
+        .SetAngularPageLoad((frameworks_detected_ &
+                             blink::LoadingBehaviorFlag::
+                                 kLoadingBehaviorAngularFrameworkUsed) != 0)
+        .SetPreactPageLoad(
+            (frameworks_detected_ &
+             blink::LoadingBehaviorFlag::kLoadingBehaviorPreactFrameworkUsed) !=
+            0)
+        .SetReactPageLoad(
+            (frameworks_detected_ &
+             blink::LoadingBehaviorFlag::kLoadingBehaviorReactFrameworkUsed) !=
+            0)
+        .SetSveltePageLoad(
+            (frameworks_detected_ &
+             blink::LoadingBehaviorFlag::kLoadingBehaviorSvelteFrameworkUsed) !=
+            0)
+        .SetVuePageLoad(
+            (frameworks_detected_ &
+             blink::LoadingBehaviorFlag::kLoadingBehaviorVueFrameworkUsed) !=
+            0);
+  }
   builder.Record(ukm::UkmRecorder::Get());
 }

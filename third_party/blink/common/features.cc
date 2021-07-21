@@ -1038,5 +1038,10 @@ const base::Feature kThirdPartyStoragePartitioning{
 const base::Feature kDesktopPWAsSubApps{"DesktopPWAsSubApps",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables reporting all JavaScript frameworks via a manual traversal to detect
+// the properties and attributes required.
+const base::Feature kReportAllJavascriptFrameworks{
+    "ReportAllJavaScriptFrameworks", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

@@ -7753,6 +7753,12 @@ be describing additional metrics about the same event.
     can use multiple frameworks at the same time, hence why this reports each
     framework individually instead of a single enum.
   </summary>
+  <metric name="AngularPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Angular JavaScript
+      framework.
+    </summary>
+  </metric>
   <metric name="GatsbyPageLoad" enum="Boolean">
     <summary>
       True if the page loaded in the main frame uses the Gatsby JavaScript
@@ -7771,9 +7777,33 @@ be describing additional metrics about the same event.
       framework.
     </summary>
   </metric>
+  <metric name="PreactPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Preact JavaScript
+      framework.
+    </summary>
+  </metric>
+  <metric name="ReactPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the React JavaScript
+      framework.
+    </summary>
+  </metric>
   <metric name="SapperPageLoad" enum="Boolean">
     <summary>
       True if the page loaded in the main frame uses the Sapper JavaScript
+      framework.
+    </summary>
+  </metric>
+  <metric name="SveltePageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Svelte JavaScript
+      framework.
+    </summary>
+  </metric>
+  <metric name="VuePageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Vue JavaScript
       framework.
     </summary>
   </metric>
