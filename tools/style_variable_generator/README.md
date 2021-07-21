@@ -49,7 +49,7 @@ in chromium is to add a `<link>` in `<head>` which points to
 
 If you are using semantic colors in a situation where relying on
 `chrome://resources` is infeasible you can specify
-`--generator-option 'includeStyleSheet=true'` and then call `getColorsCSS`
+`--generator-option 'include_style_sheet=true'` and then call `getColorsCSS`
 from the generated ts file. This is primarily intended for projects that live
 outside of chromium and need to ship with an isolated bundle of colors. Once you
 have the colors you can then add the returned string to your dom via
