@@ -29,6 +29,7 @@ class ASH_EXPORT AppListBubbleAssistantPage : public views::View {
 
   // views::View:
   void RequestFocus() override;
+  void OnThemeChanged() override;
 
  private:
   // The text and microphone input area. Owned by views hierarchy.

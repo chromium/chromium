@@ -21,6 +21,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test/view_drawn_waiter.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/assistant/test_support/scoped_assistant_browser_delegate.h"
@@ -164,6 +165,8 @@ void AssistantAshTestBase::ShowAssistantUi(AssistantEntryPoint entry_point) {
   }
   // Send all mojom messages to/from the assistant service.
   base::RunLoop().RunUntilIdle();
+  // Ensure assistant page is visible and has finished layout to non-zero size.
+  ViewDrawnWaiter().Wait(page_view());
 }
 
 void AssistantAshTestBase::CloseAssistantUi(AssistantExitPoint exit_point) {

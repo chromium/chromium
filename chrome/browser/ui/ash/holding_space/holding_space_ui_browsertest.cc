@@ -22,6 +22,7 @@
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_model_observer.h"
+#include "ash/test/view_drawn_waiter.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -388,53 +389,6 @@ class DropTargetView : public views::WidgetDelegateView {
   }
 
   base::FilePath copied_file_path_;
-};
-
-// ViewDrawnWaiter -------------------------------------------------------------
-
-class ViewDrawnWaiter : public views::ViewObserver {
- public:
-  ViewDrawnWaiter() = default;
-  ViewDrawnWaiter(const ViewDrawnWaiter&) = delete;
-  ViewDrawnWaiter& operator=(const ViewDrawnWaiter&) = delete;
-  ~ViewDrawnWaiter() override = default;
-
-  void Wait(views::View* view) {
-    if (IsDrawn(view))
-      return;
-
-    DCHECK(!wait_loop_);
-    DCHECK(!view_observer_.IsObserving());
-
-    view_observer_.Observe(view);
-
-    wait_loop_ = std::make_unique<base::RunLoop>();
-    wait_loop_->Run();
-    wait_loop_.reset();
-
-    view_observer_.Reset();
-  }
-
- private:
-  // views::ViewObserver:
-  void OnViewVisibilityChanged(views::View* view,
-                               views::View* starting_view) override {
-    if (IsDrawn(view))
-      wait_loop_->Quit();
-  }
-
-  void OnViewBoundsChanged(views::View* view) override {
-    if (IsDrawn(view))
-      wait_loop_->Quit();
-  }
-
-  bool IsDrawn(views::View* view) {
-    return view->IsDrawn() && !view->size().IsEmpty();
-  }
-
-  std::unique_ptr<base::RunLoop> wait_loop_;
-  base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
-      this};
 };
 
 // HoldingSpaceUiBrowserTest ---------------------------------------------------

@@ -2785,6 +2785,8 @@ static_library("test_support") {
     "test/toplevel_window.h",
     "test/ui_controls_factory_ash.cc",
     "test/ui_controls_factory_ash.h",
+    "test/view_drawn_waiter.cc",
+    "test/view_drawn_waiter.h",
     "test_media_client.cc",
     "test_media_client.h",
     "test_screenshot_delegate.cc",

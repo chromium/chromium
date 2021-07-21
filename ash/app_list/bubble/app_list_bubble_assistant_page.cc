@@ -8,6 +8,8 @@
 
 #include "ash/app_list/views/assistant/assistant_dialog_plate.h"
 #include "ash/app_list/views/assistant/assistant_main_stage.h"
+#include "ash/assistant/ui/colors/assistant_colors.h"
+#include "ash/assistant/ui/colors/assistant_colors_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -25,9 +27,8 @@ AppListBubbleAssistantPage::AppListBubbleAssistantPage(
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  // TODO(crbug.com/1216098): Dark background support. The assistant answer
-  // cards currently assume they are placed within a white container.
-  SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+  SetBackground(views::CreateSolidBackground(assistant::ResolveAssistantColor(
+      assistant_colors::ColorName::kBgAssistantPlate)));
 
   dialog_plate_ =
       AddChildView(std::make_unique<AssistantDialogPlate>(delegate));
@@ -40,6 +41,13 @@ AppListBubbleAssistantPage::~AppListBubbleAssistantPage() = default;
 
 void AppListBubbleAssistantPage::RequestFocus() {
   dialog_plate_->RequestFocus();
+}
+
+void AppListBubbleAssistantPage::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  background()->SetNativeControlColor(assistant::ResolveAssistantColor(
+      assistant_colors::ColorName::kBgAssistantPlate));
 }
 
 BEGIN_METADATA(AppListBubbleAssistantPage, views::View)

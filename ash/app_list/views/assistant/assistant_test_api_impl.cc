@@ -4,13 +4,17 @@
 
 #include "ash/app_list/views/assistant/assistant_test_api_impl.h"
 
+#include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_presenter_impl.h"
+#include "ash/app_list/bubble/app_list_bubble_assistant_page.h"
+#include "ash/app_list/bubble/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -25,6 +29,16 @@
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
+namespace {
+
+AppListBubbleView* GetAppListBubbleView() {
+  return Shell::Get()
+      ->app_list_controller()
+      ->bubble_presenter_for_test()  // IN-TEST
+      ->bubble_view_for_test();      // IN-TEST
+}
+
+}  // namespace
 
 std::unique_ptr<AssistantTestApi> AssistantTestApi::Create() {
   return std::make_unique<AssistantTestApiImpl>();
@@ -45,6 +59,12 @@ void AssistantTestApiImpl::DisableAnimations() {
 }
 
 bool AssistantTestApiImpl::IsVisible() {
+  if (!TabletMode::Get()->InTabletMode() &&
+      features::IsAppListBubbleEnabled()) {
+    auto* bubble_view = GetAppListBubbleView();
+    // `bubble_view` is null when the bubble launcher is closed.
+    return bubble_view && bubble_view->assistant_page_->GetVisible();
+  }
   return AppListViewsHaveBeenCreated() && page_view()->GetVisible();
 }
 
@@ -60,6 +80,13 @@ void AssistantTestApiImpl::SendTextQuery(const std::string& query) {
 }
 
 views::View* AssistantTestApiImpl::page_view() {
+  if (!TabletMode::Get()->InTabletMode() &&
+      features::IsAppListBubbleEnabled()) {
+    auto* bubble_view = GetAppListBubbleView();
+    DCHECK(bubble_view)
+        << "App list is not showing. Display the assistant UI first.";
+    return bubble_view->assistant_page_;
+  }
   const int index = contents_view()->GetPageIndexForState(
       AppListState::kStateEmbeddedAssistant);
   return static_cast<views::View*>(contents_view()->GetPageView(index));
