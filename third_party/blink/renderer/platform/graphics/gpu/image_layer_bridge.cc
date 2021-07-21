@@ -160,6 +160,15 @@ bool ImageLayerBridge::PrepareTransferableResource(
                           ? GL_NEAREST
                           : GL_LINEAR;
     auto mailbox_holder = image_for_compositor->GetMailboxHolder();
+
+    if (mailbox_holder.mailbox.IsZero()) {
+      // This can happen, for example, if an ImageBitmap is produced from a
+      // WebGL-rendered OffscreenCanvas and then the WebGL context is forcibly
+      // lost. This seems to be the only reliable point where this can be
+      // detected.
+      return false;
+    }
+
     auto* sii = image_for_compositor->ContextProvider()->SharedImageInterface();
     bool is_overlay_candidate = sii->UsageForMailbox(mailbox_holder.mailbox) &
                                 gpu::SHARED_IMAGE_USAGE_SCANOUT;
