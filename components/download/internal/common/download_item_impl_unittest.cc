@@ -309,7 +309,7 @@ class DownloadItemTest : public testing::Test {
     if (create_info_->result == DOWNLOAD_INTERRUPT_REASON_NONE) {
       mock_download_file = new StrictMock<MockDownloadFile>;
       download_file.reset(mock_download_file);
-      EXPECT_CALL(*mock_download_file, Initialize(_, _, _, _))
+      EXPECT_CALL(*mock_download_file, Initialize(_, _, _))
           .WillOnce(
               ScheduleCallbackWithParams(DOWNLOAD_INTERRUPT_REASON_NONE, 0,
                                          base::ThreadTaskRunnerHandle::Get()));
@@ -636,7 +636,7 @@ TEST_F(DownloadItemTest, NotificationAfterTogglePause) {
   MockDownloadFile* mock_download_file(new MockDownloadFile);
   std::unique_ptr<DownloadFile> download_file(mock_download_file);
 
-  EXPECT_CALL(*mock_download_file, Initialize(_, _, _, _));
+  EXPECT_CALL(*mock_download_file, Initialize(_, _, _));
   EXPECT_CALL(*mock_delegate(), DetermineDownloadTarget_(_, _));
   item->Start(std::move(download_file), base::DoNothing(), *create_info(),
               URLLoaderFactoryProvider::GetNullPtr());
@@ -1238,7 +1238,7 @@ TEST_F(DownloadItemTest, Start) {
   MockDownloadFile* mock_download_file(new MockDownloadFile);
   std::unique_ptr<DownloadFile> download_file(mock_download_file);
   DownloadItemImpl* item = CreateDownloadItem();
-  EXPECT_CALL(*mock_download_file, Initialize(_, _, _, _));
+  EXPECT_CALL(*mock_download_file, Initialize(_, _, _));
   EXPECT_CALL(*mock_delegate(), DetermineDownloadTarget_(item, _));
   item->Start(std::move(download_file), base::DoNothing(), *create_info(),
               URLLoaderFactoryProvider::GetNullPtr());
@@ -1255,7 +1255,7 @@ TEST_F(DownloadItemTest, InitDownloadFileFails) {
 
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*file, Cancel());
-  EXPECT_CALL(*file, Initialize(_, _, _, _))
+  EXPECT_CALL(*file, Initialize(_, _, _))
       .WillOnce(ScheduleCallbackWithParams(
           DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED, 0,
           base::ThreadTaskRunnerHandle::Get()));
@@ -2487,7 +2487,7 @@ TEST_P(DownloadItemDestinationUpdateRaceTest, DownloadCancelledByUser) {
   EXPECT_CALL(*file_, Cancel());
 
   DownloadFile::InitializeCallback initialize_callback;
-  EXPECT_CALL(*file_, Initialize(_, _, _, _))
+  EXPECT_CALL(*file_, Initialize(_, _, _))
       .WillOnce(SaveArg<0>(&initialize_callback));
   item_->Start(
       std::move(file_),
@@ -2539,7 +2539,7 @@ TEST_P(DownloadItemDestinationUpdateRaceTest, IntermediateRenameFails) {
       }));
 
   DownloadFile::InitializeCallback initialize_callback;
-  EXPECT_CALL(*file_, Initialize(_, _, _, _))
+  EXPECT_CALL(*file_, Initialize(_, _, _))
       .WillOnce(SaveArg<0>(&initialize_callback));
 
   item_->Start(
@@ -2610,7 +2610,7 @@ TEST_P(DownloadItemDestinationUpdateRaceTest, IntermediateRenameSucceeds) {
       }));
 
   DownloadFile::InitializeCallback initialize_callback;
-  EXPECT_CALL(*file_, Initialize(_, _, _, _))
+  EXPECT_CALL(*file_, Initialize(_, _, _))
       .WillOnce(SaveArg<0>(&initialize_callback));
 
   item_->Start(std::move(file_), base::DoNothing(), *create_info(),

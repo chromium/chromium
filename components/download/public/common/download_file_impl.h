@@ -57,8 +57,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
   // DownloadFile functions.
   void Initialize(InitializeCallback initialize_callback,
                   CancelRequestCallback cancel_request_callback,
-                  const DownloadItem::ReceivedSlices& received_slices,
-                  bool is_parallelizable) override;
+                  const DownloadItem::ReceivedSlices& received_slices) override;
   void AddInputStream(std::unique_ptr<InputStream> stream,
                       int64_t offset) override;
   void RenameAndUniquify(const base::FilePath& full_path,
@@ -363,12 +362,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
   base::TimeTicks download_start_;
   RateEstimator rate_estimator_;
   int num_active_streams_;
-  bool record_stream_bandwidth_;
-  base::TimeTicks last_update_time_;
-  size_t bytes_seen_with_parallel_streams_;
-  size_t bytes_seen_without_parallel_streams_;
-  base::TimeDelta download_time_with_parallel_streams_;
-  base::TimeDelta download_time_without_parallel_streams_;
 
   // The slices received, this is being updated when new data are written.
   std::vector<DownloadItem::ReceivedSlice> received_slices_;

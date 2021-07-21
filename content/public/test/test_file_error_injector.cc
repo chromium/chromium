@@ -44,10 +44,10 @@ class DownloadFileWithError : public download::DownloadFileImpl {
 
   ~DownloadFileWithError() override;
 
-  void Initialize(InitializeCallback initialize_callback,
-                  CancelRequestCallback cancel_request_callback,
-                  const download::DownloadItem::ReceivedSlices& received_slices,
-                  bool is_parallelizable) override;
+  void Initialize(
+      InitializeCallback initialize_callback,
+      CancelRequestCallback cancel_request_callback,
+      const download::DownloadItem::ReceivedSlices& received_slices) override;
 
   // DownloadFile interface.
   download::DownloadInterruptReason ValidateAndWriteDataToFile(
@@ -148,8 +148,7 @@ DownloadFileWithError::~DownloadFileWithError() {
 void DownloadFileWithError::Initialize(
     InitializeCallback initialize_callback,
     CancelRequestCallback cancel_request_callback,
-    const download::DownloadItem::ReceivedSlices& received_slices,
-    bool is_parallelizable) {
+    const download::DownloadItem::ReceivedSlices& received_slices) {
   download::DownloadInterruptReason error_to_return =
       download::DOWNLOAD_INTERRUPT_REASON_NONE;
   InitializeCallback callback_to_use = std::move(initialize_callback);
@@ -174,7 +173,7 @@ void DownloadFileWithError::Initialize(
 
   download::DownloadFileImpl::Initialize(std::move(callback_to_use),
                                          std::move(cancel_request_callback),
-                                         received_slices, is_parallelizable);
+                                         received_slices);
 }
 
 download::DownloadInterruptReason

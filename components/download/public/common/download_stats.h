@@ -260,22 +260,6 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordParallelizableDownloadCount(
 COMPONENTS_DOWNLOAD_EXPORT void RecordParallelDownloadRequestCount(
     int request_count);
 
-// Records the bandwidth for parallelizable download and estimates the saved
-// time at the file end. Does not count in any hash computation or file
-// open/close time.
-COMPONENTS_DOWNLOAD_EXPORT void RecordParallelizableDownloadStats(
-    size_t bytes_downloaded_with_parallel_streams,
-    base::TimeDelta time_with_parallel_streams,
-    size_t bytes_downloaded_without_parallel_streams,
-    base::TimeDelta time_without_parallel_streams,
-    bool uses_parallel_requests);
-
-// Records the average bandwidth, time, and file size for parallelizable
-// download.
-COMPONENTS_DOWNLOAD_EXPORT void RecordParallelizableDownloadAverageStats(
-    int64_t bytes_downloaded,
-    const base::TimeDelta& time_span);
-
 // Record the result of a download file rename.
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadFileRenameResultAfterRetry(
     base::TimeDelta time_since_first_failure,

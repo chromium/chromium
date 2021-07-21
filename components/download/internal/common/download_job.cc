@@ -65,7 +65,7 @@ void DownloadJob::Start(DownloadFile* download_file_,
                               weak_ptr_factory_.GetWeakPtr(), callback),
           base::BindRepeating(&DownloadJob::CancelRequestWithOffset,
                               weak_ptr_factory_.GetWeakPtr()),
-          received_slices, IsParallelizable()));
+          received_slices));
 }
 
 void DownloadJob::OnDownloadFileInitialized(

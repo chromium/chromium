@@ -6732,6 +6732,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="HighDownloadBandwidth" separator=".">
+  <obsolete>
+    Removed 2021/07.
+  </obsolete>
   <suffix name="HighDownloadBandwidth" label="download with high bandwidth."/>
   <affected-histogram name="Download.Parallelizable.FileSize"/>
 </histogram_suffixes>
