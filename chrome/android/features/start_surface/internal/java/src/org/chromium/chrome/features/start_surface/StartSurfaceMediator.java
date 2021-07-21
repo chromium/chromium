@@ -779,11 +779,11 @@ class StartSurfaceMediator
                 mSecondaryTasksSurfacePropertyModel.set(IS_INCOGNITO, mIsIncognito);
             }
             if (mSecondaryTasksSurfaceController != null) {
-                mSecondaryTasksSurfaceController.showOverview(false);
+                mSecondaryTasksSurfaceController.showOverview(/* animate = */ true);
             }
         } else {
             if (mSecondaryTasksSurfaceController != null) {
-                mSecondaryTasksSurfaceController.hideOverview(false);
+                mSecondaryTasksSurfaceController.hideOverview(/* animate = */ false);
             }
         }
         mPropertyModel.set(IS_SECONDARY_SURFACE_VISIBLE, isVisible);
