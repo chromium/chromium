@@ -20,4 +20,10 @@ void CheckUserDataDirPolicy(base::FilePath* user_data_dir);
 // process.
 void SetUpBundleOverrides();
 
+// Checks if the system launched the alerts helper app via a notification
+// action. If that's the case we want to gracefully exit the process as we can't
+// handle the click this way. Instead we rely on the browser process to re-spawn
+// the helper if it got killed unexpectedly.
+bool IsAlertsHelperLaunchedViaNotificationAction();
+
 #endif  // CHROME_APP_CHROME_MAIN_MAC_H_

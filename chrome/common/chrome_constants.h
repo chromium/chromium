@@ -27,6 +27,9 @@ extern const base::FilePath::CharType kHelperProcessExecutablePath[];
 // on Mac.
 extern const base::FilePath::CharType kFrameworkName[];
 extern const base::FilePath::CharType kFrameworkExecutableName[];
+// Suffix added to the helper app name to display alert notifications. Must be
+// kept in sync with the value in alert_helper_params (//chrome/BUILD.gn).
+extern const char kMacHelperSuffixAlerts[];
 #endif  // OS_MAC
 #if defined(OS_WIN)
 extern const base::FilePath::CharType kBrowserResourcesDll[];

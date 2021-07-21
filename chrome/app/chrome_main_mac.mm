@@ -8,14 +8,17 @@
 
 #include <string>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #import "base/mac/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "content/public/common/content_paths.h"
+#include "content/public/common/content_switches.h"
 
 void SetUpBundleOverrides() {
   @autoreleasepool {
@@ -32,4 +35,24 @@ void SetUpBundleOverrides() {
     // the app bundle's versioned directory.
     base::PathService::Override(content::CHILD_PROCESS_EXE, child_exe_path);
   }
+}
+
+bool IsAlertsHelperLaunchedViaNotificationAction() {
+  // We allow the main Chrome app to be launched via a notification action. We
+  // detect and log that to UMA by checking the passed in NSNotification in
+  // -applicationDidFinishLaunching: (//chrome/browser/app_controller_mac.mm).
+  if (!base::mac::IsBackgroundOnlyProcess())
+    return false;
+
+  // If we have a process type then we were not launched by the system.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kProcessType))
+    return false;
+
+  base::FilePath path;
+  if (!base::PathService::Get(base::FILE_EXE, &path))
+    return false;
+
+  // Check if our executable name matches the helper app for notifications.
+  std::string helper_name = path.BaseName().value();
+  return base::EndsWith(helper_name, chrome::kMacHelperSuffixAlerts);
 }

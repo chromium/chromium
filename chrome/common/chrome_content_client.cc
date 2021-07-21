@@ -355,7 +355,7 @@ base::FilePath ChromeContentClient::GetChildProcessPath(
     const base::FilePath& helpers_path) {
   std::string helper_name(chrome::kHelperProcessExecutableName);
   if (child_flags == chrome::kChildProcessHelperAlerts) {
-    helper_name += " (Alerts)";
+    helper_name += chrome::kMacHelperSuffixAlerts;
     return helpers_path.Append(helper_name + ".app")
         .Append("Contents")
         .Append("MacOS")

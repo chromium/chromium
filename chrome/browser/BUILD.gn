@@ -5230,6 +5230,7 @@ static_library("browser") {
       "webshare/mac/sharing_service_operation.mm",
     ]
     deps += [
+      "//chrome/app:notification_metrics",
       "//chrome/app_shim",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/ui/cocoa/notifications:common",

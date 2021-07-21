@@ -20,6 +20,7 @@
 
 #if defined(OS_MAC)
 #include "chrome/app/chrome_main_mac.h"
+#include "chrome/app/notification_metrics.h"
 #endif
 
 #if defined(OS_WIN) || defined(OS_LINUX)
@@ -146,6 +147,15 @@ int ChromeMain(int argc, const char** argv) {
   // to Crashpad.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ::switches::kEnableCrashpad);
+#endif
+
+#if defined(OS_MAC)
+  // Gracefully exit if the system tried to launch the macOS notification helper
+  // app when a user clicked on a notification.
+  if (IsAlertsHelperLaunchedViaNotificationAction()) {
+    LogLaunchedViaNotificationAction(NotificationActionSource::kHelperApp);
+    return 0;
+  }
 #endif
 
   int rv = content::ContentMain(params);
