@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_FIRST_RUN_DRIVE_FIRST_RUN_CONTROLLER_H_
-#define CHROME_BROWSER_CHROMEOS_FIRST_RUN_DRIVE_FIRST_RUN_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ASH_FIRST_RUN_DRIVE_FIRST_RUN_CONTROLLER_H_
+#define CHROME_BROWSER_ASH_FIRST_RUN_DRIVE_FIRST_RUN_CONTROLLER_H_
 
 #include "base/macros.h"
 #include "base/observer_list.h"
@@ -94,4 +94,4 @@ class DriveFirstRunController {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_FIRST_RUN_DRIVE_FIRST_RUN_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ASH_FIRST_RUN_DRIVE_FIRST_RUN_CONTROLLER_H_

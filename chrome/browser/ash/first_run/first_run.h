@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_FIRST_RUN_FIRST_RUN_H_
-#define CHROME_BROWSER_CHROMEOS_FIRST_RUN_FIRST_RUN_H_
+#ifndef CHROME_BROWSER_ASH_FIRST_RUN_FIRST_RUN_H_
+#define CHROME_BROWSER_ASH_FIRST_RUN_FIRST_RUN_H_
 
 class Profile;
 
@@ -37,4 +37,4 @@ using ::chromeos::first_run::ShouldLaunchHelpApp;
 }  // namespace first_run
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_FIRST_RUN_FIRST_RUN_H_
+#endif  // CHROME_BROWSER_ASH_FIRST_RUN_FIRST_RUN_H_

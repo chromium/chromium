@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/first_run/drive_first_run_controller.h"
+
 #include <memory>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/chromeos/first_run/drive_first_run_controller.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
