@@ -51,13 +51,6 @@ export class PhotoHandler {
    * Plays UI effect when taking photo.
    */
   playShutterEffect() {}
-
-  /**
-   * Gets frame image blob from current preview.
-   * @return {!Promise<!Blob>}
-   * @abstract
-   */
-  getPreviewFrame() {}
 }
 
 /**
@@ -89,10 +82,11 @@ export class Photo extends ModeBase {
 
     /**
      * CrosImageCapture object to capture still photos.
-     * @type {?CrosImageCapture}
+     * @type {!CrosImageCapture}
      * @protected
      */
-    this.crosImageCapture_ = null;
+    this.crosImageCapture_ =
+        new CrosImageCapture(this.stream_.getVideoTracks()[0]);
 
     /**
      * The observer id for saving metadata.
@@ -113,16 +107,10 @@ export class Photo extends ModeBase {
    * @override
    */
   async start_() {
-    if (this.crosImageCapture_ === null) {
-      this.crosImageCapture_ =
-          new CrosImageCapture(this.stream_.getVideoTracks()[0]);
-    }
-
     const imageName = (new Filenamer()).newImageName();
     if (this.metadataObserverId_ !== null) {
       this.metadataNames_.push(Filenamer.getMetadataName(imageName));
     }
-
 
     state.set(PerfEvent.PHOTO_CAPTURE_SHUTTER, true);
     try {
@@ -153,7 +141,7 @@ export class Photo extends ModeBase {
     if (state.get(state.State.ENABLE_PTZ)) {
       // Workaround for b/184089334 on PTZ camera to use preview frame as
       // photo result.
-      return this.handler_.getPreviewFrame();
+      return this.crosImageCapture_.grabJpegFrame();
     }
     let photoSettings;
     if (this.captureResolution_) {

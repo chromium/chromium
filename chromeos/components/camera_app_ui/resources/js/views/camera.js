@@ -641,13 +641,6 @@ export class Camera extends View {
   /**
    * @override
    */
-  getPreviewFrame() {
-    return this.preview_.toImage();
-  }
-
-  /**
-   * @override
-   */
   async handleResultVideo({resolution, duration, videoSaver, everPaused}) {
     metrics.sendCaptureEvent({
       facing: this.facingMode_,

@@ -22,6 +22,7 @@ import {
   VideoSaver,  // eslint-disable-line no-unused-vars
 } from '../../../models/video_saver.js';
 import {DeviceOperator} from '../../../mojo/device_operator.js';
+import {CrosImageCapture} from '../../../mojo/image_capture.js';
 import * as sound from '../../../sound.js';
 import * as state from '../../../state.js';
 import * as toast from '../../../toast.js';
@@ -35,7 +36,6 @@ import {
   Resolution,
   ResolutionList,  // eslint-disable-line no-unused-vars
 } from '../../../type.js';
-import * as util from '../../../util.js';
 import {WaitableEvent} from '../../../waitable_event.js';
 
 import {ModeBase, ModeFactory} from './mode_base.js';
@@ -167,13 +167,6 @@ export class VideoHandler {
    * Plays UI effect when doing video snapshot.
    */
   playShutterEffect() {}
-
-  /**
-   * Gets frame image blob from current preview.
-   * @return {!Promise<!Blob>}
-   * @abstract
-   */
-  getPreviewFrame() {}
 }
 
 /**
@@ -228,10 +221,10 @@ export class Video extends ModeBase {
     this.mediaRecorder_ = null;
 
     /**
-     * @type {?ImageCapture}
+     * @type {?CrosImageCapture}
      * @private
      */
-    this.imageCapture_ = null;
+    this.crosImageCapture_ = null;
 
     /**
      * Record-time for the elapsed recording time.
@@ -277,18 +270,7 @@ export class Video extends ModeBase {
    */
   takeSnapshot() {
     const doSnapshot = async () => {
-      const bitmap = await this.imageCapture_.grabFrame();
-      const {canvas, ctx} = util.newDrawingCanvas(this.captureResolution_);
-      ctx.drawImage(bitmap, 0, 0);
-      const blob = await (new Promise((resolve, reject) => {
-        canvas.toBlob((blob) => {
-          if (blob) {
-            resolve(blob);
-          } else {
-            reject(new Error('Photo blob error.'));
-          }
-        }, 'image/jpeg');
-      }));
+      const blob = await this.crosImageCapture_.grabJpegFrame();
 
       this.handler_.playShutterEffect();
       const imageName = (new Filenamer()).newImageName();
@@ -412,8 +394,8 @@ export class Video extends ModeBase {
       this.captureStream_ = await StreamManager.getInstance().openCaptureStream(
           this.captureConstraints_);
     }
-    if (this.imageCapture_ === null) {
-      this.imageCapture_ = new ImageCapture(this.getVideoTrack_());
+    if (this.crosImageCapture_ === null) {
+      this.crosImageCapture_ = new CrosImageCapture(this.getVideoTrack_());
     }
 
     try {

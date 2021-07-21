@@ -32,6 +32,25 @@ export function newDrawingCanvas({width, height}) {
 }
 
 /**
+ * @param {!ImageBitmap} bitmap
+ * @return {!Promise<!Blob>}
+ */
+export function bitmapToJpegBlob(bitmap) {
+  const {canvas, ctx} =
+      newDrawingCanvas({width: bitmap.width, height: bitmap.height});
+  ctx.drawImage(bitmap, 0, 0);
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) {
+        resolve(blob);
+      } else {
+        reject(new Error('Photo blob error.'));
+      }
+    }, 'image/jpeg');
+  });
+}
+
+/**
  * Returns a shortcut string, such as Ctrl-Alt-A.
  * @param {!KeyboardEvent} event Keyboard event.
  * @return {string} Shortcut identifier.

@@ -4,6 +4,7 @@
 
 import {reportError} from '../error.js';
 import {ErrorLevel, ErrorType} from '../type.js';
+import {bitmapToJpegBlob} from '../util.js';
 
 import {DeviceOperator} from './device_operator.js';
 
@@ -116,5 +117,20 @@ export class CrosImageCapture {
       takes.unshift(this.capture_.takePhoto(photoSettings));
       return takes;
     }
+  }
+
+  /**
+   * @return {!Promise<!ImageBitmap>}
+   */
+  grabFrame() {
+    return this.capture_.grabFrame();
+  }
+
+  /**
+   * @return {!Promise<!Blob>} Returns jpeg blob of the grabbed frame.
+   */
+  async grabJpegFrame() {
+    const bitmap = await this.capture_.grabFrame();
+    return bitmapToJpegBlob(bitmap);
   }
 }
