@@ -330,13 +330,7 @@ void ThrottlingURLLoader::FollowRedirectForcingRestart() {
   client_receiver_.reset();
   CHECK(throttle_will_redirect_redirect_url_.is_empty());
 
-  for (const std::string& header : removed_headers_) {
-    start_info_->url_request.headers.RemoveHeader(header);
-    start_info_->url_request.cors_exempt_headers.RemoveHeader(header);
-  }
-  start_info_->url_request.headers.MergeFrom(modified_headers_);
-  start_info_->url_request.cors_exempt_headers.MergeFrom(
-      modified_cors_exempt_headers_);
+  UpdateRequestHeaders();
 
   removed_headers_.clear();
   modified_headers_.Clear();
@@ -374,6 +368,7 @@ void ThrottlingURLLoader::FollowRedirect(
   if (!throttle_will_start_redirect_url_.is_empty()) {
     throttle_will_start_redirect_url_ = GURL();
     // This is a synthesized redirect, so no need to tell the URLLoader.
+    UpdateRequestHeaders();
     StartNow();
     return;
   }
@@ -1015,6 +1010,16 @@ void ThrottlingURLLoader::UpdateDeferredRequestHeaders(
     NOTREACHED()
         << "Can only update headers of a request before it's sent out.";
   }
+}
+
+void ThrottlingURLLoader::UpdateRequestHeaders() {
+  for (const std::string& header : removed_headers_) {
+    start_info_->url_request.headers.RemoveHeader(header);
+    start_info_->url_request.cors_exempt_headers.RemoveHeader(header);
+  }
+  start_info_->url_request.headers.MergeFrom(modified_headers_);
+  start_info_->url_request.cors_exempt_headers.MergeFrom(
+      modified_cors_exempt_headers_);
 }
 
 void ThrottlingURLLoader::UpdateDeferredResponseHead(
