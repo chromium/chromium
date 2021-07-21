@@ -850,6 +850,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cookie.TimeDatabaseMigrationToV15" units="ms"
+    expires_after="2022-02-01">
+  <owner>chlily@chromium.org</owner>
+  <owner>dylancutler@chromium.org</owner>
+  <owner>kaustubhag@chromium.org</owner>
+  <summary>
+    The amount of time (ms) to migrate a v14 cookie database to v15. Migration
+    occurs upon first startup of a browser version with v15 database code.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.TimeDatabaseMigrationToV9" units="ms"
     expires_after="2018-08-30">
   <owner>erikchen@chromium.org</owner>
