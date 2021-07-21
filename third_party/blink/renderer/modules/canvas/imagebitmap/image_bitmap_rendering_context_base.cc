@@ -120,6 +120,9 @@ bool ImageBitmapRenderingContextBase::PushFrame() {
     return false;
 
   scoped_refptr<StaticBitmapImage> image = image_layer_bridge_->GetImage();
+  if (!image) {
+    return false;
+  }
   cc::PaintFlags paint_flags;
   paint_flags.setBlendMode(SkBlendMode::kSrc);
   Host()->ResourceProvider()->Canvas()->drawImage(
