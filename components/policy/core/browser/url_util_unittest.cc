@@ -88,10 +88,9 @@ bool MatchFilters(const std::vector<std::string>& patterns,
 
 class FilterToComponentsTest : public testing::TestWithParam<FilterTestParams> {
  public:
-  FilterToComponentsTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FilterToComponentsTest);
+  FilterToComponentsTest() = default;
+  FilterToComponentsTest(const FilterToComponentsTest&) = delete;
+  FilterToComponentsTest& operator=(const FilterToComponentsTest&) = delete;
 };
 
 class OnlyWildcardTest
@@ -101,10 +100,9 @@ class OnlyWildcardTest
                                                std::string /* path */,
                                                std::string /* query*/>> {
  public:
-  OnlyWildcardTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OnlyWildcardTest);
+  OnlyWildcardTest() = default;
+  OnlyWildcardTest(const OnlyWildcardTest&) = delete;
+  OnlyWildcardTest& operator=(const OnlyWildcardTest&) = delete;
 };
 
 }  // namespace

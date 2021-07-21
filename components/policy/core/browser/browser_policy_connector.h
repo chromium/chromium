@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/policy_export.h"
@@ -32,6 +31,8 @@ class PolicyStatisticsCollector;
 // subclasses.
 class POLICY_EXPORT BrowserPolicyConnector : public BrowserPolicyConnectorBase {
  public:
+  BrowserPolicyConnector(const BrowserPolicyConnector&) = delete;
+  BrowserPolicyConnector& operator=(const BrowserPolicyConnector&) = delete;
   ~BrowserPolicyConnector() override;
 
   // Finalizes the initialization of the connector. This call can be skipped on
@@ -100,8 +101,6 @@ class POLICY_EXPORT BrowserPolicyConnector : public BrowserPolicyConnectorBase {
   std::unique_ptr<PolicyStatisticsCollector> policy_statistics_collector_;
 
   std::unique_ptr<DeviceManagementService> device_management_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserPolicyConnector);
 };
 
 }  // namespace policy

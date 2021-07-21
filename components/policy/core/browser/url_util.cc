@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -109,6 +108,9 @@ void ProcessQueryToConditions(
 // singleton so the cached regexes are only created once.
 class EmbeddedURLExtractor {
  public:
+  EmbeddedURLExtractor(const EmbeddedURLExtractor&) = delete;
+  EmbeddedURLExtractor& operator=(const EmbeddedURLExtractor&) = delete;
+
   static EmbeddedURLExtractor* GetInstance() {
     static base::NoDestructor<EmbeddedURLExtractor> instance;
     return instance.get();
@@ -207,8 +209,6 @@ class EmbeddedURLExtractor {
   const re2::RE2 google_amp_cache_path_regex_;
   const re2::RE2 google_amp_viewer_path_regex_;
   const re2::RE2 google_web_cache_query_regex_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedURLExtractor);
 };
 
 }  // namespace

@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_export.h"
@@ -36,6 +35,9 @@ struct POLICY_EXPORT PolicyToPreferenceMapEntry {
 class POLICY_EXPORT ConfigurationPolicyHandler {
  public:
   ConfigurationPolicyHandler();
+  ConfigurationPolicyHandler(const ConfigurationPolicyHandler&) = delete;
+  ConfigurationPolicyHandler& operator=(const ConfigurationPolicyHandler&) =
+      delete;
   virtual ~ConfigurationPolicyHandler();
 
   // Returns whether the policy settings handled by this
@@ -66,9 +68,6 @@ class POLICY_EXPORT ConfigurationPolicyHandler {
   // ApplyPolicySettings.
   virtual void ApplyPolicySettings(const PolicyMap& policies,
                                    PrefValueMap* prefs) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConfigurationPolicyHandler);
 };
 
 // Abstract class derived from ConfigurationPolicyHandler that should be
@@ -93,6 +92,9 @@ class POLICY_EXPORT TypeCheckingPolicyHandler : public NamedPolicyHandler {
  public:
   TypeCheckingPolicyHandler(const char* policy_name,
                             base::Value::Type value_type);
+  TypeCheckingPolicyHandler(const TypeCheckingPolicyHandler&) = delete;
+  TypeCheckingPolicyHandler& operator=(const TypeCheckingPolicyHandler&) =
+      delete;
   ~TypeCheckingPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
@@ -108,8 +110,6 @@ class POLICY_EXPORT TypeCheckingPolicyHandler : public NamedPolicyHandler {
  private:
   // The type the value of the policy should have.
   base::Value::Type value_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TypeCheckingPolicyHandler);
 };
 
 // Policy handler that makes sure the policy value is a list and filters out any
@@ -118,6 +118,8 @@ class POLICY_EXPORT TypeCheckingPolicyHandler : public NamedPolicyHandler {
 class POLICY_EXPORT ListPolicyHandler : public TypeCheckingPolicyHandler {
  public:
   ListPolicyHandler(const char* policy_name, base::Value::Type list_entry_type);
+  ListPolicyHandler(const ListPolicyHandler&) = delete;
+  ListPolicyHandler& operator=(const ListPolicyHandler&) = delete;
   ~ListPolicyHandler() override;
 
   // TypeCheckingPolicyHandler methods:
@@ -151,8 +153,6 @@ class POLICY_EXPORT ListPolicyHandler : public TypeCheckingPolicyHandler {
 
   // Expected value type for list entries. All other types are filtered out.
   base::Value::Type list_entry_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(ListPolicyHandler);
 };
 
 // Abstract class derived from TypeCheckingPolicyHandler that ensures an int
@@ -165,6 +165,9 @@ class POLICY_EXPORT IntRangePolicyHandlerBase
                             int min,
                             int max,
                             bool clamp);
+  IntRangePolicyHandlerBase(const IntRangePolicyHandlerBase&) = delete;
+  IntRangePolicyHandlerBase& operator=(const IntRangePolicyHandlerBase&) =
+      delete;
 
   // ConfigurationPolicyHandler:
   bool CheckPolicySettings(const PolicyMap& policies,
@@ -190,8 +193,6 @@ class POLICY_EXPORT IntRangePolicyHandlerBase
   // Whether to clamp values lying outside the allowed range instead of
   // rejecting them.
   bool clamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(IntRangePolicyHandlerBase);
 };
 
 // ConfigurationPolicyHandler for policies that map directly to a preference.
@@ -200,6 +201,8 @@ class POLICY_EXPORT SimplePolicyHandler : public TypeCheckingPolicyHandler {
   SimplePolicyHandler(const char* policy_name,
                       const char* pref_path,
                       base::Value::Type value_type);
+  SimplePolicyHandler(const SimplePolicyHandler&) = delete;
+  SimplePolicyHandler& operator=(const SimplePolicyHandler&) = delete;
   ~SimplePolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
@@ -209,8 +212,6 @@ class POLICY_EXPORT SimplePolicyHandler : public TypeCheckingPolicyHandler {
  private:
   // The DictionaryValue path of the preference the policy maps to.
   const char* pref_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimplePolicyHandler);
 };
 
 // Base class that encapsulates logic for mapping from a string enum list
@@ -236,6 +237,10 @@ class POLICY_EXPORT StringMappingListPolicyHandler
   StringMappingListPolicyHandler(const char* policy_name,
                                  const char* pref_path,
                                  const GenerateMapCallback& map_generator);
+  StringMappingListPolicyHandler(const StringMappingListPolicyHandler&) =
+      delete;
+  StringMappingListPolicyHandler& operator=(
+      const StringMappingListPolicyHandler&) = delete;
   ~StringMappingListPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
@@ -264,8 +269,6 @@ class POLICY_EXPORT StringMappingListPolicyHandler
   // Map of string policy values to local pref values. This is generated lazily
   // so the generation does not have to happen if no policy is present.
   std::vector<std::unique_ptr<MappingEntry>> map_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringMappingListPolicyHandler);
 };
 
 // A policy handler implementation that ensures an int policy's value lies in an
@@ -277,6 +280,8 @@ class POLICY_EXPORT IntRangePolicyHandler : public IntRangePolicyHandlerBase {
                         int min,
                         int max,
                         bool clamp);
+  IntRangePolicyHandler(const IntRangePolicyHandler&) = delete;
+  IntRangePolicyHandler& operator=(const IntRangePolicyHandler&) = delete;
   ~IntRangePolicyHandler() override;
 
   // ConfigurationPolicyHandler:
@@ -286,8 +291,6 @@ class POLICY_EXPORT IntRangePolicyHandler : public IntRangePolicyHandlerBase {
  private:
   // Name of the pref to write.
   const char* pref_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(IntRangePolicyHandler);
 };
 
 // A policy handler implementation that maps an int percentage value to a
@@ -300,6 +303,10 @@ class POLICY_EXPORT IntPercentageToDoublePolicyHandler
                                      int min,
                                      int max,
                                      bool clamp);
+  IntPercentageToDoublePolicyHandler(
+      const IntPercentageToDoublePolicyHandler&) = delete;
+  IntPercentageToDoublePolicyHandler& operator=(
+      const IntPercentageToDoublePolicyHandler&) = delete;
   ~IntPercentageToDoublePolicyHandler() override;
 
   // ConfigurationPolicyHandler:
@@ -309,8 +316,6 @@ class POLICY_EXPORT IntPercentageToDoublePolicyHandler
  private:
   // Name of the pref to write.
   const char* pref_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(IntPercentageToDoublePolicyHandler);
 };
 
 // Like TypeCheckingPolicyHandler, but validates against a schema instead of a
@@ -321,6 +326,9 @@ class POLICY_EXPORT SchemaValidatingPolicyHandler : public NamedPolicyHandler {
   SchemaValidatingPolicyHandler(const char* policy_name,
                                 Schema schema,
                                 SchemaOnErrorStrategy strategy);
+  SchemaValidatingPolicyHandler(const SchemaValidatingPolicyHandler&) = delete;
+  SchemaValidatingPolicyHandler& operator=(
+      const SchemaValidatingPolicyHandler&) = delete;
   ~SchemaValidatingPolicyHandler() override;
 
   // ConfigurationPolicyHandler:
@@ -336,8 +344,6 @@ class POLICY_EXPORT SchemaValidatingPolicyHandler : public NamedPolicyHandler {
  private:
   const Schema schema_;
   const SchemaOnErrorStrategy strategy_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchemaValidatingPolicyHandler);
 };
 
 // Maps policy to pref like SimplePolicyHandler while ensuring that the value
@@ -359,6 +365,10 @@ class POLICY_EXPORT SimpleSchemaValidatingPolicyHandler
       SchemaOnErrorStrategy strategy,
       RecommendedPermission recommended_permission,
       MandatoryPermission mandatory_permission);
+  SimpleSchemaValidatingPolicyHandler(
+      const SimpleSchemaValidatingPolicyHandler&) = delete;
+  SimpleSchemaValidatingPolicyHandler& operator=(
+      const SimpleSchemaValidatingPolicyHandler&) = delete;
   ~SimpleSchemaValidatingPolicyHandler() override;
 
   // ConfigurationPolicyHandler:
@@ -371,8 +381,6 @@ class POLICY_EXPORT SimpleSchemaValidatingPolicyHandler
   const char* pref_path_;
   const bool allow_recommended_;
   const bool allow_mandatory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleSchemaValidatingPolicyHandler);
 };
 
 // Maps policy to pref like SimplePolicyHandler. Ensures that the root value
@@ -396,6 +404,10 @@ class POLICY_EXPORT SimpleJsonStringSchemaValidatingPolicyHandler
           recommended_permission,
       SimpleSchemaValidatingPolicyHandler::MandatoryPermission
           mandatory_permission);
+  SimpleJsonStringSchemaValidatingPolicyHandler(
+      const SimpleJsonStringSchemaValidatingPolicyHandler&) = delete;
+  SimpleJsonStringSchemaValidatingPolicyHandler& operator=(
+      const SimpleJsonStringSchemaValidatingPolicyHandler&) = delete;
 
   ~SimpleJsonStringSchemaValidatingPolicyHandler() override;
 
@@ -441,8 +453,6 @@ class POLICY_EXPORT SimpleJsonStringSchemaValidatingPolicyHandler
   const char* pref_path_;
   const bool allow_recommended_;
   const bool allow_mandatory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleJsonStringSchemaValidatingPolicyHandler);
 };
 
 // A policy handler to deprecate multiple legacy policies with a new one.
@@ -455,6 +465,10 @@ class POLICY_EXPORT LegacyPoliciesDeprecatingPolicyHandler
       std::vector<std::unique_ptr<ConfigurationPolicyHandler>>
           legacy_policy_handlers,
       std::unique_ptr<NamedPolicyHandler> new_policy_handler);
+  LegacyPoliciesDeprecatingPolicyHandler(
+      const LegacyPoliciesDeprecatingPolicyHandler&) = delete;
+  LegacyPoliciesDeprecatingPolicyHandler& operator=(
+      const LegacyPoliciesDeprecatingPolicyHandler&) = delete;
   ~LegacyPoliciesDeprecatingPolicyHandler() override;
 
   // ConfigurationPolicyHandler:
@@ -473,8 +487,6 @@ class POLICY_EXPORT LegacyPoliciesDeprecatingPolicyHandler
   std::vector<std::unique_ptr<ConfigurationPolicyHandler>>
       legacy_policy_handlers_;
   std::unique_ptr<NamedPolicyHandler> new_policy_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(LegacyPoliciesDeprecatingPolicyHandler);
 };
 
 // A policy handler to deprecate a single policy with a new one. It will attempt
@@ -485,11 +497,11 @@ class POLICY_EXPORT SimpleDeprecatingPolicyHandler
   SimpleDeprecatingPolicyHandler(
       std::unique_ptr<NamedPolicyHandler> legacy_policy_handler,
       std::unique_ptr<NamedPolicyHandler> new_policy_handler);
-  ~SimpleDeprecatingPolicyHandler() override;
   SimpleDeprecatingPolicyHandler(const SimpleDeprecatingPolicyHandler&) =
       delete;
   SimpleDeprecatingPolicyHandler& operator=(
       const SimpleDeprecatingPolicyHandler&) = delete;
+  ~SimpleDeprecatingPolicyHandler() override;
 
   // ConfigurationPolicyHandler:
   bool CheckPolicySettings(const PolicyMap& policies,

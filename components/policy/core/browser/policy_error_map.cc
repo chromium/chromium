@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -22,7 +21,9 @@ class PolicyErrorMap::PendingError {
  public:
   explicit PendingError(const std::string& policy_name)
       : policy_name_(policy_name) {}
-  virtual ~PendingError() {}
+  PendingError(const PendingError&) = delete;
+  PendingError& operator=(const PendingError&) = delete;
+  virtual ~PendingError() = default;
 
   const std::string& policy_name() const { return policy_name_; }
 
@@ -30,8 +31,6 @@ class PolicyErrorMap::PendingError {
 
  private:
   std::string policy_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingError);
 };
 
 namespace {
@@ -61,6 +60,8 @@ class SimplePendingError : public PolicyErrorMap::PendingError {
         replacement_b_(replacement_b) {
     DCHECK(replacement_b.empty() || !replacement_a.empty());
   }
+  SimplePendingError(const SimplePendingError&) = delete;
+  SimplePendingError& operator=(const SimplePendingError&) = delete;
   ~SimplePendingError() override = default;
 
   std::u16string GetMessage() const override {
@@ -82,8 +83,6 @@ class SimplePendingError : public PolicyErrorMap::PendingError {
   int message_id_;
   std::string replacement_a_;
   std::string replacement_b_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimplePendingError);
 };
 
 class DictSubkeyPendingError : public SimplePendingError {
@@ -94,7 +93,9 @@ class DictSubkeyPendingError : public SimplePendingError {
                          const std::string& replacement)
       : SimplePendingError(policy_name, message_id, replacement),
         subkey_(subkey) {}
-  ~DictSubkeyPendingError() override {}
+  DictSubkeyPendingError(const DictSubkeyPendingError&) = delete;
+  DictSubkeyPendingError& operator=(const DictSubkeyPendingError&) = delete;
+  ~DictSubkeyPendingError() override = default;
 
   std::u16string GetMessage() const override {
     return l10n_util::GetStringFUTF16(IDS_POLICY_SUBKEY_ERROR,
@@ -104,8 +105,6 @@ class DictSubkeyPendingError : public SimplePendingError {
 
  private:
   std::string subkey_;
-
-  DISALLOW_COPY_AND_ASSIGN(DictSubkeyPendingError);
 };
 
 class ListItemPendingError : public SimplePendingError {
@@ -116,7 +115,9 @@ class ListItemPendingError : public SimplePendingError {
                        const std::string& replacement)
       : SimplePendingError(policy_name, message_id, replacement),
         index_(index) {}
-  ~ListItemPendingError() override {}
+  ListItemPendingError(const ListItemPendingError&) = delete;
+  ListItemPendingError& operator=(const ListItemPendingError&) = delete;
+  ~ListItemPendingError() override = default;
 
   std::u16string GetMessage() const override {
     return l10n_util::GetStringFUTF16(IDS_POLICY_LIST_ENTRY_ERROR,
@@ -126,8 +127,6 @@ class ListItemPendingError : public SimplePendingError {
 
  private:
   int index_;
-
-  DISALLOW_COPY_AND_ASSIGN(ListItemPendingError);
 };
 
 class SchemaValidatingPendingError : public SimplePendingError {
@@ -137,7 +136,10 @@ class SchemaValidatingPendingError : public SimplePendingError {
                                const std::string& replacement)
       : SimplePendingError(policy_name, -1, replacement),
         error_path_(error_path) {}
-  ~SchemaValidatingPendingError() override {}
+  SchemaValidatingPendingError(const SchemaValidatingPendingError&) = delete;
+  SchemaValidatingPendingError& operator=(const SchemaValidatingPendingError&) =
+      delete;
+  ~SchemaValidatingPendingError() override = default;
 
   std::u16string GetMessage() const override {
     return l10n_util::GetStringFUTF16(IDS_POLICY_SCHEMA_VALIDATION_ERROR,
@@ -147,8 +149,6 @@ class SchemaValidatingPendingError : public SimplePendingError {
 
  private:
   std::string error_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchemaValidatingPendingError);
 };
 
 }  // namespace

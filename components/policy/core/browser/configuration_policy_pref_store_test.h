@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
@@ -22,6 +21,12 @@ class PolicyMap;
 class ConfigurationPolicyPrefStore;
 
 class ConfigurationPolicyPrefStoreTest : public testing::Test {
+ public:
+  ConfigurationPolicyPrefStoreTest(const ConfigurationPolicyPrefStoreTest&) =
+      delete;
+  ConfigurationPolicyPrefStoreTest& operator=(
+      const ConfigurationPolicyPrefStoreTest&) = delete;
+
  protected:
   ConfigurationPolicyPrefStoreTest();
   ~ConfigurationPolicyPrefStoreTest() override;
@@ -39,9 +44,6 @@ class ConfigurationPolicyPrefStoreTest : public testing::Test {
   std::unique_ptr<PolicyServiceImpl> policy_service_;
   scoped_refptr<ConfigurationPolicyPrefStore> store_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConfigurationPolicyPrefStoreTest);
 };
 
 }  // namespace policy

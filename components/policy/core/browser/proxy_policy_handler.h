@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 namespace policy {
@@ -34,6 +33,8 @@ class POLICY_EXPORT ProxyPolicyHandler : public ConfigurationPolicyHandler {
   };
 
   ProxyPolicyHandler();
+  ProxyPolicyHandler(const ProxyPolicyHandler&) = delete;
+  ProxyPolicyHandler& operator=(const ProxyPolicyHandler&) = delete;
   ~ProxyPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
@@ -52,8 +53,6 @@ class POLICY_EXPORT ProxyPolicyHandler : public ConfigurationPolicyHandler {
   bool CheckProxyModeAndServerMode(const PolicyMap& policies,
                                    PolicyErrorMap* errors,
                                    std::string* mode_value);
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyPolicyHandler);
 };
 
 }  // namespace policy

@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/policy/policy_export.h"
 
 namespace policy {
@@ -26,6 +25,8 @@ class POLICY_EXPORT PolicyErrorMap {
   class PendingError;
 
   PolicyErrorMap();
+  PolicyErrorMap(const PolicyErrorMap&) = delete;
+  PolicyErrorMap& operator=(const PolicyErrorMap&) = delete;
   virtual ~PolicyErrorMap();
 
   // Returns true when the errors logged are ready to be retrieved. It is always
@@ -122,8 +123,6 @@ class POLICY_EXPORT PolicyErrorMap {
 
   // Maps policy keys to debug infos set through |SetDebugInfo|.
   std::map<std::string, std::string> debug_infos_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyErrorMap);
 };
 
 }  // namespace policy

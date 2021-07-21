@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -36,6 +35,9 @@ class TestingURLBlocklistManager : public URLBlocklistManager {
       : URLBlocklistManager(pref_service),
         update_called_(0),
         set_blocklist_called_(false) {}
+  TestingURLBlocklistManager(const TestingURLBlocklistManager&) = delete;
+  TestingURLBlocklistManager& operator=(const TestingURLBlocklistManager&) =
+      delete;
 
   ~TestingURLBlocklistManager() override = default;
 
@@ -59,8 +61,6 @@ class TestingURLBlocklistManager : public URLBlocklistManager {
  private:
   int update_called_;
   bool set_blocklist_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingURLBlocklistManager);
 };
 
 class URLBlocklistManagerTest : public testing::Test {

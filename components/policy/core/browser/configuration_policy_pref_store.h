@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "components/policy/core/common/policy_map.h"
@@ -38,6 +37,9 @@ class POLICY_EXPORT ConfigurationPolicyPrefStore
       PolicyService* service,
       const ConfigurationPolicyHandlerList* handler_list,
       PolicyLevel level);
+  ConfigurationPolicyPrefStore(const ConfigurationPolicyPrefStore&) = delete;
+  ConfigurationPolicyPrefStore& operator=(const ConfigurationPolicyPrefStore&) =
+      delete;
 
   // PrefStore methods:
   void AddObserver(PrefStore::Observer* observer) override;
@@ -82,8 +84,6 @@ class POLICY_EXPORT ConfigurationPolicyPrefStore
   std::unique_ptr<PrefValueMap> prefs_;
 
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConfigurationPolicyPrefStore);
 };
 
 }  // namespace policy

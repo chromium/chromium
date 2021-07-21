@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "net/test/spawned_test_server/local_test_server.h"
 #include "url/gurl.h"
@@ -37,6 +36,9 @@ class LocalPolicyTestServer : public net::LocalTestServer {
   // {source_root}/|source_root_relative_config_file|.
   explicit LocalPolicyTestServer(
       const std::string& source_root_relative_config_file);
+
+  LocalPolicyTestServer(const LocalPolicyTestServer&) = delete;
+  LocalPolicyTestServer& operator=(const LocalPolicyTestServer&) = delete;
 
   ~LocalPolicyTestServer() override;
 
@@ -108,8 +110,6 @@ class LocalPolicyTestServer : public net::LocalTestServer {
   base::DictionaryValue clients_;
   base::ScopedTempDir server_data_dir_;
   bool automatic_rotation_of_signing_keys_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalPolicyTestServer);
 };
 
 }  // namespace policy

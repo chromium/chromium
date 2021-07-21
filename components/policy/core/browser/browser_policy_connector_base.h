@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_registry.h"
@@ -25,6 +24,10 @@ class PolicyServiceImpl;
 // the policy component, mainly the PolicyProviders and the PolicyService.
 class POLICY_EXPORT BrowserPolicyConnectorBase {
  public:
+  BrowserPolicyConnectorBase(const BrowserPolicyConnectorBase&) = delete;
+  BrowserPolicyConnectorBase& operator=(const BrowserPolicyConnectorBase&) =
+      delete;
+
   // Invoke Shutdown() before deleting, see below.
   virtual ~BrowserPolicyConnectorBase();
 
@@ -118,8 +121,6 @@ class POLICY_EXPORT BrowserPolicyConnectorBase {
 
   // Callbacks scheduled via NotifyWhenResourceBundleReady().
   std::vector<base::OnceClosure> resource_bundle_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserPolicyConnectorBase);
 };
 
 }  // namespace policy
