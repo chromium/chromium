@@ -846,7 +846,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       upload_size_(0),
       upload_position_(0),
       is_resume_pending_(false),
-      is_being_destroyed_(false),
       notify_disconnection_(false),
       dialog_manager_(nullptr),
       is_showing_before_unload_dialog_(false),
@@ -905,7 +904,7 @@ WebContentsImpl::~WebContentsImpl() {
 
   // Imperfect sanity check against double free, given some crashes unexpectedly
   // observed in the wild.
-  CHECK(!is_being_destroyed_);
+  CHECK(!IsBeingDestroyed());
 
   // We generally keep track of is_being_destroyed_ to let other features know
   // to avoid certain actions during destruction.
@@ -1886,7 +1885,7 @@ base::ScopedClosureRunner WebContentsImpl::IncrementCapturerCount(
     bool stay_hidden,
     bool stay_awake) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::IncrementCapturerCount");
-  DCHECK(!is_being_destroyed_);
+  DCHECK(!IsBeingDestroyed());
   if (stay_hidden) {
     // A hidden capture should not have side effect on the web contents, so it
     // should not pass a non-empty |capture_size| which will cause side effect.
@@ -3042,12 +3041,12 @@ void WebContentsImpl::RenderWidgetDeleted(
     RenderWidgetHostImpl* render_widget_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RenderWidgetDeleted",
                         "render_widget_host", render_widget_host);
-  // Note that |is_being_destroyed_| can be true at this point as
+  // Note that IsBeingDestroyed() can return true at this point as
   // ~WebContentsImpl() calls RFHM::ClearRFHsPendingShutdown(), which might lead
   // us here.
   created_widgets_.erase(render_widget_host);
 
-  if (is_being_destroyed_)
+  if (IsBeingDestroyed())
     return;
 
   if (render_widget_host == mouse_lock_widget_)
@@ -3156,12 +3155,15 @@ bool WebContentsImpl::PreHandleGestureEvent(
 }
 
 RenderWidgetHostInputEventRouter* WebContentsImpl::GetInputEventRouter() {
-  if (!is_being_destroyed_ && GetOuterWebContents())
-    return GetOuterWebContents()->GetInputEventRouter();
+  if (!IsBeingDestroyed()) {
+    if (GetOuterWebContents())
+      return GetOuterWebContents()->GetInputEventRouter();
 
-  if (!rwh_input_event_router_.get() && !is_being_destroyed_)
-    rwh_input_event_router_ =
-        std::make_unique<RenderWidgetHostInputEventRouter>();
+    if (!rwh_input_event_router_.get()) {
+      rwh_input_event_router_ =
+          std::make_unique<RenderWidgetHostInputEventRouter>();
+    }
+  }
   return rwh_input_event_router_.get();
 }
 
@@ -3171,7 +3173,7 @@ void WebContentsImpl::ReplicatePageFocus(bool is_focused) {
   // Focus loss may occur while this WebContents is being destroyed.  Don't
   // send the message in this case, as the main frame's RenderFrameHost and
   // other state has already been cleared.
-  if (is_being_destroyed_)
+  if (IsBeingDestroyed())
     return;
 
   frame_tree_.ReplicatePageFocus(is_focused);
@@ -6321,7 +6323,7 @@ void WebContentsImpl::ResetLoadProgressState() {
 // loading, or done loading.
 void WebContentsImpl::LoadingStateChanged(bool to_different_document,
                                           LoadNotificationDetails* details) {
-  if (is_being_destroyed_)
+  if (IsBeingDestroyed())
     return;
 
   bool is_loading = IsLoading();
@@ -6950,7 +6952,7 @@ void WebContentsImpl::InnerWebContentsAttached(
 void WebContentsImpl::InnerWebContentsDetached(
     WebContents* inner_web_contents) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::InnerWebContentsCreated");
-  if (!is_being_destroyed_)
+  if (!IsBeingDestroyed())
     OnAudioStateChanged();
 }
 
@@ -6992,7 +6994,7 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
   // current_frame_host() for the root FrameTreeNode has already been cleared.
   // Since the WebContents is going away, none of the work here is needed, so
   // just return early.
-  if (is_being_destroyed_)
+  if (IsBeingDestroyed())
     return;
 
   if (rvh != GetRenderViewHost()) {
@@ -7167,7 +7169,7 @@ void WebContentsImpl::DidStopLoading() {
 
 void WebContentsImpl::DidChangeLoadProgress() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DidChangeLoadProgress");
-  if (is_being_destroyed_)
+  if (IsBeingDestroyed())
     return;
   double load_progress = frame_tree_.load_progress();
 
@@ -8130,7 +8132,7 @@ void WebContentsImpl::NotifyFindReply(int request_id,
                                       int active_match_ordinal,
                                       bool final_update) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::NotifyFindReply");
-  if (delegate_ && !is_being_destroyed_ &&
+  if (delegate_ && !IsBeingDestroyed() &&
       !GetMainFrame()->GetProcess()->FastShutdownStarted()) {
     delegate_->FindReply(this, request_id, number_of_matches, selection_rect,
                          active_match_ordinal, final_update);
@@ -8923,7 +8925,7 @@ void WebContentsImpl::DecrementCapturerCount(bool stay_hidden,
   DCHECK_GE(visible_capturer_count_, 0);
   DCHECK_GE(stay_awake_capturer_count_, 0);
 
-  if (is_being_destroyed_)
+  if (IsBeingDestroyed())
     return;
 
   const bool is_being_captured = IsBeingCaptured();

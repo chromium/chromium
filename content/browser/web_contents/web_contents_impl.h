@@ -1920,8 +1920,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // while it is on the call stack, as that leads to use-after-frees.
   bool prevent_destruction_ = false;
 
-  // See getter above.
-  bool is_being_destroyed_;
+  bool is_being_destroyed_ = false;
 
   // Indicates whether we should notify about disconnection of this
   // WebContentsImpl. This is used to ensure disconnection notifications only

@@ -416,6 +416,8 @@ class CONTENT_EXPORT FrameTree {
   bool IsFencedFrameTree() const { return is_fenced_frame_tree_; }
   void SetFencedFrameTreeForTesting() { is_fenced_frame_tree_ = true; }
 
+  bool IsBeingDestroyed() const { return is_being_destroyed_; }
+
  private:
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);
@@ -468,6 +470,8 @@ class CONTENT_EXPORT FrameTree {
   // TODO(crbug.com/1123606): Integrate this with the MPArch based fenced frame
   // code once that lands. Possibly this will then be part of |type_|.
   bool is_fenced_frame_tree_ = false;
+
+  bool is_being_destroyed_ = false;
 
 #if DCHECK_IS_ON()
   // Whether Shutdown() was called.

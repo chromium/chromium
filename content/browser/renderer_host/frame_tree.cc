@@ -201,6 +201,7 @@ FrameTree::FrameTree(
       type_(type) {}
 
 FrameTree::~FrameTree() {
+  is_being_destroyed_ = true;
 #if DCHECK_IS_ON()
   DCHECK(was_shut_down_);
 #endif

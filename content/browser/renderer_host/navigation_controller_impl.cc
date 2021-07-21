@@ -2279,7 +2279,7 @@ void NavigationControllerImpl::DiscardPendingEntry(bool was_failure) {
   // progress, since this will cause a use-after-free.  (We only allow this
   // when the tab is being destroyed for shutdown, since it won't return to
   // NavigateToEntry in that case.)  http://crbug.com/347742.
-  CHECK(!in_navigate_to_pending_entry_ || delegate_->IsBeingDestroyed());
+  CHECK(!in_navigate_to_pending_entry_ || frame_tree_.IsBeingDestroyed());
 
   if (was_failure && pending_entry_) {
     failed_pending_entry_id_ = pending_entry_->GetUniqueID();
@@ -3690,7 +3690,7 @@ void NavigationControllerImpl::NotifyNavigationEntryCommitted(
     LoadCommittedDetails* details) {
   details->entry = GetLastCommittedEntry();
 
-  // We need to notify the ssl_manager_ before the web_contents_ so the
+  // We need to notify the ssl_manager_ before the WebContents so the
   // location bar will have up-to-date information about the security style
   // when it wants to draw.  See http://crbug.com/11157
   ssl_manager_.DidCommitProvisionalLoad(*details);
