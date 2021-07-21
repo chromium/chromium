@@ -1443,6 +1443,13 @@
          {}
         ]
        ],
+       "legend-sticky-crash.html": [
+        "71debf7e44266ca01ee22156d882359d0ba1532b",
+        [
+         null,
+         {}
+        ]
+       ],
        "multicol-legend-becomes-floated-crash.html": [
         "0e7f87232abb99000e7bc351dd73aee207c3b13a",
         [
@@ -267736,6 +267743,10 @@
        "112d7ecbebc21d1340baaba6db7a7daed22e79c4",
        []
       ],
+      "shared-worker.js": [
+       "c5f2c3cc2c3b5fe88d59fb86ed112c2fa2964d69",
+       []
+      ],
       "sw-store-to-cache-storage.js": [
        "00b9e9395a7ec2171b3fee9d75f6ccb1d46ee60f",
        []
@@ -272394,6 +272405,10 @@
         []
        ]
       },
+      "hidden-elements-expected.txt": [
+       "1e99ce15605866d22fce647cb46394eaab139603",
+       []
+      ],
       "lists": {
        "DIR_METADATA": [
         "aab9ded40a44aa888745a4a544ff6b6874015624",
@@ -287445,6 +287460,10 @@
      []
     ],
     "textcontrols": {
+     "selectionchange-expected.txt": [
+      "1eb56856cdc0847ef6cde2cf4451d47bb0fbde83",
+      []
+     ],
      "selectionchange.tentative-expected.txt": [
       "1eb56856cdc0847ef6cde2cf4451d47bb0fbde83",
       []
@@ -290230,6 +290249,14 @@
     },
     "historical-expected.txt": [
      "df7158818d4988a7b294b3b8004536f2dd30fafb",
+     []
+    ],
+    "imperative-slot-api-expected.txt": [
+     "32b0dc996d7062d1f839af87c1393f9a9a58a7ab",
+     []
+    ],
+    "imperative-slot-api-slotchange-expected.txt": [
+     "0b282942e4c31ae4405e0d7929ca2cdd21c34788",
      []
     ],
     "reference": {
@@ -295341,6 +295368,12 @@
        []
       ]
      }
+    },
+    "resources": {
+     "transfer-arraybuffer-to-parent.html": [
+      "97cff4dcb3f902eeaae0e937a6473d065d4298dd",
+      []
+     ]
     },
     "support": {
      "ChildWindowPostMessage.htm": [
@@ -356043,6 +356076,13 @@
        {}
       ]
      ],
+     "dynamic-range.html": [
+      "261fccf635e116cb869e525e2c7c363592b45ea3",
+      [
+       null,
+       {}
+      ]
+     ],
      "forced-colors.html": [
       "005b5cf4a8bd01d9f360d808c1c8700c85de9364",
       [
@@ -412049,7 +412089,7 @@
       ]
      ],
      "reporting-to-endpoint.https.html": [
-      "ad1f18cbb3b65b681a674a99d54cb2e20df626ad",
+      "6bcee157f38001d44859e6217edcaeaf3b103b2b",
       [
        null,
        {
@@ -436990,7 +437030,7 @@
      ]
     ],
     "MediaStreamTrackGenerator-video.https.html": [
-     "3042f0386df737c75347f8eec7b0c543faf274c3",
+     "1185630b7cd27eb709d5579644efc25e1d8e7210",
      [
       null,
       {}
@@ -462647,7 +462687,14 @@
        }
       ]
      ],
-     "selectionchange.tentative.html": [
+     "selectionchange-bubble.html": [
+      "834b32bdd3b8fd63d18d3a0b7cad47b8473506c4",
+      [
+       null,
+       {}
+      ]
+     ],
+     "selectionchange.html": [
       "2b43cfe44b9d845251acdf1dec3e8f83060bf644",
       [
        null,
@@ -466366,14 +466413,14 @@
      ]
     ],
     "imperative-slot-api-slotchange.html": [
-     "1aa6a786760f81fdd37628fe6863717a4cfa7cb8",
+     "236aaea18a14dfb4f0f62948a5ea2df38e3ca4f1",
      [
       null,
       {}
      ]
     ],
     "imperative-slot-api.html": [
-     "8133d7e8ebe5e2c90ddd893ffd0b60552ba9c5f1",
+     "67a0555379da3a3de2556d4452f8afc1a2259d3f",
      [
       null,
       {}
@@ -490233,6 +490280,13 @@
     ],
     "postMessage_asterisk_xorigin.sub.htm": [
      "532f28251cb36159946ef3d0e99ce9b4ccbe92e2",
+     [
+      null,
+      {}
+     ]
+    ],
+    "postMessage_crosssite.sub.htm": [
+     "25bccd9df27a6688ae823bc15e9badcf7534825e",
      [
       null,
       {}
