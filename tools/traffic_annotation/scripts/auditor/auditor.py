@@ -6,6 +6,7 @@
 import argparse
 import copy
 import datetime
+import difflib
 import logging
 import os
 import platform
@@ -483,7 +484,7 @@ class AuditorError:
           "It is recommended to run traffic_annotation_auditor locally to do "
           "the updates automatically (please refer to tools/traffic_annotation/"
           "auditor/README.md), but you can also apply the following edit(s) to "
-          "do it manually:{}\n\n".format(self._details[0]))
+          "do it manually:\n{}\n\n".format(self._details[0]))
 
     raise NotImplementedError("Unimplemented AuditorError.Type: {}".format(
         self.type.name))
@@ -1498,23 +1499,9 @@ class Exporter:
   @classmethod
   def _get_xml_differences(cls, old_xml: str, new_xml: str) -> str:
     """Returns the required updates to convert one XML file to another."""
-    old_items = Exporter._get_xml_items(old_xml)
-    new_items = Exporter._get_xml_items(new_xml)
-
-    added_items = set(new_items.keys()) - old_items.keys()
-    removed_items = set(old_items.keys()) - new_items.keys()
-
-    message = []
-    for id in sorted(added_items):
-      message.append("\n\tAdd line: '{}'".format(new_items[id]))
-    for id in sorted(removed_items):
-      message.append("\n\tRemove line: '{}'".format(old_items[id]))
-    for id in sorted(old_items.keys()):
-      if id in new_items and old_items[id] != new_items[id]:
-        message.append("\n\tUpdate line: '{}' --> '{}'".format(
-            old_items[id], new_items[id]))
-
-    return "".join(message)
+    return ''.join(
+        difflib.unified_diff(old_xml.splitlines(keepends=True),
+                             new_xml.splitlines(keepends=True)))
 
   def get_required_updates(self) -> str:
     """Returns the required updates to go from one state to another in
