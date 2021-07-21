@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.download.DownloadNotificationService.E
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_IS_AUTO_RESUMPTION;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.clearResumptionAttemptLeft;
+import static org.chromium.chrome.browser.notifications.NotificationConstants.EXTRA_NOTIFICATION_ID;
 
 import android.app.DownloadManager;
 import android.app.Service;
@@ -132,34 +133,47 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
         if (!immediateNotificationUpdateNeeded(action)) return;
 
         final DownloadSharedPreferenceEntry entry = getDownloadEntryFromIntent(intent);
-        if (entry == null) return;
+        final ContentId contentId = getContentIdFromIntent(intent);
 
         switch (action) {
             case ACTION_DOWNLOAD_PAUSE:
-                mDownloadNotificationService.notifyDownloadPaused(entry.id, entry.fileName, true,
-                        false, entry.otrProfileID, entry.isTransient, null, null, false, true,
-                        false, PendingState.NOT_PENDING);
+                if (entry != null) {
+                    mDownloadNotificationService.notifyDownloadPaused(entry.id, entry.fileName,
+                            true, false, entry.otrProfileID, entry.isTransient, null, null, false,
+                            true, false, PendingState.NOT_PENDING);
+                }
                 break;
 
             case ACTION_DOWNLOAD_CANCEL:
-                mDownloadNotificationService.notifyDownloadCanceled(entry.id, true);
+                int notificationId = IntentUtils.safeGetIntExtra(intent, EXTRA_NOTIFICATION_ID, -1);
+                // For old build, notification needs to be retrieved from the
+                // DownloadSharedPreferenceEntry.
+                if (notificationId < 0 && entry != null) {
+                    notificationId = entry.notificationId;
+                }
+                if (notificationId >= 0 && contentId != null) {
+                    mDownloadNotificationService.notifyDownloadCanceled(
+                            contentId, notificationId, true);
+                }
                 break;
 
             case ACTION_DOWNLOAD_RESUME:
-                // If user manually resumes a download, update the network type if it
-                // is not metered previously.
-                boolean canDownloadWhileMetered = entry.canDownloadWhileMetered
-                        || DownloadManagerService.isActiveNetworkMetered(
-                                ContextUtils.getApplicationContext());
-                // Update the SharedPreference entry.
-                mDownloadSharedPreferenceHelper.addOrReplaceSharedPreferenceEntry(
-                        new DownloadSharedPreferenceEntry(entry.id, entry.notificationId,
-                                entry.otrProfileID, canDownloadWhileMetered, entry.fileName, true,
-                                entry.isTransient));
+                if (entry != null) {
+                    // If user manually resumes a download, update the network type if it
+                    // is not metered previously.
+                    boolean canDownloadWhileMetered = entry.canDownloadWhileMetered
+                            || DownloadManagerService.isActiveNetworkMetered(
+                                    ContextUtils.getApplicationContext());
+                    // Update the SharedPreference entry.
+                    mDownloadSharedPreferenceHelper.addOrReplaceSharedPreferenceEntry(
+                            new DownloadSharedPreferenceEntry(entry.id, entry.notificationId,
+                                    entry.otrProfileID, canDownloadWhileMetered, entry.fileName,
+                                    true, entry.isTransient));
 
-                mDownloadNotificationService.notifyDownloadPending(entry.id, entry.fileName,
-                        entry.otrProfileID, entry.canDownloadWhileMetered, entry.isTransient, null,
-                        null, false, true, PendingState.PENDING_NETWORK);
+                    mDownloadNotificationService.notifyDownloadPending(entry.id, entry.fileName,
+                            entry.otrProfileID, entry.canDownloadWhileMetered, entry.isTransient,
+                            null, null, false, true, PendingState.PENDING_NETWORK);
+                }
                 break;
 
             default:

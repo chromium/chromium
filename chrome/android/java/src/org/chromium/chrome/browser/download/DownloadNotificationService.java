@@ -286,19 +286,31 @@ public class DownloadNotificationService {
     }
 
     /**
+     * Called when a download is canceled given the notification ID.
+     * @param id The {@link ContentId} of the download.
+     * @param notificationId Notification ID of the download.
+     * @param hasUserGesture Whether cancel is triggered by user gesture.
+     */
+    @VisibleForTesting
+    public void notifyDownloadCanceled(ContentId id, int notificationId, boolean hasUserGesture) {
+        mDownloadForegroundServiceManager.updateDownloadStatus(ContextUtils.getApplicationContext(),
+                DownloadStatus.CANCELLED, notificationId, null);
+        cancelNotification(notificationId, id);
+    }
+
+    /**
      * Called when a download is canceled.  This method uses internal tracking to try to find the
      * notification id to cancel.
+     * Called when a download is canceled.
      * @param id The {@link ContentId} of the download.
+     * @param hasUserGesture Whether cancel is triggered by user gesture.
      */
     @VisibleForTesting
     public void notifyDownloadCanceled(ContentId id, boolean hasUserGesture) {
         DownloadSharedPreferenceEntry entry =
                 mDownloadSharedPreferenceHelper.getDownloadSharedPreferenceEntry(id);
         if (entry == null) return;
-
-        mDownloadForegroundServiceManager.updateDownloadStatus(ContextUtils.getApplicationContext(),
-                DownloadStatus.CANCELLED, entry.notificationId, null);
-        cancelNotification(entry.notificationId, id);
+        notifyDownloadCanceled(id, entry.notificationId, hasUserGesture);
     }
 
     /**

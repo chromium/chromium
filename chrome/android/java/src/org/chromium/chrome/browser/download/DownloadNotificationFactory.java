@@ -167,7 +167,8 @@ public final class DownloadNotificationFactory {
                                         .PENDING_ANOTHER_DOWNLOAD);
                         break;
                 }
-
+                cancelIntent.putExtra(NotificationConstants.EXTRA_NOTIFICATION_ID,
+                        downloadUpdate.getNotificationId());
                 builder.setOngoing(true)
                         .setPriorityBeforeO(NotificationCompat.PRIORITY_HIGH)
                         .setAutoCancel(false)
