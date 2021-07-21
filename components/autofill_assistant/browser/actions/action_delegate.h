@@ -27,7 +27,6 @@
 class GURL;
 
 namespace autofill {
-class AutofillProfile;
 class CreditCard;
 struct FormData;
 struct FormFieldData;
@@ -184,21 +183,6 @@ class ActionDelegate {
   // user entering CVC.
   virtual void GetFullCard(const autofill::CreditCard* credit_card,
                            GetFullCardCallback callback) = 0;
-
-  // Fill the address form given by |selector| with the given address
-  // |profile|. Return result asynchronously through |callback|.
-  virtual void FillAddressForm(
-      std::unique_ptr<autofill::AutofillProfile> profile,
-      const Selector& selector,
-      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
-
-  // Fill the card form given by |selector| with the given |card| and its
-  // |cvc|. Return result asynchronously through |callback|.
-  virtual void FillCardForm(
-      std::unique_ptr<autofill::CreditCard> card,
-      const std::u16string& cvc,
-      const Selector& selector,
-      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
   // Return |FormData| and |FormFieldData| for the element identified with
   // |selector|. The result is returned asynchronously through |callback|.

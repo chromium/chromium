@@ -483,23 +483,6 @@ void ScriptExecutor::OnChosen(UserAction::Callback callback,
   std::move(callback).Run(std::move(context));
 }
 
-void ScriptExecutor::FillAddressForm(
-    std::unique_ptr<autofill::AutofillProfile> profile,
-    const Selector& selector,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->FillAddressForm(std::move(profile), selector,
-                                                 std::move(callback));
-}
-
-void ScriptExecutor::FillCardForm(
-    std::unique_ptr<autofill::CreditCard> card,
-    const std::u16string& cvc,
-    const Selector& selector,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->FillCardForm(std::move(card), cvc, selector,
-                                              std::move(callback));
-}
-
 void ScriptExecutor::RetrieveElementFormAndFieldData(
     const Selector& selector,
     base::OnceCallback<void(const ClientStatus&,

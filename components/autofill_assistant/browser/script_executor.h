@@ -183,15 +183,6 @@ class ScriptExecutor : public ActionDelegate,
               bool browse_mode_invisible) override;
   void CleanUpAfterPrompt() override;
   void SetBrowseDomainsAllowlist(std::vector<std::string> domains) override;
-  void FillAddressForm(
-      std::unique_ptr<autofill::AutofillProfile> profile,
-      const Selector& selector,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
-  void FillCardForm(
-      std::unique_ptr<autofill::CreditCard> card,
-      const std::u16string& cvc,
-      const Selector& selector,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
   void RetrieveElementFormAndFieldData(
       const Selector& selector,
       base::OnceCallback<void(const ClientStatus&,

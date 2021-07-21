@@ -155,19 +155,19 @@ class WebController {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Fill the address form given by |selector| with the given address
+  // Fill the address form given by |element| with the given address
   // |profile|.
   virtual void FillAddressForm(
       std::unique_ptr<autofill::AutofillProfile> profile,
-      const Selector& selector,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Fill the card form given by |selector| with the given |card| and its
+  // Fill the card form given by |element| with the given |card| and its
   // |cvc|.
   virtual void FillCardForm(
       std::unique_ptr<autofill::CreditCard> card,
       const std::u16string& cvc,
-      const Selector& selector,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
   // Return |FormData| and |FormFieldData| for the element identified with
@@ -417,20 +417,19 @@ class WebController {
                            ElementFinder::Callback callback,
                            const ClientStatus& status,
                            std::unique_ptr<ElementFinder::Result> result);
+  void OnFindElementForRetrieveElementFormAndFieldData(
+      base::OnceCallback<void(const ClientStatus&,
+                              const autofill::FormData& form_data,
+                              const autofill::FormFieldData& field_data)>
+          callback,
+      const ClientStatus& element_status,
+      std::unique_ptr<ElementFinder::Result> element_result);
   void GetElementFormAndFieldData(
-      const Selector& selector,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&,
                               autofill::ContentAutofillDriver* driver,
                               const autofill::FormData&,
                               const autofill::FormFieldData&)> callback);
-  void OnFindElementForGetFormAndFieldData(
-      const Selector& selector,
-      base::OnceCallback<void(const ClientStatus&,
-                              autofill::ContentAutofillDriver* driver,
-                              const autofill::FormData&,
-                              const autofill::FormFieldData&)> callback,
-      const ClientStatus& element_status,
-      std::unique_ptr<ElementFinder::Result> element_result);
   void GetUniqueElementSelector(
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&, int)>
@@ -452,11 +451,11 @@ class WebController {
       const ClientStatus& index_status,
       int index);
   void OnGetUniqueSelectorForFormAndFieldData(
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&,
                               autofill::ContentAutofillDriver* driver,
                               const autofill::FormData&,
                               const autofill::FormFieldData&)> callback,
-      std::unique_ptr<ElementFinder::Result> element,
       const ClientStatus& selector_status,
       const std::string& query_selector,
       int index);
@@ -479,6 +478,7 @@ class WebController {
       const autofill::FormData& form_data,
       const autofill::FormFieldData& form_field);
   void OnGetFormAndFieldDataForRetrieving(
+      std::unique_ptr<ElementFinder::Result> element,
       base::OnceCallback<void(const ClientStatus&,
                               const autofill::FormData& form_data,
                               const autofill::FormFieldData& field_data)>

@@ -52,6 +52,15 @@ class MockWebController : public WebController {
   MOCK_METHOD2(CheckOnTop,
                void(const ElementFinder::Result&,
                     base::OnceCallback<void(const ClientStatus&)>));
+  MOCK_METHOD3(FillAddressForm,
+               void(std::unique_ptr<autofill::AutofillProfile>,
+                    const ElementFinder::Result&,
+                    base::OnceCallback<void(const ClientStatus&)>));
+  MOCK_METHOD4(FillCardForm,
+               void(std::unique_ptr<autofill::CreditCard>,
+                    const std::u16string&,
+                    const ElementFinder::Result&,
+                    base::OnceCallback<void(const ClientStatus&)>));
   MOCK_METHOD6(SelectOption,
                void(const std::string& re2,
                     bool case_sensitive,

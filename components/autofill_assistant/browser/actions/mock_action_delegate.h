@@ -89,15 +89,6 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD0(CleanUpAfterPrompt, void());
   MOCK_METHOD1(SetBrowseDomainsAllowlist,
                void(std::vector<std::string> domains));
-  MOCK_METHOD3(FillAddressForm,
-               void(std::unique_ptr<autofill::AutofillProfile> profile,
-                    const Selector& selector,
-                    base::OnceCallback<void(const ClientStatus&)> callback));
-  MOCK_METHOD4(FillCardForm,
-               void(std::unique_ptr<autofill::CreditCard> card,
-                    const std::u16string& cvc,
-                    const Selector& selector,
-                    base::OnceCallback<void(const ClientStatus&)> callback));
   MOCK_METHOD2(
       RetrieveElementFormAndFieldData,
       void(const Selector& selector,
