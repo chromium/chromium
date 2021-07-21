@@ -32,15 +32,6 @@ class AllowlistCheckerClient : public SafeBrowsingDatabaseManager::Client {
       const GURL& url,
       BoolCallback callback_for_result);
 
-  // Static method to lookup |url| on the high confidence allowlist. |callback|
-  // will be called when the lookup result is known, or on time out, or if the
-  // |database_manager| gets shut down, whichever happens first.
-  // Must be called on IO thread.
-  static void StartCheckHighConfidenceAllowlist(
-      scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-      const GURL& url,
-      BoolCallback callback_for_result);
-
   // public constructor for use with std::make_unique
   AllowlistCheckerClient(
       BoolCallback callback_for_result,

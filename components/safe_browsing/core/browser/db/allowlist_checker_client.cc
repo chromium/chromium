@@ -37,26 +37,6 @@ void AllowlistCheckerClient::StartCheckCsdAllowlist(
 }
 
 // static
-void AllowlistCheckerClient::StartCheckHighConfidenceAllowlist(
-    scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-    const GURL& url,
-    base::OnceCallback<void(bool)> callback_for_result) {
-  // On timeout or if the list is unavailable, report no match.
-  const bool kDefaultDoesMatchAllowlist = false;
-
-  std::unique_ptr<AllowlistCheckerClient> client = GetAllowlistCheckerClient(
-      database_manager, url, &callback_for_result, kDefaultDoesMatchAllowlist);
-  if (!client) {
-    std::move(callback_for_result).Run(kDefaultDoesMatchAllowlist);
-    return;
-  }
-
-  AsyncMatch match =
-      database_manager->CheckUrlForHighConfidenceAllowlist(url, client.get());
-  InvokeCallbackOrRelease(match, std::move(client));
-}
-
-// static
 std::unique_ptr<AllowlistCheckerClient>
 AllowlistCheckerClient::GetAllowlistCheckerClient(
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
