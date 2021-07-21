@@ -4270,21 +4270,6 @@
             ]
         }
     ],
-    "IOSMessagesOverlay": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InfobarOverlayUI"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSMetrickitCrashReport": [
         {
             "platforms": [
