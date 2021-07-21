@@ -11,6 +11,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/widget/widget.h"
 
 namespace views {
 class GridLayout;
@@ -50,7 +51,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
                              ::sharesheet::CloseCallback close_callback);
   void ShowActionView();
   void ResizeBubble(const int& width, const int& height);
-  void CloseBubble();
+  void CloseBubble(views::Widget::ClosedReason reason);
 
  private:
   class SharesheetParentWidgetObserver;

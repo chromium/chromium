@@ -42,7 +42,7 @@ void DriveShareAction::LaunchAction(
                         ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
-  controller_->CloseSharesheet();
+  controller_->CloseSharesheet(sharesheet::SharesheetResult::kSuccess);
 }
 
 void DriveShareAction::OnClosing(sharesheet::SharesheetController* controller) {

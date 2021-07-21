@@ -5,6 +5,7 @@
 #include "chrome/browser/sharesheet/sharesheet_service_delegate.h"
 
 #include "chrome/browser/sharesheet/sharesheet_service.h"
+#include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "ui/views/view.h"
 
 namespace sharesheet {
@@ -62,6 +63,6 @@ Profile* SharesheetServiceDelegate::GetProfile() {
 
 void SharesheetServiceDelegate::SetSharesheetSize(int width, int height) {}
 
-void SharesheetServiceDelegate::CloseSharesheet() {}
+void SharesheetServiceDelegate::CloseSharesheet(SharesheetResult result) {}
 
 }  // namespace sharesheet

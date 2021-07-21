@@ -78,11 +78,19 @@ NearbyShareSessionImpl::~NearbyShareSessionImpl() {
   arc_window_observation_.Reset();
 }
 
-void NearbyShareSessionImpl::OnNearbyShareClosed() {
-  session_instance_->OnNearbyShareViewClosed();
+void NearbyShareSessionImpl::OnNearbyShareClosed(
+    views::Widget::ClosedReason reason) {
+  DCHECK(session_instance_);
+  DCHECK(session_finished_callback_);
 
+  session_instance_->OnNearbyShareViewClosed();
   if (window_initialization_timer_.IsRunning()) {
     window_initialization_timer_.Stop();
+  }
+  if (reason != views::Widget::ClosedReason::kAcceptButtonClicked) {
+    // If share is not continuing after sharesheet closes (e.g. cancel, esc key,
+    // lost focus, etc.), we will clean up the current session including files.
+    std::move(session_finished_callback_).Run(task_id_);
   }
 }
 
@@ -203,6 +211,8 @@ void NearbyShareSessionImpl::OnPreparedDirectory(aura::Window* const arc_window,
 void NearbyShareSessionImpl::OnNearbyShareBubbleShown(
     sharesheet::SharesheetResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(session_instance_);
+  DCHECK(session_finished_callback_);
 
   if (VLOG_IS_ON(1)) {
     switch (result) {
@@ -221,6 +231,7 @@ void NearbyShareSessionImpl::OnNearbyShareBubbleShown(
   }
   if (result != sharesheet::SharesheetResult::kSuccess) {
     session_instance_->OnNearbyShareViewClosed();
+    std::move(session_finished_callback_).Run(task_id_);
   }
 }
 
@@ -228,6 +239,7 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
     aura::Window* const arc_window,
     absl::optional<base::File::Error> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(session_finished_callback_);
   DCHECK(arc_window);
 
   // Only applicable if sharing files.
@@ -266,11 +278,14 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
 
 void NearbyShareSessionImpl::OnTimerFired() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(session_instance_);
+  DCHECK(session_finished_callback_);
 
   // TODO(phshah): Handle error case and add UMA metric.
   LOG(ERROR) << "ARC window didn't get initialized within "
              << kWindowInitializationTimeout.InSeconds() << " second(s)";
-  OnNearbyShareClosed();
+
+  session_instance_->OnNearbyShareViewClosed();
   std::move(session_finished_callback_).Run(task_id_);
 }
 
@@ -281,6 +296,7 @@ void NearbyShareSessionImpl::OnProgressBarUpdate(double value) {
 
 void NearbyShareSessionImpl::OnSessionDisconnected() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(session_finished_callback_);
 
   aura::Window* const arc_window = GetArcWindow(task_id_);
   if (!arc_window) {
@@ -299,7 +315,8 @@ void NearbyShareSessionImpl::OnSessionDisconnected() {
     std::move(session_finished_callback_).Run(task_id_);
     return;
   }
-  sharesheet_service->CloseBubble(arc_window);
+  sharesheet_service->CloseBubble(arc_window,
+                                  sharesheet::SharesheetResult::kCancel);
 }
 
 }  // namespace arc

@@ -16,6 +16,7 @@
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/views/widget/widget.h"
 
 namespace webshare {
 class PrepareDirectoryTask;
@@ -43,7 +44,7 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   ~NearbyShareSessionImpl() override;
 
   // Called when Nearby Share is closed.
-  void OnNearbyShareClosed();
+  void OnNearbyShareClosed(views::Widget::ClosedReason reason);
 
   // aura::EnvObserver:
   void OnWindowInitialized(aura::Window* const window) override;

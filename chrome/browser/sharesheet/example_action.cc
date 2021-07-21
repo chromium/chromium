@@ -27,7 +27,7 @@ void ExampleAction::LaunchAction(sharesheet::SharesheetController* controller,
                                  apps::mojom::IntentPtr intent) {
   LOG(ERROR) << "ExampleAction launches.";
   controller_ = controller;
-  controller_->CloseSharesheet();
+  controller_->CloseSharesheet(::sharesheet::SharesheetResult::kSuccess);
 }
 
 void ExampleAction::OnClosing(sharesheet::SharesheetController* controller) {

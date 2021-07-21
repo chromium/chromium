@@ -73,7 +73,7 @@ class SharesheetServiceDelegate : public ::sharesheet::SharesheetController {
   // Default implementation does nothing. Override as needed.
   void SetSharesheetSize(int width, int height) override;
   // Default implementation does nothing. Override as needed.
-  void CloseSharesheet() override;
+  void CloseSharesheet(SharesheetResult result) override;
 
  private:
   // Only used for ID purposes. NativeWindow will always outlive the
