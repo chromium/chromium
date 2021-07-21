@@ -134,6 +134,18 @@ void PrerenderHostRegistry::CancelHost(
   ScheduleToDeleteAbandonedHost(std::move(prerender_host), final_status);
 }
 
+void PrerenderHostRegistry::CancelAllHosts(
+    PrerenderHost::FinalStatus final_status) {
+  // Should not have an activating host. See comments in CancelHost.
+  CHECK(reserved_prerender_host_by_frame_tree_node_id_.empty());
+
+  auto prerender_host_map = std::move(prerender_host_by_frame_tree_node_id_);
+  for (auto& iter : prerender_host_map) {
+    std::unique_ptr<PrerenderHost> prerender_host = std::move(iter.second);
+    ScheduleToDeleteAbandonedHost(std::move(prerender_host), final_status);
+  }
+}
+
 int PrerenderHostRegistry::FindPotentialHostToActivate(
     NavigationRequest& navigation_request) {
   TRACE_EVENT2(

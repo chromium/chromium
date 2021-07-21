@@ -1298,6 +1298,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   }
 
  private:
+  using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree*)>;
+
   friend class WebContentsObserver;
   friend class WebContents;  // To implement factory methods.
 
@@ -1766,6 +1768,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void ForEachRenderFrameHostImpl(
       RenderFrameHostImpl::FrameIterationCallbackImpl on_frame,
       bool include_speculative);
+
+  // Calls |on_frame_tree| for every FrameTree in this WebContents.
+  void ForEachFrameTree(FrameTreeIterationCallback on_frame_tree);
 
   // Returns the primary main frame, followed by the main frames of any other
   // outermost frame trees in this WebContents.

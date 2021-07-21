@@ -1330,6 +1330,19 @@ void WebContentsImpl::ForEachRenderFrameHostImpl(
   }
 }
 
+void WebContentsImpl::ForEachFrameTree(
+    FrameTreeIterationCallback on_frame_tree) {
+  std::set<FrameTree*> frame_trees;
+  ForEachRenderFrameHost(base::BindRepeating(
+      [](std::set<FrameTree*>& frame_trees, RenderFrameHostImpl* rfh) {
+        frame_trees.insert(rfh->frame_tree());
+      },
+      std::ref(frame_trees)));
+
+  for (auto* frame_tree : frame_trees)
+    on_frame_tree.Run(frame_tree);
+}
+
 std::vector<RenderFrameHostImpl*> WebContentsImpl::GetOutermostMainFrames() {
   std::vector<RenderFrameHostImpl*> result;
   result.push_back(GetMainFrame());
@@ -2790,7 +2803,12 @@ void WebContentsImpl::OnCookiesAccessed(RenderFrameHostImpl* rfh,
 
 void WebContentsImpl::Stop() {
   TRACE_EVENT0("content", "WebContentsImpl::Stop");
-  frame_tree_.StopLoading();
+  ForEachFrameTree(base::BindRepeating(
+      [](FrameTree* frame_tree) { frame_tree->StopLoading(); }));
+  if (blink::features::IsPrerender2Enabled()) {
+    GetPrerenderHostRegistry()->CancelAllHosts(
+        PrerenderHost::FinalStatus::kStop);
+  }
   observers_.NotifyObservers(&WebContentsObserver::NavigationStopped);
 }
 

@@ -78,6 +78,9 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   void CancelHost(int frame_tree_node_id,
                   PrerenderHost::FinalStatus final_status);
 
+  // Applies CancelHost for all existing PrerenderHost.
+  void CancelAllHosts(PrerenderHost::FinalStatus final_status);
+
   // For activators.
   // Finds the host to activate for a navigation for the given
   // NavigationRequest. Returns the root frame tree node id of the prerendered
