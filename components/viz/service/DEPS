@@ -3,7 +3,6 @@
 include_rules = [
   "+cc",
   "+components/power_scheduler",
-  "-components/viz/common/features.h",
   "-components/viz/common/switches.h",
   "-components/viz/service",
   "+components/viz/service/debugger/viz_debugger.h",

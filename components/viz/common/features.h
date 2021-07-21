@@ -11,6 +11,9 @@
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+// See the following for guidance on adding new viz feature flags:
+// https://cs.chromium.org/chromium/src/components/viz/README.md#runtime-features
+
 namespace features {
 
 VIZ_COMMON_EXPORT extern const base::Feature kAdpf;
