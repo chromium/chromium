@@ -5,9 +5,17 @@
 #ifndef ASH_QUICK_PAIR_SCANNING_SCANNER_BROKER_IMPL_H_
 #define ASH_QUICK_PAIR_SCANNING_SCANNER_BROKER_IMPL_H_
 
+#include <memory>
 #include "ash/quick_pair/scanning/scanner_broker.h"
+#include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
+
+namespace device {
+class BluetoothAdapter;
+}  // namespace device
 
 namespace ash {
 namespace quick_pair {
@@ -28,13 +36,18 @@ class ScannerBrokerImpl : public ScannerBroker {
   void StopScanning(Protocol protocol) override;
 
  private:
+  void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
   void StartFastPairScanning();
   void StopFastPairScanning();
 
   void NotifyDeviceFound(scoped_refptr<Device> device);
   void NotifyDeviceLost(scoped_refptr<Device> device);
 
+  SEQUENCE_CHECKER(sequence_checker_);
+  std::vector<base::OnceClosure> start_scanning_on_adapter_callbacks_;
+  scoped_refptr<device::BluetoothAdapter> adapter_;
   base::ObserverList<Observer> observers_;
+  base::WeakPtrFactory<ScannerBrokerImpl> weak_pointer_factory_{this};
 };
 
 }  // namespace quick_pair
