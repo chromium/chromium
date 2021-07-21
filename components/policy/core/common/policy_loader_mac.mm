@@ -143,7 +143,6 @@ std::unique_ptr<PolicyBundle> PolicyLoaderMac::Load() {
     bool forced = preferences_->AppValueIsForced(name, application_id_);
     PolicyLevel level =
         forced ? POLICY_LEVEL_MANDATORY : POLICY_LEVEL_RECOMMENDED;
-    // TODO(joaodasilva): figure the policy scope.
     std::unique_ptr<base::Value> policy = PropertyToValue(value);
     if (policy) {
       chrome_policy.Set(it.key(), level, POLICY_SCOPE_MACHINE,
@@ -220,12 +219,6 @@ void PolicyLoaderMac::LoadPolicyForComponent(
     const std::string& bundle_id_string,
     const Schema& schema,
     PolicyMap* policy) {
-  // TODO(joaodasilva): Extensions may be registered in a ComponentMap
-  // without a schema, to allow a graceful update of the Legacy Browser Support
-  // extension on Windows. Remove this check once that support is removed.
-  if (!schema.valid())
-    return;
-
   base::ScopedCFTypeRef<CFStringRef> bundle_id(
       base::SysUTF8ToCFStringRef(bundle_id_string));
   preferences_->AppSynchronize(bundle_id);
