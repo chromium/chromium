@@ -4,3 +4,13 @@
 -SingleClientNigoriWithWebApiTest.ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared
 -SingleClientPollingSyncTest.ShouldPollWhenIntervalExpiredAcrossRestarts
 -SingleClientPollingSyncTest.ShouldUsePollIntervalFromPrefs
+# https://crbug.com/1197201
+# Following tests fail when Mirror is enabled on Lacros. They try to update
+# credentials in Ash Account Manager, which is currently not possible in
+# sync_integration_tests because of lack of crosapi.
+-PasswordManagerSyncTest*
+-SingleClientPasswordsWithAccountStorageSyncTest*
+-SingleClientSecondaryAccountSyncTest*
+-SingleClientWalletSecondaryAccountSyncTest*
+-TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn*
+-SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest*

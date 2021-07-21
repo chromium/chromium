@@ -218,7 +218,7 @@
 # Following tests fail when Mirror is enabled on Lacros. They try to update
 # credentials in Ash Account Manager, which is currently not possible in
 # browser_tests because of lack of crosapi.
--All/PasswordBubbleBrowserTest.InvokeUi_MoveToAccountStoreBubble*
+-PasswordBubbleBrowserTest.InvokeUi_MoveToAccountStoreBubble*
 -BookmarkBubble*
 -BrowsingDataCounterUtilsBrowserTest.ShouldShowCookieException
 -ComponentCloudPolicyTest.SignOutAndBackIn
@@ -232,7 +232,7 @@
 -LocalCardMigrationBrowserTest*
 -MetricsServiceUserDemographicsBrowserTest.*
 -NetworkOnOrOff/ProfileMenuViewSignoutTestWithNetwork.Signout*
--PageInfoBubbleViewSyncBrowserTest.VerifySignInPasswordReusePageInfoBubble
+-All/PageInfoBubbleViewSyncBrowserTest.VerifySignInPasswordReusePageInfoBubble*
 -PasswordManagerBrowserTestWithSigninInterception.*
 -PrivacyBudgetBrowserTest.UkmClientIdChangesResetStudyState
 -ProfileMenuViewSignoutTest.OpenLogoutTab
@@ -246,4 +246,5 @@
 -UkmConsentParamBrowserTests*
 -UserPolicySigninServiceTest.BasicSignin
 -UserPolicySigninServiceTest.*
+-UserPolicySigninServiceSyncNotRequiredTest.AcceptManagementDeclineSync
 -VariationsHttpHeadersBrowserTest.UserSignedIn
