@@ -60,7 +60,7 @@ absl::optional<std::string> CreateJSONWebToken(
   // Create signature.
   auto signer = crypto::ECSignatureCreator::Create(private_key);
   std::vector<uint8_t> der_signature, raw_signature;
-  if (!signer->Sign((const uint8_t*)data.data(), data.size(), &der_signature)) {
+  if (!signer->Sign(base::as_bytes(base::make_span(data)), &der_signature)) {
     LOG(ERROR) << "Failed to create DER signature";
     return absl::nullopt;
   }

@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "chromeos/components/multidevice/logging/logging.h"
@@ -41,10 +42,6 @@ bool IsValidAsymmetricKey(const CryptAuthKey& key) {
 
 std::string ByteVectorToString(const std::vector<uint8_t>& byte_array) {
   return std::string(byte_array.begin(), byte_array.end());
-}
-
-std::vector<uint8_t> StringToByteVector(const std::string& str) {
-  return std::vector<uint8_t>(str.begin(), str.end());
 }
 
 }  // namespace
@@ -125,7 +122,7 @@ CryptAuthKeyProofComputerImpl::ComputeAsymmetricKeyProof(
 
   std::unique_ptr<crypto::ECPrivateKey> ec_private_key =
       crypto::ECPrivateKey::CreateFromPrivateKeyInfo(
-          StringToByteVector(asymmetric_key.private_key()));
+          base::as_bytes(base::make_span(asymmetric_key.private_key())));
   if (!ec_private_key) {
     PA_LOG(ERROR) << "Failed to compute asymmetric key proof for key handle "
                   << asymmetric_key.handle() << ". "
@@ -145,7 +142,7 @@ CryptAuthKeyProofComputerImpl::ComputeAsymmetricKeyProof(
   std::string to_sign = salt + payload;
   std::vector<uint8_t> key_proof;
   bool success = ec_signature_creator->Sign(
-      StringToByteVector(salt + payload).data(), to_sign.size(), &key_proof);
+      base::as_bytes(base::make_span(to_sign)), &key_proof);
   if (!success) {
     PA_LOG(ERROR) << "Failed to compute asymmetric key proof for key handle "
                   << asymmetric_key.handle();

@@ -507,7 +507,7 @@ bool VirtualFidoDevice::Sign(crypto::ECPrivateKey* private_key,
                              base::span<const uint8_t> sign_buffer,
                              std::vector<uint8_t>* signature) {
   auto signer = crypto::ECSignatureCreator::Create(private_key);
-  return signer->Sign(sign_buffer.data(), sign_buffer.size(), signature);
+  return signer->Sign(sign_buffer, signature);
 }
 
 absl::optional<std::vector<uint8_t>>

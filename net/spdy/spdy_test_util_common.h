@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
@@ -147,8 +148,7 @@ class MockECSignatureCreator : public crypto::ECSignatureCreator {
   explicit MockECSignatureCreator(crypto::ECPrivateKey* key);
 
   // crypto::ECSignatureCreator
-  bool Sign(const uint8_t* data,
-            int data_len,
+  bool Sign(base::span<const uint8_t> data,
             std::vector<uint8_t>* signature) override;
   bool DecodeSignature(const std::vector<uint8_t>& signature,
                        std::vector<uint8_t>* out_raw_sig) override;

@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -286,8 +287,7 @@ MockECSignatureCreator::MockECSignatureCreator(crypto::ECPrivateKey* key)
     : key_(key) {
 }
 
-bool MockECSignatureCreator::Sign(const uint8_t* data,
-                                  int data_len,
+bool MockECSignatureCreator::Sign(base::span<const uint8_t> data,
                                   std::vector<uint8_t>* signature) {
   std::vector<uint8_t> private_key;
   if (!key_->ExportPrivateKey(&private_key))
@@ -299,7 +299,7 @@ bool MockECSignatureCreator::Sign(const uint8_t* data,
   signature->insert(signature->end(), head.begin(), head.end());
   signature->insert(signature->end(), private_key.begin(), private_key.end());
   signature->insert(signature->end(), '-');
-  signature->insert(signature->end(), data, data + data_len);
+  signature->insert(signature->end(), data.begin(), data.end());
   signature->insert(signature->end(), tail.begin(), tail.end());
   return true;
 }

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/macros.h"
 #include "crypto/ec_signature_creator.h"
 
@@ -20,8 +21,7 @@ class ECSignatureCreatorImpl : public ECSignatureCreator {
   explicit ECSignatureCreatorImpl(ECPrivateKey* key);
   ~ECSignatureCreatorImpl() override;
 
-  bool Sign(const uint8_t* data,
-            int data_len,
+  bool Sign(base::span<const uint8_t> data,
             std::vector<uint8_t>* signature) override;
 
   bool DecodeSignature(const std::vector<uint8_t>& der_sig,

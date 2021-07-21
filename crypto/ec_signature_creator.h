@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "crypto/crypto_export.h"
 
 namespace crypto {
@@ -44,14 +45,13 @@ class CRYPTO_EXPORT ECSignatureCreator {
   // deterministic mocked output to compare.
   static void SetFactoryForTesting(ECSignatureCreatorFactory* factory);
 
-  // Signs |data_len| bytes from |data| and writes the results into
-  // |signature| as a DER encoded ECDSA-Sig-Value from RFC 3279.
+  // Signs |data| and writes the results into |signature| as a DER encoded
+  // ECDSA-Sig-Value from RFC 3279.
   //
   //  ECDSA-Sig-Value ::= SEQUENCE {
   //    r     INTEGER,
   //    s     INTEGER }
-  virtual bool Sign(const uint8_t* data,
-                    int data_len,
+  virtual bool Sign(base::span<const uint8_t> data,
                     std::vector<uint8_t>* signature) = 0;
 
   // DecodeSignature converts from a DER encoded ECDSA-Sig-Value (as produced

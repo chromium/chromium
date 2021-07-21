@@ -24,8 +24,7 @@ ECSignatureCreatorImpl::ECSignatureCreatorImpl(ECPrivateKey* key)
 
 ECSignatureCreatorImpl::~ECSignatureCreatorImpl() = default;
 
-bool ECSignatureCreatorImpl::Sign(const uint8_t* data,
-                                  int data_len,
+bool ECSignatureCreatorImpl::Sign(base::span<const uint8_t> data,
                                   std::vector<uint8_t>* signature) {
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
   bssl::ScopedEVP_MD_CTX ctx;
@@ -33,7 +32,7 @@ bool ECSignatureCreatorImpl::Sign(const uint8_t* data,
   if (!ctx.get() ||
       !EVP_DigestSignInit(ctx.get(), nullptr, EVP_sha256(), nullptr,
                           key_->key()) ||
-      !EVP_DigestSignUpdate(ctx.get(), data, data_len) ||
+      !EVP_DigestSignUpdate(ctx.get(), data.data(), data.size()) ||
       !EVP_DigestSignFinal(ctx.get(), nullptr, &sig_len)) {
     return false;
   }

@@ -106,8 +106,7 @@ bool DeviceTrustKeyPair::SignMessage(const std::string& message,
   std::unique_ptr<crypto::ECSignatureCreator> signer(
       crypto::ECSignatureCreator::Create(key_pair_.get()));
   // Make the signature.
-  if (!signer->Sign(reinterpret_cast<const uint8_t*>(message.c_str()),
-                    message.size(), &signature_bytes))
+  if (!signer->Sign(base::as_bytes(base::make_span(message)), &signature_bytes))
     return false;
   *signature = std::string(signature_bytes.begin(), signature_bytes.end());
   return true;

@@ -233,7 +233,7 @@ absl::optional<std::vector<uint8_t>> NearbySharePrivateCertificate::Sign(
       crypto::ECSignatureCreator::Create(key_pair_.get()));
 
   std::vector<uint8_t> signature;
-  if (!signer->Sign(payload.data(), payload.size(), &signature)) {
+  if (!signer->Sign(payload, &signature)) {
     NS_LOG(ERROR) << "Signing failed.";
     return absl::nullopt;
   }

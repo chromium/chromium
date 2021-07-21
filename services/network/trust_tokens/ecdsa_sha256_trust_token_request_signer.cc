@@ -41,7 +41,7 @@ absl::optional<std::vector<uint8_t>> EcdsaSha256TrustTokenRequestSigner::Sign(
 
   std::vector<uint8_t> signature;
 
-  if (!sig_creator->Sign(data.data(), data.size(), &signature))
+  if (!sig_creator->Sign(data, &signature))
     return absl::nullopt;
 
   return signature;
