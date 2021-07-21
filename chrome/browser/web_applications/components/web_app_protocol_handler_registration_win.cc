@@ -102,8 +102,7 @@ void UnregisterProtocolHandlersWithOsInBackground(
 
   // Remove protocol associations from the Windows registry.
   ShellUtil::RemoveAppProtocolAssociations(
-      web_app::GetProgIdForApp(profile_path, app_id),
-      /*elevate_if_not_admin=*/true);
+      web_app::GetProgIdForApp(profile_path, app_id));
 }
 
 }  // namespace

@@ -133,11 +133,6 @@ const char kRegisterDevChrome[] = "register-dev-chrome";
 // in addition to the standard set of protocols.
 const char kRegisterURLProtocol[] = "register-url-protocol";
 
-// Specifies a comma-separated list of protocols to add as protocol associations
-// for a web application, preceded by the prog_id of that web application.
-// --register-web-app-url-protocols=<progid>:<protocol>,<protocol>,<protocol>..]
-const char kRegisterWebAppURLProtocols[] = "register-web-app-url-protocols";
-
 // Removes Chrome registration from current machine. Requires admin rights.
 const char kRemoveChromeRegistration[] = "remove-chrome-registration";
 
@@ -176,10 +171,6 @@ const char kUninstall[] = "uninstall";
 // that setup.exe will apply to itself and store the resulting binary in the
 // path given by --new-setup-exe.
 const char kUpdateSetupExe[] = "update-setup-exe";
-
-// Switch to pass the ProdId of a web application to be unregistered for
-// protocol handling.
-const char kUnregisterWebAppProgId[] = "unregister-web-app-prog-id";
 
 // Enable verbose logging (info level).
 const char kVerboseLogging[] = "verbose-logging";

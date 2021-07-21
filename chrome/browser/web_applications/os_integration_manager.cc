@@ -396,8 +396,6 @@ void OsIntegrationManager::RegisterProtocolHandlers(
   // Disable protocol handler unregistration on Win7 due to bad interactions
   // between preinstalled app scenarios and the need for elevation to unregister
   // protocol handlers on that platform. See crbug.com/1224327 for context.
-  // TODO(crbug.com/1224747): remove this check and remove Win7 protocol handler
-  // support in Shell classes.
 #if defined(OS_WIN)
   if (base::win::GetVersion() == base::win::Version::WIN7) {
     std::move(callback).Run(true);
@@ -540,8 +538,6 @@ void OsIntegrationManager::UnregisterProtocolHandlers(
   // Disable protocol handler unregistration on Win7 due to bad interactions
   // between preinstalled app scenarios and the need for elevation to unregister
   // protocol handlers on that platform. See crbug.com/1224327 for context.
-  // TODO(crbug.com/1224747): remove this check and remove Win7 protocol handler
-  // support in Shell classes.
 #if defined(OS_WIN)
   if (base::win::GetVersion() == base::win::Version::WIN7) {
     std::move(callback).Run(true);

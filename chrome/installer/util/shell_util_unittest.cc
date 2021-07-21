@@ -1398,7 +1398,7 @@ TEST_F(ShellUtilRegistryTest, RemoveAppProtocolAssociations) {
   ASSERT_TRUE(ShellUtil::AddAppProtocolAssociations(app_protocols, app_progid));
 
   // Delete associations and ensure that the protocol entry does not exist.
-  EXPECT_TRUE(ShellUtil::RemoveAppProtocolAssociations(app_progid, false));
+  EXPECT_TRUE(ShellUtil::RemoveAppProtocolAssociations(app_progid));
 
   // Ensure that the software registration key was removed.
   // "<root_hkey>\Software\[CompanyPathName\]ProductPathName[install_suffix]\AppProtocolHandlers\|prog_id|".
