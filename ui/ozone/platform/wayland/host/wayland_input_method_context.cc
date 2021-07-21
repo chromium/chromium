@@ -133,8 +133,7 @@ void WaylandInputMethodContext::Init(bool initialize_for_testing) {
   if (use_ozone_wayland_vkb && !is_simple_ && !text_input_ &&
       connection_->text_input_manager_v1()) {
     text_input_ = std::make_unique<ZWPTextInputWrapperV1>(
-        connection_->text_input_manager_v1());
-    text_input_->Initialize(connection_, this);
+        connection_, this, connection_->text_input_manager_v1());
   }
 }
 

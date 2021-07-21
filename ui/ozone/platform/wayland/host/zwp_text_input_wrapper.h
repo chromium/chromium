@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/strings/string_piece.h"
-#include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace gfx {
 class Rect;
@@ -20,7 +19,6 @@ class Range;
 
 namespace ui {
 
-class WaylandConnection;
 class WaylandWindow;
 
 // Client interface which handles wayland text input callbacks
@@ -65,9 +63,6 @@ class ZWPTextInputWrapperClient {
 class ZWPTextInputWrapper {
  public:
   virtual ~ZWPTextInputWrapper() = default;
-
-  virtual void Initialize(WaylandConnection* connection,
-                          ZWPTextInputWrapperClient* client) = 0;
 
   virtual void Reset() = 0;
 

@@ -5,12 +5,13 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_ZWP_TEXT_INPUT_WRAPPER_V1_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_ZWP_TEXT_INPUT_WRAPPER_V1_H_
 
-#include <stdint.h>
-
+#include <cstdint>
+#include <string>
 #include <vector>
 
 #include <text-input-unstable-v1-client-protocol.h>
 
+#include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper.h"
 
 namespace gfx {
@@ -22,13 +23,15 @@ namespace ui {
 class WaylandConnection;
 class WaylandWindow;
 
+// Text input wrapper for text-input-unstable-v1
 class ZWPTextInputWrapperV1 : public ZWPTextInputWrapper {
  public:
-  explicit ZWPTextInputWrapperV1(zwp_text_input_manager_v1* text_input_manager);
+  ZWPTextInputWrapperV1(WaylandConnection* connection,
+                        ZWPTextInputWrapperClient* client,
+                        zwp_text_input_manager_v1* text_input_manager);
+  ZWPTextInputWrapperV1(const ZWPTextInputWrapperV1&) = delete;
+  ZWPTextInputWrapperV1& operator=(const ZWPTextInputWrapperV1&) = delete;
   ~ZWPTextInputWrapperV1() override;
-
-  void Initialize(WaylandConnection* connection,
-                  ZWPTextInputWrapperClient* client) override;
 
   void Reset() override;
 
@@ -97,16 +100,12 @@ class ZWPTextInputWrapperV1 : public ZWPTextInputWrapper {
                               uint32_t serial,
                               uint32_t direction);
 
-  WaylandConnection* connection_ = nullptr;
+  WaylandConnection* const connection_;
   wl::Object<zwp_text_input_v1> obj_;
-  ZWPTextInputWrapperClient* client_;
+  ZWPTextInputWrapperClient* const client_;
 
   std::vector<ZWPTextInputWrapperClient::SpanStyle> spans_;
   int32_t preedit_cursor_ = -1;
-
-  // Stores the string in SetSurroundingText. This string is used in
-  // OnDeleteSurroundingText.
-  std::string text_for_surrounding_text_;
 };
 
 }  // namespace ui
