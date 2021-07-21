@@ -31,7 +31,7 @@ class TestGrammarServiceClient : public GrammarServiceClient {
 
   bool RequestTextCheck(Profile* profile,
                         const std::u16string& text,
-                        TextCheckCompleteCallback callback) const override {
+                        TextCheckCompleteCallback callback) override {
     std::vector<ui::GrammarFragment> grammar_results;
     for (int i = 0; i < text.size(); i++) {
       if (text.substr(i, 5) == u"error") {
