@@ -59,7 +59,7 @@ public class AccountPickerDelegateImplTest {
     private static final String CONTINUE_URL = "https://test-continue-url.com";
 
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
-            spy(new FakeAccountManagerFacade(null));
+            spy(new FakeAccountManagerFacade());
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =

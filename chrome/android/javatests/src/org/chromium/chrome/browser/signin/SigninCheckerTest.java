@@ -57,7 +57,7 @@ public class SigninCheckerTest {
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(new FakeAccountManagerFacade(null) {
+            new AccountManagerTestRule(new FakeAccountManagerFacade() {
                 @Override
                 public void checkChildAccountStatus(
                         Account account, ChildAccountStatusListener listener) {

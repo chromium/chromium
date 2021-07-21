@@ -138,7 +138,7 @@ public class AndroidSyncSettingsTest {
             SyncService.overrideForTests(mSyncService);
         });
 
-        FakeAccountManagerFacade fakeAccountManagerFacade = new FakeAccountManagerFacade(null);
+        FakeAccountManagerFacade fakeAccountManagerFacade = new FakeAccountManagerFacade();
         AccountManagerFacadeProvider.setInstanceForTests(fakeAccountManagerFacade);
         mAccount = AccountUtils.createAccountFromName("account@example.com");
         fakeAccountManagerFacade.addAccount(mAccount);

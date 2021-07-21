@@ -73,7 +73,7 @@ public class AssistantVoiceSearchServiceUnitTest {
     public TestRule mProcessor = new Features.JUnitProcessor();
 
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
-            spy(new FakeAccountManagerFacade(null));
+            spy(new FakeAccountManagerFacade());
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =

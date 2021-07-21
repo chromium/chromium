@@ -187,7 +187,7 @@ public class AccountPickerBottomSheetTest {
         // Here since we want to test a zero account case, we would like to set up
         // a new AccountManagerFacade mock with no account in it. The mock will be
         // torn down in the end of the test in AccountManagerTestRule.
-        AccountManagerFacadeProvider.setInstanceForTests(new FakeAccountManagerFacade(null));
+        AccountManagerFacadeProvider.setInstanceForTests(new FakeAccountManagerFacade());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mCoordinator = new AccountPickerBottomSheetCoordinator(sActivityTestRule.getActivity(),
                     getBottomSheetController(), mAccountPickerDelegateMock);

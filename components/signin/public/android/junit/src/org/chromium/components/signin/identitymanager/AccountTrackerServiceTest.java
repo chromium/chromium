@@ -62,7 +62,7 @@ public class AccountTrackerServiceTest {
 
     @Spy
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
-            new FakeAccountManagerFacade(null);
+            new FakeAccountManagerFacade();
 
     @Mock
     private AccountTrackerService.Natives mNativeMock;

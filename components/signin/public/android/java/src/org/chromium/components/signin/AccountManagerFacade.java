@@ -122,7 +122,11 @@ public interface AccountManagerFacade {
     /**
      * Gets profile data source.
      * @return {@link ProfileDataSource} if it is supported by implementation, null otherwise.
+     *
+     * This method is deprecated. The {@link ProfileDataSource} is going to be removed soon.
+     * Use {@link AccountInfoService} for account information instead.
      */
+    @Deprecated
     @MainThread
     @Nullable
     ProfileDataSource getProfileDataSource();

@@ -55,7 +55,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 public class AccountManagementFragmentTest {
     private static final String CHILD_ACCOUNT_EMAIL = "child@gmail.com";
 
-    private final FakeAccountManagerFacade mFakeFacade = new FakeAccountManagerFacade(null) {
+    private final FakeAccountManagerFacade mFakeFacade = new FakeAccountManagerFacade() {
         @Override
         public void checkChildAccountStatus(Account account, ChildAccountStatusListener listener) {
             listener.onStatusReady(CHILD_ACCOUNT_EMAIL.equals(account.name)

@@ -21,7 +21,7 @@ public class PaintPreviewTestRule implements TestRule {
      * path. If we don't mock {@link AccountManagerFacade}, we'll run into a failed assertion.
      */
     private void setUp() {
-        AccountManagerFacadeProvider.setInstanceForTests(new FakeAccountManagerFacade(null));
+        AccountManagerFacadeProvider.setInstanceForTests(new FakeAccountManagerFacade());
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
     }
 

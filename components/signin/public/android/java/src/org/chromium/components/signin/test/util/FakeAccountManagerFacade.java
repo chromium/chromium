@@ -37,23 +37,17 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     @GuardedBy("mLock")
     private final Set<AccountHolder> mAccountHolders = new LinkedHashSet<>();
-
     private final List<AccountsChangeObserver> mObservers = new ArrayList<>();
-
-    private final @Nullable FakeProfileDataSource mFakeProfileDataSource;
 
     /**
      * Creates an object of FakeAccountManagerFacade.
-     * @param fakeProfileDataSource A FakeProfileDataSource instance if needed.
      */
-    public FakeAccountManagerFacade(@Nullable FakeProfileDataSource fakeProfileDataSource) {
-        mFakeProfileDataSource = fakeProfileDataSource;
-    }
+    public FakeAccountManagerFacade() {}
 
     @Override
     @Nullable
     public ProfileDataSource getProfileDataSource() {
-        return mFakeProfileDataSource;
+        return null;
     }
 
     @MainThread
@@ -153,14 +147,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
             }
         }
         ThreadUtils.runOnUiThreadBlocking(this::fireOnAccountsChangedNotification);
-    }
-
-    /**
-     * Adds a {@link ProfileDataSource.ProfileData} to the FakeProfileDataSource.
-     */
-    public void addProfileData(ProfileDataSource.ProfileData profileData) {
-        assert mFakeProfileDataSource != null : "ProfileDataSource was disabled!";
-        mFakeProfileDataSource.addProfileData(profileData);
     }
 
     /**

@@ -95,8 +95,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     private final CustomGetAccessTokenCallback mTokenCallback = new CustomGetAccessTokenCallback();
 
     @Spy
-    private final FakeAccountManagerFacade mAccountManagerFacade =
-            new FakeAccountManagerFacade(null);
+    private final FakeAccountManagerFacade mAccountManagerFacade = new FakeAccountManagerFacade();
 
     private ProfileOAuth2TokenServiceDelegate mDelegate;
 

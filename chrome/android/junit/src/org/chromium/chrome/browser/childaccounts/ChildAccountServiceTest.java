@@ -55,7 +55,7 @@ public class ChildAccountServiceTest {
             AccountUtils.createAccountFromName("adult.account2@gmail.com");
     private static final long FAKE_NATIVE_CALLBACK = 1000L;
 
-    private final FakeAccountManagerFacade mFakeFacade = spy(new FakeAccountManagerFacade(null) {
+    private final FakeAccountManagerFacade mFakeFacade = spy(new FakeAccountManagerFacade() {
         @Override
         public void checkChildAccountStatus(Account account, ChildAccountStatusListener listener) {
             listener.onStatusReady(account.name.startsWith("child")

@@ -131,7 +131,7 @@ public class FeedV2NewTabPageTest {
             new ChromeTabbedActivityTestRule();
 
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
-            new FakeAccountManagerFacade(null) {
+            new FakeAccountManagerFacade() {
                 @Override
                 public Promise<List<Account>> getAccounts() {
                     // Attention. When cache is not populated, the Promise shouldn't be fulfilled.

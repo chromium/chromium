@@ -44,7 +44,7 @@ public class AccountManagerTestRule implements TestRule {
     private boolean mIsSignedIn;
 
     public AccountManagerTestRule() {
-        this(new FakeAccountManagerFacade(null));
+        this(new FakeAccountManagerFacade());
     }
 
     public AccountManagerTestRule(@NonNull FakeAccountManagerFacade fakeAccountManagerFacade) {
@@ -53,7 +53,7 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     public AccountManagerTestRule(@NonNull FakeAccountInfoService fakeAccountInfoService) {
-        mFakeAccountManagerFacade = new FakeAccountManagerFacade(null);
+        mFakeAccountManagerFacade = new FakeAccountManagerFacade();
         mFakeAccountInfoService = fakeAccountInfoService;
     }
 

@@ -48,7 +48,7 @@ public class SigninPromoControllerTest {
     public final Features.JUnitProcessor processor = new Features.JUnitProcessor();
 
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
-            spy(new FakeAccountManagerFacade(null));
+            spy(new FakeAccountManagerFacade());
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
