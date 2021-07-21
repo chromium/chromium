@@ -408,16 +408,11 @@ void SyncEngineImpl::DisableProtocolEventForwarding() {
 
 void SyncEngineImpl::FinishConfigureDataTypesOnFrontendLoop(
     const ModelTypeSet enabled_types,
-    const ModelTypeSet succeeded_configuration_types,
-    const ModelTypeSet failed_configuration_types,
-    base::OnceCallback<void(ModelTypeSet, ModelTypeSet)> ready_task) {
+    base::OnceClosure ready_task) {
   last_enabled_types_ = enabled_types;
   SendInterestedTopicsToInvalidator();
 
-  if (!ready_task.is_null()) {
-    std::move(ready_task)
-        .Run(succeeded_configuration_types, failed_configuration_types);
-  }
+  std::move(ready_task).Run();
 }
 
 void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(

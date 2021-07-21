@@ -115,11 +115,8 @@ class SyncEngineImpl : public SyncEngine,
   friend class SyncEngineBackend;
 
   // Called when the syncer has finished performing a configuration.
-  void FinishConfigureDataTypesOnFrontendLoop(
-      const ModelTypeSet enabled_types,
-      const ModelTypeSet succeeded_configuration_types,
-      const ModelTypeSet failed_configuration_types,
-      base::OnceCallback<void(ModelTypeSet, ModelTypeSet)> ready_task);
+  void FinishConfigureDataTypesOnFrontendLoop(const ModelTypeSet enabled_types,
+                                              base::OnceClosure ready_task);
 
   // Reports backend initialization success.  Includes some objects from sync
   // manager initialization to be passed back to the UI thread.

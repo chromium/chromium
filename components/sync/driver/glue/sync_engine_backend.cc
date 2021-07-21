@@ -401,7 +401,7 @@ void SyncEngineBackend::DoConfigureSyncer(
 }
 
 void SyncEngineBackend::DoFinishConfigureDataTypes(
-    ModelTypeSet types_to_config,
+    ModelTypeSet types_to_download,
     base::OnceCallback<void(ModelTypeSet, ModelTypeSet)> ready_task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -409,13 +409,14 @@ void SyncEngineBackend::DoFinishConfigureDataTypes(
   ModelTypeSet enabled_types = sync_manager_->GetEnabledTypes();
   enabled_types.RemoveAll(ProxyTypes());
 
-  const ModelTypeSet failed_configuration_types =
-      Difference(types_to_config, sync_manager_->InitialSyncEndedTypes());
-  const ModelTypeSet succeeded_configuration_types =
-      Difference(types_to_config, failed_configuration_types);
-  host_.Call(FROM_HERE, &SyncEngineImpl::FinishConfigureDataTypesOnFrontendLoop,
-             enabled_types, succeeded_configuration_types,
-             failed_configuration_types, std::move(ready_task));
+  const ModelTypeSet failed_types =
+      Difference(types_to_download, sync_manager_->InitialSyncEndedTypes());
+  const ModelTypeSet succeeded_types =
+      Difference(types_to_download, failed_types);
+  host_.Call(
+      FROM_HERE, &SyncEngineImpl::FinishConfigureDataTypesOnFrontendLoop,
+      enabled_types,
+      base::BindOnce(std::move(ready_task), succeeded_types, failed_types));
 }
 
 void SyncEngineBackend::SendBufferedProtocolEventsAndEnableForwarding() {
