@@ -7208,6 +7208,9 @@ crbug.com/1228246 http/tests/inspector-protocol/network/same-site-issue-warn-coo
 crbug.com/1228246 http/tests/inspector-protocol/network/same-site-issue-warn-cookie-strict-subresource-context-downgrade.js [ Crash Failure Pass Skip Timeout ]
 crbug.com/1228246 http/tests/inspector-protocol/network/webbundle.js [ Crash Failure Pass Skip Timeout ]
 
+# linux_layout_tests_layout_ng_disabled needs its own baselines.
+crbug.com/1231699 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-composite.html [ Pass Failure ]
+
 # Other devtools flaky tests outside of http/tests/inspector-protocol/network.
 crbug.com/1228261 http/tests/devtools/console/console-context-selector.js [ Crash Failure Pass Skip Timeout ]
 crbug.com/1228261 http/tests/inspector-protocol/browser-grant-permissions.js [ Crash Failure Pass Skip Timeout ]
