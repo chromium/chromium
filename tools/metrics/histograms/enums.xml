@@ -48642,6 +48642,7 @@ from previous Chrome versions.
   <int value="-215580565"
       label="OmniboxEnableClipboardProviderImageSuggestions:disabled"/>
   <int value="-215534141" label="NativeWindowNavButtons:enabled"/>
+  <int value="-214618160" label="ESimPolicy:enabled"/>
   <int value="-213518852" label="protect-sync-credential:enabled"/>
   <int value="-213214894" label="enable-chromevox-arc-support"/>
   <int value="-208587977" label="OmniboxMaterialDesignWeatherIcons:enabled"/>
@@ -49157,6 +49158,7 @@ from previous Chrome versions.
   <int value="217455219" label="SyncStandaloneTransport:enabled"/>
   <int value="218890378" label="ManualSaving:disabled"/>
   <int value="219117936" label="AllowReaderForAccessibility:enabled"/>
+  <int value="219384037" label="ESimPolicy:disabled"/>
   <int value="221212638" label="StartSurfaceAndroid:enabled"/>
   <int value="221363150" label="ForceEnableFaceAe:disabled"/>
   <int value="221707633" label="AutofillFixOfferInIncognito:disabled"/>

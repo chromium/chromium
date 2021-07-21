@@ -4677,6 +4677,11 @@ const char kEnableSuggestedFilesDescription[] =
     "Enable Suggested Files feature in Launcher, which will show file "
     "suggestions in the suggestion chips when the launcher is opened";
 
+const char kESimPolicyName[] = "Enable ESim Policy";
+const char kESimPolicyDescription[] =
+    "Enable the support for policy controlled provisioning and configuration "
+    "of eSIM cellular networks";
+
 const char kExoGamepadVibrationName[] = "Gamepad Vibration for Exo Clients";
 const char kExoGamepadVibrationDescription[] =
     "Allow Exo clients like Android to request vibration events for gamepads "

@@ -2962,6 +2962,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "esim-policy",
+    "owners": [ "azeemarshad", "jiajunz@google.com", "cros-connectivity@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "ev-details-in-page-info",
     "owners": [ "cthomp" ],
     "expiry_milestone": 83
