@@ -63,6 +63,9 @@ KNOWN_TYP_TEST_RUNNERS = {
     'run_polymer_tools_tests.py',
 }
 
+KNOWN_TYP_VPYTHON3_TEST_RUNNERS = {
+    'monochrome_python_tests.py',
+}
 
 class IsolatedScriptTestAdapter(common.BaseIsolatedScriptArgsAdapter):
   def __init__(self):
@@ -118,6 +121,11 @@ class TypUnittestAdapter(common.BaseIsolatedScriptArgsAdapter):
   def clean_up_after_test_run(self):
     if self._temp_filter_file:
       os.unlink(self._temp_filter_file.name)
+
+  def select_python_executable(self):
+    if any(r in self.rest_args[0] for r in KNOWN_TYP_VPYTHON3_TEST_RUNNERS):
+      return 'vpython3.bat' if sys.platform == 'win32' else 'vpython3'
+    return super(TypUnittestAdapter, self).select_python_executable()
 
   def run_test(self):
     return super(TypUnittestAdapter, self).run_test()

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env vpython3
 #
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be

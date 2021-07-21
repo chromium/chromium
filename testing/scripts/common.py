@@ -365,8 +365,11 @@ class BaseIsolatedScriptArgsAdapter(object):
     del total_shard, shard_index  # unused
     raise RuntimeError('this method is not yet implemented')
 
+  def select_python_executable(self):
+    return sys.executable
+
   def generate_isolated_script_cmd(self):
-    isolated_script_cmd = [sys.executable] + self.rest_args
+    isolated_script_cmd = [ self.select_python_executable() ] + self.rest_args
 
     isolated_script_cmd += self.generate_test_output_args(
         self.options.isolated_script_test_output)

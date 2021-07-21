@@ -47,4 +47,5 @@ group("run_perf_test") {
 python_library("run_isolated_script_test") {
   testonly = true
   pydeps_file = "//testing/scripts/run_isolated_script_test.pydeps"
+  data = [ "//.vpython3" ]
 }

@@ -86,9 +86,9 @@ class APKEntry:
 def DumpAPK(apk):
   args = ['unzip', '-lv']
   args.append(apk)
-  content = subprocess.check_output(args)
+  content = subprocess.check_output(args, universal_newlines=True)
   apk_entries = []
-  with contextlib.closing(io.BytesIO(content)) as f:
+  with contextlib.closing(io.StringIO(content)) as f:
     for line in f:
       match = ZIP_ENTRY.match(line)
       if match:
