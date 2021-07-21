@@ -32,14 +32,14 @@ bool IsHostValidToFetchFromRemoteOptimizationGuide(const std::string& host);
 google::protobuf::RepeatedPtrField<proto::FieldTrial>
 GetActiveFieldTrialsAllowedForFetch();
 
-// Returns the file path that holds the model file for |model|, if applicable.
-absl::optional<base::FilePath> GetFilePathFromPredictionModel(
-    const proto::PredictionModel& model);
+// Returns the file path represented by the given string, handling platform
+// differences in the conversion. nullopt is only returned iff the passed string
+// is empty.
+absl::optional<base::FilePath> StringToFilePath(const std::string& str_path);
 
-// Fills |model| with the path for which the corresponding model file can be
-// found.
-void SetFilePathInPredictionModel(const base::FilePath& file_path,
-                                  proto::PredictionModel* model);
+// Returns a string representation of the given |file_path|, handling platform
+// differences in the conversion.
+std::string FilePathToString(const base::FilePath& file_path);
 
 // Returns the base file name to use for storing all prediction models.
 base::FilePath GetBaseFileNameForModels();

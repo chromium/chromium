@@ -23,7 +23,7 @@ PredictionModelFile::~PredictionModelFile() = default;
 std::unique_ptr<PredictionModelFile> PredictionModelFile::Create(
     const proto::PredictionModel& model) {
   absl::optional<base::FilePath> model_file_path =
-      GetFilePathFromPredictionModel(model);
+      StringToFilePath(model.model().download_url());
   if (!model_file_path)
     return nullptr;
   if (!model.model_info().has_version())

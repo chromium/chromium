@@ -1099,7 +1099,8 @@ void PredictionManager::OverrideTargetModelFileForTesting(
   prediction_model.mutable_model_info()->set_version(1);
   prediction_model.mutable_model_info()->set_optimization_target(
       optimization_target);
-  SetFilePathInPredictionModel(file_path, &prediction_model);
+  prediction_model.mutable_model()->set_download_url(
+      FilePathToString(file_path));
   if (model_metadata.has_value()) {
     *prediction_model.mutable_model_info()->mutable_model_metadata() =
         *model_metadata;

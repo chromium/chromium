@@ -962,11 +962,12 @@ void OptimizationGuideStore::OnLoadModelsToBeUpdated(
     // Delete files (the model itself and any additional files) that are
     // provided by the model in its directory.
     if (should_delete_download_file && entry.second.has_prediction_model() &&
-        entry.second.prediction_model().model().has_download_url()) {
-      // |GetFilePathFromPredictionModel| never returns nullopt when
-      // |model().has_download_url()| is true.
+        !entry.second.prediction_model().model().download_url().empty()) {
+      // |GetFilePathFromPredictionModel| only returns nullopt when
+      // |model().download_url()| is empty.
       base::FilePath model_file_path =
-          GetFilePathFromPredictionModel(entry.second.prediction_model())
+          StringToFilePath(
+              entry.second.prediction_model().model().download_url())
               .value();
       base::FilePath path_to_delete;
 
@@ -1088,7 +1089,7 @@ void OptimizationGuideStore::OnLoadPredictionModel(
   // Make sure the path still exists before we send it back to the load
   // initiator.
   base::FilePath file_path =
-      GetFilePathFromPredictionModel(*loaded_prediction_model).value();
+      StringToFilePath(loaded_prediction_model->model().download_url()).value();
   store_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&base::PathExists, file_path),
       base::BindOnce(&OptimizationGuideStore::OnModelFilePathVerified,

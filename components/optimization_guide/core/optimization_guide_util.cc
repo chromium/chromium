@@ -86,26 +86,22 @@ GetActiveFieldTrialsAllowedForFetch() {
   return filtered_active_field_trials;
 }
 
-absl::optional<base::FilePath> GetFilePathFromPredictionModel(
-    const proto::PredictionModel& model) {
-  if (!model.model().has_download_url())
+absl::optional<base::FilePath> StringToFilePath(const std::string& str_path) {
+  if (str_path.empty())
     return absl::nullopt;
 
 #if defined(OS_WIN)
-  return base::FilePath(base::UTF8ToWide(model.model().download_url()));
+  return base::FilePath(base::UTF8ToWide(str_path));
 #else
-  return base::FilePath(model.model().download_url());
+  return base::FilePath(str_path);
 #endif
 }
 
-void SetFilePathInPredictionModel(const base::FilePath& file_path,
-                                  proto::PredictionModel* model) {
-  DCHECK(model);
-
+std::string FilePathToString(const base::FilePath& file_path) {
 #if defined(OS_WIN)
-  model->mutable_model()->set_download_url(base::WideToUTF8(file_path.value()));
+  return base::WideToUTF8(file_path.value());
 #else
-  model->mutable_model()->set_download_url(file_path.value());
+  return file_path.value();
 #endif
 }
 

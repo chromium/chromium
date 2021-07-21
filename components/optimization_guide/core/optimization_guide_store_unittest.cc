@@ -177,7 +177,8 @@ class OptimizationGuideStoreTest : public testing::Test {
     prediction_model->mutable_model_info()->set_optimization_target(
         optimization_target);
     if (model_file_path) {
-      SetFilePathInPredictionModel(*model_file_path, prediction_model.get());
+      prediction_model->mutable_model()->set_download_url(
+          FilePathToString(*model_file_path));
     }
     update_data->CopyPredictionModelIntoUpdateData(*prediction_model);
   }
@@ -2181,7 +2182,8 @@ TEST_F(OptimizationGuideStoreTest,
 
   proto::PredictionModel* loaded_model = last_loaded_prediction_model();
   EXPECT_TRUE(loaded_model);
-  EXPECT_EQ(GetFilePathFromPredictionModel(*loaded_model).value(), file_path);
+  EXPECT_EQ(StringToFilePath(loaded_model->model().download_url()).value(),
+            file_path);
 }
 
 TEST_F(OptimizationGuideStoreTest, UpdatePredictionModelsDeletesOldFile) {

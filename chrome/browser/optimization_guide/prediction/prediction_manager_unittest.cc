@@ -746,7 +746,8 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
   // Ensure observer is hooked up.
   proto::PredictionModel model1;
   *model1.mutable_model_info() = model_info;
-  SetFilePathInPredictionModel(temp_dir().AppendASCII("whatever"), &model1);
+  model1.mutable_model()->set_download_url(
+      FilePathToString(temp_dir().AppendASCII("whatever")));
   prediction_manager()->OnModelReady(model1);
   RunUntilIdle();
 
@@ -784,7 +785,8 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
   proto::PredictionModel model2;
   *model2.mutable_model_info() = model_info;
   model2.mutable_model_info()->set_version(2);
-  SetFilePathInPredictionModel(temp_dir().AppendASCII("whatever2"), &model2);
+  model2.mutable_model()->set_download_url(
+      FilePathToString(temp_dir().AppendASCII("whatever2")));
   prediction_manager()->OnModelReady(model2);
   RunUntilIdle();
 
@@ -819,7 +821,8 @@ TEST_F(PredictionManagerTest,
   // Ensure observer is hooked up.
   proto::PredictionModel model1;
   *model1.mutable_model_info() = model_info;
-  SetFilePathInPredictionModel(temp_dir().AppendASCII("whatever"), &model1);
+  model1.mutable_model()->set_download_url(
+      FilePathToString(temp_dir().AppendASCII("whatever")));
   prediction_manager()->OnModelReady(model1);
   RunUntilIdle();
 
@@ -898,7 +901,8 @@ TEST_F(PredictionManagerTest,
   model.mutable_model_info()->set_optimization_target(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   model.mutable_model_info()->set_version(1);
-  SetFilePathInPredictionModel(temp_dir().AppendASCII("whatever2"), &model);
+  model.mutable_model()->set_download_url(
+      FilePathToString(temp_dir().AppendASCII("whatever2")));
   prediction_manager()->OnModelReady(model);
   RunUntilIdle();
 
@@ -1074,7 +1078,8 @@ TEST_F(PredictionManagerTest, UpdateModelFileWithSameVersion) {
   model.mutable_model_info()->set_optimization_target(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   model.mutable_model_info()->set_version(3);
-  SetFilePathInPredictionModel(temp_dir().AppendASCII("whatever"), &model);
+  model.mutable_model()->set_download_url(
+      FilePathToString(temp_dir().AppendASCII("whatever2")));
   prediction_manager()->OnModelReady(model);
   RunUntilIdle();
 
@@ -1308,7 +1313,8 @@ TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTargetOnModelReady) {
   model.mutable_model_info()->set_optimization_target(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   model.mutable_model_info()->set_version(3);
-  SetFilePathInPredictionModel(temp_dir().AppendASCII("whatever"), &model);
+  model.mutable_model()->set_download_url(
+      FilePathToString(temp_dir().AppendASCII("whatever")));
   prediction_manager()->OnModelReady(model);
 
   histogram_tester.ExpectTotalCount(
@@ -1343,7 +1349,8 @@ TEST_F(PredictionManagerTest, UpdateModelForRegisteredTargetButNowFile) {
   model.mutable_model_info()->set_optimization_target(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   model.mutable_model_info()->set_version(3);
-  SetFilePathInPredictionModel(temp_dir().AppendASCII("whatever"), &model);
+  model.mutable_model()->set_download_url(
+      FilePathToString(temp_dir().AppendASCII("whatever")));
   prediction_manager()->OnModelReady(model);
 
   histogram_tester.ExpectTotalCount(

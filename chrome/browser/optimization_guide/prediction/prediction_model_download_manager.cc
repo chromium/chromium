@@ -354,7 +354,7 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
 
   proto::PredictionModel model;
   *model.mutable_model_info() = model_info;
-  SetFilePathInPredictionModel(store_model_path, &model);
+  model.mutable_model()->set_download_url(FilePathToString(store_model_path));
 
   // Pairs are setup as `mv <first> <second>`.
   std::vector<std::pair<base::FilePath, base::FilePath>> files_to_move;

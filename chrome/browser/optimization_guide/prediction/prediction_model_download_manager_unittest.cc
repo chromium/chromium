@@ -558,13 +558,15 @@ TEST_F(
   EXPECT_EQ(observer.last_ready_model()->model_info().optimization_target(),
             proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   EXPECT_EQ(observer.last_ready_model()->model_info().version(), 123);
-  EXPECT_EQ(GetFilePathFromPredictionModel(observer.last_ready_model().value())
+  EXPECT_EQ(StringToFilePath(
+                observer.last_ready_model().value().model().download_url())
                 .value()
                 .DirName()
                 .BaseName()
                 .value(),
             FILE_PATH_LITERAL("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD_123"));
-  EXPECT_EQ(GetFilePathFromPredictionModel(observer.last_ready_model().value())
+  EXPECT_EQ(StringToFilePath(
+                observer.last_ready_model().value().model().download_url())
                 .value()
                 .BaseName()
                 .value(),
