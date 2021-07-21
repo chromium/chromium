@@ -29,6 +29,7 @@ group("js_modules") {
     ":actions_model",
     ":android_app_list_model",
     ":app_state_controller",
+    ":banner_controller",
     ":column_visibility_controller",
     ":constants",
     ":crossover_search_utils",
@@ -103,6 +104,7 @@ js_type_check("closure_compile_jsmodules") {
     ":actions_model",
     ":android_app_list_model",
     ":app_state_controller",
+    ":banner_controller",
     ":column_visibility_controller",
     ":constants",
     ":crossover_search_utils",
@@ -190,6 +192,9 @@ js_library("actions_model") {
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
+}
+
+js_library("banner_controller") {
 }
 
 js_library("mock_actions_model") {
@@ -469,6 +474,7 @@ js_library("file_manager") {
     ":actions_controller",
     ":android_app_list_model",
     ":app_state_controller",
+    ":banner_controller",
     ":column_visibility_controller",
     ":crossover_search_utils",
     ":crostini_controller",

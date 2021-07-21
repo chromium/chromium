@@ -17,6 +17,7 @@ import {VolumeManager} from '../../../externs/volume_manager.js';
 import {FilesPasswordDialog} from '../../elements/files_password_dialog.js';
 import {FilesToast} from '../../elements/files_toast.js';
 import {FilesTooltip} from '../../elements/files_tooltip.js';
+import {BannerController} from '../banner_controller.js';
 import {DialogType} from '../dialog_type.js';
 import {LaunchParam} from '../launch_param.js';
 import {ProvidersModel} from '../providers_model.js';
@@ -366,7 +367,7 @@ export class FileManagerUI {
 
     /**
      * Banners in the file list.
-     * @type {Banners}
+     * @type {Banners|BannerController}
      */
     this.banners = null;
 
@@ -568,7 +569,7 @@ export class FileManagerUI {
 
   /**
    * TODO(mtomasz): Merge the method into initAdditionalUI if possible.
-   * @param {!Banners} banners
+   * @param {!Banners|!BannerController} banners
    */
   initBanners(banners) {
     this.banners = banners;

@@ -182,6 +182,7 @@ preprocess_if_expr("preprocess_static") {
     "file_manager/foreground/js/actions_model.js",
     "file_manager/foreground/js/android_app_list_model.js",
     "file_manager/foreground/js/app_state_controller.js",
+    "file_manager/foreground/js/banner_controller.js",
     "file_manager/foreground/js/column_visibility_controller.js",
     "file_manager/foreground/js/constants.js",
     "file_manager/foreground/js/crossover_search_utils.js",

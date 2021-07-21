@@ -33,6 +33,7 @@ import {FilesMessage} from '../elements/files_message.js';
 import {ActionsController} from './actions_controller.js';
 import {AndroidAppListModel} from './android_app_list_model.js';
 import {AppStateController} from './app_state_controller.js';
+import {BannerController} from './banner_controller.js';
 import {ColumnVisibilityController} from './column_visibility_controller.js';
 import {crossoverSearchUtils} from './crossover_search_utils.js';
 import {CrostiniController} from './crostini_controller.js';
@@ -736,10 +737,14 @@ export class FileManager extends EventTarget {
     this.selectionHandler_.onFileSelectionChanged();
     this.ui_.listContainer.endBatchUpdates();
 
-    this.ui_.initBanners(new Banners(
-        this.directoryModel_, this.volumeManager_, this.document_,
-        // Whether to show any welcome banner.
-        this.dialogType === DialogType.FULL_PAGE));
+    if (util.isBannerFrameworkEnabled()) {
+      this.ui_.initBanners(new BannerController());
+    } else {
+      this.ui_.initBanners(new Banners(
+          this.directoryModel_, this.volumeManager_, this.document_,
+          // Whether to show any welcome banner.
+          this.dialogType === DialogType.FULL_PAGE));
+    }
 
     this.ui_.attachFilesTooltip();
     this.ui_.decorateFilesMenuItems();
