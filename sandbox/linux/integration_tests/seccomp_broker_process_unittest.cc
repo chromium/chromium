@@ -1244,11 +1244,11 @@ class StatFileNoCommandDelegate final : public StatFileDelegate {
 };
 
 TEST(BrokerProcessIntegrationTest, StatFileNoCommandFollowLinks) {
-  RunAllBrokerTests<StatFileNoCommandDelegate<true>>();
+  RunAllBrokerTests<StatFileNoCommandDelegate</*follow_links=*/true>>();
 }
 
 TEST(BrokerProcessIntegrationTest, StatFileNoCommandNoFollowLinks) {
-  RunAllBrokerTests<StatFileNoCommandDelegate<false>>();
+  RunAllBrokerTests<StatFileNoCommandDelegate</*follow_links=*/false>>();
 }
 
 // Allows the STAT command without any file permissions.
@@ -1274,11 +1274,11 @@ class StatFilesNoPermissionDelegate final : public StatFileDelegate {
 };
 
 TEST(BrokerProcessIntegrationTest, StatFilesNoPermissionFollowLinks) {
-  RunAllBrokerTests<StatFilesNoPermissionDelegate<true>>();
+  RunAllBrokerTests<StatFilesNoPermissionDelegate</*follow_links=*/true>>();
 }
 
 TEST(BrokerProcessIntegrationTest, StatFilesNoPermissionNoFollowLinks) {
-  RunAllBrokerTests<StatFilesNoPermissionDelegate<false>>();
+  RunAllBrokerTests<StatFilesNoPermissionDelegate</*follow_links=*/false>>();
 }
 
 // Nonexistent file with permissions to see file.
@@ -1323,12 +1323,14 @@ class StatNonexistentFileWithPermissionsDelegate final
 
 TEST(BrokerProcessIntegrationTest,
      StatNonexistentFileWithPermissionsFollowLinks) {
-  RunAllBrokerTests<StatNonexistentFileWithPermissionsDelegate<true>>();
+  RunAllBrokerTests<
+      StatNonexistentFileWithPermissionsDelegate</*follow_links=*/true>>();
 }
 
 TEST(BrokerProcessIntegrationTest,
      StatNonexistentFileWithPermissionsNoFollowLinks) {
-  RunAllBrokerTests<StatNonexistentFileWithPermissionsDelegate<false>>();
+  RunAllBrokerTests<
+      StatNonexistentFileWithPermissionsDelegate</*follow_links=*/false>>();
 }
 
 // Nonexistent file with permissions to create file.
@@ -1372,12 +1374,14 @@ class StatNonexistentFileWithCreatePermissionsDelegate final
 
 TEST(BrokerProcessIntegrationTest,
      StatNonexistentFileWithCreatePermissionsFollowLinks) {
-  RunAllBrokerTests<StatNonexistentFileWithCreatePermissionsDelegate<true>>();
+  RunAllBrokerTests<StatNonexistentFileWithCreatePermissionsDelegate<
+      /*follow_links=*/true>>();
 }
 
 TEST(BrokerProcessIntegrationTest,
      StatNonexistentFileWithCreatePermissionsNoFollowLinks) {
-  RunAllBrokerTests<StatNonexistentFileWithCreatePermissionsDelegate<false>>();
+  RunAllBrokerTests<StatNonexistentFileWithCreatePermissionsDelegate<
+      /*follow_links=*/false>>();
 }
 
 // Actual file with permissions to see file.
@@ -1419,11 +1423,11 @@ class StatFileWithPermissionsDelegate final : public StatFileDelegate {
 };
 
 TEST(BrokerProcessIntegrationTest, StatFileWithPermissionsFollowLinks) {
-  RunAllBrokerTests<StatFileWithPermissionsDelegate<true>>();
+  RunAllBrokerTests<StatFileWithPermissionsDelegate</*follow_links=*/true>>();
 }
 
 TEST(BrokerProcessIntegrationTest, StatFileWithPermissionsNoFollowLinks) {
-  RunAllBrokerTests<StatFileWithPermissionsDelegate<false>>();
+  RunAllBrokerTests<StatFileWithPermissionsDelegate</*follow_links=*/false>>();
 }
 
 class RenameTestDelegate : public BrokerTestDelegate {
@@ -1453,6 +1457,16 @@ class RenameTestDelegate : public BrokerTestDelegate {
   }
 
  protected:
+  void ExpectRenamed() {
+    EXPECT_TRUE(access(oldpath_.c_str(), 0) < 0);
+    EXPECT_TRUE(access(newpath_.c_str(), 0) == 0);
+  }
+
+  void ExpectNotRenamed() {
+    EXPECT_TRUE(access(oldpath_.c_str(), 0) == 0);
+    EXPECT_TRUE(access(newpath_.c_str(), 0) < 0);
+  }
+
   std::string oldpath_;
   std::string newpath_;
 };
@@ -1475,13 +1489,7 @@ class RenameNoCommandDelegate final : public RenameTestDelegate {
   }
 
   void ParentTearDown() override {
-    if (true) {
-      EXPECT_TRUE(access(oldpath_.c_str(), 0) == 0);
-      EXPECT_TRUE(access(newpath_.c_str(), 0) < 0);
-    } else {
-      EXPECT_TRUE(access(oldpath_.c_str(), 0) < 0);
-      EXPECT_TRUE(access(newpath_.c_str(), 0) == 0);
-    }
+    ExpectNotRenamed();
     RenameTestDelegate::ParentTearDown();
   }
 };
@@ -1506,13 +1514,7 @@ class RenameNoPermNewDelegate final : public RenameTestDelegate {
   }
 
   void ParentTearDown() override {
-    if (true) {
-      EXPECT_TRUE(access(oldpath_.c_str(), 0) == 0);
-      EXPECT_TRUE(access(newpath_.c_str(), 0) < 0);
-    } else {
-      EXPECT_TRUE(access(oldpath_.c_str(), 0) < 0);
-      EXPECT_TRUE(access(newpath_.c_str(), 0) == 0);
-    }
+    ExpectNotRenamed();
     RenameTestDelegate::ParentTearDown();
   }
 };
@@ -1537,13 +1539,7 @@ class RenameNoPermOldDelegate final : public RenameTestDelegate {
   }
 
   void ParentTearDown() override {
-    if (true) {
-      EXPECT_TRUE(access(oldpath_.c_str(), 0) == 0);
-      EXPECT_TRUE(access(newpath_.c_str(), 0) < 0);
-    } else {
-      EXPECT_TRUE(access(oldpath_.c_str(), 0) < 0);
-      EXPECT_TRUE(access(newpath_.c_str(), 0) == 0);
-    }
+    ExpectNotRenamed();
     RenameTestDelegate::ParentTearDown();
   }
 };
@@ -1570,13 +1566,7 @@ class RenameReadPermNewDelegate final : public RenameTestDelegate {
   }
 
   void ParentTearDown() override {
-    if (true) {
-      EXPECT_TRUE(access(oldpath_.c_str(), 0) == 0);
-      EXPECT_TRUE(access(newpath_.c_str(), 0) < 0);
-    } else {
-      EXPECT_TRUE(access(oldpath_.c_str(), 0) < 0);
-      EXPECT_TRUE(access(newpath_.c_str(), 0) == 0);
-    }
+    ExpectNotRenamed();
     RenameTestDelegate::ParentTearDown();
   }
 };
@@ -1603,13 +1593,7 @@ class RenameReadPermOldDelegate final : public RenameTestDelegate {
   }
 
   void ParentTearDown() override {
-    if (true) {
-      EXPECT_TRUE(access(oldpath_.c_str(), 0) == 0);
-      EXPECT_TRUE(access(newpath_.c_str(), 0) < 0);
-    } else {
-      EXPECT_TRUE(access(oldpath_.c_str(), 0) < 0);
-      EXPECT_TRUE(access(newpath_.c_str(), 0) == 0);
-    }
+    ExpectNotRenamed();
     RenameTestDelegate::ParentTearDown();
   }
 };
@@ -1635,13 +1619,7 @@ class RenameWritePermsBothDelegate final : public RenameTestDelegate {
   }
 
   void ParentTearDown() override {
-    if (false) {
-      EXPECT_TRUE(access(oldpath_.c_str(), 0) == 0);
-      EXPECT_TRUE(access(newpath_.c_str(), 0) < 0);
-    } else {
-      EXPECT_TRUE(access(oldpath_.c_str(), 0) < 0);
-      EXPECT_TRUE(access(newpath_.c_str(), 0) == 0);
-    }
+    ExpectRenamed();
     RenameTestDelegate::ParentTearDown();
   }
 };
