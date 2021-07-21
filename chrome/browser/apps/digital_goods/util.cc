@@ -48,7 +48,7 @@ std::string GetTwaPackageName(content::RenderFrameHost* render_frame_host) {
 
 std::string GetScope(content::RenderFrameHost* render_frame_host) {
   web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::Get(
+      web_app::WebAppProvider::GetForWebApps(
           Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))
           ->registrar();
   absl::optional<web_app::AppId> app_id = registrar.FindAppWithUrlInScope(

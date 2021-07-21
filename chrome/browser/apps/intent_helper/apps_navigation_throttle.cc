@@ -166,7 +166,8 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
 
   Profile* const profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  web_app::WebAppProvider* provider = web_app::WebAppProvider::Get(profile);
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
   if (!provider)
     return absl::nullopt;
 

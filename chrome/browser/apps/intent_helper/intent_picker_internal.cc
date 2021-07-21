@@ -75,7 +75,7 @@ std::vector<IntentPickerAppInfo> FindPwaForUrl(
   if (!app_id)
     return apps;
 
-  auto* const provider = web_app::WebAppProvider::Get(profile);
+  auto* const provider = web_app::WebAppProvider::GetForWebApps(profile);
   if (provider->registrar().GetAppUserDisplayMode(*app_id) ==
       web_app::DisplayMode::kBrowser) {
     return apps;

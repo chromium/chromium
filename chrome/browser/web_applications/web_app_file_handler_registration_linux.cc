@@ -98,8 +98,10 @@ void UpdateFileHandlerRegistrationInOs(
   // On Linux, file associations are managed through shortcuts in the app menu,
   // so after enabling or disabling file handling for an app its shortcuts
   // need to be recreated.
-  WebAppProvider::Get(profile)->os_integration_manager().GetShortcutInfoForApp(
-      app_id, base::BindOnce(&OnShortcutInfoReceived, std::move(callback)));
+  WebAppProvider::GetForWebApps(profile)
+      ->os_integration_manager()
+      .GetShortcutInfoForApp(
+          app_id, base::BindOnce(&OnShortcutInfoReceived, std::move(callback)));
 }
 
 void OnRegisterMimeTypes(bool registration_succeeded) {
@@ -170,7 +172,7 @@ void UnregisterFileHandlersWithOs(const AppId& app_id,
   // If this was triggered as part of the uninstallation process, nothing more
   // is needed. Uninstalling already cleans up shortcuts (and thus, file
   // handlers).
-  auto* provider = WebAppProvider::Get(profile);
+  auto* provider = WebAppProvider::GetForWebApps(profile);
   DCHECK(provider->registrar().IsInstalled(app_id));
   if (provider->registrar().IsUninstalling(app_id)) {
     std::move(callback).Run(true);

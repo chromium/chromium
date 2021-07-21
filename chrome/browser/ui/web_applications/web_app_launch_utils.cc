@@ -75,7 +75,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
 namespace web_app {
 
 absl::optional<AppId> GetWebAppForActiveTab(Browser* browser) {
-  WebAppProvider* provider = WebAppProvider::Get(browser->profile());
+  WebAppProvider* provider = WebAppProvider::GetForWebApps(browser->profile());
   if (!provider)
     return absl::nullopt;
 
@@ -132,7 +132,8 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   // entered the app's scope. The minimal-ui Back button will be initially
   // disabled if the previous page was outside scope. Packaged apps are not
   // affected.
-  WebAppRegistrar& registrar = WebAppProvider::Get(profile)->registrar();
+  WebAppRegistrar& registrar =
+      WebAppProvider::GetForWebApps(profile)->registrar();
   if (registrar.IsInstalled(app_id)) {
     absl::optional<GURL> app_scope = registrar.GetAppScope(app_id);
     if (!app_scope)

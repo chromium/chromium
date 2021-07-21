@@ -70,7 +70,7 @@ void OnWebAppInstalled(WebAppInstalledCallback callback,
 
 bool CanCreateWebApp(const Browser* browser) {
   // Check whether user is allowed to install web app.
-  if (!WebAppProvider::Get(browser->profile()) ||
+  if (!WebAppProvider::GetForWebApps(browser->profile()) ||
       !AreWebAppsUserInstallable(browser->profile()))
     return false;
 

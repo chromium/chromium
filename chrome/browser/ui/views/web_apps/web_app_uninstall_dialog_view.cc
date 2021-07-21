@@ -64,7 +64,7 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
     webapps::WebappUninstallSource uninstall_source,
     std::map<SquareSizePx, SkBitmap> icon_bitmaps)
     : dialog_(dialog_view), app_id_(app_id), profile_(profile) {
-  auto* provider = web_app::WebAppProvider::Get(profile_);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
   DCHECK(provider);
 
   app_start_url_ = provider->registrar().GetAppStartUrl(app_id_);
@@ -156,7 +156,7 @@ ui::ImageModel WebAppUninstallDialogDelegateView::GetWindowIcon() {
 }
 
 void WebAppUninstallDialogDelegateView::Uninstall() {
-  auto* provider = web_app::WebAppProvider::Get(profile_);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
   DCHECK(provider);
 
   if (!provider->install_finalizer().CanUserUninstallWebApp(app_id_)) {
@@ -235,7 +235,7 @@ void WebAppUninstallDialogViews::ConfirmUninstall(
     return;
   }
 
-  auto* provider = web_app::WebAppProvider::Get(profile_);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
   DCHECK(provider);
 
   registrar_observation_.Observe(&provider->registrar());
