@@ -18,6 +18,9 @@ namespace blink {
 // AccessHandle. These methods closely map to base::File equivalents. The
 // implementation of the FileDelegate will depend on whether the renderer is in
 // incognito. All methods are synchronous.
+// A FileDelegate may get accessed by multiple threads, even though the caller
+// has to make sure that there is no concurrent access. This means that at any
+// point in time there is exactly one thread that may access the FileDelegate.
 class FileSystemAccessFileDelegate
     : public GarbageCollected<FileSystemAccessFileDelegate> {
  public:

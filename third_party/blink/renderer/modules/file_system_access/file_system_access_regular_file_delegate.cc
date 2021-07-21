@@ -60,9 +60,7 @@ bool FileSystemAccessRegularFileDelegate::SetLength(int64_t length) {
 }
 
 bool FileSystemAccessRegularFileDelegate::Flush() {
-  // TODO(crbug.com/1218431): Implement this method.
-  NOTIMPLEMENTED();
-  return false;
+  return backing_file_.Flush();
 }
 
 void FileSystemAccessRegularFileDelegate::Close() {
