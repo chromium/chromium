@@ -52,7 +52,7 @@ class CommandUpdaterImpl : public CommandUpdater {
  private:
   // A piece of data about a command - whether or not it is enabled, and a list
   // of objects that observe the enabled state of this command.
-  class Command;
+  struct Command;
 
   // Get a Command node for a given command ID, creating an entry if it doesn't
   // exist if desired.
