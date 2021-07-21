@@ -241,46 +241,54 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
 
   // The frame pool passed from the client. While internally other additional
   // frame pools might be used for intermediate results, all frames passed to
-  // the client should be created using this pool.
-  // Used on |decoder_task_runner_|.
+  // the client should be created using this pool. DmabufVideoFramePool is
+  // thread safe and used from |client_task_runner_| and
+  // |decoder_task_runner_|.
   std::unique_ptr<DmabufVideoFramePool> main_frame_pool_;
 
   // The image processor is only created when the decoder cannot output frames
   // with renderable format.
-  std::unique_ptr<ImageProcessorWithPool> image_processor_;
+  std::unique_ptr<ImageProcessorWithPool> image_processor_
+      GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
-  // The frame converter passed from the client. Destroyed on
-  // |client_task_runner_|.
-  std::unique_ptr<VideoFrameConverter> frame_converter_;
+  // The frame converter passed from the client, otherwise used and destroyed on
+  // |decoder_task_runner_|.
+  std::unique_ptr<VideoFrameConverter> frame_converter_
+      GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // The transcryptor for transcrypting DecoderBuffers when needed by the HW
   // decoder implementation.
-  std::unique_ptr<DecoderBufferTranscryptor> buffer_transcryptor_;
+  std::unique_ptr<DecoderBufferTranscryptor> buffer_transcryptor_
+      GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // The current video decoder implementation. Valid after initialization is
   // successfully done.
-  std::unique_ptr<DecoderInterface> decoder_;
+  std::unique_ptr<DecoderInterface> decoder_
+      GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
-  // Only used after initialization on |decoder_sequence_checker_|.
-  CreateDecoderFunctionCB create_decoder_function_cb_;
+  // Only used after initialization on |decoder_task_runner_|.
+  CreateDecoderFunctionCB create_decoder_function_cb_
+      GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
-  // Callback from the client. These callback are called on
-  // |client_task_runner_|.
-  OutputCB client_output_cb_;
-  DecodeCB client_flush_cb_;
-  WaitingCB waiting_cb_;
+  // Callbacks provided by the client. Used on |decoder_task_runner_|.
+  // The callback methods themselves are exercised on |client_task_runner_|.
+  OutputCB client_output_cb_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
+  DecodeCB client_flush_cb_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
+  WaitingCB waiting_cb_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
   // True if we need to notify |decoder_| that the pipeline is flushed via
   // DecoderInterface::ApplyResolutionChange().
-  bool need_apply_new_resolution = false;
+  bool need_apply_new_resolution GUARDED_BY_CONTEXT(decoder_sequence_checker_) =
+      false;
 
   // True if the decoder needs bitstream conversion before decoding.
-  bool needs_bitstream_conversion_ = false;
+  bool needs_bitstream_conversion_
+      GUARDED_BY_CONTEXT(client_sequence_checker_) = false;
 
   // Set to true when any unexpected error occurs.
-  bool has_error_ = false;
+  bool has_error_ GUARDED_BY_CONTEXT(decoder_sequence_checker_) = false;
 
   // Set to true to bypass checks for encrypted content support for testing.
   bool allow_encrypted_content_for_testing_ = false;

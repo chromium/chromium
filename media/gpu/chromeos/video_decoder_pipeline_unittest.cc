@@ -154,8 +154,8 @@ class VideoDecoderPipelineTest
   MOCK_METHOD1(OnDecodeDone, void(Status));
   MOCK_METHOD1(OnWaiting, void(WaitingReason));
 
-  void SetCreateDecoderFunctionCB(
-      VideoDecoderPipeline::CreateDecoderFunctionCB function) {
+  void SetCreateDecoderFunctionCB(VideoDecoderPipeline::CreateDecoderFunctionCB
+                                      function) NO_THREAD_SAFETY_ANALYSIS {
     decoder_->create_decoder_function_cb_ = std::move(function);
   }
 
@@ -259,7 +259,9 @@ class VideoDecoderPipelineTest
     return std::move(decoder);
   }
 
-  DecoderInterface* GetUnderlyingDecoder() { return decoder_->decoder_.get(); }
+  DecoderInterface* GetUnderlyingDecoder() NO_THREAD_SAFETY_ANALYSIS {
+    return decoder_->decoder_.get();
+  }
 
   void DetachDecoderSequenceChecker() {
     // |decoder_| will be destroyed on its |decoder_task_runner| via
