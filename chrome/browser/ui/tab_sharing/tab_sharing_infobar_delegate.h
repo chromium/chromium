@@ -46,15 +46,15 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
   //
   // If |focus_target| has a value, the secondary button switches focus.
   // The image on the secondary button is derived from |focus_target|.
-  // Else, if |can_share|, the secondary button changes the capture target
-  // to be the tab associated with |this| object.
+  // Else, if |can_share_instead|, the secondary button changes the
+  // capture target to be the tab associated with |this| object.
   // Otherwise, there is no secondary button.
   static infobars::InfoBar* Create(
       infobars::ContentInfoBarManager* infobar_manager,
       const std::u16string& shared_tab_name,
       const std::u16string& app_name,
       bool shared_tab,
-      bool can_share,
+      bool can_share_instead,
       absl::optional<FocusTarget> focus_target,
       TabSharingUI* ui,
       bool favicons_used_for_switch_to_tab_button = false);
@@ -65,7 +65,7 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
   TabSharingInfoBarDelegate(std::u16string shared_tab_name,
                             std::u16string app_name,
                             bool shared_tab,
-                            bool can_share,
+                            bool can_share_instead,
                             absl::optional<FocusTarget> focus_target,
                             TabSharingUI* ui,
                             bool favicons_used_for_switch_to_tab_button);

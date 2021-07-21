@@ -53,13 +53,13 @@ class TabSharingInfoBarDelegateTest
       std::u16string shared_tab_name,
       std::u16string app_name,
       bool shared_tab,
-      bool can_share,
+      bool can_share_instead,
       int tab_index = 0,
       absl::optional<FocusTarget> focus_target = absl::nullopt) {
     return TabSharingInfoBarDelegate::Create(
         infobars::ContentInfoBarManager::FromWebContents(
             browser()->tab_strip_model()->GetWebContentsAt(tab_index)),
-        shared_tab_name, app_name, shared_tab, can_share, focus_target,
+        shared_tab_name, app_name, shared_tab, can_share_instead, focus_target,
         tab_sharing_mock_ui(), favicons_used_for_switch_to_tab_button_);
   }
 
@@ -67,11 +67,11 @@ class TabSharingInfoBarDelegateTest
       std::u16string shared_tab_name,
       std::u16string app_name,
       bool shared_tab,
-      bool can_share,
+      bool can_share_instead,
       int tab_index = 0,
       absl::optional<FocusTarget> focus_target = absl::nullopt) {
     infobars::InfoBar* infobar =
-        CreateInfobar(shared_tab_name, app_name, shared_tab, can_share,
+        CreateInfobar(shared_tab_name, app_name, shared_tab, can_share_instead,
                       tab_index, focus_target);
     return static_cast<ConfirmInfoBarDelegate*>(infobar->delegate());
   }
@@ -222,14 +222,14 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarWhenSharingNotAllowed) {
   // Create infobar for shared tab.
   AddTab(browser(), GURL("about:blank"));
   ConfirmInfoBarDelegate* delegate_shared_tab = CreateDelegate(
-      std::u16string(), kAppName, true, false /* can_share */, 0);
+      std::u16string(), kAppName, true, false /* can_share_instead */, 0);
   EXPECT_EQ(delegate_shared_tab->GetButtons(),
             ConfirmInfoBarDelegate::BUTTON_OK);
 
   // Create infobar for another not shared tab.
   AddTab(browser(), GURL("about:blank"));
-  ConfirmInfoBarDelegate* delegate =
-      CreateDelegate(kSharedTabName, kAppName, false, false /* can_share */, 1);
+  ConfirmInfoBarDelegate* delegate = CreateDelegate(
+      kSharedTabName, kAppName, false, false /* can_share_instead */, 1);
   EXPECT_EQ(delegate->GetButtons(), ConfirmInfoBarDelegate::BUTTON_OK);
 }
 
