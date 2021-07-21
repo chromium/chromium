@@ -972,6 +972,30 @@ TEST_F(WebOTPServiceTest, RecordMetricsForExistingPage) {
       WebOTPServiceDestroyedReason::kNavigateExistingPage, 1);
 }
 
+TEST_F(WebOTPServiceTest, RecordTimeoutAsOutcomeWithoutFailure) {
+  GURL url = GURL(kTestUrl);
+  NavigateAndCommit(url);
+
+  ServiceWithPrompt service(web_contents());
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  service.ExpectRequestUserConsent();
+  EXPECT_CALL(*service.provider(), Retrieve(_, _))
+      .WillOnce(Invoke([&service]() {
+        service.NotifyReceive(GURL(kTestUrl), "hi", UserConsent::kNotObtained);
+        service.ActivateTimer();
+      }));
+
+  service.MakeRequest(base::DoNothing());
+
+  ukm_loop.Run();
+
+  ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kTimeout);
+}
+
 TEST_F(WebOTPServiceTest, RecordTimeoutAsOutcomeWithTimerActivation) {
   RecordFailureOutcomeWithTimerActivation(
       FailureType::kPromptTimeout, blink::WebOTPServiceOutcome::kTimeout);

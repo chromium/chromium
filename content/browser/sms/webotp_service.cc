@@ -113,10 +113,7 @@ Outcome SmsStatusToOutcome(SmsStatus status) {
       // the request will be handled accordingly. e.g. if the user declined the
       // prompt, we record it as |kUserCancelled|.
       return Outcome::kBackendNotAvailable;
-    default:
-      // The status |kTimeout| has been handled as part of the
-      // |delayed_rejection_reason_| handling logic.
-      NOTREACHED();
+    case SmsStatus::kTimeout:
       return Outcome::kTimeout;
   }
 }
