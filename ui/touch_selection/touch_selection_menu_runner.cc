@@ -36,6 +36,10 @@ bool TouchSelectionMenuClient::IsValid(TouchSelectionMenuClient* client) {
   return base::Contains(ValidClients(), client);
 }
 
+base::WeakPtr<TouchSelectionMenuClient> TouchSelectionMenuClient::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 TouchSelectionMenuRunner::~TouchSelectionMenuRunner() {
   DCHECK_EQ(this, g_touch_selection_menu_runner);
   g_touch_selection_menu_runner = nullptr;
