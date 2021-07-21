@@ -206,6 +206,8 @@ class SafeBrowsingUIManager : public BaseUIManager {
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 
+  bool shut_down_ = false;
+
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingUIManager);
 };
 

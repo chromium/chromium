@@ -54,8 +54,15 @@ SafeBrowsingUIManager::~SafeBrowsingUIManager() {}
 void SafeBrowsingUIManager::Stop(bool shutdown) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (shutdown)
+  if (shutdown) {
+    shut_down_ = true;
+
+    // Tests require this variable to be nulled out to avoid errors due to mocks
+    // being leaked.
+    // TODO(crbug.com/1226567): Eliminate the need for this as part of
+    // eliminating this class' dependence on SafeBrowsingService altogether.
     sb_service_ = nullptr;
+  }
 }
 
 void SafeBrowsingUIManager::CreateAndSendHitReport(
@@ -171,7 +178,7 @@ void SafeBrowsingUIManager::MaybeReportSafeBrowsingHit(
 
   // The service may delete the ping manager (i.e. when user disabling service,
   // etc). This happens on the IO thread.
-  if (!sb_service_ || !sb_service_->ping_manager())
+  if (shut_down_ || !sb_service_->ping_manager())
     return;
 
   DVLOG(1) << "ReportSafeBrowsingHit: " << hit_report.malicious_url << " "
@@ -263,7 +270,7 @@ void SafeBrowsingUIManager::SendSerializedThreatDetails(
 
   // The service may delete the ping manager (i.e. when user disabling service,
   // etc). This happens on the IO thread.
-  if (sb_service_.get() == NULL || sb_service_->ping_manager() == NULL)
+  if (shut_down_ || !sb_service_->ping_manager())
     return;
 
   if (!serialized.empty()) {
