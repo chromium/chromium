@@ -806,10 +806,10 @@ IN_PROC_BROWSER_TEST_P(PDFPluginDisabledTest,
   ValidateSingleSuccessfulDownloadAndNoPDFPluginLaunch();
 }
 
-class PDFExtensionJSTestBase
+class PDFExtensionJSTestWithoutUnseasonedOverride
     : public PDFExtensionTestWithoutUnseasonedOverride {
  public:
-  ~PDFExtensionJSTestBase() override = default;
+  ~PDFExtensionJSTestWithoutUnseasonedOverride() override = default;
 
  protected:
   void RunTestsInJsModule(const std::string& filename,
@@ -857,100 +857,91 @@ class PDFExtensionJSTestBase
   }
 };
 
-class PDFExtensionJSTest : public PDFExtensionJSTestBase {
- public:
-  ~PDFExtensionJSTest() override = default;
+class PDFExtensionJSTest : public WithUnseasonedOverride,
+                           public PDFExtensionJSTestWithoutUnseasonedOverride {
 };
 
-class PDFExtensionJSTestWithUnseasonedOverride : public WithUnseasonedOverride,
-                                                 public PDFExtensionJSTest {};
-
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Basic) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSTestWithoutUnseasonedOverride, Basic) {
   RunTestsInJsModule("basic_test.js", "test.pdf");
 
   // Ensure it loaded in a PPAPI process.
   EXPECT_EQ(1, CountPDFProcesses());
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, BasicPlugin) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSTestWithoutUnseasonedOverride,
+                       BasicPlugin) {
   RunTestsInJsModule("basic_plugin_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride, Viewport) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Viewport) {
   RunTestsInJsModule("viewport_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride, Layout3) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Layout3) {
   RunTestsInJsModule("layout_test.js", "test-layout3.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride, Layout4) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Layout4) {
   RunTestsInJsModule("layout_test.js", "test-layout4.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride, Bookmark) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Bookmark) {
   RunTestsInJsModule("bookmarks_test.js", "test-bookmarks-with-zoom.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride, Navigator) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Navigator) {
   RunTestsInJsModule("navigator_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride, ParamsParser) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ParamsParser) {
   RunTestsInJsModule("params_parser_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride, ZoomManager) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ZoomManager) {
   RunTestsInJsModule("zoom_manager_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride,
-                       GestureDetector) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, GestureDetector) {
   RunTestsInJsModule("gesture_detector_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride,
-                       TouchHandling) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, TouchHandling) {
   RunTestsInJsModule("touch_handling_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride, Elements) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Elements) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("material_elements_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride,
-                       DownloadControls) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, DownloadControls) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("download_controls_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride, Title) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Title) {
   RunTestsInJsModule("title_test.js", "test-title.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride,
-                       WhitespaceTitle) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, WhitespaceTitle) {
   RunTestsInJsModule("whitespace_title_test.js", "test-whitespace-title.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride, PageChange) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, PageChange) {
   RunTestsInJsModule("page_change_test.js", "test-bookmarks.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride, Metrics) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Metrics) {
   RunTestsInJsModule("metrics_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride,
-                       ViewerPasswordDialog) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerPasswordDialog) {
   RunTestsInJsModule("viewer_password_dialog_test.js", "encrypted.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride,
-                       ArrayBufferAllocator) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ArrayBufferAllocator) {
   // Run several times to see if there are issues with unloading.
   RunTestsInJsModule("beep_test.js", "array_buffer.pdf");
   RunTestsInJsModule("beep_test.js", "array_buffer.pdf");
@@ -960,46 +951,42 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride,
 // Test that if the plugin tries to load a URL that redirects then it will fail
 // to load. This is to avoid the source origin of the document changing during
 // the redirect, which can have security implications. https://crbug.com/653749.
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, RedirectsFailInPlugin) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSTestWithoutUnseasonedOverride,
+                       RedirectsFailInPlugin) {
   RunTestsInJsModule("redirects_fail_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride,
-                       ViewerToolbar) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerToolbar) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_toolbar_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride,
-                       ViewerPdfSidenav) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerPdfSidenav) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_pdf_sidenav_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride,
-                       ViewerThumbnailBar) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerThumbnailBar) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_thumbnail_bar_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride,
-                       ViewerThumbnail) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerThumbnail) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_thumbnail_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride, Fullscreen) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Fullscreen) {
   // Use a PDF document with multiple pages, to exercise navigating between
   // pages.
   RunTestsInJsModule("fullscreen_test.js", "test-bookmarks.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride,
-                       ViewerPropertiesDialog) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerPropertiesDialog) {
   // The properties dialog formats some values based on locale.
   base::test::ScopedRestoreICUDefaultLocale scoped_locale{"en_US"};
   // This will apply to the new processes spawned within RunTestsInJsModule(),
@@ -1008,15 +995,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride,
   RunTestsInJsModule("viewer_properties_dialog_test.js", "document_info.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride,
-                       PostMessageProxy) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, PostMessageProxy) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("post_message_proxy_test.js", "test.pdf");
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride, Printing) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Printing) {
   RunTestsInJsModule("printing_icon_test.js", "test.pdf");
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1029,28 +1015,29 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride, Printing) {
 #else
 #define MAYBE_AnnotationsFeatureEnabled AnnotationsFeatureEnabled
 #endif
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, MAYBE_AnnotationsFeatureEnabled) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSTestWithoutUnseasonedOverride,
+                       MAYBE_AnnotationsFeatureEnabled) {
   RunTestsInJsModule("annotations_feature_enabled_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride,
-                       AnnotationsToolbar) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, AnnotationsToolbar) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("annotations_toolbar_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTestWithUnseasonedOverride,
-                       ViewerToolbarDropdown) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerToolbarDropdown) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_toolbar_dropdown_test.js", "test.pdf");
 }
 #endif  // BUILDFLAG(ENABLE_INK)
 
-class PDFExtensionContentSettingJSTest : public PDFExtensionJSTestBase {
+class PDFExtensionContentSettingJSTestWithoutUnseasonedOverride
+    : public PDFExtensionJSTestWithoutUnseasonedOverride {
  public:
-  ~PDFExtensionContentSettingJSTest() override = default;
+  ~PDFExtensionContentSettingJSTestWithoutUnseasonedOverride() override =
+      default;
 
  protected:
   // When blocking JavaScript, block the exact query from pdf/main.js while
@@ -1068,21 +1055,24 @@ class PDFExtensionContentSettingJSTest : public PDFExtensionJSTestBase {
   }
 };
 
-class PDFExtensionContentSettingJSTestWithUnseasonedOverride
+class PDFExtensionContentSettingJSTest
     : public WithUnseasonedOverride,
-      public PDFExtensionContentSettingJSTest {};
+      public PDFExtensionContentSettingJSTestWithoutUnseasonedOverride {};
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTestWithUnseasonedOverride,
-                       Beep) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, Beep) {
   RunTestsInJsModule("beep_test.js", "test-beep.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionContentSettingJSTest, NoBeep) {
+IN_PROC_BROWSER_TEST_F(
+    PDFExtensionContentSettingJSTestWithoutUnseasonedOverride,
+    NoBeep) {
   SetPdfJavaScript(/*enabled=*/false);
   RunTestsInJsModule("nobeep_test.js", "test-beep.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionContentSettingJSTest, BeepThenNoBeep) {
+IN_PROC_BROWSER_TEST_F(
+    PDFExtensionContentSettingJSTestWithoutUnseasonedOverride,
+    BeepThenNoBeep) {
   RunTestsInJsModule("beep_test.js", "test-beep.pdf");
   SetPdfJavaScript(/*enabled=*/false);
   RunTestsInJsModuleNewTab("nobeep_test.js", "test-beep.pdf");
@@ -1093,7 +1083,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionContentSettingJSTest, BeepThenNoBeep) {
   EXPECT_EQ(1, CountPDFProcesses());
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionContentSettingJSTest, NoBeepThenBeep) {
+IN_PROC_BROWSER_TEST_F(
+    PDFExtensionContentSettingJSTestWithoutUnseasonedOverride,
+    NoBeepThenBeep) {
   SetPdfJavaScript(/*enabled=*/false);
   RunTestsInJsModule("nobeep_test.js", "test-beep.pdf");
   SetPdfJavaScript(/*enabled=*/true);
@@ -1105,15 +1097,13 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionContentSettingJSTest, NoBeepThenBeep) {
   EXPECT_EQ(1, CountPDFProcesses());
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTestWithUnseasonedOverride,
-                       BeepCsp) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, BeepCsp) {
   // The script-source * directive in the mock headers file should
   // allow the JavaScript to execute the beep().
   RunTestsInJsModule("beep_test.js", "test-beep-csp.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTestWithUnseasonedOverride,
-                       DISABLED_NoBeepCsp) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, DISABLED_NoBeepCsp) {
   // The script-source none directive in the mock headers file should
   // prevent the JavaScript from executing the beep().
   // TODO(https://crbug.com/1032511) functionality not implemented.
@@ -1122,7 +1112,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTestWithUnseasonedOverride,
 
 // Service worker tests are regression tests for
 // https://crbug.com/916514.
-class PDFExtensionServiceWorkerJSTest : public PDFExtensionJSTest {
+class PDFExtensionServiceWorkerJSTest
+    : public PDFExtensionJSTestWithoutUnseasonedOverride {
  public:
   ~PDFExtensionServiceWorkerJSTest() override = default;
 
@@ -3417,8 +3408,6 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionTestWithTestGuestViewManager);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFPluginDisabledTest);
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PDFExtensionJSTestWithUnseasonedOverride);
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PDFExtensionContentSettingJSTestWithUnseasonedOverride);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionContentSettingJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionPrerenderTest);
