@@ -67,7 +67,9 @@ class TestInstance(object):
 
         # We add the '\x8a' for the image file to prevent the value from
         # being treated as UTF-8 (the character is invalid)
-        self.actual_image = self.base + '\x8a' + '-png' + 'tEXtchecksum\x00' + self.actual_checksum
+        self.actual_image = (self.base.encode('utf8') + b'\x8a' + b'-png' +
+                             b'tEXtchecksum\x00' +
+                             self.actual_checksum.encode('utf8'))
 
         self.expected_text = self.actual_text
         self.expected_image = self.actual_image
@@ -91,7 +93,7 @@ class TestList(object):
     def add_reference(self,
                       name,
                       actual_checksum='checksum',
-                      actual_image='FAIL'):
+                      actual_image=b'FAIL'):
         self.add(
             name,
             actual_checksum=actual_checksum,
@@ -107,21 +109,21 @@ class TestList(object):
                     actual_text=None,
                     expected_text=None,
                     crash=False,
-                    error=''):
-        self.add(
-            name,
-            actual_checksum='checksum',
-            actual_image='FAIL',
-            expected_image=None,
-            actual_text=actual_text,
-            expected_text=expected_text,
-            crash=crash,
-            error=error)
+                    error=b''):
+        self.add(name,
+                 actual_checksum='checksum',
+                 actual_image=b'FAIL',
+                 expected_image=None,
+                 actual_text=actual_text,
+                 expected_text=expected_text,
+                 crash=crash,
+                 error=error)
         if same_image:
             self.add_reference(reference_name)
         else:
-            self.add_reference(
-                reference_name, actual_checksum='diff', actual_image='DIFF')
+            self.add_reference(reference_name,
+                               actual_checksum='diff',
+                               actual_image=b'DIFF')
 
     def keys(self):
         return self.tests.keys()
@@ -153,38 +155,33 @@ def unit_test_list():
     tests.add('failures/expected/device_failure.html', device_failure=True)
     tests.add('failures/expected/timeout.html', timeout=True)
     tests.add('failures/expected/leak.html', leak=True)
-    tests.add(
-        'failures/expected/image.html',
-        actual_image='image_fail-pngtEXtchecksum\x00checksum_fail',
-        expected_image='image-pngtEXtchecksum\x00checksum-png')
-    tests.add(
-        'failures/expected/image_checksum.html',
-        actual_checksum='image_checksum_fail-checksum',
-        actual_image='image_checksum_fail-png')
+    tests.add('failures/expected/image.html',
+              actual_image=b'image_fail-pngtEXtchecksum\x00checksum_fail',
+              expected_image=b'image-pngtEXtchecksum\x00checksum-png')
+    tests.add('failures/expected/image_checksum.html',
+              actual_checksum='image_checksum_fail-checksum',
+              actual_image=b'image_checksum_fail-png')
     tests.add('failures/expected/audio.html',
               actual_audio=base64.b64encode(b'audio_fail-wav'),
-              expected_audio='audio-wav',
+              expected_audio=b'audio-wav',
               actual_text=None,
               expected_text=None,
               actual_image=None,
               expected_image=None,
               actual_checksum=None)
-    tests.add(
-        'failures/unexpected/image-mismatch.html',
-        actual_image='image_fail-pngtEXtchecksum\x00checksum_fail',
-        expected_image='image-pngtEXtchecksum\x00checksum-png')
-    tests.add(
-        'failures/unexpected/no-image-generated.html',
-        expected_image='image-pngtEXtchecksum\x00checksum-png',
-        actual_image=None,
-        actual_checksum=None)
-    tests.add(
-        'failures/unexpected/no-image-baseline.html',
-        actual_image='image_fail-pngtEXtchecksum\x00checksum_fail',
-        expected_image=None)
+    tests.add('failures/unexpected/image-mismatch.html',
+              actual_image=b'image_fail-pngtEXtchecksum\x00checksum_fail',
+              expected_image=b'image-pngtEXtchecksum\x00checksum-png')
+    tests.add('failures/unexpected/no-image-generated.html',
+              expected_image=b'image-pngtEXtchecksum\x00checksum-png',
+              actual_image=None,
+              actual_checksum=None)
+    tests.add('failures/unexpected/no-image-baseline.html',
+              actual_image=b'image_fail-pngtEXtchecksum\x00checksum_fail',
+              expected_image=None)
     tests.add('failures/unexpected/audio-mismatch.html',
               actual_audio=base64.b64encode(b'audio_fail-wav'),
-              expected_audio='audio-wav',
+              expected_audio=b'audio-wav',
               actual_text=None,
               expected_text=None,
               actual_image=None,
@@ -235,9 +232,8 @@ def unit_test_list():
     tests.add('failures/flaky/text.html')
     tests.add('failures/unexpected/*/text.html', actual_text='text_fail-png')
     tests.add('failures/unexpected/missing_text.html', expected_text=None)
-    tests.add(
-        'failures/unexpected/missing_check.html',
-        expected_image='missing-check-png')
+    tests.add('failures/unexpected/missing_check.html',
+              expected_image=b'missing-check-png')
     tests.add('failures/unexpected/missing_image.html', expected_image=None)
     tests.add(
         'failures/unexpected/missing_render_tree_dump.html',
@@ -253,34 +249,30 @@ layer at (0,0) size 800x34
     tests.add('failures/unexpected/crash.html', crash=True)
     tests.add('failures/unexpected/crash-with-sample.html', crash=True)
     tests.add('failures/unexpected/crash-with-delayed-log.html', crash=True)
-    tests.add(
-        'failures/unexpected/crash-with-stderr.html',
-        crash=True,
-        error='mock-std-error-output')
-    tests.add(
-        'failures/unexpected/web-process-crash-with-stderr.html',
-        web_process_crash=True,
-        error='mock-std-error-output')
+    tests.add('failures/unexpected/crash-with-stderr.html',
+              crash=True,
+              error=b'mock-std-error-output')
+    tests.add('failures/unexpected/web-process-crash-with-stderr.html',
+              web_process_crash=True,
+              error=b'mock-std-error-output')
     tests.add('failures/unexpected/pass.html')
     tests.add(
         'failures/unexpected/text-checksum.html',
         actual_text='text-checksum_fail-txt',
         actual_checksum='text-checksum_fail-checksum')
-    tests.add(
-        'failures/unexpected/text-image-checksum.html',
-        actual_text='text-image-checksum_fail-txt',
-        actual_image=
-        'text-image-checksum_fail-pngtEXtchecksum\x00checksum_fail',
-        actual_checksum='text-image-checksum_fail-checksum')
+    tests.add('failures/unexpected/text-image-checksum.html',
+              actual_text='text-image-checksum_fail-txt',
+              actual_image=
+              b'text-image-checksum_fail-pngtEXtchecksum\x00checksum_fail',
+              actual_checksum='text-image-checksum_fail-checksum')
     tests.add(
         'failures/unexpected/checksum-with-matching-image.html',
         actual_checksum='text-image-checksum_fail-checksum')
-    tests.add(
-        'failures/unexpected/image-only.html',
-        expected_text=None,
-        actual_text=None,
-        actual_image='image-only_fail-pngtEXtchecksum\x00checksum_fail',
-        actual_checksum='image-only_fail-checksum')
+    tests.add('failures/unexpected/image-only.html',
+              expected_text=None,
+              actual_text=None,
+              actual_image=b'image-only_fail-pngtEXtchecksum\x00checksum_fail',
+              actual_checksum='image-only_fail-checksum')
     tests.add('failures/unexpected/skip_pass.html')
     tests.add('failures/unexpected/text.html', actual_text='text_fail-txt')
     tests.add('failures/unexpected/text_then_crash.html')
@@ -290,11 +282,11 @@ layer at (0,0) size 800x34
     tests.add('http/tests/passes/image.html')
     tests.add('http/tests/ssl/text.html')
     tests.add('passes/args.html')
-    tests.add('passes/error.html', error='stuff going to stderr')
+    tests.add('passes/error.html', error=b'stuff going to stderr')
     tests.add('passes/image.html', actual_text=None, expected_text=None)
     tests.add('passes/audio.html',
               actual_audio=base64.b64encode(b'audio-wav'),
-              expected_audio='audio-wav',
+              expected_audio=b'audio-wav',
               actual_text=None,
               expected_text=None,
               actual_image=None,
@@ -303,9 +295,8 @@ layer at (0,0) size 800x34
               expected_checksum=None)
     tests.add('passes/platform_image.html')
     tests.add('passes/slow.html')
-    tests.add(
-        'passes/checksum_in_image.html',
-        expected_image='tEXtchecksum\x00checksum_in_image-checksum')
+    tests.add('passes/checksum_in_image.html',
+              expected_image=b'tEXtchecksum\x00checksum_in_image-checksum')
     tests.add('passes/skipped/skip.html')
     tests.add(
         'failures/unexpected/testharness.html',
@@ -379,7 +370,7 @@ layer at (0,0) size 800x34
         same_image=False,
         actual_text='actual',
         expected_text='expected',
-        error='oops')
+        error=b'oops')
     tests.add_reftest('failures/unexpected/mismatch.html',
                       'failures/unexpected/mismatch-expected-mismatch.html')
     tests.add(
@@ -503,11 +494,11 @@ passes/slow.html [ Slow ]
     # Add each test and the expected output, if any.
     test_list = unit_test_list()
     for test in test_list.tests.values():
-        add_file(test, test.name[test.name.rfind('.'):], '')
+        add_file(test, test.name[test.name.rfind('.'):], b'')
         if test.expected_audio:
             add_file(test, '-expected.wav', test.expected_audio)
         if test.expected_text:
-            add_file(test, '-expected.txt', test.expected_text)
+            add_file(test, '-expected.txt', test.expected_text.encode('utf-8'))
         if test.expected_image:
             add_file(test, '-expected.png', test.expected_image)
 
@@ -722,7 +713,7 @@ class TestPort(Port):
         crash_logs = {}
         for cp in crashed_processes:
             if cp[0].endswith('-with-delayed-log.html'):
-                crash_logs[cp[0]] = ('delayed crash log', '/tmp')
+                crash_logs[cp[0]] = (b'delayed crash log', '/tmp')
         return crash_logs
 
     def _path_to_driver(self, target=None):
@@ -753,8 +744,10 @@ class TestPort(Port):
         if not actual_contents or not expected_contents:
             return (True, None)
         if diffed:
-            return ('< %s\n---\n> %s\n' % (expected_contents, actual_contents),
-                    None)
+            return (
+                ('< %s\n---\n> %s\n' %
+                 (expected_contents, actual_contents)),  #.encode('utf8'),
+                None)
         return (None, None)
 
     def web_tests_dir(self):
@@ -883,18 +876,21 @@ class TestDriver(Driver):
             raise DeviceFailure('device failure in ' + test_name)
 
         audio = None
-        actual_text = test.actual_text
+        if test.actual_text:
+            actual_text = test.actual_text.encode('utf8')
+        else:
+            actual_text = None
         crash = test.crash
         web_process_crash = test.web_process_crash
         leak = test.leak
 
         if 'flaky/text.html' in test_name and not test_name in self._port._flakes:
             self._port._flakes.add(test_name)
-            actual_text = 'flaky text failure'
+            actual_text = b'flaky text failure'
 
         if 'crash_then_text.html' in test_name:
             if test_name in self._port._flakes:
-                actual_text = 'text failure'
+                actual_text = b'text failure'
             else:
                 self._port._flakes.add(test_name)
                 crashed_process_name = self._port.driver_name()
@@ -908,29 +904,30 @@ class TestDriver(Driver):
                 crash = True
             else:
                 self._port._flakes.add(test_name)
-                actual_text = 'text failure'
+                actual_text = b'text failure'
 
         if actual_text and test_args and test_name == 'passes/args.html':
-            actual_text = actual_text + ' ' + ' '.join(test_args)
+            actual_text = actual_text + b' ' + (
+                ' '.join(test_args).encode('utf8'))
 
         if test.actual_audio:
             audio = base64.b64decode(test.actual_audio)
         crashed_process_name = None
         crashed_pid = None
 
-        leak_log = ''
+        leak_log = b''
         if leak:
-            leak_log = 'leak detected'
+            leak_log = b'leak detected'
 
-        crash_log = ''
+        crash_log = b''
         if crash:
             crashed_process_name = self._port.driver_name()
             crashed_pid = 1
-            crash_log = 'crash log'
+            crash_log = b'crash log'
         elif web_process_crash:
             crashed_process_name = 'WebProcess'
             crashed_pid = 2
-            crash_log = 'web process crash log'
+            crash_log = b'web process crash log'
 
         if crashed_process_name:
             crash_logs = CrashLogs(self._port.host)
@@ -941,7 +938,7 @@ class TestDriver(Driver):
             crashed_process_name = self._port.driver_name()
             crashed_pid = 3
             crash = True
-            crash_log = 'reftest crash log'
+            crash_log = b'reftest crash log'
         if test.actual_checksum == driver_input.image_hash:
             image = None
         else:

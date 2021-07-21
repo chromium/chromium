@@ -135,7 +135,7 @@ class SingleTestRunner(object):
         return test_result
 
     def _run_compare_test(self):
-        """Runs the signle test and returns test result."""
+        """Runs the single test and returns test result."""
         driver_output = self._driver.run_test(self._driver_input())
         expected_driver_output = self._expected_driver_output()
         failures = self._compare_output(expected_driver_output, driver_output)

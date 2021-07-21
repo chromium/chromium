@@ -182,8 +182,8 @@ class MockFileSystem(object):
             path for path, contents in self.files.items()
             if contents is not None
         ]
-        return filter(path_filter, existing_files) + filter(
-            path_filter, self.dirs)
+        return list(filter(path_filter, existing_files)) + list(
+            filter(path_filter, self.dirs))
 
     def isabs(self, path):
         return path.startswith(self.sep)
@@ -529,7 +529,7 @@ class ReadableBinaryFileObject(object):
 class ReadableTextFileObject(ReadableBinaryFileObject):
     def __init__(self, fs, path, data):
         super(ReadableTextFileObject,
-              self).__init__(fs, path, StringIO(data.decode('utf-8')))
+              self).__init__(fs, path, StringIO(data.encode('utf-8')))
 
     def close(self):
         self.data.close()

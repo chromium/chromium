@@ -29,6 +29,7 @@
 import collections
 import logging
 import os
+import six
 
 from blinkpy.common.system.executive import ScriptError
 
@@ -169,7 +170,7 @@ class MockExecutive(object):
         output = self._output
         if return_stderr:
             output += self._stderr
-        if decode_output and not isinstance(output, unicode):
+        if decode_output and not isinstance(output, six.text_type):
             output = output.decode('utf-8')
 
         return output
