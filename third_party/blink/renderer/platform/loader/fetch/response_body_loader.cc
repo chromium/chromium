@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
@@ -17,11 +18,10 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
-
-constexpr size_t ResponseBodyLoader::kMaxNumConsumedBytesInTask;
 
 constexpr size_t kDefaultMaxBufferedBodyBytesPerRequest = 100 * 1000;
 
@@ -567,7 +567,8 @@ void ResponseBodyLoader::OnStateChange() {
 
   size_t num_bytes_consumed = 0;
   while (!aborted_ && (!IsSuspended() || IsSuspendedForBackForwardCache())) {
-    if (kMaxNumConsumedBytesInTask == num_bytes_consumed) {
+    uint32_t chunk_size = network::features::GetLoaderChunkSize();
+    if (chunk_size == num_bytes_consumed) {
       // We've already consumed many bytes in this task. Defer the remaining
       // to the next task.
       task_runner_->PostTask(FROM_HERE,
@@ -579,8 +580,8 @@ void ResponseBodyLoader::OnStateChange() {
     if (!IsSuspended() && body_buffer_ && !body_buffer_->IsEmpty()) {
       // We need to empty |body_buffer_| first before reading more from
       // |bytes_consumer_|.
-      num_bytes_consumed += body_buffer_->DispatchChunk(
-          kMaxNumConsumedBytesInTask - num_bytes_consumed);
+      num_bytes_consumed +=
+          body_buffer_->DispatchChunk(chunk_size - num_bytes_consumed);
       continue;
     }
 
@@ -595,8 +596,7 @@ void ResponseBodyLoader::OnStateChange() {
 
       base::AutoReset<bool> auto_reset_for_in_two_phase_read(
           &in_two_phase_read_, true);
-      available =
-          std::min(available, kMaxNumConsumedBytesInTask - num_bytes_consumed);
+      available = std::min(available, chunk_size - num_bytes_consumed);
       if (IsSuspendedForBackForwardCache()) {
         // Save the read data into |body_buffer_| instead.
         DidBufferLoadWhileInBackForwardCache(available);

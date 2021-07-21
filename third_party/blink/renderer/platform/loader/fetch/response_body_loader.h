@@ -121,13 +121,6 @@ class PLATFORM_EXPORT ResponseBodyLoader final
 
   void Trace(Visitor*) const override;
 
-  // The maximal number of bytes consumed in a task. When there are more bytes
-  // in the data pipe, they will be consumed in following tasks. Setting a too
-  // small number will generate ton of tasks but setting a too large number will
-  // lead to thread janks. Also, some clients cannot handle too large chunks
-  // (512k for example).
-  static constexpr size_t kMaxNumConsumedBytesInTask = 64 * 1024;
-
  private:
   class Buffer;
   class DelegatingBytesConsumer;

@@ -91,6 +91,9 @@ extern const base::Feature kLoaderDataPipeTuningFeature;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern uint32_t GetDataPipeDefaultAllocationSize();
 
+COMPONENT_EXPORT(NETWORK_CPP)
+extern uint32_t GetLoaderChunkSize();
+
 }  // namespace features
 }  // namespace network
 
