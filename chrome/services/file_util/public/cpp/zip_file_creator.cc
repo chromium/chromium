@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -61,7 +62,7 @@ void ZipFileCreator::Start(
 
 void ZipFileCreator::Stop() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  ReportDone(false);
+  ReportResult(kCancelled);
 }
 
 void ZipFileCreator::CreateZipFile(
@@ -72,7 +73,7 @@ void ZipFileCreator::CreateZipFile(
 
   if (!file.IsValid()) {
     LOG(ERROR) << "Cannot create ZIP file " << Redact(dest_file_);
-    ReportDone(false);
+    ReportResult(kError);
     return;
   }
 
@@ -84,12 +85,12 @@ void ZipFileCreator::CreateZipFile(
       remote_zip_file_creator_.BindNewPipeAndPassReceiver());
 
   remote_zip_file_creator_.set_disconnect_handler(
-      base::BindOnce(&ZipFileCreator::ReportDone, this, false));
+      base::BindOnce(&ZipFileCreator::ReportResult, this, kError));
 
   remote_zip_file_creator_->CreateZipFile(
       std::move(directory), src_relative_paths_, std::move(file),
       listener_.BindNewPipeAndPassRemote(),
-      base::BindOnce(&ZipFileCreator::ReportDone, this));
+      base::BindOnce(&ZipFileCreator::OnFinished, this));
 }
 
 void ZipFileCreator::BindDirectory(
@@ -115,12 +116,19 @@ void ZipFileCreator::BindDirectory(
           src_dir_, std::move(receiver), runner));
 }
 
-void ZipFileCreator::ReportDone(bool success) {
+void ZipFileCreator::OnFinished(const bool success) {
+  ReportResult(success ? kSuccess : kError);
+}
+
+void ZipFileCreator::ReportResult(const Result result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  base::UmaHistogramEnumeration("ZipFileCreator.Result", result);
 
   listener_.reset();
   remote_zip_file_creator_.reset();
 
+  const bool success = result == kSuccess;
   // In case of error, remove the partially created ZIP file.
   if (!success)
     base::ThreadPool::PostTask(
