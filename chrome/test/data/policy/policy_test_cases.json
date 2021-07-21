@@ -7447,7 +7447,7 @@
     ],
     "policy_pref_mapping_tests": [
       {
-        "note":"Check default values (no policies set)",
+        "note": "Check default values (no policies set)",
         "prefs": {
           "ssl.error_override_allowed": {
             "default_value": true
@@ -8351,7 +8351,27 @@
           "SamlInSessionPasswordChangeEnabled": true
         },
         "prefs": {
-          "saml.in_session_password_change_enabled": {}
+          "saml.in_session_password_change_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "SamlInSessionPasswordChangeEnabled": false
+        },
+        "prefs": {
+          "saml.in_session_password_change_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "saml.in_session_password_change_enabled": {
+            "default_value": false
+          }
         }
       }
     ]
