@@ -6,7 +6,7 @@
 
 #include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/bluetooth_dialog_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/chromeos/bluetooth_shared_load_time_data_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/bluetooth_pairing_dialog_resources.h"
@@ -37,7 +37,7 @@ void AddBluetoothStrings(content::WebUIDataSource* html_source) {
   };
   for (const auto& entry : localized_strings)
     html_source->AddLocalizedString(entry.name, entry.id);
-  chromeos::bluetooth_dialog::AddLocalizedStrings(html_source);
+  chromeos::bluetooth::AddLoadTimeData(html_source);
 }
 
 }  // namespace

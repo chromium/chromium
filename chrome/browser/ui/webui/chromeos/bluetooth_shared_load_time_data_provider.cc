@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/bluetooth_dialog_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/chromeos/bluetooth_shared_load_time_data_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -11,8 +12,10 @@
 #include "ui/base/webui/web_ui_util.h"
 
 namespace chromeos {
-namespace bluetooth_dialog {
+namespace bluetooth {
 
+// Adds the strings needed for bluetooth elements to |html_source|. String ids
+// correspond to ids in ui/webui/resources/cr_components/chromeos/bluetooth/.
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"bluetoothAccept", IDS_SETTINGS_BLUETOOTH_ACCEPT_PASSKEY},
@@ -66,5 +69,12 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
-}  // namespace bluetooth_dialog
+void AddLoadTimeData(content::WebUIDataSource* html_source) {
+  AddLocalizedStrings(html_source);
+
+  html_source->AddBoolean("enableBluetoothRevamp",
+                          chromeos::features::IsBluetoothRevampEnabled());
+}
+
+}  // namespace bluetooth
 }  // namespace chromeos
