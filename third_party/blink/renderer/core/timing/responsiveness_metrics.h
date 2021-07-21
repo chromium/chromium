@@ -5,9 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_RESPONSIVENESS_METRICS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_RESPONSIVENESS_METRICS_H_
 
-#include <algorithm>
-#include <random>
-#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
+#include <unordered_map>
+
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 
@@ -74,16 +73,13 @@ class ResponsivenessMetrics {
   void ResetPendingPointers();
 
   // Variables for per-interaction latencies.
-  std::map<int, EventTimestamps> key_down_timestamps_map_;
+  std::unordered_map<int, EventTimestamps> key_down_timestamps_map_;
 
   absl::optional<EventTimestamps> pending_pointer_up_timestamps_;
   absl::optional<EventTimestamps> pending_pointer_down_timestamps_;
   bool is_drag_ = false;
   ukm::UkmRecorder* ukm_recorder_;
 
-  // Varibales for UKM sampling.
-  std::mt19937 generator_;
-  std::uniform_int_distribution<uint32_t> distribution_;
   // Whether to perform UKM sampling.
   bool sampling_ = true;
 };

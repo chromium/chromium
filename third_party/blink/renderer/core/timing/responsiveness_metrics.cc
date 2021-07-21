@@ -4,17 +4,18 @@
 
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
 
+#include "base/rand_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace blink {
 
 namespace {
 // Minimum potentially generated value for UKM sampling.
-const uint32_t MinValueForSampling = 1;
+constexpr int kMinValueForSampling = 1;
 // Maximum potentially generated value for UKM sampling.
-const uint32_t MaxValueForSampling = 100;
+constexpr int kMaxValueForSampling = 100;
 // UKM sampling rate. The sampling strategy is 1/N.
-const uint32_t UkmSamplingRate = 10;
+constexpr int kUkmSamplingRate = 10;
 
 base::TimeDelta MaxEventDuration(
     WTF::Vector<ResponsivenessMetrics::EventTimestamps> timestamps) {
@@ -47,12 +48,7 @@ base::TimeDelta TotalEventDuration(
 }
 }  // namespace
 
-ResponsivenessMetrics::ResponsivenessMetrics()
-    : generator_(std::mt19937(static_cast<uint32_t>(time(NULL)))),
-      distribution_(
-          std::uniform_int_distribution<uint32_t>(MinValueForSampling,
-                                                  MaxValueForSampling)) {}
-
+ResponsivenessMetrics::ResponsivenessMetrics() = default;
 ResponsivenessMetrics::~ResponsivenessMetrics() = default;
 
 void ResponsivenessMetrics::RecordUserInteractionUKM(
@@ -66,7 +62,9 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
     ukm_recorder_ = window->UkmRecorder();
   ukm::SourceId source_id = window->UkmSourceID();
 
-  if (!sampling_ || distribution_(generator_) <= UkmSamplingRate) {
+  if (ukm_recorder_ &&
+      (!sampling_ || base::RandInt(kMinValueForSampling,
+                                   kMaxValueForSampling) <= kUkmSamplingRate)) {
     ukm::builders::Responsiveness_UserInteraction(source_id)
         .SetInteractionType(static_cast<int>(interaction_type))
         .SetMaxEventDuration(max_event_duration.InMilliseconds())
