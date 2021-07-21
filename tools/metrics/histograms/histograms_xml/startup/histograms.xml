@@ -609,6 +609,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Startup.IncognitoForcedStart" enum="IncognitoForcedStart"
+    expires_after="M100">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    Records whether Incognito switch was present in commmand line switches and
+    if Incognito mode was enforced or denied.
+  </summary>
+</histogram>
+
 <histogram name="Startup.LoadTime.ApplicationStartToChromeMain" units="ms"
     expires_after="never">
 <!-- expires-never: used to diagnose regressions to Startup.FirstWebContents.NonEmptyPaint3 -->

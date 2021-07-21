@@ -41715,6 +41715,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="Chrome - Read later"/>
 </enum>
 
+<enum name="IncognitoForcedStart">
+  <int value="0" label="No Incognito switch and not forced"/>
+  <int value="1" label="Incognito switch but not forced"/>
+  <int value="2" label="No Incognito switch but forced"/>
+  <int value="3" label="Incognito switch and forced"/>
+</enum>
+
 <enum name="Inconsistencies">
   <int value="1" label="RangeChecksum"/>
   <int value="2" label="BucketOrder"/>

@@ -22,6 +22,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/scoped_multi_source_observation.h"
@@ -495,6 +496,31 @@ bool MaybeLaunchUrlHandlerWebAppFromCmd(
 }
 #endif
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Updates need to be reflected in
+// enum IncognitoForcedStart in tools/metrics/histograms/enums.xml.
+enum class IncognitoForcedStart {
+  kNoSwitchAndNotForced = 0,
+  kSwitchButNotForced = 1,
+  kNoSwitchButForced = 2,
+  kSwitchAndForced = 3,
+  kMaxValue = kSwitchAndForced,
+};
+
+void RecordIncognitoForcedStart(bool should_launch_incognito,
+                                bool has_incognito_switch) {
+  if (has_incognito_switch) {
+    base::UmaHistogramEnumeration(
+        "Startup.IncognitoForcedStart",
+        should_launch_incognito ? IncognitoForcedStart::kSwitchAndForced
+                                : IncognitoForcedStart::kSwitchButNotForced);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Startup.IncognitoForcedStart",
+        should_launch_incognito ? IncognitoForcedStart::kNoSwitchButForced
+                                : IncognitoForcedStart::kNoSwitchAndNotForced);
+  }
+}
 }  // namespace
 
 StartupBrowserCreator::StartupBrowserCreator() = default;
@@ -842,10 +868,13 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   }
 
   bool silent_launch = false;
+  bool should_launch_incognito = IncognitoModePrefs::ShouldLaunchIncognito(
+      command_line, last_used_profile->GetPrefs());
   bool can_use_last_profile =
-      (CanOpenProfileOnStartup(last_used_profile) &&
-       !IncognitoModePrefs::ShouldLaunchIncognito(
-           command_line, last_used_profile->GetPrefs()));
+      CanOpenProfileOnStartup(last_used_profile) && !should_launch_incognito;
+
+  RecordIncognitoForcedStart(should_launch_incognito,
+                             command_line.HasSwitch(switches::kIncognito));
 
   // |last_used_profile| is never off-the-record. If Incognito or Guest
   // enforcement switch or policy are provided, use the appropriate private
