@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -37,7 +38,7 @@ class TextFragmentAnchorMetricsTest : public SimTest {
 
   void RunAsyncMatchingTasks() {
     auto* scheduler =
-        ThreadScheduler::Current()->GetWebMainThreadSchedulerForTest();
+        blink::scheduler::WebThreadScheduler::MainThreadScheduler();
     blink::scheduler::RunIdleTasksForTesting(scheduler,
                                              base::BindOnce([]() {}));
     RunPendingTasks();

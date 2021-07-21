@@ -33,6 +33,7 @@
 #include "cc/trees/sticky_position_constraint.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/web/web_settings.h"
@@ -2039,7 +2040,7 @@ class UnifiedScrollingSimTest : public SimTest, public PaintTestConfigurations {
 
   void RunIdleTasks() {
     auto* scheduler =
-        ThreadScheduler::Current()->GetWebMainThreadSchedulerForTest();
+        blink::scheduler::WebThreadScheduler::MainThreadScheduler();
     blink::scheduler::RunIdleTasksForTesting(scheduler,
                                              base::BindOnce([]() {}));
     test::RunPendingTasks();

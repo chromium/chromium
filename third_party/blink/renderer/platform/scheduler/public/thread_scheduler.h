@@ -159,14 +159,18 @@ class PLATFORM_EXPORT ThreadScheduler {
 
   // Test helpers.
 
+  virtual scheduler::NonMainThreadSchedulerImpl* AsNonMainThreadScheduler() = 0;
+
+ private:
+  // For GetWebMainThreadScheduler().
+  friend class scheduler::WebThreadScheduler;
+
   // Return a reference to an underlying main thread WebThreadScheduler object.
   // Can be null if there is no underlying main thread WebThreadScheduler
   // (e.g. worker threads).
-  virtual scheduler::WebThreadScheduler* GetWebMainThreadSchedulerForTest() {
+  virtual scheduler::WebThreadScheduler* GetWebMainThreadScheduler() {
     return nullptr;
   }
-
-  virtual scheduler::NonMainThreadSchedulerImpl* AsNonMainThreadScheduler() = 0;
 };
 
 }  // namespace blink

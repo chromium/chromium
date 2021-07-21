@@ -232,7 +232,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   std::unique_ptr<ThreadScheduler::RendererPauseHandle> PauseScheduler()
       override;
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override;
-  WebThreadScheduler* GetWebMainThreadSchedulerForTest() override;
   NonMainThreadSchedulerImpl* AsNonMainThreadScheduler() override {
     return nullptr;
   }
@@ -482,6 +481,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     kReal,
     kVirtual,
   };
+
+  // WebThreadScheduler private implementation:
+  WebThreadScheduler* GetWebMainThreadScheduler() override;
 
   static const char* TimeDomainTypeToString(TimeDomainType domain_type);
 

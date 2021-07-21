@@ -204,8 +204,6 @@ bool IsBlockingEvent(const blink::WebInputEvent& web_input_event) {
          blink::WebInputEvent::DispatchType::kBlocking;
 }
 
-MainThreadSchedulerImpl* g_main_thread_scheduler = nullptr;
-
 }  // namespace
 
 MainThreadSchedulerImpl::MainThreadSchedulerImpl(
@@ -322,8 +320,6 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
   main_thread_only().current_policy.find_in_page_priority() =
       find_in_page_budget_pool_controller_->CurrentTaskPriority();
 
-  g_main_thread_scheduler = this;
-
   // Explicitly set the priority of this queue since it is not managed by
   // the main thread scheduler.
   memory_purge_task_queue_->GetTaskQueue()->SetQueuePriority(
@@ -354,13 +350,17 @@ MainThreadSchedulerImpl::~MainThreadSchedulerImpl() {
   // we could end up having stale pointers to the Blink heap which has been
   // terminated by this point.
   DCHECK(was_shutdown_);
-
-  g_main_thread_scheduler = nullptr;
 }
 
 // static
 WebThreadScheduler* WebThreadScheduler::MainThreadScheduler() {
-  return g_main_thread_scheduler;
+  auto* main_thread = Thread::MainThread();
+  // Enforce that this is not called before the main thread is initialized.
+  DCHECK(main_thread && main_thread->Scheduler());
+
+  // This can return nullptr if the main thread scheduler is not a
+  // MainThreadSchedulerImpl, which can happen in tests.
+  return main_thread->Scheduler()->GetWebMainThreadScheduler();
 }
 
 MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
@@ -2472,8 +2472,7 @@ base::TimeTicks MainThreadSchedulerImpl::MonotonicallyIncreasingVirtualTime() {
   return GetActiveTimeDomain()->Now();
 }
 
-WebThreadScheduler*
-MainThreadSchedulerImpl::GetWebMainThreadSchedulerForTest() {
+WebThreadScheduler* MainThreadSchedulerImpl::GetWebMainThreadScheduler() {
   return this;
 }
 

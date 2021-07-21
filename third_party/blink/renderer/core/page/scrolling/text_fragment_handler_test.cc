@@ -12,6 +12,7 @@
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mouse_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
@@ -65,7 +66,7 @@ class TextFragmentHandlerTest : public SimTest,
 
   void RunAsyncMatchingTasks() {
     auto* scheduler =
-        ThreadScheduler::Current()->GetWebMainThreadSchedulerForTest();
+        blink::scheduler::WebThreadScheduler::MainThreadScheduler();
     blink::scheduler::RunIdleTasksForTesting(scheduler,
                                              base::BindOnce([]() {}));
     RunPendingTasks();
