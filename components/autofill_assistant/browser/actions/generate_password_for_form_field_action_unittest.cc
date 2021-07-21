@@ -43,7 +43,7 @@ class GeneratePasswordForFormFieldActionTest : public testing::Test {
     ON_CALL(mock_action_delegate_, GetUserData)
         .WillByDefault(Return(&user_data_));
 
-    ON_CALL(mock_website_login_manager_, GetGeneratedPassword())
+    ON_CALL(mock_website_login_manager_, GeneratePassword)
         .WillByDefault(Return(kGeneratedPassword));
 
     user_data_.selected_login_ =
@@ -94,7 +94,7 @@ TEST_F(GeneratePasswordForFormFieldActionTest, FormDataIsNotRetrieved) {
 
   GeneratePasswordForFormFieldAction action(&mock_action_delegate_, proto_);
 
-  EXPECT_CALL(mock_website_login_manager_, GetGeneratedPassword()).Times(0);
+  EXPECT_CALL(mock_website_login_manager_, GeneratePassword).Times(0);
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, INVALID_SELECTOR))));

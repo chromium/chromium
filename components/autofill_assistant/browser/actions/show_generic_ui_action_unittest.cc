@@ -66,7 +66,7 @@ class ShowGenericUiActionTest : public testing::Test {
         .WillByDefault(Return(&mock_personal_data_manager_));
     ON_CALL(mock_action_delegate_, GetWebsiteLoginManager)
         .WillByDefault(Return(&mock_website_login_manager_));
-    ON_CALL(mock_website_login_manager_, OnGetLoginsForUrl(_, _))
+    ON_CALL(mock_website_login_manager_, GetLoginsForUrl(_, _))
         .WillByDefault(
             RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{
                 WebsiteLoginManager::Login(GURL(kFakeUrl), kFakeUsername)}));

@@ -63,7 +63,7 @@ TEST_F(PresaveGeneratedPasswordActionTest, PresaveGeneratedPassword) {
   PresaveGeneratedPasswordAction action(&mock_action_delegate_, proto_);
 
   EXPECT_CALL(mock_website_login_manager_,
-              OnPresaveGeneratedPassword(_, kGeneratedPassword, _, _))
+              PresaveGeneratedPassword(_, kGeneratedPassword, _, _))
       .Times(1);
 
   action.ProcessAction(callback_.Get());

@@ -58,7 +58,7 @@ TEST_F(DeletePasswordActionTest, DeletePasswordSuccess) {
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL(kFakeUrl), kFakeUsername);
 
-  EXPECT_CALL(mock_website_login_manager_, OnDeletePasswordForLogin)
+  EXPECT_CALL(mock_website_login_manager_, DeletePasswordForLogin)
       .WillOnce(RunOnceCallback<1>(true));
   EXPECT_CALL(
       callback_,
@@ -72,7 +72,7 @@ TEST_F(DeletePasswordActionTest, DeletePasswordNoLoginAvailable) {
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL(kFakeUrl), kFakeUsername);
 
-  EXPECT_CALL(mock_website_login_manager_, OnDeletePasswordForLogin)
+  EXPECT_CALL(mock_website_login_manager_, DeletePasswordForLogin)
       .WillOnce(RunOnceCallback<1>(false));
   EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,
                                               AUTOFILL_INFO_NOT_AVAILABLE))));

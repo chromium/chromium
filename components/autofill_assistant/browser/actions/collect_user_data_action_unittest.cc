@@ -95,11 +95,11 @@ class CollectUserDataActionTest : public testing::Test {
               std::move(collect_user_data_options->confirm_callback)
                   .Run(&user_data_, &user_model_);
             }));
-    ON_CALL(mock_website_login_manager_, OnGetLoginsForUrl(_, _))
+    ON_CALL(mock_website_login_manager_, GetLoginsForUrl(_, _))
         .WillByDefault(
             RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{
                 WebsiteLoginManager::Login(GURL(kFakeUrl), kFakeUsername)}));
-    ON_CALL(mock_website_login_manager_, OnGetPasswordForLogin(_, _))
+    ON_CALL(mock_website_login_manager_, GetPasswordForLogin(_, _))
         .WillByDefault(RunOnceCallback<1>(true, kFakePassword));
     ON_CALL(mock_action_delegate_, GetWebContents())
         .WillByDefault(Return(web_contents_.get()));
@@ -320,10 +320,9 @@ TEST_F(CollectUserDataActionTest, SelectLogin) {
   login_option->set_payload("payload");
 
   // Action should fetch the logins, but not the passwords.
-  EXPECT_CALL(mock_website_login_manager_, OnGetLoginsForUrl(GURL(kFakeUrl), _))
+  EXPECT_CALL(mock_website_login_manager_, GetLoginsForUrl(GURL(kFakeUrl), _))
       .Times(1);
-  EXPECT_CALL(mock_website_login_manager_, OnGetPasswordForLogin(_, _))
-      .Times(0);
+  EXPECT_CALL(mock_website_login_manager_, GetPasswordForLogin(_, _)).Times(0);
 
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
@@ -356,14 +355,13 @@ TEST_F(CollectUserDataActionTest, SelectLoginMissingUsername) {
   login_option->mutable_password_manager();
   login_option->set_payload("payload");
 
-  ON_CALL(mock_website_login_manager_, OnGetLoginsForUrl(_, _))
+  ON_CALL(mock_website_login_manager_, GetLoginsForUrl(_, _))
       .WillByDefault(RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{
           WebsiteLoginManager::Login(GURL(kFakeUrl), /*username=*/"")}));
   // Action should fetch the logins, but not the passwords.
-  EXPECT_CALL(mock_website_login_manager_, OnGetLoginsForUrl(GURL(kFakeUrl), _))
+  EXPECT_CALL(mock_website_login_manager_, GetLoginsForUrl(GURL(kFakeUrl), _))
       .Times(1);
-  EXPECT_CALL(mock_website_login_manager_, OnGetPasswordForLogin(_, _))
-      .Times(0);
+  EXPECT_CALL(mock_website_login_manager_, GetPasswordForLogin(_, _)).Times(0);
 
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
@@ -403,7 +401,7 @@ TEST_F(CollectUserDataActionTest, LoginChoiceAutomaticIfNoOtherOptions) {
   login_option->mutable_password_manager();
   login_option->set_payload("password_manager");
 
-  ON_CALL(mock_website_login_manager_, OnGetLoginsForUrl(_, _))
+  ON_CALL(mock_website_login_manager_, GetLoginsForUrl(_, _))
       .WillByDefault(
           RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{}));
 
@@ -441,7 +439,7 @@ TEST_F(CollectUserDataActionTest,
   login_option->mutable_password_manager();
   login_option->set_payload("password_manager");
 
-  ON_CALL(mock_website_login_manager_, OnGetLoginsForUrl(_, _))
+  ON_CALL(mock_website_login_manager_, GetLoginsForUrl(_, _))
       .WillByDefault(
           RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{}));
 
@@ -474,7 +472,7 @@ TEST_F(CollectUserDataActionTest, EarlyActionReturnIfOnlyLoginRequested) {
   login_option->mutable_password_manager();
   login_option->set_payload("password_manager");
 
-  ON_CALL(mock_website_login_manager_, OnGetLoginsForUrl(_, _))
+  ON_CALL(mock_website_login_manager_, GetLoginsForUrl(_, _))
       .WillByDefault(
           RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{}));
 
@@ -613,7 +611,7 @@ TEST_F(CollectUserDataActionTest, SelectLoginFailsIfNoOptionAvailable) {
   login_option->mutable_password_manager();
   login_option->set_payload("password_manager");
 
-  ON_CALL(mock_website_login_manager_, OnGetLoginsForUrl(_, _))
+  ON_CALL(mock_website_login_manager_, GetLoginsForUrl(_, _))
       .WillByDefault(
           RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{}));
 

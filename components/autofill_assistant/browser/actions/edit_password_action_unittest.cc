@@ -88,7 +88,7 @@ TEST_F(EditPasswordActionTest, EditPasswordSuccess) {
   edit_password->set_memory_key(kMemoryKey);
   EditPasswordAction action(&mock_action_delegate_, proto_);
 
-  EXPECT_CALL(mock_website_login_manager_, OnEditPasswordForLogin)
+  EXPECT_CALL(mock_website_login_manager_, EditPasswordForLogin)
       .WillOnce(RunOnceCallback<2>(true));
   EXPECT_CALL(
       callback_,
@@ -106,7 +106,7 @@ TEST_F(EditPasswordActionTest, EditPasswordNoLoginAvailable) {
   edit_password->set_memory_key(kMemoryKey);
   EditPasswordAction action(&mock_action_delegate_, proto_);
 
-  EXPECT_CALL(mock_website_login_manager_, OnEditPasswordForLogin)
+  EXPECT_CALL(mock_website_login_manager_, EditPasswordForLogin)
       .WillOnce(RunOnceCallback<2>(false));
   EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,
                                               AUTOFILL_INFO_NOT_AVAILABLE))));

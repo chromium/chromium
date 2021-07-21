@@ -1186,7 +1186,7 @@ TEST_F(UserDataUtilTextValueTest, GetStoredPasswordFromSameDomain) {
   PasswordManagerValue password_manager_value;
   password_manager_value.set_credential_type(PasswordManagerValue::PASSWORD);
 
-  EXPECT_CALL(mock_website_login_manager_, OnGetPasswordForLogin(_, _))
+  EXPECT_CALL(mock_website_login_manager_, GetPasswordForLogin(_, _))
       .WillOnce(RunOnceCallback<1>(true, "password"));
   EXPECT_CALL(*this, OnResult(EqualsStatus(OkClientStatus()), "password"));
 
@@ -1208,7 +1208,7 @@ TEST_F(UserDataUtilTextValueTest, GetStoredPasswordFails) {
   PasswordManagerValue password_manager_value;
   password_manager_value.set_credential_type(PasswordManagerValue::PASSWORD);
 
-  EXPECT_CALL(mock_website_login_manager_, OnGetPasswordForLogin(_, _))
+  EXPECT_CALL(mock_website_login_manager_, GetPasswordForLogin(_, _))
       .WillOnce(RunOnceCallback<1>(false, std::string()));
   EXPECT_CALL(*this,
               OnResult(EqualsStatus(ClientStatus(AUTOFILL_INFO_NOT_AVAILABLE)),
@@ -1295,7 +1295,7 @@ TEST_F(UserDataUtilTextValueTest, TextValuePasswordManagerValue) {
   text_value.mutable_password_manager_value()->set_credential_type(
       PasswordManagerValue::PASSWORD);
 
-  EXPECT_CALL(mock_website_login_manager_, OnGetPasswordForLogin(_, _))
+  EXPECT_CALL(mock_website_login_manager_, GetPasswordForLogin(_, _))
       .WillOnce(RunOnceCallback<1>(true, "password"));
   EXPECT_CALL(*this, OnResult(EqualsStatus(OkClientStatus()), "password"));
 

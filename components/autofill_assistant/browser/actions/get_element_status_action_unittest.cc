@@ -708,7 +708,7 @@ TEST_F(GetElementStatusActionTest, SucceedsWithPasswordManagerValue) {
         element->container_frame_host = web_contents_->GetMainFrame();
         std::move(callback).Run(OkClientStatus(), std::move(element));
       }));
-  EXPECT_CALL(mock_website_login_manager_, OnGetPasswordForLogin(_, _))
+  EXPECT_CALL(mock_website_login_manager_, GetPasswordForLogin(_, _))
       .WillOnce(RunOnceCallback<1>(true, "password"));
   EXPECT_CALL(mock_web_controller_, GetStringAttribute(_, _, _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus(), "password"));

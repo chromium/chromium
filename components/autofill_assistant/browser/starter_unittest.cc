@@ -70,7 +70,7 @@ class StarterTest : public testing::Test {
     PrepareTriggerScriptRequestSender();
     fake_platform_delegate_.website_login_manager_ =
         &mock_website_login_manager_;
-    ON_CALL(mock_website_login_manager_, OnGetLoginsForUrl)
+    ON_CALL(mock_website_login_manager_, GetLoginsForUrl)
         .WillByDefault(
             RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>()));
 

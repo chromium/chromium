@@ -18,76 +18,48 @@ class MockWebsiteLoginManager : public WebsiteLoginManager {
   MockWebsiteLoginManager();
   ~MockWebsiteLoginManager() override;
 
-  void GetLoginsForUrl(
-      const GURL& url,
-      base::OnceCallback<void(std::vector<Login>)> callback) override {
-    OnGetLoginsForUrl(url, callback);
-  }
+  MOCK_METHOD(void,
+              GetLoginsForUrl,
+              (const GURL& url,
+               base::OnceCallback<void(std::vector<Login>)> callback),
+              (override));
 
-  MOCK_METHOD2(OnGetLoginsForUrl,
-               void(const GURL& domain,
-                    base::OnceCallback<void(std::vector<Login>)>&));
+  MOCK_METHOD(void,
+              GetPasswordForLogin,
+              (const Login& login,
+               base::OnceCallback<void(bool, std::string)> callback),
+              (override));
 
-  void GetPasswordForLogin(
-      const Login& login,
-      base::OnceCallback<void(bool, std::string)> callback) override {
-    OnGetPasswordForLogin(login, callback);
-  }
+  MOCK_METHOD(void,
+              DeletePasswordForLogin,
+              (const Login& login, base::OnceCallback<void(bool)> callback),
+              (override));
 
-  MOCK_METHOD2(OnGetPasswordForLogin,
-               void(const Login& login,
-                    base::OnceCallback<void(bool, std::string)>&));
+  MOCK_METHOD(void,
+              EditPasswordForLogin,
+              (const Login& login,
+               const std::string& new_password,
+               base::OnceCallback<void(bool)> callback),
+              (override));
 
-  void DeletePasswordForLogin(
-      const Login& login,
-      base::OnceCallback<void(bool)> callback) override {
-    OnDeletePasswordForLogin(login, callback);
-  }
+  MOCK_METHOD(std::string,
+              GeneratePassword,
+              (autofill::FormSignature form_signature,
+               autofill::FieldSignature field_signature,
+               uint64_t max_length),
+              (override));
 
-  MOCK_METHOD2(OnDeletePasswordForLogin,
-               void(const Login& login, base::OnceCallback<void(bool)>&));
+  MOCK_METHOD(void,
+              PresaveGeneratedPassword,
+              (const Login& login,
+               const std::string& password,
+               const autofill::FormData& form_data,
+               base::OnceCallback<void()> callback),
+              (override));
 
-  void EditPasswordForLogin(const Login& login,
-                            const std::string& new_password,
-                            base::OnceCallback<void(bool)> callback) override {
-    OnEditPasswordForLogin(login, new_password, callback);
-  }
+  MOCK_METHOD(bool, ReadyToCommitGeneratedPassword, (), (override));
 
-  MOCK_METHOD3(OnEditPasswordForLogin,
-               void(const Login& login,
-                    const std::string&,
-                    base::OnceCallback<void(bool)>&));
-
-  std::string GeneratePassword(autofill::FormSignature form_signature,
-                               autofill::FieldSignature field_signature,
-                               uint64_t max_length) override {
-    return GetGeneratedPassword();
-  }
-
-  MOCK_METHOD0(GetGeneratedPassword, std::string());
-
-  void PresaveGeneratedPassword(const Login& login,
-                                const std::string& password,
-                                const autofill::FormData& form_data,
-                                base::OnceCallback<void()> callback) override {
-    OnPresaveGeneratedPassword(login, password, form_data, callback);
-  }
-
-  MOCK_METHOD4(OnPresaveGeneratedPassword,
-               void(const Login& login,
-                    const std::string& password,
-                    const autofill::FormData& form_data,
-                    base::OnceCallback<void()>&));
-
-  bool ReadyToCommitGeneratedPassword() override {
-    return OnReadyToCommitGeneratedPassword();
-  }
-
-  MOCK_METHOD0(OnReadyToCommitGeneratedPassword, bool());
-
-  void CommitGeneratedPassword() override { OnCommitGeneratedPassword(); }
-
-  MOCK_METHOD0(OnCommitGeneratedPassword, void());
+  MOCK_METHOD(void, CommitGeneratedPassword, (), (override));
 
   DISALLOW_COPY_AND_ASSIGN(MockWebsiteLoginManager);
 };
