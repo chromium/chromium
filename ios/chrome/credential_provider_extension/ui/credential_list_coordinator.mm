@@ -53,8 +53,7 @@
 // enable the extension.
 @property(nonatomic, strong) ConsentCoordinator* consentCoordinator;
 
-// Consent coordinator that shows a view requesting device auth in order to
-// enable the extension.
+// Coordinator that shows a view for the user to create a new password.
 @property(nonatomic, strong) NewPasswordCoordinator* createPasswordCoordinator;
 
 // Interface for |reauthenticationModule|, handling mostly the case when no

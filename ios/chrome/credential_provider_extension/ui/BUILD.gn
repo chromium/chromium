@@ -25,6 +25,8 @@ source_set("ui") {
     "new_password_coordinator.mm",
     "new_password_mediator.h",
     "new_password_mediator.mm",
+    "new_password_table_cell.h",
+    "new_password_table_cell.mm",
     "new_password_view_controller.h",
     "new_password_view_controller.mm",
     "stale_credentials_view_controller.h",

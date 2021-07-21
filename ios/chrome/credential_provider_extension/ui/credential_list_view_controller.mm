@@ -245,6 +245,7 @@ UIColor* BackgroundColor() {
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   if ([self isIndexPathNewPasswordRow:indexPath]) {
     [self.delegate newPasswordWasSelected];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     return;
   }
   UpdateUMACountForKey(app_group::kCredentialExtensionPasswordUseCount);

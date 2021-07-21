@@ -10,13 +10,13 @@
 #error "This file requires ARC support."
 #endif
 
-@interface NewPasswordCoordinator ()
+@interface NewPasswordCoordinator () <NewPasswordViewControllerDelegate>
 
 // Base view controller from where |viewController| is presented.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
 // The view controller of this coordinator.
-@property(nonatomic, strong) NewPasswordViewController* viewController;
+@property(nonatomic, strong) UINavigationController* viewController;
 
 // The extension context for the credential provider.
 @property(nonatomic, weak) ASCredentialProviderExtensionContext* context;
@@ -37,8 +37,11 @@
 }
 
 - (void)start {
-  self.viewController = [[NewPasswordViewController alloc] init];
-  self.viewController.modalInPresentation = YES;
+  NewPasswordViewController* newPasswordViewController =
+      [[NewPasswordViewController alloc] init];
+  newPasswordViewController.delegate = self;
+  self.viewController = [[UINavigationController alloc]
+      initWithRootViewController:newPasswordViewController];
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
                                       completion:nil];
@@ -49,6 +52,13 @@
       dismissViewControllerAnimated:YES
                          completion:nil];
   self.viewController = nil;
+}
+
+#pragma mark - NewPasswordViewControllerDelegate
+
+- (void)navigationCancelButtonWasPressedInNewPasswordViewController:
+    (NewPasswordViewController*)viewController {
+  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end
