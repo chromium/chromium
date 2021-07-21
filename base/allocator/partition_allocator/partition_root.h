@@ -1220,6 +1220,9 @@ ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
 // PartitionAlloc's internal data. Used as malloc_usable_size.
 template <bool thread_safe>
 ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetUsableSize(void* ptr) {
+  // malloc_usable_size() is expected to handle NULL gracefully and return 0.
+  if (!ptr)
+    return 0;
   auto* slot_span = SlotSpan::FromSlotInnerPtr(ptr);
   auto* root = FromSlotSpan(slot_span);
   return slot_span->GetUsableSize(root);

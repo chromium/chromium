@@ -2838,6 +2838,10 @@ TEST_F(PartitionAllocTest, OptimizedGetSlotNumber) {
   }
 }
 
+TEST_F(PartitionAllocTest, GetUsableSizeNull) {
+  EXPECT_EQ(0ULL, PartitionRoot<ThreadSafe>::GetUsableSize(nullptr));
+}
+
 TEST_F(PartitionAllocTest, GetUsableSize) {
   size_t delta = SystemPageSize() + 1;
   for (size_t size = 1; size <= kMinDirectMappedDownsize; size += delta) {
