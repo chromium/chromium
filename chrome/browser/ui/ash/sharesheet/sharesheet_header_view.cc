@@ -369,7 +369,7 @@ std::vector<std::u16string> SharesheetHeaderView::ExtractShareText() {
   if (intent_->share_title.has_value() &&
       !(intent_->share_title.value().empty())) {
     std::string title_text = intent_->share_title.value();
-    text_fields.push_back(base::ASCIIToUTF16(title_text));
+    text_fields.push_back(base::UTF8ToUTF16(title_text));
   }
 
   if (intent_->share_text.has_value() &&
@@ -389,7 +389,7 @@ std::vector<std::u16string> SharesheetHeaderView::ExtractShareText() {
     }
 
     if (!extracted_text.empty())
-      text_fields.push_back(base::ASCIIToUTF16(extracted_text));
+      text_fields.push_back(base::UTF8ToUTF16(extracted_text));
 
     if (extracted_url.is_valid()) {
       text_fields.push_back(base::ASCIIToUTF16(extracted_url.spec()));
