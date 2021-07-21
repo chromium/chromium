@@ -12,6 +12,7 @@
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/switches.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/event.h"
 #include "ui/gfx/x/property_cache.h"
 #include "ui/gfx/x/screensaver.h"
 #include "ui/gfx/x/x11_atom_cache.h"

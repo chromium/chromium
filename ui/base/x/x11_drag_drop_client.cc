@@ -13,6 +13,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/x/x11_os_exchange_data_provider.h"
 #include "ui/base/x/x11_util.h"
+#include "ui/events/event_constants.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"

@@ -20,20 +20,14 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/x/x11_cursor.h"
-#include "ui/events/event_constants.h"
-#include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/events/platform_event.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xproto.h"
-#include "ui/gfx/x/xproto_types.h"
 
 typedef unsigned long Cursor;
 class SkPixmap;

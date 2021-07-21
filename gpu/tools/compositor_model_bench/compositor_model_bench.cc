@@ -36,6 +36,7 @@
 #include "gpu/tools/compositor_model_bench/render_tree.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/event.h"
 #include "ui/gfx/x/glx.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
