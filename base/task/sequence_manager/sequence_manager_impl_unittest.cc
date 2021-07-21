@@ -2324,49 +2324,74 @@ TEST_P(SequenceManagerTest,
 
 namespace {
 
-class MockTaskQueueObserver : public TaskQueue::Observer {
+class MockTaskQueueThrottler : public TaskQueue::Throttler {
  public:
-  ~MockTaskQueueObserver() override = default;
+  TaskQueue* task_queue;
 
-  MOCK_METHOD1(OnQueueNextWakeUpChanged, void(TimeTicks));
+  explicit MockTaskQueueThrottler(TaskQueue* task_queue)
+      : task_queue(task_queue) {}
+  ~MockTaskQueueThrottler() = default;
+
+  MOCK_METHOD1(OnWakeUp, void(LazyNow*));
+  MOCK_METHOD0(OnHasImmediateTask, void());
+
+  MOCK_METHOD1(GetNextAllowedWakeUp_DesiredWakeUpTime, void(TimeTicks));
+
+  absl::optional<DelayedWakeUp> GetNextAllowedWakeUp(
+      LazyNow* lazy_now,
+      absl::optional<DelayedWakeUp> next_desired_wake_up,
+      bool has_immediate_work) override {
+    if (next_desired_wake_up)
+      GetNextAllowedWakeUp_DesiredWakeUpTime(next_desired_wake_up->time);
+    if (next_allowed_wake_up_)
+      return next_allowed_wake_up_;
+    return next_desired_wake_up;
+  }
+
+  void SetNextAllowedWakeUp(
+      absl::optional<DelayedWakeUp> next_allowed_wake_up) {
+    next_allowed_wake_up_ = next_allowed_wake_up;
+  }
+
+ private:
+  absl::optional<DelayedWakeUp> next_allowed_wake_up_;
 };
 
 }  // namespace
 
-TEST_P(SequenceManagerTest, TaskQueueObserver_ImmediateTask) {
+TEST_P(SequenceManagerTest, TaskQueueThrottler_ImmediateTask) {
   auto queue = CreateTaskQueue();
 
-  MockTaskQueueObserver observer;
-  queue->SetObserver(&observer);
+  StrictMock<MockTaskQueueThrottler> throttler(queue.get());
+  queue->SetThrottler(&throttler);
 
-  // We should get a OnQueueNextWakeUpChanged notification when a task is posted
-  // on an empty queue.
-  EXPECT_CALL(observer, OnQueueNextWakeUpChanged(_));
+  // OnHasImmediateTask should be called when a task is posted on an empty
+  // queue.
+  EXPECT_CALL(throttler, OnHasImmediateTask());
   queue->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
   sequence_manager()->ReloadEmptyWorkQueues();
-  Mock::VerifyAndClearExpectations(&observer);
+  Mock::VerifyAndClearExpectations(&throttler);
 
   // But not subsequently.
-  EXPECT_CALL(observer, OnQueueNextWakeUpChanged(_)).Times(0);
   queue->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
   sequence_manager()->ReloadEmptyWorkQueues();
-  Mock::VerifyAndClearExpectations(&observer);
+  Mock::VerifyAndClearExpectations(&throttler);
 
   // Unless the immediate work queue is emptied.
   sequence_manager()->SelectNextTask();
   sequence_manager()->DidRunTask();
   sequence_manager()->SelectNextTask();
   sequence_manager()->DidRunTask();
-  EXPECT_CALL(observer, OnQueueNextWakeUpChanged(_));
+  EXPECT_CALL(throttler, OnHasImmediateTask());
   queue->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
   sequence_manager()->ReloadEmptyWorkQueues();
-  Mock::VerifyAndClearExpectations(&observer);
+  Mock::VerifyAndClearExpectations(&throttler);
 
   // Tidy up.
   queue->ShutdownTaskQueue();
 }
 
-TEST_P(SequenceManagerTest, TaskQueueObserver_DelayedTask) {
+TEST_P(SequenceManagerTest, TaskQueueThrottler_DelayedTask) {
   auto queue = CreateTaskQueue();
 
   TimeTicks start_time = sequence_manager()->NowTicks();
@@ -2374,65 +2399,133 @@ TEST_P(SequenceManagerTest, TaskQueueObserver_DelayedTask) {
   TimeDelta delay100s(TimeDelta::FromSeconds(100));
   TimeDelta delay1s(TimeDelta::FromSeconds(1));
 
-  MockTaskQueueObserver observer;
-  queue->SetObserver(&observer);
+  StrictMock<MockTaskQueueThrottler> throttler(queue.get());
+  queue->SetThrottler(&throttler);
 
-  // We should get OnQueueNextWakeUpChanged notification when a delayed task is
-  // is posted on an empty queue.
-  EXPECT_CALL(observer, OnQueueNextWakeUpChanged(start_time + delay10s));
+  // GetNextAllowedWakeUp should be called when a delayed task is posted on an
+  // empty queue.
+  EXPECT_CALL(throttler,
+              GetNextAllowedWakeUp_DesiredWakeUpTime(start_time + delay10s));
   queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                         delay10s);
-  Mock::VerifyAndClearExpectations(&observer);
+  Mock::VerifyAndClearExpectations(&throttler);
 
-  // We should not get an OnQueueNextWakeUpChanged notification for a longer
-  // delay.
-  EXPECT_CALL(observer, OnQueueNextWakeUpChanged(_)).Times(0);
+  // GetNextAllowedWakeUp should be given the same delay when a longer delay
+  // task is posted.
+  EXPECT_CALL(throttler,
+              GetNextAllowedWakeUp_DesiredWakeUpTime(start_time + delay10s));
   queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                         delay100s);
-  Mock::VerifyAndClearExpectations(&observer);
+  Mock::VerifyAndClearExpectations(&throttler);
 
-  // We should get an OnQueueNextWakeUpChanged notification for a shorter delay.
-  EXPECT_CALL(observer, OnQueueNextWakeUpChanged(start_time + delay1s));
+  // GetNextAllowedWakeUp should be given the new delay when a task is posted
+  // with a shorter delay.
+  EXPECT_CALL(throttler,
+              GetNextAllowedWakeUp_DesiredWakeUpTime(start_time + delay1s));
   queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask), delay1s);
-  Mock::VerifyAndClearExpectations(&observer);
+  Mock::VerifyAndClearExpectations(&throttler);
 
   std::unique_ptr<TaskQueue::QueueEnabledVoter> voter =
       queue->CreateQueueEnabledVoter();
   voter->SetVoteToEnable(false);
-  Mock::VerifyAndClearExpectations(&observer);
+  Mock::VerifyAndClearExpectations(&throttler);
 
   // When a queue has been enabled, we may get a notification if the
   // TimeDomain's next scheduled wake-up has changed.
-  EXPECT_CALL(observer, OnQueueNextWakeUpChanged(start_time + delay1s));
+  EXPECT_CALL(throttler,
+              GetNextAllowedWakeUp_DesiredWakeUpTime(start_time + delay1s));
   voter->SetVoteToEnable(true);
-  Mock::VerifyAndClearExpectations(&observer);
+  Mock::VerifyAndClearExpectations(&throttler);
 
   // Tidy up.
   queue->ShutdownTaskQueue();
 }
 
-TEST_P(SequenceManagerTest, TaskQueueObserver_DelayedTaskMultipleQueues) {
+TEST_P(SequenceManagerTest, TaskQueueThrottler_OnWakeUp) {
+  auto queue = CreateTaskQueue();
+
+  TimeTicks start_time = sequence_manager()->NowTicks();
+  TimeDelta delay(TimeDelta::FromSeconds(1));
+
+  StrictMock<MockTaskQueueThrottler> throttler(queue.get());
+  queue->SetThrottler(&throttler);
+
+  EXPECT_CALL(throttler,
+              GetNextAllowedWakeUp_DesiredWakeUpTime(start_time + delay));
+  queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask), delay);
+  Mock::VerifyAndClearExpectations(&throttler);
+
+  AdvanceMockTickClock(delay);
+
+  // OnWakeUp should be called when the queue has a scheduler wake up.
+  EXPECT_CALL(throttler, OnWakeUp(_));
+  // Move the task into the |delayed_work_queue|.
+  LazyNow lazy_now(mock_tick_clock());
+  sequence_manager()->MoveReadyDelayedTasksToWorkQueues(&lazy_now);
+  Mock::VerifyAndClearExpectations(&throttler);
+
+  // Tidy up.
+  queue->ShutdownTaskQueue();
+}
+
+TEST_P(SequenceManagerTest, TaskQueueThrottler_ResetThrottler) {
+  auto queue = CreateTaskQueue();
+
+  TimeTicks start_time = sequence_manager()->NowTicks();
+  TimeDelta delay10s(TimeDelta::FromSeconds(10));
+  TimeDelta delay1s(TimeDelta::FromSeconds(1));
+
+  StrictMock<MockTaskQueueThrottler> throttler(queue.get());
+  queue->SetThrottler(&throttler);
+  EXPECT_FALSE(queue->GetNextDesiredWakeUp());
+
+  // GetNextAllowedWakeUp should be called when a delayed task is posted on an
+  // empty queue.
+  throttler.SetNextAllowedWakeUp(
+      base::sequence_manager::DelayedWakeUp{start_time + delay10s});
+  EXPECT_CALL(throttler,
+              GetNextAllowedWakeUp_DesiredWakeUpTime(start_time + delay1s));
+  queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask), delay1s);
+  Mock::VerifyAndClearExpectations(&throttler);
+  // Expect throttled wake up.
+  LazyNow lazy_now(mock_tick_clock());
+  EXPECT_EQ(
+      delay10s,
+      sequence_manager()->GetRealTimeDomain()->DelayTillNextTask(&lazy_now));
+
+  queue->ResetThrottler();
+  // Next wake up should be back to normal.
+  EXPECT_EQ(delay1s, sequence_manager()->GetRealTimeDomain()->DelayTillNextTask(
+                         &lazy_now));
+
+  // Tidy up.
+  queue->ShutdownTaskQueue();
+}
+
+TEST_P(SequenceManagerTest, TaskQueueThrottler_DelayedTaskMultipleQueues) {
   auto queues = CreateTaskQueues(2u);
 
-  MockTaskQueueObserver observer0;
-  MockTaskQueueObserver observer1;
-  queues[0]->SetObserver(&observer0);
-  queues[1]->SetObserver(&observer1);
+  StrictMock<MockTaskQueueThrottler> throttler0(queues[0].get());
+  StrictMock<MockTaskQueueThrottler> throttler1(queues[1].get());
+  queues[0]->SetThrottler(&throttler0);
+  queues[1]->SetThrottler(&throttler1);
 
   TimeTicks start_time = sequence_manager()->NowTicks();
   TimeDelta delay1s(TimeDelta::FromSeconds(1));
   TimeDelta delay10s(TimeDelta::FromSeconds(10));
 
-  EXPECT_CALL(observer0, OnQueueNextWakeUpChanged(start_time + delay1s))
+  EXPECT_CALL(throttler0,
+              GetNextAllowedWakeUp_DesiredWakeUpTime(start_time + delay1s))
       .Times(1);
-  EXPECT_CALL(observer1, OnQueueNextWakeUpChanged(start_time + delay10s))
+  EXPECT_CALL(throttler1,
+              GetNextAllowedWakeUp_DesiredWakeUpTime(start_time + delay10s))
       .Times(1);
   queues[0]->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                             delay1s);
   queues[1]->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                             delay10s);
-  testing::Mock::VerifyAndClearExpectations(&observer0);
-  testing::Mock::VerifyAndClearExpectations(&observer1);
+  testing::Mock::VerifyAndClearExpectations(&throttler0);
+  testing::Mock::VerifyAndClearExpectations(&throttler1);
 
   std::unique_ptr<TaskQueue::QueueEnabledVoter> voter0 =
       queues[0]->CreateQueueEnabledVoter();
@@ -2440,34 +2533,32 @@ TEST_P(SequenceManagerTest, TaskQueueObserver_DelayedTaskMultipleQueues) {
       queues[1]->CreateQueueEnabledVoter();
 
   // Disabling a queue should not trigger a notification.
-  EXPECT_CALL(observer0, OnQueueNextWakeUpChanged(_)).Times(0);
   voter0->SetVoteToEnable(false);
-  Mock::VerifyAndClearExpectations(&observer0);
+  Mock::VerifyAndClearExpectations(&throttler0);
 
-  // But re-enabling it should should trigger an OnQueueNextWakeUpChanged
+  // But re-enabling it should should trigger an GetNextAllowedWakeUp
   // notification.
-  EXPECT_CALL(observer0, OnQueueNextWakeUpChanged(start_time + delay1s));
+  EXPECT_CALL(throttler0,
+              GetNextAllowedWakeUp_DesiredWakeUpTime(start_time + delay1s));
   voter0->SetVoteToEnable(true);
-  Mock::VerifyAndClearExpectations(&observer0);
+  Mock::VerifyAndClearExpectations(&throttler0);
 
   // Disabling a queue should not trigger a notification.
-  EXPECT_CALL(observer1, OnQueueNextWakeUpChanged(_)).Times(0);
   voter1->SetVoteToEnable(false);
-  Mock::VerifyAndClearExpectations(&observer0);
+  Mock::VerifyAndClearExpectations(&throttler0);
 
   // But re-enabling it should should trigger a notification.
-  EXPECT_CALL(observer1, OnQueueNextWakeUpChanged(start_time + delay10s));
+  EXPECT_CALL(throttler1,
+              GetNextAllowedWakeUp_DesiredWakeUpTime(start_time + delay10s));
   voter1->SetVoteToEnable(true);
-  Mock::VerifyAndClearExpectations(&observer1);
+  Mock::VerifyAndClearExpectations(&throttler1);
 
   // Tidy up.
-  EXPECT_CALL(observer0, OnQueueNextWakeUpChanged(_)).Times(AnyNumber());
-  EXPECT_CALL(observer1, OnQueueNextWakeUpChanged(_)).Times(AnyNumber());
   queues[0]->ShutdownTaskQueue();
   queues[1]->ShutdownTaskQueue();
 }
 
-TEST_P(SequenceManagerTest, TaskQueueObserver_DelayedWorkWhichCanRunNow) {
+TEST_P(SequenceManagerTest, TaskQueueThrottler_DelayedWorkWhichCanRunNow) {
   // This test checks that when delayed work becomes available
   // the notification still fires. This usually happens when time advances
   // and task becomes available in the middle of the scheduling code.
@@ -2480,14 +2571,14 @@ TEST_P(SequenceManagerTest, TaskQueueObserver_DelayedWorkWhichCanRunNow) {
   TimeDelta delay1s(TimeDelta::FromSeconds(1));
   TimeDelta delay10s(TimeDelta::FromSeconds(10));
 
-  MockTaskQueueObserver observer;
-  queue->SetObserver(&observer);
+  StrictMock<MockTaskQueueThrottler> throttler(queue.get());
+  queue->SetThrottler(&throttler);
 
-  // We should get a notification when a delayed task is posted on an empty
-  // queue.
-  EXPECT_CALL(observer, OnQueueNextWakeUpChanged(_));
+  // GetNextAllowedWakeUp should be called when a delayed task is posted on an
+  // empty queue.
+  EXPECT_CALL(throttler, GetNextAllowedWakeUp_DesiredWakeUpTime(_));
   queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask), delay1s);
-  Mock::VerifyAndClearExpectations(&observer);
+  Mock::VerifyAndClearExpectations(&throttler);
 
   std::unique_ptr<TimeDomain> mock_time_domain =
       std::make_unique<internal::RealTimeDomain>();
@@ -2495,9 +2586,9 @@ TEST_P(SequenceManagerTest, TaskQueueObserver_DelayedWorkWhichCanRunNow) {
 
   AdvanceMockTickClock(delay10s);
 
-  EXPECT_CALL(observer, OnQueueNextWakeUpChanged(_));
+  EXPECT_CALL(throttler, GetNextAllowedWakeUp_DesiredWakeUpTime(_));
   queue->SetTimeDomain(mock_time_domain.get());
-  Mock::VerifyAndClearExpectations(&observer);
+  Mock::VerifyAndClearExpectations(&throttler);
 
   // Tidy up.
   queue->ShutdownTaskQueue();
@@ -2540,17 +2631,19 @@ class DestructionCallback {
 
 }  // namespace
 
-TEST_P(SequenceManagerTest, TaskQueueObserver_SweepCanceledDelayedTasks) {
+TEST_P(SequenceManagerTest, TaskQueueThrottler_SweepCanceledDelayedTasks) {
   auto queue = CreateTaskQueue();
 
-  MockTaskQueueObserver observer;
-  queue->SetObserver(&observer);
+  StrictMock<MockTaskQueueThrottler> throttler(queue.get());
+  queue->SetThrottler(&throttler);
 
   TimeTicks start_time = sequence_manager()->NowTicks();
   TimeDelta delay1(TimeDelta::FromSeconds(5));
   TimeDelta delay2(TimeDelta::FromSeconds(10));
 
-  EXPECT_CALL(observer, OnQueueNextWakeUpChanged(start_time + delay1)).Times(1);
+  EXPECT_CALL(throttler,
+              GetNextAllowedWakeUp_DesiredWakeUpTime(start_time + delay1))
+      .Times(2);
 
   CancelableTask task1(mock_tick_clock());
   CancelableTask task2(mock_tick_clock());
@@ -2569,7 +2662,9 @@ TEST_P(SequenceManagerTest, TaskQueueObserver_SweepCanceledDelayedTasks) {
   task1.weak_factory_.InvalidateWeakPtrs();
 
   // Sweeping away canceled delayed tasks should trigger a notification.
-  EXPECT_CALL(observer, OnQueueNextWakeUpChanged(start_time + delay2)).Times(1);
+  EXPECT_CALL(throttler,
+              GetNextAllowedWakeUp_DesiredWakeUpTime(start_time + delay2))
+      .Times(1);
   sequence_manager()->ReclaimMemory();
 }
 
@@ -3637,55 +3732,58 @@ TEST_P(SequenceManagerTest, DisablingQueuesChangesDelayTillNextDoWork) {
   }
 }
 
-TEST_P(SequenceManagerTest, GetNextScheduledWakeUp) {
+TEST_P(SequenceManagerTest, GetNextDesiredWakeUp) {
   auto queue = CreateTaskQueue();
 
-  EXPECT_EQ(absl::nullopt, queue->GetNextScheduledWakeUp());
+  EXPECT_EQ(absl::nullopt, queue->GetNextDesiredWakeUp());
 
   TimeTicks start_time = sequence_manager()->NowTicks();
   TimeDelta delay1 = TimeDelta::FromMilliseconds(10);
   TimeDelta delay2 = TimeDelta::FromMilliseconds(2);
 
   queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask), delay1);
-  EXPECT_EQ(start_time + delay1, queue->GetNextScheduledWakeUp());
+  EXPECT_EQ(start_time + delay1, queue->GetNextDesiredWakeUp()->time);
 
   queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask), delay2);
-  EXPECT_EQ(start_time + delay2, queue->GetNextScheduledWakeUp());
+  EXPECT_EQ(start_time + delay2, queue->GetNextDesiredWakeUp()->time);
 
   // We don't have wake-ups scheduled for disabled queues.
   std::unique_ptr<TaskQueue::QueueEnabledVoter> voter =
       queue->CreateQueueEnabledVoter();
   voter->SetVoteToEnable(false);
-  EXPECT_EQ(absl::nullopt, queue->GetNextScheduledWakeUp());
+  EXPECT_EQ(absl::nullopt, queue->GetNextDesiredWakeUp());
 
   voter->SetVoteToEnable(true);
-  EXPECT_EQ(start_time + delay2, queue->GetNextScheduledWakeUp());
+  EXPECT_EQ(start_time + delay2, queue->GetNextDesiredWakeUp()->time);
 
   // Immediate tasks shouldn't make any difference.
   queue->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
-  EXPECT_EQ(start_time + delay2, queue->GetNextScheduledWakeUp());
+  EXPECT_EQ(start_time + delay2, queue->GetNextDesiredWakeUp()->time);
 
   // Neither should fences.
   queue->InsertFence(TaskQueue::InsertFencePosition::kBeginningOfTime);
-  EXPECT_EQ(start_time + delay2, queue->GetNextScheduledWakeUp());
+  EXPECT_EQ(start_time + delay2, queue->GetNextDesiredWakeUp()->time);
 }
 
 TEST_P(SequenceManagerTest, SetTimeDomainForDisabledQueue) {
   auto queue = CreateTaskQueue();
 
-  MockTaskQueueObserver observer;
-  queue->SetObserver(&observer);
+  TimeTicks start_time = sequence_manager()->NowTicks();
+  TimeDelta delay(TimeDelta::FromMilliseconds(1));
 
-  queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
-                                        TimeDelta::FromMilliseconds(1));
+  StrictMock<MockTaskQueueThrottler> throttler(queue.get());
+  queue->SetThrottler(&throttler);
+
+  EXPECT_CALL(throttler,
+              GetNextAllowedWakeUp_DesiredWakeUpTime(start_time + delay));
+  queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask), delay);
+  Mock::VerifyAndClearExpectations(&throttler);
 
   std::unique_ptr<TaskQueue::QueueEnabledVoter> voter =
       queue->CreateQueueEnabledVoter();
   voter->SetVoteToEnable(false);
 
   // We should not get a notification for a disabled queue.
-  EXPECT_CALL(observer, OnQueueNextWakeUpChanged(_)).Times(0);
-
   std::unique_ptr<MockTimeDomain> domain =
       std::make_unique<MockTimeDomain>(sequence_manager()->NowTicks());
   sequence_manager()->RegisterTimeDomain(domain.get());
@@ -3803,11 +3901,11 @@ TEST_P(SequenceManagerTest, ProcessTasksWithTaskTimeObservers) {
 TEST_P(SequenceManagerTest, ObserverNotFiredAfterTaskQueueDestructed) {
   scoped_refptr<TestTaskQueue> main_tq = CreateTaskQueue();
 
-  MockTaskQueueObserver observer;
-  main_tq->SetObserver(&observer);
+  StrictMock<MockTaskQueueThrottler> throttler(main_tq.get());
+  main_tq->SetThrottler(&throttler);
 
-  // We don't expect the observer to fire if the TaskQueue gets destructed.
-  EXPECT_CALL(observer, OnQueueNextWakeUpChanged(_)).Times(0);
+  // We don't expect the throttler to be notified if the TaskQueue gets
+  // destructed.
   auto task_runner = main_tq->task_runner();
   main_tq = nullptr;
   task_runner->PostTask(FROM_HERE, BindOnce(&NopTask));
@@ -3820,24 +3918,21 @@ TEST_P(SequenceManagerTest,
   scoped_refptr<TestTaskQueue> main_tq = CreateTaskQueue();
   auto task_runner = main_tq->task_runner();
 
-  MockTaskQueueObserver observer;
-  main_tq->SetObserver(&observer);
+  StrictMock<MockTaskQueueThrottler> throttler(main_tq.get());
+  main_tq->SetThrottler(&throttler);
 
   std::unique_ptr<TaskQueue::QueueEnabledVoter> voter =
       main_tq->CreateQueueEnabledVoter();
   voter->SetVoteToEnable(false);
 
-  // We don't expect the OnQueueNextWakeUpChanged to fire if the TaskQueue gets
+  // We don't expect the OnHasImmediateTask to be called if the TaskQueue gets
   // disabled.
-  EXPECT_CALL(observer, OnQueueNextWakeUpChanged(_)).Times(0);
-
-  // Should not fire the observer.
   task_runner->PostTask(FROM_HERE, BindOnce(&NopTask));
 
   FastForwardUntilNoTasksRemain();
   // When |voter| goes out of scope the queue will become enabled and the
   // observer will fire. We're not interested in testing that however.
-  Mock::VerifyAndClearExpectations(&observer);
+  Mock::VerifyAndClearExpectations(&throttler);
 }
 
 TEST_P(SequenceManagerTest,
@@ -3845,16 +3940,15 @@ TEST_P(SequenceManagerTest,
   scoped_refptr<TestTaskQueue> main_tq = CreateTaskQueue();
   auto task_runner = main_tq->task_runner();
 
-  MockTaskQueueObserver observer;
-  main_tq->SetObserver(&observer);
+  StrictMock<MockTaskQueueThrottler> throttler(main_tq.get());
+  main_tq->SetThrottler(&throttler);
 
   std::unique_ptr<TaskQueue::QueueEnabledVoter> voter =
       main_tq->CreateQueueEnabledVoter();
   voter->SetVoteToEnable(false);
 
-  // We don't expect the observer to fire if the TaskQueue gets blocked.
-  EXPECT_CALL(observer, OnQueueNextWakeUpChanged(_)).Times(0);
-
+  // We don't expect OnHasImmediateTask to be called if the TaskQueue gets
+  // blocked.
   WaitableEvent done_event;
   Thread thread("TestThread");
   thread.Start();
@@ -3870,7 +3964,7 @@ TEST_P(SequenceManagerTest,
   FastForwardUntilNoTasksRemain();
   // When |voter| goes out of scope the queue will become enabled and the
   // observer will fire. We're not interested in testing that however.
-  Mock::VerifyAndClearExpectations(&observer);
+  Mock::VerifyAndClearExpectations(&throttler);
 }
 
 TEST_P(SequenceManagerTest, GracefulShutdown) {

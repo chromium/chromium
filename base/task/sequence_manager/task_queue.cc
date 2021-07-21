@@ -143,7 +143,7 @@ void TaskQueue::ShutdownTaskQueueGracefully() {
 
   // If we've not been unregistered then this must occur on the main thread.
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  impl_->SetObserver(nullptr);
+  impl_->ResetThrottler();
   impl_->sequence_manager()->ShutdownTaskQueueGracefully(TakeTaskQueueImpl());
 }
 
@@ -235,11 +235,18 @@ bool TaskQueue::HasTaskToRunImmediatelyOrReadyDelayedTask() const {
   return impl_->HasTaskToRunImmediatelyOrReadyDelayedTask();
 }
 
-absl::optional<TimeTicks> TaskQueue::GetNextScheduledWakeUp() {
+absl::optional<DelayedWakeUp> TaskQueue::GetNextDesiredWakeUp() {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!impl_)
     return absl::nullopt;
-  return impl_->GetNextScheduledWakeUp();
+  return impl_->GetNextDesiredWakeUp();
+}
+
+void TaskQueue::UpdateDelayedWakeUp(LazyNow* lazy_now) {
+  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+  if (!impl_)
+    return;
+  impl_->UpdateDelayedWakeUp(lazy_now);
 }
 
 void TaskQueue::SetQueuePriority(TaskQueue::QueuePriority priority) {
@@ -332,14 +339,21 @@ void TaskQueue::WriteIntoTrace(perfetto::TracedValue context) const {
   dict.Add("name", name_);
 }
 
-void TaskQueue::SetObserver(Observer* observer) {
+void TaskQueue::SetThrottler(Throttler* throttler) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!impl_)
     return;
 
-  // Observer is guaranteed to outlive TaskQueue and TaskQueueImpl lifecycle is
-  // controlled by |this|.
-  impl_->SetObserver(observer);
+  // |throttler| is guaranteed to outlive TaskQueue and TaskQueueImpl lifecycle
+  // is controlled by |this|.
+  impl_->SetThrottler(throttler);
+}
+
+void TaskQueue::ResetThrottler() {
+  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+  if (!impl_)
+    return;
+  impl_->ResetThrottler();
 }
 
 void TaskQueue::SetShouldReportPostedTasksWhenDisabled(bool should_report) {

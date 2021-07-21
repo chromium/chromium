@@ -3130,7 +3130,6 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
                 FROM_HERE, base::BindOnce(&RecordRunTime, &run_times),
                 kDefaultThrottledWakeUpInterval * (i + 1));
           }
-          page_scheduler_->OnTitleOrFaviconUpdated();
         }),
         kDefaultThrottledWakeUpInterval);
 

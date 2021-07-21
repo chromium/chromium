@@ -41,7 +41,7 @@ FindInPageBudgetPoolController::FindInPageBudgetPoolController(
 
   base::TimeTicks now = scheduler_->GetTickClock()->NowTicks();
   find_in_page_budget_pool_ = std::make_unique<CPUTimeBudgetPool>(
-      "FindInPageBudgetPool", this, &scheduler_->tracing_controller_, now);
+      "FindInPageBudgetPool", &scheduler_->tracing_controller_, now);
   find_in_page_budget_pool_->SetMaxBudgetLevel(now, kFindInPageMaxBudget);
   find_in_page_budget_pool_->SetTimeBudgetRecoveryRate(
       now, kFindInPageBudgetRecoveryRate);
@@ -57,12 +57,12 @@ void FindInPageBudgetPoolController::OnTaskCompleted(
   DCHECK(find_in_page_budget_pool_);
   if (queue->GetPrioritisationType() ==
       MainThreadTaskQueue::QueueTraits::PrioritisationType::kFindInPage) {
-    find_in_page_budget_pool_->RecordTaskRunTime(
-        nullptr, task_timing->start_time(), task_timing->end_time());
+    find_in_page_budget_pool_->RecordTaskRunTime(task_timing->start_time(),
+                                                 task_timing->end_time());
   }
 
-  bool is_exhausted = !find_in_page_budget_pool_->CanRunTasksAt(
-      task_timing->end_time(), false /* is_wake_up */);
+  bool is_exhausted =
+      !find_in_page_budget_pool_->CanRunTasksAt(task_timing->end_time());
   QueuePriority task_priority = is_exhausted
                                     ? kFindInPageBudgetExhaustedPriority
                                     : kFindInPageBudgetNotExhaustedPriority;

@@ -112,7 +112,7 @@ class BASE_EXPORT TaskQueueImpl {
   bool IsEmpty() const;
   size_t GetNumberOfPendingTasks() const;
   bool HasTaskToRunImmediatelyOrReadyDelayedTask() const;
-  absl::optional<TimeTicks> GetNextScheduledWakeUp();
+  absl::optional<DelayedWakeUp> GetNextDesiredWakeUp();
   void SetQueuePriority(TaskQueue::QueuePriority priority);
   TaskQueue::QueuePriority GetQueuePriority() const;
   void AddTaskObserver(TaskObserver* task_observer);
@@ -125,9 +125,8 @@ class BASE_EXPORT TaskQueueImpl {
   void RemoveFence();
   bool HasActiveFence();
   bool BlockedByFence() const;
-
-  // Implementation of TaskQueue::SetObserver.
-  void SetObserver(TaskQueue::Observer* observer);
+  void SetThrottler(TaskQueue::Throttler* throttler);
+  void ResetThrottler();
 
   void UnregisterTaskQueue();
 
@@ -187,6 +186,8 @@ class BASE_EXPORT TaskQueueImpl {
   // |delayed_work_queue|. Must be called from the main thread.
   void MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now);
 
+  void OnWakeUp(LazyNow* lazy_now);
+
   base::internal::HeapHandle heap_handle() const {
     return main_thread_only().heap_handle;
   }
@@ -238,8 +239,15 @@ class BASE_EXPORT TaskQueueImpl {
   // and this queue can be safely deleted on any thread.
   bool IsUnregistered() const;
 
+  // Updates this queue's next wake up time in the time domain,
+  // taking into account the desired run time of queued tasks and
+  // policies enforced by the Throttler.
+  void UpdateDelayedWakeUp(LazyNow* lazy_now);
+
  protected:
-  void SetDelayedWakeUpForTesting(absl::optional<DelayedWakeUp> wake_up);
+  // Sets this queue's next wake up time to |wake_up| in the time domain.
+  void SetNextDelayedWakeUp(LazyNow* lazy_now,
+                            absl::optional<DelayedWakeUp> wake_up);
 
  private:
   friend class WorkQueue;
@@ -351,7 +359,7 @@ class BASE_EXPORT TaskQueueImpl {
     // See description inside struct AnyThread for details.
     TimeDomain* time_domain;
 
-    TaskQueue::Observer* task_queue_observer = nullptr;
+    TaskQueue::Throttler* throttler = nullptr;
 
     std::unique_ptr<WorkQueue> delayed_work_queue;
     std::unique_ptr<WorkQueue> immediate_work_queue;
@@ -415,8 +423,6 @@ class BASE_EXPORT TaskQueueImpl {
   // threads.
   void PushOntoDelayedIncomingQueue(Task pending_task);
 
-  absl::optional<DelayedWakeUp> GetNextScheduledWakeUpImpl();
-
   void ScheduleDelayedWorkTask(Task pending_task);
 
   void MoveReadyImmediateTasksToImmediateWorkQueueLocked()
@@ -435,11 +441,6 @@ class BASE_EXPORT TaskQueueImpl {
   void TraceQueueSize() const;
   static Value QueueAsValue(const TaskDeque& queue, TimeTicks now);
   static Value TaskAsValue(const Task& task, TimeTicks now);
-
-  // Schedules delayed work on time domain and calls the observer.
-  void UpdateDelayedWakeUp(LazyNow* lazy_now);
-  void UpdateDelayedWakeUpImpl(LazyNow* lazy_now,
-                               absl::optional<DelayedWakeUp> wake_up);
 
   // Activate a delayed fence if a time has come.
   void ActivateDelayedFenceIfNeeded(TimeTicks now);
@@ -498,8 +499,6 @@ class BASE_EXPORT TaskQueueImpl {
     // MainThreadOnly. It can be changed only from main thread, so it should be
     // locked before accessing from other threads.
     TimeDomain* time_domain;
-
-    TaskQueue::Observer* task_queue_observer = nullptr;
 
     TaskDeque immediate_incoming_queue;
 

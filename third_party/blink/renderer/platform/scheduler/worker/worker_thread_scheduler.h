@@ -30,7 +30,6 @@ namespace scheduler {
 
 class WorkerScheduler;
 class WorkerSchedulerProxy;
-class TaskQueueThrottler;
 class WakeUpBudgetPool;
 class CPUTimeBudgetPool;
 
@@ -90,14 +89,11 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerImpl,
   // task queues.
   scoped_refptr<NonMainThreadTaskQueue> ControlTaskQueue();
 
-  // TaskQueueThrottler might be null if throttling is not enabled or
-  // not supported.
-  TaskQueueThrottler* task_queue_throttler() const {
-    return task_queue_throttler_.get();
+  WakeUpBudgetPool* wake_up_budget_pool() const {
+    return wake_up_budget_pool_.get();
   }
-  WakeUpBudgetPool* wake_up_budget_pool() const { return wake_up_budget_pool_; }
   CPUTimeBudgetPool* cpu_time_budget_pool() const {
-    return cpu_time_budget_pool_;
+    return cpu_time_budget_pool_.get();
   }
 
  protected:
@@ -110,9 +106,10 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerImpl,
   void OnIdlePeriodEnded() override {}
   void OnPendingTasksChanged(bool new_state) override {}
 
-  void CreateTaskQueueThrottler();
+  void CreateBudgetPools();
 
-  void SetCPUTimeBudgetPoolForTesting(CPUTimeBudgetPool* cpu_time_budget_pool);
+  void SetCPUTimeBudgetPoolForTesting(
+      std::unique_ptr<CPUTimeBudgetPool> cpu_time_budget_pool);
 
   HashSet<WorkerScheduler*>& GetWorkerSchedulersForTesting();
 
@@ -146,10 +143,8 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerImpl,
   // Worker schedulers associated with this thread.
   HashSet<WorkerScheduler*> worker_schedulers_;
 
-  std::unique_ptr<TaskQueueThrottler> task_queue_throttler_;
-  // Owned by |task_queue_throttler_|.
-  WakeUpBudgetPool* wake_up_budget_pool_ = nullptr;
-  CPUTimeBudgetPool* cpu_time_budget_pool_ = nullptr;
+  std::unique_ptr<WakeUpBudgetPool> wake_up_budget_pool_;
+  std::unique_ptr<CPUTimeBudgetPool> cpu_time_budget_pool_;
 
   // The status of the parent frame when the worker was created.
   const FrameStatus initial_frame_status_;

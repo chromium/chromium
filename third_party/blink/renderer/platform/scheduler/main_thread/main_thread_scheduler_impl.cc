@@ -288,8 +288,6 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
 
   // TaskQueueThrottler requires some task runners, then initialize
   // TaskQueueThrottler after task queues/runners are initialized.
-  task_queue_throttler_ =
-      std::make_unique<TaskQueueThrottler>(this, &tracing_controller_);
   update_policy_closure_ = base::BindRepeating(
       &MainThreadSchedulerImpl::UpdatePolicy, weak_factory_.GetWeakPtr());
   end_renderer_hidden_idle_period_closure_.Reset(base::BindRepeating(
@@ -660,7 +658,6 @@ void MainThreadSchedulerImpl::Shutdown() {
   main_thread_only().metrics_helper.OnRendererShutdown(now);
 
   ShutdownAllQueues();
-  task_queue_throttler_.reset();
 
   // Shut down |helper_| first, so that the ForceUpdatePolicy() call
   // from |idle_helper_| early-outs and doesn't do anything.
@@ -1630,8 +1627,6 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
     new_policy.should_prioritize_loading_with_compositing() = true;
   }
 
-  new_policy.should_disable_throttling() = main_thread_only().use_virtual_time;
-
   new_policy.find_in_page_priority() =
       find_in_page_budget_pool_controller_->CurrentTaskPriority();
 
@@ -1656,15 +1651,6 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
     }
     for (auto& observer : main_thread_only().rail_mode_observers) {
       observer.OnRAILModeChanged(new_policy.rail_mode());
-    }
-  }
-
-  if (new_policy.should_disable_throttling() !=
-      main_thread_only().current_policy.should_disable_throttling()) {
-    if (new_policy.should_disable_throttling()) {
-      task_queue_throttler()->DisableThrottling();
-    } else {
-      task_queue_throttler()->EnableThrottling();
     }
   }
 
@@ -2100,7 +2086,12 @@ void MainThreadSchedulerImpl::WriteIntoTraceLocked(
            VirtualTimePolicyToString(main_thread_only().virtual_time_policy));
   dict.Add("virtual_time", main_thread_only().use_virtual_time);
 
-  dict.Add("page_schedulers", main_thread_only().page_schedulers);
+  dict.Add("page_schedulers", [&](perfetto::TracedValue context) {
+    auto array = std::move(context).WriteArray();
+    for (const auto* page_scheduler : main_thread_only().page_schedulers) {
+      page_scheduler->WriteIntoTrace(array.AppendItem(), optional_now);
+    }
+  });
 
   dict.Add("policy", main_thread_only().current_policy);
 
@@ -2117,10 +2108,6 @@ void MainThreadSchedulerImpl::WriteIntoTraceLocked(
 
   dict.Add("user_model", any_thread().user_model);
   dict.Add("render_widget_scheduler_signals", render_widget_scheduler_signals_);
-
-  dict.Add("task_queue_throttler", [&](perfetto::TracedValue context) {
-    task_queue_throttler_->WriteIntoTrace(std::move(context), optional_now);
-  });
 }
 
 bool MainThreadSchedulerImpl::Policy::IsQueueEnabled(
@@ -2148,7 +2135,6 @@ void MainThreadSchedulerImpl::Policy::WriteIntoTrace(
   dict.Add("rail_mode", RAILModeToString(rail_mode()));
   dict.Add("use_case", UseCaseToString(use_case()));
 
-  dict.Add("should_disable_throttling", should_disable_throttling());
   dict.Add("should_defer_task_queues", should_defer_task_queues());
   dict.Add("should_pause_task_queues", should_pause_task_queues());
   dict.Add("should_pause_task_queues_for_android_webview",
@@ -2783,6 +2769,12 @@ void MainThreadSchedulerImpl::AddTaskTimeObserver(
 void MainThreadSchedulerImpl::RemoveTaskTimeObserver(
     TaskTimeObserver* task_time_observer) {
   helper_.RemoveTaskTimeObserver(task_time_observer);
+}
+
+std::unique_ptr<CPUTimeBudgetPool>
+MainThreadSchedulerImpl::CreateCPUTimeBudgetPoolForTesting(const char* name) {
+  return std::make_unique<CPUTimeBudgetPool>(name, &tracing_controller_,
+                                             tick_clock()->NowTicks());
 }
 
 AutoAdvancingVirtualTimeDomain*

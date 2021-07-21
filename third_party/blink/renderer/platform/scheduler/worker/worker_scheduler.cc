@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
+#include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/wake_up_budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_web_scheduling_task_queue_impl.h"
@@ -29,7 +30,8 @@ WorkerScheduler::PauseHandle::~PauseHandle() {
 WorkerScheduler::WorkerScheduler(WorkerThreadScheduler* worker_thread_scheduler,
                                  WorkerSchedulerProxy* proxy)
     : throttleable_task_queue_(
-          worker_thread_scheduler->CreateTaskQueue("worker_throttleable_tq")),
+          worker_thread_scheduler->CreateTaskQueue("worker_throttleable_tq",
+                                                   true)),
       pausable_task_queue_(
           worker_thread_scheduler->CreateTaskQueue("worker_pausable_tq")),
       unpausable_task_queue_(
@@ -91,8 +93,10 @@ void WorkerScheduler::ResumeImpl() {
 }
 
 void WorkerScheduler::SetUpThrottling() {
-  if (!thread_scheduler_->task_queue_throttler())
+  if (!thread_scheduler_->wake_up_budget_pool() &&
+      !thread_scheduler_->cpu_time_budget_pool()) {
     return;
+  }
   base::TimeTicks now = thread_scheduler_->GetTickClock()->NowTicks();
 
   WakeUpBudgetPool* wake_up_budget_pool =
@@ -100,14 +104,11 @@ void WorkerScheduler::SetUpThrottling() {
   CPUTimeBudgetPool* cpu_time_budget_pool =
       thread_scheduler_->cpu_time_budget_pool();
 
-  DCHECK(wake_up_budget_pool || cpu_time_budget_pool)
-      << "At least one budget pool should be present";
-
   if (wake_up_budget_pool) {
-    wake_up_budget_pool->AddQueue(now, throttleable_task_queue_.get());
+    throttleable_task_queue_->AddToBudgetPool(now, wake_up_budget_pool);
   }
   if (cpu_time_budget_pool) {
-    cpu_time_budget_pool->AddQueue(now, throttleable_task_queue_.get());
+    throttleable_task_queue_->AddToBudgetPool(now, cpu_time_budget_pool);
   }
 }
 
@@ -117,11 +118,6 @@ SchedulingLifecycleState WorkerScheduler::CalculateLifecycleState(
 }
 
 void WorkerScheduler::Dispose() {
-  if (TaskQueueThrottler* throttler =
-          thread_scheduler_->task_queue_throttler()) {
-    throttler->ShutdownTaskQueue(throttleable_task_queue_.get());
-  }
-
   thread_scheduler_->UnregisterWorkerScheduler(this);
 
   for (const auto& pair : task_runners_) {
@@ -237,12 +233,12 @@ void WorkerScheduler::OnLifecycleStateChanged(
   lifecycle_state_ = lifecycle_state;
   thread_scheduler_->OnLifecycleStateChanged(lifecycle_state);
 
-  if (TaskQueueThrottler* throttler =
-          thread_scheduler_->task_queue_throttler()) {
+  if (thread_scheduler_->cpu_time_budget_pool() ||
+      thread_scheduler_->wake_up_budget_pool()) {
     if (lifecycle_state_ == SchedulingLifecycleState::kThrottled) {
-      throttler->IncreaseThrottleRefCount(throttleable_task_queue_.get());
+      throttleable_task_queue_->IncreaseThrottleRefCount();
     } else {
-      throttler->DecreaseThrottleRefCount(throttleable_task_queue_.get());
+      throttleable_task_queue_->DecreaseThrottleRefCount();
     }
   }
   NotifyLifecycleObservers();

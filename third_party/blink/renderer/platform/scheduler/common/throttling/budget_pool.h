@@ -7,17 +7,14 @@
 
 #include "base/callback.h"
 #include "base/task/sequence_manager/lazy_now.h"
-#include "base/task/sequence_manager/task_queue.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
-namespace sequence_manager {
-class TaskQueue;
-}
 namespace trace_event {
 class TracedValue;
 }
@@ -26,7 +23,6 @@ class TracedValue;
 namespace blink {
 namespace scheduler {
 
-class BudgetPoolController;
 enum class QueueBlockType;
 
 // BudgetPool represents a group of task queues which share a limit
@@ -41,28 +37,21 @@ class PLATFORM_EXPORT BudgetPool {
   const char* Name() const;
 
   // Report task run time to the budget pool.
-  virtual void RecordTaskRunTime(base::sequence_manager::TaskQueue* queue,
-                                 base::TimeTicks start_time,
+  virtual void RecordTaskRunTime(base::TimeTicks start_time,
                                  base::TimeTicks end_time) = 0;
 
-  // Returns the earliest time when the next pump can be scheduled to run
+  // Returns the earliest time when the next wake-up can be scheduled to run
   // new tasks.
   virtual base::TimeTicks GetNextAllowedRunTime(
       base::TimeTicks desired_run_time) const = 0;
 
   // Returns true if a task can run at the given time.
-  virtual bool CanRunTasksAt(base::TimeTicks moment, bool is_wake_up) const = 0;
+  virtual bool CanRunTasksAt(base::TimeTicks moment) const = 0;
 
   // Returns a point in time until which tasks are allowed to run.
   // base::TimeTicks::Max() means that there are no known limits.
-  virtual base::TimeTicks GetTimeTasksCanRunUntil(base::TimeTicks now,
-                                                  bool is_wake_up) const = 0;
-
-  // Notifies budget pool that queue has work with desired run time.
-  virtual void OnQueueNextWakeUpChanged(
-      base::sequence_manager::TaskQueue* queue,
-      base::TimeTicks now,
-      base::TimeTicks desired_run_time) = 0;
+  virtual base::TimeTicks GetTimeTasksCanRunUntil(
+      base::TimeTicks now) const = 0;
 
   // Invoked as part of a global wake up if any of the task queues associated
   // with the budget pool has reached its next allowed run time. The next
@@ -77,27 +66,24 @@ class PLATFORM_EXPORT BudgetPool {
   virtual void WriteIntoTrace(perfetto::TracedValue context,
                               base::TimeTicks now) const = 0;
 
-  // Adds |queue| to given pool. If the pool restriction does not allow
-  // a task to be run immediately and |queue| is throttled, |queue| becomes
-  // disabled.
-  void AddQueue(base::TimeTicks now, base::sequence_manager::TaskQueue* queue);
+  // Adds |throttler| to given pool and invokes
+  // TaskQueueThrottler::UpdateQueueState().
+  void AddThrottler(base::TimeTicks now, TaskQueueThrottler* throttler);
 
-  // Removes |queue| from given pool. If it is throttled, it does not
-  // become enabled immediately, but a wake-up is scheduled if needed.
-  void RemoveQueue(base::TimeTicks now,
-                   base::sequence_manager::TaskQueue* queue);
+  // Removes |throttler| from given pool and invokes
+  // TaskQueueThrottler::UpdateQueueState().
+  void RemoveThrottler(base::TimeTicks now, TaskQueueThrottler* throttler);
 
-  // Unlike RemoveQueue, does not schedule a new wake-up for the queue.
-  void UnregisterQueue(base::sequence_manager::TaskQueue* queue);
+  // Unlike RemoveThrottler, does not update the queue's state.
+  void UnregisterThrottler(TaskQueueThrottler* throttler);
 
-  // Enables this time budget pool. Queues from this pool will be
-  // throttled based on their run time.
+  // Enables this budget pool, allowing it to enforce its policies on its
+  // queues.
   void EnableThrottling(base::sequence_manager::LazyNow* now);
 
-  // Disables with time budget pool. Queues from this pool will not be
-  // throttled based on their run time. A call to |PumpThrottledTasks|
-  // will be scheduled to enable this queues back again and respect
-  // timer alignment. Internal budget level will not regenerate with time.
+  // Disables this budget pool, stopping it from enforcing its policies on its
+  // queues. UpdateQueueState() is invoked on all queues to update their wake up
+  // times and fences.
   void DisableThrottling(base::sequence_manager::LazyNow* now);
 
   bool IsThrottlingEnabled() const;
@@ -105,23 +91,18 @@ class PLATFORM_EXPORT BudgetPool {
   // All queues should be removed before calling Close().
   void Close();
 
-  // Ensures that a pump is scheduled and that a fence is installed for all
+  // Ensures that a wake-up is scheduled and that a fence is installed for all
   // queues in this pool, based on state of those queues and latest values from
   // CanRunTasksAt/GetTimeTasksCanRunUntil/GetNextAllowedRunTime.
-  void UpdateThrottlingStateForAllQueues(base::TimeTicks now);
+  void UpdateStateForAllThrottlers(base::TimeTicks now);
 
  protected:
-  BudgetPool(const char* name, BudgetPoolController* budget_pool_controller);
+  explicit BudgetPool(const char* name);
 
   const char* name_;  // NOT OWNED
 
-  BudgetPoolController* budget_pool_controller_;
-
-  HashSet<base::sequence_manager::TaskQueue*> associated_task_queues_;
+  HashSet<TaskQueueThrottler*> associated_throttlers_;
   bool is_enabled_;
-
- private:
-  void DissociateQueue(base::sequence_manager::TaskQueue* queue);
 };
 
 }  // namespace scheduler

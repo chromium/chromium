@@ -17,10 +17,9 @@ using base::sequence_manager::TaskQueue;
 
 CPUTimeBudgetPool::CPUTimeBudgetPool(
     const char* name,
-    BudgetPoolController* budget_pool_controller,
     TraceableVariableController* tracing_controller,
     base::TimeTicks now)
-    : BudgetPool(name, budget_pool_controller),
+    : BudgetPool(name),
       current_budget_level_(base::TimeDelta(),
                             "RendererScheduler.BackgroundBudgetMs",
                             tracing_controller,
@@ -69,29 +68,38 @@ void CPUTimeBudgetPool::SetReportingCallback(
   reporting_callback_ = reporting_callback;
 }
 
-bool CPUTimeBudgetPool::CanRunTasksAt(base::TimeTicks moment,
-                                      bool is_wake_up) const {
-  return moment >= GetNextAllowedRunTime(moment);
+bool CPUTimeBudgetPool::CanRunTasksAt(base::TimeTicks moment) const {
+  if (!is_enabled_)
+    return true;
+  if (current_budget_level_->InMicroseconds() >= 0)
+    return true;
+  base::TimeDelta time_to_recover_budget =
+      -current_budget_level_ / cpu_percentage_;
+  if (moment - last_checkpoint_ >= time_to_recover_budget) {
+    return true;
+  }
+
+  return false;
 }
 
 base::TimeTicks CPUTimeBudgetPool::GetTimeTasksCanRunUntil(
-    base::TimeTicks now,
-    bool is_wake_up) const {
-  if (CanRunTasksAt(now, is_wake_up))
+    base::TimeTicks now) const {
+  if (CanRunTasksAt(now))
     return base::TimeTicks::Max();
   return base::TimeTicks();
 }
 
 base::TimeTicks CPUTimeBudgetPool::GetNextAllowedRunTime(
     base::TimeTicks desired_run_time) const {
-  if (!is_enabled_ || current_budget_level_->InMicroseconds() >= 0)
+  if (!is_enabled_ || current_budget_level_->InMicroseconds() >= 0) {
     return last_checkpoint_;
+  }
   // Subtract because current_budget is negative.
-  return last_checkpoint_ + (-current_budget_level_ / cpu_percentage_);
+  return std::max(desired_run_time, last_checkpoint_ + (-current_budget_level_ /
+                                                        cpu_percentage_));
 }
 
-void CPUTimeBudgetPool::RecordTaskRunTime(TaskQueue* queue,
-                                          base::TimeTicks start_time,
+void CPUTimeBudgetPool::RecordTaskRunTime(base::TimeTicks start_time,
                                           base::TimeTicks end_time) {
   DCHECK_LE(start_time, end_time);
   Advance(end_time);
@@ -107,14 +115,7 @@ void CPUTimeBudgetPool::RecordTaskRunTime(TaskQueue* queue,
   }
 
   if (current_budget_level_->InSecondsF() < 0)
-    UpdateThrottlingStateForAllQueues(end_time);
-}
-
-void CPUTimeBudgetPool::OnQueueNextWakeUpChanged(
-    TaskQueue* queue,
-    base::TimeTicks now,
-    base::TimeTicks desired_run_time) {
-  budget_pool_controller_->UpdateQueueSchedulingLifecycleState(now, queue);
+    UpdateStateForAllThrottlers(end_time);
 }
 
 void CPUTimeBudgetPool::OnWakeUp(base::TimeTicks now) {}

@@ -98,7 +98,9 @@ class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadSchedulerImpl {
   //
   // virtual void Shutdown();
 
-  scoped_refptr<NonMainThreadTaskQueue> CreateTaskQueue(const char* name);
+  scoped_refptr<NonMainThreadTaskQueue> CreateTaskQueue(
+      const char* name,
+      bool can_be_throttled = false);
 
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
       override;

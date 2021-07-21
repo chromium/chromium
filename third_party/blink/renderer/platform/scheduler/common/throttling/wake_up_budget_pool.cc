@@ -15,11 +15,8 @@ namespace scheduler {
 
 using base::sequence_manager::TaskQueue;
 
-WakeUpBudgetPool::WakeUpBudgetPool(const char* name,
-                                   BudgetPoolController* budget_pool_controller,
-                                   base::TimeTicks now)
-    : BudgetPool(name, budget_pool_controller),
-      wake_up_interval_(base::TimeDelta::FromSeconds(1)) {}
+WakeUpBudgetPool::WakeUpBudgetPool(const char* name)
+    : BudgetPool(name), wake_up_interval_(base::TimeDelta::FromSeconds(1)) {}
 
 WakeUpBudgetPool::~WakeUpBudgetPool() = default;
 
@@ -30,7 +27,7 @@ QueueBlockType WakeUpBudgetPool::GetBlockType() const {
 void WakeUpBudgetPool::SetWakeUpInterval(base::TimeTicks now,
                                          base::TimeDelta interval) {
   wake_up_interval_ = interval;
-  UpdateThrottlingStateForAllQueues(now);
+  UpdateStateForAllThrottlers(now);
 }
 
 void WakeUpBudgetPool::SetWakeUpDuration(base::TimeDelta duration) {
@@ -43,35 +40,23 @@ void WakeUpBudgetPool::AllowLowerAlignmentIfNoRecentWakeUp(
   wake_up_alignment_if_no_recent_wake_up_ = alignment;
 }
 
-void WakeUpBudgetPool::RecordTaskRunTime(TaskQueue* queue,
-                                         base::TimeTicks start_time,
-                                         base::TimeTicks end_time) {
-  budget_pool_controller_->UpdateQueueSchedulingLifecycleState(end_time, queue);
-}
-
-bool WakeUpBudgetPool::CanRunTasksAt(base::TimeTicks moment,
-                                     bool is_wake_up) const {
+bool WakeUpBudgetPool::CanRunTasksAt(base::TimeTicks moment) const {
   if (!is_enabled_)
     return true;
   if (!last_wake_up_)
     return false;
-  // |is_wake_up| flag means that we're in the beginning of the wake-up and
-  // |OnWakeUp| has just been called. This is needed to support
-  // backwards compatibility with old throttling mechanism (when
-  // |wake_up_duration| is zero) and allow only one task to run.
-  if (last_wake_up_ == moment && is_wake_up)
+  if (last_wake_up_ == moment)
     return true;
+
   return moment < last_wake_up_.value() + wake_up_duration_;
 }
 
 base::TimeTicks WakeUpBudgetPool::GetTimeTasksCanRunUntil(
-    base::TimeTicks now,
-    bool is_wake_up) const {
+    base::TimeTicks now) const {
   if (!is_enabled_)
     return base::TimeTicks::Max();
-  if (!last_wake_up_)
-    return base::TimeTicks();
-  if (!CanRunTasksAt(now, is_wake_up))
+  DCHECK(last_wake_up_);
+  if (!CanRunTasksAt(now))
     return base::TimeTicks();
   return last_wake_up_.value() + wake_up_duration_;
 }
@@ -117,13 +102,6 @@ base::TimeTicks WakeUpBudgetPool::GetNextAllowedRunTime(
                                             wake_up_interval_);
 }
 
-void WakeUpBudgetPool::OnQueueNextWakeUpChanged(
-    TaskQueue* queue,
-    base::TimeTicks now,
-    base::TimeTicks desired_run_time) {
-  budget_pool_controller_->UpdateQueueSchedulingLifecycleState(now, queue);
-}
-
 void WakeUpBudgetPool::OnWakeUp(base::TimeTicks now) {
   // To ensure that we correctly enforce wakeup limits for rapid successive
   // wakeups, if |now| is within the last wakeup duration (e.g. |now| is 2ms
@@ -148,7 +126,7 @@ void WakeUpBudgetPool::WriteIntoTrace(perfetto::TracedValue context,
              (now - last_wake_up_.value()).InSecondsF());
   }
   dict.Add("is_enabled", is_enabled_);
-  dict.Add("task_queues", associated_task_queues_);
+  dict.Add("throttlers", associated_throttlers_);
 }
 
 }  // namespace scheduler

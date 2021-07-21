@@ -11,6 +11,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
@@ -72,7 +73,7 @@ class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
     return GetWorkerSchedulersForTesting();
   }
 
-  using WorkerThreadScheduler::CreateTaskQueueThrottler;
+  using WorkerThreadScheduler::CreateBudgetPools;
   using WorkerThreadScheduler::SetCPUTimeBudgetPoolForTesting;
 };
 
@@ -188,28 +189,24 @@ TEST_F(WorkerSchedulerTest, RegisterWorkerSchedulers) {
 }
 
 TEST_F(WorkerSchedulerTest, ThrottleWorkerScheduler) {
-  scheduler_->CreateTaskQueueThrottler();
+  scheduler_->CreateBudgetPools();
 
-  EXPECT_FALSE(scheduler_->task_queue_throttler()->IsThrottled(
-      worker_scheduler_->ThrottleableTaskQueue().get()));
-
-  scheduler_->OnLifecycleStateChanged(SchedulingLifecycleState::kThrottled);
-  EXPECT_TRUE(scheduler_->task_queue_throttler()->IsThrottled(
-      worker_scheduler_->ThrottleableTaskQueue().get()));
+  EXPECT_FALSE(worker_scheduler_->ThrottleableTaskQueue()->IsThrottled());
 
   scheduler_->OnLifecycleStateChanged(SchedulingLifecycleState::kThrottled);
-  EXPECT_TRUE(scheduler_->task_queue_throttler()->IsThrottled(
-      worker_scheduler_->ThrottleableTaskQueue().get()));
+  EXPECT_TRUE(worker_scheduler_->ThrottleableTaskQueue()->IsThrottled());
+
+  scheduler_->OnLifecycleStateChanged(SchedulingLifecycleState::kThrottled);
+  EXPECT_TRUE(worker_scheduler_->ThrottleableTaskQueue()->IsThrottled());
 
   // Ensure that two calls with kThrottled do not mess with throttling
   // refcount.
   scheduler_->OnLifecycleStateChanged(SchedulingLifecycleState::kNotThrottled);
-  EXPECT_FALSE(scheduler_->task_queue_throttler()->IsThrottled(
-      worker_scheduler_->ThrottleableTaskQueue().get()));
+  EXPECT_FALSE(worker_scheduler_->ThrottleableTaskQueue()->IsThrottled());
 }
 
 TEST_F(WorkerSchedulerTest, ThrottleWorkerScheduler_CreateThrottled) {
-  scheduler_->CreateTaskQueueThrottler();
+  scheduler_->CreateBudgetPools();
 
   scheduler_->OnLifecycleStateChanged(SchedulingLifecycleState::kThrottled);
 
@@ -217,14 +214,13 @@ TEST_F(WorkerSchedulerTest, ThrottleWorkerScheduler_CreateThrottled) {
       std::make_unique<WorkerSchedulerForTest>(scheduler_.get());
 
   // Ensure that newly created scheduler is throttled.
-  EXPECT_TRUE(scheduler_->task_queue_throttler()->IsThrottled(
-      worker_scheduler2->ThrottleableTaskQueue().get()));
+  EXPECT_TRUE(worker_scheduler2->ThrottleableTaskQueue()->IsThrottled());
 
   worker_scheduler2->Dispose();
 }
 
 TEST_F(WorkerSchedulerTest, ThrottleWorkerScheduler_RunThrottledTasks) {
-  scheduler_->CreateTaskQueueThrottler();
+  scheduler_->CreateBudgetPools();
   scheduler_->SetCPUTimeBudgetPoolForTesting(nullptr);
 
   // Create a new |worker_scheduler| to ensure that it's properly initialised.
@@ -254,7 +250,7 @@ TEST_F(WorkerSchedulerTest, ThrottleWorkerScheduler_RunThrottledTasks) {
 
 TEST_F(WorkerSchedulerTest,
        ThrottleWorkerScheduler_RunThrottledTasks_CPUBudget) {
-  scheduler_->CreateTaskQueueThrottler();
+  scheduler_->CreateBudgetPools();
 
   scheduler_->cpu_time_budget_pool()->SetTimeBudgetRecoveryRate(
       GetClock()->NowTicks(), 0.01);

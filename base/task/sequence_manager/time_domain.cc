@@ -121,13 +121,33 @@ void TimeDomain::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
 
 void TimeDomain::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  // Wake up any queues with pending delayed work.  Note std::multimap stores
-  // the elements sorted by key, so the begin() iterator points to the earliest
-  // queue to wake-up.
+  // Wake up any queues with pending delayed work.
+  bool update_needed = false;
   while (!delayed_wake_up_queue_.empty() &&
          delayed_wake_up_queue_.Min().wake_up.time <= lazy_now->Now()) {
     internal::TaskQueueImpl* queue = delayed_wake_up_queue_.Min().queue;
-    queue->MoveReadyDelayedTasksToWorkQueue(lazy_now);
+    // OnWakeUp() is expected to update the next wake-up for this queue with
+    // SetNextWakeUpForQueue(), thus allowing us to make progress.
+    queue->OnWakeUp(lazy_now);
+    update_needed = true;
+  }
+  if (!update_needed || delayed_wake_up_queue_.empty())
+    return;
+  // If any queue was notified, possibly update following queues. This ensures
+  // the wake up is up to date, which is necessary because calling OnWakeUp() on
+  // a throttled queue may affect state that is shared between other related
+  // throttled queues. The wake up for an affected queue might be pushed back
+  // and needs to be updated. This is done lazily only once the related queue
+  // becomes the next one to wake up, since that wake up can't be moved up.
+  // |delayed_wake_up_queue_| is non-empty here, per the condition above.
+  internal::TaskQueueImpl* queue = delayed_wake_up_queue_.Min().queue;
+  queue->UpdateDelayedWakeUp(lazy_now);
+  while (!delayed_wake_up_queue_.empty()) {
+    internal::TaskQueueImpl* old_queue =
+        std::exchange(queue, delayed_wake_up_queue_.Min().queue);
+    if (old_queue == queue)
+      break;
+    queue->UpdateDelayedWakeUp(lazy_now);
   }
 }
 

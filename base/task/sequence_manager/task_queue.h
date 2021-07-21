@@ -46,20 +46,47 @@ class TimeDomain;
 // task queue always gets unregistered on the main thread.
 class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
  public:
-  class Observer {
+  // Interface that lets a task queue be throttled by changing the wake up time
+  // and optionally, by inserting fences. A wake up in this context is a
+  // notification at a given time that lets this TaskQueue know of newly ripe
+  // delayed tasks if it's enabled. By delaying the desired wake up time to a
+  // different allowed wake up time, the Throttler can hold off delayed tasks
+  // that would otherwise by allowed to run sooner.
+  class BASE_EXPORT Throttler {
    public:
-    virtual ~Observer() = default;
+    // Invoked when the TaskQueue's next allowed wake up time is reached and is
+    // enabled, even if blocked by a fence. That wake up is defined by the last
+    // value returned from GetNextAllowedWakeUp().
+    // This is always called on the thread this TaskQueue is associated with.
+    virtual void OnWakeUp(LazyNow* lazy_now) = 0;
 
-    // Notify observer that the time at which this queue wants to run
-    // the next task has changed. |next_wakeup| can be in the past
-    // (e.g. TimeTicks() can be used to notify about immediate work).
-    // Can be called on any thread
-    // All methods but SetObserver, SetTimeDomain and GetTimeDomain can be
-    // called on |queue|.
-    //
-    // TODO(altimin): Make it absl::optional<TimeTicks> to tell
-    // observer about cancellations.
-    virtual void OnQueueNextWakeUpChanged(TimeTicks next_wake_up) = 0;
+    // Invoked when the TaskQueue newly gets a pending immediate task and is
+    // enabled, even if blocked by a fence. Redundant calls are possible when
+    // the TaskQueue already had a pending immediate task.
+    // The implementation may use this to:
+    // - Restrict task execution by inserting/updating a fence.
+    // - Update the TaskQueue's next delayed wake up via UpdateDelayedWakeUp().
+    //   This allows the Throttler to perform additional operations later from
+    //   OnWakeUp().
+    // This is always called on the thread this TaskQueue is associated with.
+    virtual void OnHasImmediateTask() = 0;
+
+    // Invoked when the TaskQueue is enabled and wants to know when to schedule
+    // the next delayed wake-up (which happens at least every time this queue is
+    // about to cause the next wake up) provided |next_desired_wake_up|, the
+    // wake-up for the next pending delayed task in this queue (pending delayed
+    // tasks that are ripe may be ignored), or nullopt if there's no pending
+    // delayed task. |has_ready_task| indicates whether there are immediate
+    // tasks or ripe delayed tasks. The implementation should return the next
+    // allowed wake up, or nullopt if no future wake-up is necessary.
+    // This is always called on the thread this TaskQueue is associated with.
+    virtual absl::optional<DelayedWakeUp> GetNextAllowedWakeUp(
+        LazyNow* lazy_now,
+        absl::optional<DelayedWakeUp> next_desired_wake_up,
+        bool has_ready_task) = 0;
+
+   protected:
+    ~Throttler() = default;
   };
 
   // Shuts down the queue. All tasks currently queued will be discarded.
@@ -243,13 +270,15 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // Returns true iff this queue has immediate tasks or delayed tasks that are
   // ripe for execution. Ignores the queue's enabled state and fences.
   // NOTE: this must be called on the thread this TaskQueue was created by.
+  // TODO(etiennep): Rename to HasReadyTask() and add LazyNow parameter.
   bool HasTaskToRunImmediatelyOrReadyDelayedTask() const;
 
-  // Returns requested run time of next scheduled wake-up for a delayed task
-  // which is not ready to run. If there are no such tasks (immediate tasks
-  // don't count) or the queue is disabled it returns nullopt.
+  // Returns a wake-up for the next pending delayed task (pending delayed tasks
+  // that are ripe may be ignored), ignoring Throttler is any. If there are no
+  // such tasks (immediate tasks don't count) or the queue is disabled it
+  // returns nullopt.
   // NOTE: this must be called on the thread this TaskQueue was created by.
-  absl::optional<TimeTicks> GetNextScheduledWakeUp();
+  absl::optional<DelayedWakeUp> GetNextDesiredWakeUp();
 
   // Can be called on any thread.
   virtual const char* GetName() const;
@@ -322,7 +351,17 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // Returns true if the queue has a fence which is blocking execution of tasks.
   bool BlockedByFence() const;
 
-  void SetObserver(Observer* observer);
+  // Associates |throttler| to this queue. Only one throttler can be associated
+  // with this queue. |throttler| must outlive this TaskQueue, or remain valid
+  // until ResetThrottler().
+  void SetThrottler(Throttler* throttler);
+  // Disassociates the current throttler from this queue, if any.
+  void ResetThrottler();
+
+  // Updates the task queue's next wake up time in its time domain, taking into
+  // account the desired run time of queued tasks and policies enforced by the
+  // throttler if any.
+  void UpdateDelayedWakeUp(LazyNow* lazy_now);
 
   // Controls whether or not the queue will emit traces events when tasks are
   // posted to it while disabled. This only applies for the current or next

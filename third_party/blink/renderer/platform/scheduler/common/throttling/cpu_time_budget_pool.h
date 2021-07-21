@@ -19,7 +19,6 @@ namespace scheduler {
 class PLATFORM_EXPORT CPUTimeBudgetPool : public BudgetPool {
  public:
   CPUTimeBudgetPool(const char* name,
-                    BudgetPoolController* budget_pool_controller,
                     TraceableVariableController* tracing_controller,
                     base::TimeTicks now);
   CPUTimeBudgetPool(const CPUTimeBudgetPool&) = delete;
@@ -56,17 +55,12 @@ class PLATFORM_EXPORT CPUTimeBudgetPool : public BudgetPool {
       base::RepeatingCallback<void(base::TimeDelta)> reporting_callback);
 
   // BudgetPool implementation:
-  void RecordTaskRunTime(base::sequence_manager::TaskQueue* queue,
-                         base::TimeTicks start_time,
+  void RecordTaskRunTime(base::TimeTicks start_time,
                          base::TimeTicks end_time) final;
-  bool CanRunTasksAt(base::TimeTicks moment, bool is_wake_up) const final;
-  base::TimeTicks GetTimeTasksCanRunUntil(base::TimeTicks now,
-                                          bool is_wake_up) const final;
+  bool CanRunTasksAt(base::TimeTicks moment) const final;
+  base::TimeTicks GetTimeTasksCanRunUntil(base::TimeTicks now) const final;
   base::TimeTicks GetNextAllowedRunTime(
       base::TimeTicks desired_run_time) const final;
-  void OnQueueNextWakeUpChanged(base::sequence_manager::TaskQueue* queue,
-                                base::TimeTicks now,
-                                base::TimeTicks desired_run_time) final;
   void OnWakeUp(base::TimeTicks now) final;
   void WriteIntoTrace(perfetto::TracedValue context,
                       base::TimeTicks) const final;

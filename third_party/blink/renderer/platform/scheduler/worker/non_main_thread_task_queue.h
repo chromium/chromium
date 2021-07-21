@@ -9,6 +9,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 
 namespace blink {
@@ -23,7 +24,8 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
   NonMainThreadTaskQueue(
       std::unique_ptr<base::sequence_manager::internal::TaskQueueImpl> impl,
       const Spec& spec,
-      NonMainThreadSchedulerImpl* non_main_thread_scheduler);
+      NonMainThreadSchedulerImpl* non_main_thread_scheduler,
+      bool can_be_throttled);
   ~NonMainThreadTaskQueue() override;
 
   void OnTaskCompleted(
@@ -36,6 +38,19 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
     return TaskQueue::CreateTaskRunner(static_cast<int>(task_type));
   }
 
+  bool IsThrottled() const { return throttler_->IsThrottled(); }
+
+  // Methods for setting and resetting budget pools for this task queue.
+  // Note that a task queue can be in multiple budget pools so a pool must
+  // be specified when removing.
+  void AddToBudgetPool(base::TimeTicks now, BudgetPool* pool);
+  void RemoveFromBudgetPool(base::TimeTicks now, BudgetPool* pool);
+
+  void IncreaseThrottleRefCount();
+  void DecreaseThrottleRefCount();
+
+  void ShutdownTaskQueue() override;
+
   // This method returns the default task runner with task type kTaskTypeNone
   // and is mostly used for tests. For most use cases, you'll want a more
   // specific task runner and should use the 'CreateTaskRunner' method and pass
@@ -47,8 +62,12 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
 
   void SetWebSchedulingPriority(WebSchedulingPriority priority);
 
+  void OnTaskRunTimeReported(TaskQueue::TaskTiming* task_timing);
+
  private:
   void OnWebSchedulingPriorityChanged();
+
+  absl::optional<TaskQueueThrottler> throttler_;
 
   // Not owned.
   NonMainThreadSchedulerImpl* non_main_thread_scheduler_;

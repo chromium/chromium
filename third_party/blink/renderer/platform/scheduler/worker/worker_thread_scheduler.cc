@@ -23,7 +23,9 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/process_state.h"
+#include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
+#include "third_party/blink/renderer/platform/scheduler/common/throttling/wake_up_budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_helper.h"
@@ -117,7 +119,7 @@ WorkerThreadScheduler::WorkerThreadScheduler(
 
   if (thread_type == ThreadType::kDedicatedWorkerThread &&
       base::FeatureList::IsEnabled(kDedicatedWorkerThrottling)) {
-    CreateTaskQueueThrottler();
+    CreateBudgetPools();
   }
 
   TRACE_EVENT_OBJECT_CREATED_WITH_ID(
@@ -178,7 +180,6 @@ void WorkerThreadScheduler::RemoveTaskObserver(
 
 void WorkerThreadScheduler::Shutdown() {
   DCHECK(initialized_);
-  task_queue_throttler_.reset();
   idle_helper_.Shutdown();
   helper()->Shutdown();
 }
@@ -209,10 +210,8 @@ void WorkerThreadScheduler::OnTaskCompleted(
   task_timing->RecordTaskEnd(lazy_now);
   worker_metrics_helper_.RecordTaskMetrics(task, *task_timing);
 
-  if (task_queue_throttler_) {
-    task_queue_throttler_->OnTaskRunTimeReported(
-        task_queue, task_timing->start_time(), task_timing->end_time());
-  }
+  if (task_queue != nullptr)
+    task_queue->OnTaskRunTimeReported(task_timing);
 
   RecordTaskUkm(task_queue, task, *task_timing);
 }
@@ -258,17 +257,15 @@ WorkerThreadScheduler::ControlTaskQueue() {
   return helper()->ControlNonMainThreadTaskQueue();
 }
 
-void WorkerThreadScheduler::CreateTaskQueueThrottler() {
-  if (task_queue_throttler_)
+void WorkerThreadScheduler::CreateBudgetPools() {
+  if (wake_up_budget_pool_ && cpu_time_budget_pool_)
     return;
-  task_queue_throttler_ = std::make_unique<TaskQueueThrottler>(
-      this, &traceable_variable_controller_);
-  wake_up_budget_pool_ =
-      task_queue_throttler_->CreateWakeUpBudgetPool("worker_wake_up_pool");
-  cpu_time_budget_pool_ =
-      task_queue_throttler_->CreateCPUTimeBudgetPool("worker_cpu_time_pool");
-
   base::TimeTicks now = GetTickClock()->NowTicks();
+  wake_up_budget_pool_ =
+      std::make_unique<WakeUpBudgetPool>("worker_wake_up_pool");
+  cpu_time_budget_pool_ = std::make_unique<CPUTimeBudgetPool>(
+      "worker_cpu_time_pool", &traceable_variable_controller_, now);
+
   cpu_time_budget_pool_->SetMaxBudgetLevel(now, GetMaxBudgetLevel());
   cpu_time_budget_pool_->SetTimeBudgetRecoveryRate(now,
                                                    GetBudgetRecoveryRate());
@@ -312,8 +309,8 @@ void WorkerThreadScheduler::SetUkmTaskSamplingRateForTest(double rate) {
 }
 
 void WorkerThreadScheduler::SetCPUTimeBudgetPoolForTesting(
-    CPUTimeBudgetPool* cpu_time_budget_pool) {
-  cpu_time_budget_pool_ = cpu_time_budget_pool;
+    std::unique_ptr<CPUTimeBudgetPool> cpu_time_budget_pool) {
+  cpu_time_budget_pool_ = std::move(cpu_time_budget_pool);
 }
 
 HashSet<WorkerScheduler*>&

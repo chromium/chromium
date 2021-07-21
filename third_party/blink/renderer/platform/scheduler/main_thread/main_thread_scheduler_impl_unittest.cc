@@ -2728,8 +2728,7 @@ TEST_F(
     SYNCHRONIZED_GESTURE_ThrottleableTaskThrottling_ThrottleableQueuesStopped) {
   SimulateCompositorGestureStart(TouchEventPolicy::kSendTouchStart);
 
-  base::TimeTicks first_throttled_run_time =
-      TaskQueueThrottler::AlignedThrottledRunTime(Now());
+  base::TimeTicks first_run_time = Now();
 
   size_t count = 0;
   // With the compositor task taking 10ms, there is not enough time to run this
@@ -2762,7 +2761,7 @@ TEST_F(
 
     // Before the policy is updated the queue will be enabled. Subsequently it
     // will be disabled until the throttled queue is pumped.
-    bool expect_queue_enabled = (i == 0) || (Now() > first_throttled_run_time);
+    bool expect_queue_enabled = (i == 0) || (Now() > first_run_time);
     if (paused)
       expect_queue_enabled = false;
     EXPECT_EQ(expect_queue_enabled,
@@ -3210,7 +3209,7 @@ TEST_F(MainThreadSchedulerImplTest, EnableVirtualTimeAfterThrottling) {
       MainThreadSchedulerImpl::BaseTimeOverridePolicy::DO_NOT_OVERRIDE);
   EXPECT_EQ(throttleable_tq->GetTaskQueue()->GetTimeDomain(),
             scheduler_->GetVirtualTimeDomain());
-  EXPECT_FALSE(throttleable_tq->IsThrottled());
+  EXPECT_TRUE(throttleable_tq->IsThrottled());
 }
 
 TEST_F(MainThreadSchedulerImplTest, DisableVirtualTimeForTesting) {
@@ -3333,11 +3332,11 @@ TEST_F(MainThreadSchedulerImplTest, Tracing) {
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
   scheduler_->AddPageScheduler(page_scheduler2.get());
 
-  CPUTimeBudgetPool* time_budget_pool =
-      scheduler_->task_queue_throttler()->CreateCPUTimeBudgetPool("test");
+  std::unique_ptr<CPUTimeBudgetPool> time_budget_pool =
+      scheduler_->CreateCPUTimeBudgetPoolForTesting("test");
 
-  time_budget_pool->AddQueue(base::TimeTicks(),
-                             throttleable_task_queue()->GetTaskQueue());
+  throttleable_task_queue()->AddToBudgetPool(base::TimeTicks(),
+                                             time_budget_pool.get());
 
   throttleable_task_runner_->PostTask(FROM_HERE, base::BindOnce(NullTask));
 

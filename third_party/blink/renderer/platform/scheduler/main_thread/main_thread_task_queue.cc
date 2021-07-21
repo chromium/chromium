@@ -115,7 +115,14 @@ MainThreadTaskQueue::MainThreadTaskQueue(
       agent_group_scheduler_(params.agent_group_scheduler),
       frame_scheduler_(params.frame_scheduler) {
   task_queue_ = base::MakeRefCounted<TaskQueue>(std::move(impl), spec);
+  // Throttling needs |should_notify_observers| to get task timing.
+  DCHECK(!params.queue_traits.can_be_throttled || spec.should_notify_observers)
+      << "Throttled queue is not supported with |!should_notify_observers|";
   if (task_queue_->HasImpl() && spec.should_notify_observers) {
+    if (params.queue_traits.can_be_throttled) {
+      throttler_.emplace(task_queue_.get(),
+                         main_thread_scheduler_->GetTickClock());
+    }
     // TaskQueueImpl may be null for tests.
     // TODO(scheduler-dev): Consider mapping directly to
     // MainThreadSchedulerImpl::OnTaskStarted/Completed. At the moment this
@@ -151,8 +158,10 @@ void MainThreadTaskQueue::OnTaskCompleted(
 
 void MainThreadTaskQueue::OnTaskRunTimeReported(
     TaskQueue::TaskTiming* task_timing) {
-  main_thread_scheduler_->task_queue_throttler()->OnTaskRunTimeReported(
-      task_queue_.get(), task_timing->start_time(), task_timing->end_time());
+  if (throttler_) {
+    throttler_->OnTaskRunTimeReported(task_timing->start_time(),
+                                      task_timing->end_time());
+  }
 }
 
 void MainThreadTaskQueue::DetachFromMainThreadScheduler() {
@@ -193,6 +202,7 @@ void MainThreadTaskQueue::DetachOnIPCTaskPostedWhileInBackForwardCache() {
 
 void MainThreadTaskQueue::ShutdownTaskQueue() {
   ClearReferencesToSchedulers();
+  throttler_.reset();
   task_queue_->ShutdownTaskQueue();
 }
 
@@ -214,11 +224,6 @@ WebAgentGroupScheduler* MainThreadTaskQueue::GetAgentGroupScheduler() {
 void MainThreadTaskQueue::ClearReferencesToSchedulers() {
   if (main_thread_scheduler_) {
     main_thread_scheduler_->OnShutdownTaskQueue(this);
-
-    if (main_thread_scheduler_->task_queue_throttler()) {
-      main_thread_scheduler_->task_queue_throttler()->ShutdownTaskQueue(
-          task_queue_.get());
-    }
   }
   main_thread_scheduler_ = nullptr;
   agent_group_scheduler_ = nullptr;
@@ -260,8 +265,7 @@ MainThreadTaskQueue::web_scheduling_priority() const {
 
 bool MainThreadTaskQueue::IsThrottled() const {
   if (main_thread_scheduler_) {
-    return main_thread_scheduler_->task_queue_throttler()->IsThrottled(
-        task_queue_.get());
+    return throttler_.has_value() && throttler_->IsThrottled();
   } else {
     // When the frame detaches the task queue is removed from the throttler.
     return false;
@@ -270,26 +274,17 @@ bool MainThreadTaskQueue::IsThrottled() const {
 
 MainThreadTaskQueue::ThrottleHandle MainThreadTaskQueue::Throttle() {
   DCHECK(CanBeThrottled());
-  return ThrottleHandle(
-      task_queue_.get()->AsWeakPtr(),
-      main_thread_scheduler_->task_queue_throttler()->AsWeakPtr());
+  return ThrottleHandle(AsWeakPtr());
 }
 
 void MainThreadTaskQueue::AddToBudgetPool(base::TimeTicks now,
                                           BudgetPool* pool) {
-  pool->AddQueue(now, task_queue_.get());
+  pool->AddThrottler(now, &throttler_.value());
 }
 
 void MainThreadTaskQueue::RemoveFromBudgetPool(base::TimeTicks now,
                                                BudgetPool* pool) {
-  pool->RemoveQueue(now, task_queue_.get());
-}
-
-void MainThreadTaskQueue::SetImmediateWakeUpForTest() {
-  if (main_thread_scheduler_) {
-    main_thread_scheduler_->task_queue_throttler()->OnQueueNextWakeUpChanged(
-        task_queue_.get(), base::TimeTicks());
-  }
+  pool->RemoveThrottler(now, &throttler_.value());
 }
 
 void MainThreadTaskQueue::SetWakeUpBudgetPool(
@@ -301,6 +296,7 @@ void MainThreadTaskQueue::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("type", queue_type_);
   dict.Add("traits", queue_traits_);
+  dict.Add("throttler", throttler_);
 }
 
 void MainThreadTaskQueue::QueueTraits::WriteIntoTrace(

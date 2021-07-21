@@ -30,11 +30,13 @@ std::unique_ptr<NonMainThreadSchedulerImpl> NonMainThreadSchedulerImpl::Create(
 }
 
 scoped_refptr<NonMainThreadTaskQueue>
-NonMainThreadSchedulerImpl::CreateTaskQueue(const char* name) {
+NonMainThreadSchedulerImpl::CreateTaskQueue(const char* name,
+                                            bool can_be_throttled) {
   helper_.CheckOnValidThread();
   return helper_.NewTaskQueue(base::sequence_manager::TaskQueue::Spec(name)
                                   .SetShouldMonitorQuiescence(true)
-                                  .SetTimeDomain(nullptr));
+                                  .SetTimeDomain(nullptr),
+                              can_be_throttled);
 }
 
 void NonMainThreadSchedulerImpl::RunIdleTask(Thread::IdleTask task,

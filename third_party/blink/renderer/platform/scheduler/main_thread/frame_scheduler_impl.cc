@@ -286,8 +286,7 @@ void FrameSchedulerImpl::RemoveThrottleableQueueFromBudgetPools(
           : base::sequence_manager::LazyNow(base::TimeTicks::Now());
 
   if (cpu_time_budget_pool) {
-    cpu_time_budget_pool->RemoveQueue(lazy_now.Now(),
-                                      task_queue->GetTaskQueue());
+    task_queue->RemoveFromBudgetPool(lazy_now.Now(), cpu_time_budget_pool);
   }
 
   parent_page_scheduler_->RemoveQueueFromWakeUpBudgetPool(task_queue,
@@ -1280,8 +1279,7 @@ void FrameSchedulerImpl::OnTaskQueueCreated(
     CPUTimeBudgetPool* cpu_time_budget_pool =
         parent_page_scheduler_->background_cpu_time_budget_pool();
     if (cpu_time_budget_pool) {
-      cpu_time_budget_pool->AddQueue(lazy_now.Now(),
-                                     task_queue->GetTaskQueue());
+      task_queue->AddToBudgetPool(lazy_now.Now(), cpu_time_budget_pool);
     }
 
     parent_page_scheduler_->AddQueueToWakeUpBudgetPool(

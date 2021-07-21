@@ -42,6 +42,7 @@ class TaskQueueThrottlerTest;
 
 class FrameSchedulerImpl;
 class MainThreadSchedulerImpl;
+class WakeUpBudgetPool;
 
 // TODO(kdillon): Remove ref-counting of MainThreadTaskQueues as it's no longer
 // needed.
@@ -101,29 +102,25 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // the queue will remain throttled as long as the handle is alive.
   class ThrottleHandle {
    public:
-    ThrottleHandle(base::WeakPtr<TaskQueue> task_queue,
-                   base::WeakPtr<TaskQueueThrottler> throttler)
-        : task_queue_(std::move(task_queue)), throttler_(std::move(throttler)) {
-      if (task_queue_ && throttler_)
-        throttler_->IncreaseThrottleRefCount(task_queue_.get());
+    explicit ThrottleHandle(base::WeakPtr<MainThreadTaskQueue> task_queue)
+        : task_queue_(std::move(task_queue)) {
+      if (task_queue_)
+        task_queue_->throttler_->IncreaseThrottleRefCount();
     }
     ~ThrottleHandle() {
-      if (task_queue_ && throttler_)
-        throttler_->DecreaseThrottleRefCount(task_queue_.get());
+      if (task_queue_)
+        task_queue_->throttler_->DecreaseThrottleRefCount();
     }
 
     // Move-only.
     ThrottleHandle(ThrottleHandle&& other)
-        : task_queue_(std::move(other.task_queue_)),
-          throttler_(std::move(other.throttler_)) {
+        : task_queue_(std::move(other.task_queue_)) {
       other.task_queue_ = nullptr;
-      other.throttler_ = nullptr;
     }
     ThrottleHandle& operator=(ThrottleHandle&&);
 
    private:
-    base::WeakPtr<TaskQueue> task_queue_;
-    base::WeakPtr<TaskQueueThrottler> throttler_;
+    base::WeakPtr<MainThreadTaskQueue> task_queue_;
   };
 
   // Returns name of the given queue type. Returned string has application
@@ -488,10 +485,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   void AddToBudgetPool(base::TimeTicks now, BudgetPool* pool);
   void RemoveFromBudgetPool(base::TimeTicks now, BudgetPool* pool);
 
-  // This method is only used for tests. If this queue is throttled it will
-  // notify the throttler that this queue should wake immediately.
-  void SetImmediateWakeUpForTest();
-
   void SetWakeUpBudgetPool(WakeUpBudgetPool* wake_up_budget_pool);
   WakeUpBudgetPool* GetWakeUpBudgetPool() const { return wake_up_budget_pool_; }
 
@@ -536,6 +529,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   void ClearReferencesToSchedulers();
 
   scoped_refptr<TaskQueue> task_queue_;
+  absl::optional<TaskQueueThrottler> throttler_;
 
   const QueueType queue_type_;
   const QueueTraits queue_traits_;

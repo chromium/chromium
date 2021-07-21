@@ -52,9 +52,10 @@ NonMainThreadSchedulerHelper::ControlTaskRunner() {
 }
 
 scoped_refptr<NonMainThreadTaskQueue>
-NonMainThreadSchedulerHelper::NewTaskQueue(const TaskQueue::Spec& spec) {
+NonMainThreadSchedulerHelper::NewTaskQueue(const TaskQueue::Spec& spec,
+                                           bool can_be_throttled) {
   return sequence_manager_->CreateTaskQueueWithType<NonMainThreadTaskQueue>(
-      spec, non_main_thread_scheduler_);
+      spec, non_main_thread_scheduler_, can_be_throttled);
 }
 
 void NonMainThreadSchedulerHelper::ShutdownAllQueues() {

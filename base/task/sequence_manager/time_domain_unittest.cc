@@ -32,7 +32,7 @@ class TaskQueueImplForTest : public internal::TaskQueueImpl {
       : TaskQueueImpl(sequence_manager, time_domain, spec) {}
   ~TaskQueueImplForTest() {}
 
-  using TaskQueueImpl::SetDelayedWakeUpForTesting;
+  using TaskQueueImpl::SetNextDelayedWakeUp;
 };
 
 class TestTimeDomain : public TimeDomain {
@@ -104,7 +104,7 @@ TEST_F(TimeDomainTest, ScheduleWakeUpForQueue) {
   EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, delayed_runtime));
   TimeTicks now = time_domain_->Now();
   LazyNow lazy_now(now);
-  task_queue_->SetDelayedWakeUpForTesting(DelayedWakeUp{now + delay});
+  task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{now + delay});
 
   EXPECT_FALSE(time_domain_->empty());
   EXPECT_EQ(delayed_runtime, time_domain_->NextScheduledRunTime());
@@ -124,7 +124,7 @@ TEST_F(TimeDomainTest, ScheduleWakeUpForQueueSupersedesPreviousWakeUp) {
   EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, delayed_runtime1));
   TimeTicks now = time_domain_->Now();
   LazyNow lazy_now(now);
-  task_queue_->SetDelayedWakeUpForTesting(DelayedWakeUp{delayed_runtime1});
+  task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{delayed_runtime1});
 
   EXPECT_EQ(delayed_runtime1, time_domain_->NextScheduledRunTime());
 
@@ -133,7 +133,7 @@ TEST_F(TimeDomainTest, ScheduleWakeUpForQueueSupersedesPreviousWakeUp) {
   // Now schedule a later wake_up, which should replace the previously
   // requested one.
   EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, delayed_runtime2));
-  task_queue_->SetDelayedWakeUpForTesting(DelayedWakeUp{delayed_runtime2});
+  task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{delayed_runtime2});
 
   EXPECT_EQ(delayed_runtime2, time_domain_->NextScheduledRunTime());
   Mock::VerifyAndClearExpectations(time_domain_.get());
@@ -165,19 +165,19 @@ TEST_F(TimeDomainTest, SetNextDelayedDoWork_OnlyCalledForEarlierTasks) {
   TimeTicks now = time_domain_->Now();
   LazyNow lazy_now(now);
   EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, now + delay1));
-  task_queue_->SetDelayedWakeUpForTesting(DelayedWakeUp{now + delay1});
+  task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{now + delay1});
 
   Mock::VerifyAndClearExpectations(time_domain_.get());
 
   // SetNextDelayedDoWork should not be called when scheduling later tasks.
   EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, _)).Times(0);
-  task_queue2->SetDelayedWakeUpForTesting(DelayedWakeUp{now + delay2});
-  task_queue3->SetDelayedWakeUpForTesting(DelayedWakeUp{now + delay3});
+  task_queue2->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{now + delay2});
+  task_queue3->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{now + delay3});
 
   // SetNextDelayedDoWork should be called when scheduling earlier tasks.
   Mock::VerifyAndClearExpectations(time_domain_.get());
   EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, now + delay4));
-  task_queue4->SetDelayedWakeUpForTesting(DelayedWakeUp{now + delay4});
+  task_queue4->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{now + delay4});
 
   Mock::VerifyAndClearExpectations(time_domain_.get());
 
@@ -197,9 +197,9 @@ TEST_F(TimeDomainTest, UnregisterQueue) {
   LazyNow lazy_now(now);
   TimeTicks wake_up1 = now + TimeDelta::FromMilliseconds(10);
   EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, wake_up1)).Times(1);
-  task_queue_->SetDelayedWakeUpForTesting(DelayedWakeUp{wake_up1});
+  task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{wake_up1});
   TimeTicks wake_up2 = now + TimeDelta::FromMilliseconds(100);
-  task_queue2->SetDelayedWakeUpForTesting(DelayedWakeUp{wake_up2});
+  task_queue2->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{wake_up2});
   EXPECT_FALSE(time_domain_->empty());
 
   EXPECT_EQ(task_queue_.get(), time_domain_->NextScheduledTaskQueue());
@@ -234,7 +234,8 @@ TEST_F(TimeDomainTest, MoveReadyDelayedTasksToWorkQueues) {
   LazyNow lazy_now_1(now);
   TimeTicks delayed_runtime = now + delay;
   EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, delayed_runtime));
-  task_queue_->SetDelayedWakeUpForTesting(DelayedWakeUp{delayed_runtime});
+  task_queue_->SetNextDelayedWakeUp(&lazy_now_1,
+                                    DelayedWakeUp{delayed_runtime});
 
   EXPECT_EQ(delayed_runtime, time_domain_->NextScheduledRunTime());
 
@@ -254,12 +255,12 @@ TEST_F(TimeDomainTest, CancelDelayedWork) {
   TimeTicks run_time = now + TimeDelta::FromMilliseconds(20);
 
   EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, run_time));
-  task_queue_->SetDelayedWakeUpForTesting(DelayedWakeUp{run_time});
+  task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{run_time});
 
   EXPECT_EQ(task_queue_.get(), time_domain_->NextScheduledTaskQueue());
 
   EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, TimeTicks::Max()));
-  task_queue_->SetDelayedWakeUpForTesting(absl::nullopt);
+  task_queue_->SetNextDelayedWakeUp(&lazy_now, absl::nullopt);
   EXPECT_FALSE(time_domain_->NextScheduledTaskQueue());
 }
 
@@ -273,11 +274,11 @@ TEST_F(TimeDomainTest, CancelDelayedWork_TwoQueues) {
   TimeTicks run_time1 = now + TimeDelta::FromMilliseconds(20);
   TimeTicks run_time2 = now + TimeDelta::FromMilliseconds(40);
   EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, run_time1));
-  task_queue_->SetDelayedWakeUpForTesting(DelayedWakeUp{run_time1});
+  task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{run_time1});
   Mock::VerifyAndClearExpectations(time_domain_.get());
 
   EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, _)).Times(0);
-  task_queue2->SetDelayedWakeUpForTesting(DelayedWakeUp{run_time2});
+  task_queue2->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{run_time2});
   Mock::VerifyAndClearExpectations(time_domain_.get());
 
   EXPECT_EQ(task_queue_.get(), time_domain_->NextScheduledTaskQueue());
@@ -285,7 +286,7 @@ TEST_F(TimeDomainTest, CancelDelayedWork_TwoQueues) {
   EXPECT_EQ(run_time1, time_domain_->NextScheduledRunTime());
 
   EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, run_time2));
-  task_queue_->SetDelayedWakeUpForTesting(absl::nullopt);
+  task_queue_->SetNextDelayedWakeUp(&lazy_now, absl::nullopt);
   EXPECT_EQ(task_queue2.get(), time_domain_->NextScheduledTaskQueue());
 
   EXPECT_EQ(run_time2, time_domain_->NextScheduledRunTime());
