@@ -96,6 +96,25 @@ IN_PROC_BROWSER_TEST_F(DevicePostureBrowserTest, PostureChangeEventTest) {
   EXPECT_EQ("folded", EvalJs(shell(), "postureReceived"));
 }
 
+IN_PROC_BROWSER_TEST_F(DevicePostureBrowserTest, PostureAddEventListenerTest) {
+  // This test will emulate a posture change and verify that the JavaScript
+  // event handler is properly called and that the new posture has the correct
+  // value.
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
+  EXPECT_EQ("continuous", EvalJs(shell(), "navigator.devicePosture.type"));
+  EXPECT_EQ(true, ExecJs(shell(),
+                         R"(
+                           var postureReceived = new Promise(resolve => {
+                             navigator.devicePosture.addEventListener(
+                               "change",
+                               () => { resolve(navigator.devicePosture.type); }
+                              );
+                            });
+                          )"));
+  set_current_posture(device::mojom::DevicePostureType::kFoldedOver);
+  EXPECT_EQ("folded-over", EvalJs(shell(), "postureReceived"));
+}
+
 }  //  namespace
 
 }  // namespace content

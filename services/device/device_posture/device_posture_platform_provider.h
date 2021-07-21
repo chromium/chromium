@@ -26,7 +26,8 @@ class DevicePosturePlatformProvider {
   virtual ~DevicePosturePlatformProvider() = default;
 
   virtual device::mojom::DevicePostureType GetDevicePosture() = 0;
-  virtual void Shutdown() = 0;
+  virtual void StopListening() = 0;
+  virtual void StartListening() = 0;
 
   void SetPostureProvider(DevicePostureProviderImpl* provider);
 

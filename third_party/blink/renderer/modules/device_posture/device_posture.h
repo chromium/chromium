@@ -42,6 +42,8 @@ class MODULES_EXPORT DevicePosture
   // DevicePostureServiceClient
   void OnPostureChanged(
       device::mojom::blink::DevicePostureType posture) override;
+  void AddedEventListener(const AtomicString& event_type,
+                          RegisteredEventListener&) override;
   void OnServiceConnectionError();
   void EnsureServiceConnection();
 

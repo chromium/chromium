@@ -34,6 +34,8 @@ void DevicePostureProviderImpl::SetListener(
 
 void DevicePostureProviderImpl::Bind(
     mojo::PendingReceiver<mojom::DevicePostureProvider> receiver) {
+  if (receivers_.empty())
+    platform_provider_->StartListening();
   receivers_.Add(this, std::move(receiver));
 }
 
@@ -45,7 +47,7 @@ void DevicePostureProviderImpl::OnDevicePostureChanged(
 
 void DevicePostureProviderImpl::OnReceiverConnectionError() {
   if (receivers_.empty())
-    platform_provider_->Shutdown();
+    platform_provider_->StopListening();
 }
 
 }  // namespace device

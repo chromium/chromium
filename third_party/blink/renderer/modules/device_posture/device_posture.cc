@@ -64,6 +64,20 @@ void DevicePosture::EnsureServiceConnection() {
       WTF::Bind(&DevicePosture::OnPostureChanged, WrapPersistent(this)));
 }
 
+void DevicePosture::AddedEventListener(const AtomicString& event_type,
+                                       RegisteredEventListener& listener) {
+  EventTargetWithInlineData::AddedEventListener(event_type, listener);
+
+  if (event_type != event_type_names::kChange)
+    return;
+
+  ExecutionContext* context = GetExecutionContext();
+  if (!context)
+    return;
+
+  EnsureServiceConnection();
+}
+
 ExecutionContext* DevicePosture::GetExecutionContext() const {
   return ExecutionContextClient::GetExecutionContext();
 }

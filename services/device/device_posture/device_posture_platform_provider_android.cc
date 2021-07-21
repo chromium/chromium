@@ -17,6 +17,8 @@ DevicePosturePlatformProviderAndroid::GetDevicePosture() {
   return device::mojom::DevicePostureType::kContinuous;
 }
 
-void DevicePosturePlatformProviderAndroid::Shutdown() {}
+void DevicePosturePlatformProviderAndroid::StartListening() {}
+
+void DevicePosturePlatformProviderAndroid::StopListening() {}
 
 }  // namespace device

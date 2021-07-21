@@ -21,7 +21,8 @@ class DevicePosturePlatformProviderAndroid
       const DevicePosturePlatformProviderAndroid&) = delete;
 
   device::mojom::DevicePostureType GetDevicePosture() override;
-  void Shutdown() override;
+  void StartListening() override;
+  void StopListening() override;
 };
 
 }  // namespace device

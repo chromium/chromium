@@ -4,8 +4,6 @@
 
 #include "services/device/device_posture/device_posture_platform_provider_win.h"
 
-#include "base/task/post_task.h"
-
 namespace device {
 
 DevicePosturePlatformProviderWin::DevicePosturePlatformProviderWin() = default;
@@ -16,6 +14,8 @@ mojom::DevicePostureType DevicePosturePlatformProviderWin::GetDevicePosture() {
   return mojom::DevicePostureType::kContinuous;
 }
 
-void DevicePosturePlatformProviderWin::Shutdown() {}
+void DevicePosturePlatformProviderWin::StartListening() {}
+
+void DevicePosturePlatformProviderWin::StopListening() {}
 
 }  // namespace device
