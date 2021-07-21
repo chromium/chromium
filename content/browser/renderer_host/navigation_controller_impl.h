@@ -246,14 +246,10 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // For use by WebContentsImpl ------------------------------------------------
 
-  // Visit all FrameNavigationEntries and register any instances of |origin| as
-  // non-isolated with their respective BrowsingInstances. This is important
-  // when |origin| requests isolation, so that we only do so in
-  // BrowsingInstances that haven't seen it before.
-  // TODO(crbug.com/1062719): Ensure that all origin instances are tracked,
-  // since currently NavigationEntries and FrameNavigationEntries may be missing
-  // for some active frames, or in pending navigations. This will be fixed when
-  // https://chromium-review.googlesource.com/c/chromium/src/+/2136703 lands.
+  // Visit all FrameNavigationEntries as well as all frame trees and register
+  // any instances of |origin| as non-isolated with their respective
+  // BrowsingInstances. This is important when |origin| requests isolation, so
+  // that we only do so in BrowsingInstances that haven't seen it before.
   void RegisterExistingOriginToPreventOptInIsolation(const url::Origin& origin);
 
   // Allow renderer-initiated navigations to create a pending entry when the
