@@ -439,6 +439,20 @@ TEST_F(ImageDecoderTest, DecoderContextDestroyed) {
   EXPECT_FALSE(decoder->HasPendingActivity());
 }
 
+TEST_F(ImageDecoderTest, DecoderContextDestroyedBeforeCreation) {
+  V8TestingScope v8_scope;
+  constexpr char kImageType[] = "image/gif";
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+
+  // Destroying the context prior to construction should fail creation.
+  v8_scope.GetExecutionContext()->NotifyContextDestroyed();
+
+  auto* decoder =
+      CreateDecoder(&v8_scope, "images/resources/animated.gif", kImageType);
+  ASSERT_FALSE(decoder);
+  ASSERT_TRUE(v8_scope.GetExceptionState().HadException());
+}
+
 TEST_F(ImageDecoderTest, DecoderReadableStream) {
   V8TestingScope v8_scope;
   constexpr char kImageType[] = "image/gif";
