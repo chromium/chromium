@@ -13,18 +13,19 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "base/time/clock.h"
-#include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/conversion_storage.h"
 #include "content/browser/conversions/rate_limit_table.h"
 #include "content/common/content_export.h"
-#include "sql/database.h"
 #include "sql/meta_table.h"
-#include "sql/statement.h"
 
 namespace base {
 class Clock;
 }  // namespace base
+
+namespace sql {
+class Database;
+class Statement;
+}  // namespace sql
 
 namespace content {
 

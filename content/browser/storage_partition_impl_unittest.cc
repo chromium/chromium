@@ -34,6 +34,7 @@
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/conversions/conversion_test_utils.h"
+#include "content/browser/conversions/storable_conversion.h"
 #include "content/browser/gpu/shader_cache_factory.h"
 #include "content/browser/interest_group/interest_group_manager.h"
 #include "content/browser/storage_partition_impl.h"

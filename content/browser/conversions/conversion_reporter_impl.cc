@@ -10,6 +10,8 @@
 #include "base/time/clock.h"
 #include "content/browser/conversions/conversion_manager.h"
 #include "content/browser/conversions/conversion_network_sender_impl.h"
+#include "content/browser/conversions/conversion_report.h"
+#include "content/browser/conversions/sent_report_info.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"

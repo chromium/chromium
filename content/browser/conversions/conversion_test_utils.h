@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <list>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -16,10 +15,10 @@
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_manager.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
+#include "content/browser/conversions/conversion_policy.h"
 #include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/conversion_storage.h"
 #include "content/browser/conversions/sent_report_info.h"
-#include "content/browser/conversions/storable_conversion.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/base/schemeful_site.h"
@@ -28,6 +27,8 @@
 #include "url/origin.h"
 
 namespace content {
+
+class StorableConversion;
 
 class ConversionDisallowingContentBrowserClient
     : public TestContentBrowserClient {

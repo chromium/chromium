@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/task_runner_util.h"
 #include "base/test/bind.h"
+#include "content/browser/conversions/storable_conversion.h"
 #include "url/gurl.h"
 
 namespace content {

@@ -15,10 +15,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/sent_report_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -27,7 +29,6 @@
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 #include "url/url_canon.h"
 
 namespace content {

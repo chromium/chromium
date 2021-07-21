@@ -6,8 +6,6 @@
 #define CONTENT_BROWSER_CONVERSIONS_CONVERSION_REPORT_H_
 
 #include <stdint.h>
-#include <string>
-#include <vector>
 
 #include "base/time/time.h"
 #include "content/browser/conversions/storable_impression.h"

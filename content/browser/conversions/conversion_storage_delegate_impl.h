@@ -6,13 +6,17 @@
 #define CONTENT_BROWSER_CONVERSIONS_CONVERSION_STORAGE_DELEGATE_IMPL_H_
 
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
-#include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/conversion_storage.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "content/common/content_export.h"
 
+namespace base {
+class Time;
+}  // namespace base
+
 namespace content {
+
+struct ConversionReport;
 
 // Implementation of the storage delegate. This class handles assigning
 // report times to newly created conversion reports. It

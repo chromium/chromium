@@ -7,21 +7,28 @@
 
 #include <vector>
 
-#include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
-#include "content/browser/conversions/conversion_policy.h"
-#include "content/browser/conversions/conversion_report.h"
-#include "content/browser/conversions/sent_report_info.h"
-#include "content/browser/conversions/storable_conversion.h"
-#include "content/browser/conversions/storable_impression.h"
 #include "content/common/content_export.h"
-#include "url/origin.h"
+
+namespace base {
+class Time;
+}  // namespace base
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
+class ConversionPolicy;
+class StorableConversion;
+class StorableImpression;
 class WebContents;
+
+struct ConversionReport;
+struct SentReportInfo;
 
 // Interface that mediates data flow between the network, storage layer, and
 // blink.

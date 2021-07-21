@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "content/browser/conversions/conversion_manager.h"
+#include "content/browser/conversions/storable_impression.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_receiver_set.h"

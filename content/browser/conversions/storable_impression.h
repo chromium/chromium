@@ -10,9 +10,12 @@
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
+
+namespace net {
+class SchemefulSite;
+}  // namespace net
 
 namespace content {
 

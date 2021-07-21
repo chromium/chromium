@@ -8,27 +8,22 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
-#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/browser/conversions/conversion_manager.h"
-#include "content/browser/conversions/conversion_policy.h"
-#include "content/browser/conversions/conversion_storage.h"
+#include "content/browser/conversions/sent_report_info.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-
 class Clock;
 class FilePath;
-
 }  // namespace base
 
 namespace content {
@@ -38,6 +33,7 @@ namespace content {
 extern CONTENT_EXPORT const base::TimeDelta
     kConversionManagerQueueReportsInterval;
 
+class ConversionStorage;
 class StoragePartitionImpl;
 
 // Provides access to the manager owned by the default StoragePartition.

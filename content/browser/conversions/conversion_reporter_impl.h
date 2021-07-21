@@ -10,12 +10,10 @@
 #include <queue>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/timer/timer.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
-#include "content/browser/conversions/conversion_report.h"
-#include "content/browser/conversions/sent_report_info.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -26,6 +24,9 @@ class Clock;
 namespace content {
 
 class StoragePartitionImpl;
+
+struct ConversionReport;
+struct SentReportInfo;
 
 // This class is responsible for managing the dispatch of conversion reports to
 // a ConversionReporterImpl::NetworkSender. It maintains a queue of reports and

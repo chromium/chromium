@@ -5,6 +5,7 @@
 #include "content/browser/conversions/storable_impression.h"
 
 #include "base/check_op.h"
+#include "net/base/schemeful_site.h"
 
 namespace content {
 

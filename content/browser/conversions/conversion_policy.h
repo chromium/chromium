@@ -9,10 +9,14 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/time/time.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class Time;
+class TimeDelta;
+}  // namespace base
 
 namespace content {
 

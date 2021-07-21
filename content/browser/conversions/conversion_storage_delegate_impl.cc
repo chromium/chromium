@@ -5,7 +5,9 @@
 #include "content/browser/conversions/conversion_storage_delegate_impl.h"
 
 #include "base/rand_util.h"
+#include "base/time/time.h"
 #include "content/browser/conversions/conversion_policy.h"
+#include "content/browser/conversions/conversion_report.h"
 
 namespace content {
 

@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 

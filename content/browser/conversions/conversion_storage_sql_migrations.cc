@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
 #include "content/browser/conversions/sql_utils.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "net/base/schemeful_site.h"

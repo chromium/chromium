@@ -8,15 +8,23 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/time/time.h"
-#include "content/browser/conversions/conversion_report.h"
-#include "content/browser/conversions/storable_conversion.h"
 #include "content/browser/conversions/storable_impression.h"
-#include "url/origin.h"
+
+namespace base {
+class Time;
+}  // namespace base
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
+
+class StorableConversion;
+
+struct ConversionReport;
 
 // This class provides an interface for persisting impression/conversion data to
 // disk, and performing queries on it. ConversionStorage should initialize

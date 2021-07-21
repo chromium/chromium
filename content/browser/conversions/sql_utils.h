@@ -10,7 +10,10 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "url/origin.h"
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 

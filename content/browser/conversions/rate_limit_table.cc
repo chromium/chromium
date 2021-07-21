@@ -6,10 +6,12 @@
 
 #include "base/check.h"
 #include "base/time/clock.h"
+#include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/sql_utils.h"
+#include "net/base/schemeful_site.h"
+#include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
