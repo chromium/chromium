@@ -833,7 +833,21 @@ void WebGPUDecoderImpl::SendAdapterProperties(
   size_t serialized_adapter_properties_size = 0;
 
   if (adapter) {
+    // Only allow unsafe APIs if the disallow_unsafe_apis toggle is explicitly
+    // disabled.
+    const bool allow_unsafe_apis =
+        std::find(force_disabled_toggles_.begin(),
+                  force_disabled_toggles_.end(),
+                  "disallow_unsafe_apis") != force_disabled_toggles_.end();
+
     adapter_properties = adapter.GetAdapterProperties();
+
+    // Don't surface extensions that are unsafe. A malicious client could still
+    // request them, so Dawn must also validate they cannot be used if
+    // DisallowUnsafeAPIs is enabled.
+    adapter_properties.timestampQuery &= allow_unsafe_apis;
+    adapter_properties.pipelineStatisticsQuery &= allow_unsafe_apis;
+
     serialized_adapter_properties_size =
         dawn_wire::SerializedWGPUDevicePropertiesSize(&adapter_properties);
   } else {
