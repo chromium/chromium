@@ -84,6 +84,7 @@ class LocationBarMediator
     private static final long NTP_KEYBOARD_FOCUS_DURATION_MS = 200;
     private static final int WIDTH_CHANGE_ANIMATION_DURATION_MS = 225;
     private static final int WIDTH_CHANGE_ANIMATION_DELAY_MS = 75;
+    private static Boolean sLastCachedIsLensOnOmniboxEnabled;
 
     /** Enabled/disabled state of 'save offline' button. */
     public interface SaveOfflineButtonState {
@@ -1007,12 +1008,21 @@ class LocationBarMediator
     private boolean shouldShowLensButton() {
         if (mIsTablet && mShouldShowButtonsWhenUnfocused) {
             return mNativeInitialized && (mUrlHasFocus || mIsUrlFocusChangeInProgress)
-                    && isLensEnabled(LensEntryPoint.OMNIBOX);
+                    && isLensOnOmniboxEnabled();
         }
         return !shouldShowDeleteButton()
                 && (mUrlHasFocus || mIsUrlFocusChangeInProgress || mUrlFocusChangeFraction > 0f
                         || mShouldShowLensButtonWhenUnfocused)
-                && isLensEnabled(LensEntryPoint.OMNIBOX);
+                && isLensOnOmniboxEnabled();
+    }
+
+    private boolean isLensOnOmniboxEnabled() {
+        if (sLastCachedIsLensOnOmniboxEnabled == null) {
+            sLastCachedIsLensOnOmniboxEnabled =
+                    Boolean.valueOf(isLensEnabled(LensEntryPoint.OMNIBOX));
+        }
+
+        return sLastCachedIsLensOnOmniboxEnabled.booleanValue();
     }
 
     private boolean shouldShowSaveOfflineButton() {
@@ -1107,6 +1117,7 @@ class LocationBarMediator
 
     @Override
     public void onIncognitoStateChanged() {
+        sLastCachedIsLensOnOmniboxEnabled = Boolean.valueOf(isLensEnabled(LensEntryPoint.OMNIBOX));
         updateButtonVisibility();
         updateSearchEngineStatusIconShownState();
     }
