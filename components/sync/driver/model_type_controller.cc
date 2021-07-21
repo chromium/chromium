@@ -150,19 +150,18 @@ void ModelTypeController::DeactivateDataType(ModelTypeConfigurer* configurer) {
   }
 }
 
-void ModelTypeController::Stop(ShutdownReason shutdown_reason,
-                               StopCallback callback) {
+void ModelTypeController::Stop(ShutdownReason reason, StopCallback callback) {
   DCHECK(CalledOnValidThread());
 
   // Leave metadata if we do not disable sync completely.
   SyncStopMetadataFate metadata_fate = KEEP_METADATA;
-  switch (shutdown_reason) {
-    case STOP_SYNC:
+  switch (reason) {
+    case ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
       break;
-    case DISABLE_SYNC:
+    case ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
       metadata_fate = CLEAR_METADATA;
       break;
-    case BROWSER_SHUTDOWN:
+    case ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
       break;
   }
 

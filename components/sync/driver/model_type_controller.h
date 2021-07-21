@@ -50,7 +50,7 @@ class ModelTypeController : public DataTypeController {
   ActivateDataTypeResult ActivateDataType(
       ModelTypeConfigurer* configurer) override;
   void DeactivateDataType(ModelTypeConfigurer* configurer) override;
-  void Stop(ShutdownReason shutdown_reason, StopCallback callback) override;
+  void Stop(ShutdownReason reason, StopCallback callback) override;
   State state() const override;
   bool ShouldRunInTransportOnlyMode() const override;
   void GetAllNodes(AllNodesCallback callback) override;

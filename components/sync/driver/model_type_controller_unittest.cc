@@ -297,7 +297,7 @@ TEST_F(ModelTypeControllerTest, Stop) {
   ASSERT_TRUE(LoadModels());
   ActivateDataType(/*expect_downloaded=*/false);
   EXPECT_TRUE(processor()->is_connected());
-  DeactivateDataTypeAndStop(STOP_SYNC);
+  DeactivateDataTypeAndStop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 }
 
@@ -307,7 +307,7 @@ TEST_F(ModelTypeControllerTest, StopWhenDatatypeEnabled) {
 
   // Ensures that metadata was not cleared.
   EXPECT_CALL(*delegate(), OnSyncStopping(KEEP_METADATA));
-  DeactivateDataTypeAndStop(STOP_SYNC);
+  DeactivateDataTypeAndStop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
   EXPECT_FALSE(processor()->is_connected());
 }
@@ -318,7 +318,7 @@ TEST_F(ModelTypeControllerTest, StopWhenDatatypeDisabled) {
   ASSERT_TRUE(LoadModels());
 
   EXPECT_CALL(*delegate(), OnSyncStopping(CLEAR_METADATA));
-  DeactivateDataTypeAndStop(DISABLE_SYNC);
+  DeactivateDataTypeAndStop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
   EXPECT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
   EXPECT_FALSE(processor()->is_connected());
 }
@@ -330,7 +330,7 @@ TEST_F(ModelTypeControllerTest, StopBeforeLoadModels) {
 
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 
-  StopAndWait(DISABLE_SYNC);
+  StopAndWait(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
 
   EXPECT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 }
@@ -358,7 +358,7 @@ TEST_F(ModelTypeControllerTest, StopDuringFailedState) {
 
   ASSERT_EQ(DataTypeController::FAILED, controller()->state());
 
-  StopAndWait(DISABLE_SYNC);
+  StopAndWait(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
 
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
 }
@@ -385,7 +385,8 @@ TEST_F(ModelTypeControllerTest, StopWhileStarting) {
   base::MockCallback<base::OnceClosure> stop_completion;
   EXPECT_CALL(stop_completion, Run()).Times(0);
   EXPECT_CALL(*delegate(), OnSyncStopping).Times(0);
-  controller()->Stop(DISABLE_SYNC, stop_completion.Get());
+  controller()->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+                     stop_completion.Get());
   EXPECT_EQ(DataTypeController::STOPPING, controller()->state());
 
   // Mimic completion for OnSyncStarting().
@@ -414,7 +415,8 @@ TEST_F(ModelTypeControllerTest, StopWhileStartingWithError) {
   base::MockCallback<base::OnceClosure> stop_completion;
   EXPECT_CALL(stop_completion, Run()).Times(0);
   EXPECT_CALL(*delegate(), OnSyncStopping).Times(0);
-  controller()->Stop(DISABLE_SYNC, stop_completion.Get());
+  controller()->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+                     stop_completion.Get());
   EXPECT_EQ(DataTypeController::STOPPING, controller()->state());
 
   base::HistogramTester histogram_tester;
@@ -458,7 +460,7 @@ TEST_F(ModelTypeControllerTest, StopWhileErrorInFlight) {
   // At this point, the UI stops the datatype, but it's possible that the
   // backend has already posted a task to the UI thread, which we'll process
   // later below.
-  StopAndWait(DISABLE_SYNC);
+  StopAndWait(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 
   base::HistogramTester histogram_tester;
@@ -521,7 +523,8 @@ TEST_F(ModelTypeControllerTest, StopAndReportErrorWhileStarting) {
   base::MockCallback<base::OnceClosure> stop_completion;
   EXPECT_CALL(stop_completion, Run()).Times(0);
   EXPECT_CALL(*delegate(), OnSyncStopping).Times(0);
-  controller()->Stop(DISABLE_SYNC, stop_completion.Get());
+  controller()->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+                     stop_completion.Get());
   EXPECT_EQ(DataTypeController::STOPPING, controller()->state());
 
   // The subclass issues ReportModelError(), which should be treated as stop
@@ -579,7 +582,8 @@ TEST(ModelTypeControllerWithMultiDelegateTest, ToggleSyncMode) {
   // Stop sync.
   EXPECT_CALL(delegate_for_full_sync_mode, OnSyncStopping).Times(0);
   EXPECT_CALL(delegate_for_transport_mode, OnSyncStopping);
-  controller.Stop(DISABLE_SYNC, base::DoNothing());
+  controller.Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+                  base::DoNothing());
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller.state());
 
   // Start sync with SyncMode::kFull.
@@ -602,7 +606,8 @@ TEST(ModelTypeControllerWithMultiDelegateTest, ToggleSyncMode) {
   // Stop sync.
   EXPECT_CALL(delegate_for_transport_mode, OnSyncStopping).Times(0);
   EXPECT_CALL(delegate_for_full_sync_mode, OnSyncStopping);
-  controller.Stop(DISABLE_SYNC, base::DoNothing());
+  controller.Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+                  base::DoNothing());
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller.state());
 }
 

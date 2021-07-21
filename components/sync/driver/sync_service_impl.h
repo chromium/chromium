@@ -296,7 +296,7 @@ class SyncServiceImpl : public SyncService,
   void UpdateDataTypesForInvalidations();
 
   // Shuts down the engine sync components.
-  // |reason| dictates if syncing is being disabled or not.
+  // |reason| dictates if sync metadata should be kept or not.
   void ShutdownImpl(ShutdownReason reason);
 
   // Helper for OnUnrecoverableError.

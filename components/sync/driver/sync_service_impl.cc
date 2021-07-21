@@ -390,7 +390,7 @@ void SyncServiceImpl::CredentialsChanged() {
     if (!engine_) {
       NotifyObservers();
     }
-    ShutdownImpl(ShutdownReason::STOP_SYNC);
+    ShutdownImpl(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
     return;
   }
 
@@ -514,7 +514,7 @@ void SyncServiceImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   NotifyShutdown();
-  ShutdownImpl(ShutdownReason::BROWSER_SHUTDOWN);
+  ShutdownImpl(ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA);
 
   DCHECK(!data_type_manager_);
   data_type_controllers_.clear();
@@ -538,14 +538,14 @@ void SyncServiceImpl::ShutdownImpl(ShutdownReason reason) {
   if (!engine_) {
     // If the engine hasn't started or is already shut down when a DISABLE_SYNC
     // happens, the Directory needs to be cleaned up here.
-    if (reason == ShutdownReason::DISABLE_SYNC) {
+    if (reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
       sync_client_->GetSyncApiComponentFactory()->ClearAllTransportData();
     }
     return;
   }
 
-  if (reason == ShutdownReason::STOP_SYNC ||
-      reason == ShutdownReason::DISABLE_SYNC) {
+  if (reason == ShutdownReason::STOP_SYNC_AND_KEEP_DATA ||
+      reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
     RemoveClientFromServer();
   }
 
@@ -593,7 +593,7 @@ void SyncServiceImpl::ShutdownImpl(ShutdownReason reason) {
 
 void SyncServiceImpl::StopAndClearImpl() {
   ClearUnrecoverableError();
-  ShutdownImpl(ShutdownReason::DISABLE_SYNC);
+  ShutdownImpl(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
   // Note: ShutdownImpl(DISABLE_SYNC) does *not* clear prefs which are
   // directly user-controlled such as the set of selected types here, so
   // that if the user ever chooses to enable Sync again, they start off
@@ -738,7 +738,7 @@ void SyncServiceImpl::OnUnrecoverableErrorImpl(
   LOG(ERROR) << "Unrecoverable error detected at " << from_here.ToString()
              << " -- SyncServiceImpl unusable: " << message;
 
-  ShutdownImpl(ShutdownReason::DISABLE_SYNC);
+  ShutdownImpl(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
 }
 
 void SyncServiceImpl::DataTypePreconditionChanged(ModelType type) {
@@ -905,10 +905,10 @@ void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
     case STOP_SYNC_FOR_DISABLED_ACCOUNT:
       // Sync disabled by domain admin. Stop syncing until next restart.
       sync_disabled_by_admin_ = true;
-      ShutdownImpl(ShutdownReason::DISABLE_SYNC);
+      ShutdownImpl(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
       break;
     case RESET_LOCAL_SYNC_DATA:
-      ShutdownImpl(ShutdownReason::DISABLE_SYNC);
+      ShutdownImpl(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
       startup_controller_->TryStart(/*force_immediate=*/true);
       break;
     case UNKNOWN_ACTION:
@@ -1451,7 +1451,7 @@ void SyncServiceImpl::OnSyncRequestedPrefChange(bool is_sync_requested) {
     // This will notify the observers.
     // TODO(crbug.com/856179): Evaluate whether we can get away without a
     // full restart in this case (i.e. just reconfigure).
-    ShutdownImpl(ShutdownReason::STOP_SYNC);
+    ShutdownImpl(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
 
     // Try to start up again (in transport-only mode).
     startup_controller_->TryStart(/*force_immediate=*/true);
@@ -1677,7 +1677,7 @@ void SyncServiceImpl::SetSyncAllowedByPlatform(bool allowed) {
 
   sync_allowed_by_platform_ = allowed;
   if (!sync_allowed_by_platform_) {
-    ShutdownImpl(ShutdownReason::STOP_SYNC);
+    ShutdownImpl(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
     // Try to start up again (in transport-only mode).
     // TODO(crbug.com/856179): Evaluate whether we can get away without a full
     // restart (i.e. just reconfigure). See also similar comment in
@@ -1742,7 +1742,7 @@ void SyncServiceImpl::OverrideNetworkForTest(
   // callback in the ctor instead of adding it retroactively.
   bool restart = false;
   if (engine_) {
-    ShutdownImpl(ShutdownReason::STOP_SYNC);
+    ShutdownImpl(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
     restart = true;
   }
   DCHECK(!engine_);

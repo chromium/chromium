@@ -298,7 +298,7 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
   DCHECK(!host_);
 
   if (invalidation_handler_registered_) {
-    if (reason != BROWSER_SHUTDOWN) {
+    if (reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
       bool success = invalidator_->UpdateInterestedTopics(this, /*topics=*/{});
       DCHECK(success);
     }
@@ -328,7 +328,7 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
   // one.
   sync_task_runner_->ReleaseSoon(FROM_HERE, std::move(backend_));
 
-  if (reason == DISABLE_SYNC) {
+  if (reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
     ClearLocalTransportDataAndNotify();
   }
 }

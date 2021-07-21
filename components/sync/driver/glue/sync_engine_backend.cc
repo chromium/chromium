@@ -357,7 +357,7 @@ void SyncEngineBackend::DoShutdown(ShutdownReason reason) {
     sync_manager_.reset();
   }
 
-  if (reason == DISABLE_SYNC) {
+  if (reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
     DeleteLegacyDirectoryFilesAndNigoriStorage(sync_data_folder_);
   }
 
@@ -377,7 +377,8 @@ void SyncEngineBackend::DoPurgeDisabledTypes(const ModelTypeSet& to_purge) {
     // There's no "purging" logic for any other data type, so likely it's not
     // necessary for NIGORI either.
     sync_manager_->GetModelTypeConnector()->DisconnectDataType(NIGORI);
-    nigori_controller_->Stop(ShutdownReason::DISABLE_SYNC, base::DoNothing());
+    nigori_controller_->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+                             base::DoNothing());
     LoadAndConnectNigoriController();
   }
 }

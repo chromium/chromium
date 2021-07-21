@@ -96,7 +96,7 @@ TEST_F(SyncModelLoadManagerTest, StopAfterFinish) {
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
 
-  model_load_manager.Stop(STOP_SYNC);
+  model_load_manager.Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
   EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 }
@@ -285,7 +285,7 @@ TEST_F(SyncModelLoadManagerTest, StopClearMetadata) {
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
 
-  model_load_manager.Stop(DISABLE_SYNC);
+  model_load_manager.Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
 
   EXPECT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
   EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
@@ -307,7 +307,7 @@ TEST_F(SyncModelLoadManagerTest, StopDataType) {
             DataTypeController::MODEL_LOADED);
 
   model_load_manager.StopDatatype(
-      BOOKMARKS, DISABLE_SYNC,
+      BOOKMARKS, ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
       SyncError(FROM_HERE, syncer::SyncError::UNREADY_ERROR,
                 "Data type is unready.", BOOKMARKS));
 
@@ -323,7 +323,7 @@ TEST_F(SyncModelLoadManagerTest, StopDataType_NotRunning) {
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
 
   model_load_manager.StopDatatype(
-      BOOKMARKS, DISABLE_SYNC,
+      BOOKMARKS, ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
       SyncError(FROM_HERE, syncer::SyncError::UNREADY_ERROR,
                 "Data type is unready.", BOOKMARKS));
 

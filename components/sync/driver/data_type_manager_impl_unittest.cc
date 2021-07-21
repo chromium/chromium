@@ -309,7 +309,7 @@ TEST_F(SyncDataTypeManagerImplTest, NoControllers) {
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
 
-  dtm_->Stop(STOP_SYNC);
+  dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
 }
 
@@ -343,7 +343,7 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureOne) {
   // So wait for that to actually get executed.
   run_loop.Run();
 
-  dtm_->Stop(STOP_SYNC);
+  dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_TRUE(configurer_.activated_types().Empty());
   EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
@@ -364,7 +364,7 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureOneStopWhileDownloadPending) {
     EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
     EXPECT_EQ(ModelTypeSet(BOOKMARKS), configurer_.activated_types());
 
-    dtm_->Stop(STOP_SYNC);
+    dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
     EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
     EXPECT_TRUE(configurer_.activated_types().Empty());
   }
@@ -391,7 +391,7 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureOneStopWhileStartingModel) {
     ASSERT_EQ(DataTypeController::MODEL_STARTING,
               GetController(BOOKMARKS)->state());
 
-    dtm_->Stop(STOP_SYNC);
+    dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
     EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
     EXPECT_TRUE(configurer_.activated_types().Empty());
     dtm_.reset();
@@ -465,7 +465,7 @@ TEST_F(SyncDataTypeManagerImplTest, OneWaitingForCrypto) {
   run_loop2.Run();
 
   // Step 5.
-  dtm_->Stop(STOP_SYNC);
+  dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
 }
 
@@ -510,7 +510,7 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureOneThenBoth) {
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
 
   // Step 5.
-  dtm_->Stop(STOP_SYNC);
+  dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_TRUE(configurer_.activated_types().Empty());
 }
@@ -555,7 +555,7 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureOneThenSwitch) {
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
 
   // Step 5.
-  dtm_->Stop(STOP_SYNC);
+  dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_TRUE(configurer_.activated_types().Empty());
 }
@@ -604,7 +604,7 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureModelLoading) {
             configurer_.activated_types());
 
   // Step 5: Stop the DTM.
-  dtm_->Stop(STOP_SYNC);
+  dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_TRUE(configurer_.activated_types().Empty());
 }
@@ -673,7 +673,7 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureWhileDownloadPending) {
             configurer_.activated_types());
 
   // Step 5.
-  dtm_->Stop(STOP_SYNC);
+  dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_TRUE(configurer_.activated_types().Empty());
 }
@@ -716,7 +716,7 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureWhileDownloadPendingWithFailure) {
             configurer_.activated_types());
 
   // Step 5.
-  dtm_->Stop(STOP_SYNC);
+  dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_TRUE(configurer_.activated_types().Empty());
 }
@@ -914,7 +914,7 @@ TEST_F(SyncDataTypeManagerImplTest, PrioritizedConfigurationStop) {
             GetController(PRIORITY_PREFERENCES)->state());
   EXPECT_EQ(DataTypeController::RUNNING, GetController(BOOKMARKS)->state());
 
-  dtm_->Stop(STOP_SYNC);
+  dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_EQ(DataTypeController::NOT_RUNNING,
             GetController(PRIORITY_PREFERENCES)->state());
@@ -979,7 +979,7 @@ TEST_F(SyncDataTypeManagerImplTest, FilterDesiredTypes) {
   EXPECT_EQ(AddControlTypesTo(BOOKMARKS), last_configure_params().to_download);
   FinishDownload(ModelTypeSet(BOOKMARKS), ModelTypeSet());
 
-  dtm_->Stop(STOP_SYNC);
+  dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
 }
 
@@ -1017,7 +1017,7 @@ TEST_F(SyncDataTypeManagerImplTest, FailingPreconditionKeepData) {
   observer_.ResetExpectations();
   dtm_->DataTypePreconditionChanged(BOOKMARKS);
 
-  dtm_->Stop(STOP_SYNC);
+  dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_TRUE(configurer_.activated_types().Empty());
 }
@@ -1334,7 +1334,7 @@ TEST_F(SyncDataTypeManagerImplTest, AllTypesReady) {
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
   EXPECT_EQ(2U, configurer_.activated_types().Size());
 
-  dtm_->Stop(STOP_SYNC);
+  dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_TRUE(configurer_.activated_types().Empty());
 }
@@ -1414,8 +1414,8 @@ TEST_F(SyncDataTypeManagerImplTest, ActivateDataTypeAfterLoadModelsError) {
   EXPECT_EQ(1, GetController(PASSWORDS)->activate_call_count());
 }
 
-// Test that Stop with DISABLE_SYNC calls DTC Stop with CLEAR_METADATA for
-// active data types.
+// Test that Stop with DISABLE_SYNC_AND_CLEAR_DATA calls DTC Stop with
+// CLEAR_METADATA for active data types.
 TEST_F(SyncDataTypeManagerImplTest, StopWithDisableSync) {
   AddController(BOOKMARKS);
   SetConfigureStartExpectation();
@@ -1424,7 +1424,7 @@ TEST_F(SyncDataTypeManagerImplTest, StopWithDisableSync) {
   Configure(ModelTypeSet(BOOKMARKS));
   EXPECT_EQ(DataTypeController::RUNNING, GetController(BOOKMARKS)->state());
 
-  dtm_->Stop(DISABLE_SYNC);
+  dtm_->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_TRUE(configurer_.activated_types().Empty());
   EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
@@ -1447,7 +1447,7 @@ TEST_F(SyncDataTypeManagerImplTest, PurgeDataOnStartingPersistent) {
   ASSERT_EQ(2U, configurer_.activated_types().Size());
 
   // The user temporarily turns off Sync.
-  dtm_->Stop(STOP_SYNC);
+  dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   ASSERT_EQ(DataTypeManager::STOPPED, dtm_->state());
   ASSERT_TRUE(configurer_.activated_types().Empty());
   ASSERT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
@@ -1490,7 +1490,7 @@ TEST_F(SyncDataTypeManagerImplTest, DontPurgeDataOnStartingEphemeral) {
   ASSERT_EQ(2U, configurer_.activated_types().Size());
 
   // The user temporarily turns off Sync.
-  dtm_->Stop(STOP_SYNC);
+  dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   ASSERT_EQ(DataTypeManager::STOPPED, dtm_->state());
   ASSERT_TRUE(configurer_.activated_types().Empty());
   ASSERT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());

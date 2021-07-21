@@ -65,15 +65,16 @@ void ModelLoadManager::Initialize(ModelTypeSet desired_types,
         dtc->state() == DataTypeController::STOPPING) {
       // Note: STOP_SYNC means we'll keep the Sync data around; DISABLE_SYNC
       // means we'll clear it.
-      ShutdownReason reason =
-          preferred_types.Has(dtc->type()) ? STOP_SYNC : DISABLE_SYNC;
+      ShutdownReason reason = preferred_types.Has(dtc->type())
+                                  ? ShutdownReason::STOP_SYNC_AND_KEEP_DATA
+                                  : ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA;
       // If we're switching to transport-only mode, don't clear any old data.
       // The reason is that if a user temporarily disables Sync, we don't want
       // to wipe (and later redownload) all their data, just because Sync
       // restarted in transport-only mode.
       if (sync_mode_changed &&
           configure_context_.sync_mode == SyncMode::kTransportOnly) {
-        reason = STOP_SYNC;
+        reason = ShutdownReason::STOP_SYNC_AND_KEEP_DATA;
       }
       types_to_stop[dtc] = reason;
     }
@@ -176,7 +177,8 @@ void ModelLoadManager::ModelLoadCallback(ModelType type,
     DVLOG(1) << "ModelLoadManager: Type encountered an error.";
     desired_types_.Remove(type);
     DataTypeController* dtc = controllers_->find(type)->second.get();
-    StopDatatypeImpl(error, STOP_SYNC, dtc, base::DoNothing());
+    StopDatatypeImpl(error, ShutdownReason::STOP_SYNC_AND_KEEP_DATA, dtc,
+                     base::DoNothing());
     NotifyDelegateIfReadyForConfigure();
     return;
   }

@@ -10,12 +10,12 @@ namespace syncer {
 
 const char* ShutdownReasonToString(ShutdownReason reason) {
   switch (reason) {
-    case STOP_SYNC:
-      return "STOP_SYNC";
-    case DISABLE_SYNC:
-      return "DISABLE_SYNC";
-    case BROWSER_SHUTDOWN:
-      return "BROWSER_SHUTDOWN";
+    case ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
+      return "STOP_SYNC_AND_KEEP_DATA";
+    case ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
+      return "DISABLE_SYNC_AND_CLEAR_DATA";
+    case ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
+      return "BROWSER_SHUTDOWN_AND_KEEP_DATA";
   }
 
   NOTREACHED();

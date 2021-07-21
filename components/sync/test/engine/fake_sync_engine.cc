@@ -87,7 +87,7 @@ void FakeSyncEngine::AddTrustedVaultDecryptionKeys(
 void FakeSyncEngine::StopSyncingForShutdown() {}
 
 void FakeSyncEngine::Shutdown(ShutdownReason reason) {
-  if (reason == DISABLE_SYNC) {
+  if (reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
     sync_transport_data_cleared_cb_.Run();
   }
 }

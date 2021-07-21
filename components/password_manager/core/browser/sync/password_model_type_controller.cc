@@ -113,11 +113,11 @@ void PasswordModelTypeController::Stop(syncer::ShutdownReason shutdown_reason,
   // in the account DB).
   if (sync_mode_ == syncer::SyncMode::kTransportOnly) {
     switch (shutdown_reason) {
-      case syncer::STOP_SYNC:
-        shutdown_reason = syncer::DISABLE_SYNC;
+      case syncer::ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
+        shutdown_reason = syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA;
         break;
-      case syncer::DISABLE_SYNC:
-      case syncer::BROWSER_SHUTDOWN:
+      case syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
+      case syncer::ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
         break;
     }
   }
