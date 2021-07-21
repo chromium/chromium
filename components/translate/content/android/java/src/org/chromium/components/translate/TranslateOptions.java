@@ -130,8 +130,9 @@ public class TranslateOptions {
      * Creates a TranslateOptions by the given data.
      */
     public static TranslateOptions create(String sourceLanguageCode, String targetLanguageCode,
-            String[] languages, String[] codes, boolean alwaysTranslate, boolean triggeredFromMenu,
-            int[] hashCodes, String[] contentLanguagesCodes) {
+            String[] languages, String[] codes, boolean neverLanguage, boolean neverDomain,
+            boolean alwaysTranslate, boolean triggeredFromMenu, int[] hashCodes,
+            String[] contentLanguagesCodes) {
         assert languages.length == codes.length;
 
         ArrayList<TranslateLanguageData> languageList = new ArrayList<TranslateLanguageData>();
@@ -141,7 +142,8 @@ public class TranslateOptions {
         }
 
         return new TranslateOptions(sourceLanguageCode, targetLanguageCode, languageList,
-                contentLanguagesCodes, false, false, alwaysTranslate, triggeredFromMenu, null);
+                contentLanguagesCodes, neverLanguage, neverDomain, alwaysTranslate,
+                triggeredFromMenu, null);
     }
 
     /**
@@ -225,12 +227,12 @@ public class TranslateOptions {
      *
      * @return true if the toggling was possible
      */
-    public boolean toggleNeverTranslateLanguageState(boolean value) {
-        // Do not toggle if we are activating NeverLanguge but AlwaysTranslate
-        // for a language pair with the same source language is already active.
-        if (mOptions[Type.ALWAYS_LANGUAGE] && value) return false;
+    public void toggleNeverTranslateLanguageState(boolean value) {
+        // Ensure AlwaysTranslate is disabled if enabling NeverTranslate.
+        if (mOptions[Type.ALWAYS_LANGUAGE] && value) {
+            toggleAlwaysTranslateLanguageState(false);
+        }
         mOptions[Type.NEVER_LANGUAGE] = value;
-        return true;
     }
 
     /**
@@ -238,11 +240,12 @@ public class TranslateOptions {
      *
      * @return true if the toggling was possible
      */
-    public boolean toggleAlwaysTranslateLanguageState(boolean value) {
-        // Do not toggle if we are activating AlwaysLanguge but NeverLanguage is active already.
-        if (mOptions[Type.NEVER_LANGUAGE] && value) return false;
+    public void toggleAlwaysTranslateLanguageState(boolean value) {
+        // Ensure NeverTranslate is disabled if enabling AlwaysTranslate.
+        if (mOptions[Type.NEVER_LANGUAGE] && value) {
+            toggleNeverTranslateLanguageState(false);
+        }
         mOptions[Type.ALWAYS_LANGUAGE] = value;
-        return true;
     }
 
     /**

@@ -224,6 +224,10 @@ void TranslateInfoBarDelegate::ToggleNeverPrompt() {
   ui_delegate_.SetNeverPrompt(!ui_delegate_.IsSiteOnNeverPromptList());
 }
 
+bool TranslateInfoBarDelegate::ShouldNeverTranslateLanguage() const {
+  return ui_delegate_.IsLanguageBlocked();
+}
+
 bool TranslateInfoBarDelegate::ShouldAlwaysTranslate() const {
   return ui_delegate_.ShouldAlwaysTranslate();
 }

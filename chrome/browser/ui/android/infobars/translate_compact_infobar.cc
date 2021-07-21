@@ -77,10 +77,11 @@ ScopedJavaLocalRef<jobject> TranslateCompactInfoBar::CreateRenderInfoBar(
   return Java_TranslateCompactInfoBar_create(
       env, tab ? tab->GetJavaObject() : nullptr, delegate->translate_step(),
       source_language_code, target_language_code,
-      delegate->ShouldAlwaysTranslate(), delegate->triggered_from_menu(),
-      translate_languages.java_languages, translate_languages.java_codes,
-      translate_languages.java_hash_codes, content_languages,
-      TabDefaultTextColor());
+      delegate->ShouldNeverTranslateLanguage(),
+      delegate->IsSiteOnNeverPromptList(), delegate->ShouldAlwaysTranslate(),
+      delegate->triggered_from_menu(), translate_languages.java_languages,
+      translate_languages.java_codes, translate_languages.java_hash_codes,
+      content_languages, TabDefaultTextColor());
 }
 
 void TranslateCompactInfoBar::ProcessButton(int action) {
@@ -154,23 +155,27 @@ void TranslateCompactInfoBar::ApplyBoolTranslateOption(
     delegate->ReportUIInteraction(
         translate::UIInteraction::kAlwaysTranslateLanguage);
   } else if (option == translate::TranslateUtils::OPTION_NEVER_TRANSLATE) {
-    if (value && delegate->IsTranslatableLanguageByPrefs()) {
+    if (delegate->ShouldNeverTranslateLanguage() != value) {
       action_flags_ |= FLAG_NEVER_LANGUAGE;
       delegate->ToggleTranslatableLanguageByPrefs();
-      RemoveSelf();
-      delegate->OnInfoBarClosedByUser();
+      if (value) {
+        RemoveSelf();
+        delegate->OnInfoBarClosedByUser();
+      }
+      delegate->ReportUIInteraction(
+          translate::UIInteraction::kNeverTranslateLanguage);
     }
-    delegate->ReportUIInteraction(
-        translate::UIInteraction::kNeverTranslateLanguage);
   } else if (option == translate::TranslateUtils::OPTION_NEVER_TRANSLATE_SITE) {
-    if (value && !delegate->IsSiteOnNeverPromptList()) {
+    if (delegate->IsSiteOnNeverPromptList() != value) {
       action_flags_ |= FLAG_NEVER_SITE;
       delegate->ToggleNeverPrompt();
-      RemoveSelf();
-      delegate->OnInfoBarClosedByUser();
+      if (value) {
+        RemoveSelf();
+        delegate->OnInfoBarClosedByUser();
+      }
+      delegate->ReportUIInteraction(
+          translate::UIInteraction::kNeverTranslateSite);
     }
-    delegate->ReportUIInteraction(
-        translate::UIInteraction::kNeverTranslateSite);
   } else {
     DCHECK(false);
   }
