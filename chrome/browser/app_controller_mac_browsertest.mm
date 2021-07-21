@@ -143,7 +143,6 @@ void CreateProfileCallback(const base::RepeatingClosure& quit_closure,
   ASSERT_TRUE(out_profile);
   *out_profile = profile;
   EXPECT_NE(Profile::CREATE_STATUS_LOCAL_FAIL, status);
-  EXPECT_NE(Profile::CREATE_STATUS_REMOTE_FAIL, status);
   // This will be called multiple times. Wait until the profile is initialized
   // fully to quit the loop.
   if (status == Profile::CREATE_STATUS_INITIALIZED)

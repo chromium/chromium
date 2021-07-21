@@ -547,14 +547,6 @@ void ProfilePickerHandler::OnProfileCreated(
       OnProfileCreationSuccess(profile_color, create_shortcut, profile);
       break;
     }
-    // User-initiated cancellation is handled in CancelProfileRegistration and
-    // does not call this callback.
-    case Profile::CREATE_STATUS_CANCELED:
-    case Profile::CREATE_STATUS_REMOTE_FAIL:
-    case Profile::MAX_CREATE_STATUS: {
-      NOTREACHED();
-      break;
-    }
   }
 
   FireWebUIListener("create-profile-finished", base::Value());

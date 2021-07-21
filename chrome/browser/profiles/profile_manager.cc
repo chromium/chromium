@@ -2340,8 +2340,7 @@ void ProfileManager::OnNewActiveProfileLoaded(
     ProfileLoadedCallback* callback,
     Profile* loaded_profile,
     Profile::CreateStatus status) {
-  DCHECK(status != Profile::CREATE_STATUS_LOCAL_FAIL &&
-         status != Profile::CREATE_STATUS_REMOTE_FAIL);
+  DCHECK_NE(status, Profile::CREATE_STATUS_LOCAL_FAIL);
 
   // Only run the code if the profile initialization has finished completely.
   if (status != Profile::CREATE_STATUS_INITIALIZED)

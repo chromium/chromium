@@ -1288,9 +1288,6 @@ void UserSessionManager::OnProfileCreated(const UserContext& user_context,
                              user_context.GetAccountId());
       break;
     case Profile::CREATE_STATUS_LOCAL_FAIL:
-    case Profile::CREATE_STATUS_REMOTE_FAIL:
-    case Profile::CREATE_STATUS_CANCELED:
-    case Profile::MAX_CREATE_STATUS:
       NOTREACHED();
       break;
   }

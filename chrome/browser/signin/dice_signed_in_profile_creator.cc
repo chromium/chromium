@@ -163,11 +163,6 @@ void DiceSignedInProfileCreator::OnNewProfileCreated(
     case Profile::CREATE_STATUS_INITIALIZED:
       OnNewProfileInitialized(new_profile);
       return;
-    case Profile::CREATE_STATUS_REMOTE_FAIL:
-    case Profile::CREATE_STATUS_CANCELED:
-    case Profile::MAX_CREATE_STATUS:
-      NOTREACHED() << "Invalid profile creation status";
-      FALLTHROUGH;
     case Profile::CREATE_STATUS_LOCAL_FAIL:
       NOTREACHED() << "Error creating new profile";
       if (callback_)

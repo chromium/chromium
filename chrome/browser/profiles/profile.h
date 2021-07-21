@@ -73,17 +73,10 @@ class Profile : public content::BrowserContext {
   enum CreateStatus {
     // Profile services were not created due to a local error (e.g., disk full).
     CREATE_STATUS_LOCAL_FAIL,
-    // Profile services were not created due to a remote error (e.g., network
-    // down during limited-user registration).
-    CREATE_STATUS_REMOTE_FAIL,
     // Profile created but before initializing extensions and promo resources.
     CREATE_STATUS_CREATED,
     // Profile is created, extensions and promo resources are initialized.
     CREATE_STATUS_INITIALIZED,
-    // Profile creation (supervised-user registration, generally) was canceled
-    // by the user.
-    CREATE_STATUS_CANCELED,
-    MAX_CREATE_STATUS  // For histogram display.
   };
 
   enum CreateMode {
