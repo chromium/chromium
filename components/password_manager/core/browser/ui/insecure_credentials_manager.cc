@@ -90,8 +90,8 @@ bool IsPasswordFormPhished(const PasswordForm& form) {
          form.password_issues->end();
 }
 
-// This function two lists: weak passwords and saved passwords and joins them,
-// producing a map that contains CredentialWithPassword as keys and
+// This function takes two lists: weak passwords and saved passwords and joins
+// them, producing a map that contains CredentialWithPassword as keys and
 // vector<PasswordForm> as values.
 CredentialPasswordsMap GetInsecureCredentialsFromPasswords(
     const base::flat_set<std::u16string>& weak_passwords,
@@ -259,10 +259,12 @@ void InsecureCredentialsManager::SaveInsecureCredential(
     if (saved_password.password_value == credential.password() &&
         CanonicalizeUsername(saved_password.username_value) ==
             canonicalized_username) {
-      GetStoreFor(saved_password)
-          .AddInsecureCredential(InsecureCredential(
-              saved_password.signon_realm, saved_password.username_value,
-              base::Time::Now(), InsecureType::kLeaked, IsMuted(false)));
+      DCHECK(saved_password.password_issues.has_value());
+      PasswordForm form_to_update = saved_password;
+      form_to_update.password_issues->insert_or_assign(
+          InsecureType::kLeaked,
+          InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+      GetStoreFor(saved_password).UpdateLogin(form_to_update);
     }
   }
 }

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -118,6 +119,11 @@ TEST_F(SavedPasswordsPresenterTest, IgnoredCredentials) {
 // notifications.
 TEST_F(SavedPasswordsPresenterTest, EditPassword) {
   PasswordForm form;
+  // Make sure the form has some issues and expect that they are cleared
+  // because of the password change.
+  form.password_issues = {
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
 
   StrictMockSavedPasswordsPresenterObserver observer;
   presenter().AddObserver(&observer);
@@ -133,8 +139,11 @@ TEST_F(SavedPasswordsPresenterTest, EditPassword) {
   form.in_store = PasswordForm::Store::kProfileStore;
 
   const std::u16string new_password = u"new_password";
+  // The expected updated form should have a new password and no password
+  // issues.
   PasswordForm updated = form;
   updated.password_value = new_password;
+  updated.password_issues->clear();
 
   // Verify that editing a password triggers the right notifications.
   EXPECT_CALL(observer, OnEdited(updated));
@@ -161,6 +170,11 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyUsername) {
   form.username_value = u"test@gmail.com";
   form.password_value = u"password";
   form.in_store = PasswordForm::Store::kProfileStore;
+  // Make sure the form has some issues and expect that they are cleared
+  // because of the username change.
+  form.password_issues = {
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
 
   StrictMockSavedPasswordsPresenterObserver observer;
   presenter().AddObserver(&observer);
@@ -173,18 +187,16 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyUsername) {
   std::vector<PasswordForm> forms = {form};
 
   const std::u16string new_username = u"new_username";
+  // The result of the update should have a new username and no password
+  // issues.
   PasswordForm updated_username = form;
   updated_username.username_value = new_username;
+  updated_username.password_issues->clear();
 
   // Verify that editing a username triggers the right notifications.
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(observer, OnEdited(updated_username));
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // properly set |password_issues|, setting them to an empty map should be part
-  // of the default constructor.
-  updated_username.password_issues =
-      base::flat_map<InsecureType, InsecurityMetadata>();
   EXPECT_CALL(observer, OnSavedPasswordsChanged(ElementsAre(updated_username)));
   EXPECT_TRUE(
       presenter().EditSavedPasswords(forms, new_username, form.password_value));
@@ -206,6 +218,11 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
   form.username_value = u"test@gmail.com";
   form.password_value = u"password";
   form.in_store = PasswordForm::Store::kProfileStore;
+  // Make sure the form has some issues and expect that they are cleared
+  // because of the password change.
+  form.password_issues = {
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
 
   StrictMockSavedPasswordsPresenterObserver observer;
   presenter().AddObserver(&observer);
@@ -219,7 +236,10 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
 
   const std::u16string new_password = u"new_password";
   PasswordForm updated_password = form;
+  // The result of the update should have a new password and no password
+  // issues.
   updated_password.password_value = new_password;
+  updated_password.password_issues->clear();
 
   base::HistogramTester histogram_tester;
   // Verify that editing a password triggers the right notifications.
@@ -244,6 +264,11 @@ TEST_F(SavedPasswordsPresenterTest, EditUsernameAndPassword) {
   form.username_value = u"test@gmail.com";
   form.password_value = u"password";
   form.in_store = PasswordForm::Store::kProfileStore;
+  // Make sure the form has some issues and expect that they are cleared
+  // because of the username and password change.
+  form.password_issues = {
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
 
   StrictMockSavedPasswordsPresenterObserver observer;
   presenter().AddObserver(&observer);
@@ -259,17 +284,15 @@ TEST_F(SavedPasswordsPresenterTest, EditUsernameAndPassword) {
   const std::u16string new_password = u"new_password";
 
   PasswordForm updated_both = form;
+  // The result of the update should have a new username and password and no
+  // password issues.
   updated_both.username_value = new_username;
   updated_both.password_value = new_password;
+  updated_both.password_issues->clear();
 
   base::HistogramTester histogram_tester;
   // Verify that editing username and password triggers the right notifications.
   EXPECT_CALL(observer, OnEdited(updated_both));
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // properly set |password_issues|, setting them to an empty map should be part
-  // of the default constructor.
-  updated_both.password_issues =
-      base::flat_map<InsecureType, InsecurityMetadata>();
   EXPECT_CALL(observer, OnSavedPasswordsChanged(ElementsAre(updated_both)));
   EXPECT_TRUE(
       presenter().EditSavedPasswords(forms, new_username, new_password));
@@ -326,6 +349,9 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordWithoutChanges) {
   form.username_value = u"test1@gmail.com";
   form.password_value = u"password";
   form.in_store = PasswordForm::Store::kProfileStore;
+  form.password_issues = {
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
 
   store().AddLogin(form);
 
@@ -356,6 +382,9 @@ TEST_F(SavedPasswordsPresenterTest, EditUpdatesDuplicates) {
   form.username_value = u"test1@gmail.com";
   form.password_value = u"password";
   form.in_store = PasswordForm::Store::kProfileStore;
+  form.password_issues = {
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
 
   PasswordForm duplicate_form(form);
   duplicate_form.signon_realm = "https://m.example.com";
@@ -372,10 +401,14 @@ TEST_F(SavedPasswordsPresenterTest, EditUpdatesDuplicates) {
   const std::u16string new_password = u"new_password";
 
   PasswordForm updated_form = form;
+  // The result of the update should have a new password and no password_issues.
+  // The same is valid for the duplicate form.
   updated_form.password_value = new_password;
+  updated_form.password_issues->clear();
 
   PasswordForm updated_duplicate_form = duplicate_form;
   updated_duplicate_form.password_value = new_password;
+  updated_duplicate_form.password_issues->clear();
 
   EXPECT_CALL(observer, OnEdited(updated_form));
   EXPECT_CALL(observer, OnEdited(updated_duplicate_form));
@@ -520,6 +553,11 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditUsername) {
   profile_store_form.username_value = u"profile@gmail.com";
   profile_store_form.password_value = u"profile_pass";
   profile_store_form.in_store = PasswordForm::Store::kProfileStore;
+  // Make sure the form has some issues and expect that they are cleared
+  // because of the password change.
+  profile_store_form.password_issues = {
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
 
   PasswordForm account_store_form;
   account_store_form.username_value = u"account@gmail.com";
@@ -540,11 +578,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditUsername) {
       forms_to_edit, new_username, profile_store_form.password_value));
   RunUntilIdle();
   profile_store_form.username_value = new_username;
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // properly set |password_issues|, setting them to an empty map should be
-  // part of the default constructor.
-  profile_store_form.password_issues =
-      base::flat_map<InsecureType, InsecurityMetadata>();
+  profile_store_form.password_issues->clear();
   EXPECT_THAT(profile_store().stored_passwords(),
               ElementsAre(Pair(profile_store_form.signon_realm,
                                ElementsAre(profile_store_form))));
@@ -782,6 +816,11 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditPasswordBothStores) {
   profile_store_form.username_value = u"test@gmail.com";
   profile_store_form.password_value = u"pass";
   profile_store_form.in_store = PasswordForm::Store::kProfileStore;
+  // Make sure the form has some issues and expect that they are cleared
+  // because of the password change.
+  profile_store_form.password_issues = {
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
 
   PasswordForm account_store_form = profile_store_form;
   account_store_form.in_store = PasswordForm::Store::kAccountStore;
@@ -806,16 +845,10 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditPasswordBothStores) {
   expected_profile_store_form.username_value = new_username;
   expected_profile_store_form.password_value = new_password;
   expected_profile_store_form.in_store = PasswordForm::Store::kProfileStore;
+  expected_profile_store_form.password_issues->clear();
   PasswordForm expected_account_store_form = expected_profile_store_form;
   expected_account_store_form.in_store = PasswordForm::Store::kAccountStore;
 
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  expected_profile_store_form.password_issues =
-      base::flat_map<InsecureType, InsecurityMetadata>();
-  expected_account_store_form.password_issues =
-      base::flat_map<InsecureType, InsecurityMetadata>();
 
   EXPECT_THAT(profile_store().stored_passwords(),
               ElementsAre(Pair(profile_store_form.signon_realm,

@@ -100,6 +100,7 @@ bool SavedPasswordsPresenter::EditPassword(const PasswordForm& form,
     return false;
 
   found->password_value = std::move(new_password);
+  found->password_issues->clear();
   PasswordStoreInterface& store =
       form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
   store.UpdateLogin(*found);
@@ -146,6 +147,7 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
       PasswordForm new_form = old_form;
       new_form.username_value = new_username;
       new_form.password_value = new_password;
+      new_form.password_issues->clear();
 
       if (username_changed) {
         // Changing username requires deleting old form and adding new one. So

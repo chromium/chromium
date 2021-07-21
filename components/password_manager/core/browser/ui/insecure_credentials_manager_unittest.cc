@@ -690,7 +690,7 @@ TEST_F(InsecureCredentialsManagerTest, UpdateCompromisedPassword) {
   RunUntilIdle();
   expected.password = kPassword216;
 
-  EXPECT_THAT(provider().GetInsecureCredentials(), ElementsAre(expected));
+  EXPECT_TRUE(provider().GetInsecureCredentials().empty());
 }
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)

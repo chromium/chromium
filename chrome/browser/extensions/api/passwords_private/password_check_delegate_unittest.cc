@@ -28,9 +28,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
-#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -76,6 +76,7 @@ using password_manager::BulkLeakCheckDelegateInterface;
 using password_manager::BulkLeakCheckService;
 using password_manager::InsecureCredentialTypeFlags;
 using password_manager::InsecureType;
+using password_manager::InsecurityMetadata;
 using password_manager::IsLeaked;
 using password_manager::IsMuted;
 using password_manager::LeakCheckCredential;
@@ -91,6 +92,7 @@ using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
 using ::testing::Mock;
+using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::UnorderedElementsAre;
 
@@ -154,6 +156,7 @@ PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
   form.username_element = std::u16string(username_element);
+  form.in_store = PasswordForm::Store::kProfileStore;
   // TODO(crbug.com/1223022): Once all places that operate changes on forms
   // via UpdateLogin properly set |password_issues|, setting them to an empty
   // map should be part of the default constructor.
@@ -776,27 +779,30 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundDoesNotCreateCredential) {
       LeakCheckCredential(kUsername1, kPassword1), IsLeaked(true));
   RunUntilIdle();
 
-  EXPECT_THAT(store().insecure_credentials(), IsEmpty());
+  EXPECT_TRUE(store().stored_passwords().at(kExampleCom).empty());
 }
 
 // Test that we don't create an entry in the password store if IsLeaked is
 // false.
 TEST_F(PasswordCheckDelegateTest, NoLeakedFound) {
-  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
+  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+  store().AddLogin(form);
   RunUntilIdle();
 
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
       LeakCheckCredential(kUsername1, kPassword1), IsLeaked(false));
   RunUntilIdle();
 
-  EXPECT_THAT(store().insecure_credentials(), IsEmpty());
+  EXPECT_THAT(store().stored_passwords(),
+              ElementsAre(Pair(kExampleCom, ElementsAre(form))));
 }
 
 // Test that a found leak creates a compromised credential in the password
 // store.
 TEST_F(PasswordCheckDelegateTest, OnLeakFoundCreatesCredential) {
   identity_test_env().MakeAccountAvailable(kTestEmail);
-  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
+  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+  store().AddLogin(form);
   RunUntilIdle();
 
   delegate().StartPasswordCheck();
@@ -804,10 +810,11 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundCreatesCredential) {
       LeakCheckCredential(kUsername1, kPassword1), IsLeaked(true));
   RunUntilIdle();
 
-  EXPECT_THAT(store().insecure_credentials(),
-              ElementsAre(password_manager::InsecureCredential(
-                  kExampleCom, kUsername1, base::Time::Now(),
-                  InsecureType::kLeaked, IsMuted(false))));
+  form.password_issues->insert_or_assign(
+      InsecureType::kLeaked,
+      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+  EXPECT_THAT(store().stored_passwords(),
+              ElementsAre(Pair(kExampleCom, ElementsAre(form))));
 }
 
 // Test that a found leak creates a compromised credential in the password
@@ -816,11 +823,19 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundCreatesMultipleCredential) {
   const std::u16string kUsername2Upper = base::ToUpperASCII(kUsername2);
   const std::u16string kUsername2Email =
       base::StrCat({kUsername2, u"@email.com"});
+  PasswordForm form_com_username1 =
+      MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+  PasswordForm form_org_username1 =
+      MakeSavedPassword(kExampleOrg, kUsername1, kPassword1);
+  PasswordForm form_com_username2 =
+      MakeSavedPassword(kExampleCom, kUsername2Upper, kPassword2);
+  PasswordForm form_org_username2 =
+      MakeSavedPassword(kExampleOrg, kUsername2Email, kPassword2);
 
-  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
-  store().AddLogin(MakeSavedPassword(kExampleOrg, kUsername1, kPassword1));
-  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername2Upper, kPassword2));
-  store().AddLogin(MakeSavedPassword(kExampleOrg, kUsername2Email, kPassword2));
+  store().AddLogin(form_com_username1);
+  store().AddLogin(form_org_username1);
+  store().AddLogin(form_com_username2);
+  store().AddLogin(form_org_username2);
   RunUntilIdle();
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
@@ -831,20 +846,24 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundCreatesMultipleCredential) {
       LeakCheckCredential(kUsername2Email, kPassword2), IsLeaked(true));
   RunUntilIdle();
 
-  EXPECT_THAT(
-      store().insecure_credentials(),
-      UnorderedElementsAre(password_manager::InsecureCredential(
-                               kExampleCom, kUsername1, base::Time::Now(),
-                               InsecureType::kLeaked, IsMuted(false)),
-                           password_manager::InsecureCredential(
-                               kExampleOrg, kUsername1, base::Time::Now(),
-                               InsecureType::kLeaked, IsMuted(false)),
-                           password_manager::InsecureCredential(
-                               kExampleCom, kUsername2Upper, base::Time::Now(),
-                               InsecureType::kLeaked, IsMuted(false)),
-                           password_manager::InsecureCredential(
-                               kExampleOrg, kUsername2Email, base::Time::Now(),
-                               InsecureType::kLeaked, IsMuted(false))));
+  form_com_username1.password_issues->insert_or_assign(
+      InsecureType::kLeaked,
+      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+  form_org_username1.password_issues->insert_or_assign(
+      InsecureType::kLeaked,
+      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+  form_com_username2.password_issues->insert_or_assign(
+      InsecureType::kLeaked,
+      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+  form_org_username2.password_issues->insert_or_assign(
+      InsecureType::kLeaked,
+      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+  EXPECT_THAT(store().stored_passwords(),
+              UnorderedElementsAre(
+                  Pair(kExampleCom, UnorderedElementsAre(form_com_username1,
+                                                         form_com_username2)),
+                  Pair(kExampleOrg, UnorderedElementsAre(form_org_username1,
+                                                         form_org_username2))));
 }
 
 // Verifies that the case where the user has no saved passwords is reported
