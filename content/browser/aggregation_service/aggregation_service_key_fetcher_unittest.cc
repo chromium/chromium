@@ -74,7 +74,7 @@ TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeys_Succeed) {
   base::Time now = base::Time::Now();
 
   url::Origin origin = url::Origin::Create(GURL("https://a.com"));
-  PublicKey expected_key(/*id=*/"abcd", /*key=*/"defg",
+  PublicKey expected_key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes,
                          /*not_before_time=*/now - base::TimeDelta::FromDays(1),
                          /*not_after_time=*/now + base::TimeDelta::FromDays(1));
   PublicKeysForOrigin origin_keys(origin, {expected_key});
@@ -88,7 +88,7 @@ TEST_F(AggregationServiceKeyFetcherTest,
   base::Time now = base::Time::Now();
 
   url::Origin origin = url::Origin::Create(GURL("http://a.com"));
-  PublicKey key(/*id=*/"abcd", /*key=*/"defg",
+  PublicKey key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes,
                 /*not_before_time=*/now - base::TimeDelta::FromDays(1),
                 /*not_after_time=*/now + base::TimeDelta::FromDays(1));
   PublicKeysForOrigin origin_keys(origin, {key});
@@ -104,7 +104,7 @@ TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysOpaqueOrigin_Failed) {
   base::Time now = base::Time::Now();
 
   url::Origin origin = url::Origin::Create(GURL("about:blank"));
-  PublicKey key(/*id=*/"abcd", /*key=*/"defg",
+  PublicKey key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes,
                 /*not_before_time=*/now - base::TimeDelta::FromDays(1),
                 /*not_after_time=*/now + base::TimeDelta::FromDays(1));
   PublicKeysForOrigin origin_keys(origin, {key});
@@ -121,7 +121,7 @@ TEST_F(AggregationServiceKeyFetcherTest,
   base::Time now = base::Time::Now();
 
   url::Origin origin = url::Origin::Create(GURL("https://a.com"));
-  PublicKey key(/*id=*/"abcd", /*key=*/"defg",
+  PublicKey key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes,
                 /*not_before_time=*/now - base::TimeDelta::FromDays(1),
                 /*not_after_time=*/now + base::TimeDelta::FromDays(1));
   PublicKeysForOrigin origin_keys(origin, {key});
@@ -139,14 +139,14 @@ TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysInvalidTime_Failed) {
 
   url::Origin origin_a = url::Origin::Create(GURL("https://a.com"));
   // not_before_time later than now.
-  PublicKey key_a(/*id=*/"abcd", /*key=*/"defg",
+  PublicKey key_a(/*id=*/"abcd", /*key=*/kABCD1234AsBytes,
                   /*not_before_time=*/now + base::TimeDelta::FromDays(1),
                   /*not_after_time=*/now + base::TimeDelta::FromDays(2));
   PublicKeysForOrigin keys_a(origin_a, {key_a});
 
   url::Origin origin_b = url::Origin::Create(GURL("https://b.com"));
   // not_after_time earlier than now.
-  PublicKey key_b(/*id=*/"abcd", /*key=*/"defg",
+  PublicKey key_b(/*id=*/"abcd", /*key=*/kABCD1234AsBytes,
                   /*not_before_time=*/now - base::TimeDelta::FromDays(2),
                   /*not_after_time=*/now - base::TimeDelta::FromDays(1));
   PublicKeysForOrigin keys_b(origin_b, {key_b});

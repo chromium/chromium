@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -88,7 +89,12 @@ absl::optional<PublicKey> GetPublicKey(base::Value& value) {
   if (!not_after)
     return absl::nullopt;
 
-  return PublicKey(id.value().GetString(), key.value().GetString(),
+  std::string key_string = key->GetString();
+  if (!base::Base64Decode(key_string, &key_string))
+    return absl::nullopt;
+
+  return PublicKey(id.value().GetString(),
+                   std::vector<uint8_t>(key_string.begin(), key_string.end()),
                    base::Time::UnixEpoch() +
                        base::TimeDelta::FromMilliseconds(not_before.value()),
                    base::Time::UnixEpoch() +

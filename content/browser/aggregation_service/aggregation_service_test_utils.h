@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_TEST_UTILS_H_
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_TEST_UTILS_H_
 
+#include <stdint.h>
+
 #include <vector>
 
 #include "base/threading/sequence_bound.h"
@@ -21,6 +23,10 @@ testing::AssertionResult PublicKeysEqual(const std::vector<PublicKey>& expected,
                                          const std::vector<PublicKey>& actual);
 
 }  // namespace aggregation_service
+
+// The strings "ABCD1234" and "EFGH5678", respectively, Base64-decoded to bytes.
+const std::vector<uint8_t> kABCD1234AsBytes = {0, 16, 131, 215, 109, 248};
+const std::vector<uint8_t> kEFGH5678AsBytes = {16, 81, 135, 231, 174, 252};
 
 class TestAggregatableReportManager : public AggregatableReportManager {
  public:

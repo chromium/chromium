@@ -35,7 +35,7 @@ TEST_F(TestAggregationServiceImplTest, SetPublicKeys) {
             "1.0" : [
                 {
                     "id" : "abcd",
-                    "key" : "defg",
+                    "key" : "ABCD1234",
                     "not_before": "1623000000000",
                     "not_after" : "1624000000000"
                 }
@@ -55,7 +55,7 @@ TEST_F(TestAggregationServiceImplTest, SetPublicKeys) {
       origin, base::BindLambdaForTesting([&](PublicKeysForOrigin keys) {
         EXPECT_TRUE(content::aggregation_service::PublicKeysEqual(
             {content::PublicKey(
-                /*id=*/"abcd", /*key=*/"defg",
+                /*id=*/"abcd", /*key=*/kABCD1234AsBytes,
                 /*not_before_time=*/base::Time::FromJavaTime(1623000000000),
                 /*not_after_time=*/base::Time::FromJavaTime(1624000000000))},
             keys.keys));

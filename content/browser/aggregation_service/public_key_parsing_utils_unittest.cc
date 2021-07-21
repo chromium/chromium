@@ -5,6 +5,7 @@
 #include "content/browser/aggregation_service/public_key_parsing_utils.h"
 
 #include <string>
+#include <vector>
 
 #include "base/json/json_reader.h"
 #include "base/time/time.h"
@@ -34,7 +35,8 @@ TEST(PublicKeyParsingUtilsTest, WellFormedSingleKey_ParsedCorrectly) {
   std::vector<PublicKey> keys =
       aggregation_service::GetPublicKeys(json_object.value());
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
-      {PublicKey("abcd", "ABCD1234", base::Time::FromJavaTime(1623000000000),
+      {PublicKey("abcd", kABCD1234AsBytes,
+                 base::Time::FromJavaTime(1623000000000),
                  base::Time::FromJavaTime(1633000000000))},
       keys));
 }
@@ -65,9 +67,11 @@ TEST(PublicKeyParsingUtilsTest, WellFormedMultipleKeys_ParsedCorrectly) {
   std::vector<PublicKey> keys =
       aggregation_service::GetPublicKeys(json_object.value());
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
-      {PublicKey("abcd", "ABCD1234", base::Time::FromJavaTime(1623000000000),
+      {PublicKey("abcd", kABCD1234AsBytes,
+                 base::Time::FromJavaTime(1623000000000),
                  base::Time::FromJavaTime(1633000000000)),
-       PublicKey("efgh", "EFGH5678", base::Time::FromJavaTime(1622500000000),
+       PublicKey("efgh", kEFGH5678AsBytes,
+                 base::Time::FromJavaTime(1622500000000),
                  base::Time::FromJavaTime(1632500000000))},
       keys));
 }
@@ -143,6 +147,28 @@ TEST(PublicKeyParsingUtilsTest, MalformedMissingNotAfter_EmptyResult) {
                     "id" : "abcd",
                     "key" : "ABCD1234",
                     "not_before": "1623000000000"
+                }
+            ]
+        }
+    )";
+
+  absl::optional<base::Value> json_object = base::JSONReader::Read(json_string);
+  ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
+
+  std::vector<PublicKey> keys =
+      aggregation_service::GetPublicKeys(json_object.value());
+  EXPECT_TRUE(keys.empty());
+}
+
+TEST(PublicKeyParsingUtilsTest, MalformedKeyNotValidBase64_EmptyResult) {
+  std::string json_string = R"(
+        {
+            "1.0" : [
+                {
+                    "id" : "abcd",
+                    "key" : "ABCD-1234",
+                    "not_before": "1623000000000",
+                    "not_after" : "1633000000000"
                 }
             ]
         }

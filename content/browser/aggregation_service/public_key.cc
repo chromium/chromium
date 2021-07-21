@@ -7,11 +7,12 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/strings/string_number_conversions.h"
 
 namespace content {
 
 PublicKey::PublicKey(std::string id,
-                     std::string key,
+                     std::vector<uint8_t> key,
                      base::Time not_before_time,
                      base::Time not_after_time)
     : id_(std::move(id)),
@@ -20,6 +21,11 @@ PublicKey::PublicKey(std::string id,
       not_after_time_(not_after_time) {
   DCHECK_LE(not_before_time_, not_after_time_);
 }
+
+PublicKey::PublicKey(const PublicKey& other) = default;
+PublicKey& PublicKey::operator=(const PublicKey& other) = default;
+
+PublicKey::~PublicKey() = default;
 
 bool PublicKey::IsValidAtTime(base::Time time) {
   return time >= not_before_time_ && time <= not_after_time_;
@@ -40,7 +46,8 @@ PublicKeysForOrigin& PublicKeysForOrigin::operator=(
 PublicKeysForOrigin::~PublicKeysForOrigin() = default;
 
 std::ostream& operator<<(std::ostream& out, const PublicKey& public_key) {
-  out << "id: " << public_key.id() << ", key: " << public_key.key()
+  out << "id: " << public_key.id() << ", key: 0x"
+      << base::HexEncode(public_key.key())
       << ", not_before_time: " << public_key.not_before_time()
       << ", not_after_time: " << public_key.not_after_time();
   return out;

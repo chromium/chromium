@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_PUBLIC_KEY_H_
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_PUBLIC_KEY_H_
 
+#include <stdint.h>
+
 #include <ostream>
 #include <string>
 #include <vector>
@@ -18,22 +20,18 @@ namespace content {
 // Class that contains all the data of a public key.
 class CONTENT_EXPORT PublicKey {
  public:
-  PublicKey() = default;
   PublicKey(std::string id,
-            std::string key,
+            std::vector<uint8_t> key,
             base::Time not_before_time,
             base::Time not_after_time);
-  PublicKey(const PublicKey& other) = default;
-  PublicKey& operator=(const PublicKey& other) = default;
-  ~PublicKey() = default;
+  PublicKey(const PublicKey& other);
+  PublicKey& operator=(const PublicKey& other);
+  ~PublicKey();
 
-  std::string id() const { return id_; }
-
-  std::string key() const { return key_; }
-
-  base::Time not_before_time() const { return not_before_time_; }
-
-  base::Time not_after_time() const { return not_after_time_; }
+  const std::string& id() const { return id_; }
+  const std::vector<uint8_t>& key() const { return key_; }
+  const base::Time& not_before_time() const { return not_before_time_; }
+  const base::Time& not_after_time() const { return not_after_time_; }
 
   bool IsValidAtTime(base::Time time);
 
@@ -41,8 +39,8 @@ class CONTENT_EXPORT PublicKey {
   // String identifying the key, controlled by the helper server.
   std::string id_;
 
-  // Base64-encoded public key.
-  std::string key_;
+  // The key itself.
+  std::vector<uint8_t> key_;
 
   // The first time the key is valid.
   base::Time not_before_time_;

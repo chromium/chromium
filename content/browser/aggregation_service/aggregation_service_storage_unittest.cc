@@ -27,9 +27,11 @@ class AggregationServiceStorageTest : public testing::Test {
 
 TEST_F(AggregationServiceStorageTest, GetSetPublicKeys) {
   std::vector<PublicKey> expected_keys{
-      PublicKey("abcd", "defg", base::Time::FromJavaTime(1623000000000),
+      PublicKey("abcd", kABCD1234AsBytes,
+                base::Time::FromJavaTime(1623000000000),
                 base::Time::FromJavaTime(1624000000000)),
-      PublicKey("bcde", "fghi", base::Time::FromJavaTime(1624000000000),
+      PublicKey("bcde", kEFGH5678AsBytes,
+                base::Time::FromJavaTime(1624000000000),
                 base::Time::FromJavaTime(1625000000000)),
   };
 
