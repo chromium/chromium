@@ -171,8 +171,6 @@ TEST_F(PartitionAllocThreadCacheTest, Simple) {
             tcache->bucket_count_for_testing(index));
 
   EXPECT_EQ(1u, batch_fill_counter.Delta());
-
-  g_root->Free(ptr2);
 }
 
 TEST_F(PartitionAllocThreadCacheTest, InexactSizeMatch) {
@@ -788,68 +786,6 @@ TEST_F(PartitionAllocThreadCacheTest, ClearFromTail) {
   }
   tcache->ClearBucket(tcache->buckets_[index], 0);
   EXPECT_EQ(nullptr, static_cast<void*>(tcache->buckets_[index].freelist_head));
-}
-
-TEST_F(PartitionAllocThreadCacheTest, Bookkeeping) {
-  void* arr[kFillCountForMediumBucket] = {};
-  auto* tcache = g_root->thread_cache_for_testing();
-
-  g_root->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
-                      PartitionPurgeDiscardUnusedSystemPages);
-  g_root->ResetBookkeepingForTesting();
-
-  size_t tc_bucket_index = g_root->SizeToBucketIndex(sizeof(ThreadCache));
-  auto* tc_bucket = &g_root->buckets[tc_bucket_index];
-  size_t expected_allocated_size =
-      tc_bucket->slot_size;  // For the ThreadCache itself.
-  size_t expected_committed_size = g_root->use_lazy_commit
-                                       ? SystemPageSize()
-                                       : tc_bucket->get_bytes_per_span();
-
-  EXPECT_EQ(expected_committed_size, g_root->total_size_of_committed_pages);
-  EXPECT_EQ(expected_committed_size, g_root->max_size_of_committed_pages);
-  EXPECT_EQ(expected_allocated_size,
-            g_root->get_total_size_of_allocated_bytes());
-  EXPECT_EQ(expected_allocated_size, g_root->get_max_size_of_allocated_bytes());
-
-  void* ptr = g_root->Alloc(kMediumSize, "");
-
-  auto* medium_bucket =
-      &g_root->buckets[g_root->SizeToBucketIndex(kMediumSize)];
-  size_t medium_alloc_size = medium_bucket->slot_size;
-  expected_allocated_size += medium_alloc_size;
-  expected_committed_size += g_root->use_lazy_commit
-                                 ? SystemPageSize()
-                                 : medium_bucket->get_bytes_per_span();
-
-  EXPECT_EQ(expected_committed_size, g_root->total_size_of_committed_pages);
-  EXPECT_EQ(expected_committed_size, g_root->max_size_of_committed_pages);
-  EXPECT_EQ(expected_allocated_size,
-            g_root->get_total_size_of_allocated_bytes());
-  EXPECT_EQ(expected_allocated_size, g_root->get_max_size_of_allocated_bytes());
-
-  expected_allocated_size += kFillCountForMediumBucket * medium_alloc_size;
-
-  // These allocations all come from the thread-cache.
-  for (size_t i = 0; i < kFillCountForMediumBucket; i++) {
-    arr[i] = g_root->Alloc(kMediumSize, "");
-    EXPECT_EQ(expected_committed_size, g_root->total_size_of_committed_pages);
-    EXPECT_EQ(expected_committed_size, g_root->max_size_of_committed_pages);
-    EXPECT_EQ(expected_allocated_size,
-              g_root->get_total_size_of_allocated_bytes());
-    EXPECT_EQ(expected_allocated_size,
-              g_root->get_max_size_of_allocated_bytes());
-    EXPECT_EQ((kFillCountForMediumBucket - 1 - i) * medium_alloc_size,
-              tcache->CachedMemory());
-  }
-
-  EXPECT_EQ(0U, tcache->CachedMemory());
-
-  g_root->Free(ptr);
-
-  for (auto*& el : arr) {
-    g_root->Free(el);
-  }
 }
 
 }  // namespace internal

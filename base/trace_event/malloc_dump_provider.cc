@@ -301,12 +301,6 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
                             memory_stats->total_mmapped_bytes);
   allocator_dump->AddScalar("virtual_committed_size", "bytes",
                             memory_stats->total_committed_bytes);
-  allocator_dump->AddScalar("max_committed_size", "bytes",
-                            memory_stats->max_committed_bytes);
-  allocator_dump->AddScalar("allocated_size", "bytes",
-                            memory_stats->total_allocated_bytes);
-  allocator_dump->AddScalar("max_allocated_size", "bytes",
-                            memory_stats->max_allocated_bytes);
   allocator_dump->AddScalar("decommittable_size", "bytes",
                             memory_stats->total_decommittable_bytes);
   allocator_dump->AddScalar("discardable_size", "bytes",

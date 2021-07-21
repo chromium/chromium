@@ -14176,26 +14176,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Only counting memory used by Partition allocator."/>
   <suffix name="PartitionAlloc.AllocatedObjects"
       label="Only counting objects allocated using Partition allocator."/>
-  <suffix name="PartitionAlloc.MaxAllocatedMemory.ArrayBuffer"
-      label="Highwatermark for allocated memory for the ArrayBuffer
-             partition."/>
-  <suffix name="PartitionAlloc.MaxAllocatedMemory.Buffer"
-      label="Highwatermark for allocated memory for the Buffer partition."/>
-  <suffix name="PartitionAlloc.MaxAllocatedMemory.FastMalloc"
-      label="Highwatermark for allocated memory for the FastMalloc partition."/>
-  <suffix name="PartitionAlloc.MaxAllocatedMemory.Layout"
-      label="Highwatermark for allocated memory for the Layout partition."/>
-  <suffix name="PartitionAlloc.MaxCommittedMemory.ArrayBuffer"
-      label="Highwatermark for committed memory for the ArrayBuffer
-             partition."/>
-  <suffix name="PartitionAlloc.MaxCommittedMemory.Buffer"
-      label="Highwatermark for committed memory for the Buffer partition."/>
-  <suffix name="PartitionAlloc.MaxCommittedMemory.FastMalloc"
-      label="Highwatermark for committed memory for the FastMalloc partition."/>
-  <suffix name="PartitionAlloc.MaxCommittedMemory.Layout"
-      label="Highwatermark for committed memory for the Layout partition."/>
   <suffix name="PartitionAlloc.Partitions.ArrayBuffer"
-      label="Only counting memory used by Array Buffer partition."/>
+      label="Only counting memory used by Array buffer partition."/>
   <suffix name="PartitionAlloc.Partitions.Buffer"
       label="Only counting memory used by Buffer partition."/>
   <suffix name="PartitionAlloc.Partitions.FastMalloc"
