@@ -348,6 +348,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/multidevice_page/multidevice_task_continuation_item.m.js",
     "chromeos/multidevice_page/multidevice_wifi_sync_disabled_link.m.js",
     "chromeos/multidevice_page/multidevice_wifi_sync_item.m.js",
+    "chromeos/multidevice_page/multidevice_smartlock_item.m.js",
     "chromeos/nearby_share_page/nearby_account_manager_browser_proxy.m.js",
     "chromeos/nearby_share_page/nearby_share_confirm_page.m.js",
     "chromeos/nearby_share_page/nearby_share_contact_visibility_dialog.m.js",

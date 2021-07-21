@@ -330,6 +330,7 @@ TEST_F(
    'multidevice_notification_access_setup_dialog_tests.m.js'
  ],
  ['MultidevicePage', 'multidevice_page_tests.m.js'],
+ ['MultideviceSmartLockItem', 'multidevice_smartlock_item_test.m.js'],
  ['MultideviceSmartLockSubPage', 'multidevice_smartlock_subpage_test.m.js'],
  ['MultideviceSubPage', 'multidevice_subpage_tests.m.js'],
  [

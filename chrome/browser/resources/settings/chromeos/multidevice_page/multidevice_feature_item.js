@@ -101,8 +101,11 @@ Polymer({
       if (this.isFeatureStateEditable(this.feature)) {
         // Toggle the editable feature if the feature is editable and does not
         // link to a subpage.
-        this.shadowRoot.querySelector('settings-multidevice-feature-toggle')
-            .toggleFeature();
+        const toggleButton =
+            /** @type{SettingsMultideviceFeatureToggleElement} */
+            (this.shadowRoot.querySelector(
+                'settings-multidevice-feature-toggle'));
+        toggleButton.toggleFeature();
       }
       return;
     }

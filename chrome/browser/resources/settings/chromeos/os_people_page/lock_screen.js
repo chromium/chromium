@@ -146,6 +146,18 @@ Polymer({
       readOnly: true,
     },
 
+    /**
+     * Alias for the SmartLockUIRevamp feature flag.
+     * @private
+     */
+    smartLockUIRevampEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('smartLockUIRevampEnabled');
+      },
+      readOnly: true,
+    },
+
     /** @private */
     showSetupPinDialog_: Boolean,
 

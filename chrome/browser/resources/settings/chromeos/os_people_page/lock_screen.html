@@ -24,6 +24,7 @@
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="../../settings_vars_css.html">
+<link rel="import" href="../multidevice_page/multidevice_smartlock_item.html">
 
 <dom-module id="settings-lock-screen">
   <template>
@@ -186,6 +187,12 @@
             </cr-button>
           </div>
         </div>
+      </template>
+
+      <template is="dom-if" if="[[smartLockUIRevampEnabled_]]">
+        <settings-multidevice-smartlock-item
+          auth-token="[[authToken]]">
+        </settings-multidevice-smartlock-item>
       </template>
 
       <template is="dom-if" if="[[showSetupPinDialog_]]" restamp>

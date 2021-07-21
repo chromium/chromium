@@ -852,6 +852,10 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "driveSuggestAvailable",
       base::FeatureList::IsEnabled(omnibox::kDocumentProvider));
 
+  html_source->AddBoolean(
+      "smartLockUIRevampEnabled",
+      base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp));
+
   AddAccountManagerPageStrings(html_source, profile());
   AddLockScreenPageStrings(html_source, profile()->GetPrefs());
   AddFingerprintListStrings(html_source);
@@ -997,6 +1001,10 @@ void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   };
   RegisterNestedSettingBulk(mojom::Subpage::kFingerprint, kFingerprintSettings,
                             generator);
+
+  // Smart Lock -- main setting is on multidevice page, but is mirrored here
+  generator->RegisterNestedAltSetting(mojom::Setting::kSmartLockOnOff,
+                                      mojom::Subpage::kSecurityAndSignIn);
 
   // Manage other people.
   generator->RegisterTopLevelSubpage(IDS_SETTINGS_PEOPLE_MANAGE_OTHER_PEOPLE,
