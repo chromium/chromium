@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.signin.ui;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -180,6 +181,9 @@ public class SigninPromoUtilLaunchSigninPromoTest {
 
     @Test
     public void whenNoAccountListStoredShouldReturnTrue() {
+        doReturn(Optional.of(true))
+                .when(mFakeAccountManagerFacade)
+                .canOfferExtendedSyncPromos(any());
         mPrefManager.setSigninPromoLastShownVersion(40);
         // Old implementation hasn't been storing account list
         Assert.assertTrue(SigninPromoUtil.launchSigninPromoIfNeeded(
@@ -191,8 +195,20 @@ public class SigninPromoUtilLaunchSigninPromoTest {
     }
 
     @Test
+    public void whenCapabilityIsNotAvailable() {
+        mPrefManager.setSigninPromoLastShownVersion(40);
+        Assert.assertFalse(SigninPromoUtil.launchSigninPromoIfNeeded(
+                mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+        verify(mLauncherMock, never())
+                .launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
+    }
+
+    @Test
     public void whenHasNewAccountShouldReturnTrue() {
         mAccountManagerTestRule.addAccount("test2@gmail.com");
+        doReturn(Optional.of(true))
+                .when(mFakeAccountManagerFacade)
+                .canOfferExtendedSyncPromos(any());
         mPrefManager.setSigninPromoLastShownVersion(40);
         mPrefManager.setSigninPromoLastAccountNames(
                 Set.of(AccountManagerTestRule.TEST_ACCOUNT_EMAIL));
