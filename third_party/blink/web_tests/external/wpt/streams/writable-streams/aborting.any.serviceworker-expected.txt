@@ -56,11 +56,11 @@ PASS abort with an undefined argument should set the stored error to undefined
 PASS abort with a string argument should set the stored error to that argument
 PASS abort on a locked stream should reject
 FAIL WritableStreamDefaultController.signal assert_true: expected true got false
-FAIL the abort signal is signalled synchronously - write promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'aborted' of undefined"
-FAIL the abort signal is signalled synchronously - close promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'aborted' of undefined"
-FAIL the abort signal is not signalled on error promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'aborted' of undefined"
-FAIL the abort signal is not signalled on write failure promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'aborted' of undefined"
-FAIL the abort signal is not signalled on close failure promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'aborted' of undefined"
-FAIL recursive abort() call promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'addEventListener' of undefined"
+FAIL the abort signal is signalled synchronously - write promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'aborted')"
+FAIL the abort signal is signalled synchronously - close promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'aborted')"
+FAIL the abort signal is not signalled on error promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'aborted')"
+FAIL the abort signal is not signalled on write failure promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'aborted')"
+FAIL the abort signal is not signalled on close failure promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'aborted')"
+FAIL recursive abort() call promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'addEventListener')"
 Harness: the test ran to completion.
 

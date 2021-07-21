@@ -1,25 +1,25 @@
 This is a testharness.js-based test.
 FAIL addTrack: creates a transceiver for the sender assert_true: expected true got false
 FAIL addTrack: "transceiver == {sender,receiver}" assert_array_equals: pc.getTransceivers() equals [transceiver] lengths differ, expected array [null] length 1, got [] length 0
-FAIL addTrack: transceiver.sender is associated with the track promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'sender' of null"
-FAIL addTrack: transceiver.receiver has its own track promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'receiver' of null"
-FAIL addTrack: transceiver.receiver's track is muted promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'receiver' of null"
-FAIL addTrack: transceiver is not associated with an m-section promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'mid' of null"
-FAIL addTrack: transceiver is not stopped promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'stopped' of null"
-FAIL addTrack: transceiver's direction is sendrecv promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'direction' of null"
-FAIL addTrack: transceiver's currentDirection is null promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'currentDirection' of null"
-FAIL setLocalDescription(offer): transceiver gets associated with an m-section promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'mid' of null"
-FAIL setLocalDescription(offer): transceiver.mid matches the offer SDP promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'mid' of null"
+FAIL addTrack: transceiver.sender is associated with the track promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'sender')"
+FAIL addTrack: transceiver.receiver has its own track promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'receiver')"
+FAIL addTrack: transceiver.receiver's track is muted promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'receiver')"
+FAIL addTrack: transceiver is not associated with an m-section promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'mid')"
+FAIL addTrack: transceiver is not stopped promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'stopped')"
+FAIL addTrack: transceiver's direction is sendrecv promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'direction')"
+FAIL addTrack: transceiver's currentDirection is null promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'currentDirection')"
+FAIL setLocalDescription(offer): transceiver gets associated with an m-section promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'mid')"
+FAIL setLocalDescription(offer): transceiver.mid matches the offer SDP promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'mid')"
 PASS setRemoteDescription(offer): ontrack fires with a track
 PASS setRemoteDescription(offer): ontrack's stream.id is the same as stream.id
 FAIL setRemoteDescription(offer): ontrack fires with a transceiver. assert_true: trackEvent.transceiver instanceof RTCRtpTransceiver expected true got false
-FAIL setRemoteDescription(offer): transceiver.mid is the same on both ends promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'mid' of null"
+FAIL setRemoteDescription(offer): transceiver.mid is the same on both ends promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'mid')"
 FAIL setRemoteDescription(offer): "transceiver == {sender,receiver}" assert_array_equals: pc2.getTransceivers() equals [transceiver] lengths differ, expected array [null] length 1, got [] length 0
-FAIL setRemoteDescription(offer): transceiver.direction is recvonly promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'direction' of null"
-FAIL setRemoteDescription(offer): transceiver.currentDirection is null promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'currentDirection' of null"
-FAIL setRemoteDescription(offer): transceiver.stopped is false promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'stopped' of null"
-FAIL setLocalDescription(answer): transceiver.currentDirection is recvonly promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'currentDirection' of null"
-FAIL setLocalDescription(answer): transceiver.currentDirection is sendonly promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'currentDirection' of null"
+FAIL setRemoteDescription(offer): transceiver.direction is recvonly promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'direction')"
+FAIL setRemoteDescription(offer): transceiver.currentDirection is null promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'currentDirection')"
+FAIL setRemoteDescription(offer): transceiver.stopped is false promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'stopped')"
+FAIL setLocalDescription(answer): transceiver.currentDirection is recvonly promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'currentDirection')"
+FAIL setLocalDescription(answer): transceiver.currentDirection is sendonly promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'currentDirection')"
 FAIL addTransceiver(track): creates a transceiver for the track promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
 FAIL addTransceiver(track): "transceiver == {sender,receiver}" promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
 FAIL addTransceiver(track, init): initialize direction to inactive promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
@@ -38,10 +38,10 @@ FAIL addTransceiver('audio'): transceiver.currentDirection is null promise_test:
 FAIL addTransceiver('audio'): transceiver.stopped is false promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
 FAIL addTrack reuses reusable transceivers promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
 FAIL addTransceiver does not reuse reusable transceivers promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
-FAIL Can setup two-way call using a single transceiver promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'direction' of null"
+FAIL Can setup two-way call using a single transceiver promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'direction')"
 FAIL Closing the PC stops the transceivers promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
-FAIL Changing transceiver direction to 'sendrecv' makes ontrack fire promise_test: Unhandled rejection with value: object "TypeError: Cannot set property 'direction' of null"
-FAIL transceiver.sender.track does not revert to an old state promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'track' of undefined"
-FAIL transceiver.direction does not revert to an old state promise_test: Unhandled rejection with value: object "TypeError: Cannot set property 'direction' of undefined"
+FAIL Changing transceiver direction to 'sendrecv' makes ontrack fire promise_test: Unhandled rejection with value: object "TypeError: Cannot set properties of null (setting 'direction')"
+FAIL transceiver.sender.track does not revert to an old state promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'track')"
+FAIL transceiver.direction does not revert to an old state promise_test: Unhandled rejection with value: object "TypeError: Cannot set properties of undefined (setting 'direction')"
 Harness: the test ran to completion.
 

@@ -292,9 +292,9 @@ PASS Calling execCommand("paste", false, null) (calling execCommand)
 PASS Calling execCommand("paste", false, null) (shouldn't fire beforeinput)
 PASS Calling execCommand("paste", false, null) (inputType value)
 PASS Calling execCommand("paste", false, null) (data value)
-FAIL Calling execCommand("paste", false, null) (dataTransfer value, text/plain) assert_true: calling dataTransfer.getData(text/plain) caused exception: TypeError: Cannot read property 'getData' of null expected true got false
-FAIL Calling execCommand("paste", false, null) (dataTransfer.clearData(text/plain)) assert_true: calling dataTransfer.clearData(text/plain) caused exception: TypeError: Cannot read property 'clearData' of null expected true got false
-FAIL Calling execCommand("paste", false, null) (dataTransfer.setData(text/plain)) assert_true: calling dataTransfer.setData(text/plain) caused exception: TypeError: Cannot read property 'setData' of null expected true got false
+FAIL Calling execCommand("paste", false, null) (dataTransfer value, text/plain) assert_true: calling dataTransfer.getData(text/plain) caused exception: TypeError: Cannot read properties of null (reading 'getData') expected true got false
+FAIL Calling execCommand("paste", false, null) (dataTransfer.clearData(text/plain)) assert_true: calling dataTransfer.clearData(text/plain) caused exception: TypeError: Cannot read properties of null (reading 'clearData') expected true got false
+FAIL Calling execCommand("paste", false, null) (dataTransfer.setData(text/plain)) assert_true: calling dataTransfer.setData(text/plain) caused exception: TypeError: Cannot read properties of null (reading 'setData') expected true got false
 PASS Calling execCommand("createLink", false, https://example.com/) (calling execCommand)
 PASS Calling execCommand("createLink", false, https://example.com/) (shouldn't fire beforeinput)
 FAIL Calling execCommand("createLink", false, https://example.com/) (inputType value) assert_equals: expected "insertLink" but got ""

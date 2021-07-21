@@ -11,7 +11,7 @@ FAIL Calling removeTrack with currentDirection sendrecv should set direction to 
 FAIL Calling removeTrack with currentDirection sendonly should set direction to inactive promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
 FAIL Calling removeTrack with currentDirection recvonly should not change direction promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
 FAIL Calling removeTrack with currentDirection inactive should not change direction promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
-FAIL Calling removeTrack on a stopped transceiver should be a no-op promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'stop' of undefined"
+FAIL Calling removeTrack on a stopped transceiver should be a no-op promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'stop')"
 PASS Calling removeTrack on a null track should have no effect
 Harness: the test ran to completion.
 

@@ -49,38 +49,38 @@ length: 0
 Document.querySelector
 
 [object HTMLDivElement]
-TypeError: Cannot read property 'dump' of null
+TypeError: Cannot read properties of null (reading 'dump')
 [object HTMLDivElement]
 [object HTMLDivElement]
 [object HTMLDivElement]
 SyntaxError: Failed to execute 'querySelector' on 'Document': '@font-face' is not a valid selector.
 SyntaxError: Failed to execute 'querySelector' on 'Document': The provided selector is empty.
-TypeError: Cannot read property 'dump' of null
-TypeError: Cannot read property 'dump' of null
+TypeError: Cannot read properties of null (reading 'dump')
+TypeError: Cannot read properties of null (reading 'dump')
 
 Element.querySelector
 
-TypeError: Cannot read property 'dump' of null
+TypeError: Cannot read properties of null (reading 'dump')
 [object HTMLDivElement]
-TypeError: Cannot read property 'dump' of null
+TypeError: Cannot read properties of null (reading 'dump')
 [object HTMLDivElement]
 [object HTMLDivElement]
 [object HTMLDivElement]
 SyntaxError: Failed to execute 'querySelector' on 'Element': '@font-face' is not a valid selector.
 SyntaxError: Failed to execute 'querySelector' on 'Element': The provided selector is empty.
-TypeError: Cannot read property 'dump' of null
-TypeError: Cannot read property 'dump' of null
+TypeError: Cannot read properties of null (reading 'dump')
+TypeError: Cannot read properties of null (reading 'dump')
 
 DocumentFragment.querySelector
 
 [object HTMLDivElement]
 [object HTMLDivElement]
-TypeError: Cannot read property 'dump' of null
+TypeError: Cannot read properties of null (reading 'dump')
 [object HTMLDivElement]
 [object HTMLDivElement]
 [object HTMLDivElement]
 SyntaxError: Failed to execute 'querySelector' on 'DocumentFragment': '@font-face' is not a valid selector.
 SyntaxError: Failed to execute 'querySelector' on 'DocumentFragment': The provided selector is empty.
-TypeError: Cannot read property 'dump' of null
-TypeError: Cannot read property 'dump' of null
+TypeError: Cannot read properties of null (reading 'dump')
+TypeError: Cannot read properties of null (reading 'dump')
 

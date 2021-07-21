@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL DTLS transport goes to connected state promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'sender')"
+FAIL close() causes the local transport to close immediately promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'sender')"
+FAIL close() causes the other end's DTLS transport to close promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'sender')"
+FAIL stop bundled transceiver retains dtls transport state promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+Harness: the test ran to completion.
+
