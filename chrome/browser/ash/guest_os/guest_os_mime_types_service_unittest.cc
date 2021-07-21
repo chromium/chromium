@@ -20,6 +20,13 @@ using vm_tools::apps::MimeTypes;
 
 namespace guest_os {
 
+namespace {
+
+constexpr char kTestVmName[] = "test_vm";
+constexpr char kTestContainerName[] = "test_container";
+
+}  // namespace
+
 class GuestOsMimeTypesServiceTest : public testing::Test {
  public:
   GuestOsMimeTypesServiceTest()
@@ -50,6 +57,11 @@ class GuestOsMimeTypesServiceTest : public testing::Test {
     return mime_types_list;
   }
 
+  std::string GetMimeType(const std::string& filename) {
+    return service_->GetMimeType(base::FilePath(filename), kTestVmName,
+                                 kTestContainerName);
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -59,21 +71,32 @@ class GuestOsMimeTypesServiceTest : public testing::Test {
 };
 
 TEST_F(GuestOsMimeTypesServiceTest, SetAndGetMimeTypes) {
-  base::FilePath test_path_foo("test.foo");
-  base::FilePath test_path_bar("test.bar");
-  std::vector<std::string> file_extensions = {"foo", "bar"};
-  std::vector<std::string> mime_types = {"test/foo-mime", "bar/x-test"};
-  std::string vm_name = "awesomevm";
-  std::string container_name = "awesomecontainer";
+  std::vector<std::string> file_extensions = {
+      "foo", "bar", "gz", "xz", "tar.gz", "c", "C", "z", "🦈x"};
+  std::vector<std::string> mime_types = {"x/foo", "x/bar",    "x/gz",
+                                         "x/xz",  "x/tar.gz", "x/c",
+                                         "x/C",   "x/z",      "x/shark"};
 
-  EXPECT_EQ("", service()->GetMimeType(test_path_foo, vm_name, container_name));
+  // Mime types not registered yet.
+  EXPECT_EQ("", GetMimeType("test.foo"));
 
-  service()->UpdateMimeTypes(CreateMimeTypesProto(file_extensions, mime_types,
-                                                  vm_name, container_name));
-  EXPECT_EQ(mime_types[0],
-            service()->GetMimeType(test_path_foo, vm_name, container_name));
-  EXPECT_EQ(mime_types[1],
-            service()->GetMimeType(test_path_bar, vm_name, container_name));
+  service()->UpdateMimeTypes(CreateMimeTypesProto(
+      file_extensions, mime_types, kTestVmName, kTestContainerName));
+
+  EXPECT_EQ("x/foo", GetMimeType("test.foo"));
+  EXPECT_EQ("x/bar", GetMimeType("test.bar"));
+  // Use double extension if possible.
+  EXPECT_EQ("x/tar.gz", GetMimeType("test.tar.gz"));
+  // Fall back to final extension.
+  EXPECT_EQ("x/xz", GetMimeType("test.tar.xz"));
+  // Case insensitive match on extension.
+  EXPECT_EQ("x/c", GetMimeType("test.c"));
+  EXPECT_EQ("x/C", GetMimeType("test.C"));
+  EXPECT_EQ("x/z", GetMimeType("test.z"));
+  EXPECT_EQ("x/z", GetMimeType("test.Z"));
+  EXPECT_EQ("x/tar.gz", GetMimeType("test.tar.GZ"));
+  // Support unicode.
+  EXPECT_EQ("x/shark", GetMimeType("test.🦈X"));
 }
 
 // Test that UpdateMimeTypes doesn't clobber MIME types from different VMs or

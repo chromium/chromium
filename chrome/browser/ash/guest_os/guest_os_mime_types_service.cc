@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
@@ -98,10 +99,25 @@ std::string GuestOsMimeTypesService::GetMimeType(
   if (vm) {
     const base::Value* container = vm->FindDictKey(container_name);
     if (container) {
-      // Remove the leading dot character from the extension.
-      std::string extension = file_path.FinalExtension();
+      // Try Extension() which may be a double like ".tar.gz".
+      std::string extension = file_path.Extension();
+      // Remove leading dot.
       extension.erase(0, 1);
       const std::string* result = container->FindStringKey(extension);
+      if (!result) {
+        // Try lowercase.
+        result = container->FindStringKey(base::ToLowerASCII(extension));
+      }
+      // If this was a double extension, then try FinalExtension().
+      if (!result && extension.find('.') != std::string::npos) {
+        extension = file_path.FinalExtension();
+        extension.erase(0, 1);
+        result = container->FindStringKey(extension);
+        if (!result) {
+          // Try lowercase.
+          result = container->FindStringKey(base::ToLowerASCII(extension));
+        }
+      }
       if (result) {
         return *result;
       }
