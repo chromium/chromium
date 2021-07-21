@@ -7,10 +7,12 @@
 #include <stddef.h>
 
 #include "base/files/file_path.h"
+#include "base/json/json_reader.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,6 +31,8 @@ class GuestOsMimeTypesServiceTest : public testing::Test {
 
  protected:
   GuestOsMimeTypesService* service() { return service_.get(); }
+
+  Profile* profile() { return &profile_; }
 
   MimeTypes CreateMimeTypesProto(
       const std::vector<std::string>& file_extensions,
@@ -131,6 +135,43 @@ TEST_F(GuestOsMimeTypesServiceTest, ClearMimeTypes) {
                                                "vm 1", "container 2"));
   EXPECT_EQ("", service()->GetMimeType(base::FilePath("test.foobar"), "vm 2",
                                        "container 1"));
+}
+
+TEST_F(GuestOsMimeTypesServiceTest, Migrate) {
+  base::Value old = *base::JSONReader::Read(R"({
+    "termina/penguin/txt": { "mime_type": "text/plain" },
+    "termina/penguin/jpg": { "mime_type": "image/jpg" },
+    "termina/penguin/tar.gz": { "mime_type": "application/tar+gzip" },
+    "borealis/penguin/txt": { "mime_type": "text/plain" },
+    "termina": {
+      "penguin": {
+        "already": "x/already-migrated"
+      }
+    },
+    "delete/me": { "mime_type": "text/plain" },
+    "delete/me/as/well": { "mime_type": "text/plain" }
+  })");
+
+  base::Value expected = *base::JSONReader::Read(R"({
+    "termina": {
+      "penguin": {
+        "already": "x/already-migrated",
+        "txt": "text/plain",
+        "jpg": "image/jpg",
+        "tar.gz": "application/tar+gzip"
+      }
+    },
+    "borealis": {
+      "penguin": {
+        "txt": "text/plain"
+      }
+    }
+  })");
+
+  PrefService* prefs = profile()->GetPrefs();
+  prefs->Set("crostini.mime_types", std::move(old));
+  GuestOsMimeTypesService::MigrateVerboseMimeTypePrefs(prefs);
+  EXPECT_EQ(expected, prefs->Get("crostini.mime_types")->Clone());
 }
 
 }  // namespace guest_os

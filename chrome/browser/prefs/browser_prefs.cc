@@ -180,7 +180,6 @@
 #include "extensions/browser/extension_prefs.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
-#include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
@@ -290,6 +289,7 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/file_system_provider/registry.h"
+#include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_detector.h"
@@ -1620,6 +1620,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 2021/07.
   profile_prefs->ClearPref(kExtensionCheckupOnStartup);
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 2021/07.
+  guest_os::GuestOsMimeTypesService::MigrateVerboseMimeTypePrefs(profile_prefs);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

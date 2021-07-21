@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/strings/string_split.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
@@ -22,21 +23,7 @@ namespace guest_os {
 
 namespace {
 
-// Keys for the Dictionary stored in prefs for each MIME type mapping.
 constexpr char kMimeTypeKey[] = "mime_type";
-constexpr char kAppVmNameKey[] = "vm_name";
-constexpr char kAppContainerNameKey[] = "container_name";
-
-// This is for generating IDs which we use for storing the file extension keys
-// unique to each VM/container.
-std::string GenerateFileExtensionId(const std::string& file_extension,
-                                    const std::string& vm_name,
-                                    const std::string& container_name) {
-  // These can collide in theory because the user could choose VM and container
-  // names which contain slashes, but this will only result in MIME type
-  // mappings not correlating properly.
-  return vm_name + "/" + container_name + "/" + file_extension;
-}
 
 }  // namespace
 
@@ -45,45 +32,96 @@ GuestOsMimeTypesService::GuestOsMimeTypesService(Profile* profile)
 
 GuestOsMimeTypesService::~GuestOsMimeTypesService() = default;
 
+// static
+// TODO(crbug.com/1015353): Can be removed after M99.
+void GuestOsMimeTypesService::MigrateVerboseMimeTypePrefs(
+    PrefService* pref_service) {
+  DictionaryPrefUpdate update(pref_service, prefs::kGuestOsMimeTypes);
+  base::DictionaryValue* mime_types = update.Get();
+  std::map<std::string,
+           std::map<std::string, std::map<std::string, std::string>>>
+      migrated;
+  std::vector<std::string> to_remove;
+
+  for (const auto item : mime_types->DictItems()) {
+    std::vector<std::string> parts = base::SplitString(
+        item.first, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    if (parts.size() == 1) {
+      // Already migrated.
+      continue;
+    }
+
+    // Migrate: "termina/penguin/txt": { "mime_type": "text/plain" } to:
+    // "termina": { "penguin": { "txt": "text/plain" } }
+    to_remove.push_back(item.first);
+    std::string* mime_type;
+    if (parts.size() == 3 && item.second.is_dict() &&
+        (mime_type = item.second.FindStringKey(kMimeTypeKey))) {
+      migrated[parts[0]][parts[1]][parts[2]] = *mime_type;
+    } else {
+      LOG(ERROR) << "Deleting unexpected crostini.mime_types key " << item.first
+                 << "=" << item.second;
+    }
+  }
+
+  // Delete old values.
+  for (const std::string& s : to_remove) {
+    mime_types->RemoveKey(s);
+  }
+
+  auto get_or_create = [](base::Value* v, const std::string& k) {
+    base::Value* result = v->FindDictKey(k);
+    if (!result) {
+      result = v->SetKey(k, base::Value(base::Value::Type::DICTIONARY));
+    }
+    return result;
+  };
+
+  // Add migrated values.
+  for (const auto& vm_item : migrated) {
+    base::Value* vm = get_or_create(mime_types, vm_item.first);
+    for (const auto& container_item : vm_item.second) {
+      base::Value* container = get_or_create(vm, container_item.first);
+      for (const auto& ext : container_item.second) {
+        container->SetStringKey(ext.first, ext.second);
+      }
+    }
+  }
+}
+
 std::string GuestOsMimeTypesService::GetMimeType(
     const base::FilePath& file_path,
     const std::string& vm_name,
     const std::string& container_name) const {
-  std::string extension = file_path.FinalExtension();
-  if (extension.empty()) {
-    return "";
+  const base::Value* vm =
+      prefs_->GetDictionary(prefs::kGuestOsMimeTypes)->FindDictKey(vm_name);
+  if (vm) {
+    const base::Value* container = vm->FindDictKey(container_name);
+    if (container) {
+      // Remove the leading dot character from the extension.
+      std::string extension = file_path.FinalExtension();
+      extension.erase(0, 1);
+      const std::string* result = container->FindStringKey(extension);
+      if (result) {
+        return *result;
+      }
+    }
   }
-  // Remove the leading dot character from the extension.
-  extension.erase(0, 1);
-  std::string extension_id =
-      GenerateFileExtensionId(extension, vm_name, container_name);
-  const base::DictionaryValue* mime_type_mappings =
-      prefs_->GetDictionary(prefs::kGuestOsMimeTypes);
-  const base::Value* extension_value = mime_type_mappings->FindKeyOfType(
-      extension_id, base::Value::Type::DICTIONARY);
-  if (!extension_value) {
-    return "";
-  }
-  return extension_value->FindKeyOfType(kMimeTypeKey, base::Value::Type::STRING)
-      ->GetString();
+  return "";
 }
 
 void GuestOsMimeTypesService::ClearMimeTypes(
     const std::string& vm_name,
     const std::string& container_name) {
+  VLOG(1) << "ClearMimeTypes(" << vm_name << ", " << container_name << ")";
   DictionaryPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
-  base::DictionaryValue* mime_type_mappings = update.Get();
-  std::vector<std::string> removed_ids;
-  for (const auto item : mime_type_mappings->DictItems()) {
-    if (item.second.FindKey(kAppVmNameKey)->GetString() == vm_name &&
-        (container_name.empty() ||
-         item.second.FindKey(kAppContainerNameKey)->GetString() ==
-             container_name)) {
-      removed_ids.push_back(item.first);
+  base::DictionaryValue* mime_types = update.Get();
+  base::Value* vm = mime_types->FindDictKey(vm_name);
+  if (vm) {
+    vm->RemoveKey(container_name);
+    if (container_name.empty() || vm->DictEmpty()) {
+      mime_types->RemoveKey(vm_name);
     }
-  }
-  for (const std::string& removed_id : removed_ids) {
-    mime_type_mappings->RemoveKey(removed_id);
   }
 }
 
@@ -98,49 +136,20 @@ void GuestOsMimeTypesService::UpdateMimeTypes(
     return;
   }
 
-  // We need to compute the diff between the new mappings and the old mappings
-  // (with matching vm/container names). We keep a set of the new extension ids
-  // so that we can compute these and update the Dictionary directly.
-  std::set<std::string> new_extension_ids;
-  std::vector<std::string> removed_extensions;
-
-  DictionaryPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
-  base::DictionaryValue* extensions = update.Get();
+  base::Value exts(base::Value::Type::DICTIONARY);
   for (const auto& mapping : mime_type_mappings.mime_type_mappings()) {
-    std::string extension_id =
-        GenerateFileExtensionId(mapping.first, mime_type_mappings.vm_name(),
-                                mime_type_mappings.container_name());
-    new_extension_ids.insert(extension_id);
-    base::Value* old_extension = extensions->FindKey(extension_id);
-    if (old_extension &&
-        old_extension->FindKey(kMimeTypeKey)->GetString() == mapping.second) {
-      // Old mapping matches the new one.
-      continue;
-    }
-
-    base::Value pref_mapping(base::Value::Type::DICTIONARY);
-    pref_mapping.SetKey(kMimeTypeKey, base::Value(mapping.second));
-    pref_mapping.SetKey(kAppVmNameKey,
-                        base::Value(mime_type_mappings.vm_name()));
-    pref_mapping.SetKey(kAppContainerNameKey,
-                        base::Value(mime_type_mappings.container_name()));
-
-    extensions->SetKey(extension_id, std::move(pref_mapping));
+    exts.SetStringKey(mapping.first, mapping.second);
   }
-
-  for (const auto item : extensions->DictItems()) {
-    if (item.second.FindKey(kAppVmNameKey)->GetString() ==
-            mime_type_mappings.vm_name() &&
-        item.second.FindKey(kAppContainerNameKey)->GetString() ==
-            mime_type_mappings.container_name() &&
-        new_extension_ids.find(item.first) == new_extension_ids.end()) {
-      removed_extensions.push_back(item.first);
-    }
+  VLOG(1) << "UpdateMimeTypes(" << mime_type_mappings.vm_name() << ", "
+          << mime_type_mappings.container_name() << ")=" << exts;
+  DictionaryPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
+  base::DictionaryValue* mime_types = update.Get();
+  base::Value* vm = mime_types->FindDictKey(mime_type_mappings.vm_name());
+  if (!vm) {
+    vm = mime_types->SetKey(mime_type_mappings.vm_name(),
+                            base::Value(base::Value::Type::DICTIONARY));
   }
-
-  for (const std::string& removed_extension : removed_extensions) {
-    extensions->RemoveKey(removed_extension);
-  }
+  vm->SetKey(mime_type_mappings.container_name(), std::move(exts));
 }
 
 }  // namespace guest_os

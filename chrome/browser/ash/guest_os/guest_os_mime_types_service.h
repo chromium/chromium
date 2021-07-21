@@ -31,6 +31,10 @@ class GuestOsMimeTypesService : public KeyedService {
   GuestOsMimeTypesService& operator=(const GuestOsMimeTypesService&) = delete;
   ~GuestOsMimeTypesService() override;
 
+  // Migrates from <vm_name>/<container_name>/<ext>: { "mime_type": ... } to
+  // <vm_name>: { <container_name>: { <ext>: <mime_type> } }.
+  static void MigrateVerboseMimeTypePrefs(PrefService* pref_service);
+
   // Returns a MIME type that corresponds to the file extension for the passed
   // in |file_path| for the specified |vm_name| and |container_name|. Returns
   // the empty string if there is no mapping.
@@ -38,8 +42,9 @@ class GuestOsMimeTypesService : public KeyedService {
                           const std::string& vm_name,
                           const std::string& container_name) const;
 
-  // Remove all MIME type associations for the named VM. Used in the
-  // uninstall process.
+  // Remove all MIME type associations for the named VM and container. If
+  // |container_name| is empty, all mappings for |vm_name| are removed. Used in
+  // the uninstall process.
   void ClearMimeTypes(const std::string& vm_name,
                       const std::string& container_name);
 

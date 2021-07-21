@@ -89,16 +89,11 @@ class GuestOsFileTasksTest : public testing::Test {
   }
 
   void AddMime(const std::string& file_ext, const std::string& mime) {
-    // crostini.mime_types {<termina/penguin/<file_ext>:
-    // {container_name: "penguin", mime_type: <mime>, vm_name: "termina"}}
+    // crostini.mime_types.termina.penguin.<file_ext>: <mime>
     DictionaryPrefUpdate update(profile_.GetPrefs(),
                                 guest_os::prefs::kGuestOsMimeTypes);
     base::DictionaryValue* mimes = update.Get();
-    base::Value mime_dict(base::Value::Type::DICTIONARY);
-    mime_dict.SetKey("container_name", base::Value("penguin"));
-    mime_dict.SetKey("mime_type", base::Value(mime));
-    mime_dict.SetKey("vm_name", base::Value("termina"));
-    mimes->SetKey("termina/penguin/" + file_ext, std::move(mime_dict));
+    mimes->SetStringPath("termina.penguin." + file_ext, mime);
   }
 
   content::BrowserTaskEnvironment task_environment_;
