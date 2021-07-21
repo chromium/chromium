@@ -193,7 +193,7 @@ class MediaGalleriesPreferencesTest : public testing::Test {
         // Setting the prefs version to 2 which is the version before
         // default_gallery_type was added.
         dict->SetInteger(kMediaGalleriesPrefsVersionKey, 2);
-        dict->Remove(kMediaGalleriesDefaultGalleryTypeKey, NULL);
+        dict->RemoveKey(kMediaGalleriesDefaultGalleryTypeKey);
       }
     }
     update.reset();

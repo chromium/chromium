@@ -107,7 +107,7 @@ class StateStoreTest : public PlatformStateStoreTestBase {
     ASSERT_NE(nullptr, prefs.get());
     base::DictionaryValue* dict = nullptr;
     ASSERT_TRUE(prefs->GetAsDictionary(&dict));
-    ASSERT_TRUE(dict->Remove(prefs::kSafeBrowsingIncidentsSent, nullptr));
+    ASSERT_TRUE(dict->RemovePath(prefs::kSafeBrowsingIncidentsSent));
     ASSERT_TRUE(JSONFileValueSerializer(GetPrefsPath()).Serialize(*dict));
   }
 

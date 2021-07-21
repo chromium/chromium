@@ -343,17 +343,17 @@ std::unique_ptr<base::ListValue> TtsExtensionEngine::BuildSpeakArgs(
   std::unique_ptr<base::DictionaryValue> options = base::DictionaryValue::From(
       base::Value::ToUniquePtrValue(utterance->GetOptions()->Clone()));
   if (options->FindKey(constants::kRequiredEventTypesKey))
-    options->Remove(constants::kRequiredEventTypesKey, NULL);
+    options->RemoveKey(constants::kRequiredEventTypesKey);
   if (options->FindKey(constants::kDesiredEventTypesKey))
-    options->Remove(constants::kDesiredEventTypesKey, NULL);
+    options->RemoveKey(constants::kDesiredEventTypesKey);
   if (sends_end_event && options->FindKey(constants::kEnqueueKey))
-    options->Remove(constants::kEnqueueKey, NULL);
+    options->RemoveKey(constants::kEnqueueKey);
   if (options->FindKey(constants::kSrcIdKey))
-    options->Remove(constants::kSrcIdKey, NULL);
+    options->RemoveKey(constants::kSrcIdKey);
   if (options->FindKey(constants::kIsFinalEventKey))
-    options->Remove(constants::kIsFinalEventKey, NULL);
+    options->RemoveKey(constants::kIsFinalEventKey);
   if (options->FindKey(constants::kOnEventKey))
-    options->Remove(constants::kOnEventKey, NULL);
+    options->RemoveKey(constants::kOnEventKey);
 
   // Get the volume, pitch, and rate, but only if they weren't already in
   // the options. TODO(dmazzoni): these shouldn't be redundant.

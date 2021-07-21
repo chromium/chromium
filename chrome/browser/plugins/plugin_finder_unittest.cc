@@ -15,8 +15,8 @@ TEST(PluginFinderTest, JsonSyntax) {
   std::unique_ptr<base::DictionaryValue> plugin_list =
       PluginFinder::LoadBuiltInPluginList();
   ASSERT_TRUE(plugin_list);
-  std::unique_ptr<base::Value> version;
-  ASSERT_TRUE(plugin_list->Remove("x-version", &version));
+  absl::optional<base::Value> version = plugin_list->ExtractKey("x-version");
+  ASSERT_TRUE(version.has_value());
   EXPECT_EQ(base::Value::Type::INTEGER, version->type());
 
   for (base::DictionaryValue::Iterator plugin_it(*plugin_list);

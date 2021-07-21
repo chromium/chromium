@@ -573,7 +573,7 @@ void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
     GURL origin("http://" + excluded_site);
     std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
     dict->SetInteger(kNumTimesIgnoredName, 0);
-    dict->Remove(kTimeLastIgnored, nullptr);
+    dict->RemoveKey(kTimeLastIgnored);
     map->SetWebsiteSettingDefaultScope(origin, origin,
                                        ContentSettingsType::IMPORTANT_SITE_INFO,
                                        std::move(dict));
