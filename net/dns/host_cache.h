@@ -34,6 +34,8 @@
 #include "net/dns/public/dns_query_type.h"
 #include "net/log/net_log_capture_mode.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "url/scheme_host_port.h"
 
 namespace base {
 class ListValue;
@@ -46,7 +48,10 @@ namespace net {
 class NET_EXPORT HostCache {
  public:
   struct NET_EXPORT Key {
-    Key(std::string hostname,
+    // Hostnames in `host` must not be IP literals. IP literals should be
+    // resolved directly to the IP address and not be stored/queried in
+    // HostCache.
+    Key(absl::variant<url::SchemeHostPort, std::string> host,
         DnsQueryType dns_query_type,
         HostResolverFlags host_resolver_flags,
         HostResolverSource host_resolver_source,
@@ -54,26 +59,31 @@ class NET_EXPORT HostCache {
     Key();
     Key(const Key& key);
     Key(Key&& key);
+    ~Key();
 
     // This is a helper used in comparing keys. The order of comparisons of
-    // |Key| fields is arbitrary, but the tuple is constructed with
-    // |dns_query_type| and |host_resolver_flags| before |hostname| under the
+    // `Key` fields is arbitrary, but the tuple is constructed with
+    // `dns_query_type` and `host_resolver_flags` before `host` under the
     // assumption that integer comparisons are faster than string comparisons.
-    auto GetTuple(const Key* key) const {
-      return std::tie(key->dns_query_type, key->host_resolver_flags,
-                      key->hostname, key->host_resolver_source,
-                      key->network_isolation_key, key->secure);
+    static auto GetTuple(const Key* key) {
+      return std::tie(key->dns_query_type, key->host_resolver_flags, key->host,
+                      key->host_resolver_source, key->network_isolation_key,
+                      key->secure);
     }
 
     bool operator==(const Key& other) const {
       return GetTuple(this) == GetTuple(&other);
     }
 
+    bool operator!=(const Key& other) const {
+      return GetTuple(this) != GetTuple(&other);
+    }
+
     bool operator<(const Key& other) const {
       return GetTuple(this) < GetTuple(&other);
     }
 
-    std::string hostname;
+    absl::variant<url::SchemeHostPort, std::string> host;
     DnsQueryType dns_query_type = DnsQueryType::UNSPECIFIED;
     HostResolverFlags host_resolver_flags = 0;
     HostResolverSource host_resolver_source = HostResolverSource::ANY;
@@ -337,16 +347,17 @@ class NET_EXPORT HostCache {
            base::TimeTicks now,
            base::TimeDelta ttl);
 
-  // Checks whether an entry exists for |hostname|.
+  // Checks whether an entry exists for `hostname`.
   // If so, returns the matching key and writes the source (e.g. DNS, HOSTS
-  // file, etc.) to |source_out| and the staleness to |stale_out| (if they are
-  // not null). It tries using two common address_family and host_resolver_flag
-  // combinations when performing lookups in the cache; this means false
-  // negatives are possible, but unlikely. It also ignores the secure field
-  // while searching for matches. If no entry exists, returns nullptr.
-  const HostCache::Key* GetMatchingKey(base::StringPiece hostname,
-                                       HostCache::Entry::Source* source_out,
-                                       HostCache::EntryStaleness* stale_out);
+  // file, etc.) to `source_out` and the staleness to `stale_out` (if they are
+  // not null). If no entry exists, returns nullptr.
+  //
+  // For testing use only and not very performant. Production code should only
+  // do lookups by precise Key.
+  const HostCache::Key* GetMatchingKeyForTesting(
+      base::StringPiece hostname,
+      HostCache::Entry::Source* source_out = nullptr,
+      HostCache::EntryStaleness* stale_out = nullptr) const;
 
   // Marks all entries as stale on account of a network change.
   void Invalidate();

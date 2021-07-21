@@ -1637,9 +1637,7 @@ struct HostResolverManager::JobKey {
   ResolveContext* resolve_context;
 
   HostCache::Key ToCacheKey(bool secure) const {
-    // TODO(crbug.com/1206799): Propagate scheme and port to cache key.
-    HostCache::Key key(std::string(GetHostname(host)), query_type, flags,
-                       source, network_isolation_key);
+    HostCache::Key key(host, query_type, flags, source, network_isolation_key);
     key.secure = secure;
     return key;
   }

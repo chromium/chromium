@@ -65,13 +65,13 @@ class HostCachePersistenceManagerTest : public testing::Test {
   void InitializePref() {
     net::HostCache temp_cache(10);
 
-    net::HostCache::Key key1("1", net::DnsQueryType::UNSPECIFIED, 0,
+    net::HostCache::Key key1("1.test", net::DnsQueryType::UNSPECIFIED, 0,
                              net::HostResolverSource::ANY,
                              net::NetworkIsolationKey());
-    net::HostCache::Key key2("2", net::DnsQueryType::UNSPECIFIED, 0,
+    net::HostCache::Key key2("2.test", net::DnsQueryType::UNSPECIFIED, 0,
                              net::HostResolverSource::ANY,
                              net::NetworkIsolationKey());
-    net::HostCache::Key key3("3", net::DnsQueryType::UNSPECIFIED, 0,
+    net::HostCache::Key key3("3.test", net::DnsQueryType::UNSPECIFIED, 0,
                              net::HostResolverSource::ANY,
                              net::NetworkIsolationKey());
     net::HostCache::Entry entry(net::OK, net::AddressList(),
@@ -109,13 +109,13 @@ const char HostCachePersistenceManagerTest::kPrefName[] = "net.test";
 TEST_F(HostCachePersistenceManagerTest, SeparateWrites) {
   MakePersistenceManager(base::TimeDelta::FromSeconds(60));
 
-  WriteToCache("1");
+  WriteToCache("1.test");
   task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(59));
   CheckPref(0);
   task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
   CheckPref(1);
 
-  WriteToCache("2");
+  WriteToCache("2.test");
   task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(59));
   CheckPref(1);
   task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -127,15 +127,15 @@ TEST_F(HostCachePersistenceManagerTest, SeparateWrites) {
 TEST_F(HostCachePersistenceManagerTest, MultipleWrites) {
   MakePersistenceManager(base::TimeDelta::FromSeconds(300));
 
-  WriteToCache("1");
-  WriteToCache("2");
+  WriteToCache("1.test");
+  WriteToCache("2.test");
   task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(299));
   CheckPref(0);
   task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
   CheckPref(2);
 
-  WriteToCache("3");
-  WriteToCache("4");
+  WriteToCache("3.test");
+  WriteToCache("4.test");
   task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(299));
   CheckPref(2);
   task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -147,11 +147,11 @@ TEST_F(HostCachePersistenceManagerTest, MultipleWrites) {
 TEST_F(HostCachePersistenceManagerTest, BatchedWrites) {
   MakePersistenceManager(base::TimeDelta::FromMilliseconds(100));
 
-  WriteToCache("1");
+  WriteToCache("1.test");
   task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(30));
-  WriteToCache("2");
+  WriteToCache("2.test");
   task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(30));
-  WriteToCache("3");
+  WriteToCache("3.test");
   CheckPref(0);
   task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(40));
   CheckPref(3);
@@ -159,11 +159,11 @@ TEST_F(HostCachePersistenceManagerTest, BatchedWrites) {
   // Add a delay in between batches.
   task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
 
-  WriteToCache("4");
+  WriteToCache("4.test");
   task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(30));
-  WriteToCache("5");
+  WriteToCache("5.test");
   task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(30));
-  WriteToCache("6");
+  WriteToCache("6.test");
   CheckPref(3);
   task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(40));
   CheckPref(6);

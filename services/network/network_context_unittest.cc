@@ -1773,7 +1773,8 @@ TEST_F(NetworkContextTest, ClearHostCache) {
         network_context->url_request_context()->host_resolver()->GetHostCache();
     ASSERT_TRUE(host_cache);
 
-    // Add the 4 test domains to the host cache.
+    // Add the 4 test domains to the host cache, each once with scheme and once
+    // without.
     for (const auto* domain : kDomains) {
       host_cache->Set(
           net::HostCache::Key(domain, net::DnsQueryType::UNSPECIFIED, 0,
@@ -1782,9 +1783,17 @@ TEST_F(NetworkContextTest, ClearHostCache) {
           net::HostCache::Entry(net::OK, net::AddressList(),
                                 net::HostCache::Entry::SOURCE_UNKNOWN),
           base::TimeTicks::Now(), base::TimeDelta::FromDays(1));
+      host_cache->Set(
+          net::HostCache::Key(
+              url::SchemeHostPort(url::kHttpsScheme, domain, 443),
+              net::DnsQueryType::UNSPECIFIED, 0, net::HostResolverSource::ANY,
+              net::NetworkIsolationKey()),
+          net::HostCache::Entry(net::OK, net::AddressList(),
+                                net::HostCache::Entry::SOURCE_UNKNOWN),
+          base::TimeTicks::Now(), base::TimeDelta::FromDays(1));
     }
     // Sanity check.
-    EXPECT_EQ(base::size(kDomains), host_cache->entries().size());
+    EXPECT_EQ(base::size(kDomains) * 2, host_cache->entries().size());
 
     // Set up and run the filter, according to |test_case|.
     mojom::ClearDataFilterPtr clear_data_filter;
@@ -1802,14 +1811,19 @@ TEST_F(NetworkContextTest, ClearHostCache) {
     run_loop.Run();
 
     // Check that only the expected domains remain in the cache.
+    size_t expected_cached = 0;
     for (size_t i = 0; i < base::size(kDomains); ++i) {
       bool expect_domain_cached =
           ((test_case.expected_cached_domains & (1 << i)) != 0);
-      EXPECT_EQ(
-          expect_domain_cached,
-          (host_cache->GetMatchingKey(kDomains[i], nullptr /* source_out */,
-                                      nullptr /* stale_out */) != nullptr));
+      EXPECT_EQ(expect_domain_cached,
+                (host_cache->GetMatchingKeyForTesting(
+                     kDomains[i], nullptr /* source_out */,
+                     nullptr /* stale_out */) != nullptr));
+      if (expect_domain_cached)
+        expected_cached += 2;
     }
+
+    EXPECT_EQ(host_cache->entries().size(), expected_cached);
   }
 }
 
