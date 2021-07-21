@@ -17,8 +17,7 @@ namespace policies {
 namespace {
 
 // Mock version of a performance_manager::BFCachePolicy.
-class LenientMockBFCachePolicy
-    : public performance_manager::policies::BFCachePolicy {
+class LenientMockBFCachePolicy : public BFCachePolicy {
  public:
   LenientMockBFCachePolicy() = default;
   ~LenientMockBFCachePolicy() override = default;
@@ -74,9 +73,21 @@ TEST_F(BFCachePolicyTest, BFCacheFlushedWhenPageBecomesNonVisible) {
   page_node_->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
   ::testing::Mock::VerifyAndClearExpectations(policy_);
 
-  EXPECT_CALL(*policy_, MaybeFlushBFCache(page_node_.get()));
+  page_node_->SetIsVisible(false);
+  // There should be no immediate call to MaybeFlushBFCache.
+  ::testing::Mock::VerifyAndClearExpectations(policy_);
+  task_env().FastForwardBy(
+      BFCachePolicy::GetDelayBeforeFlushingBFCacheAfterBackgroundForTesting() /
+      2);
+
+  // There should be no call to MaybeFlushBFCache if not enough time has passed.
+  page_node_->SetIsVisible(true);
+  ::testing::Mock::VerifyAndClearExpectations(policy_);
 
   page_node_->SetIsVisible(false);
+  EXPECT_CALL(*policy_, MaybeFlushBFCache(page_node_.get()));
+  task_env().FastForwardBy(
+      BFCachePolicy::GetDelayBeforeFlushingBFCacheAfterBackgroundForTesting());
   ::testing::Mock::VerifyAndClearExpectations(policy_);
 }
 

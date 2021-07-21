@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_GRAPH_POLICIES_BFCACHE_POLICY_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_POLICIES_BFCACHE_POLICY_H_
 
+#include <map>
+
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/system_node.h"
@@ -26,6 +30,9 @@ class BFCachePolicy : public GraphOwned,
   BFCachePolicy& operator=(BFCachePolicy&&) = delete;
   ~BFCachePolicy() override;
 
+  static base::TimeDelta
+  GetDelayBeforeFlushingBFCacheAfterBackgroundForTesting();
+
  protected:
   // Try to flush the BFCache associated with |page_node|. This will be a no-op
   // if there's a pending navigation.
@@ -39,10 +46,16 @@ class BFCachePolicy : public GraphOwned,
   // PageNodeObserver:
   void OnIsVisibleChanged(const PageNode* page_node) override;
   void OnLoadingStateChanged(const PageNode* page_node) override;
+  void OnBeforePageNodeRemoved(const PageNode* page_node) override;
 
   // SystemNodeObserver:
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel new_level) override;
+
+  // PageNodes that become non visible will have their BFcache after a small
+  // amount of time spent in that state, this map stores the timers for that
+  // logic.
+  std::map<const PageNode*, base::OneShotTimer> page_to_flush_timer_;
 
   Graph* graph_;
 };
