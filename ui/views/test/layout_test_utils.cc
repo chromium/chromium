@@ -52,6 +52,9 @@ void PrintTo(MaximumFlexSizeRule maximum_flex_size_rule, ::std::ostream* os) {
     case MaximumFlexSizeRule::kPreferred:
       *os << "MaximumFlexSizeRule::kPreferred";
       break;
+    case MaximumFlexSizeRule::kScaleToMaximum:
+      *os << "MaximumFlexSizeRule::kScaleToMaximum";
+      break;
     case MaximumFlexSizeRule::kUnbounded:
       *os << "MaximumFlexSizeRule::kUnbounded";
       break;

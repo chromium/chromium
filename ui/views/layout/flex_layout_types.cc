@@ -12,6 +12,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -23,12 +24,72 @@ namespace {
 constexpr MaximumFlexSizeRule kDefaultMaximumFlexSizeRule =
     MaximumFlexSizeRule::kPreferred;
 
+class LazySize;
+
+// Helper object that lazily returns either the width or height of a LazySize
+// (see below).
+class LazyDimension {
+ public:
+  LazyDimension(const LazySize* size, LayoutOrientation dimension)
+      : size_(size), dimension_(dimension) {}
+
+  int operator*() const { return get(); }
+  int get() const;
+
+ private:
+  const LazySize* const size_;
+  LayoutOrientation dimension_;
+};
+
+// Some of a view's sizing methods can be expensive to compute. This provides
+// a lazy-eval value that behaves like a smart pointer but is more lightweight
+// than base::LazyInstance.
+class LazySize {
+ public:
+  using SizeFunc = gfx::Size (View::*)() const;
+
+  explicit LazySize(const View* view, SizeFunc size_func)
+      : view_(view), size_func_(size_func) {}
+  LazySize(const LazySize& other) = default;
+  ~LazySize() = default;
+  // Note: copy operator is implicitly deleted due to const data member.
+
+  const gfx::Size* operator->() const { return get(); }
+  const gfx::Size& operator*() const { return *get(); }
+  const gfx::Size* get() const {
+    if (!size_)
+      size_ = (view_->*size_func_)();
+    return &size_.value();
+  }
+  LazyDimension width() const {
+    return LazyDimension(this, LayoutOrientation::kHorizontal);
+  }
+  LazyDimension height() const {
+    return LazyDimension(this, LayoutOrientation::kVertical);
+  }
+
+ private:
+  const View* const view_;
+  SizeFunc size_func_;
+  mutable absl::optional<gfx::Size> size_;
+};
+
+int LazyDimension::get() const {
+  switch (dimension_) {
+    case LayoutOrientation::kHorizontal:
+      return (*size_)->width();
+    case LayoutOrientation::kVertical:
+      return (*size_)->height();
+  }
+}
+
 // Interpolates a size between minimum, preferred size, and upper bound based on
 // sizing rules, returning the resulting ideal size.
 int InterpolateSize(MinimumFlexSizeRule minimum_size_rule,
                     MaximumFlexSizeRule maximum_size_rule,
                     int minimum_size,
                     int preferred_size,
+                    LazyDimension maximum_size,
                     int available_size) {
   // A view may (mistakenly) report a minimum size larger than its preferred
   // size. While in principle this shouldn't happen, by the time we've gotten
@@ -36,6 +97,8 @@ int InterpolateSize(MinimumFlexSizeRule minimum_size_rule,
   // cross.
   minimum_size = std::min(minimum_size, preferred_size);
 
+  // TODO(dfried): this could be rearranged to allow lazy evaluation of
+  // minimum_size.
   if (available_size < minimum_size) {
     switch (minimum_size_rule) {
       case MinimumFlexSizeRule::kScaleToZero:
@@ -67,31 +130,18 @@ int InterpolateSize(MinimumFlexSizeRule minimum_size_rule,
   switch (maximum_size_rule) {
     case MaximumFlexSizeRule::kPreferred:
       return preferred_size;
+    case MaximumFlexSizeRule::kScaleToMaximum: {
+      // A view may (mistakenly) report a maximum size smaller than its
+      // preferred size. While in principle this shouldn't happen, by the
+      // time we're here it's better to simply make sure the maximum and
+      // preferred size don't cross.
+      const int actual_maximum_size = std::max(preferred_size, *maximum_size);
+      return std::min(available_size, actual_maximum_size);
+    }
     case MaximumFlexSizeRule::kUnbounded:
       return available_size;
   }
 }
-
-// A view's minimum size can in some cases be expensive to compute. This
-// provides a lazy-eval value that behaves like a smart pointer but is more
-// lightweight than base::LazyInstance.
-class LazyMinimumSize {
- public:
-  explicit LazyMinimumSize(const View* view) : view_(view) {}
-  ~LazyMinimumSize() = default;
-
-  const gfx::Size* operator->() const { return get(); }
-  const gfx::Size& operator*() const { return *get(); }
-  const gfx::Size* get() const {
-    if (!size_)
-      size_ = view_->GetMinimumSize();
-    return &size_.value();
-  }
-
- private:
-  const View* const view_;
-  mutable absl::optional<gfx::Size> size_;
-};
 
 gfx::Size GetPreferredSize(MinimumFlexSizeRule minimum_width_rule,
                            MaximumFlexSizeRule maximum_width_rule,
@@ -99,19 +149,20 @@ gfx::Size GetPreferredSize(MinimumFlexSizeRule minimum_width_rule,
                            MaximumFlexSizeRule maximum_height_rule,
                            bool adjust_height_for_width,
                            const View* view,
-                           const SizeBounds& maximum_size) {
-  LazyMinimumSize min(view);
+                           const SizeBounds& size_bounds) {
+  LazySize minimum_size(view, &View::GetMinimumSize);
+  LazySize maximum_size(view, &View::GetMaximumSize);
   gfx::Size preferred = view->GetPreferredSize();
 
   int width;
-  if (!maximum_size.width().is_bounded()) {
+  if (!size_bounds.width().is_bounded()) {
     // Not having a maximum size is different from having a large available
     // size; a view can't grow infinitely, so we go with its preferred size.
     width = preferred.width();
   } else {
-    width =
-        InterpolateSize(minimum_width_rule, maximum_width_rule, min->width(),
-                        preferred.width(), maximum_size.width().value());
+    width = InterpolateSize(minimum_width_rule, maximum_width_rule,
+                            minimum_size->width(), preferred.width(),
+                            maximum_size.width(), size_bounds.width().value());
   }
 
   int preferred_height = preferred.height();
@@ -120,8 +171,8 @@ gfx::Size GetPreferredSize(MinimumFlexSizeRule minimum_width_rule,
     // want views to be able to adapt to the horizontal available space by
     // growing vertically. We therefore allow the horizontal size to shrink even
     // if there's otherwise no flex allowed.
-    if (maximum_size.width() > 0)
-      width = maximum_size.width().min_of(width);
+    if (size_bounds.width() > 0)
+      width = size_bounds.width().min_of(width);
 
     if (width < preferred.width()) {
       // Allow views that need to grow vertically when they're compressed
@@ -141,14 +192,14 @@ gfx::Size GetPreferredSize(MinimumFlexSizeRule minimum_width_rule,
   }
 
   int height;
-  if (!maximum_size.height().is_bounded()) {
+  if (!size_bounds.height().is_bounded()) {
     // Not having a maximum size is different from having a large available
     // size; a view can't grow infinitely, so we go with its preferred size.
     height = preferred_height;
   } else {
-    height =
-        InterpolateSize(minimum_height_rule, maximum_height_rule, min->height(),
-                        preferred_height, maximum_size.height().value());
+    height = InterpolateSize(
+        minimum_height_rule, maximum_height_rule, minimum_size->height(),
+        preferred_height, maximum_size.height(), size_bounds.height().value());
   }
 
   return gfx::Size(width, height);

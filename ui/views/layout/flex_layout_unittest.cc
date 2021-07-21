@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -45,6 +46,10 @@ class MockView : public View {
     return minimum_size_.value_or(GetPreferredSize());
   }
 
+  void SetMaximumSize(gfx::Size maximum_size) { maximum_size_ = maximum_size; }
+
+  Size GetMaximumSize() const override { return maximum_size_; }
+
   int GetHeightForWidth(int width) const override {
     const gfx::Size preferred = GetPreferredSize();
     if (width <= 0)
@@ -70,6 +75,7 @@ class MockView : public View {
 
  private:
   optional<Size> minimum_size_;
+  gfx::Size maximum_size_;
   int set_visible_count_ = 0;
   SizeMode size_mode_ = SizeMode::kUsePreferredSize;
 };
@@ -163,6 +169,9 @@ class FlexLayoutTest : public testing::Test {
   static const FlexSpecification kUnboundedScaleToMinimum;
   static const FlexSpecification kUnboundedScaleToMinimumHighPriority;
 
+  // Scale from a minimum value up to a maximum value.
+  static const FlexSpecification kScaleToMaximum;
+
   // Custom flex which scales step-wise.
   static const FlexSpecification kCustomFlex;
   static const FlexSpecification kCustomFlexSnapToZero;
@@ -233,6 +242,11 @@ const FlexSpecification FlexLayoutTest::kUnboundedScaleToMinimumHighPriority(
     MaximumFlexSizeRule::kUnbounded);
 const FlexSpecification FlexLayoutTest::kUnboundedScaleToMinimum =
     kUnboundedScaleToMinimumHighPriority.WithOrder(2);
+
+const FlexSpecification FlexLayoutTest::kScaleToMaximum =
+    FlexSpecification(MinimumFlexSizeRule::kPreferred,
+                      MaximumFlexSizeRule::kScaleToMaximum)
+        .WithOrder(2);
 
 const FlexSpecification FlexLayoutTest::kCustomFlex =
     FlexSpecification(base::BindRepeating(&CustomFlexImpl, false)).WithOrder(2);
@@ -1936,6 +1950,94 @@ TEST_F(FlexLayoutTest, Layout_FlexRule_UnboundedScaleToZero) {
   host_->SetSize(Size(9, 14));
   host_->Layout();
   EXPECT_FALSE(child->GetVisible());
+}
+
+// Tests that views allowed to scale up to their maximum size will do so.
+TEST_F(FlexLayoutTest, Layout_FlexRule_ScaleToMaximum) {
+  auto* const child1 = AddChild(Size(10, 10));
+  child1->SetMaximumSize(Size(20, 20));
+  child1->SetProperty(kFlexBehaviorKey, kScaleToMaximum);
+  auto* const child2 = AddChild(Size(10, 10));
+  child2->SetMaximumSize(Size(20, 20));
+  child2->SetProperty(kFlexBehaviorKey, kScaleToMaximum);
+  auto* const child3 = AddChild(Size(10, 10));
+  child3->SetMaximumSize(Size(20, 20));
+  child3->SetProperty(kFlexBehaviorKey, kScaleToMaximum);
+
+  host_->SetSize(Size(20, 10));
+  host_->Layout();
+  std::vector<Rect> expected_bounds = {
+      {0, 0, 10, 10}, {10, 0, 10, 10}, {20, 0, 10, 10}};
+  EXPECT_EQ(expected_bounds, GetChildBounds());
+
+  host_->SetSize(Size(30, 10));
+  host_->Layout();
+  expected_bounds = {{0, 0, 10, 10}, {10, 0, 10, 10}, {20, 0, 10, 10}};
+  EXPECT_EQ(expected_bounds, GetChildBounds());
+
+  host_->SetSize(Size(33, 10));
+  host_->Layout();
+  expected_bounds = {{0, 0, 11, 10}, {11, 0, 11, 10}, {22, 0, 11, 10}};
+  EXPECT_EQ(expected_bounds, GetChildBounds());
+
+  host_->SetSize(Size(35, 10));
+  host_->Layout();
+  expected_bounds = {{0, 0, 12, 10}, {12, 0, 12, 10}, {24, 0, 11, 10}};
+  EXPECT_EQ(expected_bounds, GetChildBounds());
+
+  host_->SetSize(Size(60, 10));
+  host_->Layout();
+  expected_bounds = {{0, 0, 20, 10}, {20, 0, 20, 10}, {40, 0, 20, 10}};
+  EXPECT_EQ(expected_bounds, GetChildBounds());
+
+  host_->SetSize(Size(70, 10));
+  host_->Layout();
+  expected_bounds = {{0, 0, 20, 10}, {20, 0, 20, 10}, {40, 0, 20, 10}};
+  EXPECT_EQ(expected_bounds, GetChildBounds());
+}
+
+// Tests that views allowed to scale up to their maximum size will do so.
+TEST_F(FlexLayoutTest, Layout_FlexRule_ScaleToMaximum_WithOrder) {
+  auto* const child1 = AddChild(Size(10, 10));
+  child1->SetMaximumSize(Size(20, 20));
+  child1->SetProperty(kFlexBehaviorKey, kScaleToMaximum.WithOrder(1));
+  auto* const child2 = AddChild(Size(10, 10));
+  child2->SetMaximumSize(Size(20, 20));
+  child2->SetProperty(kFlexBehaviorKey, kScaleToMaximum.WithOrder(2));
+  auto* const child3 = AddChild(Size(10, 10));
+  child3->SetMaximumSize(Size(20, 20));
+  child3->SetProperty(kFlexBehaviorKey, kScaleToMaximum.WithOrder(3));
+
+  host_->SetSize(Size(20, 10));
+  host_->Layout();
+  std::vector<Rect> expected_bounds = {
+      {0, 0, 10, 10}, {10, 0, 10, 10}, {20, 0, 10, 10}};
+  EXPECT_EQ(expected_bounds, GetChildBounds());
+
+  host_->SetSize(Size(30, 10));
+  host_->Layout();
+  expected_bounds = {{0, 0, 10, 10}, {10, 0, 10, 10}, {20, 0, 10, 10}};
+  EXPECT_EQ(expected_bounds, GetChildBounds());
+
+  host_->SetSize(Size(33, 10));
+  host_->Layout();
+  expected_bounds = {{0, 0, 13, 10}, {13, 0, 10, 10}, {23, 0, 10, 10}};
+  EXPECT_EQ(expected_bounds, GetChildBounds());
+
+  host_->SetSize(Size(43, 10));
+  host_->Layout();
+  expected_bounds = {{0, 0, 20, 10}, {20, 0, 13, 10}, {33, 0, 10, 10}};
+  EXPECT_EQ(expected_bounds, GetChildBounds());
+
+  host_->SetSize(Size(53, 10));
+  host_->Layout();
+  expected_bounds = {{0, 0, 20, 10}, {20, 0, 20, 10}, {40, 0, 13, 10}};
+  EXPECT_EQ(expected_bounds, GetChildBounds());
+
+  host_->SetSize(Size(70, 10));
+  host_->Layout();
+  expected_bounds = {{0, 0, 20, 10}, {20, 0, 20, 10}, {40, 0, 20, 10}};
+  EXPECT_EQ(expected_bounds, GetChildBounds());
 }
 
 // A higher priority view which can expand past its maximum size should displace
