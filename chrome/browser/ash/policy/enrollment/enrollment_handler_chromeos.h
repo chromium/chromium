@@ -40,7 +40,7 @@ class AttestationFlow;
 
 namespace policy {
 class ActiveDirectoryJoinDelegate;
-class DeviceCloudPolicyStoreChromeOS;
+class DeviceCloudPolicyStoreAsh;
 class DMTokenStorage;
 class ServerBackedStateKeysBroker;
 
@@ -64,7 +64,7 @@ class EnrollmentHandlerChromeOS : public CloudPolicyClient::Observer,
   // |store| and |install_attributes| must remain valid for the life time of the
   // enrollment handler.
   EnrollmentHandlerChromeOS(
-      DeviceCloudPolicyStoreChromeOS* store,
+      DeviceCloudPolicyStoreAsh* store,
       chromeos::InstallAttributes* install_attributes,
       ServerBackedStateKeysBroker* state_keys_broker,
       chromeos::attestation::AttestationFlow* attestation_flow,
@@ -206,7 +206,7 @@ class EnrollmentHandlerChromeOS : public CloudPolicyClient::Observer,
   // Set |enrollment_step_| to |step|.
   void SetStep(EnrollmentStep step);
 
-  DeviceCloudPolicyStoreChromeOS* store_;
+  DeviceCloudPolicyStoreAsh* store_;
   chromeos::InstallAttributes* install_attributes_;
   ServerBackedStateKeysBroker* state_keys_broker_;
   chromeos::attestation::AttestationFlow* attestation_flow_;

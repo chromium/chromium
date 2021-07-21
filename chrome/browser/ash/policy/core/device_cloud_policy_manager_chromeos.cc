@@ -27,7 +27,7 @@
 #include "chrome/browser/ash/attestation/machine_certificate_uploader_impl.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_store_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/policy_pref_names.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_chromeos.h"
 #include "chrome/browser/ash/policy/rsu/lookup_key_uploader.h"
@@ -82,7 +82,7 @@ bool IsForcedReEnrollmentEnabled() {
 }  // namespace
 
 DeviceCloudPolicyManagerChromeOS::DeviceCloudPolicyManagerChromeOS(
-    std::unique_ptr<DeviceCloudPolicyStoreChromeOS> store,
+    std::unique_ptr<DeviceCloudPolicyStoreAsh> store,
     std::unique_ptr<CloudExternalDataManager> external_data_manager,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     ServerBackedStateKeysBroker* state_keys_broker)

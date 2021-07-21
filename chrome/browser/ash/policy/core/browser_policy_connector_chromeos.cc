@@ -28,7 +28,7 @@
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/notifications/adb_sideloading_policy_change_notification.h"
 #include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_store_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/dm_token_storage.h"
@@ -136,8 +136,8 @@ BrowserPolicyConnectorChromeOS::BrowserPolicyConnectorChromeOS() {
   // (removing it now breaks tests). crbug.com/141016.
   if (chromeos::DBusThreadManager::IsInitialized() &&
       ash::DeviceSettingsService::IsInitialized()) {
-    std::unique_ptr<DeviceCloudPolicyStoreChromeOS> device_cloud_policy_store =
-        std::make_unique<DeviceCloudPolicyStoreChromeOS>(
+    std::unique_ptr<DeviceCloudPolicyStoreAsh> device_cloud_policy_store =
+        std::make_unique<DeviceCloudPolicyStoreAsh>(
             ash::DeviceSettingsService::Get(),
             chromeos::InstallAttributes::Get(), GetBackgroundTaskRunner());
 

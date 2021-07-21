@@ -22,7 +22,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_store_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
@@ -110,7 +110,7 @@ class TestingDeviceCloudPolicyManagerChromeOS
     : public DeviceCloudPolicyManagerChromeOS {
  public:
   TestingDeviceCloudPolicyManagerChromeOS(
-      std::unique_ptr<DeviceCloudPolicyStoreChromeOS> store,
+      std::unique_ptr<DeviceCloudPolicyStoreAsh> store,
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       ServerBackedStateKeysBroker* state_keys_broker)
@@ -163,9 +163,9 @@ class DeviceCloudPolicyManagerChromeOSTest
     chromeos::InstallAttributesClient::InitializeFake();
     install_attributes_ = std::make_unique<chromeos::InstallAttributes>(
         chromeos::FakeInstallAttributesClient::Get());
-    store_ = new DeviceCloudPolicyStoreChromeOS(
-        device_settings_service_.get(), install_attributes_.get(),
-        base::ThreadTaskRunnerHandle::Get());
+    store_ = new DeviceCloudPolicyStoreAsh(device_settings_service_.get(),
+                                           install_attributes_.get(),
+                                           base::ThreadTaskRunnerHandle::Get());
     auto external_data_manager =
         std::make_unique<MockCloudExternalDataManager>();
     external_data_manager_ = external_data_manager.get();
@@ -311,7 +311,7 @@ class DeviceCloudPolicyManagerChromeOSTest
   ServerBackedStateKeysBroker state_keys_broker_;
   StrictMock<chromeos::attestation::MockAttestationFlow>* mock_;
 
-  DeviceCloudPolicyStoreChromeOS* store_;
+  DeviceCloudPolicyStoreAsh* store_;
   SchemaRegistry schema_registry_;
   MockCloudExternalDataManager* external_data_manager_;
   std::unique_ptr<TestingDeviceCloudPolicyManagerChromeOS> manager_;

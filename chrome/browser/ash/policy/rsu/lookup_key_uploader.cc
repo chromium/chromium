@@ -9,7 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"
 #include "base/time/default_clock.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_store_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
@@ -22,7 +22,7 @@ const base::TimeDelta LookupKeyUploader::kRetryFrequency =
     base::TimeDelta::FromHours(10);
 
 LookupKeyUploader::LookupKeyUploader(
-    DeviceCloudPolicyStoreChromeOS* policy_store,
+    DeviceCloudPolicyStoreAsh* policy_store,
     PrefService* pref_service,
     ash::attestation::EnrollmentCertificateUploader* certificate_uploader)
     : policy_store_(policy_store),

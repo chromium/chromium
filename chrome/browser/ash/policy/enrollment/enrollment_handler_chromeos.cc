@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/policy/active_directory/active_directory_join_delegate.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_store_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/dm_token_storage.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/server_backed_state/server_backed_state_keys_broker.h"
@@ -163,7 +163,7 @@ std::string GetActiveDirectoryDomainJoinConfig(
 }  // namespace
 
 EnrollmentHandlerChromeOS::EnrollmentHandlerChromeOS(
-    DeviceCloudPolicyStoreChromeOS* store,
+    DeviceCloudPolicyStoreAsh* store,
     chromeos::InstallAttributes* install_attributes,
     ServerBackedStateKeysBroker* state_keys_broker,
     chromeos::attestation::AttestationFlow* attestation_flow,

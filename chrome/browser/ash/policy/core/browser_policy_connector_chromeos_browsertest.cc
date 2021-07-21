@@ -5,7 +5,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_store_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
@@ -27,7 +27,7 @@ const char kCustomManager[] = "user@acme.corp";
 void WaitUntilPolicyLoaded() {
   BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  DeviceCloudPolicyStoreChromeOS* store =
+  DeviceCloudPolicyStoreAsh* store =
       connector->GetDeviceCloudPolicyManager()->device_store();
   if (!store->has_policy()) {
     MockCloudPolicyStoreObserver observer;

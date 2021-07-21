@@ -46,7 +46,7 @@ class PrefService;
 
 namespace policy {
 
-class DeviceCloudPolicyStoreChromeOS;
+class DeviceCloudPolicyStoreAsh;
 class ForwardingSchemaRegistry;
 class HeartbeatScheduler;
 class SchemaRegistry;
@@ -72,7 +72,7 @@ class DeviceCloudPolicyManagerChromeOS : public CloudPolicyManager {
   // |task_runner| is the runner for policy refresh, heartbeat, and status
   // upload tasks.
   DeviceCloudPolicyManagerChromeOS(
-      std::unique_ptr<DeviceCloudPolicyStoreChromeOS> store,
+      std::unique_ptr<DeviceCloudPolicyStoreAsh> store,
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       ServerBackedStateKeysBroker* state_keys_broker);
@@ -109,7 +109,7 @@ class DeviceCloudPolicyManagerChromeOS : public CloudPolicyManager {
   // Disconnects the manager.
   virtual void Disconnect();
 
-  DeviceCloudPolicyStoreChromeOS* device_store() { return device_store_.get(); }
+  DeviceCloudPolicyStoreAsh* device_store() { return device_store_.get(); }
 
   // Return the StatusUploader used to communicate device status to the
   // policy server.
@@ -155,7 +155,7 @@ class DeviceCloudPolicyManagerChromeOS : public CloudPolicyManager {
 
   // Points to the same object as the base CloudPolicyManager::store(), but with
   // actual device policy specific type.
-  std::unique_ptr<DeviceCloudPolicyStoreChromeOS> device_store_;
+  std::unique_ptr<DeviceCloudPolicyStoreAsh> device_store_;
 
   // Manages external data referenced by device policies.
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;

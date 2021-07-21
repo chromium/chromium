@@ -17,12 +17,12 @@ class SequencedTaskRunner;
 
 namespace policy {
 
-class DeviceCloudPolicyStoreChromeOS;
+class DeviceCloudPolicyStoreAsh;
 
 class FakeDeviceCloudPolicyManager : public DeviceCloudPolicyManagerChromeOS {
  public:
   FakeDeviceCloudPolicyManager(
-      std::unique_ptr<DeviceCloudPolicyStoreChromeOS> store,
+      std::unique_ptr<DeviceCloudPolicyStoreAsh> store,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
   ~FakeDeviceCloudPolicyManager() override;
 

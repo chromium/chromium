@@ -25,16 +25,16 @@ class CryptohomeMiscClient;
 
 namespace policy {
 
-class DeviceCloudPolicyStoreChromeOS;
+class DeviceCloudPolicyStoreAsh;
 
 // This class is used for uploading Remote Server Unlock lookup keys once per
 // enrollment, attempting it whenever we receive device policy from the cloud.
 class LookupKeyUploader : public CloudPolicyStore::Observer {
  public:
-  // The observer immediately connects with DeviceCloudPolicyStoreChromeOS
+  // The observer immediately connects with DeviceCloudPolicyStoreAsh
   // to listen for policy load events.
   LookupKeyUploader(
-      DeviceCloudPolicyStoreChromeOS* policy_store,
+      DeviceCloudPolicyStoreAsh* policy_store,
       PrefService* pref_service,
       ash::attestation::EnrollmentCertificateUploader* certificate_uploader);
 
@@ -61,7 +61,7 @@ class LookupKeyUploader : public CloudPolicyStore::Observer {
   // Used in tests.
   void SetClock(base::Clock* clock) { clock_ = clock; }
 
-  DeviceCloudPolicyStoreChromeOS* policy_store_;
+  DeviceCloudPolicyStoreAsh* policy_store_;
   PrefService* prefs_;
   ash::attestation::EnrollmentCertificateUploader* certificate_uploader_;
   chromeos::CryptohomeMiscClient* cryptohome_misc_client_;

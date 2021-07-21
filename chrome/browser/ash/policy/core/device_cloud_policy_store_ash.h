@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_CLOUD_POLICY_STORE_CHROMEOS_H_
-#define CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_CLOUD_POLICY_STORE_CHROMEOS_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_CLOUD_POLICY_STORE_ASH_H_
+#define CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_CLOUD_POLICY_STORE_ASH_H_
 
 #include <memory>
 
@@ -29,18 +29,17 @@ class PolicyFetchResponse;
 
 namespace policy {
 
-// CloudPolicyStore implementation for device policy on Chrome OS. Policy is
+// CloudPolicyStore implementation for device policy on Ash. Policy is
 // stored/loaded via D-Bus to/from session_manager.
 // TODO(tnagel): Either drop "Cloud" from the name or refactor.
-class DeviceCloudPolicyStoreChromeOS
-    : public CloudPolicyStore,
-      public ash::DeviceSettingsService::Observer {
+class DeviceCloudPolicyStoreAsh : public CloudPolicyStore,
+                                  public ash::DeviceSettingsService::Observer {
  public:
-  DeviceCloudPolicyStoreChromeOS(
+  DeviceCloudPolicyStoreAsh(
       ash::DeviceSettingsService* device_settings_service,
       chromeos::InstallAttributes* install_attributes,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
-  ~DeviceCloudPolicyStoreChromeOS() override;
+  ~DeviceCloudPolicyStoreAsh() override;
 
   // CloudPolicyStore:
   // Note that Store() must not be called before the store gets initialized (by
@@ -95,11 +94,11 @@ class DeviceCloudPolicyStoreChromeOS
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
-  base::WeakPtrFactory<DeviceCloudPolicyStoreChromeOS> weak_factory_{this};
+  base::WeakPtrFactory<DeviceCloudPolicyStoreAsh> weak_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyStoreChromeOS);
+  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyStoreAsh);
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_CLOUD_POLICY_STORE_CHROMEOS_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_CLOUD_POLICY_STORE_ASH_H_

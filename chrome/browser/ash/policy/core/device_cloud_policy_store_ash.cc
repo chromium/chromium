@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/core/device_cloud_policy_store_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 
 #include <utility>
 
@@ -49,7 +49,7 @@ void RecordDeviceIdValidityMetric(
 
 }  // namespace
 
-DeviceCloudPolicyStoreChromeOS::DeviceCloudPolicyStoreChromeOS(
+DeviceCloudPolicyStoreAsh::DeviceCloudPolicyStoreAsh(
     ash::DeviceSettingsService* device_settings_service,
     chromeos::InstallAttributes* install_attributes,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
@@ -60,13 +60,12 @@ DeviceCloudPolicyStoreChromeOS::DeviceCloudPolicyStoreChromeOS(
   device_settings_service_->SetDeviceMode(install_attributes_->GetMode());
 }
 
-DeviceCloudPolicyStoreChromeOS::~DeviceCloudPolicyStoreChromeOS() {
+DeviceCloudPolicyStoreAsh::~DeviceCloudPolicyStoreAsh() {
   if (device_settings_service_)
     device_settings_service_->RemoveObserver(this);
 }
 
-void DeviceCloudPolicyStoreChromeOS::Store(
-    const em::PolicyFetchResponse& policy) {
+void DeviceCloudPolicyStoreAsh::Store(const em::PolicyFetchResponse& policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The policy and the public key must have already been loaded by the device
   // settings service.
@@ -102,11 +101,11 @@ void DeviceCloudPolicyStoreChromeOS::Store(
       CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
   DeviceCloudPolicyValidator::StartValidation(
       std::move(validator),
-      base::BindOnce(&DeviceCloudPolicyStoreChromeOS::OnPolicyToStoreValidated,
+      base::BindOnce(&DeviceCloudPolicyStoreAsh::OnPolicyToStoreValidated,
                      weak_factory_.GetWeakPtr()));
 }
 
-void DeviceCloudPolicyStoreChromeOS::Load() {
+void DeviceCloudPolicyStoreAsh::Load() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Cancel all pending requests.
@@ -115,7 +114,7 @@ void DeviceCloudPolicyStoreChromeOS::Load() {
   device_settings_service_->Load();
 }
 
-void DeviceCloudPolicyStoreChromeOS::InstallInitialPolicy(
+void DeviceCloudPolicyStoreAsh::InstallInitialPolicy(
     const em::PolicyFetchResponse& policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -133,18 +132,18 @@ void DeviceCloudPolicyStoreChromeOS::InstallInitialPolicy(
   validator->ValidateInitialKey(install_attributes_->GetDomain());
   DeviceCloudPolicyValidator::StartValidation(
       std::move(validator),
-      base::BindOnce(&DeviceCloudPolicyStoreChromeOS::OnPolicyToStoreValidated,
+      base::BindOnce(&DeviceCloudPolicyStoreAsh::OnPolicyToStoreValidated,
                      weak_factory_.GetWeakPtr()));
 }
 
-void DeviceCloudPolicyStoreChromeOS::DeviceSettingsUpdated() {
+void DeviceCloudPolicyStoreAsh::DeviceSettingsUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!weak_factory_.HasWeakPtrs())
     UpdateFromService();
 }
 
-void DeviceCloudPolicyStoreChromeOS::OnDeviceSettingsServiceShutdown() {
+void DeviceCloudPolicyStoreAsh::OnDeviceSettingsServiceShutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   device_settings_service_->RemoveObserver(this);
@@ -152,7 +151,7 @@ void DeviceCloudPolicyStoreChromeOS::OnDeviceSettingsServiceShutdown() {
 }
 
 std::unique_ptr<DeviceCloudPolicyValidator>
-DeviceCloudPolicyStoreChromeOS::CreateValidator(
+DeviceCloudPolicyStoreAsh::CreateValidator(
     const em::PolicyFetchResponse& policy) {
   auto validator = std::make_unique<DeviceCloudPolicyValidator>(
       std::make_unique<em::PolicyFetchResponse>(policy),
@@ -164,7 +163,7 @@ DeviceCloudPolicyStoreChromeOS::CreateValidator(
   return validator;
 }
 
-void DeviceCloudPolicyStoreChromeOS::OnPolicyToStoreValidated(
+void DeviceCloudPolicyStoreAsh::OnPolicyToStoreValidated(
     DeviceCloudPolicyValidator* validator) {
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
@@ -175,15 +174,15 @@ void DeviceCloudPolicyStoreChromeOS::OnPolicyToStoreValidated(
 
   device_settings_service_->Store(
       std::move(validator->policy()),
-      base::BindOnce(&DeviceCloudPolicyStoreChromeOS::OnPolicyStored,
+      base::BindOnce(&DeviceCloudPolicyStoreAsh::OnPolicyStored,
                      weak_factory_.GetWeakPtr()));
 }
 
-void DeviceCloudPolicyStoreChromeOS::OnPolicyStored() {
+void DeviceCloudPolicyStoreAsh::OnPolicyStored() {
   UpdateFromService();
 }
 
-void DeviceCloudPolicyStoreChromeOS::UpdateFromService() {
+void DeviceCloudPolicyStoreAsh::UpdateFromService() {
   if (!install_attributes_->IsEnterpriseManaged()) {
     status_ = STATUS_BAD_STATE;
     NotifyStoreError();
@@ -223,7 +222,7 @@ void DeviceCloudPolicyStoreChromeOS::UpdateFromService() {
   NotifyStoreError();
 }
 
-void DeviceCloudPolicyStoreChromeOS::UpdateStatusFromService() {
+void DeviceCloudPolicyStoreAsh::UpdateStatusFromService() {
   switch (device_settings_service_->status()) {
     case ash::DeviceSettingsService::STORE_SUCCESS:
       status_ = STATUS_OK;
@@ -243,7 +242,7 @@ void DeviceCloudPolicyStoreChromeOS::UpdateStatusFromService() {
   NOTREACHED();
 }
 
-void DeviceCloudPolicyStoreChromeOS::CheckDMToken() {
+void DeviceCloudPolicyStoreAsh::CheckDMToken() {
   const ash::DeviceSettingsService::Status service_status =
       device_settings_service_->status();
   switch (service_status) {
@@ -285,7 +284,7 @@ void DeviceCloudPolicyStoreChromeOS::CheckDMToken() {
   }
 }
 
-void DeviceCloudPolicyStoreChromeOS::UpdateFirstPoliciesLoaded() {
+void DeviceCloudPolicyStoreAsh::UpdateFirstPoliciesLoaded() {
   CloudPolicyStore::UpdateFirstPoliciesLoaded();
   // Mark policies as loaded if we don't expect any policies to be loaded.
   first_policies_loaded_ |= !install_attributes_->IsEnterpriseManaged();

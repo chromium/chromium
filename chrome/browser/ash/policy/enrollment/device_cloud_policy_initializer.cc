@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_store_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_handler_chromeos.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
@@ -60,7 +60,7 @@ DeviceCloudPolicyInitializer::DeviceCloudPolicyInitializer(
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
     chromeos::InstallAttributes* install_attributes,
     ServerBackedStateKeysBroker* state_keys_broker,
-    DeviceCloudPolicyStoreChromeOS* policy_store,
+    DeviceCloudPolicyStoreAsh* policy_store,
     DeviceCloudPolicyManagerChromeOS* policy_manager,
     std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow,
     chromeos::system::StatisticsProvider* statistics_provider)
