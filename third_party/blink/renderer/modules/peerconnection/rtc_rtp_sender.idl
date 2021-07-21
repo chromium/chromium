@@ -18,12 +18,4 @@ interface RTCRtpSender {
     [Measure,
      CallWith=ScriptState,
      RaisesException] RTCInsertableStreams createEncodedStreams();
-    [DeprecateAs=V8RTCRtpSender_CreateEncodedAudioStreams_Method,
-     RuntimeEnabled=RTCInsertableStreams,
-     CallWith=ScriptState,
-     RaisesException] RTCInsertableStreams createEncodedAudioStreams();
-    [DeprecateAs=V8RTCRtpSender_CreateEncodedVideoStreams_Method,
-     RuntimeEnabled=RTCInsertableStreams,
-     CallWith=ScriptState,
-     RaisesException] RTCInsertableStreams createEncodedVideoStreams();
 };

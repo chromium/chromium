@@ -768,11 +768,9 @@ RTCPeerConnection* RTCPeerConnection::Create(
 
   RTCPeerConnection* peer_connection = MakeGarbageCollected<RTCPeerConnection>(
       context, std::move(configuration), rtc_configuration->hasSdpSemantics(),
-      rtc_configuration->forceEncodedAudioInsertableStreams() ||
-          rtc_configuration->encodedInsertableStreams(),
-      rtc_configuration->forceEncodedVideoInsertableStreams() ||
-          rtc_configuration->encodedInsertableStreams(),
-      constraints, exception_state);
+      rtc_configuration->encodedInsertableStreams(),
+      rtc_configuration->encodedInsertableStreams(), constraints,
+      exception_state);
   if (exception_state.HadException())
     return nullptr;
 

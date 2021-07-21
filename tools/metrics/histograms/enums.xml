@@ -33073,10 +33073,14 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3177" label="BreakIteratorTypeLine"/>
   <int value="3178" label="V8FileSystemDirectoryHandle_Resolve_Method"/>
   <int value="3179" label="V8FileSystemHandle_IsSameEntry_Method"/>
-  <int value="3180" label="V8RTCRtpSender_CreateEncodedAudioStreams_Method"/>
-  <int value="3181" label="V8RTCRtpSender_CreateEncodedVideoStreams_Method"/>
-  <int value="3182" label="V8RTCRtpReceiver_CreateEncodedAudioStreams_Method"/>
-  <int value="3183" label="V8RTCRtpReceiver_CreateEncodedVideoStreams_Method"/>
+  <int value="3180"
+      label="OBSOLETEV8RTCRtpSender_CreateEncodedAudioStreams_Method"/>
+  <int value="3181"
+      label="OBSOLETEV8RTCRtpSender_CreateEncodedVideoStreams_Method"/>
+  <int value="3182"
+      label="OBSOLETEV8RTCRtpReceiver_CreateEncodedAudioStreams_Method"/>
+  <int value="3183"
+      label="OBSOLETEV8RTCRtpReceiver_CreateEncodedVideoStreams_Method"/>
   <int value="3184" label="QuicTransport"/>
   <int value="3185" label="QuicTransportStreamApis"/>
   <int value="3186" label="QuicTransportDatagramApis"/>
@@ -33192,8 +33196,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3291" label="FlexRowGapPercentIndefinite"/>
   <int value="3292" label="V8RTCRtpSender_CreateEncodedStreams_Method"/>
   <int value="3293" label="V8RTCRtpReceiver_CreateEncodedStreams_Method"/>
-  <int value="3294" label="ForceEncodedAudioInsertableStreams"/>
-  <int value="3295" label="ForceEncodedVideoInsertableStreams"/>
+  <int value="3294" label="OBSOLETEForceEncodedAudioInsertableStreams"/>
+  <int value="3295" label="OBSOLETEForceEncodedVideoInsertableStreams"/>
   <int value="3296" label="TransformStyleContainingBlockComputedUsedMismatch"/>
   <int value="3297" label="OBSOLETE_AdditionalGroupingPropertiesForCompat"/>
   <int value="3298" label="PopupDoesNotExceedOwnerWindowBounds"/>

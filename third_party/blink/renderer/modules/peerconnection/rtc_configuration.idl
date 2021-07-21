@@ -55,8 +55,4 @@ dictionary RTCConfiguration {
     [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] boolean rtcAudioJitterBufferFastAccelerate;
     [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] long rtcAudioJitterBufferMinDelayMs;
     boolean encodedInsertableStreams = false;
-    [DeprecateAs=ForceEncodedAudioInsertableStreams,
-     RuntimeEnabled=RTCInsertableStreams] boolean forceEncodedAudioInsertableStreams = false;
-    [DeprecateAs=ForceEncodedVideoInsertableStreams,
-     RuntimeEnabled=RTCInsertableStreams] boolean forceEncodedVideoInsertableStreams = false;
 };

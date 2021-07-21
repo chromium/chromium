@@ -182,6 +182,7 @@ String WillBeRemoved(const char* feature,
       feature, MilestoneString(milestone).Ascii().c_str(), details);
 }
 
+/* Currently ununsed.
 String ReplacedWillBeRemoved(const char* feature,
                              const char* replacement,
                              Milestone milestone,
@@ -192,6 +193,7 @@ String ReplacedWillBeRemoved(const char* feature,
       feature, MilestoneString(milestone).Ascii().c_str(), replacement,
       details);
 }
+*/
 
 DeprecationInfo GetDeprecationInfo(WebFeature feature) {
   switch (feature) {
@@ -522,44 +524,6 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
               "https://developer.chrome.com/blog/enabling-shared-array-buffer/"
               " for more details.",
               MilestoneString(kM92).Ascii().c_str())};
-
-    case WebFeature::kV8RTCRtpSender_CreateEncodedAudioStreams_Method:
-      return {"V8RTCRtpSender_CreateEncodedAudioStreams_Method", kM88,
-              ReplacedWillBeRemoved("RTCRtpSender.createEncodedAudioStreams",
-                                    "RTCRtpSender.createEncodedStreams", kM88,
-                                    "6321945865879552")};
-
-    case WebFeature::kV8RTCRtpSender_CreateEncodedVideoStreams_Method:
-      return {"V8RTCRtpSender_CreateEncodedVideoStreams_Method", kM88,
-              ReplacedWillBeRemoved("RTCRtpSender.createEncodedVideoStreams",
-                                    "RTCRtpSender.createEncodedStreams", kM88,
-                                    "6321945865879552")};
-
-    case WebFeature::kV8RTCRtpReceiver_CreateEncodedAudioStreams_Method:
-      return {"V8RTCRtpReceiver_CreateEncodedAudioStreams_Method", kM88,
-              ReplacedWillBeRemoved("RTCRtpReceiver.createEncodedAudioStreams",
-                                    "RTCRtpReceiver.createEncodedStreams", kM88,
-                                    "6321945865879552")};
-
-    case WebFeature::kV8RTCRtpReceiver_CreateEncodedVideoStreams_Method:
-      return {"V8RTCRtpReceiver_CreateEncodedVideoStreams_Method", kM88,
-              ReplacedWillBeRemoved("RTCRtpReceiver.createEncodedVideoStreams",
-                                    "RTCRtpReceiver.createEncodedStreams", kM88,
-                                    "6321945865879552")};
-
-    case WebFeature::kForceEncodedAudioInsertableStreams:
-      return {"ForceEncodedAudioInsertableStreams", kM88,
-              ReplacedWillBeRemoved(
-                  "RTCConfiguration.forceEncodedAudioInsertableStreams",
-                  "RTCConfiguration.encodedInsertableStreams", kM88,
-                  "6321945865879552")};
-
-    case WebFeature::kForceEncodedVideoInsertableStreams:
-      return {"ForceEncodedVideoInsertableStreams", kM88,
-              ReplacedWillBeRemoved(
-                  "RTCConfiguration.forceEncodedVideoInsertableStreams",
-                  "RTCConfiguration.encodedInsertableStreams", kM88,
-                  "6321945865879552")};
 
     case WebFeature::kRTCConstraintEnableRtpDataChannelsFalse:
     case WebFeature::kRTCConstraintEnableRtpDataChannelsTrue:

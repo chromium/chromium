@@ -191,51 +191,6 @@ promise_test(async t => {
       streams.readable.pipeThrough(transformer).pipeTo(streams.writable));
 }, 'Enqueuing the same frame twice fails');
 
-promise_test(async t => {
-  const caller = new RTCPeerConnection({forceEncodedAudioInsertableStreams:true});
-  t.add_cleanup(() => caller.close());
-  const callee = new RTCPeerConnection({forceEncodedAudioInsertableStreams:true});
-  t.add_cleanup(() => callee.close());
-
-  const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-  const audioTrack = stream.getAudioTracks()[0];
-  t.add_cleanup(() => audioTrack.stop());
-
-  const audioSender = caller.addTrack(audioTrack)
-  const senderStreams = audioSender.createEncodedStreams();
-  const senderReader = senderStreams.readable.getReader();
-  const senderWriter = senderStreams.writable.getWriter();
-
-  let sentFrameInfo = null;
-  const ontrackPromise = new Promise(resolve => {
-    callee.ontrack = e => {
-      const audioReceiver = e.receiver;
-
-      const receiverStreams = audioReceiver.createEncodedStreams();
-      const receiverReader = receiverStreams.readable.getReader();
-      receiverReader.read().then(t.step_func(receivedResult => {
-        assert_true(areFrameInfosEqual(receivedResult.value, sentFrameInfo));
-        resolve();
-      }));
-    }
-  });
-
-  exchangeIceCandidates(caller, callee);
-  await exchangeOfferAnswer(caller, callee);
-
-  // Pass frames as they come from the encoder.
-  const result = await senderReader.read()
-  sentFrameInfo = {
-    timestamp: result.value.timestamp,
-    data: result.value.data,
-    metadata: result.value.getMetadata(),
-    getMetadata() { return this.metadata; }
-  }
-  senderWriter.write(result.value);
-
-  return ontrackPromise;
-}, 'Legacy API works');
-
 </script>
 </body>
 </html>

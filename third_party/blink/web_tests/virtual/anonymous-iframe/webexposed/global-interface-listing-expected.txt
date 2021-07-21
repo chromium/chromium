@@ -6762,9 +6762,7 @@ interface RTCRtpReceiver
     getter track
     getter transport
     method constructor
-    method createEncodedAudioStreams
     method createEncodedStreams
-    method createEncodedVideoStreams
     method getContributingSources
     method getParameters
     method getStats
@@ -6778,9 +6776,7 @@ interface RTCRtpSender
     getter track
     getter transport
     method constructor
-    method createEncodedAudioStreams
     method createEncodedStreams
-    method createEncodedVideoStreams
     method getParameters
     method getStats
     method replaceTrack
