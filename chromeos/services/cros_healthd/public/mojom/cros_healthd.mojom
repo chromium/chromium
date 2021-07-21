@@ -470,6 +470,13 @@ interface CrosHealthdEventService {
   AddNetworkObserver(
       pending_remote<
           chromeos.network_health.mojom.NetworkEventsObserver> observer);
+
+  // Adds an observer to be notified on audio events. The caller can remove the
+  // observer created by this call by closing their end of the message pipe.
+  //
+  // The request:
+  // * |observer| - audio observer to be added to cros_healthd.
+  AddAudioObserver(pending_remote<CrosHealthdAudioObserver> observer);
 };
 
 // Probe interface exposed by the cros_healthd daemon.

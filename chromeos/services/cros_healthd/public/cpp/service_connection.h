@@ -288,6 +288,13 @@ class ServiceConnection {
           chromeos::network_health::mojom::NetworkEventsObserver>
           pending_observer) = 0;
 
+  // Subscribes to cros_healthd's audio-related events. See
+  // src/chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom for
+  // details.
+  virtual void AddAudioObserver(
+      mojo::PendingRemote<mojom::CrosHealthdAudioObserver>
+          pending_observer) = 0;
+
   // Gathers pieces of information about the platform. See
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.

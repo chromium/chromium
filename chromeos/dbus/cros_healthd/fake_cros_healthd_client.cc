@@ -155,6 +155,13 @@ void FakeCrosHealthdClient::EmitLidOpenedEventForTesting() {
   fake_service_.EmitLidOpenedEventForTesting();
 }
 
+void FakeCrosHealthdClient::EmitAudioUnderrunEventForTesting() {
+  // Flush the receiver, so any pending observers are registered before the
+  // event is emitted.
+  receiver_.FlushForTesting();
+  fake_service_.EmitAudioUnderrunEventForTesting();
+}
+
 void FakeCrosHealthdClient::EmitConnectionStateChangedEventForTesting(
     const std::string& network_guid,
     chromeos::network_health::mojom::NetworkState state) {

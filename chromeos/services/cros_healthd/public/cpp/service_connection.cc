@@ -147,6 +147,8 @@ class ServiceConnectionImpl : public ServiceConnection {
       mojo::PendingRemote<
           chromeos::network_health::mojom::NetworkEventsObserver>
           pending_observer) override;
+  void AddAudioObserver(mojo::PendingRemote<mojom::CrosHealthdAudioObserver>
+                            pending_observer) override;
   void ProbeTelemetryInfo(
       const std::vector<mojom::ProbeCategoryEnum>& categories_to_test,
       mojom::CrosHealthdProbeService::ProbeTelemetryInfoCallback callback)
@@ -545,6 +547,13 @@ void ServiceConnectionImpl::AddNetworkObserver(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdEventServiceIfNeeded();
   cros_healthd_event_service_->AddNetworkObserver(std::move(pending_observer));
+}
+
+void ServiceConnectionImpl::AddAudioObserver(
+    mojo::PendingRemote<mojom::CrosHealthdAudioObserver> pending_observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BindCrosHealthdEventServiceIfNeeded();
+  cros_healthd_event_service_->AddAudioObserver(std::move(pending_observer));
 }
 
 void ServiceConnectionImpl::ProbeTelemetryInfo(

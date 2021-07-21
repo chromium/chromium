@@ -325,6 +325,11 @@ void FakeCrosHealthdService::AddNetworkObserver(
   network_observers_.Add(std::move(observer));
 }
 
+void FakeCrosHealthdService::AddAudioObserver(
+    mojo::PendingRemote<mojom::CrosHealthdAudioObserver> observer) {
+  audio_observers_.Add(std::move(observer));
+}
+
 void FakeCrosHealthdService::ProbeTelemetryInfo(
     const std::vector<mojom::ProbeCategoryEnum>& categories,
     ProbeTelemetryInfoCallback callback) {
@@ -429,6 +434,11 @@ void FakeCrosHealthdService::EmitLidClosedEventForTesting() {
 void FakeCrosHealthdService::EmitLidOpenedEventForTesting() {
   for (auto& observer : lid_observers_)
     observer->OnLidOpened();
+}
+
+void FakeCrosHealthdService::EmitAudioUnderrunEventForTesting() {
+  for (auto& observer : audio_observers_)
+    observer->OnUnderrun();
 }
 
 void FakeCrosHealthdService::EmitConnectionStateChangedEventForTesting(

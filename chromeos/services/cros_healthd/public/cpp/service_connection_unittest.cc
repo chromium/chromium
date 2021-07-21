@@ -174,6 +174,24 @@ class MockCrosHealthdNetworkObserver
       receiver_;
 };
 
+class MockCrosHealthdAudioObserver : public mojom::CrosHealthdAudioObserver {
+ public:
+  MockCrosHealthdAudioObserver() : receiver_{this} {}
+  MockCrosHealthdAudioObserver(const MockCrosHealthdAudioObserver&) = delete;
+  MockCrosHealthdAudioObserver& operator=(const MockCrosHealthdAudioObserver&) =
+      delete;
+
+  MOCK_METHOD(void, OnUnderrun, (), (override));
+  MOCK_METHOD(void, OnSevereUnderrun, (), (override));
+
+  mojo::PendingRemote<mojom::CrosHealthdAudioObserver> pending_remote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+ private:
+  mojo::Receiver<mojom::CrosHealthdAudioObserver> receiver_;
+};
+
 class MockNetworkHealthService : public NetworkHealthService {
  public:
   MockNetworkHealthService() : receiver_{this} {}
@@ -792,6 +810,21 @@ TEST_F(CrosHealthdServiceConnectionTest, AddLidObserver) {
     run_loop.Quit();
   }));
   FakeCrosHealthdClient::Get()->EmitLidClosedEventForTesting();
+
+  run_loop.Run();
+}
+
+// Test that we can add a audio observer.
+TEST_F(CrosHealthdServiceConnectionTest, AddAudioObserver) {
+  MockCrosHealthdAudioObserver observer;
+  ServiceConnection::GetInstance()->AddAudioObserver(observer.pending_remote());
+
+  // Send out an event to make sure the observer is connected.
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnUnderrun()).WillOnce(Invoke([&]() {
+    run_loop.Quit();
+  }));
+  FakeCrosHealthdClient::Get()->EmitAudioUnderrunEventForTesting();
 
   run_loop.Run();
 }

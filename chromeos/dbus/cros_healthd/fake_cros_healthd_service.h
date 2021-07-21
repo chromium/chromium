@@ -147,6 +147,8 @@ class FakeCrosHealthdService final
       mojo::PendingRemote<
           chromeos::network_health::mojom::NetworkEventsObserver> observer)
       override;
+  void AddAudioObserver(
+      mojo::PendingRemote<mojom::CrosHealthdAudioObserver> observer) override;
 
   // CrosHealthdProbeService overrides:
   void ProbeTelemetryInfo(
@@ -226,6 +228,9 @@ class FakeCrosHealthdService final
   // Calls the lid event OnLidOpened for all registered lid observers.
   void EmitLidOpenedEventForTesting();
 
+  // Calls the audio event OnUnderrun for all registered audio observers.
+  void EmitAudioUnderrunEventForTesting();
+
   // Calls the network event OnConnectionStateChangedEvent on all registered
   // network observers.
   void EmitConnectionStateChangedEventForTesting(
@@ -287,6 +292,8 @@ class FakeCrosHealthdService final
   // Collection of registered network observers.
   mojo::RemoteSet<chromeos::network_health::mojom::NetworkEventsObserver>
       network_observers_;
+  // Collection of registered audio observers.
+  mojo::RemoteSet<mojom::CrosHealthdAudioObserver> audio_observers_;
 
   // Contains the most recent params passed to `GetRoutineUpdate`, if it has
   // been called.
