@@ -385,13 +385,6 @@ class ModelHandler : public OptimizationTargetModelObserver {
     return model_available_;
   }
 
-  // Returns the supported features for the loaded model, if the server provided
-  // any.
-  absl::optional<proto::Any> supported_features_for_loaded_model() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return supported_features_for_loaded_model_;
-  }
-
   // Validates that |supported_features_for_loaded_model_| is of the same type
   // and is parseable as |T|. Will return metadata if all checks pass.
   template <

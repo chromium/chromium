@@ -56,7 +56,7 @@ class TestModelExecutorHandle
 
   // There is a method on the base class that exposes the returned supported
   // features, if provided by the loaded model received from the server.
-  // absl::optional<proto::Any> supported_features_for_loaded_model();
+  // absl::optional<T> ParsedSupportedFeaturesForLoadedModel();
 };
 
 class ModelObserverTracker : public TestOptimizationGuideModelProvider {
@@ -424,7 +424,8 @@ TEST_F(ModelExecutorWithModelLoadingTest, LoadModelFileForEachExecution) {
 
   // While the model isn't actually loaded yet, the supported features are
   // already known and do not change when the model is loaded or unloaded.
-  EXPECT_TRUE(model_executor_handle()->supported_features_for_loaded_model());
+  EXPECT_TRUE(model_executor_handle()
+                  ->ParsedSupportedFeaturesForLoadedModel<proto::Duration>());
 
   std::vector<float> input;
   size_t expected_dims = 1 * 32 * 32 * 3;
@@ -450,7 +451,8 @@ TEST_F(ModelExecutorWithModelLoadingTest, LoadModelFileForEachExecution) {
   // After execution, the model should be unloaded in a PostTask, but the
   // metadata should still be available.
 
-  EXPECT_TRUE(model_executor_handle()->supported_features_for_loaded_model());
+  EXPECT_TRUE(model_executor_handle()
+                  ->ParsedSupportedFeaturesForLoadedModel<proto::Duration>());
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecutor.TaskSchedulingLatency." +
