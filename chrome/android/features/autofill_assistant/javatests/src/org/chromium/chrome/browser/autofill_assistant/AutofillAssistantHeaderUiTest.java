@@ -97,6 +97,10 @@ public class AutofillAssistantHeaderUiTest {
         return mCustomTabActivityTestRule.getActivity();
     }
 
+    private AssistantHeaderModel createModel() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(AssistantHeaderModel::new);
+    }
+
     /** Creates a coordinator for use in UI tests, and adds it to the global view hierarchy. */
     private AssistantHeaderCoordinator createCoordinator(AssistantHeaderModel model) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
@@ -117,7 +121,7 @@ public class AutofillAssistantHeaderUiTest {
     @Test
     @MediumTest
     public void testInitialState() {
-        AssistantHeaderModel model = new AssistantHeaderModel();
+        AssistantHeaderModel model = createModel();
         AssistantHeaderCoordinator coordinator = createCoordinator(model);
         ViewHolder viewHolder = new ViewHolder(coordinator.getView());
 
@@ -137,7 +141,7 @@ public class AutofillAssistantHeaderUiTest {
     @Test
     @MediumTest
     public void testSimpleModelChanges() {
-        AssistantHeaderModel model = new AssistantHeaderModel();
+        AssistantHeaderModel model = createModel();
         AssistantHeaderCoordinator coordinator = createCoordinator(model);
         ViewHolder viewHolder = new ViewHolder(coordinator.getView());
 
@@ -162,7 +166,7 @@ public class AutofillAssistantHeaderUiTest {
     @Test
     @MediumTest
     public void testProgressBarVisibility() {
-        AssistantHeaderModel model = new AssistantHeaderModel();
+        AssistantHeaderModel model = createModel();
         AssistantHeaderCoordinator coordinator = createCoordinator(model);
         ViewHolder viewHolder = new ViewHolder(coordinator.getView());
 
@@ -203,7 +207,7 @@ public class AutofillAssistantHeaderUiTest {
     @Test
     @MediumTest
     public void testChip() {
-        AssistantHeaderModel model = new AssistantHeaderModel();
+        AssistantHeaderModel model = createModel();
         AssistantHeaderCoordinator coordinator = createCoordinator(model);
 
         String chipText = "Hello World";
@@ -235,7 +239,7 @@ public class AutofillAssistantHeaderUiTest {
     @Test
     @MediumTest
     public void testProfileImageMenu() {
-        AssistantHeaderModel model = new AssistantHeaderModel();
+        AssistantHeaderModel model = createModel();
         AssistantHeaderCoordinator coordinator = createCoordinator(model);
         ViewHolder viewHolder = new ViewHolder(coordinator.getView());
 

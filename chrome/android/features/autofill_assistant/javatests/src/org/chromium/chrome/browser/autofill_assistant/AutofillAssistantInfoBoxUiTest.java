@@ -53,6 +53,10 @@ public class AutofillAssistantInfoBoxUiTest {
         return coordinator.getView().findViewById(R.id.info_box_explanation);
     }
 
+    private AssistantInfoBoxModel createModel() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(AssistantInfoBoxModel::new);
+    }
+
     /** Creates a coordinator for use in UI tests, and adds it to the global view hierarchy. */
     private AssistantInfoBoxCoordinator createCoordinator(AssistantInfoBoxModel model)
             throws Exception {
@@ -81,7 +85,7 @@ public class AutofillAssistantInfoBoxUiTest {
     @Test
     @MediumTest
     public void testInitialState() throws Exception {
-        AssistantInfoBoxModel model = new AssistantInfoBoxModel();
+        AssistantInfoBoxModel model = createModel();
         AssistantInfoBoxCoordinator coordinator = createCoordinator(model);
 
         assertThat(model.get(AssistantInfoBoxModel.INFO_BOX), nullValue());
@@ -92,7 +96,7 @@ public class AutofillAssistantInfoBoxUiTest {
     @Test
     @MediumTest
     public void testMessageNoImage() throws Exception {
-        AssistantInfoBoxModel model = new AssistantInfoBoxModel();
+        AssistantInfoBoxModel model = createModel();
         AssistantInfoBoxCoordinator coordinator = createCoordinator(model);
         AssistantInfoBox infoBox = new AssistantInfoBox("", "Message");
 
@@ -116,7 +120,7 @@ public class AutofillAssistantInfoBoxUiTest {
     @Test
     @MediumTest
     public void testImage() throws Exception {
-        AssistantInfoBoxModel model = new AssistantInfoBoxModel();
+        AssistantInfoBoxModel model = createModel();
         AssistantInfoBoxCoordinator coordinator = createCoordinator(model);
         AssistantInfoBox infoBox = new AssistantInfoBox("x", "Message");
 
@@ -131,7 +135,7 @@ public class AutofillAssistantInfoBoxUiTest {
     @Test
     @MediumTest
     public void testVisibility() throws Exception {
-        AssistantInfoBoxModel model = new AssistantInfoBoxModel();
+        AssistantInfoBoxModel model = createModel();
         AssistantInfoBoxCoordinator coordinator = createCoordinator(model);
         AssistantInfoBox infoBox = new AssistantInfoBox("", "");
 

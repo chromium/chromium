@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
@@ -83,6 +84,10 @@ public class AutofillAssistantOverlayUiTest {
         return mTestRule.getWebContents();
     }
 
+    private AssistantOverlayModel createModel() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(AssistantOverlayModel::new);
+    }
+
     /** Creates a coordinator for use in UI tests with a default, non-null overlay image. */
     private AssistantOverlayCoordinator createCoordinator(AssistantOverlayModel model)
             throws ExecutionException {
@@ -109,7 +114,7 @@ public class AutofillAssistantOverlayUiTest {
     @Test
     @MediumTest
     public void testInitialState() throws Exception {
-        AssistantOverlayModel model = new AssistantOverlayModel();
+        AssistantOverlayModel model = createModel();
         AssistantOverlayCoordinator coordinator = createCoordinator(model);
 
         assertScrimDisplayed(false);
@@ -121,7 +126,7 @@ public class AutofillAssistantOverlayUiTest {
     @Test
     @MediumTest
     public void testFullOverlay() throws Exception {
-        AssistantOverlayModel model = new AssistantOverlayModel();
+        AssistantOverlayModel model = createModel();
         AssistantOverlayCoordinator coordinator = createCoordinator(model);
 
         runOnUiThreadBlocking(
@@ -141,7 +146,7 @@ public class AutofillAssistantOverlayUiTest {
     @Test
     @MediumTest
     public void testFullOverlayWithImage() throws Exception {
-        AssistantOverlayModel model = new AssistantOverlayModel();
+        AssistantOverlayModel model = createModel();
         AssistantOverlayCoordinator coordinator = createCoordinator(model);
 
         AssistantOverlayImage image = new AssistantOverlayImage(
@@ -158,7 +163,7 @@ public class AutofillAssistantOverlayUiTest {
     @Test
     @MediumTest
     public void testPartialOverlay() throws Exception {
-        AssistantOverlayModel model = new AssistantOverlayModel();
+        AssistantOverlayModel model = createModel();
         AssistantOverlayCoordinator coordinator = createCoordinator(model);
 
         // Partial overlay, no touchable areas: equivalent to full overlay.
@@ -196,7 +201,7 @@ public class AutofillAssistantOverlayUiTest {
     @Test
     @MediumTest
     public void testSimpleScrollPartialOverlay() throws Exception {
-        AssistantOverlayModel model = new AssistantOverlayModel();
+        AssistantOverlayModel model = createModel();
         createCoordinator(model);
 
         ChromeTabUtils.waitForInteractable(mTestRule.getActivity().getActivityTab());
@@ -221,7 +226,7 @@ public class AutofillAssistantOverlayUiTest {
     @Test
     @MediumTest
     public void testOverlayImageDoesNotCrashIfValid() throws Exception {
-        AssistantOverlayModel model = new AssistantOverlayModel();
+        AssistantOverlayModel model = createModel();
         Bitmap bitmap = BitmapFactory.decodeResource(mTestRule.getActivity().getResources(),
                 org.chromium.chrome.autofill_assistant.R.drawable.btn_close);
         assertThat(bitmap, notNullValue());
@@ -241,7 +246,7 @@ public class AutofillAssistantOverlayUiTest {
     @Test
     @MediumTest
     public void testOverlayDoesNotCrashIfImageFailsToLoad() throws Exception {
-        AssistantOverlayModel model = new AssistantOverlayModel();
+        AssistantOverlayModel model = createModel();
         AssistantOverlayCoordinator coordinator =
                 createCoordinator(model, /* overlayImage = */ null);
 

@@ -119,6 +119,10 @@ public class AutofillAssistantCollectUserDataUiTest {
         mDefaultContactFullOptions.mMaxNumberLines = 2;
     }
 
+    private AssistantCollectUserDataModel createCollectUserDataModel() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(AssistantCollectUserDataModel::new);
+    }
+
     /** Creates a coordinator for use in UI tests, and adds it to the global view hierarchy. */
     private AssistantCollectUserDataCoordinator createCollectUserDataCoordinator(
             AssistantCollectUserDataModel model) throws Exception {
@@ -154,7 +158,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testInitialState() throws Exception {
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
 
         /* Test initial model state. */
@@ -208,7 +212,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testSectionVisibility() throws Exception {
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
         AutofillAssistantCollectUserDataTestHelper
                 .ViewHolder viewHolder = TestThreadUtils.runOnUiThreadBlocking(
@@ -302,7 +306,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testEmptyPaymentRequest() throws Exception {
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
         AutofillAssistantCollectUserDataTestHelper.MockDelegate delegate =
                 new AutofillAssistantCollectUserDataTestHelper.MockDelegate();
@@ -418,7 +422,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testContactDetailsUpdates() throws Exception {
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
         AutofillAssistantCollectUserDataTestHelper
                 .ViewHolder viewHolder = TestThreadUtils.runOnUiThreadBlocking(
@@ -490,7 +494,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testPaymentMethodsUpdates() throws Exception {
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
         AutofillAssistantCollectUserDataTestHelper
                 .ViewHolder viewHolder = TestThreadUtils.runOnUiThreadBlocking(
@@ -558,7 +562,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testPaymentMethodsUpdatesFromWebContents() throws Exception {
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
         AutofillAssistantCollectUserDataTestHelper
                 .ViewHolder viewHolder = TestThreadUtils.runOnUiThreadBlocking(
@@ -632,7 +636,7 @@ public class AutofillAssistantCollectUserDataUiTest {
                         "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
                         /* billingAddressId= */ "GUID", /* serverId= */ "");
 
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
         AutofillAssistantCollectUserDataTestHelper.MockDelegate delegate =
                 new AutofillAssistantCollectUserDataTestHelper.MockDelegate();
@@ -797,7 +801,7 @@ public class AutofillAssistantCollectUserDataUiTest {
                 /* requestName= */ true,
                 /* requestPhone= */ true, /* requestEmail= */ true);
 
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
         AutofillAssistantCollectUserDataTestHelper.MockDelegate delegate =
                 new AutofillAssistantCollectUserDataTestHelper.MockDelegate();
@@ -854,7 +858,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testTermsAndConditions() throws Exception {
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         createCollectUserDataCoordinator(model);
         AutofillAssistantCollectUserDataTestHelper.MockDelegate delegate =
                 new AutofillAssistantCollectUserDataTestHelper.MockDelegate();
@@ -919,7 +923,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testTermsRequireReview() throws Exception {
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         createCollectUserDataCoordinator(model);
 
         // Setting a text from "backend".
@@ -936,7 +940,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testInfoSectionText() throws Exception {
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
         AutofillAssistantCollectUserDataTestHelper
                 .ViewHolder viewHolder = TestThreadUtils.runOnUiThreadBlocking(
@@ -959,7 +963,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testPrivacyNotice() throws Exception {
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
         AutofillAssistantCollectUserDataTestHelper
                 .ViewHolder viewHolder = TestThreadUtils.runOnUiThreadBlocking(
@@ -982,7 +986,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testDateRangeLocaleUS() throws Exception {
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         Locale locale = LocaleUtils.forLanguageTag("en-US");
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(
                 model, locale, new SimpleDateFormat("MMM d, yyyy", locale));
@@ -1049,7 +1053,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testDateRangeLocaleDE() throws Exception {
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         Locale locale = LocaleUtils.forLanguageTag("de-DE");
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(
                 model, locale, new SimpleDateFormat("dd.MM.yyyy", locale));
@@ -1116,7 +1120,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testDateOrTimeNotSet() throws Exception {
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         Locale locale = LocaleUtils.forLanguageTag("en-US");
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(
                 model, locale, new SimpleDateFormat("MMM d, yyyy", locale));
@@ -1198,7 +1202,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testDateRangePopups() throws Exception {
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         Locale locale = LocaleUtils.forLanguageTag("en-US");
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(
                 model, locale, new SimpleDateFormat("MMM d, yyyy", locale));
@@ -1281,7 +1285,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testAdditionalStaticSections() throws Exception {
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
 
         List<AssistantAdditionalSectionFactory> prependedSections = new ArrayList<>();
@@ -1331,7 +1335,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testAdditionalTextInputSections() throws Exception {
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
         AutofillAssistantCollectUserDataTestHelper.MockDelegate delegate =
                 new AutofillAssistantCollectUserDataTestHelper.MockDelegate();
@@ -1374,7 +1378,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testLoginSectionInfoPopup() throws Exception {
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         createCollectUserDataCoordinator(model);
         AutofillAssistantCollectUserDataTestHelper.MockDelegate delegate =
                 new AutofillAssistantCollectUserDataTestHelper.MockDelegate();
@@ -1403,7 +1407,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @MediumTest
     public void testSuppliedNonEmptyEditContentDescriptionIsUsed() throws Exception {
         String contentDescription = "Description of edit button";
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
         AutofillAssistantCollectUserDataTestHelper.MockDelegate delegate =
                 new AutofillAssistantCollectUserDataTestHelper.MockDelegate();
@@ -1427,7 +1431,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @MediumTest
     public void testSuppliedEmptyEditContentDescriptionIsUsed() throws Exception {
         String contentDescription = "";
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
         AutofillAssistantCollectUserDataTestHelper.MockDelegate delegate =
                 new AutofillAssistantCollectUserDataTestHelper.MockDelegate();
@@ -1452,7 +1456,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     public void testWhenNullEditContentDescriptionIsSuppliedIconDescriptionIsUsed()
             throws Exception {
         String contentDescription = null;
-        AssistantCollectUserDataModel model = new AssistantCollectUserDataModel();
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
         AutofillAssistantCollectUserDataTestHelper.MockDelegate delegate =
                 new AutofillAssistantCollectUserDataTestHelper.MockDelegate();
