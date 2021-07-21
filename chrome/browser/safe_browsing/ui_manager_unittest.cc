@@ -640,7 +640,7 @@ TEST_F(SafeBrowsingUIManagerTest, NoInterstitialInExtensions) {
       base::BindRepeating(&SafeBrowsingCallbackWaiter::OnBlockingPageDone,
                           base::Unretained(&waiter));
   resource.callback_sequence = content::GetUIThreadTaskRunner({});
-  SafeBrowsingUIManager::StartDisplayingBlockingPage(ui_manager(), resource);
+  ui_manager()->StartDisplayingBlockingPage(resource);
   waiter.WaitForCallback();
   EXPECT_FALSE(waiter.proceed());
   EXPECT_FALSE(waiter.showed_interstitial());

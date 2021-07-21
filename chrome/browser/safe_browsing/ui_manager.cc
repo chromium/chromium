@@ -111,9 +111,7 @@ void SafeBrowsingUIManager::CreateAndSendHitReport(
     observer.OnSafeBrowsingHit(resource);
 }
 
-// static
 void SafeBrowsingUIManager::StartDisplayingBlockingPage(
-    scoped_refptr<SafeBrowsingUIManager> ui_manager,
     const security_interstitials::UnsafeResource& resource) {
   content::WebContents* web_contents = resource.web_contents_getter.Run();
 
@@ -164,11 +162,11 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
       security_interstitials::UnsafeResource resource_copy(resource);
       resource_copy.navigation_url = entry->GetURL();
       resource_copy.referrer_url = entry->GetReferrer().url;
-      ui_manager->DisplayBlockingPage(resource_copy);
+      DisplayBlockingPage(resource_copy);
       return;
     }
   }
-  ui_manager->DisplayBlockingPage(resource);
+  DisplayBlockingPage(resource);
 }
 
 // static

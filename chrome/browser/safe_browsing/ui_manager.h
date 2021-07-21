@@ -95,11 +95,8 @@ class SafeBrowsingUIManager : public BaseUIManager {
       const GURL& default_safe_page);
 
   // Displays a SafeBrowsing interstitial.
-  // |ui_manager| is the manager which eventually displays the blocking page.
   // |resource| is the unsafe resource for which the warning is displayed.
-  static void StartDisplayingBlockingPage(
-      scoped_refptr<SafeBrowsingUIManager> ui_manager,
-      const UnsafeResource& resource);
+  void StartDisplayingBlockingPage(const UnsafeResource& resource);
 
   // Called to stop or shutdown operations on the UI thread. This may be called
   // multiple times during the life of the UIManager. Should be called

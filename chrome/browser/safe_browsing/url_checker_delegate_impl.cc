@@ -62,14 +62,14 @@ void CreateSafeBrowsingUserInteractionObserver(
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           web_contents) ||
       web_contents->IsPortal()) {
-    SafeBrowsingUIManager::StartDisplayingBlockingPage(ui_manager, resource);
+    ui_manager->StartDisplayingBlockingPage(resource);
     return;
   }
 #if defined(OS_ANDROID)
   // Don't delay the interstitial for Chrome Custom Tabs.
   auto* tab_android = TabAndroid::FromWebContents(web_contents);
   if (tab_android && tab_android->IsCustomTab()) {
-    SafeBrowsingUIManager::StartDisplayingBlockingPage(ui_manager, resource);
+    ui_manager->StartDisplayingBlockingPage(resource);
     return;
   }
 #endif

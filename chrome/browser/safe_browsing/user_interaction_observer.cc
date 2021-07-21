@@ -373,7 +373,7 @@ void SafeBrowsingUserInteractionObserver::ShowInterstitial(
   interstitial_shown_ = true;
   CleanUp();
   RecordUMA(event);
-  SafeBrowsingUIManager::StartDisplayingBlockingPage(ui_manager_, resource_);
+  ui_manager_->StartDisplayingBlockingPage(resource_);
   Detach();
   // DO NOT add code past this point. |this| is destroyed.
 }
