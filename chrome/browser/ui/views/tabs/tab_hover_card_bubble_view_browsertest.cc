@@ -53,11 +53,11 @@ class TabHoverCardBubbleViewBrowserTest : public DialogBrowserTest {
   }
 
   std::u16string GetHoverCardTitle() {
-    return hover_card()->title_label_->GetText();
+    return hover_card()->GetTitleTextForTesting();
   }
 
   std::u16string GetHoverCardDomain() {
-    return hover_card()->domain_label_->GetText();
+    return hover_card()->GetDomainTextForTesting();
   }
 
   int GetHoverCardsSeenCount() {

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_BUBBLE_VIEW_H_
 
+#include <string>
 #include "base/callback_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -23,10 +24,6 @@
 namespace gfx {
 class ImageSkia;
 }
-
-namespace views {
-class Label;
-}  // namespace views
 
 class Tab;
 
@@ -55,14 +52,16 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   // specifying that no preview for the tab is available (yet).
   void SetPlaceholderImage();
 
+  // Accessors used by tests.
+  std::u16string GetTitleTextForTesting() const;
+  std::u16string GetDomainTextForTesting() const;
+
   // Returns the percentage complete during transition animations when a
   // pre-emptive crossfade to a placeholder should start if a new image is not
   // available, or `absl::nullopt` to disable crossfades entirely.
   static absl::optional<double> GetPreviewImageCrossfadeStart();
 
  private:
-  friend class TabHoverCardBubbleViewBrowserTest;
-  friend class TabHoverCardBubbleViewInteractiveUiTest;
   class FadeLabel;
   class ThumbnailView;
 
@@ -70,16 +69,13 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
 
   // views::BubbleDialogDelegateView:
   ax::mojom::Role GetAccessibleWindowRole() override;
-  void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
-  views::Label* title_label_ = nullptr;
-  FadeLabel* title_fade_label_ = nullptr;
-  absl::optional<TabAlertState> alert_state_;
-  views::Label* domain_label_ = nullptr;
-  FadeLabel* domain_fade_label_ = nullptr;
+  FadeLabel* title_label_ = nullptr;
+  FadeLabel* domain_label_ = nullptr;
   ThumbnailView* thumbnail_view_ = nullptr;
+  absl::optional<TabAlertState> alert_state_;
 
   absl::optional<int> corner_radius_;
 };

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
 #include "base/containers/mru_cache.h"
 #include "base/metrics/field_trial_params.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/url_formatter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -48,6 +50,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -113,35 +116,15 @@ bool UseAlternateHoverCardFormat() {
   return use_alternate_format != 0;
 }
 
-}  // namespace
-
-// This is a label with two tweaks:
-// - a solid background color, which can have alpha
-// - a function to make the foreground and background color fade away (via
-//   alpha) to zero as an animation progresses
-//
-// It is used to overlay the old title and domain values as a hover card slide
-// animation happens.
-class TabHoverCardBubbleView::FadeLabel : public views::Label {
+// Label that renders its background in a solid color. Placed in front of a
+// normal label either by being later in the draw order or on a layer, it can
+// be used to animate a fade-out.
+class SolidLabel : public views::Label {
  public:
+  METADATA_HEADER(SolidLabel);
   using Label::Label;
-
-  METADATA_HEADER(FadeLabel);
-
-  FadeLabel() = default;
-  ~FadeLabel() override = default;
-
-  // Sets the fade-out of the label as |percent| in the range [0, 1]. Since
-  // FadeLabel is designed to mask new text with the old and then fade away, the
-  // higher the percentage the less opaque the label.
-  void SetFade(double percent) {
-    if (percent >= 1.0)
-      SetText(std::u16string());
-    const SkAlpha alpha = base::saturated_cast<SkAlpha>(
-        std::numeric_limits<SkAlpha>::max() * (1.0 - percent));
-    SetBackgroundColor(SkColorSetA(GetBackgroundColor(), alpha));
-    SetEnabledColor(SkColorSetA(GetEnabledColor(), alpha));
-  }
+  SolidLabel() = default;
+  ~SolidLabel() override = default;
 
  protected:
   // views::Label:
@@ -150,8 +133,103 @@ class TabHoverCardBubbleView::FadeLabel : public views::Label {
   }
 };
 
-BEGIN_METADATA(TabHoverCardBubbleView, FadeLabel, views::Label)
+BEGIN_METADATA(SolidLabel, views::Label)
 END_METADATA
+
+}  // namespace
+
+// This view overlays and fades out an old version of the text of a label,
+// while displaying the new text underneath. It is used to fade out the old
+// value of the title and domain labels on the hover card when the tab switches
+// or the tab title changes.
+class TabHoverCardBubbleView::FadeLabel : public views::View {
+ public:
+  FadeLabel(int context, int num_lines) {
+    primary_label_ = AddChildView(std::make_unique<views::Label>(
+        std::u16string(), context, views::style::STYLE_PRIMARY));
+    primary_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    primary_label_->SetVerticalAlignment(gfx::ALIGN_TOP);
+    primary_label_->SetMultiLine(num_lines > 1);
+    if (num_lines > 1)
+      primary_label_->SetMaxLines(num_lines);
+
+    label_fading_out_ = AddChildView(std::make_unique<SolidLabel>(
+        std::u16string(), context, views::style::STYLE_PRIMARY));
+    label_fading_out_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    label_fading_out_->SetVerticalAlignment(gfx::ALIGN_TOP);
+    label_fading_out_->SetMultiLine(num_lines > 1);
+    if (num_lines > 1)
+      label_fading_out_->SetMaxLines(num_lines);
+    label_fading_out_->GetViewAccessibility().OverrideIsIgnored(true);
+
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+  }
+
+  ~FadeLabel() override = default;
+
+  void SetText(std::u16string text, absl::optional<bool> is_filename) {
+    if (was_filename_.has_value())
+      SetMultilineParams(label_fading_out_, was_filename_.value());
+    label_fading_out_->SetText(primary_label_->GetText());
+    if (is_filename.has_value())
+      SetMultilineParams(primary_label_, is_filename.value());
+    was_filename_ = is_filename;
+    primary_label_->SetText(text);
+  }
+
+  // Sets the fade-out of the label as |percent| in the range [0, 1]. Since
+  // FadeLabel is designed to mask new text with the old and then fade away, the
+  // higher the percentage the less opaque the label.
+  void SetFade(double percent) {
+    percent_ = std::min(1.0, percent);
+    if (percent_ == 1.0)
+      label_fading_out_->SetText(std::u16string());
+    const SkAlpha alpha = base::saturated_cast<SkAlpha>(
+        std::numeric_limits<SkAlpha>::max() * (1.0 - percent_));
+    label_fading_out_->SetBackgroundColor(
+        SkColorSetA(label_fading_out_->GetBackgroundColor(), alpha));
+    label_fading_out_->SetEnabledColor(
+        SkColorSetA(label_fading_out_->GetEnabledColor(), alpha));
+  }
+
+  std::u16string GetText() const { return primary_label_->GetText(); }
+
+ protected:
+  // views::View:
+  gfx::Size GetMaximumSize() const override {
+    return gfx::Tween::SizeValueBetween(percent_,
+                                        label_fading_out_->GetPreferredSize(),
+                                        primary_label_->GetPreferredSize());
+  }
+
+  gfx::Size CalculatePreferredSize() const override {
+    return primary_label_->GetPreferredSize();
+  }
+
+  gfx::Size GetMinimumSize() const override {
+    return primary_label_->GetMinimumSize();
+  }
+
+  int GetHeightForWidth(int width) const override {
+    return primary_label_->GetHeightForWidth(width);
+  }
+
+ private:
+  static void SetMultilineParams(views::Label* label, bool is_filename) {
+    if (is_filename) {
+      label->SetMultiLine(false);
+      label->SetElideBehavior(gfx::ELIDE_MIDDLE);
+    } else {
+      label->SetElideBehavior(gfx::ELIDE_TAIL);
+      label->SetMultiLine(true);
+    }
+  }
+
+  views::Label* primary_label_;
+  SolidLabel* label_fading_out_;
+  absl::optional<bool> was_filename_;
+  double percent_ = 1.0;
+};
 
 // Represents the preview image on the hover card. Allows for a new image to be
 // faded in over the old image.
@@ -399,39 +477,10 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   // navigating through the tab strip.
   set_focus_traversable_from_anchor_view(false);
 
-  title_label_ = AddChildView(std::make_unique<views::Label>(
-      std::u16string(), CONTEXT_TAB_HOVER_CARD_TITLE,
-      views::style::STYLE_PRIMARY));
-  title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_label_->SetVerticalAlignment(gfx::ALIGN_TOP);
-  title_label_->SetMultiLine(true);
-  title_label_->SetMaxLines(kHoverCardTitleMaxLines);
-
-  title_fade_label_ = AddChildView(std::make_unique<FadeLabel>(
-      std::u16string(), CONTEXT_TAB_HOVER_CARD_TITLE,
-      views::style::STYLE_PRIMARY));
-  title_fade_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_fade_label_->SetVerticalAlignment(gfx::ALIGN_TOP);
-  title_fade_label_->SetMultiLine(true);
-  title_fade_label_->SetMaxLines(kHoverCardTitleMaxLines);
-  title_fade_label_->GetViewAccessibility().OverrideIsIgnored(true);
-
-  domain_label_ = AddChildView(std::make_unique<views::Label>(
-      std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_SECONDARY,
-      gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
-  domain_label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
-  domain_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  domain_label_->SetMultiLine(false);
-
-  domain_fade_label_ = AddChildView(std::make_unique<FadeLabel>(
-      std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_SECONDARY,
-      gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
-  domain_fade_label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
-  domain_fade_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  domain_fade_label_->SetMultiLine(false);
-  domain_fade_label_->GetViewAccessibility().OverrideIsIgnored(true);
+  title_label_ = AddChildView(std::make_unique<FadeLabel>(
+      CONTEXT_TAB_HOVER_CARD_TITLE, kHoverCardTitleMaxLines));
+  domain_label_ = AddChildView(
+      std::make_unique<FadeLabel>(views::style::CONTEXT_DIALOG_BODY_TEXT, 1));
 
   if (TabHoverCardController::AreHoverCardImagesEnabled()) {
     if (UseAlternateHoverCardFormat()) {
@@ -455,8 +504,6 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   layout->SetCollapseMargins(true);
-  layout->SetChildViewIgnoredByLayout(title_fade_label_, true);
-  layout->SetChildViewIgnoredByLayout(domain_fade_label_, true);
 
   constexpr int kHorizontalMargin = 18;
   constexpr int kVerticalMargin = 10;
@@ -480,7 +527,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   title_label_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kUnbounded));
+                               views::MaximumFlexSizeRule::kScaleToMaximum));
 
   // Set up widget.
 
@@ -523,12 +570,6 @@ ax::mojom::Role TabHoverCardBubbleView::GetAccessibleWindowRole() {
   return ax::mojom::Role::kNone;
 }
 
-void TabHoverCardBubbleView::Layout() {
-  View::Layout();
-  title_fade_label_->SetBoundsRect(title_label_->bounds());
-  domain_fade_label_->SetBoundsRect(domain_label_->bounds());
-}
-
 void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   // Preview image is never visible for the active tab.
   if (thumbnail_view_) {
@@ -555,13 +596,11 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
     alert_state_ = Tab::GetAlertStateToShow(tab->data().alert_state);
   }
   std::u16string domain;
+  bool is_filename = false;
   if (domain_url.SchemeIsFile()) {
-    title_label_->SetMultiLine(false);
-    title_label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
+    is_filename = true;
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_FILE_URL_SOURCE);
   } else {
-    title_label_->SetElideBehavior(gfx::ELIDE_TAIL);
-    title_label_->SetMultiLine(true);
     if (domain_url.SchemeIsBlob()) {
       domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_BLOB_URL_SOURCE);
     } else {
@@ -574,8 +613,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
           net::UnescapeRule::NORMAL, nullptr, nullptr, nullptr);
     }
   }
-  title_fade_label_->SetText(title_label_->GetText());
-  title_label_->SetText(title);
+  title_label_->SetText(title, is_filename);
 
   if (alert_state_ != old_alert_state) {
     GetBubbleFrameView()->SetFootnoteView(
@@ -591,8 +629,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
         corner_radius_.value_or(0));
   }
 
-  domain_fade_label_->SetText(domain_label_->GetText());
-  domain_label_->SetText(domain);
+  domain_label_->SetText(domain, absl::nullopt);
 
   // Because we may have changed the card's contents, if the card has yet to be
   // shown, ensure that it starts at the correct size.
@@ -601,8 +638,8 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
 }
 
 void TabHoverCardBubbleView::SetTextFade(double percent) {
-  title_fade_label_->SetFade(percent);
-  domain_fade_label_->SetFade(percent);
+  title_label_->SetFade(percent);
+  domain_label_->SetFade(percent);
 }
 
 void TabHoverCardBubbleView::SetTargetTabImage(gfx::ImageSkia preview_image) {
@@ -615,6 +652,14 @@ void TabHoverCardBubbleView::SetPlaceholderImage() {
   DCHECK(thumbnail_view_)
       << "This method should only be called when preview images are enabled.";
   thumbnail_view_->SetPlaceholderImage();
+}
+
+std::u16string TabHoverCardBubbleView::GetTitleTextForTesting() const {
+  return title_label_->GetText();
+}
+
+std::u16string TabHoverCardBubbleView::GetDomainTextForTesting() const {
+  return domain_label_->GetText();
 }
 
 // static
@@ -643,11 +688,6 @@ void TabHoverCardBubbleView::OnThemeChanged() {
     GetWidget()->Close();
     return;
   }
-
-  // Update fade labels' background color to match that of the the original
-  // label since these child views are ignored by layout.
-  title_fade_label_->SetBackgroundColor(title_label_->GetBackgroundColor());
-  domain_fade_label_->SetBackgroundColor(domain_label_->GetBackgroundColor());
 }
 
 BEGIN_METADATA(TabHoverCardBubbleView, views::BubbleDialogDelegateView)
