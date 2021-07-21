@@ -5458,11 +5458,13 @@ interface MediaStreamTrackEvent : Event
     method constructor
 interface MediaStreamTrackGenerator : MediaStreamTrack
     attribute @@toStringTag
+    getter readableControl
     getter writable
     method constructor
 interface MediaStreamTrackProcessor
     attribute @@toStringTag
     getter readable
+    getter writableControl
     method constructor
 interface MerchantValidationEvent : Event
     attribute @@toStringTag

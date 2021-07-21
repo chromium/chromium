@@ -8,12 +8,14 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_generator_init.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_sink.h"
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_video_track_underlying_sink.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/breakout_box/video_track_signal_underlying_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -25,6 +27,18 @@
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
+
+namespace {
+
+const wtf_size_t kDefaultMaxSignalBufferSize = 20u;
+
+class NullUnderlyingSource : public UnderlyingSourceBase {
+ public:
+  explicit NullUnderlyingSource(ScriptState* script_state)
+      : UnderlyingSourceBase(script_state) {}
+};
+
+}  // namespace
 
 MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
     ScriptState* script_state,
@@ -48,7 +62,8 @@ MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
 
   return MakeGarbageCollected<MediaStreamTrackGenerator>(
       script_state, type,
-      /*track_id=*/WTF::CreateCanonicalUUIDString());
+      /*track_id=*/WTF::CreateCanonicalUUIDString(), nullptr,
+      kDefaultMaxSignalBufferSize);
 }
 
 MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
@@ -66,6 +81,11 @@ MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
     return nullptr;
   }
 
+  if (init->hasSignalTarget() && init->signalTarget()->kind() != init->kind()) {
+    exception_state.ThrowTypeError("kind and signalTarget.kind() do not match");
+    return nullptr;
+  }
+
   MediaStreamSource::StreamType type;
   if (init->kind() == "video") {
     type = MediaStreamSource::kTypeVideo;
@@ -76,24 +96,33 @@ MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
     return nullptr;
   }
 
+  wtf_size_t max_signal_buffer_size = kDefaultMaxSignalBufferSize;
+  if (init->hasMaxSignalBufferSize())
+    max_signal_buffer_size = init->maxSignalBufferSize();
+
   return MakeGarbageCollected<MediaStreamTrackGenerator>(
       script_state, type,
-      /*track_id=*/WTF::CreateCanonicalUUIDString());
+      /*track_id=*/WTF::CreateCanonicalUUIDString(),
+      init->getSignalTargetOr(nullptr),
+      max_signal_buffer_size);
 }
 
 MediaStreamTrackGenerator::MediaStreamTrackGenerator(
     ScriptState* script_state,
     MediaStreamSource::StreamType type,
-    const String& track_id)
+    const String& track_id,
+    MediaStreamTrack* signal_target,
+    wtf_size_t max_signal_buffer_size)
     : MediaStreamTrack(
           ExecutionContext::From(script_state),
           MakeGarbageCollected<MediaStreamComponent>(
               MakeGarbageCollected<MediaStreamSource>(track_id,
                                                       type,
                                                       track_id,
-                                                      /*remote=*/false))) {
+                                                      /*remote=*/false))),
+      max_signal_buffer_size_(max_signal_buffer_size) {
   if (type == MediaStreamSource::kTypeVideo) {
-    CreateVideoOutputPlatformTrack();
+    CreateVideoOutputPlatformTrack(signal_target);
   } else {
     DCHECK_EQ(type, MediaStreamSource::kTypeAudio);
     CreateAudioOutputPlatformTrack();
@@ -114,6 +143,19 @@ WritableStream* MediaStreamTrackGenerator::writable(ScriptState* script_state) {
   return writable_;
 }
 
+ReadableStream* MediaStreamTrackGenerator::readableControl(
+    ScriptState* script_state) {
+  if (readable_control_)
+    return readable_control_;
+
+  if (kind() == "video")
+    CreateVideoControlStream(script_state);
+  else if (kind() == "audio")
+    CreateAudioControlStream(script_state);
+
+  return readable_control_;
+}
+
 PushableMediaStreamVideoSource* MediaStreamTrackGenerator::PushableVideoSource()
     const {
   DCHECK_EQ(Component()->Source()->GetType(), MediaStreamSource::kTypeVideo);
@@ -122,11 +164,21 @@ PushableMediaStreamVideoSource* MediaStreamTrackGenerator::PushableVideoSource()
       MediaStreamVideoSource::GetVideoSource(Component()->Source()));
 }
 
-void MediaStreamTrackGenerator::CreateVideoOutputPlatformTrack() {
+void MediaStreamTrackGenerator::CreateVideoOutputPlatformTrack(
+    MediaStreamTrack* signal_target) {
+  base::WeakPtr<MediaStreamVideoSource> signal_target_upstream_source;
+  if (signal_target) {
+    MediaStreamVideoSource* upstream_source =
+        MediaStreamVideoSource::GetVideoSource(
+            signal_target->Component()->Source());
+    signal_target_upstream_source = upstream_source->GetWeakPtr();
+  }
+
   std::unique_ptr<PushableMediaStreamVideoSource> platform_source =
       std::make_unique<PushableMediaStreamVideoSource>(
           GetExecutionContext()->GetTaskRunner(
-              TaskType::kInternalMediaRealTime));
+              TaskType::kInternalMediaRealTime),
+          signal_target_upstream_source);
   PushableMediaStreamVideoSource* platform_source_ptr = platform_source.get();
   Component()->Source()->SetPlatformSource(std::move(platform_source));
   std::unique_ptr<MediaStreamVideoTrack> platform_track =
@@ -177,10 +229,36 @@ void MediaStreamTrackGenerator::CreateAudioStream(ScriptState* script_state) {
       audio_underlying_sink_->GetTransferringOptimizer());
 }
 
+void MediaStreamTrackGenerator::CreateVideoControlStream(
+    ScriptState* script_state) {
+  DCHECK(!readable_control_);
+  // TODO(crbug.com/1142955): Make the queue size configurable from the
+  // constructor.
+  control_underlying_source_ =
+      MakeGarbageCollected<VideoTrackSignalUnderlyingSource>(
+          script_state, this, max_signal_buffer_size_);
+  readable_control_ = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, control_underlying_source_, /*high_water_mark=*/0);
+}
+
+void MediaStreamTrackGenerator::CreateAudioControlStream(
+    ScriptState* script_state) {
+  DCHECK(!readable_control_);
+  // Since no signals have been defined for audio, use a null source that
+  // does nothing, so that a valid stream can be returned for audio
+  // MediaStreamTrackGenerators.
+  control_underlying_source_ =
+      MakeGarbageCollected<NullUnderlyingSource>(script_state);
+  readable_control_ = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, control_underlying_source_, /*high_water_mark=*/0);
+}
+
 void MediaStreamTrackGenerator::Trace(Visitor* visitor) const {
   visitor->Trace(video_underlying_sink_);
   visitor->Trace(audio_underlying_sink_);
   visitor->Trace(writable_);
+  visitor->Trace(control_underlying_source_);
+  visitor->Trace(readable_control_);
   MediaStreamTrack::Trace(visitor);
 }
 

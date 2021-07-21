@@ -52,6 +52,23 @@
     }, "Tests that creating a Audio MediaStreamTrackGenerator works as expected");
 
     promise_test(async t => {
+      const capturedStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      assert_equals(capturedStream.getAudioTracks().length, 1);
+      const upstreamTrack = capturedStream.getAudioTracks()[0];
+      t.add_cleanup(() => upstreamTrack.stop());
+
+      const generator = new MediaStreamTrackGenerator({ signalTarget: upstreamTrack, kind: "audio" });
+      t.add_cleanup(() => generator.stop());
+
+      const writer = generator.writable.getWriter();
+      const data = makeAudioData(1);
+      await writer.write(data);
+
+      assert_equals(generator.kind, "audio");
+      assert_equals(generator.readyState, "live");
+    }, "Tests that creating an Audio MediaStreamTrackGenerator with a signal target works as expected");
+
+    promise_test(async t => {
       assert_throws_js(TypeError, () => { new MediaStreamTrackGenerator({ kind: "invalid kind" }) });
     }, "Creating Generator with an invalid kind throws");
 
@@ -61,8 +78,21 @@
       const upstreamTrack = capturedStream.getAudioTracks()[0];
       t.add_cleanup(() => upstreamTrack.stop());
 
-      assert_throws_js(TypeError, () => { new MediaStreamTrackGenerator() });
+      assert_throws_js(TypeError, () => { new MediaStreamTrackGenerator({ signalTarget: upstreamTrack }) });
     }, "Creating Generator with a missing kind throws");
+
+    promise_test(async t => {
+      const capturedStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      assert_equals(capturedStream.getAudioTracks().length, 1);
+      const upstreamTrack = capturedStream.getAudioTracks()[0];
+      t.add_cleanup(() => upstreamTrack.stop());
+
+      assert_throws_js(TypeError, () => { new MediaStreamTrackGenerator({ signalTarget: upstreamTrack, kind: "video" }) });
+    }, "Creating Generator with mismatched kinds throws");
+
+    promise_test(async t => {
+      assert_throws_js(TypeError, () => { new MediaStreamTrackGenerator({ signalTarget: "IamNotATrack" }) });
+    }, "Creating Generator with invalid signalTarget throws");
 
     promise_test(async t => {
       const generator = new MediaStreamTrackGenerator({ kind: "video" });

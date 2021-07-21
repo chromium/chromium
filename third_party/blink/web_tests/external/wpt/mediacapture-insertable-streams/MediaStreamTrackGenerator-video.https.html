@@ -198,6 +198,24 @@
     }, "Tests that VideoFrames are destroyed on write.");
 
     promise_test(async t => {
+      const capturedStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      assert_equals(capturedStream.getVideoTracks().length, 1);
+      const upstreamTrack = capturedStream.getVideoTracks()[0];
+      t.add_cleanup(() => upstreamTrack.stop());
+
+      const generator = new MediaStreamTrackGenerator({ signalTarget: upstreamTrack, kind: "video" });
+      t.add_cleanup(() => generator.stop());
+
+      const writer = generator.writable.getWriter();
+      const frame = makeVideoFrame(1);
+      await writer.write(frame);
+
+      assert_equals(generator.kind, "video");
+      assert_equals(generator.readyState, "live");
+    }, "Tests that creating a Video MediaStreamTrackGenerator with a signal target works as expected");
+
+
+    promise_test(async t => {
       const generator = new MediaStreamTrackGenerator("audio");
       t.add_cleanup(() => generator.stop());
 

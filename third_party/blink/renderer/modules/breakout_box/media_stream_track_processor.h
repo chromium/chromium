@@ -20,6 +20,8 @@ class MediaStreamTrack;
 class MediaStreamTrackProcessorInit;
 class ReadableStream;
 class ScriptState;
+class UnderlyingSinkBase;
+class WritableStream;
 
 class MODULES_EXPORT MediaStreamTrackProcessor : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -44,6 +46,7 @@ class MODULES_EXPORT MediaStreamTrackProcessor : public ScriptWrappable {
 
   // MediaStreamTrackProcessor interface
   ReadableStream* readable(ScriptState* script_state);
+  WritableStream* writableControl(ScriptState* script_state);
 
   // Closes |audio_underlying_source_| and |video_underlying_source_| if they
   // exist.
@@ -56,13 +59,17 @@ class MODULES_EXPORT MediaStreamTrackProcessor : public ScriptWrappable {
  private:
   void CreateVideoSourceStream(ScriptState* script_state);
   void CreateAudioSourceStream(ScriptState* script_state);
+  void CreateVideoControlStream(ScriptState* script_state);
+  void CreateAudioControlStream(ScriptState* script_state);
 
   class UnderlyingSourceCloser;
 
   Member<MediaStreamTrack> input_track_;
   Member<MediaStreamVideoTrackUnderlyingSource> video_underlying_source_;
   Member<MediaStreamAudioTrackUnderlyingSource> audio_underlying_source_;
+  Member<UnderlyingSinkBase> signal_underlying_sink_;
   Member<ReadableStream> source_stream_;
+  Member<WritableStream> control_stream_;
   Member<UnderlyingSourceCloser> source_closer_;
   uint16_t buffer_size_;
 };
