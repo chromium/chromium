@@ -94,6 +94,14 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
   static void EndOverlayAccess(
       std::unique_ptr<ScopedOverlayAccess> overlay_access);
 
+  // Mailboxes of overlays scheduled in the current frame.
+  base::flat_set<gpu::Mailbox> scheduled_overlay_mailboxes_;
+
+  // Holds references to overlay textures so they aren't destroyed while in use.
+  // Must be destroyed after |gl_surface_| since the surface can hold scoped
+  // access to the overlay representations kept here.
+  base::flat_map<gpu::Mailbox, OverlayData> overlays_;
+
   gpu::MailboxManager* const mailbox_manager_;
 
   gpu::SharedImageRepresentationFactory* const
@@ -104,12 +112,6 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
   const bool supports_async_swap_;
 
   sk_sp<SkSurface> sk_surface_;
-
-  // Mailboxes of overlays scheduled in the current frame.
-  base::flat_set<gpu::Mailbox> scheduled_overlay_mailboxes_;
-
-  // Holds references to overlay textures so they aren't destroyed while in use.
-  base::flat_map<gpu::Mailbox, OverlayData> overlays_;
 
   uint64_t backbuffer_estimated_size_ = 0;
 

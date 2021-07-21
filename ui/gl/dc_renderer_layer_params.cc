@@ -9,6 +9,12 @@
 namespace ui {
 
 DCRendererLayerParams::DCRendererLayerParams() = default;
-DCRendererLayerParams::~DCRendererLayerParams() = default;
+
+DCRendererLayerParams::~DCRendererLayerParams() {
+  for (auto& callback : release_image_cb) {
+    if (callback)
+      std::move(callback).Run();
+  }
+}
 
 }  // namespace ui
