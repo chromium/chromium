@@ -129,7 +129,7 @@ public class WebFeedFollowIntroController {
                 ChromeFeatureList.WEB_FEED, PARAM_NUM_VISIT_MIN, DEFAULT_NUM_VISIT_MIN);
         int dailyVisitMin = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.WEB_FEED, PARAM_DAILY_VISIT_MIN, DEFAULT_DAILY_VISIT_MIN);
-        Log.d(TAG, "Minimum visit requirements set: minTotalVisits=%s, minDailyVisits=%s",
+        Log.i(TAG, "Minimum visit requirements set: minTotalVisits=%s, minDailyVisits=%s",
                 numVisitMin, dailyVisitMin);
         mTabObserver = new EmptyTabObserver() {
             @Override
@@ -147,17 +147,18 @@ public class WebFeedFollowIntroController {
                 // TODO(crbug/1152592): Also check for certificate errors or SafeBrowser warnings.
                 if (tab.isIncognito()
                         || !(url.getScheme().equals("http") || url.getScheme().equals("https"))) {
-                    Log.d(TAG, "No recommendation: URL scheme is not HTTP or HTTPS");
+                    Log.i(TAG, "No recommendation: URL scheme is not HTTP or HTTPS");
                     return;
                 }
 
                 WebFeedBridge.getVisitCountsToHost(url, result -> {
                     mMeetsVisitRequirement =
                             result.visits >= numVisitMin && result.dailyVisits >= dailyVisitMin;
-                    Log.d(TAG,
-                            "Host visits queried: totalVisits=%s, dailyVisits=%s, "
-                                    + "meetsRequirements=%s",
-                            result.visits, result.dailyVisits, mMeetsVisitRequirement);
+                    Log.i(TAG,
+                            "Host visits queried: totalVisits=%s (minToShow=%s), dailyVisits=%s "
+                                    + "(minToShow=%s), meetsRequirements=%s",
+                            result.visits, numVisitMin, result.dailyVisits, dailyVisitMin,
+                            mMeetsVisitRequirement);
                 });
                 WebFeedBridge.getWebFeedMetadataForPage(tab, url, result -> {
                     // Shouldn't be recommended if there's no metadata, ID doesn't exist, or if it
@@ -173,7 +174,8 @@ public class WebFeedFollowIntroController {
                     } else {
                         mRecommendedInfo = null;
                     }
-                    Log.d(TAG, "Web Feed metadata queried: mRecommendedInfo=%s", mRecommendedInfo);
+                    Log.i(TAG, "Web Feed metadata queried: isRecommended=%s",
+                            mRecommendedInfo != null);
                 });
 
                 // The requests for information above should all be done by the time this delayed
@@ -291,17 +293,17 @@ public class WebFeedFollowIntroController {
      */
     private boolean shouldShowFollowIntro() {
         if (mIntroShown) {
-            Log.d(TAG, "No recommendation: it was already shown");
+            Log.i(TAG, "No recommendation: it was already shown");
             return false;
         }
 
         if (mRecommendedInfo == null) {
-            Log.d(TAG, "No recommendation: URL is not in recommended list");
+            Log.i(TAG, "No recommendation: URL is not in recommended list");
             return false;
         }
 
         if (mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
-            Log.d(TAG, "Allowed recommendation: debug mode is enabled");
+            Log.i(TAG, "Allowed recommendation: debug mode is enabled");
             return true;
         }
 
@@ -314,7 +316,7 @@ public class WebFeedFollowIntroController {
                         getWebFeedIntroWebFeedIdShownTimeMsKey(mRecommendedInfo.webFeedId));
         if (!mMeetsVisitRequirement || (timeSinceLastShown < mAppearanceThresholdMillis)
                 || (timeSinceLastShownForWebFeed < WEB_FEED_ID_APPEARANCE_THRESHOLD_MILLIS)) {
-            Log.d(TAG,
+            Log.i(TAG,
                     "No recommendation: mMeetsVisitRequirement=%s, enoughTimeSinceLastShown=%s, "
                             + "enoughTimeSinceLastShownForWebFeed=%s",
                     mMeetsVisitRequirement, timeSinceLastShown > mAppearanceThresholdMillis,
@@ -327,11 +329,11 @@ public class WebFeedFollowIntroController {
         // components/feature_engagement/public/feature_configurations.cc.
         if (!mFeatureEngagementTracker.shouldTriggerHelpUI(
                     FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE)) {
-            Log.d(TAG, "No recommendation: not allowed by feature tracker");
+            Log.i(TAG, "No recommendation: not allowed by feature engagement tracker");
             return false;
         }
 
-        Log.d(TAG, "Allowed recommendation: all requirements met");
+        Log.i(TAG, "Allowed recommendation: all requirements met");
         return true;
     }
 
