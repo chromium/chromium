@@ -16,7 +16,6 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_types.h"
@@ -71,8 +70,8 @@ class POLICY_EXPORT PolicyMap {
     // Returns a copy of |this|.
     Entry DeepCopy() const;
 
-    base::Value* value() { return base::OptionalOrNullptr(value_); }
-    const base::Value* value() const { return base::OptionalOrNullptr(value_); }
+    base::Value* value();
+    const base::Value* value() const;
 
     void set_value(absl::optional<base::Value> val);
 

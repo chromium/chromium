@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -86,6 +87,14 @@ PolicyMap::Entry PolicyMap::Entry::DeepCopy() const {
     copy.AddConflictingPolicy(conflict.entry().DeepCopy());
   }
   return copy;
+}
+
+base::Value* PolicyMap::Entry::value() {
+  return base::OptionalOrNullptr(value_);
+}
+
+const base::Value* PolicyMap::Entry::value() const {
+  return base::OptionalOrNullptr(value_);
 }
 
 void PolicyMap::Entry::set_value(absl::optional<base::Value> val) {
