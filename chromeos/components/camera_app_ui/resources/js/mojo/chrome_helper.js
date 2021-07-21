@@ -308,6 +308,18 @@ export class ChromeHelper {
   }
 
   /**
+   * Converts given |jpegData| to PDF format.
+   * @param {!Blob} jpegBlob Blob in JPEG format.
+   * @return {!Promise<!Blob>} Blob in PDF format.
+   */
+  async convertToPdf(jpegBlob) {
+    const buffer = new Uint8Array(await jpegBlob.arrayBuffer());
+    const {pdfData} = await MockDocumentScanner.getInstance().convertToPdf(
+        castToNumberArray(buffer));
+    return new Blob([new Uint8Array(pdfData)], {type: MimeType.PDF});
+  }
+
+  /**
    * Creates a new instance of ChromeHelper if it is not set. Returns the
    *     exist instance.
    * @return {!ChromeHelper} The singleton instance.

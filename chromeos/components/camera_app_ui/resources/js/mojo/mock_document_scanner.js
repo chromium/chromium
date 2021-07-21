@@ -118,6 +118,15 @@ export class MockDocumentScanner {
   }
 
   /**
+   * Converts an jpeg image to PDF format.
+   * @param {!Array<number>} jpegData
+   * @return {!Promise<{pdfData: !Array<number>}>}
+   */
+  async convertToPdf(jpegData) {
+    return {pdfData: jpegData};
+  }
+
+  /**
    * Creates a new instance of MockDocumentScanner if it is not set. Returns
    * the exist instance.
    * @return {!MockDocumentScanner} The singleton instance.
