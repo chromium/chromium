@@ -21,12 +21,15 @@ FastPairPresenter::~FastPairPresenter() = default;
 
 void FastPairPresenter::ShowDiscovery(const Device& device,
                                       DiscoveryCallback callback) {
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   notification_controller_->ShowDiscoveryNotification(
       base::ASCIIToUTF16(device.metadata_id), gfx::Image(),
       base::BindOnce(&FastPairPresenter::OnDiscoveryClicked,
-                     weak_pointer_factory_.GetWeakPtr(), std::move(callback)),
+                     weak_pointer_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
       base::BindOnce(&FastPairPresenter::OnDiscoveryDismissed,
-                     weak_pointer_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_pointer_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void FastPairPresenter::OnDiscoveryClicked(DiscoveryCallback callback) {
@@ -47,12 +50,15 @@ void FastPairPresenter::ShowPairing(const Device& device) {
 
 void FastPairPresenter::ShowPairingFailed(const Device& device,
                                           PairingFailedCallback callback) {
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   notification_controller_->ShowErrorNotification(
       base::ASCIIToUTF16(device.metadata_id), gfx::Image(),
       base::BindOnce(&FastPairPresenter::OnNavigateToSettings,
-                     weak_pointer_factory_.GetWeakPtr(), std::move(callback)),
+                     weak_pointer_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
       base::BindOnce(&FastPairPresenter::OnPairingFailedDismissed,
-                     weak_pointer_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_pointer_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void FastPairPresenter::OnNavigateToSettings(PairingFailedCallback callback) {
