@@ -16,3 +16,14 @@
 # TODO(crbug.com/1231516): This test require handling capture in
 # ui::ScenicWindow
 -TooltipControllerTest.Capture
+
+# TODO(crbug.com/1231576): These tests require handling window resizing in
+# ui::ScenicWindow
+-DesktopAuraWidgetTest.TopLevelOwnedPopupResizeTest
+-DesktopNativeWidgetAuraTest.DesktopAuraWindowSizeTest
+-DesktopWidgetObserverTest.OnWidgetMovedWhenOriginChangesNative
+-DesktopWidgetTest.GetRestoredBounds
+-DesktopWidgetTest.MinimumSizeConstraints
+-DesktopWindowTreeHostPlatformTest.SetBoundsWithUnchangedSize
+-NativeWidgetAuraTest.CenterWindowLargeParent
+-RootViewDesktopNativeWidgetTest.SingleLayoutDuringInit
