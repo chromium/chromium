@@ -650,6 +650,8 @@ class PDFiumEngine : public PDFEngine,
   // The plugin size in screen coordinates.
   gfx::Size plugin_size_;
   double current_zoom_ = 1.0;
+  // The caret position and bound in plugin viewport coordinates.
+  gfx::Rect caret_rect_;
 
   std::unique_ptr<DocumentLoader> doc_loader_;  // Main document's loader.
   bool doc_loader_set_for_testing_ = false;

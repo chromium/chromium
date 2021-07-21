@@ -269,6 +269,9 @@ class PDFEngine {
     virtual void SelectionChanged(const gfx::Rect& left,
                                   const gfx::Rect& right) {}
 
+    // The caret position in the editable form (if applicable) changed.
+    virtual void CaretChanged(const gfx::Rect& caret_rect) {}
+
     // Notifies the client that the PDF has been edited.
     virtual void EnteredEditMode() {}
 

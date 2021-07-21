@@ -783,6 +783,12 @@ void OutOfProcessInstance::NotifySelectedFindResultChanged(
   SelectedFindResultChanged(current_find_index);
 }
 
+void OutOfProcessInstance::CaretChanged(const gfx::Rect& caret_rect) {
+  PP_Rect caret_viewport =
+      PPRectFromRect(caret_rect + available_area().OffsetFromOrigin());
+  text_input_->UpdateCaretPosition(caret_viewport, caret_viewport);
+}
+
 void OutOfProcessInstance::Alert(const std::string& message) {
   pp::PDF::ShowAlertDialog(this, message.c_str());
 }

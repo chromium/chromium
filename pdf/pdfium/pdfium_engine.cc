@@ -606,7 +606,12 @@ void PDFiumEngine::ScrolledToXPosition(int position) {
   int old_x = position_.x();
   position_.set_x(position);
   CalculateVisiblePages();
-  client_->DidScroll(gfx::Vector2d(old_x - position, 0));
+
+  gfx::Vector2d diff(position - old_x, 0);
+  client_->DidScroll(-diff);
+  caret_rect_ += diff;
+  client_->CaretChanged(caret_rect_);
+
   OnSelectionPositionChanged();
 }
 
@@ -616,7 +621,12 @@ void PDFiumEngine::ScrolledToYPosition(int position) {
   int old_y = position_.y();
   position_.set_y(position);
   CalculateVisiblePages();
-  client_->DidScroll(gfx::Vector2d(0, old_y - position));
+
+  gfx::Vector2d diff(0, position - old_y);
+  client_->DidScroll(-diff);
+  caret_rect_ += diff;
+  client_->CaretChanged(caret_rect_);
+
   OnSelectionPositionChanged();
 }
 
@@ -3918,6 +3928,25 @@ void PDFiumEngine::OnFocusedAnnotationUpdated(FPDF_ANNOTATION annot,
   SetInFormTextArea(is_form_text_area);
   editable_form_text_area_ =
       is_form_text_area && IsAnnotationAnEditableFormTextArea(annot, form_type);
+
+  if (editable_form_text_area_ && PageIndexInBounds(page_index)) {
+    FS_RECTF annot_rect;
+    if (!FPDFAnnot_GetRect(annot, &annot_rect))
+      return;
+
+    // Position assuming top-left of the first page is at (0,0).
+    gfx::Rect rect_screen = pages_[page_index]->PageToScreen(
+        gfx::Point(), current_zoom_, annot_rect.left, annot_rect.top,
+        annot_rect.right, annot_rect.bottom,
+        layout_.options().default_page_orientation());
+
+    // Position in viewport.
+    caret_rect_.SetRect(rect_screen.x() - position_.x(),
+                        rect_screen.y() - position_.y(), rect_screen.width(),
+                        rect_screen.height());
+
+    client_->CaretChanged(caret_rect_);
+  }
 }
 
 void PDFiumEngine::SetCaretPosition(const gfx::Point& position) {

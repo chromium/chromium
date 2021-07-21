@@ -1028,11 +1028,6 @@ gfx::Rect PepperPluginInstanceImpl::GetCaretBounds() const {
   }
 
   // TODO(kinaba) Take CSS transformation into account.
-  // TODO(kinaba) Take |text_input_caret_info_->caret_bounds| into account. On
-  // some platforms, an "exclude rectangle" where candidate window must avoid
-  // the region can be passed to IME. Currently, we pass only the caret
-  // rectangle because it is the only information supported uniformly in
-  // Chromium.
   gfx::Rect caret = text_input_caret_info_->caret;
   caret.Offset(view_data_.rect.point.x, view_data_.rect.point.y);
   ConvertDIPToViewport(&caret);
