@@ -390,7 +390,8 @@ Collections compared to other libraries used in Blink:
 | -                  | WTF::HashCountedSet | blink::HeapHashCountedSet |
 
 These heap collections work mostly the same way as their stdlib or WTF collection counterparts but there are some things to keep in mind.
-Heap collections do not inherit from `GarbageCollected` but are nonetheless allocated on-heap and thus must be properly traced from a `Trace` method.
+Heap collections are regular heap objects and thus must be properly traced from a `Trace` method.
+They can also be inlined into other objects for performance reasons and are allowed to be directly used on stack.
 
 ```c++
 class A final : public GarbageCollected<A> {
