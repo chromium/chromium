@@ -13,14 +13,14 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crostini/crostini_mime_types_service.h"
-#include "chrome/browser/ash/crostini/crostini_mime_types_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
 #include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -1395,8 +1395,7 @@ class FileManagerFileTasksCrostiniTest
     mime_types_list.set_container_name(crostini::kCrostiniDefaultContainerName);
     (*mime_types_list.mutable_mime_type_mappings())["foo"] = "foo/x-bar";
 
-    crostini::CrostiniMimeTypesServiceFactory::GetForProfile(
-        test_profile_.get())
+    guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(test_profile_.get())
         ->UpdateMimeTypes(mime_types_list);
   }
   ~FileManagerFileTasksCrostiniTest() override {

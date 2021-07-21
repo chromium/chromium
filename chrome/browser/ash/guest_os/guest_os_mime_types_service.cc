@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crostini/crostini_mime_types_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 
 #include <map>
 #include <string>
 #include <vector>
 
 #include "base/logging.h"
-#include "chrome/browser/ash/crostini/crostini_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -18,7 +18,7 @@
 
 using vm_tools::apps::App;
 
-namespace crostini {
+namespace guest_os {
 
 namespace {
 
@@ -40,12 +40,12 @@ std::string GenerateFileExtensionId(const std::string& file_extension,
 
 }  // namespace
 
-CrostiniMimeTypesService::CrostiniMimeTypesService(Profile* profile)
+GuestOsMimeTypesService::GuestOsMimeTypesService(Profile* profile)
     : prefs_(profile->GetPrefs()) {}
 
-CrostiniMimeTypesService::~CrostiniMimeTypesService() = default;
+GuestOsMimeTypesService::~GuestOsMimeTypesService() = default;
 
-std::string CrostiniMimeTypesService::GetMimeType(
+std::string GuestOsMimeTypesService::GetMimeType(
     const base::FilePath& file_path,
     const std::string& vm_name,
     const std::string& container_name) const {
@@ -58,7 +58,7 @@ std::string CrostiniMimeTypesService::GetMimeType(
   std::string extension_id =
       GenerateFileExtensionId(extension, vm_name, container_name);
   const base::DictionaryValue* mime_type_mappings =
-      prefs_->GetDictionary(prefs::kCrostiniMimeTypes);
+      prefs_->GetDictionary(prefs::kGuestOsMimeTypes);
   const base::Value* extension_value = mime_type_mappings->FindKeyOfType(
       extension_id, base::Value::Type::DICTIONARY);
   if (!extension_value) {
@@ -68,10 +68,10 @@ std::string CrostiniMimeTypesService::GetMimeType(
       ->GetString();
 }
 
-void CrostiniMimeTypesService::ClearMimeTypes(
+void GuestOsMimeTypesService::ClearMimeTypes(
     const std::string& vm_name,
     const std::string& container_name) {
-  DictionaryPrefUpdate update(prefs_, prefs::kCrostiniMimeTypes);
+  DictionaryPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
   base::DictionaryValue* mime_type_mappings = update.Get();
   std::vector<std::string> removed_ids;
   for (const auto item : mime_type_mappings->DictItems()) {
@@ -87,7 +87,7 @@ void CrostiniMimeTypesService::ClearMimeTypes(
   }
 }
 
-void CrostiniMimeTypesService::UpdateMimeTypes(
+void GuestOsMimeTypesService::UpdateMimeTypes(
     const vm_tools::apps::MimeTypes& mime_type_mappings) {
   if (mime_type_mappings.vm_name().empty()) {
     LOG(WARNING) << "Received MIME type list with missing VM name";
@@ -104,7 +104,7 @@ void CrostiniMimeTypesService::UpdateMimeTypes(
   std::set<std::string> new_extension_ids;
   std::vector<std::string> removed_extensions;
 
-  DictionaryPrefUpdate update(prefs_, prefs::kCrostiniMimeTypes);
+  DictionaryPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
   base::DictionaryValue* extensions = update.Get();
   for (const auto& mapping : mime_type_mappings.mime_type_mappings()) {
     std::string extension_id =
@@ -143,4 +143,4 @@ void CrostiniMimeTypesService::UpdateMimeTypes(
   }
 }
 
-}  // namespace crostini
+}  // namespace guest_os

@@ -10,9 +10,9 @@ class PrefRegistrySimple;
 namespace guest_os {
 namespace prefs {
 
-extern const char kCrostiniSharedPaths[];
 extern const char kGuestOSPathsSharedToVms[];
 
+extern const char kGuestOsMimeTypes[];
 extern const char kGuestOsRegistry[];
 extern const char kAppDesktopFileIdKey[];
 extern const char kAppVmTypeKey[];

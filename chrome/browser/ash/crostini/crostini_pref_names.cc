@@ -20,7 +20,6 @@ namespace prefs {
 // A boolean preference representing whether a user has opted in to use
 // Crostini (Called "Linux Apps" in UI).
 const char kCrostiniEnabled[] = "crostini.enabled";
-const char kCrostiniMimeTypes[] = "crostini.mime_types";
 // List of USB devices with their system guid, a name/description and their
 // enabled state for use with Crostini.
 const char kCrostiniSharedUsbDevices[] = "crostini.shared_usb_devices";
@@ -93,7 +92,6 @@ const char kEngagementPrefsPrefix[] = "crostini.metrics";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kCrostiniEnabled, false);
-  registry->RegisterDictionaryPref(kCrostiniMimeTypes);
   registry->RegisterListPref(kCrostiniPortForwarding);
   registry->RegisterListPref(kCrostiniSharedUsbDevices);
   registry->RegisterBooleanPref(kCrostiniMicAllowed, false);

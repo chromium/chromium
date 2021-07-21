@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crostini/crostini_mime_types_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 
 #include <stddef.h>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/test/base/testing_profile.h"
@@ -17,16 +16,19 @@
 
 using vm_tools::apps::MimeTypes;
 
-namespace crostini {
+namespace guest_os {
 
-class CrostiniMimeTypesServiceTest : public testing::Test {
+class GuestOsMimeTypesServiceTest : public testing::Test {
  public:
-  CrostiniMimeTypesServiceTest()
+  GuestOsMimeTypesServiceTest()
       : crostini_test_helper_(&profile_),
-        service_(std::make_unique<CrostiniMimeTypesService>(&profile_)) {}
+        service_(std::make_unique<GuestOsMimeTypesService>(&profile_)) {}
+  GuestOsMimeTypesServiceTest(const GuestOsMimeTypesServiceTest&) = delete;
+  GuestOsMimeTypesServiceTest& operator=(const GuestOsMimeTypesServiceTest&) =
+      delete;
 
  protected:
-  CrostiniMimeTypesService* service() { return service_.get(); }
+  GuestOsMimeTypesService* service() { return service_.get(); }
 
   MimeTypes CreateMimeTypesProto(
       const std::vector<std::string>& file_extensions,
@@ -47,14 +49,12 @@ class CrostiniMimeTypesServiceTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  CrostiniTestHelper crostini_test_helper_;
+  crostini::CrostiniTestHelper crostini_test_helper_;
 
-  std::unique_ptr<CrostiniMimeTypesService> service_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniMimeTypesServiceTest);
+  std::unique_ptr<GuestOsMimeTypesService> service_;
 };
 
-TEST_F(CrostiniMimeTypesServiceTest, SetAndGetMimeTypes) {
+TEST_F(GuestOsMimeTypesServiceTest, SetAndGetMimeTypes) {
   base::FilePath test_path_foo("test.foo");
   base::FilePath test_path_bar("test.bar");
   std::vector<std::string> file_extensions = {"foo", "bar"};
@@ -74,7 +74,7 @@ TEST_F(CrostiniMimeTypesServiceTest, SetAndGetMimeTypes) {
 
 // Test that UpdateMimeTypes doesn't clobber MIME types from different VMs or
 // containers.
-TEST_F(CrostiniMimeTypesServiceTest, MultipleContainers) {
+TEST_F(GuestOsMimeTypesServiceTest, MultipleContainers) {
   service()->UpdateMimeTypes(
       CreateMimeTypesProto({"foo"}, {"foo/mime"}, "vm 1", "container 1"));
   service()->UpdateMimeTypes(
@@ -108,7 +108,7 @@ TEST_F(CrostiniMimeTypesServiceTest, MultipleContainers) {
 
 // Test that ClearMimeTypes works, and only removes apps from the
 // specified VM.
-TEST_F(CrostiniMimeTypesServiceTest, ClearMimeTypes) {
+TEST_F(GuestOsMimeTypesServiceTest, ClearMimeTypes) {
   service()->UpdateMimeTypes(
       CreateMimeTypesProto({"foo"}, {"foo/mime"}, "vm 1", "container 1"));
   service()->UpdateMimeTypes(
@@ -133,4 +133,4 @@ TEST_F(CrostiniMimeTypesServiceTest, ClearMimeTypes) {
                                        "container 1"));
 }
 
-}  // namespace crostini
+}  // namespace guest_os

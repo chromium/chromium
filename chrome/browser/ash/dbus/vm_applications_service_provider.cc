@@ -13,11 +13,11 @@
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
-#include "chrome/browser/ash/crostini/crostini_mime_types_service.h"
-#include "chrome/browser/ash/crostini/crostini_mime_types_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/exo/chrome_data_exchange_delegate.h"
+#include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
@@ -172,9 +172,8 @@ void VmApplicationsServiceProvider::UpdateMimeTypes(
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   if (crostini::CrostiniFeatures::Get()->IsEnabled(profile)) {
-    crostini::CrostiniMimeTypesService* mime_types_service =
-        crostini::CrostiniMimeTypesServiceFactory::GetForProfile(profile);
-    mime_types_service->UpdateMimeTypes(request);
+    guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile)
+        ->UpdateMimeTypes(request);
   }
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));

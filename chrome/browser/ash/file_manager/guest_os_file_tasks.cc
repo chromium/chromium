@@ -18,12 +18,12 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
-#include "chrome/browser/ash/crostini/crostini_mime_types_service.h"
-#include "chrome/browser/ash/crostini/crostini_mime_types_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
@@ -57,7 +57,7 @@ bool HasSupportedMimeType(
     const std::set<std::string>& supported_mime_types,
     const std::string& vm_name,
     const std::string& container_name,
-    const crostini::CrostiniMimeTypesService& mime_types_service,
+    const guest_os::GuestOsMimeTypesService& mime_types_service,
     const extensions::EntryInfo& entry) {
   if (supported_mime_types.find(entry.mime_type) !=
       supported_mime_types.end()) {
@@ -93,7 +93,7 @@ bool HasSupportedMimeType(
 }
 
 bool AppSupportsMimeTypeOfAllEntries(
-    const crostini::CrostiniMimeTypesService& mime_types_service,
+    const guest_os::GuestOsMimeTypesService& mime_types_service,
     const std::vector<extensions::EntryInfo>& entries,
     const guest_os::GuestOsRegistryService::Registration& app) {
   return std::all_of(
@@ -166,8 +166,8 @@ void FindGuestOsApps(
 
   auto* registry_service =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
-  crostini::CrostiniMimeTypesService* mime_types_service =
-      crostini::CrostiniMimeTypesServiceFactory::GetForProfile(profile);
+  guest_os::GuestOsMimeTypesService* mime_types_service =
+      guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile);
   for (const auto& pair : registry_service->GetEnabledApps()) {
     const std::string& app_id = pair.first;
     const auto& registration = pair.second;

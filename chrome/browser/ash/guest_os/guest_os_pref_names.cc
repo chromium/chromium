@@ -13,6 +13,11 @@ namespace prefs {
 // shared with.
 const char kGuestOSPathsSharedToVms[] = "guest_os.paths_shared_to_vms";
 
+// Mapping of file extension to mime types for each VM/Container.
+// Use of root 'crostini' is for historic reasons / backwards compatibility.
+const char kGuestOsMimeTypes[] = "crostini.mime_types";
+
+// Registry of installed app for each VM/container.
 const char kGuestOsRegistry[] = "crostini.registry";
 // Keys for the |kGuestOsRegistry| Dictionary stored in prefs for each app.
 const char kAppDesktopFileIdKey[] = "desktop_file_id";
@@ -36,7 +41,7 @@ const char kAppLastLaunchTimeKey[] = "last_launch_time";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kGuestOSPathsSharedToVms);
-
+  registry->RegisterDictionaryPref(kGuestOsMimeTypes);
   registry->RegisterDictionaryPref(kGuestOsRegistry);
 }
 

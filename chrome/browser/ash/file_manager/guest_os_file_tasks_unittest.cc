@@ -6,7 +6,6 @@
 
 #include "base/files/file_path.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
@@ -93,7 +92,7 @@ class GuestOsFileTasksTest : public testing::Test {
     // crostini.mime_types {<termina/penguin/<file_ext>:
     // {container_name: "penguin", mime_type: <mime>, vm_name: "termina"}}
     DictionaryPrefUpdate update(profile_.GetPrefs(),
-                                crostini::prefs::kCrostiniMimeTypes);
+                                guest_os::prefs::kGuestOsMimeTypes);
     base::DictionaryValue* mimes = update.Get();
     base::Value mime_dict(base::Value::Type::DICTIONARY);
     mime_dict.SetKey("container_name", base::Value("penguin"));
