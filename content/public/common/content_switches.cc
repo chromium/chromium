@@ -52,6 +52,12 @@ const char kBrowserTest[] = "browser-test";
 // Causes the Conversion Measurement API to run without delays or noise.
 const char kConversionsDebugMode[] = "conversions-debug-mode";
 
+// Enables cross-origin sharing of WebAssembly modules. This switch supports the
+// deprecation of cross-origin WebAssembly module sharing as it allows admins to
+// re-enable cross-origin module sharing temporarily with an enterprise policy.
+const char kCrossOriginWebAssemblyModuleSharingAllowed[] =
+    "cross-origin-webassembly-module-sharing-allowed";
+
 // Disable antialiasing on 2d canvas.
 const char kDisable2dCanvasAntialiasing[]   = "disable-canvas-aa";
 

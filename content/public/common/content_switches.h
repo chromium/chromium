@@ -27,6 +27,7 @@ CONTENT_EXPORT extern const char kBrowserStartupDialog[];
 CONTENT_EXPORT extern const char kBrowserSubprocessPath[];
 CONTENT_EXPORT extern const char kBrowserTest[];
 CONTENT_EXPORT extern const char kConversionsDebugMode[];
+CONTENT_EXPORT extern const char kCrossOriginWebAssemblyModuleSharingAllowed[];
 CONTENT_EXPORT extern const char kDisable2dCanvasAntialiasing[];
 CONTENT_EXPORT extern const char kDisable2dCanvasImageChromium[];
 CONTENT_EXPORT extern const char kDisable3DAPIs[];

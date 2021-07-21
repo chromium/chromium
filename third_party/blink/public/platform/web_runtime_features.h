@@ -208,6 +208,8 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableSharedArrayBufferOnDesktop(bool);
   BLINK_PLATFORM_EXPORT static void
   EnableSharedArrayBufferUnrestrictedAccessAllowed(bool);
+  BLINK_PLATFORM_EXPORT static void
+  EnableCrossOriginWebAssemblyModuleSharingAllowed(bool);
   BLINK_PLATFORM_EXPORT static void EnableVideoPlaybackQuality(bool);
   BLINK_PLATFORM_EXPORT static void EnableMediaControlsOverlayPlayButton(bool);
   BLINK_PLATFORM_EXPORT static void EnableMediaCastOverlayButton(bool);

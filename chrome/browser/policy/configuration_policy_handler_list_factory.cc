@@ -556,6 +556,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kSharedArrayBufferUnrestrictedAccessAllowed,
     base::Value::Type::BOOLEAN },
 #endif  // !defined(OS_ANDROID)
+  { key::kCrossOriginWebAssemblyModuleSharingEnabled,
+    prefs::kCrossOriginWebAssemblyModuleSharingEnabled,
+    base::Value::Type::BOOLEAN },
   { key::kIsolateOriginsAndroid,
     prefs::kIsolateOrigins,
     base::Value::Type::STRING },

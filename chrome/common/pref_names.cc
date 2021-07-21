@@ -2968,6 +2968,10 @@ const char kIsolateOrigins[] = "site_isolation.isolate_origins";
 // Boolean that specifies opting into --site-per-process (full Site Isolation).
 const char kSitePerProcess[] = "site_isolation.site_per_process";
 
+// Boolean that enable cross-origin sharing for WebAssembly modules.
+const char kCrossOriginWebAssemblyModuleSharingEnabled[] =
+    "profile.cross_origin_webassembly_module_sharing_enabled";
+
 #if !defined(OS_ANDROID)
 // Boolean to allow SharedArrayBuffer in non-crossOriginIsolated contexts.
 // TODO(crbug.com/1144104) Remove when migration to COOP+COEP is complete.

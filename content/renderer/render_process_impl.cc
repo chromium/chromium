@@ -203,6 +203,16 @@ RenderProcessImpl::RenderProcessImpl()
     v8::V8::SetFlagsFromString(kSABPerContextFlag, sizeof(kSABPerContextFlag));
   }
 
+  // The cross-origin-webassembly-module-sharing-allowed flag is used to pass
+  // the kCrossOriginWebAssemblyModuleSharingEnabled enterprise policy from the
+  // browser process to the renderer process. This switch should be enabled by
+  // default for now, but once cross origin module sharing is deprecated, this
+  // switch will only get enabled by the enterprise policy.
+  if (command_line->HasSwitch(
+          switches::kCrossOriginWebAssemblyModuleSharingAllowed)) {
+    blink::WebRuntimeFeatures::EnableCrossOriginWebAssemblyModuleSharingAllowed(
+        true);
+  }
   SetV8FlagIfFeature(features::kWebAssemblyTiering, "--wasm-tier-up");
   SetV8FlagIfNotFeature(features::kWebAssemblyTiering, "--no-wasm-tier-up");
 

@@ -2495,6 +2495,35 @@
       }
     ]
   },
+  "CrossOriginWebAssemblyModuleSharingEnabled": {
+    "os": ["win", "linux", "mac", "chromeos"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "CrossOriginWebAssemblyModuleSharingEnabled": false },
+        "prefs": {
+          "profile.cross_origin_webassembly_module_sharing_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": { "CrossOriginWebAssemblyModuleSharingEnabled": true },
+        "prefs": {
+          "profile.cross_origin_webassembly_module_sharing_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "profile.cross_origin_webassembly_module_sharing_enabled": {
+            "default_value": true
+          }
+        }
+      }
+    ]
+  },
   "WebDriverOverridesIncompatiblePolicies": {
     "reason_for_missing_test": "Policy was removed"
   },
