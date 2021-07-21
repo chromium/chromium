@@ -12571,6 +12571,15 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="4" label="User selection not permitted"/>
 </enum>
 
+<enum name="ClientIdSource">
+  <summary/>
+  <int value="0" label="Cached id matches local state"/>
+  <int value="1" label="From local state"/>
+  <int value="2" label="From backup"/>
+  <int value="3" label="New"/>
+  <int value="4" label="From provisional id"/>
+</enum>
+
 <enum name="ClientSidePhishingResult">
   <summary>
     Enumerates the possible results from the client side phishing detector.

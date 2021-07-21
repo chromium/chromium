@@ -77,7 +77,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.ClientIdBackupRecoveredWithAge" units="hours"
-    expires_after="2021-11-21">
+    expires_after="2022-07-21">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -86,6 +86,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     installation date. This report carries the age in hours of the recovered
     client id.
   </summary>
+</histogram>
+
+<histogram name="UMA.ClientIdSource" enum="ClientIdSource"
+    expires_after="2022-07-21">
+  <owner>pdyson@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>The source of the client id when its creation is forced.</summary>
 </histogram>
 
 <histogram name="UMA.EnrollmentStatus" enum="EnrollmentStatus"

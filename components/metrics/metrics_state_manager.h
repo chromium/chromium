@@ -140,6 +140,27 @@ class MetricsStateManager final {
     ENTROPY_SOURCE_ENUM_SIZE,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numerical values should never be reused.
+  enum class ClientIdSource {
+    // Recorded when the client ID in Local State matches the cached copy.
+    kClientIdMatches = 0,
+    // Recorded when we are somehow missing the cached client ID and we are
+    // able to recover it from the Local State.
+    kClientIdFromLocalState = 1,
+    // Recorded when we are somehow missing the client ID stored in Local State
+    // yet are able to recover it from a backup location.
+    kClientIdBackupRecovered = 2,
+    // Recorded when we are somehow missing the client ID in Local State, cache
+    // and backup and there is no provisional client ID, so a new client ID is
+    // generated.
+    kClientIdNew = 3,
+    // Recorded when we are somehow missing the client ID in Local State, cache
+    // and backup, so we promote the provisional client ID.
+    kClientIdFromProvisionalId = 4,
+    kMaxValue = kClientIdFromProvisionalId,
+  };
+
   // Creates the MetricsStateManager with the given |local_state|. Uses
   // |enabled_state_provider| to query whether there is consent for metrics
   // reporting, and if it is enabled. Clients should instead use Create(), which
