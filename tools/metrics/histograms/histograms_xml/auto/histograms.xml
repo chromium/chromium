@@ -21,36 +21,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
-<histogram name="AutoScreenBrightness.AdapterDecisionAtUserChange.AlsDelta"
-    units="count" expires_after="2022-04-30">
-<!-- Name completed by histogram_suffixes name="AlsBrightnessDirection" and name="AdapterDecision" -->
-
-  <owner>wrong@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <summary>
-    When user changes brightness manually, we will ask the model whether it also
-    thinks brightness should be changed. We also log the als-delta from the
-    previous log-lux (when brightness was last changed) to the current log-lux,
-    which includes both the sign of the als-delta and its absolute value. Chrome
-    OS only.
-  </summary>
-</histogram>
-
-<histogram name="AutoScreenBrightness.AdapterDecisionAtUserChange.AlsStd"
-    units="count" expires_after="2022-04-30">
-<!-- Name completed by histogram_suffixes name="AlsBrightnessDirection" and name="AdapterDecision" -->
-
-  <owner>wrong@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <summary>
-    When user changes brightness manually, we will ask the model whether it also
-    thinks brightness should be changed. We also log the als-stddev in its
-    averaging period. We log it separately for the case when the associated
-    als-delta is positive and negative. Chrome OS only.
-  </summary>
-</histogram>
+<variants name="AlsBrightnessDirection">
+  <variant name="Brighten." summary=""/>
+  <variant name="Darken." summary=""/>
+</variants>
 
 <histogram
     name="AutoScreenBrightness.AdapterDecisionAtUserChange.BrightnessChange.Cause"
@@ -108,6 +82,41 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     averaging period. This metric records the als-stddev when the associated
     als-delta is unknown. Chrome OS only.
   </summary>
+</histogram>
+
+<histogram
+    name="AutoScreenBrightness.AdapterDecisionAtUserChange.{AlsBrightnessDirection}AlsDelta"
+    units="count" expires_after="2022-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    When user changes brightness manually, we will ask the model whether it also
+    thinks brightness should be changed. We also log the als-delta from the
+    previous log-lux (when brightness was last changed) to the current log-lux,
+    which includes both the sign of the als-delta and its absolute value. Chrome
+    OS only. {AlsBrightnessDirection}
+  </summary>
+  <token key="AlsBrightnessDirection" variants="AlsBrightnessDirection">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="AutoScreenBrightness.AdapterDecisionAtUserChange.{AlsBrightnessDirection}AlsStd"
+    units="count" expires_after="2022-04-30">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    When user changes brightness manually, we will ask the model whether it also
+    thinks brightness should be changed. We also log the als-stddev in its
+    averaging period. We log it separately for the case when the associated
+    als-delta is positive and negative. Chrome OS only. {AlsBrightnessDirection}
+  </summary>
+  <token key="AlsBrightnessDirection" variants="AlsBrightnessDirection">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="AutoScreenBrightness.AlsReaderStatus"

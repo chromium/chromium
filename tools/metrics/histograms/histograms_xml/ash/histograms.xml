@@ -21,9 +21,48 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="ContextualNudgesCategories">
+  <variant name=".BackGesture"
+      summary="Metrics related to back gesture's nudes and usage."/>
+  <variant name=".HomeToOverview"
+      summary="Metrics related to home to overview gesture's nudes and usage."/>
+  <variant name=".InAppToHome"
+      summary="Metrics related to in app to home gesture's nudes and usage."/>
+</variants>
+
 <variants name="DisplayModes">
   <variant name="ClamshellMode" summary="Clamshell mode"/>
   <variant name="TabletMode" summary="Tablet mode"/>
+</variants>
+
+<variants name="HotseatTransitionType">
+  <variant name=".TransitionToExtendedHotseat"
+      summary="Transition to the extended hotseat"/>
+  <variant name=".TransitionToHiddenHotseat"
+      summary="Transition to the hidden hotseat"/>
+  <variant name=".TransitionToShownHotseat"
+      summary="Transition to the shown hotseat"/>
+</variants>
+
+<variants name="OverviewAnimationMode">
+  <variant name=".ClamshellMode"
+      summary="Normal clamshell mode with multiple windows animates"/>
+  <variant name=".MinimizedTabletMode"
+      summary="Animates in Tablet mode w/o split view and all windows are
+               minimized"/>
+  <variant name=".SingleClamshellMode"
+      summary="In Clamshell mode with only top maximized/fullscren window
+               animates"/>
+  <variant name=".SplitView" summary="Animates in SplitView enabled"/>
+  <variant name=".TabletMode" summary="Animates in Tablet mode w/o split view"/>
+</variants>
+
+<variants name="SplitViewResizeModes">
+  <variant name=".ClamshellMode.SingleWindow" summary=""/>
+  <variant name=".ClamshellMode.WithOverview" summary=""/>
+  <variant name=".TabletMode.MultiWindow" summary=""/>
+  <variant name=".TabletMode.SingleWindow" summary=""/>
+  <variant name=".TabletMode.WithOverview" summary=""/>
 </variants>
 
 <histogram name="Ash.Accelerators.Deprecated.ShowImeMenuBubble"
@@ -176,16 +215,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Ash.Assistant.AnimationSmoothness" units="%"
-    expires_after="2021-11-21">
-<!-- Name completed by histogram_suffixes name="AshAssistantAnimationSmoothness" -->
-
+<histogram
+    name="Ash.Assistant.AnimationSmoothness{AshAssistantAnimationSmoothness}"
+    units="%" expires_after="2021-11-21">
   <owner>cowmoo@chromium.org</owner>
   <owner>xiaohuic@chromium.org</owner>
   <summary>
     Relative smoothness of assistant related animations. 100% represents ideally
-    smooth 60 frames per second.
+    smooth 60 frames per second. {AshAssistantAnimationSmoothness}
   </summary>
+  <token key="AshAssistantAnimationSmoothness">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".CardElement"
+        summary="Animation for showing and hiding card responses"/>
+    <variant name=".ResizeAssistantPageView"
+        summary="Expand assistant from launcher"/>
+    <variant name=".SuggestionChip"
+        summary="Animation for showing and hiding suggestion chips"/>
+    <variant name=".TextElement"
+        summary="Animation for showing and hiding text response"/>
+  </token>
 </histogram>
 
 <histogram name="Ash.BackGesture.EndScenarioType"
@@ -667,7 +720,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Ash.ContextualNudgeDismissContext"
+<histogram name="Ash.ContextualNudgeDismissContext{ContextualNudgesCategories}"
     enum="ContextualNudgeDismissContext" expires_after="2021-12-01">
 <!-- Name completed by histogram_suffixes name="ContextualNudgesNames" -->
 
@@ -678,12 +731,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     dismissed. Metrics are recorded when the user performs an action that
     renders the shown contextual nudge irrelevant. Metrics are recorded when the
     user performs the gesture suggested by the nudge as well as when the user
-    exits the relevant state some other way.
+    exits the relevant state some other way. {ContextualNudgesCategories}
   </summary>
+  <token key="ContextualNudgesCategories" variants="ContextualNudgesCategories">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Ash.ContextualNudgeDismissTime" units="ms"
-    expires_after="2021-12-01">
+<histogram name="Ash.ContextualNudgeDismissTime{ContextualNudgesCategories}"
+    units="ms" expires_after="2021-12-01">
 <!-- Name completed by histogram_suffixes name="ContextualNudgesNames" -->
 
   <owner>yulunwu@chromium.org</owner>
@@ -692,8 +752,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Tracks time between showing contextual nudge and gesture being performed.
     Metrics are only recorded when the user performs the action suggested by the
     contextual nudge. No metrics are recorded if the user exits the relevant
-    state some other way.
+    state some other way. {ContextualNudgesCategories}
   </summary>
+  <token key="ContextualNudgesCategories" variants="ContextualNudgesCategories">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Ash.Desks.AnimationSmoothness.DeskActivation" units="%"
@@ -1227,19 +1294,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Gestures supported by the in-app hotseat.</summary>
 </histogram>
 
-<histogram base="true" name="Ash.HotseatTransition.AnimationSmoothness"
+<histogram
+    name="Ash.HotseatTransition.AnimationSmoothness{HotseatTransitionType}"
     units="%" expires_after="2021-10-11">
-<!-- Name completed by histogram suffixes
-     name="HotseatTransitionType" -->
-
   <owner>anasalazar@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
     Tracks the animation smoothness for the ShelfWidget's animating background
     during transitions of the hotseat to shown, extended, and hidden hotseat
     states. Check Ash.HotseatWidgetAnimation.AnimationSmoothness for smoothness
-    of the HotseatWidget.
+    of the HotseatWidget. {HotseatTransitionType}
   </summary>
+  <token key="HotseatTransitionType" variants="HotseatTransitionType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Ash.HotseatTransition.Drag.PresentationTime" units="ms"
@@ -1264,22 +1336,41 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Ash.HotseatWidgetAnimation.AnimationSmoothness"
+<histogram
+    name="Ash.HotseatWidgetAnimation.AnimationSmoothness{HotseatTransitionType}"
     units="%" expires_after="2022-07-14">
-<!-- Name completed by histogram suffixes
-     name="HotseatTransitionType" -->
-
-<!-- Name completed by histogram suffixes
-     name="HotseatWidgetElement" -->
-
   <owner>anasalazar@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
     Tracks the animation smoothness for the bounds animation of the hotseat
     widget's elements during transitions of the hotseat to shown, extended, and
     hidden hotseat states. Check Ash.HotseatTransition.AnimationSmoothness for
-    smoothness of the shelf's animating background.
+    smoothness of the shelf's animating background. {HotseatTransitionType}
   </summary>
+  <token key="HotseatTransitionType" variants="HotseatTransitionType"/>
+</histogram>
+
+<histogram
+    name="Ash.HotseatWidgetAnimation.{HotseatWidgetElement}AnimationSmoothness"
+    units="%" expires_after="2022-07-14">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Tracks the animation smoothness for the bounds animation of the hotseat
+    widget's elements during transitions of the hotseat to shown, extended, and
+    hidden hotseat states. Check Ash.HotseatTransition.AnimationSmoothness for
+    smoothness of the shelf's animating background. {HotseatWidgetElement}
+  </summary>
+  <token key="HotseatWidgetElement">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name="TranslucentBackground."
+        summary="Hotseat widget's translucent background"/>
+    <variant name="Widget." summary="Hotseat widget"/>
+  </token>
 </histogram>
 
 <histogram name="Ash.ImmersiveFullscreen.WindowType" enum="WindowType"
@@ -1550,13 +1641,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Ash.NavigationWidget.AnimationSmoothness"
+<histogram
+    name="Ash.NavigationWidget.AnimationSmoothness{HotseatTransitionType}"
     units="%" expires_after="2022-06-02">
 <!-- Name completed by histogram suffixes
      name="HotseatTransitionType" -->
-
-<!-- Name completed by histogram suffixes
-     name="NavigationWidgetElement" -->
 
   <owner>anasalazar@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
@@ -1566,7 +1655,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     frames per second. 50% represents only 30 frames per second is achieved
     during the animations. Recorded every time an animation is triggered in the
     Navigation Widget. We record this metric for each element separately.
+    {HotseatTransitionType}
   </summary>
+  <token key="HotseatTransitionType" variants="HotseatTransitionType"/>
+</histogram>
+
+<histogram
+    name="Ash.NavigationWidget.{NavigationWidgetElement}AnimationSmoothness"
+    units="%" expires_after="2022-06-02">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Relative smoothness of animations of the navigation widget's elements, which
+    are the widget itself and its child views. 100% represents ideally smooth 60
+    frames per second. 50% represents only 30 frames per second is achieved
+    during the animations. Recorded every time an animation is triggered in the
+    Navigation Widget. We record this metric for each element separately.
+    {NavigationWidgetElement}
+  </summary>
+  <token key="NavigationWidgetElement">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name="BackButton." summary="Navigation widget's back button"/>
+    <variant name="HomeButton." summary="Navigation widget's home button"/>
+    <variant name="Widget." summary="Navigation widget"/>
+  </token>
 </histogram>
 
 <histogram name="Ash.NightLight.AutoNightLightNotificationShown"
@@ -1690,32 +1806,40 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Ash.Overview.AnimationSmoothness.Enter" units="%"
-    expires_after="2021-12-31">
-<!-- Name completed by histogram_suffixes
-     name="OverviewAnimationMode" -->
-
+<histogram name="Ash.Overview.AnimationSmoothness.Enter{OverviewAnimationMode}"
+    units="%" expires_after="2021-12-31">
   <owner>omrilio@chromium.org</owner>
   <owner>oshima@chromium.org</owner>
   <summary>
     Relative smoothness of animations when entering overview mode, recorded when
     the animation completes. 100% represents ideally smooth 60 frames per
-    second.
+    second. {OverviewAnimationMode}
   </summary>
+  <token key="OverviewAnimationMode" variants="OverviewAnimationMode">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Ash.Overview.AnimationSmoothness.Exit" units="%"
-    expires_after="2021-12-31">
-<!-- Name completed by histogram_suffixes
-     name="OverviewAnimationMode" -->
-
+<histogram name="Ash.Overview.AnimationSmoothness.Exit{OverviewAnimationMode}"
+    units="%" expires_after="2021-12-31">
   <owner>omrilio@chromium.org</owner>
   <owner>oshima@chromium.org</owner>
   <summary>
     Relative smoothness of animations when exiting overview mode, recorded when
     the animation completes. 100% represents ideally smooth 60 frames per
-    second.
+    second. {OverviewAnimationMode}
   </summary>
+  <token key="OverviewAnimationMode" variants="OverviewAnimationMode">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Ash.Overview.ArrowKeyPresses" units="units"
@@ -2443,15 +2567,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Ash.ShelfIcon.AnimationSmoothness" units="%"
-    expires_after="2021-03-30">
+<histogram name="Ash.ShelfIcon.AnimationSmoothness{ShelfIconAnimationType}"
+    units="%" expires_after="2021-03-30">
   <owner>andrewxu@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
     Relative smoothness of animations of the shelf icons. 100% represents
     ideally smooth 60 frames per second. Recorded when shelf icon animations are
     completed, including icon move, icon fade-in and icon fade-out.
+    {ShelfIconAnimationType}
   </summary>
+  <token key="ShelfIconAnimationType">
+    <variant name=""/>
+    <variant name=".FadeIn" summary="Shelf icon fade-in animation"/>
+    <variant name=".FadeOut" summary="Shelf icon fade-out animation"/>
+    <variant name=".Move" summary="Shelf icon move animation"/>
+  </token>
 </histogram>
 
 <histogram name="Ash.SplitView.EntryPoint.DeviceOrientation"
@@ -2576,31 +2707,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Ash.SplitViewResize.PresentationTime" units="ms"
-    expires_after="2021-12-26">
-<!-- Name completed by histogram_suffixes name="SplitViewResizeModes" -->
-
-  <owner>amusbach@chromium.org</owner>
-  <owner>xdai@chromium.org</owner>
-  <owner>omrilio@chromium.org</owner>
-  <owner>oshima@chromium.org</owner>
-  <summary>
-    Presentation time while resizing one or two split view windows.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Ash.SplitViewResize.PresentationTime.MaxLatency"
+<histogram
+    name="Ash.SplitViewResize.PresentationTime.MaxLatency{SplitViewResizeModes}"
     units="ms" expires_after="2021-12-12">
-<!-- Name completed by histogram_suffixes name="SplitViewResizeModes" -->
-
   <owner>amusbach@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <owner>oshima@chromium.org</owner>
   <summary>
     Maximum latency of the presentation time while resizing one or two split
-    view windows.
+    view windows. {SplitViewResizeModes}
   </summary>
+  <token key="SplitViewResizeModes" variants="SplitViewResizeModes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Ash.SplitViewResize.PresentationTime{SplitViewResizeModes}"
+    units="ms" expires_after="2021-12-26">
+  <owner>amusbach@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <owner>omrilio@chromium.org</owner>
+  <owner>oshima@chromium.org</owner>
+  <summary>
+    Presentation time while resizing one or two split view windows.
+    {SplitViewResizeModes}
+  </summary>
+  <token key="SplitViewResizeModes" variants="SplitViewResizeModes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Ash.StatusAreaShowBubble.PresentationTime" units="ms"

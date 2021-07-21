@@ -21,6 +21,60 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="ArcPerformanceAppCategories">
+  <variant name=".CasualGame" summary="Casual game.">
+    <obsolete>
+      Replaced with CasualGame2 in 2020/09.
+    </obsolete>
+  </variant>
+  <variant name=".CasualGame2" summary="Casual game 2.">
+    <obsolete>
+      Replaced in M91 by GachaClub
+    </obsolete>
+  </variant>
+  <variant name=".GachaClub" summary="Casual game 2: Gacha Club"/>
+  <variant name=".GarenaFreeFire" summary="Shooter game: Garena Free Fire"/>
+  <variant name=".HeavyGame" summary="Heavy Game.">
+    <obsolete>
+      Replaced in M91 by PUBGMobile
+    </obsolete>
+  </variant>
+  <variant name=".MinecraftEducationEdition"
+      summary="Online game 2: Minecraft: Education Edition"/>
+  <variant name=".Netflix" summary="Video playback app: Netflix"/>
+  <variant name=".OnlineGame" summary="Online game.">
+    <obsolete>
+      Replaced in M91 by Roblox
+    </obsolete>
+  </variant>
+  <variant name=".PUBGMobile" summary="Heavy Game: PUBG Mobile"/>
+  <variant name=".Roblox" summary="Online game: Roblox"/>
+  <variant name=".ShooterGame" summary="Shooter game.">
+    <obsolete>
+      Replaced in M91 by GarenaFreeFire
+    </obsolete>
+  </variant>
+  <variant name=".Video" summary="Video playback app.">
+    <obsolete>
+      Replaced in M91 by Netflix
+    </obsolete>
+  </variant>
+</variants>
+
+<variants name="ArcUserTypes">
+  <variant name=".ActiveDirectory"
+      summary="User with active directory account"/>
+  <variant name=".Child" summary="User with child accounts."/>
+  <variant name=".DemoMode"
+      summary="Demo devices with a demo mode robot account."/>
+  <variant name=".Managed" summary="User with forced Play Store feature"/>
+  <variant name=".OfflineDemoMode"
+      summary="Offline enrolled demo mode devices."/>
+  <variant name=".RobotAccount"
+      summary="Managed devices with a robot account (Public Session or Kiosk)"/>
+  <variant name=".Unmanaged" summary="User with optional Play Store feature"/>
+</variants>
+
 <histogram name="Arc.AbiMigration.BootTime" units="ms"
     expires_after="2021-12-12">
   <owner>vraheja@chromium.org</owner>
@@ -230,56 +284,76 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Arc.Auth.AccountCheck.Status"
+<histogram name="Arc.Auth.AccountCheck.Status{ArcUserTypes}"
     enum="ArcAuthAccountCheckStatus" expires_after="2022-07-04">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
-  <summary>The status of account check before GMS Sign-in.</summary>
+  <summary>
+    The status of account check before GMS Sign-in. {ArcUserTypes}
+  </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Arc.Auth.AccountCheck.TimeDelta" units="ms"
+<histogram name="Arc.Auth.AccountCheck.TimeDelta{ArcUserTypes}" units="ms"
     expires_after="2022-07-04">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
     Elapsed time waiting for the account status check to be completed. This is
-    not recorded in case of account status check failure.
+    not recorded in case of account status check failure. {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Arc.Auth.Checkin.Attempts" units="attempts"
+<histogram name="Arc.Auth.Checkin.Attempts{ArcUserTypes}" units="attempts"
     expires_after="2022-07-04">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
     Number of attempts done while waiting for the check-in task to be completed.
     0 means that device was already checked-in. This is recorded in case
-    check-in task is completed successfully.
+    check-in task is completed successfully. {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Arc.Auth.Checkin.TimeDelta" units="ms"
+<histogram name="Arc.Auth.Checkin.TimeDelta{ArcUserTypes}" units="ms"
     expires_after="2022-07-04">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
     Elapsed time waiting for the check-in task to be completed. This is recorded
-    in case check-in task is completed successfully.
+    in case check-in task is completed successfully. {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram name="Arc.Auth.CodeFetcher.ProxyBypass" enum="Boolean"
+<histogram name="Arc.Auth.CodeFetcher.ProxyBypass{ArcUserTypes}" enum="Boolean"
     expires_after="M96">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>acostinas@google.com</owner>
   <owner>chromeos-commercial-networking@google.com</owner>
   <summary>
@@ -292,44 +366,90 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     fetched at the first try, regardless of proxy configuration. A
     &quot;true&quot; entry means that the network is configured to use a
     mandatory PAC script which is unreachable and code was successfully fetched
-    at the second try, when the unreachable proxy was bypassed.
+    at the second try, when the unreachable proxy was bypassed. {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Arc.Auth.MainAccountResolution.Status"
+<histogram name="Arc.Auth.MainAccountResolution.Status{ArcUserTypes}"
     enum="ArcAuthMainAccountResolutionStatus" expires_after="2022-07-04">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
-  <summary>Contains the status of main account resolution.</summary>
+  <summary>
+    Contains the status of main account resolution. {ArcUserTypes}
+  </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram base="true" name="Arc.Auth.NetworkWait.TimeDelta" units="ms"
+<histogram name="Arc.Auth.NetworkWait.TimeDelta{ArcUserTypes}" units="ms"
     expires_after="2022-07-04">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
     Elapsed time waiting for network connection before starting other
-    authorization operations.
+    authorization operations. {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Arc.Auth.SignIn.TimeDelta" units="ms"
+<histogram name="Arc.Auth.SignIn.TimeDelta{ArcUserTypes}" units="ms"
     expires_after="2022-07-04">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
-  <summary>Elapsed time waiting for GMS sign-in to complete.</summary>
+  <summary>
+    Elapsed time waiting for GMS sign-in to complete. {ArcUserTypes}
+  </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram name="Arc.boot_progress" units="ms" expires_after="M81">
+<histogram name="Arc.boot_progress{AndroidBootProgressEvents}" units="ms"
+    expires_after="M81">
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <summary>
     The relative time of a boot progress event since the ARC starts.
+    {AndroidBootProgressEvents}
   </summary>
+  <token key="AndroidBootProgressEvents">
+    <variant name=""/>
+    <variant name="_ams_ready"
+        summary="For the boot_progress_ams_ready event."/>
+    <variant name="_enable_screen"
+        summary="For the boot_progress_enable_screen event."/>
+    <variant name="_pms_data_scan_start"
+        summary="For the boot_progress_pms_data_scan_start event."/>
+    <variant name="_pms_ready"
+        summary="For the boot_progress_pms_ready event."/>
+    <variant name="_pms_scan_end"
+        summary="For the boot_progress_pms_scan_end event."/>
+    <variant name="_pms_start"
+        summary="For the boot_progress_pms_start event."/>
+    <variant name="_pms_system_scan_start"
+        summary="For the boot_progress_pms_system_scan_start event."/>
+    <variant name="_preload_end"
+        summary="For the boot_progress_preload_end event."/>
+    <variant name="_preload_start"
+        summary="For the boot_progress_preload_start event."/>
+    <variant name="_start" summary="For the boot_progress_start event."/>
+    <variant name="_system_run"
+        summary="For the boot_progress_system_run event."/>
+  </token>
 </histogram>
 
 <histogram name="Arc.BootContinueCodeInstallationResult"
@@ -453,7 +573,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Arc.CpuRestrictionDisabled" units="ms"
+<histogram name="Arc.CpuRestrictionDisabled{ArcThrottleObservers}" units="ms"
     expires_after="2021-11-21">
   <owner>wvk@google.com</owner>
   <owner>khmel@google.com</owner>
@@ -461,8 +581,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records the time that throttling was disabled due to a particular throttle
     observer. The duration begins when a new throttle observer becomes active,
     and measures until it becomes inactive or another throttle observer becomes
-    effective.
+    effective. {ArcThrottleObservers}
   </summary>
+  <token key="ArcThrottleObservers">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".ArcAppLaunchRequested"
+        summary="ARC app launch in progress."/>
+    <variant name=".ArcIsBooting" summary="ARC is booting or restarting."/>
+    <variant name=".ArcPipWindowIsVisible"
+        summary="An ARC PIP window is active."/>
+    <variant name=".ArcWindowIsActiveWindow"
+        summary="An ARC window is active."/>
+  </token>
 </histogram>
 
 <histogram name="Arc.CumulativeUseTime" units="seconds"
@@ -893,25 +1027,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Arc.PlayAutoInstallRequest.State"
+<histogram name="Arc.PlayAutoInstallRequest.State{ArcUserTypes}"
     enum="ArcPlayAutoInstallRequestState" expires_after="2022-02-01">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>jhorwich@google.com</owner>
   <owner>khmel@google.com</owner>
-  <summary>State of PlayAutoInstall flow after the request.</summary>
+  <summary>
+    State of PlayAutoInstall flow after the request. {ArcUserTypes}
+  </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Arc.PlayAutoInstallRequest.TimeDelta" units="ms"
+<histogram name="Arc.PlayAutoInstallRequest.TimeDelta{ArcUserTypes}" units="ms"
     expires_after="2022-02-01">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>jhorwich@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>
     Elapsed time from the when the PlayAutoInstall request was issued and
-    completed.
+    completed. {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Arc.PlayStoreLaunch.TimeDelta" units="ms"
@@ -976,16 +1114,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Arc.PlayStoreShown.TimeDelta" units="ms"
+<histogram name="Arc.PlayStoreShown.TimeDelta{ArcUserTypes}" units="ms"
     expires_after="2021-03-11">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>yusukes@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>
     Elapsed time from the when the user agrees ToS to when the Play Store window
-    is shown to the user.
+    is shown to the user. {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Arc.PrintPreview.PreviewEvent" enum="PrintPreviewHelperEvents"
@@ -1047,147 +1186,194 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Time taken for ARC to render a PDF for print preview.</summary>
 </histogram>
 
-<histogram base="true" name="Arc.Provisioning.CheckInError"
+<histogram name="Arc.Provisioning.CheckInError{ArcUserTypes}"
     enum="ArcProvisioningCheckInError" expires_after="2021-12-01">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
     The error that occurred during GMS check-in operation. Recorded when ARC++
-    provisioning flow fails.
+    provisioning flow fails. {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Arc.Provisioning.CloudFlowError"
+<histogram name="Arc.Provisioning.CloudFlowError{ArcUserTypes}"
     enum="ArcProvisioningCloudFlowError" expires_after="2021-12-01">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
     The result (success or the reason of failure) of Cloud DPC provisioning.
-    Recorded when ARC++ provisioning flow completes.
+    Recorded when ARC++ provisioning flow completes. {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Arc.Provisioning.Result"
+<histogram name="Arc.Provisioning.Result{ArcUserTypes}"
     enum="ArcProvisioningResult" expires_after="2021-07-01">
   <obsolete>
     Removed in Dec 2020. Now reported as Arc.Provisioning.Status.
   </obsolete>
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>alexchau@google.com</owner>
   <owner>phweiss@google.com</owner>
   <summary>
     The result (success or the type of failure) of ARC provisioning. The base
     value has been deprecated on 2016-09-15 in favour of per user type values.
+    {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Arc.Provisioning.SignInError"
+<histogram name="Arc.Provisioning.SignInError{ArcUserTypes}"
     enum="ArcProvisioningSignInError" expires_after="2021-12-01">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
     The error that occured during GMS sign-in operation. Recorded when ARC++
-    provisioning flow fails.
+    provisioning flow fails. {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Arc.Provisioning.Status"
+<histogram name="Arc.Provisioning.Status{ArcUserTypes}"
     enum="ArcProvisioningStatus" expires_after="2021-12-01">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
-  <summary>The status (success or error) of ARC++ provisioning.</summary>
+  <summary>
+    The status (success or error) of ARC++ provisioning. {ArcUserTypes}
+  </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram name="Arc.Provisioning.TimeDelta.Failure" units="ms"
+<histogram name="Arc.Provisioning.TimeDelta.Failure{ArcUserTypes}" units="ms"
     expires_after="2022-01-09">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>alexchau@google.com</owner>
   <owner>phweiss@google.com</owner>
   <summary>
     Elapsed time from the signing in process start to call to onSignInFailed.
+    {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Arc.Provisioning.TimeDelta.Success" units="ms"
+<histogram name="Arc.Provisioning.TimeDelta.Success{ArcUserTypes}" units="ms"
     expires_after="2022-01-09">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>alexchau@google.com</owner>
   <owner>phweiss@google.com</owner>
   <summary>
     Elapsed time from the signing in process start to successful call to
-    onSignInComplete.
+    onSignInComplete. {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Arc.Reauthorization.Result" enum="ArcProvisioningStatus"
-    expires_after="2022-01-12">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
+<histogram name="Arc.Reauthorization.Result{ArcUserTypes}"
+    enum="ArcProvisioningStatus" expires_after="2022-01-12">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@gmail.com</owner>
   <summary>
     The result (success or the type of failure) of ARC reauthorization.
+    {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Arc.Runtime.Performance.CommitDeviation" units="microseconds"
-    expires_after="2021-06-01">
-  <obsolete>
-    Removed in Mar 2021. Now reported as
-    Arc.Runtime.Performance.CommitDeviation2.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
-
-  <owner>khmel@google.com</owner>
-  <owner>camurcu@google.com</owner>
-  <summary>Standard deviation for commit time delta from ideal time.</summary>
-</histogram>
-
-<histogram name="Arc.Runtime.Performance.CommitDeviation2" units="microseconds"
-    expires_after="2021-12-31">
-<!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
-
+<histogram
+    name="Arc.Runtime.Performance.CommitDeviation2{ArcPerformanceAppCategories}"
+    units="microseconds" expires_after="2021-12-31">
   <owner>khmel@google.com</owner>
   <owner>camurcu@google.com</owner>
   <summary>
     Standard deviation for commit time delta from ideal time. Only collected if
     the user has app syncing enabled and doesn't have a custom passphrase set.
+    {ArcPerformanceAppCategories}
   </summary>
+  <token key="ArcPerformanceAppCategories"
+      variants="ArcPerformanceAppCategories">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Arc.Runtime.Performance.FPS" units="fps"
-    expires_after="2021-06-01">
+<histogram
+    name="Arc.Runtime.Performance.CommitDeviation{ArcPerformanceAppCategories}"
+    units="microseconds" expires_after="2021-06-01">
   <obsolete>
-    Removed in Mar 2021. Now reported as Arc.Runtime.Performance.FPS2.
+    Removed in Mar 2021. Now reported as
+    Arc.Runtime.Performance.CommitDeviation2.
   </obsolete>
-<!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
-
   <owner>khmel@google.com</owner>
   <owner>camurcu@google.com</owner>
-  <summary>Render frames per second.</summary>
+  <summary>
+    Standard deviation for commit time delta from ideal time.
+    {ArcPerformanceAppCategories}
+  </summary>
+  <token key="ArcPerformanceAppCategories"
+      variants="ArcPerformanceAppCategories">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Arc.Runtime.Performance.FPS2" units="fps"
-    expires_after="2021-12-31">
-<!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
-
+<histogram name="Arc.Runtime.Performance.FPS2{ArcPerformanceAppCategories}"
+    units="fps" expires_after="2021-12-31">
   <owner>khmel@google.com</owner>
   <owner>camurcu@google.com</owner>
   <summary>
     Render frames per second. Only collected if the user has app syncing enabled
-    and doesn't have a custom passphrase set.
+    and doesn't have a custom passphrase set. {ArcPerformanceAppCategories}
   </summary>
+  <token key="ArcPerformanceAppCategories"
+      variants="ArcPerformanceAppCategories">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Arc.Runtime.Performance.FPS{ArcPerformanceAppCategories}"
+    units="fps" expires_after="2021-06-01">
+  <obsolete>
+    Removed in Mar 2021. Now reported as Arc.Runtime.Performance.FPS2.
+  </obsolete>
+  <owner>khmel@google.com</owner>
+  <owner>camurcu@google.com</owner>
+  <summary>Render frames per second. {ArcPerformanceAppCategories}</summary>
+  <token key="ArcPerformanceAppCategories"
+      variants="ArcPerformanceAppCategories">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.Generic.FirstFrameRendered" units="ms"
@@ -1221,28 +1407,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Arc.Runtime.Performance.RenderQuality" units="%"
-    expires_after="2021-06-01">
-  <obsolete>
-    Removed in Mar 2021. Now reported as Arc.Runtime.Performance.RenderQuality2.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
-
-  <owner>khmel@google.com</owner>
-  <owner>camurcu@google.com</owner>
-  <summary>Render quality with maximum 100%.</summary>
-</histogram>
-
-<histogram name="Arc.Runtime.Performance.RenderQuality2" units="%"
-    expires_after="2021-12-31">
-<!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
-
+<histogram
+    name="Arc.Runtime.Performance.RenderQuality2{ArcPerformanceAppCategories}"
+    units="%" expires_after="2021-12-31">
   <owner>khmel@google.com</owner>
   <owner>camurcu@google.com</owner>
   <summary>
     Render quality with maximum 100%. Only collected if the user has app syncing
     enabled and doesn't have a custom passphrase set.
+    {ArcPerformanceAppCategories}
   </summary>
+  <token key="ArcPerformanceAppCategories"
+      variants="ArcPerformanceAppCategories">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="Arc.Runtime.Performance.RenderQuality{ArcPerformanceAppCategories}"
+    units="%" expires_after="2021-06-01">
+  <obsolete>
+    Removed in Mar 2021. Now reported as Arc.Runtime.Performance.RenderQuality2.
+  </obsolete>
+  <owner>khmel@google.com</owner>
+  <owner>camurcu@google.com</owner>
+  <summary>
+    Render quality with maximum 100%. {ArcPerformanceAppCategories}
+  </summary>
+  <token key="ArcPerformanceAppCategories"
+      variants="ArcPerformanceAppCategories">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Arc.SdkVersionUpgradeType" enum="ArcSdkVersionUpgradeType"
@@ -1266,32 +1461,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Arc.Session.MojoDisconnection" enum="ArcMojoConnectionType"
-    expires_after="2021-11-11">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
+<histogram name="Arc.Session.MojoDisconnection{ArcUserTypes}"
+    enum="ArcMojoConnectionType" expires_after="2021-11-11">
   <owner>shaochuan@google.com</owner>
   <owner>khmel@google.com</owner>
   <owner>ttylenda@google.com</owner>
   <summary>
     This is updated when the mojo connections to processes in detailing in
     ArcMojoConnectionType are closed for reasons other than the ARC container
-    shutting down or crashing.
+    shutting down or crashing. {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Arc.Session.StopReason" enum="ArcStopReason"
+<histogram name="Arc.Session.StopReason{ArcUserTypes}" enum="ArcStopReason"
     expires_after="2021-12-19">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>shaochuan@google.com</owner>
   <owner>khmel@google.com</owner>
   <owner>mmatena@google.com</owner>
   <summary>
     This is updated in case ARC++ stops for the reasons detailed in
     ArcStopReason. For example, this is recorded in case of a graceful ARC++
-    shutdown or if ARC++ crashes.
+    shutdown or if ARC++ crashes. {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Arc.ShareFilesOnExit" enum="ArcShareFilesOnExit"
@@ -1333,16 +1530,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Arc.StateByUserType" enum="ArcEnableState"
+<histogram name="Arc.StateByUserType{ArcUserTypes}" enum="ArcEnableState"
     expires_after="2021-10-25">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>
     Similar to &quot;Arc.State&quot; metric but has separation by user type.
+    {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Arc.Supervision.Transition.Result"
@@ -1399,40 +1598,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Action of ARC++ Graphics Tracing tool.</summary>
 </histogram>
 
-<histogram name="Arc.UiAvailable.AlreadyProvisioned.TimeDelta" units="ms"
-    expires_after="2022-01-02">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
+<histogram name="Arc.UiAvailable.AlreadyProvisioned.TimeDelta{ArcUserTypes}"
+    units="ms" expires_after="2022-01-02">
   <owner>khmel@google.com</owner>
   <owner>yusukes@google.com</owner>
   <summary>
     Elapsed time from the when ARC++ is started in already provisioned state to
-    when the ARC is available for the user.
+    when the ARC is available for the user. {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Arc.UiAvailable.InSessionProvisioning.TimeDelta" units="ms"
-    expires_after="2021-11-01">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
+<histogram name="Arc.UiAvailable.InSessionProvisioning.TimeDelta{ArcUserTypes}"
+    units="ms" expires_after="2021-11-01">
   <owner>khmel@google.com</owner>
   <owner>yusukes@google.com</owner>
   <summary>
     Elapsed time from the when ARC++ is opted in from the user's session to when
-    the ARC is available for the user.
+    the ARC is available for the user. {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Arc.UiAvailable.OobeProvisioning.TimeDelta" units="ms"
-    expires_after="2022-01-02">
-<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
-
+<histogram name="Arc.UiAvailable.OobeProvisioning.TimeDelta{ArcUserTypes}"
+    units="ms" expires_after="2022-01-02">
   <owner>khmel@google.com</owner>
   <owner>yusukes@google.com</owner>
   <summary>
     Elapsed time from the when ARC++ is opted in from OOBE to when the ARC is
-    available for the user.
+    available for the user. {ArcUserTypes}
   </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Arc.UserInteraction" enum="ArcUserInteraction"

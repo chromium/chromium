@@ -21,20 +21,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram_suffixes_list>
 
-<histogram_suffixes name="AccessibilityEveryReport" separator=".">
-  <suffix name="EveryReport"
-      label="sent with every metrics report, and preferred for computing
-             uniques"/>
-  <affected-histogram name="Accessibility.Android.ScreenReader"/>
-  <affected-histogram name="Accessibility.CrosSpokenFeedback"/>
-  <affected-histogram name="Accessibility.Mac.ScreenReader"/>
-  <affected-histogram name="Accessibility.WinJAWS"/>
-  <affected-histogram name="Accessibility.WinNVDA"/>
-  <affected-histogram name="Accessibility.WinScreenReader2"/>
-  <affected-histogram name="Accessibility.WinSupernova"/>
-  <affected-histogram name="Accessibility.WinZoomText"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AccessibilityScreenReaderImage" separator=".">
   <suffix name="ExplicitlyUnlabeled" label="explicitly unlabeled image"/>
   <suffix name="Labeled" label="labeled image"/>
@@ -115,18 +101,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="WebApk" label="Chrome starts up with intent to WebApkActivity"/>
   <affected-histogram name="Startup.Android.Cold.TimeToFirstContentfulPaint"/>
   <affected-histogram name="Startup.Android.Cold.TimeToFirstNavigationCommit"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ActivityType" separator=".">
-  <suffix name="ChromeTabbedActivity" label="ChromeTabbedActivity"/>
-  <suffix name="CustomTabActivity" label="CustomTabActivity"/>
-  <suffix name="FirstRunActivity" label="FirstRunActivity"/>
-  <affected-histogram
-      name="Android.Fonts.TimeDownloadableFontsRetrievedAfterPostInflationStartup"/>
-  <affected-histogram
-      name="Android.Fonts.TimeDownloadableFontsRetrievedBeforePostInflationStartup"/>
-  <affected-histogram
-      name="Android.Fonts.TimeToRetrieveDownloadableFontsAfterOnCreate"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AdapterDecision" separator="." ordering="prefix,2">
@@ -658,16 +632,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="PasswordManager.AffiliationDummyData.RequestSuccess"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AlsBrightnessDirection" separator="."
-    ordering="prefix,2">
-  <suffix name="Brighten" label=""/>
-  <suffix name="Darken" label=""/>
-  <affected-histogram
-      name="AutoScreenBrightness.AdapterDecisionAtUserChange.AlsDelta"/>
-  <affected-histogram
-      name="AutoScreenBrightness.AdapterDecisionAtUserChange.AlsStd"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AlternateProtocol" separator="_">
   <suffix name="AlternateProtocol_http"
       label="(with alternate protocol available and spdy is used"/>
@@ -698,34 +662,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="AnchorElementMetrics.RatioVisibleArea"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Android_WebView_DevUi_NavType" separator=".">
-  <suffix name="AnyMethod" label="User navigation through any means"/>
-  <suffix name="FromIntent"
-      label="User navigation through the bottom navigation bar"/>
-  <suffix name="NavBar" label="User navigation in response to an Intent"/>
-  <affected-histogram name="Android.WebView.DevUi.FragmentNavigation"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AndroidBootProgressEvents" separator="_">
-  <suffix name="ams_ready" label="For the boot_progress_ams_ready event."/>
-  <suffix name="enable_screen"
-      label="For the boot_progress_enable_screen event."/>
-  <suffix name="pms_data_scan_start"
-      label="For the boot_progress_pms_data_scan_start event."/>
-  <suffix name="pms_ready" label="For the boot_progress_pms_ready event."/>
-  <suffix name="pms_scan_end"
-      label="For the boot_progress_pms_scan_end event."/>
-  <suffix name="pms_start" label="For the boot_progress_pms_start event."/>
-  <suffix name="pms_system_scan_start"
-      label="For the boot_progress_pms_system_scan_start event."/>
-  <suffix name="preload_end" label="For the boot_progress_preload_end event."/>
-  <suffix name="preload_start"
-      label="For the boot_progress_preload_start event."/>
-  <suffix name="start" label="For the boot_progress_start event."/>
-  <suffix name="system_run" label="For the boot_progress_system_run event."/>
-  <affected-histogram name="Arc.boot_progress"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AndroidBootTypes" separator=".">
   <suffix name="FirstBoot" label="For the very first boot, aka opt-in."/>
   <suffix name="FirstBootAfterUpdate"
@@ -743,21 +679,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Arc.boot_progress_preload_start"/>
   <affected-histogram name="Arc.boot_progress_start"/>
   <affected-histogram name="Arc.boot_progress_system_run"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AndroidDownloadTypes" separator=".">
-  <suffix name="Audio" label=""/>
-  <suffix name="Document" label=""/>
-  <suffix name="Image" label=""/>
-  <suffix name="OfflinePage" label=""/>
-  <suffix name="Other" label=""/>
-  <suffix name="PrefetchedOfflinePage" label=""/>
-  <suffix name="Total" label=""/>
-  <suffix name="Video" label=""/>
-  <affected-histogram name="Android.DownloadManager.InitialCount"/>
-  <affected-histogram name="Android.DownloadManager.InitialCount.Viewed"/>
-  <affected-histogram
-      name="Android.DownloadManager.Thumbnail.MaxRequiredStretch"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AndroidFeatureModuleInstallDuration" separator=".">
@@ -895,34 +816,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Stability.Android.SystemExitReason"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AndroidProcessType" separator=".">
-  <suffix name="Browser" label="Browser process"/>
-  <suffix name="ChildService"
-      label="Child service process (renderer, GPU, etc.)"/>
-  <affected-histogram name="Android.MemoryPressureNotification"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AndroidTabPersistentStoreTime" separator=".">
-  <suffix name="CleanupAllEncryptedTime" label="">
-    <obsolete>
-      Original code deleted in a refactoring.
-    </obsolete>
-  </suffix>
-  <suffix name="LoadStateInternalPrefetchTime" label=""/>
-  <suffix name="LoadStateInternalTime" label=""/>
-  <suffix name="LoadStateTime" label=""/>
-  <suffix name="MergeStateInternalFetchTime" label=""/>
-  <suffix name="MergeStateInternalTime" label=""/>
-  <suffix name="ReadMergedStateTime" label=""/>
-  <suffix name="ReadSavedStateTime" label=""/>
-  <suffix name="RestoreTabPrefetchTime" label=""/>
-  <suffix name="RestoreTabTime" label=""/>
-  <suffix name="SaveListTime" label=""/>
-  <suffix name="SaveStateTime" label=""/>
-  <suffix name="SaveTabsTime" label=""/>
-  <affected-histogram name="Android.StrictMode.TabPersistentStore"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AndroidWebViewFragments" separator=".">
   <owner>hazems@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
@@ -959,176 +852,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Startup.AppListFirstPaintWarmStart"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AppListFolderExperiment" separator=".">
-  <suffix name="FullscreenAppListDisabled" label="Peeking Launcher Disabled"/>
-  <suffix name="FullscreenAppListEnabled" label="Peeking Launcher Enabled"/>
-  <affected-histogram name="Apps.AppsInFolders"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AppListState" separator=".">
-  <suffix name="BubbleAllApps" label=""/>
-  <suffix name="Closed" label=""/>
-  <suffix name="FullscreenAllApps" label=""/>
-  <suffix name="FullscreenSearch" label=""/>
-  <suffix name="Half" label=""/>
-  <suffix name="HomecherAllApps" label=""/>
-  <suffix name="HomecherClosed" label=""/>
-  <suffix name="HomecherSearch" label=""/>
-  <suffix name="Peeking" label=""/>
-  <affected-histogram name="Apps.AppListAppLaunchedV2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AppListTabletModeTransition" separator=".">
-  <suffix name="DragReleaseHide" label="Release drag to hide the app list"/>
-  <suffix name="DragReleaseShow" label="Release drag to show the app list"/>
-  <suffix name="EnterFullscreenAllApps"
-      label="Enter kFullScreenAllApps state in tablet"/>
-  <suffix name="EnterFullscreenSearch"
-      label="Enter kFullscreenSearch state in tablet"/>
-  <suffix name="EnterOverview" label="Enter overview mode in tablet"/>
-  <suffix name="ExitOverview" label="Exit overview mode in tablet"/>
-  <suffix name="FadeInOverview" label="Fade in overview from home in tablet"/>
-  <suffix name="FadeOutOverview"
-      label="Fade out of overview to home in tablet"/>
-  <suffix name="HideLauncherForWindow"
-      label="Active a window to hide the app list"/>
-  <suffix name="PressAppListButtonShow"
-      label="Press the AppList button to show the app list"/>
-  <affected-histogram name="Apps.HomeLauncherTransition.AnimationSmoothness"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AppListTargetState" separator=".">
-  <suffix name="Close.ClamshellMode" label="Closing the app list"/>
-  <suffix name="FullscreenAllApps.ClamshellMode"
-      label="Fullscreen and showing all apps"/>
-  <suffix name="FullscreenSearch.ClamshellMode"
-      label="Fullscreen with search results"/>
-  <suffix name="Half.ClamshellMode" label="Half-visible state of the app list"/>
-  <suffix name="Peeking.ClamshellMode" label="Peek state of the app list"/>
-  <affected-histogram name="Apps.StateTransition.AnimationSmoothness"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AppType" separator=".">
   <suffix name="ArcApp" label="Android app"/>
   <suffix name="ChromeApp" label="Chrome app"/>
   <suffix name="PluginVmApp" label="Plugin VM app"/>
   <suffix name="WebApp" label="Web app"/>
   <affected-histogram name="AppManagement.AppDetailViews"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AppUIComponent" separator=".">
-  <suffix name="AppGrid" label="App - Fullscreen Launcher"/>
-  <suffix name="Desktop" label="Desktop"/>
-  <suffix name="SearchResult" label="Launcher App Search Result"/>
-  <suffix name="Shelf" label="Shelf"/>
-  <suffix name="ShelfButton" label="ShelfButton"/>
-  <suffix name="SuggestedAppFullscreen"
-      label="Suggested App, Fullscreen Launcher"/>
-  <suffix name="SuggestedAppPeeking" label="Suggested App, Peeking Launcher"/>
-  <affected-histogram name="Apps.ContextMenuShowSource"/>
-  <affected-histogram name="Apps.ContextMenuUserJourneyTime"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ArcPerformanceAppCategories" separator=".">
-  <suffix name="CasualGame" label="Casual game.">
-    <obsolete>
-      Replaced with CasualGame2 in 2020/09.
-    </obsolete>
-  </suffix>
-  <suffix name="CasualGame2" label="Casual game 2.">
-    <obsolete>
-      Replaced in M91 by GachaClub
-    </obsolete>
-  </suffix>
-  <suffix name="GachaClub" label="Casual game 2: Gacha Club"/>
-  <suffix name="GarenaFreeFire" label="Shooter game: Garena Free Fire"/>
-  <suffix name="HeavyGame" label="Heavy Game.">
-    <obsolete>
-      Replaced in M91 by PUBGMobile
-    </obsolete>
-  </suffix>
-  <suffix name="MinecraftEducationEdition"
-      label="Online game 2: Minecraft: Education Edition"/>
-  <suffix name="Netflix" label="Video playback app: Netflix"/>
-  <suffix name="OnlineGame" label="Online game.">
-    <obsolete>
-      Replaced in M91 by Roblox
-    </obsolete>
-  </suffix>
-  <suffix name="PUBGMobile" label="Heavy Game: PUBG Mobile"/>
-  <suffix name="Roblox" label="Online game: Roblox"/>
-  <suffix name="ShooterGame" label="Shooter game.">
-    <obsolete>
-      Replaced in M91 by GarenaFreeFire
-    </obsolete>
-  </suffix>
-  <suffix name="Video" label="Video playback app.">
-    <obsolete>
-      Replaced in M91 by Netflix
-    </obsolete>
-  </suffix>
-  <affected-histogram name="Arc.Runtime.Performance.CommitDeviation"/>
-  <affected-histogram name="Arc.Runtime.Performance.CommitDeviation2"/>
-  <affected-histogram name="Arc.Runtime.Performance.FPS"/>
-  <affected-histogram name="Arc.Runtime.Performance.FPS2"/>
-  <affected-histogram name="Arc.Runtime.Performance.RenderQuality"/>
-  <affected-histogram name="Arc.Runtime.Performance.RenderQuality2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ArcThrottleObservers" separator=".">
-  <suffix name="ArcAppLaunchRequested" label="ARC app launch in progress."/>
-  <suffix name="ArcIsBooting" label="ARC is booting or restarting."/>
-  <suffix name="ArcPipWindowIsVisible" label="An ARC PIP window is active."/>
-  <suffix name="ArcWindowIsActiveWindow" label="An ARC window is active."/>
-  <affected-histogram name="Arc.CpuRestrictionDisabled"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ArcUserTypes" separator=".">
-  <suffix name="ActiveDirectory" label="User with active directory account"/>
-  <suffix name="Child" label="User with child accounts."/>
-  <suffix name="DemoMode" label="Demo devices with a demo mode robot account."/>
-  <suffix name="Managed" label="User with forced Play Store feature"/>
-  <suffix name="OfflineDemoMode" label="Offline enrolled demo mode devices."/>
-  <suffix name="RobotAccount"
-      label="Managed devices with a robot account (Public Session or Kiosk)"/>
-  <suffix name="Unmanaged" label="User with optional Play Store feature"/>
-  <affected-histogram name="Arc.Auth.AccountCheck.Status"/>
-  <affected-histogram name="Arc.Auth.AccountCheck.TimeDelta"/>
-  <affected-histogram name="Arc.Auth.Checkin.Attempts"/>
-  <affected-histogram name="Arc.Auth.Checkin.TimeDelta"/>
-  <affected-histogram name="Arc.Auth.CodeFetcher.ProxyBypass"/>
-  <affected-histogram name="Arc.Auth.MainAccountResolution.Status"/>
-  <affected-histogram name="Arc.Auth.NetworkWait.TimeDelta"/>
-  <affected-histogram name="Arc.Auth.SignIn.TimeDelta"/>
-  <affected-histogram name="Arc.PlayAutoInstallRequest.State"/>
-  <affected-histogram name="Arc.PlayAutoInstallRequest.TimeDelta"/>
-  <affected-histogram name="Arc.PlayStoreShown.TimeDelta"/>
-  <affected-histogram name="Arc.Provisioning.CheckInError"/>
-  <affected-histogram name="Arc.Provisioning.CloudFlowError"/>
-  <affected-histogram name="Arc.Provisioning.Result"/>
-  <affected-histogram name="Arc.Provisioning.SignInError"/>
-  <affected-histogram name="Arc.Provisioning.Status"/>
-  <affected-histogram name="Arc.Provisioning.TimeDelta.Failure"/>
-  <affected-histogram name="Arc.Provisioning.TimeDelta.Success"/>
-  <affected-histogram name="Arc.Reauthorization.Result"/>
-  <affected-histogram name="Arc.Session.MojoDisconnection"/>
-  <affected-histogram name="Arc.Session.StopReason"/>
-  <affected-histogram name="Arc.StateByUserType"/>
-  <affected-histogram name="Arc.UiAvailable.AlreadyProvisioned.TimeDelta"/>
-  <affected-histogram name="Arc.UiAvailable.InSessionProvisioning.TimeDelta"/>
-  <affected-histogram name="Arc.UiAvailable.OobeProvisioning.TimeDelta"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AshAssistantAnimationSmoothness" separator=".">
-  <suffix name="CardElement"
-      label="Animation for showing and hiding card responses"/>
-  <suffix name="ResizeAssistantPageView"
-      label="Expand assistant from launcher"/>
-  <suffix name="SuggestionChip"
-      label="Animation for showing and hiding suggestion chips"/>
-  <suffix name="TextElement"
-      label="Animation for showing and hiding text response"/>
-  <affected-histogram name="Ash.Assistant.AnimationSmoothness"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AssistantProactiveSuggestionsShowAttemptByCategory"
@@ -1255,21 +984,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Autofill.UserHappiness.Address"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AutofillCreditCardAuthenticationFlows" separator=".">
-  <suffix name="Cvc" label="CVC authentication only"/>
-  <suffix name="CvcFallbackFromFido"
-      label="CVC fallback from FIDO authentication"/>
-  <suffix name="CvcThenFido" label="CVC followed by FIDO authentication"/>
-  <suffix name="Fido" label="FIDO authentication only"/>
-  <affected-histogram name="Autofill.BetterAuth.FlowEvents"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillCreditCardInfoBarSaveType" separator=".">
-  <suffix name="Local" label="Local credit card save"/>
-  <suffix name="Server" label="Server/upload credit card save"/>
-  <affected-histogram name="Autofill.CreditCardInfoBar"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AutofillCreditCardType" separator=".">
   <suffix name="Local" label="Local"/>
   <suffix name="Server" label="Server (Google Payments)"/>
@@ -1281,89 +995,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Autofill.StoredCreditCardDisusedCount"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AutofillCreditCardUnmaskReason" separator=".">
-  <suffix name="ForAutofill" label="Autofill"/>
-  <suffix name="ForPaymentRequest" label="Payment Request"/>
-  <affected-histogram name="Autofill.CardUnmask.CvcLength"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillCreditCardWebauthnOptInOrigin" separator=".">
-  <suffix name="FromCheckoutFlow" label="Opt-in from a checkout flow"/>
-  <suffix name="FromSettingsPage" label="Opt-in from settings page"/>
-  <affected-histogram name="Autofill.BetterAuth.OptInCalled"/>
-  <affected-histogram name="Autofill.BetterAuth.OptInPromoShown"/>
-  <affected-histogram name="Autofill.BetterAuth.OptInPromoUserDecision"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillDataAvailability" separator=".">
-  <suffix name="WithBothServerAndLocalData"
-      label="both server and local autofill data"/>
-  <suffix name="WithNoData" label="no autofill data"/>
-  <suffix name="WithOnlyLocalData" label="only local autofill data"/>
-  <suffix name="WithOnlyServerData" label="only server autofill data"/>
-  <affected-histogram name="Autofill.FormEvents.Address"/>
-  <affected-histogram name="Autofill.FormEvents.CreditCard"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillFidoAuthenticationEnabledState" separator=".">
-  <suffix name="OptedIn" label="FIDO authentication enabled"/>
-  <suffix name="OptedOut" label="FIDO authentication disabled"/>
-  <affected-histogram
-      name="Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillFidoUserVerificationFlow" separator=".">
-  <suffix name="AuthenticationAfterCVC" label="WebAuthn after CVC"/>
-  <suffix name="CheckoutOptIn" label="Registering for WebAuthn on checkout"/>
-  <suffix name="ImmediateAuthentication" label="WebAuthn for card downstream"/>
-  <suffix name="SettingsPageOptIn"
-      label="Registering for WebAuthn on settings page"/>
-  <affected-histogram name="Autofill.BetterAuth.WebauthnResult"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillFieldPredictionSource" separator=".">
-  <suffix name="Heuristic"
-      label="Field type predictions using local heuristics."/>
-  <suffix name="Overall"
-      label="Field type prediction as seen by the user after combining the
-             heuristic and crowd sourced predictions."/>
-  <suffix name="Server"
-      label="Field types based on crowd-sourced prediction fetched from the
-             Autofill Server"/>
-  <affected-histogram name="Autofill.FieldPrediction"/>
-  <affected-histogram name="Autofill.FieldPredictionQuality.Aggregate"/>
-  <affected-histogram name="Autofill.FieldPredictionQuality.ByFieldType"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillFormType" separator=".">
-  <suffix name="Address" label="Address form"/>
-  <suffix name="CreditCard" label="Credit card form"/>
-  <suffix name="Password" label="Password form"/>
-  <suffix name="Unknown" label="Unknown form type"/>
-  <affected-histogram
-      name="Autofill.Autocomplete.NotOff.EditedAutofilledFieldAtSubmission"/>
-  <affected-histogram name="Autofill.Autocomplete.NotOff.FillingAcceptance"/>
-  <affected-histogram
-      name="Autofill.Autocomplete.Off.EditedAutofilledFieldAtSubmission"/>
-  <affected-histogram name="Autofill.Autocomplete.Off.FillingAcceptance"/>
-  <affected-histogram
-      name="Autofill.FillDuration.FromInteraction.WithAutofill"/>
-  <affected-histogram
-      name="Autofill.FillDuration.FromInteraction.WithoutAutofill"/>
-  <affected-histogram name="Autofill.Funnel.FillAfterSuggestion"/>
-  <affected-histogram name="Autofill.Funnel.InteractionAfterParsedAsType"/>
-  <affected-histogram name="Autofill.Funnel.ParsedAsType"/>
-  <affected-histogram name="Autofill.Funnel.SubmissionAfterFill"/>
-  <affected-histogram name="Autofill.Funnel.SuggestionAfterInteraction"/>
-  <affected-histogram name="Autofill.KeyMetrics.FillingAcceptance"/>
-  <affected-histogram name="Autofill.KeyMetrics.FillingAssistance"/>
-  <affected-histogram name="Autofill.KeyMetrics.FillingCorrectness"/>
-  <affected-histogram name="Autofill.KeyMetrics.FillingReadiness"/>
-  <affected-histogram name="Autofill.KeyMetrics.FormSubmission.Autofilled"/>
-  <affected-histogram name="Autofill.KeyMetrics.FormSubmission.NotAutofilled"/>
-  <affected-histogram name="Autofill.UserHappiness"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AutofillFrame" separator=".">
   <suffix name="IsInIFrame" label="form is in an iframe"/>
   <suffix name="IsInMainFrame" label="form is in the main frame"/>
@@ -1371,65 +1002,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Autofill.FormEvents.CreditCard"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AutofillLocalCardMigrationBubbleShow" separator=".">
-  <suffix name="FirstShow" label="First time bubble is shown"/>
-  <suffix name="Reshows" label="Bubble was reopened after being closed"/>
-  <affected-histogram name="Autofill.LocalCardMigrationBubbleOffer"/>
-  <affected-histogram name="Autofill.LocalCardMigrationBubbleResult"/>
-</histogram_suffixes>
-
-<histogram_suffixes
-    name="AutofillLocalCardMigrationDialogDurationWithCloseEvent" separator=".">
-  <suffix name="Accepted"
-      label="The dialog was closed due to the user clicking the save button."/>
-  <suffix name="Closed"
-      label="The dialog was closed due to the user clicking the view cards or
-             done button."/>
-  <suffix name="Denied"
-      label="The dialog was closed due to the user clicking the cancel
-             button."/>
-  <affected-histogram name="Autofill.LocalCardMigrationDialogActiveDuration"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillLocalCardMigrationOrigin" separator=".">
-  <suffix name="SettingsPage" label="Trigger from settings page"/>
-  <suffix name="UseOfLocalCard"
-      label="Trigger from submitted form with local card"/>
-  <suffix name="UseOfServerCard"
-      label="Trigger from submitted form with server card"/>
-  <affected-histogram name="Autofill.LocalCardMigrationOrigin"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillManageCardsPrompt" separator=".">
-  <suffix name="Local" label="Card was saved locally"/>
-  <suffix name="Upload" label="Card was uploaded to server"/>
-  <affected-histogram name="Autofill.ManageCardsPrompt"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AutofillPayloadCompressionType" separator=".">
   <suffix name="Query" label="Query request compression"/>
   <suffix name="Upload" label="Upload request compression"/>
   <affected-histogram name="Autofill.PayloadCompressionRatio"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillRealPanResultGroups" separator=".">
-  <obsolete>
-    Removed as of 05/2021. Current autofill histograms will use variants.
-  </obsolete>
-  <suffix name="Failure" label="Failure"/>
-  <suffix name="NetworkError" label="Network errors"/>
-  <suffix name="Success" label="Success"/>
-  <affected-histogram name="Autofill.BetterAuth.CardUnmaskDuration.Fido"/>
-  <affected-histogram name="Autofill.UnmaskPrompt.GetRealPanDuration"/>
-  <affected-histogram name="Autofill.UnmaskPrompt.UnmaskingDuration"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillSaveCreditCardPromptDestination"
-    separator=".">
-  <suffix name="Local" label="to local storage"/>
-  <suffix name="Upload" label="to upload"/>
-  <affected-histogram name="Autofill.SaveCreditCardPromptOffer"/>
-  <affected-histogram name="Autofill.SaveCreditCardPromptResult"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AutofillSaveCreditCardPromptFromDynamicChangeForm"
@@ -1599,26 +1175,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Autofill.StoredServerCreditCardCount"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AutofillStrikeDatabaseProjectType" separator=".">
-  <suffix name="CreditCardSave" label="Credit card save"/>
-  <suffix name="FidoAuthentication"
-      label="Fido authentication (Better Auth Project)"/>
-  <suffix name="LocalCardMigration" label="Local card migration"/>
-  <affected-histogram name="Autofill.StrikeDatabase.NthStrikeAdded"/>
-  <affected-histogram
-      name="Autofill.StrikeDatabase.StrikesPresentWhenStrikeExpired"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillSuggestionAcceptedIndexSuggestionType"
-    separator=".">
-  <suffix name="CreditCard" label="Suggestions with credit card data"/>
-  <suffix name="Other" label="Unspecified suggestions"/>
-  <suffix name="Profile"
-      label="Suggestions with personal data from AutofillProfiles, e.g. name,
-             address, email address, and or phone number"/>
-  <affected-histogram name="Autofill.SuggestionAcceptedIndex"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AutofillSyncState" separator=".">
   <suffix name="SignedIn" label="Signed in"/>
   <suffix name="SignedInAndSyncFeature" label="Signed in and sync feature">
@@ -1662,14 +1218,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="Autofill.SaveCreditCardPromptResult.Upload.Reshows"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AutofillUnmaskPromptCloseReasonEvents" separator=".">
-  <suffix name="AbandonUnmasking" label="Abandon unmasking"/>
-  <suffix name="Failure" label="Failure"/>
-  <suffix name="NoAttempts" label="No attempts"/>
-  <suffix name="Success" label="Success"/>
-  <affected-histogram name="Autofill.UnmaskPrompt.Duration"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AutofillUnmaskPromptNickname" separator=".">
   <suffix name="WithNickname" label="Credit Card has a valid nickname"/>
   <affected-histogram name="Autofill.UnmaskPrompt.Duration"/>
@@ -1679,18 +1227,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Autofill.UnmaskPrompt.Duration.Success"/>
   <affected-histogram name="Autofill.UnmaskPrompt.Events"/>
   <affected-histogram name="Autofill.UnmaskPrompt.TimeBeforeAbandonUnmasking"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillUploadEvents" separator=".">
-  <suffix name="DomMutationAfterXhr" label="DOM Mutation After XHR"/>
-  <suffix name="FormSubmission" label="Form Submission"/>
-  <suffix name="FrameDetached" label="Frame Detached"/>
-  <suffix name="None" label="None"/>
-  <suffix name="ProbablyFormSubmitted" label="Probable Form Submission"/>
-  <suffix name="SameDocumentNavigation" label="Same Document Navigation"/>
-  <suffix name="Unknown" label="Unknown"/>
-  <suffix name="XhrSucceeded" label="XHR Succeeded"/>
-  <affected-histogram name="Autofill.UploadEvent"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AutofillWalletCardsDiff" separator=".">
@@ -3458,13 +2994,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="NewTabPage.ContentSuggestions.DismissedVisited"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ContextMenuFromApp" separator=".">
-  <suffix name="FromApp" label="The source of the context menu was an app."/>
-  <suffix name="NotFromApp"
-      label="The source of the context menu was shelf or wallpaper."/>
-  <affected-histogram name="Apps.ContextMenuExecuteCommand"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ContextMenuLinkPerformanceClass" separator=".">
   <suffix name="PerformanceClassFast"
       label="The context menu was shown for a link with a fast
@@ -3589,17 +3118,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="WebGPU" label="A WebGPU control command buffer context"/>
   <suffix name="XRCompositing" label="Command buffer used for XR compositing"/>
   <affected-histogram name="GPU.ContextLost"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ContextualNudgesCategories" separator=".">
-  <suffix name="BackGesture"
-      label="Metrics related to back gesture's nudes and usage."/>
-  <suffix name="HomeToOverview"
-      label="Metrics related to home to overview gesture's nudes and usage."/>
-  <suffix name="InAppToHome"
-      label="Metrics related to in app to home gesture's nudes and usage."/>
-  <affected-histogram name="Ash.ContextualNudgeDismissContext"/>
-  <affected-histogram name="Ash.ContextualNudgeDismissTime"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ContextualNudgesNames" separator=".">
@@ -3771,12 +3289,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="MediumPeriod" label="Runtime is between 10 and 60 minutes"/>
   <suffix name="ShortPeriod" label="Runtime is shorter than 10 minutes"/>
   <affected-histogram name="Cras.Busyloop"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="CreditCardScanSuccess" separator="_">
-  <suffix name="Cancelled" label="Credit card scan was cancelled."/>
-  <suffix name="Completed" label="Credit card scan completed."/>
-  <affected-histogram name="Autofill.ScanCreditCard.Duration"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="CrosFirstRunStep" separator="">
@@ -4715,37 +4227,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="This metric is for only WebP image types."/>
   <affected-histogram name="Renderer4.ImageDecodeTaskDurationUs"/>
   <affected-histogram name="Renderer4.ImageUploadTaskDurationUs"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="DefaultAppLaunchSource" separator=".">
-  <suffix name="FromAppListGrid" label="From app list grid."/>
-  <suffix name="FromAppListGridContextMenu"
-      label="From app list grid context menu."/>
-  <suffix name="FromAppListQuery" label="From app list query."/>
-  <suffix name="FromAppListQueryContextMenu"
-      label="From app list query context menu."/>
-  <suffix name="FromAppListRecommendation"
-      label="From app list recommendation."/>
-  <suffix name="FromArc" label="From ARC."/>
-  <suffix name="FromChromeInternal" label="From Chrome Internal."/>
-  <suffix name="FromDiscoverTabNotification"
-      label="From Discover Tab notification."/>
-  <suffix name="FromFileManager" label="From FileManager."/>
-  <suffix name="FromFullRestore" label="From full restore."/>
-  <suffix name="FromInstalledNotification"
-      label="From installed notification."/>
-  <suffix name="FromKeyboard" label="From keyboard shortcut."/>
-  <suffix name="FromLink" label="From Link."/>
-  <suffix name="FromMenu" label="From menu."/>
-  <suffix name="FromOmnibox" label="From Omnibox."/>
-  <suffix name="FromOtherApp" label="From another app."/>
-  <suffix name="FromReleaseNotesNotification"
-      label="From Release Notes notification."/>
-  <suffix name="FromSharesheet" label="From sharesheet."/>
-  <suffix name="FromShelf" label="From shelf."/>
-  <suffix name="FromSmartTextContextMenu"
-      label="From Smart text selection context menu."/>
-  <affected-histogram name="Apps.DefaultAppLaunch"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="DefaultAppsExperiment" separator="_">
@@ -5789,15 +5270,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="90" label=""/>
   <suffix name="100" label=""/>
   <affected-histogram name="SiteEngagementService.EngagementScoreBucket"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="EnterOrExitCardifiedState" separator=".">
-  <suffix name="EnterCardifiedState"
-      label="Triggered by entering cardified state in the app list"/>
-  <suffix name="ExitCardifiedState"
-      label="Triggered by exiting cardified state in the app list"/>
-  <affected-histogram
-      name="Apps.AppList.CardifiedStateAnimation.AnimationSmoothness"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="EnterOrExitOverview" separator=".">
@@ -7271,43 +6743,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Histogram.InconsistentSnapshotBrowser"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="HomeLauncherVisibility" separator=".">
-  <suffix name="ClamshellMode.LauncherHidden"
-      label="Home Launcher was hidden during this animation on clamshell
-             mode."/>
-  <suffix name="ClamshellMode.LauncherVisible"
-      label="Home Launcher was visible during this animation on clamshell
-             mode."/>
-  <suffix name="TabletMode.LauncherHidden"
-      label="Home Launcher was hidden during this animation on tablet mode."/>
-  <suffix name="TabletMode.LauncherVisible"
-      label="Home Launcher was visible during this animation on tablet mode."/>
-  <affected-histogram name="Apps.ScrollableShelf.AnimationSmoothness"/>
-  <affected-histogram name="Apps.ScrollableShelf.Drag.PresentationTime"/>
-  <affected-histogram
-      name="Apps.ScrollableShelf.Drag.PresentationTime.MaxLatency"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="HotseatTransitionType" separator=".">
-  <suffix name="TransitionToExtendedHotseat"
-      label="Transition to the extended hotseat"/>
-  <suffix name="TransitionToHiddenHotseat"
-      label="Transition to the hidden hotseat"/>
-  <suffix name="TransitionToShownHotseat"
-      label="Transition to the shown hotseat"/>
-  <affected-histogram name="Ash.HotseatTransition.AnimationSmoothness"/>
-  <affected-histogram name="Ash.HotseatWidgetAnimation.AnimationSmoothness"/>
-  <affected-histogram name="Ash.NavigationWidget.AnimationSmoothness"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="HotseatWidgetElement" separator="."
-    ordering="prefix,2">
-  <suffix name="TranslucentBackground"
-      label="Hotseat widget's translucent background"/>
-  <suffix name="Widget" label="Hotseat widget"/>
-  <affected-histogram name="Ash.HotseatWidgetAnimation.AnimationSmoothness"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="HstsState" separator=".">
   <suffix name="HSTSNotEnabled" label="The HSTS is not enabled."/>
   <suffix name="WithHSTSEnabled" label="The HSTS is enabled."/>
@@ -8124,19 +7559,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Renderer4.StartToFinish"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="LauncherUISurface" separator=".">
-  <suffix name="AppsSearch" label="App tiles search"/>
-  <suffix name="AppsZeroState" label="App tiles zero-state"/>
-  <suffix name="Chip" label="Suggestion chips"/>
-  <suffix name="ListSearch" label="Results list search"/>
-  <suffix name="ListZeroState" label="Results list zero-state"/>
-  <affected-histogram name="Apps.AppList.UserEvent.LaunchIndex"/>
-  <affected-histogram name="Apps.AppList.UserEvent.Overall"/>
-  <affected-histogram name="Apps.AppList.UserEvent.TypeAbandon"/>
-  <affected-histogram name="Apps.AppList.UserEvent.TypeImpression"/>
-  <affected-histogram name="Apps.AppList.UserEvent.TypeLaunch"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="LayerTreeClient" separator=".">
   <suffix name="Browser" label="Browser"/>
   <suffix name="OOPIF" label="OOPIF (out-of-process iframe) renderer"/>
@@ -8622,28 +8044,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Software.NOW" label="Now bin for software"/>
   <suffix name="Software.SOON" label="Soon bin for software"/>
   <affected-histogram name="Renderer4.LockExistingCachedImage"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="LockScreenAppDataItemOperation" separator=".">
-  <suffix name="DeleteItem" label=""/>
-  <suffix name="GetRegisteredItems" label=""/>
-  <suffix name="ReadItem" label=""/>
-  <suffix name="RegisterItem" label=""/>
-  <suffix name="WriteItem" label=""/>
-  <affected-histogram
-      name="Apps.LockScreen.DataItemStorage.FailedOperationDuration"/>
-  <affected-histogram name="Apps.LockScreen.DataItemStorage.OperationDuration"/>
-  <affected-histogram name="Apps.LockScreen.DataItemStorage.OperationResult"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="LockScreenNoteTakingAppWindowState" separator=".">
-  <suffix name="Background"
-      label="The app window is in background (behind the lock screen)"/>
-  <suffix name="Foreground"
-      label="The app window is in foreground (on top of the lock screen)"/>
-  <suffix name="TotalActive"
-      label="The total amount of time an app window was active on lock screen"/>
-  <affected-histogram name="Apps.LockScreen.NoteTakingApp.AppWindowLifeTime"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="LowMemoryMargin" separator="_">
@@ -9706,14 +9106,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Navigation.TimeToReadyToCommit2.MainFrame"/>
   <affected-histogram name="Navigation.TimeToReadyToCommit2.SameProcess"/>
   <affected-histogram name="Navigation.TimeToReadyToCommit2.Subframe"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="NavigationWidgetElement" separator="."
-    ordering="prefix,2">
-  <suffix name="BackButton" label="Navigation widget's back button"/>
-  <suffix name="HomeButton" label="Navigation widget's home button"/>
-  <suffix name="Widget" label="Navigation widget"/>
-  <affected-histogram name="Ash.NavigationWidget.AnimationSmoothness"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Net_BidirectionalStreamExperiment" separator=".">
@@ -11912,12 +11304,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="SBOffDomainInclusion2.Abort"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="OfflineItemsSource" separator=".">
-  <suffix name="Downloads" label="Downloads"/>
-  <suffix name="OfflinePages" label="Offline pages"/>
-  <affected-histogram name="Android.OfflineItems.StateAtCancel"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="OfflinePagesArchiveDirectoryType" separator=".">
   <suffix name="Persistent" label="Persistent archive directory"/>
   <suffix name="Temporary" label="Temporary archive directory"/>
@@ -12365,21 +11751,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="PLT.BeginToFinish_LinkLoadStaleOk"/>
   <affected-histogram name="PLT.BeginToFinish_NormalLoad"/>
   <affected-histogram name="PLT.LoadType"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="OverviewAnimationMode" separator=".">
-  <suffix name="ClamshellMode"
-      label="Normal clamshell mode with multiple windows animates"/>
-  <suffix name="MinimizedTabletMode"
-      label="Animates in Tablet mode w/o split view and all windows are
-             minimized"/>
-  <suffix name="SingleClamshellMode"
-      label="In Clamshell mode with only top maximized/fullscren window
-             animates"/>
-  <suffix name="SplitView" label="Animates in SplitView enabled"/>
-  <suffix name="TabletMode" label="Animates in Tablet mode w/o split view"/>
-  <affected-histogram name="Ash.Overview.AnimationSmoothness.Enter"/>
-  <affected-histogram name="Ash.Overview.AnimationSmoothness.Exit"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadBackgrounded" separator=".">
@@ -15210,13 +14581,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Protector.StartupSettings"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ProviderPermissionType" separator=".">
-  <suffix name="READ_HISTORY_BOOKMARKS" label=""/>
-  <suffix name="WRITE_HISTORY_BOOKMARKS" label=""/>
-  <affected-histogram name="Android.ChromeBrowserProvider.CallerHasPermission"/>
-  <affected-histogram name="Android.ChromeBrowserProvider.SignaturePassed"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ProxyConnectionImpact" separator="_">
   <suffix name="proxy_connections_8"
       label="with 8 connections per proxy server"/>
@@ -15318,24 +14682,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     </obsolete>
   </affected-histogram>
   <affected-histogram name="Net.QuicSession.HandshakeRoundTrips"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="QuickAnswersClickResultType" separator=".">
-  <suffix name="Definition" label="Definition result type"/>
-  <suffix name="NoResult" label="Result is not available"/>
-  <suffix name="Translation" label="Translation result type"/>
-  <suffix name="UnitConversion" label="UnitConversion result type"/>
-  <affected-histogram name="QuickAnswers.ActiveImpression.Duration"/>
-  <affected-histogram name="QuickAnswers.Click.Duration"/>
-  <affected-histogram name="QuickAnswers.Result.Duration"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="QuickAnswersConsentInteractionType" separator=".">
-  <suffix name="Accept" label="Clicks on the accept button"/>
-  <suffix name="Dismiss" label="Dismisses the consent"/>
-  <suffix name="ManageSettings" label="Clicks on the 'manage settings' button"/>
-  <affected-histogram name="QuickAnswers.Consent.Duration"/>
-  <affected-histogram name="QuickAnswers.Consent.Impression"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="QuicPortSelection" separator="">
@@ -17731,13 +17077,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Sharing.WebRtc.TimingEvents"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ShelfIconAnimationType" separator=".">
-  <suffix name="FadeIn" label="Shelf icon fade-in animation"/>
-  <suffix name="FadeOut" label="Shelf icon fade-out animation"/>
-  <suffix name="Move" label="Shelf icon move animation"/>
-  <affected-histogram name="Ash.ShelfIcon.AnimationSmoothness"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ShillCumulativeTimeOnline" separator=".">
   <suffix name="Any" label="Any connection type"/>
   <suffix name="Cellular" label="Cellular connection"/>
@@ -18226,16 +17565,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
              checker is used."/>
   <affected-histogram name="Spellcheck.Windows.SpellcheckRequestDuration"/>
   <affected-histogram name="Spellcheck.Windows.SuggestionGatheringDuration"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SplitViewResizeModes" separator=".">
-  <suffix name="ClamshellMode.SingleWindow" label=""/>
-  <suffix name="ClamshellMode.WithOverview" label=""/>
-  <suffix name="TabletMode.MultiWindow" label=""/>
-  <suffix name="TabletMode.SingleWindow" label=""/>
-  <suffix name="TabletMode.WithOverview" label=""/>
-  <affected-histogram name="Ash.SplitViewResize.PresentationTime"/>
-  <affected-histogram name="Ash.SplitViewResize.PresentationTime.MaxLatency"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SqliteDatabases" separator=".">
@@ -19385,13 +18714,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="NavigatingAway" label="Triggered by navigating away."/>
   <suffix name="TabHidden" label="Triggered by the tab being hidden."/>
   <affected-histogram name="Thumbnails.CaptureOutcome"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ThumbnailProvider_ClientType" separator=".">
-  <suffix name="DownloadHome" label="Download home"/>
-  <suffix name="NTPSnippets" label="NTP snippets"/>
-  <affected-histogram name="Android.ThumbnailProvider.BitmapCache.Size"/>
-  <affected-histogram name="Android.ThumbnailProvider.CachedBitmap.Found"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="TileUiSurface" separator="." ordering="prefix,2">

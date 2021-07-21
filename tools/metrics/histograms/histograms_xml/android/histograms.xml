@@ -21,6 +21,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="ActivityType">
+  <variant name=".ChromeTabbedActivity" summary="ChromeTabbedActivity"/>
+  <variant name=".CustomTabActivity" summary="CustomTabActivity"/>
+  <variant name=".FirstRunActivity" summary="FirstRunActivity"/>
+</variants>
+
+<variants name="AndroidDownloadTypes">
+  <variant name=".Audio" summary=""/>
+  <variant name=".Document" summary=""/>
+  <variant name=".Image" summary=""/>
+  <variant name=".OfflinePage" summary=""/>
+  <variant name=".Other" summary=""/>
+  <variant name=".PrefetchedOfflinePage" summary=""/>
+  <variant name=".Total" summary=""/>
+  <variant name=".Video" summary=""/>
+</variants>
+
 <variants name="AutofillAssistantIntents">
   <variant name="" summary="aggregated across all intents"/>
   <variant name=".BuyMovieTicket"/>
@@ -76,6 +93,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name=".SavePassword"/>
   <variant name=".SendTabToSelf"/>
   <variant name=".UpdatePassword"/>
+</variants>
+
+<variants name="ProviderPermissionType">
+  <variant name=".READ_HISTORY_BOOKMARKS" summary=""/>
+  <variant name=".WRITE_HISTORY_BOOKMARKS" summary=""/>
+</variants>
+
+<variants name="ThumbnailProvider_ClientType">
+  <variant name=".DownloadHome" summary="Download home"/>
+  <variant name=".NTPSnippets" summary="NTP snippets"/>
 </variants>
 
 <histogram name="Android.AdaptiveToolbarButton.Clicked"
@@ -448,7 +475,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Android.ChromeBrowserProvider.CallerHasPermission"
+<histogram
+    name="Android.ChromeBrowserProvider.CallerHasPermission{ProviderPermissionType}"
     enum="ClientAppId" expires_after="2021-06-28">
   <obsolete>
     ChromeBrowserProvider removed in 03/2021.
@@ -458,10 +486,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Android: Count of requests to Chrome browser which are granted to other apps
     to read/write user's bookmarks and history. Only records cases when the app
     has permission according to Android's permission manager.
+    {ProviderPermissionType}
   </summary>
+  <token key="ProviderPermissionType" variants="ProviderPermissionType">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Android.ChromeBrowserProvider.SignaturePassed"
+<histogram
+    name="Android.ChromeBrowserProvider.SignaturePassed{ProviderPermissionType}"
     enum="ClientAppId" expires_after="2021-06-28">
   <obsolete>
     ChromeBrowserProvider removed in 03/2021.
@@ -470,8 +503,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Android: Count of requests to Chrome browser which are granted to other apps
     to read/write user's bookmarks and history. Only records cases where the app
-    is a system app or signed by Google.
+    is a system app or signed by Google. {ProviderPermissionType}
   </summary>
+  <token key="ProviderPermissionType" variants="ProviderPermissionType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Android.ChromeStartupDelegate.FailureReason"
@@ -876,24 +912,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Android.DownloadManager.InitialCount" units="units"
-    expires_after="2021-01-24">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    The number of non-incognito download items displayed when the download UI is
-    initialized.
-  </summary>
-</histogram>
-
-<histogram name="Android.DownloadManager.InitialCount.Viewed" units="units"
-    expires_after="2020-10-04">
+<histogram
+    name="Android.DownloadManager.InitialCount.Viewed{AndroidDownloadTypes}"
+    units="units" expires_after="2020-10-04">
   <owner>dtrainor@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The number of non-incognito download items displayed that are already viewed
     by the user at any time, recorded when the download UI is initialized.
+    {AndroidDownloadTypes}
   </summary>
+  <token key="AndroidDownloadTypes" variants="AndroidDownloadTypes">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Android.DownloadManager.InitialCount{AndroidDownloadTypes}"
+    units="units" expires_after="2021-01-24">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    The number of non-incognito download items displayed when the download UI is
+    initialized. {AndroidDownloadTypes}
+  </summary>
+  <token key="AndroidDownloadTypes" variants="AndroidDownloadTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Android.DownloadManager.Item.OpenFailed"
@@ -1041,18 +1085,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The percentage of total storage downloads consume.</summary>
 </histogram>
 
-<histogram base="true"
-    name="Android.DownloadManager.Thumbnail.MaxRequiredStretch" units="%"
-    expires_after="2021-01-30">
-<!-- Name completed by histogram_suffixes
-     name="AndroidDownloadTypes" -->
-
+<histogram
+    name="Android.DownloadManager.Thumbnail.MaxRequiredStretch{AndroidDownloadTypes}"
+    units="%" expires_after="2021-01-30">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     Records the required stretch of the smaller dimension before displaying an
-    image on download home. Measured in percentage.
+    image on download home. Measured in percentage. {AndroidDownloadTypes}
   </summary>
+  <token key="AndroidDownloadTypes" variants="AndroidDownloadTypes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Android.DownloadPage.OpenSource"
@@ -1229,37 +1277,47 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
-    name="Android.Fonts.TimeDownloadableFontsRetrievedAfterPostInflationStartup"
+    name="Android.Fonts.TimeDownloadableFontsRetrievedAfterPostInflationStartup{ActivityType}"
     units="ms" expires_after="2021-12-15">
   <owner>sinansahin@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     Time it took to retrieve the downloadable fonts after post-inflation
     startup. Mutually exclusive with *BeforePostInflationStartup. Recorded when
-    all downloadable fonts are retrieved.
+    all downloadable fonts are retrieved. {ActivityType}
   </summary>
+  <token key="ActivityType" variants="ActivityType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram
-    name="Android.Fonts.TimeDownloadableFontsRetrievedBeforePostInflationStartup"
+    name="Android.Fonts.TimeDownloadableFontsRetrievedBeforePostInflationStartup{ActivityType}"
     units="ms" expires_after="2021-12-15">
   <owner>sinansahin@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     Amount of time the downloadable fonts were retrieved before post-inflation
     startup. Mutually exclusive with *AfterPostInflationStartup. Recorded after
-    AsyncInitializationActivity#performPostInflationStartup.
+    AsyncInitializationActivity#performPostInflationStartup. {ActivityType}
   </summary>
+  <token key="ActivityType" variants="ActivityType">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Android.Fonts.TimeToRetrieveDownloadableFontsAfterOnCreate"
+<histogram
+    name="Android.Fonts.TimeToRetrieveDownloadableFontsAfterOnCreate{ActivityType}"
     units="ms" expires_after="2021-12-15">
   <owner>sinansahin@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     Time it took to retrieve the downloadable fonts after Application#OnCreate.
-    Recorded when all downloadable fonts are retrieved.
+    Recorded when all downloadable fonts are retrieved. {ActivityType}
   </summary>
+  <token key="ActivityType" variants="ActivityType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Android.HistoryPage.ClearBrowsingData.PerProfileType"
@@ -1662,15 +1720,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Android.MemoryPressureNotification"
+<histogram name="Android.MemoryPressureNotification{AndroidProcessType}"
     enum="Android.MemoryPressureNotification" expires_after="2021-12-05">
   <owner>ssid@chromium.org</owner>
   <summary>
     Memory pressure notifications sent by Android through ComponentCallbacks2.
     This metric was added 04/2018; for prior data for the browser process see
     MemoryAndroid.NotificationBackground and
-    MemoryAndroid.NotificationForeground.
+    MemoryAndroid.NotificationForeground. {AndroidProcessType}
   </summary>
+  <token key="AndroidProcessType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".Browser" summary="Browser process"/>
+    <variant name=".ChildService"
+        summary="Child service process (renderer, GPU, etc.)"/>
+  </token>
 </histogram>
 
 <histogram name="Android.Messages.Dismissed{MessageIdentifier}"
@@ -1849,12 +1917,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Android.OfflineItems.StateAtCancel"
+<histogram name="Android.OfflineItems.StateAtCancel{OfflineItemsSource}"
     enum="OfflineItemsStateAtCancel" expires_after="M81">
   <owner>chili@chromium.org</owner>
   <summary>
     State of a download or offline page request at user-initiated cancel.
+    {OfflineItemsSource}
   </summary>
+  <token key="OfflineItemsSource">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".Downloads" summary="Downloads"/>
+    <variant name=".OfflinePages" summary="Offline pages"/>
+  </token>
 </histogram>
 
 <histogram name="Android.Omnibox.InvalidMatch" enum="MatchResult"
@@ -2510,14 +2588,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Android.StrictMode.TabPersistentStore" units="ms"
-    expires_after="2021-10-04">
+<histogram
+    name="Android.StrictMode.TabPersistentStore{AndroidTabPersistentStoreTime}"
+    units="ms" expires_after="2021-10-04">
   <owner>wnwen@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
     Measures time spent during StrictMode-whitelisted code in
-    TabPersistentStore.
+    TabPersistentStore. {AndroidTabPersistentStoreTime}
   </summary>
+  <token key="AndroidTabPersistentStoreTime">
+    <variant name=""/>
+    <variant name=".CleanupAllEncryptedTime" summary="">
+      <obsolete>
+        Original code deleted in a refactoring.
+      </obsolete>
+    </variant>
+    <variant name=".LoadStateInternalPrefetchTime" summary=""/>
+    <variant name=".LoadStateInternalTime" summary=""/>
+    <variant name=".LoadStateTime" summary=""/>
+    <variant name=".MergeStateInternalFetchTime" summary=""/>
+    <variant name=".MergeStateInternalTime" summary=""/>
+    <variant name=".ReadMergedStateTime" summary=""/>
+    <variant name=".ReadSavedStateTime" summary=""/>
+    <variant name=".RestoreTabPrefetchTime" summary=""/>
+    <variant name=".RestoreTabTime" summary=""/>
+    <variant name=".SaveListTime" summary=""/>
+    <variant name=".SaveStateTime" summary=""/>
+    <variant name=".SaveTabsTime" summary=""/>
+  </token>
 </histogram>
 
 <histogram name="Android.StrictMode.ThumbnailCacheDir" units="ms"
@@ -2693,7 +2792,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Android.ThumbnailProvider.BitmapCache.Size"
+<histogram
+    name="Android.ThumbnailProvider.BitmapCache.Size{ThumbnailProvider_ClientType}"
     units="KB" expires_after="2021-01-30">
 <!-- Name completed by histogram_suffixes
      name="ThumbnailProvider.ClientType" -->
@@ -2702,11 +2802,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>clank-downloads@google.com</owner>
   <summary>
     Measures the size of the bitmap cache used. Recorded whenever a bitmap is
-    added to the cache.
+    added to the cache. {ThumbnailProvider_ClientType}
   </summary>
+  <token key="ThumbnailProvider_ClientType"
+      variants="ThumbnailProvider_ClientType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Android.ThumbnailProvider.CachedBitmap.Found"
+<histogram
+    name="Android.ThumbnailProvider.CachedBitmap.Found{ThumbnailProvider_ClientType}"
     enum="BooleanFound" expires_after="2021-01-30">
 <!-- Name completed by histogram_suffixes
      name="ThumbnailProvider.ClientType" -->
@@ -2715,8 +2824,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>clank-downloads@google.com</owner>
   <summary>
     Records the status of a thumbnail query from the thumbnail provider
-    in-memory cache.
+    in-memory cache. {ThumbnailProvider_ClientType}
   </summary>
+  <token key="ThumbnailProvider_ClientType"
+      variants="ThumbnailProvider_ClientType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Android.WebView.ActualUiThread"
@@ -3114,7 +3231,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Android.WebView.DevUi.FragmentNavigation"
+<histogram
+    name="Android.WebView.DevUi.FragmentNavigation{Android_WebView_DevUi_NavType}"
     enum="AndroidWebViewDevUiFragments" expires_after="2021-12-14">
 <!-- Name completed by histogram_suffixes
      name="Android.WebView.DevUi.NavType" -->
@@ -3127,7 +3245,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     navigations triggered by an Intent (ex. navigating to HomeFragment on
     launch) and &quot;NavBar&quot; tracks user interaction with the bottom
     navigation bar. &quot;AnyMethod&quot; should be the sum of the other two.
+    {Android_WebView_DevUi_NavType}
   </summary>
+  <token key="Android_WebView_DevUi_NavType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".AnyMethod" summary="User navigation through any means"/>
+    <variant name=".FromIntent"
+        summary="User navigation through the bottom navigation bar"/>
+    <variant name=".NavBar" summary="User navigation in response to an Intent"/>
+  </token>
 </histogram>
 
 <histogram name="Android.WebView.DevUi.MenuSelection"

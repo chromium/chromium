@@ -21,6 +21,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="AccessibilityEveryReport">
+  <variant name=".EveryReport"
+      summary="sent with every metrics report, and preferred for computing
+               uniques"/>
+</variants>
+
 <histogram name="Accessibility.ActiveTime" units="ms"
     expires_after="2021-12-05">
   <owner>dmazzoni@chromium.org</owner>
@@ -50,8 +56,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Android.ScreenReader" enum="BooleanEnabled"
-    expires_after="never">
+<histogram name="Accessibility.Android.ScreenReader{AccessibilityEveryReport}"
+    enum="BooleanEnabled" expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
   <owner>aleventhal@chromium.org</owner>
@@ -60,8 +66,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Tracks whether a screen reader is enabled on Android (e.g. Talkback). This
     is checked once, 45 seconds after startup. Note: prefer
     Accessibility.Android.ScreenReader.EveryReport when querying for unique
-    users, as it is logged more frequently.
+    users, as it is logged more frequently. {AccessibilityEveryReport}
   </summary>
+  <token key="AccessibilityEveryReport" variants="AccessibilityEveryReport">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.Android.TabSwitcherPreferenceEnabled"
@@ -538,8 +547,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.CrosSpokenFeedback" enum="BooleanEnabled"
-    expires_after="2021-12-05">
+<histogram name="Accessibility.CrosSpokenFeedback{AccessibilityEveryReport}"
+    enum="BooleanEnabled" expires_after="2021-12-05">
   <owner>dmazzoni@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>aleventhal@google.com</owner>
@@ -548,7 +557,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Whether the Chrome OS Spoken Feedback feature is on (logged once 45 secs
     after startup). Note: prefer Accessibility.CrosSpokenFeedback.EveryReport
     when querying for unique users, as it is logged more frequently.
+    {AccessibilityEveryReport}
   </summary>
+  <token key="AccessibilityEveryReport" variants="AccessibilityEveryReport">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.CrosStickyKeys" enum="BooleanEnabled"
@@ -1036,8 +1049,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Mac.ScreenReader" enum="BooleanEnabled"
-    expires_after="never">
+<histogram name="Accessibility.Mac.ScreenReader{AccessibilityEveryReport}"
+    enum="BooleanEnabled" expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
   <owner>aleventhal@chromium.org</owner>
@@ -1046,8 +1059,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Tracks whether a screen reader is enabled on Mac (e.g. VoiceOver). This is
     logged once, 45 seconds after startup. Note: prefer
     Accessibility.Mac.ScreenReader.EveryReport when querying for unique users,
-    as it is logged more frequently.
+    as it is logged more frequently. {AccessibilityEveryReport}
   </summary>
+  <token key="AccessibilityEveryReport" variants="AccessibilityEveryReport">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.ManuallyEnabled" enum="BooleanEnabled"
@@ -1317,8 +1333,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.WinJAWS" enum="BooleanEnabled"
-    expires_after="never">
+<histogram name="Accessibility.WinJAWS{AccessibilityEveryReport}"
+    enum="BooleanEnabled" expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
   <owner>dmazzoni@chromium.org</owner>
@@ -1329,11 +1345,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Whether the third-party JAWS screen reader is running (logged once 45 secs
     after startup). Note: prefer Accessibility.WinJAWS.EveryReport when querying
     for unique users, as it is logged more frequently.
+    {AccessibilityEveryReport}
   </summary>
+  <token key="AccessibilityEveryReport" variants="AccessibilityEveryReport">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Accessibility.WinNVDA" enum="BooleanEnabled"
-    expires_after="never">
+<histogram name="Accessibility.WinNVDA{AccessibilityEveryReport}"
+    enum="BooleanEnabled" expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
   <owner>dmazzoni@chromium.org</owner>
@@ -1344,7 +1364,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Whether the third-party NVDA screen reader is running (logged once 45 secs
     after startup). Note: prefer Accessibility.WinNVDA.EveryReport when querying
     for unique users, as it is logged more frequently.
+    {AccessibilityEveryReport}
   </summary>
+  <token key="AccessibilityEveryReport" variants="AccessibilityEveryReport">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.WinScreenReader" enum="BooleanEnabled"
@@ -1359,8 +1383,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.WinScreenReader2" enum="BooleanEnabled"
-    expires_after="2020-09-13">
+<histogram name="Accessibility.WinScreenReader2{AccessibilityEveryReport}"
+    enum="BooleanEnabled" expires_after="2020-09-13">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
   <owner>aleventhal@chromium.org</owner>
@@ -1370,8 +1394,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     accessibility calls that would normally only occur from a screen reader. See
     also the more specific metrics such as Accessibility.WinJAWS/WinNVDA. Note:
     prefer Accessibility.WinScreenReader2.EveryReport when querying for unique
-    users, as it is logged more frequently.
+    users, as it is logged more frequently. {AccessibilityEveryReport}
   </summary>
+  <token key="AccessibilityEveryReport" variants="AccessibilityEveryReport">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.WinStickyKeys" enum="BooleanEnabled"
@@ -1387,8 +1414,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.WinSupernova" enum="BooleanEnabled"
-    expires_after="never">
+<histogram name="Accessibility.WinSupernova{AccessibilityEveryReport}"
+    enum="BooleanEnabled" expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
   <owner>dmazzoni@chromium.org</owner>
@@ -1399,11 +1426,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Whether the third-party Supernova screen reader is running (logged once 45
     secs after startup). Note: prefer Accessibility.Supernova.EveryReport when
     querying for unique users, as it is logged more frequently.
+    {AccessibilityEveryReport}
   </summary>
+  <token key="AccessibilityEveryReport" variants="AccessibilityEveryReport">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Accessibility.WinZoomText" enum="BooleanEnabled"
-    expires_after="never">
+<histogram name="Accessibility.WinZoomText{AccessibilityEveryReport}"
+    enum="BooleanEnabled" expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
   <owner>dmazzoni@chromium.org</owner>
@@ -1413,8 +1444,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Whether the third-party ZoomText screen magnifier is running. Note: prefer
     Accessibility.WinZoomText.EveryReport when querying for unique users, as it
-    is logged more frequently.
+    is logged more frequently. {AccessibilityEveryReport}
   </summary>
+  <token key="AccessibilityEveryReport" variants="AccessibilityEveryReport">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="DomDistiller.DistillabilityRejection" enum="DistillRejection"

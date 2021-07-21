@@ -21,6 +21,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="QuickAnswersClickResultType">
+  <variant name=".Definition" summary="Definition result type"/>
+  <variant name=".NoResult" summary="Result is not available"/>
+  <variant name=".Translation" summary="Translation result type"/>
+  <variant name=".UnitConversion" summary="UnitConversion result type"/>
+</variants>
+
+<variants name="QuickAnswersConsentInteractionType">
+  <variant name=".Accept" summary="Clicks on the accept button"/>
+  <variant name=".Dismiss" summary="Dismisses the consent"/>
+  <variant name=".ManageSettings"
+      summary="Clicks on the 'manage settings' button"/>
+</variants>
+
 <variants name="UserEligibilityTiming">
 <!--
     Before M90, the base ("") variant was reported multiple times per search
@@ -282,14 +296,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="QuickAnswers.ActiveImpression.Duration" units="ms"
-    expires_after="2022-01-16">
+<histogram
+    name="QuickAnswers.ActiveImpression.Duration{QuickAnswersClickResultType}"
+    units="ms" expires_after="2022-01-16">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
     For quick answer impression that fulfills a user's intent, records the
-    impression duration. ChromeOS only.
+    impression duration. ChromeOS only. {QuickAnswersClickResultType}
   </summary>
+  <token key="QuickAnswersClickResultType"
+      variants="QuickAnswersClickResultType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="QuickAnswers.Click" enum="QuickAnswersResultType"
@@ -301,14 +320,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="QuickAnswers.Click.Duration" units="ms"
-    expires_after="2021-11-21">
+<histogram name="QuickAnswers.Click.Duration{QuickAnswersClickResultType}"
+    units="ms" expires_after="2021-11-21">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
     For every quick answer click event, records the duration between fetch
-    finish and user clicks. ChromeOS only.
+    finish and user clicks. ChromeOS only. {QuickAnswersClickResultType}
   </summary>
+  <token key="QuickAnswersClickResultType"
+      variants="QuickAnswersClickResultType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="QuickAnswers.Consent" units="impressions"
@@ -321,24 +344,44 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="QuickAnswers.Consent.Duration" units="ms"
-    expires_after="2021-08-09">
+<histogram
+    name="QuickAnswers.Consent.Duration{QuickAnswersConsentInteractionType}"
+    units="ms" expires_after="2021-08-09">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
     For every quick answers consent interaction event, records how long the user
     has seen the consent before. ChromeOS only.
+    {QuickAnswersConsentInteractionType}
   </summary>
+  <token key="QuickAnswersConsentInteractionType"
+      variants="QuickAnswersConsentInteractionType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="QuickAnswers.Consent.Impression"
+<histogram
+    name="QuickAnswers.Consent.Impression{QuickAnswersConsentInteractionType}"
     units="impressions" expires_after="2022-01-02">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
     For every quick answers consent interaction event, records how many times
     the user has seen the consent before. ChromeOS only.
+    {QuickAnswersConsentInteractionType}
   </summary>
+  <token key="QuickAnswersConsentInteractionType"
+      variants="QuickAnswersConsentInteractionType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="QuickAnswers.ContextMenu.Close" enum="BooleanClicked"
@@ -433,14 +476,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="QuickAnswers.Result.Duration" units="ms"
-    expires_after="2022-01-02">
+<histogram name="QuickAnswers.Result.Duration{QuickAnswersClickResultType}"
+    units="ms" expires_after="2022-01-02">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
     For every quick answer result received event, records the duration between
-    fetch start and fetch finish. ChromeOS only.
+    fetch start and fetch finish. ChromeOS only. {QuickAnswersClickResultType}
   </summary>
+  <token key="QuickAnswersClickResultType"
+      variants="QuickAnswersClickResultType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="QuickAnswers.SelectedContent.Length" units="characters"

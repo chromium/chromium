@@ -38,6 +38,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="WebApp" summary="Web apps"/>
 </variants>
 
+<variants name="AppUIComponent">
+  <variant name=".AppGrid" summary="App - Fullscreen Launcher"/>
+  <variant name=".Desktop" summary="Desktop"/>
+  <variant name=".SearchResult" summary="Launcher App Search Result"/>
+  <variant name=".Shelf" summary="Shelf"/>
+  <variant name=".ShelfButton" summary="ShelfButton"/>
+  <variant name=".SuggestedAppFullscreen"
+      summary="Suggested App, Fullscreen Launcher"/>
+  <variant name=".SuggestedAppPeeking"
+      summary="Suggested App, Peeking Launcher"/>
+</variants>
+
+<variants name="HomeLauncherVisibility">
+  <variant name=".ClamshellMode.LauncherHidden"
+      summary="Home Launcher was hidden during this animation on clamshell
+               mode."/>
+  <variant name=".ClamshellMode.LauncherVisible"
+      summary="Home Launcher was visible during this animation on clamshell
+               mode."/>
+  <variant name=".TabletMode.LauncherHidden"
+      summary="Home Launcher was hidden during this animation on tablet mode."/>
+  <variant name=".TabletMode.LauncherVisible"
+      summary="Home Launcher was visible during this animation on tablet
+               mode."/>
+</variants>
+
 <variants name="InstallSource">
   <variant name="Oem" summary="Installed by an OEM"/>
   <variant name="Policy" summary="Installed by policy"/>
@@ -46,6 +72,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="System" summary="Installed with the system"/>
   <variant name="Unknown" summary="Installed with unknown source"/>
   <variant name="User" summary="Installed by user"/>
+</variants>
+
+<variants name="LauncherUISurface">
+  <variant name=".AppsSearch" summary="App tiles search"/>
+  <variant name=".AppsZeroState" summary="App tiles zero-state"/>
+  <variant name=".Chip" summary="Suggestion chips"/>
+  <variant name=".ListSearch" summary="Results list search"/>
+  <variant name=".ListZeroState" summary="Results list zero-state"/>
+</variants>
+
+<variants name="LockScreenAppDataItemOperation">
+  <variant name=".DeleteItem" summary=""/>
+  <variant name=".GetRegisteredItems" summary=""/>
+  <variant name=".ReadItem" summary=""/>
+  <variant name=".RegisterItem" summary=""/>
+  <variant name=".WriteItem" summary=""/>
 </variants>
 
 <variants name="RestoreAction">
@@ -229,11 +271,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppList.CardifiedStateAnimation.AnimationSmoothness"
+<histogram
+    name="Apps.AppList.CardifiedStateAnimation.AnimationSmoothness{EnterOrExitCardifiedState}"
     units="%" expires_after="2022-06-02">
-<!-- Name completed by histogram_suffixes
-     name="EnterOrExitCardifiedState" -->
-
   <owner>anasalazar@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -242,7 +282,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     represents only 30 frames per second is achieved during the animations. 0%
     should not happen. This metric is recorded one time per apps grid page each
     time we enter or exit cardified state in the apps grid.
+    {EnterOrExitCardifiedState}
   </summary>
+  <token key="EnterOrExitCardifiedState">
+    <variant name=""/>
+    <variant name=".EnterCardifiedState"
+        summary="Triggered by entering cardified state in the app list"/>
+    <variant name=".ExitCardifiedState"
+        summary="Triggered by exiting cardified state in the app list"/>
+  </token>
 </histogram>
 
 <histogram name="Apps.AppList.DriveQuickAccessProvider.ApiResults"
@@ -707,10 +755,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppList.UserEvent.LaunchIndex" units="index"
-    expires_after="2022-08-15">
-<!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
-
+<histogram name="Apps.AppList.UserEvent.LaunchIndex{LauncherUISurface}"
+    units="index" expires_after="2022-08-15">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -719,14 +765,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     launches, and abandons for a launcher UI view. The bucket proportion is not
     meaningful for this metric, because impressions are a superset of launches
     and abandons. Instead, the ratio between buckets can be used to calculate
-    accurate overall CTR.
+    accurate overall CTR. {LauncherUISurface}
   </summary>
+  <token key="LauncherUISurface" variants="LauncherUISurface">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Apps.AppList.UserEvent.Overall" enum="AppListUserEvent"
-    expires_after="2022-08-15">
-<!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
-
+<histogram name="Apps.AppList.UserEvent.Overall{LauncherUISurface}"
+    enum="AppListUserEvent" expires_after="2022-08-15">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -735,8 +782,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     launches, and abandons for a launcher UI view. The bucket proportion is not
     meaningful for this metric, because impressions are a superset of launches
     and abandons. Instead, the ratio between buckets can be used to calculate
-    accurate overall CTR.
+    accurate overall CTR. {LauncherUISurface}
   </summary>
+  <token key="LauncherUISurface" variants="LauncherUISurface">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.Query" enum="Boolean"
@@ -752,10 +802,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppList.UserEvent.TypeAbandon" enum="AppListSearchResult"
-    expires_after="2022-08-15">
-<!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
-
+<histogram name="Apps.AppList.UserEvent.TypeAbandon{LauncherUISurface}"
+    enum="AppListSearchResult" expires_after="2022-08-15">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -766,14 +814,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     See Apps.AppList.UserEvent.TypeImpression for more details.
 
     This metric is completed by a histogram suffix describing which UI surface
-    the results are recorded from.
+    the results are recorded from. {LauncherUISurface}
   </summary>
+  <token key="LauncherUISurface" variants="LauncherUISurface">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Apps.AppList.UserEvent.TypeImpression"
+<histogram name="Apps.AppList.UserEvent.TypeImpression{LauncherUISurface}"
     enum="AppListSearchResult" expires_after="2022-08-15">
-<!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
-
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -790,14 +839,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     gives an accurate CTR.
 
     This metric is completed by a histogram suffix describing which UI surface
-    the results are recorded from.
+    the results are recorded from. {LauncherUISurface}
   </summary>
+  <token key="LauncherUISurface" variants="LauncherUISurface">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Apps.AppList.UserEvent.TypeLaunch" enum="AppListSearchResult"
-    expires_after="2022-08-15">
-<!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
-
+<histogram name="Apps.AppList.UserEvent.TypeLaunch{LauncherUISurface}"
+    enum="AppListSearchResult" expires_after="2022-08-15">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -807,8 +857,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     details.
 
     This metric is completed by a histogram suffix describing which UI surface
-    the results are recorded from.
+    the results are recorded from. {LauncherUISurface}
   </summary>
+  <token key="LauncherUISurface" variants="LauncherUISurface">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Apps.AppList.ZeroStateDriveProvider.Relevance" units="score"
@@ -1002,17 +1055,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppListAppLaunchedV2" enum="AppListLaunchedFrom"
-    expires_after="2021-12-19">
-<!-- Name completed by histogram_suffixes name="AppListState" -->
-
+<histogram name="Apps.AppListAppLaunchedV2{AppListState}"
+    enum="AppListLaunchedFrom" expires_after="2021-12-19">
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
     The number of apps launched from the launcher and shelf for each launcher
     state. This is incremented each time an app is launched. Each bucket
     represents where in the launcher or shelf the app was launched from.
+    {AppListState}
   </summary>
+  <token key="AppListState">
+    <variant name=""/>
+    <variant name=".BubbleAllApps" summary=""/>
+    <variant name=".Closed" summary=""/>
+    <variant name=".FullscreenAllApps" summary=""/>
+    <variant name=".FullscreenSearch" summary=""/>
+    <variant name=".Half" summary=""/>
+    <variant name=".HomecherAllApps" summary=""/>
+    <variant name=".HomecherClosed" summary=""/>
+    <variant name=".HomecherSearch" summary=""/>
+    <variant name=".Peeking" summary=""/>
+  </token>
 </histogram>
 
 <histogram name="Apps.AppListAppMovingType" enum="AppListAppMovingType"
@@ -1561,17 +1625,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppsInFolders" units="Apps" expires_after="2021-08-09">
-<!-- Name completed by histogram_suffixes
-     name="AppListFolderExperiment" -->
-
+<histogram name="Apps.AppsInFolders{AppListFolderExperiment}" units="Apps"
+    expires_after="2021-08-09">
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
     The total number of apps in folders ignoring OEM folders. This is logged
     each time the app list is initialized. The
     &quot;FullscreenAppListDisabled&quot; suffix has been deprecated.
+    {AppListFolderExperiment}
   </summary>
+  <token key="AppListFolderExperiment">
+    <variant name=""/>
+    <variant name=".FullscreenAppListDisabled"
+        summary="Peeking Launcher Disabled"/>
+    <variant name=".FullscreenAppListEnabled"
+        summary="Peeking Launcher Enabled"/>
+  </token>
 </histogram>
 
 <histogram name="Apps.ArcGhostWindowLaunch" enum="Boolean"
@@ -1594,46 +1664,62 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Apps.ContextMenuExecuteCommand"
+<histogram name="Apps.ContextMenuExecuteCommand{ContextMenuFromApp}"
     enum="ChromeOSUICommands" expires_after="2021-01-31">
-<!-- Name completed by histogram_suffixes
-     name="ContextMenuFromApp" -->
-
   <owner>newcomer@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
   <summary>
     The number of times a certain command was executed by a context menu, split
     by whether the context menu came from an app, or another part of the system
-    UI.
+    UI. {ContextMenuFromApp}
   </summary>
+  <token key="ContextMenuFromApp">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".FromApp"
+        summary="The source of the context menu was an app."/>
+    <variant name=".NotFromApp"
+        summary="The source of the context menu was shelf or wallpaper."/>
+  </token>
 </histogram>
 
-<histogram base="true" name="Apps.ContextMenuShowSource" enum="MenuSourceType"
-    expires_after="2021-10-10">
-<!-- Name completed by histogram_suffixes
-     name="AppUIComponent" -->
-
+<histogram name="Apps.ContextMenuShowSource{AppUIComponent}"
+    enum="MenuSourceType" expires_after="2021-10-10">
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
     The show source (touch, mouse, keyboard, etc) for a context menu. Split by
-    the component from which the context menu originated.
+    the component from which the context menu originated. {AppUIComponent}
   </summary>
+  <token key="AppUIComponent" variants="AppUIComponent">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Apps.ContextMenuUserJourneyTime" units="ms"
+<histogram name="Apps.ContextMenuUserJourneyTime{AppUIComponent}" units="ms"
     expires_after="2021-10-31">
-<!-- Name completed by histogram_suffixes
-     name="AppUIComponent" -->
-
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
     The user journey time for a ContextMenu, defined as the time between
     launching a context menu and the context menu's close callback being
     activated. Not recorded whenever the context menu is not for an app icon on
-    the shelf.
+    the shelf. {AppUIComponent}
   </summary>
+  <token key="AppUIComponent" variants="AppUIComponent">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Apps.CreateShortcutIcon.Linux.Result"
@@ -1663,16 +1749,49 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Apps.DefaultAppLaunch" enum="DefaultAppName"
-    expires_after="2021-12-12">
-<!-- Name completed by histogram_suffixes name="DefaultAppLaunchSource" -->
-
+<histogram name="Apps.DefaultAppLaunch{DefaultAppLaunchSource}"
+    enum="DefaultAppName" expires_after="2021-12-12">
   <owner>dominickn@chromium.org</owner>
   <owner>nancylingwang@chromium.org</owner>
   <owner>nigeltao@chromium.org</owner>
   <summary>
     Records when a user attempts to launch a particular Chrome OS app.
+    {DefaultAppLaunchSource}
   </summary>
+  <token key="DefaultAppLaunchSource">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".FromAppListGrid" summary="From app list grid."/>
+    <variant name=".FromAppListGridContextMenu"
+        summary="From app list grid context menu."/>
+    <variant name=".FromAppListQuery" summary="From app list query."/>
+    <variant name=".FromAppListQueryContextMenu"
+        summary="From app list query context menu."/>
+    <variant name=".FromAppListRecommendation"
+        summary="From app list recommendation."/>
+    <variant name=".FromArc" summary="From ARC."/>
+    <variant name=".FromChromeInternal" summary="From Chrome Internal."/>
+    <variant name=".FromDiscoverTabNotification"
+        summary="From Discover Tab notification."/>
+    <variant name=".FromFileManager" summary="From FileManager."/>
+    <variant name=".FromFullRestore" summary="From full restore."/>
+    <variant name=".FromInstalledNotification"
+        summary="From installed notification."/>
+    <variant name=".FromKeyboard" summary="From keyboard shortcut."/>
+    <variant name=".FromLink" summary="From Link."/>
+    <variant name=".FromMenu" summary="From menu."/>
+    <variant name=".FromOmnibox" summary="From Omnibox."/>
+    <variant name=".FromOtherApp" summary="From another app."/>
+    <variant name=".FromReleaseNotesNotification"
+        summary="From Release Notes notification."/>
+    <variant name=".FromSharesheet" summary="From sharesheet."/>
+    <variant name=".FromShelf" summary="From shelf."/>
+    <variant name=".FromSmartTextContextMenu"
+        summary="From Smart text selection context menu."/>
+  </token>
 </histogram>
 
 <histogram name="Apps.FileHandler.Registration.Linux.RecreateShortcut.Result"
@@ -1717,15 +1836,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Apps.HomeLauncherTransition.AnimationSmoothness" units="%"
-    expires_after="never">
+<histogram
+    name="Apps.HomeLauncherTransition.AnimationSmoothness{AppListTabletModeTransition}"
+    units="%" expires_after="never">
 <!-- expires-never: These metrics are required
      by Tast tests to monitor performance. We should
      keep these metrics alive until we stop monitoring
      performance of home launcher animations -->
-
-<!-- Name completed by histogram suffixes
-     name="AppListTabletModeTransition" -->
 
   <owner>andrewxu@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
@@ -1734,8 +1851,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     100% represents ideally smooth 60 frames per second. 50% represents only 30
     frames per second is achieved during the animations. 0% should not happen.
     This metric is recorded exactly once when the user triggers launcher
-    animation in tablet mode.
+    animation in tablet mode. {AppListTabletModeTransition}
   </summary>
+  <token key="AppListTabletModeTransition">
+    <variant name=""/>
+    <variant name=".DragReleaseHide"
+        summary="Release drag to hide the app list"/>
+    <variant name=".DragReleaseShow"
+        summary="Release drag to show the app list"/>
+    <variant name=".EnterFullscreenAllApps"
+        summary="Enter kFullScreenAllApps state in tablet"/>
+    <variant name=".EnterFullscreenSearch"
+        summary="Enter kFullscreenSearch state in tablet"/>
+    <variant name=".EnterOverview" summary="Enter overview mode in tablet"/>
+    <variant name=".ExitOverview" summary="Exit overview mode in tablet"/>
+    <variant name=".FadeInOverview"
+        summary="Fade in overview from home in tablet"/>
+    <variant name=".FadeOutOverview"
+        summary="Fade out of overview to home in tablet"/>
+    <variant name=".HideLauncherForWindow"
+        summary="Active a window to hide the app list"/>
+    <variant name=".PressAppListButtonShow"
+        summary="Press the AppList button to show the app list"/>
+  </token>
 </histogram>
 
 <histogram name="Apps.Launcher.InstallAppFromLinkResult"
@@ -1820,35 +1958,63 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true"
-    name="Apps.LockScreen.DataItemStorage.FailedOperationDuration" units="ms"
-    expires_after="2022-06-01">
+<histogram
+    name="Apps.LockScreen.DataItemStorage.FailedOperationDuration{LockScreenAppDataItemOperation}"
+    units="ms" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The amount of time it took to complete a lock screen data item storage
     operation. Reported only on the operation failure.
+    {LockScreenAppDataItemOperation}
   </summary>
+  <token key="LockScreenAppDataItemOperation"
+      variants="LockScreenAppDataItemOperation">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Apps.LockScreen.DataItemStorage.OperationDuration"
+<histogram
+    name="Apps.LockScreen.DataItemStorage.OperationDuration{LockScreenAppDataItemOperation}"
     units="ms" expires_after="2021-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The amount of time it took to complete a lock screen data item storage
     operation. Reported only on the operation success.
+    {LockScreenAppDataItemOperation}
   </summary>
+  <token key="LockScreenAppDataItemOperation"
+      variants="LockScreenAppDataItemOperation">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Apps.LockScreen.DataItemStorage.OperationResult"
+<histogram
+    name="Apps.LockScreen.DataItemStorage.OperationResult{LockScreenAppDataItemOperation}"
     enum="LockScreenDataItemOperationResult" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The result of a lock screen data item storage operation returned through
-    chrome.lockScreen.data extension API.
+    chrome.lockScreen.data extension API. {LockScreenAppDataItemOperation}
   </summary>
+  <token key="LockScreenAppDataItemOperation"
+      variants="LockScreenAppDataItemOperation">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Apps.LockScreen.DataItemStorage.RegisteredItemsCount"
@@ -1874,7 +2040,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Apps.LockScreen.NoteTakingApp.AppWindowLifeTime"
+<histogram
+    name="Apps.LockScreen.NoteTakingApp.AppWindowLifeTime{LockScreenNoteTakingAppWindowState}"
     units="ms" expires_after="2022-06-01">
   <owner>dstockwell@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
@@ -1882,8 +2049,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The amount of time a lock screen enabled app window spent in a certain state
     during the app window activity. The state to which the histogram refers to
     is defined by the suffix. The metric is logged upon leaving the associated
-    state.
+    state. {LockScreenNoteTakingAppWindowState}
   </summary>
+  <token key="LockScreenNoteTakingAppWindowState">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".Background"
+        summary="The app window is in background (behind the lock screen)"/>
+    <variant name=".Foreground"
+        summary="The app window is in foreground (on top of the lock screen)"/>
+    <variant name=".TotalActive"
+        summary="The total amount of time an app window was active on lock
+                 screen"/>
+  </token>
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.AvailabilityOnScreenLock"
@@ -2279,11 +2460,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="AppType" variants="AppType"/>
 </histogram>
 
-<histogram name="Apps.ScrollableShelf.AnimationSmoothness" units="%"
-    expires_after="2022-07-14">
-<!-- Name completed by histogram suffixes
-     name="HomeLauncherVisibility" -->
-
+<histogram
+    name="Apps.ScrollableShelf.AnimationSmoothness{HomeLauncherVisibility}"
+    units="%" expires_after="2022-07-14">
   <owner>anasalazar@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -2291,16 +2470,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     100% represents ideally smooth 60 frames per second. 50% represents only 30
     frames per second is achieved during the animations. 0% should not happen.
     This metric is recorded exactly once when the user scrolls over the
-    scrollable shelf.
+    scrollable shelf. {HomeLauncherVisibility}
   </summary>
+  <token key="HomeLauncherVisibility" variants="HomeLauncherVisibility">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram base="true" name="Apps.ScrollableShelf.Drag.PresentationTime"
-    units="ms" expires_after="2022-06-02">
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" and
-     name="HomeLauncherVisibility"-->
+<histogram
+    name="Apps.ScrollableShelf.Drag.PresentationTime.MaxLatency{HomeLauncherVisibility}"
+    units="ms" expires_after="2022-01-09">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Maximum latency of the presentation time of the drag scroll in the
+    scrollable shelf. {HomeLauncherVisibility}
+  </summary>
+  <token key="HomeLauncherVisibility" variants="HomeLauncherVisibility">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
 
+<histogram
+    name="Apps.ScrollableShelf.Drag.PresentationTime{HomeLauncherVisibility}"
+    units="ms" expires_after="2022-06-02">
   <owner>anasalazar@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -2308,23 +2505,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     milliseconds.
 
     Warning: This histogram was expired from 2021-01-10 to 2022-06-02; data may
-    be missing.
+    be missing. {HomeLauncherVisibility}
   </summary>
-</histogram>
-
-<histogram base="true"
-    name="Apps.ScrollableShelf.Drag.PresentationTime.MaxLatency" units="ms"
-    expires_after="2022-01-09">
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" and
-     name="HomeLauncherVisibility" -->
-
-  <owner>anasalazar@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    Maximum latency of the presentation time of the drag scroll in the
-    scrollable shelf.
-  </summary>
+  <token key="HomeLauncherVisibility" variants="HomeLauncherVisibility">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Apps.ShortcutsMenu.Registration.Win.Result"
@@ -2351,21 +2540,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Apps.StateTransition.AnimationSmoothness" units="%"
-    expires_after="2022-01-16">
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" and
-     name="EnterOrExitOverview" and
-     name="AppListTargetState" -->
-
+<histogram name="Apps.StateTransition.AnimationSmoothness{AppListTargetState}"
+    units="%" expires_after="2022-01-16">
   <owner>newcomer@chromium.org</owner>
   <summary>
     Relative smoothness of animations of peeking launcher state transitions.
     100% represents ideally smooth 60 frames per second. 50% represents only 30
     frames per second is achieved during the animations. 0% should not happen.
     This metric is recorded exactly once when the user switches states of the
-    launcher.
+    launcher. {AppListTargetState}
   </summary>
+  <token key="AppListTargetState">
+    <variant name=""/>
+    <variant name=".Close.ClamshellMode" summary="Closing the app list"/>
+    <variant name=".FullscreenAllApps.ClamshellMode"
+        summary="Fullscreen and showing all apps"/>
+    <variant name=".FullscreenSearch.ClamshellMode"
+        summary="Fullscreen with search results"/>
+    <variant name=".Half.ClamshellMode"
+        summary="Half-visible state of the app list"/>
+    <variant name=".Peeking.ClamshellMode"
+        summary="Peek state of the app list"/>
+  </token>
 </histogram>
 
 <histogram base="true" name="Apps.StateTransition.Drag.PresentationTime"
