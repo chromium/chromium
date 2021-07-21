@@ -7387,13 +7387,40 @@
     "os": [
       "chromeos"
     ],
+    "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
+        "note": "Check default values (no policies set)",
+        "policies": {},
+        "prefs": {
+          "settings.a11y.shortcuts_enabled": {
+            "location": "user_profile",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: true",
         "policies": {
           "AccessibilityShortcutsEnabled": true
         },
         "prefs": {
-          "settings.a11y.shortcuts_enabled": {}
+          "settings.a11y.shortcuts_enabled": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: false",
+        "policies": {
+          "AccessibilityShortcutsEnabled": false
+        },
+        "prefs": {
+          "settings.a11y.shortcuts_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
         }
       }
     ]
@@ -9106,7 +9133,46 @@
     "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
   "DeviceLoginScreenAccessibilityShortcutsEnabled": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "os": [
+      "chromeos"
+    ],
+    "can_be_recommended": true,
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "policies": {},
+        "prefs": {
+          "settings.a11y.shortcuts_enabled": {
+            "location": "signin_profile",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: true",
+        "policies": {
+          "DeviceLoginScreenAccessibilityShortcutsEnabled": true
+        },
+        "prefs": {
+          "settings.a11y.shortcuts_enabled": {
+            "location": "signin_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: false",
+        "policies": {
+          "DeviceLoginScreenAccessibilityShortcutsEnabled": false
+        },
+        "prefs": {
+          "settings.a11y.shortcuts_enabled": {
+            "location": "signin_profile",
+            "value": false
+          }
+        }
+      }
+    ]
   },
   "DeviceLoginScreenDefaultScreenMagnifierType": {
     "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
