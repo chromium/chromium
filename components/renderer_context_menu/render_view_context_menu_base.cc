@@ -457,9 +457,14 @@ void RenderViewContextMenuBase::OpenURLWithExtraHeaders(
     ui::PageTransition transition,
     const std::string& extra_headers,
     bool started_from_context_menu) {
+  // Do not send the referrer url to OTR windows. We still need the
+  // |referring_url| to populate the |initiator_origin| below for browser UI.
+  GURL referrer_url;
+  if (disposition != WindowOpenDisposition::OFF_THE_RECORD)
+    referrer_url = referring_url.GetAsReferrer();
+
   content::Referrer referrer = content::Referrer::SanitizeForRequest(
-      url, content::Referrer(referring_url.GetAsReferrer(),
-                             params_.referrer_policy));
+      url, content::Referrer(referrer_url, params_.referrer_policy));
 
   if (params_.link_url == url &&
       disposition != WindowOpenDisposition::OFF_THE_RECORD)

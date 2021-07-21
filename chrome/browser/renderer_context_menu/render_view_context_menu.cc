@@ -2398,7 +2398,9 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD:
-      OpenURLWithExtraHeaders(params_.link_url, GURL(),
+      // Pass along the |referring_url| so we can show it in browser UI. Note
+      // that this won't and shouldn't be sent via the referrer header.
+      OpenURLWithExtraHeaders(params_.link_url, GetDocumentURL(params_),
                               WindowOpenDisposition::OFF_THE_RECORD,
                               ui::PAGE_TRANSITION_LINK, "" /* extra_headers */,
                               true /* started_from_context_menu */);
