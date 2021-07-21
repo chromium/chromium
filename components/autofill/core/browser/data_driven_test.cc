@@ -87,9 +87,10 @@ void DataDrivenTest::RunOneDataDrivenTest(
   ReadFile(test_file_name, &input);
 
   std::string output;
-  base::ThreadRestrictions::SetIOAllowed(false);
-  GenerateResults(input, &output);
-  base::ThreadRestrictions::SetIOAllowed(true);
+  {
+    base::ScopedDisallowBlocking disallow_blocking;
+    GenerateResults(input, &output);
+  }
 
   base::FilePath output_file = output_directory.Append(
       test_file_name.BaseName().StripTrailingSeparators().ReplaceExtension(

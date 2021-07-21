@@ -18,7 +18,7 @@ class UninstallViewBrowserTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     // UninstallView may need to know whether Chrome is the default browser,
     // which requires IO. Since this is a test, we'll just allow that.
-    base::ThreadRestrictions::SetIOAllowed(true);
+    base::ScopedAllowBlockingForTesting allow_blocking;
 
     chrome::ShowUninstallBrowserPrompt();
 

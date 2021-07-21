@@ -19,6 +19,7 @@
 #include "storage/browser/blob/blob_data_item.h"
 #include "storage/browser/blob/shareable_blob_data_item.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
 
@@ -58,7 +59,7 @@ class BlobMemoryControllerTest : public base::test::WithFeatureOverride,
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    base::ThreadRestrictions::SetIOAllowed(false);
+    disallow_blocking_.emplace();
   }
 
   void TearDown() override {
@@ -67,16 +68,15 @@ class BlobMemoryControllerTest : public base::test::WithFeatureOverride,
     base::RunLoop().RunUntilIdle();
     RunFileThreadTasks();
     base::RunLoop().RunUntilIdle();
-    base::ThreadRestrictions::SetIOAllowed(true);
+    disallow_blocking_.reset();
     ASSERT_TRUE(temp_dir_.Delete());
   }
 
   void AssertEnoughDiskSpace() {
-    base::ThreadRestrictions::SetIOAllowed(true);
+    base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_GT(base::SysInfo::AmountOfFreeDiskSpace(temp_dir_.GetPath()),
               static_cast<int64_t>(kTestBlobStorageMaxDiskSpace))
         << "Bot doesn't have enough disk space to run these tests.";
-    base::ThreadRestrictions::SetIOAllowed(false);
   }
 
   std::vector<scoped_refptr<ShareableBlobDataItem>> CreateSharedDataItems(
@@ -147,9 +147,8 @@ class BlobMemoryControllerTest : public base::test::WithFeatureOverride,
   }
 
   void RunFileThreadTasks() {
-    base::ThreadRestrictions::SetIOAllowed(true);
+    base::ScopedAllowBlockingForTesting allow_blocking;
     file_runner_->RunPendingTasks();
-    base::ThreadRestrictions::SetIOAllowed(false);
   }
 
   bool HasMemoryAllocation(ShareableBlobDataItem* item) {
@@ -171,6 +170,8 @@ class BlobMemoryControllerTest : public base::test::WithFeatureOverride,
   scoped_refptr<TestSimpleTaskRunner> file_runner_ = new TestSimpleTaskRunner();
 
   base::test::TaskEnvironment task_environment_;
+
+  absl::optional<base::ScopedDisallowBlocking> disallow_blocking_;
 };
 
 TEST_P(BlobMemoryControllerTest, Strategy) {
@@ -469,9 +470,10 @@ TEST_P(BlobMemoryControllerTest, FileRequest) {
   EXPECT_EQ(1u, files_created_.size());
   EXPECT_TRUE(future_file.Populate(std::move(files_created_[0].file_reference),
                                    files_created_[0].last_modified));
-  base::ThreadRestrictions::SetIOAllowed(true);
-  files_created_.clear();
-  base::ThreadRestrictions::SetIOAllowed(false);
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    files_created_.clear();
+  }
   EXPECT_EQ(BlobDataItem::Type::kFile, items[0]->item()->type());
   EXPECT_FALSE(items[0]->item()->IsFutureFileItem());
 

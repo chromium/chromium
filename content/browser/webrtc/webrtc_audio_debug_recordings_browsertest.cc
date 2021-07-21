@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
       switches::kAutoplayPolicy,
       switches::autoplay::kNoUserGestureRequiredPolicy);
 
-  bool prev_io_allowed = base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlockingForTesting allow_blocking;
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -176,8 +176,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   // Verify that no other files exist and remove temp dir.
   EXPECT_TRUE(base::IsDirectoryEmpty(temp_dir_path));
   EXPECT_TRUE(base::DeleteFile(temp_dir_path));
-
-  base::ThreadRestrictions::SetIOAllowed(prev_io_allowed);
 }
 
 // TODO(grunell): Add test for multiple dumps when re-use of
@@ -202,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
     return;
   }
 
-  bool prev_io_allowed = base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlockingForTesting allow_blocking;
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -229,8 +227,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   // Verify that no files exist and remove temp dir.
   EXPECT_TRUE(base::IsDirectoryEmpty(temp_dir_path));
   EXPECT_TRUE(base::DeleteFile(temp_dir_path));
-
-  base::ThreadRestrictions::SetIOAllowed(prev_io_allowed);
 }
 
 // Same test as CallWithAudioDebugRecordings, but does two parallel calls.
@@ -251,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
       switches::kAutoplayPolicy,
       switches::autoplay::kNoUserGestureRequiredPolicy);
 
-  bool prev_io_allowed = base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlockingForTesting allow_blocking;
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -331,8 +327,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   // Verify that no other files exist and remove temp dir.
   EXPECT_TRUE(base::IsDirectoryEmpty(temp_dir_path));
   EXPECT_TRUE(base::DeleteFile(temp_dir_path));
-
-  base::ThreadRestrictions::SetIOAllowed(prev_io_allowed);
 }
 
 }  // namespace content

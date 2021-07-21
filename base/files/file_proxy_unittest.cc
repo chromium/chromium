@@ -160,17 +160,18 @@ TEST_F(FileProxyTest, CreateOrOpen_OpenNonExistent) {
 }
 
 TEST_F(FileProxyTest, CreateOrOpen_AbandonedCreate) {
-  bool prev = ThreadRestrictions::SetIOAllowed(false);
-  RunLoop run_loop;
   {
-    FileProxy proxy(file_task_runner());
-    proxy.CreateOrOpen(
-        TestPath(), File::FLAG_CREATE | File::FLAG_READ,
-        BindOnce(&FileProxyTest::DidCreateOrOpen, weak_factory_.GetWeakPtr(),
-                 run_loop.QuitWhenIdleClosure()));
+    base::ScopedDisallowBlocking disallow_blocking;
+    RunLoop run_loop;
+    {
+      FileProxy proxy(file_task_runner());
+      proxy.CreateOrOpen(
+          TestPath(), File::FLAG_CREATE | File::FLAG_READ,
+          BindOnce(&FileProxyTest::DidCreateOrOpen, weak_factory_.GetWeakPtr(),
+                   run_loop.QuitWhenIdleClosure()));
+    }
+    run_loop.Run();
   }
-  run_loop.Run();
-  ThreadRestrictions::SetIOAllowed(prev);
 
   EXPECT_TRUE(PathExists(TestPath()));
 }

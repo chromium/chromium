@@ -55,7 +55,7 @@ class ExtractorBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractTarXz) {
-  base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath test_data_dir;
   ASSERT_TRUE(GetTestDataDirectory(&test_data_dir));
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractTarXz) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractNonExistentTarXz) {
-  base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath test_data_dir;
   ASSERT_TRUE(GetTestDataDirectory(&test_data_dir));

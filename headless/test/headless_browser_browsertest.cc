@@ -375,7 +375,6 @@ class HeadlessBrowserRendererCommandPrefixTest : public HeadlessBrowserTest {
   const base::FilePath& launcher_stamp() const { return launcher_stamp_; }
 
   void SetUp() override {
-    base::ThreadRestrictions::SetIOAllowed(true);
     base::CreateTemporaryFile(&launcher_stamp_);
 
     base::ScopedFILE launcher_file =
@@ -413,7 +412,7 @@ class HeadlessBrowserRendererCommandPrefixTest : public HeadlessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserRendererCommandPrefixTest, Prefix) {
-  base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_TRUE(embedded_test_server()->Start());
 
   HeadlessBrowserContext* browser_context =
@@ -440,7 +439,6 @@ class CrashReporterTest : public HeadlessBrowserTest,
   ~CrashReporterTest() override = default;
 
   void SetUp() override {
-    base::ThreadRestrictions::SetIOAllowed(true);
     base::CreateNewTempDirectory(FILE_PATH_LITERAL("CrashReporterTest"),
                                  &crash_dumps_dir_);
     EXPECT_FALSE(options()->enable_crash_reporter);
@@ -450,7 +448,6 @@ class CrashReporterTest : public HeadlessBrowserTest,
   }
 
   void TearDown() override {
-    base::ThreadRestrictions::SetIOAllowed(true);
     base::DeleteFile(crash_dumps_dir_);
   }
 
@@ -505,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(CrashReporterTest, MAYBE_GenerateMinidump) {
 
   // Check that one minidump got created.
   {
-    base::ThreadRestrictions::SetIOAllowed(true);
+    base::ScopedAllowBlockingForTesting allow_blocking;
 
 #if defined(OS_MAC)
     auto database = crashpad::CrashReportDatabase::Initialize(crash_dumps_dir_);

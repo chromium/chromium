@@ -179,8 +179,8 @@ class BASE_EXPORT File {
   void Initialize(const FilePath& path, uint32_t flags);
 
   // Returns |true| if the handle / fd wrapped by this object is valid.  This
-  // method doesn't interact with the file system (and is safe to be called from
-  // ThreadRestrictions::SetIOAllowed(false) threads).
+  // method doesn't interact with the file system and is thus safe to be called
+  // from threads that disallow blocking.
   bool IsValid() const;
 
   // Returns true if a new file was created (or an old one truncated to zero

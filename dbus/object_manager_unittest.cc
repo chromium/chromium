@@ -24,6 +24,7 @@
 #include "dbus/property.h"
 #include "dbus/test_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 
@@ -65,7 +66,7 @@ class ObjectManagerTest
 
   void SetUp() override {
     // Make the main thread not to allow IO.
-    base::ThreadRestrictions::SetIOAllowed(false);
+    disallow_blocking_.emplace();
 
     // Start the D-Bus thread.
     dbus_thread_ = std::make_unique<base::Thread>("D-Bus Thread");
@@ -103,11 +104,9 @@ class ObjectManagerTest
     // Shut down the service.
     test_service_->ShutdownAndBlock();
 
-    // Reset to the default.
-    base::ThreadRestrictions::SetIOAllowed(true);
-
     // Stopping a thread is considered an IO operation, so do this after
     // allowing IO.
+    disallow_blocking_.reset();
     test_service_->Stop();
 
     base::RunLoop().RunUntilIdle();
@@ -207,6 +206,7 @@ class ObjectManagerTest
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
+  absl::optional<base::ScopedDisallowBlocking> disallow_blocking_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<base::Thread> dbus_thread_;
   scoped_refptr<Bus> bus_;

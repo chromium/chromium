@@ -746,7 +746,7 @@ TEST_F(FileStreamTest, OpenAndDelete) {
   base::Thread worker_thread("StreamTest");
   ASSERT_TRUE(worker_thread.Start());
 
-  bool prev = base::ThreadRestrictions::SetIOAllowed(false);
+  base::ScopedDisallowBlocking disallow_blocking;
   std::unique_ptr<FileStream> stream(
       new FileStream(worker_thread.task_runner()));
   int flags = base::File::FLAG_OPEN | base::File::FLAG_WRITE |
@@ -770,7 +770,6 @@ TEST_F(FileStreamTest, OpenAndDelete) {
   // open_callback won't be called.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(open_callback.have_result());
-  base::ThreadRestrictions::SetIOAllowed(prev);
 }
 
 // Verify that Write() errors are mapped correctly.

@@ -26,6 +26,7 @@
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/test/mock_bytes_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom.h"
 
 namespace storage {
@@ -74,11 +75,10 @@ class BlobTransportStrategyTest : public testing::Test {
         &BlobTransportStrategyTest::OnBadMessage, base::Unretained(this)));
 
     // Disallow IO on the main loop.
-    base::ThreadRestrictions::SetIOAllowed(false);
+    disallow_blocking_.emplace();
   }
 
   void TearDown() override {
-    base::ThreadRestrictions::SetIOAllowed(true);
     mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   }
 
@@ -105,6 +105,8 @@ class BlobTransportStrategyTest : public testing::Test {
   scoped_refptr<base::SequencedTaskRunner> bytes_provider_runner_;
   base::Time mock_time_;
   BlobStorageLimits limits_;
+
+  absl::optional<base::ScopedDisallowBlocking> disallow_blocking_;
 
   std::vector<std::string> bad_messages_;
 

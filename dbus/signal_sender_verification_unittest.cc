@@ -31,9 +31,6 @@ class SignalSenderVerificationTest : public testing::Test {
   }
 
   void SetUp() override {
-    // Make the main thread not to allow IO.
-    base::ThreadRestrictions::SetIOAllowed(false);
-
     // Start the D-Bus thread.
     dbus_thread_ = std::make_unique<base::Thread>("D-Bus Thread");
     base::Thread::Options thread_options;
@@ -102,13 +99,8 @@ class SignalSenderVerificationTest : public testing::Test {
     test_service_->ShutdownAndBlock();
     test_service2_->ShutdownAndBlock();
 
-    // Reset to the default.
-    base::ThreadRestrictions::SetIOAllowed(true);
-
-    // Stopping a thread is considered an IO operation, so do this after
-    // allowing IO.
-    test_service_->Stop();
-    test_service2_->Stop();
+    SafeServiceStop(test_service_.get());
+    SafeServiceStop(test_service2_.get());
   }
 
   void OnOwnership(bool expected, bool success) {
@@ -157,15 +149,16 @@ class SignalSenderVerificationTest : public testing::Test {
     run_loop_->Run();
   }
 
-  // Stopping a thread is considered an IO operation, so we need to fiddle with
-  // thread restrictions before and after calling Stop() on a TestService.
+  // Stopping a thread is a blocking IO operation, so we need to fiddle with
+  // thread restrictions to call Stop() on a TestService.
   void SafeServiceStop(TestService* test_service) {
-    base::ThreadRestrictions::SetIOAllowed(true);
+    base::ScopedAllowBlockingForTesting allow_blocking;
     test_service->Stop();
-    base::ThreadRestrictions::SetIOAllowed(false);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
+  // Make the main thread not to allow IO.
+  base::ScopedDisallowBlocking disallow_blocking_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<base::Thread> dbus_thread_;
   scoped_refptr<Bus> bus_;

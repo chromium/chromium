@@ -830,10 +830,11 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
 
     // Flush startup tasks to reach the OnFirstIdle() phase before
     // SetUpOnMainThread() (which must be right before RunTestOnMainThread()).
-    const bool io_allowed_value_before_flush =
-        base::ThreadRestrictions::SetIOAllowed(false);
     {
       TRACE_EVENT0("test", "FlushStartupTasks");
+
+      base::ScopedDisallowBlocking disallow_blocking;
+
       // Since ProxyRunTestOnMainThreadLoop() replaces the main message loop, we
       // need to invoke the OnFirstIdle() phase ourselves.
       base::RunLoop flush_startup_tasks;
@@ -844,7 +845,6 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
       if (browser_main_parts_)
         browser_main_parts_->OnFirstIdle();
     }
-    base::ThreadRestrictions::SetIOAllowed(io_allowed_value_before_flush);
 
     std::unique_ptr<InitialNavigationObserver> initial_navigation_observer;
     if (initial_web_contents_) {
@@ -866,13 +866,11 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
     // to the network process if it's in use.
     InitializeNetworkProcess();
 
-    const bool old_io_allowed_value =
-        base::ThreadRestrictions::SetIOAllowed(false);
     {
       TRACE_EVENT0("test", "RunTestOnMainThread");
+      base::ScopedDisallowBlocking disallow_blocking;
       RunTestOnMainThread();
     }
-    base::ThreadRestrictions::SetIOAllowed(old_io_allowed_value);
     TearDownOnMainThread();
   }
 
