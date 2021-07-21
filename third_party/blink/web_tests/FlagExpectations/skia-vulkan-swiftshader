@@ -47,6 +47,7 @@ images/yuv-decode-eligible/color-profile-image.html [ Skip ]
 media/color-profile-video-poster-image.html [ Skip ]
 transforms/shadows.html [ Skip ]
 
-# Flaky test.
+# Flaky tests.
 crbug.com/1229016 fast/canvas/canvas-composite-video.html [ Failure Pass ]
+crbug.com/1229002 fast/canvas/canvas-composite-video-shadow.html [ Failure Pass ]
 
