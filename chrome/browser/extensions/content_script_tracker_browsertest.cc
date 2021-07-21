@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -28,6 +29,7 @@
 #include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -885,6 +887,101 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest, HistoryPushState) {
       *main_frame->GetProcess(), extension->id()));
 }
 
+class DynamicScriptsTrackerBrowserTest
+    : public ContentScriptTrackerBrowserTest {
+ public:
+  DynamicScriptsTrackerBrowserTest() = default;
+
+ private:
+  ScopedCurrentChannel current_channel_{version_info::Channel::UNKNOWN};
+};
+
+// Tests tracking of content scripts injected/declared via `chrome.scripting`
+// API.
+IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
+                       ContentScriptViaScriptingApi) {
+  // Install a test extension.
+  TestExtensionDir dir;
+  const char kManifestTemplate[] = R"(
+      {
+        "name": "ContentScriptTrackerBrowserTest - ScriptingAPI",
+        "version": "1.0",
+        "manifest_version": 3,
+        "permissions": [ "scripting" ],
+        "host_permissions": ["*://*/*"],
+        "background": { "service_worker": "worker.js" }
+      } )";
+  const char kWorkerScript[] = R"(
+      var scripts = [{
+        id: 'script1',
+        matches: ['*://a.com/*'],
+        js: ['content_script.js'],
+        runAt: 'document_end'
+      }];
+
+      chrome.runtime.onInstalled.addListener(function(details) {
+        chrome.scripting.registerContentScripts(scripts, () => {
+          chrome.test.sendMessage('SCRIPT_LOADED');
+        });
+      }); )";
+  dir.WriteManifest(kManifestTemplate);
+  dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kWorkerScript);
+  const char kContentScript[] = R"(
+      window.onload = function() {
+          chrome.test.assertEq('complete', document.readyState);
+          document.body.innerText = 'content script has run';
+          chrome.test.sendMessage('SCRIPT_INJECTED');
+      }
+  )";
+  dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
+
+  ExtensionTestMessageListener script_loaded_listener("SCRIPT_LOADED", false);
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(script_loaded_listener.WaitUntilSatisfied());
+
+  // Navigate to a test page that is *not* covered by the dynamic content script
+  // used above.
+  GURL ignored_url = embedded_test_server()->GetURL("foo.com", "/title1.html");
+  ui_test_utils::NavigateToURL(browser(), ignored_url);
+
+  // Verify that initially no frames show up as having been injected with
+  // content scripts.
+  content::WebContents* first_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ("This page has no title.",
+            content::EvalJs(first_tab, "document.body.innerText"));
+  EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+      *first_tab->GetMainFrame()->GetProcess(), extension->id()));
+
+  // Navigate to a test page that *is* covered by the dynamic content script
+  // above.
+  {
+    GURL injected_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+    ExtensionTestMessageListener listener("SCRIPT_INJECTED", false);
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), injected_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+  content::WebContents* second_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_NE(first_tab, second_tab);
+  EXPECT_NE(first_tab->GetMainFrame()->GetProcess(),
+            second_tab->GetMainFrame()->GetProcess());
+
+  // Verify that the new tab shows up as having been injected with content
+  // scripts.
+  EXPECT_EQ("content script has run",
+            content::EvalJs(second_tab, "document.body.innerText"));
+  EXPECT_EQ("This page has no title.",
+            content::EvalJs(first_tab, "document.body.innerText"));
+  EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+      *second_tab->GetMainFrame()->GetProcess(), extension->id()));
+  EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+      *first_tab->GetMainFrame()->GetProcess(), extension->id()));
+}
+
 class ContentScriptTrackerAppBrowserTest : public PlatformAppBrowserTest {
  public:
   ContentScriptTrackerAppBrowserTest() = default;
@@ -995,8 +1092,5 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerAppBrowserTest,
   EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
       *guest_process, app->id()));
 }
-
-// TODO(crbug.com/1215386): Add a test for tracking content scripts added
-// through the scripting API.
 
 }  // namespace extensions
