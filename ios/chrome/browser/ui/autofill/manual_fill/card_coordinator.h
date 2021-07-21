@@ -11,6 +11,9 @@
 // TODO(crbug.com/845472): revise delegate method names.
 @protocol CardCoordinatorDelegate<FallbackCoordinatorDelegate>
 
+// Open feature to add a credit card.
+- (void)openAddCreditCard;
+
 // Opens the cards settings.
 - (void)openCardSettings;
 

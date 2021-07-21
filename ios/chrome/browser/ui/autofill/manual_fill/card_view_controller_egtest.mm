@@ -251,10 +251,12 @@ BOOL WaitForKeyboardToAppear() {
   [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
       performAction:grey_tap()];
 
-  // Try to scroll.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    // Try to scroll on iPhone.
+    [[EarlGrey
+        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  }
 
   // Tap the "Add Credit Cards..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackAddCreditCardsMatcher()]

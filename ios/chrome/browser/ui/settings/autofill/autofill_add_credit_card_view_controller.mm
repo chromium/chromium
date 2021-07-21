@@ -124,6 +124,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return hasUserInput;
 }
 
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
 #pragma mark - ChromeTableViewController
 
 - (void)loadModel {
