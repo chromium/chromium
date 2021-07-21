@@ -1,10 +1,49 @@
+<style include="internet-shared iron-flex">
+  cr-policy-indicator {
+    margin-inline-end: 10px;
+  }
+
+  #cellularRoamingToggleContainer:hover {
+    background-color: var(--cr-hover-background-color);
+  }
+
+  #cellularRoamingToggleContainer:active {
+    background-color: var(--cr-active-background-color);
+  }
+</style>
 <!-- TODO(crbug/1220691): Remove when allowPerNetworkRoaming flag
     launches -->
 <template is="dom-if" if="[[!allowPerNetworkRoaming_]]">
-    <settings-toggle-button id="cellularRoamingToggle" class="hr"
-        disabled="[[disabled]]"
-        label="$i18n{networkAllowDataRoaming}"
-        sub-label="[[getRoamingDetails_(managedProperties)]]"
-        pref="{{prefs.cros.signed.data_roaming_enabled}}">
-    </settings-toggle-button>
+  <settings-toggle-button id="cellularRoamingToggle" class="hr"
+      disabled="[[disabled]]"
+      label="$i18n{networkAllowDataRoaming}"
+      sub-label="[[getRoamingDetails_(managedProperties, prefs.cros.signed.data_roaming_enabled)]]"
+      pref="{{prefs.cros.signed.data_roaming_enabled}}">
+  </settings-toggle-button>
+</template>
+<template is="dom-if" if="[[allowPerNetworkRoaming_]]">
+  <div id="cellularRoamingToggleContainer"
+      class="settings-box"
+      on-click="onCellularRoamingRowClicked_"
+      actionable$="[[!isPerNetworkToggleDisabled_(disabled, prefs.cros.signed.data_roaming_enabled)]]">
+    <div class="flex" id="labelWrapper">
+      <div id="cellularRoamingToggleLabel" aria-hidden="true" class="label">
+        $i18n{networkAllowDataRoaming}
+      </div>
+      <div id="cellularRoamingToggleSubLabel" aria-hidden="true"
+          class="secondary label">
+        [[getRoamingDetails_(managedProperties, prefs.cros.signed.data_roaming_enabled)]]
+      </div>
+    </div>
+    <template is="dom-if"
+        if="[[isRoamingProhibitedByPolicy_(prefs.cros.signed.data_roaming_enabled)]]">
+      <cr-policy-indicator indicator-type="devicePolicy" on-click="doNothing_">
+      </cr-policy-indicator>
+    </template>
+    <cr-toggle id="control" checked="{{isRoamingAllowedForNetwork_}}"
+        disabled="[[isPerNetworkToggleDisabled_(disabled, prefs.cros.signed.data_roaming_enabled)]]"
+        aria-labelledby="cellularRoamingToggleLabel"
+        aria-describedby="cellularRoamingToggleSubLabel">
+    </cr-toggle>
+  </div>
 </template>

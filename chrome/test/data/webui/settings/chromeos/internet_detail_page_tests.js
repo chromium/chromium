@@ -598,8 +598,7 @@ suite('InternetDetailPage', function() {
 
       const deepLinkElement =
           internetDetailPage.$$('cellular-roaming-toggle-button')
-              .getCellularRoamingToggle()
-              .$$('cr-toggle');
+              .getCellularRoamingToggle();
       await test_util.waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
