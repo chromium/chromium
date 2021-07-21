@@ -3368,7 +3368,10 @@ public class ContextualSearchManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mPanel.onSearchTermResolved("search", null, "tel:555-555-5555",
-                                QuickActionCategory.PHONE, CardTag.CT_CONTACT, null, null));
+                                QuickActionCategory.PHONE, CardTag.CT_CONTACT,
+                                null /* relatedSearchesInBar */, false /* showDefaultSearchInBar */,
+                                null /* relatedSearchesInContent */,
+                                false /* showDefaultSearchInContent */));
 
         ContextualSearchBarControl barControl = mPanel.getSearchBarControl();
         ContextualSearchQuickActionControl quickActionControl = barControl.getQuickActionControl();
@@ -3433,7 +3436,10 @@ public class ContextualSearchManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mPanel.onSearchTermResolved("search", null, "tel:555-555-5555",
-                                QuickActionCategory.PHONE, CardTag.CT_CONTACT, null, null));
+                                QuickActionCategory.PHONE, CardTag.CT_CONTACT,
+                                null /* relatedSearchesInBar */, false /* showDefaultSearchInBar */,
+                                null /* relatedSearchesInContent */,
+                                false /* showDefaultSearchInContent */));
 
         sActivityTestRule.getActivity().onUserInteraction();
         retryPanelBarInteractions(() -> {
@@ -3465,7 +3471,10 @@ public class ContextualSearchManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mPanel.onSearchTermResolved("search", null, testUrl,
-                                QuickActionCategory.WEBSITE, CardTag.CT_URL, null, null));
+                                QuickActionCategory.WEBSITE, CardTag.CT_URL,
+                                null /* relatedSearchesInBar */, false /* showDefaultSearchInBar */,
+                                null /* relatedSearchesInContent */,
+                                false /* showDefaultSearchInContent */));
         retryPanelBarInteractions(() -> {
             // Tap on the portion of the bar that should trigger the quick action.
             clickPanelBar();
@@ -3482,7 +3491,10 @@ public class ContextualSearchManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mPanel.onSearchTermResolved("obscure · əbˈskyo͝or", null, null,
-                                QuickActionCategory.NONE, cardTag, null, null));
+                                QuickActionCategory.NONE, cardTag, null /* relatedSearchesInBar */,
+                                false /* showDefaultSearchInBar */,
+                                null /* relatedSearchesInContent */,
+                                false /* showDefaultSearchInContent */));
 
         tapPeekingBarToExpandAndAssert();
     }
@@ -4000,6 +4012,37 @@ public class ContextualSearchManagerTest {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
                     mPanel.getSearchBarControl().getSearchTerm(), Matchers.is("Intelligence"));
+        });
+
+        // Close the panel
+        closePanel();
+        // TODO(donnd): Validate UMA metrics once we log in-bar selections.
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    public void testRelatedSearchesInBarWithDefaultQuery_HighlightDefaultQuery() throws Exception {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.setFeatureFlagsOverride(ENABLE_RELATED_SEARCHES_IN_BAR);
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
+                ContextualSearchFieldTrial.RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME,
+                "true");
+        FeatureList.setTestValues(testValues);
+        mFakeServer.reset();
+
+        FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
+        ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
+        Assert.assertTrue("Related Searches results should have been returned but were not!",
+                !resolvedSearchTerm.relatedSearchesJson().isEmpty());
+        // Select a chip in the Bar, which should expand the panel.
+        tapPeekingBarToExpandAndAssert();
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    mPanel.getSearchBarControl().getSearchTerm(), Matchers.is("Intelligence"));
+            Criteria.checkThat(mPanel.getRelatedSearchesInBarControl().getSelectedChipForTest(),
+                    Matchers.is(0));
         });
 
         // Close the panel
