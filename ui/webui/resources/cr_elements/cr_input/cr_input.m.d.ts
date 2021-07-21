@@ -24,7 +24,7 @@ interface CrInputElement extends LegacyElementMixin, HTMLElement {
   required: boolean|null|undefined;
   tabindex: number|null;
   type: string|null|undefined;
-  value: string|null|undefined;
+  value: string;
   hostAttributes: object|null;
   readonly inputElement: HTMLInputElement;
 

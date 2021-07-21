@@ -4,7 +4,7 @@
 
 import {ProfileSwitchElement} from 'chrome://profile-picker/lazy_load.js';
 
-import {ManageProfilesBrowserProxyImpl, ProfileState} from 'chrome://profile-picker/profile_picker.js';
+import {ManageProfilesBrowserProxyImpl} from 'chrome://profile-picker/profile_picker.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
@@ -24,7 +24,7 @@ suite('ProfileSwitchTest', function() {
 
   setup(function() {
     browserProxy = new TestManageProfilesBrowserProxy();
-    ManageProfilesBrowserProxyImpl.instance_ = browserProxy;
+    ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
     getSwitchProfilePromiseResolver = new PromiseResolver();
     browserProxy.setGetSwitchProfilePromise(
         getSwitchProfilePromiseResolver.promise);

@@ -12,7 +12,6 @@ group("closure_compile") {
       "dice_web_signin_intercept:closure_compile",
       "enterprise_profile_welcome:closure_compile",
       "profile_customization:closure_compile",
-      "profile_picker:closure_compile",
       "signin_email_confirmation:closure_compile",
       "signin_error:closure_compile",
       "signin_reauth:closure_compile",

@@ -6,32 +6,26 @@ import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-/** @return {boolean} */
-export function isGuestModeEnabled() {
+export function isGuestModeEnabled(): boolean {
   return loadTimeData.getBoolean('isGuestModeEnabled');
 }
 
-/** @return {boolean} */
-export function isProfileCreationAllowed() {
+export function isProfileCreationAllowed(): boolean {
   return loadTimeData.getBoolean('isProfileCreationAllowed');
 }
 
-/** @return {boolean} */
-export function isBrowserSigninAllowed() {
+export function isBrowserSigninAllowed(): boolean {
   return loadTimeData.getBoolean('isBrowserSigninAllowed');
 }
 
-/** @return {boolean} */
-export function isForceSigninEnabled() {
+export function isForceSigninEnabled(): boolean {
   return loadTimeData.getBoolean('isForceSigninEnabled');
 }
 
-/** @return {boolean} */
-export function isSignInProfileCreationSupported() {
+export function isSignInProfileCreationSupported(): boolean {
   return loadTimeData.getBoolean('signInProfileCreationFlowSupported');
 }
 
-/** @return {boolean} */
-export function isAskOnStartupAllowed() {
+export function isAskOnStartupAllowed(): boolean {
   return loadTimeData.getBoolean('isAskOnStartupAllowed');
 }

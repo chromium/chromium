@@ -10,7 +10,6 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
 
-/** @polymer */
 export class ProfileSwitchElement extends PolymerElement {
   static get is() {
     return 'profile-switch';
@@ -22,12 +21,8 @@ export class ProfileSwitchElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {ProfileState} */
-      profileState_: {
-        type: Object,
-      },
+      profileState_: Object,
 
-      /** @type {boolean} */
       isProfileStateInitialized_: {
         type: Boolean,
         value: false,
@@ -35,31 +30,24 @@ export class ProfileSwitchElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
+  private profileState_: ProfileState;
+  private isProfileStateInitialized_: boolean;
+  private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
+      ManageProfilesBrowserProxyImpl.getInstance();
 
-    /** @private {?ManageProfilesBrowserProxy} */
-    this.manageProfilesBrowserProxy_ = null;
-  }
-
-  /** @override */
   ready() {
     super.ready();
-    this.manageProfilesBrowserProxy_ =
-        ManageProfilesBrowserProxyImpl.getInstance();
     this.manageProfilesBrowserProxy_.getSwitchProfile().then(profileState => {
       this.profileState_ = profileState;
       this.isProfileStateInitialized_ = true;
     });
   }
 
-  /** @private */
-  onCancelClick_() {
+  private onCancelClick_() {
     this.manageProfilesBrowserProxy_.cancelProfileSwitch();
   }
 
-  /** @private */
-  onSwitchClick_() {
+  private onSwitchClick_() {
     this.manageProfilesBrowserProxy_.confirmProfileSwitch(
         this.profileState_.profilePath);
   }

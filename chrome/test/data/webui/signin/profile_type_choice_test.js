@@ -20,7 +20,7 @@ suite('ProfileTypeChoiceTest', function() {
 
   setup(function() {
     browserProxy = new TestManageProfilesBrowserProxy();
-    ManageProfilesBrowserProxyImpl.instance_ = browserProxy;
+    ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     choice = /** @type {!ProfileTypeChoiceElement} */ (
         document.createElement('profile-type-choice'));

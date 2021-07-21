@@ -61,7 +61,7 @@
     overflow-y: auto;
   }
 
-  .profiles-container {
+  #profilesContainer {
     --grid-gutter: 8px;
     align-items: center;
     display: grid;
@@ -165,7 +165,7 @@
     <h3>$i18n{mainViewSubtitle}</h3>
   </div>
   <div id="wrapper" hidden$="[[!profilesListLoaded_]]">
-    <div class="profiles-container custom-scrollbar">
+    <div id="profilesContainer" class="custom-scrollbar">
       <template is="dom-repeat" items="[[profilesList_]]">
         <profile-card
             class="profile-item" profile-state="[[item]]">

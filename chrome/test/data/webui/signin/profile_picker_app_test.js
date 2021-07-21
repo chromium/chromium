@@ -31,7 +31,7 @@ suite('ProfilePickerAppTest', function() {
 
   setup(function() {
     browserProxy = new TestManageProfilesBrowserProxy();
-    ManageProfilesBrowserProxyImpl.instance_ = browserProxy;
+    ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
 
     return resetTestElement(Routes.MAIN);
   });

@@ -10,55 +10,53 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './profile_picker_shared_css.js';
 import './icons.js';
 
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
 
-/**
- * @typedef {{
- *   BrowsingHistory: number,
- *   Passwords: number,
- *   Bookmarks: number,
- *   Autofill: number,
- * }}
- */
-export let Statistics;
-
-/**
- * This is the data structure sent back and forth between C++ and JS.
- * @typedef {{
- *   profilePath: string,
- *   statistics: Statistics,
- * }}
- */
-export let StatisticsResult;
-
-
-/**
- * Profile statistics data types.
- * @enum {string}
- */
-const ProfileStatistics = {
-  BROWSING_HISTORY: 'BrowsingHistory',
-  PASSWORDS: 'Passwords',
-  BOOKMARKS: 'Bookmarks',
-  AUTOFILL: 'Autofill',
+export type Statistics = {
+  BrowsingHistory: number,
+  Passwords: number,
+  Bookmarks: number,
+  Autofill: number,
 };
 
 /**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
+ * This is the data structure sent back and forth between C++ and JS.
  */
-const ProfileCardMenuElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+export type StatisticsResult = {
+  profilePath: string,
+  statistics: Statistics,
+};
 
-/** @polymer */
+/**
+ * Profile statistics data types.
+ */
+enum ProfileStatistics {
+  BROWSING_HISTORY = 'BrowsingHistory',
+  PASSWORDS = 'Passwords',
+  BOOKMARKS = 'Bookmarks',
+  AUTOFILL = 'Autofill',
+}
+
+export interface ProfileCardMenuElement {
+  $: {
+    actionMenu: CrActionMenuElement,
+    moreActionsButton: HTMLElement,
+    removeConfirmationDialog: CrDialogElement,
+  };
+}
+
+const ProfileCardMenuElementBase =
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior & WebUIListenerBehavior};
+
 export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   static get is() {
     return 'profile-card-menu';
@@ -70,13 +68,11 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
 
   static get properties() {
     return {
-      /**  @type {!ProfileState} */
       profileState: Object,
 
       /**
        * Results of profile statistics, keyed by the suffix of the corresponding
        * data type, as reported by the C++ side.
-       * @private {!Object<number>}
        */
       statistics_: {
         type: Object,
@@ -88,23 +84,20 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
 
       /**
        * List of selected data types.
-       * @private {!Array<string>}
        */
       profileStatistics_: {
-        type: Object,
+        type: Array,
         value: [
           ProfileStatistics.BROWSING_HISTORY, ProfileStatistics.PASSWORDS,
           ProfileStatistics.BOOKMARKS, ProfileStatistics.AUTOFILL
         ],
       },
 
-      /** @private */
       removeWarningText_: {
         type: String,
         computed: 'computeRemoveWarningText_(profileState)',
       },
 
-      /** @private */
       removeWarningTitle_: {
         type: String,
         computed: 'computeRemoveWarningTitle_(profileState)',
@@ -112,21 +105,14 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     };
   }
 
-  constructor() {
-    super();
+  profileState: ProfileState;
+  private statistics_: {[key: string]: number};
+  private profileStatistics_: Array<ProfileStatistics>;
+  private removeWarningText_: string;
+  private removeWarningTitle_: string;
+  private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
+      ManageProfilesBrowserProxyImpl.getInstance();
 
-    /** @private {ManageProfilesBrowserProxy} */
-    this.manageProfilesBrowserProxy_ = null;
-  }
-
-  /** @override */
-  ready() {
-    super.ready();
-    this.manageProfilesBrowserProxy_ =
-        ManageProfilesBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     this.addWebUIListener(
@@ -138,31 +124,19 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
         this.handleProfileStatsReceived_.bind(this));
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeRemoveWarningText_() {
+  private computeRemoveWarningText_(): string {
     return this.i18n(
         this.profileState.isSyncing ? 'removeWarningSignedInProfile' :
                                       'removeWarningLocalProfile');
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeRemoveWarningTitle_() {
+  private computeRemoveWarningTitle_(): string {
     return this.i18n(
         this.profileState.isSyncing ? 'removeWarningSignedInProfileTitle' :
                                       'removeWarningLocalProfileTitle');
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onMoreActionsButtonClicked_(e) {
+  private onMoreActionsButtonClicked_(e: Event) {
     e.stopPropagation();
     e.preventDefault();
     this.$.actionMenu.showAt(this.$.moreActionsButton);
@@ -170,11 +144,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
         'ProfilePicker_ThreeDottedMenuClicked');
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onRemoveButtonClicked_(e) {
+  private onRemoveButtonClicked_(e: Event) {
     e.stopPropagation();
     e.preventDefault();
     this.manageProfilesBrowserProxy_.getProfileStatistics(
@@ -184,23 +154,14 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     chrome.metricsPrivate.recordUserAction('ProfilePicker_RemoveOptionClicked');
   }
 
-  /**
-   * @param {!StatisticsResult} result
-   * @private
-   */
-  handleProfileStatsReceived_(result) {
+  private handleProfileStatsReceived_(result: StatisticsResult) {
     if (result.profilePath !== this.profileState.profilePath) {
       return;
     }
     this.statistics_ = result.statistics;
   }
 
-  /**
-   * @param {ProfileStatistics} dataType
-   * @return {string}
-   * @private
-   */
-  getProfileStatisticText_(dataType) {
+  private getProfileStatisticText_(dataType: ProfileStatistics): string {
     switch (dataType) {
       case ProfileStatistics.BROWSING_HISTORY:
         return this.i18n('removeWarningHistory');
@@ -212,61 +173,45 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
         return this.i18n('removeWarningAutofill');
       default:
         assertNotReached();
+        return '';
     }
   }
 
-  /**
-   * @param {string} dataType
-   * @return {string}
-   * @private
-   */
-  getProfileStatisticCount_(dataType) {
+  private getProfileStatisticCount_(dataType: string): string {
     const count = this.statistics_[dataType];
     return (count === undefined) ? this.i18n('removeWarningCalculating') :
                                    count.toString();
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onRemoveConfirmationClicked_(e) {
+  private onRemoveConfirmationClicked_(e: Event) {
     e.stopPropagation();
     e.preventDefault();
     this.manageProfilesBrowserProxy_.removeProfile(
         this.profileState.profilePath);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onRemoveCancelClicked_(e) {
+  private onRemoveCancelClicked_() {
     this.$.removeConfirmationDialog.cancel();
   }
 
   /**
    * Ensure any menu is closed on profile list updated.
-   * @private
    */
-  handleProfilesUpdated_() {
+  private handleProfilesUpdated_() {
     this.$.actionMenu.close();
   }
 
   /**
    * Closes the remove confirmation dialog when the profile is removed.
-   * @param {string} profilePath
-   * @private
    */
-  handleProfileRemoved_(profilePath) {
+  private handleProfileRemoved_(profilePath: string) {
     this.handleProfilesUpdated_();
     if (this.profileState.profilePath === profilePath) {
       this.$.removeConfirmationDialog.close();
     }
   }
 
-  /** @private */
-  onCustomizeButtonClicked_() {
+  private onCustomizeButtonClicked_() {
     this.manageProfilesBrowserProxy_.openManageProfileSettingsSubPage(
         this.profileState.profilePath);
     this.$.actionMenu.close();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ManageProfilesBrowserProxyImpl, ProfileCardMenuElement, ProfileState, Statistics, StatisticsResult} from 'chrome://profile-picker/profile_picker.js';
+import {ManageProfilesBrowserProxyImpl, ProfileCardMenuElement} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
@@ -29,7 +29,7 @@ suite('ProfileCardMenuTest', function() {
 
   setup(function() {
     browserProxy = new TestManageProfilesBrowserProxy();
-    ManageProfilesBrowserProxyImpl.instance_ = browserProxy;
+    ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     profileCardMenuElement = /** @type {!ProfileCardMenuElement} */ (
         document.createElement('profile-card-menu'));
@@ -218,7 +218,7 @@ suite('ProfileCardMenuLacrosTest', function() {
 
   setup(function() {
     browserProxy = new TestManageProfilesBrowserProxy();
-    ManageProfilesBrowserProxyImpl.instance_ = browserProxy;
+    ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     primaryProfileCardMenuElement = /** @type {!ProfileCardMenuElement} */ (
         document.createElement('profile-card-menu'));

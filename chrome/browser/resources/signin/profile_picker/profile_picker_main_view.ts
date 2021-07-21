@@ -14,22 +14,26 @@ import './profile_picker_shared_css.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
-import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
+import {navigateTo, NavigationMixin, NavigationMixinInterface, Routes} from './navigation_mixin.js';
 import {isAskOnStartupAllowed, isGuestModeEnabled, isProfileCreationAllowed} from './policy_helper.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const ProfilePickerMainViewElementBase =
-    mixinBehaviors([WebUIListenerBehavior], NavigationMixin(PolymerElement));
+export interface ProfilePickerMainViewElement {
+  $: {
+    addProfile: HTMLElement,
+    'product-logo': HTMLElement,
+    browseAsGuestButton: HTMLElement,
+    profilesContainer: HTMLElement,
+  };
+}
 
-/** @polymer */
+const ProfilePickerMainViewElementBase =
+    mixinBehaviors([WebUIListenerBehavior], NavigationMixin(PolymerElement)) as
+    {new (): PolymerElement & WebUIListenerBehavior & NavigationMixinInterface};
+
 export class ProfilePickerMainViewElement extends
     ProfilePickerMainViewElementBase {
   static get is() {
@@ -44,20 +48,17 @@ export class ProfilePickerMainViewElement extends
     return {
       /**
        * Profiles list supplied by ManageProfilesBrowserProxy.
-       * @type {!Array<!ProfileState>}
        */
       profilesList_: {
-        type: Object,
+        type: Array,
         value: () => [],
       },
 
-      /** @private */
       profilesListLoaded_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       hideAskOnStartup_: {
         type: Boolean,
         value: true,
@@ -65,7 +66,6 @@ export class ProfilePickerMainViewElement extends
 
       },
 
-      /** @private */
       askOnStartup_: {
         type: Boolean,
         value() {
@@ -75,19 +75,14 @@ export class ProfilePickerMainViewElement extends
     };
   }
 
-  constructor() {
-    super();
+  private profilesList_: Array<ProfileState>;
+  private profilesListLoaded_: boolean;
+  private hideAskOnStartup_: boolean;
+  private askOnStartup_: boolean;
+  private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
+      ManageProfilesBrowserProxyImpl.getInstance();
+  private resizeObserver_: ResizeObserver|null = null;
 
-    /** @private {?ManageProfilesBrowserProxy} */
-    this.manageProfilesBrowserProxy_ = null;
-
-    /**
-     * @private {ResizeObserver} used to observer size changes to this element
-     */
-    this.resizeObserver_ = null;
-  }
-
-  /** @override */
   ready() {
     super.ready();
     if (!isGuestModeEnabled()) {
@@ -97,12 +92,8 @@ export class ProfilePickerMainViewElement extends
     if (!isProfileCreationAllowed()) {
       this.$.addProfile.style.display = 'none';
     }
-
-    this.manageProfilesBrowserProxy_ =
-        ManageProfilesBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     this.addResizeObserver_();
@@ -113,32 +104,22 @@ export class ProfilePickerMainViewElement extends
     this.manageProfilesBrowserProxy_.initializeMainView();
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.resizeObserver_.disconnect();
+    this.resizeObserver_!.disconnect();
   }
 
-  /** @private */
-  addResizeObserver_() {
+  private addResizeObserver_() {
+    const profilesContainer = this.$.profilesContainer;
     this.resizeObserver_ = new ResizeObserver(() => {
-      const profileContainer =
-          /** @type {!HTMLDivElement} */ (
-              this.shadowRoot.querySelector('.profiles-container'));
-      if (profileContainer.scrollHeight > profileContainer.clientHeight) {
-        this.shadowRoot.querySelector('.footer').classList.add('division-line');
-      } else {
-        this.shadowRoot.querySelector('.footer').classList.remove(
-            'division-line');
-      }
+      this.shadowRoot!.querySelector('.footer')!.classList.toggle(
+          'division-line',
+          profilesContainer.scrollHeight > profilesContainer.clientHeight);
     });
-    this.resizeObserver_.observe(
-        /** @type {!HTMLDivElement} */ (
-            this.shadowRoot.querySelector('.profiles-container')));
+    this.resizeObserver_.observe(profilesContainer);
   }
 
-  /** @private */
-  onProductLogoTap_() {
+  private onProductLogoTap_() {
     this.$['product-logo'].animate(
         {
           transform: ['none', 'rotate(-10turn)'],
@@ -151,19 +132,16 @@ export class ProfilePickerMainViewElement extends
 
   /**
    * Handler for when the profiles list are updated.
-   * @param {!Array<!ProfileState>} profilesList
-   * @private
    */
-  handleProfilesListChanged_(profilesList) {
+  private handleProfilesListChanged_(profilesList: Array<ProfileState>) {
     this.profilesListLoaded_ = true;
     this.profilesList_ = profilesList;
   }
 
   /**
    * Called when the user modifies 'Ask on startup' preference.
-   * @private
    */
-  onAskOnStartupChangedByUser_() {
+  private onAskOnStartupChangedByUser_() {
     if (this.hideAskOnStartup_) {
       return;
     }
@@ -171,8 +149,7 @@ export class ProfilePickerMainViewElement extends
     this.manageProfilesBrowserProxy_.askOnStartupChanged(this.askOnStartup_);
   }
 
-  /** @private */
-  onAddProfileClick_() {
+  private onAddProfileClick_() {
     if (!isProfileCreationAllowed()) {
       return;
     }
@@ -180,16 +157,14 @@ export class ProfilePickerMainViewElement extends
     navigateTo(Routes.NEW_PROFILE);
   }
 
-  /** @private */
-  onLaunchGuestProfileClick_() {
+  private onLaunchGuestProfileClick_() {
     if (!isGuestModeEnabled()) {
       return;
     }
     this.manageProfilesBrowserProxy_.launchGuestProfile();
   }
 
-  /** @private */
-  handleProfileRemoved_(profilePath) {
+  private handleProfileRemoved_(profilePath: string) {
     for (let i = 0; i < this.profilesList_.length; i += 1) {
       if (this.profilesList_[i].profilePath === profilePath) {
         // TODO(crbug.com/1063856): Add animation.
@@ -199,11 +174,7 @@ export class ProfilePickerMainViewElement extends
     }
   }
 
-  /**
-   * @return boolean
-   * @private
-   */
-  computeHideAskOnStartup_() {
+  private computeHideAskOnStartup_(): boolean {
     return !isAskOnStartupAllowed() || !this.profilesList_ ||
         this.profilesList_.length < 2;
   }

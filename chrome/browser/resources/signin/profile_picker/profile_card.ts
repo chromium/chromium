@@ -11,18 +11,25 @@ import './profile_picker_shared_css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- */
-const ProfileCardElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+interface ProfileCardElement {
+  $: {
+    gaiaName: HTMLElement,
+    gaiaNameTooltip: PaperTooltipElement,
+    nameInput: CrInputElement,
+    tooltip: PaperTooltipElement,
+  };
+}
 
-/** @polymer */
+const ProfileCardElementBase = mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
+
 class ProfileCardElement extends ProfileCardElementBase {
   static get is() {
     return 'profile-card';
@@ -34,7 +41,6 @@ class ProfileCardElement extends ProfileCardElementBase {
 
   static get properties() {
     return {
-      /**  @type {!ProfileState} */
       profileState: {
         type: Object,
       },
@@ -46,32 +52,20 @@ class ProfileCardElement extends ProfileCardElementBase {
     };
   }
 
-  constructor() {
-    super();
+  profileState: ProfileState;
+  private pattern_: string;
+  private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
+      ManageProfilesBrowserProxyImpl.getInstance();
 
-    /** @private {ManageProfilesBrowserProxy} */
-    this.manageProfilesBrowserProxy_ = null;
-  }
-
-  /** @override */
-  ready() {
-    super.ready();
-    this.manageProfilesBrowserProxy_ =
-        ManageProfilesBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     this.addNameInputTooltipListeners_();
     this.addGaiaNameTooltipListeners_();
   }
 
-  /** @private */
-  addNameInputTooltipListeners_() {
+  private addNameInputTooltipListeners_() {
     const showTooltip = () => {
-      const inputElement =
-          /** @type {!HTMLInputElement} */ (this.$.tooltip.target.inputElement);
+      const inputElement = this.$.tooltip.target.inputElement;
       // Disable tooltip if the local name editing is in progress.
       if (this.isNameTruncated_(inputElement) &&
           !this.$.nameInput.hasAttribute('focused_')) {
@@ -89,8 +83,7 @@ class ProfileCardElement extends ProfileCardElementBase {
     this.$.tooltip.addEventListener('mouseenter', hideTooltip);
   }
 
-  /** @private */
-  addGaiaNameTooltipListeners_() {
+  private addGaiaNameTooltipListeners_() {
     const showTooltip = () => {
       if (this.isNameTruncated_(this.$.gaiaName)) {
         this.$.gaiaNameTooltip.show();
@@ -108,53 +101,44 @@ class ProfileCardElement extends ProfileCardElementBase {
     this.$.gaiaNameTooltip.addEventListener('mouseenter', hideTooltip);
   }
 
-  /**
-   * @param {!Element} element
-   * @return {boolean}
-   * @private
-   */
-  isNameTruncated_(element) {
+  private isNameTruncated_(element: HTMLElement): boolean {
     return !!element && element.scrollWidth > element.offsetWidth;
   }
 
-  /** @private */
-  onProfileClick_() {
+  private onProfileClick_() {
     this.manageProfilesBrowserProxy_.launchSelectedProfile(
         this.profileState.profilePath);
   }
 
   /**
    * Handler for when the profile name field is changed, then blurred.
-   * @param {!Event} event
-   * @private
    */
-  onProfileNameChanged_(event) {
-    if (event.target.invalid) {
+  private onProfileNameChanged_(event: Event) {
+    const target = event.target as CrInputElement;
+
+    if (target.invalid) {
       return;
     }
 
     this.manageProfilesBrowserProxy_.setProfileName(
-        this.profileState.profilePath, event.target.value);
+        this.profileState.profilePath, target.value);
 
-    event.target.blur();
+    target.blur();
   }
 
   /**
    * Handler for profile name keydowns.
-   * @param {!Event} event
-   * @private
    */
-  onProfileNameKeydown_(event) {
+  private onProfileNameKeydown_(event: KeyboardEvent) {
     if (event.key === 'Escape' || event.key === 'Enter') {
-      event.target.blur();
+      (event.target as HTMLElement).blur();
     }
   }
 
   /**
    * Handler for profile name blur.
-   * @private
    */
-  onProfileNameInputBlur_() {
+  private onProfileNameInputBlur_() {
     if (this.$.nameInput.invalid) {
       this.$.nameInput.value = this.profileState.localProfileName;
     }

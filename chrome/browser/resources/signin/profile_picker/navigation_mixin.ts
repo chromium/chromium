@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isBrowserSigninAllowed, isForceSigninEnabled, isSignInProfileCreationSupported} from './policy_helper.js';
 
@@ -12,42 +12,36 @@ import {isBrowserSigninAllowed, isForceSigninEnabled, isSignInProfileCreationSup
  * These values are persisted to logs and should not be renumbered or
  * re-used.
  * See tools/metrics/histograms/enums.xml.
- * @enum {number}
  */
-const Pages = {
-  MAIN_VIEW: 0,
-  PROFILE_TYPE_CHOICE: 1,
-  LOCAL_PROFILE_CUSTOMIZATION: 2,
-  LOAD_SIGNIN: 3,
-  LOAD_FORCE_SIGNIN: 4,
-  PROFILE_SWITCH: 5,
-};
+enum Pages {
+  MAIN_VIEW = 0,
+  PROFILE_TYPE_CHOICE = 1,
+  LOCAL_PROFILE_CUSTOMIZATION = 2,
+  LOAD_SIGNIN = 3,
+  LOAD_FORCE_SIGNIN = 4,
+  PROFILE_SWITCH = 5,
+}
 
 /**
  * Valid route pathnames.
- * @enum {string}
  */
-export const Routes = {
-  MAIN: 'main-view',
-  NEW_PROFILE: 'new-profile',
-  PROFILE_SWITCH: 'profile-switch',
-};
+export enum Routes {
+  MAIN = 'main-view',
+  NEW_PROFILE = 'new-profile',
+  PROFILE_SWITCH = 'profile-switch',
+}
 
 /**
  * Valid profile creation flow steps.
- * @enum {string}
  */
-export const ProfileCreationSteps = {
-  PROFILE_TYPE_CHOICE: 'profileTypeChoice',
-  LOCAL_PROFILE_CUSTOMIZATION: 'localProfileCustomization',
-  LOAD_SIGNIN: 'loadSignIn',
-  LOAD_FORCE_SIGNIN: 'loadForceSignIn',
-};
+export enum ProfileCreationSteps {
+  PROFILE_TYPE_CHOICE = 'profileTypeChoice',
+  LOCAL_PROFILE_CUSTOMIZATION = 'localProfileCustomization',
+  LOAD_SIGNIN = 'loadSignIn',
+  LOAD_FORCE_SIGNIN = 'loadForceSignIn',
+}
 
-/**
- * @param {!Routes} route
- */
-function computeStep(route) {
+function computeStep(route: Routes): string {
   switch (route) {
     case Routes.MAIN:
       return 'mainView';
@@ -64,6 +58,7 @@ function computeStep(route) {
       return 'profileSwitch';
     default:
       assertNotReached();
+      return '';
   }
 }
 
@@ -97,11 +92,8 @@ if (!history.state || !history.state.route || !history.state.step) {
   recordPageVisited(history.state.step);
 }
 
-/**
- * @param {string} step
- */
-export function recordPageVisited(step) {
-  let page = /** @type {!Pages} */ (Pages.MAIN_VIEW);
+export function recordPageVisited(step: string) {
+  let page = Pages.MAIN_VIEW;
   switch (step) {
     case 'mainView':
       page = Pages.MAIN_VIEW;
@@ -128,27 +120,20 @@ export function recordPageVisited(step) {
       'ProfilePicker.UiVisited', page, Object.keys(Pages).length);
 }
 
-/** @type {!Set<!PolymerElement>} */
-const routeObservers = new Set();
+const routeObservers: Set<NavigationMixinInterface> = new Set();
 
 // Notifies all the elements that extended NavigationBehavior.
 function notifyObservers() {
-  const route = /** @type {!Routes} */ (history.state.route);
+  const route = history.state.route;
   const step = history.state.step;
   recordPageVisited(step);
-  routeObservers.forEach(observer => {
-    (/** @type {{onRouteChange: Function}} */ (observer))
-        .onRouteChange(route, step);
-  });
+  routeObservers.forEach(observer => observer.onRouteChange(route, step));
 }
 
 // Notifies all elements when browser history is popped.
 window.addEventListener('popstate', notifyObservers);
 
-/**
- * @param {!Routes} route
- */
-export function navigateTo(route) {
+export function navigateTo(route: Routes) {
   assert(
       [Routes.MAIN, Routes.NEW_PROFILE, Routes.PROFILE_SWITCH].includes(route));
   navigateToStep(route, computeStep(route));
@@ -168,11 +153,7 @@ export function navigateToPreviousRoute() {
   }
 }
 
-/**
- * @param {!Routes} route
- * @param {string} step
- */
-export function navigateToStep(route, step) {
+export function navigateToStep(route: Routes, step: string) {
   history.pushState(
       {
         route: route,
@@ -183,42 +164,38 @@ export function navigateToStep(route, step) {
   notifyObservers();
 }
 
-/**
- * @polymer
- * @mixinFunction
- */
-export const NavigationMixin = dedupingMixin(superClass => {
-  /**
-   * @polymer
-   * @mixinClass
-   */
-  class NavigationMixin extends superClass {
-    /** @override */
-    connectedCallback() {
-      super.connectedCallback();
+type Constructor<T> = new (...args: any[]) => T;
 
-      assert(!routeObservers.has(this));
-      routeObservers.add(this);
+export const NavigationMixin = dedupingMixin(
+    <T extends Constructor<PolymerElement>>(superClass: T): T&
+    Constructor<NavigationMixinInterface> => {
+      class NavigationMixin extends superClass {
+        connectedCallback() {
+          super.connectedCallback();
 
-      // history state was set when page loaded, so when the element first
-      // attaches, call the route-change handler to initialize first.
-      this.onRouteChange(history.state.route, history.state.step);
-    }
+          assert(!routeObservers.has(this));
+          routeObservers.add(this);
 
-    /** @override */
-    disconnectedCallback() {
-      super.disconnectedCallback();
+          // history state was set when page loaded, so when the element first
+          // attaches, call the route-change handler to initialize first.
+          this.onRouteChange(history.state.route, history.state.step);
+        }
 
-      assert(routeObservers.delete(this));
-    }
+        disconnectedCallback() {
+          super.disconnectedCallback();
 
-    /**
-     * Elements can override onRouteChange to handle route changes.
-     * @param {Routes} route
-     * @param {string} step
-     */
-    onRouteChange(route, step) {}
-  }
+          assert(routeObservers.delete(this));
+        }
 
-  return NavigationMixin;
-});
+        /**
+         * Elements can override onRouteChange to handle route changes.
+         */
+        onRouteChange(_route: Routes, _step: string) {}
+      }
+
+      return NavigationMixin;
+    });
+
+export interface NavigationMixinInterface {
+  onRouteChange(route: Routes, step: string): void;
+}
