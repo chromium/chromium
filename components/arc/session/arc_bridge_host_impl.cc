@@ -66,8 +66,6 @@
 #include "components/arc/mojom/tts.mojom.h"
 #include "components/arc/mojom/usb_host.mojom.h"
 #include "components/arc/mojom/video.mojom.h"
-#include "components/arc/mojom/voice_interaction_arc_home.mojom.h"
-#include "components/arc/mojom/voice_interaction_framework.mojom.h"
 #include "components/arc/mojom/volume_mounter.mojom.h"
 #include "components/arc/mojom/wake_lock.mojom.h"
 #include "components/arc/mojom/wallpaper.mojom.h"
@@ -413,17 +411,6 @@ void ArcBridgeHostImpl::OnUsbHostInstanceReady(
 void ArcBridgeHostImpl::OnVideoInstanceReady(
     mojo::PendingRemote<mojom::VideoInstance> video_remote) {
   OnInstanceReady(arc_bridge_service_->video(), std::move(video_remote));
-}
-
-void ArcBridgeHostImpl::OnVoiceInteractionArcHomeInstanceReady(
-    mojo::PendingRemote<mojom::VoiceInteractionArcHomeInstance> home_remote) {
-  NOTREACHED();
-}
-
-void ArcBridgeHostImpl::OnVoiceInteractionFrameworkInstanceReady(
-    mojo::PendingRemote<mojom::VoiceInteractionFrameworkInstance>
-        framework_remote) {
-  NOTREACHED();
 }
 
 void ArcBridgeHostImpl::OnVolumeMounterInstanceReady(

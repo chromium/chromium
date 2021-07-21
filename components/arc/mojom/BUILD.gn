@@ -68,8 +68,6 @@ if (is_chromeos_ash) {
       "tracing.mojom",
       "tts.mojom",
       "usb_host.mojom",
-      "voice_interaction_arc_home.mojom",
-      "voice_interaction_framework.mojom",
       "volume_mounter.mojom",
       "wake_lock.mojom",
       "wallpaper.mojom",

@@ -58,8 +58,6 @@ import "components/arc/mojom/tracing.mojom";
 import "components/arc/mojom/tts.mojom";
 import "components/arc/mojom/usb_host.mojom";
 import "components/arc/mojom/video.mojom";
-import "components/arc/mojom/voice_interaction_arc_home.mojom";
-import "components/arc/mojom/voice_interaction_framework.mojom";
 import "components/arc/mojom/volume_mounter.mojom";
 import "components/arc/mojom/wake_lock.mojom";
 import "components/arc/mojom/wallpaper.mojom";
@@ -289,14 +287,6 @@ interface ArcBridgeHost {
   // Notifies Chrome that the VideoInstance interface is ready.
   [MinVersion=6] OnVideoInstanceReady@107(
       pending_remote<VideoInstance> instance_remote);
-
-  // Notifies Chrome that the VoiceInteractionArcHomeInstance is ready.
-  [MinVersion=24] OnVoiceInteractionArcHomeInstanceReady@130(
-      pending_remote<VoiceInteractionArcHomeInstance> instance_remote);
-
-  // Notifies Chrome that the VoiceInteractionFrameworkInstance is ready.
-  [MinVersion=23] OnVoiceInteractionFrameworkInstanceReady@129(
-      pending_remote<VoiceInteractionFrameworkInstance> instance_remote);
 
   // Notifies Chrome that the VolumeMounter interface is ready.
   [MinVersion=25] OnVolumeMounterInstanceReady@131(

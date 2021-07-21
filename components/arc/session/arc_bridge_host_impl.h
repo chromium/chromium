@@ -169,12 +169,6 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
       mojo::PendingRemote<mojom::UsbHostInstance> usb_host_remote) override;
   void OnVideoInstanceReady(
       mojo::PendingRemote<mojom::VideoInstance> video_remote) override;
-  void OnVoiceInteractionArcHomeInstanceReady(
-      mojo::PendingRemote<mojom::VoiceInteractionArcHomeInstance> home_remote)
-      override;
-  void OnVoiceInteractionFrameworkInstanceReady(
-      mojo::PendingRemote<mojom::VoiceInteractionFrameworkInstance>
-          framework_remote) override;
   void OnVolumeMounterInstanceReady(
       mojo::PendingRemote<mojom::VolumeMounterInstance> volume_mounter_remote)
       override;

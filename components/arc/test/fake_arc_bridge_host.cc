@@ -56,8 +56,6 @@
 #include "components/arc/mojom/tts.mojom.h"
 #include "components/arc/mojom/usb_host.mojom.h"
 #include "components/arc/mojom/video.mojom.h"
-#include "components/arc/mojom/voice_interaction_arc_home.mojom.h"
-#include "components/arc/mojom/voice_interaction_framework.mojom.h"
 #include "components/arc/mojom/volume_mounter.mojom.h"
 #include "components/arc/mojom/wake_lock.mojom.h"
 #include "components/arc/mojom/wallpaper.mojom.h"
@@ -242,13 +240,6 @@ void FakeArcBridgeHost::OnUsbHostInstanceReady(
 
 void FakeArcBridgeHost::OnVideoInstanceReady(
     mojo::PendingRemote<mojom::VideoInstance> video_remote) {}
-
-void FakeArcBridgeHost::OnVoiceInteractionArcHomeInstanceReady(
-    mojo::PendingRemote<mojom::VoiceInteractionArcHomeInstance> home_remote) {}
-
-void FakeArcBridgeHost::OnVoiceInteractionFrameworkInstanceReady(
-    mojo::PendingRemote<mojom::VoiceInteractionFrameworkInstance>
-        framework_remote) {}
 
 void FakeArcBridgeHost::OnVolumeMounterInstanceReady(
     mojo::PendingRemote<mojom::VolumeMounterInstance> volume_mounter_remote) {}
