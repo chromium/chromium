@@ -36,11 +36,17 @@ class ArcAccessibilityTreeTrackerTest : public ChromeViewsTestBase {
                                       accessibility_helper_instance,
                                       arc_bridge_service) {}
 
-    aura::Window* window_ = nullptr;
+    aura::Window* focused_window_ = nullptr;
     absl::optional<bool> last_dispatched_talkback_state_;
 
+    void TrackWindow(aura::Window* window) {
+      ArcAccessibilityTreeTracker::TrackWindow(window);
+    }
+
    private:
-    aura::Window* GetFocusedArcWindow() const override { return window_; }
+    aura::Window* GetFocusedArcWindow() const override {
+      return focused_window_;
+    }
 
     void DispatchCustomSpokenFeedbackToggled(bool enabled) override {
       last_dispatched_talkback_state_ = enabled;
@@ -72,11 +78,11 @@ class ArcAccessibilityTreeTrackerTest : public ChromeViewsTestBase {
 
 TEST_F(ArcAccessibilityTreeTrackerTest, TaskAndAXTreeLifecycle) {
   auto& tree_tracker = accessibility_tree_tracker();
-  std::unique_ptr<aura::Window> test_window = CreateWindow();
-  tree_tracker.window_ = test_window.get();
-
   tree_tracker.OnEnabledFeatureChanged(
       arc::mojom::AccessibilityFilterType::ALL);
+
+  std::unique_ptr<aura::Window> test_window = CreateWindow();
+  tree_tracker.TrackWindow(test_window.get());
 
   const auto& key_to_tree = tree_tracker.trees_for_test();
   ASSERT_EQ(0U, key_to_tree.size());
@@ -85,13 +91,16 @@ TEST_F(ArcAccessibilityTreeTrackerTest, TaskAndAXTreeLifecycle) {
   event1->source_id = 1;
   event1->task_id = 1;
 
-  // There's no active window.
-  tree_tracker.OnAccessibilityEvent(event1.Clone().get());
+  // There's no window matches to the event.
+  AXTreeSourceArc* tree =
+      tree_tracker.OnAccessibilityEvent(event1.Clone().get());
+  ASSERT_EQ(nullptr, tree);
   ASSERT_EQ(0U, key_to_tree.size());
 
-  // Let's make task 1 active by activating the window.
+  // Let's set task id to the window.
   exo::SetShellApplicationId(test_window.get(), "org.chromium.arc.1");
-  tree_tracker.OnAccessibilityEvent(event1.Clone().get());
+  tree = tree_tracker.OnAccessibilityEvent(event1.Clone().get());
+  ASSERT_NE(nullptr, tree);
   ASSERT_EQ(1U, key_to_tree.size());
 
   // Event from a different task.
@@ -99,20 +108,26 @@ TEST_F(ArcAccessibilityTreeTrackerTest, TaskAndAXTreeLifecycle) {
   event2->source_id = 2;
   event2->task_id = 2;
 
-  // Active window is still task 1.
-  tree_tracker.OnAccessibilityEvent(event2.Clone().get());
+  // There's only task 1 window
+  tree = tree_tracker.OnAccessibilityEvent(event2.Clone().get());
+  ASSERT_EQ(nullptr, tree);
   ASSERT_EQ(1U, key_to_tree.size());
 
-  // Now make task 2 active.
-  exo::SetShellApplicationId(test_window.get(), "org.chromium.arc.2");
-  tree_tracker.OnAccessibilityEvent(event2.Clone().get());
+  // Now add a window for task 2.
+  std::unique_ptr<aura::Window> test_window2 = CreateWindow();
+  tree_tracker.TrackWindow(test_window2.get());
+
+  exo::SetShellApplicationId(test_window2.get(), "org.chromium.arc.2");
+  tree = tree_tracker.OnAccessibilityEvent(event2.Clone().get());
+  ASSERT_NE(nullptr, tree);
   ASSERT_EQ(2U, key_to_tree.size());
 
   // Same task id, different source node.
   event2->source_id = 3;
 
   // No new tasks tree mappings should have occurred.
-  tree_tracker.OnAccessibilityEvent(event2.Clone().get());
+  tree = tree_tracker.OnAccessibilityEvent(event2.Clone().get());
+  ASSERT_NE(nullptr, tree);
   ASSERT_EQ(2U, key_to_tree.size());
 
   tree_tracker.OnTaskDestroyed(1);
@@ -125,7 +140,6 @@ TEST_F(ArcAccessibilityTreeTrackerTest, TaskAndAXTreeLifecycle) {
 TEST_F(ArcAccessibilityTreeTrackerTest, WindowIdTaskIdMapping) {
   auto& tree_tracker = accessibility_tree_tracker();
   std::unique_ptr<aura::Window> test_window = CreateWindow();
-  tree_tracker.window_ = test_window.get();
 
   tree_tracker.OnEnabledFeatureChanged(
       arc::mojom::AccessibilityFilterType::ALL);
@@ -138,17 +152,19 @@ TEST_F(ArcAccessibilityTreeTrackerTest, WindowIdTaskIdMapping) {
   event->task_id = kNoTaskId;
   event->window_id = 10;
 
-  // There's no active window.
+  // There's no tracking window.
   tree_tracker.OnAccessibilityEvent(event.Clone().get());
   ASSERT_EQ(0U, key_to_tree.size());
 
-  // Set task ID 1 as the active window.
-  // Also, set a11y window id to the active window.
+  // Set task ID 1 to the window.
+  // Also, set a11y window id to the window.
+  tree_tracker.TrackWindow(test_window.get());
   exo::SetShellApplicationId(test_window.get(), "org.chromium.arc.1");
   exo::SetShellClientAccessibilityId(test_window.get(), 10);
 
   AXTreeSourceArc* tree1 =
       tree_tracker.OnAccessibilityEvent(event.Clone().get());
+  ASSERT_NE(nullptr, tree1);
   ASSERT_EQ(1U, key_to_tree.size());
 
   // In the same task, update window id.
@@ -157,6 +173,7 @@ TEST_F(ArcAccessibilityTreeTrackerTest, WindowIdTaskIdMapping) {
 
   AXTreeSourceArc* tree2 =
       tree_tracker.OnAccessibilityEvent(event.Clone().get());
+  ASSERT_NE(nullptr, tree2);
   ASSERT_EQ(1U, key_to_tree.size());
   ASSERT_EQ(tree1, tree2);  // The same tree.
 
@@ -166,6 +183,7 @@ TEST_F(ArcAccessibilityTreeTrackerTest, WindowIdTaskIdMapping) {
 
   AXTreeSourceArc* tree3 =
       tree_tracker.OnAccessibilityEvent(event.Clone().get());
+  ASSERT_NE(nullptr, tree3);
   ASSERT_EQ(1U, key_to_tree.size());
   ASSERT_EQ(tree1, tree3);
 
@@ -179,11 +197,11 @@ TEST_F(ArcAccessibilityTreeTrackerTest, WindowIdTaskIdMapping) {
   exo::SetShellApplicationId(another_window.get(), "org.chromium.arc.2");
   exo::SetShellClientAccessibilityId(another_window.get(), 20);
 
-  tree_tracker.window_ = another_window.get();
-  tree_tracker.OnWindowFocused(another_window.get(), test_window.get());
+  tree_tracker.TrackWindow(another_window.get());
 
   AXTreeSourceArc* tree4 =
       tree_tracker.OnAccessibilityEvent(event2.Clone().get());
+  ASSERT_NE(nullptr, tree4);
   ASSERT_EQ(2U, key_to_tree.size());
   ASSERT_NE(tree1, tree4);
 }
@@ -198,8 +216,7 @@ TEST_F(ArcAccessibilityTreeTrackerTest, TrackArcGhostWindow) {
   std::unique_ptr<aura::Window> test_window =
       CreateWindow(ash::AppType::NON_APP);
   exo::SetShellApplicationId(test_window.get(), "org.chromium.arc.session.1");
-  tree_tracker.window_ = test_window.get();
-  tree_tracker.OnWindowFocused(test_window.get(), nullptr);
+  tree_tracker.TrackWindow(test_window.get());
 
   const auto& key_to_tree = tree_tracker.trees_for_test();
   ASSERT_EQ(0U, key_to_tree.size());
@@ -229,13 +246,14 @@ TEST_F(ArcAccessibilityTreeTrackerTest, FilterTypeChange) {
   auto& tree_tracker = accessibility_tree_tracker();
 
   std::unique_ptr<aura::Window> test_window = CreateWindow();
-  tree_tracker.window_ = test_window.get();
+  exo::SetShellApplicationId(test_window.get(), "org.chromium.arc.1");
+  exo::SetShellClientAccessibilityId(test_window.get(), 10);
 
   const auto& key_to_tree = tree_tracker.trees_for_test();
   ASSERT_EQ(0U, key_to_tree.size());
 
-  exo::SetShellApplicationId(test_window.get(), "org.chromium.arc.1");
   tree_tracker.OnEnabledFeatureChanged(AccessibilityFilterType::ALL);
+  tree_tracker.TrackWindow(test_window.get());
   ASSERT_EQ(1U, key_to_tree.size());
 
   // Changing from ALL to OFF should result in existing trees being destroyed.
@@ -248,6 +266,7 @@ TEST_F(ArcAccessibilityTreeTrackerTest, FilterTypeChange) {
 
   // Changing from FOCUS to ALL should not result in a existing tree recognized.
   tree_tracker.OnEnabledFeatureChanged(AccessibilityFilterType::ALL);
+  tree_tracker.TrackWindow(test_window.get());
   ASSERT_EQ(1U, key_to_tree.size());
 
   // Changing from ALL to FOCUS should not result in any changes.
@@ -259,7 +278,7 @@ TEST_F(ArcAccessibilityTreeTrackerTest, ToggleTalkBack) {
   auto& tree_tracker = accessibility_tree_tracker();
 
   std::unique_ptr<aura::Window> test_window = CreateWindow();
-  tree_tracker.window_ = test_window.get();
+  tree_tracker.focused_window_ = test_window.get();
   exo::SetShellApplicationId(test_window.get(), "org.chromium.arc.1");
 
   absl::optional<bool>& last_state =

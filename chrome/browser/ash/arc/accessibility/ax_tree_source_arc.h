@@ -23,6 +23,10 @@
 #include "ui/accessibility/ax_tree_source.h"
 #include "ui/views/view.h"
 
+namespace aura {
+class Window;
+}
+
 namespace arc {
 class AXTreeSourceArcTest;
 
@@ -61,7 +65,7 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
     virtual void PostSerializeNode(ui::AXNodeData* out_data) const = 0;
   };
 
-  explicit AXTreeSourceArc(Delegate* delegate);
+  AXTreeSourceArc(Delegate* delegate, aura::Window* window);
   ~AXTreeSourceArc() override;
 
   // Notify automation of an accessibility event.
@@ -101,7 +105,8 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   void SerializeNode(AccessibilityInfoDataWrapper* info_data,
                      ui::AXNodeData* out_data) const override;
 
-  aura::Window* GetWindow() const;
+  aura::Window* window() { return window_; }
+  void set_window(aura::Window* window) { window_ = window; }
 
   bool is_notification() { return is_notification_; }
 
@@ -183,6 +188,9 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   bool is_input_method_window_;
 
   absl::optional<std::string> notification_key_;
+
+  // Window corresponding this tree.
+  aura::Window* window_;
 
   // Cache of mapping from the *Android* window id to the last focused node id.
   std::map<int32_t, int32_t> window_id_to_last_focus_node_id_;

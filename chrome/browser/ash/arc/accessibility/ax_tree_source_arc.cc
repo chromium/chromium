@@ -9,16 +9,12 @@
 #include <string>
 #include <utility>
 
-#include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
-#include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
 #include "base/containers/cxx20_erase.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/ash/arc/accessibility/auto_complete_handler.h"
 #include "chrome/browser/ash/arc/accessibility/drawer_layout_handler.h"
-#include "components/exo/input_method_surface.h"
-#include "components/exo/wm_helper.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "extensions/common/extension_messages.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -36,10 +32,11 @@ using AXWindowBooleanProperty = mojom::AccessibilityWindowBooleanProperty;
 using AXWindowInfoData = mojom::AccessibilityWindowInfoData;
 using AXWindowIntListProperty = mojom::AccessibilityWindowIntListProperty;
 
-AXTreeSourceArc::AXTreeSourceArc(Delegate* delegate)
+AXTreeSourceArc::AXTreeSourceArc(Delegate* delegate, aura::Window* window)
     : current_tree_serializer_(new AXTreeArcSerializer(this)),
       is_notification_(false),
       is_input_method_window_(false),
+      window_(window),
       delegate_(delegate) {}
 
 AXTreeSourceArc::~AXTreeSourceArc() {
@@ -141,35 +138,6 @@ void AXTreeSourceArc::SerializeNode(AccessibilityInfoDataWrapper* info_data,
   const auto& itr = hooks_.find(info_data->GetId());
   if (itr != hooks_.end())
     itr->second->PostSerializeNode(out_data);
-}
-
-aura::Window* AXTreeSourceArc::GetWindow() const {
-  if (is_notification_) {
-    if (!notification_key_.has_value())
-      return nullptr;
-
-    auto* surface_manager = ash::ArcNotificationSurfaceManager::Get();
-    if (!surface_manager)
-      return nullptr;
-
-    ash::ArcNotificationSurface* surface =
-        surface_manager->GetArcSurface(notification_key_.value());
-    if (!surface)
-      return nullptr;
-
-    return surface->GetWindow();
-  } else if (is_input_method_window_) {
-    exo::InputMethodSurface* input_method_surface =
-        exo::InputMethodSurface::GetInputMethodSurface();
-    if (!input_method_surface)
-      return nullptr;
-
-    return input_method_surface->host_window();
-  } else if (exo::WMHelper::HasInstance()) {
-    // TODO(b/173658482): Support non-active windows.
-    return FindArcWindow(exo::WMHelper::GetInstance()->GetFocusedWindow());
-  }
-  return nullptr;
 }
 
 void AXTreeSourceArc::NotifyAccessibilityEventInternal(

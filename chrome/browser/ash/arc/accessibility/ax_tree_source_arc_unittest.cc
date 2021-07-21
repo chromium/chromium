@@ -98,7 +98,7 @@ class AXTreeSourceArcTest : public testing::Test,
    public:
     TestAXTreeSourceArc(AXTreeSourceArc::Delegate* delegate,
                         MockAutomationEventRouter* router)
-        : AXTreeSourceArc(delegate), router_(router) {}
+        : AXTreeSourceArc(delegate, /*window=*/nullptr), router_(router) {}
 
    private:
     extensions::AutomationEventRouterInterface* GetAutomationEventRouter()

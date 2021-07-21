@@ -13,8 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/accessibility/ax_enum_util.h"
-#include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 
 namespace aura {
 class Window;
@@ -109,9 +108,6 @@ bool IsArcOrGhostWindow(const aura::Window* window);
 // Finds ARC window from the given window to the parent.
 aura::Window* FindArcWindow(aura::Window* child);
 aura::Window* FindArcOrGhostWindow(aura::Window* child);
-
-// Finds a window with a given child AXTreeId from the entire screen.
-aura::Window* FindWindowFromChildAXTreeId(const ui::AXTreeID& tree_id);
 
 }  // namespace arc
 

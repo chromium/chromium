@@ -10,14 +10,9 @@
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/mojom/accessibility_helper.mojom.h"
-#include "components/exo/shell_surface_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/aura/env.h"
 #include "ui/aura/window.h"
-#include "ui/aura/window_tree_host.h"
-#include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/widget/widget.h"
 
 namespace arc {
 
@@ -29,30 +24,6 @@ aura::Window* FindWindowToParent(bool (*predicate)(const aura::Window*),
     if (predicate(window))
       return window;
     window = window->parent();
-  }
-  return nullptr;
-}
-
-// Perform a depth-first search of a window from a specified AXTreeID.
-aura::Window* FindWindowWithChildAXTreeId(aura::Window* window,
-                                          const ui::AXTreeID& ax_tree_id) {
-  if (!window)
-    return nullptr;
-  if (ash::IsArcWindow(window)) {
-    if (views::Widget* widget =
-            views::Widget::GetWidgetForNativeWindow(window)) {
-      const ui::AXTreeID& tree_id =
-          static_cast<exo::ShellSurfaceBase*>(widget->widget_delegate())
-              ->GetViewAccessibility()
-              .GetChildTreeID();
-      if (tree_id == ax_tree_id)
-        return window;
-    }
-  }
-  for (aura::Window* child : window->children()) {
-    aura::Window* found = FindWindowWithChildAXTreeId(child, ax_tree_id);
-    if (found)
-      return found;
   }
   return nullptr;
 }
@@ -358,18 +329,6 @@ aura::Window* FindArcWindow(aura::Window* window) {
 
 aura::Window* FindArcOrGhostWindow(aura::Window* window) {
   return FindWindowToParent(IsArcOrGhostWindow, window);
-}
-
-aura::Window* FindWindowFromChildAXTreeId(const ui::AXTreeID& tree_id) {
-  // TODO(hirokisato): Consider to have a map from AXTreeId to a pointer to
-  // aura::Window in ArcAccessibilityTreeTracker, instead of searching all
-  // windows every time.
-  for (auto* host : aura::Env::GetInstance()->window_tree_hosts()) {
-    aura::Window* window = FindWindowWithChildAXTreeId(host->window(), tree_id);
-    if (window)
-      return window;
-  }
-  return nullptr;
 }
 
 }  // namespace arc

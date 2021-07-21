@@ -70,8 +70,8 @@ class ArcAccessibilityHelperBridge
   void SetNativeChromeVoxArcSupport(bool enabled);
 
   // Request Android to send the entire tree with the tree id. Returns true if
-  // the specified tree exists in ARC and a request was sent.
-  bool RefreshTreeIfInActiveWindow(const ui::AXTreeID& tree_id);
+  // the specified tree is an ARC tree and a request was sent.
+  bool EnableTree(const ui::AXTreeID& tree_id);
 
   // KeyedService overrides.
   void Shutdown() override;

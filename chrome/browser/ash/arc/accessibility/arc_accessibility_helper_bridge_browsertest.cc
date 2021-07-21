@@ -170,8 +170,6 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
 
   exo::SetShellClientAccessibilityId(
       test_window_1.shell_surface->GetWidget()->GetNativeWindow(), 10);
-  exo::SetShellClientAccessibilityId(
-      test_window_2.shell_surface->GetWidget()->GetNativeWindow(), 20);
 
   EXPECT_TRUE(
       fake_accessibility_helper_instance_->last_requested_tree_window_key()
@@ -182,8 +180,8 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
                ->get()
                ->get_window_id());
 
-  activation_client->ActivateWindow(
-      test_window_2.shell_surface->GetWidget()->GetNativeWindow());
+  exo::SetShellClientAccessibilityId(
+      test_window_2.shell_surface->GetWidget()->GetNativeWindow(), 20);
 
   EXPECT_EQ(
       20U, fake_accessibility_helper_instance_->last_requested_tree_window_key()

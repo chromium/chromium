@@ -11,10 +11,13 @@
 #include <string>
 #include <tuple>
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_helper_instance_remote_proxy.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "ui/aura/client/focus_change_observer.h"
+#include "ui/aura/env.h"
+#include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
 
 namespace aura {
@@ -30,7 +33,7 @@ namespace arc {
 
 // ArcAccessibilityTreeTracker is responsible for mapping accessibility tree
 // from android to exo window / surfaces.
-class ArcAccessibilityTreeTracker {
+class ArcAccessibilityTreeTracker : public aura::EnvObserver {
  public:
   enum class TreeKeyType {
     kTaskId,
@@ -46,11 +49,14 @@ class ArcAccessibilityTreeTracker {
                               const AccessibilityHelperInstanceRemoteProxy&
                                   accessibility_helper_instance,
                               ArcBridgeService* const arc_bridge_service);
-  ~ArcAccessibilityTreeTracker();
+  ~ArcAccessibilityTreeTracker() override;
 
   ArcAccessibilityTreeTracker(ArcAccessibilityTreeTracker&&) = delete;
   ArcAccessibilityTreeTracker& operator=(ArcAccessibilityTreeTracker&&) =
       delete;
+
+  // aura::EnvObserver overrides:
+  void OnWindowInitialized(aura::Window* window) override;
 
   void OnWindowFocused(aura::Window* gained_focus, aura::Window* lost_focus);
 
@@ -62,8 +68,8 @@ class ArcAccessibilityTreeTracker {
   void OnEnabledFeatureChanged(
       arc::mojom::AccessibilityFilterType new_filter_type);
 
-  // To be called via chrome automation enableTree.
-  bool RefreshTreeIfInActiveWindow(const ui::AXTreeID& tree_id);
+  // Request to send the tree with the specified AXTreeID.
+  bool EnableTree(const ui::AXTreeID& tree_id);
 
   // Returns a pointer to the AXTreeSourceArc corresponding to the event
   // source.
@@ -98,21 +104,29 @@ class ArcAccessibilityTreeTracker {
 
   const TreeMap& trees_for_test() const { return trees_; }
 
+ protected:
+  // Start observing the given window.
+  void TrackWindow(aura::Window* window);
+
  private:
   class FocusChangeObserver;
-  class WindowObserver;
+  class WindowsObserver;
   class AppListPrefsObserver;
   class ArcInputMethodManagerServiceObserver;
   class MojoConnectionObserver;
   class ArcNotificationSurfaceManagerObserver;
 
   AXTreeSourceArc* GetFromKey(const TreeKey&);
-  AXTreeSourceArc* CreateFromKey(TreeKey);
+  AXTreeSourceArc* CreateFromKey(TreeKey, aura::Window* window);
 
   // Update |window_id_to_task_id_| with a given window if necessary.
   void UpdateWindowIdMapping(aura::Window* window);
 
   void UpdateWindowProperties(aura::Window* window);
+
+  void StartTrackingWindows();
+
+  void StartTrackingWindows(aura::Window* window);
 
   // Virtual for testing.
   virtual void DispatchCustomSpokenFeedbackToggled(bool enabled);
@@ -125,7 +139,7 @@ class ArcAccessibilityTreeTracker {
   TreeMap trees_;
 
   std::unique_ptr<FocusChangeObserver> focus_change_observer_;
-  std::unique_ptr<WindowObserver> window_observer_;
+  std::unique_ptr<WindowsObserver> windows_observer_;
   std::unique_ptr<AppListPrefsObserver> app_list_prefs_observer_;
   std::unique_ptr<ArcInputMethodManagerServiceObserver>
       input_manager_service_observer_;
@@ -133,7 +147,10 @@ class ArcAccessibilityTreeTracker {
   std::unique_ptr<ArcNotificationSurfaceManagerObserver>
       notification_surface_observer_;
 
+  base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
+
   std::map<int32_t, int32_t> window_id_to_task_id_;
+  std::map<int32_t, aura::Window*> task_id_to_window_;
 
   arc::mojom::AccessibilityFilterType filter_type_ =
       arc::mojom::AccessibilityFilterType::OFF;

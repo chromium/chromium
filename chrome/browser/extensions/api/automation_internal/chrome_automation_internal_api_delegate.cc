@@ -96,7 +96,7 @@ bool ChromeAutomationInternalApiDelegate::EnableTree(
       arc::ArcAccessibilityHelperBridge::GetForBrowserContext(
           GetActiveUserContext());
   if (bridge)
-    return bridge->RefreshTreeIfInActiveWindow(tree_id);
+    return bridge->EnableTree(tree_id);
 #endif
   return false;
 }

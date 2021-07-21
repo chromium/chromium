@@ -28,7 +28,7 @@ void AccessibilityInfoDataWrapper::Serialize(ui::AXNodeData* out_data) const {
 
 void AccessibilityInfoDataWrapper::PopulateBounds(
     ui::AXNodeData* out_data) const {
-  aura::Window* window = tree_source_->GetWindow();
+  aura::Window* window = tree_source_->window();
   AccessibilityInfoDataWrapper* root = tree_source_->GetRoot();
   gfx::Rect info_data_bounds = GetBounds();
   gfx::RectF& out_bounds_px = out_data->relative_bounds.bounds;

@@ -257,9 +257,8 @@ void ArcAccessibilityHelperBridge::SetNativeChromeVoxArcSupport(bool enabled) {
   tree_tracker_.SetNativeChromeVoxArcSupport(enabled);
 }
 
-bool ArcAccessibilityHelperBridge::RefreshTreeIfInActiveWindow(
-    const ui::AXTreeID& tree_id) {
-  return tree_tracker_.RefreshTreeIfInActiveWindow(tree_id);
+bool ArcAccessibilityHelperBridge::EnableTree(const ui::AXTreeID& tree_id) {
+  return tree_tracker_.EnableTree(tree_id);
 }
 
 void ArcAccessibilityHelperBridge::Shutdown() {
@@ -454,7 +453,11 @@ ArcAccessibilityHelperBridge::OnGetTextLocationDataResultInternal(
   if (!result_rect)
     return absl::nullopt;
 
-  aura::Window* window = FindWindowFromChildAXTreeId(ax_tree_id);
+  AXTreeSourceArc* tree_source = tree_tracker_.GetFromTreeId(ax_tree_id);
+  if (!tree_source)
+    return absl::nullopt;
+
+  aura::Window* window = tree_source->window();
   if (!window)
     return absl::nullopt;
 

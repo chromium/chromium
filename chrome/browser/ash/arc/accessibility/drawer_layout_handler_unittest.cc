@@ -36,7 +36,7 @@ class DrawerLayoutHandlerTest : public testing::Test,
   class TestAXTreeSourceArc : public AXTreeSourceArc {
    public:
     explicit TestAXTreeSourceArc(AXTreeSourceArc::Delegate* delegate)
-        : AXTreeSourceArc(delegate) {}
+        : AXTreeSourceArc(delegate, /*window=*/nullptr) {}
 
     // AXTreeSourceArc overrides.
     AccessibilityInfoDataWrapper* GetFromId(int32_t id) const override {
