@@ -1503,6 +1503,29 @@ TEST_F(DragDropControllerTest, ToplevelWindowDragDelegate) {
   }
 }
 
+TEST_F(DragDropControllerTest, ToplevelWindowDragDelegateWithTouch) {
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
+      aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), -1,
+      gfx::Rect(0, 0, 100, 100)));
+
+  // Emulate a full drag and drop flow and verify that toplevel window drag
+  // delegate gets notified about the events as expected.
+  TestToplevelWindowDragDelegate delegate;
+  drag_drop_controller_->set_toplevel_window_drag_delegate(&delegate);
+
+  auto data(std::make_unique<ui::OSExchangeData>());
+  drag_drop_controller_->StartDragAndDrop(
+      std::move(data), window->GetRootWindow(), window.get(), gfx::Point(5, 5),
+      ui::DragDropTypes::DRAG_MOVE, ui::mojom::DragEventSource::kTouch);
+
+  EXPECT_EQ(TestToplevelWindowDragDelegate::State::kDragStartedInvoked,
+            delegate.state());
+  EXPECT_EQ(ui::mojom::DragEventSource::kTouch, delegate.source());
+  EXPECT_TRUE(delegate.current_location().has_value());
+  EXPECT_EQ(gfx::PointF(5, 5), *delegate.current_location());
+  EXPECT_EQ(0, delegate.events_forwarded());
+}
+
 namespace {
 
 class MockDataTransferPolicyController

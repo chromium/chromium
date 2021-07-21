@@ -172,10 +172,13 @@ DragOperation DragDropController::StartDragAndDrop(
     return DragOperation::kNone;
 
   const ui::OSExchangeDataProvider* provider = &data->provider();
-  // We do not support touch drag/drop without a drag image.
+  // We do not support touch drag/drop without a drag image, unless it is a tab
+  // drag/drop.
   if (source == ui::mojom::DragEventSource::kTouch &&
-      provider->GetDragImage().size().IsEmpty())
+      provider->GetDragImage().size().IsEmpty() &&
+      !toplevel_window_drag_delegate_) {
     return DragOperation::kNone;
+  }
 
   operation_ = DragOperation::kNone;
   current_drag_event_source_ = source;
@@ -383,16 +386,20 @@ void DragDropController::OnGestureEvent(ui::GestureEvent* event) {
   if (current_drag_event_source_ != ui::mojom::DragEventSource::kTouch)
     return;
 
-  // Apply kTouchDragImageVerticalOffset to the location.
+  // Apply kTouchDragImageVerticalOffset to the location, if it is not a tab
+  // drag/drop.
   ui::GestureEvent touch_offset_event(*event,
                                       static_cast<aura::Window*>(nullptr),
                                       static_cast<aura::Window*>(nullptr));
-  gfx::PointF touch_offset_location = touch_offset_event.location_f();
-  gfx::PointF touch_offset_root_location = touch_offset_event.root_location_f();
-  touch_offset_location.Offset(0, kTouchDragImageVerticalOffset);
-  touch_offset_root_location.Offset(0, kTouchDragImageVerticalOffset);
-  touch_offset_event.set_location_f(touch_offset_location);
-  touch_offset_event.set_root_location_f(touch_offset_root_location);
+  if (!toplevel_window_drag_delegate_) {
+    gfx::PointF touch_offset_location = touch_offset_event.location_f();
+    gfx::PointF touch_offset_root_location =
+        touch_offset_event.root_location_f();
+    touch_offset_location.Offset(0, kTouchDragImageVerticalOffset);
+    touch_offset_root_location.Offset(0, kTouchDragImageVerticalOffset);
+    touch_offset_event.set_location_f(touch_offset_location);
+    touch_offset_event.set_root_location_f(touch_offset_root_location);
+  }
 
   aura::Window* translated_target =
       drag_drop_tracker_->GetTarget(touch_offset_event);
