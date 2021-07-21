@@ -28,17 +28,17 @@ TEST_F(ViewFactoryTest, TestViewBuilder) {
   views::View* view_with_layout_manager = nullptr;
   auto layout_manager = std::make_unique<views::FillLayout>();
   auto* layout_manager_ptr = layout_manager.get();
-  auto view = views::Builder<views::View>()
-                  .CopyAddressTo(&parent)
-                  .SetEnabled(false)
-                  .SetVisible(true)
-                  .SetBackground(views::CreateSolidBackground(SK_ColorWHITE))
-                  .SetBorder(views::CreateEmptyBorder(gfx::Insets()))
-                  .AddChildren(
-                      {views::Builder<views::View>()
+  auto view =
+      views::Builder<views::View>()
+          .CopyAddressTo(&parent)
+          .SetEnabled(false)
+          .SetVisible(true)
+          .SetBackground(views::CreateSolidBackground(SK_ColorWHITE))
+          .SetBorder(views::CreateEmptyBorder(gfx::Insets()))
+          .AddChildren(views::Builder<views::View>()
                            .SetEnabled(false)
                            .SetVisible(true)
-                           .SetProperty(views::kMarginsKey, new gfx::Insets(5)),
+                           .SetProperty(views::kMarginsKey, gfx::Insets(5)),
                        views::Builder<views::View>()
                            .SetGroup(5)
                            .SetID(1)
@@ -56,8 +56,8 @@ TEST_F(ViewFactoryTest, TestViewBuilder) {
                            .SetHeader(views::Builder<views::View>().SetID(2)),
                        views::Builder<views::LabelButton>()
                            .CopyAddressTo(&view_with_layout_manager)
-                           .SetLayoutManager(std::move(layout_manager))})
-                  .Build();
+                           .SetLayoutManager(std::move(layout_manager)))
+          .Build();
   ASSERT_TRUE(view.get());
   EXPECT_NE(parent, nullptr);
   EXPECT_NE(button, nullptr);
@@ -88,11 +88,10 @@ TEST_F(ViewFactoryTest, TestViewBuilderOwnerships) {
       .SetVisible(true)
       .SetBackground(views::CreateSolidBackground(SK_ColorWHITE))
       .SetBorder(views::CreateEmptyBorder(gfx::Insets()));
-  view_builder.AddChild(
-      views::Builder<views::View>()
-          .SetEnabled(false)
-          .SetVisible(true)
-          .SetProperty(views::kMarginsKey, new gfx::Insets(5)));
+  view_builder.AddChild(views::Builder<views::View>()
+                            .SetEnabled(false)
+                            .SetVisible(true)
+                            .SetProperty(views::kMarginsKey, gfx::Insets(5)));
   view_builder.AddChild(
       views::Builder<views::View>().SetGroup(5).SetID(1).SetFocusBehavior(
           views::View::FocusBehavior::NEVER));
@@ -107,7 +106,7 @@ TEST_F(ViewFactoryTest, TestViewBuilderOwnerships) {
                                              .CopyAddressTo(&scroll_button)
                                              .SetText(u"ScrollTest"))
                             .SetHeader(views::Builder<views::View>().SetID(2)));
-  auto view = view_builder.Build();
+  auto view = std::move(view_builder).Build();
 
   ASSERT_TRUE(view.get());
   EXPECT_NE(parent, nullptr);

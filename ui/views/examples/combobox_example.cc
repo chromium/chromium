@@ -51,19 +51,18 @@ void ComboboxExample::CreateExampleView(View* container) {
           .SetInsideBorderInsets(gfx::Insets(10, 0))
           .SetBetweenChildSpacing(5)
           .AddChildren(
-              {Builder<Combobox>()
-                   .CopyAddressTo(&combobox_)
-                   .SetOwnedModel(std::make_unique<ComboboxModelExample>())
-                   .SetSelectedIndex(3)
-                   .SetCallback(base::BindRepeating(
-                       &ComboboxExample::ValueChanged, base::Unretained(this))),
-               Builder<Combobox>()
-                   .SetOwnedModel(std::make_unique<ComboboxModelExample>())
-                   .SetEnabled(false)
-                   .SetSelectedIndex(4)
-                   .SetCallback(
-                       base::BindRepeating(&ComboboxExample::ValueChanged,
-                                           base::Unretained(this)))})
+              Builder<Combobox>()
+                  .CopyAddressTo(&combobox_)
+                  .SetOwnedModel(std::make_unique<ComboboxModelExample>())
+                  .SetSelectedIndex(3)
+                  .SetCallback(base::BindRepeating(
+                      &ComboboxExample::ValueChanged, base::Unretained(this))),
+              Builder<Combobox>()
+                  .SetOwnedModel(std::make_unique<ComboboxModelExample>())
+                  .SetEnabled(false)
+                  .SetSelectedIndex(4)
+                  .SetCallback(base::BindRepeating(
+                      &ComboboxExample::ValueChanged, base::Unretained(this))))
           .Build();
 
   container->AddChildView(std::move(view));

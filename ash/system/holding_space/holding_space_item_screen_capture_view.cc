@@ -61,7 +61,7 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
                                                   kHoldingSpaceIconSize))));
   }
 
-  builder
+  std::move(builder)
       .AddChild(
           views::Builder<views::FlexLayoutView>()
               .SetOrientation(views::LayoutOrientation::kHorizontal)

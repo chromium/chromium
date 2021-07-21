@@ -17,7 +17,7 @@ ViewBuilderCore::~ViewBuilderCore() = default;
 
 ViewBuilderCore& ViewBuilderCore::operator=(ViewBuilderCore&&) = default;
 
-std::unique_ptr<View> ViewBuilderCore::Build() {
+std::unique_ptr<View> ViewBuilderCore::Build() && {
   return DoBuild();
 }
 

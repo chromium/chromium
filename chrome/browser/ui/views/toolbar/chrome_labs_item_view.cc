@@ -163,54 +163,52 @@ ChromeLabsItemView::ChromeLabsItemView(
   AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kHorizontal)
-          .AddChildren({
-            views::Builder<views::Combobox>()
-                .CopyAddressTo(&lab_state_combobox_)
-                .SetTooltipTextAndAccessibleName(l10n_util::GetStringFUTF16(
-                    IDS_TOOLTIP_CHROMELABS_COMBOBOX, lab.visible_name))
+          .AddChildren(
+              views::Builder<views::Combobox>()
+                  .CopyAddressTo(&lab_state_combobox_)
+                  .SetTooltipTextAndAccessibleName(l10n_util::GetStringFUTF16(
+                      IDS_TOOLTIP_CHROMELABS_COMBOBOX, lab.visible_name))
 #if defined(OS_MAC)
-                .SetAccessibleName(l10n_util::GetStringFUTF16(
-                    IDS_ACCNAME_CHROMELABS_COMBOBOX_MAC, lab.visible_name,
-                    lab.visible_description))
+                  .SetAccessibleName(l10n_util::GetStringFUTF16(
+                      IDS_ACCNAME_CHROMELABS_COMBOBOX_MAC, lab.visible_name,
+                      lab.visible_description))
 #else
-                .SetAccessibleName(l10n_util::GetStringFUTF16(
-                    IDS_ACCNAME_CHROMELABS_COMBOBOX, lab.visible_name))
+                  .SetAccessibleName(l10n_util::GetStringFUTF16(
+                      IDS_ACCNAME_CHROMELABS_COMBOBOX, lab.visible_name))
 
 #endif
-                .SetOwnedModel(std::make_unique<LabsComboboxModel>(
-                    lab, feature_entry_, default_index))
-                .SetCallback(base::BindRepeating(combobox_callback, this))
+                  .SetOwnedModel(std::make_unique<LabsComboboxModel>(
+                      lab, feature_entry_, default_index))
+                  .SetCallback(base::BindRepeating(combobox_callback, this))
 
-                .SetProperty(views::kFlexBehaviorKey,
-                             views::FlexSpecification(
-                                 views::MinimumFlexSizeRule::kScaleToZero,
-                                 views::MaximumFlexSizeRule::kPreferred))
+                  .SetProperty(views::kFlexBehaviorKey,
+                               views::FlexSpecification(
+                                   views::MinimumFlexSizeRule::kScaleToZero,
+                                   views::MaximumFlexSizeRule::kPreferred))
 
-                .SetSizeToLargestLabel(false),
-                views::Builder<views::MdTextButton>()
-                    .CopyAddressTo(&feedback_button_)
-                    .SetTooltipText(l10n_util::GetStringFUTF16(
-                        IDS_TOOLTIP_CHROMELABS_FEEDBACK_BUTTON,
-                        lab.visible_name))
-                    .SetCallback(base::BindRepeating(&ShowFeedbackPage, browser,
-                                                     lab.feedback_category_name,
-                                                     lab.visible_name))
-                    .SetText(
-                        l10n_util::GetStringUTF16(IDS_CHROMELABS_SEND_FEEDBACK))
-                    .SetProperty(
-                        views::kMarginsKey,
-                        gfx::Insets(
-                            0,
-                            views::LayoutProvider::Get()->GetDistanceMetric(
-                                views::DISTANCE_RELATED_CONTROL_HORIZONTAL),
-                            0, 0))
-                    .SetProperty(
-                        views::kFlexBehaviorKey,
-                        views::FlexSpecification(
-                            views::MinimumFlexSizeRule::kPreferred,
-                            views::MaximumFlexSizeRule::kUnbounded)
-                            .WithAlignment(views::LayoutAlignment::kEnd))
-          })
+                  .SetSizeToLargestLabel(false),
+              views::Builder<views::MdTextButton>()
+                  .CopyAddressTo(&feedback_button_)
+                  .SetTooltipText(l10n_util::GetStringFUTF16(
+                      IDS_TOOLTIP_CHROMELABS_FEEDBACK_BUTTON, lab.visible_name))
+                  .SetCallback(base::BindRepeating(&ShowFeedbackPage, browser,
+                                                   lab.feedback_category_name,
+                                                   lab.visible_name))
+                  .SetText(
+                      l10n_util::GetStringUTF16(IDS_CHROMELABS_SEND_FEEDBACK))
+                  .SetProperty(
+                      views::kMarginsKey,
+                      gfx::Insets(
+                          0,
+                          views::LayoutProvider::Get()->GetDistanceMetric(
+                              views::DISTANCE_RELATED_CONTROL_HORIZONTAL),
+                          0, 0))
+                  .SetProperty(
+                      views::kFlexBehaviorKey,
+                      views::FlexSpecification(
+                          views::MinimumFlexSizeRule::kPreferred,
+                          views::MaximumFlexSizeRule::kUnbounded)
+                          .WithAlignment(views::LayoutAlignment::kEnd)))
           .Build());
 }
 

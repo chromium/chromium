@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/views/views_export.h"
@@ -101,6 +102,26 @@ class ClassPropertyMoveSetter : public PropertySetterBase {
   TValue value_;
 };
 
+template <typename TClass, typename TValue>
+class ClassPropertyUniquePtrSetter : public PropertySetterBase {
+ public:
+  ClassPropertyUniquePtrSetter(const ui::ClassProperty<TValue*>* property,
+                               std::unique_ptr<TValue> value)
+      : property_(property), value_(std::move(value)) {}
+  ClassPropertyUniquePtrSetter(const ClassPropertyUniquePtrSetter&) = delete;
+  ClassPropertyUniquePtrSetter& operator=(const ClassPropertyUniquePtrSetter&) =
+      delete;
+  ~ClassPropertyUniquePtrSetter() override = default;
+
+  void SetProperty(View* obj) override {
+    static_cast<TClass*>(obj)->SetProperty(property_, std::move(value_));
+  }
+
+ private:
+  const ui::ClassProperty<TValue*>* property_;
+  std::unique_ptr<TValue> value_;
+};
+
 template <typename TClass, typename TSig, TSig Set>
 class ClassMethodCaller : public PropertySetterBase {
  public:
@@ -121,8 +142,8 @@ class VIEWS_EXPORT ViewBuilderCore {
   ViewBuilderCore& operator=(ViewBuilderCore&&);
   virtual ~ViewBuilderCore();
 
-  std::unique_ptr<View> Build();
-  virtual std::unique_ptr<ViewBuilderCore> Release() = 0;
+  std::unique_ptr<View> Build() && WARN_UNUSED_RESULT;
+  virtual std::unique_ptr<ViewBuilderCore> Release() WARN_UNUSED_RESULT = 0;
 
  protected:
   using ChildList = std::vector<std::unique_ptr<ViewBuilderCore>>;
@@ -140,14 +161,14 @@ class VIEWS_EXPORT ViewBuilderCore {
 template <typename TClass, typename TValue, typename TSig, TSig Set>
 class ViewBuilderSetter : public PropertySetterBase {
  public:
-  explicit ViewBuilderSetter(std::reference_wrapper<ViewBuilderCore> builder)
-      : builder_(builder.get().Release()) {}
+  explicit ViewBuilderSetter(std::unique_ptr<ViewBuilderCore> builder)
+      : builder_(std::move(builder)) {}
   ViewBuilderSetter(const ViewBuilderSetter&) = delete;
   ViewBuilderSetter& operator=(const ViewBuilderSetter&) = delete;
   ~ViewBuilderSetter() override = default;
 
   void SetProperty(View* obj) override {
-    (static_cast<TClass*>(obj)->*Set)(builder_->Build());
+    (static_cast<TClass*>(obj)->*Set)(std::move(*builder_).Build());
   }
 
  private:

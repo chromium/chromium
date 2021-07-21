@@ -50,17 +50,17 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
   views::Builder<SwitchAccessMenuButton>(this)
       .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
       .AddChildren(
-          {views::Builder<views::ImageView>()
-               .CopyAddressTo(&image_view_)
-               .SetImage(gfx::CreateVectorIcon(icon, kIconSizeDip, icon_color)),
-           views::Builder<views::Label>()
-               .CopyAddressTo(&label_)
-               .SetText(label_text)
-               .SetTextContext(views::style::CONTEXT_BUTTON)
-               .SetAutoColorReadabilityEnabled(false)
-               .SetEnabledColor(label_color)
-               .SetMultiLine(true)
-               .SetMaximumWidth(kLabelMaxWidthDip)})
+          views::Builder<views::ImageView>()
+              .CopyAddressTo(&image_view_)
+              .SetImage(gfx::CreateVectorIcon(icon, kIconSizeDip, icon_color)),
+          views::Builder<views::Label>()
+              .CopyAddressTo(&label_)
+              .SetText(label_text)
+              .SetTextContext(views::style::CONTEXT_BUTTON)
+              .SetAutoColorReadabilityEnabled(false)
+              .SetEnabledColor(label_color)
+              .SetMultiLine(true)
+              .SetMaximumWidth(kLabelMaxWidthDip))
       .BuildChildren();
 
   std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(

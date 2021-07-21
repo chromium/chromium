@@ -88,18 +88,17 @@ std::unique_ptr<views::View> ResizeConfirmationDialogView::MakeContentsView() {
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       .SetBetweenChildSpacing(19)
       .SetProperty(views::kMarginsKey, gfx::Insets(0, 0, 23, 0))
-      .AddChildren(
-          {views::Builder<views::Label>()
-               .SetText(l10n_util::GetStringUTF16(
-                   IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_BODY))
-               .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
-               .SetTextStyle(views::style::STYLE_SECONDARY)
-               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-               .SetMultiLine(true),
-           views::Builder<views::Checkbox>()
-               .CopyAddressTo(&do_not_ask_checkbox_)
-               .SetText(l10n_util::GetStringUTF16(
-                   IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_DONT_ASK_ME))})
+      .AddChildren(views::Builder<views::Label>()
+                       .SetText(l10n_util::GetStringUTF16(
+                           IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_BODY))
+                       .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+                       .SetTextStyle(views::style::STYLE_SECONDARY)
+                       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                       .SetMultiLine(true),
+                   views::Builder<views::Checkbox>()
+                       .CopyAddressTo(&do_not_ask_checkbox_)
+                       .SetText(l10n_util::GetStringUTF16(
+                           IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_DONT_ASK_ME)))
       .Build();
 }
 
@@ -110,23 +109,23 @@ std::unique_ptr<views::View> ResizeConfirmationDialogView::MakeButtonsView() {
       .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd)
       .SetBetweenChildSpacing(provider->GetDistanceMetric(
           views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL))
-      .AddChildren({views::Builder<views::MdTextButton>()  // Cancel button.
-                        .CopyAddressTo(&cancel_button_)
-                        .SetCallback(base::BindRepeating(
-                            &ResizeConfirmationDialogView::OnButtonClicked,
-                            base::Unretained(this), false))
-                        .SetText(l10n_util::GetStringUTF16(IDS_APP_CANCEL))
-                        .SetProminent(false)
-                        .SetIsDefault(false),
-                    views::Builder<views::MdTextButton>()  // Accept button.
-                        .CopyAddressTo(&accept_button_)
-                        .SetCallback(base::BindRepeating(
-                            &ResizeConfirmationDialogView::OnButtonClicked,
-                            base::Unretained(this), true))
-                        .SetText(l10n_util::GetStringUTF16(
-                            IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_ACCEPT))
-                        .SetProminent(true)
-                        .SetIsDefault(true)})
+      .AddChildren(views::Builder<views::MdTextButton>()  // Cancel button.
+                       .CopyAddressTo(&cancel_button_)
+                       .SetCallback(base::BindRepeating(
+                           &ResizeConfirmationDialogView::OnButtonClicked,
+                           base::Unretained(this), false))
+                       .SetText(l10n_util::GetStringUTF16(IDS_APP_CANCEL))
+                       .SetProminent(false)
+                       .SetIsDefault(false),
+                   views::Builder<views::MdTextButton>()  // Accept button.
+                       .CopyAddressTo(&accept_button_)
+                       .SetCallback(base::BindRepeating(
+                           &ResizeConfirmationDialogView::OnButtonClicked,
+                           base::Unretained(this), true))
+                       .SetText(l10n_util::GetStringUTF16(
+                           IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_ACCEPT))
+                       .SetProminent(true)
+                       .SetIsDefault(true))
       .Build();
 }
 

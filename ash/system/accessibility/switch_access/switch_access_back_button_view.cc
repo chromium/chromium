@@ -41,17 +41,17 @@ SwitchAccessBackButtonView::SwitchAccessBackButtonView(bool for_menu) {
   views::Builder<SwitchAccessBackButtonView>(this)
       .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
       .AddChildren(
-          {views::Builder<FloatingMenuButton>()
-               .CopyAddressTo(&back_button_)
-               .SetVectorIcon(for_menu ? kSwitchAccessCloseIcon
-                                       : kSwitchAccessBackIcon)
-               .SetTooltipText(l10n_util::GetStringUTF16(
-                   IDS_ASH_SWITCH_ACCESS_BACK_BUTTON_DESCRIPTION))
-               .SetPreferredSize(gfx::Size(2 * kRadiusDp, 2 * kRadiusDp))
-               .SetDrawHighlight(true)
-               .SetCallback(base::BindRepeating(
-                   &SwitchAccessBackButtonView::OnButtonPressed,
-                   base::Unretained(this)))})
+          views::Builder<FloatingMenuButton>()
+              .CopyAddressTo(&back_button_)
+              .SetVectorIcon(for_menu ? kSwitchAccessCloseIcon
+                                      : kSwitchAccessBackIcon)
+              .SetTooltipText(l10n_util::GetStringUTF16(
+                  IDS_ASH_SWITCH_ACCESS_BACK_BUTTON_DESCRIPTION))
+              .SetPreferredSize(gfx::Size(2 * kRadiusDp, 2 * kRadiusDp))
+              .SetDrawHighlight(true)
+              .SetCallback(base::BindRepeating(
+                  &SwitchAccessBackButtonView::OnButtonPressed,
+                  base::Unretained(this))))
       .SetSize(gfx::Size(side_length, side_length))
       .BuildChildren();
 }

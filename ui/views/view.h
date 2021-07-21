@@ -198,7 +198,7 @@ enum PropertyEffects {
 //   a callback.
 //
 //   base::CallbackListSubscription AddFrobbleChangedCallback(
-//       PropertyChangedCallback callback) WARN_UNUSED_RETURN;
+//       PropertyChangedCallback callback) WARN_UNUSED_RESULT;
 //
 //   Each callback uses the the existing base::Bind mechanisms which allow for
 //   various kinds of callbacks; object methods, normal functions and lambdas.
@@ -2146,7 +2146,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, View, BaseView)
 template <typename LayoutManager>
-BuilderT& SetLayoutManager(std::unique_ptr<LayoutManager> layout_manager) {
+BuilderT& SetLayoutManager(std::unique_ptr<LayoutManager> layout_manager) & {
   auto setter = std::make_unique<::views::internal::PropertySetter<
       ViewClass_, std::unique_ptr<LayoutManager>,
       decltype((static_cast<LayoutManager* (
@@ -2155,6 +2155,10 @@ BuilderT& SetLayoutManager(std::unique_ptr<LayoutManager> layout_manager) {
       &ViewClass_::SetLayoutManager>>(std::move(layout_manager));
   ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
   return *static_cast<BuilderT*>(this);
+}
+template <typename LayoutManager>
+BuilderT&& SetLayoutManager(std::unique_ptr<LayoutManager> layout_manager) && {
+  return std::move(this->SetLayoutManager(std::move(layout_manager)));
 }
 VIEW_BUILDER_PROPERTY(std::unique_ptr<Background>, Background)
 VIEW_BUILDER_PROPERTY(std::unique_ptr<Border>, Border)

@@ -161,58 +161,58 @@ FindBarView::FindBarView(FindBarHost* host) {
       .SetHost(host)
       .SetFlipCanvasOnPaintForRTLUI(true)
       .AddChildren(
-          {views::Builder<views::Textfield>()
-               .CopyAddressTo(&find_text_)
-               .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FIND))
-               .SetBorder(views::NullBorder())
-               .SetDefaultWidthInChars(30)
-               .SetID(VIEW_ID_FIND_IN_PAGE_TEXT_FIELD)
-               .SetMinimumWidthInChars(1)
-               .SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF)
-               .SetProperty(views::kMarginsKey,
-                            gfx::Insets(toast_control_vertical_margin +
-                                        horizontal_margin))
-               .SetController(this),
-           views::Builder<FindBarMatchCountLabel>()
-               .CopyAddressTo(&match_count_text_)
-               .SetCanProcessEventsWithinSubtree(false)
-               .SetProperty(views::kMarginsKey,
-                            gfx::Insets(toast_label_vertical_margin +
-                                        horizontal_margin)),
-           views::Builder<views::Separator>()
-               .CopyAddressTo(&separator_)
-               .SetCanProcessEventsWithinSubtree(false)
-               .SetProperty(views::kMarginsKey,
-                            gfx::Insets(toast_control_vertical_margin +
-                                        horizontal_margin)),
-           views::Builder<views::ImageButton>()
-               .CopyAddressTo(&find_previous_button_)
-               .SetAccessibleName(
-                   l10n_util::GetStringUTF16(IDS_ACCNAME_PREVIOUS))
-               .SetID(VIEW_ID_FIND_IN_PAGE_PREVIOUS_BUTTON)
-               .SetTooltipText(
-                   l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_PREVIOUS_TOOLTIP))
-               .SetCallback(base::BindRepeating(&FindBarView::FindNext,
-                                                base::Unretained(this), true))
-               .SetProperty(views::kMarginsKey, image_button_margins),
-           views::Builder<views::ImageButton>()
-               .CopyAddressTo(&find_next_button_)
-               .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_NEXT))
-               .SetID(VIEW_ID_FIND_IN_PAGE_NEXT_BUTTON)
-               .SetTooltipText(
-                   l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_NEXT_TOOLTIP))
-               .SetCallback(base::BindRepeating(&FindBarView::FindNext,
-                                                base::Unretained(this), false))
-               .SetProperty(views::kMarginsKey, image_button_margins),
-           views::Builder<views::ImageButton>()
-               .CopyAddressTo(&close_button_)
-               .SetID(VIEW_ID_FIND_IN_PAGE_CLOSE_BUTTON)
-               .SetTooltipText(
-                   l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_CLOSE_TOOLTIP))
-               .SetAnimationDuration(base::TimeDelta())
-               .SetCallback(base::BindRepeating(&FindBarView::EndFindSession,
-                                                base::Unretained(this)))
-               .SetProperty(views::kMarginsKey, image_button_margins)})
+          views::Builder<views::Textfield>()
+              .CopyAddressTo(&find_text_)
+              .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FIND))
+              .SetBorder(views::NullBorder())
+              .SetDefaultWidthInChars(30)
+              .SetID(VIEW_ID_FIND_IN_PAGE_TEXT_FIELD)
+              .SetMinimumWidthInChars(1)
+              .SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF)
+              .SetProperty(views::kMarginsKey,
+                           gfx::Insets(toast_control_vertical_margin +
+                                       horizontal_margin))
+              .SetController(this),
+          views::Builder<FindBarMatchCountLabel>()
+              .CopyAddressTo(&match_count_text_)
+              .SetCanProcessEventsWithinSubtree(false)
+              .SetProperty(
+                  views::kMarginsKey,
+                  gfx::Insets(toast_label_vertical_margin + horizontal_margin)),
+          views::Builder<views::Separator>()
+              .CopyAddressTo(&separator_)
+              .SetCanProcessEventsWithinSubtree(false)
+              .SetProperty(views::kMarginsKey,
+                           gfx::Insets(toast_control_vertical_margin +
+                                       horizontal_margin)),
+          views::Builder<views::ImageButton>()
+              .CopyAddressTo(&find_previous_button_)
+              .SetAccessibleName(
+                  l10n_util::GetStringUTF16(IDS_ACCNAME_PREVIOUS))
+              .SetID(VIEW_ID_FIND_IN_PAGE_PREVIOUS_BUTTON)
+              .SetTooltipText(
+                  l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_PREVIOUS_TOOLTIP))
+              .SetCallback(base::BindRepeating(&FindBarView::FindNext,
+                                               base::Unretained(this), true))
+              .SetProperty(views::kMarginsKey, image_button_margins),
+          views::Builder<views::ImageButton>()
+              .CopyAddressTo(&find_next_button_)
+              .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_NEXT))
+              .SetID(VIEW_ID_FIND_IN_PAGE_NEXT_BUTTON)
+              .SetTooltipText(
+                  l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_NEXT_TOOLTIP))
+              .SetCallback(base::BindRepeating(&FindBarView::FindNext,
+                                               base::Unretained(this), false))
+              .SetProperty(views::kMarginsKey, image_button_margins),
+          views::Builder<views::ImageButton>()
+              .CopyAddressTo(&close_button_)
+              .SetID(VIEW_ID_FIND_IN_PAGE_CLOSE_BUTTON)
+              .SetTooltipText(
+                  l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_CLOSE_TOOLTIP))
+              .SetAnimationDuration(base::TimeDelta())
+              .SetCallback(base::BindRepeating(&FindBarView::EndFindSession,
+                                               base::Unretained(this)))
+              .SetProperty(views::kMarginsKey, image_button_margins))
       .BuildChildren();
 
   SetFlexForView(find_text_, 1, true);
