@@ -756,6 +756,8 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
                                        dedupKey: 123});)",
                                        url::Origin::Create(impression_url))));
 
+  expected_report1.WaitForReport();
+
   // This report should be deduped against the previous one.
   EXPECT_TRUE(
       ExecJs(web_contents(), JsReplace(R"(registerConversion({data: 9,
@@ -770,7 +772,6 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
                                        dedupKey: 456});)",
                                        url::Origin::Create(impression_url))));
 
-  expected_report1.WaitForReport();
   expected_report2.WaitForReport();
 }
 
