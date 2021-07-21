@@ -53,6 +53,11 @@
 #include "chrome/install_static/install_util.h"
 #endif  // defined(OS_WIN)
 
+#if defined(OS_FUCHSIA)
+#include "base/notreached.h"
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#endif
+
 namespace policy {
 
 namespace {
@@ -81,7 +86,7 @@ void ChromeBrowserCloudManagementControllerDesktop::
 #elif defined(OS_WIN)
   storage_delegate = std::make_unique<BrowserDMTokenStorageWin>();
 #else
-  NOT_REACHED();
+  NOTREACHED();
 #endif
 
   BrowserDMTokenStorage::SetDelegate(std::move(storage_delegate));

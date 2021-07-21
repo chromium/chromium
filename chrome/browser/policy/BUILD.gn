@@ -9,6 +9,8 @@ source_set("path_parser") {
 
   if (is_chromeos || is_linux) {
     sources += [ "policy_path_parser_linux.cc" ]
+  } else if (is_fuchsia) {
+    sources += [ "policy_path_parser_fuchsia.cc" ]
   } else if (is_mac) {
     sources += [ "policy_path_parser_mac.mm" ]
   } else if (is_win) {

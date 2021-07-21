@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_POLICY_POLICY_PATH_PARSER_H_
 
 #include "base/files/file_path.h"
+#include "build/build_config.h"
 
 namespace policy {
 
@@ -51,6 +52,7 @@ namespace path_parser {
 base::FilePath::StringType ExpandPathVariables(
     const base::FilePath::StringType& untranslated_string);
 
+#if defined(OS_WIN) || defined(OS_MAC)
 // A helper function used to read the UserDataDir path policy without relying on
 // any policy infrastructure. This is required because this policy is needed
 // much earlier before the PrefService is initialized.
@@ -61,6 +63,7 @@ base::FilePath::StringType ExpandPathVariables(
 // profile path is not read from the PathService which already takes this into
 // account.
 void CheckUserDataDirPolicy(base::FilePath* user_data_dir);
+#endif  // defined(OS_WIN) || defined(OS_MAC)
 
 }  // namespace path_parser
 
