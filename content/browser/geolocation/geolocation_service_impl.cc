@@ -11,7 +11,6 @@
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
@@ -104,11 +103,9 @@ void GeolocationServiceImpl::CreateGeolocationWithPermissionStatus(
   if (permission_status != blink::mojom::PermissionStatus::GRANTED)
     return;
 
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host_);
-
-  geolocation_context_->BindGeolocation(
-      std::move(receiver), web_contents->GetLastCommittedURL().GetOrigin());
+  const auto& origin =
+      render_frame_host_->GetMainFrame()->GetLastCommittedOrigin();
+  geolocation_context_->BindGeolocation(std::move(receiver), origin.GetURL());
 }
 
 }  // namespace content

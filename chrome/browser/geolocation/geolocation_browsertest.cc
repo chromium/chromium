@@ -37,7 +37,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "net/base/escape.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
@@ -166,16 +168,25 @@ class GeolocationBrowserTest : public InProcessBrowserTest {
   ~GeolocationBrowserTest() override = default;
 
   // InProcessBrowserTest:
+  void SetUpOnMainThread() override;
   void TearDownInProcessBrowserTestFixture() override;
 
   Browser* current_browser() { return current_browser_; }
   void set_html_for_tests(const std::string& html_for_tests) {
     html_for_tests_ = html_for_tests;
   }
-  const GURL& current_url() const { return current_url_; }
   const GURL& iframe_url(size_t i) const { return iframe_urls_[i]; }
   double fake_latitude() const { return fake_latitude_; }
   double fake_longitude() const { return fake_longitude_; }
+
+  GURL GetTestURL() const {
+    // Return the current test url for the top level page.
+    return embedded_test_server()->GetURL(html_for_tests_);
+  }
+
+  content::WebContents* web_contents() {
+    return current_browser()->tab_strip_model()->GetActiveWebContents();
+  }
 
   // Initializes the test server and navigates to the initial url.
   void Initialize(InitializationOptions options);
@@ -226,14 +237,14 @@ class GeolocationBrowserTest : public InProcessBrowserTest {
   double fake_longitude_ = 4.56;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
 
+  // The current Browser as set in Initialize. May be for an incognito profile.
+  Browser* current_browser_ = nullptr;
+
  private:
   // Calls watchPosition() in JavaScript and accepts or denies the resulting
   // permission request. Returns the JavaScript response.
   std::string WatchPositionAndRespondToPermissionRequest(
       permissions::PermissionRequestManager::AutoResponseType request_response);
-
-  // The current Browser as set in Initialize. May be for an incognito profile.
-  Browser* current_browser_ = nullptr;
 
   // The path element of a URL referencing the html content for this test.
   std::string html_for_tests_ = "/geolocation/simple.html";
@@ -241,12 +252,8 @@ class GeolocationBrowserTest : public InProcessBrowserTest {
   // The frame where the JavaScript calls will run.
   content::RenderFrameHost* render_frame_host_ = nullptr;
 
-  // The current url for the top level page.
-  GURL current_url_;
-
   // The urls for the iframes loaded by LoadIFrames.
   std::vector<GURL> iframe_urls_;
-
 
   DISALLOW_COPY_AND_ASSIGN(GeolocationBrowserTest);
 };
@@ -259,19 +266,17 @@ GeolocationBrowserTest::GeolocationBrowserTest()
               fake_latitude_,
               fake_longitude_)) {}
 
+void GeolocationBrowserTest::SetUpOnMainThread() {
+  ASSERT_TRUE(embedded_test_server()->Start());
+}
+
 void GeolocationBrowserTest::TearDownInProcessBrowserTestFixture() {
   LOG(WARNING) << "TearDownInProcessBrowserTestFixture. Test Finished.";
 }
 
 void GeolocationBrowserTest::Initialize(InitializationOptions options) {
-  if (!embedded_test_server()->Started() && !embedded_test_server()->Start()) {
-    ADD_FAILURE() << "Test server failed to start.";
-    return;
-  }
-
-  current_url_ = embedded_test_server()->GetURL(html_for_tests_);
   if (options == INITIALIZATION_OFFTHERECORD) {
-    current_browser_ = OpenURLOffTheRecord(browser()->profile(), current_url_);
+    current_browser_ = OpenURLOffTheRecord(browser()->profile(), GetTestURL());
   } else {
     current_browser_ = browser();
     if (options == INITIALIZATION_NEWTAB)
@@ -279,7 +284,7 @@ void GeolocationBrowserTest::Initialize(InitializationOptions options) {
   }
   ASSERT_TRUE(current_browser_);
   if (options != INITIALIZATION_OFFTHERECORD)
-    ui_test_utils::NavigateToURL(current_browser_, current_url_);
+    ui_test_utils::NavigateToURL(current_browser_, GetTestURL());
 
   // By default the main frame is used for JavaScript execution.
   SetFrameForScriptExecution("");
@@ -296,15 +301,13 @@ void GeolocationBrowserTest::LoadIFrames() {
 
 void GeolocationBrowserTest::SetFrameForScriptExecution(
     const std::string& frame_name) {
-  content::WebContents* web_contents =
-      current_browser_->tab_strip_model()->GetActiveWebContents();
   render_frame_host_ = nullptr;
 
   if (frame_name.empty()) {
-    render_frame_host_ = web_contents->GetMainFrame();
+    render_frame_host_ = web_contents()->GetMainFrame();
   } else {
     render_frame_host_ = content::FrameMatchingPredicate(
-        web_contents,
+        web_contents(),
         base::BindRepeating(&content::FrameMatchesName, frame_name));
   }
   DCHECK(render_frame_host_);
@@ -329,16 +332,14 @@ bool GeolocationBrowserTest::WatchPositionAndDenyPermission() {
 
 std::string GeolocationBrowserTest::WatchPositionAndRespondToPermissionRequest(
     permissions::PermissionRequestManager::AutoResponseType request_response) {
-  permissions::PermissionRequestManager::FromWebContents(
-      current_browser_->tab_strip_model()->GetActiveWebContents())
+  permissions::PermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(request_response);
   return RunScript(render_frame_host_, "geoStartWithAsyncResponse()");
 }
 
 void GeolocationBrowserTest::WatchPositionAndObservePermissionRequest(
     bool request_should_display) {
-  permissions::PermissionRequestObserver observer(
-      current_browser_->tab_strip_model()->GetActiveWebContents());
+  permissions::PermissionRequestObserver observer(web_contents());
   if (request_should_display) {
     // Control will return as soon as the API call is made, and then the
     // observer will wait for the request to display.
@@ -396,10 +397,9 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, DisplaysPrompt) {
   ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT));
   ASSERT_TRUE(WatchPositionAndGrantPermission());
 
-  EXPECT_EQ(
-      CONTENT_SETTING_ALLOW,
-      GetHostContentSettingsMap()->GetContentSetting(
-          current_url(), current_url(), ContentSettingsType::GEOLOCATION));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            GetHostContentSettingsMap()->GetContentSetting(
+                GetTestURL(), GetTestURL(), ContentSettingsType::GEOLOCATION));
 
   // Ensure a second request doesn't create a prompt in this tab.
   WatchPositionAndObservePermissionRequest(false);
@@ -416,10 +416,9 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, ErrorOnPermissionDenied) {
   EXPECT_TRUE(WatchPositionAndDenyPermission());
   ExpectValueFromScript(GetErrorCodePermissionDenied(), "geoGetLastError()");
 
-  EXPECT_EQ(
-      CONTENT_SETTING_BLOCK,
-      GetHostContentSettingsMap()->GetContentSetting(
-          current_url(), current_url(), ContentSettingsType::GEOLOCATION));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            GetHostContentSettingsMap()->GetContentSetting(
+                GetTestURL(), GetTestURL(), ContentSettingsType::GEOLOCATION));
 
   // Ensure a second request doesn't create a prompt in this tab.
   WatchPositionAndObservePermissionRequest(false);
@@ -438,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, NoPromptForSecondTab) {
 IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, NoPromptForDeniedOrigin) {
   ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT));
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      current_url(), current_url(), ContentSettingsType::GEOLOCATION,
+      GetTestURL(), GetTestURL(), ContentSettingsType::GEOLOCATION,
       CONTENT_SETTING_BLOCK);
 
   // Check that the request wasn't shown but we get an error for this origin.
@@ -454,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, NoPromptForDeniedOrigin) {
 IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, NoPromptForAllowedOrigin) {
   ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT));
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      current_url(), current_url(), ContentSettingsType::GEOLOCATION,
+      GetTestURL(), GetTestURL(), ContentSettingsType::GEOLOCATION,
       CONTENT_SETTING_ALLOW);
   // The request is not shown, there is no error, and the position gets to the
   // script.
@@ -531,8 +530,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, InvalidUrlRequest) {
   set_html_for_tests("/geolocation/invalid_request_url.html");
   ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT));
 
-  content::WebContents* original_tab =
-      current_browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* original_tab = web_contents();
   ExpectValueFromScript(GetErrorCodePermissionDenied(),
                         "requestGeolocationFromInvalidUrl()");
   ExpectValueFromScriptForFrame("1", "isAlive()", original_tab->GetMainFrame());
@@ -606,6 +604,62 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, TabDestroyed) {
   // valid when the test was written, but now it just prints "Scripts may close
   // only the windows that were opened by it."
   std::string script = "window.domAutomationController.send(window.close())";
-  ASSERT_TRUE(content::ExecuteScript(
-      current_browser()->tab_strip_model()->GetActiveWebContents(), script));
+  ASSERT_TRUE(content::ExecuteScript(web_contents(), script));
+}
+
+class GeolocationPrerenderBrowserTest : public GeolocationBrowserTest {
+ public:
+  GeolocationPrerenderBrowserTest()
+      : prerender_helper_(
+            base::BindRepeating(&GeolocationPrerenderBrowserTest::web_contents,
+                                base::Unretained(this))) {}
+  ~GeolocationPrerenderBrowserTest() override = default;
+
+  // GeolocationBrowserTest:
+  void SetUpOnMainThread() override {
+    current_browser_ = browser();
+
+    // embedded_test_server is started on MainThread for the prerender helper.
+    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+    host_resolver()->AddRule("*", "127.0.0.1");
+    GeolocationBrowserTest::SetUpOnMainThread();
+  }
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(GeolocationPrerenderBrowserTest,
+                       DeferredBeforePrerenderActivation) {
+  // Navigate to an initial page.
+  ui_test_utils::NavigateToURL(current_browser(),
+                               embedded_test_server()->GetURL("/empty.html"));
+
+  // Start a prerender with the geolocation test URL.
+  int host_id = prerender_helper_.AddPrerender(GetTestURL());
+  content::test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                          host_id);
+  ASSERT_NE(prerender_helper_.GetHostForUrl(GetTestURL()),
+            content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  permissions::PermissionRequestObserver observer(web_contents());
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+  // Execute script on the prerendered page and wait to ensure that the Mojo
+  // capability control defers the binding of blink::mojom::GeolocationService
+  // during prerendering.
+  ExecuteScriptAsync(prerender_rfh, "geoStartWithAsyncResponse()");
+  base::RunLoop().RunUntilIdle();
+
+  // The prerendered page shouldn't show up a permission request's bubble.
+  EXPECT_FALSE(observer.request_shown());
+
+  prerender_helper_.NavigatePrimaryPage(GetTestURL());
+  // Make sure that the prerender was activated.
+  ASSERT_TRUE(prerender_observer.was_activated());
+
+  // The activated page should create GeolocationService and show up the
+  // permission request's bubble.
+  observer.Wait();
+  EXPECT_TRUE(observer.request_shown());
 }
