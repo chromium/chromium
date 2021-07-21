@@ -6,13 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_INTERFACE_BRIDGE_BASE_H_
 
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
 class DOMWrapperWorld;
+enum class OriginTrialFeature : int32_t;
 
 namespace bindings {
 
@@ -35,15 +35,15 @@ class PLATFORM_EXPORT V8InterfaceBridgeBase {
   //
   // FeatureSelector() is used for usage 1) and
   // FeatureSelector(feature) is used for usage 2).
-  class FeatureSelector final {
+  class PLATFORM_EXPORT FeatureSelector final {
    public:
     // Selects all properties not associated to any origin trial feature and
     // properties associated with the origin trial features that are already
     // enabled.
-    FeatureSelector() : does_select_all_(true) {}
+    FeatureSelector();
     // Selects only the properties that are associated to the given origin
     // trial feature.
-    explicit FeatureSelector(OriginTrialFeature feature) : selector_(feature) {}
+    explicit FeatureSelector(OriginTrialFeature feature);
     FeatureSelector(const FeatureSelector&) = default;
     FeatureSelector(FeatureSelector&&) = default;
     ~FeatureSelector() = default;
@@ -68,7 +68,9 @@ class PLATFORM_EXPORT V8InterfaceBridgeBase {
 
    private:
     bool does_select_all_ = false;
-    OriginTrialFeature selector_ = OriginTrialFeature::kNonExisting;
+    // We intentionally avoid default member initializer for |selector_| in
+    // order not to include runtime_enabled_features.h.
+    OriginTrialFeature selector_;
   };
 
   using InstallInterfaceTemplateFuncType =
