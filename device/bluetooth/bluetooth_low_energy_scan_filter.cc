@@ -17,6 +17,40 @@ constexpr base::TimeDelta kTimeoutMin = base::TimeDelta::FromSeconds(1);
 constexpr base::TimeDelta kTimeoutMax = base::TimeDelta::FromSeconds(300);
 constexpr uint8_t kPatternValueMaxLength = 31;
 
+// These values are based on real-world testing with the goal that they will be
+// as high as possible without any false negatives at 1.5/6/20 feet,
+// respectively.
+constexpr int16_t kImmediateDeviceFoundRSSIThreshold = -60;
+constexpr int16_t kImmediateDeviceLostRSSIThreshold = -75;
+constexpr int16_t kNearDeviceFoundRSSIThreshold = -65;
+constexpr int16_t kNearDeviceLostRSSIThreshold = -80;
+constexpr int16_t kFarDeviceFoundRSSIThreshold = -85;
+constexpr int16_t kFarDeviceLostRSSIThreshold = -100;
+
+int16_t GetDeviceFoundRSSIThreshold(
+    device::BluetoothLowEnergyScanFilter::Range range) {
+  switch (range) {
+    case device::BluetoothLowEnergyScanFilter::Range::kImmediate:
+      return kImmediateDeviceFoundRSSIThreshold;
+    case device::BluetoothLowEnergyScanFilter::Range::kNear:
+      return kNearDeviceFoundRSSIThreshold;
+    case device::BluetoothLowEnergyScanFilter::Range::kFar:
+      return kFarDeviceFoundRSSIThreshold;
+  }
+}
+
+int16_t GetDeviceLostRSSIThreshold(
+    device::BluetoothLowEnergyScanFilter::Range range) {
+  switch (range) {
+    case device::BluetoothLowEnergyScanFilter::Range::kImmediate:
+      return kImmediateDeviceLostRSSIThreshold;
+    case device::BluetoothLowEnergyScanFilter::Range::kNear:
+      return kNearDeviceLostRSSIThreshold;
+    case device::BluetoothLowEnergyScanFilter::Range::kFar:
+      return kFarDeviceLostRSSIThreshold;
+  }
+}
+
 }  // namespace
 
 namespace device {
@@ -42,6 +76,17 @@ bool BluetoothLowEnergyScanFilter::Pattern::IsValid() const {
   }
 
   return true;
+}
+
+// static
+std::unique_ptr<BluetoothLowEnergyScanFilter>
+BluetoothLowEnergyScanFilter::Create(Range device_range,
+                                     base::TimeDelta device_found_timeout,
+                                     base::TimeDelta device_lost_timeout,
+                                     const std::vector<Pattern>& patterns) {
+  return Create(GetDeviceFoundRSSIThreshold(device_range),
+                GetDeviceLostRSSIThreshold(device_range), device_found_timeout,
+                device_lost_timeout, patterns);
 }
 
 // static

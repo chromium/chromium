@@ -94,4 +94,21 @@ TEST(BluetoothLowEnergyScanFilterTest, InvalidBadThresholds) {
   EXPECT_FALSE(filter);
 }
 
+TEST(BluetoothLowEnergyScanFilterTest, ValidUsingRange) {
+  auto filter = device::BluetoothLowEnergyScanFilter::Create(
+      device::BluetoothLowEnergyScanFilter::Range::kImmediate,
+      kDeviceFoundTimeout, kDeviceLostTimeout, {GetPattern()});
+  EXPECT_TRUE(filter);
+
+  filter = device::BluetoothLowEnergyScanFilter::Create(
+      device::BluetoothLowEnergyScanFilter::Range::kNear, kDeviceFoundTimeout,
+      kDeviceLostTimeout, {GetPattern()});
+  EXPECT_TRUE(filter);
+
+  filter = device::BluetoothLowEnergyScanFilter::Create(
+      device::BluetoothLowEnergyScanFilter::Range::kFar, kDeviceFoundTimeout,
+      kDeviceLostTimeout, {GetPattern()});
+  EXPECT_TRUE(filter);
+}
+
 }  // namespace device

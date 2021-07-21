@@ -33,6 +33,20 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyScanFilter {
     kManufacturerSpecificData = 0xFF
   };
 
+  // Used as an alternative to specifying RSSI threshold values directly. Since
+  // measured signal strength will vary with different combinations of devices
+  // and environmental conditions, distances are provided as rough guidelines.
+  // However the goal is that there will be no false negatives at the listed
+  // distance.
+  enum class Range {
+    // Roughly 1.5 ft.
+    kImmediate,
+    // Roughly 6 ft.
+    kNear,
+    // Roughly 20 ft.
+    kFar
+  };
+
   class Pattern {
    public:
     explicit Pattern(uint8_t start_position,
@@ -55,6 +69,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyScanFilter {
 
   // Returns nullptr if the provided parameters fail validation. See
   // documentation on instance variables for details.
+  static std::unique_ptr<BluetoothLowEnergyScanFilter> Create(
+      Range device_range,
+      base::TimeDelta device_found_timeout,
+      base::TimeDelta device_lost_timeout,
+      const std::vector<Pattern>& patterns);
+
   static std::unique_ptr<BluetoothLowEnergyScanFilter> Create(
       int16_t device_found_rssi_threshold,
       int16_t device_lost_rssi_threshold,

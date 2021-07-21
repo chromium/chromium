@@ -106,12 +106,10 @@ bool IsBackgroundScanningFeatureEnabled() {
 }
 
 // Background scanning filter values.
-constexpr int16_t kBackgroundScanningDeviceFoundRSSIThreshold = -80;
-constexpr int16_t kBackgroundScanningDeviceLostRSSIThreshold = -100;
 constexpr base::TimeDelta kBackgroundScanningDeviceFoundTimeout =
     base::TimeDelta::FromSeconds(1);
 constexpr base::TimeDelta kBackgroundScanningDeviceLostTimeout =
-    base::TimeDelta::FromSeconds(5);
+    base::TimeDelta::FromSeconds(3);
 // This pattern value encodes the Fast Initiation service ID of 0xfe2c and the
 // model ID of 0xfc128e.
 constexpr uint8_t kBackgroundScanningFilterPatternValue[] = {0x2c, 0xfe, 0xfc,
@@ -2207,8 +2205,7 @@ void NearbySharingServiceImpl::StartBackgroundScanning() {
       device::BluetoothLowEnergyScanFilter::AdvertisementDataType::kServiceData,
       std::move(pattern_value));
   auto filter = device::BluetoothLowEnergyScanFilter::Create(
-      kBackgroundScanningDeviceFoundRSSIThreshold,
-      kBackgroundScanningDeviceLostRSSIThreshold,
+      device::BluetoothLowEnergyScanFilter::Range::kNear,
       kBackgroundScanningDeviceFoundTimeout,
       kBackgroundScanningDeviceLostTimeout, {pattern});
   if (!filter) {
