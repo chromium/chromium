@@ -5,9 +5,10 @@
   "type": "module",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "bidi-server": "npm run build && npm run server --",
-    "server": "node ./src/.build/index.js",
+    "unit": "TS_NODE_PROJECT='src/bidiMapper/tsconfig.json' mocha",
+    "e2e": "python3 -m pytest --rootdir=tests",
+    "bidi-server": "npm run build && npm run server-no-build --",
+    "server-no-build": "node ./src/.build/index.js",
     "build": "npm run prettier && npm run clean && rollup --config src/bidiMapper/rollup.config.js && tsc -b src/tsconfig.json",
     "clean": "rimraf ./src/.build",
     "prettier": "npx prettier --write . "
@@ -26,13 +27,19 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-typescript": "^8.2.1",
     "@types/argparse": "^2.0.10",
+    "@types/chai": "^4.2.21",
     "@types/debug": "^4.1.6",
+    "@types/mocha": "^8.2.2",
+    "@types/sinon": "^10.0.2",
     "@types/websocket": "^1.0.2",
     "@types/ws": "^7.4.4",
+    "chai": "^4.3.4",
     "devtools-protocol": "^0.0.900357",
+    "mocha": "^9.0.1",
     "prettier": "2.3.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.47.0",
+    "sinon": "^11.1.1",
     "typescript": "^4.2.4"
   }
 }

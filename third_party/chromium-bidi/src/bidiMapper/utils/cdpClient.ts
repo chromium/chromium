@@ -17,17 +17,13 @@ import { log } from './log';
 const logCdp = log('cdp');
 
 import { EventEmitter } from './events';
+import { IServer } from './iServer';
 
 import * as browserProtocol from 'devtools-protocol/json/browser_protocol.json';
 import * as jsProtocol from 'devtools-protocol/json/js_protocol.json';
 import ProtocolProxyApi from 'devtools-protocol/types/protocol-proxy-api';
 
 export type CdpClient = EventEmitter & ProtocolProxyApi.ProtocolApi;
-
-export interface CdpTransport {
-  sendMessage(message: string): void;
-  onmessage?: (message: string) => void;
-}
 
 export interface CdpError {
   code: number;
@@ -91,12 +87,12 @@ class CdpClientImpl extends EventEmitter {
   private _domains: Map<string, DomainBase>;
   private _nextId: number;
 
-  constructor(private _transport: CdpTransport) {
+  constructor(private _transport: IServer) {
     super();
 
     this._commandCallbacks = new Map();
     this._nextId = 0;
-    this._transport.onmessage = this._onCdpMessage.bind(this);
+    this._transport.setOnMessage(this._onCdpMessage.bind(this));
 
     this._domains = new Map();
     for (const [domainName, ctor] of domainConstructorMap.entries()) {
@@ -157,6 +153,6 @@ class CdpClientImpl extends EventEmitter {
  * @param transport A transport object that will be used to send and receive raw CDP messages.
  * @returns A connected CDP client object.
  */
-export function connectCdp(transport: CdpTransport) {
+export function connectCdp(transport: IServer) {
   return new CdpClientImpl(transport) as unknown as CdpClient;
 }

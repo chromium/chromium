@@ -15,16 +15,28 @@
  */
 export function log(type: string): (...message: any[]) => void {
   return (...messages: any[]) => {
-    const elementId = type + '_log';
+    // If run in browser, add debug message to the page.
+    if (globalThis.document?.documentElement) {
+      console.log(type, ...messages);
 
-    if (!window.document.getElementById(elementId)) {
-      window.document.documentElement.innerHTML += `<h3>${type}:</h3><pre id='${elementId}'></pre>`;
-      window.document.getElementById(elementId);
+      const typeLogContainer = findOrCreateTypeLogContainer(type);
+
+      const pre = document.createElement('pre');
+      pre.textContent = messages.join(', ');
+      typeLogContainer.appendChild(pre);
     }
-
-    const element = window.document.getElementById(elementId);
-
-    console.log.apply(null, [type].concat(messages));
-    element.innerText += messages.join(', ') + '\n';
   };
+}
+
+function findOrCreateTypeLogContainer(type: string) {
+  const elementId = type + '_log';
+
+  const existingContainer = document.getElementById(elementId);
+  if (existingContainer) return existingContainer;
+
+  const newContainer = document.createElement('div');
+  newContainer.id = elementId;
+  newContainer.innerHTML = `<h3>${type}:</h3>`;
+  document.body.appendChild(newContainer);
+  return newContainer;
 }

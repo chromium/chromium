@@ -15,9 +15,9 @@
  */
 import { CommandProcessor } from './commandProcessor';
 
-import { CdpClient, CdpTransport, connectCdp } from './utils/cdpClient';
+import { CdpClient, connectCdp } from './utils/cdpClient';
 import { BidiServer } from './utils/bidiServer';
-import { ServerBinding } from './utils/iServer';
+import { ServerBinding, IServer } from './utils/iServer';
 
 import { log } from './utils/log';
 const logSystem = log('system');
@@ -68,18 +68,22 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
 function _createCdpClient() {
   // A CdpTransport implementation that uses the window.cdp bindings
   // injected by Target.exposeDevToolsProtocol.
-  class WindowCdpTransport implements CdpTransport {
-    onmessage?: (message: string) => void;
+  class WindowCdpTransport implements IServer {
+    private _onMessage?: (message: string) => void;
 
     constructor() {
       window.cdp.onmessage = (message: string) => {
-        if (this.onmessage) {
-          this.onmessage.call(null, message);
+        if (this._onMessage) {
+          this._onMessage.call(null, message);
         }
       };
     }
 
-    sendMessage(message: string): void {
+    setOnMessage(onMessage: (messageObj: any) => Promise<void>): void {
+      this._onMessage = onMessage;
+    }
+
+    async sendMessage(message: string): Promise<void> {
       window.cdp.send(message);
     }
   }
