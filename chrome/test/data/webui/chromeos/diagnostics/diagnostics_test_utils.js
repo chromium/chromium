@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertTrue} from '../../chai_assert.js';
+import {isVisible} from '../../test_util.m.js';
 
 /**
  * Helper function for getting a data-point element.
@@ -116,6 +117,23 @@ export function getToggleTestReportButtonFromSection(element) {
       /** @type {!CrButtonElement} */ (element.$$('#toggleReportButton'));
   assertTrue(!!button);
   return button;
+}
+
+/**
+ * Helper function checks data-point visibility and content against expectation.
+ * @param {?T} container
+ * @param {string} selector
+ * @param {string} expectedHeaderText
+ * @param {string} expectedValueText
+ * @template T
+ * @throws {Error}
+ */
+export function assertDataPointHasExpectedHeaderAndValue(
+    container, selector, expectedHeaderText, expectedValueText) {
+  const dataPoint = getDataPoint(container, selector);
+  assertTrue(isVisible(dataPoint));
+  assertEquals(expectedHeaderText, dataPoint.header);
+  assertEquals(expectedValueText, dataPoint.value);
 }
 
 /**

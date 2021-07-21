@@ -6,8 +6,8 @@ import 'chrome://diagnostics/ip_config_info_drawer.js';
 
 import {Network} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeEthernetNetwork, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.m.js';
+import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
@@ -34,20 +34,6 @@ export function ipConfigInfoDrawerTestSuite() {
     document.body.appendChild(ipConfigInfoDrawerElement);
     assertTrue(!!ipConfigInfoDrawerElement);
     return flushTasks();
-  }
-
-  /**
-   * @param {string} selector
-   * @param {string} headerText
-   * @param {string} valueText
-   */
-  function assertDataPointHasExpectedHeaderAndValue(
-      selector, headerText, valueText) {
-    const dataPoint =
-        dx_utils.getDataPoint(ipConfigInfoDrawerElement, selector);
-    assertTrue(isVisible(dataPoint));
-    assertEquals(headerText, dataPoint.header);
-    assertEquals(valueText, dataPoint.value);
   }
 
   /**
@@ -97,8 +83,8 @@ export function ipConfigInfoDrawerTestSuite() {
         // Opening drawer to test visibility and content of data points.
         .then(() => getDrawerToggle().click())
         .then(() => {
-          assertDataPointHasExpectedHeaderAndValue(
-              '#macAddress',
+          dx_utils.assertDataPointHasExpectedHeaderAndValue(
+              ipConfigInfoDrawerElement, '#macAddress',
               ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerMacAddress'),
               `${fakeEthernetNetwork.macAddress}`);
         });
@@ -109,8 +95,8 @@ export function ipConfigInfoDrawerTestSuite() {
         // Opening drawer to test visibility and content of data points.
         .then(() => getDrawerToggle().click())
         .then(() => {
-          assertDataPointHasExpectedHeaderAndValue(
-              '#gateway',
+          dx_utils.assertDataPointHasExpectedHeaderAndValue(
+              ipConfigInfoDrawerElement, '#gateway',
               ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerGateway'),
               `${fakeWifiNetwork.ipConfig.gateway}`);
         });
@@ -122,8 +108,8 @@ export function ipConfigInfoDrawerTestSuite() {
         // Opening drawer to test visibility and content of data points.
         .then(() => getDrawerToggle().click())
         .then(() => {
-          assertDataPointHasExpectedHeaderAndValue(
-              '#subnetMask',
+          dx_utils.assertDataPointHasExpectedHeaderAndValue(
+              ipConfigInfoDrawerElement, '#subnetMask',
               ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerSubnetMask'),
               expectedSubnetMask);
         });
@@ -135,8 +121,8 @@ export function ipConfigInfoDrawerTestSuite() {
         // Opening drawer to test visibility and content of data points.
         .then(() => getDrawerToggle().click())
         .then(() => {
-          assertDataPointHasExpectedHeaderAndValue(
-              '#nameServers', 'Name servers', '');
+          dx_utils.assertDataPointHasExpectedHeaderAndValue(
+              ipConfigInfoDrawerElement, '#nameServers', 'Name servers', '');
         });
   });
 }

@@ -118,6 +118,7 @@ js_library("diagnostics_app_unified_test") {
 js_library("diagnostics_test_utils") {
   deps = [
     "../..:chai_assert",
+    "../..:test_util.m",
     "//ash/webui/diagnostics_ui/resources:battery_status_card",
     "//ash/webui/diagnostics_ui/resources:cpu_card",
     "//ash/webui/diagnostics_ui/resources:data_point",
