@@ -129,7 +129,7 @@ class HistoryClustersService : public KeyedService {
                                QueryClustersCallback callback,
                                base::CancelableTaskTracker* task_tracker) const;
 
-  // Internally used callback for GetVisitsForOnTheFlyClustering.
+  // Internally used callback for `GetVisitsForOnTheFlyClustering()`.
   void OnGotHistoryVisits(
       const std::string& query,
       base::Time original_end_time,
@@ -139,6 +139,12 @@ class HistoryClustersService : public KeyedService {
       base::CancelableTaskTracker* task_tracker,
       std::vector<history::AnnotatedVisit> accumulated_visits,
       std::vector<history::AnnotatedVisit> newly_fetched_visits) const;
+
+  // Internally used callback for `GetVisitsOnTheFlyClustering()`.
+  void OnGotClusters(const std::string& query,
+                     base::Time continuation_end_time,
+                     QueryClustersCallback callback,
+                     const std::vector<history::Cluster>& clusters) const;
 
   // `VisitContextAnnotations`s are constructed stepwise; they're initially
   // placed in `incomplete_visit_context_annotations_` and saved to the history

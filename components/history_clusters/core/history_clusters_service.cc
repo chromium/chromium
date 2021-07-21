@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -216,6 +217,7 @@ void HistoryClustersService::QueryClusters(
   NotifyDebugMessage("  end_time = " + (end_time.is_null()
                                             ? "null"
                                             : base::TimeToISO8601(end_time)));
+  NotifyDebugMessage("  max_count = " + base::NumberToString(max_count));
 
   if (!backend_ || !backend_weak_factory_) {
     NotifyDebugMessage(
@@ -428,18 +430,25 @@ void HistoryClustersService::OnGotHistoryVisits(
 
   NotifyDebugMessage("Calling backend_->GetClusters()");
   backend_->GetClusters(
-      base::BindOnce(
-          [](const std::string& query, base::Time continuation_end_time,
-             QueryClustersCallback callback,
-             const std::vector<history::Cluster>& clusters) {
-            HistoryClustersService::QueryClustersResult result;
-            result.continuation_end_time = continuation_end_time;
-            result.clusters = FilterClustersMatchingQuery(query, clusters);
-            result.clusters = SortClusters(result.clusters);
-            std::move(callback).Run(std::move(result));
-          },
-          query, continuation_end_time, std::move(callback)),
+      base::BindOnce(&HistoryClustersService::OnGotClusters,
+                     weak_ptr_factory_.GetWeakPtr(), query,
+                     continuation_end_time, std::move(callback)),
       accumulated_visits);
+}
+
+void HistoryClustersService::OnGotClusters(
+    const std::string& query,
+    base::Time continuation_end_time,
+    QueryClustersCallback callback,
+    const std::vector<history::Cluster>& clusters) const {
+  NotifyDebugMessage("HistoryClustersService::OnGotClusters()");
+  HistoryClustersService::QueryClustersResult result;
+  result.continuation_end_time = continuation_end_time;
+  result.clusters = FilterClustersMatchingQuery(query, clusters);
+  result.clusters = SortClusters(result.clusters);
+
+  NotifyDebugMessage("  Passing results back to original caller now.");
+  std::move(callback).Run(std::move(result));
 }
 
 }  // namespace history_clusters
