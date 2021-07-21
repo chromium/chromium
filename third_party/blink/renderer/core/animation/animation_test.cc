@@ -2385,7 +2385,7 @@ TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsDoNotTick) {
       animation->CheckCanStartAnimationOnCompositor(paint_artifact_compositor),
       CompositorAnimations::kCompositorPropertyAnimationsHaveNoEffect);
   EXPECT_TRUE(animation->CompositorPropertyAnimationsHaveNoEffectForTesting());
-  EXPECT_TRUE(animation->AnimationHasNoEffectForTesting());
+  EXPECT_TRUE(animation->AnimationHasNoEffect());
 
   // The next effect change should be at the end because the animation does not
   // tick while hidden.
@@ -2432,7 +2432,11 @@ TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsTickWhenVisible) {
       animation->CheckCanStartAnimationOnCompositor(paint_artifact_compositor),
       CompositorAnimations::kCompositorPropertyAnimationsHaveNoEffect);
   EXPECT_TRUE(animation->CompositorPropertyAnimationsHaveNoEffectForTesting());
-  EXPECT_TRUE(animation->AnimationHasNoEffectForTesting());
+  EXPECT_TRUE(animation->AnimationHasNoEffect());
+
+  // The no-effect animation doesn't count. The one animation is
+  // AnimationAnimationTestCompositing::animation_.
+  EXPECT_EQ(1u, animation->timeline()->AnimationsNeedingUpdateCount());
 
   // The next effect change should be at the end because the animation does not
   // tick while hidden.
@@ -2449,7 +2453,8 @@ TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsTickWhenVisible) {
       animation->CheckCanStartAnimationOnCompositor(paint_artifact_compositor),
       CompositorAnimations::kNoFailure);
   EXPECT_FALSE(animation->CompositorPropertyAnimationsHaveNoEffectForTesting());
-  EXPECT_FALSE(animation->AnimationHasNoEffectForTesting());
+  EXPECT_FALSE(animation->AnimationHasNoEffect());
+  EXPECT_EQ(2u, animation->timeline()->AnimationsNeedingUpdateCount());
 
   // The next effect change should be at the end because the animation is
   // running on the compositor.

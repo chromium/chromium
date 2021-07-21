@@ -313,9 +313,7 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   bool CompositorPropertyAnimationsHaveNoEffectForTesting() const {
     return compositor_property_animations_have_no_effect_;
   }
-  bool AnimationHasNoEffectForTesting() const {
-    return animation_has_no_effect_;
-  }
+  bool AnimationHasNoEffect() const { return animation_has_no_effect_; }
 
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;
