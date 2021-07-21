@@ -220,6 +220,13 @@ const char kUserGestureRequiredPolicy[] = "user-gesture-required";
 
 }  // namespace autoplay
 
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+// Some (Qualcomm only at the moment) V4L2 video decoders require setting the
+// framerate so that the hardware decoder can scale the clocks efficiently.
+// This provides a mechanism during testing to lock the decoder framerate
+// to a specific value.
+const char kHardwareVideoDecodeFrameRate[] = "hardware-video-decode-framerate";
+#endif
 }  // namespace switches
 
 namespace media {

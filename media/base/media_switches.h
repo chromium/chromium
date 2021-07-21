@@ -99,6 +99,10 @@ MEDIA_EXPORT extern const char kUserGestureRequiredPolicy[];
 
 }  // namespace autoplay
 
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+MEDIA_EXPORT extern const char kHardwareVideoDecodeFrameRate[];
+#endif
+
 }  // namespace switches
 
 namespace media {

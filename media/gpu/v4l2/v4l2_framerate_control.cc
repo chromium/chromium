@@ -4,9 +4,30 @@
 
 #include "media/gpu/v4l2/v4l2_framerate_control.h"
 
+#include "base/command_line.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_number_conversions.h"
+#include "media/base/media_switches.h"
 
 namespace {
+double GetUserFrameRate() {
+  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  if (!cmd_line->HasSwitch(switches::kHardwareVideoDecodeFrameRate))
+    return 0.0;
+
+  const std::string framerate_str(
+      cmd_line->GetSwitchValueASCII(switches::kHardwareVideoDecodeFrameRate));
+
+  constexpr double kMaxFramerate = 120.0;
+  double framerate = 0;
+  if (base::StringToDouble(framerate_str, &framerate) && framerate >= 0.0 &&
+      framerate <= kMaxFramerate) {
+    return framerate;
+  }
+  VLOG(1) << "Requested framerate is unreasonable: " << framerate
+          << "fps, not overriding.";
+  return 0.0;
+}
 
 bool FrameRateControlPresent(scoped_refptr<media::V4L2Device> device) {
   DCHECK(device);
@@ -16,16 +37,26 @@ bool FrameRateControlPresent(scoped_refptr<media::V4L2Device> device) {
   parms.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
 
   // Try to set the framerate to 30fps to see if the control is available.
-  // VIDIOC_G_PARM can not be used as it does not return the current framerate.
-  parms.parm.output.timeperframe.numerator = 30;
-  parms.parm.output.timeperframe.denominator = 1000L;
+  // VIDIOC_G_PARM can not be used as it does not return the current
+  // framerate.
+  parms.parm.output.timeperframe.numerator = 1;
+  parms.parm.output.timeperframe.denominator = 30;
+
+  const double user_framerate = GetUserFrameRate();
+  if (user_framerate > 0.0) {
+    parms.parm.output.timeperframe.numerator = 1000;
+    parms.parm.output.timeperframe.denominator = 1000.0 * user_framerate;
+    VLOG(1) << "Overriding playback framerate. Set at " << user_framerate
+            << " fps.";
+  }
 
   if (device->Ioctl(VIDIOC_S_PARM, &parms) != 0) {
     VLOG(1) << "Failed to issue VIDIOC_S_PARM command";
     return false;
   }
 
-  return parms.parm.output.capability & V4L2_CAP_TIMEPERFRAME;
+  return (user_framerate == 0) &&
+         (parms.parm.output.capability & V4L2_CAP_TIMEPERFRAME);
 }
 
 }  // namespace

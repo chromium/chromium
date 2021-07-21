@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/encryption_scheme.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/test_data_util.h"
 #include "media/base/video_decoder_config.h"
@@ -144,6 +145,11 @@ class VideoDecoderTest : public ::testing::Test {
             VideoFrameValidator::ValidationMode::kThreshold, kSSIMTolerance));
       }
     }
+
+    base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+    command_line.AppendSwitchASCII(
+        switches::kHardwareVideoDecodeFrameRate,
+        base::NumberToString(g_env->Video()->FrameRate()));
 
     config.implementation = g_env->GetDecoderImplementation();
 
