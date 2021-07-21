@@ -186,4 +186,10 @@ Polymer({
   isPerNetworkToggleDisabled_() {
     return this.disabled || this.isRoamingProhibitedByPolicy_();
   },
+
+  /** @private */
+  showPerNetworkAllowRoamingToggle_() {
+    return this.allowPerNetworkRoaming_ &&
+        this.isRoamingAllowedForNetwork_ !== undefined;
+  },
 });

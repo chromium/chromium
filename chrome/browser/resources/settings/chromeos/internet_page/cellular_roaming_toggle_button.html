@@ -21,7 +21,8 @@
       pref="{{prefs.cros.signed.data_roaming_enabled}}">
   </settings-toggle-button>
 </template>
-<template is="dom-if" if="[[allowPerNetworkRoaming_]]">
+<template is="dom-if"
+    if="[[showPerNetworkAllowRoamingToggle_(allowPerNetworkRoaming_, isRoamingAllowedForNetwork_)]]">
   <div id="cellularRoamingToggleContainer"
       class="settings-box"
       on-click="onCellularRoamingRowClicked_"
