@@ -4,95 +4,24 @@
 
 #include "components/accuracy_tips/accuracy_service.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "components/accuracy_tips/accuracy_tip_safe_browsing_client.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
 #include "components/accuracy_tips/accuracy_tip_ui.h"
 #include "components/accuracy_tips/features.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "url/gurl.h"
 
 namespace accuracy_tips {
 
 using AccuracyCheckCallback = AccuracyService::AccuracyCheckCallback;
-
-class AccuracyTipSafeBrowsingClient
-    : public base::RefCountedThreadSafe<AccuracyTipSafeBrowsingClient>,
-      public safe_browsing::SafeBrowsingDatabaseManager::Client {
- public:
-  AccuracyTipSafeBrowsingClient(
-      scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> sb_database,
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner)
-      : sb_database_(sb_database),
-        ui_task_runner_(std::move(ui_task_runner)),
-        io_task_runner_(std::move(io_task_runner)) {}
-
-  void ShutdownOnIOThread();
-
-  // Check status of URL with SafeBrowsingDatabaseManager. Will call
-  // |callback| with result on UI thread.
-  void CheckAccuracyStatusOnIOThread(const GURL& url,
-                                     AccuracyCheckCallback callback);
-  // Replies to |callback| with |status| and ensure that this happens on the
-  // ui thread.
-  void ReplyOnUIThread(AccuracyCheckCallback callback,
-                       AccuracyTipStatus status);
-
-  // SafeBrowsingDatabaseManager::Client:
-  void OnCheckUrlForAccuracyTip(bool should_show_accuracy_tip) override;
-
- private:
-  friend class base::RefCountedThreadSafe<AccuracyTipSafeBrowsingClient>;
-  ~AccuracyTipSafeBrowsingClient() override = default;
-
-  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> sb_database_;
-  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
-  AccuracyCheckCallback pending_callback_;  // accessed on io thread!
-};
-
-void AccuracyTipSafeBrowsingClient::CheckAccuracyStatusOnIOThread(
-    const GURL& url,
-    AccuracyCheckCallback callback) {
-  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  if (pending_callback_) {
-    sb_database_->CancelCheck(this);
-    ReplyOnUIThread(std::move(pending_callback_), AccuracyTipStatus::kNone);
-  }
-
-  pending_callback_ = std::move(callback);
-  if (sb_database_->CheckUrlForAccuracyTips(url, this)) {
-    ReplyOnUIThread(std::move(pending_callback_), AccuracyTipStatus::kNone);
-  }
-}
-
-void AccuracyTipSafeBrowsingClient::OnCheckUrlForAccuracyTip(
-    bool should_show_accuracy_tip) {
-  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(pending_callback_);
-  ReplyOnUIThread(std::move(pending_callback_),
-                  should_show_accuracy_tip ? AccuracyTipStatus::kShowAccuracyTip
-                                           : AccuracyTipStatus::kNone);
-}
-
-void AccuracyTipSafeBrowsingClient::ReplyOnUIThread(
-    AccuracyCheckCallback callback,
-    AccuracyTipStatus status) {
-  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  ui_task_runner_->PostTask(FROM_HERE,
-                            base::BindOnce(std::move(callback), status));
-}
-
-void AccuracyTipSafeBrowsingClient::ShutdownOnIOThread() {
-  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  if (pending_callback_)
-    sb_database_->CancelCheck(this);
-  sb_database_ = nullptr;
-}
 
 AccuracyService::AccuracyService(
     std::unique_ptr<AccuracyTipUI> ui,

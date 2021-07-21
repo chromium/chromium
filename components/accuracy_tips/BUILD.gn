@@ -6,6 +6,8 @@ static_library("accuracy_tips") {
   sources = [
     "accuracy_service.cc",
     "accuracy_service.h",
+    "accuracy_tip_safe_browsing_client.cc",
+    "accuracy_tip_safe_browsing_client.h",
     "accuracy_tip_status.h",
     "accuracy_tip_ui.h",
     "accuracy_web_contents_observer.cc",
