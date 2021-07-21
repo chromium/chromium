@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
+#include "components/federated_learning/features/features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/driver/sync_service.h"
@@ -48,6 +49,9 @@ FlocIdProviderFactory::~FlocIdProviderFactory() = default;
 
 KeyedService* FlocIdProviderFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  if (!base::FeatureList::IsEnabled(kFederatedLearningOfCohorts))
+    return nullptr;
+
   Profile* profile = Profile::FromBrowserContext(context);
 
   syncer::SyncService* sync_service =

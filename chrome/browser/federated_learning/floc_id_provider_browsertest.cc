@@ -69,8 +69,22 @@ class CopyingFileOutputStream
   base::File file_;
 };
 
+class FlocIdProviderComputationDisabledBrowserTest
+    : public InProcessBrowserTest {};
+
+IN_PROC_BROWSER_TEST_F(FlocIdProviderComputationDisabledBrowserTest,
+                       NoProvider) {
+  EXPECT_FALSE(FlocIdProviderFactory::GetForProfile(browser()->profile()));
+}
+
 class FlocIdProviderBrowserTest : public InProcessBrowserTest {
  public:
+  FlocIdProviderBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kFederatedLearningOfCohorts,
+        {{"minimum_history_domain_size_required", "1"}});
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -99,6 +113,8 @@ class FlocIdProviderBrowserTest : public InProcessBrowserTest {
   std::string test_host() const { return "a.test"; }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   net::EmbeddedTestServer https_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
 };
@@ -181,12 +197,6 @@ class MockFlocEventLogger : public FlocEventLogger {
 class FlocIdProviderSortingLshUninitializedBrowserTest
     : public FlocIdProviderBrowserTest {
  public:
-  FlocIdProviderSortingLshUninitializedBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kFederatedLearningOfCohorts,
-        {{"minimum_history_domain_size_required", "1"}});
-  }
-
   void SetUpOnMainThread() override {
     FlocIdProviderBrowserTest::SetUpOnMainThread();
     ConfigureReplacementHostAndPortForRemotePermissionService();
@@ -494,8 +504,6 @@ class FlocIdProviderSortingLshUninitializedBrowserTest
         primary_pattern, ContentSettingsPattern::Wildcard(), content_type,
         setting);
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   // Owned by the floc id provider.
   MockFlocEventLogger* floc_event_logger_ = nullptr;
