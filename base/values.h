@@ -466,7 +466,7 @@ class BASE_EXPORT Value {
   // exist, this operation fails, leaves underlying Values untouched and returns
   // `false`. In case intermediate dictionaries become empty as a result of this
   // path removal, they will be removed as well.
-  // Note: If there is only one component in the path, use `ExtractKey()`
+  // Note: If there is only one component in the path, use `RemoveKey()`
   // instead.
   //
   // Example:
