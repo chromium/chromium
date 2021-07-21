@@ -87,12 +87,6 @@ class HistoryClustersElement extends PolymerElement {
       },
 
       /**
-       * The message to show in the toast when the request to browser to remove
-       * visits succeeds.
-       */
-      toastMessage_: String,
-
-      /**
        * The list of visits to be removed. A non-empty array indicates a pending
        * remove request to the browser.
        */
@@ -114,7 +108,6 @@ class HistoryClustersElement extends PolymerElement {
   private pageHandler_: PageHandlerRemote;
   private result_: QueryResult = new QueryResult();
   private title_: string = '';
-  private toastMessage_: string = '';
   private visitsToBeRemoved_: Array<URLVisit> = [];
 
   //============================================================================
@@ -281,11 +274,11 @@ class HistoryClustersElement extends PolymerElement {
    * Called when the last accepted request to browser to remove visits succeeds.
    */
   private onVisitsRemoved_() {
-    this.toastMessage_ = loadTimeData.getString(
-        assert(this.visitsToBeRemoved_.length) > 1 ?
-            'removeAllFromHistoryToast' :
-            'removeFromHistoryToast');
-    this.$.confirmationToast.get().show();
+    // Show the confirmation toast once done removing one visit only; since a
+    // confirmation dialog was not shown prior to the action.
+    if (assert(this.visitsToBeRemoved_.length) === 1) {
+      this.$.confirmationToast.get().show();
+    }
     this.visitsToBeRemoved_ = [];
   }
 
