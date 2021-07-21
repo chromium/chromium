@@ -14,6 +14,7 @@ html {
   --cros-font-family-other: Roboto, 'Noto Sans', sans-serif;
 
   /* typefaces */
+  --cros-headline-1-font: 500 15px/22px var(--cros-font-family-test);
   --cros-headline-1-font-family: var(--cros-font-family-test);
   --cros-headline-1-font-size: 15px;
   --cros-headline-1-font-weight: 500;

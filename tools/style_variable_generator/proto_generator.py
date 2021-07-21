@@ -31,6 +31,8 @@ class BaseProtoStyleGenerator(BaseGenerator):
         field_id_map = dict()
         field_list = []
         for ctx in self.in_file_to_context.values():
+            if self.GetContextKey() not in ctx:
+                continue
             proto_ctx = ctx[self.GetContextKey()]
             field_name = proto_ctx['field_name']
             field_id = proto_ctx['field_id']

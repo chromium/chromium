@@ -39,6 +39,7 @@ html {
 
   /* typefaces */
 {%-   for name, typeface in typography.typefaces.items() %}
+  {{name | to_css_var_name}}-font: {{typeface.font_weight}} {{typeface.font_size}}px/{{typeface.line_height}}px {{typeface.font_family | process_simple_ref}};
   {{name | to_css_var_name}}-font-family: {{typeface.font_family | process_simple_ref}};
   {{name | to_css_var_name}}-font-size: {{typeface.font_size}}px;
   {{name | to_css_var_name}}-font-weight: {{typeface.font_weight}};
