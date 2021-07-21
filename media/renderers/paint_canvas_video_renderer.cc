@@ -1004,19 +1004,22 @@ scoped_refptr<VideoFrame> DownShiftHighbitVideoFrame(
   ret->metadata().MergeMetadataFrom(video_frame->metadata());
 
   for (int plane = VideoFrame::kYPlane; plane <= VideoFrame::kVPlane; ++plane) {
+    int width = VideoFrame::Columns(plane, video_frame->format(),
+                                    video_frame->visible_rect().width());
+    int height = VideoFrame::Rows(plane, video_frame->format(),
+                                  video_frame->visible_rect().height());
     const uint16_t* src =
-        reinterpret_cast<const uint16_t*>(video_frame->data(plane));
-    uint8_t* dst = ret->data(plane);
+        reinterpret_cast<const uint16_t*>(video_frame->visible_data(plane));
+    uint8_t* dst = ret->visible_data(plane);
     if (!src) {
       // An AV1 monochrome (grayscale) frame has no U and V planes. Set all U
       // and V samples to the neutral value (128).
       DCHECK_NE(plane, VideoFrame::kYPlane);
-      memset(dst, 128, video_frame->rows(plane) * ret->stride(plane));
+      memset(dst, 128, height * ret->stride(plane));
       continue;
     }
-    libyuv::Convert16To8Plane(
-        src, video_frame->stride(plane) / 2, dst, ret->stride(plane), scale,
-        video_frame->columns(plane), video_frame->rows(plane));
+    libyuv::Convert16To8Plane(src, video_frame->stride(plane) / 2, dst,
+                              ret->stride(plane), scale, width, height);
   }
   return ret;
 }
