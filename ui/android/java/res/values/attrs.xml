@@ -29,6 +29,7 @@
     <attr name="colorFixedOnSurfaceAlpha38OverSurface" format="color"/>
 
     <!-- Semantic names that support dynamic colors. -->
+    <attr name="default_bg_color" format="color"/>
     <attr name="divider_line_bg_color" format="color"/>
 
     <attr name="default_icon_color" format="color" />

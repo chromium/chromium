@@ -216,10 +216,11 @@
         <item name="divider_line_bg_color">?attr/colorSurfaceVariant</item>
     </style>
     <style name="ColorOverlay.BrowserUi.DayNight" parent="ColorOverlay.Ui">
-        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
-        <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
         <item name="android:textColorPrimary">@color/default_text_color_list</item>
         <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
+        <item name="default_bg_color">?attr/colorSurface</item>
     </style>
 
     <!-- It's logically backward, but this is applied to SettingsActivity when
