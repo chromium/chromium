@@ -26,22 +26,6 @@ Polymer({
     network: {
       type: Object,
     },
-
-    /** @type {boolean} */
-    showIpConfigProperties: {
-      type: Boolean,
-      value: false,
-    },
-  },
-
-  /**
-   * Returns a concatenated list of strings.
-   * @protected
-   * @param {!Array<string>} nameServers
-   * @return {string}
-   */
-  joinNameServers_(nameServers) {
-    return nameServers ? nameServers.join(', ') : '';
   },
 
   /**
@@ -56,14 +40,5 @@ Polymer({
     const channel = convertFrequencyToChannel(frequency);
     const ghz = (frequency / 1000).toFixed(3);
     return `${channel || '?'} (${ghz} GHz)`;
-  },
-
-  /**
-   * @protected
-   * @param {number} prefix
-   * @return {string}
-   */
-  getSubnetMask_(prefix) {
-    return getSubnetMaskFromRoutingPrefix(prefix);
   },
 });
