@@ -69,7 +69,9 @@ GoogleTtsStream::GoogleTtsStream(
       owner, &stream_receiver_));
 }
 
-GoogleTtsStream::~GoogleTtsStream() = default;
+GoogleTtsStream::~GoogleTtsStream() {
+  libchrometts_.GoogleTtsShutdown();
+}
 
 bool GoogleTtsStream::IsBound() const {
   return stream_receiver_.is_bound();
