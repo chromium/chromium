@@ -30,9 +30,7 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -1198,7 +1196,8 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
   }
 }
 
-bool TabStripModel::IsReadLaterSupportedForAny(const std::vector<int> indices) {
+bool TabStripModel::IsReadLaterSupportedForAny(
+    const std::vector<int>& indices) {
   ReadingListModel* model =
       ReadingListModelFactory::GetForBrowserContext(profile_);
   if (!model || !model->loaded())
@@ -1270,18 +1269,8 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandCloseTab:
       return true;
 
-    case CommandReload: {
-      std::vector<int> indices = GetIndicesForCommand(context_index);
-      for (size_t i = 0; i < indices.size(); ++i) {
-        WebContents* tab = GetWebContentsAt(indices[i]);
-        if (tab) {
-          Browser* browser = chrome::FindBrowserWithWebContents(tab);
-          if (!browser || browser->CanReloadContents(tab))
-            return true;
-        }
-      }
-      return false;
-    }
+    case CommandReload:
+      return delegate_->CanReload();
 
     case CommandCloseOtherTabs:
     case CommandCloseTabsToRight:
@@ -1360,14 +1349,12 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
 
     case CommandReload: {
       base::RecordAction(UserMetricsAction("TabContextMenu_Reload"));
-      std::vector<int> indices = GetIndicesForCommand(context_index);
-      for (size_t i = 0; i < indices.size(); ++i) {
-        WebContents* tab = GetWebContentsAt(indices[i]);
-        if (tab) {
-          Browser* browser = chrome::FindBrowserWithWebContents(tab);
-          if (!browser || browser->CanReloadContents(tab))
-            tab->GetController().Reload(content::ReloadType::NORMAL, true);
-        }
+      if (!delegate_->CanReload())
+        break;
+      for (int index : GetIndicesForCommand(context_index)) {
+        WebContents* tab = GetWebContentsAt(index);
+        if (tab)
+          tab->GetController().Reload(content::ReloadType::NORMAL, true);
       }
       break;
     }
@@ -2222,16 +2209,8 @@ void TabStripModel::MoveAndSetGroup(
 }
 
 void TabStripModel::AddToReadLaterImpl(const std::vector<int>& indices) {
-  ReadingListModel* model =
-      ReadingListModelFactory::GetForBrowserContext(profile_);
-  if (!model || !model->loaded())
-    return;
-
-  for (int index : indices) {
-    WebContents* contents = GetWebContentsAt(index);
-    chrome::MoveTabToReadLater(chrome::FindBrowserWithWebContents(contents),
-                               contents);
-  }
+  for (int index : indices)
+    delegate_->AddToReadLater(GetWebContentsAt(index));
 }
 
 absl::optional<tab_groups::TabGroupId> TabStripModel::UngroupTab(int index) {

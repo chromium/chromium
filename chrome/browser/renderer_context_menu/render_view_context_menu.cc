@@ -2787,11 +2787,7 @@ const policy::DlpRulesManager* RenderViewContextMenu::GetDlpRulesManager()
 bool RenderViewContextMenu::IsReloadEnabled() const {
   CoreTabHelper* core_tab_helper =
       CoreTabHelper::FromWebContents(embedder_web_contents_);
-  if (!core_tab_helper)
-    return false;
-
-  Browser* browser = GetBrowser();
-  return !browser || browser->CanReloadContents(embedder_web_contents_);
+  return core_tab_helper && chrome::CanReload(GetBrowser());
 }
 
 bool RenderViewContextMenu::IsViewSourceEnabled() const {

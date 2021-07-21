@@ -1054,10 +1054,6 @@ void Browser::UpdateDownloadShelfVisibility(bool visible) {
     GetStatusBubble()->UpdateDownloadShelfVisibility(visible);
 }
 
-bool Browser::CanReloadContents(content::WebContents* web_contents) const {
-  return chrome::CanReload(this);
-}
-
 bool Browser::CanSaveContents(content::WebContents* web_contents) const {
   return chrome::CanSavePage(this);
 }

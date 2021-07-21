@@ -556,10 +556,6 @@ class Browser : public TabStripModelObserver,
 
   void UpdateDownloadShelfVisibility(bool visible);
 
-  // Whether the specified WebContents can be reloaded.
-  // Reloading can be disabled e.g. for the DevTools window.
-  bool CanReloadContents(content::WebContents* web_contents) const;
-
   // Whether the specified WebContents can be saved.
   // Saving can be disabled e.g. for the DevTools window.
   bool CanSaveContents(content::WebContents* web_contents) const;

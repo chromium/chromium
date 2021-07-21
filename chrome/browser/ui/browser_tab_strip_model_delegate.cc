@@ -17,12 +17,14 @@
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/reading_list/core/reading_list_model.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -232,6 +234,20 @@ bool BrowserTabStripModelDelegate::ShouldRunUnloadListenerBeforeClosing(
 bool BrowserTabStripModelDelegate::ShouldDisplayFavicon(
     content::WebContents* contents) const {
   return browser_->ShouldDisplayFavicon(contents);
+}
+
+bool BrowserTabStripModelDelegate::CanReload() const {
+  return chrome::CanReload(browser_);
+}
+
+void BrowserTabStripModelDelegate::AddToReadLater(
+    content::WebContents* web_contents) {
+  ReadingListModel* model =
+      ReadingListModelFactory::GetForBrowserContext(browser_->profile());
+  if (!model || !model->loaded())
+    return;
+
+  chrome::MoveTabToReadLater(browser_, web_contents);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

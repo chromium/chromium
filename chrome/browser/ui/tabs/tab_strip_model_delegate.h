@@ -148,6 +148,12 @@ class TabStripModelDelegate {
   // Returns whether favicon should be shown.
   virtual bool ShouldDisplayFavicon(
       content::WebContents* web_contents) const = 0;
+
+  // Returns whether the delegate allows reloading of WebContents.
+  virtual bool CanReload() const = 0;
+
+  // Adds the specified WebContents to read later.
+  virtual void AddToReadLater(content::WebContents* web_contents) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_DELEGATE_H_

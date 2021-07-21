@@ -484,7 +484,7 @@ class TabStripModel : public TabGroupController {
 
   // Returns true if one or more of the tabs pointed to by |indices| are
   // supported by read later.
-  bool IsReadLaterSupportedForAny(const std::vector<int> indices);
+  bool IsReadLaterSupportedForAny(const std::vector<int>& indices);
 
   // Saves tabs with url supported by Read Later.
   void AddToReadLater(const std::vector<int>& indices);

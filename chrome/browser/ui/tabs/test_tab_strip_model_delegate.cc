@@ -96,3 +96,10 @@ bool TestTabStripModelDelegate::ShouldDisplayFavicon(
     content::WebContents* web_contents) const {
   return true;
 }
+
+bool TestTabStripModelDelegate::CanReload() const {
+  return true;
+}
+
+void TestTabStripModelDelegate::AddToReadLater(
+    content::WebContents* web_contents) {}

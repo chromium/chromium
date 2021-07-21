@@ -51,6 +51,8 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
   bool ShouldRunUnloadListenerBeforeClosing(
       content::WebContents* contents) override;
   bool ShouldDisplayFavicon(content::WebContents* contents) const override;
+  bool CanReload() const override;
+  void AddToReadLater(content::WebContents* web_contents) override;
 
   void CloseFrame();
 
