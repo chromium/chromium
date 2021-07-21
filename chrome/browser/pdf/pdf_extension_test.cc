@@ -1325,13 +1325,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
   EXPECT_EQ(u"TabTitleWithEmbeddedPdf", GetActiveWebContents()->GetTitle());
 }
 
-// Flaky, http://crbug.com/767427
-#if defined(OS_WIN)
-#define MAYBE_PdfZoomWithoutBubble DISABLED_PdfZoomWithoutBubble
-#else
-#define MAYBE_PdfZoomWithoutBubble PdfZoomWithoutBubble
-#endif
-IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfZoomWithoutBubble) {
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   WebContents* guest_contents = LoadPdfGetGuestContents(test_pdf_url);
   ASSERT_TRUE(guest_contents);
@@ -1345,9 +1339,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
   // ensures the test passes regardless of the initial default zoom level.
   std::vector<double> preset_zoom_levels = zoom::PageZoom::PresetZoomLevels(0);
   auto it = std::find(preset_zoom_levels.begin(), preset_zoom_levels.end(), 0);
-  ASSERT_TRUE(it != preset_zoom_levels.end());
+  ASSERT_NE(it, preset_zoom_levels.end());
   it++;
-  ASSERT_TRUE(it != preset_zoom_levels.end());
+  ASSERT_NE(it, preset_zoom_levels.end());
   double new_zoom_level = *it;
 
   auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
@@ -1360,7 +1354,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
 
   // Zoom PDF via script.
 #if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
-  EXPECT_EQ(nullptr, ZoomBubbleView::GetZoomBubble());
+  EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
 #endif
   ASSERT_TRUE(content::ExecuteScript(guest_contents,
                                      "while (viewer.viewport.getZoom() < 1) {"
@@ -1372,7 +1366,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
 
   watcher.Wait();
 #if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
-  EXPECT_EQ(nullptr, ZoomBubbleView::GetZoomBubble());
+  EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
 #endif
 }
 
