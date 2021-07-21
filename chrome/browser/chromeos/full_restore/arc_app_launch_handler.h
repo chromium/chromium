@@ -211,6 +211,8 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   // ChromeShelfController is created to prepare launching apps.
   bool is_shelf_ready_ = false;
 
+  bool is_app_connection_ready_ = false;
+
   // A repeating timer to check whether we can restore the ARC apps.
   std::unique_ptr<base::RepeatingTimer> app_launch_timer_;
 

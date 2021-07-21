@@ -1084,13 +1084,14 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
   void Restore() {
     test_full_restore_info_observer_.Reset();
 
-    app_launch_handler_ =
-        std::make_unique<FullRestoreAppLaunchHandler>(profile());
-    app_launch_handler_->SetShouldRestore();
-
     arc_app_launch_handler_ =
         FullRestoreArcTaskHandler::GetForProfile(profile())
             ->arc_app_launch_handler();
+    arc_app_launch_handler_->is_app_connection_ready_ = false;
+
+    app_launch_handler_ =
+        std::make_unique<FullRestoreAppLaunchHandler>(profile());
+    app_launch_handler_->SetShouldRestore();
 
     content::RunAllTasksUntilIdle();
   }
@@ -1955,7 +1956,11 @@ class ArcAppLaunchHandlerArcAppBrowserTest
   }
 
   void OnAppConnectionReady() {
-    DCHECK(arc_app_launch_handler_);
+    if (!arc_app_launch_handler_) {
+      arc_app_launch_handler_ =
+          FullRestoreArcTaskHandler::GetForProfile(profile())
+              ->arc_app_launch_handler();
+    }
     arc_app_launch_handler_->OnAppConnectionReady();
   }
 
@@ -2259,6 +2264,68 @@ IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, AppIsReadyLate) {
   // removed.
   VerifyRestoreData(app_id1, kTaskId1);
   VerifyRestoreData(app_id2, kTaskId2);
+
+  StopInstance();
+}
+
+// Verify the restore process when the user clicks the `restore` button very
+// late after the OnAppConnectionReady is called.
+IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, RestoreLate) {
+  SetProfile();
+  InstallTestApps(kTestAppPackage, true);
+
+  const std::string app_id1 = GetTestApp1Id(kTestAppPackage);
+  const std::string app_id2 = GetTestApp2Id(kTestAppPackage);
+
+  int32_t session_id1 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+  int32_t session_id2 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+
+  SaveAppLaunchInfo(app_id1, session_id1);
+  SaveAppLaunchInfo(app_id2, session_id2);
+
+  // Simulate creating kTaskId1. The task id needs to match the |window_app_id|
+  // arg of CreateExoWindow.
+  int32_t kTaskId1 = 100;
+  CreateTask(app_id1, kTaskId1, session_id1);
+
+  // Create the window for the app1.
+  views::Widget* widget1 = CreateExoWindow("org.chromium.arc.100");
+  aura::Window* window1 = widget1->GetNativeWindow();
+
+  // Simulate creating kTaskId2 for the app2.
+  int32_t kTaskId2 = 101;
+  CreateTask(app_id2, kTaskId2, session_id2);
+
+  int32_t activation_index1 = 11;
+  SaveWindowInfo(window1, activation_index1,
+                 chromeos::WindowStateType::kNormal);
+
+  WaitForAppLaunchInfoSaved();
+
+  // Call OnAppConnectionReady to simulate the app connection is ready.
+  base::HistogramTester histogram_tester;
+  OnAppConnectionReady();
+
+  // Simulate the user clicks the `restore` button.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
+  app_launch_handler->SetShouldRestore();
+
+  content::RunAllTasksUntilIdle();
+
+  widget1->CloseNow();
+
+  app_host()->OnTaskDestroyed(kTaskId1);
+  app_host()->OnTaskDestroyed(kTaskId2);
+
+  EXPECT_TRUE(HasRestoreData());
+  VerifyWindows(activation_index1, app_id1, kTaskId1);
+  VerifyNoStackWindows(app_id2, kTaskId2);
+
+  EXPECT_EQ(
+      1, histogram_tester.GetBucketCount(kRestoredAppWindowCountHistogram, 2));
 
   StopInstance();
 }
