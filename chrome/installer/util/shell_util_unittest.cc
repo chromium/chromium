@@ -150,7 +150,7 @@ class ShellUtilShortcutTest : public testing::Test {
     std::wstring shortcut_name = properties.has_shortcut_name()
                                      ? properties.shortcut_name
                                      : InstallUtil::GetShortcutName();
-    shortcut_name.append(installer::kLnkExt);
+    shortcut_name += installer::kLnkExt;
     return expected_path.Append(shortcut_name);
   }
 
