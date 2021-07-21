@@ -60,6 +60,7 @@
 #include "base/unguessable_token.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluez/bluetooth_low_energy_scan_session_bluez.h"
+#include "device/bluetooth/chromeos/bluetooth_connection_logger.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "device/bluetooth/dbus/bluetooth_advertisement_monitor_application_service_provider.h"
 #include "device/bluetooth/dbus/bluetooth_advertisement_monitor_manager_client.h"
@@ -1386,6 +1387,13 @@ void BluetoothAdapterBlueZ::NotifyDeviceConnectedStateChanged(
     bool is_now_connected) {
   DCHECK_EQ(device->adapter_, this);
   DCHECK_EQ(device->IsConnected(), is_now_connected);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (is_now_connected) {
+    device::BluetoothConnectionLogger::RecordDeviceConnected(
+        device->GetIdentifier(), device->GetDeviceType());
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   for (auto& observer : observers_)
     observer.DeviceConnectedStateChanged(this, device, is_now_connected);

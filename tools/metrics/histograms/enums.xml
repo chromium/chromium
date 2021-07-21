@@ -7842,6 +7842,23 @@ Called by update_bad_message_reasons.py.-->
   <int value="7" label="Not connectable"/>
 </enum>
 
+<enum name="BluetoothDeviceType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Computer"/>
+  <int value="2" label="Phone"/>
+  <int value="3" label="Modem"/>
+  <int value="4" label="Audio"/>
+  <int value="5" label="Car Audio"/>
+  <int value="6" label="Video"/>
+  <int value="7" label="Peripheral"/>
+  <int value="8" label="Joystick"/>
+  <int value="9" label="Gamepad"/>
+  <int value="10" label="Keyboard"/>
+  <int value="11" label="Mouse"/>
+  <int value="12" label="Tablet"/>
+  <int value="13" label="Keyboard Mouse Combo"/>
+</enum>
+
 <enum name="BluetoothDiscoveryOutcomes">
   <int value="0" label="Success"/>
   <int value="1"

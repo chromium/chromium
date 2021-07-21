@@ -26,22 +26,25 @@ enum BluetoothTransport : uint8_t {
 
 // Possible values that may be returned by BluetoothDevice::GetDeviceType(),
 // representing different types of bluetooth device that we support or are aware
-// of decoded from the bluetooth class information.
+// of decoded from the bluetooth class information. These values are persisted
+// to logs. Entries should not be renumbered and numeric values should never be
+// reused.
 enum class BluetoothDeviceType {
-  UNKNOWN,
-  COMPUTER,
-  PHONE,
-  MODEM,
-  AUDIO,
-  CAR_AUDIO,
-  VIDEO,
-  PERIPHERAL,
-  JOYSTICK,
-  GAMEPAD,
-  KEYBOARD,
-  MOUSE,
-  TABLET,
-  KEYBOARD_MOUSE_COMBO
+  UNKNOWN = 0,
+  COMPUTER = 1,
+  PHONE = 2,
+  MODEM = 3,
+  AUDIO = 4,
+  CAR_AUDIO = 5,
+  VIDEO = 6,
+  PERIPHERAL = 7,
+  JOYSTICK = 8,
+  GAMEPAD = 9,
+  KEYBOARD = 10,
+  MOUSE = 11,
+  TABLET = 12,
+  KEYBOARD_MOUSE_COMBO = 13,
+  kMaxValue = KEYBOARD_MOUSE_COMBO
 };
 
 }  // namespace device
