@@ -737,7 +737,10 @@ if (is_android) {
       "../browser/policy/cloud/chrome_browser_cloud_management_browsertest.cc",
       "../browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate.h",
       "../browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate_android.cc",
+      "../browser/policy/cloud/cloud_policy_browsertest.cc",
       "../browser/policy/cloud/cloud_policy_manager_browsertest.cc",
+      "../browser/policy/cloud/cloud_policy_test_utils.cc",
+      "../browser/policy/cloud/cloud_policy_test_utils.h",
       "../browser/policy/policy_prefs_browsertest.cc",
       "../browser/profiles/profile_browsertest_android.cc",
       "../browser/safe_browsing/test_safe_browsing_database_helper.cc",
@@ -761,6 +764,8 @@ if (is_android) {
       "//components/autofill/content/renderer:test_support",
       "//components/enterprise:enterprise",
       "//components/enterprise:test_support",
+      "//components/invalidation/impl:test_support",
+      "//components/policy:chrome_settings_proto_generated_compile",
       "//components/policy/core/browser:test_support",
       "//components/policy/test_support:test_support",
       "//components/safe_browsing/content/renderer/phishing_classifier:phishing_classifier",
@@ -768,6 +773,7 @@ if (is_android) {
       "//components/safe_browsing/core/common/proto:client_model_proto",
       "//components/spellcheck:buildflags",
       "//components/spellcheck/renderer:renderer",
+      "//components/user_manager:user_manager",
     ]
 
     # Add unwind tables in android_browsertests apk to support enabling
