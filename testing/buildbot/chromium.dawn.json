@@ -3131,6 +3131,7 @@
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--time-out-ms=30000",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3434,7 +3435,7 @@
         "args": [
           "--jobs=1",
           "--order=natural",
-          "--additional-driver-flag=--enable-dawn-backend-validation",
+          "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -3746,6 +3747,7 @@
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--time-out-ms=30000",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -4049,7 +4051,7 @@
         "args": [
           "--jobs=1",
           "--order=natural",
-          "--additional-driver-flag=--enable-dawn-backend-validation",
+          "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -4361,7 +4363,8 @@
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator"
+          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--time-out-ms=30000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4663,7 +4666,7 @@
         "args": [
           "--jobs=1",
           "--order=natural",
-          "--additional-driver-flag=--enable-dawn-backend-validation",
+          "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -4972,7 +4975,8 @@
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
-          "--additional-driver-flag=--enable-dawn-features=use_tint_generator"
+          "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
+          "--time-out-ms=30000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -5274,7 +5278,7 @@
         "args": [
           "--jobs=1",
           "--order=natural",
-          "--additional-driver-flag=--enable-dawn-backend-validation",
+          "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",

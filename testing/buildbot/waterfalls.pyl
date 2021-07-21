@@ -2216,7 +2216,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough_win_intel',
-          'isolated_scripts': 'gpu_dawn_isolated_scripts_win_intel',
+          'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
       },
       'Dawn Win10 x64 DEPS Release (NVIDIA)': {
@@ -2227,7 +2227,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
-          'isolated_scripts': 'gpu_dawn_isolated_scripts',
+          'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
       },
       'Dawn Win10 x64 Release (Intel HD 630)': {
@@ -2238,7 +2238,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough_win_intel',
-          'isolated_scripts': 'gpu_dawn_isolated_scripts_win_intel',
+          'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
       },
       'Dawn Win10 x64 Release (NVIDIA)': {
@@ -2249,7 +2249,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
-          'isolated_scripts': 'gpu_dawn_isolated_scripts',
+          'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
       },
       'Dawn Win10 x86 Builder' : {},
@@ -2262,7 +2262,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough_win_intel',
-          'isolated_scripts': 'gpu_dawn_isolated_scripts_win_intel',
+          'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
       },
       'Dawn Win10 x86 DEPS Release (NVIDIA)': {
@@ -2273,7 +2273,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
-          'isolated_scripts': 'gpu_dawn_isolated_scripts',
+          'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
       },
       'Dawn Win10 x86 Release (Intel HD 630)': {
@@ -2284,7 +2284,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough_win_intel',
-          'isolated_scripts': 'gpu_dawn_isolated_scripts_win_intel',
+          'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
       },
       'Dawn Win10 x86 Release (NVIDIA)': {
@@ -2295,7 +2295,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
-          'isolated_scripts': 'gpu_dawn_isolated_scripts',
+          'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
       },
     }
