@@ -1285,7 +1285,10 @@ TEST_F(ConversionStorageTest, DedupKey_Dedups) {
           .SetData(2)
           .SetConversionOrigin(url::Origin::Create(GURL("https://b.example")))
           .Build());
-  EXPECT_EQ(2u, storage()->GetActiveImpressions().size());
+  auto active_impressions = storage()->GetActiveImpressions();
+  EXPECT_EQ(2u, active_impressions.size());
+  EXPECT_THAT(active_impressions[0].dedup_keys(), IsEmpty());
+  EXPECT_THAT(active_impressions[1].dedup_keys(), IsEmpty());
 
   EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(
       ConversionBuilder()
@@ -1340,6 +1343,11 @@ TEST_F(ConversionStorageTest, DedupKey_Dedups) {
   EXPECT_EQ(71u, actual_reports[0].conversion_data);
   EXPECT_EQ(72u, actual_reports[1].conversion_data);
   EXPECT_EQ(73u, actual_reports[2].conversion_data);
+
+  active_impressions = storage()->GetActiveImpressions();
+  EXPECT_EQ(2u, active_impressions.size());
+  EXPECT_THAT(active_impressions[0].dedup_keys(), ElementsAre(11, 12));
+  EXPECT_THAT(active_impressions[1].dedup_keys(), ElementsAre(12));
 }
 
 TEST_F(ConversionStorageTest, DedupKey_DedupsAfterConversionDeletion) {

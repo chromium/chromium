@@ -251,6 +251,9 @@ class ImpressionBuilder {
   ImpressionBuilder& SetImpressionId(absl::optional<int64_t> impression_id)
       WARN_UNUSED_RESULT;
 
+  ImpressionBuilder& SetDedupKeys(std::vector<int64_t> dedup_keys)
+      WARN_UNUSED_RESULT;
+
   StorableImpression Build() const WARN_UNUSED_RESULT;
 
  private:
@@ -263,6 +266,7 @@ class ImpressionBuilder {
   StorableImpression::SourceType source_type_;
   int64_t priority_;
   absl::optional<int64_t> impression_id_;
+  std::vector<int64_t> dedup_keys_;
 };
 
 // Returns a StorableConversion with default data which matches the default

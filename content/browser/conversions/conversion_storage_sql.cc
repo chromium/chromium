@@ -1083,6 +1083,25 @@ std::vector<StorableImpression> ConversionStorageSql::GetActiveImpressions(
   }
   if (!statement.Succeeded())
     return {};
+
+  static constexpr char kDedupKeySql[] =
+      "SELECT dedup_key FROM dedup_keys WHERE impression_id = ?";
+  sql::Statement dedup_key_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kDedupKeySql));
+  for (auto& impression : impressions) {
+    dedup_key_statement.Reset(/*clear_bound_vars=*/true);
+    dedup_key_statement.BindInt64(0, *impression.impression_id());
+
+    std::vector<int64_t> dedup_keys;
+    while (dedup_key_statement.Step()) {
+      dedup_keys.push_back(dedup_key_statement.ColumnInt64(0));
+    }
+    if (!dedup_key_statement.Succeeded())
+      return {};
+
+    impression.SetDedupKeys(std::move(dedup_keys));
+  }
+
   return impressions;
 }
 

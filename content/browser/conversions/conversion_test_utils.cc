@@ -252,12 +252,20 @@ ImpressionBuilder& ImpressionBuilder::SetImpressionId(
   return *this;
 }
 
+ImpressionBuilder& ImpressionBuilder::SetDedupKeys(
+    std::vector<int64_t> dedup_keys) {
+  dedup_keys_ = std::move(dedup_keys);
+  return *this;
+}
+
 StorableImpression ImpressionBuilder::Build() const {
-  return StorableImpression(impression_data_, impression_origin_,
-                            conversion_origin_, reporting_origin_,
-                            impression_time_,
-                            /*expiry_time=*/impression_time_ + expiry_,
-                            source_type_, priority_, impression_id_);
+  StorableImpression impression(impression_data_, impression_origin_,
+                                conversion_origin_, reporting_origin_,
+                                impression_time_,
+                                /*expiry_time=*/impression_time_ + expiry_,
+                                source_type_, priority_, impression_id_);
+  impression.SetDedupKeys(dedup_keys_);
+  return impression;
 }
 
 StorableConversion DefaultConversion() {
@@ -313,7 +321,7 @@ StorableConversion ConversionBuilder::Build() const {
 }
 
 // Custom comparator for StorableImpressions that does not take impression IDs
-// into account.
+// or dedup keys into account.
 bool operator==(const StorableImpression& a, const StorableImpression& b) {
   const auto tie = [](const StorableImpression& impression) {
     return std::make_tuple(

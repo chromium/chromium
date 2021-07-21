@@ -98,6 +98,7 @@ function createSourceRow(source) {
   td[5].textContent = new Date(source.expiryTime).toLocaleString();
   td[6].textContent = SourceTypeToText(source.sourceType);
   td[7].textContent = source.priority;
+  td[8].textContent = source.dedupKeys.join();
   return document.importNode(template.content, true);
 }
 

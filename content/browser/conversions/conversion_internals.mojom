@@ -34,6 +34,7 @@ struct WebUIImpression {
   double expiry_time;
   SourceType source_type;
   int64 priority;
+  array<int64> dedup_keys;
 };
 
 // Struct containing info for reports sent in this session.

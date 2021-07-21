@@ -50,7 +50,8 @@ void ForwardImpressionsToWebUI(
         impression.conversion_origin(), impression.reporting_origin(),
         impression.impression_time().ToJsTime(),
         impression.expiry_time().ToJsTime(),
-        SourceTypeToMojoType(impression.source_type()), impression.priority()));
+        SourceTypeToMojoType(impression.source_type()), impression.priority(),
+        impression.dedup_keys()));
   }
 
   std::move(web_ui_callback).Run(std::move(web_ui_impressions));

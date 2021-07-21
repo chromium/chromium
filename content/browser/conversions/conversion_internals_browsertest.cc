@@ -188,6 +188,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
        ImpressionBuilder(base::Time::Now())
            .SetSourceType(StorableImpression::SourceType::kEvent)
            .SetPriority(std::numeric_limits<int64_t>::max())
+           .SetDedupKeys({13, 17})
            .Build()});
   OverrideWebUIConversionManager(&manager);
 
@@ -199,7 +200,9 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
           table.children[0].children[6].innerText === "Navigation" &&
           table.children[1].children[6].innerText === "Event" &&
           table.children[0].children[7].innerText === "0" &&
-          table.children[1].children[7].innerText === $2) {
+          table.children[1].children[7].innerText === $2 &&
+          table.children[0].children[8].innerText === "" &&
+          table.children[1].children[8].innerText === "13,17") {
         document.title = $3;
       }
     });
