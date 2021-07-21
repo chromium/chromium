@@ -905,9 +905,10 @@ std::u16string CreditCard::NetworkForDisplay() const {
   return CreditCard::NetworkForDisplay(network_);
 }
 
-std::u16string CreditCard::ObfuscatedLastFourDigits() const {
+std::u16string CreditCard::ObfuscatedLastFourDigits(
+    int obfuscation_length) const {
   return internal::GetObfuscatedStringForCardDigits(LastFourDigits(),
-                                                    /*obfuscation_length=*/4);
+                                                    obfuscation_length);
 }
 
 std::string CreditCard::CardIconStringForAutofillSuggestion() const {

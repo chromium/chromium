@@ -283,8 +283,9 @@ class CreditCard : public AutofillDataModel {
   std::u16string FullDigitsForDisplay() const;
   // The user-visible issuer network of the card, e.g. 'Mastercard'.
   std::u16string NetworkForDisplay() const;
-  // A label for this card formatted as '****2345'.
-  std::u16string ObfuscatedLastFourDigits() const;
+  // A label for this card formatted as '••••2345' where the number of dots are
+  // specified by the `obfuscation_length`.
+  std::u16string ObfuscatedLastFourDigits(int obfuscation_length = 4) const;
   // The string used to represent the icon to be used for the autofill
   // suggestion. For ex: visaCC, googleIssuedCC, americanExpressCC, etc.
   std::string CardIconStringForAutofillSuggestion() const;
