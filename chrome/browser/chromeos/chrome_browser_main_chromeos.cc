@@ -91,6 +91,7 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
 #include "chrome/browser/ash/notifications/debugd_notification_handler.h"
 #include "chrome/browser/ash/notifications/gnubby_notification.h"
 #include "chrome/browser/ash/notifications/low_disk_notification.h"
@@ -457,6 +458,7 @@ class DBusServices {
   }
 
   ~DBusServices() {
+    ash::rollback_network_config::Shutdown();
     sensors::SensorHalDispatcher::Shutdown();
     NetworkHandler::Shutdown();
     disks::DiskMountManager::Shutdown();
@@ -756,7 +758,6 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
   // keyboard::KeyboardController initializes ChromeKeyboardUI which depends
   // on ChromeKeyboardControllerClient.
   chrome_keyboard_controller_client_ = ChromeKeyboardControllerClient::Create();
-
 
   // ProfileHelper has to be initialized after UserManager instance is created.
   ProfileHelper::Get()->Initialize();

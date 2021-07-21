@@ -332,7 +332,7 @@ const NestedShillDictionaryEntry nested_shill_dictionaries[] = {
 const StringTranslationEntry kNetworkTypeTable[] = {
     {::onc::network_type::kEthernet, shill::kTypeEthernet},
     // kTypeEthernetEap is set in onc_translator_onc_to_shill.cc.
-    //  { ::onc::network_type::kEthernet, shill::kTypeEthernetEap },
+    // {::onc::network_type::kEthernet, shill::kTypeEthernetEap},
     {::onc::network_type::kWiFi, shill::kTypeWifi},
     // wimax entries are ignored in onc_translator_onc_to_shill.cc.
     // {::onc::network_type::kWimax, shill::kTypeWimax},
