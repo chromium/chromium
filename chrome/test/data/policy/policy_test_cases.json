@@ -2777,16 +2777,19 @@
         "note": "Precedence over SpellcheckLanguageBlacklist",
         "policies": {
           "SpellcheckLanguageBlocklist": [
-            "fr", "it"
+            "fr",
+            "it"
           ],
           "SpellcheckLanguageBlacklist": [
-            "it", "es"
+            "it",
+            "es"
           ]
         },
         "prefs": {
           "spellcheck.blocked_dictionaries": {
             "value": [
-              "fr", "it"
+              "fr",
+              "it"
             ]
           }
         }
@@ -9993,8 +9996,7 @@
         "policies": {},
         "prefs": {
           "safebrowsing.safe_browsing_whitelist_domains": {
-            "default_value": [
-            ]
+            "default_value": []
           }
         }
       },
@@ -11903,11 +11905,37 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Check default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "safebrowsing.advanced_protection_allowed": {
+            "location": "user_profile",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: true",
         "policies": {
           "AdvancedProtectionAllowed": true
         },
         "prefs": {
-          "safebrowsing.advanced_protection_allowed": {}
+          "safebrowsing.advanced_protection_allowed": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: false",
+        "policies": {
+          "AdvancedProtectionAllowed": false
+        },
+        "prefs": {
+          "safebrowsing.advanced_protection_allowed": {
+            "location": "user_profile",
+            "value": false
+          }
         }
       }
     ]
