@@ -1565,6 +1565,9 @@
             "experiments": [
                 {
                     "name": "Enabled_20210201",
+                    "params": {
+                        "holdback_chance": "0.0"
+                    },
                     "enable_features": [
                         "PermissionPredictions"
                     ]
