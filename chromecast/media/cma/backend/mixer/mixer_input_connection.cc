@@ -871,9 +871,12 @@ double MixerInputConnection::ExtraDelayFrames() {
   //   * Data in the rate shifter.
   //   * Data buffered in the fader.
   //   * Queued data in |queue_|.
+  // Note that the delay for data that will be pushed into the rate shifter
+  // (ie, fader and queue_) needs to be adjusted for the current playback rate.
   return mixer_read_size_ + audio_clock_simulator_.DelayFrames() +
-         rate_shifter_.BufferedFrames() + timestamped_fader_->BufferedFrames() +
-         (queued_frames_ / playback_rate_);
+         rate_shifter_.BufferedFrames() +
+         ((timestamped_fader_->BufferedFrames() + queued_frames_) /
+          playback_rate_);
 }
 
 void MixerInputConnection::InitializeAudioPlayback(
