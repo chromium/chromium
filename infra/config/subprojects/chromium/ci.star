@@ -619,8 +619,10 @@ ci.android_builder(
         category = "builder|det",
         short_name = "rel",
     ),
+    cores = 32,
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 7 * time.hour,
+    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
     notifies = ["Deterministic Android"],
     tree_closing = True,
 )
