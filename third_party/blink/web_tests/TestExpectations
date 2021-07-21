@@ -7255,3 +7255,9 @@ crbug.com/1161244 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-
 crbug.com/1230534 [ Linux ] external/wpt/webrtc/simulcast/vp8.https.html [ Pass Timeout ]
 
 crbug.com/1230836 [ Mac ] fast/forms/calendar-picker/date-picker-appearance-zoom150.html [ Crash Failure Pass ]
+
+# Sheriff 2021-07-21
+crbug.com/1231431 external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure ]
+crbug.com/1231431 virtual/coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure ]
+crbug.com/1231431 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure ]
+crbug.com/1231431 virtual/plz-service-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure ]
