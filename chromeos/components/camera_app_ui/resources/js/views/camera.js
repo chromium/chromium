@@ -132,8 +132,11 @@ export class Camera extends View {
      * @type {!ScannerOptions}
      * @private
      */
-    this.scannerOptions_ =
-        new ScannerOptions(this.start.bind(this), this.infoUpdater_);
+    this.scannerOptions_ = new ScannerOptions({
+      doReconfigure: this.start.bind(this),
+      doSwitchDevice: (deviceId) => this.options_.switchDevice(deviceId),
+      infoUpdater: this.infoUpdater_,
+    });
 
     /**
      * Video preview for the camera.

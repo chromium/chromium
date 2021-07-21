@@ -49,15 +49,24 @@ const DEFAULT_SCAN_TYPE = ScanType.DOCUMENT;
  */
 export class ScannerOptions {
   /**
-   * @param {function(): !Promise} reconfigure Request camera reconfiguration.
-   * @param {!DeviceInfoUpdater} infoUpdater
+   * @param {{
+   *   doReconfigure: function(): !Promise,
+   *   doSwitchDevice: function(string): !Promise,
+   *   infoUpdater: !DeviceInfoUpdater,
+   * }} params
    */
-  constructor(reconfigure, infoUpdater) {
+  constructor({doReconfigure, doSwitchDevice, infoUpdater}) {
     /**
      * @type {function(): !Promise}
      * @private
      */
-    this.reconfigure_ = reconfigure;
+    this.doReconfigure_ = doReconfigure;
+
+    /**
+     * @type {function(string): !Promise}
+     * @private
+     */
+    this.doSwitchDevice_ = doSwitchDevice;
 
     /**
      * Togglable barcode option in photo mode.
@@ -109,7 +118,7 @@ export class ScannerOptions {
               state.get(state.State.ENABLE_DOCUMENT_MODE_ON_ALL_CAMERAS));
     };
     state.addObserver(state.State.ENABLE_DOCUMENT_MODE_ON_ALL_CAMERAS, () => {
-      this.reconfigure_();
+      this.doReconfigure_();
       updateShowScannerMode();
     });
     infoUpdater.addDeviceChangeListener(async () => {
@@ -216,6 +225,11 @@ export class ScannerOptions {
     }
 
     if (state.get(Mode.SCANNER) && scanType === ScanType.DOCUMENT) {
+      const currentDeviceId = this.documentCornerOverylay_.getDeviceId();
+      if (!this.canScanDocument_(currentDeviceId)) {
+        this.doSwitchDevice_(this.docModeDevices_[0]);
+        return;
+      }
       await this.documentCornerOverylay_.start();
     } else {
       await this.documentCornerOverylay_.stop();
