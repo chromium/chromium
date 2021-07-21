@@ -154,7 +154,7 @@
       {
         "name": "isAllowedIncognitoAccess",
         "type": "function",
-        "description": "Retrieves the state of the extension's access to Incognito-mode (as determined by the user-controlled 'Allowed in Incognito' checkbox.",
+        "description": "Retrieves the state of the extension's access to Incognito-mode. This corresponds to the user-controlled per-extension 'Allowed in Incognito' setting accessible via the chrome://extensions page.",
         "min_version": "12.0.706.0",
         "parameters": [
           {
@@ -173,7 +173,7 @@
       {
         "name": "isAllowedFileSchemeAccess",
         "type": "function",
-        "description": "Retrieves the state of the extension's access to the 'file://' scheme (as determined by the user-controlled 'Allow access to File URLs' checkbox.",
+        "description": "Retrieves the state of the extension's access to the 'file://' scheme. This corresponds to the user-controlled per-extension 'Allow access to File URLs' setting accessible via the chrome://extensions page.",
         "min_version": "12.0.706.0",
         "parameters": [
           {
