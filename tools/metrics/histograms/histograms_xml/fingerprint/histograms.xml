@@ -48,28 +48,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Reset.ResetContextMode"
-    enum="FingerprintSensorMode" expires_after="2021-10-10">
+    enum="FingerprintSensorMode" expires_after="2022-01-02">
   <owner>tomhughes@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>The mode FPMCU was in when we reset context.</summary>
 </histogram>
 
 <histogram name="Fingerprint.SetContext.SetContextMode"
-    enum="FingerprintSensorMode" expires_after="2021-10-04">
-  <owner>yichengli@chromium.org</owner>
+    enum="FingerprintSensorMode" expires_after="2022-01-02">
+  <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>The mode FPMCU was in when we set its context.</summary>
 </histogram>
 
 <histogram name="Fingerprint.SetContext.Success" enum="BooleanSuccess"
-    expires_after="2021-09-01">
-  <owner>yichengli@chromium.org</owner>
+    expires_after="2022-01-02">
+  <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>Whether setting FPMCU mode succeeded.</summary>
 </histogram>
 
 <histogram name="Fingerprint.Unlock.AttemptsCountBeforeSuccess" units="count"
-    expires_after="2021-12-19">
+    expires_after="2022-01-02">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -79,7 +79,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.AuthSuccessful" enum="BooleanSuccess"
-    expires_after="2021-11-21">
+    expires_after="2022-01-02">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -90,7 +90,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.EnrolledFingerCount" units="count"
-    expires_after="2021-11-21">
+    expires_after="2022-01-02">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -98,7 +98,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Match.Duration.Capture" units="ms"
-    expires_after="2021-08-15">
+    expires_after="2022-01-02">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -109,7 +109,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Match.Duration.Matcher" units="ms"
-    expires_after="2021-08-15">
+    expires_after="2022-01-02">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -119,7 +119,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Match.Duration.Overall" units="ms"
-    expires_after="2021-11-21">
+    expires_after="2022-01-02">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -130,8 +130,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Match.PositiveMatchSecretCorrect"
-    enum="BooleanCorrect" expires_after="2021-10-31">
-  <owner>yichengli@chromium.org</owner>
+    enum="BooleanCorrect" expires_after="2022-01-02">
+  <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Whether the hash of the positive match secret read from FPMCU matches the
@@ -153,7 +153,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <obsolete>
     Removed 09/2020 as the migration is no longer supported after M85.
   </obsolete>
-  <owner>yichengli@chromium.org</owner>
+  <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Whether migrating a record to positive match secret succeeded.
@@ -161,7 +161,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.NoMatch.Duration.Capture" units="ms"
-    expires_after="2021-09-01">
+    expires_after="2022-01-02">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -172,7 +172,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.NoMatch.Duration.Matcher" units="ms"
-    expires_after="2021-09-01">
+    expires_after="2022-01-02">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -193,8 +193,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.ReadPositiveMatchSecret.Success"
-    enum="BooleanSuccess" expires_after="2021-09-01">
-  <owner>yichengli@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2022-01-02">
+  <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Whether successfully read positive match secret from FPMCU when needed.
@@ -202,8 +202,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.RecordFormatVersion"
-    enum="FingerprintRecordFormatVersion" expires_after="2021-10-31">
-  <owner>yichengli@chromium.org</owner>
+    enum="FingerprintRecordFormatVersion" expires_after="2022-01-02">
+  <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Format version of a fingerprint template record read from storage.
@@ -211,7 +211,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Result" enum="FingerprintUnlockResult"
-    expires_after="2022-01-09">
+    expires_after="2022-01-02">
   <owner>rsorokin@chromium.org</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -223,7 +223,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.UnlockEnabled" enum="BooleanEnabled"
-    expires_after="2021-11-21">
+    expires_after="2022-01-02">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -234,7 +234,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Updater.NoUpdate.Duration.Overall" units="ms"
-    expires_after="2021-11-21">
+    expires_after="2022-01-02">
   <owner>tomhughes@chromium.org</owner>
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
@@ -245,7 +245,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Updater.Reason" enum="FingerprintUpdaterReason"
-    expires_after="2021-11-21">
+    expires_after="2022-01-02">
   <owner>tomhughes@chromium.org</owner>
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
@@ -255,7 +255,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Updater.Status" enum="FingerprintUpdaterStatus"
-    expires_after="2021-11-21">
+    expires_after="2022-01-02">
   <owner>tomhughes@chromium.org</owner>
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
@@ -263,7 +263,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Updater.Update.Duration.Overall" units="ms"
-    expires_after="2021-11-21">
+    expires_after="2022-01-02">
   <owner>tomhughes@chromium.org</owner>
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
