@@ -28,7 +28,7 @@ input {
 }
 
 #focus-ring {
-  border: 2px solid rgba(var(--blue-600-dark-rgb), 0.7);
+  border: 2px solid var(--blue-300);
   border-radius: 4px;
   height: 0; /* Calculate at runtime. */
   left: 0; /* Calculate at runtime. */
