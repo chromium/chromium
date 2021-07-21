@@ -361,7 +361,7 @@ void MediaRouterMojoImpl::TerminateRoute(const MediaRoute::Id& route_id) {
                                                        std::move(callback));
 }
 
-void MediaRouterMojoImpl::DetachRoute(const MediaRoute::Id& route_id) {
+void MediaRouterMojoImpl::DetachRoute(MediaRoute::Id route_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   absl::optional<mojom::MediaRouteProviderId> provider_id =
       GetProviderIdForRoute(route_id);

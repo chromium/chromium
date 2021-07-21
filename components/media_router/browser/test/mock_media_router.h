@@ -96,7 +96,7 @@ class MockMediaRouter : public MediaRouterBase {
                     base::TimeDelta timeout,
                     bool incognito));
 
-  MOCK_METHOD1(DetachRoute, void(const MediaRoute::Id& route_id));
+  MOCK_METHOD1(DetachRoute, void(MediaRoute::Id route_id));
   MOCK_METHOD1(TerminateRoute, void(const MediaRoute::Id& route_id));
   MOCK_METHOD2(SendRouteMessage,
                void(const MediaRoute::Id& route_id,

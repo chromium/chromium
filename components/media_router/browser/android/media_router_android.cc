@@ -168,7 +168,7 @@ void MediaRouterAndroid::SendRouteBinaryMessage(
 
 void MediaRouterAndroid::OnUserGesture() {}
 
-void MediaRouterAndroid::DetachRoute(const MediaRoute::Id& route_id) {
+void MediaRouterAndroid::DetachRoute(MediaRoute::Id route_id) {
   bridge_->DetachRoute(route_id);
   RemoveRoute(route_id);
   NotifyPresentationConnectionClose(
