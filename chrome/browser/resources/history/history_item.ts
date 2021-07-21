@@ -120,8 +120,6 @@ export class HistoryItemElement extends HistoryItemElementBase {
   connectedCallback() {
     super.connectedCallback();
 
-    this.setAttribute('role', 'row');
-
     afterNextRender(this, () => {
       // Adding listeners asynchronously to reduce blocking time, since these
       // history items are items in a potentially long list.
@@ -156,17 +154,25 @@ export class HistoryItemElement extends HistoryItemElementBase {
    * Toggle item selection whenever the checkbox or any non-interactive part
    * of the item is clicked.
    */
-  private onItemClick_(e: MouseEvent) {
+  private onRowClick_(e: MouseEvent) {
     const path = e.composedPath();
+    // VoiceOver has issues with click events within elements that have a role
+    // of row, so this event listeners has to be on the row itself.
+    // (See crbug.com/1185827.)
+    let inItemContainer = false;
     for (let i = 0; i < path.length; i++) {
       const elem = path[i] as HTMLElement;
       if (elem.id !== 'checkbox' &&
           (elem.nodeName === 'A' || elem.nodeName === 'CR-ICON-BUTTON')) {
         return;
       }
+
+      if (!inItemContainer && elem.id === 'item-container') {
+        inItemContainer = true;
+      }
     }
 
-    if (this.selectionNotAllowed_) {
+    if (this.selectionNotAllowed_ || !inItemContainer) {
       return;
     }
 
@@ -197,7 +203,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
     this.isShiftKeyDown_ = false;
   }
 
-  private onItemMousedown_(e: MouseEvent) {
+  private onRowMousedown_(e: MouseEvent) {
     // Prevent shift clicking a checkbox from selecting text.
     if (e.shiftKey) {
       e.preventDefault();
