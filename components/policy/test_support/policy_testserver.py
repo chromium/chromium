@@ -1310,7 +1310,7 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
       start_csr_response.va_challenge = va_challenge
       start_csr_response.hashing_algorithm = 2
       start_csr_response.signing_algorithm = 1
-      start_csr_response.data_to_sign = 'data_to_sign_123'
+      start_csr_response.data_to_sign = b'data_to_sign_123'
 
       response = dm.DeviceManagementResponse()
       response.client_certificate_provisioning_response.start_csr_response.\
@@ -1331,7 +1331,7 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
       pubKey = crypto.load_publickey(crypto.FILETYPE_ASN1, msg.public_key)
 
       caPrivKey = crypto.load_privatekey(
-        crypto.FILETYPE_PEM, CERT_PROVISIONING_CA_PRIVATE_KEY_PEM, 'pass')
+        crypto.FILETYPE_PEM, CERT_PROVISIONING_CA_PRIVATE_KEY_PEM, b'pass')
 
       cert = crypto.X509()
       cert.set_serial_number(3)
