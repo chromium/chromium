@@ -127,9 +127,6 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   // Can only be called from the main (Java) thread.
   NetworkChangeNotifier::ConnectionSubtype GetCurrentConnectionSubtype() const;
 
-  // Is the current process bound to a specific network?
-  bool IsProcessBoundToNetwork();
-
   // Returns true if NetworkCallback failed to register, indicating that
   // network-specific callbacks will not be issued.
   bool RegisterNetworkCallbackFailed() const {

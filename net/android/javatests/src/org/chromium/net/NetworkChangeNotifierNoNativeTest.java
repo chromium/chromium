@@ -48,8 +48,8 @@ public class NetworkChangeNotifierNoNativeTest {
     }
 
     /**
-     * Verify NetworkChangeNotifier.registerNetworkCallbackFailed() and
-     * NetworkChangeNotifier.isProcessBoundToNetwork() return false under normal circumstances.
+     * Verify NetworkChangeNotifier.registerNetworkCallbackFailed() returns false under normal
+     * circumstances.
      */
     @Test
     @MediumTest
@@ -57,10 +57,8 @@ public class NetworkChangeNotifierNoNativeTest {
         Looper.prepare();
         NetworkChangeNotifier ncn = NetworkChangeNotifier.init();
         Assert.assertFalse(ncn.registerNetworkCallbackFailed());
-        Assert.assertFalse(NetworkChangeNotifier.isProcessBoundToNetwork());
         NetworkChangeNotifier.registerToReceiveNotificationsAlways();
         Assert.assertFalse(ncn.registerNetworkCallbackFailed());
-        Assert.assertFalse(NetworkChangeNotifier.isProcessBoundToNetwork());
     }
 
     /**

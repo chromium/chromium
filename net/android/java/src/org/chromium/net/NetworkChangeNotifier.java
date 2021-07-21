@@ -5,19 +5,14 @@
 package org.chromium.net;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.os.Build;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.compat.ApiHelperForM;
 
 import java.util.ArrayList;
 
@@ -43,7 +38,6 @@ public class NetworkChangeNotifier {
 
     private final ArrayList<Long> mNativeChangeNotifiers;
     private final ObserverList<ConnectionTypeObserver> mConnectionTypeObservers;
-    private final ConnectivityManager mConnectivityManager;
     private NetworkChangeNotifierAutoDetect mAutoDetector;
     // Last value broadcast via ConnectionTypeChange signal.
     private int mCurrentConnectionType = ConnectionType.CONNECTION_UNKNOWN;
@@ -55,9 +49,6 @@ public class NetworkChangeNotifier {
     protected NetworkChangeNotifier() {
         mNativeChangeNotifiers = new ArrayList<Long>();
         mConnectionTypeObservers = new ObserverList<ConnectionTypeObserver>();
-        mConnectivityManager =
-                (ConnectivityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.CONNECTIVITY_SERVICE);
     }
 
     /**
@@ -393,29 +384,6 @@ public class NetworkChangeNotifier {
 
     private void removeConnectionTypeObserverInternal(ConnectionTypeObserver observer) {
         mConnectionTypeObservers.removeObserver(observer);
-    }
-
-    /**
-     * Is the process bound to a network?
-     */
-    private boolean isProcessBoundToNetworkInternal() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            return false;
-        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            @SuppressWarnings("deprecation")
-            boolean returnValue = ConnectivityManager.getProcessDefaultNetwork() != null;
-            return returnValue;
-        } else {
-            return ApiHelperForM.getBoundNetworkForProcess(mConnectivityManager) != null;
-        }
-    }
-
-    /**
-     * Is the process bound to a network?
-     */
-    @CalledByNative
-    public static boolean isProcessBoundToNetwork() {
-        return getInstance().isProcessBoundToNetworkInternal();
     }
 
     // For testing only.
