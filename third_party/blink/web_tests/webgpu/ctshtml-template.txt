@@ -32,7 +32,8 @@
 <meta name=variant content='?worker=1&q=webgpu:api,operation,buffers,map_detach:while_mapped:*'>
 <meta name=variant content='?worker=1&q=webgpu:api,operation,command_buffer,basic:*'>
 <meta name=variant content='?worker=1&q=webgpu:api,operation,command_buffer,copyBufferToBuffer:*'>
-<meta name=variant content='?worker=1&q=webgpu:api,operation,compute,basic:*'>
+<meta name=variant content='?worker=1&q=webgpu:api,operation,compute,basic:memcpy:*'>
+<meta name=variant content='?worker=1&q=webgpu:api,operation,compute,basic:large_dispatch:*'>
 <meta name=variant content='?worker=1&q=webgpu:api,operation,rendering,basic:clear:*'>
 <meta name=variant content='?worker=1&q=webgpu:api,operation,rendering,basic:fullscreen_quad:*'>
 <meta name=variant content='?worker=1&q=webgpu:api,operation,rendering,basic:large_draw:*'>
