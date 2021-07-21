@@ -9,7 +9,7 @@
 #include "ash/webui/diagnostics_ui/backend/telemetry_log.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -117,10 +117,11 @@ bool SessionLogHandler::CreateSessionLog(const base::FilePath& file_path) {
   // Fetch TelemetryLog
   const std::string telemetry_log_contents = telemetry_log_->GetContents();
 
-  const std::string combined_contents =
-      base::StrCat({kTelemetryLogSectionHeader, telemetry_log_contents,
-                    kRoutineLogSectionHeader, routine_log_contents});
-  return base::WriteFile(file_path, combined_contents);
+  const std::vector<std::string> pieces = {
+      kTelemetryLogSectionHeader, telemetry_log_contents,
+      kRoutineLogSectionHeader, routine_log_contents};
+
+  return base::WriteFile(file_path, base::JoinString(pieces, "\n"));
 }
 
 void SessionLogHandler::HandleSaveSessionLogRequest(
