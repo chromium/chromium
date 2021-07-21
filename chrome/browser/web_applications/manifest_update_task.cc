@@ -258,7 +258,7 @@ void ManifestUpdateTask::WebContentsDestroyed() {
     case Stage::kPendingInstallation:
     case Stage::kPendingAssociationsUpdate:
       // These stages should have stopped listening to the web contents.
-      NOTREACHED();
+      NOTREACHED() << static_cast<int>(stage_);
       Observe(nullptr);
       break;
   }
