@@ -2366,10 +2366,6 @@ component("base") {
         "trace_event/trace_event_android.cc",
       ]
     }
-
-    if (use_perfetto_client_library) {
-      sources -= [ "trace_event/builtin_categories.cc" ]
-    }
   } else {
     sources += [
       "trace_event/trace_event_stub.cc",

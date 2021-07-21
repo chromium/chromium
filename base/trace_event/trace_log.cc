@@ -53,6 +53,8 @@
 #include "third_party/perfetto/include/perfetto/ext/trace_processor/export_json.h"  // nogncheck
 #include "third_party/perfetto/include/perfetto/trace_processor/trace_processor_storage.h"  // nogncheck
 #include "third_party/perfetto/protos/perfetto/config/interceptor_config.gen.h"  // nogncheck
+#include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.gen.h"  // nogncheck
+#include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.gen.h"  // nogncheck
 #endif
 
 #if defined(OS_WIN)
@@ -289,31 +291,96 @@ void OnAddLegacyTraceEvent(TraceEvent* trace_event,
   perfetto::DynamicCategory category(
       TraceLog::GetInstance()->GetCategoryGroupName(
           trace_event->category_group_enabled()));
-  PERFETTO_INTERNAL_TRACK_EVENT(
-      category, trace_event->name(),
-      perfetto::protos::pbzero::TrackEvent::TYPE_UNSPECIFIED,
-      [&](perfetto::EventContext ctx) {
-        WriteDebugAnnotations(trace_event, ctx.event());
-        auto* legacy_event = ctx.event()->set_legacy_event();
-        legacy_event->set_phase(trace_event->phase());
-        uint32_t id_flags =
-            trace_event->flags() &
-            (TRACE_EVENT_FLAG_HAS_ID | TRACE_EVENT_FLAG_HAS_LOCAL_ID |
-             TRACE_EVENT_FLAG_HAS_GLOBAL_ID);
-        switch (id_flags) {
-          case TRACE_EVENT_FLAG_HAS_ID:
-            legacy_event->set_unscoped_id(trace_event->id());
-            break;
-          case TRACE_EVENT_FLAG_HAS_LOCAL_ID:
-            legacy_event->set_local_id(trace_event->id());
-            break;
-          case TRACE_EVENT_FLAG_HAS_GLOBAL_ID:
-            legacy_event->set_global_id(trace_event->id());
-            break;
-          default:
-            break;
-        }
-      });
+  auto write_args = [trace_event](perfetto::EventContext ctx) {
+    WriteDebugAnnotations(trace_event, ctx.event());
+    uint32_t id_flags = trace_event->flags() & (TRACE_EVENT_FLAG_HAS_ID |
+                                                TRACE_EVENT_FLAG_HAS_LOCAL_ID |
+                                                TRACE_EVENT_FLAG_HAS_GLOBAL_ID);
+    if (!id_flags &&
+        perfetto::internal::TrackEventLegacy::PhaseToType(
+            trace_event->phase()) !=
+            perfetto::protos::pbzero::TrackEvent::TYPE_UNSPECIFIED) {
+      return;
+    }
+    auto* legacy_event = ctx.event()->set_legacy_event();
+    legacy_event->set_phase(trace_event->phase());
+    switch (id_flags) {
+      case TRACE_EVENT_FLAG_HAS_ID:
+        legacy_event->set_unscoped_id(trace_event->id());
+        break;
+      case TRACE_EVENT_FLAG_HAS_LOCAL_ID:
+        legacy_event->set_local_id(trace_event->id());
+        break;
+      case TRACE_EVENT_FLAG_HAS_GLOBAL_ID:
+        legacy_event->set_global_id(trace_event->id());
+        break;
+      default:
+        break;
+    }
+  };
+
+  auto phase = trace_event->phase();
+  auto flags = trace_event->flags();
+  base::TimeTicks timestamp = trace_event->timestamp().is_null()
+                                  ? TRACE_TIME_TICKS_NOW()
+                                  : trace_event->timestamp();
+  if (phase == TRACE_EVENT_PHASE_COMPLETE) {
+    phase = TRACE_EVENT_PHASE_BEGIN;
+  } else if (phase == TRACE_EVENT_PHASE_INSTANT) {
+    auto scope = flags & TRACE_EVENT_FLAG_SCOPE_MASK;
+    switch (scope) {
+      case TRACE_EVENT_SCOPE_GLOBAL:
+        PERFETTO_INTERNAL_LEGACY_EVENT_ON_TRACK(
+            phase, category, trace_event->name(), ::perfetto::Track::Global(0),
+            timestamp, write_args);
+        return;
+      case TRACE_EVENT_SCOPE_PROCESS:
+        PERFETTO_INTERNAL_LEGACY_EVENT_ON_TRACK(
+            phase, category, trace_event->name(),
+            ::perfetto::ProcessTrack::Current(), timestamp, write_args);
+        return;
+      default:
+      case TRACE_EVENT_SCOPE_THREAD: /* Fallthrough. */
+        break;
+    }
+  }
+  if (trace_event->thread_id() &&
+      trace_event->thread_id() != base::PlatformThread::CurrentId()) {
+    PERFETTO_INTERNAL_LEGACY_EVENT_ON_TRACK(
+        phase, category, trace_event->name(),
+        perfetto::ThreadTrack::ForThread(trace_event->thread_id()), timestamp,
+        write_args);
+    return;
+  }
+  PERFETTO_INTERNAL_LEGACY_EVENT_ON_TRACK(
+      phase, category, trace_event->name(),
+      perfetto::internal::TrackEventInternal::kDefaultTrack, timestamp,
+      write_args);
+}
+
+void OnUpdateLegacyTraceEventDuration(
+    const unsigned char* category_group_enabled,
+    const char* name,
+    TraceEventHandle handle,
+    int thread_id,
+    bool explicit_timestamps,
+    const TimeTicks& now,
+    const ThreadTicks& thread_now,
+    ThreadInstructionCount thread_instruction_now) {
+  perfetto::DynamicCategory category(
+      TraceLog::GetInstance()->GetCategoryGroupName(category_group_enabled));
+  auto phase = TRACE_EVENT_PHASE_END;
+  base::TimeTicks timestamp =
+      explicit_timestamps ? now : TRACE_TIME_TICKS_NOW();
+  if (thread_id && thread_id != base::PlatformThread::CurrentId()) {
+    PERFETTO_INTERNAL_LEGACY_EVENT_ON_TRACK(
+        phase, category, name, perfetto::ThreadTrack::ForThread(thread_id),
+        timestamp);
+    return;
+  }
+  PERFETTO_INTERNAL_LEGACY_EVENT_ON_TRACK(
+      phase, category, name,
+      perfetto::internal::TrackEventInternal::kDefaultTrack, timestamp);
 }
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
@@ -632,7 +699,8 @@ TraceLog::TraceLog(int generation)
   // to Perfetto yet will still be using TRACE_EVENT_API_ADD_TRACE_EVENT, so we
   // need to route these events to Perfetto using an override here. This
   // override is also used to capture internal metadata events.
-  SetAddTraceEventOverrides(&OnAddLegacyTraceEvent, nullptr, nullptr);
+  SetAddTraceEventOverrides(&OnAddLegacyTraceEvent, nullptr,
+                            &OnUpdateLegacyTraceEventDuration);
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   g_trace_log_for_testing = this;
 }
@@ -2090,6 +2158,19 @@ void TraceLog::SetProcessID(int process_id) {
 void TraceLog::SetProcessSortIndex(int sort_index) {
   AutoLock lock(lock_);
   process_sort_index_ = sort_index;
+}
+
+void TraceLog::set_process_name(const std::string& process_name) {
+  {
+    AutoLock lock(lock_);
+    process_name_ = process_name;
+  }
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  auto track = perfetto::ProcessTrack::Current();
+  auto desc = track.Serialize();
+  desc.mutable_process()->set_process_name(process_name);
+  perfetto::TrackEvent::SetTrackDescriptor(track, std::move(desc));
+#endif
 }
 
 void TraceLog::UpdateProcessLabel(int label_id,

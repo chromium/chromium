@@ -11,6 +11,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "base/trace_event/trace_event.h"
 #include "base/tracing/perfetto_task_runner.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_tracing_backend.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
@@ -107,6 +108,13 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     // place to check this.
     void ClearProducerForTesting() { producer_ = nullptr; }
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    // By default, data source callbacks (e.g., Start/StopTracingImpl) are
+    // called on PerfettoTracedProcess::GetTaskRunner()'s sequence. This method
+    // allows overriding that task runner.
+    virtual base::SequencedTaskRunner* GetTaskRunner();
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
    protected:
     SEQUENCE_CHECKER(perfetto_sequence_checker_);
 
@@ -115,6 +123,38 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     std::string name_;
     PerfettoProducer* producer_ = nullptr;
   };
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  // A proxy that adapts Chrome's DataSourceBase class into a Perfetto
+  // DataSource, allowing the former to be registered as a data source in the
+  // tracing service and participate in tracing sessions.
+  //
+  // Any subclass using this proxy should also use
+  // PERFETTO_DEFINE_DATA_SOURCE_STATIC_MEMBERS to instantiate the necessary
+  // static data members.
+  //
+  // The subclass should also call DataSourceProxy::Register() with a data
+  // source descriptor and a pointer to the DataSourceBase instance in order to
+  // hook up the data source with Perfetto. The DataSourceBase instance passed
+  // to Register() must have process-lifetime since Perfetto data sources are
+  // never unregistered.
+  template <typename T>
+  class COMPONENT_EXPORT(TRACING_CPP) DataSourceProxy
+      : public perfetto::DataSource<DataSourceProxy<T>> {
+   public:
+    explicit DataSourceProxy(PerfettoTracedProcess::DataSourceBase*);
+    ~DataSourceProxy() override;
+
+    // perfetto::DataSource implementation:
+    void OnSetup(const perfetto::DataSourceBase::SetupArgs&) override;
+    void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
+    void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
+
+   private:
+    PerfettoTracedProcess::DataSourceBase* data_source_;
+    perfetto::DataSourceConfig data_source_config_;
+  };
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   // Returns the process-wide instance of the PerfettoTracedProcess.
   static PerfettoTracedProcess* Get();
@@ -267,5 +307,44 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   SEQUENCE_CHECKER(sequence_checker_);
   DISALLOW_COPY_AND_ASSIGN(PerfettoTracedProcess);
 };
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+template <typename T>
+PerfettoTracedProcess::DataSourceProxy<T>::DataSourceProxy(
+    PerfettoTracedProcess::DataSourceBase* data_source)
+    : data_source_(data_source) {}
+
+template <typename T>
+PerfettoTracedProcess::DataSourceProxy<T>::~DataSourceProxy() = default;
+
+template <typename T>
+void PerfettoTracedProcess::DataSourceProxy<T>::OnSetup(
+    const perfetto::DataSourceBase::SetupArgs& args) {
+  data_source_config_ = *args.config;
+}
+
+template <typename T>
+void PerfettoTracedProcess::DataSourceProxy<T>::OnStart(
+    const perfetto::DataSourceBase::StartArgs&) {
+  data_source_->GetTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PerfettoTracedProcess::DataSourceBase::StartTracingImpl,
+                     base::Unretained(data_source_), nullptr,
+                     data_source_config_));
+}
+
+template <typename T>
+void PerfettoTracedProcess::DataSourceProxy<T>::OnStop(
+    const perfetto::DataSourceBase::StopArgs& args) {
+  std::function<void()> finish_async_stop = args.HandleStopAsynchronously();
+  base::OnceClosure stop_callback = base::BindOnce(
+      [](std::function<void()> callback) { callback(); }, finish_async_stop);
+  data_source_->GetTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PerfettoTracedProcess::DataSourceBase::StopTracingImpl,
+                     base::Unretained(data_source_), std::move(stop_callback)));
+}
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
 }  // namespace tracing
 #endif  // SERVICES_TRACING_PUBLIC_CPP_PERFETTO_PERFETTO_TRACED_PROCESS_H_

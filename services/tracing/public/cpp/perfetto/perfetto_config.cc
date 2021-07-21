@@ -32,7 +32,15 @@ perfetto::TraceConfig::DataSource* AddDataSourceConfig(
     const std::string& json_agent_label_filter) {
   auto* data_source = perfetto_config->add_data_sources();
   auto* source_config = data_source->mutable_config();
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  if (!strcmp(name, tracing::mojom::kTraceEventDataSourceName)) {
+    source_config->set_name("track_event");
+  } else {
+    source_config->set_name(name);
+  }
+#else
   source_config->set_name(name);
+#endif
   source_config->set_target_buffer(0);
   auto* chrome_config = source_config->mutable_chrome_config();
   chrome_config->set_trace_config(chrome_config_string);
@@ -42,6 +50,26 @@ perfetto::TraceConfig::DataSource* AddDataSourceConfig(
 
   if (!json_agent_label_filter.empty())
     chrome_config->set_json_agent_label_filter(json_agent_label_filter);
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  if (!strcmp(name, tracing::mojom::kTraceEventDataSourceName)) {
+    base::trace_event::TraceConfig base_config(chrome_config_string);
+    perfetto::protos::gen::TrackEventConfig te_cfg;
+    for (const auto& excluded :
+         base_config.category_filter().excluded_categories()) {
+      te_cfg.add_disabled_categories(excluded);
+    }
+    for (const auto& included :
+         base_config.category_filter().included_categories()) {
+      te_cfg.add_enabled_categories(included);
+    }
+    for (const auto& disabled :
+         base_config.category_filter().disabled_categories()) {
+      te_cfg.add_enabled_categories(disabled);
+    }
+    source_config->set_track_event_config_raw(te_cfg.SerializeAsString());
+  }
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   return data_source;
 }

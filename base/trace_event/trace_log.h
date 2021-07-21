@@ -378,10 +378,7 @@ class BASE_EXPORT TraceLog :
   void SetProcessSortIndex(int sort_index);
 
   // Sets the name of the process.
-  void set_process_name(const std::string& process_name) {
-    AutoLock lock(lock_);
-    process_name_ = process_name;
-  }
+  void set_process_name(const std::string& process_name);
 
   bool IsProcessNameEmpty() const {
     AutoLock lock(lock_);

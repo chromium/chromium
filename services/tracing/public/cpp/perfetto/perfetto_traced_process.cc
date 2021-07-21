@@ -94,6 +94,16 @@ void PerfettoTracedProcess::DataSourceBase::StopTracing(
       std::move(stop_complete_callback)));
 }
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+base::SequencedTaskRunner*
+PerfettoTracedProcess::DataSourceBase::GetTaskRunner() {
+  return PerfettoTracedProcess::Get()
+      ->GetTaskRunner()
+      ->GetOrCreateTaskRunner()
+      .get();
+}
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
 // static
 PerfettoTracedProcess* PerfettoTracedProcess::Get() {
   static base::NoDestructor<PerfettoTracedProcess> traced_process;
