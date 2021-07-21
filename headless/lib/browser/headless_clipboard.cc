@@ -55,18 +55,15 @@ void HeadlessClipboard::ReadAvailableTypes(
   DCHECK(types);
   types->clear();
 
-  if (IsFormatAvailable(ui::ClipboardFormatType::GetPlainTextType(), buffer,
+  if (IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(), buffer,
                         data_dst))
     types->push_back(base::UTF8ToUTF16(ui::kMimeTypeText));
-  if (IsFormatAvailable(ui::ClipboardFormatType::GetHtmlType(), buffer,
-                        data_dst))
+  if (IsFormatAvailable(ui::ClipboardFormatType::HtmlType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(ui::kMimeTypeHTML));
 
-  if (IsFormatAvailable(ui::ClipboardFormatType::GetRtfType(), buffer,
-                        data_dst))
+  if (IsFormatAvailable(ui::ClipboardFormatType::RtfType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(ui::kMimeTypeRTF));
-  if (IsFormatAvailable(ui::ClipboardFormatType::GetPngType(), buffer,
-                        data_dst))
+  if (IsFormatAvailable(ui::ClipboardFormatType::PngType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(ui::kMimeTypePNG));
 }
 
@@ -104,7 +101,7 @@ void HeadlessClipboard::ReadAsciiText(ui::ClipboardBuffer buffer,
                                       std::string* result) const {
   result->clear();
   const DataStore& store = GetStore(buffer);
-  auto it = store.data.find(ui::ClipboardFormatType::GetPlainTextType());
+  auto it = store.data.find(ui::ClipboardFormatType::PlainTextType());
   if (it != store.data.end())
     *result = it->second;
 }
@@ -120,7 +117,7 @@ void HeadlessClipboard::ReadHTML(ui::ClipboardBuffer buffer,
   markup->clear();
   src_url->clear();
   const DataStore& store = GetStore(buffer);
-  auto it = store.data.find(ui::ClipboardFormatType::GetHtmlType());
+  auto it = store.data.find(ui::ClipboardFormatType::HtmlType());
   if (it != store.data.end())
     *markup = base::UTF8ToUTF16(it->second);
   *src_url = store.html_src_url;
@@ -135,7 +132,7 @@ void HeadlessClipboard::ReadSvg(ui::ClipboardBuffer buffer,
                                 std::u16string* result) const {
   result->clear();
   const DataStore& store = GetStore(buffer);
-  auto it = store.data.find(ui::ClipboardFormatType::GetSvgType());
+  auto it = store.data.find(ui::ClipboardFormatType::SvgType());
   if (it != store.data.end())
     *result = base::UTF8ToUTF16(it->second);
 }
@@ -147,7 +144,7 @@ void HeadlessClipboard::ReadRTF(ui::ClipboardBuffer buffer,
                                 std::string* result) const {
   result->clear();
   const DataStore& store = GetStore(buffer);
-  auto it = store.data.find(ui::ClipboardFormatType::GetRtfType());
+  auto it = store.data.find(ui::ClipboardFormatType::RtfType());
   if (it != store.data.end())
     *result = it->second;
 }
@@ -192,7 +189,7 @@ void HeadlessClipboard::ReadBookmark(const ui::DataTransferEndpoint* data_dst,
                                      std::u16string* title,
                                      std::string* url) const {
   const DataStore& store = GetDefaultStore();
-  auto it = store.data.find(ui::ClipboardFormatType::GetUrlType());
+  auto it = store.data.find(ui::ClipboardFormatType::UrlType());
   if (it != store.data.end())
     *url = it->second;
   *title = base::UTF8ToUTF16(store.url_title);
@@ -233,10 +230,10 @@ void HeadlessClipboard::WritePortableAndPlatformRepresentations(
 
 void HeadlessClipboard::WriteText(const char* text_data, size_t text_len) {
   std::string text(text_data, text_len);
-  GetDefaultStore().data[ui::ClipboardFormatType::GetPlainTextType()] = text;
+  GetDefaultStore().data[ui::ClipboardFormatType::PlainTextType()] = text;
   if (IsSupportedClipboardBuffer(ui::ClipboardBuffer::kSelection)) {
     GetStore(ui::ClipboardBuffer::kSelection)
-        .data[ui::ClipboardFormatType::GetPlainTextType()] = text;
+        .data[ui::ClipboardFormatType::PlainTextType()] = text;
   }
 }
 
@@ -246,18 +243,18 @@ void HeadlessClipboard::WriteHTML(const char* markup_data,
                                   size_t url_len) {
   std::u16string markup;
   base::UTF8ToUTF16(markup_data, markup_len, &markup);
-  GetDefaultStore().data[ui::ClipboardFormatType::GetHtmlType()] =
+  GetDefaultStore().data[ui::ClipboardFormatType::HtmlType()] =
       base::UTF16ToUTF8(markup);
   GetDefaultStore().html_src_url = std::string(url_data, url_len);
 }
 
 void HeadlessClipboard::WriteSvg(const char* markup_data, size_t markup_len) {
   std::string markup(markup_data, markup_len);
-  GetDefaultStore().data[ui::ClipboardFormatType::GetSvgType()] = markup;
+  GetDefaultStore().data[ui::ClipboardFormatType::SvgType()] = markup;
 }
 
 void HeadlessClipboard::WriteRTF(const char* rtf_data, size_t data_len) {
-  GetDefaultStore().data[ui::ClipboardFormatType::GetRtfType()] =
+  GetDefaultStore().data[ui::ClipboardFormatType::RtfType()] =
       std::string(rtf_data, data_len);
 }
 
@@ -269,19 +266,19 @@ void HeadlessClipboard::WriteBookmark(const char* title_data,
                                       size_t title_len,
                                       const char* url_data,
                                       size_t url_len) {
-  GetDefaultStore().data[ui::ClipboardFormatType::GetUrlType()] =
+  GetDefaultStore().data[ui::ClipboardFormatType::UrlType()] =
       std::string(url_data, url_len);
   GetDefaultStore().url_title = std::string(title_data, title_len);
 }
 
 void HeadlessClipboard::WriteWebSmartPaste() {
   // Create a dummy entry.
-  GetDefaultStore().data[ui::ClipboardFormatType::GetWebKitSmartPasteType()];
+  GetDefaultStore().data[ui::ClipboardFormatType::WebKitSmartPasteType()];
 }
 
 void HeadlessClipboard::WriteBitmap(const SkBitmap& bitmap) {
   // Create a dummy entry.
-  GetDefaultStore().data[ui::ClipboardFormatType::GetPngType()];
+  GetDefaultStore().data[ui::ClipboardFormatType::PngType()];
   gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
                                     &GetDefaultStore().png);
 }

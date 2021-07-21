@@ -5693,7 +5693,7 @@ void ChromeContentBrowserClient::IsClipboardPasteContentAllowed(
   // Safe browsing does not support images, so accept without checking.
   // TODO(crbug.com/1013584): check policy on what to do about unsupported
   // types when it is implemented.
-  if (data_type == ui::ClipboardFormatType::GetBitmapType()) {
+  if (data_type == ui::ClipboardFormatType::BitmapType()) {
     std::move(callback).Run(ClipboardPasteContentAllowed(true));
     return;
   }

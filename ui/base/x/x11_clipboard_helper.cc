@@ -213,15 +213,15 @@ std::vector<std::string> XClipboardHelper::GetAvailableTypes(
 
   if (target_list.ContainsText())
     available_types.push_back(kMimeTypeText);
-  if (target_list.ContainsFormat(ClipboardFormatType::GetHtmlType()))
+  if (target_list.ContainsFormat(ClipboardFormatType::HtmlType()))
     available_types.push_back(kMimeTypeHTML);
-  if (target_list.ContainsFormat(ClipboardFormatType::GetRtfType()))
+  if (target_list.ContainsFormat(ClipboardFormatType::RtfType()))
     available_types.push_back(kMimeTypeRTF);
-  if (target_list.ContainsFormat(ClipboardFormatType::GetBitmapType()))
+  if (target_list.ContainsFormat(ClipboardFormatType::BitmapType()))
     available_types.push_back(kMimeTypePNG);
-  if (target_list.ContainsFormat(ClipboardFormatType::GetFilenamesType()))
+  if (target_list.ContainsFormat(ClipboardFormatType::FilenamesType()))
     available_types.push_back(kMimeTypeURIList);
-  if (target_list.ContainsFormat(ClipboardFormatType::GetWebCustomDataType()))
+  if (target_list.ContainsFormat(ClipboardFormatType::WebCustomDataType()))
     available_types.push_back(kMimeTypeWebCustomData);
 
   return available_types;
@@ -252,8 +252,8 @@ std::vector<std::string> XClipboardHelper::GetAvailableAtomNames(
 bool XClipboardHelper::IsFormatAvailable(ClipboardBuffer buffer,
                                          const ClipboardFormatType& format) {
   auto target_list = GetTargetList(buffer);
-  if (format == ClipboardFormatType::GetPlainTextType() ||
-      format == ClipboardFormatType::GetUrlType()) {
+  if (format == ClipboardFormatType::PlainTextType() ||
+      format == ClipboardFormatType::UrlType()) {
     return target_list.ContainsText();
   }
   return target_list.ContainsFormat(format);

@@ -76,60 +76,60 @@ ClipboardFormatType ClipboardFormatType::GetType(
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetFilenamesType() {
+const ClipboardFormatType& ClipboardFormatType::FilenamesType() {
   static base::NoDestructor<ClipboardFormatType> type(NSFilenamesPboardType);
   return *type;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetUrlType() {
+const ClipboardFormatType& ClipboardFormatType::UrlType() {
   static base::NoDestructor<ClipboardFormatType> type(NSURLPboardType);
   return *type;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetPlainTextType() {
+const ClipboardFormatType& ClipboardFormatType::PlainTextType() {
   static base::NoDestructor<ClipboardFormatType> type(NSPasteboardTypeString);
   return *type;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetHtmlType() {
+const ClipboardFormatType& ClipboardFormatType::HtmlType() {
   static base::NoDestructor<ClipboardFormatType> type(NSHTMLPboardType);
   return *type;
 }
 
-const ClipboardFormatType& ClipboardFormatType::GetSvgType() {
+const ClipboardFormatType& ClipboardFormatType::SvgType() {
   static base::NoDestructor<ClipboardFormatType> type(kImageSvg);
   return *type;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetRtfType() {
+const ClipboardFormatType& ClipboardFormatType::RtfType() {
   static base::NoDestructor<ClipboardFormatType> type(NSRTFPboardType);
   return *type;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetPngType() {
+const ClipboardFormatType& ClipboardFormatType::PngType() {
   static base::NoDestructor<ClipboardFormatType> type(NSPasteboardTypePNG);
   return *type;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetBitmapType() {
+const ClipboardFormatType& ClipboardFormatType::BitmapType() {
   static base::NoDestructor<ClipboardFormatType> type(NSTIFFPboardType);
   return *type;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetWebKitSmartPasteType() {
+const ClipboardFormatType& ClipboardFormatType::WebKitSmartPasteType() {
   static base::NoDestructor<ClipboardFormatType> type(kWebSmartPastePboardType);
   return *type;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetWebCustomDataType() {
+const ClipboardFormatType& ClipboardFormatType::WebCustomDataType() {
   static base::NoDestructor<ClipboardFormatType> type(kWebCustomDataPboardType);
   return *type;
 }

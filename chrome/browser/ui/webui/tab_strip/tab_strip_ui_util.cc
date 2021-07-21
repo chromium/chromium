@@ -81,7 +81,7 @@ void MoveTabAcrossWindows(Browser* source_browser,
 
 bool IsDraggedTab(const ui::OSExchangeData& drop_data) {
   base::Pickle pickle;
-  drop_data.GetPickledData(ui::ClipboardFormatType::GetWebCustomDataType(),
+  drop_data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
                            &pickle);
   base::PickleIterator iter(pickle);
 
@@ -106,7 +106,7 @@ bool IsDraggedTab(const ui::OSExchangeData& drop_data) {
 bool DropTabsInNewBrowser(Browser* new_browser,
                           const ui::OSExchangeData& drop_data) {
   base::Pickle pickle;
-  drop_data.GetPickledData(ui::ClipboardFormatType::GetWebCustomDataType(),
+  drop_data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
                            &pickle);
 
   std::u16string tab_id_str;

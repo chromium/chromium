@@ -99,7 +99,7 @@ std::vector<base::FilePath> ExtractFilePathsFromFilenames(
 std::vector<base::FilePath> ExtractFilePathsFromFileSystemSources(
     const ui::OSExchangeData& data) {
   base::Pickle pickle;
-  if (!data.GetPickledData(ui::ClipboardFormatType::GetWebCustomDataType(),
+  if (!data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
                            &pickle)) {
     return {};
   }
@@ -394,7 +394,7 @@ bool HoldingSpaceTray::GetDropFormats(
   // Support custom web data so that file system sources can be retrieved from
   // pickled data. That is the storage location at which the Files app stores
   // both file paths *and* directory paths.
-  format_types->insert(ui::ClipboardFormatType::GetWebCustomDataType());
+  format_types->insert(ui::ClipboardFormatType::WebCustomDataType());
   return true;
 }
 

@@ -120,7 +120,7 @@ class ClipboardHistoryTest : public AshTestBase {
     {
       ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
       scw.WritePickledData(input_data_pickle,
-                           ui::ClipboardFormatType::GetWebCustomDataType());
+                           ui::ClipboardFormatType::WebCustomDataType());
     }
     base::RunLoop().RunUntilIdle();
 

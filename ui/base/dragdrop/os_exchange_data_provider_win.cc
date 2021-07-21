@@ -305,12 +305,12 @@ bool OSExchangeDataProviderWin::DidOriginateFromRenderer() const {
 void OSExchangeDataProviderWin::SetString(const std::u16string& data) {
   STGMEDIUM storage = CreateStorageForString(data);
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
-      ClipboardFormatType::GetPlainTextType().ToFormatEtc(), storage));
+      ClipboardFormatType::PlainTextType().ToFormatEtc(), storage));
 
   // Also add the UTF8-encoded version.
   storage = CreateStorageForString(base::UTF16ToUTF8(data));
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
-      ClipboardFormatType::GetPlainTextAType().ToFormatEtc(), storage));
+      ClipboardFormatType::PlainTextAType().ToFormatEtc(), storage));
 }
 
 void OSExchangeDataProviderWin::SetURL(const GURL& url,
@@ -327,7 +327,7 @@ void OSExchangeDataProviderWin::SetURL(const GURL& url,
   x_moz_url_str += title;
   STGMEDIUM storage = CreateStorageForString(x_moz_url_str);
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
-      ClipboardFormatType::GetMozUrlType().ToFormatEtc(), storage));
+      ClipboardFormatType::MozUrlType().ToFormatEtc(), storage));
 
   // Add a .URL shortcut file for dragging to Explorer.
   std::wstring valid_file_name =
@@ -338,10 +338,10 @@ void OSExchangeDataProviderWin::SetURL(const GURL& url,
   // Add a UniformResourceLocator link for apps like IE and Word.
   storage = CreateStorageForString(base::UTF8ToUTF16(url.spec()));
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
-      ClipboardFormatType::GetUrlType().ToFormatEtc(), storage));
+      ClipboardFormatType::UrlType().ToFormatEtc(), storage));
   storage = CreateStorageForString(url.spec());
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
-      ClipboardFormatType::GetUrlAType().ToFormatEtc(), storage));
+      ClipboardFormatType::UrlAType().ToFormatEtc(), storage));
 
   // TODO(https://crbug.com/6767): add CF_HTML.
 
@@ -357,7 +357,7 @@ void OSExchangeDataProviderWin::SetFilename(const base::FilePath& path) {
   if (storage.tymed == TYMED_NULL)
     return;
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
-      ClipboardFormatType::GetIDListType().ToFormatEtc(), storage));
+      ClipboardFormatType::IDListType().ToFormatEtc(), storage));
 }
 
 void OSExchangeDataProviderWin::SetFilenames(
@@ -367,7 +367,7 @@ void OSExchangeDataProviderWin::SetFilenames(
     return;
 
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
-      ClipboardFormatType::GetCFHDropType().ToFormatEtc(), storage));
+      ClipboardFormatType::CFHDropType().ToFormatEtc(), storage));
 }
 
 void OSExchangeDataProviderWin::SetVirtualFileContentsForTesting(
@@ -397,7 +397,7 @@ void OSExchangeDataProviderWin::SetVirtualFileContentsForTesting(
   STGMEDIUM storage = {
       .tymed = TYMED_HGLOBAL, .hGlobal = hdata, .pUnkForRelease = nullptr};
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
-      ClipboardFormatType::GetFileDescriptorType().ToFormatEtc(), storage));
+      ClipboardFormatType::FileDescriptorType().ToFormatEtc(), storage));
 
   for (size_t i = 0; i < num_files; i++) {
     // Fill in each FILEDESCRIPTORW with file name.
@@ -473,8 +473,7 @@ void OSExchangeDataProviderWin::SetVirtualFileContentAtIndexForTesting(
     storage_for_contents =
         CreateStorageForBytes(data_buffer.data(), data_buffer.size_bytes());
   }
-  ClipboardFormatType type =
-      ClipboardFormatType::GetFileContentAtIndexType(index);
+  ClipboardFormatType type = ClipboardFormatType::FileContentAtIndexType(index);
   // Pass ownership of |storage_for_contents| here.
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
       type.ToFormatEtc(), storage_for_contents));
@@ -494,13 +493,13 @@ void OSExchangeDataProviderWin::SetFileContents(
   // Add CFSTR_FILEDESCRIPTORW.
   STGMEDIUM storage = CreateStorageForFileDescriptor(filename);
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
-      ClipboardFormatType::GetFileDescriptorType().ToFormatEtc(), storage));
+      ClipboardFormatType::FileDescriptorType().ToFormatEtc(), storage));
 
   // Add CFSTR_FILECONTENTS.
   STGMEDIUM storage_contents =
       CreateStorageForBytes(file_contents.data(), file_contents.length());
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
-      ClipboardFormatType::GetFileContentZeroType().ToFormatEtc(),
+      ClipboardFormatType::FileContentZeroType().ToFormatEtc(),
       storage_contents));
 }
 
@@ -513,12 +512,12 @@ void OSExchangeDataProviderWin::SetHtml(const std::u16string& html,
   std::string cf_html = ClipboardUtil::HtmlToCFHtml(utf8_html, url);
   STGMEDIUM storage = CreateStorageForBytes(cf_html.c_str(), cf_html.size());
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
-      ClipboardFormatType::GetHtmlType().ToFormatEtc(), storage));
+      ClipboardFormatType::HtmlType().ToFormatEtc(), storage));
 
   STGMEDIUM storage_plain =
       CreateStorageForBytes(utf8_html.c_str(), utf8_html.size());
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
-      ClipboardFormatType::GetTextHtmlType().ToFormatEtc(), storage_plain));
+      ClipboardFormatType::TextHtmlType().ToFormatEtc(), storage_plain));
 }
 
 bool OSExchangeDataProviderWin::GetString(std::u16string* data) const {
@@ -683,7 +682,7 @@ void OSExchangeDataProviderWin::SetDownloadFileInfo(
 
   // Add CF_HDROP.
   auto info = DataObjectImpl::StoredDataInfo::TakeStorageMedium(
-      ClipboardFormatType::GetCFHDropType().ToFormatEtc(), storage);
+      ClipboardFormatType::CFHDropType().ToFormatEtc(), storage);
   info->downloader = std::move(download->downloader);
   data_->contents_.push_back(std::move(info));
 
@@ -883,7 +882,7 @@ void DataObjectImpl::OnDownloadCompleted(const base::FilePath& file_path) {
       STGMEDIUM storage = ClipboardUtil::CreateStorageForFileNames(
           {FileInfo(file_path, base::FilePath())});
       content = StoredDataInfo::TakeStorageMedium(
-          ClipboardFormatType::GetCFHDropType().ToFormatEtc(), storage);
+          ClipboardFormatType::CFHDropType().ToFormatEtc(), storage);
       content->downloader = std::move(downloader);
       break;
     }

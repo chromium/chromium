@@ -80,8 +80,8 @@ class ChromeScreenshotGrabberBrowserTest
 
   bool IsImageClipboardAvailable() {
     return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
-        ui::ClipboardFormatType::GetBitmapType(),
-        ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr);
+        ui::ClipboardFormatType::BitmapType(), ui::ClipboardBuffer::kCopyPaste,
+        /* data_dst = */ nullptr);
   }
 
   ash::HoldingSpaceModel* GetHoldingSpaceModel() const {

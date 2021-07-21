@@ -42,7 +42,7 @@ bool HasRecentURLFromClipboard() {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
-  return clipboard->IsFormatAvailable(ui::ClipboardFormatType::GetUrlType(),
+  return clipboard->IsFormatAvailable(ui::ClipboardFormatType::UrlType(),
                                       ui::ClipboardBuffer::kCopyPaste,
                                       &data_dst);
 }
@@ -51,9 +51,9 @@ bool HasRecentTextFromClipboard() {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
-  return clipboard->IsFormatAvailable(
-      ui::ClipboardFormatType::GetPlainTextType(),
-      ui::ClipboardBuffer::kCopyPaste, &data_dst);
+  return clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(),
+                                      ui::ClipboardBuffer::kCopyPaste,
+                                      &data_dst);
 }
 
 }  // namespace
@@ -148,7 +148,7 @@ bool ClipboardRecentContentGeneric::HasRecentImageFromClipboard() {
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
   return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
-      ui::ClipboardFormatType::GetBitmapType(), ui::ClipboardBuffer::kCopyPaste,
+      ui::ClipboardFormatType::BitmapType(), ui::ClipboardBuffer::kCopyPaste,
       &data_dst);
 }
 

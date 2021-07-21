@@ -75,18 +75,18 @@ bool TestClipboard::IsFormatAvailable(
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // The linux clipboard treats the presence of text on the clipboard
   // as the url format being available.
-  if (format == ClipboardFormatType::GetUrlType())
-    return IsFormatAvailable(ClipboardFormatType::GetPlainTextType(), buffer,
+  if (format == ClipboardFormatType::UrlType())
+    return IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
                              data_dst);
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
   const DataStore& store = GetStore(buffer);
-  if (format == ClipboardFormatType::GetFilenamesType())
+  if (format == ClipboardFormatType::FilenamesType())
     return !store.filenames.empty();
   // Chrome can retrieve an image from the clipboard as either a bitmap or PNG.
-  if (format == ClipboardFormatType::GetPngType() ||
-      format == ClipboardFormatType::GetBitmapType()) {
-    return base::Contains(store.data, ClipboardFormatType::GetPngType()) ||
-           base::Contains(store.data, ClipboardFormatType::GetBitmapType());
+  if (format == ClipboardFormatType::PngType() ||
+      format == ClipboardFormatType::BitmapType()) {
+    return base::Contains(store.data, ClipboardFormatType::PngType()) ||
+           base::Contains(store.data, ClipboardFormatType::BitmapType());
   }
   return base::Contains(store.data, format);
 }
@@ -104,7 +104,7 @@ void TestClipboard::ReadAvailableTypes(
   if (!IsReadAllowed(GetStore(buffer).data_src.get(), data_dst))
     return;
 
-  if (IsFormatAvailable(ClipboardFormatType::GetPlainTextType(), buffer,
+  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
                         data_dst)) {
     types->push_back(base::UTF8ToUTF16(kMimeTypeText));
 #if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
@@ -119,16 +119,15 @@ void TestClipboard::ReadAvailableTypes(
       types->push_back(base::UTF8ToUTF16(kMimeTypeTextUtf8));
 #endif
   }
-  if (IsFormatAvailable(ClipboardFormatType::GetHtmlType(), buffer, data_dst))
+  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeHTML));
 
-  if (IsFormatAvailable(ClipboardFormatType::GetRtfType(), buffer, data_dst))
+  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
-  if (IsFormatAvailable(ClipboardFormatType::GetPngType(), buffer, data_dst) ||
-      IsFormatAvailable(ClipboardFormatType::GetBitmapType(), buffer, data_dst))
+  if (IsFormatAvailable(ClipboardFormatType::PngType(), buffer, data_dst) ||
+      IsFormatAvailable(ClipboardFormatType::BitmapType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypePNG));
-  if (IsFormatAvailable(ClipboardFormatType::GetFilenamesType(), buffer,
-                        data_dst))
+  if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeURIList));
 }
 
@@ -152,7 +151,7 @@ TestClipboard::ReadAvailablePlatformSpecificFormatNames(
 
   // Some platforms add additional raw types to represent text, or offer them
   // as available formats by automatically converting between them.
-  if (IsFormatAvailable(ClipboardFormatType::GetPlainTextType(), buffer,
+  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
                         data_dst)) {
 #if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMECAST) && !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -195,7 +194,7 @@ void TestClipboard::ReadAsciiText(ClipboardBuffer buffer,
     return;
 
   result->clear();
-  auto it = store.data.find(ClipboardFormatType::GetPlainTextType());
+  auto it = store.data.find(ClipboardFormatType::PlainTextType());
   if (it != store.data.end())
     *result = it->second;
 }
@@ -212,7 +211,7 @@ void TestClipboard::ReadHTML(ClipboardBuffer buffer,
 
   markup->clear();
   src_url->clear();
-  auto it = store.data.find(ClipboardFormatType::GetHtmlType());
+  auto it = store.data.find(ClipboardFormatType::HtmlType());
   if (it != store.data.end())
     *markup = base::UTF8ToUTF16(it->second);
   *src_url = store.html_src_url;
@@ -228,7 +227,7 @@ void TestClipboard::ReadSvg(ClipboardBuffer buffer,
     return;
 
   result->clear();
-  auto it = store.data.find(ClipboardFormatType::GetSvgType());
+  auto it = store.data.find(ClipboardFormatType::SvgType());
   if (it != store.data.end())
     *result = base::UTF8ToUTF16(it->second);
 }
@@ -241,7 +240,7 @@ void TestClipboard::ReadRTF(ClipboardBuffer buffer,
     return;
 
   result->clear();
-  auto it = store.data.find(ClipboardFormatType::GetRtfType());
+  auto it = store.data.find(ClipboardFormatType::RtfType());
   if (it != store.data.end())
     *result = it->second;
 }
@@ -295,7 +294,7 @@ void TestClipboard::ReadBookmark(const DataTransferEndpoint* data_dst,
     return;
 
   if (url) {
-    auto it = store.data.find(ClipboardFormatType::GetUrlType());
+    auto it = store.data.find(ClipboardFormatType::UrlType());
     if (it != store.data.end())
       *url = it->second;
   }
@@ -346,14 +345,14 @@ void TestClipboard::WritePortableAndPlatformRepresentations(
 
 void TestClipboard::WriteText(const char* text_data, size_t text_len) {
   std::string text(text_data, text_len);
-  GetDefaultStore().data[ClipboardFormatType::GetPlainTextType()] = text;
+  GetDefaultStore().data[ClipboardFormatType::PlainTextType()] = text;
 #if defined(OS_WIN)
   // Create a dummy entry.
-  GetDefaultStore().data[ClipboardFormatType::GetPlainTextAType()];
+  GetDefaultStore().data[ClipboardFormatType::PlainTextAType()];
 #endif
   if (IsSupportedClipboardBuffer(ClipboardBuffer::kSelection))
     GetStore(ClipboardBuffer::kSelection)
-        .data[ClipboardFormatType::GetPlainTextType()] = text;
+        .data[ClipboardFormatType::PlainTextType()] = text;
   ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
@@ -363,7 +362,7 @@ void TestClipboard::WriteHTML(const char* markup_data,
                               size_t url_len) {
   std::u16string markup;
   base::UTF8ToUTF16(markup_data, markup_len, &markup);
-  GetDefaultStore().data[ClipboardFormatType::GetHtmlType()] =
+  GetDefaultStore().data[ClipboardFormatType::HtmlType()] =
       base::UTF16ToUTF8(markup);
   GetDefaultStore().html_src_url = std::string(url_data, url_len);
 }
@@ -371,12 +370,12 @@ void TestClipboard::WriteHTML(const char* markup_data,
 void TestClipboard::WriteSvg(const char* markup_data, size_t markup_len) {
   std::u16string markup;
   base::UTF8ToUTF16(markup_data, markup_len, &markup);
-  GetDefaultStore().data[ClipboardFormatType::GetSvgType()] =
+  GetDefaultStore().data[ClipboardFormatType::SvgType()] =
       base::UTF16ToUTF8(markup);
 }
 
 void TestClipboard::WriteRTF(const char* rtf_data, size_t data_len) {
-  GetDefaultStore().data[ClipboardFormatType::GetRtfType()] =
+  GetDefaultStore().data[ClipboardFormatType::RtfType()] =
       std::string(rtf_data, data_len);
 }
 
@@ -388,14 +387,14 @@ void TestClipboard::WriteBookmark(const char* title_data,
                                   size_t title_len,
                                   const char* url_data,
                                   size_t url_len) {
-  GetDefaultStore().data[ClipboardFormatType::GetUrlType()] =
+  GetDefaultStore().data[ClipboardFormatType::UrlType()] =
       std::string(url_data, url_len);
   GetDefaultStore().url_title = std::string(title_data, title_len);
 }
 
 void TestClipboard::WriteWebSmartPaste() {
   // Create a dummy entry.
-  GetDefaultStore().data[ClipboardFormatType::GetWebKitSmartPasteType()];
+  GetDefaultStore().data[ClipboardFormatType::WebKitSmartPasteType()];
 }
 
 void TestClipboard::WriteBitmap(const SkBitmap& bitmap) {
@@ -406,7 +405,7 @@ void TestClipboard::WriteBitmap(const SkBitmap& bitmap) {
   DCHECK_EQ(bitmap.colorType(), kN32_SkColorType);
 
   // Create a dummy entry.
-  GetDefaultStore().data[ClipboardFormatType::GetBitmapType()];
+  GetDefaultStore().data[ClipboardFormatType::BitmapType()];
   gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &GetDefaultStore().png);
   ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }

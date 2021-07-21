@@ -49,37 +49,37 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   static ClipboardFormatType GetType(const std::string& format_string);
 
   // Get format identifiers for various types.
-  static const ClipboardFormatType& GetFilenamesType();
-  static const ClipboardFormatType& GetUrlType();
-  static const ClipboardFormatType& GetPlainTextType();
-  static const ClipboardFormatType& GetWebKitSmartPasteType();
+  static const ClipboardFormatType& FilenamesType();
+  static const ClipboardFormatType& UrlType();
+  static const ClipboardFormatType& PlainTextType();
+  static const ClipboardFormatType& WebKitSmartPasteType();
   // Win: MS HTML Format, Other: Generic HTML format
-  static const ClipboardFormatType& GetHtmlType();
-  static const ClipboardFormatType& GetSvgType();
-  static const ClipboardFormatType& GetRtfType();
-  static const ClipboardFormatType& GetPngType();
+  static const ClipboardFormatType& HtmlType();
+  static const ClipboardFormatType& SvgType();
+  static const ClipboardFormatType& RtfType();
+  static const ClipboardFormatType& PngType();
   // TODO(crbug.com/1201018): Remove this type.
-  static const ClipboardFormatType& GetBitmapType();
-  static const ClipboardFormatType& GetWebCustomDataType();
+  static const ClipboardFormatType& BitmapType();
+  static const ClipboardFormatType& WebCustomDataType();
 
 #if defined(OS_WIN)
   // ANSI formats. Only Windows differentiates between ANSI and UNICODE formats
   // in ClipboardFormatType. Reference:
   // https://docs.microsoft.com/en-us/windows/win32/learnwin32/working-with-strings
-  static const ClipboardFormatType& GetUrlAType();
-  static const ClipboardFormatType& GetPlainTextAType();
-  static const ClipboardFormatType& GetFilenameAType();
+  static const ClipboardFormatType& UrlAType();
+  static const ClipboardFormatType& PlainTextAType();
+  static const ClipboardFormatType& FilenameAType();
 
   // Firefox text/html
-  static const ClipboardFormatType& GetTextHtmlType();
-  static const ClipboardFormatType& GetCFHDropType();
-  static const ClipboardFormatType& GetFileDescriptorAType();
-  static const ClipboardFormatType& GetFileDescriptorType();
-  static const ClipboardFormatType& GetFileContentZeroType();
-  static const ClipboardFormatType& GetFileContentAtIndexType(LONG index);
-  static const ClipboardFormatType& GetFilenameType();
-  static const ClipboardFormatType& GetIDListType();
-  static const ClipboardFormatType& GetMozUrlType();
+  static const ClipboardFormatType& TextHtmlType();
+  static const ClipboardFormatType& CFHDropType();
+  static const ClipboardFormatType& FileDescriptorAType();
+  static const ClipboardFormatType& FileDescriptorType();
+  static const ClipboardFormatType& FileContentZeroType();
+  static const ClipboardFormatType& FileContentAtIndexType(LONG index);
+  static const ClipboardFormatType& FilenameType();
+  static const ClipboardFormatType& IDListType();
+  static const ClipboardFormatType& MozUrlType();
 #endif
 
   // Gets the ClipboardFormatType corresponding to an arbitrary format string,
@@ -135,7 +135,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   // an index into the data (the first file corresponds to index 0). This
   // function returns a map of index to CFSTR_FILECONTENTS clipboard format
   // type.
-  static std::map<LONG, ClipboardFormatType>& GetFileContentTypeMap();
+  static std::map<LONG, ClipboardFormatType>& FileContentTypeMap();
 
   // FORMATETC:
   // https://docs.microsoft.com/en-us/windows/desktop/com/the-formatetc-structure

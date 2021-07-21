@@ -877,20 +877,20 @@ TEST_P(OmniboxViewViewsClipboardTest, ClipboardCopyOrCutURL) {
   EXPECT_EQ(expected_text, omnibox_view()->GetText());
 
   // Make sure the plain text format is available, but the HTML one isn't.
-  EXPECT_TRUE(
-      clipboard->IsFormatAvailable(ui::ClipboardFormatType::GetPlainTextType(),
-                                   clipboard_buffer, /* data_dst = */ nullptr));
-  EXPECT_FALSE(
-      clipboard->IsFormatAvailable(ui::ClipboardFormatType::GetHtmlType(),
-                                   clipboard_buffer, /* data_dst = */ nullptr));
+  EXPECT_TRUE(clipboard->IsFormatAvailable(
+      ui::ClipboardFormatType::PlainTextType(), clipboard_buffer,
+      /* data_dst = */ nullptr));
+  EXPECT_FALSE(clipboard->IsFormatAvailable(ui::ClipboardFormatType::HtmlType(),
+                                            clipboard_buffer,
+                                            /* data_dst = */ nullptr));
 
   // Windows clipboard only supports text URLs.
   // Mac clipboard not reporting URL format available for some reason.
   // crbug.com/751031
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  EXPECT_TRUE(
-      clipboard->IsFormatAvailable(ui::ClipboardFormatType::GetUrlType(),
-                                   clipboard_buffer, /* data_dst = */ nullptr));
+  EXPECT_TRUE(clipboard->IsFormatAvailable(ui::ClipboardFormatType::UrlType(),
+                                           clipboard_buffer,
+                                           /* data_dst = */ nullptr));
 #endif
 
   std::string read_from_clipboard;
@@ -916,12 +916,12 @@ TEST_P(OmniboxViewViewsClipboardTest, ClipboardCopyOrCutUserText) {
 
   // Make sure HTML format isn't written. See
   // BookmarkNodeData::WriteToClipboard() for details.
-  EXPECT_TRUE(
-      clipboard->IsFormatAvailable(ui::ClipboardFormatType::GetPlainTextType(),
-                                   clipboard_buffer, /* data_dst = */ nullptr));
-  EXPECT_FALSE(
-      clipboard->IsFormatAvailable(ui::ClipboardFormatType::GetHtmlType(),
-                                   clipboard_buffer, /* data_dst = */ nullptr));
+  EXPECT_TRUE(clipboard->IsFormatAvailable(
+      ui::ClipboardFormatType::PlainTextType(), clipboard_buffer,
+      /* data_dst = */ nullptr));
+  EXPECT_FALSE(clipboard->IsFormatAvailable(ui::ClipboardFormatType::HtmlType(),
+                                            clipboard_buffer,
+                                            /* data_dst = */ nullptr));
 
   std::string read_from_clipboard;
   clipboard->ReadAsciiText(clipboard_buffer, /* data_dst = */ nullptr,

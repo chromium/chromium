@@ -573,13 +573,13 @@ void WebUITabStripContainerView::GetDropFormatsForView(
     int* formats,
     std::set<ui::ClipboardFormatType>* format_types) {
   *formats |= ui::OSExchangeData::PICKLED_DATA;
-  format_types->insert(ui::ClipboardFormatType::GetWebCustomDataType());
+  format_types->insert(ui::ClipboardFormatType::WebCustomDataType());
 }
 
 // static
 bool WebUITabStripContainerView::IsDraggedTab(const ui::OSExchangeData& data) {
   base::Pickle pickle;
-  if (data.GetPickledData(ui::ClipboardFormatType::GetWebCustomDataType(),
+  if (data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
                           &pickle)) {
     std::u16string result;
     ui::ReadCustomDataForType(pickle.data(), pickle.size(),

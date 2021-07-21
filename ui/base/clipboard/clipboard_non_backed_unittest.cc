@@ -90,7 +90,7 @@ TEST_F(ClipboardNonBackedTest, AdminWriteDoesNotRecordHistograms) {
 // Tests that site bookmark URLs are accessed as text, and
 // IsFormatAvailable('text/uri-list') is only true for files.
 TEST_F(ClipboardNonBackedTest, TextURIList) {
-  EXPECT_EQ("text/uri-list", ClipboardFormatType::GetFilenamesType().GetName());
+  EXPECT_EQ("text/uri-list", ClipboardFormatType::FilenamesType().GetName());
 
   auto data = std::make_unique<ClipboardData>();
   data->set_bookmark_url("http://example.com");
@@ -101,11 +101,11 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
 
   // With bookmark data, available types should be only 'text/plain'.
   EXPECT_EQ(std::vector<std::string>({"text/plain"}), UTF8Types(types));
-  EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::GetUrlType(),
+  EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::UrlType(),
                                              ClipboardBuffer::kCopyPaste,
                                              /*data_dst=*/nullptr));
   EXPECT_FALSE(clipboard()->IsFormatAvailable(
-      ClipboardFormatType::GetFilenamesType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::FilenamesType(), ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
 
   // With filenames data, available types should be 'text/uri-list'.
@@ -115,11 +115,11 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
   clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
                                   /*data_dst=*/nullptr, &types);
   EXPECT_EQ(std::vector<std::string>({"text/uri-list"}), UTF8Types(types));
-  EXPECT_FALSE(clipboard()->IsFormatAvailable(ClipboardFormatType::GetUrlType(),
+  EXPECT_FALSE(clipboard()->IsFormatAvailable(ClipboardFormatType::UrlType(),
                                               ClipboardBuffer::kCopyPaste,
                                               /*data_dst=*/nullptr));
   EXPECT_TRUE(clipboard()->IsFormatAvailable(
-      ClipboardFormatType::GetFilenamesType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::FilenamesType(), ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
 }
 

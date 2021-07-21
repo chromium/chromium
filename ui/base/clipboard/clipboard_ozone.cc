@@ -364,9 +364,9 @@ void ClipboardOzone::ReadAvailableTypes(
     // Special handling for chromium/x-web-custom-data.
     // We must read the data and deserialize it to find the list
     // of mime types to report.
-    if (mime_type == ClipboardFormatType::GetWebCustomDataType().GetName()) {
+    if (mime_type == ClipboardFormatType::WebCustomDataType().GetName()) {
       auto data = async_clipboard_ozone_->ReadClipboardDataAndWait(
-          buffer, ClipboardFormatType::GetWebCustomDataType().GetName());
+          buffer, ClipboardFormatType::WebCustomDataType().GetName());
       ReadCustomDataTypes(data.data(), data.size(), types);
     } else {
       types->push_back(base::UTF8ToUTF16(mime_type));

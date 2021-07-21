@@ -151,11 +151,11 @@ TYPED_TEST(ClipboardTest, ClearTest) {
 
   EXPECT_TRUE(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste).empty());
   EXPECT_FALSE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetPlainTextType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
 #if defined(OS_WIN)
   EXPECT_FALSE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetPlainTextAType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::PlainTextAType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
 #endif
 }
@@ -188,11 +188,11 @@ TYPED_TEST(ClipboardTest, MAYBE_TextTest) {
   }
 #endif
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetPlainTextType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
 #if defined(OS_WIN)
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetPlainTextAType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::PlainTextAType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
 #endif
 
@@ -219,7 +219,7 @@ TYPED_TEST(ClipboardTest, HTMLTest) {
   EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
               Contains(ASCIIToUTF16(kMimeTypeHTML)));
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetHtmlType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::HtmlType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
   uint32_t fragment_start;
   uint32_t fragment_end;
@@ -245,7 +245,7 @@ TYPED_TEST(ClipboardTest, SvgTest) {
   }
 
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetSvgType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::SvgType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
 
   std::u16string markup_result;
@@ -272,7 +272,7 @@ TYPED_TEST(ClipboardTest, RTFTest) {
   EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
               Contains(ASCIIToUTF16(kMimeTypeRTF)));
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetRtfType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::RtfType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
   std::string result;
   this->clipboard().ReadRTF(ClipboardBuffer::kCopyPaste,
@@ -310,17 +310,17 @@ TYPED_TEST(ClipboardTest, MultipleBufferTest) {
               Contains(ASCIIToUTF16(kMimeTypeHTML)));
 
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetPlainTextType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
   EXPECT_FALSE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetPlainTextType(), ClipboardBuffer::kSelection,
+      ClipboardFormatType::PlainTextType(), ClipboardBuffer::kSelection,
       /* data_dst = */ nullptr));
 
   EXPECT_FALSE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetHtmlType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::HtmlType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetHtmlType(), ClipboardBuffer::kSelection,
+      ClipboardFormatType::HtmlType(), ClipboardBuffer::kSelection,
       /* data_dst = */ nullptr));
 
   this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
@@ -353,7 +353,7 @@ TYPED_TEST(ClipboardTest, TrickyHTMLTest) {
   EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
               Contains(ASCIIToUTF16(kMimeTypeHTML)));
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetHtmlType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::HtmlType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
   uint32_t fragment_start;
   uint32_t fragment_end;
@@ -394,7 +394,7 @@ TYPED_TEST(ClipboardTest, MAYBE_UnicodeHTMLTest) {
   EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
               Contains(ASCIIToUTF16(kMimeTypeHTML)));
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetHtmlType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::HtmlType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
   uint32_t fragment_start;
   uint32_t fragment_end;
@@ -421,7 +421,7 @@ TYPED_TEST(ClipboardTest, BookmarkTest) {
   }
 
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetUrlType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::UrlType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
   this->clipboard().ReadBookmark(/* data_dst = */ nullptr, &title_result,
                                  &url_result);
@@ -452,7 +452,7 @@ TYPED_TEST(ClipboardTest, MAYBE_FilenamesTest) {
   }
 
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetFilenamesType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::FilenamesType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
 
   std::vector<std::u16string> types;
@@ -492,14 +492,14 @@ TYPED_TEST(ClipboardTest, MAYBE_MultiFormatTest) {
   EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
               Contains(ASCIIToUTF16(kMimeTypeText)));
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetHtmlType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::HtmlType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetPlainTextType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
 #if defined(OS_WIN)
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetPlainTextAType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::PlainTextAType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
 #endif
   uint32_t fragment_start;
@@ -534,11 +534,11 @@ TYPED_TEST(ClipboardTest, URLTest) {
   EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
               Contains(ASCIIToUTF16(kMimeTypeText)));
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetPlainTextType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
 #if defined(OS_WIN)
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetPlainTextAType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::PlainTextAType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
 #endif
   std::u16string text_result;
@@ -604,7 +604,7 @@ static void TestBitmapWrite(Clipboard* clipboard,
                             const U8x4* expect_data) {
   WriteBitmap(clipboard, info, reinterpret_cast<const void*>(bitmap_data));
 
-  EXPECT_TRUE(clipboard->IsFormatAvailable(ClipboardFormatType::GetBitmapType(),
+  EXPECT_TRUE(clipboard->IsFormatAvailable(ClipboardFormatType::BitmapType(),
                                            ClipboardBuffer::kCopyPaste,
                                            /* data_dst = */ nullptr));
   const SkBitmap& image = clipboard_test_util::ReadImage(clipboard);
@@ -619,10 +619,10 @@ static void TestBitmapWriteAndPngRead(Clipboard* clipboard,
   WriteBitmap(clipboard, info, reinterpret_cast<const void*>(bitmap_data));
 
   // Expect to be able to read images as either bitmaps or PNGs.
-  EXPECT_TRUE(clipboard->IsFormatAvailable(ClipboardFormatType::GetBitmapType(),
+  EXPECT_TRUE(clipboard->IsFormatAvailable(ClipboardFormatType::BitmapType(),
                                            ClipboardBuffer::kCopyPaste,
                                            /* data_dst = */ nullptr));
-  EXPECT_TRUE(clipboard->IsFormatAvailable(ClipboardFormatType::GetPngType(),
+  EXPECT_TRUE(clipboard->IsFormatAvailable(ClipboardFormatType::PngType(),
                                            ClipboardBuffer::kCopyPaste,
                                            /* data_dst = */ nullptr));
   std::vector<uint8_t> result = clipboard_test_util::ReadPng(clipboard);
@@ -982,7 +982,7 @@ TYPED_TEST(ClipboardTest, MAYBE_ReadAvailablePlatformSpecificFormatNamesTest) {
   std::string ascii_text;
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
-    // `WriteText` uses `GetPlainTextType` format.
+    // `WriteText` uses `ClipboardFormatType::PlainTextType` format.
     clipboard_writer.WriteText(text);
   }
 
@@ -1068,7 +1068,7 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
 #else
   // TODO(crbug.com/106449): Support custom formats on other platforms.
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetPlainTextType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
   std::string text_result;
   this->clipboard().ReadAsciiText(ClipboardBuffer::kCopyPaste,
@@ -1076,7 +1076,7 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
   EXPECT_EQ(text_result, text);
   // Windows will automatically convert CF_TEXT to its UNICODE version.
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetPlainTextType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
   std::u16string text_result16;
   this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
@@ -1107,7 +1107,7 @@ TYPED_TEST(ClipboardTest, HyperlinkTest) {
   }
 
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetHtmlType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::HtmlType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
   uint32_t fragment_start;
   uint32_t fragment_end;
@@ -1127,8 +1127,8 @@ TYPED_TEST(ClipboardTest, WebSmartPasteTest) {
   }
 
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetWebKitSmartPasteType(),
-      ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr));
+      ClipboardFormatType::WebKitSmartPasteType(), ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr));
 }
 
 #if defined(OS_WIN)  // Windows only tests.
@@ -1254,7 +1254,7 @@ TYPED_TEST(ClipboardTest, WriteHyperlinkEmptyParams) {
 
 TYPED_TEST(ClipboardTest, WritePickledData) {
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
-  scw.WritePickledData(base::Pickle(), ClipboardFormatType::GetPlainTextType());
+  scw.WritePickledData(base::Pickle(), ClipboardFormatType::PlainTextType());
 }
 
 TYPED_TEST(ClipboardTest, WriteImageEmptyParams) {

@@ -58,62 +58,62 @@ ClipboardFormatType ClipboardFormatType::GetType(
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetFilenamesType() {
+const ClipboardFormatType& ClipboardFormatType::FilenamesType() {
   static base::NoDestructor<ClipboardFormatType> type(kMimeTypeURIList);
   return *type;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetUrlType() {
+const ClipboardFormatType& ClipboardFormatType::UrlType() {
   static base::NoDestructor<ClipboardFormatType> type(kMimeTypeMozillaURL);
   return *type;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetPlainTextType() {
+const ClipboardFormatType& ClipboardFormatType::PlainTextType() {
   static base::NoDestructor<ClipboardFormatType> type(kMimeTypeText);
   return *type;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetWebKitSmartPasteType() {
+const ClipboardFormatType& ClipboardFormatType::WebKitSmartPasteType() {
   static base::NoDestructor<ClipboardFormatType> type(
       kMimeTypeWebkitSmartPaste);
   return *type;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetHtmlType() {
+const ClipboardFormatType& ClipboardFormatType::HtmlType() {
   static base::NoDestructor<ClipboardFormatType> type(kMimeTypeHTML);
   return *type;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetSvgType() {
+const ClipboardFormatType& ClipboardFormatType::SvgType() {
   static base::NoDestructor<ClipboardFormatType> type(kMimeTypeSvg);
   return *type;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetRtfType() {
+const ClipboardFormatType& ClipboardFormatType::RtfType() {
   static base::NoDestructor<ClipboardFormatType> type(kMimeTypeRTF);
   return *type;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetPngType() {
+const ClipboardFormatType& ClipboardFormatType::PngType() {
   static base::NoDestructor<ClipboardFormatType> type(kMimeTypePNG);
   return *type;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetBitmapType() {
+const ClipboardFormatType& ClipboardFormatType::BitmapType() {
   static base::NoDestructor<ClipboardFormatType> type(kMimeTypeImageURI);
   return *type;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetWebCustomDataType() {
+const ClipboardFormatType& ClipboardFormatType::WebCustomDataType() {
   static base::NoDestructor<ClipboardFormatType> type(kMimeTypeWebCustomData);
   return *type;
 }

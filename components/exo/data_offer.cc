@@ -242,7 +242,7 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
   // OSExchangeData::GetFilenames().
   std::vector<ui::FileInfo> filenames;
   base::Pickle pickle;
-  if (data.GetPickledData(ui::ClipboardFormatType::GetWebCustomDataType(),
+  if (data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
                           &pickle)) {
     filenames = data_exchange_delegate->ParseFileSystemSources(data.GetSource(),
                                                                pickle);
@@ -332,7 +332,7 @@ void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
                                  ui::EndpointType endpoint_type) {
   DCHECK_EQ(0u, data_callbacks_.size());
   const ui::DataTransferEndpoint data_dst(endpoint_type);
-  if (data.IsFormatAvailable(ui::ClipboardFormatType::GetPlainTextType(),
+  if (data.IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
     auto utf8_callback = base::BindRepeating(&ReadTextFromClipboard,
                                              std::string(kUTF8), data_dst);
@@ -346,7 +346,7 @@ void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
         std::string(kTextMimeTypeUtf16),
         base::BindOnce(&ReadTextFromClipboard, std::string(kUTF16), data_dst));
   }
-  if (data.IsFormatAvailable(ui::ClipboardFormatType::GetHtmlType(),
+  if (data.IsFormatAvailable(ui::ClipboardFormatType::HtmlType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
     delegate_->OnOffer(std::string(kTextHtmlMimeTypeUtf8));
     data_callbacks_.emplace(
@@ -357,13 +357,13 @@ void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
         std::string(kTextHtmlMimeTypeUtf16),
         base::BindOnce(&ReadHTMLFromClipboard, std::string(kUTF16), data_dst));
   }
-  if (data.IsFormatAvailable(ui::ClipboardFormatType::GetRtfType(),
+  if (data.IsFormatAvailable(ui::ClipboardFormatType::RtfType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
     delegate_->OnOffer(std::string(kTextRtfMimeType));
     data_callbacks_.emplace(std::string(kTextRtfMimeType),
                             base::BindOnce(&ReadRTFFromClipboard, data_dst));
   }
-  if (data.IsFormatAvailable(ui::ClipboardFormatType::GetBitmapType(),
+  if (data.IsFormatAvailable(ui::ClipboardFormatType::BitmapType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
     delegate_->OnOffer(std::string(kImagePngMimeType));
     data_callbacks_.emplace(std::string(kImagePngMimeType),
@@ -373,15 +373,14 @@ void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
   // We accept the filenames pickle from FilesApp, or text/uri-list from apps.
   std::vector<ui::FileInfo> filenames;
   std::string buf;
-  data.ReadData(ui::ClipboardFormatType::GetWebCustomDataType(), &data_dst,
-                &buf);
+  data.ReadData(ui::ClipboardFormatType::WebCustomDataType(), &data_dst, &buf);
   if (!buf.empty()) {
     base::Pickle pickle(buf.data(), static_cast<int>(buf.size()));
     filenames = data_exchange_delegate->ParseFileSystemSources(
         data.GetSource(ui::ClipboardBuffer::kCopyPaste), pickle);
   }
   if (filenames.empty() &&
-      data.IsFormatAvailable(ui::ClipboardFormatType::GetFilenamesType(),
+      data.IsFormatAvailable(ui::ClipboardFormatType::FilenamesType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
     data.ReadFilenames(ui::ClipboardBuffer::kCopyPaste, &data_dst, &filenames);
   }

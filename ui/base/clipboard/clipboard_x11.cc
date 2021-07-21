@@ -90,10 +90,10 @@ void ClipboardX11::ReadAvailableTypes(
   for (const auto& mime_type : available_types) {
     // Special handling for chromium/x-web-custom-data. We must read the data
     // and deserialize it to find the list of mime types to report.
-    if (mime_type == ClipboardFormatType::GetWebCustomDataType().GetName()) {
+    if (mime_type == ClipboardFormatType::WebCustomDataType().GetName()) {
       auto data(x_clipboard_helper_->Read(
           buffer, x_clipboard_helper_->GetAtomsForFormat(
-                      ClipboardFormatType::GetWebCustomDataType())));
+                      ClipboardFormatType::WebCustomDataType())));
       if (data.IsValid())
         ReadCustomDataTypes(data.GetData(), data.GetSize(), types);
     } else {
@@ -164,8 +164,8 @@ void ClipboardX11::ReadHTML(ClipboardBuffer buffer,
   *fragment_end = 0;
 
   SelectionData data(x_clipboard_helper_->Read(
-      buffer, x_clipboard_helper_->GetAtomsForFormat(
-                  ClipboardFormatType::GetHtmlType())));
+      buffer,
+      x_clipboard_helper_->GetAtomsForFormat(ClipboardFormatType::HtmlType())));
   if (data.IsValid()) {
     *markup = data.GetHtml();
 
@@ -184,8 +184,8 @@ void ClipboardX11::ReadSvg(ClipboardBuffer buffer,
   RecordRead(ClipboardFormatMetric::kSvg);
 
   SelectionData data(x_clipboard_helper_->Read(
-      buffer, x_clipboard_helper_->GetAtomsForFormat(
-                  ClipboardFormatType::GetSvgType())));
+      buffer,
+      x_clipboard_helper_->GetAtomsForFormat(ClipboardFormatType::SvgType())));
   if (data.IsValid()) {
     std::string markup;
     data.AssignTo(&markup);
@@ -202,8 +202,8 @@ void ClipboardX11::ReadRTF(ClipboardBuffer buffer,
   RecordRead(ClipboardFormatMetric::kRtf);
 
   SelectionData data(x_clipboard_helper_->Read(
-      buffer, x_clipboard_helper_->GetAtomsForFormat(
-                  ClipboardFormatType::GetRtfType())));
+      buffer,
+      x_clipboard_helper_->GetAtomsForFormat(ClipboardFormatType::RtfType())));
   if (data.IsValid())
     data.AssignTo(result);
 }
@@ -242,7 +242,7 @@ void ClipboardX11::ReadCustomData(ClipboardBuffer buffer,
 
   SelectionData data(x_clipboard_helper_->Read(
       buffer, x_clipboard_helper_->GetAtomsForFormat(
-                  ClipboardFormatType::GetWebCustomDataType())));
+                  ClipboardFormatType::WebCustomDataType())));
   if (data.IsValid())
     ReadCustomDataForType(data.GetData(), data.GetSize(), type, result);
 }
@@ -257,7 +257,7 @@ void ClipboardX11::ReadFilenames(ClipboardBuffer buffer,
 
   SelectionData data(x_clipboard_helper_->Read(
       buffer, x_clipboard_helper_->GetAtomsForFormat(
-                  ClipboardFormatType::GetFilenamesType())));
+                  ClipboardFormatType::FilenamesType())));
   std::string uri_list;
   if (data.IsValid())
     data.AssignTo(&uri_list);
@@ -372,7 +372,7 @@ void ClipboardX11::WriteSvg(const char* markup_data, size_t markup_len) {
 }
 
 void ClipboardX11::WriteRTF(const char* rtf_data, size_t data_len) {
-  WriteData(ClipboardFormatType::GetRtfType(), rtf_data, data_len);
+  WriteData(ClipboardFormatType::RtfType(), rtf_data, data_len);
 }
 
 void ClipboardX11::WriteFilenames(std::vector<ui::FileInfo> filenames) {
@@ -380,7 +380,7 @@ void ClipboardX11::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   scoped_refptr<base::RefCountedMemory> mem(
       base::RefCountedString::TakeString(&uri_list));
   x_clipboard_helper_->InsertMapping(
-      ClipboardFormatType::GetFilenamesType().GetName(), mem);
+      ClipboardFormatType::FilenamesType().GetName(), mem);
 }
 
 void ClipboardX11::WriteBookmark(const char* title_data,
@@ -437,8 +437,8 @@ std::vector<uint8_t> ClipboardX11::ReadPngInternal(
   // to keep a callback with the request, and invoke the callback when the
   // request is satisfied.
   SelectionData data(x_clipboard_helper_->Read(
-      buffer, x_clipboard_helper_->GetAtomsForFormat(
-                  ClipboardFormatType::GetPngType())));
+      buffer,
+      x_clipboard_helper_->GetAtomsForFormat(ClipboardFormatType::PngType())));
 
   if (data.IsValid()) {
     return std::vector<uint8_t>(data.GetData(),

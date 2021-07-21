@@ -122,13 +122,13 @@ bool ClipboardMac::IsFormatAvailable(
 
   // Safari only places RTF on the pasteboard, never HTML. We can convert RTF
   // to HTML, so the presence of either indicates success when looking for HTML.
-  if (format == ClipboardFormatType::GetHtmlType()) {
+  if (format == ClipboardFormatType::HtmlType()) {
     return [types containsObject:NSHTMLPboardType] ||
            [types containsObject:NSRTFPboardType];
   }
   // Chrome can retrieve an image from the clipboard as either a bitmap or PNG.
-  if (format == ClipboardFormatType::GetPngType() ||
-      format == ClipboardFormatType::GetBitmapType()) {
+  if (format == ClipboardFormatType::PngType() ||
+      format == ClipboardFormatType::BitmapType()) {
     return [types containsObject:NSPasteboardTypePNG] ||
            [types containsObject:NSTIFFPboardType];
   }
@@ -171,16 +171,15 @@ void ClipboardMac::ReadAvailableTypes(
 
   NSPasteboard* pb = GetPasteboard();
   types->clear();
-  if (IsFormatAvailable(ClipboardFormatType::GetPlainTextType(), buffer,
-                        data_dst))
+  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeText));
-  if (IsFormatAvailable(ClipboardFormatType::GetHtmlType(), buffer, data_dst))
+  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeHTML));
-  if (IsFormatAvailable(ClipboardFormatType::GetSvgType(), buffer, data_dst))
+  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeSvg));
-  if (IsFormatAvailable(ClipboardFormatType::GetRtfType(), buffer, data_dst))
+  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
-  if (IsFormatAvailable(ClipboardFormatType::GetFilenamesType(), buffer,
+  if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer,
                         data_dst)) {
     types->push_back(base::UTF8ToUTF16(kMimeTypeURIList));
   } else if (pb && [NSImage canInitWithPasteboard:pb]) {
@@ -300,7 +299,7 @@ void ClipboardMac::ReadRTF(ClipboardBuffer buffer,
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kRtf);
 
-  return ReadData(ClipboardFormatType::GetRtfType(), data_dst, result);
+  return ReadData(ClipboardFormatType::RtfType(), data_dst, result);
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -433,7 +432,7 @@ void ClipboardMac::WriteSvg(const char* markup_data, size_t markup_len) {
 }
 
 void ClipboardMac::WriteRTF(const char* rtf_data, size_t data_len) {
-  WriteData(ClipboardFormatType::GetRtfType(), rtf_data, data_len);
+  WriteData(ClipboardFormatType::RtfType(), rtf_data, data_len);
 }
 
 void ClipboardMac::WriteFilenames(std::vector<ui::FileInfo> filenames) {
@@ -484,8 +483,7 @@ void ClipboardMac::WriteData(const ClipboardFormatType& format,
 // Write an extra flavor that signifies WebKit was the last to modify the
 // pasteboard. This flavor has no data.
 void ClipboardMac::WriteWebSmartPaste() {
-  NSString* format =
-      ClipboardFormatType::GetWebKitSmartPasteType().ToNSString();
+  NSString* format = ClipboardFormatType::WebKitSmartPasteType().ToNSString();
   [GetPasteboard() setData:nil forType:format];
 }
 

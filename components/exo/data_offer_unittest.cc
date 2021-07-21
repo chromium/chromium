@@ -606,7 +606,7 @@ TEST_F(DataOfferTest, SetClipboardDataFilenames) {
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
     writer.WritePickledData(pickle,
-                            ui::ClipboardFormatType::GetWebCustomDataType());
+                            ui::ClipboardFormatType::WebCustomDataType());
   }
 
   auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());

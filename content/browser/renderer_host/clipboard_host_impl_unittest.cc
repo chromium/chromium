@@ -138,10 +138,10 @@ TEST_F(ClipboardHostImplTest, SimpleImage_ReadBitmap) {
   EXPECT_NE(sequence_number, system_clipboard()->GetSequenceNumber(
                                  ui::ClipboardBuffer::kCopyPaste));
   EXPECT_FALSE(system_clipboard()->IsFormatAvailable(
-      ui::ClipboardFormatType::GetPlainTextType(),
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst=*/nullptr));
+      ui::ClipboardFormatType::PlainTextType(), ui::ClipboardBuffer::kCopyPaste,
+      /* data_dst=*/nullptr));
   EXPECT_TRUE(system_clipboard()->IsFormatAvailable(
-      ui::ClipboardFormatType::GetBitmapType(), ui::ClipboardBuffer::kCopyPaste,
+      ui::ClipboardFormatType::BitmapType(), ui::ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
 
   SkBitmap actual = ui::clipboard_test_util::ReadImage(system_clipboard());
@@ -161,13 +161,13 @@ TEST_F(ClipboardHostImplTest, SimpleImage_ReadPng) {
   EXPECT_NE(sequence_number, system_clipboard()->GetSequenceNumber(
                                  ui::ClipboardBuffer::kCopyPaste));
   EXPECT_FALSE(system_clipboard()->IsFormatAvailable(
-      ui::ClipboardFormatType::GetPlainTextType(),
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst=*/nullptr));
+      ui::ClipboardFormatType::PlainTextType(), ui::ClipboardBuffer::kCopyPaste,
+      /* data_dst=*/nullptr));
   EXPECT_TRUE(system_clipboard()->IsFormatAvailable(
-      ui::ClipboardFormatType::GetBitmapType(), ui::ClipboardBuffer::kCopyPaste,
+      ui::ClipboardFormatType::BitmapType(), ui::ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
   EXPECT_TRUE(system_clipboard()->IsFormatAvailable(
-      ui::ClipboardFormatType::GetPngType(), ui::ClipboardBuffer::kCopyPaste,
+      ui::ClipboardFormatType::PngType(), ui::ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
 
   std::vector<uint8_t> png =
@@ -298,8 +298,8 @@ TEST_F(ClipboardHostImplScanTest, PasteIfPolicyAllowed_EmptyData) {
 
   // When data is empty, the callback is invoked right away.
   clipboard_host_impl()->PasteIfPolicyAllowed(
-      ui::ClipboardBuffer::kCopyPaste,
-      ui::ClipboardFormatType::GetPlainTextType(), "",
+      ui::ClipboardBuffer::kCopyPaste, ui::ClipboardFormatType::PlainTextType(),
+      "",
       base::BindLambdaForTesting(
           [&count](
               FakeClipboardHostImpl::ClipboardPasteContentAllowed allowed) {
@@ -316,7 +316,7 @@ TEST_F(ClipboardHostImplScanTest, PerformPasteIfContentAllowed) {
   int count = 0;
   ui::ClipboardSequenceNumberToken sequence_number;
   clipboard_host_impl()->PerformPasteIfContentAllowed(
-      sequence_number, ui::ClipboardFormatType::GetPlainTextType(), "data",
+      sequence_number, ui::ClipboardFormatType::PlainTextType(), "data",
       base::BindLambdaForTesting(
           [&count](ClipboardHostImpl::ClipboardPasteContentAllowed allowed) {
             ++count;
@@ -340,7 +340,7 @@ TEST_F(ClipboardHostImplScanTest, CleanupObsoleteScanRequests) {
   ui::ClipboardSequenceNumberToken sequence_number;
   // Perform a request and complete it.
   clipboard_host_impl()->PerformPasteIfContentAllowed(
-      sequence_number, ui::ClipboardFormatType::GetPlainTextType(), "data",
+      sequence_number, ui::ClipboardFormatType::PlainTextType(), "data",
       base::DoNothing());
   clipboard_host_impl()->CompleteRequest(sequence_number);
   EXPECT_EQ(
@@ -363,8 +363,8 @@ TEST_F(ClipboardHostImplScanTest, IsPastePolicyAllowed_NoController) {
 
   // Policy controller doesn't exist.
   clipboard_host_impl()->PasteIfPolicyAllowed(
-      ui::ClipboardBuffer::kCopyPaste,
-      ui::ClipboardFormatType::GetPlainTextType(), "data",
+      ui::ClipboardBuffer::kCopyPaste, ui::ClipboardFormatType::PlainTextType(),
+      "data",
       base::BindLambdaForTesting(
           [&is_policy_callback_called](
               FakeClipboardHostImpl::ClipboardPasteContentAllowed allowed) {
@@ -399,8 +399,8 @@ TEST_F(ClipboardHostImplScanTest, IsPastePolicyAllowed_NotAllowed) {
           }));
 
   clipboard_host_impl()->PasteIfPolicyAllowed(
-      ui::ClipboardBuffer::kCopyPaste,
-      ui::ClipboardFormatType::GetPlainTextType(), "data",
+      ui::ClipboardBuffer::kCopyPaste, ui::ClipboardFormatType::PlainTextType(),
+      "data",
       base::BindLambdaForTesting(
           [&is_policy_callback_called](
               FakeClipboardHostImpl::ClipboardPasteContentAllowed allowed) {
@@ -432,8 +432,8 @@ TEST_F(ClipboardHostImplScanTest, IsPastePolicyAllowed_Allowed) {
           }));
 
   clipboard_host_impl()->PasteIfPolicyAllowed(
-      ui::ClipboardBuffer::kCopyPaste,
-      ui::ClipboardFormatType::GetPlainTextType(), "data",
+      ui::ClipboardBuffer::kCopyPaste, ui::ClipboardFormatType::PlainTextType(),
+      "data",
       base::BindLambdaForTesting(
           [&is_policy_callback_called](
               FakeClipboardHostImpl::ClipboardPasteContentAllowed allowed) {

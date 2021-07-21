@@ -39,7 +39,7 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
 
   base::Pickle original_pickle;
   original_pickle.WriteString16(kTestString);
-  original.SetPickledData(ClipboardFormatType::GetPlainTextType(),
+  original.SetPickledData(ClipboardFormatType::PlainTextType(),
                           original_pickle);
   original.SetFileContents(base::FilePath(kFileContentsFileName),
                            std::string(kFileContents));
@@ -63,7 +63,7 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   EXPECT_EQ(kUrlTitle, copy_title);
 
   base::Pickle copy_pickle;
-  copy->GetPickledData(ClipboardFormatType::GetPlainTextType(), &copy_pickle);
+  copy->GetPickledData(ClipboardFormatType::PlainTextType(), &copy_pickle);
   base::PickleIterator pickle_itr(copy_pickle);
   std::u16string copy_pickle_string;
   EXPECT_TRUE(pickle_itr.ReadString16(&copy_pickle_string));
