@@ -1,0 +1,36 @@
+# Copyright 2021 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+static_library("backend") {
+  sources = [
+    "plural_string_handler.cc",
+    "plural_string_handler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/strings/",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/webui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "plural_string_handler_unittest.cc" ]
+
+  deps = [
+    ":backend",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/strings/",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/webui",
+  ]
+}
