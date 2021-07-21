@@ -57,11 +57,6 @@ struct CONTENT_EXPORT ConversionReport {
   // `conversion_test_utils.h` should also be updated.
 };
 
-// Only used for logging.
-CONTENT_EXPORT std::ostream& operator<<(
-    std::ostream& out,
-    const ConversionReport& ConversionReport);
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_CONVERSIONS_CONVERSION_REPORT_H_

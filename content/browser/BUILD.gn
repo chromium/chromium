@@ -700,7 +700,6 @@ source_set("browser") {
     "conversions/conversion_storage_sql_migrations.h",
     "conversions/rate_limit_table.cc",
     "conversions/rate_limit_table.h",
-    "conversions/sent_report_info.cc",
     "conversions/sent_report_info.h",
     "conversions/sql_utils.cc",
     "conversions/sql_utils.h",

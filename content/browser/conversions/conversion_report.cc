@@ -29,16 +29,4 @@ ConversionReport& ConversionReport::operator=(ConversionReport&& other) =
 
 ConversionReport::~ConversionReport() = default;
 
-std::ostream& operator<<(std::ostream& out, const ConversionReport& report) {
-  out << "impression_data: " << report.impression.impression_data()
-      << ", impression_origin: " << report.impression.impression_origin()
-      << ", conversion_origin: " << report.impression.conversion_origin()
-      << ", reporting_origin: " << report.impression.reporting_origin()
-      << ", conversion_data: " << report.conversion_data
-      << ", conversion_time: " << report.conversion_time
-      << ", report_time: " << report.report_time
-      << ", extra_delay: " << report.extra_delay;
-  return out;
-}
-
 }  // namespace content

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_CONVERSIONS_SENT_REPORT_INFO_H_
 #define CONTENT_BROWSER_CONVERSIONS_SENT_REPORT_INFO_H_
 
-#include <ostream>
 #include <string>
 
 #include "content/common/content_export.h"
@@ -23,10 +22,6 @@ struct CONTENT_EXPORT SentReportInfo {
   // When adding new members, the corresponding `operator==()` definition in
   // `conversion_test_utils.h` should also be updated.
 };
-
-// Only used for logging.
-CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
-                                        const SentReportInfo& info);
 
 }  // namespace content
 
