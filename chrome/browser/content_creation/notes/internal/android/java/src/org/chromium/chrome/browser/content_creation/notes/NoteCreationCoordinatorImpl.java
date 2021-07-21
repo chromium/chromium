@@ -97,8 +97,8 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
      */
     @Override
     public void dismiss() {
-        NoteCreationMetrics.recordNoteCreationDismissed(getTimeElapsedSinceCreationStart());
-        NoteCreationMetrics.recordNbTemplateChanges(mDialog.getNbTemplateSwitches());
+        NoteCreationMetrics.recordNoteCreationDismissed(
+                getTimeElapsedSinceCreationStart(), mDialog.getNbTemplateSwitches());
         mDialog.dismiss();
     }
 
@@ -115,12 +115,11 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
      */
     @Override
     public void executeAction() {
-        NoteCreationMetrics.recordNoteTemplateSelected(getTimeElapsedSinceCreationStart());
-        NoteCreationMetrics.recordNbTemplateChanges(mDialog.getNbTemplateSwitches());
-
         int selectedNoteIndex = mDialog.getSelectedItemIndex();
-        NoteCreationMetrics.recordSelectedTemplateId(
+        NoteCreationMetrics.recordNoteTemplateSelected(getTimeElapsedSinceCreationStart(),
+                mDialog.getNbTemplateSwitches(),
                 mListModel.get(selectedNoteIndex).model.get(NoteProperties.TEMPLATE).id);
+
         View noteView = mDialog.getNoteViewAt(selectedNoteIndex);
 
         assert noteView != null;

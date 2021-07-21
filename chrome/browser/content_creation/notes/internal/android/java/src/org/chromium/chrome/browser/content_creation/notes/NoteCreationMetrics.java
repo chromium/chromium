@@ -60,8 +60,7 @@ public final class NoteCreationMetrics {
      * Records metrics related to the user starting the creation flow.
      */
     public static void recordNoteCreationSelected() {
-        RecordHistogram.recordEnumeratedHistogram("NoteCreation.Funnel",
-                NoteCreationFunnel.NOTE_CREATION_SELECTED, NoteCreationFunnel.NUM_ENTRIES);
+        recordNoteCreationFunnel(NoteCreationFunnel.NOTE_CREATION_SELECTED);
     }
 
     /**
@@ -70,13 +69,14 @@ public final class NoteCreationMetrics {
      * @param duration The time elapsed between the start of the creation flow and when the user
      *         selected a template and created their note.
      */
-    public static void recordNoteTemplateSelected(long duration) {
-        RecordHistogram.recordEnumeratedHistogram("NoteCreation.Funnel",
-                NoteCreationFunnel.TEMPLATE_SELECTED, NoteCreationFunnel.NUM_ENTRIES);
-
-        RecordHistogram.recordBooleanHistogram("NoteCreation.CreationStatus", true);
-
+    public static void recordNoteTemplateSelected(
+            long duration, int nbChanges, int selectedTemplateId) {
         RecordHistogram.recordMediumTimesHistogram("NoteCreation.TimeTo.SelectTemplate", duration);
+
+        recordNoteCreationFunnel(NoteCreationFunnel.TEMPLATE_SELECTED);
+        recordNoteCreated(/*created=*/true);
+        recordNbTemplateChanges(nbChanges);
+        recordSelectedTemplateId(selectedTemplateId);
     }
 
     /**
@@ -85,11 +85,12 @@ public final class NoteCreationMetrics {
      * @param duration The time elapsed between the start of the creation flow and when the user
      *         dismissed the creation dialog.
      */
-    public static void recordNoteCreationDismissed(long duration) {
-        RecordHistogram.recordBooleanHistogram("NoteCreation.CreationStatus", false);
-
+    public static void recordNoteCreationDismissed(long duration, int nbChanges) {
         RecordHistogram.recordMediumTimesHistogram(
                 "NoteCreation.TimeTo.DismissCreationDialog", duration);
+
+        recordNoteCreated(/*created=*/false);
+        recordNbTemplateChanges(nbChanges);
     }
 
     /**
@@ -100,21 +101,17 @@ public final class NoteCreationMetrics {
      * @param chosenComponent The component that was picked as a share desitination.
      */
     public static void recordNoteShared(long duration, ComponentName chosenComponent) {
-        RecordHistogram.recordEnumeratedHistogram("NoteCreation.Funnel",
-                NoteCreationFunnel.NOTE_SHARED, NoteCreationFunnel.NUM_ENTRIES);
-
-        RecordHistogram.recordBooleanHistogram("NoteCreation.NoteShared", true);
-
         RecordHistogram.recordMediumTimesHistogram("NoteCreation.TimeTo.ShareCreation", duration);
 
-        if (chosenComponent.equals(
-                    ChromeProvidedSharingOptionsProvider.CHROME_PROVIDED_FEATURE_COMPONENT_NAME)) {
-            RecordHistogram.recordEnumeratedHistogram("NoteCreation.ShareDestination",
-                    NoteShareDestination.FIRST_PARTY, NoteShareDestination.NUM_ENTRIES);
-        } else {
-            RecordHistogram.recordEnumeratedHistogram("NoteCreation.ShareDestination",
-                    NoteShareDestination.THIRD_PARTY, NoteShareDestination.NUM_ENTRIES);
-        }
+        recordNoteShared(/*shared=*/true);
+        recordNoteCreationFunnel(NoteCreationFunnel.NOTE_SHARED);
+
+        RecordHistogram.recordEnumeratedHistogram("NoteCreation.ShareDestination",
+                chosenComponent.equals(
+                        ChromeProvidedSharingOptionsProvider.CHROME_PROVIDED_FEATURE_COMPONENT_NAME)
+                        ? NoteShareDestination.FIRST_PARTY
+                        : NoteShareDestination.THIRD_PARTY,
+                NoteShareDestination.NUM_ENTRIES);
     }
 
     /**
@@ -124,9 +121,41 @@ public final class NoteCreationMetrics {
      *         dismissed the share sheet.
      */
     public static void recordNoteNotShared(long duration) {
-        RecordHistogram.recordBooleanHistogram("NoteCreation.NoteShared", false);
-
         RecordHistogram.recordMediumTimesHistogram("NoteCreation.TimeTo.DismissShare", duration);
+
+        recordNoteShared(/*shared=*/false);
+    }
+
+    /**
+     * Records whether the user ended up creating a note or note after getting to the note creation
+     * flow.
+     *
+     * @param created Whether a note was created or not.
+     */
+    private static void recordNoteCreated(boolean created) {
+        RecordHistogram.recordBooleanHistogram("NoteCreation.CreationStatus", created);
+    }
+
+    /**
+     * Records whether the user ended up sharing their created note.
+     *
+     * @param shared Whether the user shared the created note or not.
+     */
+    private static void recordNoteShared(boolean shared) {
+        RecordHistogram.recordBooleanHistogram("NoteCreation.NoteShared", shared);
+    }
+
+    /**
+     * Records the different states of the creation funnel that the user reaches.
+     *
+     * @param funnelState The state of the funnel that the user reached.
+     */
+    private static void recordNoteCreationFunnel(@NoteCreationFunnel int funnelState) {
+        assert funnelState < NoteCreationFunnel.NUM_ENTRIES;
+        assert funnelState >= 0;
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "NoteCreation.Funnel", funnelState, NoteCreationFunnel.NUM_ENTRIES);
     }
 
     /**
@@ -134,12 +163,18 @@ public final class NoteCreationMetrics {
      *
      * @param nbChanges The number of times the user changes templates.
      */
-    public static void recordNbTemplateChanges(int nbChanges) {
+    private static void recordNbTemplateChanges(int nbChanges) {
         RecordHistogram.recordCount100Histogram("NoteCreation.NumberOfTemplateChanges", nbChanges);
     }
 
-    public static void recordSelectedTemplateId(int selectedTemplateId) {
+    /**
+     * Records the id of the template that was selected by the user.
+     *
+     * @param selectedTemplateId The id of the selected template.
+     */
+    private static void recordSelectedTemplateId(@NoteTemplateIds int selectedTemplateId) {
         assert selectedTemplateId < NoteTemplateIds.NUM_ENTRIES;
+        assert selectedTemplateId >= 0;
 
         if (selectedTemplateId >= NoteTemplateIds.NUM_ENTRIES) {
             selectedTemplateId = NoteTemplateIds.UNKNOWN;
