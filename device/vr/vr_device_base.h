@@ -17,6 +17,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+struct CHROME_LUID;
+
 namespace device {
 
 // Represents one of the platform's VR devices. Owned by the respective
@@ -64,7 +66,7 @@ class COMPONENT_EXPORT(DEVICE_VR_BASE) VRDeviceBase : public mojom::XRRuntime {
   void SetSupportedFeatures(
       const std::vector<mojom::XRSessionFeature>& features);
 #if defined(OS_WIN)
-  void SetLuid(const LUID& luid);
+  void SetLuid(const CHROME_LUID& luid);
 #endif
 
   mojom::VRDisplayInfoPtr display_info_;

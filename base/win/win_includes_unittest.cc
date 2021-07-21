@@ -41,3 +41,4 @@ static_assert(sizeof(CHROME_WIN32_FIND_DATA) == sizeof(WIN32_FIND_DATA),
               "Definition mismatch.");
 static_assert(sizeof(CHROME_FORMATETC) == sizeof(FORMATETC),
               "Definition mismatch.");
+static_assert(sizeof(CHROME_LUID) == sizeof(LUID), "Definition mismatch.");

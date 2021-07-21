@@ -25,6 +25,8 @@
 
 #if defined(OS_WIN)
 #include <dxgi.h>
+
+#include "base/win/windows_types.h"
 #endif
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -252,7 +254,7 @@ struct GPU_EXPORT GPUInfo {
     // unique relative its vendor, not to each other. If there are more than one
     // of the same exact graphics card, they all have the same vendor id and
     // device id but different LUIDs.
-    LUID luid;
+    CHROME_LUID luid;
 #endif  // OS_WIN
 
     // Whether this GPU is the currently used one.

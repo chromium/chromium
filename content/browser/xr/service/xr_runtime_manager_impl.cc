@@ -355,7 +355,7 @@ void XRRuntimeManagerImpl::MakeXrCompatible() {
 
   if (!IsInitializedOnCompatibleAdapter(runtime)) {
 #if defined(OS_WIN)
-    absl::optional<LUID> luid = runtime->GetLuid();
+    absl::optional<CHROME_LUID> luid = runtime->GetLuid();
     // IsInitializedOnCompatibleAdapter should have returned true if the
     // runtime doesn't specify a LUID.
     DCHECK(luid && (luid->HighPart != 0 || luid->LowPart != 0));
@@ -401,9 +401,9 @@ void XRRuntimeManagerImpl::MakeXrCompatible() {
 bool XRRuntimeManagerImpl::IsInitializedOnCompatibleAdapter(
     BrowserXRRuntimeImpl* runtime) {
 #if defined(OS_WIN)
-  absl::optional<LUID> luid = runtime->GetLuid();
+  absl::optional<CHROME_LUID> luid = runtime->GetLuid();
   if (luid && (luid->HighPart != 0 || luid->LowPart != 0)) {
-    LUID active_luid =
+    CHROME_LUID active_luid =
         content::GpuDataManager::GetInstance()->GetGPUInfo().active_gpu().luid;
     return active_luid.HighPart == luid->HighPart &&
            active_luid.LowPart == luid->LowPart;
@@ -460,7 +460,7 @@ XRRuntimeManagerImpl::~XRRuntimeManagerImpl() {
     // separate from xr_compatible_restarted_gpu_ because the GPU process may
     // not have been successfully initialized using the specified GPU and is
     // still on the default adapter.
-    LUID active_gpu =
+    CHROME_LUID active_gpu =
         content::GpuDataManager::GetInstance()->GetGPUInfo().active_gpu().luid;
     if (active_gpu.LowPart != default_gpu_.LowPart ||
         active_gpu.HighPart != default_gpu_.HighPart) {

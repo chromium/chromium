@@ -9,6 +9,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 
+#if defined(OS_WIN)
+#include "base/win/windows_types.h"
+#endif
+
 namespace device {
 
 VRDeviceBase::VRDeviceBase(mojom::XRDeviceId id) : id_(id) {
@@ -85,10 +89,10 @@ void VRDeviceBase::SetArBlendModeSupported(bool is_ar_blend_mode_supported) {
 }
 
 #if defined(OS_WIN)
-void VRDeviceBase::SetLuid(const LUID& luid) {
+void VRDeviceBase::SetLuid(const CHROME_LUID& luid) {
   if (luid.HighPart != 0 || luid.LowPart != 0) {
     // Only set the LUID if it exists and is nonzero.
-    device_data_.luid = absl::make_optional<LUID>(luid);
+    device_data_.luid = luid;
   }
 }
 #endif

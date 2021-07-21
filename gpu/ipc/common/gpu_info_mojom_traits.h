@@ -15,6 +15,10 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
+#if defined(OS_WIN)
+#include "base/win/windows_types.h"
+#endif
+
 namespace mojo {
 
 template <>
@@ -41,7 +45,7 @@ struct GPU_EXPORT
     return input.sub_sys_id;
   }
 
-  static const LUID luid(const gpu::GPUInfo::GPUDevice& input) {
+  static const CHROME_LUID luid(const gpu::GPUInfo::GPUDevice& input) {
     return input.luid;
   }
 #endif  // OS_WIN

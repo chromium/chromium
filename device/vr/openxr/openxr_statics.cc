@@ -40,7 +40,8 @@ bool OpenXrStatics::IsApiAvailable() {
 #if defined(OS_WIN)
 // Returns the LUID of the adapter the OpenXR runtime is on. Returns {0, 0} if
 // the LUID could not be determined.
-LUID OpenXrStatics::GetLuid(const OpenXrExtensionHelper& extension_helper) {
+CHROME_LUID OpenXrStatics::GetLuid(
+    const OpenXrExtensionHelper& extension_helper) {
   if (GetXrInstance() == XR_NULL_HANDLE)
     return {0, 0};
 
@@ -59,7 +60,8 @@ LUID OpenXrStatics::GetLuid(const OpenXrExtensionHelper& extension_helper) {
               instance_, system, &graphics_requirements)))
     return {0, 0};
 
-  return graphics_requirements.adapterLuid;
+  const LUID& luid = graphics_requirements.adapterLuid;
+  return CHROME_LUID{luid.LowPart, luid.HighPart};
 }
 #endif
 

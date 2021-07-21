@@ -151,6 +151,11 @@ struct CHROME_CONDITION_VARIABLE {
   PVOID Ptr;
 };
 
+struct CHROME_LUID {
+  DWORD LowPart;
+  LONG HighPart;
+};
+
 // _WIN32_FIND_DATAW is 592 bytes and the largest built-in type in it is a
 // DWORD. The buffer declaration guarantees the correct size and alignment.
 struct CHROME_WIN32_FIND_DATA {

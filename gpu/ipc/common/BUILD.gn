@@ -575,10 +575,11 @@ mojom("interfaces") {
         types = [
           {
             mojom = "gpu.mojom.Luid"
-            cpp = "::LUID"
+            cpp = "::CHROME_LUID"
           },
         ]
         traits_headers = [ "luid_mojom_traits.h" ]
+        traits_sources = [ "luid_mojom_traits.cc" ]
         traits_public_deps = [
           ":mojom_traits",
           "//gpu/config:config_sources",
@@ -590,7 +591,7 @@ mojom("interfaces") {
         types = [
           {
             mojom = "gpu.mojom.Luid"
-            cpp = "::LUID"
+            cpp = "::CHROME_LUID"
           },
         ]
         traits_headers = [ "luid_mojom_traits.h" ]

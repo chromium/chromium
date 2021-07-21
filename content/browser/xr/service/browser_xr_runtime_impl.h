@@ -20,6 +20,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+struct CHROME_LUID;
+
 namespace content {
 class XrInstallHelper;
 }  // namespace content
@@ -85,7 +87,7 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
   device::mojom::XRDeviceId GetId() const { return id_; }
 
 #if defined(OS_WIN)
-  absl::optional<LUID> GetLuid() const;
+  absl::optional<CHROME_LUID> GetLuid() const;
 #endif
 
   // BrowserXRRuntime

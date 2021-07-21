@@ -26,6 +26,10 @@
 #include "ui/gfx/transform.h"
 #include "ui/gfx/transform_util.h"
 
+#if defined(OS_WIN)
+#include "base/win/windows_types.h"
+#endif
+
 namespace content {
 namespace {
 bool IsValidTransform(const gfx::Transform& transform,
@@ -435,7 +439,7 @@ void BrowserXRRuntimeImpl::BeforeRuntimeRemoved() {
 }
 
 #if defined(OS_WIN)
-absl::optional<LUID> BrowserXRRuntimeImpl::GetLuid() const {
+absl::optional<CHROME_LUID> BrowserXRRuntimeImpl::GetLuid() const {
   return device_data_->luid;
 }
 #endif

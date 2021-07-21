@@ -23,6 +23,9 @@
 #include "gpu/command_buffer/client/gles2_lib.h"
 #include "ui/gfx/geometry/quaternion.h"
 
+// To avoid conflicts with the macro from the Windows SDK...
+#undef DrawState
+
 namespace {
 constexpr base::TimeDelta kWebVrInitialFrameTimeout =
     base::TimeDelta::FromSeconds(5);
