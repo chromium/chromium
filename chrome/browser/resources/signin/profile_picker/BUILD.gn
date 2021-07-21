@@ -7,12 +7,11 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../../tools/optimize_webui.gni")
 
 preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 
 if (optimize_webui) {
   build_manifest = "build_manifest.json"
@@ -23,7 +22,7 @@ if (optimize_webui) {
       "profile_picker.js",
       "lazy_load.js",
     ]
-    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+    input = rebase_path("$target_gen_dir/tsc", root_build_dir)
     out_manifest = "$target_gen_dir/$build_manifest"
     js_out_files = [
       "profile_picker.rollup.js",
@@ -31,12 +30,7 @@ if (optimize_webui) {
       "shared.rollup.js",
     ]
 
-    deps = [
-      ":preprocess",
-      ":preprocess_generated",
-      "//ui/webui/resources:preprocess",
-      "//ui/webui/resources/cr_components/customize_themes:build_ts",
-    ]
+    deps = [ ":build_ts" ]
     excludes = [
       "chrome://resources/js/cr.m.js",
       "chrome://resources/mojo/mojo/public/js/bindings.js",
@@ -67,21 +61,14 @@ generate_grd("build_grd") {
       "lazy_load.rollup.js|lazy_load.js",
     ]
   } else {
-    deps = [
-      ":preprocess",
-      ":preprocess_generated",
-    ]
-    manifest_files = [
-      "$target_gen_dir/$preprocess_manifest",
-      "$target_gen_dir/$preprocess_gen_manifest",
-    ]
+    deps = [ ":build_ts" ]
+    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   }
 }
 
 preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
     "profile_picker.js",
     "navigation_mixin.js",
@@ -97,7 +84,6 @@ preprocess_if_expr("preprocess_generated") {
   deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "profile_picker_app.js",
     "profile_picker_main_view.js",
@@ -249,6 +235,44 @@ js_library("policy_helper") {
 
 js_library("profile_switch") {
   deps = [ ":manage_profiles_browser_proxy" ]
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "ensure_lazy_loaded.js",
+    "icons.js",
+    "lazy_load.js",
+    "manage_profiles_browser_proxy.js",
+    "navigation_mixin.js",
+    "policy_helper.js",
+    "profile_card.js",
+    "profile_card_menu.js",
+    "profile_creation_flow/local_profile_customization.js",
+    "profile_creation_flow/profile_type_choice.js",
+    "profile_creation_flow/shared_css.js",
+    "profile_picker_app.js",
+    "profile_picker.js",
+    "profile_picker_main_view.js",
+    "profile_picker_shared_css.js",
+    "profile_switch.js",
+  ]
+  definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+  ]
+
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/customize_themes:build_ts",
+  ]
+  extra_deps = [
+    ":preprocess",
+    ":preprocess_generated",
+  ]
 }
 
 group("web_components") {
