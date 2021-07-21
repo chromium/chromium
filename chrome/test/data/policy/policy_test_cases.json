@@ -2532,13 +2532,92 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "spellcheck.forced_dictionaries": {
+            "default_value": []
+          },
+          "browser.enable_spellchecking": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value & enables spellchecking pref",
         "policies": {
           "SpellcheckLanguage": [
             "fr"
           ]
         },
         "prefs": {
-          "spellcheck.forced_dictionaries": {}
+          "spellcheck.forced_dictionaries": {
+            "value": [
+              "fr"
+            ]
+          },
+          "browser.enable_spellchecking": {
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check that SpellcheckEnabled precedes this one",
+        "policies": {
+          "SpellcheckLanguage": [
+            "fr"
+          ],
+          "SpellcheckEnabled": false
+        },
+        "prefs": {
+          "spellcheck.forced_dictionaries": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Invalid values get filtered out",
+        "policies": {
+          "SpellcheckLanguage": [
+            "fr",
+            "frrrrrr"
+          ]
+        },
+        "prefs": {
+          "spellcheck.forced_dictionaries": {
+            "value": [
+              "fr"
+            ]
+          }
+        }
+      },
+      {
+        "note": "Language transforms",
+        "policies": {
+          "SpellcheckLanguage": [
+            "af-ZA"
+          ]
+        },
+        "prefs": {
+          "spellcheck.forced_dictionaries": {
+            "value": [
+              "af"
+            ]
+          }
+        }
+      },
+      {
+        "note": "Whitespace trimming",
+        "policies": {
+          "SpellcheckLanguage": [
+            "    fr "
+          ]
+        },
+        "prefs": {
+          "spellcheck.forced_dictionaries": {
+            "value": [
+              "fr"
+            ]
+          }
         }
       }
     ]
@@ -2551,13 +2630,56 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "spellcheck.blocked_dictionaries": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value",
         "policies": {
           "SpellcheckLanguageBlacklist": [
             "fr"
           ]
         },
         "prefs": {
-          "spellcheck.blocked_dictionaries": {}
+          "spellcheck.blocked_dictionaries": {
+            "value": [
+              "fr"
+            ]
+          }
+        }
+      },
+      {
+        "note": "SpellcheckEnabled precedence",
+        "policies": {
+          "SpellcheckLanguageBlacklist": [
+            "fr"
+          ],
+          "SpellcheckEnabled": false
+        },
+        "prefs": {
+          "spellcheck.blocked_dictionaries": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "SpellcheckLanguage precedence",
+        "policies": {
+          "SpellcheckLanguageBlacklist": [
+            "fr"
+          ],
+          "SpellcheckLanguage": [
+            "fr"
+          ]
+        },
+        "prefs": {
+          "spellcheck.blocked_dictionaries": {
+            "value": []
+          }
         }
       }
     ]
@@ -2570,13 +2692,74 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "spellcheck.blocked_dictionaries": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value",
         "policies": {
           "SpellcheckLanguageBlocklist": [
             "fr"
           ]
         },
         "prefs": {
-          "spellcheck.blocked_dictionaries": {}
+          "spellcheck.blocked_dictionaries": {
+            "value": [
+              "fr"
+            ]
+          }
+        }
+      },
+      {
+        "note": "SpellcheckEnabled precedence",
+        "policies": {
+          "SpellcheckLanguageBlocklist": [
+            "fr"
+          ],
+          "SpellcheckEnabled": false
+        },
+        "prefs": {
+          "spellcheck.blocked_dictionaries": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "SpellcheckLanguage precedence",
+        "policies": {
+          "SpellcheckLanguageBlocklist": [
+            "fr"
+          ],
+          "SpellcheckLanguage": [
+            "fr"
+          ]
+        },
+        "prefs": {
+          "spellcheck.blocked_dictionaries": {
+            "value": []
+          }
+        }
+      },
+      {
+        "note": "Precedence over SpellcheckLanguageBlacklist",
+        "policies": {
+          "SpellcheckLanguageBlocklist": [
+            "fr", "it"
+          ],
+          "SpellcheckLanguageBlacklist": [
+            "it", "es"
+          ]
+        },
+        "prefs": {
+          "spellcheck.blocked_dictionaries": {
+            "value": [
+              "fr", "it"
+            ]
+          }
         }
       }
     ]
@@ -2608,11 +2791,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "browser.enable_spellchecking": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value",
         "policies": {
           "SpellcheckEnabled": false
         },
         "prefs": {
-          "browser.enable_spellchecking": {}
+          "browser.enable_spellchecking": {
+            "value": false
+          }
         }
       }
     ]
@@ -4914,11 +5108,22 @@
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "spellcheck.use_spelling_service": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value",
         "policies": {
-          "SpellCheckServiceEnabled": false
+          "SpellCheckServiceEnabled": true
         },
         "prefs": {
-          "spellcheck.use_spelling_service": {}
+          "spellcheck.use_spelling_service": {
+            "value": true
+          }
         }
       }
     ]
