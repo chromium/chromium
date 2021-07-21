@@ -26,9 +26,28 @@
 #endif
 
 namespace crash_keys {
+namespace {
+
+#if defined(OS_CHROMEOS)
+// ChromeOS uses --enable-features and --disable-features more heavily than
+// most platforms, and the results don't fit into the default 64 bytes. So they
+// are listed in special, larger CrashKeys and excluded from the default
+// "switches".
+void HandleEnableDisableFeatures(const base::CommandLine& command_line) {
+  static crash_reporter::CrashKeyString<150> enable_features_key(
+      "commandline-enabled-features");
+  enable_features_key.Set(
+      command_line.GetSwitchValueASCII(switches::kEnableFeatures));
+
+  static crash_reporter::CrashKeyString<150> disable_features_key(
+      "commandline-disabled-features");
+  disable_features_key.Set(
+      command_line.GetSwitchValueASCII(switches::kDisableFeatures));
+}
+#endif
 
 // Return true if we DON'T want to upload this flag to the crash server.
-static bool IsBoringSwitch(const std::string& flag) {
+bool IsBoringSwitch(const std::string& flag) {
   static const char* const kIgnoreSwitches[] = {
     switches::kEnableLogging,
     switches::kFlagSwitchesBegin,
@@ -37,6 +56,14 @@ static bool IsBoringSwitch(const std::string& flag) {
     switches::kProcessType,
     switches::kV,
     switches::kVModule,
+    // This is a serialized buffer which won't fit in the default 64 bytes
+    // anyways. Should be switches::kGpuPreferences but we run into linking
+    // errors on Windows if we try to use that directly.
+    "gpu-preferences",
+#if defined(OS_CHROMEOS)
+    switches::kEnableFeatures,
+    switches::kDisableFeatures,
+#endif
 #if defined(OS_MAC)
     switches::kMetricsClientID,
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
@@ -80,8 +107,13 @@ static bool IsBoringSwitch(const std::string& flag) {
   return false;
 }
 
+}  // namespace
+
 void SetCrashKeysFromCommandLine(const base::CommandLine& command_line) {
-  return SetSwitchesFromCommandLine(command_line, &IsBoringSwitch);
+#if defined(OS_CHROMEOS)
+  HandleEnableDisableFeatures(command_line);
+#endif
+  SetSwitchesFromCommandLine(command_line, &IsBoringSwitch);
 }
 
 void SetActiveExtensions(const std::set<std::string>& extensions) {

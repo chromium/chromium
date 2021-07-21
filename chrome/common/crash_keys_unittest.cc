@@ -8,23 +8,28 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crash/core/common/crash_key.h"
+#include "gpu/config/gpu_switches.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using crash_reporter::GetCrashKeyValue;
+using ::testing::IsEmpty;
 
 class CrashKeysTest : public testing::Test {
  public:
   void SetUp() override {
-    crash_reporter::ResetCrashKeysForTesting();
     crash_reporter::InitializeCrashKeys();
   }
 
   void TearDown() override {
-    crash_reporter::ResetCrashKeysForTesting();
+    // We can't call crash_reporter::ResetCrashKeysForTesting() here; since
+    // we don't destroy the CrashKeyString objects, it just confuses the system
+    // to have the annotation list reset.
   }
 };
 
@@ -89,6 +94,7 @@ TEST_F(CrashKeysTest, Extensions) {
 
 TEST_F(CrashKeysTest, IgnoreBoringFlags) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  std::string expected_num_switches = "7";
   command_line.AppendSwitch("--enable-logging");
   command_line.AppendSwitch("--v=1");
 
@@ -96,9 +102,12 @@ TEST_F(CrashKeysTest, IgnoreBoringFlags) {
   command_line.AppendSwitch("--vvv");
   command_line.AppendSwitch("--enable-multi-profiles");
   command_line.AppendSwitch("--device-management-url=https://foo/bar");
+  command_line.AppendSwitch(
+      base::StrCat({"--", switches::kGpuPreferences, "=ABC123"}));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   command_line.AppendSwitch("--user-data-dir=/tmp");
   command_line.AppendSwitch("--default-wallpaper-small=test.png");
+  expected_num_switches = "9";
 #endif
 
   crash_keys::SetCrashKeysFromCommandLine(command_line);
@@ -108,5 +117,85 @@ TEST_F(CrashKeysTest, IgnoreBoringFlags) {
   EXPECT_EQ("--enable-multi-profiles", GetCrashKeyValue("switch-3"));
   EXPECT_EQ("--device-management-url=https://foo/bar",
             GetCrashKeyValue("switch-4"));
+  EXPECT_EQ(expected_num_switches, GetCrashKeyValue("num-switches"));
   EXPECT_TRUE(GetCrashKeyValue("switch-5").empty());
 }
+
+#if defined(OS_CHROMEOS)
+TEST_F(CrashKeysTest, EnabledDisabledFeaturesFlags) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.InitFromArgv(
+      {"program_name", "--example",
+       "--enable-features=LongString,WhichDoesn't,Fit,In64Characters,ButFitsIn,"
+       "120Characters,SoWePutIt,InItsOwnCrashKey",
+       "--unrelated-flag=23", "--disable-features=ADisabledFeaturesString",
+       "--more-example=yes"});
+
+  crash_keys::SetCrashKeysFromCommandLine(command_line);
+
+  EXPECT_EQ(
+      "LongString,WhichDoesn't,Fit,In64Characters,ButFitsIn,"
+      "120Characters,SoWePutIt,InItsOwnCrashKey",
+      GetCrashKeyValue("commandline-enabled-features"));
+  EXPECT_EQ("ADisabledFeaturesString",
+            GetCrashKeyValue("commandline-disabled-features"));
+
+  // Unrelated flags are not affected by the enable-features extraction.
+  EXPECT_EQ("--example", GetCrashKeyValue("switch-1"));
+  EXPECT_EQ("--unrelated-flag=23", GetCrashKeyValue("switch-2"));
+  EXPECT_EQ("--more-example=yes", GetCrashKeyValue("switch-3"));
+  // --enable-features and --disable-features are still counted in num-switches.
+  EXPECT_EQ("5", GetCrashKeyValue("num-switches"));
+}
+
+TEST_F(CrashKeysTest, EnabledDisabledFeatures_MultipleFlags) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.InitFromArgv({"program_name",
+                             "--enable-features=FeatureOne,FeatureTwo",
+                             "--disable-features=FeatureThree",
+                             "--enable-features=FeatureFour,FeatureFive",
+                             "--disable-features=FeatureSix,FeatureSeven"});
+
+  crash_keys::SetCrashKeysFromCommandLine(command_line);
+
+  EXPECT_EQ("FeatureFour,FeatureFive",
+            GetCrashKeyValue("commandline-enabled-features"));
+  EXPECT_EQ("FeatureSix,FeatureSeven",
+            GetCrashKeyValue("commandline-disabled-features"));
+}
+
+TEST_F(CrashKeysTest, EnabledDisabledFeatures_MultipleParses) {
+  {
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.InitFromArgv({"program_name",
+                               "--enable-features=OriginalEnable",
+                               "--disable-features=OriginalDisable"});
+    crash_keys::SetCrashKeysFromCommandLine(command_line);
+    EXPECT_EQ("OriginalEnable",
+              GetCrashKeyValue("commandline-enabled-features"));
+    EXPECT_EQ("OriginalDisable",
+              GetCrashKeyValue("commandline-disabled-features"));
+  }
+
+  // Parse a command line with no enable-features or disable-features flags.
+  {
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.InitFromArgv(
+        {"program_name", "--enable-logging", "--type=renderer"});
+    crash_keys::SetCrashKeysFromCommandLine(command_line);
+    EXPECT_EQ("", GetCrashKeyValue("commandline-enabled-features"));
+    EXPECT_EQ("", GetCrashKeyValue("commandline-disabled-features"));
+  }
+
+  // Parse a new command line with enable-features or disable-features flags.
+  {
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.InitFromArgv({"program_name", "--enable-features=NewEnable",
+                               "--disable-features=NewDisable"});
+    crash_keys::SetCrashKeysFromCommandLine(command_line);
+    EXPECT_EQ("NewEnable", GetCrashKeyValue("commandline-enabled-features"));
+    EXPECT_EQ("NewDisable", GetCrashKeyValue("commandline-disabled-features"));
+  }
+}
+
+#endif  // defined(OS_CHROMEOS)
