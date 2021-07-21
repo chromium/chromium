@@ -136,6 +136,7 @@ class SiteInstanceTest : public testing::Test {
     old_browser_client_ = SetBrowserClientForTesting(&browser_client_);
     RenderProcessHostImpl::set_render_process_host_factory_for_testing(
         &rph_factory_);
+    SiteIsolationPolicy::DisableFlagCachingForTesting();
   }
 
   void TearDown() override {

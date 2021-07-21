@@ -71,6 +71,10 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // startup.
   static void ApplyGlobalIsolatedOrigins();
 
+  // Forces other methods in this class to reread flag values instead of using
+  // their cached value.
+  static void DisableFlagCachingForTesting();
+
  private:
   SiteIsolationPolicy();  // Not instantiable.
 

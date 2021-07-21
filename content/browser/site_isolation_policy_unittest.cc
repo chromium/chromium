@@ -25,6 +25,7 @@ TEST(SiteIsolationPolicyTest, DisableSiteIsolationSwitch) {
     return;
   }
 
+  SiteIsolationPolicy::DisableFlagCachingForTesting();
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
   command_line->AppendSwitch(switches::kDisableSiteIsolation);
