@@ -1275,7 +1275,6 @@ try_.chromium_linux_builder(
 
 try_.chromium_linux_builder(
     name = "linux-rel-orchestrator",
-    branch_selector = branches.STANDARD_MILESTONE,
     builderless = False,
     cores = 2,
     executable = "recipe:chromium/orchestrator",
@@ -1292,7 +1291,6 @@ try_.chromium_linux_builder(
 
 try_.chromium_linux_builder(
     name = "linux-rel-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
     builderless = False,
     cores = None,
     executable = "recipe:chromium/compilator",
