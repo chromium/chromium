@@ -271,14 +271,14 @@ TEST_F(BluetoothUtilsTest, TestUiSurfaceDisplayedMetric) {
       "Bluetooth.ChromeOS.UiSurfaceDisplayed",
       BluetoothUiSurface::kSettingsDeviceListSubpage, 1);
 
-  RecordUiSurfaceDisplayed(BluetoothUiSurface::kSettingsDeviceSubpage);
+  RecordUiSurfaceDisplayed(BluetoothUiSurface::kSettingsDeviceDetailSubpage);
 
   histogram_tester.ExpectBucketCount(
       "Bluetooth.ChromeOS.UiSurfaceDisplayed",
       BluetoothUiSurface::kSettingsDeviceListSubpage, 1);
-  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.UiSurfaceDisplayed",
-                                     BluetoothUiSurface::kSettingsDeviceSubpage,
-                                     1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.UiSurfaceDisplayed",
+      BluetoothUiSurface::kSettingsDeviceDetailSubpage, 1);
 }
 
 }  // namespace device

@@ -18,6 +18,7 @@ import {Polymer, html, flush} from '//resources/polymer/v3_0/polymer/polymer_bun
 
 import '//resources/cr_components/chromeos/bluetooth/bluetooth_dialog.m.js';
 import {CrScrollableBehavior} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
+import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from '//resources/cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
@@ -294,6 +295,8 @@ Polymer({
 
     this.addWindowFocusEventListeners_();
 
+    recordBluetoothUiSurfaceMetrics(
+        BluetoothUiSurface.SETTINGS_DEVICE_LIST_SUBPAGE);
     this.attemptDeepLink().then(result => {
       if (!result.deepLinkShown && result.pendingSettingId) {
         // Store any deep link settingId that wasn't shown so we can try again
@@ -601,6 +604,7 @@ Polymer({
     // Call flush so that the dialog gets sized correctly before it is opened.
     flush();
     this.$.deviceDialog.open();
+    recordBluetoothUiSurfaceMetrics(BluetoothUiSurface.SETTINGS_PAIRING_DIALOG);
     this.dialogShown_ = true;
   },
 

@@ -5,12 +5,21 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
+import("../os_cr_components.gni")
 
 assert(is_chromeos, "Bluetooth dialog is Chrome OS only.")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  deps = [ ":bluetooth_dialog.m" ]
+  deps = [
+    ":bluetooth_dialog.m",
+    ":bluetooth_metrics_utils",
+  ]
+}
+
+js_library("bluetooth_metrics_utils") {
+  externs_list =
+      chrome_extension_public_externs + [ "$externs_path/metrics_private.js" ]
 }
 
 js_library("bluetooth_dialog.m") {

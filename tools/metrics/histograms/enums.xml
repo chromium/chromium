@@ -8073,7 +8073,7 @@ Called by update_bad_message_reasons.py.-->
 
 <enum name="BluetoothUiSurface">
   <int value="0" label="Settings - device list subpage"/>
-  <int value="1" label="Settings - device subpage"/>
+  <int value="1" label="Settings - device detail subpage"/>
   <int value="2" label="Settings - pairing dialog"/>
   <int value="3" label="Bluetooth Quick Settings"/>
   <int value="4" label="Standalone Pairing dialog"/>

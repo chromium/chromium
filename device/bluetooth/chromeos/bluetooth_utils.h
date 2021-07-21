@@ -54,7 +54,7 @@ enum class ConnectionFailureReason {
 // change one without changing the other).
 enum class BluetoothUiSurface {
   kSettingsDeviceListSubpage = 0,
-  kSettingsDeviceSubpage = 1,
+  kSettingsDeviceDetailSubpage = 1,
   kSettingsPairingDialog = 2,
   kBluetoothQuickSettings = 3,
   kStandalonePairingDialog = 4,
