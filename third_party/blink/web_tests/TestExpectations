@@ -4028,6 +4028,7 @@ virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-flex-trac
 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-002.html [ Failure ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-003.html [ Failure ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-intrinsic-size-with-orthogonal-items.html [ Failure ]
+virtual/layout-ng-grid/external/wpt/css/css-grid/grid-within-flexbox-indefinite.html [ Failure ]
 virtual/layout-ng-grid/external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-018.html [ Failure ]
 virtual/layout-ng-grid/external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-028.html [ Failure ]
 virtual/layout-ng-grid/external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-029.html [ Failure ]

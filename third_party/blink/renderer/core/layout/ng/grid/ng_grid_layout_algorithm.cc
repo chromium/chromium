@@ -261,11 +261,6 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
       ConstraintSpace(), container_style, BorderPadding(), intrinsic_block_size,
       border_box_size_.inline_size);
 
-  const bool depends_on_block_constraints =
-      (container_style.RowGap() &&
-       container_style.RowGap()->IsPercentOrCalc()) ||
-      row_track_collection.DependsOnAvailableSize();
-
   if (grid_available_size_.block_size == kIndefiniteSize) {
     const LayoutUnit resolved_available_block_size =
         (block_size - BorderScrollbarPadding().BlockSum())
@@ -284,7 +279,28 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
     // If we have any rows, gaps which will resolve differently if we have a
     // definite |grid_available_size_| re-compute the grid using the
     // |block_size| calculated above.
-    if (depends_on_block_constraints)
+    bool should_recompute_grid =
+        (container_style.RowGap() &&
+         container_style.RowGap()->IsPercentOrCalc()) ||
+        row_track_collection.DependsOnAvailableSize();
+
+    // If we are a flex-item, we may have our initial block-size forced to be
+    // indefinite, however grid layout always re-computes the grid using the
+    // final "used" block-size.
+    // We can detect this case by checking if computing our block-size (with an
+    // indefinite intrinsic size) is definite.
+    //
+    // TODO(layout-dev): A small optimization here would be to do this only if
+    // we have 'auto' tracks which fill the remaining available space.
+    if (ConstraintSpace().IsInitialBlockSizeIndefinite()) {
+      should_recompute_grid |=
+          ComputeBlockSizeForFragment(
+              ConstraintSpace(), container_style, BorderPadding(),
+              /* intrinsic_block_size */ kIndefiniteSize,
+              border_box_size_.inline_size) != kIndefiniteSize;
+    }
+
+    if (should_recompute_grid)
       ComputeGrid();
   }
 
