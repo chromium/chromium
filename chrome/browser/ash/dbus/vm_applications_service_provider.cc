@@ -106,18 +106,8 @@ void VmApplicationsServiceProvider::UpdateApplicationList(
   }
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  // Borealis checks Allowed() rather than Enabled() as we need to update the
-  // borealis applications list before it is considered Enabled (i.e. failure to
-  // update the list implies failure to enable).
-  if (crostini::CrostiniFeatures::Get()->IsEnabled(profile) ||
-      plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile) ||
-      borealis::BorealisService::GetForProfile(profile)
-          ->Features()
-          .IsAllowed()) {
-    auto* registry_service =
-        guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
-    registry_service->UpdateApplicationList(request);
-  }
+  guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile)
+      ->UpdateApplicationList(request);
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
@@ -171,10 +161,8 @@ void VmApplicationsServiceProvider::UpdateMimeTypes(
   }
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  if (crostini::CrostiniFeatures::Get()->IsEnabled(profile)) {
-    guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile)
-        ->UpdateMimeTypes(request);
-  }
+  guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile)
+      ->UpdateMimeTypes(request);
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
