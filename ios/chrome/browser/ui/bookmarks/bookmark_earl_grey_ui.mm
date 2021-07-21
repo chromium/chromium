@@ -460,9 +460,11 @@ id<GREYMatcher> SearchIconButton() {
 - (void)verifyEmptyState {
   [self verifyEmptyBackgroundAppears];
 
-  // TODO(crbug.com/1126982): Fix the search bar issue on iOS 12.4.
   // The search bar should not be visible when the illustrated empty state is
   // shown.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityTrait(
+                                          UIAccessibilityTraitSearchField)]
+      assertWithMatcher:grey_nil()];
 }
 
 - (void)verifyBookmarkFolderIsSeen:(NSString*)bookmarkFolder {
