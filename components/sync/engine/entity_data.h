@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_SYNC_ENGINE_ENTITY_DATA_H_
 #define COMPONENTS_SYNC_ENGINE_ENTITY_DATA_H_
 
+#include <iosfwd>
 #include <memory>
 #include <string>
 
 #include "base/macros.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -19,6 +19,10 @@
 // to implement new datatypes, so components/sync/engine can't be hidden while
 // this file lives there. Consider moving to components/sync/protocol or
 // elsewhere.
+
+namespace base {
+class DictionaryValue;
+}
 
 namespace syncer {
 

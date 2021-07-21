@@ -9,9 +9,9 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "base/values.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
