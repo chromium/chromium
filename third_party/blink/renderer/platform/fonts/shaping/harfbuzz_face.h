@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/harfbuzz-ng/utils/hb_scoped.h"
 
 #include <hb.h>
 
@@ -72,7 +73,7 @@ class HarfBuzzFace : public RefCounted<HarfBuzzFace> {
  private:
   HarfBuzzFace(FontPlatformData*, uint64_t);
 
-  hb_face_t* CreateFace();
+  HbScoped<hb_face_t> CreateFace();
   void PrepareHarfBuzzFontData();
 
   FontPlatformData* platform_data_;
