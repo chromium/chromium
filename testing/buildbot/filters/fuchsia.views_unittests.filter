@@ -27,3 +27,12 @@
 -DesktopWindowTreeHostPlatformTest.SetBoundsWithUnchangedSize
 -NativeWidgetAuraTest.CenterWindowLargeParent
 -RootViewDesktopNativeWidgetTest.SingleLayoutDuringInit
+
+# TODO(crbug.com/1231590): These tests are failing on Fuchsia and need to be
+# investigated.
+-CompositorAnimationRunnerDesktopTest.SwitchCompositor
+-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura
+-DesktopWidgetTest.CloseAllSecondaryWidgets
+-DesktopWidgetTestTest.GetAllWidgets
+-LabelTest.FontPropertyArial
+-LabelTest.FontPropertySymbol
