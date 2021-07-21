@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
+import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
 import android.view.View;
 import android.widget.ImageView;
@@ -45,11 +46,20 @@ class ContinuousSearchListViewBinder {
      * Binds properties related to an individual item within the RecyclerView.
      */
     static void bindListItem(PropertyModel model, View view, PropertyKey propertyKey) {
-        ChipView chipView = view.findViewById(R.id.csn_chip);
+        ContinuousSearchChipView chipView = view.findViewById(R.id.csn_chip);
+        boolean showResultTitle = model.get(ListItemProperties.SHOW_RESULT_TITLE);
 
-        if (ListItemProperties.URL == propertyKey) {
+        if (ListItemProperties.SHOW_RESULT_TITLE == propertyKey && showResultTitle) {
+            chipView.initTwoLineChipView();
+        } else if (ListItemProperties.LABEL == propertyKey && showResultTitle) {
+            assert chipView.twoLineChipViewInitialized();
+            setupTextView(chipView.getPrimaryTextView(), model.get(ListItemProperties.LABEL),
+                    view.getResources().getDimensionPixelSize(R.dimen.csn_chip_text_max_width),
+                    TruncateAt.END);
+        } else if (ListItemProperties.URL == propertyKey) {
             GURL url = model.get(ListItemProperties.URL);
-            TextView textView = chipView.getPrimaryTextView();
+            TextView textView = showResultTitle ? chipView.getSecondaryTextView()
+                                                : chipView.getPrimaryTextView();
 
             String safeUrl = "";
             if (url != null) {
@@ -60,9 +70,9 @@ class ContinuousSearchListViewBinder {
                 safeUrl = UrlFormatter.formatUrlForSecurityDisplay(
                         url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
             }
-            textView.setEllipsize(TruncateAt.START);
-            textView.setTextDirection(View.TEXT_DIRECTION_LTR);
-            textView.setText(safeUrl);
+            setupTextView(textView, safeUrl,
+                    view.getResources().getDimensionPixelSize(R.dimen.csn_chip_text_max_width),
+                    TruncateAt.START);
         } else if (ListItemProperties.IS_SELECTED == propertyKey) {
             setBorder(chipView, model);
         } else if (ListItemProperties.BORDER_COLOR == propertyKey) {
@@ -74,7 +84,19 @@ class ContinuousSearchListViewBinder {
         } else if (ListItemProperties.PRIMARY_TEXT_STYLE == propertyKey) {
             ApiCompatibilityUtils.setTextAppearance(chipView.getPrimaryTextView(),
                     model.get(ListItemProperties.PRIMARY_TEXT_STYLE));
+        } else if (ListItemProperties.SECONDARY_TEXT_STYLE == propertyKey) {
+            ApiCompatibilityUtils.setTextAppearance(chipView.getSecondaryTextView(),
+                    model.get(ListItemProperties.SECONDARY_TEXT_STYLE));
         }
+    }
+
+    private static void setupTextView(
+            TextView textView, String text, int maxWidth, TextUtils.TruncateAt truncateAt) {
+        textView.setEllipsize(truncateAt);
+        textView.setMaxLines(1);
+        textView.setTextDirection(View.TEXT_DIRECTION_LTR);
+        textView.setMaxWidth(maxWidth);
+        textView.setText(text);
     }
 
     private static void setBorder(ChipView chipView, PropertyModel model) {

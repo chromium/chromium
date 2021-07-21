@@ -117,8 +117,10 @@ public class ContinuousSearchListCoordinator {
         private final int mSidePaddingPx;
 
         public SpaceItemDecoration(Resources resources) {
-            mChipSpacingPx = (int) resources.getDimensionPixelSize(R.dimen.chip_list_chip_spacing);
-            mSidePaddingPx = (int) resources.getDimensionPixelSize(R.dimen.chip_list_side_padding);
+            mChipSpacingPx =
+                    (int) resources.getDimensionPixelSize(R.dimen.csn_chip_list_chip_spacing);
+            mSidePaddingPx =
+                    (int) resources.getDimensionPixelSize(R.dimen.csn_chip_list_side_padding);
         }
 
         @Override

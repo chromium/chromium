@@ -45,6 +45,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                                               ThemeColorProvider.ThemeColorObserver {
     @VisibleForTesting
     static final String TRIGGER_MODE_PARAM = "trigger_mode";
+    static final String SHOW_RESULT_TITLE_PARAM = "show_result_title";
 
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ModelList mModelList;
@@ -215,6 +216,11 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                 ChromeFeatureList.CONTINUOUS_SEARCH, TRIGGER_MODE_PARAM, TriggerMode.ALWAYS);
     }
 
+    private boolean shouldShowResultTitle() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.CONTINUOUS_SEARCH, SHOW_RESULT_TITLE_PARAM, false);
+    }
+
     /**
      * Generates the {@link PropertyModel} for the provider.
      * @param label     Provider label text. Can be null.
@@ -254,6 +260,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                 getBackgroundColorForParentBackgroundColor(mThemeColorProvider.getThemeColor());
         boolean useDarkColors = shouldUseDarkElementColors(backgroundColor);
         return new PropertyModel.Builder(ListItemProperties.ALL_KEYS)
+                .with(ListItemProperties.SHOW_RESULT_TITLE, shouldShowResultTitle())
                 .with(ListItemProperties.LABEL, text)
                 .with(ListItemProperties.URL, url)
                 .with(ListItemProperties.IS_SELECTED, false)
@@ -266,6 +273,9 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                 .with(ListItemProperties.PRIMARY_TEXT_STYLE,
                         useDarkColors ? R.style.TextAppearance_ContinuousNavigationChipText_Dark
                                       : R.style.TextAppearance_ContinuousNavigationChipText_Light)
+                .with(ListItemProperties.SECONDARY_TEXT_STYLE,
+                        useDarkColors ? R.style.TextAppearance_ContinuousNavigationChipHint_Dark
+                                      : R.style.TextAppearance_ContinuousNavigationChipHint_Light)
                 .build();
     }
 
@@ -358,6 +368,9 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                 listItem.model.set(ListItemProperties.PRIMARY_TEXT_STYLE,
                         useDarkColors ? R.style.TextAppearance_ContinuousNavigationChipText_Dark
                                       : R.style.TextAppearance_ContinuousNavigationChipText_Light);
+                listItem.model.set(ListItemProperties.SECONDARY_TEXT_STYLE,
+                        useDarkColors ? R.style.TextAppearance_ContinuousNavigationChipHint_Dark
+                                      : R.style.TextAppearance_ContinuousNavigationChipHint_Light);
                 listItem.model.set(ListItemProperties.BORDER_COLOR,
                         useDarkColors ? getColor(R.color.default_icon_color_dark)
                                       : getColor(R.color.default_icon_color_light));
