@@ -84,7 +84,10 @@ class FakeMBW(mb.MetaBuildWrapper):
     return self.sep.join(comps)
 
   def ReadFile(self, path):
-    return self.files[self._AbsPath(path)]
+    try:
+      return self.files[self._AbsPath(path)]
+    except KeyError:
+      raise IOError('%s not found' % path)
 
   def WriteFile(self, path, contents, force_verbose=False):
     if self.args.dryrun or self.args.verbose or force_verbose:
@@ -156,32 +159,33 @@ TEST_CONFIG = """\
     'fake_builder_group': {
       'fake_builder': 'rel_bot',
       'fake_debug_builder': 'debug_goma',
-      'fake_args_bot': '//build/args/bots/fake_builder_group/fake_args_bot.gn',
+      'fake_args_bot': 'fake_args_bot',
       'fake_multi_phase': { 'phase_1': 'phase_1', 'phase_2': 'phase_2'},
       'fake_args_file': 'args_file_goma',
       'fake_ios_error': 'ios_error',
     },
   },
   'configs': {
-    'args_file_goma': ['args_file', 'goma'],
+    'args_file_goma': ['fake_args_bot', 'goma'],
+    'fake_args_bot': ['fake_args_bot'],
     'rel_bot': ['rel', 'goma', 'fake_feature1'],
     'debug_goma': ['debug', 'goma'],
-    'phase_1': ['phase_1'],
-    'phase_2': ['phase_2'],
+    'phase_1': ['rel', 'phase_1'],
+    'phase_2': ['rel', 'phase_2'],
     'ios_error': ['error'],
   },
   'mixins': {
     'error': {
       'gn_args': 'error',
     },
+    'fake_args_bot': {
+      'args_file': '//build/args/bots/fake_builder_group/fake_args_bot.gn',
+    },
     'fake_feature1': {
       'gn_args': 'enable_doom_melon=true',
     },
     'goma': {
       'gn_args': 'use_goma=true',
-    },
-    'args_file': {
-      'args_file': '//build/args/fake.gn',
     },
     'phase_1': {
       'gn_args': 'phase=1',
@@ -190,7 +194,7 @@ TEST_CONFIG = """\
       'gn_args': 'phase=2',
     },
     'rel': {
-      'gn_args': 'is_debug=false',
+      'gn_args': 'is_debug=false dcheck_always_on=false',
     },
     'debug': {
       'gn_args': 'is_debug=true',
@@ -302,7 +306,7 @@ class UnitTest(unittest.TestCase):
       }''')
     mbw.files.setdefault(
         mbw.ToAbsPath('//build/args/bots/fake_builder_group/fake_args_bot.gn'),
-        'is_debug = false\n')
+        'is_debug = false\ndcheck_always_on=false\n')
     mbw.files.setdefault(mbw.ToAbsPath('//tools/mb/rts_banned_suites.json'),
                          '{}')
     if files:
@@ -470,7 +474,7 @@ class UnitTest(unittest.TestCase):
 
     self.assertEqual(
         mbw.files['/fake_src/out/Debug/args.gn'],
-        ('import("//build/args/fake.gn")\n'
+        ('import("//build/args/bots/fake_builder_group/fake_args_bot.gn")\n'
          'use_goma = true\n'))
 
   def test_gen_args_file_twice(self):
@@ -849,9 +853,11 @@ class UnitTest(unittest.TestCase):
                     'use_goma = true\n'))
 
   def test_lookup_goma_dir_expansion(self):
-    self.check(['lookup', '-c', 'rel_bot', '-g', '/foo'], ret=0,
+    self.check(['lookup', '-c', 'rel_bot', '-g', '/foo'],
+               ret=0,
                out=('\n'
                     'Writing """\\\n'
+                    'dcheck_always_on = false\n'
                     'enable_doom_melon = true\n'
                     'goma_dir = "/foo"\n'
                     'is_debug = false\n'
@@ -901,10 +907,14 @@ class UnitTest(unittest.TestCase):
           'enable_antidoom_banana = true\n'
         )
     }
-    self.check(['lookup', '-m', 'fake_builder_group', '-b', 'fake_args_file',
-                '--recursive'], files=files, ret=0,
-               out=('enable_antidoom_banana = true\n'
-                    'enable_doom_melon = true\n'
+    self.check([
+        'lookup', '-m', 'fake_builder_group', '-b', 'fake_args_file',
+        '--recursive'
+    ],
+               files=files,
+               ret=0,
+               out=('dcheck_always_on = false\n'
+                    'is_debug = false\n'
                     'use_goma = true\n'))
 
   def test_train(self):

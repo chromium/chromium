@@ -137,6 +137,28 @@ def CheckDuplicateConfigs(errs, config_pool, mixin_pool, grouping,
           'configuration value.' % (', '.join(sorted('%r' % val for val in v))))
 
 
+def CheckDebugDCheckOrOfficial(errs, gn_args, builder_group, builder, phase):
+  # TODO(crbug.com/1227171): Figure out how to check this properly
+  # for simplechrome-based bots.
+  if gn_args.get('is_chromeos_device'):
+    return
+
+  if ((gn_args.get('is_debug') == True)
+      or (gn_args.get('is_official_build') == True)
+      or ('dcheck_always_on' in gn_args)):
+    return
+
+  if phase:
+    errs.append('Phase "%s" of builder "%s" on %s did not specify '
+                'one of is_debug=true, is_official_build=true, or '
+                'dcheck_always_on=(true|false).' %
+                (phase, builder, builder_group))
+  else:
+    errs.append('Builder "%s" on %s did not specify '
+                'one of is_debug=true, is_official_build=true, or '
+                'dcheck_always_on=(true|false).' % (builder, builder_group))
+
+
 def CheckExpectations(mbw, jsonish_blob, expectations_dir):
   """Checks that the expectation files match the config file.
 

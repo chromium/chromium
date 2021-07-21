@@ -153,23 +153,12 @@ class MetaBuildWrapper(object):
                         help='optional phase name (used when builders '
                              'do multiple compiles with different '
                              'arguments in a single build)')
-      subp.add_argument('-f',
-                        '--config-file',
-                        metavar='PATH',
-                        help=('path to config file '
-                              '(default is mb_config.pyl'))
       subp.add_argument('-i', '--isolate-map-file', metavar='PATH',
                         help='path to isolate map file '
                              '(default is %(default)s)',
                         default=[],
                         action='append',
                         dest='isolate_map_files')
-      subp.add_argument('-g', '--goma-dir',
-                        help='path to goma directory')
-      subp.add_argument('--android-version-code',
-                        help='Sets GN arg android_default_version_code')
-      subp.add_argument('--android-version-name',
-                        help='Sets GN arg android_default_version_name')
       subp.add_argument('-n', '--dryrun', action='store_true',
                         help='Do a dry run (i.e., do nothing, just print '
                              'the commands that will run)')
@@ -177,6 +166,21 @@ class MetaBuildWrapper(object):
                         help='verbose logging')
       subp.add_argument('--root', help='Path to GN source root')
       subp.add_argument('--dotfile', help='Path to GN dotfile')
+      AddExpansionOptions(subp)
+
+    def AddExpansionOptions(subp):
+      # These are the args needed to expand a config file into the full
+      # parsed dicts of GN args.
+      subp.add_argument('-f',
+                        '--config-file',
+                        metavar='PATH',
+                        help=('path to config file '
+                              '(default is mb_config.pyl'))
+      subp.add_argument('-g', '--goma-dir', help='path to goma directory')
+      subp.add_argument('--android-version-code',
+                        help='Sets GN arg android_default_version_code')
+      subp.add_argument('--android-version-name',
+                        help='Sets GN arg android_default_version_name')
       subp.add_argument('--use-rts',
                         action='store_true',
                         default=False,
@@ -225,13 +229,7 @@ class MetaBuildWrapper(object):
     subp = subps.add_parser('export',
                             description='Print out the expanded configuration '
                             'for each builder as a JSON object.')
-    subp.add_argument('-f',
-                      '--config-file',
-                      metavar='PATH',
-                      help=('path to config file '
-                            '(default is mb_config.pyl'))
-    subp.add_argument('-g', '--goma-dir',
-                      help='path to goma directory')
+    AddExpansionOptions(subp)
     subp.set_defaults(func=self.CmdExport)
 
     subp = subps.add_parser('get-swarming-command',
@@ -390,8 +388,7 @@ class MetaBuildWrapper(object):
 
     subp = subps.add_parser('validate',
                             description='Validate the config file.')
-    subp.add_argument('-f', '--config-file', metavar='PATH',
-                      help='path to config file (default is %(default)s)')
+    AddExpansionOptions(subp)
     subp.add_argument('--expectations-dir',
                       metavar='PATH',
                       help='path to dir containing expectation files')
@@ -530,7 +527,7 @@ class MetaBuildWrapper(object):
 
   def CmdLookup(self):
     vals = self.Lookup()
-    gn_args = self.GNArgs(vals, expand_imports=self.args.recursive)
+    _, gn_args = self.GNArgs(vals, expand_imports=self.args.recursive)
     if self.args.quiet or self.args.recursive:
       self.Print(gn_args, end='')
     else:
@@ -850,6 +847,8 @@ class MetaBuildWrapper(object):
     validation.CheckDuplicateConfigs(errs, self.configs, self.mixins,
                                      self.builder_groups, FlattenConfig)
 
+    self._ValidateEach(errs, validation.CheckDebugDCheckOrOfficial)
+
     if errs:
       raise MBErr(('mb config file %s has problems:\n  ' %
                    self.args.config_file) + '\n  '.join(errs))
@@ -865,6 +864,43 @@ class MetaBuildWrapper(object):
     if print_ok:
       self.Print('mb config file %s looks ok.' % self.args.config_file)
     return 0
+
+  def _ValidateEach(self, errs, validate):
+    """Checks a validate function against every builder config.
+
+    This loops over all the builders in the config file, invoking the
+    validate function against the full set of GN args. Any errors found
+    should be appended to the errs list passed in; the validation
+    function signature is
+
+        validate(errs:list, gn_args:dict, builder_group:str, builder:str,
+                 phase:(str|None))"""
+
+    for builder_group, builders in self.builder_groups.items():
+      for builder, config in builders.items():
+        if isinstance(config, dict):
+          for phase, phase_config in config.items():
+            vals = FlattenConfig(self.configs, self.mixins, phase_config)
+            if vals['gn_args'] == 'error':
+              continue
+            try:
+              parsed_gn_args, _ = self.GNArgs(vals, expand_imports=True)
+            except IOError:
+              # The builder must use an args file that was not checked out or
+              # generated, so we should just ignore it.
+              parsed_gn_args, _ = self.GNArgs(vals, expand_imports=False)
+            validate(errs, parsed_gn_args, builder_group, builder, phase)
+        else:
+          vals = FlattenConfig(self.configs, self.mixins, config)
+          if vals['gn_args'] == 'error':
+            continue
+          try:
+            parsed_gn_args, _ = self.GNArgs(vals, expand_imports=True)
+          except IOError:
+            # The builder must use an args file that was not checked out or
+            # generated, so we should just ignore it.
+            parsed_gn_args, _ = self.GNArgs(vals, expand_imports=False)
+          validate(errs, parsed_gn_args, builder_group, builder, phase=None)
 
   def GetConfig(self):
     build_dir = self.args.path
@@ -1056,7 +1092,7 @@ class MetaBuildWrapper(object):
       cmd = self.GNCmd('gen', build_dir, '--check')
     else:
       cmd = self.GNCmd('gen', build_dir)
-    gn_args = self.GNArgs(vals)
+    _, gn_args = self.GNArgs(vals)
     if compute_inputs_for_analyze:
       gn_args += ' compute_inputs_for_analyze=true'
 
@@ -1545,6 +1581,10 @@ class MetaBuildWrapper(object):
     return cmd + [path] + list(args)
 
   def GNArgs(self, vals, expand_imports=False):
+    """Returns the gn args from vals as a Python dict and a text string.
+
+    If expand_imports is true, any import() lines will be read in and
+    valuese them will be included."""
     gn_args = vals['gn_args']
 
     if self.args.goma_dir:
@@ -1578,7 +1618,7 @@ class MetaBuildWrapper(object):
     parsed_gn_args.update(gn_helpers.FromGNArgs(gn_args))
     args_gn_lines.append(gn_helpers.ToGNString(parsed_gn_args))
 
-    return '\n'.join(args_gn_lines)
+    return parsed_gn_args, '\n'.join(args_gn_lines)
 
   def GetSwarmingCommand(self, target, vals):
     isolate_map = self.ReadIsolateMap()
