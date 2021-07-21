@@ -90,7 +90,7 @@ SyntheticPointerAction::ForwardTouchOrMouseInputEvents(
             param.position().x(), param.position().y(), param.pointer_id(),
             param.key_modifiers(), param.width(), param.height(),
             param.rotation_angle(), param.force(), param.tangential_pressure(),
-            param.tilt_x(), param.tilt_y());
+            param.tilt_x(), param.tilt_y(), param.button());
         break;
       case SyntheticPointerActionParams::PointerActionType::RELEASE:
         synthetic_pointer_driver_->Release(param.pointer_id(), param.button(),

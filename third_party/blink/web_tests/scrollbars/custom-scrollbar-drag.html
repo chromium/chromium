@@ -74,14 +74,14 @@ var steps = new Promise((resolve, reject) => {
     if (next == STATES.length)
       resolve();
     else
-      mouseMoveTo(thumb_x, thumb_y(STATES[next]));
+      mouseMoveTo(thumb_x, thumb_y(STATES[next]), Buttons.LEFT);
   };
 });
 
 promise_test(async (t) => {
   await mouseMoveTo(thumb_x, thumb_y(STATES[0]));
   await mouseDownAt(thumb_x, thumb_y(STATES[0]));
-  await mouseMoveTo(thumb_x, thumb_y(STATES[1]));
+  await mouseMoveTo(thumb_x, thumb_y(STATES[1]), Buttons.LEFT);
   await steps;
 }, "Scroll offset responds correctly to thumb drags.");
 

@@ -1879,6 +1879,7 @@ TEST_F(SyntheticGestureControllerTest, PointerMouseAction) {
   param.set_pointer_action_type(
       SyntheticPointerActionParams::PointerActionType::PRESS);
   param.set_position(gfx::PointF(183, 239));
+  param.set_button(SyntheticPointerActionParams::Button::LEFT);
   params.PushPointerActionParams(param);
   gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
@@ -1951,6 +1952,7 @@ TEST_F(SyntheticGestureControllerTest, PointerPenAction) {
   // Second, send a pen press.
   param.set_pointer_action_type(
       SyntheticPointerActionParams::PointerActionType::PRESS);
+  param.set_button(SyntheticPointerActionParams::Button::LEFT);
   param.set_position(gfx::PointF(183, 239));
   params.PushPointerActionParams(param);
   gesture = std::make_unique<SyntheticPointerAction>(params);

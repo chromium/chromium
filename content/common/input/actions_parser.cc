@@ -15,23 +15,26 @@
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
 #include "ui/events/types/scroll_types.h"
 
+using Button = content::SyntheticPointerActionParams::Button;
+using PointerActionType =
+    content::SyntheticPointerActionParams::PointerActionType;
+
 namespace content {
 
 namespace {
 
-SyntheticPointerActionParams::PointerActionType ToSyntheticPointerActionType(
-    const std::string& action_type) {
+PointerActionType ToSyntheticPointerActionType(const std::string& action_type) {
   if (action_type == "pointerDown")
-    return SyntheticPointerActionParams::PointerActionType::PRESS;
+    return PointerActionType::PRESS;
   if (action_type == "pointerMove")
-    return SyntheticPointerActionParams::PointerActionType::MOVE;
+    return PointerActionType::MOVE;
   if (action_type == "pointerUp")
-    return SyntheticPointerActionParams::PointerActionType::RELEASE;
+    return PointerActionType::RELEASE;
   if (action_type == "pointerLeave")
-    return SyntheticPointerActionParams::PointerActionType::LEAVE;
+    return PointerActionType::LEAVE;
   if (action_type == "pause")
-    return SyntheticPointerActionParams::PointerActionType::IDLE;
-  return SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED;
+    return PointerActionType::IDLE;
+  return PointerActionType::NOT_INITIALIZED;
 }
 
 content::mojom::GestureSourceType ToSyntheticGestureSourceType(
@@ -45,19 +48,19 @@ content::mojom::GestureSourceType ToSyntheticGestureSourceType(
   return content::mojom::GestureSourceType::kDefaultInput;
 }
 
-SyntheticPointerActionParams::Button ToSyntheticMouseButton(int button) {
+Button ToSyntheticMouseButton(int button) {
   if (button == 0)
-    return SyntheticPointerActionParams::Button::LEFT;
+    return Button::LEFT;
   if (button == 1)
-    return SyntheticPointerActionParams::Button::MIDDLE;
+    return Button::MIDDLE;
   if (button == 2)
-    return SyntheticPointerActionParams::Button::RIGHT;
+    return Button::RIGHT;
   if (button == 3)
-    return SyntheticPointerActionParams::Button::BACK;
+    return Button::BACK;
   if (button == 4)
-    return SyntheticPointerActionParams::Button::FORWARD;
+    return Button::FORWARD;
   NOTREACHED() << "Unexpected button";
-  return SyntheticPointerActionParams::Button();
+  return Button();
 }
 
 int ToKeyModifiers(const std::string& key) {
@@ -136,7 +139,7 @@ bool ActionsParser::Parse() {
       if (index < pointer_action_list.size()) {
         param_list.push_back(pointer_action_list[index]);
         if (pointer_action_list[index].pointer_action_type() ==
-            SyntheticPointerActionParams::PointerActionType::IDLE) {
+            PointerActionType::IDLE) {
           size_t num_pause_frame = static_cast<size_t>(std::ceil(
               pointer_action_list[index].duration().InMilliseconds() /
               viz::BeginFrameArgs::DefaultInterval().InMilliseconds()));
@@ -149,8 +152,7 @@ bool ActionsParser::Parse() {
     for (size_t pause_index = 1; pause_index < longest_pause_frame;
          ++pause_index) {
       SyntheticPointerActionListParams::ParamList pause_param_list;
-      SyntheticPointerActionParams pause_action_param(
-          SyntheticPointerActionParams::PointerActionType::IDLE);
+      SyntheticPointerActionParams pause_action_param(PointerActionType::IDLE);
       for (size_t i = 0; i < param_list.size(); ++i) {
         pause_param_list.push_back(pause_action_param);
       }
@@ -476,18 +478,18 @@ bool ActionsParser::ParsePointerAction(
     return false;
   }
 
-  SyntheticPointerActionParams::PointerActionType pointer_action_type =
-      SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED;
+  PointerActionType pointer_action_type = PointerActionType::NOT_INITIALIZED;
   pointer_action_type = ToSyntheticPointerActionType(subtype);
-  if (pointer_action_type ==
-      SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED) {
+  if (pointer_action_type == PointerActionType::NOT_INITIALIZED) {
     error_message_ = base::StringPrintf(
         "actions[%zu].actions.name is an unsupported action name",
         action_index_);
     return false;
   }
 
-  int button_id = 0;
+  Button button = pointer_action_type == PointerActionType::MOVE
+                      ? Button::NO_BUTTON
+                      : Button::LEFT;
   const base::Value* button_id_value = action.FindKey("button");
   if (button_id_value) {
     if (!button_id_value->is_int()) {
@@ -495,15 +497,15 @@ bool ActionsParser::ParsePointerAction(
           "actions[%zu].actions.button is not an integer", action_index_);
       return false;
     }
-    button_id = button_id_value->GetInt();
+    int button_id = button_id_value->GetInt();
+    if (button_id < 0 || button_id > 4) {
+      error_message_ = base::StringPrintf(
+          "actions[%zu].actions.button is an unsupported button",
+          action_index_);
+      return false;
+    }
+    button = ToSyntheticMouseButton(button_id);
   }
-  if (button_id < 0 || button_id > 4) {
-    error_message_ = base::StringPrintf(
-        "actions[%zu].actions.button is an unsupported button", action_index_);
-    return false;
-  }
-  SyntheticPointerActionParams::Button button =
-      ToSyntheticMouseButton(button_id);
 
   std::string keys;
   const base::Value* keys_value = action.FindKey("keys");
@@ -633,8 +635,7 @@ bool ActionsParser::ParsePointerAction(
   }
 
   int duration = viz::BeginFrameArgs::DefaultInterval().InMilliseconds();
-  if (pointer_action_type ==
-          SyntheticPointerActionParams::PointerActionType::IDLE &&
+  if (pointer_action_type == PointerActionType::IDLE &&
       !GetPauseDuration(action, duration)) {
     return false;
   }
@@ -642,7 +643,7 @@ bool ActionsParser::ParsePointerAction(
   SyntheticPointerActionParams action_param(pointer_action_type);
   action_param.set_pointer_id(input_source_count_);
   switch (pointer_action_type) {
-    case SyntheticPointerActionParams::PointerActionType::PRESS:
+    case PointerActionType::PRESS:
       action_param.set_position(gfx::PointF(position_x, position_y));
       action_param.set_button(button);
       action_param.set_key_modifiers(key_modifiers);
@@ -654,7 +655,7 @@ bool ActionsParser::ParsePointerAction(
       action_param.set_tilt_y(tilt_y);
       action_param.set_rotation_angle(twist);
       break;
-    case SyntheticPointerActionParams::PointerActionType::MOVE:
+    case PointerActionType::MOVE:
       action_param.set_position(gfx::PointF(position_x, position_y));
       action_param.set_key_modifiers(key_modifiers);
       action_param.set_width(width);
@@ -664,17 +665,18 @@ bool ActionsParser::ParsePointerAction(
       action_param.set_tilt_x(tilt_x);
       action_param.set_tilt_y(tilt_y);
       action_param.set_rotation_angle(twist);
+      action_param.set_button(button);
       break;
-    case SyntheticPointerActionParams::PointerActionType::RELEASE:
+    case PointerActionType::RELEASE:
       action_param.set_button(button);
       action_param.set_key_modifiers(key_modifiers);
       break;
-    case SyntheticPointerActionParams::PointerActionType::IDLE:
+    case PointerActionType::IDLE:
       action_param.set_duration(base::TimeDelta::FromMilliseconds(duration));
       break;
-    case SyntheticPointerActionParams::PointerActionType::CANCEL:
-    case SyntheticPointerActionParams::PointerActionType::LEAVE:
-    case SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED:
+    case PointerActionType::CANCEL:
+    case PointerActionType::LEAVE:
+    case PointerActionType::NOT_INITIALIZED:
       break;
   }
   param_list.push_back(action_param);
@@ -685,11 +687,9 @@ bool ActionsParser::ParseNullAction(
     const base::Value& action,
     std::string subtype,
     SyntheticPointerActionListParams::ParamList& param_list) {
-  SyntheticPointerActionParams::PointerActionType pointer_action_type =
-      SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED;
+  PointerActionType pointer_action_type = PointerActionType::NOT_INITIALIZED;
   pointer_action_type = ToSyntheticPointerActionType(subtype);
-  if (pointer_action_type !=
-      SyntheticPointerActionParams::PointerActionType::IDLE) {
+  if (pointer_action_type != PointerActionType::IDLE) {
     error_message_ = base::StringPrintf(
         "actions[%zu].actions.name should only be pause", action_index_);
     return false;

@@ -44,7 +44,9 @@ class CONTENT_EXPORT SyntheticMouseDriver : public SyntheticPointerDriver {
             float force = 0.5,
             float tangential_pressure = 0.f,
             int tilt_x = 0,
-            int tilt_y = 0) override;
+            int tilt_y = 0,
+            SyntheticPointerActionParams::Button button =
+                SyntheticPointerActionParams::Button::NO_BUTTON) override;
   void Release(int index = 0,
                SyntheticPointerActionParams::Button button =
                    SyntheticPointerActionParams::Button::LEFT,

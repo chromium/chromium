@@ -35,7 +35,7 @@ window.onload = () => {
      // Scroll down
     for (var i = 0; i < 5; i++){
       y += asc_increments[i];
-      await mouseMoveTo(x, y);
+      await mouseMoveTo(x, y, Buttons.LEFT);
       const offset = onMacPlatform ? asc_offsets_mac[i] : asc_offsets[i];
       if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
         assert_approx_equals(window.scrollY, offset, 1,
@@ -49,7 +49,7 @@ window.onload = () => {
     // Scroll up
     for (var i = 0; i < 5; i++){
       y -= desc_increments[i];
-      await mouseMoveTo(x, y);
+      await mouseMoveTo(x, y, Buttons.LEFT);
       const offset = onMacPlatform ? desc_offsets_mac[i] : desc_offsets[i];
       if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
         assert_approx_equals(window.scrollY, offset, 1,

@@ -70,14 +70,26 @@ void SyntheticMouseDriver::Move(float x,
                                 float force,
                                 float tangential_pressure,
                                 int tilt_x,
-                                int tilt_y) {
+                                int tilt_y,
+                                SyntheticPointerActionParams::Button button) {
   DCHECK_EQ(index, 0);
+  int button_modifiers =
+      SyntheticPointerActionParams::GetWebMouseEventModifier(button);
   mouse_event_ = blink::SyntheticWebMouseEventBuilder::Build(
       blink::WebInputEvent::Type::kMouseMove, x, y,
-      key_modifiers | last_modifiers_, mouse_event_.pointer_type);
-  mouse_event_.button =
-      SyntheticPointerActionParams::GetWebMouseEventButtonFromModifier(
-          last_modifiers_);
+      button_modifiers | key_modifiers | last_modifiers_,
+      mouse_event_.pointer_type);
+  if (button != SyntheticPointerActionParams::Button::NO_BUTTON) {
+    // If the caller specified a pressed button for this move event, use that.
+    mouse_event_.button =
+        SyntheticPointerActionParams::GetWebMouseEventButton(button);
+  } else {
+    // Otherwise, infer pressed button from a previous press event (if any) in
+    // the same pointer action sequence.
+    mouse_event_.button =
+        SyntheticPointerActionParams::GetWebMouseEventButtonFromModifier(
+            last_modifiers_);
+  }
   mouse_event_.click_count = 0;
   mouse_event_.force =
       mouse_event_.button == blink::WebMouseEvent::Button::kNoButton ? 0

@@ -57,10 +57,10 @@ window.onload = () => {
     await mouseDownAt(x, y);
     assert_equals(standardDivFast.scrollTop, 0, "Mousedown on vertical scrollbar thumb is not expected to scroll.");
 
-    await mouseMoveTo(x, y-10);
+    await mouseMoveTo(x, y-10, Buttons.LEFT);
     assert_equals(standardDivFast.scrollTop, 0, "Vertical thumb drag beyond the track should not cause a scroll.");
 
-    await mouseMoveTo(x, y);
+    await mouseMoveTo(x, y, Buttons.LEFT);
     assert_equals(standardDivFast.scrollTop, 0, "Vertical thumb drag beyond the track and back should not cause a scroll.");
 
     await mouseUpAt(x, y);
@@ -84,7 +84,7 @@ window.onload = () => {
     // Scroll down
     for (var i = 0; i < 5; i++){
       y += asc_increments[i];
-      await mouseMoveTo(x, y);
+      await mouseMoveTo(x, y, Buttons.LEFT);
       // TODO(crbug.com/1009892): Sometimes there is 1px difference in threaded scrollbar scrolling mode.
       // Change assert_approx_equals(..., 1, ...) to assert_equals(...) when the bug is fixed.
       assert_approx_equals(standardDivFast.scrollTop, asc_offsets[i], 1, "Vertical thumb drag downwards did not scroll as expected at "+asc_increments[i]+" - ");
@@ -93,7 +93,7 @@ window.onload = () => {
     // Scroll up
     for (var i = 0; i < 5; i++){
       y -= desc_increments[i];
-      await mouseMoveTo(x, y);
+      await mouseMoveTo(x, y, Buttons.LEFT);
       // TODO(crbug.com/1009892): Ditto.
       assert_approx_equals(standardDivFast.scrollTop, desc_offsets[i], 1, "Vertical thumb drag upwards did not scroll as expected at "+desc_increments[i]+" - ");
     };

@@ -58,7 +58,8 @@ void SyntheticTouchDriver::Move(float x,
                                 float force,
                                 float tangential_pressure,
                                 int tilt_x,
-                                int tilt_y) {
+                                int tilt_y,
+                                SyntheticPointerActionParams::Button button) {
   DCHECK_GE(index, 0);
   DCHECK(pointer_id_map_.find(index) != pointer_id_map_.end());
   touch_event_.MovePoint(pointer_id_map_[index], x, y, width / 2.f,

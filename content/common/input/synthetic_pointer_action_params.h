@@ -65,6 +65,7 @@ struct CONTENT_EXPORT SyntheticPointerActionParams {
 
   void set_button(Button button) {
     DCHECK(pointer_action_type_ == PointerActionType::PRESS ||
+           pointer_action_type_ == PointerActionType::MOVE ||
            pointer_action_type_ == PointerActionType::RELEASE ||
            pointer_action_type_ == PointerActionType::CANCEL);
     button_ = button;
@@ -136,6 +137,7 @@ struct CONTENT_EXPORT SyntheticPointerActionParams {
 
   Button button() const {
     DCHECK(pointer_action_type_ == PointerActionType::PRESS ||
+           pointer_action_type_ == PointerActionType::MOVE ||
            pointer_action_type_ == PointerActionType::RELEASE ||
            pointer_action_type_ == PointerActionType::CANCEL);
     return button_;

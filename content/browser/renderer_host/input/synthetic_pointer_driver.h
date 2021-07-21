@@ -52,7 +52,9 @@ class CONTENT_EXPORT SyntheticPointerDriver {
                     float force = 1.f,
                     float tangential_pressure = 0.f,
                     int tilt_x = 0,
-                    int tilt_y = 0) = 0;
+                    int tilt_y = 0,
+                    SyntheticPointerActionParams::Button button =
+                        SyntheticPointerActionParams::Button::NO_BUTTON) = 0;
   virtual void Release(int index = 0,
                        SyntheticPointerActionParams::Button button =
                            SyntheticPointerActionParams::Button::LEFT,

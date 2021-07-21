@@ -263,6 +263,28 @@ const Buttons = (function() {
   }
 })();
 
+// Takes a value from the Buttons enum (above) and returns an integer suitable
+// for the "button" property in the gpuBenchmarking.pointerActionSequence API.
+// Keep in sync with ToSyntheticMouseButton in actions_parser.cc.
+function pointerActionButtonId(button_str) {
+  if (button_str === undefined)
+    return undefined;
+
+  switch (button_str) {
+    case Buttons.LEFT:
+      return 0;
+    case Buttons.MIDDLE:
+      return 1;
+    case Buttons.RIGHT:
+      return 2;
+    case Buttons.BACK:
+      return 3;
+    case Buttons.FORWARD:
+      return 4;
+  }
+  throw new Error("invalid button");
+}
+
 // Use this for speed to make gestures (effectively) instant. That is, finish
 // entirely within one Begin|Update|End triplet. This is in physical
 // pixels/second.
@@ -432,13 +454,14 @@ function pinchBy(scale, centerX, centerY, speed_in_pixels_s, gesture_source_type
 }
 
 
-function mouseMoveTo(xPosition, yPosition) {
+function mouseMoveTo(xPosition, yPosition, withButtonPressed) {
   return new Promise(function(resolve, reject) {
     if (window.chrome && chrome.gpuBenchmarking) {
       chrome.gpuBenchmarking.pointerActionSequence([
         {source: 'mouse',
          actions: [
-            { name: 'pointerMove', x: xPosition, y: yPosition },
+            { name: 'pointerMove', x: xPosition, y: yPosition,
+              button: pointerActionButtonId(withButtonPressed) },
       ]}], resolve);
     } else {
       reject('This test requires chrome.gpuBenchmarking');
