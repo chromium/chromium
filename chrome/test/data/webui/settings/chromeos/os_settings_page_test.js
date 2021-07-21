@@ -16,19 +16,21 @@ suite('OsSettingsPageTests', function() {
   /** @type {?OsSettingsPageElement} */
   let settingsPage = null;
 
+  /** @type {?SettingsPrefsElement} */
+  let prefElement = null;
+
   suiteSetup(async function() {
+    loadTimeData.overrideValues({
+      enableBluetoothRevamp: false,
+    });
+
     settings.Router.getInstance().navigateTo(settings.routes.BASIC);
     PolymerTest.clearBody();
 
-    const prefElement = document.createElement('settings-prefs');
+    prefElement = document.createElement('settings-prefs');
     document.body.appendChild(prefElement);
 
-    return CrSettingsPrefs.initialized.then(function() {
-      settingsPage = document.createElement('os-settings-page');
-      settingsPage.prefs = prefElement.prefs;
-      document.body.appendChild(settingsPage);
-      Polymer.dom.flush();
-    });
+    return CrSettingsPrefs.initialized;
   });
 
   teardown(function() {
@@ -37,16 +39,26 @@ suite('OsSettingsPageTests', function() {
     settings.Router.getInstance().resetRouteForTesting();
   });
 
+  function init() {
+    settingsPage = document.createElement('os-settings-page');
+    settingsPage.prefs = prefElement.prefs;
+    document.body.appendChild(settingsPage);
+    Polymer.dom.flush();
+  }
+
   test('Os Settings Page created', async () => {
+    init();
     assert(!!settingsPage);
   });
 
   test('Check settings-internet-page exists', async () => {
+    init();
     const settingsInternetPage = settingsPage.$$('settings-internet-page');
     assert(!!settingsInternetPage);
   });
 
   test('Check os-settings-printing-page exists', async () => {
+    init();
     const idleRender = settingsPage.$$('settings-idle-load');
     await idleRender.get();
     Polymer.dom.flush();
@@ -54,12 +66,35 @@ suite('OsSettingsPageTests', function() {
     assert(!!osSettingsPrintingPage);
   });
 
-  test('Check settings-bluetooth-page exists', async () => {
-    const settingsBluetoothPage = settingsPage.$$('settings-bluetooth-page');
-    assert(!!settingsBluetoothPage);
-  });
+  // TODO(crbug.com/1010321) Update this to check for absence of
+  // <os-settings-bluetooth-page> when it is created.
+  test(
+      'Check settings-bluetooth-page exists with' +
+          'enableBluetoothRevamp flag off',
+      async () => {
+        init();
+        const settingsBluetoothPage =
+            settingsPage.$$('settings-bluetooth-page');
+        assert(!!settingsBluetoothPage);
+      });
+
+  // TODO(crbug.com/1010321) Update this to check for existence of
+  // <os-settings-bluetooth-page> when it is created.
+  test(
+      'Check settings-bluetooth-page does not exist with' +
+          'enableBluetoothRevamp flag on',
+      async () => {
+        loadTimeData.overrideValues({
+          enableBluetoothRevamp: true,
+        });
+        init();
+        const settingsBluetoothPage =
+            settingsPage.$$('settings-bluetooth-page');
+        assertFalse(!!settingsBluetoothPage);
+      });
 
   test('Check os-settings-privacy-page exists', async () => {
+    init();
     settingsPage.isAccountManagementFlowsV2Enabled_ = false;
     const osSettingsPrivacyPage = settingsPage.$$('os-settings-privacy-page');
     assert(!!osSettingsPrivacyPage);
@@ -67,17 +102,20 @@ suite('OsSettingsPageTests', function() {
   });
 
   test('Check settings-multidevice-page exists', async () => {
+    init();
     const settingsMultidevicePage =
         settingsPage.$$('settings-multidevice-page');
     assert(!!settingsMultidevicePage);
   });
 
   test('Check os-settings-people-page exists', async () => {
+    init();
     const settingsPeoplePage = settingsPage.$$('os-settings-people-page');
     assert(!!settingsPeoplePage);
   });
 
   test('Check settings-date-time-page exists', async () => {
+    init();
     const idleRender = settingsPage.$$('settings-idle-load');
     await idleRender.get();
     Polymer.dom.flush();
@@ -86,17 +124,28 @@ suite('OsSettingsPageTests', function() {
   });
 
   test('Check os-settings-languages-section exists', async () => {
+    init();
+    const idleRender = settingsPage.$$('settings-idle-load');
+    assert(!!idleRender);
+    await idleRender.get();
+    Polymer.dom.flush();
     const osSettingsLangagesSection =
         settingsPage.$$('os-settings-languages-section');
     assert(!!osSettingsLangagesSection);
   });
 
   test('Check os-settings-a11y-page exists', async () => {
+    init();
+    const idleRender = settingsPage.$$('settings-idle-load');
+    assert(!!idleRender);
+    await idleRender.get();
+    Polymer.dom.flush();
     const osSettingsA11yPage = settingsPage.$$('os-settings-a11y-page');
     assert(!!osSettingsA11yPage);
   });
 
   test('Check settings-kerberos-page exists', async () => {
+    init();
     settingsPage.showKerberosSection = true;
     const idleRender = settingsPage.$$('settings-idle-load');
     assert(!!idleRender);
@@ -109,6 +158,7 @@ suite('OsSettingsPageTests', function() {
   });
 
   test('Check settings-device-page exists', async () => {
+    init();
     settingsPage.showCrostini = true;
     settingsPage.allowCrostini_ = true;
     const settingsDevicePage = settingsPage.$$('settings-device-page');
@@ -117,6 +167,7 @@ suite('OsSettingsPageTests', function() {
   });
 
   test('Check os-settings-files-page exists', async () => {
+    init();
     settingsPage.isGuestMode_ = false;
     const idleRender = settingsPage.$$('settings-idle-load');
     await idleRender.get();
@@ -126,17 +177,20 @@ suite('OsSettingsPageTests', function() {
   });
 
   test('Check settings-personalization-page exists', async () => {
+    init();
     const settingsPersonalizationPage =
         settingsPage.$$('settings-personalization-page');
     assert(!!settingsPersonalizationPage);
   });
 
   test('Check os-settings-search-page exists', async () => {
+    init();
     const osSettingsSearchPage = settingsPage.$$('os-settings-search-page');
     assert(!!osSettingsSearchPage);
   });
 
   test('Check os-settings-apps-page exists', async () => {
+    init();
     settingsPage.showAndroidApps = true;
     settingsPage.showPluginVm = true;
     settingsPage.havePlayStoreApp = true;
@@ -146,6 +200,7 @@ suite('OsSettingsPageTests', function() {
   });
 
   test('Check settings-crostini-page exists', async () => {
+    init();
     settingsPage.showCrostini = true;
     const idleRender = settingsPage.$$('settings-idle-load');
     await idleRender.get();
@@ -155,6 +210,11 @@ suite('OsSettingsPageTests', function() {
   });
 
   test('Check os-settings-reset-page exists', async () => {
+    init();
+    const idleRender = settingsPage.$$('settings-idle-load');
+    assert(!!idleRender);
+    await idleRender.get();
+
     settingsPage.showReset = true;
     Polymer.dom.flush();
     const osSettingsResetPage = settingsPage.$$('os-settings-reset-page');

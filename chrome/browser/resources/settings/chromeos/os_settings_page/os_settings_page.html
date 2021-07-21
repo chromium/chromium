@@ -147,8 +147,10 @@
         </settings-section>
         <settings-section page-title="$i18n{bluetoothPageTitle}"
             section="bluetooth">
-          <settings-bluetooth-page prefs="{{prefs}}">
-          </settings-bluetooth-page>
+          <template is="dom-if" if="[[!isBluetoothRevampEnabled_]]" restamp>
+            <settings-bluetooth-page prefs="{{prefs}}">
+            </settings-bluetooth-page>
+          </template>
         </settings-section>
         <template is="dom-if" if="[[!isGuestMode_]]" restamp>
           <settings-section page-title="$i18n{multidevicePageTitle}"

@@ -113,6 +113,14 @@ Polymer({
       },
       readOnly: true,
     },
+
+    /** @private */
+    isBluetoothRevampEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('enableBluetoothRevamp');
+      }
+    },
   },
 
   hostAttributes: {
