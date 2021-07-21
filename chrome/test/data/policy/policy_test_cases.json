@@ -1211,6 +1211,7 @@
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
+        "note": "value 'enhanced'",
         "policies": {
           "SafeBrowsingProtectionLevel": 2
         },
@@ -1219,6 +1220,69 @@
             "value": true
           },
           "safebrowsing.enhanced": {
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "value 'standard'",
+        "policies": {
+          "SafeBrowsingProtectionLevel": 1
+        },
+        "prefs": {
+          "safebrowsing.enabled": {
+            "value": true
+          },
+          "safebrowsing.enhanced": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "value 'disabled'",
+        "policies": {
+          "SafeBrowsingProtectionLevel": 0
+        },
+        "prefs": {
+          "safebrowsing.enabled": {
+            "value": false
+          },
+          "safebrowsing.enhanced": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "safebrowsing.enabled": {
+            "default_value": true
+          },
+          "safebrowsing.enhanced": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "SafeBrowsingProtectionLevel overrules SafeBrowsingEnabled",
+        "policies": {
+          "SafeBrowsingProtectionLevel": 0,
+          "SafeBrowsingEnabled": true
+        },
+        "prefs": {
+          "safebrowsing.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "SafeBrowsingProtectionLevel overrules SafeBrowsingEnabled",
+        "policies": {
+          "SafeBrowsingProtectionLevel": 1,
+          "SafeBrowsingEnabled": false
+        },
+        "prefs": {
+          "safebrowsing.enabled": {
             "value": true
           }
         }
