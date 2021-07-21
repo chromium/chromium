@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/quick_pair/common/constants.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
@@ -105,7 +106,7 @@ class FastPairScannerTest : public testing::Test {
             Invoke(this, &FastPairScannerTest::StartLowEnergyScanSession));
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
     EXPECT_CALL(adapter(), AddObserver);
-    scanner_ = std::make_unique<FastPairScannerImpl>();
+    scanner_ = base::MakeRefCounted<FastPairScannerImpl>();
     scanner_observer_ = std::make_unique<FastPairScannerObserver>();
     scanner().AddObserver(scanner_observer_.get());
   }
@@ -154,7 +155,7 @@ class FastPairScannerTest : public testing::Test {
 
  protected:
   scoped_refptr<FakeBluetoothAdapter> adapter_;
-  std::unique_ptr<FastPairScannerImpl> scanner_;
+  scoped_refptr<FastPairScannerImpl> scanner_;
   device::MockBluetoothLowEnergyScanSession* mock_scan_session_ = nullptr;
   std::unique_ptr<FastPairScannerObserver> scanner_observer_;
   base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate_;
