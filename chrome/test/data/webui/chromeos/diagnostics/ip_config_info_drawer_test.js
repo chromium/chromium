@@ -128,4 +128,15 @@ export function ipConfigInfoDrawerTestSuite() {
               expectedSubnetMask);
         });
   });
+
+  test('ConfigDrawerOpenDisplaysNameServersBasedOnNetwork', () => {
+    // Ethernet currently has no ipConfig object.
+    return initializeIpConfigInfoDrawerElement()
+        // Opening drawer to test visibility and content of data points.
+        .then(() => getDrawerToggle().click())
+        .then(() => {
+          assertDataPointHasExpectedHeaderAndValue(
+              '#nameServers', 'Name servers', '');
+        });
+  });
 }

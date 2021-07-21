@@ -53,6 +53,15 @@ Polymer({
       computed: 'computeMacAddress_(network.macAddress)',
     },
 
+    /**
+     * @protected
+     * @type {string}
+     */
+    nameServers_: {
+      type: String,
+      computed: 'computeNameServers_(network.ipConfig.nameServers)',
+    },
+
     /** @type {!Network} */
     network: {
       type: Object,
@@ -85,6 +94,18 @@ Polymer({
    */
   computeMacAddress_() {
     return this.network.macAddress || '';
+  },
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  computeNameServers_() {
+    // Both ipConfig and nameServers could be null.
+    if (this.network.ipConfig && this.network.ipConfig.nameServers) {
+      return this.network.ipConfig.nameServers.join(', ');
+    }
+    return '';
   },
 
   /**
