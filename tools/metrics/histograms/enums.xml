@@ -79572,7 +79572,7 @@ would be helpful to identify which type is being sent.
   <int value="4" label="Scanning"/>
   <int value="5" label="Web Store"/>
   <int value="6" label="Canvas"/>
-  <int value="7" label="Google News"/>
+  <int value="7" label="[Deprecated] Google News"/>
   <int value="8" label="Explore"/>
 </enum>
 

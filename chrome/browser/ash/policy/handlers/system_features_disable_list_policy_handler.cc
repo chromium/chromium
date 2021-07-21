@@ -22,7 +22,6 @@ const char kOsSettingsFeature[] = "os_settings";
 const char kScanningFeature[] = "scanning";
 const char kWebStoreFeature[] = "web_store";
 const char kCanvasFeature[] = "canvas";
-const char kGoogleNewsFeature[] = "google_news";
 const char kExploreFeature[] = "explore";
 
 const char kBlockedDisableMode[] = "blocked";
@@ -49,8 +48,6 @@ SystemFeature SystemFeaturesDisableListPolicyHandler::GetSystemFeatureFromAppId(
     const std::string& app_id) {
   if (app_id == web_app::kCanvasAppId)
     return SystemFeature::kCanvas;
-  if (app_id == web_app::kGoogleNewsAppId)
-    return SystemFeature::kGoogleNews;
   return SystemFeature::kUnknownSystemFeature;
 }
 
@@ -97,8 +94,6 @@ SystemFeature SystemFeaturesDisableListPolicyHandler::ConvertToEnum(
     return SystemFeature::kWebStore;
   if (system_feature == kCanvasFeature)
     return SystemFeature::kCanvas;
-  if (system_feature == kGoogleNewsFeature)
-    return SystemFeature::kGoogleNews;
   if (system_feature == kExploreFeature)
     return SystemFeature::kExplore;
 

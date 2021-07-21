@@ -20,14 +20,14 @@ namespace policy {
 // numeric values should never be reused.
 enum SystemFeature : int {
   kUnknownSystemFeature = 0,
-  kCamera = 1,           // The camera chrome app on Chrome OS.
-  kBrowserSettings = 2,  // Browser settings.
-  kOsSettings = 3,       // The settings feature on Chrome OS.
-  kScanning = 4,         // The scan SWA on Chrome OS.
-  kWebStore = 5,         // The web store chrome app on Chrome OS.
-  kCanvas = 6,           // The canvas web app on Chrome OS.
-  kGoogleNews = 7,       // The Google news web app on Chrome OS.
-  kExplore = 8,          // The explore web app on Chrome OS.
+  kCamera = 1,                // The camera chrome app on Chrome OS.
+  kBrowserSettings = 2,       // Browser settings.
+  kOsSettings = 3,            // The settings feature on Chrome OS.
+  kScanning = 4,              // The scan SWA on Chrome OS.
+  kWebStore = 5,              // The web store chrome app on Chrome OS.
+  kCanvas = 6,                // The canvas web app on Chrome OS.
+  kGoogleNewsDeprecated = 7,  // The Google news app is no longer supported.
+  kExplore = 8,               // The explore web app on Chrome OS.
   kMaxValue = kExplore
 };
 
@@ -46,7 +46,6 @@ extern const char kOsSettingsFeature[];
 extern const char kScanningFeature[];
 extern const char kWebStoreFeature[];
 extern const char kCanvasFeature[];
-extern const char kGoogleNewsFeature[];
 extern const char kExploreFeature[];
 
 extern const char kBlockedDisableMode[];

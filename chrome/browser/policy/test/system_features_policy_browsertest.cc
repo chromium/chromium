@@ -37,8 +37,6 @@ namespace policy {
 namespace {
 const char kCanvasAppURL[] = "https://canvas.apps.chrome/";
 const char kCanvasAppTitle[] = "canvas.apps.chrome";
-const char kGoogleNewsAppURL[] = "https://news.google.com/?lfhs=2";
-const char kGoogleNewsAppTitle[] = "news.google.com";
 const char kWebStoreExtensionURL[] = "https://chrome.google.com/webstore/";
 const char kWebStoreExtensionTitle[] = "chrome.google.com";
 
@@ -437,11 +435,6 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisablePWAs) {
   VerifyIsAppURLDisabled(web_app::kCanvasAppId, kCanvasFeature, kCanvasAppURL,
                          kCanvasAppTitle);
   VerifyAppDisableMode(web_app::kCanvasAppId, kCanvasFeature);
-
-  // Disable Google News app.
-  VerifyIsAppURLDisabled(web_app::kGoogleNewsAppId, kGoogleNewsFeature,
-                         kGoogleNewsAppURL, kGoogleNewsAppTitle);
-  VerifyAppDisableMode(web_app::kGoogleNewsAppId, kGoogleNewsFeature);
 }
 
 }  // namespace policy
