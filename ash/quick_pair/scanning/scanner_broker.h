@@ -5,12 +5,13 @@
 #ifndef ASH_QUICK_PAIR_SCANNING_SCANNER_BROKER_H_
 #define ASH_QUICK_PAIR_SCANNING_SCANNER_BROKER_H_
 
-#include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "base/observer_list_types.h"
 
 namespace ash {
 namespace quick_pair {
+
+struct Device;
 
 // The ScannerBroker is the entry point for the Scanning component in the Quick
 // Pair system. It is responsible for brokering the start/stop scanning calls
@@ -20,8 +21,8 @@ class ScannerBroker {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnDeviceFound(const Device& device) = 0;
-    virtual void OnDeviceLost(const Device& device) = 0;
+    virtual void OnDeviceFound(scoped_refptr<Device> device) = 0;
+    virtual void OnDeviceLost(scoped_refptr<Device> device) = 0;
   };
 
   virtual ~ScannerBroker() = default;

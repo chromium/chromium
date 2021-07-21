@@ -6,6 +6,7 @@
 
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/ui/actions.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace ash {
 namespace quick_pair {
@@ -22,25 +23,25 @@ void MockUIBroker::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void MockUIBroker::NotifyDiscoveryAction(const Device& device,
+void MockUIBroker::NotifyDiscoveryAction(scoped_refptr<Device> device,
                                          DiscoveryAction action) {
   for (auto& obs : observers_)
     obs.OnDiscoveryAction(device, action);
 }
 
-void MockUIBroker::NotifyCompanionAppAction(const Device& device,
+void MockUIBroker::NotifyCompanionAppAction(scoped_refptr<Device> device,
                                             CompanionAppAction action) {
   for (auto& obs : observers_)
     obs.OnCompanionAppAction(device, action);
 }
 
-void MockUIBroker::NotifyPairingFailedAction(const Device& device,
+void MockUIBroker::NotifyPairingFailedAction(scoped_refptr<Device> device,
                                              PairingFailedAction action) {
   for (auto& obs : observers_)
     obs.OnPairingFailureAction(device, action);
 }
 
-void MockUIBroker::NotifyAssociateAccountAction(const Device& device,
+void MockUIBroker::NotifyAssociateAccountAction(scoped_refptr<Device> device,
                                                 AssociateAccountAction action) {
   for (auto& obs : observers_)
     obs.OnAssociateAccountAction(device, action);

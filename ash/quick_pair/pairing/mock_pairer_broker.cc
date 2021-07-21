@@ -22,19 +22,19 @@ void MockPairerBroker::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void MockPairerBroker::NotifyDevicePaired(const Device& device) {
+void MockPairerBroker::NotifyDevicePaired(scoped_refptr<Device> device) {
   for (auto& obs : observers_)
     obs.OnDevicePaired(device);
 }
 
-void MockPairerBroker::NotifyPairFailure(const Device& device,
+void MockPairerBroker::NotifyPairFailure(scoped_refptr<Device> device,
                                          PairFailure failure) {
   for (auto& obs : observers_)
     obs.OnPairFailure(device, failure);
 }
 
 void MockPairerBroker::NotifyAccountKeyWrite(
-    const Device& device,
+    scoped_refptr<Device> device,
     absl::optional<AccountKeyFailure> failure) {
   for (auto& obs : observers_)
     obs.OnAccountKeyWrite(device, failure);

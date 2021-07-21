@@ -27,8 +27,8 @@ class MockScannerBroker : public ScannerBroker {
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void NotifyDeviceFound(const Device& device);
-  void NotifyDeviceLost(const Device& device);
+  void NotifyDeviceFound(scoped_refptr<Device> device);
+  void NotifyDeviceLost(scoped_refptr<Device> device);
 
  private:
   base::ObserverList<Observer> observers_;

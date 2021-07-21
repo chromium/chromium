@@ -7,6 +7,20 @@
 #include <ostream>
 
 #include "ash/quick_pair/common/protocol.h"
+#include "base/memory/scoped_refptr.h"
+
+namespace {
+
+std::ostream& OutputToStream(std::ostream& stream,
+                             const std::string& metadata_id,
+                             const std::string& address,
+                             const ash::quick_pair::Protocol& protocol) {
+  stream << "[Device: metadata_id=" << metadata_id << ", address=" << address
+         << ", protocol=" << protocol << "]";
+  return stream;
+}
+
+}  // namespace
 
 namespace ash {
 namespace quick_pair {
@@ -17,10 +31,13 @@ Device::Device(std::string metadata_id, std::string address, Protocol protocol)
       protocol(protocol) {}
 
 std::ostream& operator<<(std::ostream& stream, const Device& device) {
-  stream << "[Device: metadata_id=" << device.metadata_id
-         << ", address=" << device.address << ", protocol=" << device.protocol
-         << "]";
-  return stream;
+  return OutputToStream(stream, device.metadata_id, device.address,
+                        device.protocol);
+}
+
+std::ostream& operator<<(std::ostream& stream, scoped_refptr<Device> device) {
+  return OutputToStream(stream, device->metadata_id, device->address,
+                        device->protocol);
 }
 
 }  // namespace quick_pair

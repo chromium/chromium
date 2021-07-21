@@ -7,14 +7,16 @@
 
 #include <memory>
 
-#include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker.h"
 #include "ash/quick_pair/scanning/scanner_broker.h"
 #include "ash/quick_pair/ui/ui_broker.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 
 namespace ash {
 namespace quick_pair {
+
+struct Device;
 
 // Implements the Mediator design pattern for the components in the Quick Pair
 // system, e.g. the UI Broker, Scanning Broker and Pairing Broker.
@@ -43,16 +45,17 @@ class Mediator : public FeatureStatusTracker::Observer,
   void OnFastPairEnabledChanged(bool is_enabled) override;
 
   // SannerBroker::Observer
-  void OnDeviceFound(const Device& device) override;
-  void OnDeviceLost(const Device& device) override;
+  void OnDeviceFound(scoped_refptr<Device> device) override;
+  void OnDeviceLost(scoped_refptr<Device> device) override;
 
   // UIBroker::Observer
-  void OnDiscoveryAction(const Device& device, DiscoveryAction action) override;
-  void OnPairingFailureAction(const Device& device,
+  void OnDiscoveryAction(scoped_refptr<Device> device,
+                         DiscoveryAction action) override;
+  void OnPairingFailureAction(scoped_refptr<Device> device,
                               PairingFailedAction action) override;
-  void OnCompanionAppAction(const Device& device,
+  void OnCompanionAppAction(scoped_refptr<Device> device,
                             CompanionAppAction action) override;
-  void OnAssociateAccountAction(const Device& device,
+  void OnAssociateAccountAction(scoped_refptr<Device> device,
                                 AssociateAccountAction action) override;
 
  private:

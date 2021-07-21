@@ -7,6 +7,8 @@
 
 #include "ash/quick_pair/common/protocol.h"
 #include "base/component_export.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace ash {
 namespace quick_pair {
@@ -18,13 +20,12 @@ namespace quick_pair {
 // fetch objects which contain more information. E.g. A Fast Pair component
 // can use |metadata_id| to query the Service to receive a full metadata
 // object.
-struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device {
+struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
+    : public base::RefCounted<Device> {
   Device(std::string metadata_id, std::string address, Protocol protocol);
   Device(const Device&) = delete;
-  Device(Device&&) = default;
   Device& operator=(const Device&) = delete;
   Device& operator=(Device&&) = delete;
-  ~Device() = default;
 
   // An identifier which components can use to fetch additional metadata for
   // this device. This ID will correspond to different things depending on
@@ -37,10 +38,17 @@ struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device {
 
   // The Quick Pair protocol implementation that this device belongs to.
   const Protocol protocol;
+
+ private:
+  friend class base::RefCounted<Device>;
+  ~Device() = default;
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 std::ostream& operator<<(std::ostream& stream, const Device& device);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+std::ostream& operator<<(std::ostream& stream, scoped_refptr<Device> device);
 
 }  // namespace quick_pair
 }  // namespace ash

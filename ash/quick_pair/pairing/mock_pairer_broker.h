@@ -25,13 +25,13 @@ class MockPairerBroker : public PairerBroker {
   MockPairerBroker& operator=(const MockPairerBroker&) = delete;
   ~MockPairerBroker() override;
 
-  MOCK_METHOD(void, PairDevice, (const Device&), (override));
+  MOCK_METHOD(void, PairDevice, (scoped_refptr<Device>), (override));
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void NotifyDevicePaired(const Device& device);
-  void NotifyPairFailure(const Device& device, PairFailure failure);
-  void NotifyAccountKeyWrite(const Device& device,
+  void NotifyDevicePaired(scoped_refptr<Device> device);
+  void NotifyPairFailure(scoped_refptr<Device> device, PairFailure failure);
+  void NotifyAccountKeyWrite(scoped_refptr<Device> device,
                              absl::optional<AccountKeyFailure> error);
 
  private:

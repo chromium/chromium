@@ -28,77 +28,73 @@ void UIBrokerImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void UIBrokerImpl::ShowDiscovery(const Device& device) {
-  switch (device.protocol) {
+void UIBrokerImpl::ShowDiscovery(scoped_refptr<Device> device) {
+  switch (device->protocol) {
     case Protocol::kFastPair:
       fast_pair_presenter_->ShowDiscovery(
-          device,
-          base::BindOnce(&UIBrokerImpl::NotifyDiscoveryAction,
-                         weak_pointer_factory_.GetWeakPtr(), std::ref(device)));
+          device, base::BindOnce(&UIBrokerImpl::NotifyDiscoveryAction,
+                                 weak_pointer_factory_.GetWeakPtr(), device));
       break;
   }
 }
 
-void UIBrokerImpl::ShowPairing(const Device& device) {
-  switch (device.protocol) {
+void UIBrokerImpl::ShowPairing(scoped_refptr<Device> device) {
+  switch (device->protocol) {
     case Protocol::kFastPair:
-      fast_pair_presenter_->ShowPairing(device);
+      fast_pair_presenter_->ShowPairing(std::move(device));
       break;
   }
 }
 
-void UIBrokerImpl::ShowPairingFailed(const Device& device) {
-  switch (device.protocol) {
+void UIBrokerImpl::ShowPairingFailed(scoped_refptr<Device> device) {
+  switch (device->protocol) {
     case Protocol::kFastPair:
       fast_pair_presenter_->ShowPairingFailed(
-          device,
-          base::BindOnce(&UIBrokerImpl::NotifyPairingFailedAction,
-                         weak_pointer_factory_.GetWeakPtr(), std::ref(device)));
+          device, base::BindOnce(&UIBrokerImpl::NotifyPairingFailedAction,
+                                 weak_pointer_factory_.GetWeakPtr(), device));
       break;
   }
 }
 
-void UIBrokerImpl::ShowAssociateAccount(const Device& device) {
-  switch (device.protocol) {
+void UIBrokerImpl::ShowAssociateAccount(scoped_refptr<Device> device) {
+  switch (device->protocol) {
     case Protocol::kFastPair:
       fast_pair_presenter_->ShowAssociateAccount(
-          device,
-          base::BindOnce(&UIBrokerImpl::NotifyAssociateAccountAction,
-                         weak_pointer_factory_.GetWeakPtr(), std::ref(device)));
+          device, base::BindOnce(&UIBrokerImpl::NotifyAssociateAccountAction,
+                                 weak_pointer_factory_.GetWeakPtr(), device));
       break;
   }
 }
 
-void UIBrokerImpl::ShowCompanionApp(const Device& device) {
-  switch (device.protocol) {
+void UIBrokerImpl::ShowCompanionApp(scoped_refptr<Device> device) {
+  switch (device->protocol) {
     case Protocol::kFastPair:
       fast_pair_presenter_->ShowCompanionApp(
-          device,
-          base::BindOnce(&UIBrokerImpl::NotifyCompanionAppAction,
-                         weak_pointer_factory_.GetWeakPtr(), std::ref(device)));
+          device, base::BindOnce(&UIBrokerImpl::NotifyCompanionAppAction,
+                                 weak_pointer_factory_.GetWeakPtr(), device));
       break;
   }
 }
 
-void UIBrokerImpl::NotifyDiscoveryAction(const Device& device,
+void UIBrokerImpl::NotifyDiscoveryAction(scoped_refptr<Device> device,
                                          DiscoveryAction action) {
   for (auto& observer : observers_)
     observer.OnDiscoveryAction(device, action);
 }
 
-void UIBrokerImpl::NotifyPairingFailedAction(const Device& device,
+void UIBrokerImpl::NotifyPairingFailedAction(scoped_refptr<Device> device,
                                              PairingFailedAction action) {
   for (auto& observer : observers_)
     observer.OnPairingFailureAction(device, action);
 }
 
-void UIBrokerImpl::NotifyAssociateAccountAction(const Device& device,
+void UIBrokerImpl::NotifyAssociateAccountAction(scoped_refptr<Device> device,
                                                 AssociateAccountAction action) {
   for (auto& observer : observers_)
     observer.OnAssociateAccountAction(device, action);
 }
 
-void UIBrokerImpl::NotifyCompanionAppAction(const Device& device,
+void UIBrokerImpl::NotifyCompanionAppAction(scoped_refptr<Device> device,
                                             CompanionAppAction action) {
   for (auto& observer : observers_)
     observer.OnCompanionAppAction(device, action);

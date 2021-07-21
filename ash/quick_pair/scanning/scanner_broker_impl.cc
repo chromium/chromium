@@ -4,9 +4,12 @@
 
 #include "ash/quick_pair/scanning/scanner_broker_impl.h"
 
+#include <memory>
+
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/protocol.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace ash {
 namespace quick_pair {
@@ -47,13 +50,17 @@ void ScannerBrokerImpl::StopFastPairScanning() {
   QP_LOG(INFO) << "Stoping Fast Pair Scanning.";
 }
 
-void ScannerBrokerImpl::NotifyDeviceFound(const Device& device) {
+void ScannerBrokerImpl::NotifyDeviceFound(scoped_refptr<Device> device) {
+  QP_LOG(INFO) << __func__ << ": device.metadata_id=" << device->metadata_id;
+
   for (auto& observer : observers_) {
     observer.OnDeviceFound(device);
   }
 }
 
-void ScannerBrokerImpl::NotifyDeviceLost(const Device& device) {
+void ScannerBrokerImpl::NotifyDeviceLost(scoped_refptr<Device> device) {
+  QP_LOG(INFO) << __func__ << ": device.metadata_id=" << device->metadata_id;
+
   for (auto& observer : observers_) {
     observer.OnDeviceLost(device);
   }

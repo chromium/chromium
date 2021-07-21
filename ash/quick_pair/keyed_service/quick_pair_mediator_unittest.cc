@@ -15,7 +15,15 @@
 #include "ash/quick_pair/scanning/scanner_broker.h"
 #include "ash/quick_pair/ui/mock_ui_broker.h"
 #include "ash/quick_pair/ui/ui_broker.h"
+#include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+
+constexpr char kTestMetadataId[] = "test_metadata_id";
+constexpr char kTestAddress[] = "test_address";
+
+}  // namespace
 
 namespace ash {
 namespace quick_pair {
@@ -38,10 +46,13 @@ class MediatorTest : public testing::Test {
 
     mediator_ = std::make_unique<Mediator>(
         std::move(tracker), std::move(scanner_broker), std::move(ui_broker));
+
+    device_ = base::MakeRefCounted<Device>(kTestMetadataId, kTestAddress,
+                                           Protocol::kFastPair);
   }
 
  protected:
-  Device device_{"test_metadata_id", "test_address", Protocol::kFastPair};
+  scoped_refptr<Device> device_;
   FakeFeatureStatusTracker* feature_status_tracker_;
   MockScannerBroker* mock_scanner_broker_;
   MockUIBroker* mock_ui_broker_;

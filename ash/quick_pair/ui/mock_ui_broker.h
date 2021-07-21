@@ -22,20 +22,21 @@ class MockUIBroker : public UIBroker {
   MockUIBroker& operator=(const MockUIBroker&) = delete;
   ~MockUIBroker() override;
 
-  MOCK_METHOD(void, ShowDiscovery, (const Device&), (override));
-  MOCK_METHOD(void, ShowPairing, (const Device&), (override));
-  MOCK_METHOD(void, ShowPairingFailed, (const Device&), (override));
-  MOCK_METHOD(void, ShowAssociateAccount, (const Device&), (override));
-  MOCK_METHOD(void, ShowCompanionApp, (const Device&), (override));
+  MOCK_METHOD(void, ShowDiscovery, (scoped_refptr<Device>), (override));
+  MOCK_METHOD(void, ShowPairing, (scoped_refptr<Device>), (override));
+  MOCK_METHOD(void, ShowPairingFailed, (scoped_refptr<Device>), (override));
+  MOCK_METHOD(void, ShowAssociateAccount, (scoped_refptr<Device>), (override));
+  MOCK_METHOD(void, ShowCompanionApp, (scoped_refptr<Device>), (override));
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void NotifyDiscoveryAction(const Device& device, DiscoveryAction action);
-  void NotifyCompanionAppAction(const Device& device,
+  void NotifyDiscoveryAction(scoped_refptr<Device> device,
+                             DiscoveryAction action);
+  void NotifyCompanionAppAction(scoped_refptr<Device> device,
                                 CompanionAppAction action);
-  void NotifyPairingFailedAction(const Device& device,
+  void NotifyPairingFailedAction(scoped_refptr<Device> device,
                                  PairingFailedAction action);
-  void NotifyAssociateAccountAction(const Device& device,
+  void NotifyAssociateAccountAction(scoped_refptr<Device> device,
                                     AssociateAccountAction action);
 
  private:

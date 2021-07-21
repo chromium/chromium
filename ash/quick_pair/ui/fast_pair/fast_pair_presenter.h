@@ -6,7 +6,6 @@
 #define ASH_QUICK_PAIR_UI_FAST_PAIR_FAST_PAIR_PRESENTER_H_
 
 #include <memory>
-#include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/ui/actions.h"
 #include "ash/quick_pair/ui/fast_pair/fast_pair_notification_controller.h"
 #include "base/callback.h"
@@ -14,6 +13,8 @@
 
 namespace ash {
 namespace quick_pair {
+
+struct Device;
 
 using DiscoveryCallback = base::OnceCallback<void(DiscoveryAction)>;
 using PairingFailedCallback = base::OnceCallback<void(PairingFailedAction)>;
@@ -28,12 +29,14 @@ class FastPairPresenter {
   FastPairPresenter& operator=(const FastPairPresenter&) = delete;
   ~FastPairPresenter();
 
-  void ShowDiscovery(const Device& device, DiscoveryCallback callback);
-  void ShowPairing(const Device& device);
-  void ShowPairingFailed(const Device& device, PairingFailedCallback callback);
-  void ShowAssociateAccount(const Device& device,
+  void ShowDiscovery(scoped_refptr<Device> device, DiscoveryCallback callback);
+  void ShowPairing(scoped_refptr<Device> device);
+  void ShowPairingFailed(scoped_refptr<Device> device,
+                         PairingFailedCallback callback);
+  void ShowAssociateAccount(scoped_refptr<Device> device,
                             AssociateAccountCallback callback);
-  void ShowCompanionApp(const Device& device, CompanionAppCallback callback);
+  void ShowCompanionApp(scoped_refptr<Device> device,
+                        CompanionAppCallback callback);
 
  private:
   void OnDiscoveryClicked(DiscoveryCallback action_callback);

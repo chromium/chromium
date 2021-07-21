@@ -5,13 +5,13 @@
 #ifndef ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_PAIRER_H_
 #define ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_PAIRER_H_
 
-#include <functional>
-#include "ash/quick_pair/common/device.h"
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace ash {
 namespace quick_pair {
 
+struct Device;
 enum class AccountKeyFailure;
 enum class PairFailure;
 
@@ -20,12 +20,14 @@ enum class PairFailure;
 class FastPairPairer {
  public:
   FastPairPairer(
-      const Device& device,
-      base::OnceCallback<void(const Device&)> paired_callback,
-      base::OnceCallback<void(const Device&, PairFailure)> pair_failed_callback,
-      base::OnceCallback<void(const Device&, AccountKeyFailure)>
+      scoped_refptr<Device> device,
+      base::OnceCallback<void(scoped_refptr<Device>)> paired_callback,
+      base::OnceCallback<void(scoped_refptr<Device>, PairFailure)>
+          pair_failed_callback,
+      base::OnceCallback<void(scoped_refptr<Device>, AccountKeyFailure)>
           account_key_failure_callback,
-      base::OnceCallback<void(const Device&)> pairing_procedure_complete);
+      base::OnceCallback<void(scoped_refptr<Device>)>
+          pairing_procedure_complete);
   FastPairPairer(const FastPairPairer&) = delete;
   FastPairPairer& operator=(const FastPairPairer&) = delete;
   FastPairPairer(FastPairPairer&&);
@@ -35,12 +37,13 @@ class FastPairPairer {
  private:
   void StartPairing();
 
-  std::reference_wrapper<const Device> device_;
-  base::OnceCallback<void(const Device&)> paired_callback_;
-  base::OnceCallback<void(const Device&, PairFailure)> pair_failed_callback_;
-  base::OnceCallback<void(const Device&, AccountKeyFailure)>
+  scoped_refptr<Device> device_;
+  base::OnceCallback<void(scoped_refptr<Device>)> paired_callback_;
+  base::OnceCallback<void(scoped_refptr<Device>, PairFailure)>
+      pair_failed_callback_;
+  base::OnceCallback<void(scoped_refptr<Device>, AccountKeyFailure)>
       account_key_failure_callback_;
-  base::OnceCallback<void(const Device&)> pairing_procedure_complete_;
+  base::OnceCallback<void(scoped_refptr<Device>)> pairing_procedure_complete_;
 };
 
 }  // namespace quick_pair

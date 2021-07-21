@@ -5,12 +5,14 @@
 #ifndef ASH_QUICK_PAIR_SCANNING_SCANNER_BROKER_IMPL_H_
 #define ASH_QUICK_PAIR_SCANNING_SCANNER_BROKER_IMPL_H_
 
-#include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/scanning/scanner_broker.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 
 namespace ash {
 namespace quick_pair {
+
+struct Device;
 
 class ScannerBrokerImpl : public ScannerBroker {
  public:
@@ -29,8 +31,8 @@ class ScannerBrokerImpl : public ScannerBroker {
   void StartFastPairScanning();
   void StopFastPairScanning();
 
-  void NotifyDeviceFound(const Device& device);
-  void NotifyDeviceLost(const Device& device);
+  void NotifyDeviceFound(scoped_refptr<Device> device);
+  void NotifyDeviceLost(scoped_refptr<Device> device);
 
   base::ObserverList<Observer> observers_;
 };

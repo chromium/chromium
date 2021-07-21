@@ -14,6 +14,7 @@
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,14 +35,16 @@ class PairerBrokerImpl : public PairerBroker {
   // PairingBroker:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void PairDevice(const Device& device) override;
+  void PairDevice(scoped_refptr<Device> device) override;
 
  private:
-  void PairFastPairDevice(const Device& device);
-  void OnFastPairDevicePaired(const Device& device);
-  void OnFastPairPairingFailure(const Device& device, PairFailure failure);
-  void OnAccountKeyFailure(const Device& device, AccountKeyFailure failure);
-  void OnFastPairProcedureComplete(const Device& device);
+  void PairFastPairDevice(scoped_refptr<Device> device);
+  void OnFastPairDevicePaired(scoped_refptr<Device> device);
+  void OnFastPairPairingFailure(scoped_refptr<Device> device,
+                                PairFailure failure);
+  void OnAccountKeyFailure(scoped_refptr<Device> device,
+                           AccountKeyFailure failure);
+  void OnFastPairProcedureComplete(scoped_refptr<Device> device);
 
   base::flat_map<std::string, std::unique_ptr<FastPairPairer>>
       fast_pair_pairers_;

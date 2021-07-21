@@ -57,12 +57,12 @@ void Mediator::OnFastPairEnabledChanged(bool is_enabled) {
   SetFastPairState(is_enabled);
 }
 
-void Mediator::OnDeviceFound(const Device& device) {
+void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
   ui_broker_->ShowDiscovery(device);
 }
 
-void Mediator::OnDeviceLost(const Device& device) {
+void Mediator::OnDeviceLost(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
 }
 
@@ -75,12 +75,13 @@ void Mediator::SetFastPairState(bool is_enabled) {
     scanner_broker_->StopScanning(Protocol::kFastPair);
 }
 
-void Mediator::OnDiscoveryAction(const Device& device, DiscoveryAction action) {
+void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
+                                 DiscoveryAction action) {
   QP_LOG(INFO) << __func__ << ": Device=" << device << ", Action=" << action;
 
   switch (action) {
     case DiscoveryAction::kPairToDevice:
-      ui_broker_->ShowPairing(device);
+      ui_broker_->ShowPairing(std::move(device));
       break;
     case DiscoveryAction::kDismissedByUser:
     case DiscoveryAction::kDismissed:
@@ -88,17 +89,17 @@ void Mediator::OnDiscoveryAction(const Device& device, DiscoveryAction action) {
   }
 }
 
-void Mediator::OnPairingFailureAction(const Device& device,
+void Mediator::OnPairingFailureAction(scoped_refptr<Device> device,
                                       PairingFailedAction action) {
   QP_LOG(INFO) << __func__ << ": Device=" << device << ", Action=" << action;
 }
 
-void Mediator::OnCompanionAppAction(const Device& device,
+void Mediator::OnCompanionAppAction(scoped_refptr<Device> device,
                                     CompanionAppAction action) {
   QP_LOG(INFO) << __func__ << ": Device=" << device << ", Action=" << action;
 }
 
-void Mediator::OnAssociateAccountAction(const Device& device,
+void Mediator::OnAssociateAccountAction(scoped_refptr<Device> device,
                                         AssociateAccountAction action) {
   QP_LOG(INFO) << __func__ << ": Device=" << device << ", Action=" << action;
 }

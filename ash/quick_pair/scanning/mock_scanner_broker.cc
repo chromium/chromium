@@ -5,6 +5,7 @@
 #include "ash/quick_pair/scanning/mock_scanner_broker.h"
 
 #include "ash/quick_pair/common/device.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace ash {
 namespace quick_pair {
@@ -21,12 +22,12 @@ void MockScannerBroker::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void MockScannerBroker::NotifyDeviceFound(const Device& device) {
+void MockScannerBroker::NotifyDeviceFound(scoped_refptr<Device> device) {
   for (auto& obs : observers_)
     obs.OnDeviceFound(device);
 }
 
-void MockScannerBroker::NotifyDeviceLost(const Device& device) {
+void MockScannerBroker::NotifyDeviceLost(scoped_refptr<Device> device) {
   for (auto& obs : observers_)
     obs.OnDeviceLost(device);
 }

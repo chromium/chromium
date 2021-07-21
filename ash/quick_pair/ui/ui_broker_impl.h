@@ -16,6 +16,7 @@ namespace ash {
 namespace quick_pair {
 
 class FastPairPresenter;
+struct Device;
 
 class COMPONENT_EXPORT(QUICK_PAIR_UI) UIBrokerImpl : public UIBroker {
  public:
@@ -27,19 +28,20 @@ class COMPONENT_EXPORT(QUICK_PAIR_UI) UIBrokerImpl : public UIBroker {
   // UIBroker:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void ShowDiscovery(const Device& device) override;
-  void ShowPairing(const Device& device) override;
-  void ShowPairingFailed(const Device& device) override;
-  void ShowAssociateAccount(const Device& device) override;
-  void ShowCompanionApp(const Device& device) override;
+  void ShowDiscovery(scoped_refptr<Device> device) override;
+  void ShowPairing(scoped_refptr<Device> device) override;
+  void ShowPairingFailed(scoped_refptr<Device> device) override;
+  void ShowAssociateAccount(scoped_refptr<Device> device) override;
+  void ShowCompanionApp(scoped_refptr<Device> device) override;
 
  private:
-  void NotifyDiscoveryAction(const Device& device, DiscoveryAction action);
-  void NotifyPairingFailedAction(const Device& device,
+  void NotifyDiscoveryAction(scoped_refptr<Device> device,
+                             DiscoveryAction action);
+  void NotifyPairingFailedAction(scoped_refptr<Device> device,
                                  PairingFailedAction action);
-  void NotifyAssociateAccountAction(const Device& device,
+  void NotifyAssociateAccountAction(scoped_refptr<Device> device,
                                     AssociateAccountAction action);
-  void NotifyCompanionAppAction(const Device& device,
+  void NotifyCompanionAppAction(scoped_refptr<Device> device,
                                 CompanionAppAction action);
 
   std::unique_ptr<FastPairPresenter> fast_pair_presenter_;

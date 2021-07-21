@@ -14,13 +14,14 @@ namespace ash {
 namespace quick_pair {
 
 FastPairPairer::FastPairPairer(
-    const Device& device,
-    base::OnceCallback<void(const Device&)> paired_callback,
-    base::OnceCallback<void(const Device&, PairFailure)> pair_failed_callback,
-    base::OnceCallback<void(const Device&, AccountKeyFailure)>
+    scoped_refptr<Device> device,
+    base::OnceCallback<void(scoped_refptr<Device>)> paired_callback,
+    base::OnceCallback<void(scoped_refptr<Device>, PairFailure)>
+        pair_failed_callback,
+    base::OnceCallback<void(scoped_refptr<Device>, AccountKeyFailure)>
         account_key_failure_callback,
-    base::OnceCallback<void(const Device&)> pairing_procedure_complete)
-    : device_(device),
+    base::OnceCallback<void(scoped_refptr<Device>)> pairing_procedure_complete)
+    : device_(std::move(device)),
       paired_callback_(std::move(paired_callback)),
       pair_failed_callback_(std::move(pair_failed_callback)),
       account_key_failure_callback_(std::move(account_key_failure_callback)),

@@ -24,9 +24,10 @@ class PairerBroker {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnDevicePaired(const Device& device) = 0;
-    virtual void OnPairFailure(const Device& device, PairFailure failure) = 0;
-    virtual void OnAccountKeyWrite(const Device& device,
+    virtual void OnDevicePaired(scoped_refptr<Device> device) = 0;
+    virtual void OnPairFailure(scoped_refptr<Device> device,
+                               PairFailure failure) = 0;
+    virtual void OnAccountKeyWrite(scoped_refptr<Device> device,
                                    absl::optional<AccountKeyFailure> error) = 0;
   };
 
@@ -34,7 +35,7 @@ class PairerBroker {
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
-  virtual void PairDevice(const Device& device) = 0;
+  virtual void PairDevice(scoped_refptr<Device> device) = 0;
 };
 
 }  // namespace quick_pair
