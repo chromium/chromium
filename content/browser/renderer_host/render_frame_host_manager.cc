@@ -2021,9 +2021,7 @@ bool RenderFrameHostManager::InitializeMainRenderFrameForImmediateUse() {
     return false;
   }
 
-  // TODO(jam): uncomment this when the method is shared. Not adding the call
-  // now to make merge to 63 easier.
-  // EnsureRenderFrameHostPageFocusConsistent();
+  EnsureRenderFrameHostPageFocusConsistent();
 
   // TODO(nasko): This is a very ugly hack. The Chrome extensions process
   // manager still uses NotificationService and expects to see a
