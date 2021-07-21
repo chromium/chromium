@@ -56,8 +56,9 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
   ~V4L2JpegEncodeAccelerator() override;
 
   // JpegEncodeAccelerator implementation.
-  chromeos_camera::JpegEncodeAccelerator::Status Initialize(
-      chromeos_camera::JpegEncodeAccelerator::Client* client) override;
+  void InitializeAsync(
+      chromeos_camera::JpegEncodeAccelerator::Client* client,
+      chromeos_camera::JpegEncodeAccelerator::InitCB init_cb) override;
   size_t GetMaxCodedBufferSize(const gfx::Size& picture_size) override;
   void Encode(scoped_refptr<media::VideoFrame> video_frame,
               int quality,
@@ -71,6 +72,10 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
                         BitstreamBuffer* exif_buffer) override;
 
  private:
+  void InitializeOnTaskRunner(
+      chromeos_camera::JpegEncodeAccelerator::Client* client,
+      InitCB init_cb);
+
   // Record for input buffers.
   struct I420BufferRecord {
     I420BufferRecord();

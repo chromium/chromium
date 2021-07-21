@@ -16,6 +16,7 @@
 #include "base/callback_helpers.h"
 #include "base/numerics/ranges.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "media/base/bind_to_current_loop.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
@@ -1847,31 +1848,43 @@ void V4L2JpegEncodeAccelerator::NotifyError(int32_t task_id, Status status) {
   client_->NotifyError(task_id, status);
 }
 
-chromeos_camera::JpegEncodeAccelerator::Status
-V4L2JpegEncodeAccelerator::Initialize(
-    chromeos_camera::JpegEncodeAccelerator::Client* client) {
+void V4L2JpegEncodeAccelerator::InitializeOnTaskRunner(
+    chromeos_camera::JpegEncodeAccelerator::Client* client,
+    chromeos_camera::JpegEncodeAccelerator::InitCB init_cb) {
   DCHECK(child_task_runner_->BelongsToCurrentThread());
-
   std::unique_ptr<EncodedInstanceDmaBuf> encoded_device(
       new EncodedInstanceDmaBuf(this));
 
   // We just check if we can initialize device here.
   if (!encoded_device->Initialize()) {
     VLOGF(1) << "Failed to initialize device";
-    return HW_JPEG_ENCODE_NOT_SUPPORTED;
+    std::move(init_cb).Run(HW_JPEG_ENCODE_NOT_SUPPORTED);
+    return;
   }
 
   if (!encoder_thread_.Start()) {
     VLOGF(1) << "encoder thread failed to start";
-    return THREAD_CREATION_FAILED;
+    std::move(init_cb).Run(THREAD_CREATION_FAILED);
+    return;
   }
 
   client_ = client;
-
   encoder_task_runner_ = encoder_thread_.task_runner();
 
   VLOGF(2) << "V4L2JpegEncodeAccelerator initialized.";
-  return ENCODE_OK;
+  std::move(init_cb).Run(ENCODE_OK);
+  return;
+}
+
+void V4L2JpegEncodeAccelerator::InitializeAsync(
+    chromeos_camera::JpegEncodeAccelerator::Client* client,
+    chromeos_camera::JpegEncodeAccelerator::InitCB init_cb) {
+  DCHECK(child_task_runner_->BelongsToCurrentThread());
+
+  child_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&V4L2JpegEncodeAccelerator::InitializeOnTaskRunner,
+                     weak_ptr_, client, BindToCurrentLoop(std::move(init_cb))));
 }
 
 size_t V4L2JpegEncodeAccelerator::GetMaxCodedBufferSize(

@@ -290,6 +290,8 @@ class JpegClient : public JpegEncodeAccelerator::Client {
   TestImage* GetTestImage(int32_t bitstream_buffer_id);
   void PrepareMemory(int32_t bitstream_buffer_id);
   void SetState(ClientState new_state);
+  void OnInitialize(
+      chromeos_camera::JpegEncodeAccelerator::Status initialize_result);
   void SaveToFile(TestImage* test_image, size_t hw_size, size_t sw_size);
   bool CompareHardwareAndSoftwareResults(int width,
                                          int height,
@@ -349,6 +351,8 @@ class JpegClient : public JpegEncodeAccelerator::Client {
   // Used to create Gpu memory buffer for DMA-buf encoding tests.
   std::unique_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
 
+  base::WeakPtrFactory<JpegClient> weak_factory_{this};
+
   DISALLOW_COPY_AND_ASSIGN(JpegClient);
 };
 
@@ -385,14 +389,20 @@ void JpegClient::CreateJpegEncoder() {
     SetState(ClientState::ERROR);
     return;
   }
+  encoder_->InitializeAsync(this, base::BindOnce(&JpegClient::OnInitialize,
+                                                 weak_factory_.GetWeakPtr()));
+}
 
-  JpegEncodeAccelerator::Status status = encoder_->Initialize(this);
-  if (status != JpegEncodeAccelerator::ENCODE_OK) {
-    LOG(ERROR) << "JpegEncodeAccelerator::Initialize() failed: " << status;
-    SetState(ClientState::ERROR);
+void JpegClient::OnInitialize(
+    chromeos_camera::JpegEncodeAccelerator::Status initialize_result) {
+  if (initialize_result ==
+      ::chromeos_camera::JpegEncodeAccelerator::ENCODE_OK) {
+    SetState(ClientState::INITIALIZED);
     return;
   }
-  SetState(ClientState::INITIALIZED);
+
+  LOG(ERROR) << "JpegEncodeAccelerator::InitializeAsync() failed";
+  SetState(ClientState::ERROR);
 }
 
 void JpegClient::DestroyJpegEncoder() {
@@ -814,6 +824,11 @@ void JpegEncodeAcceleratorTest::TestEncode(size_t num_concurrent_encoders,
         FROM_HERE, base::BindOnce(&JpegClient::DestroyJpegEncoder,
                                   base::Unretained(clients[i].get())));
   }
+  auto destroy_clients_task = base::BindOnce(
+      [](std::vector<std::unique_ptr<JpegClient>> clients) { clients.clear(); },
+      std::move(clients));
+  encoder_thread.task_runner()->PostTask(FROM_HERE,
+                                         std::move(destroy_clients_task));
   encoder_thread.Stop();
   VLOG(1) << "Exit TestEncode";
 }

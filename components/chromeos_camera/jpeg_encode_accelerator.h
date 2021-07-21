@@ -44,6 +44,9 @@ class JpegEncodeAccelerator {
     LARGEST_ERROR_ENUM = PLATFORM_FAILURE,
   };
 
+  // Callback for JPEG encoder initialization.
+  using InitCB = base::OnceCallback<void(Status)>;
+
   class Client {
    public:
     // Callback called after each successful Encode().
@@ -75,12 +78,16 @@ class JpegEncodeAccelerator {
   virtual ~JpegEncodeAccelerator() = 0;
 
   // Initializes the JPEG encoder. Should be called once per encoder
-  // construction. This call is synchronous and returns ENCODE_OK iff
-  // initialization is successful.
-  // Parameters:
+  // construction. This call is asynchronous and executes |init_cb| upon
+  // completion. Parameters:
   //  |client| is the Client interface for encode callback. The provided
   //  pointer must be valid until destructor is called.
-  virtual Status Initialize(Client* client) = 0;
+  //  |init_cb| is the JPEG encoder initialization status report callback.
+  //
+  // |init_cb| is called on the same thread as InitializeAsync() and can
+  // potentially be called even after the JpegEncodeAccelerator destructor.
+  // TODO(b/192342780): take a WeakPtr<Client> instead of a Client*.
+  virtual void InitializeAsync(Client* client, InitCB init_cb) = 0;
 
   // Gets the maximum possible encoded result size.
   virtual size_t GetMaxCodedBufferSize(const gfx::Size& picture_size) = 0;

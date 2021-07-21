@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
+#include "base/threading/thread.h"
 #include "components/chromeos_camera/jpeg_encode_accelerator.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/unaligned_shared_memory.h"
@@ -35,8 +36,9 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
   ~VaapiJpegEncodeAccelerator() override;
 
   // JpegEncodeAccelerator implementation.
-  chromeos_camera::JpegEncodeAccelerator::Status Initialize(
-      chromeos_camera::JpegEncodeAccelerator::Client* client) override;
+  void InitializeAsync(
+      chromeos_camera::JpegEncodeAccelerator::Client* client,
+      chromeos_camera::JpegEncodeAccelerator::InitCB init_cb) override;
   size_t GetMaxCodedBufferSize(const gfx::Size& picture_size) override;
 
   // Currently only I420 format is supported for |video_frame|.
@@ -75,6 +77,14 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
   // |encoder_task_runner_|.
   class Encoder;
 
+  void InitializeOnEncoderTaskRunner(InitCB init_cb);
+
+  void InitializeOnTaskRunner(
+      chromeos_camera::JpegEncodeAccelerator::Client* client,
+      InitCB init_cb);
+
+  void CleanUpOnEncoderThread();
+
   // Notifies the client that an error has occurred and encoding cannot
   // continue.
   void NotifyError(int32_t task_id, Status status);
@@ -88,7 +98,9 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   // The client of this class.
-  Client* client_;
+  Client* client_ = nullptr;
+
+  base::Thread encoder_thread_;
 
   // Use this to post tasks to encoder thread.
   scoped_refptr<base::SingleThreadTaskRunner> encoder_task_runner_;

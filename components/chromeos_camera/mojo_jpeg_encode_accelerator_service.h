@@ -49,6 +49,17 @@ class MojoJpegEncodeAcceleratorService
   // chromeos_camera::mojom::JpegEncodeAccelerator implementation.
   void Initialize(InitializeCallback callback) override;
 
+  void OnInitialize(
+      std::vector<GpuJpegEncodeAcceleratorFactory::CreateAcceleratorCB>
+          remaining_accelerator_factory_functions,
+      InitializeCallback init_cb,
+      chromeos_camera::JpegEncodeAccelerator::Status last_initialize_result);
+
+  void InitializeInternal(
+      std::vector<GpuJpegEncodeAcceleratorFactory::CreateAcceleratorCB>
+          remaining_accelerator_factory_functions,
+      InitializeCallback init_cb);
+
   // TODO(wtlee): To be deprecated. (crbug.com/944705)
   void EncodeWithFD(int32_t task_id,
                     mojo::ScopedHandle input_fd,
@@ -77,15 +88,20 @@ class MojoJpegEncodeAcceleratorService
       size_t encoded_picture_size,
       ::chromeos_camera::JpegEncodeAccelerator::Status status);
 
-  const std::vector<GpuJpegEncodeAcceleratorFactory::CreateAcceleratorCB>
-      accelerator_factory_functions_;
 
   // A map from task_id to EncodeCallback.
   EncodeCallbackMap encode_cb_map_;
 
+  // We do not know when OnInitialize() is going to happen with respect to
+  // EncodeWithFD()/EncodeWithDmaBuf() so this variable is used as an indicator
+  // to confirm |accelerator_| is ready.
+  bool accelerator_initialized_;
+
   std::unique_ptr<::chromeos_camera::JpegEncodeAccelerator> accelerator_;
 
   THREAD_CHECKER(thread_checker_);
+
+  base::WeakPtrFactory<MojoJpegEncodeAcceleratorService> weak_this_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(MojoJpegEncodeAcceleratorService);
 };
