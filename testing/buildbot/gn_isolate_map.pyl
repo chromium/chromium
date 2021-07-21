@@ -92,10 +92,6 @@
     "label": "//chrome/test:android_browsertests",
     "type": "windowed_test_launcher",
   },
-  "android_nocompile_tests": {
-    "label": "//build/android/test:android_nocompile_tests",
-    "type": "additional_compile_target",
-  },
   "android_sync_integration_tests": {
     "label": "//chrome/test:android_sync_integration_tests",
     "type": "windowed_test_launcher",
@@ -472,6 +468,10 @@
     "label": "//chrome/android:chrome_modern_public_bundle_fake_modules_smoke_test",
     "type": "console_test_launcher",
   },
+  "chrome_nocompile_tests": {
+    "label": "//chrome/android:chrome_nocompile_tests",
+    "type": "additional_compile_target",
+  },
   "chrome_official_builder": {
     "label": "//:chrome_official_builder",
     "type": "additional_compile_target",
@@ -811,10 +811,6 @@
   },
   "empty_main": {
     "label": "//testing:empty_main",
-    "type": "additional_compile_target",
-  },
-  "errorprone_plugin_tests": {
-    "label": "//tools/android/errorprone_plugin/test:errorprone_plugin_tests",
     "type": "additional_compile_target",
   },
   "events_unittests": {

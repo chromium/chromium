@@ -24473,9 +24473,8 @@
   },
   "android-lollipop-arm-rel": {
     "additional_compile_targets": [
-      "android_nocompile_tests",
+      "chrome_nocompile_tests",
       "cronet_test_instrumentation_apk",
-      "errorprone_plugin_tests",
       "monochrome_static_initializers"
     ],
     "gtest_tests": [

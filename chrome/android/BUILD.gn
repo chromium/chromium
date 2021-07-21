@@ -3095,6 +3095,21 @@ instrumentation_test_runner("trichrome_chrome_bundle_fake_modules_smoke_test") {
       _bundle_smoke_test_extra_args + _bundle_fake_modules_smoke_test_extra_args
 }
 
+group("chrome_nocompile_tests") {
+  # Tests which check that build errors are thrown when expected and that build
+  # validation tools (ex: lint) do not get silently disabled.
+  testonly = true
+
+  # No-compile tests use an output directory dedicated to no-compile tests.
+  # Put new test suites in //build/android/test/nocompile_gn if possible in
+  # order to share the target output directory and avoid running 'gn gen'
+  # for each android_nocompile_test_suite().
+  deps = [
+    "//build/android/test:android_nocompile_tests",
+    "//tools/android/errorprone_plugin/test:errorprone_plugin_tests",
+  ]
+}
+
 script_test("chrome_public_wpt") {
   script = "//testing/scripts/run_android_wpt.py"
   args = [
