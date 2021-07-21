@@ -4260,6 +4260,7 @@ ci.fyi_coverage_builder(
         short_name = "and",
     ),
     use_java_coverage = True,
+    coverage_test_types = ["overall", "unit"],
     schedule = "triggered",
     triggered_by = [],
 )
@@ -4271,6 +4272,7 @@ ci.fyi_coverage_builder(
         short_name = "ann",
     ),
     use_clang_coverage = True,
+    coverage_test_types = ["overall", "unit"],
 )
 
 ci.fyi_coverage_builder(
