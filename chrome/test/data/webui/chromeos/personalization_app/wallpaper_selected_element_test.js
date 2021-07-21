@@ -122,6 +122,23 @@ export function WallpaperSelectedTest() {
     });
   });
 
+  test('shows unknown for empty attribution', async () => {
+    personalizationStore.data.selected = {
+      url: {url: 'data:image/png;base64,abc='},
+      attribution: [],
+      assetId: BigInt(100),
+    };
+    personalizationStore.data.loading.selected = false;
+    wallpaperSelectedElement = initElement(WallpaperSelected.is);
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    const title =
+        wallpaperSelectedElement.shadowRoot.getElementById('imageTitle');
+    assertEquals(
+        wallpaperSelectedElement.i18n('unknownImageAttribution'),
+        title.textContent.trim());
+  });
+
   test('removes high resolution suffix from image url', async () => {
     personalizationStore.data.selected = {
       url: {url: 'https://images.googleusercontent.com/abc12=w456'},

@@ -224,7 +224,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
           this.i18n('dailyRefresh') + ': ' + image.attribution[0] :
           image.attribution[0];
     }
-    return '';
+    return this.i18n('unknownImageAttribution');
   }
 
   /**
@@ -392,8 +392,11 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @private
    */
   getAriaLabel_(image) {
-    // TODO(b/192195088) figure out aria label when image has no attribution
-    return [this.i18n('currentlySet'), ...(image?.attribution || [])].join(' ');
+    if (!!image && isNonEmptyArray(image.attribution)) {
+      return [this.i18n('currentlySet'), ...image.attribution].join(' ');
+    }
+    return this.i18n('currentlySet') + ' ' +
+        this.i18n('unknownImageAttribution');
   }
 }
 

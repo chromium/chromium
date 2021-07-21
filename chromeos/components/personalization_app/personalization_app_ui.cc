@@ -66,7 +66,9 @@ void AddStrings(content::WebUIDataSource* source) {
       {"fill", IDS_PERSONALIZATION_APP_FILL},
       {"changeDaily", IDS_PERSONALIZATION_APP_CHANGE_DAILY},
       {"refresh", IDS_PERSONALIZATION_APP_REFRESH},
-      {"dailyRefresh", IDS_PERSONALIZATION_APP_DAILY_REFRESH}};
+      {"dailyRefresh", IDS_PERSONALIZATION_APP_DAILY_REFRESH},
+      {"unknownImageAttribution",
+       IDS_PERSONALIZATION_APP_UNKNOWN_IMAGE_ATTRIBUTION}};
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();
 }
