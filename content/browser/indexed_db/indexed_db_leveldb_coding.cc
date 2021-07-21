@@ -477,9 +477,8 @@ bool DecodeIDBKeyPath(StringPiece* slice, IndexedDBKeyPath* value) {
     case blink::mojom::IDBKeyPathType::Array: {
       std::vector<std::u16string> array;
       int64_t count;
-      if (!DecodeVarInt(slice, &count))
+      if (!DecodeVarInt(slice, &count) || count < 0)
         return false;
-      DCHECK_GE(count, 0);
       while (count--) {
         std::u16string string;
         if (!DecodeStringWithLength(slice, &string))
@@ -526,7 +525,7 @@ bool ConsumeEncodedIDBKey(StringPiece* slice) {
       return true;
     case kIndexedDBKeyArrayTypeByte: {
       int64_t length;
-      if (!DecodeVarInt(slice, &length))
+      if (!DecodeVarInt(slice, &length) || length < 0)
         return false;
       while (length--) {
         if (!ConsumeEncodedIDBKey(slice))
