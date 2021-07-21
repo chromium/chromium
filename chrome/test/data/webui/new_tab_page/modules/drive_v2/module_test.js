@@ -80,4 +80,67 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     await testProxy.handler.whenCalled('getFiles');
     assertTrue(!module);
   });
+
+  test('module has height of 56 with only one file', async () => {
+    const data = {
+      files: [
+        {
+          title: 'Abc',
+        },
+      ]
+    };
+    testProxy.handler.setResultFor('getFiles', Promise.resolve(data));
+
+    const module = await driveV2Descriptor.initialize();
+    document.body.append(module);
+    await testProxy.handler.whenCalled('getFiles');
+    module.$.fileRepeat.render();
+
+    assertEquals(56, module.offsetHeight);
+  });
+
+  test('module has height of 112 with two files', async () => {
+    const data = {
+      files: [
+        {
+          title: 'Abc',
+        },
+        {
+          title: 'Def',
+        },
+      ]
+    };
+    testProxy.handler.setResultFor('getFiles', Promise.resolve(data));
+
+    const module = await driveV2Descriptor.initialize();
+    document.body.append(module);
+    await testProxy.handler.whenCalled('getFiles');
+    module.$.fileRepeat.render();
+
+    assertEquals(112, module.offsetHeight);
+  });
+
+  test('module has height of 168 with 3 files', async () => {
+    const data = {
+      files: [
+        {
+          title: 'Abc',
+        },
+        {
+          title: 'Def',
+        },
+        {
+          title: 'Ghi',
+        },
+      ]
+    };
+    testProxy.handler.setResultFor('getFiles', Promise.resolve(data));
+
+    const module = await driveV2Descriptor.initialize();
+    document.body.append(module);
+    await testProxy.handler.whenCalled('getFiles');
+    module.$.fileRepeat.render();
+
+    assertEquals(168, module.offsetHeight);
+  });
 });
