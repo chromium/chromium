@@ -24,6 +24,10 @@
 # the bots behave similarly.
 {
   'android_browsertests': {
+    'remove_from': [
+      # Remove from CQ bots due to capacity.
+      'android-lollipop-arm-rel',
+    ],
     'modifications': {
       'android-11-x86-fyi-rel': {
         'swarming': {
