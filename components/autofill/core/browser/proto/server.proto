@@ -222,7 +222,7 @@ message AutofillRandomizedFieldMetadata {
 
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
-// Next available id: 41
+// Next available id: 42
 message AutofillUploadContents {
   required string client_version = 1;
   required fixed64 form_signature = 2;
@@ -347,6 +347,21 @@ message AutofillUploadContents {
     // or automatic fillings. This field is used to detect static
     // placeholders.
     optional uint32 initial_value_hash = 40;
+
+    // The type of the username first flow signal.
+    enum SingleUsernameVoteType {
+      DEFAULT = 0;
+      // Recorded if Save/Update prompt was accepted without username edits.
+      NOT_EDITED_IN_PROMPT = 1;
+      // Recorded if Save/Update prompt was accepted after username edits.
+      EDITED_IN_PROMPT = 2;
+      // Recorded when a single username candidate value had whitespaces.
+      HAD_WHITESPACES = 3;
+    }
+
+    // The type of the username first flow vote signal, set iff |autofill_type|
+    // is SINGLE_USERNAME or NOT_USERNAME.
+    optional SingleUsernameVoteType single_username_vote_type = 41;
   }
   // Signature of the form action host (e.g. Hash64Bit("example.com")).
   optional fixed64 action_signature = 13;

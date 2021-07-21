@@ -2210,7 +2210,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
     }
 
     // Create possible username data.
-    const std::u16string possible_username = u"possible_username";
+    const std::u16string possible_username =
+        is_password_update ? saved_match_.username_value : u"possible_username";
     constexpr autofill::FieldRendererId kUsernameFieldRendererId(101);
     const std::u16string field_name = u"username_field";
     PossibleUsernameData possible_username_data(
@@ -2233,6 +2234,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
 
     ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                  &possible_username_data));
+    EXPECT_EQ(form_manager_->IsPasswordUpdate(), is_password_update);
 
     // Check that uploads for both username and password form happen.
     testing::InSequence in_sequence;
@@ -2246,10 +2248,12 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
     }
 
     // Upload for the username form.
+#if !defined(OS_ANDROID)
     EXPECT_CALL(mock_autofill_download_manager_,
                 StartUploadRequest(SignatureIs(kUsernameFormSignature), false,
                                    ServerFieldTypeSet{SINGLE_USERNAME}, _, true,
                                    nullptr));
+#endif  // !defined(OS_ANDROID)
 
     if (is_password_update) {
       // Upload for the password form.
@@ -2259,11 +2263,11 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
                       false, _, _, true, nullptr));
     }
 
-    if (!is_password_update) {
+    if (!is_password_update)
       form_manager_->Save();
-    } else {
+    else
       form_manager_->Update(saved_match_);
-    }
+
     Mock::VerifyAndClearExpectations(&mock_autofill_download_manager_);
   }
 }
@@ -2319,11 +2323,14 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
 
   // Upload for the username form. Ensure that we send `NOT_USERNAME` for the
   // username field.
+#if !defined(OS_ANDROID)
   EXPECT_CALL(
       mock_autofill_download_manager_,
       StartUploadRequest(SignatureIs(kUsernameFormSignature), false,
                          ServerFieldTypeSet{NOT_USERNAME}, _, true, nullptr));
-
+#else
+  EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
+#endif  // !defined(OS_ANDROID)
   form_manager_->Save();
 }
 
@@ -3016,8 +3023,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   FormData submitted_form = observed_form_only_password_fields_;
   submitted_form.fields[0].value = u"strongpassword";
   PasswordForm parsed_submitted_form;
-  EXPECT_CALL(*mock_password_save_manager(),
-              CreatePendingCredentials(_, _, _, _, _))
+  EXPECT_CALL(*mock_password_save_manager(), CreatePendingCredentials)
       .WillOnce(SaveArg<0>(&parsed_submitted_form));
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                &possible_username_data));

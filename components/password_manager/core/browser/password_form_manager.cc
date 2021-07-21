@@ -114,19 +114,6 @@ bool IsUsernameFirstFlowFeatureEnabled() {
   return base::FeatureList::IsEnabled(features::kUsernameFirstFlow);
 }
 
-// Find a field in |predictions| with given renderer id.
-const PasswordFieldPrediction* FindFieldPrediction(
-    const absl::optional<FormPredictions>& predictions,
-    autofill::FieldRendererId field_renderer_id) {
-  if (!predictions)
-    return nullptr;
-  for (const auto& field : predictions->fields) {
-    if (field.renderer_id == field_renderer_id)
-      return &field;
-  }
-  return nullptr;
-}
-
 void LogUsingPossibleUsername(PasswordManagerClient* client,
                               bool is_used,
                               const char* message) {
@@ -581,6 +568,11 @@ void PasswordFormManager::ProvisionallySaveFieldDataManagerInfo(
 }
 #endif  // defined(OS_IOS)
 
+void PasswordFormManager::SaveSuggestedUsernameValueToVotesUploader() {
+  votes_uploader_.set_suggested_username(
+      GetPendingCredentials().username_value);
+}
+
 std::unique_ptr<PasswordFormManager> PasswordFormManager::Clone() {
   // Fetcher is cloned to avoid re-fetching data from PasswordStore.
   std::unique_ptr<FormFetcher> fetcher = form_fetcher_->Clone();
@@ -718,18 +710,24 @@ bool PasswordFormManager::ProvisionallySave(
   votes_uploader_.clear_single_username_vote_data();
 
   if (IsUsernameFirstFlowFeatureEnabled() &&
-      parsed_submitted_form_->username_value.empty() &&
-      UsePossibleUsernameToBuildCredential(possible_username)) {
-    parsed_submitted_form_->username_value = possible_username->value;
-    metrics_recorder_->set_possible_username_used(true);
-    // PasswordManager does not upload votes for fields that have no names or
-    // ids to avoid aggregation of multiple unrelated fields during single
-    // username detection. (crbug.com/1209143)
-    if (!possible_username->field_name.empty() &&
-        possible_username->form_predictions) {
-      votes_uploader_.set_single_username_vote_data(
-          possible_username->renderer_id, *possible_username->form_predictions);
+      parsed_submitted_form_->username_value.empty() && possible_username &&
+      IsPossibleSingleUsernameAvailable(possible_username)) {
+    // Suggest the possible username value in a prompt if the server confirmed
+    // it is a single username field. Otherwise, |possible_username| is used
+    // only for voting.
+    if (possible_username->HasSingleUsernameServerPrediction()) {
+      parsed_submitted_form_->username_value = possible_username->value;
+      LogUsingPossibleUsername(client_, /*is_used*/ true,
+                               "Valid possible username, populated in prompt");
+    } else {
+      LogUsingPossibleUsername(
+          client_, /*is_used*/ true,
+          "Valid possible username, not populated in prompt");
     }
+    metrics_recorder_->set_possible_username_used(true);
+    votes_uploader_.set_single_username_vote_data(
+        possible_username->renderer_id, possible_username->value,
+        possible_username->form_predictions.value_or(FormPredictions()));
   }
   CreatePendingCredentials();
   return true;
@@ -992,8 +990,8 @@ void PasswordFormManager::CalculateFillingAssistanceMetric(
           ->ComputePasswordAccountStorageUsageLevel());
 }
 
-bool PasswordFormManager::UsePossibleUsernameToBuildCredential(
-    const PossibleUsernameData* possible_username) {
+bool PasswordFormManager::IsPossibleSingleUsernameAvailable(
+    const PossibleUsernameData* possible_username) const {
   if (!possible_username) {
     LogUsingPossibleUsername(client_, /*is_used*/ false, "Null");
     return false;
@@ -1011,7 +1009,15 @@ bool PasswordFormManager::UsePossibleUsernameToBuildCredential(
     return false;
   }
 
-  if (IsPossibleUsernameStale(*possible_username)) {
+  // PasswordManager does not upload votes for fields that have no names or
+  // ids to avoid aggregation of multiple unrelated fields during single
+  // username detection. (crbug.com/1209143)
+  if (possible_username->field_name.empty()) {
+    LogUsingPossibleUsername(client_, /*is_used*/ false, "Empty field name");
+    return false;
+  }
+
+  if (possible_username->IsStale()) {
     LogUsingPossibleUsername(client_, /*is_used*/ false,
                              "Possible username data expired");
     return false;
@@ -1028,18 +1034,7 @@ bool PasswordFormManager::UsePossibleUsernameToBuildCredential(
     }
   }
 
-  // Check if there is a server prediction.
-  const PasswordFieldPrediction* field_prediction = FindFieldPrediction(
-      possible_username->form_predictions, possible_username->renderer_id);
-  if (field_prediction && field_prediction->type == SINGLE_USERNAME) {
-    LogUsingPossibleUsername(client_, /*is_used*/ true,
-                             "Server predictions available");
-    return true;
-  } else {
-    LogUsingPossibleUsername(client_, /*is_used*/ false,
-                             "No server predictions");
-    return false;
-  }
+  return true;
 }
 
 void PasswordFormManager::UpdatePredictionsForObservedForm(

@@ -885,6 +885,10 @@ TEST_P(PasswordManagerTest, FormSubmitNoGoodMatch) {
       .WillOnce(WithArg<1>(InvokeConsumer(store_.get(), existing_different)));
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
+  ASSERT_TRUE(manager()->form_managers().front());
+  const VotesUploader& votes_uploader =
+      manager()->form_managers().front()->votes_uploader();
+
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
       .WillRepeatedly(Return(true));
   OnPasswordFormSubmitted(form.form_data);
@@ -899,6 +903,9 @@ TEST_P(PasswordManagerTest, FormSubmitNoGoodMatch) {
   manager()->DidNavigateMainFrame(true);
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
+
+  // Check that suggested value was properly recorded in VotesUploader.
+  EXPECT_EQ(form.username_value, votes_uploader.suggested_username());
 
   // Simulate saving the form.
   EXPECT_CALL(*store_, AddLogin(FormMatches(form)));
@@ -1084,6 +1091,9 @@ TEST_P(PasswordManagerTest, FormSubmit) {
   manager()->OnPasswordFormsParsed(&driver_, observed);
   EXPECT_TRUE(manager()->IsPasswordFieldDetectedOnPage());
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
+  ASSERT_TRUE(manager()->form_managers().front());
+  const VotesUploader& votes_uploader =
+      manager()->form_managers().front()->votes_uploader();
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
       .WillRepeatedly(Return(true));
@@ -1096,6 +1106,9 @@ TEST_P(PasswordManagerTest, FormSubmit) {
   observed.clear();
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
+
+  // Check that suggested value was properly recorded in VotesUploader.
+  EXPECT_EQ(form.username_value, votes_uploader.suggested_username());
 
   // Simulate saving the form, as if the info bar was accepted.
   EXPECT_CALL(*store_, AddLogin(FormMatches(form)));
@@ -3907,6 +3920,9 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
   form_data.fields.push_back(confirm_password_field);
 
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  ASSERT_TRUE(manager()->form_managers().front());
+  const VotesUploader& votes_uploader =
+      manager()->form_managers().front()->votes_uploader();
 
   form_data.fields[0].value = u"oldpass";
   form_data.fields[1].value = u"newpass";
@@ -3918,6 +3934,9 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr)
       .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
   manager()->OnPasswordFormCleared(&driver_, form_data);
+
+  // Check that suggested username was properly recorded in VotesUploader.
+  EXPECT_EQ(saved_match.username_value, votes_uploader.suggested_username());
 }
 
 // Similar test as above with fields that have empty names.

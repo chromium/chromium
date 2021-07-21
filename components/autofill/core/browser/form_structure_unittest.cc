@@ -5145,6 +5145,29 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_MissingNames) {
   EXPECT_EQ(expected_query_string, encoded_query_string);
 }
 
+TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameVoteType) {
+  FormData form;
+  form.url = GURL("http://www.foo.com/");
+  FormFieldData field;
+  field.name = u"text field";
+  field.unique_renderer_id = MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  FormStructure form_structure(form);
+  form_structure.set_passwords_were_revealed(true);
+  form_structure.field(0)->set_single_username_vote_type(
+      AutofillUploadContents::Field::EDITED_IN_PROMPT);
+
+  AutofillUploadContents upload;
+  std::vector<FormSignature> signatures;
+  EXPECT_TRUE(form_structure.EncodeUploadRequest(
+      {{}} /* available_field_types */, false /* form_was_autofilled */,
+      std::string() /* login_form_signature */, true /* observed_submission */,
+      false /* is_raw_metadata_uploading_enabled */, &upload, &signatures));
+  EXPECT_EQ(form_structure.field(0)->single_username_vote_type(),
+            upload.field(0).single_username_vote_type());
+}
+
 // Test that server predictions get precedence over htmll types if they are
 // overrides.
 TEST_F(FormStructureTestImpl, ParseQueryResponse_ServerPredictionIsOverride) {

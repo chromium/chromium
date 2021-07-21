@@ -64,6 +64,19 @@ MATCHER_P3(FieldInfoHasData, form_signature, field_signature, field_type, "") {
 constexpr int kNumberOfPasswordAttributes =
     static_cast<int>(PasswordAttribute::kPasswordAttributesCount);
 
+constexpr autofill::FieldRendererId kSingleUsernameRendererId(101);
+constexpr FieldSignature kSingleUsernameFieldSignature(1234);
+constexpr FormSignature kSingleUsernameFormSignature(1000);
+
+FormPredictions MakeSimpleSingleUsernamePredictions() {
+  FormPredictions form_predictions;
+  form_predictions.form_signature = kSingleUsernameFormSignature;
+  form_predictions.fields.emplace_back();
+  form_predictions.fields.back().renderer_id = kSingleUsernameRendererId;
+  form_predictions.fields.back().signature = kSingleUsernameFieldSignature;
+  return form_predictions;
+}
+
 class MockAutofillDownloadManager : public AutofillDownloadManager {
  public:
   MockAutofillDownloadManager()
@@ -402,114 +415,258 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_NonAsciiPassword) {
 
 TEST_F(VotesUploaderTest, NoSingleUsernameDataNoUpload) {
   VotesUploader votes_uploader(&client_, false);
-  EXPECT_CALL(mock_autofill_download_manager_,
-              StartUploadRequest(_, _, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
   votes_uploader.MaybeSendSingleUsernameVote();
 }
 
-TEST_F(VotesUploaderTest, UploadSingleUsername) {
-  for (bool credentials_saved : {false, true}) {
-    SCOPED_TRACE(testing::Message("credentials_saved = ") << credentials_saved);
-    VotesUploader votes_uploader(&client_, false);
+TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
+  VotesUploader votes_uploader(&client_, false);
 
-    MockFieldInfoManager mock_field_manager;
-    ON_CALL(mock_field_manager, GetFieldType(_, _))
-        .WillByDefault(Return(UNKNOWN_TYPE));
-    ON_CALL(client_, GetFieldInfoManager())
-        .WillByDefault(Return(&mock_field_manager));
+  MockFieldInfoManager mock_field_manager;
+  ON_CALL(mock_field_manager, GetFieldType(_, _))
+      .WillByDefault(Return(UNKNOWN_TYPE));
+  ON_CALL(client_, GetFieldInfoManager())
+      .WillByDefault(Return(&mock_field_manager));
 
-    constexpr autofill::FieldRendererId kUsernameRendererId(101);
-    constexpr FieldSignature kUsernameFieldSignature(1234);
-    constexpr FormSignature kFormSignature(1000);
+  // Make form predictions for a form with multiple fields.
+  FormPredictions form_predictions;
+  form_predictions.form_signature = kSingleUsernameFormSignature;
+  // Add a non-username field.
+  form_predictions.fields.emplace_back();
+  form_predictions.fields.back().renderer_id.value() =
+      kSingleUsernameRendererId.value() - 1;
+  form_predictions.fields.back().signature.value() =
+      kSingleUsernameFieldSignature.value() - 1;
+  // Add the username field.
+  form_predictions.fields.emplace_back();
+  form_predictions.fields.back().renderer_id = kSingleUsernameRendererId;
+  form_predictions.fields.back().signature = kSingleUsernameFieldSignature;
 
-    FormPredictions form_predictions;
-    form_predictions.form_signature = kFormSignature;
-    // Add a non-username field.
-    form_predictions.fields.emplace_back();
-    form_predictions.fields.back().renderer_id.value() =
-        kUsernameRendererId.value() - 1;
-    form_predictions.fields.back().signature.value() =
-        kUsernameFieldSignature.value() - 1;
+  std::u16string single_username_candidate_value = u"username_candidate_value";
+  votes_uploader.set_single_username_vote_data(kSingleUsernameRendererId,
+                                               single_username_candidate_value,
+                                               form_predictions);
+  votes_uploader.set_suggested_username(single_username_candidate_value);
+  votes_uploader.set_saved_username(single_username_candidate_value);
 
-    // Add the username field.
-    form_predictions.fields.emplace_back();
-    form_predictions.fields.back().renderer_id = kUsernameRendererId;
-    form_predictions.fields.back().signature = kUsernameFieldSignature;
+#if !defined(OS_ANDROID)
+  ServerFieldTypeSet expected_types = {SINGLE_USERNAME};
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(AllOf(SignatureIs(kSingleUsernameFormSignature),
+                               UploadedSingleUsernameVoteTypeIs(
+                                   autofill::AutofillUploadContents::Field::
+                                       NOT_EDITED_IN_PROMPT)),
+                         false, expected_types, std::string(), true,
+                         /* pref_service= */ nullptr));
+#else
+  EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
+#endif  // !defined(OS_ANDROID)
 
-    votes_uploader.set_single_username_vote_data(kUsernameRendererId,
-                                                 form_predictions);
-
-    ServerFieldTypeSet expected_types = {SINGLE_USERNAME};
-    EXPECT_CALL(mock_autofill_download_manager_,
-                StartUploadRequest(SignatureIs(kFormSignature), false,
-                                   expected_types, std::string(), true,
-                                   /* pref_service= */ nullptr));
-
-    votes_uploader.MaybeSendSingleUsernameVote();
-  }
+  votes_uploader.MaybeSendSingleUsernameVote();
 }
 
-// Verifies that the sent username vote depends on whether the username was
-// changed or not.
-TEST_F(VotesUploaderTest, UploadedVotesDependOnUsernameChangeState) {
-  using State = VotesUploader::UsernameChangeState;
-  constexpr autofill::FieldRendererId kUsernameRendererId(101);
-  constexpr FieldSignature kUsernameFieldSignature(1234);
-  constexpr FormSignature kFormSignature(1000);
+// Tests that a negeative vote is sent if the username candidate field
+// value contained whitespaces.
+TEST_F(VotesUploaderTest, UploadNotSingleUsernameForWhitespaces) {
+  VotesUploader votes_uploader(&client_, false);
 
+  MockFieldInfoManager mock_field_manager;
+  ON_CALL(mock_field_manager, GetFieldType(_, _))
+      .WillByDefault(Return(UNKNOWN_TYPE));
+  ON_CALL(client_, GetFieldInfoManager())
+      .WillByDefault(Return(&mock_field_manager));
+
+  votes_uploader.set_single_username_vote_data(
+      kSingleUsernameRendererId,
+      /*username_candidate_value=*/u"some search query",
+      MakeSimpleSingleUsernamePredictions());
+
+  ServerFieldTypeSet expected_types = {NOT_USERNAME};
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(
+          AllOf(SignatureIs(kSingleUsernameFormSignature),
+                UploadedSingleUsernameVoteTypeIs(
+                    autofill::AutofillUploadContents::Field::HAD_WHITESPACES)),
+          false, expected_types, std::string(), true,
+          /* pref_service= */ nullptr));
+
+  votes_uploader.MaybeSendSingleUsernameVote();
+}
+
+// Verifies that SINGLE_USERNAME vote and NOT_EDITED_IN_PROMPT vote type
+// are sent if single username candidate value was suggested and accepted.
+TEST_F(VotesUploaderTest, SingleUsernameValueSuggestedAndAccepted) {
   MockFieldInfoManager mock_field_manager;
   ON_CALL(mock_field_manager, GetFieldType).WillByDefault(Return(UNKNOWN_TYPE));
   ON_CALL(client_, GetFieldInfoManager)
       .WillByDefault(Return(&mock_field_manager));
 
-  for (State username_change_state :
-       {State::kUnchanged, State::kChangedToKnownValue,
-        State::kChangedToUnknownValue}) {
-    SCOPED_TRACE(testing::Message("username_change_state = ")
-                 << base::to_underlying(username_change_state));
-    ServerFieldTypeSet kExpectedVotes = {
-        username_change_state == State::kUnchanged ? SINGLE_USERNAME
-                                                   : NOT_USERNAME};
+  VotesUploader votes_uploader(&client_, false);
+  std::u16string single_username_candidate_value = u"username_candidate_value";
+  votes_uploader.set_single_username_vote_data(
+      kSingleUsernameRendererId, single_username_candidate_value,
+      MakeSimpleSingleUsernamePredictions());
+  votes_uploader.set_suggested_username(single_username_candidate_value);
+  votes_uploader.set_saved_username(single_username_candidate_value);
 
-    VotesUploader votes_uploader(&client_, false);
-    votes_uploader.set_username_change_state(username_change_state);
+#if !defined(OS_ANDROID)
+  ServerFieldTypeSet expected_types = {SINGLE_USERNAME};
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(AllOf(SignatureIs(kSingleUsernameFormSignature),
+                               UploadedSingleUsernameVoteTypeIs(
+                                   autofill::AutofillUploadContents::Field::
+                                       NOT_EDITED_IN_PROMPT)),
+                         /*form_was_autofilled=*/false, expected_types,
+                         /*login_form_signature=*/"",
+                         /*observed_submission=*/true,
+                         /*pref_service=*/nullptr));
+#else
+  EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
+#endif  // !defined(OS_ANDROID)
+  votes_uploader.MaybeSendSingleUsernameVote();
+}
 
-    FormPredictions form_predictions;
-    form_predictions.form_signature = kFormSignature;
-    form_predictions.fields.push_back({
-        .renderer_id = kUsernameRendererId,
-        .signature = kUsernameFieldSignature,
-    });
-    votes_uploader.set_single_username_vote_data(kUsernameRendererId,
-                                                 form_predictions);
-    EXPECT_CALL(
-        mock_autofill_download_manager_,
-        StartUploadRequest(SignatureIs(kFormSignature),
-                           /*form_was_autofilled=*/false, kExpectedVotes,
-                           /*login_form_signature=*/"",
-                           /*observed_submission=*/true,
-                           /*pref_service=*/nullptr));
-    votes_uploader.MaybeSendSingleUsernameVote();
-  }
+// Verifies that NOT_USERNAME vote and NOT_EDITED_IN_PROMPT vote type
+// are sent if value other than single username candidate was suggested and
+// accepted.
+TEST_F(VotesUploaderTest, SingleUsernameOtherValueSuggestedAndAccepted) {
+  MockFieldInfoManager mock_field_manager;
+  ON_CALL(mock_field_manager, GetFieldType).WillByDefault(Return(UNKNOWN_TYPE));
+  ON_CALL(client_, GetFieldInfoManager)
+      .WillByDefault(Return(&mock_field_manager));
+
+  VotesUploader votes_uploader(&client_, false);
+  std::u16string single_username_candidate_value = u"username_candidate_value";
+  votes_uploader.set_single_username_vote_data(
+      kSingleUsernameRendererId, single_username_candidate_value,
+      MakeSimpleSingleUsernamePredictions());
+  std::u16string suggested_value = u"other_value";
+  votes_uploader.set_suggested_username(suggested_value);
+  votes_uploader.set_saved_username(suggested_value);
+
+#if !defined(OS_ANDROID)
+  ServerFieldTypeSet expected_types = {NOT_USERNAME};
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(AllOf(SignatureIs(kSingleUsernameFormSignature),
+                               UploadedSingleUsernameVoteTypeIs(
+                                   autofill::AutofillUploadContents::Field::
+                                       NOT_EDITED_IN_PROMPT)),
+                         /*form_was_autofilled=*/false, expected_types,
+                         /*login_form_signature=*/"",
+                         /*observed_submission=*/true,
+                         /*pref_service=*/nullptr));
+#else
+  EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
+#endif  // !defined(OS_ANDROID)
+  votes_uploader.MaybeSendSingleUsernameVote();
+}
+
+// Verifies that SINGLE_USERNAME vote and EDITED_IN_PROMPT vote type are sent
+// if value other than single username candidate was suggested, but the user
+// has inputted single username candidate value in prompt.
+TEST_F(VotesUploaderTest, SingleUsernameValueSetInPrompt) {
+  MockFieldInfoManager mock_field_manager;
+  ON_CALL(mock_field_manager, GetFieldType).WillByDefault(Return(UNKNOWN_TYPE));
+  ON_CALL(client_, GetFieldInfoManager)
+      .WillByDefault(Return(&mock_field_manager));
+
+  VotesUploader votes_uploader(&client_, false);
+  std::u16string single_username_candidate_value = u"username_candidate_value";
+  votes_uploader.set_single_username_vote_data(
+      kSingleUsernameRendererId, single_username_candidate_value,
+      MakeSimpleSingleUsernamePredictions());
+  std::u16string suggested_value = u"other_value";
+  votes_uploader.set_suggested_username(suggested_value);
+  votes_uploader.set_saved_username(single_username_candidate_value);
+
+#if !defined(OS_ANDROID)
+  ServerFieldTypeSet expected_types = {SINGLE_USERNAME};
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(
+          AllOf(SignatureIs(kSingleUsernameFormSignature),
+                UploadedSingleUsernameVoteTypeIs(
+                    autofill::AutofillUploadContents::Field::EDITED_IN_PROMPT)),
+          /*form_was_autofilled=*/false, expected_types,
+          /*login_form_signature=*/"",
+          /*observed_submission=*/true,
+          /*pref_service=*/nullptr));
+#else
+  EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
+#endif  // !defined(OS_ANDROID)
+  votes_uploader.MaybeSendSingleUsernameVote();
+}
+
+// Verifies that NOT_USERNAME vote and EDITED_IN_PROMPT vote type are sent
+// if single username candidate value was suggested, but the user has deleted
+// it in prompt.
+TEST_F(VotesUploaderTest, SingleUsernameValueDeletedInPrompt) {
+  MockFieldInfoManager mock_field_manager;
+  ON_CALL(mock_field_manager, GetFieldType).WillByDefault(Return(UNKNOWN_TYPE));
+  ON_CALL(client_, GetFieldInfoManager)
+      .WillByDefault(Return(&mock_field_manager));
+
+  VotesUploader votes_uploader(&client_, false);
+  std::u16string single_username_candidate_value = u"username_candidate_value";
+  votes_uploader.set_single_username_vote_data(
+      kSingleUsernameRendererId, single_username_candidate_value,
+      MakeSimpleSingleUsernamePredictions());
+  votes_uploader.set_suggested_username(single_username_candidate_value);
+  votes_uploader.set_saved_username(u"");
+
+#if !defined(OS_ANDROID)
+  ServerFieldTypeSet expected_types = {NOT_USERNAME};
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(
+          AllOf(SignatureIs(kSingleUsernameFormSignature),
+                UploadedSingleUsernameVoteTypeIs(
+                    autofill::AutofillUploadContents::Field::EDITED_IN_PROMPT)),
+          /*form_was_autofilled=*/false, expected_types,
+          /*login_form_signature=*/"",
+          /*observed_submission=*/true,
+          /*pref_service=*/nullptr));
+#else
+  EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
+#endif  // !defined(OS_ANDROID)
+  votes_uploader.MaybeSendSingleUsernameVote();
+}
+
+// Verifies that no vote is sent if the user has deleted the username value
+// suggested in prompt, and suggested value wasn't equal to single username
+// candidate value.
+TEST_F(VotesUploaderTest, NotSingleUsernameValueDeletedInPrompt) {
+  MockFieldInfoManager mock_field_manager;
+  ON_CALL(mock_field_manager, GetFieldType).WillByDefault(Return(UNKNOWN_TYPE));
+  ON_CALL(client_, GetFieldInfoManager)
+      .WillByDefault(Return(&mock_field_manager));
+
+  VotesUploader votes_uploader(&client_, false);
+  std::u16string single_username_candidate_value = u"username_candidate_value";
+  votes_uploader.set_single_username_vote_data(
+      kSingleUsernameRendererId, single_username_candidate_value,
+      MakeSimpleSingleUsernamePredictions());
+  std::u16string other_value = u"other_value";
+  votes_uploader.set_suggested_username(other_value);
+  votes_uploader.set_saved_username(u"");
+
+  // Expect no upload, as th signal is not informative to us.
+  EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
+  votes_uploader.MaybeSendSingleUsernameVote();
 }
 
 TEST_F(VotesUploaderTest, SaveSingleUsernameVote) {
   VotesUploader votes_uploader(&client_, false);
-  constexpr autofill::FieldRendererId kUsernameRendererId(101);
-  constexpr autofill::FieldSignature kUsernameFieldSignature(1234);
-  constexpr autofill::FormSignature kFormSignature(1000);
 
-  FormPredictions form_predictions;
-  form_predictions.form_signature = kFormSignature;
-
-  // Add the username field.
-  form_predictions.fields.emplace_back();
-  form_predictions.fields.back().renderer_id = kUsernameRendererId;
-  form_predictions.fields.back().signature = kUsernameFieldSignature;
-
-  votes_uploader.set_single_username_vote_data(kUsernameRendererId,
-                                               form_predictions);
+  std::u16string single_username_candidate_value = u"username_candidate_value";
+  votes_uploader.set_single_username_vote_data(
+      kSingleUsernameRendererId, single_username_candidate_value,
+      MakeSimpleSingleUsernamePredictions());
+  votes_uploader.set_saved_username(single_username_candidate_value);
 
   // Init store and expect that adding field info is called.
   scoped_refptr<MockPasswordStore> store = new MockPasswordStore;
@@ -518,9 +675,9 @@ TEST_F(VotesUploaderTest, SaveSingleUsernameVote) {
 #if defined(OS_ANDROID)
   EXPECT_CALL(*store, AddFieldInfoImpl).Times(0);
 #else
-  EXPECT_CALL(*store,
-              AddFieldInfoImpl(FieldInfoHasData(
-                  kFormSignature, kUsernameFieldSignature, SINGLE_USERNAME)));
+  EXPECT_CALL(*store, AddFieldInfoImpl(FieldInfoHasData(
+                          kSingleUsernameFormSignature,
+                          kSingleUsernameFieldSignature, SINGLE_USERNAME)));
 #endif  // defined(OS_ANDROID)
 
   // Init FieldInfoManager.
@@ -535,28 +692,19 @@ TEST_F(VotesUploaderTest, SaveSingleUsernameVote) {
 
 TEST_F(VotesUploaderTest, DontUploadSingleUsernameWhenAlreadyUploaded) {
   VotesUploader votes_uploader(&client_, false);
-  constexpr autofill::FieldRendererId kUsernameRendererId(101);
-  constexpr autofill::FieldSignature kUsernameFieldSignature(1234);
-  constexpr autofill::FormSignature kFormSignature(1000);
 
   MockFieldInfoManager mock_field_manager;
   ON_CALL(client_, GetFieldInfoManager())
       .WillByDefault(Return(&mock_field_manager));
+
   // Simulate that the vote has been already uploaded.
-  ON_CALL(mock_field_manager,
-          GetFieldType(kFormSignature, kUsernameFieldSignature))
+  ON_CALL(mock_field_manager, GetFieldType(kSingleUsernameFormSignature,
+                                           kSingleUsernameFieldSignature))
       .WillByDefault(Return(SINGLE_USERNAME));
 
-  FormPredictions form_predictions;
-  form_predictions.form_signature = kFormSignature;
-
-  // Add the username field.
-  form_predictions.fields.emplace_back();
-  form_predictions.fields.back().renderer_id = kUsernameRendererId;
-  form_predictions.fields.back().signature = kUsernameFieldSignature;
-
-  votes_uploader.set_single_username_vote_data(kUsernameRendererId,
-                                               form_predictions);
+  votes_uploader.set_single_username_vote_data(
+      kSingleUsernameRendererId, u"username_candidate_value",
+      MakeSimpleSingleUsernamePredictions());
 
   // Expect no upload, since the vote has been already uploaded.
   EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
