@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -34,6 +35,7 @@ const size_t kMaxDevicesForFilter = 5;
 class BluetoothUtilsTest : public testing::Test {
  protected:
   BluetoothUtilsTest() = default;
+  base::HistogramTester histogram_tester;
 
   void SetUp() override {
     BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
@@ -260,6 +262,23 @@ TEST_F(BluetoothUtilsTest,
 
   VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
                                   0u /* num_expected_remaining_devices */);
+}
+
+TEST_F(BluetoothUtilsTest, TestUiSurfaceDisplayedMetric) {
+  RecordUiSurfaceDisplayed(BluetoothUiSurface::kSettingsDeviceListSubpage);
+
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.UiSurfaceDisplayed",
+      BluetoothUiSurface::kSettingsDeviceListSubpage, 1);
+
+  RecordUiSurfaceDisplayed(BluetoothUiSurface::kSettingsDeviceSubpage);
+
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.UiSurfaceDisplayed",
+      BluetoothUiSurface::kSettingsDeviceListSubpage, 1);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.UiSurfaceDisplayed",
+                                     BluetoothUiSurface::kSettingsDeviceSubpage,
+                                     1);
 }
 
 }  // namespace device

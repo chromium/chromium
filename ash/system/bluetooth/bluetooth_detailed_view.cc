@@ -23,6 +23,7 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -135,6 +136,8 @@ BluetoothDetailedView::BluetoothDetailedView(DetailedViewDelegate* delegate,
                                              LoginStatus login)
     : TrayDetailedView(delegate), login_(login) {
   CreateItems();
+  device::RecordUiSurfaceDisplayed(
+      device::BluetoothUiSurface::kBluetoothQuickSettings);
 }
 
 BluetoothDetailedView::~BluetoothDetailedView() = default;

@@ -49,6 +49,22 @@ enum class ConnectionFailureReason {
   kMaxValue = kNotConnectable
 };
 
+// This enum is tied directly to a UMA enum defined in
+// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+// change one without changing the other).
+enum class BluetoothUiSurface {
+  kSettingsDeviceListSubpage = 0,
+  kSettingsDeviceSubpage = 1,
+  kSettingsPairingDialog = 2,
+  kBluetoothQuickSettings = 3,
+  kStandalonePairingDialog = 4,
+  kPairedNotification = 5,
+  kConnectionToast = 6,
+  kDisconnectedToast = 7,
+  kOobeHidDetection = 8,
+  kMaxValue = kOobeHidDetection
+};
+
 // Return filtered devices based on the filter type and max number of devices.
 DEVICE_BLUETOOTH_EXPORT device::BluetoothAdapter::DeviceList
 FilterBluetoothDeviceList(const BluetoothAdapter::DeviceList& devices,
@@ -76,6 +92,10 @@ DEVICE_BLUETOOTH_EXPORT void RecordDeviceSelectionDuration(
 
 // Record each time the local device's Bluetooth is powered on or off.
 DEVICE_BLUETOOTH_EXPORT void RecordPoweredState(bool is_powered);
+
+// Record each time a bluetooth UI surface is displayed.
+DEVICE_BLUETOOTH_EXPORT void RecordUiSurfaceDisplayed(
+    BluetoothUiSurface ui_surface);
 
 }  // namespace device
 

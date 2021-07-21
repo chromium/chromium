@@ -224,6 +224,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.UiSurfaceDisplayed"
+    enum="BluetoothUiSurface" expires_after="2022-07-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>Metric emmitted each time a UI surface is shown.</summary>
+</histogram>
+
 <histogram
     name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result.FailureReason{UserInitiatedReconnectionUISurfaces}"
     enum="BluetoothConnectionFailureReason" expires_after="2022-03-05">

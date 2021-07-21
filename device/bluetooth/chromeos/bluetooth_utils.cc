@@ -322,4 +322,9 @@ void RecordPoweredState(bool is_powered) {
   base::UmaHistogramBoolean("Bluetooth.ChromeOS.PoweredState", is_powered);
 }
 
+void RecordUiSurfaceDisplayed(BluetoothUiSurface ui_surface) {
+  base::UmaHistogramEnumeration("Bluetooth.ChromeOS.UiSurfaceDisplayed",
+                                ui_surface);
+}
+
 }  // namespace device
