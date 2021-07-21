@@ -1033,11 +1033,6 @@ bool SwapChainPresenter::PresentToSwapChain(ui::DCRendererLayerParams& params) {
     return false;
   }
 
-  // TODO(sunnyps): Use correct color space for uploaded video frames.
-  gfx::ColorSpace src_color_space = gfx::ColorSpace::CreateREC709();
-  if (image_dxgi && image_dxgi->color_space().IsValid())
-    src_color_space = image_dxgi->color_space();
-
   absl::optional<DXGI_HDR_METADATA_HDR10> stream_metadata;
   if (params.hdr_metadata.IsValid()) {
     stream_metadata =
@@ -1045,7 +1040,7 @@ bool SwapChainPresenter::PresentToSwapChain(ui::DCRendererLayerParams& params) {
   }
 
   if (!VideoProcessorBlt(input_texture, input_level, keyed_mutex,
-                         params.content_rect, src_color_space, content_is_hdr,
+                         params.content_rect, input_color_space, content_is_hdr,
                          stream_metadata)) {
     return false;
   }
