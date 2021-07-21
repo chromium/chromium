@@ -1770,6 +1770,106 @@ TEST_F(TileManagerTest, ActivateAndDrawWhenOOM) {
   }
 }
 
+class TileManagerOcclusionTest : public TileManagerTest {
+ public:
+  LayerTreeSettings CreateSettings() override {
+    auto settings = TestLayerTreeHostBase::CreateSettings();
+    settings.create_low_res_tiling = true;
+    settings.use_occlusion_for_tile_prioritization = true;
+    return settings;
+  }
+
+  void PrepareTilesAndWaitUntilDone(
+      const GlobalStateThatImpactsTilePriority& state) {
+    base::RunLoop run_loop;
+    EXPECT_CALL(MockHostImpl(), NotifyAllTileTasksCompleted())
+        .WillOnce(testing::Invoke([&run_loop]() { run_loop.Quit(); }));
+    tile_manager()->PrepareTiles(state);
+    run_loop.Run();
+    tile_manager()->CheckForCompletedTasks();
+  }
+
+  TileManager* tile_manager() { return host_impl()->tile_manager(); }
+};
+
+TEST_F(TileManagerOcclusionTest, OccludedTileEvictedForVisibleTile) {
+  gfx::Size layer_bounds(256, 256);
+  host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(layer_bounds));
+
+  SetupPendingTree(FakeRasterSource::CreateFilledWithText(layer_bounds));
+  const int initial_picture_id = pending_layer()->id();
+  ActivateTree();
+
+  GlobalStateThatImpactsTilePriority global_state =
+      host_impl()->global_tile_state();
+  const LayerTreeSettings settings = CreateSettings();
+  global_state.hard_memory_limit_in_bytes =
+      global_state.soft_memory_limit_in_bytes =
+          settings.default_tile_size.GetArea() * 4 + 1;
+
+  // Call PrepareTiles and wait for it to complete. It's necessary to wait for
+  // completion so that the resource is pushed to the tile, which is used
+  // in calculating eviction.
+  PrepareTilesAndWaitUntilDone(global_state);
+
+  // At this point the initial PictureLayerImpl should have a Tile with a
+  // resource.
+  {
+    PictureLayerImpl* initial_layer = static_cast<PictureLayerImpl*>(
+        host_impl()->active_tree()->LayerById(initial_picture_id));
+    ASSERT_NE(initial_layer, nullptr);
+    ASSERT_EQ(1u, initial_layer->picture_layer_tiling_set()->num_tilings());
+    std::vector<Tile*> initial_layer_tiles =
+        initial_layer->picture_layer_tiling_set()
+            ->tiling_at(0)
+            ->AllTilesForTesting();
+    ASSERT_EQ(1u, initial_layer_tiles.size());
+    EXPECT_TRUE(initial_layer_tiles[0]->draw_info().has_resource());
+  }
+
+  // Add another layer on top. As there is only enough memory for one tile,
+  // the top most tile should get a raster task and the bottom layer should
+  // not.
+  SetupPendingTree(FakeRasterSource::CreateFilledWithText(layer_bounds));
+
+  // Advance the frame to ensure PictureLayerTilingSet applies the occlusion to
+  // the PictureLayerTiling. The amount of time advanced doesn't matter.
+  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromSeconds(2));
+
+  auto* picture_layer = AddLayer<FakePictureLayerImpl>(
+      host_impl()->pending_tree(),
+      FakeRasterSource::CreateFilledWithText(layer_bounds));
+  const int top_most_layer_id = picture_layer->id();
+  picture_layer->SetDrawsContent(true);
+  picture_layer->SetContentsOpaque(true);
+  CopyProperties(pending_layer(), picture_layer);
+  ActivateTree();
+  PrepareTilesAndWaitUntilDone(global_state);
+  {
+    PictureLayerImpl* initial_layer = static_cast<PictureLayerImpl*>(
+        host_impl()->active_tree()->LayerById(initial_picture_id));
+    ASSERT_NE(initial_layer, nullptr);
+    ASSERT_EQ(1u, initial_layer->picture_layer_tiling_set()->num_tilings());
+    std::vector<Tile*> initial_layer_tiles =
+        initial_layer->picture_layer_tiling_set()
+            ->tiling_at(0)
+            ->AllTilesForTesting();
+    ASSERT_EQ(1u, initial_layer_tiles.size());
+    EXPECT_FALSE(initial_layer_tiles[0]->draw_info().has_resource());
+
+    PictureLayerImpl* top_most_layer = static_cast<PictureLayerImpl*>(
+        host_impl()->active_tree()->LayerById(top_most_layer_id));
+    ASSERT_NE(top_most_layer, nullptr);
+    ASSERT_EQ(1u, top_most_layer->picture_layer_tiling_set()->num_tilings());
+    std::vector<Tile*> top_most_layer_tiles =
+        top_most_layer->picture_layer_tiling_set()
+            ->tiling_at(0)
+            ->AllTilesForTesting();
+    ASSERT_EQ(1u, top_most_layer_tiles.size());
+    EXPECT_TRUE(top_most_layer_tiles[0]->draw_info().has_resource());
+  }
+}
+
 class PixelInspectTileManagerTest : public TileManagerTest {
  public:
   ~PixelInspectTileManagerTest() override {

@@ -18,6 +18,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
+#include "cc/layers/picture_layer_impl.h"
 #include "cc/raster/raster_source.h"
 #include "cc/tiles/prioritized_tile.h"
 #include "cc/tiles/tile.h"
@@ -931,9 +932,16 @@ TilePriority PictureLayerTiling::ComputePriorityForTile(
   DCHECK_EQ(ComputePriorityRectTypeForTile(tile), priority_rect_type);
   DCHECK_EQ(TileAt(tile->tiling_i_index(), tile->tiling_j_index()), tile);
 
-  TilePriority::PriorityBin priority_bin = client_->HasValidTilePriorities()
-                                               ? TilePriority::NOW
-                                               : TilePriority::EVENTUALLY;
+  TilePriority::PriorityBin priority_bin;
+  if (client_->HasValidTilePriorities()) {
+    // Occluded tiles are given a lower PriorityBin to ensure they are evicted
+    // before non-occluded tiles.
+    priority_bin =
+        IsTileOccluded(tile) ? TilePriority::SOON : TilePriority::NOW;
+  } else {
+    priority_bin = TilePriority::EVENTUALLY;
+  }
+
   switch (priority_rect_type) {
     case VISIBLE_RECT:
     case PENDING_VISIBLE_RECT:
