@@ -15,7 +15,7 @@
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
-#include "chrome/browser/chromeos/policy/status_collector/status_collector.h"
+#include "chrome/browser/ash/policy/status_collector/status_collector.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"

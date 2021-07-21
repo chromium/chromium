@@ -8,7 +8,7 @@
 #include "base/containers/queue.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/reporting/login_logout_record.pb.h"
-#include "chrome/browser/chromeos/policy/status_collector/managed_session_service.h"
+#include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
 #include "components/policy/core/common/cloud/dm_token.h"

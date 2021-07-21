@@ -846,7 +846,7 @@
     },
     'cros_reporting': {
       'filepath': 'chrome/browser/policy/messaging_layer/'\
-                  '|chrome/browser/chromeos/policy/status_collector/'\
+                  '|chrome/browser/ash/policy/status_collector/'\
                   '|components/policy/proto/record',
     },
     'cros_sharesheet': {

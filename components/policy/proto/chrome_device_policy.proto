@@ -118,9 +118,9 @@ message HostnameUserConfigurableProto {
 
 // Policies to turn on portions of the device status reports.
 // If changed, the default values have to be updated in
-// chrome/browser/chromeos/policy/status_collector/device_status_collector.cc
+// chrome/browser/ash/policy/status_collector/device_status_collector.cc
 // and
-// chrome/browser/chromeos/policy/status_collector/child_status_collector.cc.
+// chrome/browser/ash/policy/status_collector/child_status_collector.cc.
 message DeviceReportingProto {
   optional bool report_version_info = 1 [default = true];
   optional bool report_activity_times = 2 [default = true];
