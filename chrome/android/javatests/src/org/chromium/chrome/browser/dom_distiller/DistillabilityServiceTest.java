@@ -26,6 +26,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestWebContentsObserver;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
@@ -61,7 +62,7 @@ public class DistillabilityServiceTest {
 
         final CallbackHelper readerShownCallbackHelper = new CallbackHelper();
 
-        mActivityTestRule.getInfoBarContainer().addObserver(new InfoBarContainerObserver() {
+        InfoBarContainerObserver infoBarObserver = new InfoBarContainerObserver() {
             @Override
             public void onAddInfoBar(InfoBarContainer container, InfoBar infoBar, boolean isFirst) {
                 if (infoBar instanceof ReaderModeInfoBar) readerShownCallbackHelper.notifyCalled();
@@ -77,10 +78,12 @@ public class DistillabilityServiceTest {
             @Override
             public void onInfoBarContainerShownRatioChanged(
                     InfoBarContainer container, float shownRatio) {}
-        });
+        };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getInfoBarContainer().addObserver(infoBarObserver));
 
-        TestWebContentsObserver observer =
-                new TestWebContentsObserver(mActivityTestRule.getWebContents());
+        TestWebContentsObserver observer = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> new TestWebContentsObserver(mActivityTestRule.getWebContents()));
         OnPageFinishedHelper finishHelper = observer.getOnPageFinishedHelper();
 
         // Navigate to a native page.

@@ -64,9 +64,10 @@ public class ContextMenuRenderTest extends DummyUiChromeActivityTestCase {
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
-        mListItems = new ModelList();
-        mAdapter = new ModelListAdapter(mListItems);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mListItems = new ModelList();
+            mAdapter = new ModelListAdapter(mListItems);
+
             getActivity().setContentView(R.layout.context_menu_fullscreen_container);
             mView = getActivity().findViewById(android.R.id.content);
             ((ViewStub) mView.findViewById(R.id.context_menu_stub)).inflate();

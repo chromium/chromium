@@ -189,12 +189,14 @@ public class CustomTabPostMessageTest {
                 connection.postMessage(token, "Message", null) == CustomTabsService.RESULT_SUCCESS);
 
         final CallbackHelper renderProcessCallback = new CallbackHelper();
-        new WebContentsObserver(mCustomTabActivityTestRule.getWebContents()) {
-            @Override
-            public void renderProcessGone(boolean wasOomProtected) {
-                renderProcessCallback.notifyCalled();
-            }
-        };
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            new WebContentsObserver(mCustomTabActivityTestRule.getWebContents()) {
+                @Override
+                public void renderProcessGone(boolean wasOomProtected) {
+                    renderProcessCallback.notifyCalled();
+                }
+            };
+        });
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
             WebContentsUtils.simulateRendererKilled(
                     mCustomTabActivityTestRule.getActivity().getActivityTab().getWebContents(),

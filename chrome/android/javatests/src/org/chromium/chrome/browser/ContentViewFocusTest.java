@@ -38,6 +38,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
@@ -213,14 +214,15 @@ public class ContentViewFocusTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         final WebContents webContents = mActivityTestRule.getWebContents();
         final CallbackHelper onTitleUpdatedHelper = new CallbackHelper();
-        final WebContentsObserver observer =
-                new WebContentsObserver(webContents) {
-                    @Override
-                    public void titleWasSet(String title) {
-                        mTitle = title;
-                        onTitleUpdatedHelper.notifyCalled();
-                    }
-                };
+        final WebContentsObserver observer = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            return new WebContentsObserver(webContents) {
+                @Override
+                public void titleWasSet(String title) {
+                    mTitle = title;
+                    onTitleUpdatedHelper.notifyCalled();
+                }
+            };
+        });
         int callCount = onTitleUpdatedHelper.getCallCount();
         String url = UrlUtils.getIsolatedTestFileUrl(
                 "chrome/test/data/android/content_view_focus/content_view_blur_focus.html");
@@ -236,6 +238,7 @@ public class ContentViewFocusTest {
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> eventSink.onResumeForTesting());
         onTitleUpdatedHelper.waitForCallback(callCount);
         Assert.assertEquals("focused", mTitle);
-        mActivityTestRule.getWebContents().removeObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getWebContents().removeObserver(observer));
     }
 }

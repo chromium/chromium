@@ -293,14 +293,16 @@ public class CustomTabActivityTest {
 
         final Tab tab = getActivity().getActivityTab();
         final CallbackHelper pageLoadFinishedHelper = new CallbackHelper();
-        tab.addObserver(new EmptyTabObserver() {
-            @Override
-            public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
-                assertTrue(params.getVerbatimHeaders().contains("bearer-token: Some token"));
-                assertTrue(params.getVerbatimHeaders().contains(
-                        "redirect-url: https://www.google.com"));
-                pageLoadFinishedHelper.notifyCalled();
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tab.addObserver(new EmptyTabObserver() {
+                @Override
+                public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                    assertTrue(params.getVerbatimHeaders().contains("bearer-token: Some token"));
+                    assertTrue(params.getVerbatimHeaders().contains(
+                            "redirect-url: https://www.google.com"));
+                    pageLoadFinishedHelper.notifyCalled();
+                }
+            });
         });
 
         TestThreadUtils.runOnUiThreadBlockingNoException(
@@ -855,11 +857,13 @@ public class CustomTabActivityTest {
                 }));
         final Tab tab = getActivity().getActivityTab();
         final CallbackHelper pageLoadFinishedHelper = new CallbackHelper();
-        tab.addObserver(new EmptyTabObserver() {
-            @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                pageLoadFinishedHelper.notifyCalled();
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tab.addObserver(new EmptyTabObserver() {
+                @Override
+                public void onPageLoadFinished(Tab tab, GURL url) {
+                    pageLoadFinishedHelper.notifyCalled();
+                }
+            });
         });
         pageLoadFinishedHelper.waitForCallback(0);
         CriteriaHelper.pollInstrumentationThread(() -> {
@@ -915,16 +919,18 @@ public class CustomTabActivityTest {
 
         final Tab tab = getActivity().getActivityTab();
         final CallbackHelper pageLoadFinishedHelper = new CallbackHelper();
-        tab.addObserver(new EmptyTabObserver() {
-            @Override
-            public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
-                assertEquals(referrer, params.getReferrer().getUrl());
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tab.addObserver(new EmptyTabObserver() {
+                @Override
+                public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                    assertEquals(referrer, params.getReferrer().getUrl());
+                }
 
-            @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                pageLoadFinishedHelper.notifyCalled();
-            }
+                @Override
+                public void onPageLoadFinished(Tab tab, GURL url) {
+                    pageLoadFinishedHelper.notifyCalled();
+                }
+            });
         });
         Assert.assertTrue("CustomTabContentHandler can't handle intent with same session",
                 TestThreadUtils.runOnUiThreadBlockingNoException(
@@ -955,16 +961,18 @@ public class CustomTabActivityTest {
 
         final Tab tab = getActivity().getActivityTab();
         final CallbackHelper pageLoadFinishedHelper = new CallbackHelper();
-        tab.addObserver(new EmptyTabObserver() {
-            @Override
-            public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
-                assertEquals(referrer, params.getReferrer().getUrl());
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tab.addObserver(new EmptyTabObserver() {
+                @Override
+                public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                    assertEquals(referrer, params.getReferrer().getUrl());
+                }
 
-            @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                pageLoadFinishedHelper.notifyCalled();
-            }
+                @Override
+                public void onPageLoadFinished(Tab tab, GURL url) {
+                    pageLoadFinishedHelper.notifyCalled();
+                }
+            });
         });
         Assert.assertTrue("CustomTabContentHandler can't handle intent with same session",
                 TestThreadUtils.runOnUiThreadBlockingNoException(
@@ -1589,7 +1597,8 @@ public class CustomTabActivityTest {
                 tabbedActivity.set((ChromeTabbedActivity) activity);
             }
         };
-        ApplicationStatus.registerStateListenerForAllActivities(listener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> ApplicationStatus.registerStateListenerForAllActivities(listener));
 
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             TabTestUtils.openNewTab(cctActivity.getActivityTab(), new GURL("about:blank"), null,
@@ -1609,7 +1618,8 @@ public class CustomTabActivityTest {
                     ChromeTabUtils.getUrlStringOnUiThread(tab), is("about:blank"));
         });
 
-        ApplicationStatus.unregisterActivityStateListener(listener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> ApplicationStatus.unregisterActivityStateListener(listener));
     }
 
     /** Maybe prerenders a URL with a referrer, then launch it with another one. */
@@ -1892,7 +1902,7 @@ public class CustomTabActivityTest {
                 tabHiddenHelper.notifyCalled();
             }
         };
-        tabToBeReparented.addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tabToBeReparented.addObserver(observer));
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
             getActivity().getComponent().resolveNavigationController()
                     .openCurrentUrlInBrowser(true);
@@ -1919,11 +1929,14 @@ public class CustomTabActivityTest {
         assertEquals("The tab should never be hidden during the reparenting process", 0,
                 tabHiddenHelper.getCallCount());
         Assert.assertFalse(TabTestUtils.isCustomTab(tabToBeReparented));
-        tabToBeReparented.removeObserver(observer);
-        RewindableIterator<TabObserver> observers = TabTestUtils.getTabObservers(tabToBeReparented);
-        while (observers.hasNext()) {
-            Assert.assertFalse(observers.next() instanceof CustomTabObserver);
-        }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tabToBeReparented.removeObserver(observer);
+            RewindableIterator<TabObserver> observers =
+                    TabTestUtils.getTabObservers(tabToBeReparented);
+            while (observers.hasNext()) {
+                Assert.assertFalse(observers.next() instanceof CustomTabObserver);
+            }
+        });
         return newActivity;
     }
 

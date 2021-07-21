@@ -135,7 +135,7 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
                 selectedCallback.notifyCalled();
             }
         };
-        incognitoTabModel.addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> incognitoTabModel.addObserver(observer));
 
         MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
                 getActivity(), R.id.new_incognito_tab_menu_id);
@@ -150,7 +150,7 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
         } catch (TimeoutException ex) {
             Assert.fail("Never received tab selected event");
         }
-        incognitoTabModel.removeObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> incognitoTabModel.removeObserver(observer));
 
         Tab tab = getActivity().getActivityTab();
 

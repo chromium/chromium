@@ -233,20 +233,23 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
         final CallbackHelper newTabCallback = new CallbackHelper();
         final AtomicReference<Tab> newTab = new AtomicReference<>();
-        mDownloadTestRule.getActivity().getTabModelSelector().addObserver(
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
-                        if (CriticalPersistedTabData.from(tab).getParentId()
-                                != activityTab.getId()) {
-                            return;
-                        }
-                        newTab.set(tab);
-                        newTabCallback.notifyCalled();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDownloadTestRule.getActivity().getTabModelSelector().addObserver(
+                    new TabModelSelectorObserver() {
+                        @Override
+                        public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
+                            if (CriticalPersistedTabData.from(tab).getParentId()
+                                    != activityTab.getId()) {
+                                return;
+                            }
+                            newTab.set(tab);
+                            newTabCallback.notifyCalled();
 
-                        mDownloadTestRule.getActivity().getTabModelSelector().removeObserver(this);
-                    }
-                });
+                            mDownloadTestRule.getActivity().getTabModelSelector().removeObserver(
+                                    this);
+                        }
+                    });
+        });
 
         int callbackCount = newTabCallback.getCallCount();
 

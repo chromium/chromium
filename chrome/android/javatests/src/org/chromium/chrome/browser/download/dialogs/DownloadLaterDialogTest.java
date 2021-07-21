@@ -127,7 +127,7 @@ public class DownloadLaterDialogTest {
                     DownloadLaterDialogProperties.SHOW_DATE_TIME_PICKER_OPTION, showDateTimePicker);
         }
 
-        return builder.build();
+        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> builder.build());
     }
 
     private void showDialog() {
@@ -200,7 +200,8 @@ public class DownloadLaterDialogTest {
     public void testInitialSelectionOnWifiWithEditLocation() {
         mModel = createModel(
                 DownloadLaterDialogChoice.ON_WIFI, DownloadLaterPromptStatus.SHOW_PREFERENCE);
-        mModel.set(DownloadLaterDialogProperties.LOCATION_TEXT, "location");
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mModel.set(DownloadLaterDialogProperties.LOCATION_TEXT, "location"));
         showDialog();
         assertPositiveButtonText(POSITIVE_BUTTON_TEXT);
         assertShowAgainCheckBox(true, View.VISIBLE, false);

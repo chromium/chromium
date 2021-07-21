@@ -95,8 +95,10 @@ public class DownloadLocationDialogTest extends DummyUiChromeActivityTestCase {
                 .thenReturn(PRIMARY_STORAGE_PATH);
         Profile.setLastUsedProfileForTesting(mProfileMock);
         mAppModalPresenter = new AppModalPresenter(getActivity());
-        mModalDialogManager =
-                new ModalDialogManager(mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
+        mModalDialogManager = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new ModalDialogManager(
+                    mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
+        });
         Map<String, Boolean> features = new HashMap<>();
         features.put(ChromeFeatureList.SMART_SUGGESTION_FOR_LARGE_DOWNLOADS, false);
         ChromeFeatureList.setTestFeatures(features);

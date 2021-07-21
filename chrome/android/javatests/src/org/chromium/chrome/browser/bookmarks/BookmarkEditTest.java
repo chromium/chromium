@@ -93,18 +93,23 @@ public class BookmarkEditTest {
                 mModelChangedCallback.notifyCalled();
             }
         };
-        mBookmarkModel.addObserver(mModelObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mBookmarkModel.addObserver(mModelObserver));
 
         startEditActivity(mBookmarkId);
-        ApplicationStatus.registerStateListenerForActivity(
-                mActivityStateListener, mBookmarkEditActivity);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ApplicationStatus.registerStateListenerForActivity(
+                    mActivityStateListener, mBookmarkEditActivity);
+        });
     }
 
     @After
     public void tearDown() {
-        mBookmarkModel.removeObserver(mModelObserver);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mBookmarkModel.removeAllUserBookmarks());
-        ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mBookmarkModel.removeObserver(mModelObserver);
+            mBookmarkModel.removeAllUserBookmarks();
+            ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
+        });
     }
 
     @Test

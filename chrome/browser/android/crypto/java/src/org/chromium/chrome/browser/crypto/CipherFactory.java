@@ -11,7 +11,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ByteArrayGenerator;
 import org.chromium.base.Log;
-import org.chromium.base.ObserverList;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -58,16 +57,6 @@ public class CipherFactory {
     static final String BUNDLE_IV = "org.chromium.content.browser.crypto.CipherFactory.IV";
     static final String BUNDLE_KEY = "org.chromium.content.browser.crypto.CipherFactory.KEY";
 
-    /**
-     * An observer for whether cipher data has been created.
-     */
-    public interface CipherDataObserver {
-        /**
-         * Called asynchronously after new cipher key data has been generated.
-         */
-        void onCipherDataGenerated();
-    }
-
     /** Holds intermediate data for the computation. */
     private static class CipherData {
         public final Key key;
@@ -105,7 +94,7 @@ public class CipherFactory {
     private ByteArrayGenerator mRandomNumberProvider;
 
     /** A list of observers for this class. */
-    private final ObserverList<CipherDataObserver> mObservers;
+    private Runnable mTestCipherDataGeneratedCallback;
 
     /** @return The Singleton instance. Creates it if it doesn't exist. */
     public static CipherFactory getInstance() {
@@ -309,30 +298,15 @@ public class CipherFactory {
         mRandomNumberProvider = mockProvider;
     }
 
-    /**
-     * Adds an observer for cipher data creation.
-     * @param observer The observer to add.
-     */
-    public void addCipherDataObserver(CipherDataObserver observer) {
-        mObservers.addObserver(observer);
-    }
-
-    /**
-     * Removes a cipher data observer for cipher data creation.
-     * @param observer The observer to remove.
-     */
-    public void removeCipherDataObserver(CipherDataObserver observer) {
-        mObservers.removeObserver(observer);
+    void setTestCipherDataGeneratedCallback(Runnable callback) {
+        mTestCipherDataGeneratedCallback = callback;
     }
 
     private void notifyCipherDataGenerated() {
-        for (CipherDataObserver observer : mObservers) {
-            observer.onCipherDataGenerated();
-        }
+        if (mTestCipherDataGeneratedCallback != null) mTestCipherDataGeneratedCallback.run();
     }
 
     private CipherFactory() {
         mRandomNumberProvider = new ByteArrayGenerator();
-        mObservers = new ObserverList<CipherDataObserver>();
     }
 }

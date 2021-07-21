@@ -717,7 +717,7 @@ public class AppBannerManagerTest {
 
         InfoBarContainer container = mTabbedActivityTestRule.getInfoBarContainer();
         final InfobarListener listener = new InfobarListener();
-        container.addAnimationListener(listener);
+        TestThreadUtils.runOnUiThreadBlocking(() -> container.addAnimationListener(listener));
 
         Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
         new TabLoadObserver(tab).fullyLoadUrl(webBannerUrl);
@@ -927,7 +927,7 @@ public class AppBannerManagerTest {
 
         InfoBarContainer container = mTabbedActivityTestRule.getInfoBarContainer();
         final InfobarListener listener = new InfobarListener();
-        container.addAnimationListener(listener);
+        TestThreadUtils.runOnUiThreadBlocking(() -> container.addAnimationListener(listener));
 
         Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
         new TabLoadObserver(tab).fullyLoadUrl(webBannerUrl);

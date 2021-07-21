@@ -2087,7 +2087,8 @@ public class ContextualSearchManagerTest {
                 tabCreatedHelper.notifyCalled();
             }
         };
-        sActivityTestRule.getActivity().getTabModelSelector().addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> sActivityTestRule.getActivity().getTabModelSelector().addObserver(observer));
         // Track User Actions
         mActionTester = new UserActionTester();
 
@@ -2119,7 +2120,9 @@ public class ContextualSearchManagerTest {
         assertUserActionRecorded("ContextualSearch.TabPromotion");
 
         // -------- CLEAN UP ---------
-        sActivityTestRule.getActivity().getTabModelSelector().removeObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            sActivityTestRule.getActivity().getTabModelSelector().removeObserver(observer);
+        });
     }
 
     //============================================================================================
@@ -2488,7 +2491,7 @@ public class ContextualSearchManagerTest {
     public void testNotifyObserversAfterNonResolve(@EnabledFeature int enabledFeature)
             throws Exception {
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
-        mManager.addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mManager.addObserver(observer));
         triggerNonResolve("states");
         Assert.assertEquals(1, observer.getShowCount());
         Assert.assertEquals(0, observer.getHideCount());
@@ -2496,7 +2499,7 @@ public class ContextualSearchManagerTest {
         tapBasePageToClosePanel();
         Assert.assertEquals(1, observer.getShowCount());
         Assert.assertEquals(1, observer.getHideCount());
-        mManager.removeObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mManager.removeObserver(observer));
     }
 
     /**
@@ -2514,7 +2517,7 @@ public class ContextualSearchManagerTest {
         // Mark the user undecided so we won't allow sending surroundings.
         mPolicy.overrideDecidedStateForTesting(false);
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
-        mManager.addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mManager.addObserver(observer));
         triggerNonResolve("states");
         Assert.assertEquals(1, observer.getShowRedactedCount());
         Assert.assertEquals(1, observer.getShowCount());
@@ -2524,7 +2527,7 @@ public class ContextualSearchManagerTest {
         Assert.assertEquals(1, observer.getShowRedactedCount());
         Assert.assertEquals(1, observer.getShowCount());
         Assert.assertEquals(1, observer.getHideCount());
-        mManager.removeObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mManager.removeObserver(observer));
     }
 
     /**
@@ -2539,7 +2542,7 @@ public class ContextualSearchManagerTest {
     public void testNotifyObserversAfterResolve(@EnabledFeature int enabledFeature)
             throws Exception {
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
-        mManager.addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mManager.addObserver(observer));
         simulateResolveSearch("states");
         Assert.assertEquals(1, observer.getShowCount());
         Assert.assertEquals(0, observer.getHideCount());
@@ -2547,7 +2550,7 @@ public class ContextualSearchManagerTest {
         tapBasePageToClosePanel();
         Assert.assertEquals(1, observer.getShowCount());
         Assert.assertEquals(1, observer.getHideCount());
-        mManager.removeObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mManager.removeObserver(observer));
     }
 
     /**
@@ -2577,7 +2580,7 @@ public class ContextualSearchManagerTest {
     public void testNotifyObserversOnClearSelectionAfterLongpress(
             @EnabledFeature int enabledFeature) throws Exception {
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
-        mManager.addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mManager.addObserver(observer));
         longPressNode("states");
         Assert.assertEquals(0, observer.getHideCount());
 
@@ -2590,7 +2593,7 @@ public class ContextualSearchManagerTest {
         waitForPanelToClose();
         Assert.assertEquals(1, observer.getShowCount());
         Assert.assertEquals(1, observer.getHideCount());
-        mManager.removeObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mManager.removeObserver(observer));
     }
 
     /**
@@ -3726,7 +3729,7 @@ public class ContextualSearchManagerTest {
             throws Exception {
         mPolicy.overrideDecidedStateForTesting(true);
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
-        mManager.addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mManager.addObserver(observer));
 
         simulateSlowResolveSearch("states");
         simulateSlowResolveFinished();
@@ -3736,7 +3739,7 @@ public class ContextualSearchManagerTest {
         Assert.assertEquals("United States".length(), observer.getLastShownLength());
         Assert.assertEquals(2, observer.getShowCount());
         Assert.assertEquals(1, observer.getHideCount());
-        mManager.removeObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mManager.removeObserver(observer));
     }
 
     /** Asserts that the given value is either 1 or 2.  Helpful for flaky tests. */
@@ -3755,7 +3758,7 @@ public class ContextualSearchManagerTest {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
-        mManager.addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mManager.addObserver(observer));
 
         clickWordNode("search");
         Assert.assertEquals(1, observer.getShowCount());
@@ -3769,7 +3772,7 @@ public class ContextualSearchManagerTest {
         // tests.  See crbug.com/776541.
         assertValueIs1or2(observer.getShowCount());
         Assert.assertEquals(1, observer.getHideCount());
-        mManager.removeObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mManager.removeObserver(observer));
     }
 
     /**

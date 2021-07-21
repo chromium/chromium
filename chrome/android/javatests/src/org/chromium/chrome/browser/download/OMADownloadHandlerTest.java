@@ -367,12 +367,15 @@ public class OMADownloadHandlerTest {
 
         try {
             DownloadInfo info = new DownloadInfo.Builder().build();
-            final OMADownloadHandlerForTest omaHandler = new OMADownloadHandlerForTest(context) {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    // Ignore all the broadcasts.
-                }
-            };
+            final OMADownloadHandlerForTest omaHandler =
+                    TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                        return new OMADownloadHandlerForTest(context) {
+                            @Override
+                            public void onReceive(Context context, Intent intent) {
+                                // Ignore all the broadcasts.
+                            }
+                        };
+                    });
 
             omaHandler.clearPendingOMADownloads();
             omaHandler.downloadOMAContent(0, info, omaInfo);

@@ -14,6 +14,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoService;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,7 +26,11 @@ import java.util.Map;
 public class FakeAccountInfoService implements AccountInfoService {
     private final Map<String, AccountInfo> mAccountInfos =
             Collections.synchronizedMap(new HashMap<>());
-    protected final ObserverList<Observer> mObservers = new ObserverList<>();
+    protected final ObserverList<Observer> mObservers;
+
+    public FakeAccountInfoService() {
+        mObservers = TestThreadUtils.runOnUiThreadBlockingNoException(ObserverList::new);
+    }
 
     @Override
     public Promise<AccountInfo> getAccountInfoByEmail(String email) {
