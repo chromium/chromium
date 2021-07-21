@@ -118,13 +118,15 @@ public interface RenderFrameHost {
 
     /**
      * Runs security checks associated with a Web Authentication MakeCredential request for the
-     * the given relying party ID and an effective origin. See
+     * the given relying party ID, an effective origin and whether MakeCredential is making the
+     * payment credential. See
      * performGetAssertionWebAuthSecurityChecks for more on |effectiveOrigin|. The return value is a
      * code corresponding to the AuthenticatorStatus mojo enum.
      *
      * @return Status code indicating the result of the MakeCredential request security checks.
      */
-    int performMakeCredentialWebAuthSecurityChecks(String relyingPartyId, Origin effectiveOrigin);
+    int performMakeCredentialWebAuthSecurityChecks(
+            String relyingPartyId, Origin effectiveOrigin, boolean isPaymentCredentialCreation);
 
     /**
      * @return An identifier for this RenderFrameHost.

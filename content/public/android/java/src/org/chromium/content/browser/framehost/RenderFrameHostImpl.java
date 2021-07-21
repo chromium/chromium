@@ -186,11 +186,11 @@ public class RenderFrameHostImpl implements RenderFrameHost {
 
     @Override
     public int performMakeCredentialWebAuthSecurityChecks(
-            String relyingPartyId, Origin effectiveOrigin) {
+            String relyingPartyId, Origin effectiveOrigin, boolean isPaymentCredentialCreation) {
         if (mNativeRenderFrameHostAndroid == 0) return AuthenticatorStatus.UNKNOWN_ERROR;
         return RenderFrameHostImplJni.get().performMakeCredentialWebAuthSecurityChecks(
                 mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this, relyingPartyId,
-                effectiveOrigin);
+                effectiveOrigin, isPaymentCredentialCreation);
     }
 
     @Override
@@ -229,7 +229,8 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         int performGetAssertionWebAuthSecurityChecks(long nativeRenderFrameHostAndroid,
                 RenderFrameHostImpl caller, String relyingPartyId, Origin effectiveOrigin);
         int performMakeCredentialWebAuthSecurityChecks(long nativeRenderFrameHostAndroid,
-                RenderFrameHostImpl caller, String relyingPartyId, Origin effectiveOrigin);
+                RenderFrameHostImpl caller, String relyingPartyId, Origin effectiveOrigin,
+                boolean isPaymentCredentialCreation);
         int getLifecycleState(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
     }
 }

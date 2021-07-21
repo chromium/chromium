@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/render_frame_host_android.h"
 
+#include <jni.h>
 #include <utility>
 
 #include "base/android/callback_android.h"
@@ -200,11 +201,13 @@ jint RenderFrameHostAndroid::PerformMakeCredentialWebAuthSecurityChecks(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>&,
     const base::android::JavaParamRef<jstring>& relying_party_id,
-    const base::android::JavaParamRef<jobject>& effective_origin) const {
+    const base::android::JavaParamRef<jobject>& effective_origin,
+    jboolean is_payment_credential_creation) const {
   url::Origin origin = url::Origin::FromJavaObject(effective_origin);
   return static_cast<int32_t>(
       render_frame_host_->PerformMakeCredentialWebAuthSecurityChecks(
-          ConvertJavaStringToUTF8(env, relying_party_id), origin));
+          ConvertJavaStringToUTF8(env, relying_party_id), origin,
+          is_payment_credential_creation));
 }
 
 jint RenderFrameHostAndroid::GetLifecycleState(

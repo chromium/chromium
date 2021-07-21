@@ -366,6 +366,7 @@ public class Fido2CredentialRequestTest {
     private static class MockAuthenticatorRenderFrameHost extends MockRenderFrameHost {
         private GURL mLastUrl;
         private MockOrigin mLastOrigin;
+        private boolean mIsPaymentCredentialCreation;
 
         @Override
         public GURL getLastCommittedURL() {
@@ -381,6 +382,15 @@ public class Fido2CredentialRequestTest {
             mLastUrl = url;
             mLastOrigin = new MockOrigin();
             mLastOrigin.setUrl(url.getSpec());
+        }
+
+        @Override
+        public int performMakeCredentialWebAuthSecurityChecks(String relyingPartyId,
+                Origin effectiveOrigin, boolean isPaymentCredentialCreation) {
+            super.performMakeCredentialWebAuthSecurityChecks(
+                    relyingPartyId, effectiveOrigin, isPaymentCredentialCreation);
+            mIsPaymentCredentialCreation = isPaymentCredentialCreation;
+            return 0;
         }
     }
 
@@ -1052,6 +1062,23 @@ public class Fido2CredentialRequestTest {
         Assert.assertEquals(
                 mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.CREDENTIAL_EXCLUDED));
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+    }
+
+    @Test
+    @SmallTest
+    public void testMakeCredential_isPaymentCredentialCreationPassedToFrameHost() {
+        mWindowAndroid.setResponseIntent(
+                Fido2ApiTestHelper.createErrorIntent(ErrorCode.INVALID_STATE_ERR,
+                        "One of the excluded credentials exists on the local device"));
+        TestThreadUtils.runOnUiThreadBlocking(() -> mRequest.setWindowForTesting(mWindowAndroid));
+
+        mCreationOptions.isPaymentCredentialCreation = true;
+        Assert.assertFalse(mFrameHost.mIsPaymentCredentialCreation);
+        mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin,
+                (responseStatus, response)
+                        -> mCallback.onRegisterResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        Assert.assertTrue(mFrameHost.mIsPaymentCredentialCreation);
     }
 
     @Test
