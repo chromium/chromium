@@ -84,6 +84,7 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
   self = [super initWithFrame:frame];
   if (self) {
     self.userInteractionEnabled = NO;
+    self.clipsToBounds = YES;
     // Avatar view.
     _avatarView = [[UIImageView alloc] init];
     _avatarView.translatesAutoresizingMaskIntoConstraints = NO;
