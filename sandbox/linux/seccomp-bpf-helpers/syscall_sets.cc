@@ -171,6 +171,7 @@ bool SyscallSets::IsFileSystem(int sysno) {
     (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
     case __NR_statfs64:
 #endif
+    case __NR_statx:  // EPERM not a valid errno.
     case __NR_symlinkat:
     case __NR_truncate:
 #if defined(__i386__) || defined(__arm__) || \

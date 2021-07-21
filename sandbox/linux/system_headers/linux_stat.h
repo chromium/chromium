@@ -161,6 +161,10 @@ struct kernel_stat {
 #define AT_EMPTY_PATH 0x1000
 #endif
 
+#if !defined(STATX_BASIC_STATS)
+#define STATX_BASIC_STATS 0x000007ffU
+#endif
+
 // On 32-bit systems, we default to the 64-bit stat struct like libc
 // implementations do. Otherwise we default to the normal stat struct which is
 // already 64-bit.

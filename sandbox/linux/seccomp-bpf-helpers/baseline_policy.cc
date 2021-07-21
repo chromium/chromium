@@ -312,6 +312,17 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
     return RewriteFstatatSIGSYS(fs_denied_errno);
   }
 
+  // The statx syscall is a filesystem syscall, which will be denied below with
+  // fs_denied_errno. However, on some platforms, glibc will default to statx
+  // for normal stat-family calls. Unfortunately there's no way to rewrite statx
+  // to something safe using a signal handler. Returning ENOSYS will cause glibc
+  // to fallback to old stat paths.
+  if (sysno == __NR_statx) {
+    const Arg<int> mask(3);
+    return If(mask == STATX_BASIC_STATS, Error(ENOSYS))
+        .Else(Error(fs_denied_errno));
+  }
+
   if (SyscallSets::IsFileSystem(sysno) ||
       SyscallSets::IsCurrentDirectory(sysno)) {
     return Error(fs_denied_errno);
