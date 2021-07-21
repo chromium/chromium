@@ -80,22 +80,34 @@ bool ProbabilityCheck(TrustSafetySentimentService::FeatureArea feature_area) {
 bool HasNonDefaultPrivacySetting(Profile* profile) {
   auto* prefs = profile->GetPrefs();
 
-  // Check for the most relevant set of privacy preferences.
-  const bool has_non_default_pref =
-      !prefs->FindPreference(prefs::kSafeBrowsingEnabled)->IsDefaultValue() ||
-      !prefs->FindPreference(prefs::kSafeBrowsingEnhanced)->IsDefaultValue() ||
-      !prefs->FindPreference(prefs::kSafeBrowsingScoutReportingEnabled)
-           ->IsDefaultValue() ||
-      !prefs->FindPreference(prefs::kEnableDoNotTrack)->IsDefaultValue() ||
-      !prefs
-           ->FindPreference(
-               password_manager::prefs::kPasswordLeakDetectionEnabled)
-           ->IsDefaultValue() ||
-      !prefs->FindPreference(prefs::kCookieControlsMode)->IsDefaultValue() ||
-      // Users consenting to sync automatically enable UKM collection
-      (prefs->GetBoolean(
-           unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled) !=
-       prefs->GetBoolean(prefs::kGoogleServicesConsentedToSync));
+  std::vector<std::string> prefs_to_check = {
+      prefs::kSafeBrowsingEnabled,
+      prefs::kSafeBrowsingEnhanced,
+      prefs::kSafeBrowsingScoutReportingEnabled,
+      prefs::kEnableDoNotTrack,
+      password_manager::prefs::kPasswordLeakDetectionEnabled,
+      prefs::kCookieControlsMode,
+  };
+
+  bool has_non_default_pref = false;
+  for (const auto& pref_name : prefs_to_check) {
+    auto* pref = prefs->FindPreference(pref_name);
+    if (!pref->IsDefaultValue() && pref->IsUserControlled()) {
+      has_non_default_pref = true;
+      break;
+    }
+  }
+
+  // Users consenting to sync automatically enable UKM collection
+  auto* ukm_pref = prefs->FindPreference(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
+  auto* sync_consent_pref =
+      prefs->FindPreference(prefs::kGoogleServicesConsentedToSync);
+
+  bool has_non_default_ukm =
+      ukm_pref->GetValue()->GetBool() !=
+          sync_consent_pref->GetValue()->GetBool() &&
+      (ukm_pref->IsUserControlled() || sync_consent_pref->IsUserControlled());
 
   // Check the default value for each user facing content setting. Note that
   // this will not include content setting exceptions set via permission
@@ -105,21 +117,33 @@ bool HasNonDefaultPrivacySetting(Profile* profile) {
 
   for (auto content_setting_type :
        site_settings::GetVisiblePermissionCategories()) {
-    auto current_value = map->GetDefaultContentSetting(content_setting_type,
-                                                       /*provider_id=*/nullptr);
+    std::string content_setting_provider;
+    auto current_value = map->GetDefaultContentSetting(
+        content_setting_type, &content_setting_provider);
+    auto content_setting_source =
+        HostContentSettingsMap::GetSettingSourceFromProviderName(
+            content_setting_provider);
+
+    const bool user_controlled =
+        content_setting_source ==
+            content_settings::SettingSource::SETTING_SOURCE_NONE ||
+        content_setting_source ==
+            content_settings::SettingSource::SETTING_SOURCE_USER;
+
     auto default_value = static_cast<ContentSetting>(
         content_settings::WebsiteSettingsRegistry::GetInstance()
             ->Get(content_setting_type)
             ->initial_default_value()
             ->GetInt());
 
-    if (current_value != default_value) {
+    if (current_value != default_value && user_controlled) {
       has_non_default_content_setting = true;
       break;
     }
   }
 
-  return has_non_default_pref || has_non_default_content_setting;
+  return has_non_default_pref || has_non_default_ukm ||
+         has_non_default_content_setting;
 }
 
 // Generates the Product Specific Data which accompanies survey results for the

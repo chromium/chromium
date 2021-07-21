@@ -14,6 +14,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/test/content_settings_mock_provider.h"
+#include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
@@ -504,6 +506,25 @@ TEST_F(TrustSafetySentimentServiceTest, PrivacySettingsProductSpecificData) {
   profile()->GetTestingPrefService()->SetUserPref(
       prefs::kGoogleServicesConsentedToSync,
       std::make_unique<base::Value>(true));
+  service()->InteractedWithPrivacySettings(web_contents.get());
+  task_environment()->RunUntilIdle();
+  service()->OpenedNewTabPage();
+
+  // A preference or content setting changed via policy should not be considered
+  // as non-default.
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kEnableDoNotTrack, std::make_unique<base::Value>(true));
+  auto managed_provider = std::make_unique<content_settings::MockProvider>();
+  managed_provider->SetWebsiteSetting(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::COOKIES,
+      std::make_unique<base::Value>(ContentSetting::CONTENT_SETTING_BLOCK));
+  content_settings::TestUtils::OverrideProvider(
+      content_settings, std::move(managed_provider),
+      HostContentSettingsMap::POLICY_PROVIDER);
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings,
+                           testing::_, testing::_, expected_psd));
   service()->InteractedWithPrivacySettings(web_contents.get());
   task_environment()->RunUntilIdle();
   service()->OpenedNewTabPage();
