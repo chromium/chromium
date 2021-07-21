@@ -17,6 +17,7 @@ class AppListBubbleAssistantPage;
 class AppListBubbleSearchPage;
 class AppListControllerImpl;
 class AppListView;
+class ContinueSectionView;
 class RecentAppsView;
 class ScrollableAppsGridView;
 class SearchBoxView;
@@ -74,6 +75,7 @@ class AppListTestHelper {
   // Bubble launcher helpers. The bubble must be open before calling these.
   SearchBoxView* GetBubbleSearchBoxView();
   AppListBubbleAppsPage* GetBubbleAppsPage();
+  ContinueSectionView* GetContinueSectionView();
   RecentAppsView* GetBubbleRecentAppsView();
   ScrollableAppsGridView* GetScrollableAppsGridView();
   AppListBubbleSearchPage* GetBubbleSearchPage();

@@ -99,6 +99,10 @@ AppListBubbleAppsPage* AppListTestHelper::GetBubbleAppsPage() {
       ->apps_page_;
 }
 
+ContinueSectionView* AppListTestHelper::GetContinueSectionView() {
+  return GetBubbleAppsPage()->continue_section_;
+}
+
 RecentAppsView* AppListTestHelper::GetBubbleRecentAppsView() {
   return GetBubbleAppsPage()->recent_apps_;
 }

@@ -4,10 +4,12 @@
 
 #include "ash/app_list/views/continue_task_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "ash/app_list/model/search/search_result.h"
 #include "ash/bubble/bubble_utils.h"
 #include "base/strings/string_util.h"
 #include "extensions/common/constants.h"
@@ -17,13 +19,25 @@
 
 namespace ash {
 
-ContinueTaskView::ContinueTaskView(const std::u16string& task_title) {
+ContinueTaskView::ContinueTaskView(SearchResult* task_result)
+    : result_(task_result) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  auto* label = AddChildView(std::make_unique<views::Label>(task_title));
-  bubble_utils::ApplyStyle(label, bubble_utils::LabelStyle::kBody);
+  title_ = AddChildView(std::make_unique<views::Label>());
+  SetText(result()->title());
+  title_->SetAccessibleName(result()->accessible_name());
 }
 
 ContinueTaskView::~ContinueTaskView() = default;
+
+void ContinueTaskView::SetText(const std::u16string& text) {
+  title_->SetText(text);
+  PreferredSizeChanged();
+}
+
+void ContinueTaskView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  bubble_utils::ApplyStyle(title_, bubble_utils::LabelStyle::kBody);
+}
 
 BEGIN_METADATA(ContinueTaskView, views::View)
 END_METADATA

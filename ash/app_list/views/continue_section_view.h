@@ -11,6 +11,7 @@
 namespace ash {
 
 class AppListViewDelegate;
+class ContinueTaskView;
 
 // The "Continue" section of the bubble launcher. This view wraps around
 // suggestions with tasks to continue.
@@ -23,10 +24,13 @@ class ASH_EXPORT ContinueSectionView : public views::View {
   ContinueSectionView& operator=(const ContinueSectionView&) = delete;
   ~ContinueSectionView() override;
 
+  size_t GetTasksSuggestionsCount() const;
+  ContinueTaskView* GetTaskViewAtForTesting(size_t index) const;
+
  private:
   AppListViewDelegate* const view_delegate_;
 
-  views::View* continue_suggestions_ = nullptr;
+  views::View* suggestions_container_ = nullptr;
 };
 
 }  // namespace ash
