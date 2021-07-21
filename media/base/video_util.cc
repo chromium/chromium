@@ -137,8 +137,7 @@ scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySyncGLES(
       return nullptr;
     ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
 
-    int width = VideoFrame::Columns(plane, result->format(),
-                                    result->coded_size().width());
+    int width = result->columns(plane);
     int height = result->rows(plane);
 
     auto texture_id = ri->CreateAndConsumeForGpuRaster(holder.mailbox);
@@ -234,8 +233,7 @@ scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySyncOOP(
     }
     ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
 
-    int width = VideoFrame::Columns(plane, result->format(),
-                                    result->coded_size().width());
+    int width = result->columns(plane);
     int height = result->rows(plane);
 
     GrGLenum texture_format;

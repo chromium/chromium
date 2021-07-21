@@ -228,14 +228,11 @@ void GenerateCompositorSyncToken(gpu::gles2::GLES2Interface* gl,
 gfx::Size SoftwarePlaneDimension(VideoFrame* input_frame,
                                  bool software_compositor,
                                  size_t plane_index) {
-  gfx::Size coded_size = input_frame->coded_size();
   if (software_compositor)
-    return coded_size;
+    return input_frame->coded_size();
 
-  int plane_width = VideoFrame::Columns(plane_index, input_frame->format(),
-                                        coded_size.width());
-  int plane_height =
-      VideoFrame::Rows(plane_index, input_frame->format(), coded_size.height());
+  int plane_width = input_frame->columns(plane_index);
+  int plane_height = input_frame->rows(plane_index);
   return gfx::Size(plane_width, plane_height);
 }
 
@@ -583,10 +580,8 @@ void VideoResourceUpdater::AppendQuads(
     case VideoFrameResourceType::YUV: {
       const gfx::Size ya_tex_size = coded_size;
 
-      int u_width = VideoFrame::Columns(VideoFrame::kUPlane, frame->format(),
-                                        coded_size.width());
-      int u_height = VideoFrame::Rows(VideoFrame::kUPlane, frame->format(),
-                                      coded_size.height());
+      int u_width = frame->columns(VideoFrame::kUPlane);
+      int u_height = frame->rows(VideoFrame::kUPlane);
       gfx::Size uv_tex_size(u_width, u_height);
 
       DCHECK_EQ(frame_resources_.size(),
@@ -902,11 +897,8 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
         sync_token = video_frame->UpdateReleaseSyncToken(&client);
       }
 
-      const gfx::Size& coded_size = video_frame->coded_size();
-      const size_t width =
-          VideoFrame::Columns(i, video_frame->format(), coded_size.width());
-      const size_t height =
-          VideoFrame::Rows(i, video_frame->format(), coded_size.height());
+      const size_t width = video_frame->columns(i);
+      const size_t height = video_frame->rows(i);
       const gfx::Size plane_size(width, height);
       auto transfer_resource = viz::TransferableResource::MakeGL(
           mailbox, GL_LINEAR, mailbox_holder.texture_target, sync_token,
