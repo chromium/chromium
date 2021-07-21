@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_HIT_TEST_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_HIT_TEST_DATA_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action_rect.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -21,7 +22,7 @@ struct PLATFORM_EXPORT HitTestData {
   // container, and whether the region allows composited scrolling depends
   // whether the scroll_translation is composited.
   IntRect scroll_hit_test_rect;
-  const TransformPaintPropertyNode* scroll_translation = nullptr;
+  scoped_refptr<const TransformPaintPropertyNode> scroll_translation;
 
   bool operator==(const HitTestData& rhs) const {
     return touch_action_rects == rhs.touch_action_rects &&

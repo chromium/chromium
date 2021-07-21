@@ -42,7 +42,7 @@ void ClipToVisibilityLimit(const PropertyTreeState& state, FloatRect& rect) {
 bool IsCompositedScrollHitTest(const PaintChunk& chunk) {
   if (!chunk.hit_test_data)
     return false;
-  const auto* scroll_translation = chunk.hit_test_data->scroll_translation;
+  const auto scroll_translation = chunk.hit_test_data->scroll_translation;
   return scroll_translation &&
          scroll_translation->HasDirectCompositingReasons();
 }
