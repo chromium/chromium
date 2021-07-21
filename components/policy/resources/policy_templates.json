@@ -6461,6 +6461,8 @@
 
       The URLs must be valid, otherwise the policy is ignored. Only the origin (scheme, host and port) of the URL is considered.
 
+      On Chrome OS, this policy only applies to affiliated users.
+
       This policy overrides <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME">DefaultSerialGuardSetting</ph>, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME">SerialAskForUrls</ph>, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME">SerialBlockedForUrls</ph> and the user's preferences.''',
     },
     {
@@ -6512,6 +6514,8 @@
       'desc': '''Setting the policy allows you to list sites which are automatically granted permission to access USB serial devices with vendor and product IDs matching the <ph name="VENDOR_ID_FIELD_NAME">vendor_id</ph> and <ph name="PRODUCT_ID_FIELD_NAME">product_id</ph> fields. Omitting the <ph name="PRODUCT_ID_FIELD_NAME">product_id</ph> field allows the given sites permission to access devices with a vendor ID matching the <ph name="VENDOR_ID_FIELD_NAME">vendor_id</ph> field and any product ID.
 
       The URLs must be valid, otherwise the policy is ignored. Only the origin (scheme, host and port) of the URL is considered.
+
+      On Chrome OS, this policy only applies to affiliated users.
 
       This policy overrides <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME">DefaultSerialGuardSetting</ph>, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME">SerialAskForUrls</ph>, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME">SerialBlockedForUrls</ph> and the user's preferences.
 

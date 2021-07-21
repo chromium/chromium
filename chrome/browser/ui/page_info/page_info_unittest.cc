@@ -74,6 +74,11 @@
 #include "media/base/media_switches.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "components/user_manager/user.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 using content::SSLStatus;
 using testing::_;
 using testing::AnyNumber;
@@ -125,6 +130,19 @@ class MockPageInfoUI : public PageInfoUI {
       set_permission_info_callback_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class FakeAffiliatedUser : public user_manager::User {
+ public:
+  explicit FakeAffiliatedUser(const AccountId& account_id) : User(account_id) {
+    SetAffiliation(true);
+  }
+
+  user_manager::UserType GetType() const override {
+    return user_manager::USER_TYPE_REGULAR;
+  }
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 class PageInfoTest : public ChromeRenderViewHostTestHarness {
  public:
   PageInfoTest() : testing_local_state_(TestingBrowserProcess::GetGlobal()) {
@@ -143,6 +161,16 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
     cert_ =
         net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
     ASSERT_TRUE(cert_);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    auto account_id =
+        AccountId::FromUserEmailGaiaId(profile()->GetProfileUserName(), "id");
+    user_ = std::make_unique<FakeAffiliatedUser>(account_id);
+    chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(
+        user_.get());
+    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+        user_.get(), profile());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
     content_settings::PageSpecificContentSettings::CreateForWebContents(
@@ -280,6 +308,10 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
 
 #if !defined(OS_ANDROID)
   ChromeLayoutProvider layout_provider_;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<FakeAffiliatedUser> user_;
 #endif
 
   scoped_refptr<net::X509Certificate> cert_;

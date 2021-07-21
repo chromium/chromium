@@ -30,9 +30,9 @@
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -71,6 +71,12 @@
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/scoped_user_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const char* kUrl = "http://www.example.com/index.html";
 const char* kSecureUrl = "https://www.example.com/index.html";
@@ -323,27 +329,53 @@ class PageInfoBubbleViewTestApi {
 
 namespace {
 
+constexpr char kTestUserEmail[] = "user@example.com";
+
 // Helper class that wraps a TestingProfile and a TestWebContents for a test
 // harness. Inspired by RenderViewHostTestHarness, but doesn't use inheritance
 // so the helper can be composed with other helpers in the test harness.
 class ScopedWebContentsTestHelper {
  public:
-  ScopedWebContentsTestHelper() {
-    TestingProfile::Builder profile_builder;
-    profile_builder.AddTestingFactory(
-        HistoryServiceFactory::GetInstance(),
-        HistoryServiceFactory::GetDefaultFactory());
-    profile_ = profile_builder.Build();
+  ScopedWebContentsTestHelper()
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    auto* fake_user_manager_ptr = fake_user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(fake_user_manager));
 
-    web_contents_ = factory_.CreateWebContents(profile_.get());
+    constexpr char kTestUserGaiaId[] = "1111111111";
+    auto account_id =
+        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+    fake_user_manager_ptr->AddUserWithAffiliation(account_id,
+                                                  /*is_affiliated=*/true);
+    fake_user_manager_ptr->LoginUser(account_id);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+    EXPECT_TRUE(testing_profile_manager_.SetUp());
+    profile_ = testing_profile_manager_.CreateTestingProfile(
+        kTestUserEmail, {{HistoryServiceFactory::GetInstance(),
+                          HistoryServiceFactory::GetDefaultFactory()}});
+    EXPECT_TRUE(profile_);
+
+    web_contents_ = factory_.CreateWebContents(profile_);
   }
 
-  Profile* profile() { return profile_.get(); }
+  Profile* profile() { return profile_; }
   content::WebContents* web_contents() { return web_contents_; }
+  TestingPrefServiceSimple* local_state() {
+    return testing_profile_manager_.local_state()->Get();
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+#endif
+
+  TestingProfileManager testing_profile_manager_;
+  TestingProfile* profile_ = nullptr;
   content::TestWebContentsFactory factory_;
   content::WebContents* web_contents_;  // Weak. Owned by factory_.
 
@@ -356,8 +388,6 @@ class PageInfoBubbleViewTest : public testing::Test,
   PageInfoBubbleViewTest() {
     feature_list_.InitWithFeatureState(page_info::kPageInfoV2Desktop,
                                        is_page_info_v2_enabled());
-    testing_local_state_ = std::make_unique<ScopedTestingLocalState>(
-        TestingBrowserProcess::GetGlobal());
     web_contents_helper_ = std::make_unique<ScopedWebContentsTestHelper>();
     views_helper_ = std::make_unique<views::ScopedViewsTestHelper>(
         std::make_unique<ChromeTestViewsDelegate<>>());
@@ -398,7 +428,6 @@ class PageInfoBubbleViewTest : public testing::Test,
   bool is_page_info_v2_enabled() const { return GetParam(); }
 
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<ScopedTestingLocalState> testing_local_state_;
   std::unique_ptr<ScopedWebContentsTestHelper> web_contents_helper_;
   std::unique_ptr<views::ScopedViewsTestHelper> views_helper_;
   MockTrustSafetySentimentService* mock_sentiment_service_;
@@ -943,8 +972,8 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithPolicySerialPorts) {
   EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren));
 
   // Add the policy setting to prefs.
-  testing_local_state_->Get()->Set(prefs::kManagedSerialAllowUsbDevicesForUrls,
-                                   ReadJson(R"([
+  web_contents_helper_->local_state()->Set(
+      prefs::kManagedSerialAllowUsbDevicesForUrls, ReadJson(R"([
                {
                  "devices": [{ "vendor_id": 6353, "product_id": 5678 }],
                  "urls": [ "http://www.example.com" ]

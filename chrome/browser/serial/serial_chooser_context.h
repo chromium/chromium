@@ -77,11 +77,12 @@ class SerialChooserContext : public permissions::ObjectPermissionContextBase,
   void SetUpPortManagerConnection(
       mojo::PendingRemote<device::mojom::SerialPortManager> manager);
   void OnPortManagerConnectionError();
-  void OnGetPorts(const url::Origin& origin,
-                  blink::mojom::SerialService::GetPortsCallback callback,
-                  std::vector<device::mojom::SerialPortInfoPtr> ports);
+  bool CanApplyPortSpecificPolicy();
 
-  const bool is_incognito_;
+  // This raw pointer is safe because instances of this class are created by
+  // SerialChooserContextFactory as KeyedServices that will be destroyed when
+  // the Profile object is destroyed.
+  Profile* const profile_;
 
   // Tracks the set of ports to which an origin has access to.
   std::map<url::Origin, std::set<base::UnguessableToken>> ephemeral_ports_;
