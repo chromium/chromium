@@ -81,6 +81,10 @@ class FullRestoreService : public KeyedService,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
 
+  FullRestoreAppLaunchHandler* app_launch_handler() {
+    return app_launch_handler_.get();
+  }
+
  private:
   // KeyedService overrides.
   void Shutdown() override;

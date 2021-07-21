@@ -97,6 +97,12 @@ void FullRestoreAppLaunchHandler::ForceLaunchBrowserForTesting() {
   UserSessionManager::GetInstance()->MaybeLaunchSettings(profile_);
 }
 
+void FullRestoreAppLaunchHandler::OnExtensionLaunching(
+    const std::string& app_id) {
+  ::full_restore::FullRestoreReadHandler::GetInstance()
+      ->SetNextRestoreWindowIdForChromeApp(profile_->GetPath(), app_id);
+}
+
 base::WeakPtr<AppLaunchHandler>
 FullRestoreAppLaunchHandler::GetWeakPtrAppLaunchHandler() {
   return weak_ptr_factory_.GetWeakPtr();
@@ -137,6 +143,8 @@ void FullRestoreAppLaunchHandler::MaybePostRestore() {
 }
 
 void FullRestoreAppLaunchHandler::MaybeRestore() {
+  restore_start_time_ = base::TimeTicks::Now();
+
   if (should_launch_browser_) {
     LaunchBrowser();
     should_launch_browser_ = false;

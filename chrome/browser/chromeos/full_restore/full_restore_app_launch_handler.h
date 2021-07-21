@@ -50,6 +50,8 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
   // true to allow the restoration.
   void SetShouldRestore();
 
+  base::TimeTicks restore_start_time() const { return restore_start_time_; }
+
   // AppLaunchHandler:
   void OnAppUpdate(const apps::AppUpdate& update) override;
 
@@ -57,6 +59,7 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
   void ForceLaunchBrowserForTesting();
 
  protected:
+  void OnExtensionLaunching(const std::string& app_id) override;
   base::WeakPtr<AppLaunchHandler> GetWeakPtrAppLaunchHandler() override;
 
  private:
@@ -80,6 +83,9 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
 
   bool should_restore_ = false;
+
+  // The time when `should_restore_` has been set to true.
+  base::TimeTicks restore_start_time_;
 
   bool should_launch_browser_ = false;
 

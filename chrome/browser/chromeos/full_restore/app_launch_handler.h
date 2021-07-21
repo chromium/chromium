@@ -41,6 +41,10 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   // separately.
   void LaunchApps();
 
+  // Called before an extension type app is launched. Allows subclasses to
+  // perform some setup prior to launching an extension type app.
+  virtual void OnExtensionLaunching(const std::string& app_id) = 0;
+
   virtual base::WeakPtr<AppLaunchHandler> GetWeakPtrAppLaunchHandler() = 0;
 
   Profile* profile_;
