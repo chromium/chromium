@@ -8410,7 +8410,17 @@
           "SamlPasswordExpirationAdvanceWarningDays": 7
         },
         "prefs": {
-          "saml.password_expiration_advance_warning_days": {}
+          "saml.password_expiration_advance_warning_days": {
+            "value": 7
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "saml.password_expiration_advance_warning_days": {
+            "default_value": 14
+          }
         }
       }
     ]
