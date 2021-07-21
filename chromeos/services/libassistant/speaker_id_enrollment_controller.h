@@ -12,12 +12,10 @@
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace assistant_client {
-class AssistantManagerInternal;
-}  // namespace assistant_client
-
 namespace chromeos {
 namespace libassistant {
+
+class AssistantClient;
 
 class SpeakerIdEnrollmentController
     : public mojom::SpeakerIdEnrollmentController,
@@ -58,8 +56,7 @@ class SpeakerIdEnrollmentController
   // Contains all pending callbacks for GetSpeakerIdEnrollmentStatus requests.
   AbortableTaskList pending_response_waiters_;
 
-  assistant_client::AssistantManagerInternal* assistant_manager_internal_ =
-      nullptr;
+  AssistantClient* assistant_client_ = nullptr;
 };
 
 }  // namespace libassistant

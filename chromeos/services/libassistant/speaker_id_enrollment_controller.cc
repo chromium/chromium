@@ -4,9 +4,11 @@
 
 #include "chromeos/services/libassistant/speaker_id_enrollment_controller.h"
 
+#include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_event.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_interface.pb.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
-#include "libassistant/shared/internal_api/assistant_manager_internal.h"
+#include "libassistant/shared/internal_api/speaker_id_enrollment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
@@ -26,32 +28,29 @@ class SpeakerIdEnrollmentController::GetStatusWaiter : public AbortableTask {
   using Callback =
       SpeakerIdEnrollmentController::GetSpeakerIdEnrollmentStatusCallback;
 
-  GetStatusWaiter() : task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+  GetStatusWaiter() = default;
   ~GetStatusWaiter() override { DCHECK(!callback_); }
   GetStatusWaiter(const GetStatusWaiter&) = delete;
   GetStatusWaiter& operator=(const GetStatusWaiter&) = delete;
 
-  void Start(
-      assistant_client::AssistantManagerInternal* assistant_manager_internal,
-      const std::string& user_gaia_id,
-      Callback callback) {
+  void Start(AssistantClient* assistant_client,
+             const std::string& user_gaia_id,
+             Callback callback) {
     callback_ = std::move(callback);
 
     VLOG(1) << "Assistant: Retrieving speaker enrollment status";
 
-    if (!assistant_manager_internal) {
+    if (!assistant_client) {
       SendErrorResponse();
       return;
     }
 
-    assistant_manager_internal->GetSpeakerIdEnrollmentStatus(
-        user_gaia_id,
-        [this](const assistant_client::SpeakerIdEnrollmentStatus& status) {
-          task_runner_->PostTask(FROM_HERE,
-                                 base::BindOnce(&GetStatusWaiter::SendResponse,
-                                                weak_ptr_factory_.GetWeakPtr(),
-                                                status.user_model_exists));
-        });
+    ::assistant::api::GetSpeakerIdEnrollmentInfoRequest request;
+    auto* cloud_request = request.mutable_cloud_enrollment_status_request();
+    cloud_request->set_user_id(user_gaia_id);
+    assistant_client->GetSpeakerIdEnrollmentInfo(
+        request, base::BindOnce(&GetStatusWaiter::SendResponse,
+                                weak_ptr_factory_.GetWeakPtr()));
   }
 
   // AbortableTask implementation:
@@ -68,7 +67,6 @@ class SpeakerIdEnrollmentController::GetStatusWaiter : public AbortableTask {
         mojom::SpeakerIdEnrollmentStatus::New(user_model_exists));
   }
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   Callback callback_;
   base::WeakPtrFactory<GetStatusWaiter> weak_ptr_factory_{this};
 };
@@ -81,13 +79,14 @@ class SpeakerIdEnrollmentController::GetStatusWaiter : public AbortableTask {
 // and destroyed when it is done or cancelled.
 class SpeakerIdEnrollmentController::EnrollmentSession {
  public:
+  using SpeakerIdEnrollmentEvent =
+      ::assistant::api::events::SpeakerIdEnrollmentEvent;
+
   EnrollmentSession(
       ::mojo::PendingRemote<mojom::SpeakerIdEnrollmentClient> client,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal)
-      : client_(std::move(client)),
-        assistant_manager_internal_(assistant_manager_internal),
-        mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
-    DCHECK(assistant_manager_internal_);
+      AssistantClient* assistant_client)
+      : client_(std::move(client)), assistant_client_(assistant_client) {
+    DCHECK(assistant_client_);
   }
   EnrollmentSession(const EnrollmentSession&) = delete;
   EnrollmentSession& operator=(const EnrollmentSession&) = delete;
@@ -96,20 +95,14 @@ class SpeakerIdEnrollmentController::EnrollmentSession {
   void Start(const std::string& user_gaia_id, bool skip_cloud_enrollment) {
     VLOG(1) << "Assistant: Starting speaker id enrollment";
 
-    assistant_client::SpeakerIdEnrollmentConfig client_config;
-    client_config.user_id = user_gaia_id;
-    client_config.skip_cloud_enrollment = skip_cloud_enrollment;
+    ::assistant::api::StartSpeakerIdEnrollmentRequest request;
+    request.set_user_id(user_gaia_id);
+    request.set_skip_cloud_enrollment(skip_cloud_enrollment);
 
-    assistant_manager_internal_->StartSpeakerIdEnrollment(
-        client_config,
-        [weak_ptr = weak_factory_.GetWeakPtr(),
-         task_runner = mojom_task_runner_](
-            const assistant_client::SpeakerIdEnrollmentUpdate& update) {
-          task_runner->PostTask(
-              FROM_HERE,
-              base::BindOnce(&EnrollmentSession::OnSpeakerIdEnrollmentUpdate,
-                             weak_ptr, update));
-        });
+    assistant_client_->StartSpeakerIdEnrollment(
+        request,
+        base::BindRepeating(&EnrollmentSession::OnSpeakerIdEnrollmentUpdate,
+                            weak_factory_.GetWeakPtr()));
   }
 
   void Stop() {
@@ -117,42 +110,43 @@ class SpeakerIdEnrollmentController::EnrollmentSession {
       return;
 
     VLOG(1) << "Assistant: Stopping speaker id enrollment";
-    assistant_manager_internal_->StopSpeakerIdEnrollment([]() {});
+    ::assistant::api::CancelSpeakerIdEnrollmentRequest request;
+    assistant_client_->CancelSpeakerIdEnrollment(request);
   }
 
  private:
-  void OnSpeakerIdEnrollmentUpdate(
-      const assistant_client::SpeakerIdEnrollmentUpdate& update) {
-    switch (update.state) {
-      case SpeakerIdEnrollmentState::LISTEN:
+  void OnSpeakerIdEnrollmentUpdate(const SpeakerIdEnrollmentEvent& event) {
+    switch (event.type_case()) {
+      case SpeakerIdEnrollmentEvent::kListenState:
         VLOG(1) << "Assistant: Speaker id enrollment is listening";
         client_->OnListeningHotword();
         break;
-      case SpeakerIdEnrollmentState::PROCESS:
+      case SpeakerIdEnrollmentEvent::kProcessState:
         VLOG(1) << "Assistant: Speaker id enrollment is processing";
         client_->OnProcessingHotword();
         break;
-      case SpeakerIdEnrollmentState::DONE:
+      case SpeakerIdEnrollmentEvent::kDoneState:
         VLOG(1) << "Assistant: Speaker id enrollment is done";
         client_->OnSpeakerIdEnrollmentDone();
         done_ = true;
         break;
-      case SpeakerIdEnrollmentState::FAILURE:
+      case SpeakerIdEnrollmentEvent::kFailureState:
         VLOG(1) << "Assistant: Speaker id enrollment is done (with failure)";
         client_->OnSpeakerIdEnrollmentFailure();
         done_ = true;
         break;
-      case SpeakerIdEnrollmentState::INIT:
-      case SpeakerIdEnrollmentState::CHECK:
-      case SpeakerIdEnrollmentState::UPLOAD:
-      case SpeakerIdEnrollmentState::FETCH:
+      case SpeakerIdEnrollmentEvent::kInitState:
+      case SpeakerIdEnrollmentEvent::kCheckState:
+      case SpeakerIdEnrollmentEvent::kRecognizeState:
+      case SpeakerIdEnrollmentEvent::kUploadState:
+      case SpeakerIdEnrollmentEvent::kFetchState:
+      case SpeakerIdEnrollmentEvent::TYPE_NOT_SET:
         break;
     }
   }
 
   ::mojo::Remote<mojom::SpeakerIdEnrollmentClient> client_;
-  assistant_client::AssistantManagerInternal* const assistant_manager_internal_;
-  scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;
+  AssistantClient* const assistant_client_;
   bool done_ = false;
   base::WeakPtrFactory<EnrollmentSession> weak_factory_{this};
 };
@@ -176,7 +170,7 @@ void SpeakerIdEnrollmentController::StartSpeakerIdEnrollment(
     const std::string& user_gaia_id,
     bool skip_cloud_enrollment,
     ::mojo::PendingRemote<mojom::SpeakerIdEnrollmentClient> client) {
-  if (!assistant_manager_internal_)
+  if (!assistant_client_)
     return;
 
   // Force mic state to open, otherwise the training might not open the
@@ -187,13 +181,13 @@ void SpeakerIdEnrollmentController::StartSpeakerIdEnrollment(
   if (active_enrollment_session_)
     active_enrollment_session_->Stop();
 
-  active_enrollment_session_ = std::make_unique<EnrollmentSession>(
-      std::move(client), assistant_manager_internal_);
+  active_enrollment_session_ =
+      std::make_unique<EnrollmentSession>(std::move(client), assistant_client_);
   active_enrollment_session_->Start(user_gaia_id, skip_cloud_enrollment);
 }
 
 void SpeakerIdEnrollmentController::StopSpeakerIdEnrollment() {
-  if (!assistant_manager_internal_)
+  if (!assistant_client_)
     return;
 
   if (!active_enrollment_session_)
@@ -210,18 +204,18 @@ void SpeakerIdEnrollmentController::GetSpeakerIdEnrollmentStatus(
     GetSpeakerIdEnrollmentStatusCallback callback) {
   auto* waiter =
       pending_response_waiters_.Add(std::make_unique<GetStatusWaiter>());
-  waiter->Start(assistant_manager_internal_, user_gaia_id, std::move(callback));
+  waiter->Start(assistant_client_, user_gaia_id, std::move(callback));
 }
 
 void SpeakerIdEnrollmentController::OnAssistantClientStarted(
     AssistantClient* assistant_client) {
-  assistant_manager_internal_ = assistant_client->assistant_manager_internal();
+  assistant_client_ = assistant_client;
 }
 
 void SpeakerIdEnrollmentController::OnDestroyingAssistantClient(
     AssistantClient* assistant_client) {
   active_enrollment_session_ = nullptr;
-  assistant_manager_internal_ = nullptr;
+  assistant_client_ = nullptr;
   pending_response_waiters_.AbortAll();
 }
 

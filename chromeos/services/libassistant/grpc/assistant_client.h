@@ -13,6 +13,13 @@ namespace assistant {
 namespace api {
 class Interaction;
 class VoicelessOptions;
+class StartSpeakerIdEnrollmentRequest;
+class CancelSpeakerIdEnrollmentRequest;
+class GetSpeakerIdEnrollmentInfoRequest;
+
+namespace events {
+class SpeakerIdEnrollmentEvent;
+}  // namespace events
 }  // namespace api
 }  // namespace assistant
 
@@ -30,6 +37,15 @@ namespace libassistant {
 // specific method below and call the appropriate gRPC (IPC) client method.
 class AssistantClient {
  public:
+  using StartSpeakerIdEnrollmentRequest =
+      ::assistant::api::StartSpeakerIdEnrollmentRequest;
+  using CancelSpeakerIdEnrollmentRequest =
+      ::assistant::api::CancelSpeakerIdEnrollmentRequest;
+  using GetSpeakerIdEnrollmentInfoRequest =
+      ::assistant::api::GetSpeakerIdEnrollmentInfoRequest;
+  using SpeakerIdEnrollmentEvent =
+      ::assistant::api::events::SpeakerIdEnrollmentEvent;
+
   AssistantClient(
       std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
       assistant_client::AssistantManagerInternal* assistant_manager_internal);
@@ -51,6 +67,17 @@ class AssistantClient {
       const std::string& description,
       const ::assistant::api::VoicelessOptions& options,
       base::OnceCallback<void(bool)> on_done) = 0;
+
+  // Speaker Id Enrollment methods.
+  virtual void StartSpeakerIdEnrollment(
+      const StartSpeakerIdEnrollmentRequest& request,
+      base::RepeatingCallback<void(const SpeakerIdEnrollmentEvent&)>
+          on_done) = 0;
+  virtual void CancelSpeakerIdEnrollment(
+      const CancelSpeakerIdEnrollmentRequest& request) = 0;
+  virtual void GetSpeakerIdEnrollmentInfo(
+      const GetSpeakerIdEnrollmentInfoRequest& request,
+      base::OnceCallback<void(bool user_model_exists)> on_done) = 0;
 
   // Will not return nullptr.
   assistant_client::AssistantManager* assistant_manager() {

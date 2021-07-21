@@ -44,6 +44,18 @@ class AssistantClientMock : public AssistantClient {
                const std::string& description,
                const ::assistant::api::VoicelessOptions& options,
                base::OnceCallback<void(bool)> on_done));
+  MOCK_METHOD(
+      void,
+      StartSpeakerIdEnrollment,
+      (const StartSpeakerIdEnrollmentRequest& request,
+       base::RepeatingCallback<void(const SpeakerIdEnrollmentEvent&)> on_done));
+  MOCK_METHOD(void,
+              CancelSpeakerIdEnrollment,
+              (const CancelSpeakerIdEnrollmentRequest& request));
+  MOCK_METHOD(void,
+              GetSpeakerIdEnrollmentInfo,
+              (const GetSpeakerIdEnrollmentInfoRequest& request,
+               base::OnceCallback<void(bool user_model_exists)> on_done));
 };
 
 class AssistantManagerInternalMock

@@ -56,6 +56,12 @@ source_set("sandbox_hook") {
   ]
 }
 
+source_set("callback_utils") {
+  sources = [ "callback_utils.h" ]
+
+  deps = [ "//base" ]
+}
+
 source_set("internal") {
   visibility = [ ":*" ]
 
@@ -65,7 +71,6 @@ source_set("internal") {
     "assistant_client_observer.h",
     "audio_input_controller.cc",
     "audio_input_controller.h",
-    "callback_utils.h",
     "chromium_api_delegate.cc",
     "chromium_api_delegate.h",
     "chromium_http_connection.cc",
@@ -109,6 +114,7 @@ source_set("internal") {
 
   deps = [
     ":audio",
+    ":callback_utils",
     ":constants",
     "./grpc:assistant_client",
     "//build/util:chromium_git_revision",
@@ -117,6 +123,7 @@ source_set("internal") {
     "//chromeos/assistant/internal:buildflags",
     "//chromeos/assistant/internal:libassistant",
     "//chromeos/assistant/internal:support",
+    "//chromeos/assistant/internal/proto:assistant",
     "//chromeos/dbus",
     "//chromeos/dbus/power",
     "//chromeos/resources:resources_grit",

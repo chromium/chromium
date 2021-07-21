@@ -51,6 +51,16 @@ std::function<void(Args...)> ToStdFunction(
   };
 }
 
+// Wrapper around a |base::RepeatingCallback| that converts it to a
+// std::function.
+template <typename... Args>
+std::function<void(Args...)> ToStdFunctionRepeating(
+    base::RepeatingCallback<void(Args...)> repeating_callback) {
+  return [callback = repeating_callback](Args... args) {
+    callback.Run(std::forward<Args>(args)...);
+  };
+}
+
 // Binds a method call to the current sequence, meaning we ensure |callback|
 // will always be called from the current sequence. If the call comes from a
 // different sequence it will be posted to the correct one.
@@ -71,6 +81,28 @@ base::OnceCallback<void(Args...)> BindToCurrentSequence(
         }
       },
       std::move(callback), base::SequencedTaskRunnerHandle::Get());
+}
+
+// Binds a method call to the current sequence, meaning we ensure |callback|
+// will always be called from the current sequence. If the call comes from a
+// different sequence it will be posted to the correct one.
+template <typename... Args>
+base::RepeatingCallback<void(Args...)> BindToCurrentSequenceRepeating(
+    base::RepeatingCallback<void(Args...)> callback) {
+  return base::BindRepeating(
+      [](base::RepeatingCallback<void(Args...)> callback,
+         scoped_refptr<base::SequencedTaskRunner> sequence_runner,
+         Args&&... args) {
+        // Invoke the callback on the original sequence.
+        if (sequence_runner->RunsTasksInCurrentSequence()) {
+          callback.Run(std::forward<Args>(args)...);
+        } else {
+          sequence_runner->PostTask(
+              FROM_HERE,
+              base::BindRepeating(callback, std::forward<Args>(args)...));
+        }
+      },
+      callback, base::SequencedTaskRunnerHandle::Get());
 }
 
 // Binds a method call to the current sequence.

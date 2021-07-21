@@ -36,6 +36,15 @@ class FakeAssistantClient : public AssistantClient {
       const std::string& description,
       const ::assistant::api::VoicelessOptions& options,
       base::OnceCallback<void(bool)> on_done) override;
+  void StartSpeakerIdEnrollment(
+      const StartSpeakerIdEnrollmentRequest& request,
+      base::RepeatingCallback<void(const SpeakerIdEnrollmentEvent&)> on_done)
+      override;
+  void CancelSpeakerIdEnrollment(
+      const CancelSpeakerIdEnrollmentRequest& request) override;
+  void GetSpeakerIdEnrollmentInfo(
+      const GetSpeakerIdEnrollmentInfoRequest& request,
+      base::OnceCallback<void(bool user_model_exists)> on_done) override;
 };
 
 }  // namespace libassistant

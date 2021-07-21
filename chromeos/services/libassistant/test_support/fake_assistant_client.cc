@@ -30,5 +30,16 @@ void FakeAssistantClient::SendVoicelessInteraction(
     const ::assistant::api::VoicelessOptions& options,
     base::OnceCallback<void(bool)> on_done) {}
 
+void FakeAssistantClient::StartSpeakerIdEnrollment(
+    const StartSpeakerIdEnrollmentRequest& request,
+    base::RepeatingCallback<void(const SpeakerIdEnrollmentEvent&)> on_done) {}
+
+void FakeAssistantClient::CancelSpeakerIdEnrollment(
+    const CancelSpeakerIdEnrollmentRequest& request) {}
+
+void FakeAssistantClient::GetSpeakerIdEnrollmentInfo(
+    const ::assistant::api::GetSpeakerIdEnrollmentInfoRequest& request,
+    base::OnceCallback<void(bool user_model_exists)> on_done) {}
+
 }  // namespace libassistant
 }  // namespace chromeos

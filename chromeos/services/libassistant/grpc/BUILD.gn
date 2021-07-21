@@ -14,6 +14,7 @@ source_set("assistant_client") {
 
   deps = [
     ":libassistant_client",
+    "../:callback_utils",
     "external_services:grpc_services_initializer",
     "//base",
     "//chromeos/assistant/internal",
