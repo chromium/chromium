@@ -63,6 +63,12 @@ Polymer({
 
   usersPrivate_: chrome.usersPrivate,
 
+  /** @override */
+  attached() {
+    // Initialize the announcer once.
+    Polymer.IronA11yAnnouncer.requestAvailability();
+  },
+
   open() {
     this.$.addUserInput.value = '';
     this.onInput_();
@@ -97,6 +103,9 @@ Polymer({
         this.errorCode_ = UserAddError.USER_EXISTS;
         return;
       }
+
+      this.fire(
+          'iron-announce', {text: this.i18n('userAddedMessage', userEmail)});
 
       this.$.dialog.close();
       this.usersPrivate_.addUser(

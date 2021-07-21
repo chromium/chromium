@@ -5,6 +5,7 @@
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
@@ -50,10 +51,10 @@
               aria-hidden="true">
           <div class="flex layout vertical user-info no-min-width">
             <div class="text-elide" title="[[getTooltip_(item)]]"
-                aria-describedby="user-email">
+                aria-describedby="userEmail-[[index]]">
               [[getUserName_(item)]]
             </div>
-            <div class="secondary text-elide" id="user-email"
+            <div class="secondary text-elide" id="userEmail-[[index]]"
                 title="[[item.displayEmail]]"
                 hidden$="[[!shouldShowEmail_(item)]]"
                 aria-hidden="true">

@@ -2860,8 +2860,14 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_USERS_REMOVE_USER_TOOLTIP" desc="Tooltip for the button that removes a user from the list of restricted sign in users.">
     Remove <ph name="USER_NAME">$1<ex>John Smith</ex></ph>
   </message>
+  <message name="IDS_SETTINGS_USERS_USER_REMOVED_MESSAGE" desc="Message announced by screen reader after removal of the user from the list of restricted sign in users.">
+    <ph name="USER_NAME_OR_EMAIL">$1<ex>John Smith</ex></ph> removed
+  </message>
   <message name="IDS_SETTINGS_USERS_ADD_USERS" desc="Label the dialog for adding users.">
     Add user
+  </message>
+  <message name="IDS_SETTINGS_USERS_USER_ADDED_MESSAGE" desc="Message announced by screen reader after addition of the user to the list of restricted sign in users.">
+    <ph name="USER_EMAIL">$1<ex>user@gmail.com</ex></ph> added
   </message>
   <message name="IDS_SETTINGS_USERS_ADD_USERS_EMAIL" desc="Label for the email input field for adding users.">
     Email address

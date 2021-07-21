@@ -626,6 +626,8 @@ void AddUsersStrings(content::WebUIDataSource* html_source) {
       {"restrictSigninLabel", IDS_SETTINGS_USERS_RESTRICT_SIGNIN_LABEL},
       {"deviceOwnerLabel", IDS_SETTINGS_USERS_DEVICE_OWNER_LABEL},
       {"removeUserTooltip", IDS_SETTINGS_USERS_REMOVE_USER_TOOLTIP},
+      {"userRemovedMessage", IDS_SETTINGS_USERS_USER_REMOVED_MESSAGE},
+      {"userAddedMessage", IDS_SETTINGS_USERS_USER_ADDED_MESSAGE},
       {"addUsers", IDS_SETTINGS_USERS_ADD_USERS},
       {"addUsersEmail", IDS_SETTINGS_USERS_ADD_USERS_EMAIL},
       {"userExistsError", IDS_SETTINGS_USER_EXISTS_ERROR},
