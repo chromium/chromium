@@ -122,8 +122,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabPinned) {
       << message_;
 }
 
-// TODO(crbug.com/1227134): Flaky test.
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabMove) {
+// TODO(crbug.com/1227134): Flaky on ASAN builds.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_TabMove DISABLED_TabMove
+#else
+#define MAYBE_TabMove TabMove
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_TabMove) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "move.html"}))
       << message_;
 }
