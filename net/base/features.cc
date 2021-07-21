@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 
 namespace net {
@@ -261,7 +262,7 @@ const base::Feature kDocumentReporting{"DocumentReporting",
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
 const base::Feature kUdpSocketPosixAlwaysUpdateBytesReceived{
     "UdpSocketPosixAlwaysUpdateBytesReceived",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
 
 const base::Feature kCookieSameSiteConsidersRedirectChain{
