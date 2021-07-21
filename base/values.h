@@ -888,9 +888,6 @@ class BASE_EXPORT ListValue : public Value {
 
   // DEPRECATED, use `Value::Clone()` instead.
   // TODO(crbug.com/646113): Delete this and migrate callsites.
-  ListValue* DeepCopy() const;
-  // DEPRECATED, use `Value::Clone()` instead.
-  // TODO(crbug.com/646113): Delete this and migrate callsites.
   std::unique_ptr<ListValue> CreateDeepCopy() const;
 };
 
