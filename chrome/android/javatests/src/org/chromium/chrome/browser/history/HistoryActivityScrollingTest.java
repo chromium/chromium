@@ -8,6 +8,7 @@ import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -16,7 +17,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -56,8 +56,8 @@ import java.util.List;
 public class HistoryActivityScrollingTest {
     // clang-format on
     @Rule
-    public BaseActivityTestRule<HistoryActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(HistoryActivity.class);
+    public IntentsTestRule<HistoryActivity> mActivityTestRule =
+            new IntentsTestRule<>(HistoryActivity.class, false, false);
 
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams = new TestParamsProvider().getParameters();
@@ -150,8 +150,7 @@ public class HistoryActivityScrollingTest {
     }
 
     private void launchHistoryActivity() {
-        mActivityTestRule.launchActivity(null);
-        HistoryActivity activity = mActivityTestRule.getActivity();
+        HistoryActivity activity = mActivityTestRule.launchActivity(null);
         mHistoryManager = activity.getHistoryManagerForTests();
         mAdapter = mHistoryManager.getContentManagerForTests().getAdapter();
         mRecyclerView = mHistoryManager.getContentManagerForTests().getRecyclerView();

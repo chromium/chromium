@@ -1,0 +1,12 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# To create CIPD package run the following command.
+# cipd create --pkg-def cipd.yaml -tag version:$(cat version.txt)
+package: chromium/third_party/android_support_test_runner
+description: android_support_test_runner Java libraries
+data:
+  - file: lib/exposed-instrumentation-api-publish-no-dep.jar
+  - file: lib/rules.aar
+  - file: lib/runner-release-no-dep.jar

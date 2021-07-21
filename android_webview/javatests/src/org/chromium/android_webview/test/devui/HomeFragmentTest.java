@@ -34,7 +34,6 @@ import android.os.Build;
 import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
 
-import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.MediumTest;
@@ -78,10 +77,6 @@ public class HomeFragmentTest {
         if (mRule.getActivity() != null) {
             // Tests are responsible for verifying every Intent they trigger.
             assertNoUnverifiedIntents();
-        } else {
-            // IntentsTestRule assumes the Activity was started when tearing down the rule, so we
-            // need to work around that.
-            Intents.init();
         }
     }
 

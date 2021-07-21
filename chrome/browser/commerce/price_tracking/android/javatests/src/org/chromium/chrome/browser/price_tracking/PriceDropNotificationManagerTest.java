@@ -22,6 +22,7 @@ import android.os.Build;
 import android.provider.Browser;
 import android.provider.Settings;
 
+import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -36,6 +37,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -75,6 +77,10 @@ public class PriceDropNotificationManagerTest {
 
     private MockNotificationManagerProxy mMockNotificationManager;
     private PriceDropNotificationManager mPriceDropNotificationManager;
+
+    @Rule
+    public IntentsTestRule<ChromeActivity> mIntentTestRule =
+            new IntentsTestRule<>(ChromeActivity.class, false, false);
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
