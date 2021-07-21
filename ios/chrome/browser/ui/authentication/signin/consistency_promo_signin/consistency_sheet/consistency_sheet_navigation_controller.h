@@ -15,6 +15,14 @@ typedef NS_ENUM(NSUInteger, ConsistencySheetDisplayStyle) {
   ConsistencySheetDisplayStyleCentered,
 };
 
+// Delegate for updating navigation controller content.
+@protocol ConsistencySheetNavigationControllerLayoutDelegate <NSObject>
+
+// Performs updates due to changes in preferred content size.
+- (void)preferredContentSizeDidChangeForChildConsistencySheetViewController;
+
+@end
+
 // Navigation controller presented from the bottom. The pushed view controllers
 // view have to be UIScrollView. This is required to support high font size
 // (related to accessibility) with small devices (like iPhone SE).
@@ -35,6 +43,11 @@ typedef NS_ENUM(NSUInteger, ConsistencySheetDisplayStyle) {
 
 // Updates internal views according to the consistency sheet view position.
 - (void)didUpdateControllerViewFrame;
+
+// Delegate for layout.
+@property(nonatomic, weak)
+    id<ConsistencySheetNavigationControllerLayoutDelegate>
+        layoutDelegate;
 
 @end
 
