@@ -46,7 +46,7 @@ JNI_DomDistillerUrlUtils_GetOriginalUrlFromDistillerUrl(
     const JavaParamRef<jstring>& j_url) {
   GURL url(base::android::ConvertJavaStringToUTF8(env, j_url));
   if (!url.is_valid())
-    return ScopedJavaLocalRef<jstring>();
+    return url::GURLAndroid::EmptyGURL(env);
 
   GURL original_url =
       dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(url);
