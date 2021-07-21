@@ -113,11 +113,11 @@ void ClientSidePhishingModel::PopulateFromDynamicUpdate(
 
   bool model_valid = false;
   int model_version_field = 0;
-  model_type_ = CSDModelType::kNone;
 
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           kOverrideCsdModelFlag) &&
       !model_str.empty()) {
+    model_type_ = CSDModelType::kNone;
     if (base::FeatureList::IsEnabled(kClientSideDetectionModelIsFlatBuffer)) {
       flatbuffers::Verifier verifier(
           reinterpret_cast<const uint8_t*>(model_str.data()),
