@@ -2692,6 +2692,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- New Tab Page strings -->
+      <message name="IDS_NEW_TAB_TITLE" desc="Title in tab strip when opening a new tab.">
+        New tab
+      </message>
+      <message name="IDS_NEW_INCOGNITO_TAB_TITLE" desc="Title in tab strip when opening a new Incognito tab.">
+        New Incognito tab
+      </message>
       <message name="IDS_RECENT_TABS" desc="Text for button to show 'Recent tabs', i.e. recently closed tabs and tabs that are open on other devices [CHAR_LIMIT=20]">
         Recent tabs
       </message>

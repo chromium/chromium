@@ -329,7 +329,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 activity, profile, navigationDelegate, snackbarManager);
 
         mResources = activity.getResources();
-        mTitle = activity.getResources().getString(R.string.button_new_tab);
+        mTitle = activity.getResources().getString(R.string.new_tab_title);
         mBackgroundColor =
                 ApiCompatibilityUtils.getColor(activity.getResources(), R.color.default_bg_color);
         mIsTablet = isTablet;
