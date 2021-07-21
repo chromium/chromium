@@ -46,14 +46,14 @@ TEST(GetMediaURLScheme, Android) {
 }
 
 TEST(GetMediaURLScheme, Chrome) {
-  SchemeRegistry::RegisterURLSchemeAsWebUI("chrome");
-  SchemeRegistry::RegisterURLSchemeAsExtension("chrome-extension");
+  SchemeRegistry::RegisterURLSchemeAsWebUIForTest("chrome");
+  SchemeRegistry::RegisterURLSchemeAsExtensionForTest("chrome-extension");
   EXPECT_EQ(media::mojom::MediaURLScheme::kChrome,
             GetMediaURLScheme(KURL("chrome://abc.123")));
   EXPECT_EQ(media::mojom::MediaURLScheme::kChromeExtension,
             GetMediaURLScheme(KURL("chrome-extension://abc.123")));
-  SchemeRegistry::RemoveURLSchemeAsExtension("chrome-extension");
-  SchemeRegistry::RemoveURLSchemeAsWebUI("chrome");
+  SchemeRegistry::RemoveURLSchemeAsExtensionForTest("chrome-extension");
+  SchemeRegistry::RemoveURLSchemeAsWebUIForTest("chrome");
 }
 
 }  // namespace blink

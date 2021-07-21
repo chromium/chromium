@@ -467,6 +467,15 @@ bool SchemeRegistry::IsExtensionScheme(const String& scheme) {
   return GetURLSchemesRegistry().extension_schemes.Contains(scheme);
 }
 
+void SchemeRegistry::RegisterURLSchemeAsExtensionForTest(const String& scheme) {
+  DCHECK_EQ(scheme, scheme.LowerASCII());
+  GetMutableURLSchemesRegistryForTest().extension_schemes.insert(scheme);
+}
+
+void SchemeRegistry::RemoveURLSchemeAsExtensionForTest(const String& scheme) {
+  GetMutableURLSchemesRegistryForTest().extension_schemes.erase(scheme);
+}
+
 void SchemeRegistry::RegisterURLSchemeAsWebUI(const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
   GetMutableURLSchemesRegistry().web_ui_schemes.insert(scheme);
@@ -481,6 +490,15 @@ bool SchemeRegistry::IsWebUIScheme(const String& scheme) {
     return false;
   DCHECK_EQ(scheme, scheme.LowerASCII());
   return GetURLSchemesRegistry().web_ui_schemes.Contains(scheme);
+}
+
+void SchemeRegistry::RegisterURLSchemeAsWebUIForTest(const String& scheme) {
+  DCHECK_EQ(scheme, scheme.LowerASCII());
+  GetMutableURLSchemesRegistryForTest().web_ui_schemes.insert(scheme);
+}
+
+void SchemeRegistry::RemoveURLSchemeAsWebUIForTest(const String& scheme) {
+  GetMutableURLSchemesRegistryForTest().web_ui_schemes.erase(scheme);
 }
 
 }  // namespace blink
