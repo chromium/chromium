@@ -109,9 +109,9 @@ std::string ScreenOzone::GetCurrentWorkspace() {
   return platform_screen_->GetCurrentWorkspace();
 }
 
-base::Value ScreenOzone::GetGpuExtraInfoAsListValue(
+std::vector<base::Value> ScreenOzone::GetGpuExtraInfo(
     const gfx::GpuExtraInfo& gpu_extra_info) {
-  return platform_screen_->GetGpuExtraInfoAsListValue(gpu_extra_info);
+  return platform_screen_->GetGpuExtraInfo(gpu_extra_info);
 }
 
 gfx::NativeWindow ScreenOzone::GetNativeWindowFromAcceleratedWidget(

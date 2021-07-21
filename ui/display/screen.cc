@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
@@ -128,9 +129,9 @@ std::string Screen::GetCurrentWorkspace() {
   return {};
 }
 
-base::Value Screen::GetGpuExtraInfoAsListValue(
+std::vector<base::Value> Screen::GetGpuExtraInfo(
     const gfx::GpuExtraInfo& gpu_extra_info) {
-  return base::Value(base::Value::Type::LIST);
+  return std::vector<base::Value>();
 }
 
 void Screen::SetScopedDisplayForNewWindows(int64_t display_id) {

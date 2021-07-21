@@ -4,6 +4,8 @@
 
 #include "ui/base/linux/linux_desktop.h"
 
+#include <vector>
+
 #include "base/environment.h"
 #include "base/nix/xdg_util.h"
 #include "base/strings/string_piece.h"
@@ -12,21 +14,21 @@
 
 namespace ui {
 
-base::Value GetDesktopEnvironmentInfoAsListValue() {
-  base::Value result(base::Value::Type::LIST);
+std::vector<base::Value> GetDesktopEnvironmentInfo() {
+  std::vector<base::Value> result;
   auto env(base::Environment::Create());
   std::string value;
   if (env->GetVar(base::nix::kXdgCurrentDesktopEnvVar, &value)) {
-    result.Append(
+    result.push_back(
         display::BuildGpuInfoEntry(base::nix::kXdgCurrentDesktopEnvVar, value));
   }
   if (env->GetVar(base::nix::kXdgSessionTypeEnvVar, &value)) {
-    result.Append(
+    result.push_back(
         display::BuildGpuInfoEntry(base::nix::kXdgSessionTypeEnvVar, value));
   }
   constexpr char kGDMSession[] = "GDMSESSION";
   if (env->GetVar(kGDMSession, &value))
-    result.Append(display::BuildGpuInfoEntry(kGDMSession, value));
+    result.push_back(display::BuildGpuInfoEntry(kGDMSession, value));
   return result;
 }
 

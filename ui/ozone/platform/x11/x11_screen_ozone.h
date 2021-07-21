@@ -51,7 +51,7 @@ class X11ScreenOzone : public PlatformScreen,
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
   std::string GetCurrentWorkspace() override;
-  base::Value GetGpuExtraInfoAsListValue(
+  std::vector<base::Value> GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info) override;
   void SetDeviceScaleFactor(float scale) override;
 
