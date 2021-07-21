@@ -122,11 +122,11 @@ class SellerWorkletTest : public testing::Test {
       double expected_score,
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
-    auto seller_worket = CreateWorklet();
-    ASSERT_TRUE(seller_worket);
+    auto seller_worklet = CreateWorklet();
+    ASSERT_TRUE(seller_worklet);
 
     base::RunLoop run_loop;
-    seller_worket->ScoreAd(
+    seller_worklet->ScoreAd(
         ad_metadata_, bid_, auction_config_.Clone(),
         browser_signal_top_window_origin_, browser_signal_interest_group_owner_,
         browser_signal_ad_render_fingerprint_,
@@ -177,11 +177,11 @@ class SellerWorkletTest : public testing::Test {
       const absl::optional<GURL>& expected_report_url,
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
-    auto seller_worket = CreateWorklet();
-    ASSERT_TRUE(seller_worket);
+    auto seller_worklet = CreateWorklet();
+    ASSERT_TRUE(seller_worklet);
 
     base::RunLoop run_loop;
-    seller_worket->ReportResult(
+    seller_worklet->ReportResult(
         auction_config_.Clone(), browser_signal_top_window_origin_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_render_fingerprint_, bid_,
@@ -695,8 +695,8 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
 
         reportResult = scoreAd;
       )");
-  auto seller_worket = CreateWorklet();
-  ASSERT_TRUE(seller_worket);
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
 
   for (int i = 0; i < 3; ++i) {
     // Run each script twice in a row, to cover both cases where the same
@@ -704,7 +704,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
     // other.
     for (int j = 0; j < 2; ++j) {
       base::RunLoop run_loop;
-      seller_worket->ScoreAd(
+      seller_worklet->ScoreAd(
           ad_metadata_, bid_, auction_config_.Clone(),
           browser_signal_top_window_origin_,
           browser_signal_interest_group_owner_,
@@ -722,7 +722,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
 
     for (int j = 0; j < 2; ++j) {
       base::RunLoop run_loop;
-      seller_worket->ReportResult(
+      seller_worklet->ReportResult(
           auction_config_.Clone(), browser_signal_top_window_origin_,
           browser_signal_interest_group_owner_, browser_signal_render_url_,
           browser_signal_ad_render_fingerprint_, bid_,

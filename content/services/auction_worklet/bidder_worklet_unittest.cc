@@ -180,11 +180,11 @@ class BidderWorkletTest : public testing::Test {
       const absl::optional<GURL>& expected_report_url,
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
-    auto bidder_worket = CreateWorkletAndGenerateBid();
-    ASSERT_TRUE(bidder_worket);
+    auto bidder_worklet = CreateWorkletAndGenerateBid();
+    ASSERT_TRUE(bidder_worklet);
 
     base::RunLoop run_loop;
-    bidder_worket->ReportWin(
+    bidder_worklet->ReportWin(
         seller_signals_, browser_signal_render_url_,
         browser_signal_ad_render_fingerprint_, browser_signal_bid_,
         base::BindLambdaForTesting(
@@ -1270,12 +1270,12 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
           sendReportTo("https://" + ad[0] + ad[1] + ".test/");
         }
       )");
-  auto bidder_worket = CreateWorkletAndGenerateBid();
-  ASSERT_TRUE(bidder_worket);
+  auto bidder_worklet = CreateWorkletAndGenerateBid();
+  ASSERT_TRUE(bidder_worklet);
 
   for (int i = 0; i < 3; ++i) {
     base::RunLoop run_loop;
-    bidder_worket->ReportWin(
+    bidder_worklet->ReportWin(
         seller_signals_, browser_signal_render_url_,
         browser_signal_ad_render_fingerprint_, browser_signal_bid_,
         base::BindLambdaForTesting(
