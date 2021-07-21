@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
@@ -107,6 +108,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-shared.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -313,30 +315,16 @@ class PDFExtensionTestWithoutUnseasonedOverride
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  int CountPDFProcesses() {
-    int result = -1;
-    base::RunLoop run_loop;
-    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                           ? content::GetUIThreadTaskRunner({})
-                           : content::GetIOThreadTaskRunner({});
-    task_runner->PostTaskAndReply(
-        FROM_HERE,
-        base::BindOnce(&PDFExtensionTestWithoutUnseasonedOverride::
-                           CountPDFProcessesOnProcessThread,
-                       base::Unretained(this), base::Unretained(&result)),
-        run_loop.QuitClosure());
-    run_loop.Run();
-    return result;
-  }
-
-  void CountPDFProcessesOnProcessThread(int* result) {
-    auto* service = content::PluginService::GetInstance();
-    *result = service->CountPpapiPluginProcessesForProfile(
-        base::FilePath(ChromeContentClient::kPDFPluginPath),
-        browser()->profile()->GetPath());
-  }
-
  protected:
+  int CountPDFProcesses() {
+    return IsUnseasoned() ? CountUnseasonedPDFProcesses()
+                          : CountPepperPDFProcesses();
+  }
+
+  bool IsUnseasoned() const {
+    return base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUnseasoned);
+  }
+
   // Hooks to set up feature flags.
   virtual std::vector<base::Feature> GetEnabledFeatures() const { return {}; }
 
@@ -356,6 +344,60 @@ class PDFExtensionTestWithoutUnseasonedOverride
         contents->GetBrowserContext()->GetGuestManager();
     WebContents* guest_contents = guest_manager->GetFullPageGuest(contents);
     return guest_contents;
+  }
+
+  int CountPepperPDFProcesses() {
+    int result = -1;
+    base::RunLoop run_loop;
+    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                           ? content::GetUIThreadTaskRunner({})
+                           : content::GetIOThreadTaskRunner({});
+    task_runner->PostTaskAndReply(
+        FROM_HERE,
+        base::BindOnce(&PDFExtensionTestWithoutUnseasonedOverride::
+                           CountPepperPDFProcessesOnProcessThread,
+                       base::Unretained(this), base::Unretained(&result)),
+        run_loop.QuitClosure());
+    run_loop.Run();
+    return result;
+  }
+
+  void CountPepperPDFProcessesOnProcessThread(int* result) {
+    auto* service = content::PluginService::GetInstance();
+    *result = service->CountPpapiPluginProcessesForProfile(
+        base::FilePath(ChromeContentClient::kPDFPluginPath),
+        browser()->profile()->GetPath());
+  }
+
+  int CountUnseasonedPDFProcesses() {
+    base::flat_set<content::RenderProcessHost*> plugin_processes;
+
+    const TabStripModel* tab_strip = browser()->tab_strip_model();
+    for (int tab = 0; tab < tab_strip->count(); ++tab) {
+      tab_strip->GetWebContentsAt(tab)->ForEachRenderFrameHost(
+          base::BindLambdaForTesting(
+              [&plugin_processes](content::RenderFrameHost* frame) {
+                if (IsUnseasonedPdfFrame(*frame))
+                  plugin_processes.insert(frame->GetProcess());
+              }));
+    }
+
+    // TODO(crbug.com/1231763): HTML and PDF content are not separated yet, so
+    // we don't try to verify that the PDF renderer is a separate process.
+    return plugin_processes.size();
+  }
+
+  static bool IsUnseasonedPdfFrame(content::RenderFrameHost& frame) {
+    // TODO(crbug.com/1231763): This is a heuristic to identify which frame
+    // contains the in-process PDF plugin, but ideally we would have a stronger
+    // identification of frames that should contain PDF content.
+    if (frame.GetFrameOwnerElementType() !=
+        blink::mojom::FrameOwnerElementType::kEmbed) {
+      return false;
+    }
+
+    EXPECT_TRUE(frame.IsCrossProcessSubframe());
+    return true;
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -568,12 +610,11 @@ class PDFExtensionLoadTest
       public testing::WithParamInterface<std::tuple<int, bool>> {
  protected:
   int part() const { return std::get<0>(GetParam()); }
-  bool is_unseasoned() const { return std::get<1>(GetParam()); }
 
   std::vector<base::Feature> GetEnabledFeatures() const override {
     std::vector<base::Feature> enabled =
         PDFExtensionTestWithoutUnseasonedOverride::GetEnabledFeatures();
-    if (is_unseasoned())
+    if (IsUnseasoned())
       enabled.push_back(chrome_pdf::features::kPdfUnseasoned);
     return enabled;
   }
@@ -581,7 +622,7 @@ class PDFExtensionLoadTest
   std::vector<base::Feature> GetDisabledFeatures() const override {
     std::vector<base::Feature> disabled =
         PDFExtensionTestWithoutUnseasonedOverride::GetDisabledFeatures();
-    if (!is_unseasoned())
+    if (!IsUnseasoned())
       disabled.push_back(chrome_pdf::features::kPdfUnseasoned);
     return disabled;
   }
@@ -861,7 +902,7 @@ class PDFExtensionJSTest : public WithUnseasonedOverride,
                            public PDFExtensionJSTestWithoutUnseasonedOverride {
 };
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTestWithoutUnseasonedOverride, Basic) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Basic) {
   RunTestsInJsModule("basic_test.js", "test.pdf");
 
   // Ensure it loaded in a PPAPI process.
@@ -1112,8 +1153,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, DISABLED_NoBeepCsp) {
 
 // Service worker tests are regression tests for
 // https://crbug.com/916514.
-class PDFExtensionServiceWorkerJSTest
-    : public PDFExtensionJSTestWithoutUnseasonedOverride {
+class PDFExtensionServiceWorkerJSTest : public PDFExtensionJSTest {
  public:
   ~PDFExtensionServiceWorkerJSTest() override = default;
 
@@ -1138,19 +1178,19 @@ class PDFExtensionServiceWorkerJSTest
 
 // Test navigating to a PDF in the scope of a service worker with no fetch event
 // handler.
-IN_PROC_BROWSER_TEST_F(PDFExtensionServiceWorkerJSTest, NoFetchHandler) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionServiceWorkerJSTest, NoFetchHandler) {
   RunServiceWorkerTest("empty.js");
 }
 
 // Test navigating to a PDF when a service worker intercepts the request and
 // then falls back to network by not calling FetchEvent.respondWith().
-IN_PROC_BROWSER_TEST_F(PDFExtensionServiceWorkerJSTest, NetworkFallback) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionServiceWorkerJSTest, NetworkFallback) {
   RunServiceWorkerTest("network_fallback_worker.js");
 }
 
 // Test navigating to a PDF when a service worker intercepts the request and
 // provides a response.
-IN_PROC_BROWSER_TEST_F(PDFExtensionServiceWorkerJSTest, Interception) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionServiceWorkerJSTest, Interception) {
   RunServiceWorkerTest("respond_with_fetch_worker.js");
 }
 
@@ -1222,8 +1262,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, BlockDirectAccess) {
 }
 
 // This test ensures that PDF can be loaded from local file
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
-                       EnsurePDFFromLocalFileLoads) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, EnsurePDFFromLocalFileLoads) {
   GURL test_pdf_url;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -1242,8 +1281,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
 }
 
 // Tests that PDF with no filename extension can be loaded from local file.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
-                       ExtensionlessPDFLocalFileLoads) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, ExtensionlessPDFLocalFileLoads) {
   GURL test_pdf_url;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -1715,8 +1753,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, NavigationOnCorrectTab) {
   EXPECT_FALSE(active_web_contents->GetController().GetPendingEntry());
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
-                       MultipleDomains) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MultipleDomains) {
   for (const std::string& domain : {"a.com", "b.com"}) {
     const GURL url = embedded_test_server()->GetURL(domain, "/pdf/test.pdf");
     ASSERT_TRUE(LoadPdfInNewTab(url));
@@ -3410,4 +3447,5 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFPluginDisabledTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionContentSettingJSTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionServiceWorkerJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionPrerenderTest);
