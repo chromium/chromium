@@ -113,16 +113,21 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
 }  // namespace
 
 SellerWorklet::SellerWorklet(
-    AuctionV8Helper* v8_helper,
+    scoped_refptr<AuctionV8Helper> v8_helper,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
     const GURL& script_source_url,
     mojom::AuctionWorkletService::LoadSellerWorkletCallback
         load_worklet_callback)
-    : v8_helper_(v8_helper),
-      script_source_url_(script_source_url),
+    : v8_runner_(v8_helper->v8_runner()),
+      v8_state_(nullptr, base::OnTaskRunnerDeleter(v8_runner_)),
       load_worklet_callback_(std::move(load_worklet_callback)) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   DCHECK(load_worklet_callback_);
+
+  v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
+      new V8State(v8_helper, script_source_url, weak_ptr_factory_.GetWeakPtr()),
+      base::OnTaskRunnerDeleter(v8_runner_));
 
   // Bind URLLoaderFactory. Remote is not needed after this method completes,
   // since requests will continue after the URLLoaderFactory pipe has been
@@ -137,6 +142,7 @@ SellerWorklet::SellerWorklet(
 }
 
 SellerWorklet::~SellerWorklet() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   if (load_worklet_callback_) {
     std::move(load_worklet_callback_)
         .Run(false /* success */, std::vector<std::string>() /* errors */);
@@ -152,7 +158,66 @@ void SellerWorklet::ScoreAd(
     const std::string& browser_signal_ad_render_fingerprint,
     uint32_t browser_signal_bidding_duration_msecs,
     ScoreAdCallback callback) {
-  AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  v8_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &SellerWorklet::V8State::ScoreAd, base::Unretained(v8_state_.get()),
+          ad_metadata_json, bid, std::move(auction_config),
+          browser_signal_top_window_origin, browser_signal_interest_group_owner,
+          browser_signal_ad_render_fingerprint,
+          browser_signal_bidding_duration_msecs, std::move(callback)));
+}
+
+void SellerWorklet::ReportResult(
+    blink::mojom::AuctionAdConfigPtr auction_config,
+    const url::Origin& browser_signal_top_window_origin,
+    const url::Origin& browser_signal_interest_group_owner,
+    const GURL& browser_signal_render_url,
+    const std::string& browser_signal_ad_render_fingerprint,
+    double browser_signal_bid,
+    double browser_signal_desirability,
+    ReportResultCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  v8_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &SellerWorklet::V8State::ReportResult,
+          base::Unretained(v8_state_.get()), std::move(auction_config),
+          browser_signal_top_window_origin, browser_signal_interest_group_owner,
+          browser_signal_render_url, browser_signal_ad_render_fingerprint,
+          browser_signal_bid, browser_signal_desirability,
+          std::move(callback)));
+}
+
+SellerWorklet::V8State::V8State(scoped_refptr<AuctionV8Helper> v8_helper,
+                                GURL script_source_url,
+                                base::WeakPtr<SellerWorklet> parent)
+    : v8_helper_(std::move(v8_helper)),
+      parent_(std::move(parent)),
+      user_thread_(base::SequencedTaskRunnerHandle::Get()),
+      script_source_url_(std::move(script_source_url)) {
+  DETACH_FROM_SEQUENCE(v8_sequence_checker_);
+}
+
+void SellerWorklet::V8State::SetWorkletScript(
+    WorkletLoader::Result worklet_script) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  worklet_script_ = worklet_script.TakeScript();
+}
+
+void SellerWorklet::V8State::ScoreAd(
+    const std::string& ad_metadata_json,
+    double bid,
+    blink::mojom::AuctionAdConfigPtr auction_config,
+    const url::Origin& browser_signal_top_window_origin,
+    const url::Origin& browser_signal_interest_group_owner,
+    const std::string& browser_signal_ad_render_fingerprint,
+    uint32_t browser_signal_bidding_duration_msecs,
+    ScoreAdCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+
+  AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
   // Short lived context, to avoid leaking data at global scope between either
   // repeated calls to this worklet, or to calls to any other worklet.
@@ -161,16 +226,16 @@ void SellerWorklet::ScoreAd(
 
   std::vector<v8::Local<v8::Value>> args;
   if (!v8_helper_->AppendJsonValue(context, ad_metadata_json, &args)) {
-    std::move(callback).Run(0 /* score */,
-                            std::vector<std::string>() /* errors */);
+    PostScoreAdCallbackToUserThread(std::move(callback), 0 /* score */,
+                                    std::vector<std::string>() /* errors */);
     return;
   }
 
   args.push_back(gin::ConvertToV8(isolate, bid));
 
-  if (!AppendAuctionConfig(v8_helper_, context, *auction_config, &args)) {
-    std::move(callback).Run(0 /* score */,
-                            std::vector<std::string>() /* errors */);
+  if (!AppendAuctionConfig(v8_helper_.get(), context, *auction_config, &args)) {
+    PostScoreAdCallbackToUserThread(std::move(callback), 0 /* score */,
+                                    std::vector<std::string>() /* errors */);
     return;
   }
 
@@ -188,8 +253,8 @@ void SellerWorklet::ScoreAd(
                                 browser_signal_ad_render_fingerprint) ||
       !browser_signals_dict.Set("biddingDurationMsec",
                                 browser_signal_bidding_duration_msecs)) {
-    std::move(callback).Run(0 /* score */,
-                            std::vector<std::string>() /* errors */);
+    PostScoreAdCallbackToUserThread(std::move(callback), 0 /* score */,
+                                    std::vector<std::string>() /* errors */);
     return;
   }
   args.push_back(browser_signals);
@@ -198,10 +263,11 @@ void SellerWorklet::ScoreAd(
   double score;
   std::vector<std::string> errors_out;
   if (!v8_helper_
-           ->RunScript(context, worklet_script_->Get(isolate), "scoreAd", args,
+           ->RunScript(context, worklet_script_.Get(isolate), "scoreAd", args,
                        errors_out)
            .ToLocal(&score_ad_result)) {
-    std::move(callback).Run(0 /* score */, errors_out);
+    PostScoreAdCallbackToUserThread(std::move(callback), 0 /* score */,
+                                    std::move(errors_out));
     return;
   }
 
@@ -210,19 +276,23 @@ void SellerWorklet::ScoreAd(
     errors_out.push_back(
         base::StrCat({script_source_url_.spec(),
                       " scoreAd() did not return a valid number."}));
-    std::move(callback).Run(0 /* score */, errors_out);
+
+    PostScoreAdCallbackToUserThread(std::move(callback), 0 /* score */,
+                                    std::move(errors_out));
     return;
   }
 
   if (score <= 0) {
-    std::move(callback).Run(0 /* score */, errors_out);
+    PostScoreAdCallbackToUserThread(std::move(callback), 0 /* score */,
+                                    std::move(errors_out));
     return;
   }
 
-  std::move(callback).Run(score, errors_out);
+  PostScoreAdCallbackToUserThread(std::move(callback), score,
+                                  std::move(errors_out));
 }
 
-void SellerWorklet::ReportResult(
+void SellerWorklet::V8State::ReportResult(
     blink::mojom::AuctionAdConfigPtr auction_config,
     const url::Origin& browser_signal_top_window_origin,
     const url::Origin& browser_signal_interest_group_owner,
@@ -231,12 +301,13 @@ void SellerWorklet::ReportResult(
     double browser_signal_bid,
     double browser_signal_desirability,
     ReportResultCallback callback) {
-  AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
 
   v8::Local<v8::ObjectTemplate> global_template =
       v8::ObjectTemplate::New(isolate);
-  ReportBindings report_bindings(v8_helper_, global_template);
+  ReportBindings report_bindings(v8_helper_.get(), global_template);
 
   // Short lived context, to avoid leaking data at global scope between either
   // repeated calls to this worklet, or to calls to any other worklet.
@@ -244,10 +315,11 @@ void SellerWorklet::ReportResult(
   v8::Context::Scope context_scope(context);
 
   std::vector<v8::Local<v8::Value>> args;
-  if (!AppendAuctionConfig(v8_helper_, context, *auction_config, &args)) {
-    std::move(callback).Run(absl::nullopt /* signals_for_winner */,
-                            absl::nullopt /* report_url */,
-                            std::vector<std::string>() /* errors */);
+  if (!AppendAuctionConfig(v8_helper_.get(), context, *auction_config, &args)) {
+    PostReportResultCallbackToUserThread(
+        std::move(callback), absl::nullopt /* signals_for_winner */,
+        absl::nullopt /* report_url */,
+        std::vector<std::string>() /* errors */);
     return;
   }
 
@@ -264,9 +336,10 @@ void SellerWorklet::ReportResult(
                                 browser_signal_ad_render_fingerprint) ||
       !browser_signals_dict.Set("bid", browser_signal_bid) ||
       !browser_signals_dict.Set("desirability", browser_signal_desirability)) {
-    std::move(callback).Run(absl::nullopt /* signals_for_winner */,
-                            absl::nullopt /* report_url */,
-                            std::vector<std::string>() /* errors */);
+    PostReportResultCallbackToUserThread(
+        std::move(callback), absl::nullopt /* signals_for_winner */,
+        absl::nullopt /* report_url */,
+        std::vector<std::string>() /* errors */);
     return;
   }
   args.push_back(browser_signals);
@@ -274,11 +347,12 @@ void SellerWorklet::ReportResult(
   v8::Local<v8::Value> signals_for_winner_value;
   std::vector<std::string> errors_out;
   if (!v8_helper_
-           ->RunScript(context, worklet_script_->Get(isolate), "reportResult",
+           ->RunScript(context, worklet_script_.Get(isolate), "reportResult",
                        args, errors_out)
            .ToLocal(&signals_for_winner_value)) {
-    std::move(callback).Run(absl::nullopt /* signals_for_winner */,
-                            absl::nullopt /* report_url */, errors_out);
+    PostReportResultCallbackToUserThread(
+        std::move(callback), absl::nullopt /* signals_for_winner */,
+        absl::nullopt /* report_url */, std::move(errors_out));
     return;
   }
 
@@ -290,22 +364,80 @@ void SellerWorklet::ReportResult(
     signals_for_winner = "null";
   }
 
-  std::move(callback).Run(signals_for_winner, report_bindings.report_url(),
-                          errors_out);
+  PostReportResultCallbackToUserThread(
+      std::move(callback), std::move(signals_for_winner),
+      report_bindings.report_url(), std::move(errors_out));
 }
 
-void SellerWorklet::OnDownloadComplete(
-    std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
-    absl::optional<std::string> error_msg) {
-  DCHECK(load_worklet_callback_);
+SellerWorklet::V8State::~V8State() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+}
 
+void SellerWorklet::V8State::PostScoreAdCallbackToUserThread(
+    ScoreAdCallback callback,
+    double score,
+    std::vector<std::string> errors) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  // `parent` being a weak pointer takes care of the case where the
+  // SellerWorklet proper is destroyed.
+  user_thread_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SellerWorklet::DeliverScoreAdCallbackOnUserThread,
+                     parent_, std::move(callback), score, std::move(errors)));
+}
+
+void SellerWorklet::V8State::PostReportResultCallbackToUserThread(
+    ReportResultCallback callback,
+    absl::optional<std::string> signals_for_winner,
+    absl::optional<GURL> report_url,
+    std::vector<std::string> errors) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  // `parent` being a weak pointer takes care of the case where the
+  // SellerWorklet proper is destroyed.
+  user_thread_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SellerWorklet::DeliverReportResultCallbackOnUserThread,
+                     parent_, std::move(callback),
+                     std::move(signals_for_winner), std::move(report_url),
+                     std::move(errors)));
+}
+
+void SellerWorklet::OnDownloadComplete(WorkletLoader::Result worklet_script,
+                                       absl::optional<std::string> error_msg) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  DCHECK(load_worklet_callback_);
   worklet_loader_.reset();
-  worklet_script_ = std::move(worklet_script);
+
+  bool success = worklet_script.success();
+  if (success) {
+    v8_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&SellerWorklet::V8State::SetWorkletScript,
+                                  base::Unretained(v8_state_.get()),
+                                  std::move(worklet_script)));
+  }
+
   std::vector<std::string> errors;
   if (error_msg)
     errors.emplace_back(std::move(error_msg).value());
-  std::move(load_worklet_callback_)
-      .Run(worklet_script_ != nullptr /* success */, errors);
+  std::move(load_worklet_callback_).Run(success, errors);
+}
+
+void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
+    ScoreAdCallback callback,
+    double score,
+    std::vector<std::string> errors) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  std::move(callback).Run(score, std::move(errors));
+}
+
+void SellerWorklet::DeliverReportResultCallbackOnUserThread(
+    ReportResultCallback callback,
+    absl::optional<std::string> signals_for_winner,
+    absl::optional<GURL> report_url,
+    std::vector<std::string> errors) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  std::move(callback).Run(std::move(signals_for_winner), std::move(report_url),
+                          std::move(errors));
 }
 
 }  // namespace auction_worklet

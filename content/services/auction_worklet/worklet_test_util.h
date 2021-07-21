@@ -13,7 +13,13 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+namespace base {
+class WaitableEvent;
+}  // namespace base
+
 namespace auction_worklet {
+
+class AuctionV8Helper;
 
 // The official Javascript and JSON MIME types. These are not the only supported
 // MIME types for either, however.
@@ -46,6 +52,10 @@ void AddJavascriptResponse(network::TestURLLoaderFactory* url_loader_factory,
 void AddJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
                      const GURL& url,
                      const std::string content);
+
+// Adds a task to `v8_helper->v8_runner()` that blocks until the return value
+// is signaled. The returned event will be deleted afterwards.
+base::WaitableEvent* WedgeV8Thread(AuctionV8Helper* v8_helper);
 
 }  // namespace auction_worklet
 

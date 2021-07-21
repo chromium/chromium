@@ -10,6 +10,9 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequenced_task_runner.h"
+#include "content/services/auction_worklet/auction_v8_helper.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -17,25 +20,48 @@
 
 namespace auction_worklet {
 
-class AuctionV8Helper;
 class AuctionDownloader;
 
 // Utility class to download and build a worklet.
 class WorkletLoader {
  public:
+  // This helps ensure that the script handle is deleted on the right thread
+  // even in case when the callback handling the result is destroyed.
+  class Result {
+   public:
+    Result();
+    Result(scoped_refptr<AuctionV8Helper> v8_helper,
+           v8::Global<v8::UnboundScript>);
+    Result(Result&&);
+    ~Result();
+
+    Result& operator=(Result&&);
+
+    // True if the script was loaded & parsed successfully.
+    bool success() const { return script_.get() && !script_->IsEmpty(); }
+
+    // Should only be called on the V8 thread. Requires success() to be true.
+    v8::Global<v8::UnboundScript> TakeScript();
+
+   private:
+    scoped_refptr<AuctionV8Helper> v8_helper_;
+    std::unique_ptr<v8::Global<v8::UnboundScript>, base::OnTaskRunnerDeleter>
+        script_;
+  };
+
   // On success, `worklet_script` is compiled script, not bound to any context.
   // It can be repeatedly bound to different contexts and executed, without
   // persisting any state.
-  using LoadWorkletCallback = base::OnceCallback<void(
-      std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
-      absl::optional<std::string> error_msg)>;
+  using LoadWorkletCallback =
+      base::OnceCallback<void(Result worklet_script,
+                              absl::optional<std::string> error_msg)>;
 
   // Starts loading the worklet script on construction. Callback will be invoked
-  // asynchronously once the data has been fetched or an error has occurred.
-  // Must be destroyed before `v8_helper`.
+  // asynchronously once the data has been fetched or an error has occurred, on
+  // the current thread. Destroying this is guaranteed to cancel the callback.
   WorkletLoader(network::mojom::URLLoaderFactory* url_loader_factory,
                 const GURL& script_source_url,
-                AuctionV8Helper* v8_helper,
+                scoped_refptr<AuctionV8Helper> v8_helper,
                 LoadWorkletCallback load_worklet_callback);
   explicit WorkletLoader(const WorkletLoader&) = delete;
   WorkletLoader& operator=(const WorkletLoader&) = delete;
@@ -45,11 +71,24 @@ class WorkletLoader {
   void OnDownloadComplete(std::unique_ptr<std::string> body,
                           absl::optional<std::string> error_msg);
 
+  static void HandleDownloadResultOnV8Thread(
+      GURL script_source_url,
+      scoped_refptr<AuctionV8Helper> v8_helper,
+      std::unique_ptr<std::string> body,
+      absl::optional<std::string> error_msg,
+      scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
+      base::WeakPtr<WorkletLoader> weak_instance);
+
+  void DeliverCallbackOnUserThread(Result worklet_script,
+                                   absl::optional<std::string> error_msg);
+
   const GURL script_source_url_;
-  AuctionV8Helper* const v8_helper_;
+  const scoped_refptr<AuctionV8Helper> v8_helper_;
 
   std::unique_ptr<AuctionDownloader> auction_downloader_;
   LoadWorkletCallback load_worklet_callback_;
+
+  base::WeakPtrFactory<WorkletLoader> weak_ptr_factory_{this};
 };
 
 }  // namespace auction_worklet

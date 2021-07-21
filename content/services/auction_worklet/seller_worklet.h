@@ -11,9 +11,11 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/sequence_checker.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "content/services/auction_worklet/worklet_loader.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -25,7 +27,6 @@
 namespace auction_worklet {
 
 class AuctionV8Helper;
-class WorkletLoader;
 
 // Represents a seller worklet for FLEDGE
 // (https://github.com/WICG/turtledove/blob/main/FLEDGE.md). Loads and runs the
@@ -34,8 +35,7 @@ class SellerWorklet : public mojom::SellerWorklet {
  public:
   // Starts loading the worklet script on construction. Callback will be invoked
   // asynchronously once the data has been fetched or an error has occurred.
-  // Must be destroyed before `v8_helper`.
-  SellerWorklet(AuctionV8Helper* v8_helper,
+  SellerWorklet(scoped_refptr<AuctionV8Helper> v8_helper,
                 mojo::PendingRemote<network::mojom::URLLoaderFactory>
                     pending_url_loader_factory,
                 const GURL& script_source_url,
@@ -66,20 +66,88 @@ class SellerWorklet : public mojom::SellerWorklet {
                     ReportResultCallback callback) override;
 
  private:
-  void OnDownloadComplete(
-      std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
-      absl::optional<std::string> error_msg);
+  // Portion of SellerWorklet that deals with V8 execution, and therefore lives
+  // on the v8 thread --- everything except the constructor must be run there.
+  class V8State {
+   public:
+    V8State(scoped_refptr<AuctionV8Helper> v8_helper,
+            GURL script_source_url,
+            base::WeakPtr<SellerWorklet> parent);
 
-  AuctionV8Helper* const v8_helper_;
+    void SetWorkletScript(WorkletLoader::Result worklet_script);
 
-  const GURL script_source_url_;
+    void ScoreAd(const std::string& ad_metadata_json,
+                 double bid,
+                 blink::mojom::AuctionAdConfigPtr auction_config,
+                 const url::Origin& browser_signal_top_window_origin,
+                 const url::Origin& browser_signal_interest_group_owner,
+                 const std::string& browser_signal_ad_render_fingerprint,
+                 uint32_t browser_signal_bidding_duration_msecs,
+                 ScoreAdCallback callback);
+
+    void ReportResult(blink::mojom::AuctionAdConfigPtr auction_config,
+                      const url::Origin& browser_signal_top_window_origin,
+                      const url::Origin& browser_signal_interest_group_owner,
+                      const GURL& browser_signal_render_url,
+                      const std::string& browser_signal_ad_render_fingerprint,
+                      double browser_signal_bid,
+                      double browser_signal_desirability,
+                      ReportResultCallback callback);
+
+   private:
+    friend class base::DeleteHelper<V8State>;
+    ~V8State();
+
+    void PostScoreAdCallbackToUserThread(ScoreAdCallback callback,
+                                         double score,
+                                         std::vector<std::string> errors);
+
+    void PostReportResultCallbackToUserThread(
+        ReportResultCallback callback,
+        absl::optional<std::string> signals_for_winner,
+        absl::optional<GURL> report_url,
+        std::vector<std::string> errors);
+
+    const scoped_refptr<AuctionV8Helper> v8_helper_;
+    const base::WeakPtr<SellerWorklet> parent_;
+    const scoped_refptr<base::SequencedTaskRunner> user_thread_;
+
+    // Compiled script, not bound to any context. Can be repeatedly bound to
+    // different context and executed, without persisting any state.
+    v8::Global<v8::UnboundScript> worklet_script_;
+
+    const GURL script_source_url_;
+
+    SEQUENCE_CHECKER(v8_sequence_checker_);
+  };
+
+  void OnDownloadComplete(WorkletLoader::Result worklet_script,
+                          absl::optional<std::string> error_msg);
+
+  void DeliverScoreAdCallbackOnUserThread(ScoreAdCallback callback,
+                                          double score,
+                                          std::vector<std::string> errors);
+  void DeliverReportResultCallbackOnUserThread(
+      ReportResultCallback callback,
+      absl::optional<std::string> signals_for_winner,
+      absl::optional<GURL> report_url,
+      std::vector<std::string> errors);
+
+  scoped_refptr<base::SequencedTaskRunner> v8_runner_;
+
   std::unique_ptr<WorkletLoader> worklet_loader_;
+
+  // Lives on `v8_runner_`. Since it's deleted there, tasks can be safely
+  // posted from main thread to it with an Unretained pointer.
+  std::unique_ptr<V8State, base::OnTaskRunnerDeleter> v8_state_;
 
   mojom::AuctionWorkletService::LoadSellerWorkletCallback
       load_worklet_callback_;
-  // Compiled script, not bound to any context. Can be repeatedly bound to
-  // different context and executed, without persisting any state.
-  std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script_;
+
+  SEQUENCE_CHECKER(user_sequence_checker_);
+
+  // Used when posting callbacks back from V8State.
+  base::WeakPtrFactory<SellerWorklet> weak_ptr_factory_{this};
 };
 
 }  // namespace auction_worklet

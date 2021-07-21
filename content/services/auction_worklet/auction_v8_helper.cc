@@ -159,25 +159,33 @@ AuctionV8Helper::FullIsolateScope::FullIsolateScope(AuctionV8Helper* v8_helper)
 
 AuctionV8Helper::FullIsolateScope::~FullIsolateScope() = default;
 
-AuctionV8Helper::AuctionV8Helper() {
-  static int v8_initialized = false;
-  if (!v8_initialized)
-    InitV8();
+// static
+scoped_refptr<AuctionV8Helper> AuctionV8Helper::Create(
+    scoped_refptr<base::SingleThreadTaskRunner> v8_runner) {
+  scoped_refptr<AuctionV8Helper> result(new AuctionV8Helper(v8_runner));
 
-  v8_initialized = true;
+  // This can't be in the constructor since something else needs to also keep
+  // a reference to the object, hence this factory method.
+  v8_runner->PostTask(FROM_HERE,
+                      base::BindOnce(&AuctionV8Helper::CreateIsolate, result));
 
-  // Now the initialization is completed, create an isolate.
-  isolate_holder_ = std::make_unique<gin::IsolateHolder>(
-      base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kUseLocker,
-      gin::IsolateHolder::IsolateType::kUtility);
-  FullIsolateScope v8_scope(this);
-  scratch_context_.Reset(isolate(), CreateContext());
+  return result;
 }
 
-AuctionV8Helper::~AuctionV8Helper() = default;
+// static
+scoped_refptr<base::SingleThreadTaskRunner>
+AuctionV8Helper::CreateTaskRunner() {
+  // We want a dedicated thread for V8 execution since it may block indefinitely
+  // if breakpointed in a debugger.
+  return base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::WithBaseSyncPrimitives(),
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+}
 
 v8::Local<v8::Context> AuctionV8Helper::CreateContext(
     v8::Handle<v8::ObjectTemplate> global_template) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Local<v8::Context> context =
       v8::Context::New(isolate(), nullptr /* extensions */, global_template);
   auto result =
@@ -199,6 +207,7 @@ v8::Local<v8::Context> AuctionV8Helper::CreateContext(
 
 v8::Local<v8::String> AuctionV8Helper::CreateStringFromLiteral(
     const char* ascii_string) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::IsStringASCII(ascii_string));
   return v8::String::NewFromUtf8(isolate(), ascii_string,
                                  v8::NewStringType::kNormal,
@@ -208,6 +217,7 @@ v8::Local<v8::String> AuctionV8Helper::CreateStringFromLiteral(
 
 v8::MaybeLocal<v8::String> AuctionV8Helper::CreateUtf8String(
     base::StringPiece utf8_string) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::IsStringUTF8(utf8_string))
     return v8::MaybeLocal<v8::String>();
   return v8::String::NewFromUtf8(isolate(), utf8_string.data(),
@@ -218,6 +228,7 @@ v8::MaybeLocal<v8::String> AuctionV8Helper::CreateUtf8String(
 v8::MaybeLocal<v8::Value> AuctionV8Helper::CreateValueFromJson(
     v8::Local<v8::Context> context,
     base::StringPiece utf8_json) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Local<v8::String> v8_string;
   if (!CreateUtf8String(utf8_json).ToLocal(&v8_string))
     return v8::MaybeLocal<v8::Value>();
@@ -227,6 +238,7 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::CreateValueFromJson(
 bool AuctionV8Helper::AppendUtf8StringValue(
     base::StringPiece utf8_string,
     std::vector<v8::Local<v8::Value>>* args) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Local<v8::String> value;
   if (!CreateUtf8String(utf8_string).ToLocal(&value))
     return false;
@@ -237,6 +249,7 @@ bool AuctionV8Helper::AppendUtf8StringValue(
 bool AuctionV8Helper::AppendJsonValue(v8::Local<v8::Context> context,
                                       base::StringPiece utf8_json,
                                       std::vector<v8::Local<v8::Value>>* args) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Local<v8::Value> value;
   if (!CreateValueFromJson(context, utf8_json).ToLocal(&value))
     return false;
@@ -247,6 +260,7 @@ bool AuctionV8Helper::AppendJsonValue(v8::Local<v8::Context> context,
 bool AuctionV8Helper::InsertValue(base::StringPiece key,
                                   v8::Local<v8::Value> value,
                                   v8::Local<v8::Object> object) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Local<v8::String> v8_key;
   if (!CreateUtf8String(key).ToLocal(&v8_key))
     return false;
@@ -259,6 +273,7 @@ bool AuctionV8Helper::InsertJsonValue(v8::Local<v8::Context> context,
                                       base::StringPiece key,
                                       base::StringPiece utf8_json,
                                       v8::Local<v8::Object> object) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Local<v8::Value> v8_value;
   return CreateValueFromJson(context, utf8_json).ToLocal(&v8_value) &&
          InsertValue(key, v8_value, object);
@@ -269,6 +284,7 @@ bool AuctionV8Helper::InsertJsonValue(v8::Local<v8::Context> context,
 bool AuctionV8Helper::ExtractJson(v8::Local<v8::Context> context,
                                   v8::Local<v8::Value> value,
                                   std::string* out) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::MaybeLocal<v8::String> maybe_json = v8::JSON::Stringify(context, value);
   v8::Local<v8::String> json;
   if (!maybe_json.ToLocal(&json))
@@ -289,6 +305,7 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
     const std::string& src,
     const GURL& src_url,
     absl::optional<std::string>& error_out) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Isolate* v8_isolate = isolate();
 
   v8::MaybeLocal<v8::String> src_string = CreateUtf8String(src);
@@ -317,6 +334,7 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
     base::StringPiece script_name,
     base::span<v8::Local<v8::Value>> args,
     std::vector<std::string>& error_out) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(isolate(), context->GetIsolate());
 
   ScopedConsoleTarget direct_console(
@@ -378,6 +396,12 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
   return func_result;
 }
 
+void AuctionV8Helper::set_script_timeout_for_testing(
+    base::TimeDelta script_timeout) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  script_timeout_ = script_timeout;
+}
+
 AuctionV8Helper::ScopedConsoleTarget::ScopedConsoleTarget(
     AuctionV8Helper* owner,
     const std::string& console_script_name,
@@ -392,6 +416,36 @@ AuctionV8Helper::ScopedConsoleTarget::ScopedConsoleTarget(
 AuctionV8Helper::ScopedConsoleTarget::~ScopedConsoleTarget() {
   owner_->console_buffer_ = nullptr;
   owner_->console_script_name_ = std::string();
+}
+
+AuctionV8Helper::AuctionV8Helper(
+    scoped_refptr<base::SingleThreadTaskRunner> v8_runner)
+    : base::RefCountedDeleteOnSequence<AuctionV8Helper>(v8_runner),
+      v8_runner_(std::move(v8_runner)) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+
+  // InitV8 on main thread, to avoid races if multiple instances exist with
+  // different runners.
+  static int v8_initialized = false;
+  if (!v8_initialized)
+    InitV8();
+
+  v8_initialized = true;
+}
+
+AuctionV8Helper::~AuctionV8Helper() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void AuctionV8Helper::CreateIsolate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Now the initialization is completed, create an isolate.
+  isolate_holder_ = std::make_unique<gin::IsolateHolder>(
+      base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kUseLocker,
+      gin::IsolateHolder::IsolateType::kUtility);
+  FullIsolateScope v8_scope(this);
+  scratch_context_.Reset(isolate(), CreateContext());
 }
 
 // static

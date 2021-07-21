@@ -20,7 +20,9 @@ namespace auction_worklet {
 
 AuctionWorkletServiceImpl::AuctionWorkletServiceImpl(
     mojo::PendingReceiver<mojom::AuctionWorkletService> receiver)
-    : receiver_(this, std::move(receiver)) {}
+    : receiver_(this, std::move(receiver)),
+      auction_v8_helper_(
+          AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner())) {}
 
 AuctionWorkletServiceImpl::~AuctionWorkletServiceImpl() = default;
 
@@ -38,7 +40,7 @@ void AuctionWorkletServiceImpl::LoadBidderWorkletAndGenerateBid(
         load_bidder_worklet_and_generate_bid_callback) {
   bidder_worklets_.Add(
       std::make_unique<BidderWorklet>(
-          &auction_v8_helper_, std::move(pending_url_loader_factory),
+          auction_v8_helper_, std::move(pending_url_loader_factory),
           std::move(bidding_interest_group), auction_signals_json,
           per_buyer_signals_json, top_window_origin, seller_origin,
           auction_start_time,
@@ -54,7 +56,7 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
     LoadSellerWorkletCallback load_seller_worklet_callback) {
   seller_worklets_.Add(
       std::make_unique<SellerWorklet>(
-          &auction_v8_helper_, std::move(pending_url_loader_factory),
+          auction_v8_helper_, std::move(pending_url_loader_factory),
           script_source_url, std::move(load_seller_worklet_callback)),
       std::move(seller_worklet_receiver));
 }

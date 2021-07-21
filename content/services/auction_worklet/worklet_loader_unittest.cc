@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -35,13 +36,15 @@ const char kInvalidScript[] = "Invalid Script";
 // merely check success/failure of trying to load a worklet.
 class WorkletLoaderTest : public testing::Test {
  public:
-  WorkletLoaderTest() = default;
-  ~WorkletLoaderTest() override = default;
+  WorkletLoaderTest() {
+    v8_helper_ = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
+  }
 
-  void LoadWorkletCallback(
-      std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
-      absl::optional<std::string> error_msg) {
-    load_succeeded_ = !!worklet_script;
+  ~WorkletLoaderTest() override { task_environment_.RunUntilIdle(); }
+
+  void LoadWorkletCallback(WorkletLoader::Result worklet_script,
+                           absl::optional<std::string> error_msg) {
+    load_succeeded_ = worklet_script.success();
     error_msg_ = std::move(error_msg);
     EXPECT_EQ(load_succeeded_, !error_msg_.has_value());
     run_loop_.Quit();
@@ -55,7 +58,7 @@ class WorkletLoaderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   network::TestURLLoaderFactory url_loader_factory_;
-  AuctionV8Helper v8_helper_;
+  scoped_refptr<AuctionV8Helper> v8_helper_;
   GURL url_ = GURL("https://foo.test/");
   base::RunLoop run_loop_;
   bool load_succeeded_ = false;
@@ -67,7 +70,7 @@ TEST_F(WorkletLoaderTest, NetworkError) {
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, absl::nullopt,
               kValidScript, kAllowFledgeHeader, net::HTTP_NOT_FOUND);
   WorkletLoader worklet_loader(
-      &url_loader_factory_, url_, &v8_helper_,
+      &url_loader_factory_, url_, v8_helper_,
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
@@ -79,7 +82,7 @@ TEST_F(WorkletLoaderTest, NetworkError) {
 TEST_F(WorkletLoaderTest, CompileError) {
   AddJavascriptResponse(&url_loader_factory_, url_, kInvalidScript);
   WorkletLoader worklet_loader(
-      &url_loader_factory_, url_, &v8_helper_,
+      &url_loader_factory_, url_, v8_helper_,
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
@@ -91,7 +94,7 @@ TEST_F(WorkletLoaderTest, CompileError) {
 TEST_F(WorkletLoaderTest, Success) {
   AddJavascriptResponse(&url_loader_factory_, url_, kValidScript);
   WorkletLoader worklet_loader(
-      &url_loader_factory_, url_, &v8_helper_,
+      &url_loader_factory_, url_, v8_helper_,
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
@@ -103,17 +106,17 @@ TEST_F(WorkletLoaderTest, Success) {
 // during the callback.
 TEST_F(WorkletLoaderTest, DeleteDuringCallbackSuccess) {
   AddJavascriptResponse(&url_loader_factory_, url_, kValidScript);
-  auto v8_helper = std::make_unique<AuctionV8Helper>();
+  auto v8_helper = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
   base::RunLoop run_loop;
   std::unique_ptr<WorkletLoader> worklet_loader =
       std::make_unique<WorkletLoader>(
           &url_loader_factory_, url_, v8_helper.get(),
           base::BindLambdaForTesting(
-              [&](std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
+              [&](WorkletLoader::Result worklet_script,
                   absl::optional<std::string> error_msg) {
-                EXPECT_TRUE(worklet_script);
+                EXPECT_TRUE(worklet_script.success());
                 EXPECT_FALSE(error_msg.has_value());
-                worklet_script.reset();
+                worklet_script = WorkletLoader::Result();
                 worklet_loader.reset();
                 v8_helper.reset();
                 run_loop.Quit();
@@ -126,15 +129,15 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackSuccess) {
 // crashing during the callback.
 TEST_F(WorkletLoaderTest, DeleteDuringCallbackCompileError) {
   AddJavascriptResponse(&url_loader_factory_, url_, kInvalidScript);
-  auto v8_helper = std::make_unique<AuctionV8Helper>();
+  auto v8_helper = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
   base::RunLoop run_loop;
   std::unique_ptr<WorkletLoader> worklet_loader =
       std::make_unique<WorkletLoader>(
           &url_loader_factory_, url_, v8_helper.get(),
           base::BindLambdaForTesting(
-              [&](std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
+              [&](WorkletLoader::Result worklet_script,
                   absl::optional<std::string> error_msg) {
-                EXPECT_FALSE(worklet_script);
+                EXPECT_FALSE(worklet_script.success());
                 ASSERT_TRUE(error_msg.has_value());
                 EXPECT_THAT(error_msg.value(),
                             StartsWith("https://foo.test/:1 "));
@@ -144,6 +147,24 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackCompileError) {
                 run_loop.Quit();
               }));
   run_loop.Run();
+}
+
+// Testcase where the loader is deleted after it queued the parsing of
+// the script on V8 thread, but before that parsing completes.
+TEST_F(WorkletLoaderTest, DeleteBeforeCallback) {
+  // Wedge the V8 thread so we can order loader deletion before script parsing.
+  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
+
+  AddJavascriptResponse(&url_loader_factory_, url_, kValidScript);
+  auto worklet_loader = std::make_unique<WorkletLoader>(
+      &url_loader_factory_, url_, v8_helper_,
+      base::BindOnce([](WorkletLoader::Result worklet_script,
+                        absl::optional<std::string> error_msg) {
+        ADD_FAILURE() << "Callback should not be invoked since loader deleted";
+      }));
+  run_loop_.RunUntilIdle();
+  worklet_loader.reset();
+  event_handle->Signal();
 }
 
 }  // namespace

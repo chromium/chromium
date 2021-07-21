@@ -70,9 +70,12 @@ std::string CreateReportWinScript(const std::string& function_body) {
 
 class BidderWorkletTest : public testing::Test {
  public:
-  BidderWorkletTest() { SetDefaultParameters(); }
+  BidderWorkletTest() {
+    SetDefaultParameters();
+    v8_helper_ = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
+  }
 
-  ~BidderWorkletTest() override = default;
+  ~BidderWorkletTest() override { task_environment_.RunUntilIdle(); }
 
   // Default values. No test actually depends on these being anything but valid,
   // but test that set these can use this to reset values to default after each
@@ -234,7 +237,7 @@ class BidderWorkletTest : public testing::Test {
     mojo::Remote<mojom::BidderWorklet> bidder_worklet;
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<BidderWorklet>(
-            &v8_helper_, std::move(url_loader_factory),
+            v8_helper_, std::move(url_loader_factory),
             CreateBiddingInterestGroup(),
             null_auction_signals_
                 ? absl::nullopt
@@ -322,7 +325,7 @@ class BidderWorkletTest : public testing::Test {
   std::vector<std::string> bid_errors_;
 
   network::TestURLLoaderFactory url_loader_factory_;
-  AuctionV8Helper v8_helper_;
+  scoped_refptr<AuctionV8Helper> v8_helper_;
 };
 
 // Test the case the BidderWorklet pipe is closed before invoking the
@@ -337,7 +340,7 @@ TEST_F(BidderWorkletTest, PipeClosed) {
 
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<BidderWorklet>(
-          &v8_helper_,
+          v8_helper_,
           url_loader_factory_receiver.InitWithNewPipeAndPassRemote(),
           CreateBiddingInterestGroup(),
           absl::nullopt /* auction_signals_json */,
@@ -1039,6 +1042,26 @@ TEST_F(BidderWorkletTest, ReportWin) {
       absl::nullopt /* expected_report_url */,
       {"https://url.test/:9 Uncaught TypeError: sendReportTo may be called at "
        "most once."});
+}
+
+TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateReportWinScript(R"(sendReportTo("https://foo.test"))"));
+  auto bidder_worklet = CreateWorkletAndGenerateBid();
+  ASSERT_TRUE(bidder_worklet);
+
+  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
+  bidder_worklet->ReportWin(
+      seller_signals_, browser_signal_render_url_,
+      browser_signal_ad_render_fingerprint_, browser_signal_bid_,
+      base::BindOnce([](const absl::optional<GURL>& report_url,
+                        const std::vector<std::string>& errors) {
+        ADD_FAILURE() << "Callback should not be invoked since worklet deleted";
+      }));
+  base::RunLoop().RunUntilIdle();
+  bidder_worklet.reset();
+  event_handle->Signal();
 }
 
 // Make sure Date() is not available when running reportWin().

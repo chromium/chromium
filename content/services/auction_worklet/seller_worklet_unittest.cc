@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -67,9 +68,12 @@ std::string CreateReportToScript(const std::string& raw_return_value,
 
 class SellerWorkletTest : public testing::Test {
  public:
-  SellerWorkletTest() { SetDefaultParameters(); }
+  SellerWorkletTest() {
+    SetDefaultParameters();
+    v8_helper_ = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
+  }
 
-  ~SellerWorkletTest() override = default;
+  ~SellerWorkletTest() override { task_environment_.RunUntilIdle(); }
 
   // Sets default values for scoreAd() and report_result() arguments. No test
   // actually depends on these being anything but valid, but this does allow
@@ -209,7 +213,7 @@ class SellerWorkletTest : public testing::Test {
     mojo::Remote<mojom::SellerWorklet> seller_worklet;
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<SellerWorklet>(
-            &v8_helper_, std::move(url_loader_factory), url_,
+            v8_helper_, std::move(url_loader_factory), url_,
             base::BindOnce(&SellerWorkletTest::CreateWorkletCallback,
                            base::Unretained(this))),
         seller_worklet.BindNewPipeAndPassReceiver());
@@ -257,7 +261,7 @@ class SellerWorkletTest : public testing::Test {
   std::vector<std::string> last_errors_;
 
   network::TestURLLoaderFactory url_loader_factory_;
-  AuctionV8Helper v8_helper_;
+  scoped_refptr<AuctionV8Helper> v8_helper_;
 };
 
 // Test the case the SellerWorklet pipe is closed before invoking the
@@ -271,7 +275,7 @@ TEST_F(SellerWorkletTest, PipeClosed) {
 
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<SellerWorklet>(
-          &v8_helper_,
+          v8_helper_,
           url_loader_factory_receiver.InitWithNewPipeAndPassRemote(), url_,
           base::BindOnce(&SellerWorkletTest::CreateWorkletCallback,
                          base::Unretained(this))),
@@ -734,6 +738,48 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
       run_loop.Run();
     }
   }
+}
+
+TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
+  AddJavascriptResponse(&url_loader_factory_, url_, CreateBasicSellAdScript());
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+
+  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
+  seller_worklet->ScoreAd(
+      ad_metadata_, bid_, auction_config_.Clone(),
+      browser_signal_top_window_origin_, browser_signal_interest_group_owner_,
+      browser_signal_ad_render_fingerprint_,
+      browser_signal_bidding_duration_msecs_,
+      base::BindOnce([](double score, const std::vector<std::string>& errors) {
+        ADD_FAILURE() << "Callback should not be invoked since worklet deleted";
+      }));
+  base::RunLoop().RunUntilIdle();
+  seller_worklet.reset();
+  event_handle->Signal();
+}
+
+TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
+  AddJavascriptResponse(
+      &url_loader_factory_, url_,
+      CreateReportToScript("1", R"(sendReportTo("https://foo.test"))"));
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+
+  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
+  seller_worklet->ReportResult(
+      auction_config_.Clone(), browser_signal_top_window_origin_,
+      browser_signal_interest_group_owner_, browser_signal_render_url_,
+      browser_signal_ad_render_fingerprint_, bid_,
+      browser_signal_desireability_,
+      base::BindOnce([](const absl::optional<std::string>& signals_for_winner,
+                        const absl::optional<GURL>& report_url,
+                        const std::vector<std::string>& errors) {
+        ADD_FAILURE() << "Callback should not be invoked since worklet deleted";
+      }));
+  base::RunLoop().RunUntilIdle();
+  seller_worklet.reset();
+  event_handle->Signal();
 }
 
 }  // namespace

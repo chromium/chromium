@@ -4,11 +4,14 @@
 
 #include "content/services/auction_worklet/worklet_test_util.h"
 
+#include <memory>
 #include <string>
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/waitable_event.h"
 #include "content/services/auction_worklet/auction_downloader.h"
+#include "content/services/auction_worklet/auction_v8_helper.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -65,6 +68,17 @@ void AddJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
                      const GURL& url,
                      const std::string content) {
   AddResponse(url_loader_factory, url, kJsonMimeType, absl::nullopt, content);
+}
+
+base::WaitableEvent* WedgeV8Thread(AuctionV8Helper* v8_helper) {
+  auto event = std::make_unique<base::WaitableEvent>();
+  base::WaitableEvent* event_handle = event.get();
+  v8_helper->v8_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](std::unique_ptr<base::WaitableEvent> event) { event->Wait(); },
+          std::move(event)));
+  return event_handle;
 }
 
 }  // namespace auction_worklet

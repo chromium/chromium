@@ -5,6 +5,7 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_AUCTION_WORKLET_SERVICE_IMPL_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_AUCTION_WORKLET_SERVICE_IMPL_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -53,9 +54,7 @@ class AuctionWorkletServiceImpl : public mojom::AuctionWorkletService {
  private:
   mojo::Receiver<mojom::AuctionWorkletService> receiver_;
 
-  // `auction_v8_helper_` needs to be before the worklets, since they refer to
-  // it, so need to be torn down before it is.
-  AuctionV8Helper auction_v8_helper_;
+  scoped_refptr<AuctionV8Helper> auction_v8_helper_;
 
   mojo::UniqueReceiverSet<mojom::BidderWorklet> bidder_worklets_;
   mojo::UniqueReceiverSet<mojom::SellerWorklet> seller_worklets_;

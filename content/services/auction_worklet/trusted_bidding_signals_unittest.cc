@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
@@ -39,13 +40,16 @@ const char kHostname[] = "publisher";
 
 class TrustedBiddingSignalsTest : public testing::Test {
  public:
-  TrustedBiddingSignalsTest() = default;
+  TrustedBiddingSignalsTest() {
+    v8_helper_ = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
+  }
 
-  ~TrustedBiddingSignalsTest() override = default;
+  ~TrustedBiddingSignalsTest() override { task_environment_.RunUntilIdle(); }
 
   // Sets the HTTP response and then fetches bidding signals and waits for
   // completion. Returns nullptr on failure.
-  std::unique_ptr<TrustedBiddingSignals> FetchBiddingSignalsWithResponse(
+  std::unique_ptr<TrustedBiddingSignals::Result>
+  FetchBiddingSignalsWithResponse(
       const GURL& url,
       const std::string& response,
       std::vector<std::string> trusted_bidding_signals_keys,
@@ -56,54 +60,67 @@ class TrustedBiddingSignalsTest : public testing::Test {
 
   // Fetches bidding signals and waits for completion. Returns nullptr on
   // failure.
-  std::unique_ptr<TrustedBiddingSignals> FetchBiddingSignals(
+  std::unique_ptr<TrustedBiddingSignals::Result> FetchBiddingSignals(
       std::vector<std::string> trusted_bidding_signals_keys,
       const std::string& hostname) {
     CHECK(!load_signals_run_loop_);
 
-    load_signals_succeeded_ = false;
+    DCHECK(!load_signals_result_);
     auto bidding_signals = std::make_unique<TrustedBiddingSignals>(
         &url_loader_factory_, std::move(trusted_bidding_signals_keys),
-        std::move(hostname), base_url_, &v8_helper_,
+        std::move(hostname), base_url_, v8_helper_,
         base::BindOnce(&TrustedBiddingSignalsTest::LoadSignalsCallback,
                        base::Unretained(this)));
     load_signals_run_loop_ = std::make_unique<base::RunLoop>();
     load_signals_run_loop_->Run();
     load_signals_run_loop_.reset();
-    if (!load_signals_succeeded_)
-      return nullptr;
-    return bidding_signals;
+    return std::move(load_signals_result_);
   }
 
-  // Returns the results of calling TrustedBiddingSignals::GetSignals() with
-  // `trusted_bidding_signals_keys`. Returns value as a JSON std::string, for
-  // easy testing.
+  // Returns the results of calling TrustedBiddingSignals::Result::GetSignals()
+  // with `trusted_bidding_signals_keys`. Returns value as a JSON std::string,
+  // for easy testing.
   std::string ExtractSignals(
-      TrustedBiddingSignals* signals,
+      TrustedBiddingSignals::Result* signals,
       std::vector<std::string> trusted_bidding_signals_keys) {
-    AuctionV8Helper::FullIsolateScope isolate_scope(&v8_helper_);
-    v8::Isolate* isolate = v8_helper_.isolate();
-    // Could use the scratch context, but using a separate one more closely
-    // resembles actual use.
-    v8::Local<v8::Context> context = v8::Context::New(isolate);
-    v8::Context::Scope context_scope(context);
+    base::RunLoop run_loop;
 
-    v8::Local<v8::Value> value =
-        signals->GetSignals(context, trusted_bidding_signals_keys);
     std::string result;
-    if (!v8_helper_.ExtractJson(context, value, &result)) {
-      ADD_FAILURE() << "JSON extraction failed.";
-      return "";
-    }
+    v8_helper_->v8_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](scoped_refptr<AuctionV8Helper> v8_helper,
+               TrustedBiddingSignals::Result* signals,
+               std::vector<std::string> trusted_bidding_signals_keys,
+               std::string* result_out, base::OnceClosure quit_closure) {
+              AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper.get());
+              v8::Isolate* isolate = v8_helper->isolate();
+              // Could use the scratch context, but using a separate one more
+              // closely resembles actual use.
+              v8::Local<v8::Context> context = v8::Context::New(isolate);
+              v8::Context::Scope context_scope(context);
+
+              v8::Local<v8::Value> value = signals->GetSignals(
+                  v8_helper.get(), context, trusted_bidding_signals_keys);
+
+              if (!v8_helper->ExtractJson(context, value, result_out)) {
+                *result_out = "JSON extraction failed.";
+              }
+              std::move(quit_closure).Run();
+            },
+            v8_helper_, signals, std::move(trusted_bidding_signals_keys),
+            &result, run_loop.QuitClosure()));
+    run_loop.Run();
     return result;
   }
 
  protected:
-  void LoadSignalsCallback(bool success,
-                           absl::optional<std::string> error_msg) {
-    load_signals_succeeded_ = success;
+  void LoadSignalsCallback(
+      std::unique_ptr<TrustedBiddingSignals::Result> result,
+      absl::optional<std::string> error_msg) {
+    load_signals_result_ = std::move(result);
     error_msg_ = std::move(error_msg);
-    EXPECT_EQ(load_signals_succeeded_, !error_msg_.has_value());
+    EXPECT_EQ(load_signals_result_ == nullptr, error_msg_.has_value());
     load_signals_run_loop_->Quit();
   }
 
@@ -116,11 +133,11 @@ class TrustedBiddingSignalsTest : public testing::Test {
   // creating the worklet, to cause a crash if the callback is invoked
   // synchronously.
   std::unique_ptr<base::RunLoop> load_signals_run_loop_;
-  bool load_signals_succeeded_ = false;
+  std::unique_ptr<TrustedBiddingSignals::Result> load_signals_result_;
   absl::optional<std::string> error_msg_;
 
   network::TestURLLoaderFactory url_loader_factory_;
-  AuctionV8Helper v8_helper_;
+  scoped_refptr<AuctionV8Helper> v8_helper_;
 };
 
 TEST_F(TrustedBiddingSignalsTest, NetworkError) {
@@ -154,7 +171,7 @@ TEST_F(TrustedBiddingSignalsTest, ResponseNotObject) {
 }
 
 TEST_F(TrustedBiddingSignalsTest, KeyMissing) {
-  std::unique_ptr<TrustedBiddingSignals> signals =
+  std::unique_ptr<TrustedBiddingSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher&keys=key4"), kBaseJson,
           {"key4"}, kHostname);
@@ -163,7 +180,7 @@ TEST_F(TrustedBiddingSignalsTest, KeyMissing) {
 }
 
 TEST_F(TrustedBiddingSignalsTest, FetchOneKey) {
-  std::unique_ptr<TrustedBiddingSignals> signals =
+  std::unique_ptr<TrustedBiddingSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher&keys=key1"), kBaseJson,
           {"key1"}, kHostname);
@@ -172,7 +189,7 @@ TEST_F(TrustedBiddingSignalsTest, FetchOneKey) {
 }
 
 TEST_F(TrustedBiddingSignalsTest, FetchMultipleKeys) {
-  std::unique_ptr<TrustedBiddingSignals> signals =
+  std::unique_ptr<TrustedBiddingSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher&keys=key3,key1,key5,key2"),
           kBaseJson, {"key3", "key1", "key5", "key2"}, kHostname);
@@ -186,7 +203,7 @@ TEST_F(TrustedBiddingSignalsTest, FetchMultipleKeys) {
 }
 
 TEST_F(TrustedBiddingSignalsTest, EscapeQueryParams) {
-  std::unique_ptr<TrustedBiddingSignals> signals =
+  std::unique_ptr<TrustedBiddingSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/"
                "?hostname=pub+li%26sher&keys=key+6,key%3D7,key%2C8"),
@@ -195,6 +212,28 @@ TEST_F(TrustedBiddingSignalsTest, EscapeQueryParams) {
   EXPECT_EQ(R"({"key 6":6})", ExtractSignals(signals.get(), {"key 6"}));
   EXPECT_EQ(R"({"key=7":7})", ExtractSignals(signals.get(), {"key=7"}));
   EXPECT_EQ(R"({"key,8":8})", ExtractSignals(signals.get(), {"key,8"}));
+}
+
+// Testcase where the loader is deleted after it queued the parsing of
+// the script on V8 thread, but before it gets to finish.
+TEST_F(TrustedBiddingSignalsTest, DeleteBeforeCallback) {
+  GURL url("https://url.test/?hostname=publisher&keys=key1");
+
+  AddJsonResponse(&url_loader_factory_, url, kBaseJson);
+
+  // Wedge the V8 thread to control when the JSON parsing takes place.
+  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
+
+  auto bidding_signals = std::make_unique<TrustedBiddingSignals>(
+      &url_loader_factory_, std::vector<std::string>{"key1"}, "publisher",
+      base_url_, v8_helper_,
+      base::BindOnce([](std::unique_ptr<TrustedBiddingSignals::Result> result,
+                        absl::optional<std::string> error_msg) {
+        ADD_FAILURE() << "Callback should not be invoked since loader deleted";
+      }));
+  base::RunLoop().RunUntilIdle();
+  bidding_signals.reset();
+  event_handle->Signal();
 }
 
 }  // namespace

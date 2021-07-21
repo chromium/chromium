@@ -11,6 +11,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
+#include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/console.h"
@@ -29,8 +33,11 @@ namespace auction_worklet {
 // Currently, multiple AuctionV8Helpers can be in use at once, each will have
 // its own V8 isolate.  All AuctionV8Helpers are assumed to be created on the
 // same thread (V8 startup is done only once per process, and not behind a
-// lock).
-class AuctionV8Helper {
+// lock).  After creation, all operations on the helper must be done on the
+// thread represented by the `v8_runner` argument to Create(); it's the caller's
+// responsibility to ensure the methods are invoked there.
+class AuctionV8Helper
+    : public base::RefCountedDeleteOnSequence<AuctionV8Helper> {
  public:
   // Timeout for script execution.
   static const base::TimeDelta kScriptTimeout;
@@ -51,16 +58,26 @@ class AuctionV8Helper {
     const v8::HandleScope handle_scope_;
   };
 
-  AuctionV8Helper();
   explicit AuctionV8Helper(const AuctionV8Helper&) = delete;
   AuctionV8Helper& operator=(const AuctionV8Helper&) = delete;
-  ~AuctionV8Helper();
 
-  v8::Isolate* isolate() { return isolate_holder_->isolate(); }
+  static scoped_refptr<AuctionV8Helper> Create(
+      scoped_refptr<base::SingleThreadTaskRunner> v8_runner);
+  static scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner();
+
+  scoped_refptr<base::SequencedTaskRunner> v8_runner() const {
+    return v8_runner_;
+  }
+
+  v8::Isolate* isolate() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return isolate_holder_->isolate();
+  }
 
   // Context that can be used for persistent items that can then be used in
   // other contexts - compiling functions, creating objects, etc.
   v8::Local<v8::Context> scratch_context() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return scratch_context_.Get(isolate());
   }
 
@@ -138,21 +155,28 @@ class AuctionV8Helper {
                                       base::span<v8::Local<v8::Value>> args,
                                       std::vector<std::string>& error_out);
 
-  void set_script_timeout_for_testing(base::TimeDelta script_timeout) {
-    script_timeout_ = script_timeout;
-  }
+  void set_script_timeout_for_testing(base::TimeDelta script_timeout);
 
   // If non-nullptr, this returns a pointer to the of vector representing the
   // debug output lines of the currently running script.  It's nullptr when
   // nothing is running.
-  std::vector<std::string>* console_buffer() { return console_buffer_; }
+  std::vector<std::string>* console_buffer() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return console_buffer_;
+  }
 
   // Returns a string identifying the currently running script for purpose of
   // attributing its debug output in a human-understandable way. Empty if
   // nothing is running.
-  const std::string& console_script_name() { return console_script_name_; }
+  const std::string& console_script_name() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return console_script_name_;
+  }
 
  private:
+  friend class base::RefCountedDeleteOnSequence<AuctionV8Helper>;
+  friend class base::DeleteHelper<AuctionV8Helper>;
+
   // Sets values of console_buffer() and console_script_name() to those
   // passed-in to its constructor for duration of its existence, and clears
   // them afterward.
@@ -167,20 +191,34 @@ class AuctionV8Helper {
     AuctionV8Helper* owner_;
   };
 
+  explicit AuctionV8Helper(
+      scoped_refptr<base::SingleThreadTaskRunner> v8_runner);
+  ~AuctionV8Helper();
+
+  void CreateIsolate();
+
   static std::string FormatExceptionMessage(v8::Local<v8::Context> context,
                                             v8::Local<v8::Message> message);
   static std::string FormatValue(v8::Isolate* isolate,
                                  v8::Local<v8::Value> val);
 
-  std::unique_ptr<gin::IsolateHolder> isolate_holder_;
-  Console console_{this};
-  v8::Global<v8::Context> scratch_context_;
+  scoped_refptr<base::SequencedTaskRunner> v8_runner_;
+
+  std::unique_ptr<gin::IsolateHolder> isolate_holder_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  Console console_ GUARDED_BY_CONTEXT(sequence_checker_){this};
+  v8::Global<v8::Context> scratch_context_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   // Script timeout. Can be changed for testing.
-  base::TimeDelta script_timeout_ = kScriptTimeout;
+  base::TimeDelta script_timeout_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      kScriptTimeout;
 
   // See corresponding getters for description.
-  std::vector<std::string>* console_buffer_ = nullptr;
-  std::string console_script_name_;
+  std::vector<std::string>* console_buffer_
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+  std::string console_script_name_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace auction_worklet
