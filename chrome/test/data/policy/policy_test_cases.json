@@ -10727,6 +10727,15 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "required_client_certificate_for_user": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value",
         "policies": {
           "RequiredClientCertificateForUser": [
             {
@@ -10762,6 +10771,16 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "required_client_certificate_for_device": {
+            "default_value": [],
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Simple value",
         "policies": {
           "RequiredClientCertificateForDevice": [
             {
