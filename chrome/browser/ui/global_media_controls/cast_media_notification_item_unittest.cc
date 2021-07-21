@@ -9,9 +9,9 @@
 #include <utility>
 
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
+#include "chrome/browser/ui/global_media_controls/test_helper.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/media_message_center/media_notification_controller.h"
-#include "components/media_message_center/media_notification_view.h"
+#include "components/media_message_center/mock_media_notification_view.h"
 #include "components/media_router/common/media_route.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_task_environment.h"
@@ -58,39 +58,6 @@ class MockBitmapFetcher : public BitmapFetcher {
   MOCK_METHOD1(Start, void(network::mojom::URLLoaderFactory* loader_factory));
 };
 
-class MockMediaNotificationController
-    : public media_message_center::MediaNotificationController {
- public:
-  MOCK_METHOD(void, ShowNotification, (const std::string&));
-  MOCK_METHOD(void, HideNotification, (const std::string&));
-  MOCK_METHOD(void, RemoveItem, (const std::string&));
-  MOCK_METHOD(scoped_refptr<base::SequencedTaskRunner>,
-              GetTaskRunner,
-              (),
-              (const));
-  MOCK_METHOD(void,
-              LogMediaSessionActionButtonPressed,
-              (const std::string&, MediaSessionAction));
-};
-
-class MockMediaNotificationView
-    : public media_message_center::MediaNotificationView {
- public:
-  MOCK_METHOD1(SetExpanded, void(bool));
-  MOCK_METHOD2(UpdateCornerRadius, void(int, int));
-  MOCK_METHOD1(SetForcedExpandedState, void(bool*));
-  MOCK_METHOD1(UpdateWithMediaSessionInfo, void(const MediaSessionInfoPtr&));
-  MOCK_METHOD1(UpdateWithMediaMetadata,
-               void(const media_session::MediaMetadata&));
-  MOCK_METHOD1(UpdateWithMediaActions,
-               void(const base::flat_set<MediaSessionAction>&));
-  MOCK_METHOD1(UpdateWithMediaPosition,
-               void(const media_session::MediaPosition&));
-  MOCK_METHOD1(UpdateWithMediaArtwork, void(const gfx::ImageSkia&));
-  MOCK_METHOD1(UpdateWithFavicon, void(const gfx::ImageSkia&));
-  MOCK_METHOD1(UpdateWithVectorIcon, void(const gfx::VectorIcon& vector_icon));
-  MOCK_METHOD1(UpdateDeviceSelectorAvailability, void(bool availability));
-};
 
 class MockSessionController : public CastMediaSessionController {
  public:
@@ -112,8 +79,8 @@ class CastMediaNotificationItemTest : public testing::Test {
             mojo::Remote<media_router::mojom::MediaController>());
     session_controller_ = session_controller.get();
     item_ = std::make_unique<CastMediaNotificationItem>(
-        CreateMediaRoute(), &notification_controller_,
-        std::move(session_controller), &profile_);
+        CreateMediaRoute(), &items_manager_, std::move(session_controller),
+        &profile_);
     item_->set_bitmap_fetcher_factory_for_testing_(
         base::BindRepeating(&CastMediaNotificationItemTest::CreateBitmapFetcher,
                             base::Unretained(this)));
@@ -156,12 +123,13 @@ class CastMediaNotificationItemTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  testing::NiceMock<MockMediaNotificationController> notification_controller_;
+  testing::NiceMock<MockMediaItemsManager> items_manager_;
   MockSessionController* session_controller_ = nullptr;
   // This needs to be a NiceMock, because the uninteresting mock function calls
   // slow down the tests enough to make
   // CastMediaNotificationItemTest.MediaPositionUpdate flaky.
-  testing::NiceMock<MockMediaNotificationView> view_;
+  testing::NiceMock<media_message_center::test::MockMediaNotificationView>
+      view_;
   std::unique_ptr<CastMediaNotificationItem> item_;
 };
 
@@ -245,13 +213,12 @@ TEST_F(CastMediaNotificationItemTest, SetViewToNull) {
 }
 
 TEST_F(CastMediaNotificationItemTest, HideNotificationOnDismiss) {
-  EXPECT_CALL(notification_controller_, HideNotification(kRouteId))
-      .Times(AtLeast(1));
+  EXPECT_CALL(items_manager_, HideItem(kRouteId)).Times(AtLeast(1));
   item_->Dismiss();
 }
 
 TEST_F(CastMediaNotificationItemTest, HideNotificationOnDelete) {
-  EXPECT_CALL(notification_controller_, HideNotification(kRouteId));
+  EXPECT_CALL(items_manager_, HideItem(kRouteId));
   item_.reset();
 }
 

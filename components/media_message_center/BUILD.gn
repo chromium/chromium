@@ -13,10 +13,7 @@ component("media_message_center") {
     "media_notification_background_ash_impl.h",
     "media_notification_background_impl.cc",
     "media_notification_background_impl.h",
-    "media_notification_constants.cc",
-    "media_notification_constants.h",
     "media_notification_container.h",
-    "media_notification_controller.h",
     "media_notification_item.cc",
     "media_notification_item.h",
     "media_notification_util.cc",
@@ -26,8 +23,6 @@ component("media_message_center") {
     "media_notification_view_impl.h",
     "media_notification_view_modern_impl.cc",
     "media_notification_view_modern_impl.h",
-    "media_session_notification_item.cc",
-    "media_session_notification_item.h",
   ]
 
   defines = [ "IS_MEDIA_MESSAGE_CENTER_IMPL" ]
@@ -72,5 +67,21 @@ source_set("unit_tests") {
     "//ui/native_theme:test_support",
     "//ui/views",
     "//ui/views:test_support",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_media_notification_view.cc",
+    "mock_media_notification_view.h",
+  ]
+
+  deps = [
+    ":media_message_center",
+    "//services/media_session/public/mojom",
+    "//skia",
+    "//testing/gmock",
   ]
 }

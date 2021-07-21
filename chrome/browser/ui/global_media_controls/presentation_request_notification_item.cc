@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_item.h"
 
 #include "base/unguessable_token.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_service.h"
+#include "chrome/browser/ui/global_media_controls/media_items_manager.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/media_message_center/media_notification_view.h"
@@ -22,11 +22,11 @@ content::WebContents* GetWebContentsFromPresentationRequest(
 }
 
 PresentationRequestNotificationItem::PresentationRequestNotificationItem(
-    MediaNotificationService* notification_service,
+    MediaItemsManager* items_manager,
     const content::PresentationRequest& request,
     std::unique_ptr<media_router::StartPresentationContext> context)
     : id_(base::UnguessableToken::Create().ToString()),
-      notification_service_(notification_service),
+      items_manager_(items_manager),
       is_default_presentation_request_(context == nullptr),
       context_(std::move(context)),
       request_(request) {
@@ -34,7 +34,7 @@ PresentationRequestNotificationItem::PresentationRequestNotificationItem(
 }
 
 PresentationRequestNotificationItem::~PresentationRequestNotificationItem() {
-  notification_service_->RemoveItem(id_);
+  items_manager_->HideItem(id_);
 }
 
 void PresentationRequestNotificationItem::SetView(
@@ -66,7 +66,7 @@ void PresentationRequestNotificationItem::OnMediaSessionActionButtonPressed(
     media_session::mojom::MediaSessionAction action) {}
 
 void PresentationRequestNotificationItem::Dismiss() {
-  notification_service_->HideNotification(id_);
+  items_manager_->HideItem(id_);
 }
 
 media_message_center::SourceType

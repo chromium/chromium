@@ -7,19 +7,28 @@
 
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer_set.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_producer.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
+#include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/overlay_media_notification.h"
+#include "chrome/browser/ui/global_media_controls/overlay_media_notifications_manager_impl.h"
+#include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
-namespace media_message_center {
-class MediaSessionNotificationItem;
-}  // namespace media_message_center
+namespace content {
+class WebContents;
+}  // namespace content
+
+namespace media_router {
+class CastDialogController;
+}  // namespace media_router
 
 class MediaNotificationContainerImpl;
+class MediaNotificationService;
 class Profile;
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -34,6 +43,7 @@ enum class GlobalMediaControlsDismissReason {
 
 class MediaSessionNotificationProducer
     : public MediaNotificationProducer,
+      public MediaSessionNotificationItem::Delegate,
       public media_session::mojom::AudioFocusObserver,
       public MediaNotificationContainerObserver {
  public:
@@ -49,6 +59,14 @@ class MediaSessionNotificationProducer
   void OnItemShown(const std::string& id,
                    MediaNotificationContainerImpl* container) override;
 
+  // MediaSessionNotificationItem::Delegate:
+  void ActivateItem(const std::string& id) override;
+  void HideItem(const std::string& id) override;
+  void RemoveItem(const std::string& id) override;
+  void LogMediaSessionActionButtonPressed(
+      const std::string& id,
+      media_session::mojom::MediaSessionAction action) override;
+
   // media_session::mojom::AudioFocusObserver:
   void OnFocusGained(
       media_session::mojom::AudioFocusRequestStatePtr session) override;
@@ -63,12 +81,6 @@ class MediaSessionNotificationProducer
   void OnAudioSinkChosen(const std::string& id,
                          const std::string& sink_id) override;
 
-  void HideItem(const std::string& id);
-  void RemoveItem(const std::string& id);
-  // Puts the item with the given ID on the list of active items. Returns false
-  // if we fail to do so because the item is hidden or is an overlay. Requires
-  // that the item exists.
-  bool ActivateItem(const std::string& id);
   bool HasSession(const std::string& id) const;
   bool IsSessionPlaying(const std::string& id) const;
   // Returns whether there still exists a session for |id|.
@@ -82,9 +94,6 @@ class MediaSessionNotificationProducer
   // There is at most one session per WebContents.
   std::string GetActiveControllableSessionForWebContents(
       content::WebContents* web_contents) const;
-  void LogMediaSessionActionButtonPressed(
-      const std::string& id,
-      media_session::mojom::MediaSessionAction action);
 
   // Used by a |MediaNotificationDeviceSelectorView| to query the system
   // for connected audio output devices.
@@ -112,8 +121,7 @@ class MediaSessionNotificationProducer
    public:
     Session(MediaSessionNotificationProducer* owner,
             const std::string& id,
-            std::unique_ptr<media_message_center::MediaSessionNotificationItem>
-                item,
+            std::unique_ptr<MediaSessionNotificationItem> item,
             content::WebContents* web_contents,
             mojo::Remote<media_session::mojom::MediaController> controller);
     Session(const Session&) = delete;
@@ -142,9 +150,7 @@ class MediaSessionNotificationProducer
     // when the tab is closed).
     void OnRequestIdReleased();
 
-    media_message_center::MediaSessionNotificationItem* item() {
-      return item_.get();
-    }
+    MediaSessionNotificationItem* item() { return item_.get(); }
 
     // Called when a new MediaController is given to the item. We need to
     // observe the same session as our underlying item.
@@ -189,7 +195,7 @@ class MediaSessionNotificationProducer
 
     MediaSessionNotificationProducer* const owner_;
     const std::string id_;
-    std::unique_ptr<media_message_center::MediaSessionNotificationItem> item_;
+    std::unique_ptr<MediaSessionNotificationItem> item_;
 
     // Used to stop/hide a paused session after a period of inactivity.
     base::OneShotTimer inactive_timer_;

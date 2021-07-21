@@ -18,22 +18,19 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider_impl.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
+#include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/overlay_media_notification.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
-#include "components/media_message_center/media_session_notification_item.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 
 MediaNotificationService::MediaNotificationService(
     Profile* profile,
@@ -49,7 +46,7 @@ MediaNotificationService::MediaNotificationService(
           std::make_unique<CastMediaNotificationProducer>(
               profile, this,
               base::BindRepeating(
-                  &MediaNotificationService::OnCastNotificationsChanged,
+                  &MediaNotificationService::OnNotificationChanged,
                   base::Unretained(this)));
       notification_producers_.insert(cast_notification_producer_.get());
     }
@@ -74,12 +71,15 @@ void MediaNotificationService::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void MediaNotificationService::ShowNotification(const std::string& id) {
-  if (media_session_notification_producer_->HasSession(id) &&
-      !media_session_notification_producer_->ActivateItem(id)) {
-    return;
-  }
+void MediaNotificationService::Shutdown() {
+  // |cast_notification_producer_| and
+  // |presentation_request_notification_producer_| depend on MediaRouter,
+  // which is another keyed service.
+  cast_notification_producer_.reset();
+  presentation_request_notification_producer_.reset();
+}
 
+void MediaNotificationService::ShowItem(const std::string& id) {
   // If new notifications come up while the dialog is open for a
   // PresentationRequest, do not show the new notifications.
   if (!HasOpenDialogForPresentationRequest()) {
@@ -87,44 +87,12 @@ void MediaNotificationService::ShowNotification(const std::string& id) {
   }
 }
 
-void MediaNotificationService::HideNotification(const std::string& id) {
-  if (media_session_notification_producer_) {
-    media_session_notification_producer_->HideItem(id);
-  }
+void MediaNotificationService::HideItem(const std::string& id) {
   OnNotificationChanged();
   if (!dialog_delegate_) {
     return;
   }
   dialog_delegate_->HideMediaSession(id);
-}
-
-void MediaNotificationService::RemoveItem(const std::string& id) {
-  // Copy |id| to avoid a dangling reference after the item is deleted. This
-  // happens when |id| refers to a string owned by the item being removed.
-  const auto id_copy{id};
-  if (media_session_notification_producer_)
-    media_session_notification_producer_->RemoveItem(id_copy);
-  OnNotificationChanged();
-}
-
-scoped_refptr<base::SequencedTaskRunner>
-MediaNotificationService::GetTaskRunner() const {
-  return nullptr;
-}
-
-void MediaNotificationService::LogMediaSessionActionButtonPressed(
-    const std::string& id,
-    media_session::mojom::MediaSessionAction action) {
-  media_session_notification_producer_->LogMediaSessionActionButtonPressed(
-      id, action);
-}
-
-void MediaNotificationService::Shutdown() {
-  // |cast_notification_producer_| and
-  // |presentation_request_notification_producer_| depend on MediaRouter,
-  // which is another keyed service.
-  cast_notification_producer_.reset();
-  presentation_request_notification_producer_.reset();
 }
 
 void MediaNotificationService::OnOverlayNotificationClosed(
@@ -135,8 +103,9 @@ void MediaNotificationService::OnOverlayNotificationClosed(
   ShowAndObserveContainer(id);
 }
 
-void MediaNotificationService::OnCastNotificationsChanged() {
-  OnNotificationChanged();
+void MediaNotificationService::OnNotificationChanged() {
+  for (auto& observer : observers_)
+    observer.OnNotificationListChanged();
 }
 
 void MediaNotificationService::SetDialogDelegate(
@@ -350,11 +319,6 @@ MediaNotificationService::GetNotificationItem(const std::string& id) {
     }
   }
   return nullptr;
-}
-
-void MediaNotificationService::OnNotificationChanged() {
-  for (auto& observer : observers_)
-    observer.OnNotificationListChanged();
 }
 
 void MediaNotificationService::SetDialogDelegateCommon(

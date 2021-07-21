@@ -14,13 +14,13 @@
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "content/public/browser/presentation_request.h"
 
-class MediaNotificationService;
+class MediaItemsManager;
 
 class PresentationRequestNotificationItem final
     : public media_message_center::MediaNotificationItem {
  public:
   PresentationRequestNotificationItem(
-      MediaNotificationService* notification_service,
+      MediaItemsManager* items_manager,
       const content::PresentationRequest& request,
       std::unique_ptr<media_router::StartPresentationContext> context);
   PresentationRequestNotificationItem(
@@ -58,7 +58,7 @@ class PresentationRequestNotificationItem final
   media_message_center::SourceType SourceType() override;
 
   const std::string id_;
-  MediaNotificationService* const notification_service_;
+  MediaItemsManager* const items_manager_;
 
   // True if the item is created from a default PresentationRequest, which means
   // |context_| is set to nullptr in the constructor.

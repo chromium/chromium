@@ -8,9 +8,9 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/ui/global_media_controls/test_helper.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/media_message_center/media_notification_controller.h"
-#include "components/media_message_center/media_notification_view.h"
+#include "components/media_message_center/mock_media_notification_view.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/media_route.h"
 #include "content/public/test/browser_task_environment.h"
@@ -33,45 +33,6 @@ MediaRoute CreateRoute(const std::string& route_id,
   return route;
 }
 
-class MockMediaNotificationController
-    : public media_message_center::MediaNotificationController {
- public:
-  MockMediaNotificationController() = default;
-  ~MockMediaNotificationController() = default;
-
-  MOCK_METHOD(void, ShowNotification, (const std::string& id));
-  MOCK_METHOD(void, HideNotification, (const std::string& id));
-  MOCK_METHOD(void, RemoveItem, (const std::string& id));
-  scoped_refptr<base::SequencedTaskRunner> GetTaskRunner() const override {
-    return nullptr;
-  }
-  MOCK_METHOD(void,
-              LogMediaSessionActionButtonPressed,
-              (const std::string& id,
-               media_session::mojom::MediaSessionAction action));
-};
-
-class MockMediaNotificationView
-    : public media_message_center::MediaNotificationView {
- public:
-  MOCK_METHOD1(SetExpanded, void(bool));
-  MOCK_METHOD2(UpdateCornerRadius, void(int, int));
-  MOCK_METHOD1(SetForcedExpandedState, void(bool*));
-  MOCK_METHOD1(UpdateWithMediaSessionInfo,
-               void(const media_session::mojom::MediaSessionInfoPtr&));
-  MOCK_METHOD1(UpdateWithMediaMetadata,
-               void(const media_session::MediaMetadata&));
-  MOCK_METHOD1(
-      UpdateWithMediaActions,
-      void(const base::flat_set<media_session::mojom::MediaSessionAction>&));
-  MOCK_METHOD1(UpdateWithMediaPosition,
-               void(const media_session::MediaPosition&));
-  MOCK_METHOD1(UpdateWithMediaArtwork, void(const gfx::ImageSkia&));
-  MOCK_METHOD1(UpdateWithFavicon, void(const gfx::ImageSkia&));
-  MOCK_METHOD1(UpdateWithVectorIcon, void(const gfx::VectorIcon& vector_icon));
-  MOCK_METHOD1(UpdateDeviceSelectorAvailability, void(bool availability));
-};
-
 class MockClosure {
  public:
   MOCK_METHOD0(Run, void());
@@ -83,7 +44,7 @@ class CastMediaNotificationProducerTest : public testing::Test {
  public:
   void SetUp() override {
     notification_producer_ = std::make_unique<CastMediaNotificationProducer>(
-        &profile_, &router_, &notification_controller_,
+        &profile_, &router_, &items_manager_,
         base::BindRepeating(&MockClosure::Run,
                             base::Unretained(&items_changed_callback_)));
   }
@@ -94,7 +55,7 @@ class CastMediaNotificationProducerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<CastMediaNotificationProducer> notification_producer_;
-  NiceMock<MockMediaNotificationController> notification_controller_;
+  NiceMock<MockMediaItemsManager> items_manager_;
   NiceMock<media_router::MockMediaRouter> router_;
   NiceMock<MockClosure> items_changed_callback_;
 };
@@ -137,7 +98,7 @@ TEST_F(CastMediaNotificationProducerTest, UpdateRoute) {
   notification_producer_->OnRoutesUpdated({route}, {});
   auto* item = static_cast<CastMediaNotificationItem*>(
       notification_producer_->GetNotificationItem(route_id).get());
-  NiceMock<MockMediaNotificationView> view;
+  NiceMock<media_message_center::test::MockMediaNotificationView> view;
   item->SetView(&view);
 
   const std::string new_sink = "new sink";

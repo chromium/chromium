@@ -17,6 +17,8 @@
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class MediaNotificationService;
+
 // An object that creates and manages media notifications related to
 // presentation requests.
 //

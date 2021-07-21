@@ -2,22 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/media_message_center/media_session_notification_item.h"
+#include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "components/media_message_center/media_notification_constants.h"
-#include "components/media_message_center/media_notification_controller.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "services/media_session/public/cpp/util.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
-#include "ui/message_center/public/cpp/message_center_constants.h"
-
-namespace media_message_center {
 
 using media_session::mojom::MediaSessionAction;
 
@@ -40,27 +35,33 @@ MediaSessionNotificationItem::Source GetSource(const std::string& name) {
 constexpr base::TimeDelta kFreezeTimerDelay =
     base::TimeDelta::FromMilliseconds(2500);
 
+// The minimum size in px that the media session artwork can be to be displayed
+// in the notification.
+constexpr int kMediaSessionNotificationArtworkMinSize = 114;
+
+// The desired size in px for the media session artwork to be displayed in the
+// notification. The media session service will try and select artwork closest
+// to this size.
+constexpr int kMediaSessionNotificationArtworkDesiredSize = 512;
+
 }  // namespace
 
 MediaSessionNotificationItem::MediaSessionNotificationItem(
-    MediaNotificationController* notification_controller,
+    Delegate* delegate,
     const std::string& request_id,
     const std::string& source_name,
     mojo::Remote<media_session::mojom::MediaController> controller,
     media_session::mojom::MediaSessionInfoPtr session_info)
-    : controller_(notification_controller),
+    : delegate_(delegate),
       request_id_(request_id),
       source_(GetSource(source_name)) {
-  DCHECK(controller_);
-
-  if (auto task_runner = notification_controller->GetTaskRunner())
-    freeze_timer_.SetTaskRunner(task_runner);
+  DCHECK(delegate_);
 
   SetController(std::move(controller), std::move(session_info));
 }
 
 MediaSessionNotificationItem::~MediaSessionNotificationItem() {
-  controller_->HideNotification(request_id_);
+  delegate_->HideItem(request_id_);
 }
 
 void MediaSessionNotificationItem::MediaSessionInfoChanged(
@@ -141,7 +142,8 @@ void MediaSessionNotificationItem::MediaControllerImageChanged(
     MaybeUnfreeze();
 }
 
-void MediaSessionNotificationItem::SetView(MediaNotificationView* view) {
+void MediaSessionNotificationItem::SetView(
+    media_message_center::MediaNotificationView* view) {
   DCHECK(view_ || view);
 
   view_ = view;
@@ -168,7 +170,7 @@ void MediaSessionNotificationItem::OnMediaSessionActionButtonPressed(
   if (frozen_)
     return;
 
-  controller_->LogMediaSessionActionButtonPressed(request_id_, action);
+  delegate_->LogMediaSessionActionButtonPressed(request_id_, action);
   media_session::PerformMediaSessionAction(action, media_controller_remote_);
 }
 
@@ -180,7 +182,7 @@ void MediaSessionNotificationItem::SeekTo(base::TimeDelta time) {
 void MediaSessionNotificationItem::Dismiss() {
   if (media_controller_remote_.is_bound())
     media_controller_remote_->Stop();
-  controller_->RemoveItem(request_id_);
+  delegate_->RemoveItem(request_id_);
 }
 
 media_message_center::SourceType MediaSessionNotificationItem::SourceType() {
@@ -340,9 +342,9 @@ void MediaSessionNotificationItem::OnFreezeTimerFired() {
   }
 
   if (is_bound_) {
-    controller_->HideNotification(request_id_);
+    delegate_->HideItem(request_id_);
   } else {
-    controller_->RemoveItem(request_id_);
+    delegate_->RemoveItem(request_id_);
   }
 }
 
@@ -351,7 +353,7 @@ void MediaSessionNotificationItem::MaybeHideOrShowNotification() {
     return;
 
   if (!ShouldShowNotification()) {
-    controller_->HideNotification(request_id_);
+    delegate_->HideItem(request_id_);
     return;
   }
 
@@ -359,9 +361,7 @@ void MediaSessionNotificationItem::MaybeHideOrShowNotification() {
   if (view_)
     return;
 
-  controller_->ShowNotification(request_id_);
+  delegate_->ActivateItem(request_id_);
 
   UMA_HISTOGRAM_ENUMERATION(kSourceHistogramName, source_);
 }
-
-}  // namespace media_message_center

@@ -55,3 +55,7 @@ std::unique_ptr<OverlayMediaNotification> MockMediaDialogDelegate::PopOut(
 void MockMediaDialogDelegate::HideMediaDialog() {
   Close();
 }
+
+MockMediaItemsManager::MockMediaItemsManager() = default;
+
+MockMediaItemsManager::~MockMediaItemsManager() = default;

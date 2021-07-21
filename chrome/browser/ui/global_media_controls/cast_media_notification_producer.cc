@@ -8,7 +8,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/media_message_center/media_notification_controller.h"
+#include "chrome/browser/ui/global_media_controls/media_items_manager.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
@@ -48,23 +48,23 @@ bool ShouldHideNotification(const media_router::MediaRoute& route) {
 
 CastMediaNotificationProducer::CastMediaNotificationProducer(
     Profile* profile,
-    media_message_center::MediaNotificationController* notification_controller,
+    MediaItemsManager* items_manager,
     base::RepeatingClosure items_changed_callback)
     : CastMediaNotificationProducer(
           profile,
           media_router::MediaRouterFactory::GetApiForBrowserContext(profile),
-          notification_controller,
+          items_manager,
           std::move(items_changed_callback)) {}
 
 CastMediaNotificationProducer::CastMediaNotificationProducer(
     Profile* profile,
     media_router::MediaRouter* router,
-    media_message_center::MediaNotificationController* notification_controller,
+    MediaItemsManager* items_manager,
     base::RepeatingClosure items_changed_callback)
     : media_router::MediaRoutesObserver(router),
       profile_(profile),
       router_(router),
-      notification_controller_(notification_controller),
+      items_manager_(items_manager),
       items_changed_callback_(std::move(items_changed_callback)),
       container_observer_set_(this) {}
 
@@ -132,14 +132,14 @@ void CastMediaNotificationProducer::OnRoutesUpdated(
       auto it_pair = items_.emplace(
           std::piecewise_construct,
           std::forward_as_tuple(route.media_route_id()),
-          std::forward_as_tuple(route, notification_controller_,
+          std::forward_as_tuple(route, items_manager_,
                                 std::make_unique<CastMediaSessionController>(
                                     std::move(controller_remote)),
                                 profile_));
       router_->GetMediaController(
           route.media_route_id(), std::move(controller_receiver),
           it_pair.first->second.GetObserverPendingRemote());
-      notification_controller_->ShowNotification(route.media_route_id());
+      items_manager_->ShowItem(route.media_route_id());
     } else {
       item_it->second.OnRouteUpdated(route);
     }

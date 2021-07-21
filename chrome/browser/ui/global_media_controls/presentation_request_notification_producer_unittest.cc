@@ -24,6 +24,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::AtLeast;
 using testing::NiceMock;
 
 namespace {
@@ -233,7 +234,8 @@ TEST_F(PresentationRequestNotificationProducerTest,
   SimulateDialogOpenedAndWait(&delegate);
   EXPECT_CALL(
       delegate,
-      HideMediaSession(notification_producer_->GetNotificationItem()->id()));
+      HideMediaSession(notification_producer_->GetNotificationItem()->id()))
+      .Times(AtLeast(1));
   NavigateAndCommit(GURL("https://www.google.com/"));
   EXPECT_FALSE(notification_producer_->GetNotificationItem());
   SimulateDialogClosedAndWait(&delegate);
@@ -248,7 +250,8 @@ TEST_F(PresentationRequestNotificationProducerTest,
   SimulateDialogOpenedAndWait(&delegate);
   EXPECT_CALL(
       delegate,
-      HideMediaSession(notification_producer_->GetNotificationItem()->id()));
+      HideMediaSession(notification_producer_->GetNotificationItem()->id()))
+      .Times(AtLeast(1));
   DeleteContents();
   EXPECT_FALSE(notification_producer_->GetNotificationItem());
   SimulateDialogClosedAndWait(&delegate);

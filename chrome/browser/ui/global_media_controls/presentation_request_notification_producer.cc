@@ -249,7 +249,7 @@ void PresentationRequestNotificationProducer::DeleteItemForPresentationRequest(
   const auto id{item_->id()};
   item_.reset();
   presentation_request_observer_.reset();
-  notification_service_->HideNotification(id);
+  notification_service_->HideItem(id);
 }
 
 void PresentationRequestNotificationProducer::ShowOrHideItem() {
@@ -269,8 +269,8 @@ void PresentationRequestNotificationProducer::ShowOrHideItem() {
 
   should_hide_ = new_visibility;
   if (should_hide_) {
-    notification_service_->HideNotification(item_->id());
+    notification_service_->HideItem(item_->id());
   } else {
-    notification_service_->ShowNotification(item_->id());
+    notification_service_->ShowItem(item_->id());
   }
 }

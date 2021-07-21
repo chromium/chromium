@@ -10,7 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_session_controller.h"
-#include "components/media_message_center/media_notification_controller.h"
+#include "chrome/browser/ui/global_media_controls/media_items_manager.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "components/vector_icons/vector_icons.h"
@@ -144,10 +144,10 @@ std::u16string GetSourceTitle(const media_router::MediaRoute& route) {
 
 CastMediaNotificationItem::CastMediaNotificationItem(
     const media_router::MediaRoute& route,
-    media_message_center::MediaNotificationController* notification_controller,
+    MediaItemsManager* items_manager,
     std::unique_ptr<CastMediaSessionController> session_controller,
     Profile* profile)
-    : notification_controller_(notification_controller),
+    : items_manager_(items_manager),
       profile_(profile),
       session_controller_(std::move(session_controller)),
       media_route_id_(route.media_route_id()),
@@ -163,7 +163,7 @@ CastMediaNotificationItem::CastMediaNotificationItem(
 }
 
 CastMediaNotificationItem::~CastMediaNotificationItem() {
-  notification_controller_->HideNotification(media_route_id_);
+  items_manager_->HideItem(media_route_id_);
 }
 
 void CastMediaNotificationItem::SetView(
@@ -201,7 +201,7 @@ void CastMediaNotificationItem::SeekTo(base::TimeDelta time) {
 }
 
 void CastMediaNotificationItem::Dismiss() {
-  notification_controller_->HideNotification(media_route_id_);
+  items_manager_->HideItem(media_route_id_);
   is_active_ = false;
 }
 

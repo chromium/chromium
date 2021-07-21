@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_SESSION_NOTIFICATION_ITEM_H_
-#define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_SESSION_NOTIFICATION_ITEM_H_
+#ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_ITEM_H_
+#define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_ITEM_H_
 
 #include <string>
 
@@ -21,19 +21,40 @@
 #include "ui/gfx/image/image_skia.h"
 
 namespace media_message_center {
-
-class MediaNotificationController;
 class MediaNotificationView;
+}  // namespace media_message_center
 
 // MediaSessionNotificationItem manages hiding/showing a media notification and
 // updating the metadata for a single media session.
-class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSessionNotificationItem
-    : public MediaNotificationItem,
+class MediaSessionNotificationItem
+    : public media_message_center::MediaNotificationItem,
       public media_session::mojom::MediaControllerObserver,
       public media_session::mojom::MediaControllerImageObserver {
  public:
+  class Delegate {
+   public:
+    // The given item meets the criteria for being displayed.
+    virtual void ActivateItem(const std::string& id) = 0;
+
+    // The given item no longer meets the criteria for being displayed, but may
+    // be reactivated.
+    virtual void HideItem(const std::string& id) = 0;
+
+    // The given item should be destroyed.
+    virtual void RemoveItem(const std::string& id) = 0;
+
+    // The given button has been pressed, and therefore the action should be
+    // recorded.
+    virtual void LogMediaSessionActionButtonPressed(
+        const std::string& id,
+        media_session::mojom::MediaSessionAction action) = 0;
+
+   protected:
+    virtual ~Delegate() = default;
+  };
+
   MediaSessionNotificationItem(
-      MediaNotificationController* notification_controller,
+      Delegate* delegate,
       const std::string& request_id,
       const std::string& source_name,
       mojo::Remote<media_session::mojom::MediaController> controller,
@@ -61,8 +82,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSessionNotificationItem
       media_session::mojom::MediaSessionImageType type,
       const SkBitmap& bitmap) override;
 
-  // MediaNotificationItem:
-  void SetView(MediaNotificationView* view) override;
+  // media_message_center::MediaNotificationItem:
+  void SetView(media_message_center::MediaNotificationView* view) override;
   void OnMediaSessionActionButtonPressed(
       media_session::mojom::MediaSessionAction action) override;
   void SeekTo(base::TimeDelta time) override;
@@ -113,12 +134,12 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSessionNotificationItem
 
   void MaybeHideOrShowNotification();
 
-  MediaNotificationController* controller_;
+  Delegate* const delegate_;
 
   bool is_bound_ = true;
 
   // Weak reference to the view of the currently shown media notification.
-  MediaNotificationView* view_ = nullptr;
+  media_message_center::MediaNotificationView* view_ = nullptr;
 
   // The |request_id_| is the request id of the media session and is guaranteed
   // to be globally unique.
@@ -184,6 +205,4 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSessionNotificationItem
   base::WeakPtrFactory<MediaSessionNotificationItem> weak_ptr_factory_{this};
 };
 
-}  // namespace media_message_center
-
-#endif  // COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_SESSION_NOTIFICATION_ITEM_H_
+#endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_ITEM_H_

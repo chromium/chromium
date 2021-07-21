@@ -18,13 +18,9 @@
 #include "build/build_config.h"
 #include "components/media_message_center/media_controls_progress_view.h"
 #include "components/media_message_center/media_notification_background_impl.h"
-#include "components/media_message_center/media_notification_constants.h"
 #include "components/media_message_center/media_notification_container.h"
-#include "components/media_message_center/media_notification_controller.h"
+#include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
-#include "components/media_message_center/media_session_notification_item.h"
-#include "services/media_session/public/cpp/test/test_media_controller.h"
-#include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -42,7 +38,6 @@
 namespace media_message_center {
 
 using media_session::mojom::MediaSessionAction;
-using media_session::test::TestMediaController;
 using testing::_;
 using testing::Expectation;
 using testing::Invoke;
@@ -57,29 +52,37 @@ const gfx::Size kWidgetSize(500, 500);
 constexpr int kViewWidth = 350;
 const gfx::Size kViewSize(kViewWidth, 400);
 
-class MockMediaNotificationController : public MediaNotificationController {
+class MockMediaNotificationItem : public MediaNotificationItem {
  public:
-  MockMediaNotificationController() = default;
-  ~MockMediaNotificationController() override = default;
+  MockMediaNotificationItem() = default;
+  MockMediaNotificationItem(const MockMediaNotificationItem&) = delete;
+  MockMediaNotificationItem& operator=(const MockMediaNotificationItem&) =
+      delete;
+  ~MockMediaNotificationItem() override = default;
 
-  // MediaNotificationController implementation.
-  MOCK_METHOD1(ShowNotification, void(const std::string& id));
-  MOCK_METHOD1(HideNotification, void(const std::string& id));
-  MOCK_METHOD1(RemoveItem, void(const std::string& id));
-  scoped_refptr<base::SequencedTaskRunner> GetTaskRunner() const override {
-    return nullptr;
+  MOCK_METHOD(void, SetView, (MediaNotificationView*));
+  MOCK_METHOD(void,
+              OnMediaSessionActionButtonPressed,
+              (media_session::mojom::MediaSessionAction));
+  MOCK_METHOD(void, SeekTo, (base::TimeDelta));
+  MOCK_METHOD(void, Dismiss, ());
+  MOCK_METHOD(media_message_center::SourceType, SourceType, ());
+
+  base::WeakPtr<MockMediaNotificationItem> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
   }
-  MOCK_METHOD2(LogMediaSessionActionButtonPressed,
-               void(const std::string& id,
-                    media_session::mojom::MediaSessionAction action));
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(MockMediaNotificationController);
+  base::WeakPtrFactory<MockMediaNotificationItem> weak_ptr_factory_{this};
 };
 
 class MockMediaNotificationContainer : public MediaNotificationContainer {
  public:
   MockMediaNotificationContainer() = default;
+  MockMediaNotificationContainer(const MockMediaNotificationContainer&) =
+      delete;
+  MockMediaNotificationContainer& operator=(
+      const MockMediaNotificationContainer&) = delete;
   ~MockMediaNotificationContainer() override = default;
 
   // MediaNotificationContainer implementation.
@@ -94,14 +97,6 @@ class MockMediaNotificationContainer : public MediaNotificationContainer {
   MOCK_METHOD1(OnMediaArtworkChanged, void(const gfx::ImageSkia& image));
   MOCK_METHOD2(OnColorsChanged, void(SkColor foreground, SkColor background));
   MOCK_METHOD0(OnHeaderClicked, void());
-
-  MediaNotificationViewModernImpl* view() const { return view_; }
-  void SetView(MediaNotificationViewModernImpl* view) { view_ = view; }
-
- private:
-  MediaNotificationViewModernImpl* view_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMediaNotificationContainer);
 };
 
 }  // namespace
@@ -111,18 +106,14 @@ class MediaNotificationViewModernImplTest : public views::ViewsTestBase {
   MediaNotificationViewModernImplTest()
       : views::ViewsTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  MediaNotificationViewModernImplTest(
+      const MediaNotificationViewModernImplTest&) = delete;
+  MediaNotificationViewModernImplTest& operator=(
+      const MediaNotificationViewModernImplTest&) = delete;
   ~MediaNotificationViewModernImplTest() override = default;
 
   void SetUp() override {
     views::ViewsTestBase::SetUp();
-
-    request_id_ = base::UnguessableToken::Create();
-
-    // Create a new MediaNotificationViewModernImpl whenever the
-    // MediaSessionNotificationItem says to show the notification.
-    EXPECT_CALL(controller_, ShowNotification(request_id_.ToString()))
-        .WillRepeatedly(InvokeWithoutArgs(
-            this, &MediaNotificationViewModernImplTest::CreateView));
 
     // Create a widget to show on the screen for testing screen coordinates and
     // focus.
@@ -134,33 +125,12 @@ class MediaNotificationViewModernImplTest : public views::ViewsTestBase {
     widget_->Init(std::move(params));
     widget_->Show();
 
-    CreateViewFromMediaSessionInfo(
-        media_session::mojom::MediaSessionInfo::New());
-  }
-
-  void CreateViewFromMediaSessionInfo(
-      media_session::mojom::MediaSessionInfoPtr session_info) {
-    session_info->is_controllable = true;
-    mojo::Remote<media_session::mojom::MediaController> controller;
-    item_ = std::make_unique<MediaSessionNotificationItem>(
-        &controller_, request_id_.ToString(), std::string(),
-        std::move(controller), std::move(session_info));
-
-    // Update the metadata.
-    media_session::MediaMetadata metadata;
-    metadata.title = u"title";
-    metadata.artist = u"artist";
-    metadata.source_title = u"source title";
-    item_->MediaSessionMetadataChanged(metadata);
-
-    // Inject the test media controller into the item.
-    media_controller_ = std::make_unique<TestMediaController>();
-    item_->SetMediaControllerForTesting(
-        media_controller_->CreateMediaControllerRemote());
+    // Creates the view and adds it to the widget.
+    CreateView();
   }
 
   void TearDown() override {
-    container_.SetView(nullptr);
+    view_ = nullptr;
     widget_.reset();
 
     actions_.clear();
@@ -194,17 +164,13 @@ class MediaNotificationViewModernImplTest : public views::ViewsTestBase {
 
   MockMediaNotificationContainer& container() { return container_; }
 
-  MockMediaNotificationController& controller() { return controller_; }
-
-  MediaNotificationViewModernImpl* view() const { return container_.view(); }
-
-  TestMediaController* media_controller() const {
-    return media_controller_.get();
-  }
+  MediaNotificationViewModernImpl* view() const { return view_; }
 
   const std::u16string& accessible_name() const {
     return view()->accessible_name_;
   }
+
+  MockMediaNotificationItem& item() { return item_; }
 
   views::Label* title_label() const { return view()->title_label_; }
 
@@ -245,8 +211,6 @@ class MediaNotificationViewModernImplTest : public views::ViewsTestBase {
     return GetButtonForAction(action)->GetVisible();
   }
 
-  MediaSessionNotificationItem* GetItem() const { return item_.get(); }
-
   const gfx::ImageSkia& GetArtworkImage() const {
     return static_cast<MediaNotificationBackgroundImpl*>(
                view()->GetMediaNotificationBackground())
@@ -267,12 +231,6 @@ class MediaNotificationViewModernImplTest : public views::ViewsTestBase {
     view()->GetFocusManager()->OnKeyEvent(pressed_tab);
   }
 
-  void ExpectHistogramActionRecorded(MediaSessionAction action) {
-    histogram_tester_.ExpectUniqueSample(
-        MediaSessionNotificationItem::kUserActionHistogramName,
-        static_cast<base::HistogramBase::Sample>(action), 1);
-  }
-
   void ExpectHistogramArtworkRecorded(bool present, int count) {
     histogram_tester_.ExpectBucketCount(
         MediaNotificationViewModernImpl::kArtworkHistogramName,
@@ -287,42 +245,36 @@ class MediaNotificationViewModernImplTest : public views::ViewsTestBase {
         static_cast<base::HistogramBase::Sample>(metadata), count);
   }
 
-  void AdvanceClockMilliseconds(int milliseconds) {
-    task_environment()->FastForwardBy(
-        base::TimeDelta::FromMilliseconds(milliseconds));
-  }
-
  private:
-  void NotifyUpdatedActions() {
-    item_->MediaSessionActionsChanged(
-        std::vector<MediaSessionAction>(actions_.begin(), actions_.end()));
-  }
+  void NotifyUpdatedActions() { view_->UpdateWithMediaActions(actions_); }
 
   void CreateView() {
-    // Create a MediaNotificationViewModernImpl.
+    // On creation, the view should notify |item_|.
     auto view = std::make_unique<MediaNotificationViewModernImpl>(
-        &container_, item_->GetWeakPtr(), std::make_unique<views::View>(),
+        &container_, item_.GetWeakPtr(), std::make_unique<views::View>(),
         kViewWidth);
     view->SetSize(kViewSize);
 
-    // Display it in |widget_|. Widget now owns |view|.
-    // And associate it with |container_|.
-    container_.SetView(widget_->SetContentsView(std::move(view)));
-  }
+    media_session::MediaMetadata metadata;
+    metadata.title = u"title";
+    metadata.artist = u"artist";
+    metadata.source_title = u"source title";
+    view->UpdateWithMediaMetadata(metadata);
 
-  base::UnguessableToken request_id_;
+    view->UpdateWithMediaActions(actions_);
+
+    // Display it in |widget_|. Widget now owns |view|.
+    view_ = widget_->SetContentsView(std::move(view));
+  }
 
   base::HistogramTester histogram_tester_;
 
   base::flat_set<MediaSessionAction> actions_;
 
-  std::unique_ptr<TestMediaController> media_controller_;
   MockMediaNotificationContainer container_;
-  MockMediaNotificationController controller_;
-  std::unique_ptr<MediaSessionNotificationItem> item_;
+  MockMediaNotificationItem item_;
+  MediaNotificationViewModernImpl* view_;
   std::unique_ptr<views::Widget> widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaNotificationViewModernImplTest);
 };
 
 // TODO(crbug.com/1009287): many of these tests are failing on TSan builds.
@@ -415,12 +367,11 @@ TEST_F(MAYBE_MediaNotificationViewModernImplTest, PlayPauseButtonTooltipCheck) {
   std::u16string tooltip = button->GetTooltipText(gfx::Point());
   EXPECT_FALSE(tooltip.empty());
 
-  media_session::mojom::MediaSessionInfoPtr session_info(
-      media_session::mojom::MediaSessionInfo::New());
+  auto session_info = media_session::mojom::MediaSessionInfo::New();
   session_info->playback_state =
       media_session::mojom::MediaPlaybackState::kPlaying;
   session_info->is_controllable = true;
-  GetItem()->MediaSessionInfoChanged(session_info.Clone());
+  view()->UpdateWithMediaSessionInfo(std::move(session_info));
 
   std::u16string new_tooltip = button->GetTooltipText(gfx::Point());
   EXPECT_FALSE(new_tooltip.empty());
@@ -428,95 +379,60 @@ TEST_F(MAYBE_MediaNotificationViewModernImplTest, PlayPauseButtonTooltipCheck) {
 }
 
 TEST_F(MAYBE_MediaNotificationViewModernImplTest, NextTrackButtonClick) {
-  EXPECT_CALL(controller(), LogMediaSessionActionButtonPressed(
-                                _, MediaSessionAction::kNextTrack));
   EnableAction(MediaSessionAction::kNextTrack);
 
-  EXPECT_EQ(0, media_controller()->next_track_count());
-
+  EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
+                          MediaSessionAction::kNextTrack));
   SimulateButtonClick(MediaSessionAction::kNextTrack);
-  GetItem()->FlushForTesting();
-
-  EXPECT_EQ(1, media_controller()->next_track_count());
-  ExpectHistogramActionRecorded(MediaSessionAction::kNextTrack);
 }
 
 TEST_F(MAYBE_MediaNotificationViewModernImplTest, PlayButtonClick) {
-  EXPECT_CALL(controller(),
-              LogMediaSessionActionButtonPressed(_, MediaSessionAction::kPlay));
   EnableAction(MediaSessionAction::kPlay);
 
-  EXPECT_EQ(0, media_controller()->resume_count());
-
+  EXPECT_CALL(item(),
+              OnMediaSessionActionButtonPressed(MediaSessionAction::kPlay));
   SimulateButtonClick(MediaSessionAction::kPlay);
-  GetItem()->FlushForTesting();
-
-  EXPECT_EQ(1, media_controller()->resume_count());
-  ExpectHistogramActionRecorded(MediaSessionAction::kPlay);
 }
 
 TEST_F(MAYBE_MediaNotificationViewModernImplTest, PauseButtonClick) {
-  EXPECT_CALL(controller(), LogMediaSessionActionButtonPressed(
-                                _, MediaSessionAction::kPause));
   EnableAction(MediaSessionAction::kPause);
-  EXPECT_CALL(container(), OnMediaSessionInfoChanged(_));
 
-  EXPECT_EQ(0, media_controller()->suspend_count());
-
-  media_session::mojom::MediaSessionInfoPtr session_info(
-      media_session::mojom::MediaSessionInfo::New());
+  auto session_info = media_session::mojom::MediaSessionInfo::New();
   session_info->playback_state =
       media_session::mojom::MediaPlaybackState::kPlaying;
   session_info->is_controllable = true;
-  GetItem()->MediaSessionInfoChanged(session_info.Clone());
 
+  EXPECT_CALL(container(), OnMediaSessionInfoChanged(_));
+  view()->UpdateWithMediaSessionInfo(session_info.Clone());
+  testing::Mock::VerifyAndClearExpectations(&container());
+
+  EXPECT_CALL(item(),
+              OnMediaSessionActionButtonPressed(MediaSessionAction::kPause));
   SimulateButtonClick(MediaSessionAction::kPause);
-  GetItem()->FlushForTesting();
-
-  EXPECT_EQ(1, media_controller()->suspend_count());
-  ExpectHistogramActionRecorded(MediaSessionAction::kPause);
 }
 
 TEST_F(MAYBE_MediaNotificationViewModernImplTest, PreviousTrackButtonClick) {
-  EXPECT_CALL(controller(), LogMediaSessionActionButtonPressed(
-                                _, MediaSessionAction::kPreviousTrack));
   EnableAction(MediaSessionAction::kPreviousTrack);
 
-  EXPECT_EQ(0, media_controller()->previous_track_count());
-
+  EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
+                          MediaSessionAction::kPreviousTrack));
   SimulateButtonClick(MediaSessionAction::kPreviousTrack);
-  GetItem()->FlushForTesting();
-
-  EXPECT_EQ(1, media_controller()->previous_track_count());
-  ExpectHistogramActionRecorded(MediaSessionAction::kPreviousTrack);
 }
 
 TEST_F(MAYBE_MediaNotificationViewModernImplTest, SeekBackwardButtonClick) {
-  EXPECT_CALL(controller(), LogMediaSessionActionButtonPressed(
-                                _, MediaSessionAction::kSeekBackward));
   EnableAction(MediaSessionAction::kSeekBackward);
 
-  EXPECT_EQ(0, media_controller()->seek_backward_count());
-
+  EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
+                          MediaSessionAction::kSeekBackward));
   SimulateButtonClick(MediaSessionAction::kSeekBackward);
-  GetItem()->FlushForTesting();
-
-  EXPECT_EQ(1, media_controller()->seek_backward_count());
-  ExpectHistogramActionRecorded(MediaSessionAction::kSeekBackward);
 }
 
 TEST_F(MAYBE_MediaNotificationViewModernImplTest, SeekForwardButtonClick) {
-  EXPECT_CALL(controller(), LogMediaSessionActionButtonPressed(
-                                _, MediaSessionAction::kSeekForward));
   EnableAction(MediaSessionAction::kSeekForward);
 
-  EXPECT_EQ(0, media_controller()->seek_forward_count());
-
+  EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
+                          MediaSessionAction::kSeekForward));
   SimulateButtonClick(MediaSessionAction::kSeekForward);
-  GetItem()->FlushForTesting();
-
-  EXPECT_EQ(1, media_controller()->seek_forward_count());
-  ExpectHistogramActionRecorded(MediaSessionAction::kSeekForward);
 }
 
 TEST_F(MAYBE_MediaNotificationViewModernImplTest,
@@ -601,7 +517,8 @@ TEST_F(MAYBE_MediaNotificationViewModernImplTest, UpdateMetadata_FromObserver) {
   metadata.album = u"album";
 
   EXPECT_CALL(container(), OnMediaSessionMetadataChanged(_));
-  GetItem()->MediaSessionMetadataChanged(metadata);
+  view()->UpdateWithMediaMetadata(metadata);
+  testing::Mock::VerifyAndClearExpectations(&container());
 
   EXPECT_TRUE(title_label()->GetVisible());
   EXPECT_TRUE(subtitle_label()->GetVisible());
@@ -653,8 +570,7 @@ TEST_F(MAYBE_MediaNotificationViewModernImplTest, UpdateArtworkFromItem) {
 
   EXPECT_TRUE(GetArtworkImage().isNull());
 
-  GetItem()->MediaControllerImageChanged(
-      media_session::mojom::MediaSessionImageType::kArtwork, image);
+  view()->UpdateWithMediaArtwork(gfx::ImageSkia::CreateFrom1xBitmap(image));
 
   ExpectHistogramArtworkRecorded(true, 1);
 
@@ -671,8 +587,8 @@ TEST_F(MAYBE_MediaNotificationViewModernImplTest, UpdateArtworkFromItem) {
   EXPECT_EQ(gfx::Size(10, 10), GetArtworkImage().size());
   EXPECT_EQ(size, view()->size());
 
-  GetItem()->MediaControllerImageChanged(
-      media_session::mojom::MediaSessionImageType::kArtwork, SkBitmap());
+  view()->UpdateWithMediaArtwork(
+      gfx::ImageSkia::CreateFrom1xBitmap(SkBitmap()));
 
   ExpectHistogramArtworkRecorded(false, 1);
 
@@ -690,7 +606,7 @@ TEST_F(MAYBE_MediaNotificationViewModernImplTest, UpdateProgressBar) {
   media_session::MediaPosition media_position(
       /*playback_rate=*/1.0, /*duration=*/base::TimeDelta::FromSeconds(600),
       /*position=*/base::TimeDelta::FromSeconds(0), /*end_of_media=*/false);
-  GetItem()->MediaSessionPositionChanged(media_position);
+  view()->UpdateWithMediaPosition(media_position);
   EXPECT_EQ(progress_view()->duration_for_testing(), u"10:00");
 }
 
@@ -701,380 +617,6 @@ TEST_F(MAYBE_MediaNotificationViewModernImplTest, AccessibleNodeData) {
   EXPECT_TRUE(
       data.HasStringAttribute(ax::mojom::StringAttribute::kRoleDescription));
   EXPECT_EQ(u"title - artist", accessible_name());
-}
-
-TEST_F(MAYBE_MediaNotificationViewModernImplTest,
-       Freezing_DoNotUpdateMetadata) {
-  media_session::MediaMetadata metadata;
-  metadata.title = u"title2";
-  metadata.artist = u"artist2";
-  metadata.album = u"album";
-
-  EXPECT_CALL(container(), OnMediaSessionMetadataChanged(_)).Times(0);
-  GetItem()->Freeze(base::DoNothing());
-  GetItem()->MediaSessionMetadataChanged(metadata);
-
-  EXPECT_EQ(u"title", title_label()->GetText());
-  EXPECT_EQ(u"source title", subtitle_label()->GetText());
-}
-
-TEST_F(MAYBE_MediaNotificationViewModernImplTest, Freezing_DoNotUpdateImage) {
-  SkBitmap image;
-  image.allocN32Pixels(10, 10);
-  image.eraseColor(SK_ColorMAGENTA);
-  EXPECT_CALL(container(), OnMediaArtworkChanged(_)).Times(0);
-  EXPECT_CALL(container(), OnColorsChanged(_, _)).Times(0);
-
-  GetItem()->Freeze(base::DoNothing());
-  GetItem()->MediaControllerImageChanged(
-      media_session::mojom::MediaSessionImageType::kArtwork, image);
-
-  EXPECT_TRUE(GetArtworkImage().isNull());
-}
-
-TEST_F(MAYBE_MediaNotificationViewModernImplTest,
-       Freezing_DoNotUpdatePlaybackState) {
-  EnableAction(MediaSessionAction::kPlay);
-  EnableAction(MediaSessionAction::kPause);
-
-  EXPECT_CALL(container(), OnMediaSessionInfoChanged(_)).Times(0);
-
-  GetItem()->Freeze(base::DoNothing());
-
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
-  EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-
-  media_session::mojom::MediaSessionInfoPtr session_info(
-      media_session::mojom::MediaSessionInfo::New());
-  session_info->playback_state =
-      media_session::mojom::MediaPlaybackState::kPlaying;
-  GetItem()->MediaSessionInfoChanged(session_info.Clone());
-
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
-  EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-}
-
-TEST_F(MAYBE_MediaNotificationViewModernImplTest, Freezing_DoNotUpdateActions) {
-  EXPECT_FALSE(
-      GetButtonForAction(MediaSessionAction::kSeekForward)->GetVisible());
-
-  GetItem()->Freeze(base::DoNothing());
-  EnableAction(MediaSessionAction::kSeekForward);
-
-  EXPECT_FALSE(
-      GetButtonForAction(MediaSessionAction::kSeekForward)->GetVisible());
-}
-
-TEST_F(MAYBE_MediaNotificationViewModernImplTest, Freezing_DisableInteraction) {
-  EnableAllActions();
-
-  EXPECT_EQ(0, media_controller()->next_track_count());
-
-  GetItem()->Freeze(base::DoNothing());
-
-  SimulateButtonClick(MediaSessionAction::kNextTrack);
-  GetItem()->FlushForTesting();
-
-  EXPECT_EQ(0, media_controller()->next_track_count());
-}
-
-TEST_F(MAYBE_MediaNotificationViewModernImplTest, UnfreezingDoesntMissUpdates) {
-  EnableAction(MediaSessionAction::kPlay);
-  EnableAction(MediaSessionAction::kPause);
-
-  // Freeze the item and clear the metadata.
-  base::MockOnceClosure unfrozen_callback;
-  EXPECT_CALL(unfrozen_callback, Run).Times(0);
-  GetItem()->Freeze(unfrozen_callback.Get());
-  GetItem()->MediaSessionInfoChanged(nullptr);
-  GetItem()->MediaSessionMetadataChanged(absl::nullopt);
-
-  // The item should be frozen and the view should contain the old data.
-  EXPECT_TRUE(GetItem()->frozen());
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
-  EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(u"title", title_label()->GetText());
-  EXPECT_EQ(u"source title", subtitle_label()->GetText());
-
-  // Bind the item to a new controller that's playing instead of paused.
-  auto new_media_controller = std::make_unique<TestMediaController>();
-  media_session::mojom::MediaSessionInfoPtr session_info(
-      media_session::mojom::MediaSessionInfo::New());
-  session_info->playback_state =
-      media_session::mojom::MediaPlaybackState::kPlaying;
-  session_info->is_controllable = true;
-  GetItem()->SetController(new_media_controller->CreateMediaControllerRemote(),
-                           session_info.Clone());
-
-  // The item will receive a MediaSessionInfoChanged.
-  GetItem()->MediaSessionInfoChanged(session_info.Clone());
-
-  // The item should still be frozen, and the view should contain the old data.
-  EXPECT_TRUE(GetItem()->frozen());
-  testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
-  EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(u"title", title_label()->GetText());
-  EXPECT_EQ(u"source title", subtitle_label()->GetText());
-
-  // Update the metadata.
-  EXPECT_CALL(unfrozen_callback, Run);
-  media_session::MediaMetadata metadata;
-  metadata.title = u"title2";
-  metadata.source_title = u"source title 2";
-  GetItem()->MediaSessionMetadataChanged(metadata);
-
-  // The item should no longer be frozen, and we should see the updated data.
-  EXPECT_FALSE(GetItem()->frozen());
-  testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
-  EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPlay));
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(u"title2", title_label()->GetText());
-  EXPECT_EQ(u"source title 2", subtitle_label()->GetText());
-}
-
-TEST_F(MAYBE_MediaNotificationViewModernImplTest,
-       UnfreezingWaitsForArtwork_Timeout) {
-  EnableAction(MediaSessionAction::kPlay);
-  EnableAction(MediaSessionAction::kPause);
-
-  // Set an image before freezing.
-  SkBitmap initial_image;
-  initial_image.allocN32Pixels(10, 10);
-  initial_image.eraseColor(SK_ColorMAGENTA);
-  GetItem()->MediaControllerImageChanged(
-      media_session::mojom::MediaSessionImageType::kArtwork, initial_image);
-  EXPECT_FALSE(GetArtworkImage().isNull());
-
-  // Freeze the item and clear the metadata.
-  base::MockOnceClosure unfrozen_callback;
-  EXPECT_CALL(unfrozen_callback, Run).Times(0);
-  GetItem()->Freeze(unfrozen_callback.Get());
-  GetItem()->MediaSessionInfoChanged(nullptr);
-  GetItem()->MediaSessionMetadataChanged(absl::nullopt);
-  GetItem()->MediaControllerImageChanged(
-      media_session::mojom::MediaSessionImageType::kArtwork, SkBitmap());
-
-  // The item should be frozen and the view should contain the old data.
-  EXPECT_TRUE(GetItem()->frozen());
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
-  EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(u"title", title_label()->GetText());
-  EXPECT_EQ(u"source title", subtitle_label()->GetText());
-  EXPECT_FALSE(GetArtworkImage().isNull());
-
-  // Bind the item to a new controller that's playing instead of paused.
-  auto new_media_controller = std::make_unique<TestMediaController>();
-  media_session::mojom::MediaSessionInfoPtr session_info(
-      media_session::mojom::MediaSessionInfo::New());
-  session_info->playback_state =
-      media_session::mojom::MediaPlaybackState::kPlaying;
-  session_info->is_controllable = true;
-  GetItem()->SetController(new_media_controller->CreateMediaControllerRemote(),
-                           session_info.Clone());
-
-  // The item will receive a MediaSessionInfoChanged.
-  GetItem()->MediaSessionInfoChanged(session_info.Clone());
-
-  // The item should still be frozen, and the view should contain the old data.
-  EXPECT_TRUE(GetItem()->frozen());
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
-  EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(u"title", title_label()->GetText());
-  EXPECT_EQ(u"source title", subtitle_label()->GetText());
-  EXPECT_FALSE(GetArtworkImage().isNull());
-
-  // Update the metadata.
-  media_session::MediaMetadata metadata;
-  metadata.title = u"title2";
-  metadata.source_title = u"source title 2";
-  GetItem()->MediaSessionMetadataChanged(metadata);
-
-  // The item should still be frozen, and waiting for a new image.
-  EXPECT_TRUE(GetItem()->frozen());
-  testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
-  EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(u"title", title_label()->GetText());
-  EXPECT_EQ(u"source title", subtitle_label()->GetText());
-  EXPECT_FALSE(GetArtworkImage().isNull());
-
-  // Once the freeze timer fires, the item should unfreeze even if there's no
-  // artwork.
-  EXPECT_CALL(unfrozen_callback, Run);
-  AdvanceClockMilliseconds(2600);
-
-  EXPECT_FALSE(GetItem()->frozen());
-  testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
-  EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPlay));
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(u"title2", title_label()->GetText());
-  EXPECT_EQ(u"source title 2", subtitle_label()->GetText());
-  EXPECT_TRUE(GetArtworkImage().isNull());
-}
-
-TEST_F(MAYBE_MediaNotificationViewModernImplTest, UnfreezingWaitsForActions) {
-  EnableAction(MediaSessionAction::kPlay);
-  EnableAction(MediaSessionAction::kPause);
-  EnableAction(MediaSessionAction::kNextTrack);
-  EnableAction(MediaSessionAction::kPreviousTrack);
-
-  // Freeze the item and clear the metadata and actions.
-  base::MockOnceClosure unfrozen_callback;
-  EXPECT_CALL(unfrozen_callback, Run).Times(0);
-  GetItem()->Freeze(unfrozen_callback.Get());
-  GetItem()->MediaSessionInfoChanged(nullptr);
-  GetItem()->MediaSessionMetadataChanged(absl::nullopt);
-  DisableAction(MediaSessionAction::kPlay);
-  DisableAction(MediaSessionAction::kPause);
-  DisableAction(MediaSessionAction::kNextTrack);
-  DisableAction(MediaSessionAction::kPreviousTrack);
-
-  // The item should be frozen and the view should contain the old data.
-  EXPECT_TRUE(GetItem()->frozen());
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
-  EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kNextTrack));
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPreviousTrack));
-  EXPECT_EQ(u"title", title_label()->GetText());
-  EXPECT_EQ(u"source title", subtitle_label()->GetText());
-
-  // Bind the item to a new controller that's playing instead of paused.
-  auto new_media_controller = std::make_unique<TestMediaController>();
-  media_session::mojom::MediaSessionInfoPtr session_info(
-      media_session::mojom::MediaSessionInfo::New());
-  session_info->playback_state =
-      media_session::mojom::MediaPlaybackState::kPlaying;
-  session_info->is_controllable = true;
-  GetItem()->SetController(new_media_controller->CreateMediaControllerRemote(),
-                           session_info.Clone());
-
-  // The item will receive a MediaSessionInfoChanged.
-  GetItem()->MediaSessionInfoChanged(session_info.Clone());
-
-  // The item should still be frozen, and the view should contain the old data.
-  EXPECT_TRUE(GetItem()->frozen());
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
-  EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kNextTrack));
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPreviousTrack));
-  EXPECT_EQ(u"title", title_label()->GetText());
-  EXPECT_EQ(u"source title", subtitle_label()->GetText());
-
-  // Update the metadata.
-  media_session::MediaMetadata metadata;
-  metadata.title = u"title2";
-  metadata.source_title = u"source title 2";
-  GetItem()->MediaSessionMetadataChanged(metadata);
-
-  // The item should still be frozen, and waiting for new actions.
-  EXPECT_TRUE(GetItem()->frozen());
-  testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
-  EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kNextTrack));
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPreviousTrack));
-  EXPECT_EQ(u"title", title_label()->GetText());
-  EXPECT_EQ(u"source title", subtitle_label()->GetText());
-
-  // Once we receive actions, the item should unfreeze.
-  EXPECT_CALL(unfrozen_callback, Run);
-  EnableAction(MediaSessionAction::kPlay);
-  EnableAction(MediaSessionAction::kPause);
-  EnableAction(MediaSessionAction::kSeekForward);
-  EnableAction(MediaSessionAction::kSeekBackward);
-
-  EXPECT_FALSE(GetItem()->frozen());
-  testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
-  EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPlay));
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kSeekForward));
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kSeekBackward));
-  EXPECT_EQ(u"title2", title_label()->GetText());
-  EXPECT_EQ(u"source title 2", subtitle_label()->GetText());
-}
-
-TEST_F(MAYBE_MediaNotificationViewModernImplTest,
-       UnfreezingWaitsForArtwork_ReceiveArtwork) {
-  EnableAction(MediaSessionAction::kPlay);
-  EnableAction(MediaSessionAction::kPause);
-
-  // Set an image before freezing.
-  SkBitmap initial_image;
-  initial_image.allocN32Pixels(10, 10);
-  initial_image.eraseColor(SK_ColorMAGENTA);
-  GetItem()->MediaControllerImageChanged(
-      media_session::mojom::MediaSessionImageType::kArtwork, initial_image);
-  EXPECT_FALSE(GetArtworkImage().isNull());
-
-  // Freeze the item and clear the metadata.
-  base::MockOnceClosure unfrozen_callback;
-  EXPECT_CALL(unfrozen_callback, Run).Times(0);
-  GetItem()->Freeze(unfrozen_callback.Get());
-  GetItem()->MediaSessionInfoChanged(nullptr);
-  GetItem()->MediaSessionMetadataChanged(absl::nullopt);
-  GetItem()->MediaControllerImageChanged(
-      media_session::mojom::MediaSessionImageType::kArtwork, SkBitmap());
-
-  // The item should be frozen and the view should contain the old data.
-  EXPECT_TRUE(GetItem()->frozen());
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
-  EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(u"title", title_label()->GetText());
-  EXPECT_EQ(u"source title", subtitle_label()->GetText());
-  EXPECT_FALSE(GetArtworkImage().isNull());
-
-  // Bind the item to a new controller that's playing instead of paused.
-  auto new_media_controller = std::make_unique<TestMediaController>();
-  media_session::mojom::MediaSessionInfoPtr session_info(
-      media_session::mojom::MediaSessionInfo::New());
-  session_info->playback_state =
-      media_session::mojom::MediaPlaybackState::kPlaying;
-  session_info->is_controllable = true;
-  GetItem()->SetController(new_media_controller->CreateMediaControllerRemote(),
-                           session_info.Clone());
-
-  // The item will receive a MediaSessionInfoChanged.
-  GetItem()->MediaSessionInfoChanged(session_info.Clone());
-
-  // The item should still be frozen, and the view should contain the old data.
-  EXPECT_TRUE(GetItem()->frozen());
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
-  EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(u"title", title_label()->GetText());
-  EXPECT_EQ(u"source title", subtitle_label()->GetText());
-  EXPECT_FALSE(GetArtworkImage().isNull());
-
-  // Update the metadata.
-  media_session::MediaMetadata metadata;
-  metadata.title = u"title2";
-  metadata.source_title = u"source title 2";
-  GetItem()->MediaSessionMetadataChanged(metadata);
-
-  // The item should still be frozen, and waiting for a new image.
-  EXPECT_TRUE(GetItem()->frozen());
-  testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
-  EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(u"title", title_label()->GetText());
-  EXPECT_EQ(u"source title", subtitle_label()->GetText());
-  EXPECT_FALSE(GetArtworkImage().isNull());
-
-  // Once we receive artwork, the item should unfreeze.
-  EXPECT_CALL(unfrozen_callback, Run);
-  SkBitmap new_image;
-  new_image.allocN32Pixels(10, 10);
-  new_image.eraseColor(SK_ColorYELLOW);
-  GetItem()->MediaControllerImageChanged(
-      media_session::mojom::MediaSessionImageType::kArtwork, new_image);
-
-  EXPECT_FALSE(GetItem()->frozen());
-  testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
-  EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPlay));
-  EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(u"title2", title_label()->GetText());
-  EXPECT_EQ(u"source title 2", subtitle_label()->GetText());
-  EXPECT_FALSE(GetArtworkImage().isNull());
 }
 
 }  // namespace media_message_center

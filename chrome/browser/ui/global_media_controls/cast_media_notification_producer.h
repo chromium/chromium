@@ -17,11 +17,8 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_producer.h"
 #include "components/media_router/browser/media_routes_observer.h"
 
+class MediaItemsManager;
 class Profile;
-
-namespace media_message_center {
-class MediaNotificationController;
-}  // namespace media_message_center
 
 // Manages media notifications shown in the Global Media Controls dialog for
 // active Cast sessions.
@@ -30,17 +27,13 @@ class CastMediaNotificationProducer
       public media_router::MediaRoutesObserver,
       public MediaNotificationContainerObserver {
  public:
-  CastMediaNotificationProducer(
-      Profile* profile,
-      media_message_center::MediaNotificationController*
-          notification_controller,
-      base::RepeatingClosure items_changed_callback);
-  CastMediaNotificationProducer(
-      Profile* profile,
-      media_router::MediaRouter* router,
-      media_message_center::MediaNotificationController*
-          notification_controller,
-      base::RepeatingClosure items_changed_callback_);
+  CastMediaNotificationProducer(Profile* profile,
+                                MediaItemsManager* items_manager,
+                                base::RepeatingClosure items_changed_callback);
+  CastMediaNotificationProducer(Profile* profile,
+                                media_router::MediaRouter* router,
+                                MediaItemsManager* items_manager,
+                                base::RepeatingClosure items_changed_callback_);
   CastMediaNotificationProducer(const CastMediaNotificationProducer&) = delete;
   CastMediaNotificationProducer& operator=(
       const CastMediaNotificationProducer&) = delete;
@@ -68,8 +61,7 @@ class CastMediaNotificationProducer
 
   Profile* const profile_;
   media_router::MediaRouter* const router_;
-  media_message_center::MediaNotificationController* const
-      notification_controller_;
+  MediaItemsManager* const items_manager_;
 
   // Maps from notification item IDs to items.
   std::map<std::string, CastMediaNotificationItem> items_;

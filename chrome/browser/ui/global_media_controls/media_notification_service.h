@@ -12,20 +12,19 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
+#include "chrome/browser/ui/global_media_controls/media_items_manager.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_producer.h"
-#include "chrome/browser/ui/global_media_controls/overlay_media_notifications_manager_impl.h"
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_producer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/media_message_center/media_notification_controller.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/audio/audio_device_description.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom-forward.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class StartPresentationContext;
@@ -39,10 +38,9 @@ class CastDialogController;
 class MediaDialogDelegate;
 class MediaNotificationServiceObserver;
 class MediaSessionNotificationProducer;
+class OverlayMediaNotification;
 
-class MediaNotificationService
-    : public KeyedService,
-      public media_message_center::MediaNotificationController {
+class MediaNotificationService : public MediaItemsManager, public KeyedService {
  public:
   MediaNotificationService(Profile* profile, bool show_from_all_profiles);
   MediaNotificationService(const MediaNotificationService&) = delete;
@@ -52,23 +50,20 @@ class MediaNotificationService
   void AddObserver(MediaNotificationServiceObserver* observer);
   void RemoveObserver(MediaNotificationServiceObserver* observer);
 
-  // media_message_center::MediaNotificationController implementation.
-  void ShowNotification(const std::string& id) override;
-  void HideNotification(const std::string& id) override;
-  void RemoveItem(const std::string& id) override;
-  scoped_refptr<base::SequencedTaskRunner> GetTaskRunner() const override;
-  void LogMediaSessionActionButtonPressed(
-      const std::string& id,
-      media_session::mojom::MediaSessionAction action) override;
-
   // KeyedService implementation.
   void Shutdown() override;
+
+  // MediaItemsManager:
+  void ShowItem(const std::string& id) override;
+  void HideItem(const std::string& id) override;
 
   // Called by the |overlay_media_notifications_manager_| when an overlay
   // notification is closed.
   void OnOverlayNotificationClosed(const std::string& id);
 
-  void OnCastNotificationsChanged();
+  // Called after changing anything about a notification to notify any observers
+  // and update the visibility of supplemental notifications.
+  void OnNotificationChanged();
 
   // Called if the dialog is opened from the toolbar button. It shows all active
   // and controllable media notifications.
@@ -135,9 +130,6 @@ class MediaNotificationService
   void ShowAndObserveContainer(const std::string& id);
 
  private:
-  // TODO(crbug.com/1021643): Remove this friend declaration once the Session
-  // class is moved to MediaSessionNotificationProducer.
-  friend class MediaSessionNotificationProducer;
   friend class MediaNotificationProviderImplTest;
   friend class MediaNotificationServiceTest;
   friend class MediaNotificationServiceCastTest;
@@ -159,10 +151,6 @@ class MediaNotificationService
   // Looks up a notification from any source.  Returns null if not found.
   base::WeakPtr<media_message_center::MediaNotificationItem>
   GetNotificationItem(const std::string& id);
-
-  // Called after changing anything about a notification to notify any observers
-  // and update the visibility of supplemental notifications.
-  void OnNotificationChanged();
 
   MediaNotificationProducer* GetNotificationProducer(
       const std::string& notification_id);

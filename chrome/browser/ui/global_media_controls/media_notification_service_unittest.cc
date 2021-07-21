@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
+#include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/overlay_media_notification.h"
 #include "chrome/browser/ui/global_media_controls/test_helper.h"
@@ -26,7 +27,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
-#include "components/media_message_center/media_session_notification_item.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "content/public/browser/media_session.h"
@@ -536,11 +536,12 @@ TEST_F(MediaNotificationServiceTest, ShowControllableOnGainAndHideOnLoss) {
   testing::Mock::VerifyAndClearExpectations(&observer());
 
   EXPECT_CALL(dialog_delegate, ShowMediaSession(id.ToString(), _));
-  service()->ShowNotification(id.ToString());
+  service()->ShowItem(id.ToString());
 
   // Once the freeze timer fires, we should hide the media session.
   EXPECT_CALL(observer(), OnNotificationListChanged()).Times(AtLeast(1));
-  EXPECT_CALL(dialog_delegate, HideMediaSession(id.ToString()));
+  EXPECT_CALL(dialog_delegate, HideMediaSession(id.ToString()))
+      .Times(AtLeast(1));
   AdvanceClockMilliseconds(2500);
   testing::Mock::VerifyAndClearExpectations(&observer());
 }
@@ -755,7 +756,8 @@ TEST_F(MediaNotificationServiceTest, DismissesMediaSession) {
   SimulateDialogOpened(&dialog_delegate);
 
   // Then, click the dismiss button. This should stop and hide the session.
-  EXPECT_CALL(dialog_delegate, HideMediaSession(id.ToString()));
+  EXPECT_CALL(dialog_delegate, HideMediaSession(id.ToString()))
+      .Times(AtLeast(1));
   ExpectHistogramDismissReasonRecorded(
       GlobalMediaControlsDismissReason::kUserDismissedNotification, 0);
   SimulateDismissButtonClicked(id);
@@ -955,7 +957,7 @@ TEST_F(MediaNotificationServiceCastTest, HideSupplementalNotifications) {
   SimulateMediaRoutesUpdate({media_route});
 
   SetMediaRoutesManagedByPresentationManager({media_route});
-  service()->OnCastNotificationsChanged();
+  service()->OnNotificationChanged();
   EXPECT_CALL(dialog_delegate,
               ShowMediaSession(media_route.media_route_id(), _));
   SimulateDialogOpened(&dialog_delegate);

@@ -103,11 +103,13 @@ class MediaNotificationProviderImplTest : public testing::Test {
 
     provider_->service_for_testing()
         ->media_session_notification_producer_->OnFocusGained(std::move(focus));
-    provider_->service_for_testing()->ShowNotification(id.ToString());
+    provider_->service_for_testing()
+        ->media_session_notification_producer_->ActivateItem(id.ToString());
   }
 
   void SimulateHideNotification(base::UnguessableToken id) {
-    provider_->service_for_testing()->HideNotification(id.ToString());
+    provider_->service_for_testing()
+        ->media_session_notification_producer_->HideItem(id.ToString());
   }
 
   MockMediaNotificationProviderObserver* observer() {
