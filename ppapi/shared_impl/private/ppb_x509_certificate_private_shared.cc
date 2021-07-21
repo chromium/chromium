@@ -13,53 +13,52 @@
 
 namespace ppapi {
 
-PPB_X509Certificate_Fields::PPB_X509Certificate_Fields() {}
+PPB_X509Certificate_Fields::PPB_X509Certificate_Fields()
+    : values_(base::Value::Type::LIST) {}
 
 PPB_X509Certificate_Fields::PPB_X509Certificate_Fields(
-    const PPB_X509Certificate_Fields& fields) {
-  std::unique_ptr<base::ListValue> new_values(fields.values_.DeepCopy());
-  values_.Swap(new_values.get());
-}
+    const PPB_X509Certificate_Fields& fields)
+    : values_(fields.values_.Clone()) {}
 
 void PPB_X509Certificate_Fields::SetField(
     PP_X509Certificate_Private_Field field,
     std::unique_ptr<base::Value> value) {
+  DCHECK(value);
   uint32_t index = static_cast<uint32_t>(field);
-  bool success = values_.Set(index, std::move(value));
-  DCHECK(success);
+  // Pad the list with null values if necessary.
+  while (index >= values_.GetList().size())
+    values_.Append(base::Value());
+  values_.GetList()[index] = base::Value::FromUniquePtrValue(std::move(value));
 }
 
 PP_Var PPB_X509Certificate_Fields::GetFieldAsPPVar(
     PP_X509Certificate_Private_Field field) const {
   uint32_t index = static_cast<uint32_t>(field);
-  const base::Value* value;
-  bool success = values_.Get(index, &value);
-  if (!success) {
+  if (index >= values_.GetList().size()) {
     // Our list received might be smaller than the number of fields, so just
     // return null if the index is OOB.
     return PP_MakeNull();
   }
 
-  switch (value->type()) {
+  const base::Value& value = values_.GetList()[index];
+  switch (value.type()) {
     case base::Value::Type::NONE:
       return PP_MakeNull();
     case base::Value::Type::BOOLEAN: {
-      return PP_MakeBool(PP_FromBool(value->GetBool()));
+      return PP_MakeBool(PP_FromBool(value.GetBool()));
     }
     case base::Value::Type::INTEGER: {
-      return PP_MakeInt32(value->GetInt());
+      return PP_MakeInt32(value.GetInt());
     }
     case base::Value::Type::DOUBLE: {
-      return PP_MakeDouble(value->GetDouble());
+      return PP_MakeDouble(value.GetDouble());
     }
     case base::Value::Type::STRING: {
-      std::string val;
-      value->GetAsString(&val);
-      return StringVar::StringToPPVar(val);
+      return StringVar::StringToPPVar(value.GetString());
     }
     case base::Value::Type::BINARY: {
-      uint32_t size = static_cast<uint32_t>(value->GetBlob().size());
-      const uint8_t* buffer = value->GetBlob().data();
+      uint32_t size = static_cast<uint32_t>(value.GetBlob().size());
+      const uint8_t* buffer = value.GetBlob().data();
       PP_Var array_buffer =
           PpapiGlobals::Get()->GetVarTracker()->MakeArrayBufferPPVar(size,
                                                                      buffer);

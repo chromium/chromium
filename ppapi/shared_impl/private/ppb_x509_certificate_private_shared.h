@@ -37,7 +37,7 @@ class PPAPI_SHARED_EXPORT PPB_X509Certificate_Fields {
   // Friend so ParamTraits can serialize us.
   friend struct IPC::ParamTraits<ppapi::PPB_X509Certificate_Fields>;
 
-  base::ListValue values_;
+  base::Value values_;
 };
 
 //------------------------------------------------------------------------------
