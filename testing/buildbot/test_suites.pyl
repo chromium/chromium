@@ -1642,6 +1642,9 @@
       },
       'views_unittests': {
         'mixins': ['fuchsia_runner_logs'],
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter',
+        ],
       },
       'wm_unittests': {
         'mixins': ['fuchsia_runner_logs'],
