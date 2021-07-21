@@ -171,8 +171,7 @@
     },
 
     # TODO(crbug.com/1111436): Deprecate this group in favor of
-    # android_pie_rel_non_skia_renderer_gtests if/when android Pie capacity
-    # is fully restored.
+    # android_pie_rel_gtests if/when android Pie capacity is fully restored.
     'android_pie_rel_reduced_capacity_gtests': {
       'android_browsertests': {},
       'blink_platform_unittests': {},
@@ -230,15 +229,6 @@
           'enable_resultdb',
         ],
       },
-      'chrome_public_test_vr_apk': {
-        'args': [
-          '--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_cardboard_skipdon_setupcomplete.json',
-          '--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-      },
       'content_shell_test_apk': {
         'swarming': {
           'shards': 3,
@@ -262,7 +252,6 @@
       },
       'mojo_test_apk': {},
       'ui_android_unittests': {},
-      'vr_android_unittests': {},
       'webview_instrumentation_test_apk': {
         'swarming': {
           'shards': 7,
@@ -5146,6 +5135,25 @@
       'upload_trace_processor': {},
     },
 
+    # Not applicable for android x86 & x64 since the targets here assert
+    # "enable_vr" in GN which is only true for android arm & arm64.
+    # For details, see the following files:
+    #  * //chrome/android/BUILD.gn
+    #  * //chrome/browser/android/vr/BUILD.gn
+    #  * //device/vr/buildflags/buildflags.gni
+    'vr_android_specific_chromium_tests': {
+      'chrome_public_test_vr_apk': {
+        'args': [
+          '--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_cardboard_skipdon_setupcomplete.json',
+          '--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk',
+        ],
+        'swarming': {
+          'shards': 2,
+        },
+      },
+      'vr_android_unittests': {},
+    },
+
     'vr_platform_specific_chromium_gtests': {
       # Only run on platforms that intend to support WebVR in the near
       # future.
@@ -5627,6 +5635,7 @@
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'linux_flavor_specific_chromium_gtests',
+      'vr_android_specific_chromium_tests',
       'vr_platform_specific_chromium_gtests',
       'weblayer_android_gtests',
       'weblayer_gtests',
@@ -5641,6 +5650,7 @@
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'linux_flavor_specific_chromium_gtests',
+      'vr_android_specific_chromium_tests',
       'vr_platform_specific_chromium_gtests',
       'weblayer_android_gtests',
       'weblayer_gtests',
@@ -5699,6 +5709,7 @@
       'chromium_gtests_for_devices_with_graphical_output',
       'linux_flavor_specific_chromium_gtests',
       'system_webview_shell_instrumentation_tests', # Not an experimental test
+      'vr_android_specific_chromium_tests',
       'vr_platform_specific_chromium_gtests',
       'weblayer_android_gtests',
       'weblayer_gtests',
@@ -5724,32 +5735,26 @@
       # O only.
     ],
 
-     # Keep in sync with android_pie_rel_non_skia_renderer_gtests below.
-    'android_pie_rel_gtests': [
+     # Keep in sync with android_pie_rel_gtests below, except for
+     # vr_{android,platform}_specific_chromium_gtests which are not applicable
+     # to android emulators on x86 & x64.
+    'android_pie_rel_emulator_gtests': [
       'android_monochrome_smoke_tests',
       'android_pagecontroller_self_tests',
       'android_smoke_tests',
       'android_webapk_launch_tests',
-      # TODO: Following tests are experimental (crbug/1010211).
       'android_specific_chromium_gtests',  # Already includes gl_gtests.
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'linux_flavor_specific_chromium_gtests',
       'system_webview_shell_instrumentation_tests', # Not an experimental test
-      'vr_platform_specific_chromium_gtests',
       'weblayer_android_gtests',
       'weblayer_gtests',
-      # Experimental tests end here.
       'webview_cts_tests_gtest',
       'webview_ui_instrumentation_tests',
     ],
 
-    # Temporary test suite to minimize impact of non_skia_renderer_gtests.
-    # Keep in sync with android_pie_rel_gtests above.
-    #
-    # TODO(https://crbug.com/1058067): Remove this once SkiaRenderer goes
-    # stable on Android.
-    'android_pie_rel_non_skia_renderer_gtests': [
+    'android_pie_rel_gtests': [
       # TODO(crbug.com/1111436): Deprecate this when all the test suites below
       # it are re-enabled.
       'android_pie_rel_reduced_capacity_gtests',
@@ -5758,16 +5763,15 @@
       'android_pagecontroller_self_tests',
       'android_smoke_tests',
       'android_webapk_launch_tests',
-      # TODO: Following tests are experimental (crbug/1010211).
     #   'android_specific_chromium_gtests',  # Already includes gl_gtests.
     #   'chromium_gtests',
     #   'chromium_gtests_for_devices_with_graphical_output',
     #   'linux_flavor_specific_chromium_gtests',
     #   'system_webview_shell_instrumentation_tests', # Not an experimental test
+    #   'vr_android_specific_chromium_tests',
     #   'vr_platform_specific_chromium_gtests',
     #   'weblayer_android_gtests',
       'weblayer_gtests',
-      # Experimental tests end here.
       'webview_cts_tests_gtest',
       'webview_ui_instrumentation_tests',
     ],
@@ -5803,6 +5807,7 @@
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'linux_flavor_specific_chromium_gtests',
+      'vr_android_specific_chromium_tests',
       'vr_platform_specific_chromium_gtests',
     ],
 
