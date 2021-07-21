@@ -13,7 +13,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_subresource_tab_helper.h"
@@ -33,9 +32,6 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/process_manager.h"
-#endif
 #include "ipc/ipc_message.h"
 #include "url/gurl.h"
 
@@ -123,8 +119,7 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
   }
 
   prerender::NoStatePrefetchContents* no_state_prefetch_contents =
-      prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
-          web_contents);
+      delegate_->GetNoStatePrefetchContentsIfExists(web_contents);
   if (no_state_prefetch_contents) {
     no_state_prefetch_contents->Destroy(prerender::FINAL_STATUS_SAFE_BROWSING);
     // Tab is being prerendered.
@@ -133,23 +128,14 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
     return;
   }
 
-// We don't show interstitials for extension triggered SB errors, since they
-// might not be visible, and cause the extension to hang. The request is just
-// cancelled instead.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  extensions::ProcessManager* extension_manager =
-      extensions::ProcessManager::Get(web_contents->GetBrowserContext());
-  if (extension_manager) {
-    extensions::ExtensionHost* extension_host =
-        extension_manager->GetExtensionHostForRenderFrameHost(
-            web_contents->GetMainFrame());
-    if (extension_host) {
-      resource.DispatchCallback(FROM_HERE, false /* proceed */,
-                                false /* showed_interstitial */);
-      return;
-    }
+  // We don't show interstitials for extension triggered SB errors, since they
+  // might not be visible, and cause the extension to hang. The request is just
+  // cancelled instead.
+  if (delegate_->IsHostingExtension(web_contents)) {
+    resource.DispatchCallback(FROM_HERE, false /* proceed */,
+                              false /* showed_interstitial */);
+    return;
   }
-#endif
 
   // With committed interstitials, if this is a main frame load, we need to
   // get the navigation URL and referrer URL from the navigation entry now,

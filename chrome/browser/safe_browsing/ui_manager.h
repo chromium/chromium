@@ -29,6 +29,10 @@ namespace history {
 class HistoryService;
 }  // namespace history
 
+namespace prerender {
+class NoStatePrefetchContents;
+}
+
 namespace safe_browsing {
 
 class BaseBlockingPage;
@@ -86,6 +90,14 @@ class SafeBrowsingUIManager : public BaseUIManager {
         const GURL& page_url,
         const std::string& reason,
         int net_error_code) = 0;
+
+    // Gets the NoStatePrefetchContents instance associated with |web_contents|
+    // if one exists (i.e., if |web_contents| is being prerendered).
+    virtual prerender::NoStatePrefetchContents*
+    GetNoStatePrefetchContentsIfExists(content::WebContents* web_contents) = 0;
+
+    // Returns true if |web_contents| is hosting a page for an extension.
+    virtual bool IsHostingExtension(content::WebContents* web_contents) = 0;
   };
 
   SafeBrowsingUIManager(
