@@ -106,16 +106,6 @@ void DockKeyboard() {
                  @"Keyboard animations still present.");
 }
 
-// Waits for the keyboard to appear. Returns NO on timeout.
-BOOL WaitForKeyboardToAppear() {
-  GREYCondition* waitForKeyboard = [GREYCondition
-      conditionWithName:@"Wait for keyboard"
-                  block:^BOOL {
-                    return [EarlGrey isKeyboardShownWithError:nil];
-                  }];
-  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout];
-}
-
 }  // namespace
 
 // Integration Tests for fallback coordinator.
@@ -317,9 +307,6 @@ BOOL WaitForKeyboardToAppear() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
 
-  // Wait for the accessory icon to appear.
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
-
   // Verify the profiles icon is visible, and therefore also the input accessory
   // bar.
   [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
@@ -406,9 +393,6 @@ BOOL WaitForKeyboardToAppear() {
   // Bring up the regular keyboard again.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
-
-  // Wait for the accessory icon to appear.
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
 
   // Verify the profiles icon is visible, and therefore also the input accessory
   // bar.
