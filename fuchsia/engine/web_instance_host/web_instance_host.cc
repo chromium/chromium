@@ -43,6 +43,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
+#include "components/embedder_support/switches.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
 #include "content/public/common/content_switches.h"
@@ -353,6 +354,9 @@ bool MaybeAddCommandLineArgsFromConfig(const base::Value& config,
       blink::switches::kMinHeightForGpuRasterTile,
       cc::switches::kEnableClippedImageScaling,
       cc::switches::kEnableGpuBenchmarking,
+      embedder_support::kOriginTrialPublicKey,
+      embedder_support::kOriginTrialDisabledFeatures,
+      embedder_support::kOriginTrialDisabledTokens,
       switches::kDisableFeatures,
       switches::kDisableGpuWatchdog,
       switches::kDisableMipmapGeneration,

@@ -29,6 +29,10 @@ constexpr base::Feature kKeyboardInput{"KeyboardInput",
 constexpr base::Feature kVirtualKeyboard{"VirtualKeyboard",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables origin trials support.
+constexpr base::Feature kOriginTrials{"OriginTrials",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 
 #endif  // FUCHSIA_ENGINE_FEATURES_H_
