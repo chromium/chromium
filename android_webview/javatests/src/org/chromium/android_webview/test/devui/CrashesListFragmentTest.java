@@ -78,6 +78,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.FileUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -1049,6 +1050,7 @@ public class CrashesListFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/1231595")
     public void testConsentErrorMessage_shown_canUseGms() throws Throwable {
         Context context = InstrumentationRegistry.getTargetContext();
 
