@@ -793,7 +793,7 @@ void NativeExtensionBindingsSystem::SendRequest(
   params->extension_id = script_context->GetExtensionID();
   params->source_url = url;
   params->request_id = request->request_id;
-  params->has_callback = request->has_callback;
+  params->has_callback = request->has_async_response_handler;
   params->user_gesture = request->has_user_gesture;
   // The IPC sender will update these members, if appropriate.
   params->worker_thread_id = kMainThreadId;

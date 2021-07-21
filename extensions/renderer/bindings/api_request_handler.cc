@@ -483,7 +483,7 @@ void APIRequestHandler::StartRequestImpl(
   std::unique_ptr<InteractionProvider::Token> user_gesture_token;
   if (async_handler) {
     user_gesture_token = interaction_provider_->GetCurrentToken(context);
-    request->has_callback = true;
+    request->has_async_response_handler = true;
   }
 
   v8::Isolate* isolate = context->GetIsolate();

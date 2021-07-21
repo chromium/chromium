@@ -229,9 +229,10 @@ class APIBindingUnittest : public APIBindingTest {
     api_availability_callback_ = callback;
   }
 
-  void SetPromiseAvailabilityCallback(
-      const BindingAccessChecker::PromiseAvailabilityCallback& callback) {
-    promise_availability_callback_ = callback;
+  void SetPromiseAvailabilityFlag(bool* availability_flag) {
+    promise_availability_callback_ = base::BindRepeating(
+        [](bool* flag, v8::Local<v8::Context> context) { return *flag; },
+        availability_flag);
   }
 
   void InitializeJSHooks(
@@ -284,22 +285,25 @@ class APIBindingUnittest : public APIBindingTest {
     EXPECT_EQ(!binding_types_.get(), type_refs_.empty());
   }
 
-  void ExpectPass(v8::Local<v8::Object> object,
-                  const std::string& script_source,
-                  const std::string& expected_json_arguments_single_quotes,
-                  bool expect_callback) {
-    ExpectPass(MainContext(), object, script_source,
-               expected_json_arguments_single_quotes, expect_callback);
+  v8::Local<v8::Value> ExpectPass(
+      v8::Local<v8::Object> object,
+      const std::string& script_source,
+      const std::string& expected_json_arguments_single_quotes,
+      bool expect_async_handler) {
+    return ExpectPass(MainContext(), object, script_source,
+                      expected_json_arguments_single_quotes,
+                      expect_async_handler);
   }
 
-  void ExpectPass(v8::Local<v8::Context> context,
-                  v8::Local<v8::Object> object,
-                  const std::string& script_source,
-                  const std::string& expected_json_arguments_single_quotes,
-                  bool expect_callback) {
-    RunTest(context, object, script_source, true,
-            ReplaceSingleQuotes(expected_json_arguments_single_quotes),
-            expect_callback, std::string());
+  v8::Local<v8::Value> ExpectPass(
+      v8::Local<v8::Context> context,
+      v8::Local<v8::Object> object,
+      const std::string& script_source,
+      const std::string& expected_json_arguments_single_quotes,
+      bool expect_async_handler) {
+    return RunTest(context, object, script_source, true,
+                   ReplaceSingleQuotes(expected_json_arguments_single_quotes),
+                   expect_async_handler, std::string());
   }
 
   void ExpectFailure(v8::Local<v8::Object> object,
@@ -327,13 +331,13 @@ class APIBindingUnittest : public APIBindingTest {
   const APITypeReferenceMap& type_refs() const { return type_refs_; }
 
  private:
-  void RunTest(v8::Local<v8::Context> context,
-               v8::Local<v8::Object> object,
-               const std::string& script_source,
-               bool should_pass,
-               const std::string& expected_json_arguments,
-               bool expect_callback,
-               const std::string& expected_error);
+  v8::Local<v8::Value> RunTest(v8::Local<v8::Context> context,
+                               v8::Local<v8::Object> object,
+                               const std::string& script_source,
+                               bool should_pass,
+                               const std::string& expected_json_arguments,
+                               bool expect_async_handler,
+                               const std::string& expected_error);
 
   std::unique_ptr<APIRequestHandler::Request> last_request_;
   std::unique_ptr<APIBinding> binding_;
@@ -358,35 +362,46 @@ class APIBindingUnittest : public APIBindingTest {
   DISALLOW_COPY_AND_ASSIGN(APIBindingUnittest);
 };
 
-void APIBindingUnittest::RunTest(v8::Local<v8::Context> context,
-                                 v8::Local<v8::Object> object,
-                                 const std::string& script_source,
-                                 bool should_pass,
-                                 const std::string& expected_json_arguments,
-                                 bool expect_callback,
-                                 const std::string& expected_error) {
+v8::Local<v8::Value> APIBindingUnittest::RunTest(
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Object> object,
+    const std::string& script_source,
+    bool should_pass,
+    const std::string& expected_json_arguments,
+    bool expect_async_handler,
+    const std::string& expected_error) {
   EXPECT_FALSE(last_request_);
   std::string wrapped_script_source =
       base::StringPrintf("(function(obj) { %s })", script_source.c_str());
 
   v8::Local<v8::Function> func =
       FunctionFromString(context, wrapped_script_source);
-  ASSERT_FALSE(func.IsEmpty());
+  if (func.IsEmpty()) {
+    ADD_FAILURE() << "Script source couldn't be converted to a function: "
+                  << script_source;
+    return v8::Local<v8::Value>();
+  }
 
   v8::Local<v8::Value> argv[] = {object};
+  v8::Local<v8::Value> result;
 
   if (should_pass) {
-    RunFunction(func, context, 1, argv);
-    ASSERT_TRUE(last_request_) << script_source;
+    result = RunFunction(func, context, 1, argv);
+    if (!last_request_) {
+      ADD_FAILURE() << "No request was made. Script source: " << script_source;
+      return v8::Local<v8::Value>();
+    }
     EXPECT_EQ(expected_json_arguments,
               ValueToString(*last_request_->arguments_list));
-    EXPECT_EQ(expect_callback, last_request_->has_callback) << script_source;
+    EXPECT_EQ(expect_async_handler, last_request_->has_async_response_handler)
+        << script_source;
   } else {
     RunFunctionAndExpectError(func, context, 1, argv, expected_error);
     EXPECT_FALSE(last_request_);
   }
 
   last_request_.reset();
+  return result;
 }
 
 TEST_F(APIBindingUnittest, TestEmptyAPI) {
@@ -1636,7 +1651,7 @@ TEST_F(APIBindingUnittest, TestHooksWithCustomCallback) {
   RunFunction(func, context, 1, args);
 
   ASSERT_TRUE(last_request());
-  EXPECT_TRUE(last_request()->has_callback);
+  EXPECT_TRUE(last_request()->has_async_response_handler);
   request_handler()->CompleteRequest(last_request()->request_id,
                                      base::ListValue(), std::string());
 
@@ -1702,9 +1717,7 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
   // Set a local boolean we can change to simulate if the context supports
   // promises or not.
   bool context_allows_promises = true;
-  SetPromiseAvailabilityCallback(base::BindRepeating(
-      [](bool* flag, v8::Local<v8::Context> context) { return *flag; },
-      &context_allows_promises));
+  SetPromiseAvailabilityFlag(&context_allows_promises);
 
   InitializeBinding();
 
@@ -1829,9 +1842,7 @@ TEST_F(APIBindingUnittest, TestPromisesWithJSCustomCallback) {
   // Set a local boolean we can change to simulate if the context supports
   // promises or not.
   bool context_allows_promises = true;
-  SetPromiseAvailabilityCallback(base::BindRepeating(
-      [](bool* flag, v8::Local<v8::Context> context) { return *flag; },
-      &context_allows_promises));
+  SetPromiseAvailabilityFlag(&context_allows_promises);
 
   // Register a custom callback hook for the supportsPromises method.
   const char kRegisterHook[] = R"(
@@ -1896,6 +1907,88 @@ TEST_F(APIBindingUnittest, TestPromisesWithJSCustomCallback) {
     EXPECT_EQ(R"("foo")", V8ToString(promise->Result(), context));
     EXPECT_EQ(R"("foo")", GetStringPropertyFromObject(
                               context->Global(), context, "promiseResult"));
+  }
+}
+
+TEST_F(APIBindingUnittest, TestPromiseWithJSUpdateArgumentsPreValidate) {
+  bool context_allows_promises = true;
+  SetPromiseAvailabilityFlag(&context_allows_promises);
+
+  // Register an update arguments pre validate hook for supportsPromises.
+  const char kRegisterHook[] = R"(
+      (function(hooks) {
+        hooks.setUpdateArgumentsPreValidate('supportsPromises',
+                                            (...arguments) => {
+          this.firstArgument = arguments[0];
+          this.secondArgument = arguments[1];
+          if (arguments[0] == 'hooked')
+            arguments[0] = 42;
+          return arguments;
+        });
+      }))";
+  InitializeJSHooks(kRegisterHook);
+  SetFunctions(kFunctionsWithPromiseSignatures);
+  InitializeBinding();
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+  v8::Local<v8::Object> binding_object = binding()->CreateInstance(context);
+
+  {
+    // Calling supportsPromises normally with a callback should work fine.
+    auto result =
+        ExpectPass(binding_object, "return obj.supportsPromises(5, () => {});",
+                   "[5]", true);
+    ASSERT_FALSE(result.IsEmpty());
+    EXPECT_TRUE(result->IsUndefined());
+    EXPECT_TRUE(
+        GetPropertyFromObject(context->Global(), context, "secondArgument")
+            ->IsFunction());
+  }
+
+  {
+    // Calling supportsPromises normally while omitting the callback should work
+    // fine.
+    auto result = ExpectPass(binding_object, "return obj.supportsPromises(5);",
+                             "[5]", true);
+    ASSERT_FALSE(result.IsEmpty());
+    EXPECT_TRUE(result->IsPromise());
+  }
+
+  {
+    // Calling supportsPromises with a string which we have not set up the
+    // custom hook for should cause an error.
+    ExpectFailure(binding_object, "obj.supportsPromises('foo');",
+                  api_errors::InvocationError(
+                      "test.supportsPromises", "integer int, function callback",
+                      api_errors::NoMatchingSignature()));
+    EXPECT_EQ(R"("foo")", GetStringPropertyFromObject(
+                              context->Global(), context, "firstArgument"));
+  }
+
+  {
+    // supportsPromises expects an int, but our custom hook should allow the
+    // string 'hooked' to work as well.
+    auto result = ExpectPass(
+        binding_object, "return obj.supportsPromises('hooked');", "[42]", true);
+    ASSERT_FALSE(result.IsEmpty());
+    EXPECT_TRUE(result->IsPromise());
+    EXPECT_EQ(R"("hooked")", GetStringPropertyFromObject(
+                                 context->Global(), context, "firstArgument"));
+  }
+
+  {
+    // We should also be able to hit the custom hook with a callback still.
+    auto result = ExpectPass(binding_object,
+                             "return obj.supportsPromises('hooked', () => {});",
+                             "[42]", true);
+    ASSERT_FALSE(result.IsEmpty());
+    EXPECT_TRUE(result->IsUndefined());
+    EXPECT_EQ(R"("hooked")", GetStringPropertyFromObject(
+                                 context->Global(), context, "firstArgument"));
+    EXPECT_TRUE(
+        GetPropertyFromObject(context->Global(), context, "secondArgument")
+            ->IsFunction());
   }
 }
 

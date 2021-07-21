@@ -35,7 +35,7 @@ class APIRequestHandler {
 
     int request_id = -1;
     std::string method_name;
-    bool has_callback = false;
+    bool has_async_response_handler = false;
     bool has_user_gesture = false;
     std::unique_ptr<base::Value> arguments_list;
 
