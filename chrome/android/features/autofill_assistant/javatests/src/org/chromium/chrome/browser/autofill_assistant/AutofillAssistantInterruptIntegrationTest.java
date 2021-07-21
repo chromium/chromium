@@ -35,7 +35,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTestService.ScriptsReturnMode;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.AutofillFormatProto;
@@ -119,7 +118,6 @@ public class AutofillAssistantInterruptIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1219553")
     public void testInterruptClicksElementDuringPrompt() throws Exception {
         ArrayList<AutofillAssistantTestScript> scripts = new ArrayList<>();
         SelectorProto touch_area_one = toCssSelector("#touch_area_one");
@@ -222,7 +220,6 @@ public class AutofillAssistantInterruptIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1222969")
     public void testInterruptCicksElementDuringShowGenericUi() throws Exception {
         ArrayList<AutofillAssistantTestScript> scripts = new ArrayList<>();
         SelectorProto touch_area_one = toCssSelector("#touch_area_one");

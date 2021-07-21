@@ -890,7 +890,6 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "https://crbug.com/1219046")
     public void testCreateShippingAddressAndCreditCard() {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
