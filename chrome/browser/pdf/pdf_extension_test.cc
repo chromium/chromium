@@ -1681,14 +1681,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Test a particular PDF encountered in the wild that triggered a crash
 // when accessibility is enabled.  (http://crbug.com/668724)
-// TODO(crbug.com/1231444): Step "browser_tests on Ubuntu-18.04" failing on
-// builder "linux-chromeos-chrome"
-#if defined(OS_CHROMEOS)
-#define MAYBE_PdfAccessibilityTextRunCrash DISABLED_PdfAccessibilityTextRunCrash
-#else
-#define MAYBE_PdfAccessibilityTextRunCrash PdfAccessibilityTextRunCrash
-#endif
-IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfAccessibilityTextRunCrash) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
+                       PdfAccessibilityTextRunCrash) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   GURL test_pdf_url(
       embedded_test_server()->GetURL("/pdf_private/accessibility_crash_2.pdf"));
