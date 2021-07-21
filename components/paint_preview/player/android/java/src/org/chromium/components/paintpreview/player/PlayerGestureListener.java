@@ -4,6 +4,7 @@
 
 package org.chromium.components.paintpreview.player;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.url.GURL;
 
 /**
@@ -17,11 +18,13 @@ public class PlayerGestureListener {
 
     public PlayerGestureListener(LinkClickHandler linkClickHandler,
             Runnable userInteractionCallback, Runnable userFrustrationCallback) {
+        TraceEvent.begin("PlayerGestureListener");
         mLinkClickHandler = linkClickHandler;
         mUserInteractionCallback = userInteractionCallback;
         if (userFrustrationCallback == null) return;
 
         mUserFrustrationDetector = new PlayerUserFrustrationDetector(userFrustrationCallback);
+        TraceEvent.end("PlayerGestureListener");
     }
 
     /**

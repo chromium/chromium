@@ -127,13 +127,19 @@ public class TabbedPaintPreview implements UserData {
 
         mTab.addObserver(mTabObserver);
         PaintPreviewCompositorUtils.warmupCompositor();
+
         mPlayerManager = new PlayerManager(mTab.getUrl(), mTab.getContext(), getService(),
                 String.valueOf(mTab.getId()), listener,
                 ChromeColors.getPrimaryBackgroundColor(mTab.getContext().getResources(), false),
                 /*ignoreInitialScrollOffset=*/false, shouldCompressBitmaps());
+
+        // TODO(crbug/1230021): Consider deferring/post tasking. Locally this appears to be slow.
+        TraceEvent.begin("TabbedPaintPreview.maybeShow addTabViewProvider");
         mTab.getTabViewManager().addTabViewProvider(mTabbedPainPreviewViewProvider);
+        TraceEvent.end("TabbedPaintPreview.maybeShow addTabViewProvider");
         mIsAttachedToTab = true;
         mWasEverShown = true;
+
         TraceEvent.end("TabbedPaintPreview.maybeShow");
         return true;
     }

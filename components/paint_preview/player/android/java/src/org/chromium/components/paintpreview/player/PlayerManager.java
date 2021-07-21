@@ -135,17 +135,25 @@ public class PlayerManager {
         mContext = context;
         mListener = listener;
         mShouldCompressBitmaps = shouldCompressBitmaps;
+        mIgnoreInitialScrollOffset = ignoreInitialScrollOffset;
+
+        // This calls into native to set up the compositor.
         mDelegate = getCompositorDelegateFactory().create(nativePaintPreviewServiceProvider, url,
                 directoryKey, false, this::onCompositorReady, mListener::onCompositorError);
-        mHostView = new FrameLayout(mContext);
+
+        // TODO(crbug/1230021): Consider making these parts of setup deferred as these objects
+        // aren't needed immediately and appear to be the slowest part of PlayerManager init.
         mPlayerSwipeRefreshHandler =
                 new PlayerSwipeRefreshHandler(mContext, mListener::onPullToRefresh);
         mPlayerGestureListener = new PlayerGestureListener(
                 mListener::onLinkClick, mListener::onUserInteraction, mListener::onUserFrustration);
+
+        // Set up the HostView to avoid partial loads looking choppy.
+        mHostView = new FrameLayout(mContext);
         mHostView.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mHostView.setBackgroundColor(backgroundColor);
-        mIgnoreInitialScrollOffset = ignoreInitialScrollOffset;
+
         TraceEvent.end("PlayerManager");
     }
 

@@ -9,6 +9,8 @@
 #include "base/files/file_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/accessibility/mojom/ax_tree_update.mojom.h"
 
 namespace paint_preview {
@@ -17,6 +19,52 @@ namespace {
 
 const char kPaintPreviewDir[] = "paint_preview";
 const char kAxTreeFilename[] = "ax_tree.message";
+
+// Threadpool task to read the proto from disk.
+std::pair<PaintPreviewFileMixin::ProtoReadStatus,
+          std::unique_ptr<PaintPreviewProto>>
+GetProto(scoped_refptr<FileManager> file_manager,
+         const DirectoryKey& key,
+         absl::optional<base::TimeDelta> expiry_horizon) {
+  TRACE_EVENT0("paint_preview", "PaintPreviewFileMixin::GetProto");
+  if (expiry_horizon.has_value()) {
+    auto file_info = file_manager->GetInfo(key);
+    if (!file_info.has_value())
+      return std::make_pair(PaintPreviewFileMixin::ProtoReadStatus::kNoProto,
+                            nullptr);
+
+    if (file_info->last_modified + expiry_horizon.value() <
+        base::Time::NowFromSystemTime()) {
+      return std::make_pair(PaintPreviewFileMixin::ProtoReadStatus::kExpired,
+                            nullptr);
+    }
+  }
+  auto result = file_manager->DeserializePaintPreviewProto(key);
+  PaintPreviewFileMixin::ProtoReadStatus status =
+      PaintPreviewFileMixin::ProtoReadStatus::kNoProto;
+  switch (result.first) {
+    case FileManager::ProtoReadStatus::kOk:
+      status = PaintPreviewFileMixin::ProtoReadStatus::kOk;
+      break;
+    case FileManager::ProtoReadStatus::kNoProto:
+      status = PaintPreviewFileMixin::ProtoReadStatus::kNoProto;
+      break;
+    case FileManager::ProtoReadStatus::kDeserializationError:
+      status = PaintPreviewFileMixin::ProtoReadStatus::kDeserializationError;
+      break;
+    default:
+      NOTREACHED();
+  }
+  return std::make_pair(status, std::move(result.second));
+}
+
+// Callback executed on threadpool read complete.
+void OnReadProto(PaintPreviewFileMixin::OnReadProtoCallback callback,
+                 std::pair<PaintPreviewFileMixin::ProtoReadStatus,
+                           std::unique_ptr<PaintPreviewProto>> result) {
+  TRACE_EVENT0("paint_preview", "PaintPreviewFileMixin::OnReadProto");
+  std::move(callback).Run(result.first, std::move(result.second));
+}
 
 }  // namespace
 
@@ -38,48 +86,8 @@ void PaintPreviewFileMixin::GetCapturedPaintPreviewProto(
     absl::optional<base::TimeDelta> expiry_horizon,
     OnReadProtoCallback on_read_proto_callback) {
   task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          [](scoped_refptr<FileManager> file_manager, const DirectoryKey& key,
-             absl::optional<base::TimeDelta> expiry_horizon)
-              -> std::pair<PaintPreviewFileMixin::ProtoReadStatus,
-                           std::unique_ptr<PaintPreviewProto>> {
-            if (expiry_horizon.has_value()) {
-              auto file_info = file_manager->GetInfo(key);
-              if (!file_info.has_value())
-                return std::make_pair(ProtoReadStatus::kNoProto, nullptr);
-
-              if (file_info->last_modified + expiry_horizon.value() <
-                  base::Time::NowFromSystemTime()) {
-                return std::make_pair(ProtoReadStatus::kExpired, nullptr);
-              }
-            }
-            auto result = file_manager->DeserializePaintPreviewProto(key);
-            PaintPreviewFileMixin::ProtoReadStatus status =
-                ProtoReadStatus::kNoProto;
-            switch (result.first) {
-              case FileManager::ProtoReadStatus::kOk:
-                status = ProtoReadStatus::kOk;
-                break;
-              case FileManager::ProtoReadStatus::kNoProto:
-                status = ProtoReadStatus::kNoProto;
-                break;
-              case FileManager::ProtoReadStatus::kDeserializationError:
-                status = ProtoReadStatus::kDeserializationError;
-                break;
-              default:
-                NOTREACHED();
-            }
-            return std::make_pair(status, std::move(result.second));
-          },
-          file_manager_, key, expiry_horizon),
-      base::BindOnce(
-          [](OnReadProtoCallback callback,
-             std::pair<PaintPreviewFileMixin::ProtoReadStatus,
-                       std::unique_ptr<PaintPreviewProto>> result) {
-            std::move(callback).Run(result.first, std::move(result.second));
-          },
-          std::move(on_read_proto_callback)));
+      FROM_HERE, base::BindOnce(&GetProto, file_manager_, key, expiry_horizon),
+      base::BindOnce(OnReadProto, std::move(on_read_proto_callback)));
 }
 
 void PaintPreviewFileMixin::WriteAXTreeUpdate(
@@ -93,6 +101,8 @@ void PaintPreviewFileMixin::WriteAXTreeUpdate(
       base::BindOnce(
           [](scoped_refptr<FileManager> file_manager, const DirectoryKey& key,
              const std::vector<uint8_t>& ax_data) {
+            TRACE_EVENT0("paint_preview",
+                         "PaintPreviewFileMixin::WriteAXTreeUpdate Task");
             auto directory = file_manager->CreateOrGetDirectory(key, false);
             if (!directory.has_value()) {
               return false;
@@ -111,6 +121,8 @@ void PaintPreviewFileMixin::GetAXTreeUpdate(const DirectoryKey& key,
       base::BindOnce(
           [](scoped_refptr<FileManager> file_manager,
              const DirectoryKey& key) -> std::unique_ptr<ui::AXTreeUpdate> {
+            TRACE_EVENT0("paint_preview",
+                         "PaintPreviewFileMixin::GetAXTreeUpdate Task");
             auto dir = file_manager->CreateOrGetDirectory(key, false);
             if (!dir.has_value()) {
               return nullptr;
