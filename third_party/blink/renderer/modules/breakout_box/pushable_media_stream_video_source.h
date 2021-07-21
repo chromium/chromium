@@ -12,8 +12,6 @@
 
 namespace blink {
 
-class MediaStreamVideoTrackSignalObserver;
-
 // Simplifies the creation of video tracks.  Just do this:
 // auto source = std::make_unique<PushableMediaStreamVideoSource>();
 // auto* track = CreateVideoTrackFromSource(script_state, source);
@@ -70,9 +68,6 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
 
   explicit PushableMediaStreamVideoSource(
       scoped_refptr<base::SingleThreadTaskRunner>);
-  PushableMediaStreamVideoSource(
-      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-      const base::WeakPtr<MediaStreamVideoSource>& upstream_source);
   ~PushableMediaStreamVideoSource() override;
 
   // See the definition of VideoCaptureDeliverFrameCB in
@@ -88,20 +83,12 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
   scoped_refptr<Broker> GetBroker() const { return broker_; }
 
   // MediaStreamVideoSource
-  void RequestRefreshFrame() override;
-  void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
-  VideoCaptureFeedbackCB GetFeedbackCallback() const override;
   void StartSourceImpl(VideoCaptureDeliverFrameCB frame_callback,
                        EncodedVideoFrameCB encoded_frame_callback) override;
   void StopSourceImpl() override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const override;
 
-  VideoCaptureFeedbackCB GetInternalFeedbackCallback() const;
-  void SetSignalObserver(MediaStreamVideoTrackSignalObserver*);
-
  private:
-  base::WeakPtr<MediaStreamVideoSource> upstream_source_;
-  WeakPersistent<MediaStreamVideoTrackSignalObserver> signal_observer_;
   scoped_refptr<Broker> broker_;
   base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};
 };

@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_generator_init.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_signal.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -165,33 +164,6 @@ TEST_F(MediaStreamTrackGeneratorTest, AudioDataAreWritten) {
   histogram_tester.ExpectTotalCount("Media.BreakoutBox.Usage", 1);
 }
 
-TEST_F(MediaStreamTrackGeneratorTest, SignalsAreRead) {
-  base::HistogramTester histogram_tester;
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  MediaStreamTrackGenerator* generator = MediaStreamTrackGenerator::Create(
-      script_state, "video", ASSERT_NO_EXCEPTION);
-
-  auto* video_source = generator->PushableVideoSource();
-  auto* video_track = MediaStreamVideoTrack::From(generator->Component());
-
-  auto* reader =
-      generator->readableControl(script_state)
-          ->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
-  video_source->RequestRefreshFrame();
-  auto* signal = ReadObjectFromStream<MediaStreamTrackSignal>(v8_scope, reader);
-  EXPECT_EQ(signal->signalType(), "request-frame");
-
-  const double min_frame_rate = 3.5;
-  video_track->SetMinimumFrameRate(min_frame_rate);
-  signal = ReadObjectFromStream<MediaStreamTrackSignal>(v8_scope, reader);
-  EXPECT_EQ(signal->signalType(), "set-min-frame-rate");
-  EXPECT_TRUE(signal->hasFrameRate());
-  EXPECT_EQ(signal->frameRate(), min_frame_rate);
-  histogram_tester.ExpectUniqueSample(
-      "Media.BreakoutBox.Usage", BreakoutBoxUsage::kReadableControlVideo, 1);
-  histogram_tester.ExpectTotalCount("Media.BreakoutBox.Usage", 1);
-}
 
 TEST_F(MediaStreamTrackGeneratorTest, FramesDoNotFlowOnStoppedGenerator) {
   V8TestingScope v8_scope;
@@ -315,55 +287,6 @@ TEST_F(MediaStreamTrackGeneratorTest, CloneStopSource) {
   EXPECT_FALSE(v8_scope.GetExceptionState().HadException());
   EXPECT_TRUE(original->Ended());
   EXPECT_TRUE(clone->Ended());
-}
-
-TEST_F(MediaStreamTrackGeneratorTest, SignalsFlowFromGeneratorToProcessor) {
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  auto* generator = MediaStreamTrackGenerator::Create(script_state, "video",
-                                                      ASSERT_NO_EXCEPTION);
-
-  // Create a processor connected to a mock source.
-  auto* mock_video_source = CreateMockVideoSource();
-  auto* processor = MediaStreamTrackProcessor::Create(
-      script_state,
-      CreateVideoMediaStreamTrack(v8_scope.GetExecutionContext(),
-                                  mock_video_source),
-      ASSERT_NO_EXCEPTION);
-  mock_video_source->StartMockedSource();
-
-  // Connect the generator to the processor.
-  generator->readableControl(script_state)
-      ->pipeTo(script_state, processor->writableControl(script_state),
-               ASSERT_NO_EXCEPTION);
-
-  // Push a signal to the generator and verify that it makes it to the mock
-  // source backing the processor at the end of the chain.
-  base::RunLoop loop;
-  EXPECT_CALL(*mock_video_source, OnRequestRefreshFrame())
-      .WillOnce(base::test::RunOnceClosure(loop.QuitClosure()));
-  generator->PushableVideoSource()->RequestRefreshFrame();
-  loop.Run();
-}
-
-TEST_F(MediaStreamTrackGeneratorTest, ImplicitSignalsAreForwarded) {
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-
-  MockMediaStreamVideoSource* mock_source = CreateMockVideoSource();
-  MediaStreamTrack* signal_target =
-      CreateVideoMediaStreamTrack(v8_scope.GetExecutionContext(), mock_source);
-  mock_source->StartMockedSource();
-
-  auto* init = MediaStreamTrackGeneratorInit::Create();
-  init->setKind("video");
-  init->setSignalTarget(signal_target);
-  auto* generator = MediaStreamTrackGenerator::Create(script_state, init,
-                                                      ASSERT_NO_EXCEPTION);
-  // Send a signal to the generator. It should be forwarded to the source of the
-  // |signal_target| track.
-  EXPECT_CALL(*mock_source, OnRequestRefreshFrame());
-  generator->PushableVideoSource()->RequestRefreshFrame();
 }
 
 }  // namespace blink

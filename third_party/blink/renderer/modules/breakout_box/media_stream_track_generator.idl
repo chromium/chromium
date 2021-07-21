@@ -16,7 +16,4 @@ interface MediaStreamTrackGenerator : MediaStreamTrack {
 
   // This streams takes VideoFrame or AudioData objects.
   [CallWith=ScriptState] readonly attribute WritableStream writable;
-
-  // This stream returns MediaStreamTrackSignal objects.
-  [CallWith=ScriptState] readonly attribute ReadableStream readableControl;
 };
