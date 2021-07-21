@@ -43,12 +43,12 @@ class HeapVectorBacking final
   // from ToArray may not be fully constructed as the elements of the array are
   // not initialized and may have null vtable pointers. Null vtable pointer
   // violates CFI for polymorphic types.
-  NO_SANITIZE_UNRELATED_CAST
-  static T* ToArray(ClassType* backing) {
+  NO_SANITIZE_UNRELATED_CAST ALWAYS_INLINE static T* ToArray(
+      ClassType* backing) {
     return reinterpret_cast<T*>(backing);
   }
 
-  static ClassType* FromArray(T* payload) {
+  ALWAYS_INLINE static ClassType* FromArray(T* payload) {
     return reinterpret_cast<ClassType*>(payload);
   }
 
