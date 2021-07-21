@@ -45,9 +45,9 @@ using l10n_util::GetNSString;
 namespace {
 
 // Enterprise icon.
-NSString* kGoogleServicesEnterpriseImage = @"google_services_enterprise";
+NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 // Sync error icon.
-NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
+NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 }  // namespace
 
 @interface ManageSyncSettingsMediator () <
@@ -278,29 +278,6 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   BOOL needsUpdate =
       self.shouldEncryptionItemBeEnabled &&
       (self.encryptionItem.enabled != self.shouldEncryptionItemBeEnabled);
-  if (self.shouldEncryptionItemBeEnabled &&
-      self.syncSetupService->GetSyncServiceState() ==
-          SyncSetupService::kSyncServiceNeedsPassphrase) {
-    needsUpdate = needsUpdate || self.encryptionItem.image == nil;
-    self.encryptionItem.image =
-        [UIImage imageNamed:kGoogleServicesSyncErrorImage];
-    self.encryptionItem.detailText = GetNSString(
-        IDS_IOS_GOOGLE_SERVICES_SETTINGS_ENTER_PASSPHRASE_TO_START_SYNC);
-  } else if (self.shouldEncryptionItemBeEnabled &&
-             self.syncSetupService->GetSyncServiceState() ==
-                 SyncSetupService::kSyncServiceNeedsTrustedVaultKey) {
-    needsUpdate = needsUpdate || self.encryptionItem.image == nil;
-    self.encryptionItem.image =
-        [UIImage imageNamed:kGoogleServicesSyncErrorImage];
-    self.encryptionItem.detailText =
-        GetNSString(self.syncSetupService->IsEncryptEverythingEnabled()
-                        ? IDS_IOS_SYNC_ERROR_DESCRIPTION
-                        : IDS_IOS_SYNC_PASSWORDS_ERROR_DESCRIPTION);
-  } else {
-    needsUpdate = needsUpdate || self.encryptionItem.image != nil;
-    self.encryptionItem.image = nil;
-    self.encryptionItem.detailText = nil;
-  }
   self.encryptionItem.enabled = self.shouldEncryptionItemBeEnabled;
   if (self.shouldEncryptionItemBeEnabled) {
     self.encryptionItem.textColor = nil;
@@ -451,7 +428,9 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 - (BOOL)shouldEncryptionItemBeEnabled {
   return self.syncService->IsEngineInitialized() &&
          self.syncSetupService->CanSyncFeatureStart() &&
-         !self.disabledBecauseOfSyncError;
+         !self.disabledBecauseOfSyncError &&
+         self.syncSetupService->GetSyncServiceState() !=
+             SyncSetupService::kSyncServiceNeedsTrustedVaultKey;
 }
 
 - (BOOL)shouldDisplaySignoutSection {

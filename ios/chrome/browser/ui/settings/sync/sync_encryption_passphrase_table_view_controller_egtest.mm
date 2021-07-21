@@ -113,9 +113,8 @@ using chrome_test_util::PrimarySignInButton;
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   // Select Encryption item.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_MANAGE_SYNC_ENCRYPTION))]
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                          IDS_IOS_MANAGE_SYNC_ENCRYPTION)]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:
