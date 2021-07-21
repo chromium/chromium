@@ -12,8 +12,14 @@
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/launch_util.h"
+#include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
@@ -23,10 +29,17 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/sync/base/model_type.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_service_utils.h"
+#include "components/ukm/app_source_url_recorder.h"
+#include "components/user_manager/user_manager.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace {
 
@@ -296,6 +309,55 @@ void RecordAppLaunchPerAppType(apps::AppTypeName app_type_name) {
   base::UmaHistogramEnumeration("Apps.AppLaunchPerAppType", app_type_name);
 }
 
+// Due to the privacy limitation, only ARC apps, Chrome apps and web apps(PWA),
+// system web apps and builtin apps are recorded because they are synced to
+// server/cloud, or part of OS. Other app types, e.g. Crostini, remote apps,
+// etc, are not recorded. So returns true if the app_type_name is allowed to
+// record UKM. Otherwise, returns false.
+//
+// See DD: go/app-platform-metrics-using-ukm for details.
+bool ShouldRecordUkmForAppTypeName(apps::AppTypeName app_type_name) {
+  switch (app_type_name) {
+    case apps::AppTypeName::kArc:
+    case apps::AppTypeName::kBuiltIn:
+    case apps::AppTypeName::kChromeApp:
+    case apps::AppTypeName::kChromeBrowser:
+    case apps::AppTypeName::kWeb:
+    case apps::AppTypeName::kSystemWeb:
+      return true;
+    case apps::AppTypeName::kUnknown:
+    case apps::AppTypeName::kCrostini:
+    case apps::AppTypeName::kMacOs:
+    case apps::AppTypeName::kPluginVm:
+    case apps::AppTypeName::kStandaloneBrowser:
+    case apps::AppTypeName::kStandaloneBrowserExtension:
+    case apps::AppTypeName::kRemote:
+    case apps::AppTypeName::kBorealis:
+      return false;
+  }
+}
+
+int GetUserTypeByDeviceTypeMetrics() {
+  const user_manager::User* primary_user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  DCHECK(primary_user);
+  DCHECK(primary_user->is_profile_created());
+  Profile* profile =
+      chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  DCHECK(profile);
+
+  UserTypeByDeviceTypeMetricsProvider::UserSegment user_segment =
+      UserTypeByDeviceTypeMetricsProvider::GetUserSegment(profile);
+
+  policy::BrowserPolicyConnectorChromeOS* connector =
+      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::MarketSegment device_segment =
+      connector->GetEnterpriseMarketSegment();
+
+  return UserTypeByDeviceTypeMetricsProvider::ConstructUmaValue(user_segment,
+                                                                device_segment);
+}
+
 }  // namespace
 
 namespace apps {
@@ -378,6 +440,7 @@ AppPlatformMetrics::AppPlatformMetrics(
     : profile_(profile), app_registry_cache_(app_registry_cache) {
   apps::AppRegistryCache::Observer::Observe(&app_registry_cache);
   apps::InstanceRegistry::Observer::Observe(&instance_registry);
+  user_type_by_device_type_ = GetUserTypeByDeviceTypeMetrics();
   InitRunningDuration();
 }
 
@@ -496,9 +559,8 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   auto it = running_start_time_.find(update.Window());
   if (is_active) {
     if (it == running_start_time_.end()) {
-      AppTypeName app_type_name =
-          GetAppTypeName(profile_, app_type, update.AppId(),
-                         update.Window()->GetToplevelWindow());
+      AppTypeName app_type_name = GetAppTypeName(
+          profile_, app_type, app_id, update.Window()->GetToplevelWindow());
       if (app_type_name == apps::AppTypeName::kUnknown) {
         return;
       }
@@ -521,6 +583,7 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
           base::TimeTicks::Now();
       start_time_per_five_minutes_[update.Window()].app_type_name =
           app_type_name;
+      start_time_per_five_minutes_[update.Window()].app_id = app_id;
     }
     return;
   }
@@ -535,9 +598,11 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
       base::TimeTicks::Now() - it->second.start_time;
   running_start_time_.erase(it);
 
-  running_time_per_five_minutes_[app_type_name] +=
+  base::TimeDelta running_time =
       base::TimeTicks::Now() -
       start_time_per_five_minutes_[update.Window()].start_time;
+  app_type_running_time_per_five_minutes_[app_type_name] += running_time;
+  app_id_running_time_per_five_minutes_[app_id] += running_time;
   start_time_per_five_minutes_.erase(update.Window());
 
   should_refresh_duration_pref = true;
@@ -664,17 +729,109 @@ void AppPlatformMetrics::RecordAppsRunningDuration() {
 
 void AppPlatformMetrics::RecordAppsUsageTime() {
   for (auto& it : start_time_per_five_minutes_) {
-    running_time_per_five_minutes_[it.second.app_type_name] +=
+    base::TimeDelta running_time =
         base::TimeTicks::Now() - it.second.start_time;
+    app_type_running_time_per_five_minutes_[it.second.app_type_name] +=
+        running_time;
+    app_id_running_time_per_five_minutes_[it.second.app_id] += running_time;
     it.second.start_time = base::TimeTicks::Now();
   }
 
-  for (auto it : running_time_per_five_minutes_) {
+  for (auto it : app_type_running_time_per_five_minutes_) {
     base::UmaHistogramCustomTimes(
         kAppsUsageTimeHistogramPrefix + GetAppTypeHistogramName(it.first),
         it.second, kMinDuration, kMaxUsageDuration, kUsageTimeBuckets);
   }
-  running_time_per_five_minutes_.clear();
+  app_type_running_time_per_five_minutes_.clear();
+
+  RecordAppsUsageTimeUkm();
+}
+
+void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
+  if (!ShouldRecordUkm()) {
+    return;
+  }
+
+  for (auto it : app_id_running_time_per_five_minutes_) {
+    const std::string& app_id = it.first;
+    apps::AppTypeName app_type_name =
+        GetAppTypeName(profile_, app_registry_cache_.GetAppType(app_id), app_id,
+                       apps::mojom::LaunchContainer::kLaunchContainerWindow);
+
+    if (!ShouldRecordUkmForAppTypeName(app_type_name)) {
+      continue;
+    }
+
+    ukm::SourceId source_id = GetSourceId(app_id);
+    if (source_id != ukm::kInvalidSourceId) {
+      ukm::builders::ChromeOSApp_UsageTime builder(source_id);
+      builder.SetAppType((int)app_type_name)
+          .SetDuration(it.second.InMilliseconds())
+          .SetUserDeviceMatrix(user_type_by_device_type_)
+          .Record(ukm::UkmRecorder::Get());
+    }
+  }
+  app_id_running_time_per_five_minutes_.clear();
+}
+
+bool AppPlatformMetrics::ShouldRecordUkm() {
+  switch (syncer::GetUploadToGoogleState(
+      SyncServiceFactory::GetForProfile(profile_), syncer::ModelType::APPS)) {
+    case syncer::UploadState::NOT_ACTIVE:
+      return false;
+    case syncer::UploadState::INITIALIZING:
+      // Note that INITIALIZING is considered good enough, because syncing apps
+      // is known to be enabled, and transient errors don't really matter here.
+    case syncer::UploadState::ACTIVE:
+      return true;
+  }
+}
+
+ukm::SourceId AppPlatformMetrics::GetSourceId(const std::string& app_id) {
+  auto it = app_id_to_source_id_.find(app_id);
+  if (it != app_id_to_source_id_.end()) {
+    return it->second;
+  }
+
+  ukm::SourceId source_id;
+  apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
+  switch (app_type) {
+    case apps::mojom::AppType::kBuiltIn:
+    case apps::mojom::AppType::kExtension:
+      source_id = ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(app_id);
+      break;
+    case apps::mojom::AppType::kArc:
+    case apps::mojom::AppType::kWeb:
+    case apps::mojom::AppType::kSystemWeb: {
+      std::string publisher_id;
+      app_registry_cache_.ForOneApp(
+          app_id, [&publisher_id](const apps::AppUpdate& update) {
+            publisher_id = update.PublisherId();
+          });
+      if (publisher_id.empty()) {
+        return ukm::kInvalidSourceId;
+      }
+      if (app_type == apps::mojom::AppType::kArc) {
+        source_id = ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(
+            publisher_id);
+        break;
+      }
+      source_id =
+          ukm::AppSourceUrlRecorder::GetSourceIdForPWA(GURL(publisher_id));
+      break;
+    }
+    case apps::mojom::AppType::kUnknown:
+    case apps::mojom::AppType::kCrostini:
+    case apps::mojom::AppType::kMacOs:
+    case apps::mojom::AppType::kPluginVm:
+    case apps::mojom::AppType::kStandaloneBrowser:
+    case apps::mojom::AppType::kStandaloneBrowserExtension:
+    case apps::mojom::AppType::kRemote:
+    case apps::mojom::AppType::kBorealis:
+      return ukm::kInvalidSourceId;
+  }
+  app_id_to_source_id_[app_id] = source_id;
+  return source_id;
 }
 
 }  // namespace apps

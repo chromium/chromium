@@ -15,6 +15,9 @@
 #include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/test_browser_window_aura.h"
@@ -26,7 +29,11 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,12 +77,21 @@ apps::mojom::AppPtr MakeApp(const char* app_id,
   return app;
 }
 
+std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
+    content::BrowserContext* context) {
+  return std::make_unique<syncer::TestSyncService>();
+}
+
 }  // namespace
 
-// Tests for family user metrics service.
+// Tests for app platform metrics service.
 class AppPlatformMetricsServiceTest : public testing::Test {
  public:
   void SetUp() override {
+    AddRegularUser("user@test.com");
+
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+
     base::Time start_time;
     EXPECT_TRUE(base::Time::FromUTCString(kStartTime, &start_time));
     base::TimeDelta forward_by = start_time - base::Time::Now();
@@ -87,12 +103,12 @@ class AppPlatformMetricsServiceTest : public testing::Test {
 
     chromeos::PowerManagerClient::InitializeFake();
     app_platform_metrics_service_ =
-        std::make_unique<AppPlatformMetricsService>(&testing_profile_);
+        std::make_unique<AppPlatformMetricsService>(testing_profile_.get());
 
     app_platform_metrics_service_->Start(
-        apps::AppServiceProxyFactory::GetForProfile(&testing_profile_)
+        apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get())
             ->AppRegistryCache(),
-        apps::AppServiceProxyFactory::GetForProfile(&testing_profile_)
+        apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get())
             ->InstanceRegistry());
 
     InstallApps();
@@ -105,9 +121,36 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     browser_window2_.reset();
   }
 
+  void AddRegularUser(const std::string& email) {
+    fake_user_manager_ = new ash::FakeChromeUserManager;
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        base::WrapUnique(fake_user_manager_));
+
+    AccountId account_id = AccountId::FromUserEmail(email);
+    const user_manager::User* user = fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
+                                     /*browser_restart=*/false,
+                                     /*is_child=*/false);
+    fake_user_manager_->SimulateUserProfileLoad(account_id);
+
+    TestingProfile::Builder builder;
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              SyncServiceFactory::GetDefaultFactory());
+    testing_profile_ = builder.Build();
+
+    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+        user, testing_profile_.get());
+
+    sync_service_ = static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            testing_profile_.get(),
+            base::BindRepeating(&TestingSyncFactoryFunction)));
+    sync_service_->SetFirstSetupComplete(true);
+  }
+
   void InstallApps() {
     auto* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(&testing_profile_);
+        apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get());
     std::vector<apps::mojom::AppPtr> deltas;
     apps::AppRegistryCache& cache = proxy->AppRegistryCache();
     deltas.push_back(MakeApp(/*app_id=*/"u", apps::mojom::AppType::kUnknown,
@@ -145,7 +188,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
 
   void InstallOneApp(const std::string& app_id, apps::mojom::AppType app_type) {
     auto* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(&testing_profile_);
+        apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get());
     std::vector<apps::mojom::AppPtr> deltas;
     apps::AppRegistryCache& cache = proxy->AppRegistryCache();
     deltas.push_back(
@@ -259,7 +302,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     std::vector<std::unique_ptr<apps::Instance>> deltas;
     deltas.push_back(std::move(instance));
 
-    apps::AppServiceProxyFactory::GetForProfile(&testing_profile_)
+    apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get())
         ->InstanceRegistry()
         .OnInstances(deltas);
   }
@@ -269,7 +312,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         &delegate1_, aura::client::WINDOW_TYPE_NORMAL);
     window->SetId(0);
     window->Init(ui::LAYER_TEXTURED);
-    Browser::CreateParams params(&testing_profile_, true);
+    Browser::CreateParams params(testing_profile_.get(), true);
     params.type = Browser::TYPE_NORMAL;
     browser_window1_ =
         std::make_unique<TestBrowserWindowAura>(std::move(window));
@@ -282,7 +325,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         &delegate2_, aura::client::WINDOW_TYPE_NORMAL);
     window->SetId(0);
     window->Init(ui::LAYER_TEXTURED);
-    Browser::CreateParams params(&testing_profile_, true);
+    Browser::CreateParams params(testing_profile_.get(), true);
     params.type = Browser::TYPE_NORMAL;
     browser_window2_ =
         std::make_unique<TestBrowserWindowAura>(std::move(window));
@@ -388,14 +431,35 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         time_delta, count);
   }
 
+  void VerifyAppUsageTimeUkm(const std::string& app_id,
+                             int duration,
+                             AppTypeName app_type_name) {
+    const std::string kUrl = std::string("app://") + app_id;
+    const auto entries =
+        test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
+    ASSERT_EQ(1ul, entries.size());
+    const auto* entry = entries.back();
+    test_ukm_recorder()->ExpectEntrySourceHasUrl(entry, GURL(kUrl));
+    test_ukm_recorder()->ExpectEntryMetric(entry, "UserDeviceMatrix", 0);
+    test_ukm_recorder()->ExpectEntryMetric(entry, "Duration", duration);
+    test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",
+                                           (int)app_type_name);
+  }
+
+  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
+    return test_ukm_recorder_.get();
+  }
+
  protected:
   sync_preferences::TestingPrefServiceSyncable* GetPrefService() {
-    return testing_profile_.GetTestingPrefService();
+    return testing_profile_->GetTestingPrefService();
   }
 
   int GetDayIdPref() {
     return GetPrefService()->GetInteger(kAppPlatformMetricsDayId);
   }
+
+  syncer::TestSyncService* sync_service() { return sync_service_; }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
@@ -403,13 +467,17 @@ class AppPlatformMetricsServiceTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
-  TestingProfile testing_profile_;
+  std::unique_ptr<TestingProfile> testing_profile_;
+  syncer::TestSyncService* sync_service_ = nullptr;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<AppPlatformMetricsService> app_platform_metrics_service_;
   std::unique_ptr<TestBrowserWindowAura> browser_window1_;
   std::unique_ptr<TestBrowserWindowAura> browser_window2_;
   aura::test::TestWindowDelegate delegate1_;
   aura::test::TestWindowDelegate delegate2_;
+  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
 
 // Tests OnNewDay() is called after more than one day passes.
@@ -789,6 +857,8 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTime) {
   VerifyAppUsageTimeHistogram(base::TimeDelta::FromMinutes(3),
                               /*expected_count=*/1,
                               AppTypeName::kChromeBrowser);
+  VerifyAppUsageTimeUkm(extension_misc::kChromeAppId, /*duration=*/180000,
+                        AppTypeName::kChromeBrowser);
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(15));
   VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeName::kArc);
@@ -797,6 +867,35 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTime) {
   VerifyAppUsageTimeHistogram(base::TimeDelta::FromMinutes(5),
                               /*expected_count=*/3,
                               AppTypeName::kChromeBrowser);
+}
+
+TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkm) {
+  // Create a browser window.
+  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kExtension);
+  std::unique_ptr<Browser> browser = CreateBrowserWithAuraWindow1();
+  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+
+  // Set the browser window active.
+  ModifyInstance(extension_misc::kChromeAppId,
+                 browser->window()->GetNativeWindow(), kActiveInstanceState);
+
+  // Set sync is not allowed.
+  sync_service()->SetDisableReasons(
+      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+
+  // Verify UKM is not reported.
+  const std::string kUrl = std::string("app://") + extension_misc::kChromeAppId;
+  const auto entries =
+      test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
+  ASSERT_EQ(0U, entries.size());
+
+  // Set sync is allowed by setting an empty disable reason set.
+  sync_service()->SetDisableReasons(syncer::SyncService::DisableReasonSet());
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  VerifyAppUsageTimeUkm(extension_misc::kChromeAppId, /*duration=*/600000,
+                        AppTypeName::kChromeBrowser);
 }
 
 }  // namespace apps
