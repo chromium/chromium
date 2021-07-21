@@ -9,8 +9,7 @@ khorimoto@chromium.org
 oshima@chromium.org
 satorux@chromium.org
 xiyuan@chromium.org
-per-file *active_directory*=rsorokin@chromium.org
-per-file *active_directory*=fsandrade@chromium.org
+per-file *active_directory*=file://chrome/browser/ash/authpolicy/OWNERS
 per-file tpm_firmware_update*=mnissler@chromium.org
 
 # Sandbox selection needs security review
