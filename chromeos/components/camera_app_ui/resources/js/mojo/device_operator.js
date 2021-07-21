@@ -4,6 +4,7 @@
 
 import {assert, assertNotReached} from '../chrome_util.js';
 import {reportError} from '../error.js';
+import {Point} from '../geometry.js';
 import {
   ErrorLevel,
   ErrorType,
@@ -616,7 +617,7 @@ export class DeviceOperator {
    * Registers a document corners detector and triggers |callback| if the
    * detected corners are updated.
    * @param {string} deviceId The id of target camera device.
-   * @param {function(!Array<gfx.mojom.PointF>): void} callback Callback to
+   * @param {function(!Array<Point>): void} callback Callback to
    *     trigger when the detected corners are updated.
    * @return {!Promise<number>} Id for the added detector.
    */
@@ -624,7 +625,9 @@ export class DeviceOperator {
     // TODO(b/180564352): Switch to the actual implementation once it is ready.
     const {id} =
         await MockDocumentScanner.getInstance().registerDocumentCornersDetector(
-            callback);
+            (corners) => {
+              callback(corners.map((c) => new Point(c.x, c.y)));
+            });
     return id;
   }
 

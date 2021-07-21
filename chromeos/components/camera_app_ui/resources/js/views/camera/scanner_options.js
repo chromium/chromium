@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import * as barcodeChip from '../../barcode_chip.js';
+import {assert} from '../../chrome_util.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
 import * as dom from '../../dom.js';
@@ -10,6 +11,38 @@ import {sendBarcodeEnabledEvent} from '../../metrics.js';
 import {BarcodeScanner} from '../../models/barcode.js';
 import * as state from '../../state.js';
 import {Mode} from '../../type.js';
+
+import {DocumentCornerOverlay} from './document_corner_overlay.js';
+
+/**
+ * @enum {string}
+ */
+const ScanType = {
+  BARCODE: 'barcode',
+  DOCUMENT: 'document',
+};
+
+const scanTypeValues = new Set(Object.values(ScanType));
+
+/**
+ * @param {!HTMLInputElement} el
+ * @return {!ScanType}
+ */
+function getScanTypeFromElement(el) {
+  const s = el.dataset['scantype'];
+  assert(scanTypeValues.has(s), `No such scantype: ${s}`);
+  return /** @type {!ScanType} */ (s);
+}
+
+/**
+ * @param {!ScanType} type
+ * @return {!HTMLInputElement}
+ */
+function getElemetFromScanType(type) {
+  return dom.get(`input[data-scantype=${type}]`, HTMLInputElement);
+}
+
+const DEFAULT_SCAN_TYPE = ScanType.DOCUMENT;
 
 /**
  * Controller for the scanner options of Camera view.
@@ -35,30 +68,44 @@ export class ScannerOptions {
     this.photoBarcodeOption_ = dom.get('#toggle-barcode', HTMLInputElement);
 
     /**
-     * Barcode scanner type option in scanner mode.
-     * @type {!HTMLInputElement}
+     * @type {!Array<!HTMLInputElement>}
      * @private
      * @const
      */
-    this.scannerBarcodeOption_ = dom.get('#scanner-barcode', HTMLInputElement);
+    this.scannerOptions_ = [...dom.getAll(
+        '#scanner-modes-group [data-scantype]', HTMLInputElement)];
+
+    /**
+     * Whether preview have attached as scan frame source.
+     * @type {boolean}
+     * @private
+     */
+    this.previewAttached_ = false;
 
     /**
      * May be null if preview is not ready.
      * @type {?BarcodeScanner}
      * @private
      */
-    this.scanner_ = null;
+    this.barcodeScanner_ = null;
 
     /**
-     * @type {boolean}
+     * @const {!DocumentCornerOverlay}
      * @private
      */
-    this.hasCameraSupportDocumentMode_ = false;
+    this.documentCornerOverylay_ = new DocumentCornerOverlay();
+
+    /**
+     * List of device ids of devices supporting document mode.
+     * @type {!Array<string>}
+     * @private
+     */
+    this.docModeDevices_ = [];
 
     const updateShowScannerMode = () => {
       state.set(
           state.State.SHOW_SCANNER_MODE,
-          this.hasCameraSupportDocumentMode_ ||
+          this.docModeDevices_.length > 0 ||
               state.get(state.State.ENABLE_DOCUMENT_MODE_ON_ALL_CAMERAS));
     };
     state.addObserver(state.State.ENABLE_DOCUMENT_MODE_ON_ALL_CAMERAS, () => {
@@ -70,62 +117,108 @@ export class ScannerOptions {
       if (devicesInfo === null) {
         return;
       }
-      this.hasCameraSupportDocumentMode_ =
-          devicesInfo.some(({supportDocumentScan}) => supportDocumentScan);
+      this.docModeDevices_ = [];
+      for (const {supportDocumentScan, deviceId} of devicesInfo) {
+        if (supportDocumentScan) {
+          this.docModeDevices_.push(deviceId);
+        }
+      }
       updateShowScannerMode();
     });
-    [state.State.SHOW_SCANNER_MODE, state.State.SCAN_BARCODE].forEach((s) => {
-      state.addObserver(s, (value) => {
+
+    [this.photoBarcodeOption_, ...this.scannerOptions_].forEach((opt) => {
+      opt.addEventListener('click', (evt) => {
         if (state.get(state.State.CAMERA_CONFIGURING)) {
-          return;
+          evt.preventDefault();
         }
-        this.updateOption_(state.get(state.State.SCAN_BARCODE));
+      });
+    });
+    this.photoBarcodeOption_.addEventListener('change', () => {
+      this.updateOption_(
+          this.photoBarcodeOption_.checked ? ScanType.BARCODE : null);
+    });
+    this.scannerOptions_.forEach((opt) => {
+      opt.addEventListener('change', (evt) => {
+        if (opt.checked) {
+          this.updateOption_(this.getScannerToggledOption_());
+        }
       });
     });
   }
 
   /**
-   * @return {boolean} Whether barcode option is toggled.
+   * @return {!ScanType} Returns scan type of checked radio buttons in scan type
+   *     option groups.
    */
-  isBarcodeOptionToggled_() {
-    if (!state.get(state.State.SCAN_BARCODE)) {
-      return false;
-    }
-    if (state.get(state.State.SHOW_SCANNER_MODE)) {
-      return state.get(Mode.SCANNER);
-    } else {
-      return state.get(Mode.PHOTO);
-    }
+  getScannerToggledOption_() {
+    const checkedEl = this.scannerOptions_.find(({checked}) => checked);
+    return checkedEl === undefined ? DEFAULT_SCAN_TYPE :
+                                     getScanTypeFromElement(checkedEl);
   }
 
   /**
-   * @param {!HTMLVideoElement} video
+   * @param {string} deviceId
+   * @return {boolean}
    */
-  async initialize(video) {
-    this.scanner_ = new BarcodeScanner(video, (value) => {
+  canScanDocument_(deviceId) {
+    if (state.get(state.State.ENABLE_DOCUMENT_MODE_ON_ALL_CAMERAS)) {
+      return true;
+    }
+    return this.docModeDevices_.includes(deviceId);
+  }
+
+  /**
+   * Attaches to preview video as source of frames to be scanned.
+   * @param {!HTMLVideoElement} video
+   * @return {!Promise}
+   */
+  async attachPreview(video) {
+    assert(!this.previewAttached_);
+    this.barcodeScanner_ = new BarcodeScanner(video, (value) => {
       barcodeChip.show(value);
     });
-    this.updateOption_(this.isBarcodeOptionToggled_());
+    const {deviceId} = video.srcObject.getVideoTracks()[0].getSettings();
+    this.documentCornerOverylay_.attach(deviceId);
+    this.previewAttached_ = true;
+    const scanType = (() => {
+      if (!state.get(Mode.SCANNER)) {
+        return null;
+      }
+      const type = this.getScannerToggledOption_();
+      if (type === ScanType.DOCUMENT && !this.canScanDocument_(deviceId)) {
+        return ScanType.BARCODE;
+      }
+      return type;
+    })();
+    await this.updateOption_(scanType);
   }
 
   /**
-   * @param {boolean} toggled Whether barcode scanner option is toggled.
+   * @param {?ScanType} scanType Scan type to be enabled, null for no type is
+   *     enabled.
    * @private
    */
-  updateOption_(toggled) {
-    if (this.scanner_ === null) {
+  async updateOption_(scanType) {
+    if (!this.previewAttached_) {
       return;
     }
+    assert(this.barcodeScanner_ !== null);
 
-    this.updateOptionsUI_(toggled);
+    this.updateOptionsUI_(scanType);
     const mode =
         state.get(state.State.SHOW_SCANNER_MODE) ? Mode.SCANNER : Mode.PHOTO;
-    if (state.get(mode) && toggled) {
+    if (state.get(mode) && scanType === ScanType.BARCODE) {
       sendBarcodeEnabledEvent();
-      this.scanner_.start();
+      this.barcodeScanner_.start();
       state.set(state.State.ENABLE_SCAN_BARCODE, true);
     } else {
       this.stopBarcodeScanner_();
+    }
+
+    if (state.get(Mode.SCANNER) && scanType === ScanType.DOCUMENT) {
+      await this.documentCornerOverylay_.start();
+    } else {
+      await this.documentCornerOverylay_.stop();
     }
   }
 
@@ -133,28 +226,34 @@ export class ScannerOptions {
    * @private
    */
   stopBarcodeScanner_() {
-    this.scanner_.stop();
+    this.barcodeScanner_.stop();
     barcodeChip.dismiss();
     state.set(state.State.ENABLE_SCAN_BARCODE, false);
   }
 
   /**
-   * @param {boolean} toggled Whether barcode scanner option is toggled.
+   * @param {?ScanType} scanType
    * @private
    */
-  updateOptionsUI_(toggled) {
-    this.photoBarcodeOption_.checked = toggled;
-    this.scannerBarcodeOption_.checked = toggled;
-    state.set(state.State.SCAN_BARCODE, toggled);
+  updateOptionsUI_(scanType) {
+    if (state.get(Mode.SCANNER)) {
+      assert(scanType !== null);
+      getElemetFromScanType(scanType).checked = true;
+    } else if (state.get(Mode.PHOTO)) {
+      this.photoBarcodeOption_.checked = scanType === ScanType.BARCODE;
+    }
   }
 
   /**
-   * Stops all scanner.
+   * Stops all scanner and detach from current preview.
+   * @return {!Promise}
    */
-  async uninitialize() {
-    if (this.scanner_ !== null) {
+  async detachPreview() {
+    if (this.barcodeScanner_ !== null) {
       this.stopBarcodeScanner_();
-      this.scanner_= null;
+      this.barcodeScanner_ = null;
     }
+    await this.documentCornerOverylay_.detach();
+    this.previewAttached_ = false;
   }
 }

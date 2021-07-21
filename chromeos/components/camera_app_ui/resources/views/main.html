@@ -96,6 +96,8 @@
                     data="/images/camera_focus_aim.svg"
                     tabindex="-1" hidden></object>
           </div>
+          <div id="preview-document-corner-overlay">
+          </div>
           <div class="barcode-scan-box centered-overlay"></div>
           <div class="snackbar" aria-live="polite"></div>
           <div id="camera-mode" class="centered-overlay"></div>
@@ -191,9 +193,15 @@
         </div>
       </div>
       <div id="scanner-modes-group">
+        <div id="scan-document-option" class="scanner-mode-item">
+          <input id="scanner-document" type="radio" tabindex="0"
+                 name="scanner-type" data-scantype="document"
+                 i18n-aria="scan_document_option">
+          <div class="label" i18n-text="label_scan_document_option"></div>
+        </div>
         <div class="scanner-mode-item">
           <input id="scanner-barcode" type="radio" tabindex="0"
-                 name="scanner-type" data-state="scan-barcode"
+                 name="scanner-type" data-scantype="barcode"
                  i18n-aria="scan_qrcode_option">
           <div class="label" i18n-text="label_scan_qrcode_option"></div>
         </div>
@@ -257,8 +265,8 @@
                data-key="toggleMic" checked>
       </div>
       <div class="top-stripe right-stripe circle buttons">
-        <input id="toggle-barcode" type="checkbox" data-state="scan-barcode"
-               tabindex="0" i18n-label="toggle_barcode_button">
+        <input id="toggle-barcode" type="checkbox" tabindex="0"
+               i18n-label="toggle_barcode_button">
       </div>
       <div class="centered-overlay">
         <div id="timer-tick-msg"></div>
@@ -579,6 +587,16 @@
     </template>
     <template id="video-profile-option-template">
       <option></option>
+    </template>
+    <template id="document-corner-template">
+      <div class="corner">
+        <div class="dot"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+      </div>
+    </template>
+    <template id="document-side-template">
+      <div class="side line"></div>
     </template>
     <template id="inkdrop-template">
       <div class="inkdrop-ripple"></div>

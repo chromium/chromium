@@ -132,3 +132,67 @@ StylePropertyMapReadOnly.prototype.get = function(property) {};
  * @return {!StylePropertyMapReadOnly}
  */
 Element.prototype.computedStyleMap = function() {};
+
+/**
+ * @param {string} property
+ * @return {?CSSStyleValue}
+ */
+StylePropertyMap.prototype.get = function(property) {};
+
+/**
+ * @constructor
+ * @extends {CSSStyleValue}
+ * @param {!CSSStyleValue} x
+ * @param {!CSSStyleValue} y
+ */
+function CSSTranslate(x, y) {}
+
+/**
+ * @constructor
+ * @extends {CSSStyleValue}
+ * @param {!CSSStyleValue} x
+ */
+function CSSRotate(x) {}
+
+/**
+ * @type {!CSSStyleValue}
+ */
+CSSRotate.prototype.angle;
+
+/**
+ * @constructor
+ * @extends {CSSStyleValue}
+ * @param {!CSSStyleValue} x
+ * @param {!CSSStyleValue} y
+ */
+function CSSScale(x, y) {}
+
+/**
+ * @typedef {(CSSTranslate|CSSRotate|CSSScale)}
+ */
+let CSSTransformComponent;
+
+/**
+ * @constructor
+ * @implements {Iterable<!CSSTransformComponent>}
+ * @param {!Array<!CSSTransformComponent>} transforms
+ */
+function CSSTransformValue(transforms) {}
+
+/**
+ * @param {number} px
+ * @return {!CSSStyleValue}
+ */
+CSS.px;
+
+/**
+ * @param {number} rad
+ * @return {!CSSStyleValue}
+ */
+CSS.rad;
+
+/**
+ * @param {number} number
+ * @return {!CSSStyleValue}
+ */
+CSS.number;

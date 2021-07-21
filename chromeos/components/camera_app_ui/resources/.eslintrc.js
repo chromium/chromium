@@ -388,6 +388,14 @@ module.exports = {
     // https://github.com/sindresorhus/globals/pull/175 merged in ESlint and
     // Chromium.
     'OverconstrainedError': 'readable',
+
+    // TODO(b/190689433): Remove this once we have
+    // https://github.com/sindresorhus/globals/pull/178 merged in ESlint and
+    // Chromium.
+    'CSSRotate': 'readable',
+    'CSSScale': 'readable',
+    'CSSTransformValue': 'readable',
+    'CSSTranslate': 'readable',
   },
   // Generally, the rules should be compatible to both bundled and the newest
   // stable eslint, so it's easier to upgrade and develop without the full

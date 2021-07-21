@@ -14,14 +14,6 @@ body:is(:not(.show-scanner-mode), :not(.scanner), :not(.streaming)) #scanner-mod
   display: none;
 }
 
-body.scanner.scan-barcode #shutters-group {
-  display: none;
-}
-
-body.scanner.scan-barcode #toggle-timer {
-  display: none;
-}
-
 #toggle-barcode:checked {
   background: url(/images/barcode_toggle_on.svg) center no-repeat,
               rgba(var(--blue-300-rgb), 0.3);
@@ -82,6 +74,10 @@ body.scanner.scan-barcode #toggle-timer {
   transition: all var(--exit-easing) var(--moderate1-duration);
   visibility: hidden;
   width: calc(100% / 2);
+}
+
+body.scanner.enable-scan-barcode :is(#shutters-group, #toggle-timer) {
+  display: none;
 }
 
 body.enable-scan-barcode .barcode-scan-box {
@@ -285,4 +281,63 @@ body.enable-scan-barcode .barcode-scan-box {
   100% {
     opacity: 0;
   }
+}
+
+#preview-document-corner-overlay {
+  --corner-border-width: 6px;
+  --corner-border-length: 16px;
+
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#preview-document-corner-overlay.clear div {
+  display: none;
+}
+
+#preview-document-corner-overlay div {
+  position: absolute;
+  transition-duration: var(--moderate2-duration);
+  transition-timing-function: var(--enter-easing);
+}
+
+#preview-document-corner-overlay .line {
+  transform-origin: center left;
+  transition-property: transform, display;
+}
+
+#preview-document-corner-overlay .corner div {
+  background: rgba(138, 180, 248, 1)
+}
+
+#preview-document-corner-overlay .corner {
+  height: calc(var(--corner-border-length) * 2);
+  transform: translate(-50%, -50%);
+  transition-property: left, top, display;
+  width: calc(var(--corner-border-length) * 2);
+}
+
+#preview-document-corner-overlay .corner .dot {
+  border-radius: 50%;
+  height: var(--corner-border-width);
+  left: calc(50% - calc(var(--corner-border-width) / 2));
+  top: calc(50% - calc(var(--corner-border-width) / 2));
+  width: var(--corner-border-width);
+}
+
+#preview-document-corner-overlay .corner .line {
+  height: var(--corner-border-width);
+  left: 50%;
+  top: calc(50% - calc(var(--corner-border-width) / 2));
+  width: var(--corner-border-length);
+}
+
+#preview-document-corner-overlay .side.line {
+  background: rgba(66, 133, 244, 1);
+  height: 1px;
+  width: 1px;
 }
