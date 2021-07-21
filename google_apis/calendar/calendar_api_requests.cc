@@ -32,11 +32,17 @@ GURL CalendarApiGetRequest::GetURL() const {
   return url;
 }
 
+// Maps calendar api error reason to code. See
+// https://developers.google.com/calendar/api/guides/errors.
 ApiErrorCode CalendarApiGetRequest::MapReasonToError(
     ApiErrorCode code,
     const std::string& reason) {
-  // TODO (jiamingc@): parse the calendar error codes from JSON based on
-  // https://developers.google.com/calendar/api/guides/errors
+  const char kErrorReasonRateLimitExceeded[] = "rateLimitExceeded";
+
+  // The rateLimitExceeded errors can return either 403 or 429 error codes, but
+  // we want to treat them in the same way.
+  if (reason == kErrorReasonRateLimitExceeded)
+    return google_apis::HTTP_FORBIDDEN;
   return code;
 }
 
