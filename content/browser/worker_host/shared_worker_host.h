@@ -57,6 +57,7 @@ class StorageKey;
 namespace content {
 
 class AppCacheNavigationHandle;
+class CrossOriginEmbedderPolicyReporter;
 class ServiceWorkerMainResourceHandle;
 class ServiceWorkerObjectHost;
 class SharedWorkerContentSettingsProxyImpl;
@@ -317,6 +318,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   // the script's response head is loaded.
   absl::optional<network::CrossOriginEmbedderPolicy>
       worker_cross_origin_embedder_policy_;
+
+  std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
   base::WeakPtrFactory<SharedWorkerHost> weak_factory_{this};
 

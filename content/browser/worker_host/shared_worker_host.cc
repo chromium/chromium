@@ -16,6 +16,7 @@
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
+#include "content/browser/net/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/cross_origin_embedder_policy.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -211,6 +212,13 @@ void SharedWorkerHost::Start(
       worker_cross_origin_embedder_policy_ = CoepFromMainResponse(
           final_response_url, main_script_load_params->response_head.get());
     }
+
+    // Create a COEP reporter with worker's policy.
+    coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
+        GetProcessHost()->GetStoragePartition(), final_response_url,
+        worker_cross_origin_embedder_policy_->reporting_endpoint,
+        worker_cross_origin_embedder_policy_->report_only_reporting_endpoint,
+        GetReportingSource(), GetNetworkIsolationKey());
   } else {
     worker_cross_origin_embedder_policy_ = network::CrossOriginEmbedderPolicy();
   }
@@ -346,15 +354,20 @@ network::mojom::URLLoaderFactoryParamsPtr
 SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
   url::Origin origin = GetStorageKey().origin();
 
-  // TODO(https://crbug.com/1060832): Implement COEP reporter for shared
-  // workers.
+  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+      coep_reporter;
+  if (coep_reporter_) {
+    DCHECK(base::FeatureList::IsEnabled(blink::features::kCOEPForSharedWorker));
+    coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
+  }
+
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
           GetProcessHost(), origin,
           net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
                                      origin, origin,
                                      net::SiteForCookies::FromOrigin(origin)),
-          /*coep_reporter=*/mojo::NullRemote(),
+          std::move(coep_reporter),
           /*url_loader_network_observer=*/mojo::NullRemote(),
           /*devtools_observer=*/mojo::NullRemote(),
           /*debug_tag=*/"SharedWorkerHost::CreateNetworkFactoryForSubresource");
@@ -421,10 +434,12 @@ void SharedWorkerHost::BindCacheStorage(
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(https://crbug.com/1031542): Plumb a CrossOriginEmbedderPolicyReporter
-  // here to handle reports.
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter;
+  if (coep_reporter_) {
+    DCHECK(base::FeatureList::IsEnabled(blink::features::kCOEPForSharedWorker));
+    coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
+  }
 
   GetProcessHost()->BindCacheStorage(cross_origin_embedder_policy(),
                                      std::move(coep_reporter), GetStorageKey(),

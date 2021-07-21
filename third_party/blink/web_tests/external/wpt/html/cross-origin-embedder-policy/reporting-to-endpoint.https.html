@@ -24,6 +24,9 @@ const BASE = new URL("resources", location).pathname
 const FRAME_URL = `resources/reporting-empty-frame.html` +
   `?pipe=header(cross-origin-embedder-policy,require-corp;report-to="endpoint")` +
   `|header(cross-origin-embedder-policy-report-only,require-corp;report-to="report-only-endpoint")`;
+const WORKER_URL = `resources/shared-worker.js` +
+  '?pipe=header(cross-origin-embedder-policy,require-corp;report-to="endpoint")' +
+  `|header(cross-origin-embedder-policy-report-only,require-corp;report-to="report-only-endpoint")`;
 
 function wait(ms) {
   return new Promise(resolve => step_timeout(resolve, ms));
@@ -58,7 +61,7 @@ async function checkCorpReportExistence(endpoint, blockedUrl, contextUrl, destin
     }
     await wait(retryDelay);
   }
-  assert_unreached(`A report whose blockedURL is ${blockedUrl} and url is ${contextUrl} is not found.`);
+  assert_unreached(`A report whose blockedURL is ${blockedUrl.split("?")[0]} and url is ${contextUrl} is not found.`);
 }
 
 async function checkNavigationReportExistence(endpoint, blockedUrl, contextUrl, disposition) {
@@ -80,7 +83,7 @@ async function checkNavigationReportExistence(endpoint, blockedUrl, contextUrl, 
     }
     await wait(retryDelay);
   }
-  assert_unreached(`A report whose blockedURL is ${blockedUrl} and url is ${contextUrl} is not found.`);
+  assert_unreached(`A report whose blockedURL is ${blockedUrl.split("?")[0]} and url is ${contextUrl} is not found.`);
 }
 
 promise_test(async t => {
@@ -176,5 +179,28 @@ promise_test(async (t) => {
     'report-only-endpoint', targetUrl, iframe.src, 'reporting');
 
 }, 'Two COEP headers, split inside report-to value');
+
+// Shared worker do not support observer currently, so add test for endpoint
+// here.
+promise_test(async (t) => {
+  const iframe = document.createElement('iframe');
+  t.add_cleanup(() => iframe.remove());
+
+  iframe.src = FRAME_URL;
+  const targetUrl = `${REMOTE_ORIGIN}/common/blank.html?${token()}`;
+  document.body.appendChild(iframe);
+
+  const worker = new iframe.contentWindow.SharedWorker(WORKER_URL);
+  worker.port.start();
+  const script =
+    `fetch('${targetUrl}', {mode: 'no-cors', cache: 'no-store'}).catch(e => {});`;
+  worker.addEventListener('error', t.unreached_func('Worker.onerror'));
+  worker.port.postMessage(script);
+
+  await checkCorpReportExistence(
+      'endpoint', targetUrl, WORKER_URL, 'iframe', 'enforce');
+  await checkCorpReportExistence(
+      'report-only-endpoint', targetUrl, WORKER_URL, 'iframe', 'reporting');
+}, 'Shared worker fetch');
 
 </script>

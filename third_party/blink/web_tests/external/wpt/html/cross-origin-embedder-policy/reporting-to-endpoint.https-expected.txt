@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS subresource CORP
+PASS navigation CORP
+PASS COEP violation on nested frame navigation
+PASS Two COEP headers, split inside report-to value
+FAIL Shared worker fetch assert_unreached: A report whose blockedURL is https://www1.web-platform.test:8444/common/blank.html and url is https://web-platform.test:8444/html/cross-origin-embedder-policy/resources/shared-worker.js?pipe=header(cross-origin-embedder-policy,require-corp;report-to=%22endpoint%22)|header(cross-origin-embedder-policy-report-only,require-corp;report-to=%22report-only-endpoint%22) is not found. Reached unreachable code
+Harness: the test ran to completion.
+
+
