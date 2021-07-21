@@ -11,4 +11,13 @@
   SecureContext
 ] interface FileSystemSyncAccessHandle {
   [CallWith=ScriptState] Promise<void> close();
+
+[
+  RaisesException
+] unsigned long long read([AllowShared] ArrayBufferView buffer,
+                           FileSystemReadWriteOptions options);
+[
+  RaisesException
+] unsigned long long write([AllowShared] ArrayBufferView buffer,
+                           FileSystemReadWriteOptions options);
 };

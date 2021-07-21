@@ -335,6 +335,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_get_file_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_handle_permission_descriptor.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_handle_permission_descriptor.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_read_write_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_read_write_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_remove_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_remove_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gain_options.cc",

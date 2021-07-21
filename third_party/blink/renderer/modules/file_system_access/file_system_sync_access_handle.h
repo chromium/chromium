@@ -9,7 +9,10 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_read_write_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -34,6 +37,14 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
 
   // GarbageCollected
   void Trace(Visitor* visitor) const override;
+
+  uint64_t read(MaybeShared<DOMArrayBufferView> buffer,
+                FileSystemReadWriteOptions* options,
+                ExceptionState&);
+
+  uint64_t write(MaybeShared<DOMArrayBufferView> buffer,
+                 FileSystemReadWriteOptions* options,
+                 ExceptionState&);
 
  private:
   // Interface that provides file-like access to the backing storage.
