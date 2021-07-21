@@ -98,6 +98,18 @@ class SafeBrowsingUIManager : public BaseUIManager {
 
     // Returns true if |web_contents| is hosting a page for an extension.
     virtual bool IsHostingExtension(content::WebContents* web_contents) = 0;
+
+    // Returns the PrefService that the embedder associates with
+    // |browser_context|.
+    virtual PrefService* GetPrefs(content::BrowserContext* browser_context) = 0;
+
+    // Returns the HistoryService that the embedder associates with
+    // |browser_context|.
+    virtual history::HistoryService* GetHistoryService(
+        content::BrowserContext* browser_context) = 0;
+
+    // Returns true if metrics reporting is enabled.
+    virtual bool IsMetricsAndCrashReportingEnabled() = 0;
   };
 
   SafeBrowsingUIManager(

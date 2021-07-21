@@ -192,9 +192,10 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
   }
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
-      Profile* profile) override {
+      content::BrowserContext* browser_context) override {
     if (!base::FeatureList::IsEnabled(kSafeBrowsingSeparateNetworkContexts))
       return GetURLLoaderFactory();
+    auto* profile = Profile::FromBrowserContext(browser_context);
     auto it = test_shared_loader_factory_map_.find(profile);
     if (it == test_shared_loader_factory_map_.end())
       return nullptr;

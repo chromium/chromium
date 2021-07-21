@@ -95,7 +95,7 @@ class TestSafeBrowsingService : public SafeBrowsingService,
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
-      Profile* profile) override;
+      content::BrowserContext* browser_context) override;
 
  private:
   std::unique_ptr<V4ProtocolConfig> v4_protocol_config_;

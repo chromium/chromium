@@ -10,10 +10,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_subresource_tab_helper.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
@@ -91,15 +87,12 @@ void SafeBrowsingUIManager::CreateAndSendHitReport(
     hit_report.page_url = resource.original_url;
   }
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  hit_report.extended_reporting_level =
-      profile ? GetExtendedReportingLevel(*profile->GetPrefs())
-              : SBER_LEVEL_OFF;
-  hit_report.is_enhanced_protection =
-      IsEnhancedProtectionEnabled(*profile->GetPrefs());
+  const auto& prefs = *delegate_->GetPrefs(web_contents->GetBrowserContext());
+
+  hit_report.extended_reporting_level = GetExtendedReportingLevel(prefs);
+  hit_report.is_enhanced_protection = IsEnhancedProtectionEnabled(prefs);
   hit_report.is_metrics_reporting_active =
-      ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
+      delegate_->IsMetricsAndCrashReportingEnabled();
 
   MaybeReportSafeBrowsingHit(hit_report, web_contents);
 
@@ -184,10 +177,9 @@ void SafeBrowsingUIManager::MaybeReportSafeBrowsingHit(
   DVLOG(1) << "ReportSafeBrowsingHit: " << hit_report.malicious_url << " "
            << hit_report.page_url << " " << hit_report.referrer_url << " "
            << hit_report.is_subresource << " " << hit_report.threat_type;
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   sb_service_->ping_manager()->ReportSafeBrowsingHit(
-      sb_service_->GetURLLoaderFactory(profile), hit_report);
+      sb_service_->GetURLLoaderFactory(web_contents->GetBrowserContext()),
+      hit_report);
 }
 
 // Static.
@@ -254,9 +246,7 @@ const std::string SafeBrowsingUIManager::app_locale() const {
 history::HistoryService* SafeBrowsingUIManager::history_service(
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return HistoryServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-      ServiceAccessType::EXPLICIT_ACCESS);
+  return delegate_->GetHistoryService(web_contents->GetBrowserContext());
 }
 
 const GURL SafeBrowsingUIManager::default_safe_page() const {
@@ -279,9 +269,7 @@ void SafeBrowsingUIManager::SendSerializedThreatDetails(
   if (!serialized.empty()) {
     DVLOG(1) << "Sending serialized threat details.";
     sb_service_->ping_manager()->ReportThreatDetails(
-        sb_service_->GetURLLoaderFactory(
-            Profile::FromBrowserContext(browser_context)),
-        serialized);
+        sb_service_->GetURLLoaderFactory(browser_context), serialized);
   }
 }
 

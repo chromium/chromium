@@ -201,13 +201,14 @@ network::mojom::NetworkContext* SafeBrowsingService::GetNetworkContext(
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
-SafeBrowsingService::GetURLLoaderFactory(Profile* profile) {
+SafeBrowsingService::GetURLLoaderFactory(
+    content::BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!base::FeatureList::IsEnabled(kSafeBrowsingSeparateNetworkContexts))
     return GetURLLoaderFactory();
 
   NetworkContextService* service =
-      NetworkContextServiceFactory::GetForBrowserContext(profile);
+      NetworkContextServiceFactory::GetForBrowserContext(browser_context);
   if (!service)
     return nullptr;
 

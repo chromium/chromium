@@ -135,7 +135,7 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   network::mojom::NetworkContext* GetNetworkContext(
       content::BrowserContext* browser_context) override;
   virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
-      Profile* profile);
+      content::BrowserContext* browser_context);
 
   // Flushes above two interfaces to avoid races in tests.
   void FlushNetworkInterfaceForTesting();

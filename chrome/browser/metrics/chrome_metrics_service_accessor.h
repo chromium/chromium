@@ -60,10 +60,10 @@ void JoinOnboardingGroup(Profile* profile);
 
 namespace safe_browsing {
 class ChromeCleanerControllerDelegate;
+class ChromeSafeBrowsingUIManagerDelegate;
 class DownloadUrlSBClient;
 class IncidentReportingService;
 class SafeBrowsingService;
-class SafeBrowsingUIManager;
 
 namespace internal {
 class ReporterRunner;
@@ -118,11 +118,11 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class settings::MetricsReportingHandler;
   friend class UmaSessionStats;
   friend class safe_browsing::ChromeCleanerControllerDelegate;
+  friend class safe_browsing::ChromeSafeBrowsingUIManagerDelegate;
   friend class safe_browsing::DownloadUrlSBClient;
   friend class safe_browsing::IncidentReportingService;
   friend class safe_browsing::internal::ReporterRunner;
   friend class safe_browsing::SafeBrowsingService;
-  friend class safe_browsing::SafeBrowsingUIManager;
   friend class ChromeMetricsServiceClient;
   friend class ChromePasswordManagerClient;
   friend void welcome::JoinOnboardingGroup(Profile* profile);

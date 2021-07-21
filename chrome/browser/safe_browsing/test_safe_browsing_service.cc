@@ -152,10 +152,11 @@ TestSafeBrowsingService::GetURLLoaderFactory() {
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
-TestSafeBrowsingService::GetURLLoaderFactory(Profile* profile) {
+TestSafeBrowsingService::GetURLLoaderFactory(
+    content::BrowserContext* browser_context) {
   if (use_test_url_loader_factory_)
     return test_shared_loader_factory_;
-  return SafeBrowsingService::GetURLLoaderFactory(profile);
+  return SafeBrowsingService::GetURLLoaderFactory(browser_context);
 }
 
 // TestSafeBrowsingServiceFactory functions:

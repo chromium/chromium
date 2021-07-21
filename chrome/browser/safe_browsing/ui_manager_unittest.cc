@@ -22,6 +22,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/safe_browsing/core/browser/db/util.h"
@@ -155,7 +156,10 @@ class TestSafeBrowsingBlockingPageFactory
 class TestSafeBrowsingUIManagerDelegate
     : public SafeBrowsingUIManager::Delegate {
  public:
-  TestSafeBrowsingUIManagerDelegate() = default;
+  TestSafeBrowsingUIManagerDelegate() {
+    safe_browsing::RegisterProfilePrefs(pref_service_.registry());
+  }
+
   ~TestSafeBrowsingUIManagerDelegate() override = default;
 
   // SafeBrowsingUIManager::Delegate:
@@ -177,6 +181,14 @@ class TestSafeBrowsingUIManagerDelegate
   bool IsHostingExtension(content::WebContents* web_contents) override {
     return is_hosting_extension_;
   }
+  PrefService* GetPrefs(content::BrowserContext* browser_context) override {
+    return &pref_service_;
+  }
+  history::HistoryService* GetHistoryService(
+      content::BrowserContext* browser_context) override {
+    return nullptr;
+  }
+  bool IsMetricsAndCrashReportingEnabled() override { return false; }
 
   void set_is_hosting_extension(bool is_hosting_extension) {
     is_hosting_extension_ = is_hosting_extension;
@@ -185,6 +197,7 @@ class TestSafeBrowsingUIManagerDelegate
  private:
   std::string app_locale_ = "en-us";
   bool is_hosting_extension_ = false;
+  TestingPrefServiceSimple pref_service_;
 };
 
 class SafeBrowsingUIManagerTest : public ChromeRenderViewHostTestHarness {
