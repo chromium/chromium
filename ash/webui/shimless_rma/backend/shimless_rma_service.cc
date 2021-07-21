@@ -73,9 +73,38 @@ void ShimlessRmaService::AbortRma(AbortRmaCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ShimlessRmaService::CheckForNetworkConnection(
-    CheckForNetworkConnectionCallback callback) {
-  // TODO(joonbug): actually check for network
+void ShimlessRmaService::BeginFinalization(BeginFinalizationCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kWelcome) {
+    LOG(ERROR) << "FinalizeRepair called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(state_proto_.state_case(),
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  state_proto_.mutable_welcome()->set_choice(
+      rmad::WelcomeState::RMAD_CHOICE_FINALIZE_REPAIR);
+  // TODO(gavindodd): Determine if rmad service or shimless rma is responsible
+  // for managing the network connection and chrome update states.
+  // If shimless rma is responsible then check network connection here and
+  // insert a non-rmad state here to display the network select screen.
+  TransitionNextStateGeneric(std::move(callback));
+}
+
+void ShimlessRmaService::NetworkSelectionComplete(
+    NetworkSelectionCompleteCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kSelectNetwork) {
+    LOG(ERROR) << "FinalizeRepair called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(state_proto_.state_case(),
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  // TODO(gavindodd): Determine network state and set correct connection state.
+  // Should this be done on JS side with a separate call for user declined?
+  // That way we can confirm it was an active user choice rather than a
+  // disconnect when next was clicked?
+  state_proto_.mutable_select_network()->set_connection_state(
+      rmad::SelectNetworkState::RMAD_NETWORK_CONNECTED);
   TransitionNextStateGeneric(std::move(callback));
 }
 

@@ -8,7 +8,7 @@ import './base_page.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
@@ -31,12 +31,6 @@ export class OnboardingLandingPage extends PolymerElement {
         type: Object,
         value: null,
       },
-
-      /** @private {boolean} */
-      networkConnected_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
@@ -48,7 +42,7 @@ export class OnboardingLandingPage extends PolymerElement {
 
   /** @return {!Promise<StateResult>} */
   onNextButtonClick() {
-    return this.shimlessRmaService_.checkForNetworkConnection();
+    return this.shimlessRmaService_.beginFinalization();
   }
 };
 

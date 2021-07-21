@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {fakeStates} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingLandingPage} from 'chrome://shimless-rma/onboarding_landing_page.js';
 import {RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
 
@@ -56,25 +57,23 @@ export function onboardingLandingPageTest() {
     assertTrue(!!basePage);
   });
 
-  test('ConnectedNetworkNext', async () => {
-    service.setCheckForNetworkConnection(fakeStates[2]);
+  test('OnBoardingPageOnNextCallsBeginFinalization', async () => {
+    const resolver = new PromiseResolver();
     await initializeLandingPage();
+    let callCounter = 0;
+    service.beginFinalization = () => {
+      callCounter++;
+      return resolver.promise;
+    };
 
+    let expectedResult = {foo: 'bar'};
     let savedResult;
     component.onNextButtonClick().then((result) => savedResult = result);
+    // Resolve to a distinct result to confirm it was not modified.
+    resolver.resolve(expectedResult);
     await flushTasks();
 
-    assertEquals(savedResult.state, RmaState.kUpdateChrome);
-  });
-
-  test('NoNetworkNext', async () => {
-    service.setCheckForNetworkConnection(fakeStates[1]);
-    await initializeLandingPage();
-
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    await flushTasks();
-
-    assertEquals(savedResult.state, RmaState.kConfigureNetwork);
+    assertEquals(callCounter, 1);
+    assertDeepEquals(savedResult, expectedResult);
   });
 }

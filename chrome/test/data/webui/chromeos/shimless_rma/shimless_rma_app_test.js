@@ -26,9 +26,6 @@ export function shimlessRMAAppTest() {
 
   setup(() => {
     document.body.innerHTML = '';
-
-    // force network selection page
-    service.setCheckForNetworkConnection(fakeStates[1]);
   });
 
   teardown(() => {

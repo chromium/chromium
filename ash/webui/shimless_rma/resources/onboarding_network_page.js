@@ -17,8 +17,8 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getNetworkConfigService} from './mojo_interface_provider.js';
-import {NetworkConfigServiceInterface} from './shimless_rma_types.js';
+import {getNetworkConfigService, getShimlessRmaService} from './mojo_interface_provider.js';
+import {NetworkConfigServiceInterface, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
@@ -48,6 +48,12 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
 
   static get properties() {
     return {
+      /** @private {ShimlessRmaServiceInterface} */
+      shimlessRmaService_: {
+        type: Object,
+        value: null,
+      },
+
       /** @private {?NetworkConfigServiceInterface} */
       networkConfig_: {
         type: Object,
@@ -129,6 +135,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
   /** @override */
   ready() {
     super.ready();
+    this.shimlessRmaService_ = getShimlessRmaService();
     this.networkConfig_ = getNetworkConfigService();
     this.refreshNetworks();
   }
@@ -284,6 +291,11 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
     const type = this.i18n('OncType' + this.networkType_);
     return type;
     // return this.i18n('internetJoinType', type);
+  }
+
+  /** @return {!Promise<StateResult>} */
+  onNextButtonClick() {
+    return this.shimlessRmaService_.networkSelectionComplete();
   }
 };
 

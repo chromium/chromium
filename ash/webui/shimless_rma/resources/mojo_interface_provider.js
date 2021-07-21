@@ -45,7 +45,6 @@ function setupFakeShimlessRmaService_() {
 
   service.setGetComponentListResult(fakeComponents);
   service.setReimageRequiredResult(false);
-  service.setCheckForNetworkConnection(fakeStates[2]);
   service.automaticallyTriggerDisableWriteProtectionObservation();
   service.automaticallyTriggerProvisioningObservation();
 

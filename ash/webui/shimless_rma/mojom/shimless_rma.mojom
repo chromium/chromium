@@ -257,8 +257,19 @@ interface ShimlessRmaService {
   // Attempts to abort the RMA.
   AbortRma() => (RmadErrorCode error);
 
-  // Checks for network connection and returns appropriate RMA state.
-  CheckForNetworkConnection() => (RmaState state, RmadErrorCode error);
+
+  ///////////////////////////////////////
+  // Methods for kWelcomeScreen state.
+  //
+  // User has confirmed they wish to finalize RMA.
+  BeginFinalization() => (RmaState state, RmadErrorCode error);
+
+  ///////////////////////////////////////
+  // Methods for kConfigureNetwork state.
+  //
+  // Called when next is clicked after a network is successfully connected or
+  // the user skips connecting to a network.
+  NetworkSelectionComplete() => (RmaState state, RmadErrorCode error);
 
   ///////////////////////////////////////
   // Methods for kUpdateChrome state.
