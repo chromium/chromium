@@ -13,8 +13,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr int kShelfHeight = 56;
@@ -354,4 +353,4 @@ TEST_F(OobeDialogSizeUtilsTestNewLayout, ChromeTabHorizontal) {
   ValidateDialog(tablet_device, SizeWithoutShelf(tablet_device), dialog);
 }
 
-}  // namespace chromeos
+}  // namespace ash

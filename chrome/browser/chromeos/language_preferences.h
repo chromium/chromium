@@ -35,4 +35,12 @@ void RegisterPrefs(PrefRegistrySimple* registry);
 }  // namespace language_prefs
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace language_prefs {
+using ::chromeos::language_prefs::kPreferredKeyboardLayout;
+}
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_CHROMEOS_LANGUAGE_PREFERENCES_H_

@@ -14,7 +14,7 @@ namespace user_manager {
 class User;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Ensure a set of "Login keyboard layouts" is used at UserAddingScreen.
 class UserAddingScreenInputMethodsController
@@ -36,6 +36,6 @@ class UserAddingScreenInputMethodsController
   DISALLOW_COPY_AND_ASSIGN(UserAddingScreenInputMethodsController);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_USER_ADDING_SCREEN_INPUT_METHODS_CONTROLLER_H_

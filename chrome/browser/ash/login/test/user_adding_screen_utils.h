@@ -15,4 +15,12 @@ void ShowUserAddingScreen();
 }  // namespace test
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace test {
+using ::chromeos::test::ShowUserAddingScreen;
+}
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_USER_ADDING_SCREEN_UTILS_H_

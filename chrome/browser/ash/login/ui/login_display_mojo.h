@@ -11,8 +11,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
-
+namespace ash {
 class LoginDisplayHostMojo;
 
 // Interface used by UI-agnostic code to send messages to views-based login
@@ -69,6 +68,6 @@ class LoginDisplayMojo : public LoginDisplay,
   DISALLOW_COPY_AND_ASSIGN(LoginDisplayMojo);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_MOJO_H_

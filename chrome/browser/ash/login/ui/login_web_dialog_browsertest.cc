@@ -14,9 +14,9 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/widget_test.h"
 
-namespace chromeos {
+namespace ash {
 
-using LoginWebDialogTest = InProcessBrowserTest;
+using LoginWebDialogTest = ::InProcessBrowserTest;
 
 // Tests that LoginWebDialog is not minimizable.
 IN_PROC_BROWSER_TEST_F(LoginWebDialogTest, CannotMinimize) {
@@ -55,4 +55,4 @@ IN_PROC_BROWSER_TEST_F(LoginWebDialogTest, NoParentWindow) {
   ASSERT_TRUE(window);
 }
 
-}  // namespace chromeos
+}  // namespace ash

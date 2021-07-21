@@ -6,8 +6,7 @@
 
 #include <memory>
 
-namespace chromeos {
-
+namespace ash {
 namespace login_screen_extension_ui {
 
 CreateOptions::CreateOptions(const std::string& extension_name,
@@ -22,5 +21,4 @@ CreateOptions::CreateOptions(const std::string& extension_name,
 CreateOptions::~CreateOptions() = default;
 
 }  // namespace login_screen_extension_ui
-
-}  // namespace chromeos
+}  // namespace ash

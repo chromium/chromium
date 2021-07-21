@@ -31,7 +31,7 @@ class Widget;
 class WidgetDelegate;
 }  // namespace views
 
-namespace chromeos {
+namespace ash {
 
 class StubBubbleModelDelegate;
 
@@ -121,6 +121,6 @@ class SimpleWebViewDialog : public views::View,
   base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked observers_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_SIMPLE_WEB_VIEW_DIALOG_H_

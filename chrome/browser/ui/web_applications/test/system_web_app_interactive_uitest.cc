@@ -590,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
 
   installation_ =
       TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
-  chromeos::UserAddingScreen::Get()->Start();
+  ash::UserAddingScreen::Get()->Start();
   AddUser(account_id2_);
   base::RunLoop().RunUntilIdle();
   Profile* profile2 = chromeos::ProfileHelper::Get()->GetProfileByUser(
@@ -644,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
 
   installation_ =
       TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
-  chromeos::UserAddingScreen::Get()->Start();
+  ash::UserAddingScreen::Get()->Start();
   AddUser(account_id2_);
   base::RunLoop().RunUntilIdle();
   Profile* profile2 = chromeos::ProfileHelper::Get()->GetProfileByUser(

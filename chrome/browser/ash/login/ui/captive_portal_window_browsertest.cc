@@ -31,8 +31,7 @@
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // Stub implementation of CaptivePortalWindowProxyDelegate, does
@@ -76,10 +75,9 @@ class CaptivePortalWindowTest : public InProcessBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
-    command_line->AppendSwitch(chromeos::switches::kLoginManager);
-    command_line->AppendSwitch(
-        chromeos::switches::kDisableHIDDetectionOnOOBEForTesting);
+    command_line->AppendSwitch(switches::kForceLoginManagerInTests);
+    command_line->AppendSwitch(switches::kLoginManager);
+    command_line->AppendSwitch(switches::kDisableHIDDetectionOnOOBEForTesting);
   }
 
   void SetUpOnMainThread() override {
@@ -241,4 +239,4 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalWindowCtorDtorTest, OpenPortalDialog) {
   error_screen->ShowCaptivePortal();
 }
 
-}  // namespace chromeos
+}  // namespace ash

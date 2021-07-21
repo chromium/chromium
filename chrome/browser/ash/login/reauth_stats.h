@@ -78,6 +78,7 @@ void SendReauthReason(const AccountId& account_id, bool password_changed);
 // source migration is finished.
 namespace ash {
 using ::chromeos::ReauthReason;
-}
+using ::chromeos::SendReauthReason;
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_REAUTH_STATS_H_

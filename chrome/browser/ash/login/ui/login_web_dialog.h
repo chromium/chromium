@@ -18,7 +18,7 @@ namespace content {
 class BrowserContext;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Launches web dialog during OOBE/Login with specified URL and title.
 class LoginWebDialog : public ui::WebDialogDelegate {
@@ -93,11 +93,12 @@ class LoginWebDialog : public ui::WebDialogDelegate {
   DISALLOW_COPY_AND_ASSIGN(LoginWebDialog);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
-namespace ash {
-using ::chromeos::LoginWebDialog;
+// TODO(https://crbug.com/1164001): remove when the chrome/browser/chromeos/
+// source migration is finished.
+namespace chromeos {
+using ::ash::LoginWebDialog;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_WEB_DIALOG_H_

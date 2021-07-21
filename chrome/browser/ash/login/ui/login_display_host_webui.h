@@ -35,10 +35,6 @@
 
 namespace ash {
 class FocusRingController;
-}
-
-namespace chromeos {
-
 class LoginDisplayWebUI;
 class WebUILoginView;
 
@@ -52,13 +48,13 @@ class WebUILoginView;
 class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
                               public content::WebContentsObserver,
                               public chromeos::SessionManagerClient::Observer,
-                              public chromeos::CrasAudioHandler::AudioObserver,
+                              public CrasAudioHandler::AudioObserver,
                               public chromeos::OobeConfiguration::Observer,
                               public display::DisplayObserver,
                               public ui::InputDeviceEventObserver,
                               public views::WidgetRemovalsObserver,
                               public views::WidgetObserver,
-                              public ash::MultiUserWindowManagerObserver {
+                              public MultiUserWindowManagerObserver {
  public:
   LoginDisplayHostWebUI();
   ~LoginDisplayHostWebUI() override;
@@ -83,7 +79,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void ShowGaiaDialog(const AccountId& prefilled_account) override;
   void HideOobeDialog() override;
   void SetShelfButtonsEnabled(bool enabled) override;
-  void UpdateOobeDialogState(ash::OobeDialogState state) override;
+  void UpdateOobeDialogState(OobeDialogState state) override;
   void HandleDisplayCaptivePortal() override;
   void UpdateAddUserButtonStatus() override;
   void RequestSystemInfoUpdate() override;
@@ -123,7 +119,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // chromeos::OobeConfiguration::Observer:
   void OnOobeConfigurationChanged() override;
 
-  // chromeos::CrasAudioHandler::AudioObserver:
+  // CrasAudioHandler::AudioObserver:
   void OnActiveOutputNodeChanged() override;
 
   // display::DisplayObserver:
@@ -144,7 +140,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
   // TODO (crbug.com/1168114): remove whole observer hierarchy, it is not needed
   // anymore.
-  // ash::MultiUserWindowManagerObserver:
+  // MultiUserWindowManagerObserver:
   void OnUserSwitchAnimationFinished() override;
 
  private:
@@ -246,7 +242,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
   // A focus ring controller to draw focus ring around view for keyboard
   // driven oobe.
-  std::unique_ptr<ash::FocusRingController> focus_ring_controller_;
+  std::unique_ptr<FocusRingController> focus_ring_controller_;
 
   // Handles special keys for keyboard driven oobe.
   std::unique_ptr<KeyboardDrivenOobeKeyHandler>
@@ -281,12 +277,12 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   DISALLOW_COPY_AND_ASSIGN(LoginDisplayHostWebUI);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source code migration is finished.
-namespace ash {
-using ::chromeos::LoginDisplayHostWebUI;
+namespace chromeos {
+using ::ash::LoginDisplayHostWebUI;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_HOST_WEBUI_H_

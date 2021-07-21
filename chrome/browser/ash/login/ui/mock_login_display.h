@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockLoginDisplay : public LoginDisplay {
  public:
@@ -28,12 +28,12 @@ class MockLoginDisplay : public LoginDisplay {
   DISALLOW_COPY_AND_ASSIGN(MockLoginDisplay);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::MockLoginDisplay;
+namespace chromeos {
+using ::ash::MockLoginDisplay;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_MOCK_LOGIN_DISPLAY_H_

@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "ui/events/event_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // A simple input events blocker that just makes device unresponsive.
 // Should be used only for a (very) short time lock as it's confusing to the
@@ -28,12 +28,6 @@ class InputEventsBlocker : public ui::EventHandler {
   DISALLOW_COPY_AND_ASSIGN(InputEventsBlocker);
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::InputEventsBlocker;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_INPUT_EVENTS_BLOCKER_H_

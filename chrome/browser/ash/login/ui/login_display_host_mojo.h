@@ -15,10 +15,16 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/existing_user_controller.h"
+// TODO(https://crbug.com/1164001): use forward declaration.
+#include "chrome/browser/ash/login/mojo_system_info_dispatcher.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/login/security_token_pin_dialog_host_ash_impl.h"
 #include "chrome/browser/ash/login/ui/login_display_host_common.h"
 #include "chrome/browser/ash/login/ui/oobe_ui_dialog_delegate.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/user_board_view_mojo.h"
 // TODO(https://crbug.com/1164001): use forward declaration.
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
@@ -33,12 +39,9 @@ namespace views {
 class View;
 }  // namespace views
 
-namespace chromeos {
-class ExistingUserController;
+namespace ash {
 class LoginDisplayMojo;
 class OobeUIDialogDelegate;
-class UserBoardViewMojo;
-class MojoSystemInfoDispatcher;
 
 // A LoginDisplayHost instance that sends requests to the views-based signin
 // screen.
@@ -84,7 +87,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void ShowGaiaDialog(const AccountId& prefilled_account) override;
   void HideOobeDialog() override;
   void SetShelfButtonsEnabled(bool enabled) override;
-  void UpdateOobeDialogState(ash::OobeDialogState state) override;
+  void UpdateOobeDialogState(OobeDialogState state) override;
   void OnCancelPasswordChangedFlow() override;
   void ShowEnableConsumerKioskScreen() override;
   void HandleDisplayCaptivePortal() override;
@@ -240,6 +243,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   DISALLOW_COPY_AND_ASSIGN(LoginDisplayHostMojo);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_HOST_MOJO_H_

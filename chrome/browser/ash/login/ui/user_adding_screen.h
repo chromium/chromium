@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 
-namespace chromeos {
+namespace ash {
 
 // An interface that defines screen for adding users into multi-profile session.
 // Current implementation is a singleton.
@@ -36,12 +36,12 @@ class UserAddingScreen {
   DISALLOW_COPY_AND_ASSIGN(UserAddingScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::UserAddingScreen;
+namespace chromeos {
+using ::ash::UserAddingScreen;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_USER_ADDING_SCREEN_H_

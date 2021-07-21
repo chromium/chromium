@@ -8,10 +8,10 @@
 #include "components/user_manager/user.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace chromeos {
+namespace ash {
 
 MockLoginDisplay::MockLoginDisplay() = default;
 
 MockLoginDisplay::~MockLoginDisplay() = default;
 
-}  // namespace chromeos
+}  // namespace ash

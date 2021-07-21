@@ -20,8 +20,6 @@
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 // TODO(https://crbug.com/1164001): use forward declaration.
-#include "chrome/browser/ash/login/ui/webui_login_view.h"
-// TODO(https://crbug.com/1164001): use forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "components/user_manager/user_type.h"
 
@@ -40,6 +38,7 @@ class Rect;
 namespace ash {
 class KioskAppId;
 class KioskLaunchController;
+class WebUILoginView;
 class WizardController;
 enum class OobeDialogState;
 

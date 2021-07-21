@@ -22,7 +22,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace chromeos {
+namespace ash {
 
 KioskAppMenuController::KioskAppMenuController() {
   kiosk_observations_.AddObservation(KioskAppManager::Get());
@@ -49,7 +49,7 @@ void KioskAppMenuController::SendKioskApps() {
   if (!LoginScreenClientImpl::HasInstance())
     return;
 
-  std::vector<ash::KioskAppMenuEntry> output;
+  std::vector<KioskAppMenuEntry> output;
 
   const gfx::ImageSkia default_icon = *ui::ResourceBundle::GetSharedInstance()
                                            .GetImageNamed(IDR_APP_DEFAULT_ICON)
@@ -62,7 +62,7 @@ void KioskAppMenuController::SendKioskApps() {
     std::vector<KioskAppManagerBase::App> apps;
     manager->GetApps(&apps);
     for (const auto& app : apps) {
-      ash::KioskAppMenuEntry menu_entry;
+      KioskAppMenuEntry menu_entry;
       menu_entry.app_id = app.app_id;
       menu_entry.account_id = app.account_id;
       menu_entry.name = base::UTF8ToUTF16(app.name);
@@ -71,7 +71,7 @@ void KioskAppMenuController::SendKioskApps() {
     }
   }
 
-  ash::KioskAppMenu::Get()->SetKioskApps(
+  KioskAppMenu::Get()->SetKioskApps(
       output,
       base::BindRepeating(&KioskAppMenuController::LaunchApp,
                           weak_factory_.GetWeakPtr()),
@@ -84,11 +84,11 @@ void KioskAppMenuController::SendKioskApps() {
   // Clear any old pending Kiosk launch errors
   KioskAppLaunchError::RecordMetricAndClear();
 
-  ash::LoginScreen::Get()->ShowKioskAppError(
+  LoginScreen::Get()->ShowKioskAppError(
       KioskAppLaunchError::GetErrorMessage(error));
 }
 
-void KioskAppMenuController::LaunchApp(const ash::KioskAppMenuEntry& app) {
+void KioskAppMenuController::LaunchApp(const KioskAppMenuEntry& app) {
   auto* host = LoginDisplayHost::default_host();
   if (!app.account_id.is_valid())
     return;
@@ -123,4 +123,4 @@ void KioskAppMenuController::OnMenuWillShow() {
   WebKioskAppManager::Get()->LoadIcons();
 }
 
-}  // namespace chromeos
+}  // namespace ash

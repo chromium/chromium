@@ -8,7 +8,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 void WebContentsForcedTitle::CreateForWebContentsWithTitle(
@@ -37,4 +37,4 @@ void WebContentsForcedTitle::TitleWasSet(content::NavigationEntry* entry) {
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsForcedTitle)
 
-}  // namespace chromeos
+}  // namespace ash

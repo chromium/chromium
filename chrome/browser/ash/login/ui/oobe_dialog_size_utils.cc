@@ -9,8 +9,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr int kDialogHeightForWidePadding = 640;
@@ -73,14 +72,13 @@ gfx::Size CalculateOobeDialogSize(const gfx::Size& host_size,
   return result;
 }
 
-gfx::Size CalculateOobeDialogSizeForPrimrayDisplay() {
+gfx::Size CalculateOobeDialogSizeForPrimaryDisplay() {
   const gfx::Size display_size =
       display::Screen::GetScreen()->GetPrimaryDisplay().size();
   const bool is_horizontal = display_size.width() > display_size.height();
   // ShellConfig is only non-existent in test scenarios.
-  const int shelf_height = ash::ShelfConfig::Get()
-                               ? ash::ShelfConfig::Get()->shelf_size()
-                               : 48 /* default shelf height */;
+  const int shelf_height = ShelfConfig::Get() ? ShelfConfig::Get()->shelf_size()
+                                              : 48 /* default shelf height */;
   return CalculateOobeDialogSize(display_size, shelf_height, is_horizontal);
 }
 
@@ -107,4 +105,4 @@ void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

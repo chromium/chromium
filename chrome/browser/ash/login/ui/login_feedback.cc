@@ -31,8 +31,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 extensions::ComponentLoader* GetComponentLoader(
@@ -228,4 +227,4 @@ void LoginFeedback::OnFeedbackFinished() {
     std::move(finished_callback_).Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

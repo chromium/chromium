@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderMultiUserTest,
   // Log in 2 users.
   LoginUser(account_id1_);
   base::RunLoop().RunUntilIdle();
-  chromeos::UserAddingScreen::Get()->Start();
+  ash::UserAddingScreen::Get()->Start();
   AddUser(account_id2_);
   base::RunLoop().RunUntilIdle();
 

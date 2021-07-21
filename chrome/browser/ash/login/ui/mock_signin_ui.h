@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockSigninUI : public SigninUI {
  public:
@@ -42,6 +42,12 @@ class MockSigninUI : public SigninUI {
   MOCK_METHOD(void, StartBrowserDataMigration, (), (override));
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::MockSigninUI;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_MOCK_SIGNIN_UI_H_

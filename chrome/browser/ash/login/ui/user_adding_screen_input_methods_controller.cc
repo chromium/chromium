@@ -6,7 +6,7 @@
 
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 UserAddingScreenInputMethodsController::UserAddingScreenInputMethodsController(
     UserAddingScreen* screen)
@@ -39,4 +39,4 @@ void UserAddingScreenInputMethodsController::OnUserAddingFinished() {
   saved_ime_state_.reset();
 }
 
-}  // namespace chromeos
+}  // namespace ash

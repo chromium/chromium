@@ -16,7 +16,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // A simulated modal dialog. Taking focus seems important to repro the crash,
@@ -79,4 +79,4 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalDialogDelegateTest,
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

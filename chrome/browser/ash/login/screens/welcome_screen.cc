@@ -229,7 +229,7 @@ void WelcomeScreen::SetApplicationLocaleAndInputMethod(
   // (InputEventsBlocker will live until callback is finished.)
   locale_util::SwitchLanguageCallback callback(base::BindOnce(
       &WelcomeScreen::OnLanguageChangedCallback, weak_factory_.GetWeakPtr(),
-      base::Owned(new chromeos::InputEventsBlocker), input_method));
+      base::Owned(new InputEventsBlocker), input_method));
   locale_util::SwitchLanguage(locale, true /* enableLocaleKeyboardLayouts */,
                               true /* login_layouts_only */,
                               std::move(callback),
@@ -256,7 +256,7 @@ void WelcomeScreen::SetApplicationLocale(const std::string& locale) {
   // (InputEventsBlocker will live until callback is finished.)
   locale_util::SwitchLanguageCallback callback(base::BindOnce(
       &WelcomeScreen::OnLanguageChangedCallback, weak_factory_.GetWeakPtr(),
-      base::Owned(new chromeos::InputEventsBlocker), std::string()));
+      base::Owned(new InputEventsBlocker), std::string()));
   locale_util::SwitchLanguage(locale, true /* enableLocaleKeyboardLayouts */,
                               true /* login_layouts_only */,
                               std::move(callback),

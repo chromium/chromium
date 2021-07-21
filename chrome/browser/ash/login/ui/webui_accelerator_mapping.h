@@ -9,10 +9,10 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 
-namespace chromeos {
+namespace ash {
 
-std::string MapToWebUIAccelerator(ash::LoginAcceleratorAction action);
+std::string MapToWebUIAccelerator(LoginAcceleratorAction action);
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_WEBUI_ACCELERATOR_MAPPING_H_

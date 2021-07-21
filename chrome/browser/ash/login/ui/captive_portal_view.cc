@@ -16,6 +16,7 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
+namespace ash {
 namespace {
 
 const char* CaptivePortalStartURL() {
@@ -34,8 +35,6 @@ std::u16string WindowTitleForNetwork(const chromeos::NetworkState* network) {
 }
 
 }  // namespace
-
-namespace chromeos {
 
 CaptivePortalView::CaptivePortalView(Profile* profile,
                                      CaptivePortalWindowProxy* proxy)
@@ -83,4 +82,4 @@ std::unique_ptr<views::WidgetDelegate> CaptivePortalView::MakeWidgetDelegate() {
   return delegate;
 }
 
-}  // namespace chromeos
+}  // namespace ash

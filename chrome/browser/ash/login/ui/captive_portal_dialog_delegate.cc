@@ -17,7 +17,7 @@
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 
 // Cleans up the delegate for a WebContentsModalDialogManager on destruction, or
 // on WebContents destruction, whichever comes first.
@@ -58,7 +58,7 @@ CaptivePortalDialogDelegate::CaptivePortalDialogDelegate(
   params.delegate = view_;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   ash_util::SetupWidgetInitParamsForContainer(
-      &params, ash::kShellWindowId_LockSystemModalContainer);
+      &params, kShellWindowId_LockSystemModalContainer);
 
   widget_ = new views::Widget;
   widget_->Init(std::move(params));
@@ -175,4 +175,4 @@ CaptivePortalDialogDelegate::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-}  // namespace chromeos
+}  // namespace ash

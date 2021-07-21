@@ -85,10 +85,4 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::FakeLoginDisplayHost;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_FAKE_LOGIN_DISPLAY_HOST_H_

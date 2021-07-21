@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientClockTest, TestMultiProfile24HourClock) {
   EXPECT_TRUE(tray_test_api->Is24HourClock());
 
   // Add a user with a 12-hour clock.
-  chromeos::UserAddingScreen::Get()->Start();
+  ash::UserAddingScreen::Get()->Start();
   content::RunAllPendingInMessageLoop();
   AddUser(account_id2_);
   SetupUserProfile(account_id2_, false /* use_24_hour_clock */);
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientClockTest, PRE_FocusedPod24HourClock) {
   EXPECT_TRUE(tray_test_api->Is24HourClock());
 
   // Add a user with a 12-hour clock.
-  chromeos::UserAddingScreen::Get()->Start();
+  ash::UserAddingScreen::Get()->Start();
   AddUser(account_id2_);
   SetupUserProfile(account_id2_, false /* use_24_hour_clock */);
   EXPECT_FALSE(tray_test_api->Is24HourClock());
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseAccountTest,
   // Switch to unmanaged account should still show the managed string (since the
   // primary user is managed user). However, the string should not contain the
   // account manager of the primary user.
-  chromeos::UserAddingScreen::Get()->Start();
+  ash::UserAddingScreen::Get()->Start();
   AddUser(unmanaged_user_.account_id);
   EXPECT_TRUE(test_api->IsBubbleViewVisible(ash::VIEW_ID_TRAY_ENTERPRISE,
                                             true /* open_tray */));

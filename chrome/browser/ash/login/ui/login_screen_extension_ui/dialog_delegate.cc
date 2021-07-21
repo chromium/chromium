@@ -14,11 +14,12 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
 const double kRelativeScreenWidth = 0.9;
 const double kRelativeScreenHeight = 0.8;
+
 }  // namespace
 
 namespace login_screen_extension_ui {
@@ -92,5 +93,4 @@ bool DialogDelegate::ShouldShowCloseButton() const {
 }
 
 }  // namespace login_screen_extension_ui
-
-}  // namespace chromeos
+}  // namespace ash

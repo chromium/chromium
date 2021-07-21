@@ -14,6 +14,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "ui/views/widget/widget.h"
 
+namespace ash {
 namespace {
 
 // A widget that uses the supplied Profile to return a ThemeProvider.  This is
@@ -60,8 +61,6 @@ views::Widget* CreateWindowAsFramelessChild(
 }
 
 }  // namespace
-
-namespace chromeos {
 
 CaptivePortalWindowProxy::CaptivePortalWindowProxy(
     Delegate* delegate,
@@ -178,4 +177,4 @@ void CaptivePortalWindowProxy::DetachFromWidget(views::Widget* widget) {
   widget_ = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

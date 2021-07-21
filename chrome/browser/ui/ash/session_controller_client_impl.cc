@@ -121,7 +121,7 @@ void OnAcceptMultiprofilesIntroDialog(bool accept, bool never_show_again) {
 
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kMultiProfileNeverShowIntro, never_show_again);
-  chromeos::UserAddingScreen::Get()->Start();
+  ash::UserAddingScreen::Get()->Start();
 }
 
 }  // namespace
@@ -281,7 +281,7 @@ void SessionControllerClientImpl::ShowMultiProfileLogin() {
     session_controller_->ShowMultiprofilesIntroDialog(
         base::BindOnce(&OnAcceptMultiprofilesIntroDialog));
   } else {
-    chromeos::UserAddingScreen::Get()->Start();
+    ash::UserAddingScreen::Get()->Start();
   }
 }
 

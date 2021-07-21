@@ -24,8 +24,7 @@
 
 class AccountId;
 
-namespace chromeos {
-
+namespace ash {
 class LoginFeedback;
 
 // LoginDisplayHostCommon contains code which is not specific to a particular UI
@@ -61,7 +60,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void CancelPasswordChangedFlow() final;
   void MigrateUserData(const std::string& old_password) final;
   void ResyncUserData() final;
-  bool HandleAccelerator(ash::LoginAcceleratorAction action) final;
+  bool HandleAccelerator(LoginAcceleratorAction action) final;
   SigninUI* GetSigninUI() final;
   void ShowOsInstallScreen() final;
 
@@ -138,6 +137,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   DISALLOW_COPY_AND_ASSIGN(LoginDisplayHostCommon);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_HOST_COMMON_H_

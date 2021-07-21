@@ -22,7 +22,7 @@ class WebDialogView;
 class Widget;
 }  // namespace views
 
-namespace chromeos {
+namespace ash {
 
 // Handles captive portal UI. Hosts modal dialogs that might be opened by the
 // web content.
@@ -86,6 +86,6 @@ class CaptivePortalDialogDelegate
   base::WeakPtrFactory<CaptivePortalDialogDelegate> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_CAPTIVE_PORTAL_DIALOG_DELEGATE_H_

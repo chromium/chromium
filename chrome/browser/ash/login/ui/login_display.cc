@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/ui/login_display.h"
 
-namespace chromeos {
+namespace ash {
 
 LoginDisplay::Delegate::~Delegate() = default;
 
@@ -12,4 +12,4 @@ LoginDisplay::LoginDisplay() = default;
 
 LoginDisplay::~LoginDisplay() = default;
 
-}  // namespace chromeos
+}  // namespace ash

@@ -414,7 +414,7 @@ bool ChromeVirtualKeyboardDelegate::SetRequestedKeyboardState(int state_enum) {
 
 bool ChromeVirtualKeyboardDelegate::IsSettingsEnabled() {
   return (user_manager::UserManager::Get()->IsUserLoggedIn() &&
-          !chromeos::UserAddingScreen::Get()->IsRunning() &&
+          !ash::UserAddingScreen::Get()->IsRunning() &&
           !(ash::ScreenLocker::default_screen_locker() &&
             ash::ScreenLocker::default_screen_locker()->locked()));
 }

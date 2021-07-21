@@ -17,9 +17,9 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 
-using SimpleWebViewDialogTest = InProcessBrowserTest;
+using SimpleWebViewDialogTest = ::InProcessBrowserTest;
 
 // Tests that http auth triggered web dialog does not crash.
 IN_PROC_BROWSER_TEST_F(SimpleWebViewDialogTest, HttpAuthWebDialog) {
@@ -45,4 +45,4 @@ IN_PROC_BROWSER_TEST_F(SimpleWebViewDialogTest, HttpAuthWebDialog) {
   WindowedAuthNeededObserver(controller).Wait();
 }
 
-}  // namespace chromeos
+}  // namespace ash

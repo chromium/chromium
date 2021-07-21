@@ -21,7 +21,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
 
+namespace ash {
+namespace login_screen_extension_ui {
 namespace {
+
+using DialogDelegateUnittest = ::testing::Test;
 
 const char kExtensionName[] = "extension-name";
 const char16_t kExtensionName16[] = u"extension-name";
@@ -29,12 +33,6 @@ const char kExtensionId[] = "abcdefghijklmnopqrstuvwxyzabcdef";
 const char kResourcePath[] = "path/to/file.html";
 
 }  // namespace
-
-namespace chromeos {
-
-namespace login_screen_extension_ui {
-
-using DialogDelegateUnittest = testing::Test;
 
 TEST_F(DialogDelegateUnittest, Test) {
   content::BrowserTaskEnvironment task_environment_;
@@ -74,5 +72,4 @@ TEST_F(DialogDelegateUnittest, Test) {
 }
 
 }  // namespace login_screen_extension_ui
-
-}  // namespace chromeos
+}  // namespace ash

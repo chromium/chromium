@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(ShillProfileLoadingTest, UnmanagedUser) {
           unmanaged_user_.account_id))));
 
   // Adding a secondary user does not re-trigger loading the shill profile.
-  chromeos::UserAddingScreen::Get()->Start();
+  UserAddingScreen::Get()->Start();
   AddUser(secondary_unmanaged_user_.account_id);
   EXPECT_THAT(
       waiter.invocations(),

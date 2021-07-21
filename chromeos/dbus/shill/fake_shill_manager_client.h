@@ -174,4 +174,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::FakeShillManagerClient;
+}
+
 #endif  // CHROMEOS_DBUS_SHILL_FAKE_SHILL_MANAGER_CLIENT_H_

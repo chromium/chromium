@@ -702,7 +702,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest,
     MetricNotRecordedOnRegisteredAccount) {
-  chromeos::UserAddingScreen::Get()->Start();
+  ash::UserAddingScreen::Get()->Start();
 
   // Verify that the launcher usage state is recorded when switching accounts.
   base::HistogramTester tester;
@@ -731,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(
     DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest,
     MetricNotRecordedAfterUserSwitch) {
   // Switch to a registered user account then switch back.
-  chromeos::UserAddingScreen::Get()->Start();
+  ash::UserAddingScreen::Get()->Start();
   AddUser(registered_user_id_);
   user_manager::UserManager::Get()->SwitchActiveUser(new_user_id_);
 

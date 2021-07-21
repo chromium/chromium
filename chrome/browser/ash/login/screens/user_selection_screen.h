@@ -33,11 +33,8 @@
 
 class AccountId;
 
-namespace chromeos {
-class UserBoardView;
-}
-
 namespace ash {
+class UserBoardView;
 
 enum class DisplayedScreen { SIGN_IN_SCREEN, USER_ADDING_SCREEN, LOCK_SCREEN };
 
@@ -51,7 +48,7 @@ class UserSelectionScreen
   explicit UserSelectionScreen(DisplayedScreen display_type);
   ~UserSelectionScreen() override;
 
-  void SetView(chromeos::UserBoardView* view);
+  void SetView(UserBoardView* view);
 
   static const user_manager::UserList PrepareUserListForSending(
       const user_manager::UserList& users,
@@ -114,7 +111,7 @@ class UserSelectionScreen
   void SetUsersLoaded(bool loaded);
 
  protected:
-  chromeos::UserBoardView* view_ = nullptr;
+  UserBoardView* view_ = nullptr;
 
   // Map from public session account IDs to recommended locales set by policy.
   std::map<AccountId, std::vector<std::string>>

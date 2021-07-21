@@ -17,7 +17,7 @@
 
 class AccountId;
 
-namespace chromeos {
+namespace ash {
 
 // TODO(jdufault): Rename UserBoardView to UserSelectionView. See
 // crbug.com/672142.
@@ -57,12 +57,12 @@ class UserBoardView {
                                  base::TimeDelta time_left) = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::UserBoardView;
+namespace chromeos {
+using ::ash::UserBoardView;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_VIEWS_USER_BOARD_VIEW_H_

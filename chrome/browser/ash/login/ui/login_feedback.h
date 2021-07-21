@@ -14,8 +14,7 @@
 
 class Profile;
 
-namespace chromeos {
-
+namespace ash {
 class FeedbackExtensionLoader;
 
 // Show the feedback UI to collect a feedback on the login screen. Note that
@@ -55,12 +54,12 @@ class LoginFeedback {
   DISALLOW_COPY_AND_ASSIGN(LoginFeedback);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::LoginFeedback;
+namespace chromeos {
+using ::ash::LoginFeedback;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_FEEDBACK_H_

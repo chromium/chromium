@@ -23,10 +23,8 @@ namespace gfx {
 class Size;
 }  // namespace gfx
 
-namespace chromeos {
-
+namespace ash {
 namespace login_screen_extension_ui {
-
 struct CreateOptions;
 
 // This class is used to provide data from a chrome.loginScreenUi API call to
@@ -72,7 +70,6 @@ class DialogDelegate : public ui::WebDialogDelegate {
 };
 
 }  // namespace login_screen_extension_ui
-
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_SCREEN_EXTENSION_UI_DIALOG_DELEGATE_H_

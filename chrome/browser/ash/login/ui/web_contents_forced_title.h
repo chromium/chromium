@@ -10,7 +10,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-namespace chromeos {
+namespace ash {
 
 // Ensures that the title of the WebContents instance this object is attached
 // to is always set to the given title value.
@@ -38,6 +38,6 @@ class WebContentsForcedTitle
   DISALLOW_COPY_AND_ASSIGN(WebContentsForcedTitle);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_WEB_CONTENTS_FORCED_TITLE_H_

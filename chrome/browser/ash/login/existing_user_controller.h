@@ -29,9 +29,10 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/signin/oauth2_token_initializer.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ash/login/ui/signin_ui.h"
 // TODO(https://crbug.com/1164001): move CrosSettings to forward declaration
 // when moved to chrome/browser/ash/.
-#include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/login/auth/login_performer.h"
@@ -52,8 +53,6 @@ class ListValue;
 }
 
 namespace chromeos {
-class LoginDisplay;
-
 namespace login {
 class NetworkStateHelper;
 }

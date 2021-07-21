@@ -18,21 +18,18 @@ class BrowserContext;
 class WebContents;
 }  // namespace content
 
-namespace chromeos {
-
+namespace ash {
 namespace login_screen_extension_ui {
-
 class DialogDelegate;
 
 // A WebDialogView used by chrome.loginScreenUi API calls. It hides the close
 // button if `DialogDelegate::CanCloseDialog()` is false.
-class WebDialogView : public views::WebDialogView,
-                      public ash::SystemTrayObserver {
+class WebDialogView : public views::WebDialogView, public SystemTrayObserver {
  public:
   METADATA_HEADER(WebDialogView);
   explicit WebDialogView(
       content::BrowserContext* context,
-      chromeos::login_screen_extension_ui::DialogDelegate* delegate,
+      login_screen_extension_ui::DialogDelegate* delegate,
       std::unique_ptr<ui::WebDialogWebContentsDelegate::WebContentsHandler>
           handler);
   WebDialogView(const WebDialogView&) = delete;
@@ -42,17 +39,16 @@ class WebDialogView : public views::WebDialogView,
   // views::WebDialogView
   bool TakeFocus(content::WebContents* source, bool reverse) override;
 
-  // ash::SystemTrayObserver
+  // SystemTrayObserver
   void OnFocusLeavingSystemTray(bool reverse) override;
 
  private:
   // views::WebDialogView extends views::DialogDelegate, so fully qualified name
   // is needed.
-  chromeos::login_screen_extension_ui::DialogDelegate* delegate_ = nullptr;
+  login_screen_extension_ui::DialogDelegate* delegate_ = nullptr;
 };
 
 }  // namespace login_screen_extension_ui
-
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_SCREEN_EXTENSION_UI_WEB_DIALOG_VIEW_H_

@@ -51,7 +51,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // The delay of triggering initialization of the device policy subsystem
@@ -368,10 +368,9 @@ void LoginDisplayHostCommon::ResyncUserData() {
     GetExistingUserController()->ResyncUserData();
 }
 
-bool LoginDisplayHostCommon::HandleAccelerator(
-    ash::LoginAcceleratorAction action) {
+bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
   DCHECK(GetOobeUI());
-  if (action == ash::LoginAcceleratorAction::kShowFeedback) {
+  if (action == LoginAcceleratorAction::kShowFeedback) {
     login_feedback_ = std::make_unique<LoginFeedback>(
         ProfileHelper::Get()->GetSigninProfile());
     login_feedback_->Request(
@@ -381,8 +380,8 @@ bool LoginDisplayHostCommon::HandleAccelerator(
     return true;
   }
 
-  if (action == ash::LoginAcceleratorAction::kLaunchDiagnostics &&
-      base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp)) {
+  if (action == LoginAcceleratorAction::kLaunchDiagnostics &&
+      base::FeatureList::IsEnabled(features::kDiagnosticsApp)) {
     // Don't handle this action if device is disabled.
     if (system::DeviceDisablingManager::
             IsDeviceDisabledDuringNormalOperation()) {
@@ -561,4 +560,4 @@ void LoginDisplayHostCommon::OnFeedbackFinished() {
   login_feedback_.reset();
 }
 
-}  // namespace chromeos
+}  // namespace ash

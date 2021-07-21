@@ -21,8 +21,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 class UserAddingScreenImpl : public UserAddingScreen {
@@ -81,8 +80,7 @@ class UserAddingScreenImpl : public UserAddingScreen {
 
 void UserAddingScreenImpl::Start() {
   CHECK(!IsRunning());
-  display_host_ =
-      new chromeos::LoginDisplayHostMojo(DisplayedScreen::USER_ADDING_SCREEN);
+  display_host_ = new LoginDisplayHostMojo(DisplayedScreen::USER_ADDING_SCREEN);
   reporter_ = std::make_unique<LoadTimeReporter>();
 
   // This triggers input method manager to filter login screen methods. This
@@ -152,4 +150,4 @@ UserAddingScreen* UserAddingScreen::Get() {
   return UserAddingScreenImpl::GetInstance();
 }
 
-}  // namespace chromeos
+}  // namespace ash

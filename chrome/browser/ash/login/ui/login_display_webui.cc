@@ -27,7 +27,7 @@
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 
 // LoginDisplayWebUI, public: --------------------------------------------------
 
@@ -143,4 +143,4 @@ void LoginDisplayWebUI::OnUserActivity(const ui::Event* event) {
     delegate_->ResetAutoLoginTimer();
 }
 
-}  // namespace chromeos
+}  // namespace ash

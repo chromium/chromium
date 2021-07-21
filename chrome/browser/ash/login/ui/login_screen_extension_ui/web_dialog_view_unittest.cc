@@ -18,6 +18,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+namespace ash {
+namespace login_screen_extension_ui {
 namespace {
 
 class MockLoginScreen : public TestLoginScreen {
@@ -30,12 +32,6 @@ class MockLoginScreen : public TestLoginScreen {
  private:
   DISALLOW_COPY_AND_ASSIGN(MockLoginScreen);
 };
-
-}  // namespace
-
-namespace chromeos {
-
-namespace login_screen_extension_ui {
 
 class LoginScreenExtensionUiWebDialogViewUnittest : public testing::Test {
  public:
@@ -94,6 +90,6 @@ TEST_F(LoginScreenExtensionUiWebDialogViewUnittest, TabOut) {
   testing::Mock::VerifyAndClearExpectations(&mock_login_screen_);
 }
 
+}  // namespace
 }  // namespace login_screen_extension_ui
-
-}  // namespace chromeos
+}  // namespace ash

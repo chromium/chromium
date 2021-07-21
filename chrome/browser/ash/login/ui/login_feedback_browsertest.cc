@@ -24,7 +24,7 @@
 #include "ui/aura/client/focus_client.h"
 #include "ui/base/base_window.h"
 
-namespace chromeos {
+namespace ash {
 
 class LoginFeedbackTest : public LoginManagerTest {
  public:
@@ -73,4 +73,4 @@ IN_PROC_BROWSER_TEST_F(OobeBaseTest, FeedbackBasic) {
   TestFeedback();
 }
 
-}  // namespace chromeos
+}  // namespace ash

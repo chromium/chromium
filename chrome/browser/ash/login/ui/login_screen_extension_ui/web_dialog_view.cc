@@ -10,13 +10,12 @@
 #include "content/public/browser/browser_context.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace login_screen_extension_ui {
 
 WebDialogView::WebDialogView(
     content::BrowserContext* context,
-    chromeos::login_screen_extension_ui::DialogDelegate* delegate,
+    login_screen_extension_ui::DialogDelegate* delegate,
     std::unique_ptr<ui::WebDialogWebContentsDelegate::WebContentsHandler>
         handler)
     : views::WebDialogView(context, delegate, std::move(handler)),
@@ -35,7 +34,7 @@ WebDialogView::~WebDialogView() {
 }
 
 bool WebDialogView::TakeFocus(content::WebContents* source, bool reverse) {
-  ash::LoginScreen::Get()->FocusLoginShelf(reverse);
+  LoginScreen::Get()->FocusLoginShelf(reverse);
   return true;
 }
 
@@ -48,5 +47,4 @@ BEGIN_METADATA(WebDialogView, views::WebDialogView)
 END_METADATA
 
 }  // namespace login_screen_extension_ui
-
-}  // namespace chromeos
+}  // namespace ash

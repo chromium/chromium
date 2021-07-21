@@ -9,7 +9,7 @@
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 
-namespace chromeos {
+namespace ash {
 
 enum class SigninError {
   kCaptivePortalError,
@@ -69,13 +69,12 @@ class SigninUI {
   virtual void StartBrowserDataMigration() = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::SigninError;
-using ::chromeos::SigninUI;
+namespace chromeos {
+using ::ash::SigninError;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_SIGNIN_UI_H_

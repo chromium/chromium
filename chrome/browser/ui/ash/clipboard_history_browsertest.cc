@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   }
 
   // Log in as the user2. The clipboard history should be non-empty.
-  chromeos::UserAddingScreen::Get()->Start();
+  ash::UserAddingScreen::Get()->Start();
   AddUser(account_id2_);
   EXPECT_FALSE(GetClipboardItems().empty());
 

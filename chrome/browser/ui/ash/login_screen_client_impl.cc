@@ -284,7 +284,7 @@ void LoginScreenClientImpl::SignOutUser() {
 }
 
 void LoginScreenClientImpl::CancelAddUser() {
-  chromeos::UserAddingScreen::Get()->Cancel();
+  ash::UserAddingScreen::Get()->Cancel();
 }
 
 void LoginScreenClientImpl::LoginAsGuest() {

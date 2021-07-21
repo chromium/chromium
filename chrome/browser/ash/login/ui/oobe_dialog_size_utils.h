@@ -9,7 +9,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace chromeos {
+namespace ash {
 
 // Enum that specifies how inner padding of OOBE dialog should be calculated.
 enum class OobeDialogPaddingMode {
@@ -40,7 +40,7 @@ gfx::Size CalculateOobeDialogSize(const gfx::Size& host_size,
 
 // Calculated the size of OOBE dialog for primary display by passing primary
 // display screen size and shelf height to `CalculateOobeDialogSize`.
-gfx::Size CalculateOobeDialogSizeForPrimrayDisplay();
+gfx::Size CalculateOobeDialogSizeForPrimaryDisplay();
 
 // Position OOBE dialog according to specs inside `host_bounds` excluding shelf.
 // `host_bounds` is in coordinates of oobe dialog widget. `result` is
@@ -52,6 +52,18 @@ void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
                                gfx::Rect* result,
                                OobeDialogPaddingMode* result_padding);
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::CalculateOobeDialogSize;
+using ::ash::CalculateOobeDialogSizeForPrimaryDisplay;
+using ::ash::OobeDialogPaddingMode;
+using ::ash::kMaxLandscapeDialogSize;
+using ::ash::kMaxPortraitDialogSize;
+using ::ash::kMinLandscapeDialogSize;
+using ::ash::kMinPortraitDialogSize;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_OOBE_DIALOG_SIZE_UTILS_H_

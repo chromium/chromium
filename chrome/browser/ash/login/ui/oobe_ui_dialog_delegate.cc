@@ -41,13 +41,12 @@
 #include "ui/views/widget/widget.h"
 
 DEFINE_ENUM_CONVERTERS(
-    chromeos::OobeDialogPaddingMode,
-    {chromeos::OobeDialogPaddingMode::PADDING_AUTO, u"PADDING_AUTO"},
-    {chromeos::OobeDialogPaddingMode::PADDING_WIDE, u"PADDING_WIDE"},
-    {chromeos::OobeDialogPaddingMode::PADDING_NARROW, u"PADDING_NARROW"})
+    ash::OobeDialogPaddingMode,
+    {ash::OobeDialogPaddingMode::PADDING_AUTO, u"PADDING_AUTO"},
+    {ash::OobeDialogPaddingMode::PADDING_WIDE, u"PADDING_WIDE"},
+    {ash::OobeDialogPaddingMode::PADDING_NARROW, u"PADDING_NARROW"})
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kGaiaURL[] = "chrome://oobe/gaia-signin";
@@ -94,7 +93,7 @@ class OobeWebDialogView : public views::WebDialogView {
   }
 
   bool TakeFocus(content::WebContents* source, bool reverse) override {
-    ash::LoginScreen::Get()->FocusLoginShelf(reverse);
+    LoginScreen::Get()->FocusLoginShelf(reverse);
     return true;
   }
 
@@ -194,8 +193,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
     }
 
     gfx::Rect bounds;
-    const int shelf_height =
-        has_shelf_ ? ash::ShelfConfig::Get()->shelf_size() : 0;
+    const int shelf_height = has_shelf_ ? ShelfConfig::Get()->shelf_size() : 0;
     const gfx::Size display_size =
         display::Screen::GetScreen()->GetPrimaryDisplay().size();
     const bool is_horizontal = display_size.width() > display_size.height();
@@ -236,17 +234,16 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
   set_can_resize(false);
   keyboard_observer_.Observe(ChromeKeyboardControllerClient::Get());
 
-  for (size_t i = 0; i < ash::kLoginAcceleratorDataLength; ++i) {
-    if (ash::kLoginAcceleratorData[i].global)
+  for (size_t i = 0; i < kLoginAcceleratorDataLength; ++i) {
+    if (kLoginAcceleratorData[i].global)
       continue;
-    if (!(ash::kLoginAcceleratorData[i].scope &
-          (ash::kScopeLogin | ash::kScopeLock))) {
+    if (!(kLoginAcceleratorData[i].scope & (kScopeLogin | kScopeLock))) {
       continue;
     }
 
-    accel_map_[ui::Accelerator(ash::kLoginAcceleratorData[i].keycode,
-                               ash::kLoginAcceleratorData[i].modifiers)] =
-        ash::kLoginAcceleratorData[i].action;
+    accel_map_[ui::Accelerator(kLoginAcceleratorData[i].keycode,
+                               kLoginAcceleratorData[i].modifiers)] =
+        kLoginAcceleratorData[i].action;
   }
 
   DCHECK(!dialog_view_ && !widget_);
@@ -261,7 +258,7 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   ash_util::SetupWidgetInitParamsForContainer(
-      &params, ash::kShellWindowId_LockScreenContainer);
+      &params, kShellWindowId_LockScreenContainer);
   layout_view_ = new LayoutWidgetDelegateView(this, dialog_view_);
   params.delegate = layout_view_;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
@@ -311,16 +308,16 @@ void OobeUIDialogDelegate::SetShouldDisplayCaptivePortal(bool should_display) {
 void OobeUIDialogDelegate::Show() {
   if (LoginScreenClientImpl::Get()) {
     scoped_system_tray_observer_ = std::make_unique<base::ScopedObservation<
-        LoginScreenClientImpl, ash::SystemTrayObserver,
+        LoginScreenClientImpl, SystemTrayObserver,
         &LoginScreenClientImpl::AddSystemTrayObserver,
         &LoginScreenClientImpl::RemoveSystemTrayObserver>>(this);
     scoped_system_tray_observer_->Observe(LoginScreenClientImpl::Get());
   }
   widget_->Show();
-  if (state_ == ash::OobeDialogState::HIDDEN) {
-    SetState(ash::OobeDialogState::GAIA_SIGNIN);
+  if (state_ == OobeDialogState::HIDDEN) {
+    SetState(OobeDialogState::GAIA_SIGNIN);
   } else {
-    ash::LoginScreen::Get()->GetModel()->NotifyOobeDialogState(state_);
+    LoginScreen::Get()->GetModel()->NotifyOobeDialogState(state_);
   }
 
   if (should_display_captive_portal_)
@@ -337,7 +334,7 @@ void OobeUIDialogDelegate::Hide() {
   if (!widget_)
     return;
   widget_->Hide();
-  SetState(ash::OobeDialogState::HIDDEN);
+  SetState(OobeDialogState::HIDDEN);
 }
 
 void OobeUIDialogDelegate::Close() {
@@ -349,7 +346,7 @@ void OobeUIDialogDelegate::Close() {
   widget_->Close();
 }
 
-void OobeUIDialogDelegate::SetState(ash::OobeDialogState state) {
+void OobeUIDialogDelegate::SetState(OobeDialogState state) {
   if (!widget_ || state_ == state)
     return;
 
@@ -357,10 +354,10 @@ void OobeUIDialogDelegate::SetState(ash::OobeDialogState state) {
 
   // Gaia WebUI is preloaded, so it's possible for WebUI to send state updates
   // while the widget is not visible. Defer the state update until Show().
-  if (!widget_->IsVisible() && state_ != ash::OobeDialogState::HIDDEN)
+  if (!widget_->IsVisible() && state_ != OobeDialogState::HIDDEN)
     return;
 
-  ash::LoginScreen::Get()->GetModel()->NotifyOobeDialogState(state_);
+  LoginScreen::Get()->GetModel()->NotifyOobeDialogState(state_);
 }
 
 OobeUI* OobeUIDialogDelegate::GetOobeUI() const {
@@ -488,4 +485,4 @@ void OobeUIDialogDelegate::OnFocusLeavingSystemTray(bool reverse) {
     dialog_view_->AboutToRequestFocusFromTabTraversal(reverse);
 }
 
-}  // namespace chromeos
+}  // namespace ash

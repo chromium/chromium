@@ -20,8 +20,7 @@ namespace views {
 class Widget;
 }
 
-namespace chromeos {
-
+namespace ash {
 class CaptivePortalView;
 
 // Delegate interface for CaptivePortalWindowProxy.
@@ -131,12 +130,12 @@ class CaptivePortalWindowProxy : public views::WidgetObserver {
   base::ObserverList<Observer> observers_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::CaptivePortalWindowProxy;
+namespace chromeos {
+using ::ash::CaptivePortalWindowProxyDelegate;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_CAPTIVE_PORTAL_WINDOW_PROXY_H_

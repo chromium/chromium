@@ -8,8 +8,7 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // These strings must be kept in sync with handleAccelerator()
@@ -30,35 +29,35 @@ const char kAccelNameLaunchDiagnostics[] = "launch_diagnostics";
 
 }  // namespace
 
-std::string MapToWebUIAccelerator(ash::LoginAcceleratorAction action) {
+std::string MapToWebUIAccelerator(LoginAcceleratorAction action) {
   switch (action) {
-    case ash::LoginAcceleratorAction::kToggleSystemInfo:
+    case LoginAcceleratorAction::kToggleSystemInfo:
       return kAccelNameVersion;
-    case ash::LoginAcceleratorAction::kShowFeedback:
+    case LoginAcceleratorAction::kShowFeedback:
       return kAccelSendFeedback;
-    case ash::LoginAcceleratorAction::kShowResetScreen:
+    case LoginAcceleratorAction::kShowResetScreen:
       return kAccelNameReset;
-    case ash::LoginAcceleratorAction::kAppLaunchBailout:
+    case LoginAcceleratorAction::kAppLaunchBailout:
       return kAccelNameAppLaunchBailout;
-    case ash::LoginAcceleratorAction::kAppLaunchNetworkConfig:
+    case LoginAcceleratorAction::kAppLaunchNetworkConfig:
       return kAccelNameAppLaunchNetworkConfig;
-    case ash::LoginAcceleratorAction::kCancelScreenAction:
+    case LoginAcceleratorAction::kCancelScreenAction:
       return kAccelNameCancel;
-    case ash::LoginAcceleratorAction::kStartEnrollment:
+    case LoginAcceleratorAction::kStartEnrollment:
       return kAccelNameEnrollment;
-    case ash::LoginAcceleratorAction::kEnableConsumerKiosk:
+    case LoginAcceleratorAction::kEnableConsumerKiosk:
       return kAccelNameKioskEnable;
-    case ash::LoginAcceleratorAction::kEnableDebugging:
+    case LoginAcceleratorAction::kEnableDebugging:
       return kAccelNameEnableDebugging;
-    case ash::LoginAcceleratorAction::kEditDeviceRequisition:
+    case LoginAcceleratorAction::kEditDeviceRequisition:
       return kAccelNameDeviceRequisition;
-    case ash::LoginAcceleratorAction::kDeviceRequisitionRemora:
+    case LoginAcceleratorAction::kDeviceRequisitionRemora:
       return kAccelNameDeviceRequisitionRemora;
-    case ash::LoginAcceleratorAction::kStartDemoMode:
+    case LoginAcceleratorAction::kStartDemoMode:
       return kAccelNameDemoMode;
-    case ash::LoginAcceleratorAction::kLaunchDiagnostics:
+    case LoginAcceleratorAction::kLaunchDiagnostics:
       return kAccelNameLaunchDiagnostics;
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

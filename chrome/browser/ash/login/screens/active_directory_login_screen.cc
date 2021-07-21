@@ -24,15 +24,15 @@ namespace {
 
 constexpr char kUserActionCancel[] = "cancel";
 
-chromeos::SigninError GetSigninError(authpolicy::ErrorType error) {
+SigninError GetSigninError(authpolicy::ErrorType error) {
   switch (error) {
     case authpolicy::ERROR_NETWORK_PROBLEM:
-      return chromeos::SigninError::kActiveDirectoryNetworkProblem;
+      return SigninError::kActiveDirectoryNetworkProblem;
     case authpolicy::ERROR_KDC_DOES_NOT_SUPPORT_ENCRYPTION_TYPE:
-      return chromeos::SigninError::kActiveDirectoryNotSupportedEncryption;
+      return SigninError::kActiveDirectoryNotSupportedEncryption;
     default:
       DLOG(WARNING) << "Unhandled error code: " << error;
-      return chromeos::SigninError::kActiveDirectoryUnknownError;
+      return SigninError::kActiveDirectoryUnknownError;
   }
 }
 

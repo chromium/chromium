@@ -157,7 +157,7 @@ void FindRuntimeContext(gfx::NativeWindow owner_window,
   // certificate manager dialog. There are no browser or webapp window
   // instances present in this case.
   if (chrome::IsRunningInForcedAppMode() && !(*web_contents))
-    *web_contents = chromeos::LoginWebDialog::GetCurrentWebContents();
+    *web_contents = ash::LoginWebDialog::GetCurrentWebContents();
 
   // Check for a WebContents used for the Chrome OS WebUI login flow.
   if (!*web_contents)

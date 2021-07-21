@@ -36,8 +36,7 @@ class WebDialogView;
 class Widget;
 }  // namespace views
 
-namespace chromeos {
-
+namespace ash {
 class CaptivePortalDialogDelegate;
 class LayoutWidgetDelegateView;
 class LoginDisplayHostMojo;
@@ -55,7 +54,7 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
                              public CaptivePortalWindowProxy::Observer,
                              public OobeUI::Observer,
                              public views::ViewObserver,
-                             public ash::SystemTrayObserver {
+                             public SystemTrayObserver {
  public:
   explicit OobeUIDialogDelegate(base::WeakPtr<LoginDisplayHostMojo> controller);
   ~OobeUIDialogDelegate() override;
@@ -76,7 +75,7 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   bool IsVisible();
 
   // Update the oobe state of the dialog.
-  void SetState(ash::OobeDialogState state);
+  void SetState(OobeDialogState state);
 
   // Tell the dialog whether to call FixCaptivePortal next time it is shown.
   void SetShouldDisplayCaptivePortal(bool should_display);
@@ -128,7 +127,7 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
                               OobeScreenId new_screen) override;
   void OnDestroyingOobeUI() override;
 
-  // ash::SystemTrayObserver:
+  // SystemTrayObserver:
   void OnFocusLeavingSystemTray(bool reverse) override;
 
   base::WeakPtr<LoginDisplayHostMojo> controller_;
@@ -155,13 +154,13 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
 
   std::unique_ptr<
       base::ScopedObservation<LoginScreenClientImpl,
-                              ash::SystemTrayObserver,
+                              SystemTrayObserver,
                               &LoginScreenClientImpl::AddSystemTrayObserver,
                               &LoginScreenClientImpl::RemoveSystemTrayObserver>>
       scoped_system_tray_observer_;
 
-  std::map<ui::Accelerator, ash::LoginAcceleratorAction> accel_map_;
-  ash::OobeDialogState state_ = ash::OobeDialogState::HIDDEN;
+  std::map<ui::Accelerator, LoginAcceleratorAction> accel_map_;
+  OobeDialogState state_ = OobeDialogState::HIDDEN;
 
   // Whether the captive portal screen should be shown the next time the Gaia
   // dialog is opened.
@@ -170,6 +169,6 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   DISALLOW_COPY_AND_ASSIGN(OobeUIDialogDelegate);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_OOBE_UI_DIALOG_DELEGATE_H_

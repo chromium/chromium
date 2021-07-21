@@ -58,12 +58,13 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 
-using content::NativeWebKeyboardEvent;
-using content::RenderViewHost;
-using content::WebContents;
-using web_modal::WebContentsModalDialogManager;
-
+namespace ash {
 namespace {
+
+using ::content::NativeWebKeyboardEvent;
+using ::content::RenderViewHost;
+using ::content::WebContents;
+using ::web_modal::WebContentsModalDialogManager;
 
 // A class to change arrow key traversal behavior when it's alive.
 class ScopedArrowKeyTraversal {
@@ -86,8 +87,6 @@ class ScopedArrowKeyTraversal {
 
 }  // namespace
 
-namespace chromeos {
-
 // WebUILoginView public: ------------------------------------------------------
 
 WebUILoginView::WebUILoginView(const WebViewSettings& settings,
@@ -102,18 +101,18 @@ WebUILoginView::WebUILoginView(const WebViewSettings& settings,
   registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
                  content::NotificationService::AllSources());
 
-  for (size_t i = 0; i < ash::kLoginAcceleratorDataLength; ++i) {
-    ui::Accelerator accelerator(ash::kLoginAcceleratorData[i].keycode,
-                                ash::kLoginAcceleratorData[i].modifiers);
+  for (size_t i = 0; i < kLoginAcceleratorDataLength; ++i) {
+    ui::Accelerator accelerator(kLoginAcceleratorData[i].keycode,
+                                kLoginAcceleratorData[i].modifiers);
     // Show reset conflicts with rotate screen when --ash-dev-shortcuts is
     // passed. Favor --ash-dev-shortcuts since that is explicitly added.
-    if (ash::kLoginAcceleratorData[i].action ==
-            ash::LoginAcceleratorAction::kEnableConsumerKiosk &&
+    if (kLoginAcceleratorData[i].action ==
+            LoginAcceleratorAction::kEnableConsumerKiosk &&
         !KioskAppManager::IsConsumerKioskEnabled()) {
       continue;
     }
 
-    accel_map_[accelerator] = ash::kLoginAcceleratorData[i].action;
+    accel_map_[accelerator] = kLoginAcceleratorData[i].action;
   }
 
   for (AccelMap::iterator i(accel_map_.begin()); i != accel_map_.end(); ++i) {
@@ -378,7 +377,7 @@ bool WebUILoginView::TakeFocus(content::WebContents* source, bool reverse) {
   // FocusLoginShelf focuses either system tray or login shelf buttons.
   // Only do this if the login shelf is enabled.
   if (shelf_enabled_)
-    ash::LoginScreen::Get()->FocusLoginShelf(reverse);
+    LoginScreen::Get()->FocusLoginShelf(reverse);
   return shelf_enabled_;
 }
 
@@ -440,4 +439,4 @@ void WebUILoginView::OnLoginPromptVisible() {
 BEGIN_METADATA(WebUILoginView, views::View)
 END_METADATA
 
-}  // namespace chromeos
+}  // namespace ash

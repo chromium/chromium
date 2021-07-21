@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/login/ui/mock_signin_ui.h"
 
-namespace chromeos {
+namespace ash {
 
 MockSigninUI::MockSigninUI() {}
 
 MockSigninUI::~MockSigninUI() {}
 
-}  // namespace chromeos
+}  // namespace ash

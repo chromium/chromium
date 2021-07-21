@@ -406,7 +406,7 @@ class LocationBarView : public LocationBar,
   bool GetPopupMode() const;
 
   // The Browser this LocationBarView is in.  Note that at least
-  // chromeos::SimpleWebViewDialog uses a LocationBarView outside any browser
+  // ash::SimpleWebViewDialog uses a LocationBarView outside any browser
   // window, so this may be NULL.
   Browser* const browser_;
 

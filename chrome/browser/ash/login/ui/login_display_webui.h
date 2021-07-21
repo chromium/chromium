@@ -13,7 +13,7 @@
 #include "ui/base/user_activity/user_activity_observer.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 
 // WebUI-based login UI implementation.
 class LoginDisplayWebUI : public LoginDisplay,
@@ -61,6 +61,6 @@ class LoginDisplayWebUI : public LoginDisplay,
   DISALLOW_COPY_AND_ASSIGN(LoginDisplayWebUI);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_WEBUI_H_

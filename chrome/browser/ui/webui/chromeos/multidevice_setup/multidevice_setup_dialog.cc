@@ -99,7 +99,7 @@ MultiDeviceSetupDialog::~MultiDeviceSetupDialog() {
 
 void MultiDeviceSetupDialog::GetDialogSize(gfx::Size* size) const {
   if (features::IsNewOobeLayoutEnabled()) {
-    const gfx::Size dialog_size = CalculateOobeDialogSizeForPrimrayDisplay();
+    const gfx::Size dialog_size = CalculateOobeDialogSizeForPrimaryDisplay();
     size->SetSize(dialog_size.width(), dialog_size.height());
   } else {
     // Note: The size is calculated once based on the current screen orientation

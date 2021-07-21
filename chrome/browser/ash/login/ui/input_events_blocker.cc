@@ -8,17 +8,16 @@
 #include "base/logging.h"
 #include "ui/events/event.h"
 
-namespace chromeos {
+namespace ash {
 
 InputEventsBlocker::InputEventsBlocker() {
-  ash::Shell::Get()->AddPreTargetHandler(this,
-                                         ui::EventTarget::Priority::kSystem);
+  Shell::Get()->AddPreTargetHandler(this, ui::EventTarget::Priority::kSystem);
   VLOG(1) << "InputEventsBlocker " << this << " created.";
 }
 
 InputEventsBlocker::~InputEventsBlocker() {
-  if (ash::Shell::HasInstance())
-    ash::Shell::Get()->RemovePreTargetHandler(this);
+  if (Shell::HasInstance())
+    Shell::Get()->RemovePreTargetHandler(this);
   VLOG(1) << "InputEventsBlocker " << this << " destroyed.";
 }
 
@@ -38,4 +37,4 @@ void InputEventsBlocker::OnGestureEvent(ui::GestureEvent* event) {
   event->StopPropagation();
 }
 
-}  // namespace chromeos
+}  // namespace ash

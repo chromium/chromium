@@ -15,8 +15,7 @@
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace login_screen_extension_ui {
 
 WindowFactory::WindowFactory() = default;
@@ -36,7 +35,7 @@ Window::Window(CreateOptions* create_options)
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
   params.delegate = dialog_view_;
   ash_util::SetupWidgetInitParamsForContainer(
-      &params, ash::kShellWindowId_LockScreenContainer);
+      &params, kShellWindowId_LockScreenContainer);
   dialog_widget_->Init(std::move(params));
   dialog_widget_->set_movement_disabled(true);
   dialog_delegate_->set_native_window(dialog_widget_->GetNativeWindow());
@@ -57,5 +56,4 @@ views::Widget* Window::GetDialogWidgetForTesting() {
 }
 
 }  // namespace login_screen_extension_ui
-
-}  // namespace chromeos
+}  // namespace ash

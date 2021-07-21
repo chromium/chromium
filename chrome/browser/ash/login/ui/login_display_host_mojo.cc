@@ -52,8 +52,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/views/view.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 CertificateProviderService* GetLoginScreenCertProviderService() {
@@ -225,9 +224,9 @@ void LoginDisplayHostMojo::OnStartUserAdding() {
   VLOG(1) << "Login Mojo >> user adding";
 
   // Lock container can be transparent after lock screen animation.
-  aura::Window* lock_container = ash::Shell::GetContainer(
-      ash::Shell::GetPrimaryRootWindow(),
-      ash::kShellWindowId_LockScreenContainersContainer);
+  aura::Window* lock_container =
+      Shell::GetContainer(Shell::GetPrimaryRootWindow(),
+                          kShellWindowId_LockScreenContainersContainer);
   lock_container->layer()->SetOpacity(1.0);
 
   CreateExistingUserController();
@@ -352,14 +351,14 @@ void LoginDisplayHostMojo::SetShelfButtonsEnabled(bool enabled) {
   // screen.
 }
 
-void LoginDisplayHostMojo::UpdateOobeDialogState(ash::OobeDialogState state) {
+void LoginDisplayHostMojo::UpdateOobeDialogState(OobeDialogState state) {
   if (dialog_)
     dialog_->SetState(state);
 }
 
 void LoginDisplayHostMojo::UpdateAddUserButtonStatus() {
   DCHECK(GetOobeUI());
-  ash::LoginScreen::Get()->EnableAddUserButton(
+  LoginScreen::Get()->EnableAddUserButton(
       !GetOobeUI()->signin_screen_handler()->AllAllowlistedUsersPresent());
 }
 
@@ -704,4 +703,4 @@ void LoginDisplayHostMojo::MaybeUpdateOfflineLoginLinkVisibility(
       !offline_limit_expired);
 }
 
-}  // namespace chromeos
+}  // namespace ash

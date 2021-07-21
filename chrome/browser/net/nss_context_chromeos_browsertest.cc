@@ -111,14 +111,14 @@ class DBTester {
   net::NSSCertDatabase* db_;
 };
 
-class UserAddingFinishObserver : public chromeos::UserAddingScreen::Observer {
+class UserAddingFinishObserver : public ash::UserAddingScreen::Observer {
  public:
   UserAddingFinishObserver() {
-    chromeos::UserAddingScreen::Get()->AddObserver(this);
+    ash::UserAddingScreen::Get()->AddObserver(this);
   }
 
   ~UserAddingFinishObserver() override {
-    chromeos::UserAddingScreen::Get()->RemoveObserver(this);
+    ash::UserAddingScreen::Get()->RemoveObserver(this);
   }
 
   void WaitUntilUserAddingFinishedOrCancelled() {
@@ -129,7 +129,7 @@ class UserAddingFinishObserver : public chromeos::UserAddingScreen::Observer {
     run_loop_->Run();
   }
 
-  // chromeos::UserAddingScreen::Observer:
+  // ash::UserAddingScreen::Observer:
   void OnUserAddingFinished() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     finished_ = true;
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(NSSContextChromeOSBrowserTest, TwoUsers) {
 
   // Log in second user and get their DB.
   UserAddingFinishObserver observer;
-  chromeos::UserAddingScreen::Get()->Start();
+  ash::UserAddingScreen::Get()->Start();
   base::RunLoop().RunUntilIdle();
 
   const AccountId account_id2(login_mixin_.users()[1].account_id);

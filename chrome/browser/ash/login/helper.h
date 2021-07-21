@@ -122,6 +122,7 @@ base::TimeDelta TimeToOnlineSignIn(base::Time last_online_signin,
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
 namespace ash {
 namespace login = ::chromeos::login;
+using ::chromeos::CalculateScreenBounds;
 using ::chromeos::GetCurrentUserImageSize;
 }  // namespace ash
 
