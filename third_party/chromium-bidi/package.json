@@ -5,7 +5,7 @@
   "type": "module",
   "main": "index.ts",
   "scripts": {
-    "unit": "TS_NODE_PROJECT='src/bidiMapper/tsconfig.json' mocha",
+    "unit": "cross-env TS_NODE_PROJECT='src/bidiMapper/tsconfig.json' mocha",
     "e2e": "python3 -m pytest --rootdir=tests",
     "bidi-server": "npm run build && npm run server-no-build --",
     "server-no-build": "node ./src/.build/index.js",
@@ -34,6 +34,7 @@
     "@types/websocket": "^1.0.2",
     "@types/ws": "^7.4.4",
     "chai": "^4.3.4",
+    "cross-env": "^7.0.3",
     "devtools-protocol": "^0.0.900357",
     "mocha": "^9.0.1",
     "prettier": "2.3.0",
