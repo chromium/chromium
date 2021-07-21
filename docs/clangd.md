@@ -2,7 +2,7 @@
 
 ## Introduction
 
-[clangd](https://clang.llvm.org/extra/clangd/) is a clang-based [language server](http://langserver.org/).
+[clangd](https://clangd.llvm.org/) is a clang-based [language server](https://langserver.org/).
 It brings IDE features (e.g. diagnostics, code completion, code navigations) to
 your editor.
 
@@ -21,7 +21,7 @@ tools/clang/scripts/generate_compdb.py -p out/<build> > compile_commands.json
 
 ## Getting clangd
 
-See [instructions](https://clang.llvm.org/extra/clangd/Installation.html#installing-clangd).
+See [instructions](https://clangd.llvm.org/installation.html#installing-clangd).
 
 **Googlers:** clangd has been installed on your glinux by default, just use
 `/usr/bin/clangd`.
@@ -76,7 +76,7 @@ ninja -C out/Release chrome
 ```
 
 4. Use clangd in your favourite editor, see detailed [instructions](
-https://clang.llvm.org/extra/clangd/Installation.html#getting-started-with-clangd).
+https://clangd.llvm.org/installation.html#editor-plugins).
 
 ## Background Indexing
 

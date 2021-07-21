@@ -116,7 +116,7 @@ development and testing purposes.
 ## Setting up the build
 
 Chromium uses [Ninja](https://ninja-build.org) as its main build tool along with
-a tool called [GN](https://gn.googlesource.com/gn/+/master/docs/quick_start.md)
+a tool called [GN](https://gn.googlesource.com/gn/+/main/docs/quick_start.md)
 to generate `.ninja` files. You can create any number of *build directories*
 with different configurations. To create a build directory which builds Chrome
 for Android, run `gn args out/Default` and edit the file to contain the
@@ -135,7 +135,7 @@ target_cpu = "arm64"  # See "Figuring out target_cpu" below
   configuration](https://www.chromium.org/developers/gn-build-configuration).
   The default will be a debug component build.
 * For more info on GN, run `gn help` on the command line or read the
-  [quick start guide](https://gn.googlesource.com/gn/+/master/docs/quick_start.md).
+  [quick start guide](https://gn.googlesource.com/gn/+/main/docs/quick_start.md).
 
 Also be aware that some scripts (e.g. `tombstones.py`, `adb_gdb.py`)
 require you to set `CHROMIUM_OUTPUT_DIR=out/Default`.
@@ -143,7 +143,7 @@ require you to set `CHROMIUM_OUTPUT_DIR=out/Default`.
 ### Figuring out target\_cpu
 
 The value of
-[`target_cpu`](https://gn.googlesource.com/gn/+/master/docs/reference.md#target_cpu)
+[`target_cpu`](https://gn.googlesource.com/gn/+/main/docs/reference.md#var_target_cpu)
 determines what instruction set to use for native code. Given a device (or
 emulator), you can determine the correct instruction set with `adb shell getprop
 ro.product.cpu.abi`:
@@ -223,7 +223,7 @@ $ gclient sync
 
 The first command updates the primary Chromium source repository and rebases
 any of your local branches on top of tip-of-tree (aka the Git branch
-`origin/master`). If you don't want to use this script, you can also just use
+`origin/main`). If you don't want to use this script, you can also just use
 `git pull` or other common Git commands to update the repo.
 
 The second command syncs dependencies to the appropriate versions and re-runs

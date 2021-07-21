@@ -20,7 +20,7 @@ power figuring out the next step to take.
 You should create a new branch before starting any development work. It's
 helpful to branch early and to branch often in Git. Use the command
 `git new-branch <branch_name>`. This is equivalent to
-`git checkout -b <branch_name> --track origin/master`.
+`git checkout -b <branch_name> --track origin/main`.
 
 You may also want to set another local branch as the upstream branch. You can do
 that with `git checkout -b <branch_name> --track <upstream_branch>`. Do this if
@@ -126,7 +126,7 @@ shortcut for combining the previous step and this one is `git commit -a -m
 If you have many commits on your current branch, and you want to avoid some
 nasty commit-by-commit merge conflicts in the next step, consider collecting all
 your changes into one commit. Run `git rebase -i @{u}`. The `@{u}` is a
-short-hand pointer for the upstream branch, which is usually origin/master, but
+short-hand pointer for the upstream branch, which is usually origin/main, but
 can also be one of your local branches. After running the `git rebase` command,
 you should see a list of commits, with each commit starting with the word
 "pick". Make sure the first commit says "pick" and change the rest from "pick"
