@@ -93,7 +93,7 @@ void ShimlessRmaService::BeginFinalization(BeginFinalizationCallback callback) {
 void ShimlessRmaService::NetworkSelectionComplete(
     NetworkSelectionCompleteCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kSelectNetwork) {
-    LOG(ERROR) << "FinalizeRepair called from incorrect state "
+    LOG(ERROR) << "NetworkSelectionComplete called from incorrect state "
                << state_proto_.state_case();
     std::move(callback).Run(state_proto_.state_case(),
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
