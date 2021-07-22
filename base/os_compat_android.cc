@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <limits.h>
 #include <math.h>
+#include <sys/stat.h>
 #include <sys/syscall.h>
 #include <unistd.h>
 #include "base/strings/string_util.h"

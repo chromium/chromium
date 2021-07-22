@@ -20,6 +20,7 @@
 #if defined(OS_WIN)
 #include "base/win/windows_types.h"
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#include <sys/stat.h>
 #include <unistd.h>
 #include <unordered_set>
 #endif

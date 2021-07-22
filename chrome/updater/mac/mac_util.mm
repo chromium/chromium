@@ -4,6 +4,7 @@
 
 #import "chrome/updater/mac/mac_util.h"
 
+#include <sys/stat.h>
 #include <pwd.h>
 #include <unistd.h>
 
