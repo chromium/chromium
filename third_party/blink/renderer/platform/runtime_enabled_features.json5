@@ -1076,6 +1076,10 @@
       status: {"ChromeOS": "stable"},
     },
     {
+      name: "FractionalLineHeight",
+      status: "stable",
+    },
+    {
       name: "FractionalScrollOffsets",
       status: "experimental",
     },

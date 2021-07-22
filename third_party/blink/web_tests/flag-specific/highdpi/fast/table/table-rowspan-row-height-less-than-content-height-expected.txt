@@ -8,7 +8,7 @@ PASS
 This is third row first column. But it should display as second column.
 
 FAIL:
-Expected 70 for offsetTop, but got 245. 
+Expected 70 for offsetTop, but got 250. 
 
 <tr data-offset-y="70">
             <td id="percent-height"> This is third row first column. But it should display as second column. </td>
@@ -16,7 +16,7 @@ Expected 70 for offsetTop, but got 245.
 This is fourth row first column. But it should display as second column.
 
 FAIL:
-Expected 119 for offsetTop, but got 131. 
+Expected 119 for offsetTop, but got 134. 
 
 <tr data-offset-y="119">
             <td id="percent-height"> This is fourth row first column. But it should display as second column. </td>

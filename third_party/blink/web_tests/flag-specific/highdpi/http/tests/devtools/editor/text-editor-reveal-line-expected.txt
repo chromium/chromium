@@ -21,7 +21,7 @@ This test checks that text editor's revealLine centers line where needed.
 
 
 ======= Revealing line: 100
-      is line centered: false
+      is line centered: true
 
 
 ======= Revealing line: 9998

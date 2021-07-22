@@ -65,7 +65,7 @@
     if (selectedElement) {
       const selectedRect = selectedElement.getBoundingClientRect();
       const viewportRect = viewport.element.getBoundingClientRect();
-      const fullyVisible = (selectedRect.top + 2 >= viewportRect.top && selectedRect.bottom - 2 <= viewportRect.bottom);
+      const fullyVisible = (selectedRect.top + 2.5 >= viewportRect.top && selectedRect.bottom - 2.5 <= viewportRect.bottom);
       infoText += ', selected element is fully visible? ' + fullyVisible;
     }
     TestRunner.addResult(infoText);

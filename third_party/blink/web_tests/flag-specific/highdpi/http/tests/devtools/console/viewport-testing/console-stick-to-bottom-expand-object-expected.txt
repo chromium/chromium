@@ -7,7 +7,7 @@ Running: testExpandLastVisibleObjectRemainsInView
 Force selecting index 149
 Is at bottom: true, should stick: true, selected element is fully visible? true
 Expanding object
-Is at bottom: false, should stick: false, selected element is fully visible? false
+Is at bottom: false, should stick: false, selected element is fully visible? true
 Collapsing object
 Is at bottom: true, should stick: false, selected element is fully visible? true
 

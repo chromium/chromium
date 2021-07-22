@@ -46,7 +46,6 @@ PASS
 XXX X
 FAIL:
 Expected 75 for width, but got 74. 
-Expected 50 for height, but got 49. 
 
 <div class="container">
     <div class="grid itemsStart">
