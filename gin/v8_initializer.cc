@@ -249,6 +249,21 @@ void RunArrayBufferCageReservationExperiment() {
 #endif
 }
 
+template <size_t N, size_t M>
+void SetV8FlagsIfOverridden(const base::Feature& feature,
+                            const char (&enabling_flag)[N],
+                            const char (&disabling_flag)[M]) {
+  auto overridden_state = base::FeatureList::GetStateIfOverridden(feature);
+  if (!overridden_state.has_value()) {
+    return;
+  }
+  if (overridden_state.value()) {
+    SetV8Flags(enabling_flag);
+  } else {
+    SetV8Flags(disabling_flag);
+  }
+}
+
 }  // namespace
 
 // static
@@ -332,9 +347,8 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
     SetV8Flags("--turboprop");
   }
 
-  if (base::FeatureList::IsEnabled(features::kV8Sparkplug)) {
-    SetV8Flags("--sparkplug");
-  }
+  SetV8FlagsIfOverridden(features::kV8Sparkplug, "--sparkplug",
+                         "--no-sparkplug");
 
   if (base::FeatureList::IsEnabled(
           features::kV8SparkplugNeedsShortBuiltinCalls)) {

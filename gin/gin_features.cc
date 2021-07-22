@@ -59,9 +59,10 @@ const base::Feature kV8ExperimentalRegexpEngine{
 const base::Feature kV8Turboprop{"V8Turboprop",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables experimental Sparkplug compiler.
+// Enables Sparkplug compiler. Note that this only sets the V8 flag when
+// manually overridden; otherwise it defers to whatever the V8 default is.
 const base::Feature kV8Sparkplug{"V8Sparkplug",
-                                 base::FEATURE_DISABLED_BY_DEFAULT};
+                                 base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Makes sure the experimental Sparkplug compiler is only enabled if short
 // builtin calls are enabled too.

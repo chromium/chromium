@@ -18,6 +18,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -239,6 +240,13 @@ class BASE_EXPORT FeatureList {
   // struct, which is checked in builds with DCHECKs enabled.
   static bool IsEnabled(const Feature& feature);
 
+  // If the given |feature| is overridden, returns its enabled state; otherwise,
+  // returns an empty optional. Must only be called after the singleton instance
+  // has been registered via SetInstance(). Additionally, a feature with a given
+  // name must only have a single corresponding Feature struct, which is checked
+  // in builds with DCHECKs enabled.
+  static absl::optional<bool> GetStateIfOverridden(const Feature& feature);
+
   // Returns the field trial associated with the given |feature|. Must only be
   // called after the singleton instance has been registered via SetInstance().
   static FieldTrial* GetFieldTrial(const Feature& feature);
@@ -335,6 +343,16 @@ class BASE_EXPORT FeatureList {
   // public FeatureList::IsEnabled() static function on the global singleton.
   // Requires the FeatureList to have already been fully initialized.
   bool IsFeatureEnabled(const Feature& feature);
+
+  // Returns whether the given |feature| is enabled. This is invoked by the
+  // public FeatureList::GetStateIfOverridden() static function on the global
+  // singleton. Requires the FeatureList to have already been fully initialized.
+  absl::optional<bool> IsFeatureEnabledIfOverridden(const Feature& feature);
+
+  // Returns the override state of a given |feature|. If the feature was not
+  // overridden, returns OVERRIDE_USE_DEFAULT. Performs any necessary callbacks
+  // for when the feature state has been observed, e.g. actvating field trials.
+  OverrideState GetOverrideState(const Feature& feature);
 
   // Returns the field trial associated with the given |feature|. This is
   // invoked by the public FeatureList::GetFieldTrial() static function on the

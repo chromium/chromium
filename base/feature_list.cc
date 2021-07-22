@@ -382,6 +382,19 @@ bool FeatureList::IsEnabled(const Feature& feature) {
 }
 
 // static
+absl::optional<bool> FeatureList::GetStateIfOverridden(const Feature& feature) {
+#if DCHECK_IS_ON()
+  CHECK(g_use_allowed) << "base::Feature not permitted for this module.";
+#endif
+  if (!g_feature_list_instance) {
+    g_initialized_from_accessor = &feature;
+    // If there is no feature list, there can be no overrides.
+    return absl::nullopt;
+  }
+  return g_feature_list_instance->IsFeatureEnabledIfOverridden(feature);
+}
+
+// static
 FieldTrial* FeatureList::GetFieldTrial(const Feature& feature) {
 #if DCHECK_IS_ON()
   // See documentation for ForbidUseForCurrentModule.
@@ -508,6 +521,28 @@ void FeatureList::FinalizeInitialization() {
 }
 
 bool FeatureList::IsFeatureEnabled(const Feature& feature) {
+  OverrideState overridden_state = GetOverrideState(feature);
+
+  // If marked as OVERRIDE_USE_DEFAULT, simply return the default state below.
+  if (overridden_state != OVERRIDE_USE_DEFAULT)
+    return overridden_state == OVERRIDE_ENABLE_FEATURE;
+
+  return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
+}
+
+absl::optional<bool> FeatureList::IsFeatureEnabledIfOverridden(
+    const Feature& feature) {
+  OverrideState overridden_state = GetOverrideState(feature);
+
+  // If marked as OVERRIDE_USE_DEFAULT, fall through to returning empty.
+  if (overridden_state != OVERRIDE_USE_DEFAULT)
+    return overridden_state == OVERRIDE_ENABLE_FEATURE;
+
+  return absl::nullopt;
+}
+
+FeatureList::OverrideState FeatureList::GetOverrideState(
+    const Feature& feature) {
   DCHECK(initialized_);
   DCHECK(IsValidFeatureOrFieldTrialName(feature.name)) << feature.name;
   DCHECK(CheckFeatureIdentity(feature)) << feature.name;
@@ -522,12 +557,10 @@ bool FeatureList::IsFeatureEnabled(const Feature& feature) {
 
     // TODO(asvitkine) Expand this section as more support is added.
 
-    // If marked as OVERRIDE_USE_DEFAULT, simply return the default state below.
-    if (entry.overridden_state != OVERRIDE_USE_DEFAULT)
-      return entry.overridden_state == OVERRIDE_ENABLE_FEATURE;
+    return entry.overridden_state;
   }
-  // Otherwise, return the default state.
-  return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
+  // Otherwise, report that we want to use the default state.
+  return OVERRIDE_USE_DEFAULT;
 }
 
 FieldTrial* FeatureList::GetAssociatedFieldTrial(const Feature& feature) {
