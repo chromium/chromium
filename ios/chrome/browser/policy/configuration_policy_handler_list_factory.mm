@@ -94,7 +94,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kSearchSuggestEnabled,
     base::Value::Type::BOOLEAN },
   { policy::key::kTranslateEnabled,
-    prefs::kOfferTranslateEnabled,
+    translate::prefs::kOfferTranslateEnabled,
     base::Value::Type::BOOLEAN },
   { policy::key::kURLAllowlist,
     policy::policy_prefs::kUrlAllowlist,

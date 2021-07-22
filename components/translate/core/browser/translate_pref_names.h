@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_PREF_NAMES_H_
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_PREF_NAMES_H_
 
+namespace translate {
 namespace prefs {
 
 extern const char kOfferTranslateEnabled[];
@@ -12,5 +13,6 @@ extern const char kPrefAlwaysTranslateList[];
 extern const char kPrefTranslateRecentTarget[];
 
 }  // namespace prefs
+}  // namespace translate
 
 #endif  // COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_PREF_NAMES_H_

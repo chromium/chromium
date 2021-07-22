@@ -70,8 +70,8 @@ FakeTranslateInfoBarDelegateFactory::FakeTranslateInfoBarDelegateFactory() {
       std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
   language::LanguagePrefs::RegisterProfilePrefs(pref_service_->registry());
   translate::TranslatePrefs::RegisterProfilePrefs(pref_service_->registry());
-  pref_service_->registry()->RegisterBooleanPref(prefs::kOfferTranslateEnabled,
-                                                 true);
+  pref_service_->registry()->RegisterBooleanPref(
+      translate::prefs::kOfferTranslateEnabled, true);
   client_ =
       std::make_unique<MockTranslateClient>(&driver_, pref_service_.get());
   ranker_ = std::make_unique<MockTranslateRanker>();

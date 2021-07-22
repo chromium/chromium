@@ -918,9 +918,8 @@ void TranslateManager::FilterIsTranslatePossible(
   if (!ignore_missing_key_for_testing_ &&
       !::google_apis::HasAPIKeyConfigured()) {
     // Without an API key, translate won't work, so don't offer to translate in
-    // the first place. Leave prefs::kOfferTranslateEnabled on, though, because
-    // that settings syncs and we don't want to turn off translate everywhere
-    // else.
+    // the first place. Leave kOfferTranslateEnabled on, though, because that
+    // settings syncs and we don't want to turn off translate everywhere else.
     decision->PreventAllTriggering();
     decision->initiation_statuses.push_back(
         TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_KEY);

@@ -145,12 +145,12 @@ class LanguageSettingsMediatorTest : public PlatformTest {
 };
 
 // Tests that the mediator notifies its consumer when the value of
-// prefs::kOfferTranslateEnabled, language::prefs::kAcceptLanguages or
-// language::prefs::kFluentLanguages change.
+// translate::prefs::kOfferTranslateEnabled, language::prefs::kAcceptLanguages
+// or language::prefs::kFluentLanguages change.
 TEST_F(LanguageSettingsMediatorTest, TestPrefsChanged) {
   consumer().translateEnabledWasCalled = NO;
   EXPECT_FALSE([consumer() translateEnabled]);
-  GetPrefs()->SetBoolean(prefs::kOfferTranslateEnabled, true);
+  GetPrefs()->SetBoolean(translate::prefs::kOfferTranslateEnabled, true);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kSyncOperationTimeout, ^bool() {
     return consumer().translateEnabledWasCalled;
   }));
@@ -158,7 +158,7 @@ TEST_F(LanguageSettingsMediatorTest, TestPrefsChanged) {
 
   consumer().translateEnabledWasCalled = NO;
   EXPECT_TRUE([consumer() translateEnabled]);
-  GetPrefs()->SetBoolean(prefs::kOfferTranslateEnabled, false);
+  GetPrefs()->SetBoolean(translate::prefs::kOfferTranslateEnabled, false);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kSyncOperationTimeout, ^bool() {
     return consumer().translateEnabledWasCalled;
   }));
@@ -234,10 +234,11 @@ TEST_F(LanguageSettingsMediatorTest, TestAcceptLanguagesItems) {
 // Tests that the mediator updates the model upon receiving the UI commands.
 TEST_F(LanguageSettingsMediatorTest, TestLanguageSettingsCommands) {
   [mediator() setTranslateEnabled:NO];
-  EXPECT_FALSE(GetPrefs()->GetBoolean(prefs::kOfferTranslateEnabled));
+  EXPECT_FALSE(
+      GetPrefs()->GetBoolean(translate::prefs::kOfferTranslateEnabled));
 
   [mediator() setTranslateEnabled:YES];
-  EXPECT_TRUE(GetPrefs()->GetBoolean(prefs::kOfferTranslateEnabled));
+  EXPECT_TRUE(GetPrefs()->GetBoolean(translate::prefs::kOfferTranslateEnabled));
 
   [mediator() addLanguage:"fa"];
   [mediator() addLanguage:"en-US"];

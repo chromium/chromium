@@ -290,7 +290,7 @@ void BrowserContextImpl::RegisterPrefs(
       pref_registry);
   payments::RegisterProfilePrefs(pref_registry);
   pref_registry->RegisterBooleanPref(
-      ::prefs::kOfferTranslateEnabled, true,
+      translate::prefs::kOfferTranslateEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 #if defined(OS_ANDROID)
   cdm::MediaDrmStorageImpl::RegisterProfilePrefs(pref_registry);

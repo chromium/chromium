@@ -35,7 +35,6 @@
 #include "url/gurl.h"
 
 namespace translate {
-
 namespace {
 
 static const char kTestValidScript[] =
@@ -221,8 +220,6 @@ static const char kTranslateHrefHintStatusHistogram[] =
     "Translate.HrefHint.Status";
 static const char kTranslateHrefHintPrefsFilterStatusHistogram[] =
     "Translate.HrefHint.PrefsFilterStatus";
-
-}  // namespace
 
 class TranslateManagerBrowserTest : public InProcessBrowserTest {
  public:
@@ -2176,4 +2173,5 @@ IN_PROC_BROWSER_TEST_F(
                                1);
 }
 
+}  // namespace
 }  // namespace translate

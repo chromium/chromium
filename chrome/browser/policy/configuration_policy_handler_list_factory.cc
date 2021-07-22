@@ -387,7 +387,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kForceEnablePrivetPrinting,
     base::Value::Type::BOOLEAN },
   { key::kTranslateEnabled,
-    prefs::kOfferTranslateEnabled,
+    translate::prefs::kOfferTranslateEnabled,
     base::Value::Type::BOOLEAN },
   { key::kBookmarkBarEnabled,
     bookmarks::prefs::kShowBookmarkBar,

@@ -21,6 +21,9 @@
 #include "extensions/common/constants.h"
 #endif
 
+namespace translate {
+namespace {
+
 // Test the check that determines if a URL should be translated.
 TEST(TranslateServiceTest, CheckTranslatableURL) {
   GURL empty_url = GURL(std::string());
@@ -79,3 +82,6 @@ TEST(TranslateServiceTest, DownloadsAndHistoryNotTranslated) {
       TranslateService::IsTranslatableURL(GURL(chrome::kChromeUIHistoryURL)));
   TranslateService::ShutdownForTesting();
 }
+
+}  // namespace
+}  // namespace translate

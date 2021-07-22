@@ -37,6 +37,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace translate {
 namespace {
 
 // Fetch and calculate the total number of samples from all the bins for
@@ -72,8 +73,6 @@ int RetryForHistogramUntilCountReached(
     base::RunLoop().RunUntilIdle();
   }
 }
-
-}  // namespace
 
 class TranslateModelServiceDisabledBrowserTest : public InProcessBrowserTest {
  public:
@@ -423,3 +422,6 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
 
   run_loop->Run();
 }
+
+}  // namespace
+}  // namespace translate

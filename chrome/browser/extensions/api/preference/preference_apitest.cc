@@ -68,7 +68,7 @@ class ExtensionPreferenceApiTest : public extensions::ExtensionApiTest {
     EXPECT_EQ(CookieControlsMode::kOff, GetCookieControlsMode(prefs));
     EXPECT_TRUE(prefs->GetBoolean(prefs::kEnableHyperlinkAuditing));
     EXPECT_TRUE(prefs->GetBoolean(prefs::kEnableReferrers));
-    EXPECT_TRUE(prefs->GetBoolean(prefs::kOfferTranslateEnabled));
+    EXPECT_TRUE(prefs->GetBoolean(translate::prefs::kOfferTranslateEnabled));
     EXPECT_EQ(chrome_browser_net::NETWORK_PREDICTION_DEFAULT,
               prefs->GetInteger(prefs::kNetworkPredictionOptions));
     EXPECT_TRUE(
@@ -94,7 +94,7 @@ class ExtensionPreferenceApiTest : public extensions::ExtensionApiTest {
               GetCookieControlsMode(prefs));
     EXPECT_FALSE(prefs->GetBoolean(prefs::kEnableHyperlinkAuditing));
     EXPECT_FALSE(prefs->GetBoolean(prefs::kEnableReferrers));
-    EXPECT_FALSE(prefs->GetBoolean(prefs::kOfferTranslateEnabled));
+    EXPECT_FALSE(prefs->GetBoolean(translate::prefs::kOfferTranslateEnabled));
     EXPECT_EQ(chrome_browser_net::NETWORK_PREDICTION_NEVER,
               prefs->GetInteger(prefs::kNetworkPredictionOptions));
     EXPECT_FALSE(
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, Standard) {
   SetCookieControlsMode(prefs, CookieControlsMode::kBlockThirdParty);
   prefs->SetBoolean(prefs::kEnableHyperlinkAuditing, false);
   prefs->SetBoolean(prefs::kEnableReferrers, false);
-  prefs->SetBoolean(prefs::kOfferTranslateEnabled, false);
+  prefs->SetBoolean(translate::prefs::kOfferTranslateEnabled, false);
   prefs->SetInteger(prefs::kNetworkPredictionOptions,
                     chrome_browser_net::NETWORK_PREDICTION_NEVER);
   prefs->SetBoolean(password_manager::prefs::kCredentialsEnableService, false);

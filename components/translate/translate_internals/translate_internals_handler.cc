@@ -237,16 +237,16 @@ void TranslateInternalsHandler::SendPrefsToJs() {
   base::DictionaryValue dict;
 
   static const char* const keys[] = {
+      language::prefs::kAcceptLanguages,
       language::prefs::kFluentLanguages,
       prefs::kOfferTranslateEnabled,
+      prefs::kPrefAlwaysTranslateList,
       prefs::kPrefTranslateRecentTarget,
       translate::TranslatePrefs::kPrefNeverPromptSitesDeprecated,
       translate::TranslatePrefs::kPrefNeverPromptSitesWithTime,
-      prefs::kPrefAlwaysTranslateList,
       translate::TranslatePrefs::kPrefTranslateDeniedCount,
       translate::TranslatePrefs::kPrefTranslateIgnoredCount,
       translate::TranslatePrefs::kPrefTranslateAcceptedCount,
-      language::prefs::kAcceptLanguages,
   };
   for (const char* key : keys) {
     const PrefService::Preference* pref = prefs->FindPreference(key);

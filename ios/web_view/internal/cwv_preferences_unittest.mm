@@ -36,7 +36,8 @@ class CWVPreferencesTest : public PlatformTest {
                                        true);
     pref_registry->RegisterBooleanPref(
         password_manager::prefs::kCredentialsEnableService, true);
-    pref_registry->RegisterBooleanPref(prefs::kOfferTranslateEnabled, true);
+    pref_registry->RegisterBooleanPref(translate::prefs::kOfferTranslateEnabled,
+                                       true);
     pref_registry->RegisterBooleanPref(
         password_manager::prefs::kPasswordLeakDetectionEnabled, true);
 

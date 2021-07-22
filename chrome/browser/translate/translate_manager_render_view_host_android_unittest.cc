@@ -34,6 +34,9 @@
 #include "content/public/test/test_renderer_host.h"
 #include "url/gurl.h"
 
+namespace translate {
+namespace {
+
 class TranslateManagerRenderViewHostAndroidTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -161,3 +164,6 @@ TEST_F(TranslateManagerRenderViewHostAndroidTest,
   EXPECT_TRUE(GetTranslateInfoBar() != NULL);
   EXPECT_TRUE(CloseTranslateInfoBar());
 }
+
+}  // namespace
+}  // namespace translate

@@ -38,7 +38,7 @@
   // Registrar for pref change notifications.
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
 
-  // Pref observer to track changes to prefs::kOfferTranslateEnabled.
+  // Pref observer to track changes to translate::prefs::kOfferTranslateEnabled.
   std::unique_ptr<PrefObserverBridge> _offerTranslatePrefObserverBridge;
 
   // Pref observer to track changes to language::prefs::kAcceptLanguages.
@@ -71,7 +71,7 @@
     _offerTranslatePrefObserverBridge =
         std::make_unique<PrefObserverBridge>(self);
     _offerTranslatePrefObserverBridge->ObserveChangesForPreference(
-        prefs::kOfferTranslateEnabled, _prefChangeRegistrar.get());
+        translate::prefs::kOfferTranslateEnabled, _prefChangeRegistrar.get());
     _acceptLanguagesPrefObserverBridge =
         std::make_unique<PrefObserverBridge>(self);
     _acceptLanguagesPrefObserverBridge->ObserveChangesForPreference(
@@ -94,16 +94,16 @@
 
 #pragma mark - PrefObserverDelegate
 
-// Called when the value of prefs::kOfferTranslateEnabled,
+// Called when the value of translate::prefs::kOfferTranslateEnabled,
 // language::prefs::kAcceptLanguages or
 // language::prefs::kFluentLanguages change.
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  DCHECK(preferenceName == prefs::kOfferTranslateEnabled ||
+  DCHECK(preferenceName == translate::prefs::kOfferTranslateEnabled ||
          preferenceName == language::prefs::kAcceptLanguages ||
          preferenceName == language::prefs::kFluentLanguages);
 
   // Inform the consumer.
-  if (preferenceName == prefs::kOfferTranslateEnabled) {
+  if (preferenceName == translate::prefs::kOfferTranslateEnabled) {
     [self.consumer translateEnabled:[self translateEnabled]];
   } else {
     [self.consumer languagePrefsChanged];
@@ -205,12 +205,12 @@
 
 - (BOOL)translateEnabled {
   return self.browserState->GetPrefs()->GetBoolean(
-      prefs::kOfferTranslateEnabled);
+      translate::prefs::kOfferTranslateEnabled);
 }
 
 - (BOOL)translateManaged {
   return self.browserState->GetPrefs()->IsManagedPreference(
-      prefs::kOfferTranslateEnabled);
+      translate::prefs::kOfferTranslateEnabled);
 }
 
 - (void)stopObservingModel {
@@ -224,8 +224,8 @@
 #pragma mark - LanguageSettingsCommands
 
 - (void)setTranslateEnabled:(BOOL)enabled {
-  self.browserState->GetPrefs()->SetBoolean(prefs::kOfferTranslateEnabled,
-                                            enabled);
+  self.browserState->GetPrefs()->SetBoolean(
+      translate::prefs::kOfferTranslateEnabled, enabled);
 
   UMA_HISTOGRAM_ENUMERATION(
       kLanguageSettingsActionsHistogram,

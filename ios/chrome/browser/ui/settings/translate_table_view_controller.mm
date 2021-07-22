@@ -78,7 +78,7 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
     _prefs = prefs;
     _translationEnabled = [[PrefBackedBoolean alloc]
         initWithPrefService:_prefs
-                   prefName:prefs::kOfferTranslateEnabled];
+                   prefName:translate::prefs::kOfferTranslateEnabled];
     [_translationEnabled setObserver:self];
   }
   return self;

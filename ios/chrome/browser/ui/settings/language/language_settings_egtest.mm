@@ -148,7 +148,8 @@ id<GREYMatcher> NavigationBarEditButton() {
 - (void)setUp {
   [super setUp];
 
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kOfferTranslateEnabled];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:translate::prefs::kOfferTranslateEnabled];
   [LanguageSettingsAppInterface removeAllLanguages];
   [LanguageSettingsAppInterface addLanguage:@"en"];
 }

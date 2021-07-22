@@ -318,7 +318,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_LIST;
   (*s_allowlist)[spellcheck::prefs::kSpellCheckUseSpellingService] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::prefs::kOfferTranslateEnabled] =
+  (*s_allowlist)[translate::prefs::kOfferTranslateEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[language::prefs::kFluentLanguages] =
       settings_api::PrefType::PREF_TYPE_LIST;
@@ -326,9 +326,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_STRING;
   (*s_allowlist)[language::prefs::kForcedLanguages] =
       settings_api::PrefType::PREF_TYPE_LIST;
-  (*s_allowlist)[::prefs::kPrefTranslateRecentTarget] =
+  (*s_allowlist)[translate::prefs::kPrefTranslateRecentTarget] =
       settings_api::PrefType::PREF_TYPE_STRING;
-  (*s_allowlist)[prefs::kPrefAlwaysTranslateList] =
+  (*s_allowlist)[translate::prefs::kPrefAlwaysTranslateList] =
       settings_api::PrefType::PREF_TYPE_LIST;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   (*s_allowlist)[::prefs::kLanguageImeMenuActivated] =

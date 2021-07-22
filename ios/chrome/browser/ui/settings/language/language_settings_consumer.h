@@ -11,7 +11,8 @@
 // The consumer protocol for the LanguageSettingsDataSource.
 @protocol LanguageSettingsConsumer
 
-// Called when the value of prefs::kOfferTranslateEnabled changes to |enabled|.
+// Called when the value of translate::prefs::kOfferTranslateEnabled changes to
+// |enabled|.
 - (void)translateEnabled:(BOOL)enabled;
 
 // Called when the value of language::prefs::kAcceptLanguages or

@@ -70,6 +70,7 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
+namespace translate {
 namespace {
 
 class MockTranslateBubbleFactory : public TranslateBubbleFactory {
@@ -117,8 +118,6 @@ class MockTranslateBubbleFactory : public TranslateBubbleFactory {
 
   DISALLOW_COPY_AND_ASSIGN(MockTranslateBubbleFactory);
 };
-
-}  // namespace
 
 class TranslateManagerRenderViewHostTest
     : public ChromeRenderViewHostTestHarness,
@@ -1139,7 +1138,7 @@ TEST_F(TranslateManagerRenderViewHostTest, TranslateEnabledPref) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   PrefService* prefs = profile->GetPrefs();
-  prefs->SetBoolean(prefs::kOfferTranslateEnabled, true);
+  prefs->SetBoolean(translate::prefs::kOfferTranslateEnabled, true);
 
   SimulateNavigation(GURL("http://www.google.fr"), "fr", true);
 
@@ -1148,7 +1147,7 @@ TEST_F(TranslateManagerRenderViewHostTest, TranslateEnabledPref) {
   EXPECT_TRUE(infobar != NULL);
 
   // Disable translate.
-  prefs->SetBoolean(prefs::kOfferTranslateEnabled, false);
+  prefs->SetBoolean(translate::prefs::kOfferTranslateEnabled, false);
 
   // Navigate to a new page, that should close the previous infobar.
   GURL url("http://www.youtube.fr");
@@ -1286,10 +1285,10 @@ TEST_F(TranslateManagerRenderViewHostTest, AlwaysTranslateLanguagePref) {
   PrefService* prefs = profile->GetPrefs();
   PrefChangeRegistrar registrar;
   registrar.Init(prefs);
-  registrar.Add(prefs::kPrefAlwaysTranslateList, pref_callback_);
+  registrar.Add(translate::prefs::kPrefAlwaysTranslateList, pref_callback_);
   std::unique_ptr<translate::TranslatePrefs> translate_prefs(
       ChromeTranslateClient::CreateTranslatePrefs(prefs));
-  SetPrefObserverExpectation(prefs::kPrefAlwaysTranslateList);
+  SetPrefObserverExpectation(translate::prefs::kPrefAlwaysTranslateList);
   translate_prefs->AddLanguagePairToAlwaysTranslateList("fr", "en");
 
   // Load a page in French.
@@ -1326,7 +1325,7 @@ TEST_F(TranslateManagerRenderViewHostTest, AlwaysTranslateLanguagePref) {
 
   // Now revert the always translate pref and make sure we go back to expected
   // behavior, which is show a "before translate" infobar.
-  SetPrefObserverExpectation(prefs::kPrefAlwaysTranslateList);
+  SetPrefObserverExpectation(translate::prefs::kPrefAlwaysTranslateList);
   translate_prefs->RemoveLanguagePairFromAlwaysTranslateList("fr", "en");
   SimulateNavigation(GURL("http://www.google.fr"), "fr", true);
   EXPECT_FALSE(GetTranslateMessage(&source_lang, &target_lang));
@@ -1679,3 +1678,6 @@ TEST_F(TranslateManagerRenderViewHostTest, BubbleUnknownLanguage) {
             bubble->GetViewState());
 }
 #endif  // defined(USE_AURA) && !defined(OS_MAC)
+
+}  // namespace
+}  // namespace translate

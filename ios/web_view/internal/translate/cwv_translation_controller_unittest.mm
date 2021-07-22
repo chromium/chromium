@@ -100,14 +100,14 @@ class CWVTranslationControllerTest : public TestWithLocaleAndResources {
     pref_service_.registry()->RegisterListPref(
         language::prefs::kFluentLanguages,
         language::LanguagePrefs::GetDefaultFluentLanguages());
-    pref_service_.registry()->RegisterBooleanPref(prefs::kOfferTranslateEnabled,
-                                                  true);
+    pref_service_.registry()->RegisterBooleanPref(
+        translate::prefs::kOfferTranslateEnabled, true);
     pref_service_.registry()->RegisterListPref(
         translate::TranslatePrefs::kPrefNeverPromptSitesDeprecated);
     pref_service_.registry()->RegisterDictionaryPref(
         translate::TranslatePrefs::kPrefNeverPromptSitesWithTime);
     pref_service_.registry()->RegisterDictionaryPref(
-        prefs::kPrefAlwaysTranslateList);
+        translate::prefs::kPrefAlwaysTranslateList);
     pref_service_.registry()->RegisterDictionaryPref(
         translate::TranslatePrefs::kPrefTranslateDeniedCount);
     pref_service_.registry()->RegisterDictionaryPref(
@@ -115,7 +115,7 @@ class CWVTranslationControllerTest : public TestWithLocaleAndResources {
     pref_service_.registry()->RegisterDictionaryPref(
         translate::TranslatePrefs::kPrefTranslateAcceptedCount);
     pref_service_.registry()->RegisterStringPref(
-        prefs::kPrefTranslateRecentTarget, "");
+        translate::prefs::kPrefTranslateRecentTarget, "");
     // Using string literal here because kForceTriggerTranslateCount is private
     // in translate::TranslatePrefs.
     pref_service_.registry()->RegisterIntegerPref(

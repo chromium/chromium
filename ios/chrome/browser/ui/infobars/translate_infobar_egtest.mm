@@ -487,7 +487,8 @@ void TestResponseProvider::GetLanguageResponse(
   // Disable translate.
   [ChromeEarlGreyAppInterface
       setBoolValue:NO
-       forUserPref:base::SysUTF8ToNSString(prefs::kOfferTranslateEnabled)];
+       forUserPref:base::SysUTF8ToNSString(
+                       translate::prefs::kOfferTranslateEnabled)];
 
   // Open some webpage.
   [ChromeEarlGrey loadURL:URL];
@@ -498,7 +499,8 @@ void TestResponseProvider::GetLanguageResponse(
   // Enable translate.
   [ChromeEarlGreyAppInterface
       setBoolValue:YES
-       forUserPref:base::SysUTF8ToNSString(prefs::kOfferTranslateEnabled)];
+       forUserPref:base::SysUTF8ToNSString(
+                       translate::prefs::kOfferTranslateEnabled)];
 }
 
 // Tests that the infobar banner persists as the page scrolls mode and that the

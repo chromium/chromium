@@ -56,8 +56,8 @@ class TranslateTableViewControllerTest : public ChromeTableViewControllerTest {
 
   std::unique_ptr<PrefService> CreateLocalState() {
     scoped_refptr<PrefRegistrySyncable> registry = new PrefRegistrySyncable();
-    registry->RegisterBooleanPref(prefs::kOfferTranslateEnabled, false,
-                                  PrefRegistrySyncable::SYNCABLE_PREF);
+    registry->RegisterBooleanPref(translate::prefs::kOfferTranslateEnabled,
+                                  false, PrefRegistrySyncable::SYNCABLE_PREF);
     language::LanguagePrefs::RegisterProfilePrefs(registry.get());
     translate::TranslatePrefs::RegisterProfilePrefs(registry.get());
     base::FilePath path("TranslateTableViewControllerTest.pref");
@@ -81,7 +81,8 @@ TEST_F(TranslateTableViewControllerTest, TestModelTranslateOff) {
 
 TEST_F(TranslateTableViewControllerTest, TestModelTranslateOn) {
   BooleanPrefMember translateEnabled;
-  translateEnabled.Init(prefs::kOfferTranslateEnabled, pref_service_.get());
+  translateEnabled.Init(translate::prefs::kOfferTranslateEnabled,
+                        pref_service_.get());
   translateEnabled.SetValue(true);
   CreateController();
   EXPECT_EQ(1, NumberOfSections());
