@@ -182,6 +182,13 @@ bool DoesCommandLineContainProtocolUrl(const base::CommandLine& command_line) {
   return false;
 }
 
+WebAppLaunchManager::OpenApplicationCallback&
+GetOpenApplicationCallbackForTesting() {
+  static base::NoDestructor<WebAppLaunchManager::OpenApplicationCallback>
+      callback;
+  return *callback;
+}
+
 }  // namespace
 
 Browser* CreateWebApplicationWindow(Profile* profile,
@@ -237,8 +244,8 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
   if (params.container == apps::mojom::LaunchContainer::kLaunchContainerWindow)
     RecordAppWindowLaunch(profile_, params.app_id);
 
-  if (GetOpenApplicationCallback())
-    return GetOpenApplicationCallback().Run(std::move(params));
+  if (GetOpenApplicationCallbackForTesting())
+    return GetOpenApplicationCallbackForTesting().Run(std::move(params));
 
   // Determine the launch URL.
   bool is_share_intent =
@@ -444,7 +451,7 @@ void WebAppLaunchManager::LaunchApplication(
 // static
 void WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
     OpenApplicationCallback callback) {
-  GetOpenApplicationCallback() = std::move(callback);
+  GetOpenApplicationCallbackForTesting() = std::move(callback);
 }
 
 void WebAppLaunchManager::LaunchWebApplication(
@@ -471,14 +478,6 @@ void WebAppLaunchManager::LaunchWebApplication(
     browser = apps::CreateBrowserWithNewTabPage(profile_);
   }
   std::move(callback).Run(browser, container);
-}
-
-// static
-WebAppLaunchManager::OpenApplicationCallback&
-WebAppLaunchManager::GetOpenApplicationCallback() {
-  static base::NoDestructor<OpenApplicationCallback> callback;
-
-  return *callback;
 }
 
 void RecordAppWindowLaunch(Profile* profile, const std::string& app_id) {

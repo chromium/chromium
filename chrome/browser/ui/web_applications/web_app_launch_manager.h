@@ -67,8 +67,6 @@ class WebAppLaunchManager {
                               apps::mojom::LaunchContainer container)>
           callback);
 
-  static OpenApplicationCallback& GetOpenApplicationCallback();
-
   Profile* const profile_;
   WebAppProvider* const provider_;
 
