@@ -8,28 +8,19 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/values.h"
-#include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
-#include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
-#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
-#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
+#include "components/safe_browsing/content/browser/safe_browsing_controller_client.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
+#include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
+#include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -42,6 +33,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
+#include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -103,10 +95,16 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
             web_contents,
             main_frame_url,
             unsafe_resources,
-            ChromeSafeBrowsingBlockingPageFactory::CreateControllerClient(
+            std::make_unique<safe_browsing::SafeBrowsingControllerClient>(
                 web_contents,
-                unsafe_resources,
-                manager),
+                std::make_unique<security_interstitials::MetricsHelper>(
+                    unsafe_resources[0].url,
+                    BaseBlockingPage::GetReportingInfo(unsafe_resources),
+                    /*history_service=*/nullptr),
+                /*prefs=*/nullptr,
+                manager->app_locale(),
+                manager->default_safe_page(),
+                /*settings_helper=*/nullptr),
             BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
                 BaseBlockingPage::IsMainPageLoadBlocked(unsafe_resources),
                 false,                 // is_extended_reporting_opt_in_allowed
@@ -121,14 +119,10 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
                 false,                 // is_safe_browsing_managed
                 "cpn_safe_browsing"),  // help_center_article_link
             true,                      // should_trigger_reporting
-            HistoryServiceFactory::GetForProfile(
-                Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-                ServiceAccessType::EXPLICIT_ACCESS),
-            SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
-                web_contents->GetBrowserContext()),
-            SafeBrowsingMetricsCollectorFactory::GetForProfile(
-                Profile::FromBrowserContext(web_contents->GetBrowserContext())),
-            g_browser_process->safe_browsing_service()->trigger_manager()) {
+            /*history_service=*/nullptr,
+            /*navigation_observer_manager=*/nullptr,
+            /*metrics_collector=*/nullptr,
+            /*trigger_manager=*/nullptr) {
     // Don't delay details at all for the unittest.
     SetThreatDetailsProceedDelayForTesting(0);
     DontCreateViewForTesting();
@@ -207,8 +201,7 @@ class TestSafeBrowsingUIManagerDelegate
 
 class SafeBrowsingUIManagerTest : public ChromeRenderViewHostTestHarness {
  public:
-  SafeBrowsingUIManagerTest()
-      : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {
+  SafeBrowsingUIManagerTest() {
     auto ui_manager_delegate =
         std::make_unique<TestSafeBrowsingUIManagerDelegate>();
     raw_ui_manager_delegate_ = ui_manager_delegate.get();
@@ -223,35 +216,6 @@ class SafeBrowsingUIManagerTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     SafeBrowsingUIManager::CreateAllowlistForTesting(web_contents());
-
-    safe_browsing::TestSafeBrowsingServiceFactory sb_service_factory;
-    auto* safe_browsing_service =
-        sb_service_factory.CreateSafeBrowsingService();
-    TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(
-        safe_browsing_service);
-    g_browser_process->safe_browsing_service()->Initialize();
-    // A profile was created already but SafeBrowsingService wasn't around to
-    // get notified of it, so include that notification now.
-    safe_browsing_service->OnProfileAdded(
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-    content::BrowserThread::RunAllPendingTasksOnThreadForTesting(
-        content::BrowserThread::IO);
-    PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<
-                content::BrowserContext, password_manager::MockPasswordStore>));
-  }
-
-  void TearDown() override {
-    TestingBrowserProcess::GetGlobal()->safe_browsing_service()->ShutDown();
-    TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
-
-    // Depends on LocalState from ChromeRenderViewHostTestHarness.
-    if (SystemNetworkContextManager::GetInstance())
-      SystemNetworkContextManager::DeleteInstance();
-
-    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   bool IsAllowlisted(security_interstitials::UnsafeResource resource) {
@@ -314,7 +278,6 @@ class SafeBrowsingUIManagerTest : public ChromeRenderViewHostTestHarness {
  private:
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;
   TestSafeBrowsingUIManagerDelegate* raw_ui_manager_delegate_ = nullptr;
-  ScopedTestingLocalState scoped_testing_local_state_;
 };
 
 TEST_F(SafeBrowsingUIManagerTest, Allowlist) {
