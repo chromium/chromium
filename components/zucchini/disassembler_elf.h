@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/zucchini/address_translator.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/disassembler.h"
@@ -35,6 +34,7 @@ struct Elf32Traits {
 };
 
 // Architecture-specific definitions.
+
 struct Elf32IntelTraits : public Elf32Traits {
   static constexpr ExecutableType kExeType = kExeTypeElfX86;
   static const char kExeTypeString[];
@@ -72,6 +72,8 @@ class DisassemblerElf : public Disassembler {
   // of an executable. Returns true iff the check passes.
   static bool QuickDetect(ConstBufferView image);
 
+  DisassemblerElf(const DisassemblerElf&) = delete;
+  const DisassemblerElf& operator=(const DisassemblerElf&) = delete;
   ~DisassemblerElf() override;
 
   // Disassembler:
@@ -150,9 +152,6 @@ class DisassemblerElf : public Disassembler {
 
   // Sorted file offsets of abs32 locations.
   std::vector<offset_t> abs32_locations_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisassemblerElf);
 };
 
 // Disassembler for ELF with Intel architectures.
@@ -162,6 +161,8 @@ class DisassemblerElfIntel : public DisassemblerElf<Traits> {
   enum ReferenceType : uint8_t { kReloc, kAbs32, kRel32, kTypeCount };
 
   DisassemblerElfIntel();
+  DisassemblerElfIntel(const DisassemblerElfIntel&) = delete;
+  const DisassemblerElfIntel& operator=(const DisassemblerElfIntel&) = delete;
   ~DisassemblerElfIntel() override;
 
   // Disassembler:
@@ -181,8 +182,6 @@ class DisassemblerElfIntel : public DisassemblerElf<Traits> {
   // Sorted file offsets of rel32 locations.
   // Using std::deque to reduce peak memory footprint.
   std::deque<offset_t> rel32_locations_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisassemblerElfIntel);
 };
 
 using DisassemblerElfX86 = DisassemblerElfIntel<Elf32IntelTraits>;

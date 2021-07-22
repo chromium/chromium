@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/image_utils.h"
 
@@ -60,6 +59,8 @@ class Disassembler;
 class ReferenceBytesMixer {
  public:
   ReferenceBytesMixer();
+  ReferenceBytesMixer(const ReferenceBytesMixer&) = delete;
+  const ReferenceBytesMixer& operator=(const ReferenceBytesMixer&) = delete;
   virtual ~ReferenceBytesMixer();
 
   // Returns a new ReferenceBytesMixer instance that's owned by the caller.
@@ -81,9 +82,6 @@ class ReferenceBytesMixer {
                               offset_t old_offset,
                               ConstBufferView new_view,
                               offset_t new_offset);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReferenceBytesMixer);
 };
 
 }  // namespace zucchini

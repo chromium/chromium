@@ -16,9 +16,9 @@ inline bool IsMisaligned(rva_t rva, ArmAlign align) {
 
 }  // namespace
 
-/******** Arm32Rel32Translator ********/
+/******** AArch32Rel32Translator ********/
 
-Arm32Rel32Translator::Arm32Rel32Translator() = default;
+AArch32Rel32Translator::AArch32Rel32Translator() = default;
 
 // The mapping between ARM instruction "Code" to "Displacement" involves complex
 // bit manipulation. The comments below annotate bits mappings using a string.
@@ -30,7 +30,7 @@ Arm32Rel32Translator::Arm32Rel32Translator() = default;
 // * Lowercase letters denote bit fields with orders preserved.
 
 // static
-ArmAlign Arm32Rel32Translator::DecodeA24(uint32_t code32, arm_disp_t* disp) {
+ArmAlign AArch32Rel32Translator::DecodeA24(uint32_t code32, arm_disp_t* disp) {
   // Handle multiple instructions. Let cccc != 1111:
   // B encoding A1:
   //   Code:         cccc1010 Siiiiiii iiiiiiii iiiiiiii
@@ -56,7 +56,7 @@ ArmAlign Arm32Rel32Translator::DecodeA24(uint32_t code32, arm_disp_t* disp) {
 }
 
 // static
-bool Arm32Rel32Translator::EncodeA24(arm_disp_t disp, uint32_t* code32) {
+bool AArch32Rel32Translator::EncodeA24(arm_disp_t disp, uint32_t* code32) {
   uint32_t t = *code32;
   uint8_t bits = GetUnsignedBits<24, 27>(t);
   if (bits == 0xA || bits == 0xB) {
@@ -81,9 +81,9 @@ bool Arm32Rel32Translator::EncodeA24(arm_disp_t disp, uint32_t* code32) {
 }
 
 // static
-bool Arm32Rel32Translator::ReadA24(rva_t instr_rva,
-                                   uint32_t code32,
-                                   rva_t* target_rva) {
+bool AArch32Rel32Translator::ReadA24(rva_t instr_rva,
+                                     uint32_t code32,
+                                     rva_t* target_rva) {
   constexpr ArmAlign kInstrAlign = kArmAlign4;
   if (IsMisaligned(instr_rva, kInstrAlign))
     return false;
@@ -96,9 +96,9 @@ bool Arm32Rel32Translator::ReadA24(rva_t instr_rva,
 }
 
 // static
-bool Arm32Rel32Translator::WriteA24(rva_t instr_rva,
-                                    rva_t target_rva,
-                                    uint32_t* code32) {
+bool AArch32Rel32Translator::WriteA24(rva_t instr_rva,
+                                      rva_t target_rva,
+                                      uint32_t* code32) {
   constexpr ArmAlign kInstrAlign = kArmAlign4;
   if (IsMisaligned(instr_rva, kInstrAlign))
     return false;
@@ -113,7 +113,7 @@ bool Arm32Rel32Translator::WriteA24(rva_t instr_rva,
 }
 
 // static
-ArmAlign Arm32Rel32Translator::DecodeT8(uint16_t code16, arm_disp_t* disp) {
+ArmAlign AArch32Rel32Translator::DecodeT8(uint16_t code16, arm_disp_t* disp) {
   if ((code16 & 0xF000) == 0xD000 && (code16 & 0x0F00) != 0x0F00) {
     // B encoding T1:
     //   Code:         1101cccc Siiiiiii
@@ -125,7 +125,7 @@ ArmAlign Arm32Rel32Translator::DecodeT8(uint16_t code16, arm_disp_t* disp) {
 }
 
 // static
-bool Arm32Rel32Translator::EncodeT8(arm_disp_t disp, uint16_t* code16) {
+bool AArch32Rel32Translator::EncodeT8(arm_disp_t disp, uint16_t* code16) {
   uint16_t t = *code16;
   if ((t & 0xF000) == 0xD000 && (t & 0x0F00) != 0x0F00) {
     if (disp % 2)  // Require 2-byte alignment.
@@ -140,9 +140,9 @@ bool Arm32Rel32Translator::EncodeT8(arm_disp_t disp, uint16_t* code16) {
 }
 
 // static
-bool Arm32Rel32Translator::ReadT8(rva_t instr_rva,
-                                  uint16_t code16,
-                                  rva_t* target_rva) {
+bool AArch32Rel32Translator::ReadT8(rva_t instr_rva,
+                                    uint16_t code16,
+                                    rva_t* target_rva) {
   constexpr ArmAlign kInstrAlign = kArmAlign2;
   if (IsMisaligned(instr_rva, kInstrAlign))
     return false;
@@ -155,9 +155,9 @@ bool Arm32Rel32Translator::ReadT8(rva_t instr_rva,
 }
 
 // static
-bool Arm32Rel32Translator::WriteT8(rva_t instr_rva,
-                                   rva_t target_rva,
-                                   uint16_t* code16) {
+bool AArch32Rel32Translator::WriteT8(rva_t instr_rva,
+                                     rva_t target_rva,
+                                     uint16_t* code16) {
   constexpr ArmAlign kInstrAlign = kArmAlign2;
   constexpr ArmAlign kTargetAlign = kArmAlign2;
   if (IsMisaligned(instr_rva, kInstrAlign) ||
@@ -170,7 +170,7 @@ bool Arm32Rel32Translator::WriteT8(rva_t instr_rva,
 }
 
 // static
-ArmAlign Arm32Rel32Translator::DecodeT11(uint16_t code16, arm_disp_t* disp) {
+ArmAlign AArch32Rel32Translator::DecodeT11(uint16_t code16, arm_disp_t* disp) {
   if ((code16 & 0xF800) == 0xE000) {
     // B encoding T2:
     //   Code:         11100Sii iiiiiiii
@@ -182,7 +182,7 @@ ArmAlign Arm32Rel32Translator::DecodeT11(uint16_t code16, arm_disp_t* disp) {
 }
 
 // static
-bool Arm32Rel32Translator::EncodeT11(arm_disp_t disp, uint16_t* code16) {
+bool AArch32Rel32Translator::EncodeT11(arm_disp_t disp, uint16_t* code16) {
   uint16_t t = *code16;
   if ((t & 0xF800) == 0xE000) {
     if (disp % 2)  // Require 2-byte alignment.
@@ -197,9 +197,9 @@ bool Arm32Rel32Translator::EncodeT11(arm_disp_t disp, uint16_t* code16) {
 }
 
 // static
-bool Arm32Rel32Translator::ReadT11(rva_t instr_rva,
-                                   uint16_t code16,
-                                   rva_t* target_rva) {
+bool AArch32Rel32Translator::ReadT11(rva_t instr_rva,
+                                     uint16_t code16,
+                                     rva_t* target_rva) {
   constexpr ArmAlign kInstrAlign = kArmAlign2;
   if (IsMisaligned(instr_rva, kInstrAlign))
     return false;
@@ -212,9 +212,9 @@ bool Arm32Rel32Translator::ReadT11(rva_t instr_rva,
 }
 
 // static
-bool Arm32Rel32Translator::WriteT11(rva_t instr_rva,
-                                    rva_t target_rva,
-                                    uint16_t* code16) {
+bool AArch32Rel32Translator::WriteT11(rva_t instr_rva,
+                                      rva_t target_rva,
+                                      uint16_t* code16) {
   constexpr ArmAlign kInstrAlign = kArmAlign2;
   constexpr ArmAlign kTargetAlign = kArmAlign2;
   if (IsMisaligned(instr_rva, kInstrAlign) ||
@@ -227,7 +227,7 @@ bool Arm32Rel32Translator::WriteT11(rva_t instr_rva,
 }
 
 // static
-ArmAlign Arm32Rel32Translator::DecodeT20(uint32_t code32, arm_disp_t* disp) {
+ArmAlign AArch32Rel32Translator::DecodeT20(uint32_t code32, arm_disp_t* disp) {
   if ((code32 & 0xF800D000) == 0xF0008000 &&
       (code32 & 0x03C00000) != 0x03C00000) {
     // B encoding T3. Note the reversal of "(J1)" and "(J2)".
@@ -247,7 +247,7 @@ ArmAlign Arm32Rel32Translator::DecodeT20(uint32_t code32, arm_disp_t* disp) {
 }
 
 // static
-bool Arm32Rel32Translator::EncodeT20(arm_disp_t disp, uint32_t* code32) {
+bool AArch32Rel32Translator::EncodeT20(arm_disp_t disp, uint32_t* code32) {
   uint32_t t = *code32;
   if ((t & 0xF800D000) == 0xF0008000 && (t & 0x03C00000) != 0x03C00000) {
     if (disp % 2)  // Require 2-byte alignment.
@@ -268,9 +268,9 @@ bool Arm32Rel32Translator::EncodeT20(arm_disp_t disp, uint32_t* code32) {
 }
 
 // static
-bool Arm32Rel32Translator::ReadT20(rva_t instr_rva,
-                                   uint32_t code32,
-                                   rva_t* target_rva) {
+bool AArch32Rel32Translator::ReadT20(rva_t instr_rva,
+                                     uint32_t code32,
+                                     rva_t* target_rva) {
   constexpr ArmAlign kInstrAlign = kArmAlign2;
   if (IsMisaligned(instr_rva, kInstrAlign))
     return false;
@@ -283,9 +283,9 @@ bool Arm32Rel32Translator::ReadT20(rva_t instr_rva,
 }
 
 // static
-bool Arm32Rel32Translator::WriteT20(rva_t instr_rva,
-                                    rva_t target_rva,
-                                    uint32_t* code32) {
+bool AArch32Rel32Translator::WriteT20(rva_t instr_rva,
+                                      rva_t target_rva,
+                                      uint32_t* code32) {
   constexpr ArmAlign kInstrAlign = kArmAlign2;
   constexpr ArmAlign kTargetAlign = kArmAlign2;
   if (IsMisaligned(instr_rva, kInstrAlign) ||
@@ -298,7 +298,7 @@ bool Arm32Rel32Translator::WriteT20(rva_t instr_rva,
 }
 
 // static
-ArmAlign Arm32Rel32Translator::DecodeT24(uint32_t code32, arm_disp_t* disp) {
+ArmAlign AArch32Rel32Translator::DecodeT24(uint32_t code32, arm_disp_t* disp) {
   uint32_t bits = code32 & 0xF800D000;
   if (bits == 0xF0009000 || bits == 0xF000D000 || bits == 0xF000C000) {
     // Let I1 = J1 ^ S ^ 1, I2 = J2 ^ S ^ 1.
@@ -335,7 +335,7 @@ ArmAlign Arm32Rel32Translator::DecodeT24(uint32_t code32, arm_disp_t* disp) {
 }
 
 // static
-bool Arm32Rel32Translator::EncodeT24(arm_disp_t disp, uint32_t* code32) {
+bool AArch32Rel32Translator::EncodeT24(arm_disp_t disp, uint32_t* code32) {
   uint32_t t = *code32;
   uint32_t bits = t & 0xF800D000;
   if (bits == 0xF0009000 || bits == 0xF000D000 || bits == 0xF000C000) {
@@ -365,9 +365,9 @@ bool Arm32Rel32Translator::EncodeT24(arm_disp_t disp, uint32_t* code32) {
 }
 
 // static
-bool Arm32Rel32Translator::ReadT24(rva_t instr_rva,
-                                   uint32_t code32,
-                                   rva_t* target_rva) {
+bool AArch32Rel32Translator::ReadT24(rva_t instr_rva,
+                                     uint32_t code32,
+                                     rva_t* target_rva) {
   constexpr ArmAlign kInstrAlign = kArmAlign2;
   if (IsMisaligned(instr_rva, kInstrAlign))
     return false;
@@ -380,9 +380,9 @@ bool Arm32Rel32Translator::ReadT24(rva_t instr_rva,
 }
 
 // static
-bool Arm32Rel32Translator::WriteT24(rva_t instr_rva,
-                                    rva_t target_rva,
-                                    uint32_t* code32) {
+bool AArch32Rel32Translator::WriteT24(rva_t instr_rva,
+                                      rva_t target_rva,
+                                      uint32_t* code32) {
   constexpr ArmAlign kInstrAlign = kArmAlign2;
   if (IsMisaligned(instr_rva, kInstrAlign))
     return false;

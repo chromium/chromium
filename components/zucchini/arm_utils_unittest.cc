@@ -121,8 +121,8 @@ static bool SplitBits(const std::string& pattern,
   return true;
 }
 
-// ARM32 or AArch64 instruction specification for tests. May be 16-bit or 32-bit
-// (determined by INT_T).
+// AArch32 or AArch64 instruction specification for tests. May be 16-bit or
+// 32-bit (determined by INT_T).
 template <typename INT_T>
 struct ArmRelInstruction {
   ArmRelInstruction(const std::string& code_pattern_in, INT_T code)
@@ -307,10 +307,10 @@ TEST(ArmUtilsTest, SplitBits) {
   run_test("BAD", "AAAAaaaa BBBB01..", 0xFC02);  // Constant mismatch.
 }
 
-TEST(Arm32Rel32Translator, Fetch) {
+TEST(AArch32Rel32Translator, Fetch) {
   std::vector<uint8_t> bytes = {0x10, 0x32, 0x54, 0x76, 0x98, 0xBA, 0xDC, 0xFE};
   ConstBufferView region(&bytes[0], bytes.size());
-  Arm32Rel32Translator translator;
+  AArch32Rel32Translator translator;
   EXPECT_EQ(0x76543210U, translator.FetchArmCode32(region, 0U));
   EXPECT_EQ(0xFEDCBA98U, translator.FetchArmCode32(region, 4U));
 
@@ -321,7 +321,7 @@ TEST(Arm32Rel32Translator, Fetch) {
   EXPECT_EQ(0xBA98FEDCU, translator.FetchThumb2Code32(region, 4U));
 }
 
-TEST(Arm32Rel32Translator, Store) {
+TEST(AArch32Rel32Translator, Store) {
   std::vector<uint8_t> expected = {
       0xFF, 0xFF, 0xFF, 0xFF,  // Padding.
       0x10, 0x32, 0x54, 0x76,  // ARM 32-bit.
@@ -336,7 +336,7 @@ TEST(Arm32Rel32Translator, Store) {
   MutableBufferView region(&bytes[0], bytes.size());
   CHECK_EQ(expected.size(), bytes.size());
 
-  Arm32Rel32Translator translator;
+  AArch32Rel32Translator translator;
   translator.StoreArmCode32(region, 4U, 0x76543210U);
   translator.StoreThumb2Code16(region, 10U, 0x8642U);
   translator.StoreThumb2Code32(region, 14U, 0xFEDCBA98U);
@@ -346,10 +346,11 @@ TEST(Arm32Rel32Translator, Store) {
 
 // Detailed test of Encode/Decode: Check valid and invalid |disp| for various
 // clean slate |code| cases. Also check |disp| and |code| binary components,
-// which in Arm32Rel32Translator comments.
-TEST(Arm32Rel32Translator, EncodeDecode) {
+// which in AArch32Rel32Translator comments.
+TEST(AArch32Rel32Translator, EncodeDecode) {
   // A24 tests.
-  ArmTranslatorEncodeDecodeTest<Arm32Rel32Translator::AddrTraits_A24> test_A24;
+  ArmTranslatorEncodeDecodeTest<AArch32Rel32Translator::AddrTraits_A24>
+      test_A24;
   for (int cond = 0; cond <= 0x0E; ++cond) {
     ArmRelInstruction<uint32_t> B_A1_cond("cccc1010 Siiiiiii iiiiiiii iiiiiiii",
                                           kCleanSlateB_A1 | (cond << 28));
@@ -368,7 +369,7 @@ TEST(Arm32Rel32Translator, EncodeDecode) {
                {1, -1, 0x41, 0x43, 0x02000000, -0x02000002});
 
   // T8 tests.
-  ArmTranslatorEncodeDecodeTest<Arm32Rel32Translator::AddrTraits_T8> test_T8;
+  ArmTranslatorEncodeDecodeTest<AArch32Rel32Translator::AddrTraits_T8> test_T8;
   for (int cond = 0; cond <= 0x0E; ++cond) {
     ArmRelInstruction<uint16_t> B_T1_cond("1101cccc Siiiiiii",
                                           kCleanSlateB_T1 | (cond << 8));
@@ -383,14 +384,16 @@ TEST(Arm32Rel32Translator, EncodeDecode) {
               {0x00FE, -0x0100, 0, 2, 4, 0x40, 0x41, 0x0100, -0x0102});
 
   // T11 tests.
-  ArmTranslatorEncodeDecodeTest<Arm32Rel32Translator::AddrTraits_T11> test_T11;
+  ArmTranslatorEncodeDecodeTest<AArch32Rel32Translator::AddrTraits_T11>
+      test_T11;
   ArmRelInstruction<uint16_t> B_T2("11100Sii iiiiiiii", kCleanSlateB_T2);
   test_T11.Run("SSSSSSSS SSSSSSSS SSSSSiii iiiiiii0", {"S", "i"}, {B_T2},
                {0x07FE, -0x0800, 0, 2, -2, 4, 0x40, 0x42},
                {1, -1, 0x41, 0x43, 0x0800, -0x0802});
 
   // T20 tests.
-  ArmTranslatorEncodeDecodeTest<Arm32Rel32Translator::AddrTraits_T20> test_T20;
+  ArmTranslatorEncodeDecodeTest<AArch32Rel32Translator::AddrTraits_T20>
+      test_T20;
   for (int cond = 0; cond <= 0x0E; ++cond) {
     ArmRelInstruction<uint32_t> B_T3_cond(
         "11110Scc cciiiiii 10(J1)0(J2)jjj jjjjjjjj",
@@ -409,7 +412,8 @@ TEST(Arm32Rel32Translator, EncodeDecode) {
                 0x00100000, -0x00100002});
 
   // T24 tests.
-  ArmTranslatorEncodeDecodeTest<Arm32Rel32Translator::AddrTraits_T24> test_T24;
+  ArmTranslatorEncodeDecodeTest<AArch32Rel32Translator::AddrTraits_T24>
+      test_T24;
   // "Clean slate" means J1 = J2 = 1, so we include 0x00002800.
   ArmRelInstruction<uint32_t> B_T4("11110Sii iiiiiiii 10(J1)1(J2)jjj jjjjjjjj",
                                    kCleanSlateB_T4);
@@ -431,7 +435,7 @@ TEST(Arm32Rel32Translator, EncodeDecode) {
       {1, -1, 2, -2, 0x41, 0x42, 0x43, 0x00FFFFFE, 0x01000000, -0x01000002});
 }
 
-TEST(Arm32Rel32Translator, WriteRead) {
+TEST(AArch32Rel32Translator, WriteRead) {
   std::vector<rva_t> aligned4;
   std::vector<rva_t> misaligned4;
   std::vector<rva_t> aligned2;
@@ -450,7 +454,7 @@ TEST(Arm32Rel32Translator, WriteRead) {
   auto pcThumb2 = [](rva_t instr_rva) -> rva_t { return instr_rva + 4; };
 
   // A24 tests.
-  ArmTranslatorWriteReadTest<Arm32Rel32Translator::AddrTraits_A24> test_A24;
+  ArmTranslatorWriteReadTest<AArch32Rel32Translator::AddrTraits_A24> test_A24;
   for (uint32_t clean_slate_code : {kCleanSlateB_A1, kCleanSlateBL_A1}) {
     test_A24.Accept(clean_slate_code, aligned4, aligned4);
     test_A24.Reject(clean_slate_code, aligned4, misaligned4);
@@ -475,7 +479,7 @@ TEST(Arm32Rel32Translator, WriteRead) {
                    pcArm(0x16FFFFFE + 2), pcArm(0x16FFFFFE + 4)});
 
   // T8 tests.
-  ArmTranslatorWriteReadTest<Arm32Rel32Translator::AddrTraits_T8> test_T8;
+  ArmTranslatorWriteReadTest<AArch32Rel32Translator::AddrTraits_T8> test_T8;
   test_T8.Accept(kCleanSlateB_T1, aligned2, aligned2);
   test_T8.Reject(kCleanSlateB_T1, aligned2, misaligned2);
   test_T8.Reject(kCleanSlateB_T1, misaligned2, aligned2);
@@ -487,7 +491,7 @@ TEST(Arm32Rel32Translator, WriteRead) {
                  {pcThumb2(0x10000400 - 2), pcThumb2(0x100005FE + 2)});
 
   // T11 tests.
-  ArmTranslatorWriteReadTest<Arm32Rel32Translator::AddrTraits_T11> test_T11;
+  ArmTranslatorWriteReadTest<AArch32Rel32Translator::AddrTraits_T11> test_T11;
   test_T11.Accept(kCleanSlateB_T2, aligned2, aligned2);
   test_T11.Reject(kCleanSlateB_T2, aligned2, misaligned2);
   test_T11.Reject(kCleanSlateB_T2, misaligned2, aligned2);
@@ -499,7 +503,7 @@ TEST(Arm32Rel32Translator, WriteRead) {
                   {pcThumb2(0x10002800 - 2), pcThumb2(0x100037FE + 2)});
 
   // T20 tests.
-  ArmTranslatorWriteReadTest<Arm32Rel32Translator::AddrTraits_T20> test_T20;
+  ArmTranslatorWriteReadTest<AArch32Rel32Translator::AddrTraits_T20> test_T20;
   test_T20.Accept(kCleanSlateB_T3, aligned2, aligned2);
   test_T20.Reject(kCleanSlateB_T3, aligned2, misaligned2);
   test_T20.Reject(kCleanSlateB_T3, misaligned2, aligned2);
@@ -511,7 +515,7 @@ TEST(Arm32Rel32Translator, WriteRead) {
                   {pcThumb2(0x10200000 - 2), pcThumb2(0x103FFFFE + 2)});
 
   // T24 tests.
-  ArmTranslatorWriteReadTest<Arm32Rel32Translator::AddrTraits_T24> test_T24;
+  ArmTranslatorWriteReadTest<AArch32Rel32Translator::AddrTraits_T24> test_T24;
   for (uint32_t clean_slate_code : {kCleanSlateB_T4, kCleanSlateBL_T1}) {
     test_T24.Accept(clean_slate_code, aligned2, aligned2);
     test_T24.Reject(clean_slate_code, aligned2, misaligned2);
@@ -537,12 +541,12 @@ TEST(Arm32Rel32Translator, WriteRead) {
 }
 
 // Typical usage in |target_rva| extraction.
-TEST(Arm32Rel32Translator, Main) {
+TEST(AArch32Rel32Translator, Main) {
   // ARM mode (32-bit).
   // 00103050: 00 01 02 EA    B     00183458 ; B encoding A1 (cond = AL).
   {
     rva_t instr_rva = 0x00103050U;
-    Arm32Rel32Translator translator;
+    AArch32Rel32Translator translator;
     std::vector<uint8_t> bytes = {0x00, 0x01, 0x02, 0xEA};
     MutableBufferView region(&bytes[0], bytes.size());
     uint32_t code = translator.FetchArmCode32(region, 0U);
@@ -572,7 +576,7 @@ TEST(Arm32Rel32Translator, Main) {
   // 001030A2: F3 E7          B     0010308C ; B encoding T2.
   {
     rva_t instr_rva = 0x001030A2U;
-    Arm32Rel32Translator translator;
+    AArch32Rel32Translator translator;
     std::vector<uint8_t> bytes = {0xF3, 0xE7};
     MutableBufferView region(&bytes[0], bytes.size());
     uint16_t code = translator.FetchThumb2Code16(region, 0U);
@@ -603,7 +607,7 @@ TEST(Arm32Rel32Translator, Main) {
   // 001030A2: 00 F0 01 FA    BL    001034A8 ; BL encoding T1.
   {
     rva_t instr_rva = 0x001030A2U;
-    Arm32Rel32Translator translator;
+    AArch32Rel32Translator translator;
     std::vector<uint8_t> bytes = {0x00, 0xF0, 0x01, 0xFA};
     MutableBufferView region(&bytes[0], bytes.size());
     uint32_t code = translator.FetchThumb2Code32(region, 0U);
@@ -630,12 +634,12 @@ TEST(Arm32Rel32Translator, Main) {
   }
 }
 
-TEST(Arm32Rel32Translator, BLXComplication) {
+TEST(AArch32Rel32Translator, BLXComplication) {
   auto run_test = [](rva_t instr_rva,
                      std::vector<uint8_t> bytes,  // Pass by value.
                      uint32_t expected_code, arm_disp_t expected_disp,
                      uint32_t clean_slate_code, rva_t expected_target_rva) {
-    Arm32Rel32Translator translator;
+    AArch32Rel32Translator translator;
     MutableBufferView region(&bytes[0], bytes.size());
     uint32_t code = translator.FetchThumb2Code32(region, 0U);
     EXPECT_EQ(expected_code, code);

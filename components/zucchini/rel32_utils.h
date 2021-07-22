@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "components/zucchini/address_translator.h"
 #include "components/zucchini/arm_utils.h"
 #include "components/zucchini/buffer_view.h"
@@ -34,6 +33,8 @@ class Rel32ReaderX86 : public ReferenceReader {
                  offset_t hi,
                  const std::deque<offset_t>* locations,
                  const AddressTranslator& translator);
+  Rel32ReaderX86(const Rel32ReaderX86&) = delete;
+  const Rel32ReaderX86& operator=(const Rel32ReaderX86&) = delete;
   ~Rel32ReaderX86() override;
 
   // Returns the next reference, or absl::nullopt if exhausted.
@@ -46,8 +47,6 @@ class Rel32ReaderX86 : public ReferenceReader {
   const offset_t hi_;
   const std::deque<offset_t>::const_iterator last_;
   std::deque<offset_t>::const_iterator current_;
-
-  DISALLOW_COPY_AND_ASSIGN(Rel32ReaderX86);
 };
 
 // Writer for x86 / x64 rel32 References.
@@ -58,6 +57,8 @@ class Rel32WriterX86 : public ReferenceWriter {
   // |target_offset_to_rva_| and |location_offset_to_rva_| for address
   // translation, and therefore must outlive |*this|.
   Rel32WriterX86(MutableBufferView image, const AddressTranslator& translator);
+  Rel32WriterX86(const Rel32WriterX86&) = delete;
+  const Rel32WriterX86& operator=(const Rel32WriterX86&) = delete;
   ~Rel32WriterX86() override;
 
   void PutNext(Reference ref) override;
@@ -66,8 +67,6 @@ class Rel32WriterX86 : public ReferenceWriter {
   MutableBufferView image_;
   AddressTranslator::OffsetToRvaCache target_offset_to_rva_;
   AddressTranslator::OffsetToRvaCache location_offset_to_rva_;
-
-  DISALLOW_COPY_AND_ASSIGN(Rel32WriterX86);
 };
 
 // Reader that emits x86 / x64 References (locations and target) of a spcific
@@ -91,6 +90,9 @@ class Rel32ReaderArm : public ReferenceReader {
     rel32_end_ = rel32_locations.end();
   }
 
+  Rel32ReaderArm(const Rel32ReaderArm&) = delete;
+  const Rel32ReaderArm& operator=(const Rel32ReaderArm&) = delete;
+
   absl::optional<Reference> GetNext() override {
     while (cur_it_ < rel32_end_ && *cur_it_ < hi_) {
       offset_t location = *(cur_it_++);
@@ -113,8 +115,6 @@ class Rel32ReaderArm : public ReferenceReader {
   std::deque<offset_t>::const_iterator cur_it_;
   std::deque<offset_t>::const_iterator rel32_end_;
   offset_t hi_;
-
-  DISALLOW_COPY_AND_ASSIGN(Rel32ReaderArm);
 };
 
 // Writer for ARM rel32 References of a specific type.
@@ -126,6 +126,9 @@ class Rel32WriterArm : public ReferenceWriter {
   Rel32WriterArm(const AddressTranslator& translator,
                  MutableBufferView mutable_view)
       : mutable_view_(mutable_view), offset_to_rva_(translator) {}
+
+  Rel32WriterArm(const Rel32WriterArm&) = delete;
+  const Rel32WriterArm& operator=(const Rel32WriterArm&) = delete;
 
   void PutNext(Reference ref) override {
     CODE_T code = ADDR_TRAITS::Fetch(mutable_view_, ref.location);
@@ -143,8 +146,6 @@ class Rel32WriterArm : public ReferenceWriter {
  private:
   MutableBufferView mutable_view_;
   AddressTranslator::OffsetToRvaCache offset_to_rva_;
-
-  DISALLOW_COPY_AND_ASSIGN(Rel32WriterArm);
 };
 
 // Type for specialized versions of ArmCopyDisp().
