@@ -4,6 +4,8 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
+import {Banner} from '../../externs/banner.js';
+
 /**
  * The central component to the Banners Framework. The controller maintains the
  * core logic that dictates which banner should be shown as well as what events
@@ -14,7 +16,9 @@ export class BannerController extends EventTarget {
   constructor() {
     super();
 
+    /** @type {!Array<!Banner>} */
     this.warningBanners_ = [];
+    /** @type {!Array<!Banner>} */
     this.educationalBanners_ = [];
   }
 }

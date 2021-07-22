@@ -195,6 +195,10 @@ js_library("actions_model") {
 }
 
 js_library("banner_controller") {
+  deps = [
+    "//ui/file_manager/file_manager/externs:banner",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
 }
 
 js_library("mock_actions_model") {

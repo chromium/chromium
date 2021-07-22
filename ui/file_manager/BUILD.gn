@@ -164,6 +164,7 @@ preprocess_if_expr("preprocess_static") {
     "file_manager/externs/background/progress_center.js",
     "file_manager/externs/background/task_queue.js",
     "file_manager/externs/background_window.js",
+    "file_manager/externs/banner.js",
     "file_manager/externs/command_handler_deps.js",
     "file_manager/externs/directory_change_event.js",
     "file_manager/externs/drive_dialog_controller.js",
