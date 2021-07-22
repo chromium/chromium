@@ -155,6 +155,8 @@ public class QuickActionSearchWidgetProviderDelegate {
                 return R.layout.quick_action_search_widget_small_layout;
             case QuickActionSearchWidgetType.MEDIUM:
                 return R.layout.quick_action_search_widget_medium_layout;
+            case QuickActionSearchWidgetType.DINO:
+                return R.layout.quick_action_search_widget_dino_layout;
             case QuickActionSearchWidgetType.INVALID:
             default:
                 assert false : "Unknown QuickActionSearchWidgetType";

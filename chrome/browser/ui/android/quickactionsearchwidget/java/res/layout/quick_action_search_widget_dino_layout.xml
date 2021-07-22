@@ -4,7 +4,7 @@
      found in the LICENSE file. -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/dino_widget"
+    android:id="@+id/dino_quick_action_button"
     android:layout_width="@dimen/quick_action_search_widget_dino_size"
     android:layout_height="@dimen/quick_action_search_widget_dino_size"
     android:background="@drawable/quick_action_search_widget_dino_background"

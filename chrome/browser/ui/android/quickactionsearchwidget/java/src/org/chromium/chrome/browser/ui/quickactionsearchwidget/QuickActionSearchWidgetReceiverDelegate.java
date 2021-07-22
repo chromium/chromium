@@ -13,6 +13,7 @@ import android.os.Bundle;
 import androidx.core.app.ActivityOptionsCompat;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
@@ -96,14 +97,34 @@ public class QuickActionSearchWidgetReceiverDelegate {
      * @param context the {@link Context} in which we will launch the activity.
      */
     private void startDinoGame(final Context context) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(UrlConstants.CHROME_DINO_URL));
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        intent.setComponent(mChromeLauncherComponent);
-
-        IntentUtils.addTrustedIntentExtras(intent);
+        Intent intent = createDinoIntent(context);
 
         IntentUtils.safeStartActivity(context, intent,
                 ActivityOptionsCompat.makeCustomAnimation(context, R.anim.activity_open_enter, 0)
                         .toBundle());
+    }
+
+    /**
+     * Creates an intent to launch a new tab with chrome://dino/ URL.
+     *
+     * @param context The context from which the intent is being created.
+     * @return An intent to launch a tab with a new tab with chrome://dino/ URL.
+     */
+    private Intent createDinoIntent(final Context context) {
+        // We concatenate the forward slash to the URL since if a Dino tab already exists, we would
+        // like to reuse it. In order to determine if there is an existing Dino tab,
+        // ChromeTabbedActivity will check by comparing URLs of existing tabs to the URL of our
+        // intent. If there is an existing Dino tab, it would have a forward slash appended to the
+        // end of its URL, so our URL must have a forward slash to match.
+        String chromeDinoUrl = UrlConstants.CHROME_DINO_URL + "/";
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(chromeDinoUrl));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        intent.setComponent(mChromeLauncherComponent);
+        intent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
+
+        IntentUtils.addTrustedIntentExtras(intent);
+
+        return intent;
     }
 }
