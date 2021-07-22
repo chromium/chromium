@@ -169,7 +169,8 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
   auto* subtitle_label =
       label_wrapper->AddChildView(std::make_unique<views::Label>(
           presenter_->GetSimpleSiteName(), views::style::CONTEXT_LABEL,
-          views::style::STYLE_SECONDARY));
+          views::style::STYLE_SECONDARY,
+          gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
   subtitle_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   subtitle_label->SetAllowCharacterBreak(true);
   subtitle_label->SetMultiLine(true);

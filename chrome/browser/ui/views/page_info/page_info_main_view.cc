@@ -437,7 +437,9 @@ std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetInteriorMargin(gfx::Insets(0, kIconColumnWidth));
   title_ = header->AddChildView(std::make_unique<views::Label>(
-      std::u16string(), views::style::CONTEXT_DIALOG_TITLE));
+      std::u16string(), views::style::CONTEXT_DIALOG_TITLE,
+      views::style::STYLE_PRIMARY,
+      gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
   title_->SetMultiLine(true);
   title_->SetAllowCharacterBreak(true);
   title_->SetProperty(
