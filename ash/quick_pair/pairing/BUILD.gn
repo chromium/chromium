@@ -15,10 +15,6 @@ source_set("pairing") {
     "fast_pair/decrypted_response.h",
     "fast_pair/fast_pair_data_parser.cc",
     "fast_pair/fast_pair_data_parser.h",
-    "fast_pair/fast_pair_encryption.cc",
-    "fast_pair/fast_pair_encryption.h",
-    "fast_pair/fast_pair_key_pair.cc",
-    "fast_pair/fast_pair_key_pair.h",
     "fast_pair/fast_pair_pairer.cc",
     "fast_pair/fast_pair_pairer.h",
     "pairer_broker.h",
@@ -56,7 +52,6 @@ source_set("unit_tests") {
 
   sources = [
     "fast_pair/fast_pair_data_parser_unittest.cc",
-    "fast_pair/fast_pair_encryption_unittest.cc",
     "fast_pair/fast_pair_pairer_unittest.cc",
   ]
 
