@@ -333,34 +333,6 @@ TEST_F(HelpAppNotificationControllerTest,
   EXPECT_EQ(false, HasDiscoverTabNotification());
 }
 
-TEST_F(HelpAppNotificationControllerTest,
-       DoesNotShowDiscoverNotificationIfAlreadyShownIfM92) {
-  std::unique_ptr<Profile> profile = CreateChildProfile();
-  profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
-                                  92);
-  std::unique_ptr<HelpAppNotificationController> controller =
-      std::make_unique<HelpAppNotificationController>(profile.get());
-
-  controller->MaybeShowDiscoverNotification();
-
-  EXPECT_EQ(0, notification_count_);
-  EXPECT_EQ(false, HasDiscoverTabNotification());
-}
-
-TEST_F(HelpAppNotificationControllerTest,
-       DoesNotShowDiscoverNotificationIfAlreadyShownInM93) {
-  std::unique_ptr<Profile> profile = CreateChildProfile();
-  profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
-                                  93);
-  std::unique_ptr<HelpAppNotificationController> controller =
-      std::make_unique<HelpAppNotificationController>(profile.get());
-
-  controller->MaybeShowDiscoverNotification();
-
-  EXPECT_EQ(0, notification_count_);
-  EXPECT_EQ(false, HasDiscoverTabNotification());
-}
-
 // TODO(b/187774783): Remove this when discover tab is supported in all locales.
 TEST_F(HelpAppNotificationControllerTest,
        DoesNotShowDiscoverNotificationIfSystemLanguageNotEnglish) {

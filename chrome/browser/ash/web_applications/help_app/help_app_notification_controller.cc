@@ -26,7 +26,7 @@ namespace {
 // This stores the latest milestone with new Discover Tab content. If the last
 // milestone the user has seen the notification is before this, a new
 // notification will be shown.
-constexpr int kLastChromeVersionWithDiscoverTabContent = 92;
+constexpr int kLastChromeVersionWithDiscoverTabContent = 94;
 constexpr int kTimesToShowSuggestionChip = 3;
 
 int CurrentMilestone() {
