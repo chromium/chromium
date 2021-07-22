@@ -2739,14 +2739,6 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   if (AnyFrameIsPrintingOrPaintingPreview())
     return;
 
-  if (LocalDOMWindow* window = GetFrame().DomWindow()) {
-    if (HighlightRegistry* highlight_registry =
-            window->Supplementable<LocalDOMWindow>::RequireSupplement<
-                HighlightRegistry>()) {
-      highlight_registry->ValidateHighlightMarkers();
-    }
-  }
-
   bool repainted = PaintTree(benchmark_mode);
 
   if (paint_artifact_compositor_ &&
@@ -2762,6 +2754,14 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   ForAllNonThrottledLocalFrameViews(
       [this, &needed_update,
        &total_animations_count](LocalFrameView& frame_view) {
+        if (LocalDOMWindow* window = frame_view.GetFrame().DomWindow()) {
+          if (HighlightRegistry* highlight_registry =
+                  window->Supplementable<LocalDOMWindow>::RequireSupplement<
+                      HighlightRegistry>()) {
+            highlight_registry->ValidateHighlightMarkers();
+          }
+        }
+
         if (auto* scrollable_area = frame_view.GetScrollableArea())
           scrollable_area->UpdateCompositorScrollAnimations();
         if (const auto* animating_scrollable_areas =
