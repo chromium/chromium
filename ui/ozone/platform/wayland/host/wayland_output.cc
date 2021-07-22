@@ -13,7 +13,6 @@ namespace ui {
 WaylandOutput::WaylandOutput(uint32_t output_id, wl_output* output)
     : output_id_(output_id),
       output_(output),
-      scale_factor_(kDefaultScaleFactor),
       rect_in_physical_pixels_(gfx::Rect()) {
   wl_output_set_user_data(output_.get(), this);
 }
@@ -43,7 +42,7 @@ float WaylandOutput::GetUIScaleFactor() const {
 void WaylandOutput::TriggerDelegateNotifications() const {
   DCHECK(!rect_in_physical_pixels_.IsEmpty());
   delegate_->OnOutputHandleMetrics(output_id_, rect_in_physical_pixels_,
-                                   scale_factor_);
+                                   scale_factor_, transform_);
 }
 
 // static
@@ -58,8 +57,10 @@ void WaylandOutput::OutputHandleGeometry(void* data,
                                          const char* model,
                                          int32_t output_transform) {
   WaylandOutput* wayland_output = static_cast<WaylandOutput*>(data);
-  if (wayland_output)
+  if (wayland_output) {
     wayland_output->rect_in_physical_pixels_.set_origin(gfx::Point(x, y));
+    wayland_output->transform_ = output_transform;
+  }
 }
 
 // static

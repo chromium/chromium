@@ -33,6 +33,49 @@
 #endif
 
 namespace ui {
+namespace {
+
+display::Display::Rotation WaylandTransformToRotation(
+    wl_output_transform transform) {
+  switch (transform) {
+    case WL_OUTPUT_TRANSFORM_NORMAL:
+      return display::Display::ROTATE_0;
+    case WL_OUTPUT_TRANSFORM_90:
+      return display::Display::ROTATE_90;
+    case WL_OUTPUT_TRANSFORM_180:
+      return display::Display::ROTATE_180;
+    case WL_OUTPUT_TRANSFORM_270:
+      return display::Display::ROTATE_270;
+    // ui::display::Display does not support flipped rotation.
+    // see ui::display::Display::Rotation comment.
+    case WL_OUTPUT_TRANSFORM_FLIPPED:
+    case WL_OUTPUT_TRANSFORM_FLIPPED_90:
+    case WL_OUTPUT_TRANSFORM_FLIPPED_180:
+    case WL_OUTPUT_TRANSFORM_FLIPPED_270:
+      NOTIMPLEMENTED_LOG_ONCE();
+      return display::Display::ROTATE_0;
+  }
+  NOTREACHED();
+  return display::Display::ROTATE_0;
+}
+
+wl_output_transform RotationToWaylandTransform(
+    display::Display::Rotation rotation) {
+  switch (rotation) {
+    case display::Display::ROTATE_0:
+      return WL_OUTPUT_TRANSFORM_NORMAL;
+    case display::Display::ROTATE_90:
+      return WL_OUTPUT_TRANSFORM_90;
+    case display::Display::ROTATE_180:
+      return WL_OUTPUT_TRANSFORM_180;
+    case display::Display::ROTATE_270:
+      return WL_OUTPUT_TRANSFORM_270;
+  }
+  NOTREACHED();
+  return WL_OUTPUT_TRANSFORM_NORMAL;
+}
+
+}  // namespace
 
 WaylandScreen::WaylandScreen(WaylandConnection* connection)
     : connection_(connection), weak_factory_(this) {
@@ -82,8 +125,9 @@ WaylandScreen::~WaylandScreen() = default;
 
 void WaylandScreen::OnOutputAddedOrUpdated(uint32_t output_id,
                                            const gfx::Rect& bounds,
-                                           int32_t scale) {
-  AddOrUpdateDisplay(output_id, bounds, scale);
+                                           int32_t scale,
+                                           int32_t transform) {
+  AddOrUpdateDisplay(output_id, bounds, scale, transform);
 }
 
 void WaylandScreen::OnOutputRemoved(uint32_t output_id) {
@@ -106,7 +150,8 @@ void WaylandScreen::OnOutputRemoved(uint32_t output_id) {
 
 void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
                                        const gfx::Rect& new_bounds,
-                                       int32_t scale_factor) {
+                                       int32_t scale_factor,
+                                       int32_t transform) {
   display::Display changed_display(output_id);
   if (!display::Display::HasForceDeviceScaleFactor()) {
     changed_display.SetScaleAndBounds(scale_factor + additional_scale_,
@@ -115,6 +160,11 @@ void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
     changed_display.set_bounds(new_bounds);
     changed_display.set_work_area(new_bounds);
   }
+
+  display::Display::Rotation rotation =
+      WaylandTransformToRotation(static_cast<wl_output_transform>(transform));
+  changed_display.set_rotation(rotation);
+  changed_display.set_panel_rotation(rotation);
 
   gfx::DisplayColorSpaces color_spaces;
   color_spaces.SetOutputBufferFormats(image_format_no_alpha_.value(),
@@ -339,7 +389,8 @@ void WaylandScreen::SetDeviceScaleFactor(float scale) {
   additional_scale_ = std::modf(scale, &whole);
   for (const auto& display : display_list_.displays()) {
     OnOutputAddedOrUpdated(display.id(), display.bounds(),
-                           display.device_scale_factor());
+                           display.device_scale_factor(),
+                           RotationToWaylandTransform(display.rotation()));
   }
 }
 

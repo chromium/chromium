@@ -22,7 +22,8 @@ class WaylandOutput {
    public:
     virtual void OnOutputHandleMetrics(uint32_t output_id,
                                        const gfx::Rect& new_bounds,
-                                       int32_t scale_factor) = 0;
+                                       int32_t scale_factor,
+                                       int32_t transform) = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -38,6 +39,7 @@ class WaylandOutput {
   uint32_t output_id() const { return output_id_; }
   bool has_output(wl_output* output) const { return output_.get() == output; }
   int32_t scale_factor() const { return scale_factor_; }
+  int32_t transform() const { return transform_; }
   gfx::Rect bounds() const { return rect_in_physical_pixels_; }
 
   // Tells if the output has already received physical screen dimensions in the
@@ -76,6 +78,7 @@ class WaylandOutput {
   const uint32_t output_id_ = 0;
   wl::Object<wl_output> output_;
   int32_t scale_factor_ = kDefaultScaleFactor;
+  int32_t transform_ = WL_OUTPUT_TRANSFORM_NORMAL;
   gfx::Rect rect_in_physical_pixels_;
 
   Delegate* delegate_ = nullptr;

@@ -73,7 +73,8 @@ std::unique_ptr<WaylandScreen> WaylandOutputManager::CreateWaylandScreen() {
   for (const auto& output : output_list_) {
     if (output->is_ready()) {
       wayland_screen->OnOutputAddedOrUpdated(
-          output->output_id(), output->bounds(), output->scale_factor());
+          output->output_id(), output->bounds(),
+          output->scale_factor(), output->transform());
     }
   }
 
@@ -95,10 +96,11 @@ WaylandOutput* WaylandOutputManager::GetPrimaryOutput() const {
 
 void WaylandOutputManager::OnOutputHandleMetrics(uint32_t output_id,
                                                  const gfx::Rect& new_bounds,
-                                                 int32_t scale_factor) {
+                                                 int32_t scale_factor,
+                                                 int32_t transform) {
   if (wayland_screen_) {
     wayland_screen_->OnOutputAddedOrUpdated(output_id, new_bounds,
-                                            scale_factor);
+                                            scale_factor, transform);
   }
   auto* wayland_window_manager = connection_->wayland_window_manager();
   for (auto* window : wayland_window_manager->GetWindowsOnOutput(output_id))
