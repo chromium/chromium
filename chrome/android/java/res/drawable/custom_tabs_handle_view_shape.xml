@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners
+        android:radius="1dp"
+        android:topLeftRadius="@dimen/custom_tabs_top_corner_round_radius"
+        android:topRightRadius="@dimen/custom_tabs_top_corner_round_radius"
+        android:bottomLeftRadius="0dp"
+        android:bottomRightRadius="0dp" />
+    <solid
+        android:color="@color/default_bg_color" />
+</shape>

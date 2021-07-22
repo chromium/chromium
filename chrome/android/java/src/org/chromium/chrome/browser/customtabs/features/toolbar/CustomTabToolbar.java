@@ -135,6 +135,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private ImageButton mSecurityButton;
     private LinearLayout mCustomActionButtons;
     private ImageButton mCloseButton;
+    // This View will be non-null only for bottom sheet custom tabs.
+    private ImageView mHandleView;
 
     // Whether dark tint should be applied to icons and text.
     private boolean mUseDarkColors;
@@ -530,7 +532,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                         + fraction * (Color.green(finalColor) - Color.green(initialColor)));
                 int blue = (int) (Color.blue(initialColor)
                         + fraction * (Color.blue(finalColor) - Color.blue(initialColor)));
-                background.setColor(Color.rgb(red, green, blue));
+                int color = Color.rgb(red, green, blue);
+                background.setColor(color);
+                if (mHandleView != null) {
+                    mHandleView.getBackground().setTint(color);
+                }
             }
         });
         mBrandColorTransitionAnimation.addListener(new AnimatorListenerAdapter() {
@@ -565,6 +571,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     @Override
     public LocationBar getLocationBar() {
         return mLocationBar;
+    }
+
+    public void setHandleView(ImageView view) {
+        mHandleView = view;
+        mHandleView.getBackground().setTint(getBackground().getColor());
     }
 
     @Override
