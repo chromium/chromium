@@ -45,7 +45,7 @@ class RemoteOpenUrlMessageHandler final
   SEQUENCE_CHECKER(sequence_checker_);
 
   MojoIpcServer<mojom::RemoteUrlOpener> ipc_server_{
-      GetRemoteOpenUrlIpcChannelName(), 0, this};
+      GetRemoteOpenUrlIpcChannelName(), this};
 
   static_assert(
       std::is_same<

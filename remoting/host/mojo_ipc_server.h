@@ -5,7 +5,10 @@
 #ifndef REMOTING_HOST_MOJO_IPC_SERVER_H_
 #define REMOTING_HOST_MOJO_IPC_SERVER_H_
 
+#include <memory>
+
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -16,12 +19,19 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 
+namespace mojo {
+class IsolatedConnection;
+}
+
 namespace remoting {
 
 // Template-less base class to keep implementations in the .cc file. For usage,
 // see MojoIpcServer.
 class MojoIpcServerBase {
  public:
+  // Internal use only.
+  struct PendingConnection;
+
   // Starts sending out mojo invitations and accepting IPCs. No-op if the server
   // is already started.
   void StartServer();
@@ -30,28 +40,37 @@ class MojoIpcServerBase {
   // is already stopped.
   void StopServer();
 
+  // Close the receiver identified by |id| and disconnects the remote. No-op if
+  // |id| doesn't exist or the receiver is already closed.
+  void Close(mojo::ReceiverId id);
+
  protected:
   explicit MojoIpcServerBase(
-      const mojo::NamedPlatformChannel::ServerName& server_name,
-      uint64_t message_pipe_id);
+      const mojo::NamedPlatformChannel::ServerName& server_name);
   virtual ~MojoIpcServerBase();
 
   void SendInvitation();
 
-  virtual void CloseAllConnections() = 0;
-
-  virtual void OnInvitationAccepted(
+  virtual mojo::ReceiverId TrackMessagePipe(
       mojo::ScopedMessagePipeHandle message_pipe) = 0;
+
+  virtual void UntrackMessagePipe(mojo::ReceiverId id) = 0;
+
+  virtual void UntrackAllMessagePipes() = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
-  void OnInvitationSent(mojo::ScopedMessagePipeHandle message_pipe);
+  using ActiveConnectionMap =
+      base::flat_map<mojo::ReceiverId,
+                     std::unique_ptr<mojo::IsolatedConnection>>;
+
+  void OnInvitationSent(
+      std::unique_ptr<MojoIpcServerBase::PendingConnection> pending_connection);
   void OnMessagePipeReady(MojoResult result,
                           const mojo::HandleSignalsState& state);
 
   mojo::NamedPlatformChannel::ServerName server_name_;
-  uint64_t message_pipe_id_;
 
   bool server_started_ = false;
 
@@ -60,7 +79,8 @@ class MojoIpcServerBase {
 
   // The message pipe will be "pending" until a client accepts the invitation.
   mojo::SimpleWatcher pending_message_pipe_watcher_;
-  mojo::ScopedMessagePipeHandle pending_message_pipe_;
+  std::unique_ptr<PendingConnection> pending_connection_;
+  ActiveConnectionMap active_connections_;
 
   base::WeakPtrFactory<MojoIpcServerBase> weak_factory_{this};
 };
@@ -91,7 +111,7 @@ class MojoIpcServerBase {
 //       server_.Close(server_.current_receiver());
 //     }
 
-//     MojoIpcServer<mojom::MyInterface> server_{"my_server_name", 0, this};
+//     MojoIpcServer<mojom::MyInterface> server_{"my_server_name", this};
 //   };
 template <typename Interface>
 class MojoIpcServer final : public MojoIpcServerBase {
@@ -100,31 +120,13 @@ class MojoIpcServer final : public MojoIpcServerBase {
   // message_pipe_id: The message pipe ID. The client must call
   // ExtractMessagePipe() with the same ID.
   MojoIpcServer(const mojo::NamedPlatformChannel::ServerName& server_name,
-                uint64_t message_pipe_id,
                 Interface* interface_impl)
-      : MojoIpcServerBase(server_name, message_pipe_id),
-        interface_impl_(interface_impl) {}
+      : MojoIpcServerBase(server_name), interface_impl_(interface_impl) {}
 
-  ~MojoIpcServer() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    // StopServer() calls CloseAllConnections(), which is not implemented in
-    // the base class, so this method can't be called in ~MojoIpcServerBase().
-    StopServer();
-  }
+  ~MojoIpcServer() override = default;
 
   MojoIpcServer(const MojoIpcServer&) = delete;
   MojoIpcServer& operator=(const MojoIpcServer&) = delete;
-
-  // Close the receiver identified by |id| and disconnects the remote. No-op if
-  // |id| doesn't exist or the receiver is already closed.
-  //
-  // Returns a boolean that indicates whether a receiver has be closed.
-  bool Close(mojo::ReceiverId id) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    return receiver_set_.Remove(id);
-  }
 
   // Sets a callback to be invoked any time a receiver is disconnected. You may
   // find out which receiver is being disconnected by calling
@@ -141,17 +143,21 @@ class MojoIpcServer final : public MojoIpcServerBase {
 
  private:
   // MojoIpcServerBase implementation.
-  void CloseAllConnections() override { receiver_set_.Clear(); }
-
-  void OnInvitationAccepted(
+  mojo::ReceiverId TrackMessagePipe(
       mojo::ScopedMessagePipeHandle message_pipe) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    receiver_set_.Add(interface_impl_, mojo::PendingReceiver<Interface>(
-                                           std::move(message_pipe)));
-
-    SendInvitation();
+    return receiver_set_.Add(interface_impl_, mojo::PendingReceiver<Interface>(
+                                                  std::move(message_pipe)));
   }
+
+  void UntrackMessagePipe(mojo::ReceiverId id) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    receiver_set_.Remove(id);
+  }
+
+  void UntrackAllMessagePipes() override { receiver_set_.Clear(); }
 
   Interface* interface_impl_;
   mojo::ReceiverSet<Interface> receiver_set_;

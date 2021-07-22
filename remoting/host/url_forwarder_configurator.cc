@@ -13,7 +13,7 @@ UrlForwarderConfigurator::UrlForwarderConfigurator() = default;
 
 UrlForwarderConfigurator::~UrlForwarderConfigurator() = default;
 
-#if !defined(OS_LINUX)
+#if !defined(OS_LINUX) && !defined(OS_WIN)
 
 // static
 UrlForwarderConfigurator* UrlForwarderConfigurator::GetInstance() {
@@ -22,6 +22,6 @@ UrlForwarderConfigurator* UrlForwarderConfigurator::GetInstance() {
   return nullptr;
 }
 
-#endif  // !defined(OS_LINUX)
+#endif  // !defined(OS_LINUX) && !defined(OS_WIN)
 
 }  // namespace remoting

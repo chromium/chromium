@@ -43,6 +43,9 @@ class DesktopEnvironmentOptions final {
   bool enable_file_transfer() const;
   void set_enable_file_transfer(bool enabled);
 
+  bool enable_remote_open_url() const;
+  void set_enable_remote_open_url(bool enabled);
+
   const webrtc::DesktopCaptureOptions* desktop_capture_options() const;
   webrtc::DesktopCaptureOptions* desktop_capture_options();
 
@@ -68,6 +71,9 @@ class DesktopEnvironmentOptions final {
 
   // True if this host has file transfer enabled.
   bool enable_file_transfer_ = false;
+
+  // True if this host has the remote open URL feature enabled.
+  bool enable_remote_open_url_ = false;
 
   // The DesktopCaptureOptions to initialize DesktopCapturer.
   webrtc::DesktopCaptureOptions desktop_capture_options_;

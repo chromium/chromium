@@ -1579,6 +1579,12 @@ void HostProcess::StartHost() {
         enable_user_interface_);
   }
 
+#if defined(OS_LINUX) || (!defined(NDEBUG) && defined(OS_WIN))
+  // Remote open URL is fully supported on Linux and still in development for
+  // Windows.
+  desktop_environment_options_.set_enable_remote_open_url(true);
+#endif
+
   host_ = std::make_unique<ChromotingHost>(
       desktop_environment_factory_.get(), std::move(session_manager),
       transport_context, context_->audio_task_runner(),

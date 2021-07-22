@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
-#include "mojo/public/cpp/system/invitation.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/remote_open_url_constants.h"
 
@@ -89,9 +88,8 @@ void RemoteOpenUrlClient::OpenUrl(const GURL& url, base::OnceClosure done) {
     return;
   }
 
-  auto invitation = mojo::IncomingInvitation::Accept(std::move(endpoint));
   mojo::PendingRemote<mojom::RemoteUrlOpener> pending_remote(
-      invitation.ExtractMessagePipe(0), 0);
+      connection_.Connect(std::move(endpoint)), /* version= */ 0);
   if (!pending_remote.is_valid()) {
     LOG(WARNING) << "Invalid message pipe.";
     OnOpenUrlResponse(mojom::OpenUrlResult::FAILURE);

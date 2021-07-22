@@ -103,6 +103,14 @@ void DesktopEnvironmentOptions::set_enable_file_transfer(bool enabled) {
   enable_file_transfer_ = enabled;
 }
 
+bool DesktopEnvironmentOptions::enable_remote_open_url() const {
+  return enable_remote_open_url_;
+}
+
+void DesktopEnvironmentOptions::set_enable_remote_open_url(bool enabled) {
+  enable_remote_open_url_ = enabled;
+}
+
 void DesktopEnvironmentOptions::ApplySessionOptions(
     const SessionOptions& options) {
 #if defined(OS_WIN)

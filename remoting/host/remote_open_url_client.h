@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/isolated_connection.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
 
 namespace remoting {
@@ -55,6 +56,7 @@ class RemoteOpenUrlClient final {
   base::OneShotTimer timeout_timer_;
   GURL url_;
   base::OnceClosure done_;
+  mojo::IsolatedConnection connection_;
   mojo::Remote<mojom::RemoteUrlOpener> remote_;
 };
 

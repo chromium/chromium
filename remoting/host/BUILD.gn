@@ -571,6 +571,8 @@ static_library("common") {
       "sas_injector_win.cc",
       "touch_injector_win.cc",
       "touch_injector_win.h",
+      "url_forwarder_configurator_win.cc",
+      "url_forwarder_configurator_win.h",
       "usage_stats_consent_win.cc",
 
       # TODO(crbug.com/1184893): These are in //remoting/host/win:remoting_core, but we can't add a

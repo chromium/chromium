@@ -174,6 +174,11 @@ std::string DesktopSessionProxy::GetCapabilities() const {
     result += protocol::kFileTransferCapability;
   }
 
+  if (options_.enable_remote_open_url()) {
+    result += " ";
+    result += protocol::kRemoteOpenUrlCapability;
+  }
+
   return result;
 }
 
