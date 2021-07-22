@@ -329,8 +329,7 @@ scoped_refptr<AudioBuffer> MakeAudioBuffer(SampleFormat format,
                                 static_cast<int>(frames));
   output->set_timestamp(timestamp);
 
-  const bool is_planar =
-      format == kSampleFormatPlanarS16 || format == kSampleFormatPlanarF32;
+  const bool is_planar = IsPlanar(format);
 
   // Values in channel 0 will be:
   //   start
