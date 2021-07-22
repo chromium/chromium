@@ -3624,12 +3624,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     navigation commit to the start of the next navigation.
   </summary>
   <token key="Scheme">
+    <variant name="App"/>
+    <variant name="Blob"/>
+    <variant name="Chrome"/>
+    <variant name="ChromeNative"/>
+    <variant name="Content"/>
+    <variant name="CustomTab"/>
     <variant name="Data"/>
+    <variant name="Devtools"/>
+    <variant name="Document"/>
     <variant name="File"/>
+    <variant name="Filesystem"/>
+    <variant name="Ftp"/>
     <variant name="Http"/>
     <variant name="Https"/>
+    <variant name="Inline"/>
+    <variant name="Intent"/>
+    <variant name="Jar"/>
     <variant name="JavaScript"/>
     <variant name="Other"/>
+    <variant name="Sms"/>
+    <variant name="Tel"/>
   </token>
 </histogram>
 

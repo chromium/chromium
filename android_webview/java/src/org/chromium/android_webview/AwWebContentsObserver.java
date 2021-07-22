@@ -137,16 +137,46 @@ public class AwWebContentsObserver extends WebContentsObserver {
      */
     private static String pageTimeSpentSchemeToHistogramKey(String scheme) {
         switch (scheme) {
+            case UrlConstants.APP_INTENT_SCHEME:
+                return "App";
+            case UrlConstants.BLOB_SCHEME:
+                return "Blob";
+            case UrlConstants.CHROME_SCHEME:
+                return "Chrome";
+            case UrlConstants.CHROME_NATIVE_SCHEME:
+                return "ChromeNative";
+            case UrlConstants.CONTENT_SCHEME:
+                return "Content";
+            case UrlConstants.CUSTOM_TAB_SCHEME:
+                return "CustomTab";
             case UrlConstants.DATA_SCHEME:
                 return "Data";
+            case UrlConstants.DEVTOOLS_SCHEME:
+                return "Devtools";
+            case UrlConstants.DOCUMENT_SCHEME:
+                return "Document";
             case UrlConstants.FILE_SCHEME:
                 return "File";
+            case UrlConstants.FILESYSTEM_SCHEME:
+                return "Filesystem";
+            case UrlConstants.FTP_SCHEME:
+                return "Ftp";
             case UrlConstants.HTTP_SCHEME:
                 return "Http";
             case UrlConstants.HTTPS_SCHEME:
                 return "Https";
+            case UrlConstants.INLINE_SCHEME:
+                return "Inline";
+            case UrlConstants.INTENT_SCHEME:
+                return "Intent";
+            case UrlConstants.JAR_SCHEME:
+                return "Jar";
             case UrlConstants.JAVASCRIPT_SCHEME:
                 return "JavaScript";
+            case UrlConstants.SMS_SCHEME:
+                return "Sms";
+            case UrlConstants.TEL_SCHEME:
+                return "Tel";
             default:
                 return "Other";
         }
