@@ -63,6 +63,22 @@ const SkScalar kTrackHeightRatio = 8.0f / 16;
 const SkScalar kMenuListArrowStrokeWidth = 2.f;
 const int kSliderThumbSize = 16;
 
+// This value was created with the following steps:
+// 1. Take the SkColors returned by GetControlColor for kAccent and
+//    kHoveredAccent.
+// 2. use color_utils::SkColorToHSL to convert those colors to HSL.
+// 3. Take the difference of the luminance component of the HSL between those
+//    two colors.
+// 4. Round to the nearest two decimal points.
+//
+// This is used to emulate the changes in color used for hover and pressed
+// states when a custom accent-color is used to draw form controls. It just so
+// happens that the luminance difference is the same for hover and press, and it
+// also happens that GetDarkModeControlColor has very close values when you run
+// these steps, which makes it work well for forced color-scheme for contrast
+// with certain accent-colors.
+const double kAccentLuminanceAdjust = 0.11;
+
 // Get a color constant based on color-scheme
 SkColor GetColor(const SkColor colors[2],
                  ui::NativeTheme::ColorScheme color_scheme) {
@@ -107,6 +123,33 @@ ui::NativeTheme::ColorScheme ColorSchemeForAccentColor(
   }
 
   return color_scheme;
+}
+
+SkColor AdjustLuminance(const SkColor& color, double luminance) {
+  color_utils::HSL hsl;
+  color_utils::SkColorToHSL(color, &hsl);
+  hsl.l = base::ClampToRange(hsl.l + luminance, 0., 1.);
+  return color_utils::HSLToSkColor(hsl, SkColorGetA(color));
+}
+
+SkColor CustomAccentColorForState(
+    const SkColor& accent_color,
+    ui::NativeTheme::State state,
+    const ui::NativeTheme::ColorScheme& color_scheme) {
+  bool make_lighter = false;
+  bool is_dark_mode = color_scheme == ui::NativeTheme::ColorScheme::kDark;
+  switch (state) {
+    case ui::NativeTheme::kHovered:
+      make_lighter = is_dark_mode;
+      break;
+    case ui::NativeTheme::kPressed:
+      make_lighter = !is_dark_mode;
+      break;
+    default:
+      return accent_color;
+  }
+  return AdjustLuminance(accent_color,
+                         (make_lighter ? 1 : -1) * kAccentLuminanceAdjust);
 }
 
 }  // namespace
@@ -608,7 +651,8 @@ void NativeThemeBase::PaintCheckbox(
       // Draw the accent background.
       flags.setStyle(cc::PaintFlags::kFill_Style);
       if (accent_color && state != kDisabled) {
-        flags.setColor(*accent_color);
+        flags.setColor(
+            CustomAccentColorForState(*accent_color, state, color_scheme));
       } else {
         flags.setColor(ControlsAccentColorForState(state, color_scheme));
       }
@@ -658,7 +702,8 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
   if (skrect.width() <= 2) {
     cc::PaintFlags flags;
     if (accent_color && state != kDisabled) {
-      flags.setColor(*accent_color);
+      flags.setColor(
+          CustomAccentColorForState(*accent_color, state, color_scheme));
     } else {
       flags.setColor(GetControlColor(kBorder, color_scheme));
     }
@@ -694,7 +739,8 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
     SkColor border_color;
     if (button.checked && !button.indeterminate) {
       if (accent_color && state != kDisabled) {
-        border_color = *accent_color;
+        border_color =
+            CustomAccentColorForState(*accent_color, state, color_scheme);
       } else {
         border_color = ControlsAccentColorForState(state, color_scheme);
       }
@@ -741,7 +787,8 @@ void NativeThemeBase::PaintRadio(
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
     if (accent_color && state != kDisabled) {
-      flags.setColor(*accent_color);
+      flags.setColor(
+          CustomAccentColorForState(*accent_color, state, color_scheme));
     } else {
       flags.setColor(ControlsAccentColorForState(state, color_scheme));
     }
@@ -958,9 +1005,8 @@ void NativeThemeBase::PaintSliderTrack(
 
   // Paint the value slider track.
   if (accent_color && state != kDisabled) {
-    // TODO(crbug.com/1092093): Decide what to do when state is kHovered or
-    // kPressed.
-    flags.setColor(*accent_color);
+    flags.setColor(
+        CustomAccentColorForState(*accent_color, state, color_scheme));
   } else {
     flags.setColor(ControlsSliderColorForState(state, color_scheme));
   }
@@ -1014,9 +1060,8 @@ void NativeThemeBase::PaintSliderThumb(
   // Paint the background (is not visible behind the rounded corners).
   thumb_rect.inset(border_width / 2, border_width / 2);
   if (accent_color && state != kDisabled) {
-    // TODO(crbug.com/1092093): Decide what to do when state is kHovered or
-    // kPressed.
-    flags.setColor(*accent_color);
+    flags.setColor(
+        CustomAccentColorForState(*accent_color, state, color_scheme));
   } else {
     flags.setColor(ControlsSliderColorForState(state, color_scheme));
   }
