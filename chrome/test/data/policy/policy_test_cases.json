@@ -5102,7 +5102,17 @@
         },
         "prefs": {
           "google.services.username_pattern": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": ".*@google.com"
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "google.services.username_pattern": {
+            "location": "local_state",
+            "default_value": ""
           }
         }
       }
