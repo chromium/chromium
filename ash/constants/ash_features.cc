@@ -603,6 +603,13 @@ const base::Feature kHoldingSpaceInProgressDownloadsIntegration{
     "HoldingSpaceInProgressDownloadsIntegration",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables incognito profile integration with the productivity feature that
+// aims to reduce context switching by enabling users to collect content and
+// transfer or access it later.
+const base::Feature kHoldingSpaceIncognitoProfileIntegration{
+    "HoldingSpaceIncognitoProfileIntegration",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable or disable IME decoder via Mojo connection on Chrome OS.
 const base::Feature kImeMojoDecoder{"ImeMojoDecoder",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1340,6 +1347,10 @@ bool IsHoldingSpaceArcIntegrationEnabled() {
 bool IsHoldingSpaceInProgressDownloadsIntegrationEnabled() {
   return base::FeatureList::IsEnabled(
       kHoldingSpaceInProgressDownloadsIntegration);
+}
+
+bool IsHoldingSpaceIncognitoProfileIntegrationEnabled() {
+  return base::FeatureList::IsEnabled(kHoldingSpaceIncognitoProfileIntegration);
 }
 
 bool IsHostnameSettingEnabled() {

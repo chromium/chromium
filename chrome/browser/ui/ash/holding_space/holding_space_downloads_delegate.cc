@@ -430,11 +430,13 @@ void HoldingSpaceDownloadsDelegate::OnDownloadCreated(
   }
 }
 
-// TODO(crbug.com/1208910): Support incognito.
 void HoldingSpaceDownloadsDelegate::OnLacrosDownloadUpdated(
     const crosapi::mojom::DownloadEvent& event) {
-  if (event.is_from_incognito_profile)
+  if (event.is_from_incognito_profile &&
+      !features::IsHoldingSpaceIncognitoProfileIntegrationEnabled()) {
     return;
+  }
+
   if (event.state == crosapi::mojom::DownloadState::kComplete) {
     service()->AddDownload(ash::HoldingSpaceItem::Type::kLacrosDownload,
                            event.target_file_path);

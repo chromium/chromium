@@ -2174,7 +2174,9 @@ TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
 // tests should use an incognito browser.
 class HoldingSpaceKeyedServicePrintToPdfIntegrationTest
     : public HoldingSpaceKeyedServiceTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<
+          std::tuple<bool /* from_incognito_profile */,
+                     bool /* incognito_prints_enabled */>> {
  public:
   // Starts a job to print an empty PDF to the specified `file_path`.
   // NOTE: This method will not return until the print job completes.
@@ -2193,7 +2195,11 @@ class HoldingSpaceKeyedServicePrintToPdfIntegrationTest
   }
 
   // Returns true if the test should use an incognito browser, false otherwise.
-  bool UseIncognitoBrowser() const { return GetParam(); }
+  bool UseIncognitoBrowser() const { return std::get<0>(GetParam()); }
+
+  // Returns true if the test should run with the incognito profile feature
+  // enabled, false otherwise.
+  bool IncognitoPrintsEnabled() const { return std::get<1>(GetParam()); }
 
  private:
   // HoldingSpaceKeyedServiceTest:
@@ -2228,13 +2234,21 @@ class HoldingSpaceKeyedServicePrintToPdfIntegrationTest
   std::unique_ptr<Browser> incognito_browser_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceKeyedServicePrintToPdfIntegrationTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HoldingSpaceKeyedServicePrintToPdfIntegrationTest,
+    testing::Combine(/*from_incognito_profile=*/::testing::Bool(),
+                     /*incognito_prints_enabled=*/::testing::Bool()));
 
 // Verifies that print-to-PDF adds an associated item to holding space unless
-// the print job was from an incognito profile.
+// the print job was from an incognito profile and the incognito profile
+// feature is not enabled.
 TEST_P(HoldingSpaceKeyedServicePrintToPdfIntegrationTest, AddPrintedPdfItem) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureState(
+      features::kHoldingSpaceIncognitoProfileIntegration,
+      IncognitoPrintsEnabled());
+
   // Create a file system mount point.
   std::unique_ptr<ScopedTestMountPoint> mount_point =
       ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
@@ -2253,9 +2267,9 @@ TEST_P(HoldingSpaceKeyedServicePrintToPdfIntegrationTest, AddPrintedPdfItem) {
   base::FilePath file_path = mount_point->GetRootPath().Append("foo.pdf");
   StartPrintToPdfAndWaitForSave(u"job_title", file_path);
 
-  // If the print job was from an incognito profile, no item should have been
-  // added to holding space.
-  if (UseIncognitoBrowser()) {
+  // If the print job was from an incognito profile and the incognito profile
+  // feature is not enabled, no item should have been added to holding space.
+  if (UseIncognitoBrowser() && !IncognitoPrintsEnabled()) {
     ASSERT_EQ(model->items().size(), 0u);
     return;
   }

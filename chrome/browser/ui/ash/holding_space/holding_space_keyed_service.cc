@@ -6,6 +6,7 @@
 
 #include <set>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
@@ -131,12 +132,13 @@ void HoldingSpaceKeyedService::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-// TODO(crbug.com/1208910): Support incognito.
 void HoldingSpaceKeyedService::AddPrintedPdf(
     const base::FilePath& printed_pdf_path,
     bool from_incognito_profile) {
-  if (!from_incognito_profile)
+  if (!from_incognito_profile ||
+      features::IsHoldingSpaceIncognitoProfileIntegrationEnabled()) {
     AddItemOfType(HoldingSpaceItem::Type::kPrintedPdf, printed_pdf_path);
+  }
 }
 
 void HoldingSpaceKeyedService::AddPinnedFiles(
