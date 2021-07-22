@@ -112,6 +112,7 @@
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/cart/commerce_hint_service.h"
 #include "chrome/browser/new_tab_page/modules/drive/drive.mojom.h"
+#include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/task_module/task_module.mojom.h"
 #include "chrome/browser/payments/payment_request_factory.h"
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom.h"
@@ -715,6 +716,11 @@ void PopulateChromeWebUIFrameBinders(
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpDriveModule)) {
     RegisterWebUIControllerInterfaceBinder<drive::mojom::DriveHandler,
+                                           NewTabPageUI>(map);
+  }
+
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpPhotosModule)) {
+    RegisterWebUIControllerInterfaceBinder<photos::mojom::PhotosHandler,
                                            NewTabPageUI>(map);
   }
 

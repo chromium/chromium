@@ -1603,6 +1603,7 @@ static_library("ui") {
       "//chrome/browser/cart:mojo_bindings",
       "//chrome/browser/media/router",
       "//chrome/browser/new_tab_page/modules/drive:mojo_bindings",
+      "//chrome/browser/new_tab_page/modules/photos:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/task_module:mojo_bindings",
       "//chrome/browser/profile_resetter:profile_reset_report_proto",
       "//chrome/browser/promo_browser_command:mojo_bindings",

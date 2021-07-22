@@ -41,6 +41,7 @@ js_library("module_descriptors") {
     "cart_v2:module",
     "drive:module",
     "drive_v2:module",
+    "photos:module",
     "task_module:module",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -101,6 +102,7 @@ group("web_components") {
     "drive:web_components",
     "drive_v2:web_components",
     "dummy:web_components",
+    "photos:web_components",
     "task_module:web_components",
   ]
 }
@@ -138,6 +140,7 @@ preprocess_if_expr("preprocess") {
     "task_module/task_module_handler_proxy.js",
     "cart/chrome_cart_proxy.js",
     "drive/drive_module_proxy.js",
+    "photos/photos_module_proxy.js",
   ]
   if (!is_official_build) {
     in_files += [ "dummy/foo_proxy.js" ]
@@ -160,6 +163,7 @@ preprocess_if_expr("preprocess_gen") {
     "cart_v2/module.js",
     "drive/module.js",
     "drive_v2/module.js",
+    "photos/module.js",
   ]
   if (!is_official_build) {
     in_files += [ "dummy/module.js" ]

@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/new_tab_page/modules/drive/drive.mojom.h"
+#include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/task_module/task_module.mojom.h"
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom-forward.h"
 #include "chrome/browser/search/instant_service_observer.h"
@@ -53,6 +54,7 @@ class RealboxHandler;
 class TaskModuleHandler;
 class CartHandler;
 class DriveHandler;
+class PhotosHandler;
 
 class NewTabPageUI
     : public ui::MojoWebUIController,
@@ -113,6 +115,11 @@ class NewTabPageUI
   // passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<drive::mojom::DriveHandler> pending_receiver);
+
+  // Instantiates the implementor of photos::mojom::PhotosHandler mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<photos::mojom::PhotosHandler> pending_receiver);
 
 #if !defined(OFFICIAL_BUILD)
   // Instantiates the implementor of the foo::mojom::FooHandler mojo interface
@@ -196,6 +203,7 @@ class NewTabPageUI
   // Mojo implementations for modules:
   std::unique_ptr<TaskModuleHandler> task_module_handler_;
   std::unique_ptr<DriveHandler> drive_handler_;
+  std::unique_ptr<PhotosHandler> photos_handler_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

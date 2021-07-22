@@ -1,0 +1,27 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+
+js_library("module") {
+  deps = [
+    ":photos_module_proxy",
+    "..:module_descriptor",
+    "../..:i18n_setup",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_auto_img",
+  ]
+}
+
+js_library("photos_module_proxy") {
+  deps = [
+    "//chrome/browser/new_tab_page/modules/photos:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = [ "module.js" ]
+}

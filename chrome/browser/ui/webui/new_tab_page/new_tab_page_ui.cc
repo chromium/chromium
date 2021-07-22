@@ -13,6 +13,7 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/new_tab_page/modules/drive/drive_handler.h"
+#include "chrome/browser/new_tab_page/modules/photos/photos_handler.h"
 #include "chrome/browser/new_tab_page/modules/task_module/task_module_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
@@ -219,10 +220,12 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
       {"modulesDriveFilesLower", IDS_NTP_MODULES_DRIVE_FILES_LOWER},
       {"modulesDummyLower", IDS_NTP_MODULES_DUMMY_LOWER},
       {"modulesDriveTitle", IDS_NTP_MODULES_DRIVE_TITLE},
+      {"modulesPhotosTitle", IDS_NTP_MODULES_PHOTOS_TITLE},
       {"modulesDriveInfo", IDS_NTP_MODULES_DRIVE_INFO},
       {"modulesDummyTitle", IDS_NTP_MODULES_DUMMY_TITLE},
       {"modulesDummy2Title", IDS_NTP_MODULES_DUMMY2_TITLE},
       {"modulesKaleidoscopeTitle", IDS_NTP_MODULES_KALEIDOSCOPE_TITLE},
+      {"modulesPhotosSentence", IDS_NTP_MODULES_PHOTOS_TITLE},
       {"modulesTasksInfoTitle", IDS_NTP_MODULES_SHOPPING_TASKS_INFO_TITLE},
       {"modulesTasksInfoClose", IDS_NTP_MODULES_SHOPPING_TASKS_INFO_CLOSE},
       {"modulesCartHeaderNew", IDS_NTP_MODULES_CART_HEADER_CHIP_NEW},
@@ -267,6 +270,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
       base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule));
   source->AddBoolean("driveModuleEnabled",
                      NewTabPageUI::IsDriveModuleEnabled(profile));
+  source->AddBoolean(
+      "photosModuleEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpPhotosModule));
   source->AddBoolean(
       "ruleBasedDiscountEnabled",
       base::GetFieldTrialParamValueByFeature(
@@ -449,6 +455,12 @@ void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<drive::mojom::DriveHandler> pending_receiver) {
   drive_handler_ =
       std::make_unique<DriveHandler>(std::move(pending_receiver), profile_);
+}
+
+void NewTabPageUI::BindInterface(
+    mojo::PendingReceiver<photos::mojom::PhotosHandler> pending_receiver) {
+  photos_handler_ =
+      std::make_unique<PhotosHandler>(std::move(pending_receiver), profile_);
 }
 
 #if !defined(OFFICIAL_BUILD)

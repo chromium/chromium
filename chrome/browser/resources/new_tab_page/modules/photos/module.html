@@ -1,0 +1,82 @@
+<style>
+  :host {
+    display: block;
+    height: 100%;
+    width: 100%;
+  }
+
+  ntp-module-header {
+    margin-bottom: 8px;
+  }
+
+  #memories {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    margin: 16px;
+    margin-inline-end: 4px;
+    overflow: hidden;
+  }
+
+  .memory {
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3),
+                0 2px 6px 2px rgba(60, 64, 67, 0.15);
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 1;
+    height: 164px;
+    margin-inline-end: 12px;
+    max-width: 258px;
+    min-width: 123px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .memory::before {
+    background: linear-gradient(180deg,
+                              rgba(0, 0, 0, 0) 47.92%,
+                              rgb(0, 0, 0) 100%);
+    bottom: 0;
+    content: ' ';
+    left: 0;
+    opacity: 0.54;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  .memory-title {
+    align-items: flex-end;
+    bottom: 0;
+    color: rgb(255, 255, 255);
+    display: flex;
+    font-size: 16px;
+    left: 0;
+    letter-spacing: 0.1px;
+    line-height: 24px;
+    margin: 5px 12px;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  .memory-img {
+    min-height: 100%;
+    min-width: 100%;
+    object-fit: cover;
+  }
+</style>
+<ntp-module-header>
+  [[i18n('modulesPhotosTitle')]]
+</ntp-module-header>
+<div id="memories">
+  <template id="memoryRepeat" is="dom-repeat" items="[[memories]]">
+    <a class="memory" href="[[item.itemUrl.url]]">
+      <img class="memory-img" is="cr-auto-img" auto-src="[[item.coverUrl.url]]"
+          draggable="false"></img>
+      <div class="memory-title">[[item.title]]</div>
+    </a>
+  </template>
+</div>
