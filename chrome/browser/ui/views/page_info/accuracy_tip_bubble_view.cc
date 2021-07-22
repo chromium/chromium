@@ -110,8 +110,8 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
   // Configure header view.
   auto& bundle = ui::ResourceBundle::GetSharedInstance();
   auto header_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      *bundle.GetImageSkiaNamed(IDR_SAFETY_TIP_ILLUSTRATION_LIGHT),
-      *bundle.GetImageSkiaNamed(IDR_SAFETY_TIP_ILLUSTRATION_DARK),
+      *bundle.GetImageSkiaNamed(IDR_ACCURACY_TIP_ILLUSTRATION_LIGHT),
+      *bundle.GetImageSkiaNamed(IDR_ACCURACY_TIP_ILLUSTRATION_DARK),
       base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
                           base::Unretained(GetBubbleFrameView())));
   set_fixed_width(header_view->GetPreferredSize().width());
@@ -132,11 +132,15 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
                                    /*adjust_height_for_width =*/true)
               .WithWeight(1));
 
-  // TODO(crbug.com/1210891): Replace placeholder strings and icons.
-  AddChildView(CreateRow(u"Verify the organizations's authority on the topic",
-                         vector_icons::kCertificateIcon));
+  // TODO(crbug.com/1210891): Replace placeholder strings.
   AddChildView(
-      CreateRow(u"Check the source and evidence", vector_icons::kSettingsIcon));
+      CreateRow(u"Who’s behind this information?", vector_icons::kGroupsIcon));
+
+  AddChildView(CreateRow(u"What evidence supports it?",
+                         vector_icons::kTroubleshootIcon));
+
+  AddChildView(
+      CreateRow(u"What do other sources say?", vector_icons::kFeedIcon));
 
   Layout();
   SizeToContents();
