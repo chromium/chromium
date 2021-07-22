@@ -16,6 +16,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/mdns_listener_update_type.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 
 namespace net {
@@ -36,21 +37,17 @@ class HostResolverMdnsListener
             base::OnceClosure cancellation_callback);
 
   // net::HostResolver::MdnsListenerDelegate implementation
-  void OnAddressResult(
-      net::HostResolver::MdnsListener::Delegate::UpdateType update_type,
-      net::DnsQueryType query_type,
-      net::IPEndPoint address) override;
-  void OnTextResult(
-      net::HostResolver::MdnsListener::Delegate::UpdateType update_type,
-      net::DnsQueryType query_type,
-      std::vector<std::string> text_records) override;
-  void OnHostnameResult(
-      net::HostResolver::MdnsListener::Delegate::UpdateType update_type,
-      net::DnsQueryType query_type,
-      net::HostPortPair host) override;
-  void OnUnhandledResult(
-      net::HostResolver::MdnsListener::Delegate::UpdateType update_type,
-      net::DnsQueryType query_type) override;
+  void OnAddressResult(net::MdnsListenerUpdateType update_type,
+                       net::DnsQueryType query_type,
+                       net::IPEndPoint address) override;
+  void OnTextResult(net::MdnsListenerUpdateType update_type,
+                    net::DnsQueryType query_type,
+                    std::vector<std::string> text_records) override;
+  void OnHostnameResult(net::MdnsListenerUpdateType update_type,
+                        net::DnsQueryType query_type,
+                        net::HostPortPair host) override;
+  void OnUnhandledResult(net::MdnsListenerUpdateType update_type,
+                         net::DnsQueryType query_type) override;
 
  private:
   void OnConnectionError();

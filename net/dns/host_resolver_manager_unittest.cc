@@ -61,6 +61,7 @@
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/mdns_listener_update_type.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -3287,36 +3288,31 @@ TEST_F(HostResolverManagerTest, Mdns_ListenFailure) {
 // received results in maps.
 class TestMdnsListenerDelegate : public HostResolver::MdnsListener::Delegate {
  public:
-  using UpdateKey =
-      std::pair<HostResolver::MdnsListener::Delegate::UpdateType, DnsQueryType>;
+  using UpdateKey = std::pair<MdnsListenerUpdateType, DnsQueryType>;
 
-  void OnAddressResult(
-      HostResolver::MdnsListener::Delegate::UpdateType update_type,
-      DnsQueryType result_type,
-      IPEndPoint address) override {
+  void OnAddressResult(MdnsListenerUpdateType update_type,
+                       DnsQueryType result_type,
+                       IPEndPoint address) override {
     address_results_.insert({{update_type, result_type}, address});
   }
 
-  void OnTextResult(
-      HostResolver::MdnsListener::Delegate::UpdateType update_type,
-      DnsQueryType result_type,
-      std::vector<std::string> text_records) override {
+  void OnTextResult(MdnsListenerUpdateType update_type,
+                    DnsQueryType result_type,
+                    std::vector<std::string> text_records) override {
     for (auto& text_record : text_records) {
       text_results_.insert(
           {{update_type, result_type}, std::move(text_record)});
     }
   }
 
-  void OnHostnameResult(
-      HostResolver::MdnsListener::Delegate::UpdateType update_type,
-      DnsQueryType result_type,
-      HostPortPair host) override {
+  void OnHostnameResult(MdnsListenerUpdateType update_type,
+                        DnsQueryType result_type,
+                        HostPortPair host) override {
     hostname_results_.insert({{update_type, result_type}, std::move(host)});
   }
 
-  void OnUnhandledResult(
-      HostResolver::MdnsListener::Delegate::UpdateType update_type,
-      DnsQueryType result_type) override {
+  void OnUnhandledResult(MdnsListenerUpdateType update_type,
+                         DnsQueryType result_type) override {
     unhandled_results_.insert({update_type, result_type});
   }
 
@@ -3338,7 +3334,7 @@ class TestMdnsListenerDelegate : public HostResolver::MdnsListener::Delegate {
 
   template <typename T>
   static std::pair<UpdateKey, T> CreateExpectedResult(
-      HostResolver::MdnsListener::Delegate::UpdateType update_type,
+      MdnsListenerUpdateType update_type,
       DnsQueryType query_type,
       T result) {
     return std::make_pair(std::make_pair(update_type, query_type), result);
@@ -3385,14 +3381,14 @@ TEST_F(HostResolverManagerTest, MdnsListener) {
   EXPECT_THAT(delegate.address_results(),
               testing::ElementsAre(
                   TestMdnsListenerDelegate::CreateExpectedResult(
-                      HostResolver::MdnsListener::Delegate::UpdateType::ADDED,
-                      DnsQueryType::A, CreateExpected("1.2.3.4", 80)),
+                      MdnsListenerUpdateType::kAdded, DnsQueryType::A,
+                      CreateExpected("1.2.3.4", 80)),
                   TestMdnsListenerDelegate::CreateExpectedResult(
-                      HostResolver::MdnsListener::Delegate::UpdateType::CHANGED,
-                      DnsQueryType::A, CreateExpected("5.6.7.8", 80)),
+                      MdnsListenerUpdateType::kChanged, DnsQueryType::A,
+                      CreateExpected("5.6.7.8", 80)),
                   TestMdnsListenerDelegate::CreateExpectedResult(
-                      HostResolver::MdnsListener::Delegate::UpdateType::REMOVED,
-                      DnsQueryType::A, CreateExpected("5.6.7.8", 80))));
+                      MdnsListenerUpdateType::kRemoved, DnsQueryType::A,
+                      CreateExpected("5.6.7.8", 80))));
 
   EXPECT_THAT(delegate.text_results(), testing::IsEmpty());
   EXPECT_THAT(delegate.hostname_results(), testing::IsEmpty());
@@ -3440,8 +3436,8 @@ TEST_F(HostResolverManagerTest, MdnsListener_Expiration) {
   EXPECT_THAT(
       delegate.address_results(),
       testing::ElementsAre(TestMdnsListenerDelegate::CreateExpectedResult(
-          HostResolver::MdnsListener::Delegate::UpdateType::ADDED,
-          DnsQueryType::A, CreateExpected("1.2.3.4", 100))));
+          MdnsListenerUpdateType::kAdded, DnsQueryType::A,
+          CreateExpected("1.2.3.4", 100))));
 
   clock.Advance(base::TimeDelta::FromSeconds(16));
   cache_cleanup_timer_ptr->Fire();
@@ -3449,11 +3445,11 @@ TEST_F(HostResolverManagerTest, MdnsListener_Expiration) {
   EXPECT_THAT(delegate.address_results(),
               testing::ElementsAre(
                   TestMdnsListenerDelegate::CreateExpectedResult(
-                      HostResolver::MdnsListener::Delegate::UpdateType::ADDED,
-                      DnsQueryType::A, CreateExpected("1.2.3.4", 100)),
+                      MdnsListenerUpdateType::kAdded, DnsQueryType::A,
+                      CreateExpected("1.2.3.4", 100)),
                   TestMdnsListenerDelegate::CreateExpectedResult(
-                      HostResolver::MdnsListener::Delegate::UpdateType::REMOVED,
-                      DnsQueryType::A, CreateExpected("1.2.3.4", 100))));
+                      MdnsListenerUpdateType::kRemoved, DnsQueryType::A,
+                      CreateExpected("1.2.3.4", 100))));
 
   EXPECT_THAT(delegate.text_results(), testing::IsEmpty());
   EXPECT_THAT(delegate.hostname_results(), testing::IsEmpty());
@@ -3476,14 +3472,13 @@ TEST_F(HostResolverManagerTest, MdnsListener_Txt) {
   socket_factory_ptr->SimulateReceive(kMdnsResponseTxt,
                                       sizeof(kMdnsResponseTxt));
 
-  EXPECT_THAT(delegate.text_results(),
-              testing::ElementsAre(
-                  TestMdnsListenerDelegate::CreateExpectedResult(
-                      HostResolver::MdnsListener::Delegate::UpdateType::ADDED,
-                      DnsQueryType::TXT, "foo"),
-                  TestMdnsListenerDelegate::CreateExpectedResult(
-                      HostResolver::MdnsListener::Delegate::UpdateType::ADDED,
-                      DnsQueryType::TXT, "bar")));
+  EXPECT_THAT(
+      delegate.text_results(),
+      testing::ElementsAre(
+          TestMdnsListenerDelegate::CreateExpectedResult(
+              MdnsListenerUpdateType::kAdded, DnsQueryType::TXT, "foo"),
+          TestMdnsListenerDelegate::CreateExpectedResult(
+              MdnsListenerUpdateType::kAdded, DnsQueryType::TXT, "bar")));
 
   EXPECT_THAT(delegate.address_results(), testing::IsEmpty());
   EXPECT_THAT(delegate.hostname_results(), testing::IsEmpty());
@@ -3509,8 +3504,8 @@ TEST_F(HostResolverManagerTest, MdnsListener_Ptr) {
   EXPECT_THAT(
       delegate.hostname_results(),
       testing::ElementsAre(TestMdnsListenerDelegate::CreateExpectedResult(
-          HostResolver::MdnsListener::Delegate::UpdateType::ADDED,
-          DnsQueryType::PTR, HostPortPair("foo.com", 13))));
+          MdnsListenerUpdateType::kAdded, DnsQueryType::PTR,
+          HostPortPair("foo.com", 13))));
 
   EXPECT_THAT(delegate.address_results(), testing::IsEmpty());
   EXPECT_THAT(delegate.text_results(), testing::IsEmpty());
@@ -3536,8 +3531,8 @@ TEST_F(HostResolverManagerTest, MdnsListener_Srv) {
   EXPECT_THAT(
       delegate.hostname_results(),
       testing::ElementsAre(TestMdnsListenerDelegate::CreateExpectedResult(
-          HostResolver::MdnsListener::Delegate::UpdateType::ADDED,
-          DnsQueryType::SRV, HostPortPair("foo.com", 8265))));
+          MdnsListenerUpdateType::kAdded, DnsQueryType::SRV,
+          HostPortPair("foo.com", 8265))));
 
   EXPECT_THAT(delegate.address_results(), testing::IsEmpty());
   EXPECT_THAT(delegate.text_results(), testing::IsEmpty());
@@ -3583,8 +3578,7 @@ TEST_F(HostResolverManagerTest, MdnsListener_RootDomain) {
 
   EXPECT_THAT(delegate.unhandled_results(),
               testing::ElementsAre(std::make_pair(
-                  HostResolver::MdnsListener::Delegate::UpdateType::ADDED,
-                  DnsQueryType::PTR)));
+                  MdnsListenerUpdateType::kAdded, DnsQueryType::PTR)));
 
   EXPECT_THAT(delegate.address_results(), testing::IsEmpty());
   EXPECT_THAT(delegate.text_results(), testing::IsEmpty());

@@ -29,6 +29,7 @@
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/mdns_listener_update_type.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
 #include "net/net_buildflags.h"
@@ -134,7 +135,7 @@ class TestResolveHostClient : public mojom::ResolveHostClient {
 
 class TestMdnsListenClient : public mojom::MdnsListenClient {
  public:
-  using UpdateType = net::HostResolver::MdnsListener::Delegate::UpdateType;
+  using UpdateType = net::MdnsListenerUpdateType;
   using UpdateKey = std::pair<UpdateType, net::DnsQueryType>;
 
   explicit TestMdnsListenClient(
@@ -1420,14 +1421,13 @@ TEST_F(HostResolverTest, MdnsListener_AddressResult) {
   net::IPAddress result_address(1, 2, 3, 4);
   net::IPEndPoint result(result_address, 41);
   inner_resolver->TriggerMdnsListeners(
-      host, net::DnsQueryType::A,
-      net::HostResolver::MdnsListener::Delegate::UpdateType::ADDED, result);
+      host, net::DnsQueryType::A, net::MdnsListenerUpdateType::kAdded, result);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_THAT(response_client.address_results(),
-              testing::ElementsAre(TestMdnsListenClient::CreateExpectedResult(
-                  net::HostResolver::MdnsListener::Delegate::UpdateType::ADDED,
-                  net::DnsQueryType::A, result)));
+  EXPECT_THAT(
+      response_client.address_results(),
+      testing::ElementsAre(TestMdnsListenClient::CreateExpectedResult(
+          net::MdnsListenerUpdateType::kAdded, net::DnsQueryType::A, result)));
 
   EXPECT_THAT(response_client.text_results(), testing::IsEmpty());
   EXPECT_THAT(response_client.hostname_results(), testing::IsEmpty());
@@ -1454,21 +1454,19 @@ TEST_F(HostResolverTest, MdnsListener_TextResult) {
   run_loop.Run();
   ASSERT_EQ(net::OK, error);
 
-  inner_resolver->TriggerMdnsListeners(
-      host, net::DnsQueryType::TXT,
-      net::HostResolver::MdnsListener::Delegate::UpdateType::CHANGED,
-      {"foo", "bar"});
+  inner_resolver->TriggerMdnsListeners(host, net::DnsQueryType::TXT,
+                                       net::MdnsListenerUpdateType::kChanged,
+                                       {"foo", "bar"});
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(
       response_client.text_results(),
-      testing::UnorderedElementsAre(
-          TestMdnsListenClient::CreateExpectedResult(
-              net::HostResolver::MdnsListener::Delegate::UpdateType::CHANGED,
-              net::DnsQueryType::TXT, "foo"),
-          TestMdnsListenClient::CreateExpectedResult(
-              net::HostResolver::MdnsListener::Delegate::UpdateType::CHANGED,
-              net::DnsQueryType::TXT, "bar")));
+      testing::UnorderedElementsAre(TestMdnsListenClient::CreateExpectedResult(
+                                        net::MdnsListenerUpdateType::kChanged,
+                                        net::DnsQueryType::TXT, "foo"),
+                                    TestMdnsListenClient::CreateExpectedResult(
+                                        net::MdnsListenerUpdateType::kChanged,
+                                        net::DnsQueryType::TXT, "bar")));
 
   EXPECT_THAT(response_client.address_results(), testing::IsEmpty());
   EXPECT_THAT(response_client.hostname_results(), testing::IsEmpty());
@@ -1496,16 +1494,15 @@ TEST_F(HostResolverTest, MdnsListener_HostnameResult) {
   ASSERT_EQ(net::OK, error);
 
   net::HostPortPair result("example.com", 43);
-  inner_resolver->TriggerMdnsListeners(
-      host, net::DnsQueryType::PTR,
-      net::HostResolver::MdnsListener::Delegate::UpdateType::REMOVED, result);
+  inner_resolver->TriggerMdnsListeners(host, net::DnsQueryType::PTR,
+                                       net::MdnsListenerUpdateType::kRemoved,
+                                       result);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_THAT(
-      response_client.hostname_results(),
-      testing::ElementsAre(TestMdnsListenClient::CreateExpectedResult(
-          net::HostResolver::MdnsListener::Delegate::UpdateType::REMOVED,
-          net::DnsQueryType::PTR, result)));
+  EXPECT_THAT(response_client.hostname_results(),
+              testing::ElementsAre(TestMdnsListenClient::CreateExpectedResult(
+                  net::MdnsListenerUpdateType::kRemoved, net::DnsQueryType::PTR,
+                  result)));
 
   EXPECT_THAT(response_client.address_results(), testing::IsEmpty());
   EXPECT_THAT(response_client.text_results(), testing::IsEmpty());
@@ -1532,15 +1529,14 @@ TEST_F(HostResolverTest, MdnsListener_UnhandledResult) {
   run_loop.Run();
   ASSERT_EQ(net::OK, error);
 
-  inner_resolver->TriggerMdnsListeners(
-      host, net::DnsQueryType::PTR,
-      net::HostResolver::MdnsListener::Delegate::UpdateType::ADDED);
+  inner_resolver->TriggerMdnsListeners(host, net::DnsQueryType::PTR,
+                                       net::MdnsListenerUpdateType::kAdded);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_THAT(response_client.unhandled_results(),
-              testing::ElementsAre(std::make_pair(
-                  net::HostResolver::MdnsListener::Delegate::UpdateType::ADDED,
-                  net::DnsQueryType::PTR)));
+  EXPECT_THAT(
+      response_client.unhandled_results(),
+      testing::ElementsAre(std::make_pair(net::MdnsListenerUpdateType::kAdded,
+                                          net::DnsQueryType::PTR)));
 
   EXPECT_THAT(response_client.address_results(), testing::IsEmpty());
   EXPECT_THAT(response_client.text_results(), testing::IsEmpty());

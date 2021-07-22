@@ -6,6 +6,9 @@
 
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/host_resolver_source.h"
+#include "net/dns/public/mdns_listener_update_type.h"
+#include "net/dns/public/resolve_error_info.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "services/network/public/cpp/ip_address_mojom_traits.h"
@@ -296,33 +299,31 @@ bool EnumTraits<ResolveHostParameters::Source, net::HostResolverSource>::
 
 // static
 MdnsListenClient::UpdateType
-EnumTraits<MdnsListenClient::UpdateType,
-           net::HostResolver::MdnsListener::Delegate::UpdateType>::
-    ToMojom(net::HostResolver::MdnsListener::Delegate::UpdateType input) {
+EnumTraits<MdnsListenClient::UpdateType, net::MdnsListenerUpdateType>::ToMojom(
+    net::MdnsListenerUpdateType input) {
   switch (input) {
-    case net::HostResolver::MdnsListener::Delegate::UpdateType::ADDED:
+    case net::MdnsListenerUpdateType::kAdded:
       return MdnsListenClient::UpdateType::ADDED;
-    case net::HostResolver::MdnsListener::Delegate::UpdateType::CHANGED:
+    case net::MdnsListenerUpdateType::kChanged:
       return MdnsListenClient::UpdateType::CHANGED;
-    case net::HostResolver::MdnsListener::Delegate::UpdateType::REMOVED:
+    case net::MdnsListenerUpdateType::kRemoved:
       return MdnsListenClient::UpdateType::REMOVED;
   }
 }
 
 // static
-bool EnumTraits<MdnsListenClient::UpdateType,
-                net::HostResolver::MdnsListener::Delegate::UpdateType>::
+bool EnumTraits<MdnsListenClient::UpdateType, net::MdnsListenerUpdateType>::
     FromMojom(MdnsListenClient::UpdateType input,
-              net::HostResolver::MdnsListener::Delegate::UpdateType* output) {
+              net::MdnsListenerUpdateType* output) {
   switch (input) {
     case MdnsListenClient::UpdateType::ADDED:
-      *output = net::HostResolver::MdnsListener::Delegate::UpdateType::ADDED;
+      *output = net::MdnsListenerUpdateType::kAdded;
       return true;
     case MdnsListenClient::UpdateType::CHANGED:
-      *output = net::HostResolver::MdnsListener::Delegate::UpdateType::CHANGED;
+      *output = net::MdnsListenerUpdateType::kChanged;
       return true;
     case MdnsListenClient::UpdateType::REMOVED:
-      *output = net::HostResolver::MdnsListener::Delegate::UpdateType::REMOVED;
+      *output = net::MdnsListenerUpdateType::kRemoved;
       return true;
   }
 }

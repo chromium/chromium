@@ -12,8 +12,8 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/host_cache.h"
-#include "net/dns/host_resolver_source.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/host_resolver_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cronet {

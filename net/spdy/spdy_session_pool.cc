@@ -23,7 +23,7 @@
 #include "net/base/trace_constants.h"
 #include "net/dns/dns_alias_utility.h"
 #include "net/dns/host_resolver.h"
-#include "net/dns/host_resolver_source.h"
+#include "net/dns/public/host_resolver_source.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/http_stream_request.h"

@@ -33,6 +33,8 @@
 #include "net/base/test_completion_callback.h"
 #include "net/dns/dns_alias_utility.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/public/host_resolver_source.h"
+#include "net/dns/public/mdns_listener_update_type.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_with_source.h"
@@ -317,22 +319,22 @@ class MockHostResolverBase::MdnsListenerImpl
     return OK;
   }
 
-  void TriggerAddressResult(Delegate::UpdateType update_type,
+  void TriggerAddressResult(MdnsListenerUpdateType update_type,
                             IPEndPoint address) {
     delegate_->OnAddressResult(update_type, query_type_, std::move(address));
   }
 
-  void TriggerTextResult(Delegate::UpdateType update_type,
+  void TriggerTextResult(MdnsListenerUpdateType update_type,
                          std::vector<std::string> text_records) {
     delegate_->OnTextResult(update_type, query_type_, std::move(text_records));
   }
 
-  void TriggerHostnameResult(Delegate::UpdateType update_type,
+  void TriggerHostnameResult(MdnsListenerUpdateType update_type,
                              HostPortPair host) {
     delegate_->OnHostnameResult(update_type, query_type_, std::move(host));
   }
 
-  void TriggerUnhandledResult(Delegate::UpdateType update_type) {
+  void TriggerUnhandledResult(MdnsListenerUpdateType update_type) {
     delegate_->OnUnhandledResult(update_type, query_type_);
   }
 
@@ -507,7 +509,7 @@ void MockHostResolverBase::ResolveOnlyRequestNow() {
 void MockHostResolverBase::TriggerMdnsListeners(
     const HostPortPair& host,
     DnsQueryType query_type,
-    MdnsListener::Delegate::UpdateType update_type,
+    MdnsListenerUpdateType update_type,
     const IPEndPoint& address_result) {
   for (auto* listener : listeners_) {
     if (listener->host() == host && listener->query_type() == query_type)
@@ -518,7 +520,7 @@ void MockHostResolverBase::TriggerMdnsListeners(
 void MockHostResolverBase::TriggerMdnsListeners(
     const HostPortPair& host,
     DnsQueryType query_type,
-    MdnsListener::Delegate::UpdateType update_type,
+    MdnsListenerUpdateType update_type,
     const std::vector<std::string>& text_result) {
   for (auto* listener : listeners_) {
     if (listener->host() == host && listener->query_type() == query_type)
@@ -529,7 +531,7 @@ void MockHostResolverBase::TriggerMdnsListeners(
 void MockHostResolverBase::TriggerMdnsListeners(
     const HostPortPair& host,
     DnsQueryType query_type,
-    MdnsListener::Delegate::UpdateType update_type,
+    MdnsListenerUpdateType update_type,
     const HostPortPair& host_result) {
   for (auto* listener : listeners_) {
     if (listener->host() == host && listener->query_type() == query_type)
@@ -540,7 +542,7 @@ void MockHostResolverBase::TriggerMdnsListeners(
 void MockHostResolverBase::TriggerMdnsListeners(
     const HostPortPair& host,
     DnsQueryType query_type,
-    MdnsListener::Delegate::UpdateType update_type) {
+    MdnsListenerUpdateType update_type) {
   for (auto* listener : listeners_) {
     if (listener->host() == host && listener->query_type() == query_type)
       listener->TriggerUnhandledResult(update_type);

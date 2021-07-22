@@ -198,6 +198,7 @@ source_set("host_resolver") {
     "//chrome/test:unit_tests",
     "//components/grpc_support/test:unit_tests",
     "//content/shell:content_shell_lib",
+    "//content/test:*",
 
     # Stand-alone tools.
     "//google_apis/gcm:mcs_probe",
@@ -213,7 +214,6 @@ source_set("host_resolver") {
     "dns_config.h",
     "host_cache.h",
     "host_resolver.h",
-    "host_resolver_source.h",
     "mapped_host_resolver.h",
   ]
   public = []

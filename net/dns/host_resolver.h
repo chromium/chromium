@@ -20,9 +20,10 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_cache.h"
-#include "net/dns/host_resolver_source.h"
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/host_resolver_source.h"
+#include "net/dns/public/mdns_listener_update_type.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_with_source.h"
@@ -282,23 +283,21 @@ class NET_EXPORT HostResolver {
     // multiple types for the same host.
     class Delegate {
      public:
-      enum class UpdateType { ADDED, CHANGED, REMOVED };
-
       virtual ~Delegate() {}
 
-      virtual void OnAddressResult(UpdateType update_type,
+      virtual void OnAddressResult(MdnsListenerUpdateType update_type,
                                    DnsQueryType result_type,
                                    IPEndPoint address) = 0;
-      virtual void OnTextResult(UpdateType update_type,
+      virtual void OnTextResult(MdnsListenerUpdateType update_type,
                                 DnsQueryType result_type,
                                 std::vector<std::string> text_records) = 0;
-      virtual void OnHostnameResult(UpdateType update_type,
+      virtual void OnHostnameResult(MdnsListenerUpdateType update_type,
                                     DnsQueryType result_type,
                                     HostPortPair host) = 0;
 
       // For results which may be valid MDNS but are not handled/parsed by
       // HostResolver, e.g. pointers to the root domain.
-      virtual void OnUnhandledResult(UpdateType update_type,
+      virtual void OnUnhandledResult(MdnsListenerUpdateType update_type,
                                      DnsQueryType result_type) = 0;
     };
 

@@ -17,9 +17,11 @@
 #include "net/base/address_family.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
-#include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/host_resolver_source.h"
+#include "net/dns/public/mdns_listener_update_type.h"
+#include "net/dns/public/resolve_error_info.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "services/network/public/mojom/host_resolver.mojom-forward.h"
@@ -107,12 +109,11 @@ struct EnumTraits<network::mojom::ResolveHostParameters_Source,
 
 template <>
 struct EnumTraits<network::mojom::MdnsListenClient_UpdateType,
-                  net::HostResolver::MdnsListener::Delegate::UpdateType> {
+                  net::MdnsListenerUpdateType> {
   static network::mojom::MdnsListenClient_UpdateType ToMojom(
-      net::HostResolver::MdnsListener::Delegate::UpdateType input);
-  static bool FromMojom(
-      network::mojom::MdnsListenClient_UpdateType input,
-      net::HostResolver::MdnsListener::Delegate::UpdateType* output);
+      net::MdnsListenerUpdateType input);
+  static bool FromMojom(network::mojom::MdnsListenClient_UpdateType input,
+                        net::MdnsListenerUpdateType* output);
 };
 
 template <>

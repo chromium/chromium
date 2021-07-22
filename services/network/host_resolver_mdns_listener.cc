@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "net/base/host_port_pair.h"
+#include "net/dns/host_resolver.h"
+#include "net/dns/public/mdns_listener_update_type.h"
 
 namespace network {
 
@@ -48,7 +50,7 @@ int HostResolverMdnsListener::Start(
 }
 
 void HostResolverMdnsListener::OnAddressResult(
-    net::HostResolver::MdnsListener::Delegate::UpdateType update_type,
+    net::MdnsListenerUpdateType update_type,
     net::DnsQueryType query_type,
     net::IPEndPoint address) {
   DCHECK(response_client_.is_bound());
@@ -56,7 +58,7 @@ void HostResolverMdnsListener::OnAddressResult(
 }
 
 void HostResolverMdnsListener::OnTextResult(
-    net::HostResolver::MdnsListener::Delegate::UpdateType update_type,
+    net::MdnsListenerUpdateType update_type,
     net::DnsQueryType query_type,
     std::vector<std::string> text_records) {
   DCHECK(response_client_.is_bound());
@@ -64,7 +66,7 @@ void HostResolverMdnsListener::OnTextResult(
 }
 
 void HostResolverMdnsListener::OnHostnameResult(
-    net::HostResolver::MdnsListener::Delegate::UpdateType update_type,
+    net::MdnsListenerUpdateType update_type,
     net::DnsQueryType query_type,
     net::HostPortPair host) {
   DCHECK(response_client_.is_bound());
@@ -72,7 +74,7 @@ void HostResolverMdnsListener::OnHostnameResult(
 }
 
 void HostResolverMdnsListener::OnUnhandledResult(
-    net::HostResolver::MdnsListener::Delegate::UpdateType update_type,
+    net::MdnsListenerUpdateType update_type,
     net::DnsQueryType query_type) {
   DCHECK(response_client_.is_bound());
   response_client_->OnUnhandledResult(update_type, query_type);

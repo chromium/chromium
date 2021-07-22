@@ -24,8 +24,9 @@
 #include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_proc.h"
-#include "net/dns/host_resolver_source.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/host_resolver_source.h"
+#include "net/dns/public/mdns_listener_update_type.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_with_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -221,19 +222,19 @@ class MockHostResolverBase
 
   void TriggerMdnsListeners(const HostPortPair& host,
                             DnsQueryType query_type,
-                            MdnsListener::Delegate::UpdateType update_type,
+                            MdnsListenerUpdateType update_type,
                             const IPEndPoint& address_result);
   void TriggerMdnsListeners(const HostPortPair& host,
                             DnsQueryType query_type,
-                            MdnsListener::Delegate::UpdateType update_type,
+                            MdnsListenerUpdateType update_type,
                             const std::vector<std::string>& text_result);
   void TriggerMdnsListeners(const HostPortPair& host,
                             DnsQueryType query_type,
-                            MdnsListener::Delegate::UpdateType update_type,
+                            MdnsListenerUpdateType update_type,
                             const HostPortPair& host_result);
   void TriggerMdnsListeners(const HostPortPair& host,
                             DnsQueryType query_type,
-                            MdnsListener::Delegate::UpdateType update_type);
+                            MdnsListenerUpdateType update_type);
 
   void set_tick_clock(const base::TickClock* tick_clock) {
     tick_clock_ = tick_clock;

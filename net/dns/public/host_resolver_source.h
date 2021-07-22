@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_DNS_HOST_RESOLVER_SOURCE_H_
-#define NET_DNS_HOST_RESOLVER_SOURCE_H_
+#ifndef NET_DNS_PUBLIC_HOST_RESOLVER_SOURCE_H_
+#define NET_DNS_PUBLIC_HOST_RESOLVER_SOURCE_H_
 
 #include "base/cxx17_backports.h"
 
@@ -47,4 +47,4 @@ static_assert(
 
 }  // namespace net
 
-#endif  // NET_DNS_HOST_RESOLVER_SOURCE_H_
+#endif  // NET_DNS_PUBLIC_HOST_RESOLVER_SOURCE_H_

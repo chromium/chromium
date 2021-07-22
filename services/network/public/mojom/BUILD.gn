@@ -863,7 +863,7 @@ mojom("mojom") {
         },
         {
           mojom = "network.mojom.MdnsListenClient.UpdateType"
-          cpp = "::net::HostResolver::MdnsListener::Delegate::UpdateType"
+          cpp = "::net::MdnsListenerUpdateType"
         },
         {
           mojom = "network.mojom.SecureDnsMode"
