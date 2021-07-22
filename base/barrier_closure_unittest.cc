@@ -5,27 +5,23 @@
 #include "base/barrier_closure.h"
 
 #include "base/bind.h"
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-void Increment(int* count) { (*count)++; }
-
 TEST(BarrierClosureTest, RunImmediatelyForZeroClosures) {
   int count = 0;
-  auto done_closure = base::BindOnce(&Increment, base::Unretained(&count));
-
-  base::RepeatingClosure barrier_closure =
-      base::BarrierClosure(0, std::move(done_closure));
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      0, base::BindLambdaForTesting([&count]() { ++count; }));
   EXPECT_EQ(1, count);
+  EXPECT_FALSE(barrier_closure.is_null());
 }
 
 TEST(BarrierClosureTest, RunAfterNumClosures) {
   int count = 0;
-  auto done_closure = base::BindOnce(&Increment, base::Unretained(&count));
-
-  base::RepeatingClosure barrier_closure =
-      base::BarrierClosure(2, std::move(done_closure));
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      2, base::BindLambdaForTesting([&count]() { ++count; }));
   EXPECT_EQ(0, count);
 
   barrier_closure.Run();
@@ -61,10 +57,6 @@ TEST(BarrierClosureTest, ReleasesDoneClosureWhenDone) {
   EXPECT_TRUE(done_destructed);
 }
 
-void ResetBarrierClosure(base::RepeatingClosure* closure) {
-  *closure = base::RepeatingClosure();
-}
-
 // Tests a case when |done_closure| resets a |barrier_closure|.
 // |barrier_closure| is a RepeatingClosure holding the |done_closure|.
 // |done_closure| holds a pointer back to the |barrier_closure|. When
@@ -74,9 +66,12 @@ void ResetBarrierClosure(base::RepeatingClosure* closure) {
 // ResetBarrierClosure() or this test would crash inside Run().
 TEST(BarrierClosureTest, KeepingClosureAliveUntilDone) {
   base::RepeatingClosure barrier_closure;
-  auto done_closure = base::BindOnce(ResetBarrierClosure, &barrier_closure);
-  barrier_closure = base::BarrierClosure(1, std::move(done_closure));
+  barrier_closure =
+      base::BarrierClosure(1, base::BindLambdaForTesting([&barrier_closure]() {
+                             barrier_closure = base::RepeatingClosure();
+                           }));
   barrier_closure.Run();
+  EXPECT_TRUE(barrier_closure.is_null());
 }
 
 }  // namespace
