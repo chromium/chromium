@@ -9,7 +9,7 @@ import './base_page.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {ShimlessRmaServiceInterface} from './shimless_rma_types.js';
+import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
@@ -129,6 +129,11 @@ export class OnboardingUpdatePageElement extends PolymerElement {
    */
   updateCheckButtonHidden_() {
     return !this.networkAvailable || this.updateAvailable_;
+  }
+
+  /** @return {!Promise<StateResult>} */
+  onNextButtonClick() {
+    return this.shimlessRmaService_.updateOsSkipped();
   }
 };
 
