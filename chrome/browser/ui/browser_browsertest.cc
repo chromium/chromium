@@ -218,17 +218,12 @@ class TabClosingObserver : public TabStripModelObserver {
   int closing_count_ = 0;
 };
 
-// Used by CloseWithAppMenuOpen. Invokes CloseWindow on the supplied browser.
-void CloseWindowCallback(Browser* browser) {
-  chrome::CloseWindow(browser);
-}
-
 // Used by CloseWithAppMenuOpen. Posts a CloseWindowCallback and shows the app
 // menu.
 void RunCloseWithAppMenuCallback(Browser* browser) {
   // ShowAppMenu is modal under views. Schedule a task that closes the window.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&CloseWindowCallback, browser));
+      FROM_HERE, base::BindOnce(&chrome::CloseWindow, browser));
   chrome::ShowAppMenu(browser);
 }
 
@@ -2586,14 +2581,11 @@ void CheckDisplayModeMQ(const std::u16string& display_mode,
   bool js_result = false;
   base::RunLoop run_loop;
   web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
-      function, base::BindOnce(
-                    [](base::OnceClosure quit_closure, bool* out_result,
-                       base::Value value) {
-                      DCHECK(value.is_bool());
-                      *out_result = value.GetBool();
-                      std::move(quit_closure).Run();
-                    },
-                    run_loop.QuitClosure(), &js_result));
+      function, base::BindLambdaForTesting([&](base::Value value) {
+        DCHECK(value.is_bool());
+        js_result = value.GetBool();
+        run_loop.Quit();
+      }));
   run_loop.Run();
   EXPECT_TRUE(js_result);
 }
