@@ -1,0 +1,74 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// For expedience, we are borrowing file ops in the protobuf/testing.
+// In the long run this should be replaced by either using better
+// libraries or rewrite.
+
+syntax = "proto2";
+
+package maldoca;
+
+option java_multiple_files = true;
+option optimize_for = LITE_RUNTIME;
+
+// Maldoca specific error code for more context on the errors
+enum MaldocaErrorCode {
+  OK = 0;
+
+  // Start the code after all the generic status code in absl::Status
+  DOC_TYPE_INFERENCE_FAILED = 1000;
+  UNSUPPORTED_DOC_TYPE = 1001;
+  SANDBOX_ERROR = 1002;
+  ARCHIVE_CORRUPTED = 1003;
+  OLE_DIR_PARSING_FAILED = 1004;
+  OLE_FAT_HEADER_PARSING_FAILED = 1005;
+  PREFIXED_ANSI_STRING_HEADER_TOO_SHORT = 1006;
+  PREFIXED_ANSI_STRING_CONTENT_TOO_SHORT = 1007;
+  CLIPBOARD_FORMAT_OR_ANSI_STRING_TOO_SHORT = 1008;
+  BOF_HEADER_TOO_SHORT = 1009;
+  NOT_BIFF_FORMAT = 1010;
+  FAIL_PARSE_BIFF_VERSION = 1011;
+  INVALID_DDE_OLE_LINK = 1012;
+  OLE_NATIVE_EMBEDDED_PARSE_SIZE_FAIL = 1013;
+  OLE_NATIVE_EMBEDDED_SIZE_MISMATCH = 1014;
+  OLE_NATIVE_EMBEDDED_PARSE_TYPE_FAIL = 1015;
+  OLE_NATIVE_EMBEDDED_PARSE_FILENAME_FAIL = 1016;
+  OLE_NATIVE_EMBEDDED_PARSE_FILEPATH_FAIL = 1017;
+  OLE_NATIVE_EMBEDDED_PARSE_RESERVED_FAIL = 1018;
+  OLE_NATIVE_EMBEDDED_PARSE_TEMPPATH_FAIL = 1019;
+  OLE_NATIVE_EMBEDDED_PARSE_FILESIZE_FAIL = 1020;
+  OLE_NATIVE_EMBEDDED_FILESIZE_MISMATCH = 1021;
+  OLE_NATIVE_EMBEDDED_PARSE_CONTENT_FAIL = 1022;
+  INVALID_OLE2_HEADER = 1023;
+  INVALID_FAT_HEADER = 1024;
+  EMPTY_FAT_HEADER = 1025;
+  INVALID_ROOT_DIR = 1026;
+  MISSING_FILE_IN_ARCHIVE = 1027;
+  INVALID_XML_DOC = 1028;
+  MISSING_PROPERTIES = 1029;
+  NOT_IMPLEMENTED_FOR_CHROME = 1030;
+  NOT_IMPLEMENTED = 1031;
+}
+
+// This is a proto equivalent of a status, with additional error code.
+message StatusProto {
+  // Mimicking the payload object in absl::Status
+  message StatusPayload {
+    optional bytes type_url = 1;
+    optional bytes payload = 2;
+  }
+  optional int32 code = 1;
+  optional string error_message = 2;
+  repeated StatusPayload payloads = 3;
+}

@@ -1,0 +1,364 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@rules_cc//cc:defs.bzl", "cc_proto_library")
+load("@com_google_maldoca//:bazel/variables.bzl", "DEFAULT_MALDOCA_COPTS")
+
+licenses(["notice"])
+
+package(
+    default_visibility = ["//:__subpackages__"],
+)
+
+cc_library(
+    name = "cleanup",
+    hdrs = ["cleanup.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        "@com_google_absl//absl/cleanup",
+    ],
+)
+
+cc_test(
+    name = "cleanup_test",
+    srcs = ["cleanup_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":cleanup",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "endian",
+    hdrs = [
+        "endian.h",
+    ],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        "@com_google_absl//absl/base:config",
+    ],
+)
+
+cc_test(
+    name = "endian_test",
+    srcs = ["endian_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":endian",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "enum_utils",
+    hdrs = ["enum_utils.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = select({
+        "//conditions:default": [
+            "@com_google_zetasql//:enum_utils",
+        ],
+        "//:chrome_build": [],
+    }),
+)
+
+cc_test(
+    name = "enum_utils_test",
+    srcs = ["enum_utils_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":enum_utils",
+        ":test_payload_cc_proto",
+        "@com_google_googletest//:gtest_main",
+        "@com_google_protobuf//:protobuf",
+    ],
+)
+
+cc_library(
+    name = "get_runfiles_dir",
+    srcs = ["get_runfiles_dir.cc"],
+    hdrs = ["get_runfiles_dir.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":logging",
+        ":status",
+        "@com_google_absl//absl/status",
+    ],
+)
+
+cc_library(
+    name = "logging",
+    hdrs = ["logging.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    visibility = ["//visibility:public"],
+    deps = select({
+        "//conditions:default": [
+            "@com_google_zetasql//:logging",
+        ],
+        "//:chrome_build": [
+            "@com_google_absl//absl/strings",
+            "@mini_chromium//:base",
+        ],
+    }),
+)
+
+cc_library(
+    name = "map_util",
+    hdrs = [
+        "map_util.h",
+    ],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = select({
+        "//conditions:default": [
+            "@com_google_zetasql//:map_util",
+        ],
+        "//:chrome_build": [
+        ],
+    }),
+)
+
+cc_library(
+    name = "parse_text_proto",
+    hdrs = ["parse_text_proto.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":logging",
+        "@com_google_protobuf//:protobuf",
+    ],
+)
+
+cc_library(
+    name = "source_location",
+    hdrs = ["source_location.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = select({
+        "//conditions:default": [
+            "@com_google_zetasql//:source_location",
+        ],
+        "//:chrome_build": [
+        ],
+    }),
+)
+
+cc_test(
+    name = "source_location_test",
+    srcs = ["source_location_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":source_location",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "ret_check",
+    hdrs = ["ret_check.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = select({
+        "//conditions:default": [
+            "@com_google_zetasql//:ret_check",
+        ],
+        "//:chrome_build": [
+            ":status",
+        ],
+    }),
+)
+
+cc_library(
+    name = "status",
+    hdrs = [
+        "status.h",
+        "status_builder.h",
+        "status_macros.h",
+        "statusor.h",
+    ] + select({
+        "//conditions:default": [
+            "status_payload.h",
+        ],
+        "//:chrome_build": [
+        ],
+    }),
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":logging",
+        ":status_cc_proto",
+        "@com_google_absl//absl/base:core_headers",
+        "@com_google_absl//absl/strings",
+        "@com_google_protobuf//:protobuf",
+    ] + select({
+        "//conditions:default": [
+            "@com_google_zetasql//:status",
+        ],
+        "//:chrome_build": [
+            "@com_google_absl//absl/status",
+            "@com_google_absl//absl/status:statusor",
+        ],
+    }),
+)
+
+proto_library(
+    name = "status_proto",
+    srcs = ["status_proto.proto"],
+    deps = [
+    ],
+)
+
+cc_proto_library(
+    name = "status_cc_proto",
+    deps = [":status_proto"],
+)
+
+cc_test(
+    name = "status_builder_test",
+    srcs = ["status_builder_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = select({
+        "//conditions:default": [
+            ":source_location",
+            ":status",
+            ":test_payload_cc_proto",
+            "//maldoca/base/testing:status_matchers",
+            "@com_google_absl//absl/status",
+            "@com_google_absl//absl/strings",
+            "@com_google_googletest//:gtest_main",
+            "@com_google_protobuf//:protobuf",
+        ],
+        "//:chrome_build": [
+            "@com_google_googletest//:gtest_main",
+        ],
+    }),
+)
+
+cc_test(
+    name = "status_macros_test",
+    srcs = ["status_macros_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":source_location",
+        ":status",
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_proto_library(
+    name = "any_cc_proto",
+    deps = [
+        "@com_google_protobuf//:any_proto",
+    ],
+)
+
+cc_test(
+    name = "status_test",
+    srcs = ["status_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":status",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+proto_library(
+    name = "test_payload_proto",
+    testonly = 1,
+    srcs = ["test_payload.proto"],
+)
+
+cc_proto_library(
+    name = "test_payload_cc_proto",
+    testonly = 1,
+    deps = [":test_payload_proto"],
+)
+
+cc_test(
+    name = "statusor_test",
+    size = "small",
+    srcs = ["statusor_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":source_location",
+        ":status",
+        "//maldoca/base/testing:status_matchers",
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "file",
+    srcs = [
+        "file.cc",
+    ],
+    hdrs = ["file.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":logging",
+        ":ret_check",
+        ":status",
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/time",
+        "@com_google_protobuf//:protobuf",
+    ] + select({
+        "//conditions:default": [
+            "@com_googlesource_code_re2//:re2",
+        ],
+        "//:chrome_build": [
+            "@mini_chromium//:base",
+        ],
+    }) +
+    select({
+        "//conditions:default": [],
+        "@platforms//os:windows": [
+            "//maldoca/base/utf8:unicodetext",
+        ],
+    }),
+)
+
+cc_test(
+    name = "file_test",
+    size = "small",
+    srcs = ["file_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS + [
+        "-Wno-trigraphs",
+    ],
+    deps = [
+        ":file",
+        ":status",
+        "//maldoca/base/testing:status_matchers",
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest_main",
+    ] + select({
+        "//conditions:default": [],
+        "@platforms//os:windows": [
+            "//maldoca/base/utf8:unicodetext",
+        ],
+    }),
+)
+
+cc_library(
+    name = "digest",
+    hdrs = ["digest.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        "@boringssl//:crypto",
+        "@com_google_absl//absl/strings",
+    ],
+)

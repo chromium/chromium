@@ -1,0 +1,29 @@
+include_rules = [
+  "+absl",
+  "+base",
+  "+benchmark",
+  "+maldoca",
+  "+src",
+  "+gmock",
+  "+google/protobuf",
+  "+gtest",
+  "+libxml",
+  "+mini_chromium/base/logging.h",
+  "+openssl",
+  "+re2",
+  "+third_party/iree",
+  "+third_party/zlib",
+  # Zetasql is not used when building maldoca in Chromium.
+  "+zetasql",
+  "+zlib",
+  "+zlibwrapper"
+]
+
+
+skip_child_includes = [
+  # We don't build the tests for maldoca in Chromium.
+  "src/maldoca/base/testing",
+  # The Chromium versions of these packages are used instead of these.
+  "src/third_party/chromium",
+  "src/third_party/iree"
+]

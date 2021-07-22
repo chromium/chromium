@@ -1,0 +1,62 @@
+/*
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// Protocol buffer definitions for OLD VBA extraction.
+
+syntax = "proto2";
+
+package maldoca;
+
+option optimize_for = LITE_RUNTIME;
+
+// A VBACode chunk is the code iself, its filename and the path under
+// which the file was stored in the OLE input.
+message VBACodeChunk {
+  optional string code = 1;
+  optional string filename = 2;
+  optional string path = 3;
+  // sha1 of the code for quick identification.
+  optional bytes sha1 = 4;
+  // sha256 as pirmary key for search.
+  optional string sha256_hex_string = 6;
+  // True if the code was extracted from an orphaned directory entry or
+  // otherwise malformed file.
+  optional bool extracted_from_malformed_entry = 5;
+}
+
+// A VBACodeChunks message is just a series of VBACodeChunk entries.
+message VBACodeChunks {
+  repeated VBACodeChunk chunk = 1;
+}
+
+// A VBACodeExtraction is made of the code chunk and the string of
+// possible errors collected during the extraction.
+message VBACodeExtraction {
+  optional VBACodeChunks chunks = 1;
+  optional string error = 2;
+}
+
+// A OLEDirectory element: a name and children. We are postfixing these
+// name with Message to avoid collisions with existing OLEDirectoryEntry
+// classes.
+message OLEDirectoryEntryMessage {
+  optional string name = 1;
+  repeated OLEDirectoryEntryMessage children = 2;
+}
+
+message OLEDirectoryMessage {
+  repeated OLEDirectoryEntryMessage entries = 1;
+}

@@ -1,0 +1,653 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@com_google_maldoca//:bazel/variables.bzl", "DEFAULT_MALDOCA_COPTS")
+
+licenses(["notice"])
+
+package(
+    default_visibility = ["//visibility:public"],
+    features = [
+        "parse_headers",
+        "layering_check",
+    ],
+)
+
+cc_library(
+    name = "endian_reader",
+    srcs = ["endian_reader.cc"],
+    hdrs = ["endian_reader.h"],
+    copts = DEFAULT_MALDOCA_COPTS + [
+        "-Wno-strict-aliasing",
+    ],
+    visibility = [":__subpackages__"],
+    deps = [
+        ":oss_utils",
+        "//maldoca/base:endian",
+        "//maldoca/base:logging",
+        "//maldoca/base/utf8:unicodetext",
+        "@com_google_absl//absl/strings",
+    ],
+)
+
+cc_test(
+    name = "endian_reader_test",
+    srcs = ["endian_reader_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS + [
+        "-Wno-strict-aliasing",
+    ],
+    deps = [
+        ":endian_reader",
+        "//maldoca/base:endian",
+        "@com_google_absl//absl/strings",
+        "@com_google_benchmark//:benchmark",
+        "@com_google_googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "data_structures",
+    srcs = ["data_structures.cc"],
+    hdrs = ["data_structures.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":endian_reader",
+        "//maldoca/base:digest",
+        "//maldoca/base:logging",
+        "//maldoca/base:status",
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
+    ],
+)
+
+cc_library(
+    name = "ole_lib",
+    srcs = [
+        "dir.cc",
+        "fat.cc",
+        "header.cc",
+        "mso.cc",
+        "stream.cc",
+        "vba.cc",
+    ],
+    hdrs = [
+        "dir.h",
+        "fat.h",
+        "header.h",
+        "mso.h",
+        "stream.h",
+        "vba.h",
+    ],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":endian_reader",
+        ":oss_utils",
+        "//maldoca/base:cleanup",
+        "//maldoca/base:digest",
+        "//maldoca/base:logging",
+        "//maldoca/base/utf8:unicodetext",
+        "//maldoca/ole/proto:vba_extraction_cc_proto",
+        "@com_google_absl//absl/container:flat_hash_set",
+        "@com_google_absl//absl/container:node_hash_map",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
+        "@com_googlesource_code_re2//:re2",
+        "@libxml",
+        "@zlib",
+    ],
+)
+
+cc_library(
+    name = "ole_helper",
+    srcs = [
+        "ole_helper.cc",
+    ],
+    hdrs = [
+        "ole_helper.h",
+    ],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":ole_lib",
+        "//maldoca/base:status",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+    ],
+)
+
+cc_library(
+    name = "oss_utils",
+    srcs = [
+        "oss_utils.cc",
+    ],
+    hdrs = [
+        "oss_utils.h",
+    ],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        "//maldoca/base:file",
+        "//maldoca/base:logging",
+        "//maldoca/base:status",
+        "@com_google_absl//absl/base",
+        "@com_google_absl//absl/base:endian",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
+        "@com_google_protobuf//:protobuf",
+        "@libxml",
+    ],
+)
+
+cc_test(
+    name = "oss_utils_test",
+    srcs = ["oss_utils_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":oss_utils",
+        "//maldoca/base:logging",
+        "@com_google_googletest//:gtest",
+    ],
+)
+
+cc_library(
+    name = "strings_extract",
+    srcs = ["strings_extract.cc"],
+    hdrs = ["strings_extract.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        "@com_google_absl//absl/container:flat_hash_set",
+        "@com_google_absl//absl/strings",
+    ],
+)
+
+cc_test(
+    name = "strings_extract_test",
+    srcs = ["strings_extract_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":strings_extract",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "ole_to_proto",
+    srcs = [
+        "ole_to_proto.cc",
+        "property_set_stream.cc",
+    ],
+    hdrs = [
+        "ole_to_proto.h",
+        "property_set_stream.h",
+    ],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":data_structures",
+        ":endian_reader",
+        ":ole_helper",
+        ":ole_lib",
+        ":oss_utils",
+        ":strings_extract",
+        "@com_google_absl//absl/container:node_hash_map",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+        "//maldoca/base:digest",
+        "//maldoca/base:status",
+        "//maldoca/ole/proto:office_cc_proto",
+        "//maldoca/ole/proto:ole_cc_proto",
+        "//maldoca/ole/proto:ole_to_proto_settings_cc_proto",
+    ] + select({
+        "//conditions:default": [
+            ":biff_obj",
+            "//maldoca/ole/proto:excel4_extraction_cc_proto",
+        ],
+        "//:chrome_build": [],
+    }),
+)
+
+cc_test(
+    name = "ole_to_proto_test",
+    srcs = ["ole_to_proto_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    data = [
+        "testdata/ole/bogus_ole",
+        # A .hwp file (https://en.wikipedia.org/wiki/Hangul_(word_processor)).
+        "testdata/ole/7050af905f1696b2b8cdb4c6e6805a618addf5acfbd4edc3fc807a663016ab26",
+        # Native embedded.
+        "testdata/ole/f674740dfdf4fd4ded529c339160c8255cdd971c4a00180c9e3fc3f3e7b53799",
+        "testdata/ole/f3897d9509bd8f6bbee6e39568fb694aa05f3dc83ccf5eedcfabda21b48332ee",
+        "testdata/ole/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
+        "testdata/ole/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_all.textproto",
+        "testdata/ole/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_nodirs.textproto",
+        "testdata/ole/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_nohashes.textproto",
+        "testdata/ole/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_nosummary.textproto",
+        "testdata/ole/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_novba.textproto",
+        "testdata/ole/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_with_strings.textproto",
+        "testdata/ole/testcase-5487200440418304",
+        "testdata/ole/testcase-6493403182268416",
+        "testdata/ole/name.xls",
+        "testdata/ole/name.xls_excel4.textproto",
+        "testdata/ole/name.xls_noexcel4.textproto",
+        "testdata/ole/extraction_errors_base.xls",
+        "testdata/ole/extraction_errors_base.xls_excel4.textproto",
+        "testdata/ole/extraction_errors_corrupted_boundsheet.xls",
+        "testdata/ole/extraction_errors_corrupted_boundsheet.xls_excel4.textproto",
+        "testdata/ole/extraction_errors_corrupted_externalbook.xls",
+        "testdata/ole/extraction_errors_corrupted_externalbook.xls_excel4.textproto",
+        "testdata/ole/extraction_errors_corrupted_externalname.xls",
+        "testdata/ole/extraction_errors_corrupted_externalname.xls_excel4.textproto",
+        "testdata/ole/extraction_errors_corrupted_externalname_formula.xls",
+        "testdata/ole/extraction_errors_corrupted_externalname_formula.xls_excel4.textproto",
+        "testdata/ole/extraction_errors_corrupted_externsheet.xls",
+        "testdata/ole/extraction_errors_corrupted_externsheet.xls_excel4.textproto",
+        "testdata/ole/extraction_errors_corrupted_formula.xls",
+        "testdata/ole/extraction_errors_corrupted_formula.xls_excel4.textproto",
+        "testdata/ole/extraction_errors_corrupted_formularecord.xls",
+        "testdata/ole/extraction_errors_corrupted_formularecord.xls_excel4.textproto",
+        "testdata/ole/extraction_errors_corrupted_lbl.xls",
+        "testdata/ole/extraction_errors_corrupted_lbl.xls_excel4.textproto",
+        "testdata/ole/extraction_errors_corrupted_lbl_formula.xls",
+        "testdata/ole/extraction_errors_corrupted_lbl_formula.xls_excel4.textproto",
+        "testdata/ole/external_refs.xls",
+        "testdata/ole/external_refs.xls_excel4.textproto",
+        "testdata/ole/encrypted_workbook_12345.xls",
+        "testdata/ole/encrypted_workbook_12345.xls_excel4.textproto",
+        "testdata/ole/encrypted_no_formulas_12345.xls",
+        "testdata/ole/encrypted_no_formulas_12345.xls_excel4.textproto",
+        "testdata/ole/missing_formula.xls",
+        "testdata/ole/missing_formula.xls_excel4.textproto",
+    ],
+    deps = [
+        ":ole_to_proto",
+        "//maldoca/base:file",
+        "//maldoca/base:get_runfiles_dir",
+        "//maldoca/base:status",
+        "//maldoca/base/testing:protocol-buffer-matchers",
+        "//maldoca/base/testing:status_matchers",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_binary(
+    name = "ole_to_proto_cli",
+    srcs = ["ole_to_proto_cli.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":ole_to_proto",
+        "//maldoca/base:file",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/flags:parse",
+        "@com_google_absl//absl/strings:str_format",
+    ],
+)
+
+cc_test(
+    name = "header_test",
+    srcs = ["header_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    data = ["testdata/vba1.bin"],
+    deps = [
+        ":ole_lib",
+        "//maldoca/base:file",
+        "//maldoca/base:get_runfiles_dir",
+        "@com_google_benchmark//:benchmark",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "fat_test",
+    srcs = ["fat_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    data = ["testdata/vba1.bin"],
+    deps = [
+        ":ole_lib",
+        ":oss_utils",
+        "//maldoca/base:file",
+        "//maldoca/base:get_runfiles_dir",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/flags:parse",
+        "@com_google_absl//absl/strings",
+        "@com_google_benchmark//:benchmark",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "dir_test",
+    srcs = ["dir_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    data = ["testdata/vba1.bin"],
+    deps = [
+        ":ole_lib",
+        "//maldoca/base:file",
+        "//maldoca/base:get_runfiles_dir",
+        "//maldoca/base/testing:status_matchers",
+        "@com_google_absl//absl/flags:parse",
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/strings",
+        "@com_google_benchmark//:benchmark",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "stream_test",
+    srcs = ["stream_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    data = [
+        "testdata/vba1.bin",
+    ],
+    deps = [
+        ":ole_lib",
+        ":oss_utils",
+        "//maldoca/base:digest",
+        "//maldoca/base:file",
+        "//maldoca/base:get_runfiles_dir",
+        "//maldoca/base/testing:status_matchers",
+        "@com_google_absl//absl/strings",
+        "@com_google_benchmark//:benchmark",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "vba_test",
+    srcs = ["vba_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    data = [
+        "testdata/vba1.bin",
+    ],
+    deps = [
+        ":ole_lib",
+        "//maldoca/base:file",
+        "//maldoca/base:get_runfiles_dir",
+        "//maldoca/base:status",
+        "//maldoca/base/testing:status_matchers",
+        "@com_google_absl//absl/container:node_hash_map",
+        "@com_google_benchmark//:benchmark",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "ppt",
+    srcs = ["ppt.cc"],
+    hdrs = [
+        "ppt.h",
+    ],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":endian_reader",
+        ":ole_lib",
+        ":oss_utils",
+        "//maldoca/base:logging",
+        "//maldoca/base:status",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+        "@zlib",
+        "@zlibwrapper",
+    ],
+)
+
+cc_test(
+    name = "ppt_test",
+    srcs = ["ppt_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    data = [
+        "testdata/ole/95dc7b31c9ba45a066f580e6e2c5c914",
+    ],
+    deps = [
+        ":oss_utils",
+        ":ppt",
+        ":vba_extract_lib",
+        "//maldoca/base:digest",
+        "//maldoca/base:file",
+        "//maldoca/base:get_runfiles_dir",
+        "//maldoca/base:status",
+        "//maldoca/base/testing:status_matchers",
+        "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "vba_extract_lib",
+    srcs = [
+        "vba_extract.cc",
+    ],
+    hdrs = [
+        "vba_extract.h",
+    ],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":archive_handler",
+        ":ole_helper",
+        ":ole_lib",
+        ":oss_utils",
+        ":ppt",
+        "//maldoca/base:logging",
+        "//maldoca/base:status",
+        "//maldoca/ole/proto:extract_vba_settings_cc_proto",
+        "//maldoca/ole/proto:vba_extraction_cc_proto",
+        "@com_google_absl//absl/base",
+        "@com_google_absl//absl/container:flat_hash_set",
+        "@com_google_absl//absl/container:node_hash_map",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
+    ],
+)
+
+cc_binary(
+    name = "vba_extractor",
+    srcs = ["vba_extractor.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":oss_utils",
+        ":vba_extract_lib",
+        "//maldoca/base:digest",
+        "//maldoca/base:file",
+        "//maldoca/base:logging",
+        "//maldoca/base:status",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/flags:parse",
+        "@com_google_absl//absl/strings",
+    ],
+)
+
+cc_test(
+    name = "vba_extract_test",
+    srcs = ["vba_extract_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS + [
+        "-Wno-comment",
+    ],
+    data = [
+        "testdata/ole/0d21ac394df6857ff203e456ed2385ee",
+        "testdata/ole/95dc7b31c9ba45a066f580e6e2c5c914",
+        "testdata/ole/bogus_ole",
+        "testdata/ole/bogus_ooxml",
+        # A malicious docx file with VBA.
+        "testdata/ole/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d",
+        "testdata/ole/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
+    ],
+    deps = [
+        ":oss_utils",
+        ":vba_extract_lib",
+        "//maldoca/base:digest",
+        "//maldoca/base:file",
+        "//maldoca/base:get_runfiles_dir",
+        "//maldoca/base:logging",
+        "//maldoca/base:status",
+        "//maldoca/ole/proto:extract_vba_settings_cc_proto",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+        "@com_google_protobuf//:protobuf",
+    ] + select({
+        "//conditions:default": [
+            "@com_google_benchmark//:benchmark",
+        ],
+        "//:chrome_build": [],
+    }),
+)
+
+cc_library(
+    name = "ooxml_properties_extract",
+    srcs = ["ooxml_properties_extract.cc"],
+    hdrs = ["ooxml_properties_extract.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":oss_utils",
+        "//maldoca/base:digest",
+        "//maldoca/base:ret_check",
+        "//maldoca/base:status",
+        "//maldoca/ole/proto:ole_cc_proto",
+        "//maldoca/ole/proto:ooxml_cc_proto",
+        "@com_google_absl//absl/container:flat_hash_map",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/time",
+        "@libxml",
+    ],
+)
+
+cc_test(
+    name = "ooxml_properties_extract_test",
+    srcs = ["ooxml_properties_extract_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":ooxml_properties_extract",
+        ":oss_utils",
+        "//maldoca/base:file",
+        "//maldoca/base/testing:status_matchers",
+        "@com_google_absl//absl/container:flat_hash_set",
+        "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+        "@libxml",
+    ],
+)
+
+cc_library(
+    name = "ooxml_to_proto",
+    srcs = ["ooxml_to_proto.cc"],
+    hdrs = ["ooxml_to_proto.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":archive_handler",
+        ":ole_to_proto",
+        ":ooxml_properties_extract",
+        ":oss_utils",
+        ":vba_extract_lib",
+        "//maldoca/base:digest",
+        "//maldoca/base:file",
+        "//maldoca/base:status",
+        "//maldoca/ole/proto:office_cc_proto",
+        "//maldoca/ole/proto:ooxml_cc_proto",
+        "//maldoca/ole/proto:ooxml_to_proto_settings_cc_proto",
+        "//maldoca/service:common_utils",
+        "@com_google_absl//absl/container:flat_hash_map",
+        "@com_google_absl//absl/strings",
+        "@libxml",
+    ],
+)
+
+cc_binary(
+    name = "ooxml_to_proto_cli",
+    srcs = ["ooxml_to_proto_cli.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":ooxml_to_proto",
+        "//maldoca/base:file",
+        "//maldoca/service:common_utils",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/flags:parse",
+    ],
+)
+
+cc_test(
+    name = "ooxml_to_proto_test",
+    srcs = ["ooxml_to_proto_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    data = [
+        "testdata/ooxml/hyperlink_relationship.docx",
+        "testdata/ooxml/sample_document.docm",
+        "testdata/ooxml/sample_document_invalid_archive.docx",
+    ],
+    deps = [
+        ":ooxml_to_proto",
+        "//maldoca/base:file",
+        "//maldoca/base:get_runfiles_dir",
+        "//maldoca/base:logging",
+        "//maldoca/base/testing:status_matchers",
+        "//maldoca/ole/proto:ooxml_to_proto_settings_cc_proto",
+        "//maldoca/service:common_utils",
+        "@com_google_absl//absl/container:flat_hash_set",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+        "@libxml",
+    ],
+)
+
+cc_test(
+    name = "archive_handler_test",
+    srcs = ["archive_handler_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    data = [
+        "testdata/archive_zip.zip",
+    ],
+    deps = [
+        ":archive_handler",
+        "//maldoca/base:file",
+        "//maldoca/base:get_runfiles_dir",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "archive_handler",
+    srcs = ["archive_handler.cc"],
+    hdrs = ["archive_handler.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        "//maldoca/base:logging",
+        "@com_google_absl//absl/strings",
+        "@zip_reader",
+    ] + select({
+        "//conditions:default": [],
+        "@platforms//os:windows": [
+            "//maldoca/base/utf8:unicodetext",
+        ],
+    }),
+)

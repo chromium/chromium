@@ -1,0 +1,321 @@
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/grpc/grpc_library.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+config("maldoca_flags") {
+  cflags = [
+    "-Wno-sign-compare",
+    "-Wno-error=unreachable-code",
+    "-Wno-unused-private-field",
+    "-Wno-c++98-compat-pedantic",
+    "-Wno-comment",
+    "-Wno-ignored-qualifiers",
+    "-Wno-unused-const-variable",
+    "-Wno-unused-result"
+  ]
+  defines = ["MALDOCA_CHROME=1"]
+}
+
+config("maldoca_chromium_config") {
+  defines = ["MALDOCA_IN_CHROMIUM"]
+}
+
+static_library("zlibwrapper") {
+  sources = [
+    "src/third_party/zlibwrapper/gzipheader.cc",
+    "src/third_party/zlibwrapper/gzipheader.h",
+    "src/third_party/zlibwrapper/zlibwrapper.cc",
+    "src/third_party/zlibwrapper/zlibwrapper.h",
+  ]
+
+  include_dirs = [
+    "//third_party/maldoca/src/",
+    "//third_party/maldoca/src/third_party/",
+  ]
+
+  deps = [
+    ":maldoca-base",
+    "//base",
+    "//third_party/zlib:zlib"
+  ]
+
+  configs += [
+    ":maldoca_chromium_config",
+    ":maldoca_flags",
+  ]
+}
+
+proto_library("feature_proto") {
+  proto_in_dir = "//third_party/maldoca/src/third_party/tensorflow_protos"
+  sources = ["${proto_in_dir}/tensorflow/core/example/feature.proto"]
+}
+
+proto_library("example_proto") {
+  proto_in_dir = "//third_party/maldoca/src/third_party/tensorflow_protos"
+  sources = ["${proto_in_dir}/tensorflow/core/example/example.proto"]
+  link_deps = [":feature_proto"]
+}
+
+proto_library("maldoca-pdf_parser-protos") {
+  proto_in_dir = "src"
+  sources = [
+    "${proto_in_dir}/maldoca/pdf_parser/proto/adobe_js.proto",
+    "${proto_in_dir}/maldoca/pdf_parser/proto/exporting_packet.proto",
+    "${proto_in_dir}/maldoca/pdf_parser/proto/features_packet.proto",
+    "${proto_in_dir}/maldoca/pdf_parser/proto/parser_packet.proto",
+    "${proto_in_dir}/maldoca/pdf_parser/proto/pdf_assets.proto",
+    "${proto_in_dir}/maldoca/pdf_parser/proto/pdf_feature.proto",
+    "${proto_in_dir}/maldoca/pdf_parser/proto/pdfium_result.proto",
+  ]
+
+  import_dirs = ["//third_party/tflite/src/"]
+  link_deps = [":example_proto"]
+}
+
+proto_library("maldoca-antivirus-protos") {
+  proto_in_dir = "src"
+  sources = ["${proto_in_dir}/maldoca/vba/antivirus/vba_feature.proto"]
+}
+
+proto_library("maldoca-ole-protos") {
+  proto_in_dir = "src"
+  sources = [
+    "${proto_in_dir}/maldoca/ole/proto/extract_vba_settings.proto",
+    "${proto_in_dir}/maldoca/ole/proto/office.proto",
+    "${proto_in_dir}/maldoca/ole/proto/ole.proto",
+    "${proto_in_dir}/maldoca/ole/proto/ole_to_proto_settings.proto",
+    "${proto_in_dir}/maldoca/ole/proto/ooxml.proto",
+    "${proto_in_dir}/maldoca/ole/proto/ooxml_to_proto_settings.proto",
+    "${proto_in_dir}/maldoca/ole/proto/vba_extraction.proto",
+  ]
+
+}
+
+proto_library("maldoca-base-protos") {
+  proto_in_dir = "src"
+  sources = ["${proto_in_dir}/maldoca/base/status_proto.proto"]
+}
+
+proto_library("maldoca-service-protos") {
+  proto_in_dir = "src"
+  sources = [
+    "${proto_in_dir}/maldoca/service/proto/doc_type.proto",
+    "${proto_in_dir}/maldoca/service/proto/document_features.proto",
+    "${proto_in_dir}/maldoca/service/proto/exported_features.proto",
+    "${proto_in_dir}/maldoca/service/proto/parsed_document.proto",
+    "${proto_in_dir}/maldoca/service/proto/processing_config.proto",
+  ]
+  import_dirs = ["//third_party/tflite/src/"]
+  link_deps = [
+    ":example_proto",
+    ":maldoca-antivirus-protos",
+    ":maldoca-base-protos",
+    ":maldoca-ole-protos",
+    ":maldoca-pdf_parser-protos",
+  ]
+}
+
+grpc_library("maldoca-service-grpc-proto") {
+  proto_in_dir = "src"
+  sources = ["${proto_in_dir}/maldoca/service/proto/maldoca_service.proto"]
+  import_dirs = ["//third_party/tflite/src/"]
+  link_deps = [
+    ":example_proto",
+    ":maldoca-base-protos",
+    ":maldoca-service-protos",
+  ]
+}
+
+static_library("maldoca-base") {
+  sources = [
+    "src/maldoca/base/cleanup.h",
+    "src/maldoca/base/digest.h",
+    "src/maldoca/base/endian.h",
+    "src/maldoca/base/enum_utils.h",
+    "src/maldoca/base/file.cc",
+    "src/maldoca/base/file.h",
+    "src/maldoca/base/get_runfiles_dir.cc",
+    "src/maldoca/base/get_runfiles_dir.h",
+    "src/maldoca/base/logging.h",
+    "src/maldoca/base/map_util.h",
+    "src/maldoca/base/parse_text_proto.h",
+    "src/maldoca/base/ret_check.h",
+    "src/maldoca/base/source_location.h",
+    "src/maldoca/base/status.h",
+    "src/maldoca/base/status_builder.h",
+    "src/maldoca/base/status_macros.h",
+    "src/maldoca/base/status_payload.h",
+    "src/maldoca/base/statusor.h",
+    "src/maldoca/base/utf8/unicodetext.h",
+  ]
+  include_dirs = ["//third_party/maldoca/src/"]
+
+  public_deps = [
+    ":maldoca-base-protos",
+  ]
+
+  deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/boringssl",
+    "//third_party/protobuf:protobuf_lite",
+    "//third_party/re2",
+  ]
+
+  configs += [
+    ":maldoca_chromium_config",
+    ":maldoca_flags",
+  ]
+}
+
+source_set("maldoca-ole") {
+  sources = [
+    "src/maldoca/ole/archive_handler.cc",
+    "src/maldoca/ole/archive_handler.h",
+    "src/maldoca/ole/data_structures.cc",
+    "src/maldoca/ole/data_structures.h",
+    "src/maldoca/ole/dir.cc",
+    "src/maldoca/ole/dir.h",
+    "src/maldoca/ole/endian_reader.cc",
+    "src/maldoca/ole/endian_reader.h",
+    "src/maldoca/ole/fat.cc",
+    "src/maldoca/ole/fat.h",
+    "src/maldoca/ole/header.cc",
+    "src/maldoca/ole/header.h",
+    "src/maldoca/ole/mso.cc",
+    "src/maldoca/ole/mso.h",
+    "src/maldoca/ole/ole_helper.cc",
+    "src/maldoca/ole/ole_helper.h",
+    "src/maldoca/ole/ole_to_proto.cc",
+    "src/maldoca/ole/ole_to_proto.h",
+    # Should only be used for debugging
+    # "src/maldoca/ole/ole_to_proto_cli.cc",
+    "src/maldoca/ole/ooxml_properties_extract.cc",
+    "src/maldoca/ole/ooxml_properties_extract.h",
+    "src/maldoca/ole/ooxml_to_proto.cc",
+    "src/maldoca/ole/ooxml_to_proto.h",
+    # Should only be used for debugging
+    # "src/maldoca/ole/ooxml_to_proto_cli.cc",
+    "src/maldoca/ole/oss_utils.cc",
+    "src/maldoca/ole/oss_utils.h",
+    "src/maldoca/ole/ppt.cc",
+    "src/maldoca/ole/ppt.h",
+    "src/maldoca/ole/property_set_stream.cc",
+    "src/maldoca/ole/property_set_stream.h",
+    "src/maldoca/ole/stream.cc",
+    "src/maldoca/ole/stream.h",
+    "src/maldoca/ole/strings_extract.cc",
+    "src/maldoca/ole/strings_extract.h",
+    "src/maldoca/ole/vba.cc",
+    "src/maldoca/ole/vba.h",
+    "src/maldoca/ole/vba_extract.cc",
+    "src/maldoca/ole/vba_extract.h",
+    # Should only be used for debugging
+    # "src/maldoca/ole/vba_extractor.cc",
+  ]
+
+  include_dirs = [
+    "//third_party/maldoca/src/",
+    "//third_party/maldoca/src/third_party/",
+
+    #"//third_party/libxml/src/include/"
+  ]
+
+  public_deps = [
+    ":example_proto",
+    ":maldoca-base",
+    ":maldoca-ole-protos",
+    ":maldoca-public-headers",
+    "//third_party/abseil-cpp:absl",
+  ]
+  deps = [
+    ":zlibwrapper",
+    "//third_party/libxml",
+    "//third_party/protobuf:protobuf_lite",
+    "//third_party/re2",
+    "//third_party/zlib:zlib_common_headers",
+    "//third_party/zlib/google:zip",
+  ]
+
+  public_configs = [
+    ":maldoca_chromium_config",
+    ":maldoca_flags",
+  ]
+}
+
+source_set("maldoca-public-headers") {
+  public = [
+    "src/maldoca/service/common/office_processing_component.h",
+    "src/maldoca/service/common/process_doc.h",
+    "src/maldoca/service/common/processing_component.h",
+    "src/maldoca/service/common/processing_component_factory.h",
+    "src/maldoca/service/common/processing_pipeline.h",
+    "src/maldoca/service/common/utils.h",
+  ]
+
+  public_deps = [
+    ":example_proto",
+    ":maldoca-base",
+    ":maldoca-ole-protos",
+    ":maldoca-service-protos",
+    ":maldoca-service-grpc-proto"
+  ]
+  deps = [
+    "//third_party/abseil-cpp:absl",
+    "//third_party/grpc:grpc++",
+    "//third_party/libxml",
+    "//third_party/protobuf:protobuf_lite",
+    "//third_party/re2",
+    "//third_party/zlib",
+  ]
+
+  configs += [":maldoca_flags"]
+}
+
+static_library("maldoca") {
+  sources = [
+    "src/maldoca/service/common/office_processing_component.cc",
+    "src/maldoca/service/common/process_doc.cc",
+    "src/maldoca/service/common/processing_component.cc",
+    "src/maldoca/service/common/processing_component_factory.cc",
+    "src/maldoca/service/common/processing_pipeline.cc",
+    "src/maldoca/service/common/utils.cc",
+  ]
+  deps = [
+    "//third_party/abseil-cpp:absl",
+    "//third_party/boringssl",
+    "//third_party/grpc:grpc++",
+    "//third_party/libxml",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+
+  public_deps = [
+    ":maldoca-base",
+    ":maldoca-ole",
+    ":maldoca-public-headers",
+    ":maldoca-service-grpc-proto",
+    ":maldoca-service-protos",
+  ]
+
+  include_dirs = ["//third_party/maldoca/src/"]
+
+  configs += [
+    "//third_party/grpc:grpc_config",
+  ]
+
+  public_configs = [
+    ":maldoca_chromium_config",
+    ":maldoca_flags",
+  ]
+}
+
+fuzzer_test("process_doc_fuzzer") {
+  sources = ["//third_party/maldoca/src/maldoca/service/common/fuzz_process_doc.cc"]
+  include_dirs = ["//third_party/maldoca/src/"]
+  deps = [
+    ":maldoca",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  additional_configs = [":maldoca_flags", ":maldoca_chromium_config"]
+}

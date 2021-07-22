@@ -1,0 +1,406 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@//third_party/iree/build_tools/embed_data:build_defs.bzl", "cc_embed_data")
+load("@com_google_maldoca//:bazel/variables.bzl", "DEFAULT_MALDOCA_COPTS")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+licenses(["notice"])
+
+cc_library(
+    name = "common_utils",
+    srcs = [
+        "common/utils.cc",
+    ],
+    hdrs = [
+        "common/utils.h",
+    ],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps =
+        select({
+            "//conditions:default": [
+                ":file_type_identifier",
+                ":magic_db_docs_embed",
+            ],
+            "//:chrome_build": [],
+        }) + [
+            "//maldoca/base:digest",
+            "//maldoca/base:file",
+            "//maldoca/base:status",
+            "//maldoca/base/utf8:unicodetext",
+            "//maldoca/ole/proto:extract_vba_settings_cc_proto",
+            "//maldoca/ole/proto:office_cc_proto",
+            "//maldoca/ole/proto:ole_to_proto_settings_cc_proto",
+            "//maldoca/ole/proto:ooxml_to_proto_settings_cc_proto",
+            "//maldoca/ole/proto:vba_extraction_cc_proto",
+            "//maldoca/service/proto:doc_type_cc_proto",
+            "//maldoca/service/proto:document_features_cc_proto",
+            "//maldoca/service/proto:maldoca_service_cc_proto",
+            "//maldoca/service/proto:parsed_document_cc_proto",
+            "@com_google_absl//absl/container:flat_hash_map",
+            "@com_google_absl//absl/container:flat_hash_set",
+            "@com_google_absl//absl/memory",
+            "@com_google_absl//absl/status",
+            "@com_google_absl//absl/status:statusor",
+            "@com_google_absl//absl/strings",
+            "@com_googlesource_code_re2//:re2",
+        ],
+)
+
+cc_test(
+    name = "common_utils_test",
+    srcs = ["common/utils_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    data = [
+        "testdata/ba5c251f78a1d57b72901f4ff80824d6ad0aa4bf1931c593a36254db4ab41021.ppt",
+        "testdata/image_and_text.pdf",
+        # A malicious docx file with vba.
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.docx",
+        "testdata/f66b8ee9bea7ec406c6a88ccfb54c447afc3e4c44ae08c071b97beb74b66e2eb.xls",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.doc",
+    ],
+    deps = [
+        ":common_utils",
+        "//maldoca/base:file",
+        "//maldoca/base:get_runfiles_dir",
+        "//maldoca/base:parse_text_proto",
+        "//maldoca/base:status",
+        "//maldoca/base/testing:status_matchers",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "maldoca_service",
+    srcs = [
+        "maldoca_service.cc",
+    ],
+    hdrs = [
+        "maldoca_service.h",
+    ],
+    copts = DEFAULT_MALDOCA_COPTS + [
+        "-Wno-maybe-uninitialized",  # grpc
+    ],
+    defines = ["BAZEL_BUILD"],
+    deps = [
+        ":common_utils",
+        ":process_doc",
+        "//maldoca/base:logging",
+        "//maldoca/base:status",
+        "//maldoca/service/proto:doc_type_cc_proto",
+        "//maldoca/service/proto:maldoca_service_cc_grpc_proto",
+        "//maldoca/service/proto:maldoca_service_cc_proto",
+        "@com_github_grpc_grpc//:grpc++",
+    ],
+)
+
+cc_binary(
+    name = "maldoca_server",
+    srcs = [
+        "maldoca_server.cc",
+    ],
+    copts = DEFAULT_MALDOCA_COPTS,
+    defines = ["BAZEL_BUILD"],
+    linkstatic = True,  # Due to pdfium
+    deps = [
+        ":common_utils",
+        ":maldoca_service",
+        "//maldoca/base:logging",
+        "//maldoca/service/proto:processing_config_cc_proto",
+        "@com_github_grpc_grpc//:grpc++",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/flags:parse",
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/strings",
+        "@com_google_protobuf//:protobuf",
+    ],
+)
+
+cc_library(
+    name = "maldoca_client",
+    srcs = [
+        "maldoca_client.cc",
+    ],
+    hdrs = [
+        "maldoca_client.h",
+    ],
+    copts = DEFAULT_MALDOCA_COPTS,
+    defines = ["BAZEL_BUILD"],
+    deps = [
+        "//maldoca/service/proto:maldoca_service_cc_grpc_proto",
+        "//maldoca/service/proto:maldoca_service_cc_proto",
+        "@com_github_grpc_grpc//:grpc++",
+    ],
+)
+
+cc_binary(
+    name = "maldoca_client_cli",
+    srcs = [
+        "maldoca_client_cli.cc",
+    ],
+    copts = DEFAULT_MALDOCA_COPTS,
+    defines = ["BAZEL_BUILD"],
+    deps = [
+        ":maldoca_client",
+        "//maldoca/base:file",
+        "@com_github_grpc_grpc//:grpc++",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/flags:parse",
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/strings",
+    ],
+)
+
+cc_library(
+    name = "processing_component",
+    srcs = ["common/processing_component.cc"],
+    hdrs = ["common/processing_component.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        "//maldoca/base:status",
+        "//maldoca/service/proto:document_features_cc_proto",
+        "//maldoca/service/proto:exported_features_cc_proto",
+        "//maldoca/service/proto:parsed_document_cc_proto",
+        "//maldoca/service/proto:processing_config_cc_proto",
+        "@com_google_absl//absl/status",
+    ],
+)
+
+cc_library(
+    name = "office_processing_component",
+    srcs = ["common/office_processing_component.cc"],
+    hdrs = ["common/office_processing_component.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = select({
+        "//conditions:default": [
+            "//maldoca/base/utf8:unicodetext",
+            "//maldoca/ole:vba_extract_lib",
+            "//maldoca/ole/proto:vba_extraction_cc_proto",
+            "//maldoca/service/common/office_sandbox:office-parser-sapi",
+            "//maldoca/service/common/office_sandbox:sapi_office_params_cc_proto",
+            "//maldoca/vba/antivirus:extract_stats_features",
+            "//maldoca/vba/ast:ast2_cast",
+            "//maldoca/vba/ast:ast2_cc_proto",
+            "//maldoca/vba/parser:line_parser",
+            "//maldoca/vba/parser:merge_stmt_likes",
+            "//maldoca/vba/parser:preprocessor",
+        ],
+        "//:chrome_build": [],
+    }) + [
+        "@com_google_absl//absl/status",
+        "//maldoca/service/proto:doc_type_cc_proto",
+        ":common_utils",
+        ":processing_component",
+        "@com_google_absl//absl/container:flat_hash_map",
+        "@com_google_absl//absl/strings",
+        "//maldoca/base:digest",
+        "//maldoca/base:enum_utils",
+        "//maldoca/base:status",
+        "//maldoca/ole:ole_to_proto",
+        "//maldoca/ole:ooxml_to_proto",
+        "//maldoca/ole:oss_utils",
+        "//maldoca/ole/proto:office_cc_proto",
+        "//maldoca/ole/proto:ole_to_proto_settings_cc_proto",
+        "//maldoca/ole/proto:ooxml_to_proto_settings_cc_proto",
+        "//maldoca/service/proto:document_features_cc_proto",
+        "//maldoca/service/proto:exported_features_cc_proto",
+        "//maldoca/service/proto:parsed_document_cc_proto",
+        "//maldoca/service/proto:processing_config_cc_proto",
+    ],
+)
+
+cc_library(
+    name = "processing_component_factory",
+    srcs = ["common/processing_component_factory.cc"],
+    hdrs = ["common/processing_component_factory.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = select({
+        "//conditions:default": [
+            ":office_processing_component",
+            ":processing_component",
+            "//maldoca/pdf_parser:adobe_api_mapper",
+            "//maldoca/pdf_parser:pdfium_processor",
+        ],
+        "//:chrome_build": [
+            ":office_processing_component",
+            ":processing_component",
+        ],
+    }),
+)
+
+cc_test(
+    name = "office_processing_component_test",
+    srcs = ["common/office_processing_component_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    data = [
+        # A malicious docx file with VBA.
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.docx",
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.features.textproto",
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.parsed.textproto",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.doc",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.features.textproto",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.parsed.textproto",
+    ],
+    deps = [
+        ":common_utils",
+        ":office_processing_component",
+        ":processing_component",
+        "//maldoca/base:file",
+        "//maldoca/base:get_runfiles_dir",
+        "//maldoca/base:logging",
+        "//maldoca/base:parse_text_proto",
+        "//maldoca/base/testing:protocol-buffer-matchers",
+        "//maldoca/base/testing:status_matchers",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "processing_pipeline",
+    srcs = ["common/processing_pipeline.cc"],
+    hdrs = ["common/processing_pipeline.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        ":processing_component",
+        "//maldoca/base:file",
+        "//maldoca/base:logging",
+        "//maldoca/base:status",
+        "//maldoca/service/proto:document_features_cc_proto",
+        "//maldoca/service/proto:exported_features_cc_proto",
+        "//maldoca/service/proto:parsed_document_cc_proto",
+        "//maldoca/service/proto:processing_config_cc_proto",
+        "@com_google_absl//absl/container:flat_hash_set",
+        "@com_google_protobuf//:protobuf",
+    ],
+)
+
+cc_test(
+    name = "processing_pipeline_test",
+    srcs = ["common/processing_pipeline_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    data = [
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.docx",
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.features.textproto",
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.parsed.textproto",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.doc",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.features.textproto",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.parsed.textproto",
+        "testdata/image_and_text.features.textproto",
+        "testdata/image_and_text.parsed.textproto",
+        "testdata/image_and_text.pdf",
+    ],
+    linkstatic = True,  # Due to pdfium
+    deps = [
+        ":common_utils",
+        ":office_processing_component",
+        ":processing_pipeline",
+        "//maldoca/base:digest",
+        "//maldoca/base:file",
+        "//maldoca/base:get_runfiles_dir",
+        "//maldoca/base:logging",
+        "//maldoca/base/testing:protocol-buffer-matchers",
+        "//maldoca/base/testing:status_matchers",
+        "@com_google_absl//absl/memory",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "process_doc",
+    srcs = [
+        "common/process_doc.cc",
+    ],
+    hdrs = [
+        "common/process_doc.h",
+    ],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = select({
+        "//conditions:default": [
+            ":file_type_identifier",
+            "//maldoca/pdf_parser:adobe_api_mapper",
+            "//maldoca/pdf_parser:pdf_features",
+            "//maldoca/pdf_parser:pdfium_processor",
+        ],
+        "//:chrome_build": [],
+    }) + [
+        ":common_utils",
+        ":office_processing_component",
+        ":processing_component_factory",
+        ":processing_pipeline",
+        "@com_google_protobuf//:protobuf",
+        "@com_google_absl//absl/container:flat_hash_map",
+        "@com_google_absl//absl/container:flat_hash_set",
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+        "//maldoca/base:digest",
+        "//maldoca/base:status",
+        "//maldoca/service/proto:doc_type_cc_proto",
+        "//maldoca/service/proto:maldoca_service_cc_proto",
+        "//maldoca/service/proto:processing_config_cc_proto",
+    ],
+)
+
+filegroup(
+    name = "process_doc_testdata",
+    srcs = [
+        "testdata/vba1.bin",
+        "testdata/vba1.bin.response.textproto",
+        "testdata/vba1.features.textproto",
+        "testdata/vba1.parsed.textproto",
+        "testdata/embedded_file.pdf",
+        "testdata/embedded_file.pdf.response.textproto",
+        "testdata/image_and_link.pdf",
+        "testdata/image_and_link.pdf.response.textproto",
+        "testdata/image_and_text.pdf",
+        "testdata/image_and_text.pdf.response.textproto",
+        # A malicious docx file with VBA.
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.docx",
+        "testdata/c98661bcd5bd2e5df06d3432890e7a2e8d6a3edcb5f89f6aaa2e5c79d4619f3d.response.textproto",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.doc",
+        "testdata/ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.response.textproto",
+    ],
+)
+
+cc_test(
+    name = "process_doc_test",
+    srcs = ["common/process_doc_test.cc"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    data = [
+        ":process_doc_testdata",
+    ],
+    linkstatic = True,  # Due to pdfium
+    deps = [
+        ":common_utils",
+        ":process_doc",
+        "//maldoca/base:digest",
+        "//maldoca/base:file",
+        "//maldoca/base:get_runfiles_dir",
+        "//maldoca/base:logging",
+        "//maldoca/base:parse_text_proto",
+        "//maldoca/base/testing:protocol-buffer-matchers",
+        "//maldoca/base/testing:status_matchers",
+        "//maldoca/service/proto:doc_type_cc_proto",
+        "//maldoca/service/proto:maldoca_service_cc_proto",
+        "@com_google_absl//absl/memory",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)

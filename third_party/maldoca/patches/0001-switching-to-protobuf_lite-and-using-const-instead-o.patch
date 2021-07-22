@@ -1,0 +1,500 @@
+From 196006b57e14890ed91df7bb22afbaa439ac1a04 Mon Sep 17 00:00:00 2001
+From: Olabode Anise <anise@chromium.org>
+Date: Fri, 18 Jun 2021 20:58:06 +0000
+Subject: [PATCH] switching to protobuf_lite and using const instead of
+ absl::GetFlag
+
+---
+ .../maldoca/src/maldoca/base/status_proto.proto  |  1 +
+ third_party/maldoca/src/maldoca/ole/mso.cc       | 16 ++++++++++++----
+ third_party/maldoca/src/maldoca/ole/oss_utils.cc |  8 ++++++--
+ third_party/maldoca/src/maldoca/ole/ppt.cc       |  9 ++++++---
+ .../maldoca/ole/proto/excel4_extraction.proto    |  2 ++
+ .../maldoca/ole/proto/extract_vba_settings.proto |  2 ++
+ .../maldoca/src/maldoca/ole/proto/office.proto   |  3 ++-
+ .../maldoca/src/maldoca/ole/proto/ole.proto      |  2 ++
+ .../ole/proto/ole_to_proto_settings.proto        |  2 ++
+ .../maldoca/src/maldoca/ole/proto/ooxml.proto    |  2 ++
+ .../ole/proto/ooxml_to_proto_settings.proto      |  2 ++
+ .../src/maldoca/ole/proto/vba_extraction.proto   |  2 ++
+ .../maldoca/src/maldoca/ole/vba_extract.cc       | 15 +++++++++++----
+ .../src/maldoca/pdf_parser/proto/adobe_js.proto  |  2 ++
+ .../pdf_parser/proto/exporting_packet.proto      |  2 ++
+ .../pdf_parser/proto/features_packet.proto       |  2 ++
+ .../maldoca/pdf_parser/proto/parser_packet.proto |  2 ++
+ .../maldoca/pdf_parser/proto/pdf_assets.proto    |  2 ++
+ .../maldoca/pdf_parser/proto/pdf_feature.proto   |  2 ++
+ .../maldoca/pdf_parser/proto/pdfium_result.proto |  2 ++
+ .../src/maldoca/service/proto/doc_type.proto     |  2 ++
+ .../service/proto/document_features.proto        |  2 ++
+ .../service/proto/exported_features.proto        |  2 ++
+ .../maldoca/service/proto/maldoca_service.proto  |  2 ++
+ .../maldoca/service/proto/parsed_document.proto  |  2 ++
+ .../service/proto/processing_config.proto        |  2 ++
+ .../src/maldoca/vba/antivirus/vba_feature.proto  |  2 ++
+ 27 files changed, 80 insertions(+), 14 deletions(-)
+
+diff --git a/third_party/maldoca/src/maldoca/base/status_proto.proto b/third_party/maldoca/src/maldoca/base/status_proto.proto
+index 0a28082fe445..6eeca1c0d20b 100644
+--- a/third_party/maldoca/src/maldoca/base/status_proto.proto
++++ b/third_party/maldoca/src/maldoca/base/status_proto.proto
+@@ -20,6 +20,7 @@ syntax = "proto2";
+ package maldoca;
+ 
+ option java_multiple_files = true;
++option optimize_for = LITE_RUNTIME;
+ 
+ // Maldoca specific error code for more context on the errors
+ enum MaldocaErrorCode {
+diff --git a/third_party/maldoca/src/maldoca/ole/mso.cc b/third_party/maldoca/src/maldoca/ole/mso.cc
+index 7b0943285061..599444d5040f 100644
+--- a/third_party/maldoca/src/maldoca/ole/mso.cc
++++ b/third_party/maldoca/src/maldoca/ole/mso.cc
+@@ -33,12 +33,16 @@
+ #include "zlib/include/zlib.h"
+ #endif
+ 
++#ifdef MALDOCA_IN_CHROMIUM
++static const int32_t mso_deflated_max_file_size = 2 << 20;
++#else
+ ABSL_FLAG(int32_t, mso_deflated_max_file_size, 2 << 20,
+           "The maximum deflated MSO file size (in bytes) we are willing to "
+           "process. The Office 2003 XML file format stores VBA code in "
+           "OLE2 files using the ActiveMime/MSO format which is zlib "
+           "compressed. We don't easily know in advance the size of "
+           "the deflated MSO so we use a reasonable limit instead.");
++#endif
+ 
+ namespace maldoca {
+ using utils::XmlCharDeleter;
+@@ -142,11 +146,15 @@ bool MSOContent::GetOLE2Data(absl::string_view mso, std::string *ole2) {
+   offsets.insert(std::pair<uint16_t, bool>(0x32, true));
+   offsets.insert(std::pair<uint16_t, bool>(0x22a, true));
+ 
+-  // We don't know beforehand the size of the output and we can't
+-  // easily compute with the kind of zlib stream we're going to
+-  // process, so we arbitrarily set it to a large enough limit - we
+-  // will declare an error if that limit is insufficient.
++// We don't know beforehand the size of the output and we can't
++// easily compute with the kind of zlib stream we're going to
++// process, so we arbitrarily set it to a large enough limit - we
++// will declare an error if that limit is insufficient.
++#ifdef MALDOCA_IN_CHROMIUM
++  uLongf dest_length = mso_deflated_max_file_size;
++#else
+   uLongf dest_length = absl::GetFlag(FLAGS_mso_deflated_max_file_size);
++#endif
+   std::unique_ptr<char[]> dest(new char[dest_length]);
+ 
+   for (auto const &current_offset : offsets) {
+diff --git a/third_party/maldoca/src/maldoca/ole/oss_utils.cc b/third_party/maldoca/src/maldoca/ole/oss_utils.cc
+index 774b09e581de..faf7992bb707 100644
+--- a/third_party/maldoca/src/maldoca/ole/oss_utils.cc
++++ b/third_party/maldoca/src/maldoca/ole/oss_utils.cc
+@@ -28,8 +28,12 @@
+ #include "libxml/SAX2.h"
+ #include "libxml/parserInternals.h"
+ 
++#ifdef MALDOCA_CHROME
++const static int32_t default_max_proto_recursion = 400;
++#else
+ ABSL_FLAG(int32_t, default_max_proto_recursion, 400,
+           "Default max allowed recursion in proto parsing from text.");
++#endif
+ 
+ namespace maldoca {
+ namespace utils {
+@@ -538,8 +542,8 @@ bool ParseProtoFromText(std::string text, int32_t max_recursion,
+ 
+ bool ParseProtoFromText(std::string text,
+                         ::google::protobuf::Message* message) {
+-  return ParseProtoFromText(
+-      text, absl::GetFlag(FLAGS_default_max_proto_recursion), message, nullptr);
++  return ParseProtoFromText(text, default_max_proto_recursion, message,
++                            nullptr);
+ }
+ }  // namespace utils
+ }  // namespace maldoca
+diff --git a/third_party/maldoca/src/maldoca/ole/ppt.cc b/third_party/maldoca/src/maldoca/ole/ppt.cc
+index 5ff55eeb3289..82520e7ce774 100644
+--- a/third_party/maldoca/src/maldoca/ole/ppt.cc
++++ b/third_party/maldoca/src/maldoca/ole/ppt.cc
+@@ -32,6 +32,9 @@
+ #endif
+ #include "zlibwrapper/zlibwrapper.h"
+ 
++#ifdef MALDOCA_IN_CHROMIUM
++const static int32_t ppt_deflated_max_vba_project_size = 2 << 20;
++#else
+ ABSL_FLAG(
+     int32_t, ppt_deflated_max_vba_project_size, 2 << 20,
+     "The maximum deflated VBA Project Storage size (in bytes) we are "
+@@ -40,6 +43,7 @@ ABSL_FLAG(
+     "which can be zlib compressed. The compressed object storage "
+     "header defines a decompressed content size, which we set the maximum "
+     "value of with this flag.");
++#endif
+ 
+ namespace maldoca {
+ 
+@@ -140,14 +144,13 @@ StatusOr<std::string> VBAProjectStorage::ExtractCompressedContent(
+   }
+ 
+   // Resource check
+-  if (decompressed_size >
+-      absl::GetFlag(FLAGS_ppt_deflated_max_vba_project_size)) {
++  if (decompressed_size > ppt_deflated_max_vba_project_size) {
+     auto status = absl::FailedPreconditionError(absl::StrCat(
+         "VBA Project Compressed Storage header defines a decompressed "
+         "size of ",
+         decompressed_size,
+         ", which is larger than the allowed decompressed size: ",
+-        absl::GetFlag(FLAGS_ppt_deflated_max_vba_project_size)));
++        ppt_deflated_max_vba_project_size));
+     LOG(WARNING) << status.message();
+     return status;
+   }
+diff --git a/third_party/maldoca/src/maldoca/ole/proto/excel4_extraction.proto b/third_party/maldoca/src/maldoca/ole/proto/excel4_extraction.proto
+index af1e9f23b197..1d3458efb9a3 100644
+--- a/third_party/maldoca/src/maldoca/ole/proto/excel4_extraction.proto
++++ b/third_party/maldoca/src/maldoca/ole/proto/excel4_extraction.proto
+@@ -20,6 +20,8 @@ syntax = "proto2";
+ 
+ package maldoca;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ import "maldoca/ole/excel4/ast.proto";
+ 
+ // Contains Excel 4.0 macros parsed into an AST.
+diff --git a/third_party/maldoca/src/maldoca/ole/proto/extract_vba_settings.proto b/third_party/maldoca/src/maldoca/ole/proto/extract_vba_settings.proto
+index 6266616a5e5f..53a06498e0a5 100644
+--- a/third_party/maldoca/src/maldoca/ole/proto/extract_vba_settings.proto
++++ b/third_party/maldoca/src/maldoca/ole/proto/extract_vba_settings.proto
+@@ -16,6 +16,8 @@ syntax = "proto2";
+ 
+ package maldoca.vba;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ enum VBAExtractionMethod {
+   EXTRACTION_TYPE_UNKNOWN = 0;
+   // Same as ExtractVBAFromString, but OOXML content is not
+diff --git a/third_party/maldoca/src/maldoca/ole/proto/office.proto b/third_party/maldoca/src/maldoca/ole/proto/office.proto
+index 6e596062d157..2e0b6f6f6f9a 100644
+--- a/third_party/maldoca/src/maldoca/ole/proto/office.proto
++++ b/third_party/maldoca/src/maldoca/ole/proto/office.proto
+@@ -18,7 +18,8 @@ syntax = "proto2";
+ 
+ package maldoca.office;
+ 
+-;
++option optimize_for = LITE_RUNTIME;
++
+ import "maldoca/ole/proto/excel4_extraction.proto";
+ import "maldoca/ole/proto/ole.proto";
+ import "maldoca/ole/proto/ooxml.proto";
+diff --git a/third_party/maldoca/src/maldoca/ole/proto/ole.proto b/third_party/maldoca/src/maldoca/ole/proto/ole.proto
+index c22e7b9ce03a..fc6ce727eecb 100644
+--- a/third_party/maldoca/src/maldoca/ole/proto/ole.proto
++++ b/third_party/maldoca/src/maldoca/ole/proto/ole.proto
+@@ -18,6 +18,8 @@ syntax = "proto2";
+ 
+ package maldoca.ole;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ import "maldoca/ole/proto/excel4_extraction.proto";
+ import "maldoca/ole/proto/vba_extraction.proto";
+ 
+diff --git a/third_party/maldoca/src/maldoca/ole/proto/ole_to_proto_settings.proto b/third_party/maldoca/src/maldoca/ole/proto/ole_to_proto_settings.proto
+index b26c5c3cddd1..4b23a019b65b 100644
+--- a/third_party/maldoca/src/maldoca/ole/proto/ole_to_proto_settings.proto
++++ b/third_party/maldoca/src/maldoca/ole/proto/ole_to_proto_settings.proto
+@@ -16,6 +16,8 @@ syntax = "proto2";
+ 
+ package maldoca.ole;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ message OleToProtoSettings {
+   optional bool include_summary_information = 1 [default = true];
+   optional bool include_vba_code = 2 [default = true];
+diff --git a/third_party/maldoca/src/maldoca/ole/proto/ooxml.proto b/third_party/maldoca/src/maldoca/ole/proto/ooxml.proto
+index ff10f9c7e906..7ae8d62ac3ed 100644
+--- a/third_party/maldoca/src/maldoca/ole/proto/ooxml.proto
++++ b/third_party/maldoca/src/maldoca/ole/proto/ooxml.proto
+@@ -18,6 +18,8 @@ syntax = "proto2";
+ 
+ package maldoca.ooxml;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ import "maldoca/ole/proto/ole.proto";
+ 
+ // File entry inside the OOXML archive.
+diff --git a/third_party/maldoca/src/maldoca/ole/proto/ooxml_to_proto_settings.proto b/third_party/maldoca/src/maldoca/ole/proto/ooxml_to_proto_settings.proto
+index 556f840892f8..eac682e04f61 100644
+--- a/third_party/maldoca/src/maldoca/ole/proto/ooxml_to_proto_settings.proto
++++ b/third_party/maldoca/src/maldoca/ole/proto/ooxml_to_proto_settings.proto
+@@ -16,6 +16,8 @@ syntax = "proto2";
+ 
+ package maldoca.ooxml;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ message OoxmlToProtoSettings {
+   // Extract summary information, document summary information and
+   // relationships from OOXML. Also adds OLE summary information for OLE files
+diff --git a/third_party/maldoca/src/maldoca/ole/proto/vba_extraction.proto b/third_party/maldoca/src/maldoca/ole/proto/vba_extraction.proto
+index c68d52d552fb..e9f4eea167cf 100644
+--- a/third_party/maldoca/src/maldoca/ole/proto/vba_extraction.proto
++++ b/third_party/maldoca/src/maldoca/ole/proto/vba_extraction.proto
+@@ -20,6 +20,8 @@ syntax = "proto2";
+ 
+ package maldoca;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ // A VBACode chunk is the code iself, its filename and the path under
+ // which the file was stored in the OLE input.
+ message VBACodeChunk {
+diff --git a/third_party/maldoca/src/maldoca/ole/vba_extract.cc b/third_party/maldoca/src/maldoca/ole/vba_extract.cc
+index 603e7413a79d..e7c61e33e59e 100644
+--- a/third_party/maldoca/src/maldoca/ole/vba_extract.cc
++++ b/third_party/maldoca/src/maldoca/ole/vba_extract.cc
+@@ -63,6 +63,11 @@ static const uint32_t kSupportAllButOOXMLInputType =
+ static const uint32_t kSupportAllInputType =
+     (kSupportAllButOOXMLInputType | TRY_OOXML);
+ 
++#ifdef MALDOCA_IN_CHROMIUM
++static const int32_t try_input_type = -1;
++static bool extract_malformed_content = true;
++static bool ignore_archive_reader_warning = true;
++#else
+ ABSL_FLAG(int32_t, input_type, -1,
+           "This flag is a bitwise combination of TRY_* enum values and "
+           "can be set to specify what type of input can be expected "
+@@ -79,6 +84,7 @@ ABSL_FLAG(bool, ignore_archive_reader_warning, true,
+           "This flag specifies whether to ignore warning from libarchive. "
+           "For instance, ignore when there is a mismatch between number of "
+           "decompressed bytes specified vs actual.");
++#endif
+ 
+ namespace maldoca {
+ 
+@@ -276,7 +282,8 @@ absl::Status ExtractFromOLE2String(absl::string_view content,
+   absl::Status status = ExtractFromOLE2StringInternal(
+       content, &header, &fat, &root, &dir_entries, &extracted_indices,
+       &directory_stream, &code_modules, dir, code_chunks);
+-  if (!absl::GetFlag(FLAGS_extract_malformed_content)) {
++
++  if (!extract_malformed_content) {
+     return status;
+   } else if (!status.ok()) {
+     DLOG(INFO) << "ExtractDirectoryAndVBAFromString returned: " << status;
+@@ -326,7 +333,8 @@ static absl::Status ExtractFromOOXMLContentInternal(
+     return absl::FailedPreconditionError(
+         "Cannot initialize zip ArchiveHandler");
+   }
+-  handler.SetIgnoreWarning(absl::GetFlag(FLAGS_ignore_archive_reader_warning));
++
++  handler.SetIgnoreWarning(ignore_archive_reader_warning);
+ 
+   DLOG(INFO) << "Evaluating " << original_filename << " (" << content.length()
+              << " bytes) as a OOXML file";
+@@ -567,8 +575,7 @@ void ExtractDirectoryAndVBAFromString(absl::string_view content,
+                                       std::string *error) {
+   error->clear();
+   uint32_t input_type =
+-      (absl::GetFlag(FLAGS_input_type) == -1 ? kSupportAllInputType
+-                                             : absl::GetFlag(FLAGS_input_type));
++      (try_input_type == -1 ? kSupportAllInputType : try_input_type);
+   auto status = ExtractFromStringInternal(input_type, "", content, directory,
+                                           code_chunks);
+   error->assign(std::string(status.message()));
+diff --git a/third_party/maldoca/src/maldoca/pdf_parser/proto/adobe_js.proto b/third_party/maldoca/src/maldoca/pdf_parser/proto/adobe_js.proto
+index 1d1468ba6d1a..023db9ddcee0 100644
+--- a/third_party/maldoca/src/maldoca/pdf_parser/proto/adobe_js.proto
++++ b/third_party/maldoca/src/maldoca/pdf_parser/proto/adobe_js.proto
+@@ -17,6 +17,8 @@ syntax = "proto2";
+ 
+ package maldoca.pdf;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ // Definition for individual Adobe JS object.
+ // For example see the May 2015 Adobe documentation which references object
+ // names, methods, and properties.
+diff --git a/third_party/maldoca/src/maldoca/pdf_parser/proto/exporting_packet.proto b/third_party/maldoca/src/maldoca/pdf_parser/proto/exporting_packet.proto
+index c0b566595826..f26def3e41fc 100644
+--- a/third_party/maldoca/src/maldoca/pdf_parser/proto/exporting_packet.proto
++++ b/third_party/maldoca/src/maldoca/pdf_parser/proto/exporting_packet.proto
+@@ -16,6 +16,8 @@ syntax = "proto2";
+ 
+ package maldoca.pdf;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ import "tensorflow/core/example/example.proto";
+ 
+ message ExportingPacket {
+diff --git a/third_party/maldoca/src/maldoca/pdf_parser/proto/features_packet.proto b/third_party/maldoca/src/maldoca/pdf_parser/proto/features_packet.proto
+index a73877fe0c44..1fd65185de47 100644
+--- a/third_party/maldoca/src/maldoca/pdf_parser/proto/features_packet.proto
++++ b/third_party/maldoca/src/maldoca/pdf_parser/proto/features_packet.proto
+@@ -16,6 +16,8 @@ syntax = "proto2";
+ 
+ package maldoca.pdf;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ import "maldoca/pdf_parser/proto/pdf_feature.proto";
+ 
+ message FeaturesPacket {
+diff --git a/third_party/maldoca/src/maldoca/pdf_parser/proto/parser_packet.proto b/third_party/maldoca/src/maldoca/pdf_parser/proto/parser_packet.proto
+index e61fdd995b50..335acdd55ede 100644
+--- a/third_party/maldoca/src/maldoca/pdf_parser/proto/parser_packet.proto
++++ b/third_party/maldoca/src/maldoca/pdf_parser/proto/parser_packet.proto
+@@ -16,6 +16,8 @@ syntax = "proto2";
+ 
+ package maldoca.pdf;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ import "maldoca/pdf_parser/proto/pdfium_result.proto";
+ 
+ message ParserPacket {
+diff --git a/third_party/maldoca/src/maldoca/pdf_parser/proto/pdf_assets.proto b/third_party/maldoca/src/maldoca/pdf_parser/proto/pdf_assets.proto
+index 6634471e459b..16d7ec92b155 100644
+--- a/third_party/maldoca/src/maldoca/pdf_parser/proto/pdf_assets.proto
++++ b/third_party/maldoca/src/maldoca/pdf_parser/proto/pdf_assets.proto
+@@ -16,6 +16,8 @@ syntax = "proto2";
+ 
+ package maldoca.pdf;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ // The request used by the engine interface to instruct which signals should be
+ // extracted.
+ message PdfAssetsRequest {
+diff --git a/third_party/maldoca/src/maldoca/pdf_parser/proto/pdf_feature.proto b/third_party/maldoca/src/maldoca/pdf_parser/proto/pdf_feature.proto
+index 18db5b422725..47468a4f8bcc 100644
+--- a/third_party/maldoca/src/maldoca/pdf_parser/proto/pdf_feature.proto
++++ b/third_party/maldoca/src/maldoca/pdf_parser/proto/pdf_feature.proto
+@@ -16,6 +16,8 @@ syntax = "proto2";
+ 
+ package maldoca.pdf;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ import "maldoca/pdf_parser/proto/pdf_assets.proto";
+ 
+ // Adobe Javascript functions in ADOBE_$ObjectName_$Method format.
+diff --git a/third_party/maldoca/src/maldoca/pdf_parser/proto/pdfium_result.proto b/third_party/maldoca/src/maldoca/pdf_parser/proto/pdfium_result.proto
+index 122337fcac8f..74b0752451be 100644
+--- a/third_party/maldoca/src/maldoca/pdf_parser/proto/pdfium_result.proto
++++ b/third_party/maldoca/src/maldoca/pdf_parser/proto/pdfium_result.proto
+@@ -16,6 +16,8 @@ syntax = "proto2";
+ 
+ package maldoca.pdf;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ import "maldoca/pdf_parser/proto/pdf_assets.proto";
+ 
+ enum ExtractionQuota {
+diff --git a/third_party/maldoca/src/maldoca/service/proto/doc_type.proto b/third_party/maldoca/src/maldoca/service/proto/doc_type.proto
+index 39ad252ad231..6479a8402bab 100644
+--- a/third_party/maldoca/src/maldoca/service/proto/doc_type.proto
++++ b/third_party/maldoca/src/maldoca/service/proto/doc_type.proto
+@@ -16,6 +16,8 @@ syntax = "proto2";
+ 
+ package maldoca;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ enum DocType {
+   UNKNOWN_TYPE = 0;
+ 
+diff --git a/third_party/maldoca/src/maldoca/service/proto/document_features.proto b/third_party/maldoca/src/maldoca/service/proto/document_features.proto
+index 8e58c22f1791..0f1b1dcf9675 100644
+--- a/third_party/maldoca/src/maldoca/service/proto/document_features.proto
++++ b/third_party/maldoca/src/maldoca/service/proto/document_features.proto
+@@ -18,6 +18,8 @@ syntax = "proto2";
+ 
+ package maldoca;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ import "maldoca/pdf_parser/proto/pdf_feature.proto";
+ import "maldoca/service/proto/doc_type.proto";
+ import "maldoca/vba/antivirus/vba_feature.proto";
+diff --git a/third_party/maldoca/src/maldoca/service/proto/exported_features.proto b/third_party/maldoca/src/maldoca/service/proto/exported_features.proto
+index 6d933e5208f2..159b6fcdad32 100644
+--- a/third_party/maldoca/src/maldoca/service/proto/exported_features.proto
++++ b/third_party/maldoca/src/maldoca/service/proto/exported_features.proto
+@@ -16,6 +16,8 @@ syntax = "proto2";
+ 
+ package maldoca;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ import "maldoca/service/proto/doc_type.proto";
+ import "tensorflow/core/example/example.proto";
+ 
+diff --git a/third_party/maldoca/src/maldoca/service/proto/maldoca_service.proto b/third_party/maldoca/src/maldoca/service/proto/maldoca_service.proto
+index daab712a3284..aedc891ef496 100644
+--- a/third_party/maldoca/src/maldoca/service/proto/maldoca_service.proto
++++ b/third_party/maldoca/src/maldoca/service/proto/maldoca_service.proto
+@@ -21,6 +21,8 @@ syntax = "proto2";
+ 
+ package maldoca;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ option java_multiple_files = true;
+ 
+ // Expected usage:
+diff --git a/third_party/maldoca/src/maldoca/service/proto/parsed_document.proto b/third_party/maldoca/src/maldoca/service/proto/parsed_document.proto
+index 359f7f8bb159..1678e37fe21c 100644
+--- a/third_party/maldoca/src/maldoca/service/proto/parsed_document.proto
++++ b/third_party/maldoca/src/maldoca/service/proto/parsed_document.proto
+@@ -18,6 +18,8 @@ syntax = "proto2";
+ 
+ package maldoca;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ import "maldoca/ole/proto/office.proto";
+ import "maldoca/pdf_parser/proto/pdfium_result.proto";
+ import "maldoca/service/proto/doc_type.proto";
+diff --git a/third_party/maldoca/src/maldoca/service/proto/processing_config.proto b/third_party/maldoca/src/maldoca/service/proto/processing_config.proto
+index d6a14458f319..1644a3270961 100644
+--- a/third_party/maldoca/src/maldoca/service/proto/processing_config.proto
++++ b/third_party/maldoca/src/maldoca/service/proto/processing_config.proto
+@@ -18,6 +18,8 @@ syntax = "proto2";
+ 
+ package maldoca;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ import "maldoca/ole/proto/extract_vba_settings.proto";
+ import "maldoca/ole/proto/ole_to_proto_settings.proto";
+ import "maldoca/ole/proto/ooxml_to_proto_settings.proto";
+diff --git a/third_party/maldoca/src/maldoca/vba/antivirus/vba_feature.proto b/third_party/maldoca/src/maldoca/vba/antivirus/vba_feature.proto
+index 3e8cca507377..ee93f52c4da9 100644
+--- a/third_party/maldoca/src/maldoca/vba/antivirus/vba_feature.proto
++++ b/third_party/maldoca/src/maldoca/vba/antivirus/vba_feature.proto
+@@ -16,6 +16,8 @@ syntax = "proto2";
+ 
+ package maldoca;
+ 
++option optimize_for = LITE_RUNTIME;
++
+ // Suspicious external dlls.
+ // Example:
+ //   This means the VBA code wants to call the "LoadLibraryW" function in
+-- 
+2.32.0.288.g62a8d224e6-goog
+

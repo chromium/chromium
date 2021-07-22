@@ -1,0 +1,18 @@
+Name: MalDocA source for extracting and analyzing features from Office documents.
+Short Name: maldoca
+URL: https://github.com/google/maldoca.git
+Version: 0
+Revision: f79b8b77b658429b8899c3aa488ffbff49a2ab21
+License: Apache 2.0
+License File: src/LICENSE
+Security Critical: yes
+CPEPrefix: unknown
+
+Description:
+This library is used to extract macros from Office documents that have been
+downloaded by user to check their Safe Browsing reputation. It is only used
+by Chromium for desktop.
+
+Local Modifications:
+- Path changes were made to utilize the versions of libraries in Chromium's
+  third_party

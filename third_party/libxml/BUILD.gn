@@ -142,6 +142,7 @@ static_library("libxml") {
     "//third_party/blink/renderer/*",
     "//third_party/fontconfig",
     "//third_party/libxslt",
+    "//third_party/maldoca/*",
   ]
   if (is_ios) {
     foreach(tgt, ios_libxml_visibility_additions) {

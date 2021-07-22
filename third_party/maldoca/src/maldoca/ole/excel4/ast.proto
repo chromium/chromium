@@ -1,0 +1,1300 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// The definition of the Excel 4.0 macro AST.
+
+syntax = "proto2";
+
+package maldoca;
+
+// See
+// https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/e7625cc8-3da9-4154-b449-49cf1bbd9703,
+// https://docs.microsoft.com/en-us/office/open-xml/working-with-formulas,
+// and https://www.openoffice.org/sc/excelfileformat.pdf.
+
+message XlExtractionError {
+  optional string msg = 1;
+}
+
+message XlSheet {
+  // 1-based index.
+  optional uint32 idx = 1;
+  optional XlSheetState state = 2;
+  optional XlSheetType type = 3;
+  optional XlStr name = 4;
+}
+
+enum XlSheetState {
+  XL_SHEET_STATE_UNKNOWN = 0;
+  XL_SHEET_STATE_VISIBLE = 1;
+  XL_SHEET_STATE_HIDDEN = 2;
+  XL_SHEET_STATE_VERY_HIDDEN = 3;
+}
+
+enum XlSheetType {
+  XL_SHEET_TYPE_UNKNOWN = 0;
+  XL_SHEET_TYPE_WORKSHEET = 1;
+  XL_SHEET_TYPE_CHART = 2;
+  XL_SHEET_VISUAL_BASIC_MODULE = 3;
+  XL_SHEET_TYPE_MACRO_SHEET = 4;
+}
+
+// Represents a formula extracted from a Formula record
+// https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/8e3c6978-6c9f-4915-a826-07613204b244.
+message XlCellFormula {
+  // Cell that the formula is located.
+  optional XlCellFormulaAddress cell = 1;
+  optional XlFormula formula = 2;
+  optional XlCellFormulaOptions options = 3;
+  // 1-based sheet index. (0 if invalid index).
+  optional uint32 sheet_idx = 4;
+}
+
+message XlCellFormulaAddress {
+  // 0-65535.
+  optional uint32 row_idx = 1;
+  // 0-65535.
+  optional uint32 col_idx = 2;
+}
+
+message XlCellFormulaOptions {
+  optional bool is_recalculated_always = 1;
+  optional bool is_calculated_on_open = 2;
+}
+
+// A formula is a parsed expression. Excel documents store formulas in BIFF
+// objects or within XML files. In BIFF objects, they are contained within
+// different types of records (e.g. Lbl and Formula records). See
+// https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/e7625cc8-3da9-4154-b449-49cf1bbd9703.
+// Within XML files, they are contained in the f tag. See
+// https://docs.microsoft.com/en-us/dotnet/api/documentformat.openxml.spreadsheet.cellformula?view=openxml-2.8.1
+// (and
+// https://docs.microsoft.com/en-us/openspecs/office_standards/ms-oi29500/8a3a109c-d769-43ac-a449-8526a2ea40dc
+// for normal cell formula documentation).
+message XlFormula {
+  optional XlExpression expression = 1;
+  // Errors while extracting the formula.
+  repeated XlExtractionError extraction_errors = 2;
+}
+
+message XlDefinition {
+  optional XlName name = 1;
+  optional XlFormula formula = 2;
+  // 1-based sheet index. 0 == global defined name.
+  optional uint32 sheet_idx = 3;
+  // True if the definition refers to a macro in the VB project.
+  optional bool is_vb = 4;
+  // True if the definition's formula is hidden.
+  optional bool is_hidden = 5;
+  // For BIFF8, this is just the order that the XlDefinition appeared. e.g.
+  // XlDefinition --> id = 0
+  // XlDefinition --> id = 1
+  // ...
+  optional uint32 id = 6;
+}
+
+message XlName {
+  oneof kind {
+    XlStr user_defined = 1;
+    XlBuiltinName builtin = 2;
+  }
+}
+
+message XlExternalDefinition {
+  optional XlName name = 1;
+  oneof kind {
+    XlDdeOleLink ole_dde_link = 2;
+    XlExternalName external_name = 3;
+    XlAddinFunction addin = 4;
+  }
+  // For BIFF8, this is just the order that the XlExternalDefinition appeared.
+  // e.g. XlExternalDefinition --> id = 0 XlExternalDefinition --> id = 1
+  // ...
+  optional uint32 id = 6;
+}
+
+message XlDdeOleLink {}
+
+message XlAddinFunction {}
+
+message XlExternalName {
+  optional XlExternalNameFormula formula = 1;
+  // Set to true when the 'cb' field in the ExtNameParsedFormula structure is 0.
+  // https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/bcdeb725-04eb-4432-ab35-0d38dd06a7cf
+  optional bool does_not_exist = 2;
+}
+
+message XlExternalNameFormula {
+  oneof kind {
+    XlOperandRef ref = 1;
+    XlOperandArea area = 2;
+    XlConstantErr err = 3;
+  }
+  // Errors while extracting the formula.
+  repeated XlExtractionError extraction_errors = 4;
+}
+
+enum XlBuiltinName {
+  XL_BUILTIN_NAME_CONSOLIDATE_AREA = 0x00;
+  XL_BUILTIN_NAME_AUTO_OPEN = 0x01;
+  XL_BUILTIN_NAME_AUTO_CLOSE = 0x02;
+  XL_BUILTIN_NAME_EXTRACT = 0x03;
+  XL_BUILTIN_NAME_DATABASE = 0x04;
+  XL_BUILTIN_NAME_CRITERIA = 0x05;
+  XL_BUILTIN_NAME_PRINT_AREA = 0x06;
+  XL_BUILTIN_NAME_PRINT_TITLES = 0x07;
+  XL_BUILTIN_NAME_RECORDER = 0x08;
+  XL_BUILTIN_NAME_DATA_FORM = 0x09;
+  XL_BUILTIN_NAME_AUTO_ACTIVATE = 0x0A;
+  XL_BUILTIN_NAME_AUTO_DEACTIVATE = 0x0B;
+  XL_BUILTIN_NAME_SHEET_TITLE = 0x0C;
+  XL_BUILTIN_NAME_FILTER_DATABASE = 0x0D;
+}
+
+message XlExpression {
+  oneof kind {
+    XlUnaryExpr unary = 1;
+    XlBinaryExpr binary = 2;
+    XlFunctionExpr function = 3;
+    XlConstantExpr constant = 4;
+    XlOperand operand = 5;
+    XlControl control = 6;
+  }
+}
+
+message XlUnaryExpr {
+  optional XlUnaryOp op = 1;
+  optional XlExpression operand = 2;
+}
+
+enum XlUnaryOp {
+  XL_UNARY_OP_INVALID = 0;
+  // Represented by +. No effect on operand.
+  XL_UNARY_OP_PLUS = 1;
+  // Represented by -. Negation.
+  XL_UNARY_OP_MINUS = 2;
+  // Divides the operand by 100. e.g. 1%.
+  XL_UNARY_OP_PERCENT = 3;
+}
+
+message XlBinaryExpr {
+  optional XlBinaryOp op = 1;
+  optional XlExpression lhs = 2;
+  optional XlExpression rhs = 3;
+}
+
+enum XlBinaryOp {
+  XL_BINARY_OP_INVALID = 0;
+  // Represented by +. Addition operator.
+  XL_BINARY_OP_ADD = 1;
+  // Represented by -. Subtraction operator.
+  XL_BINARY_OP_SUB = 2;
+  // Represented by *. Multiplication operator.
+  XL_BINARY_OP_MUL = 3;
+  // Represented by /. Division operator.
+  XL_BINARY_OP_DIV = 4;
+  // Represented by ^. Exponentiation operator.
+  XL_BINARY_OP_POWER = 5;
+  // Represented by &. Concatenation operator.
+  XL_BINARY_OP_CONCAT = 6;
+  // Represented by <. Less than operator.
+  XL_BINARY_OP_LT = 7;
+  // Represented by <=. Less than or equal operator.
+  XL_BINARY_OP_LE = 8;
+  // Represented by =. Equality operator.
+  XL_BINARY_OP_EQ = 9;
+  // Represented by >=. Greater than or equal operator.
+  XL_BINARY_OP_GE = 10;
+  // Represented by >. Greater than operator.
+  XL_BINARY_OP_GT = 11;
+  // Represented by <>. Inequality operator.
+  XL_BINARY_OP_NE = 12;
+  // Represented by a space. Returns the intersected range of two ranges.
+  XL_BINARY_OP_ISECT = 13;
+  // Represeted by the system's separator sign, e.g. comma. Treats two ranges as
+  // one operator. The result is basically the union plus the intersection of
+  // the two ranges.
+  XL_BINARY_OP_LIST = 14;
+  // Represented by the colon sign. Expression returns the minimal rectangular
+  // range that contains both parameters.
+  XL_BINARY_OP_RANGE = 15;
+}
+
+message XlFunctionExpr {
+  // Built-in sheet function or macro command.
+  optional XlBuiltinFunctionType builtin = 1;
+  repeated XlExpression args = 2;
+}
+
+// See
+// https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/00b5dd7d-51ca-4938-b7b7-483fe0e5933b
+// and
+// https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/0b8acba5-86d2-4854-836e-0afaee743d44.
+// We store builtin functions and macro commands in the same enum in the AST;
+// however macro commands need to be OR'ed with 0x8000 so that they don't
+// overlap with builtin functions. We do this because for tFuncVar tokens, we
+// just directly use the function index stored in data, which has its high-order
+// bit of a 16-bit value set to 1 already (to denote whether or not the index
+// refers to a builtin or macro command).
+enum XlBuiltinFunctionType {
+  XL_COUNT = 0x0000;
+  XL_IF = 0x0001;
+  XL_ISNA = 0x0002;
+  XL_ISERROR = 0x0003;
+  XL_SUM = 0x0004;
+  XL_AVERAGE = 0x0005;
+  XL_MIN = 0x0006;
+  XL_MAX = 0x0007;
+  XL_ROW = 0x0008;
+  XL_COLUMN = 0x0009;
+  XL_NA = 0x000A;
+  XL_NPV = 0x000B;
+  XL_STDEV = 0x000C;
+  XL_DOLLAR = 0x000D;
+  XL_FIXED = 0x000E;
+  XL_SIN = 0x000F;
+  XL_COS = 0x0010;
+  XL_TAN = 0x0011;
+  XL_ATAN = 0x0012;
+  XL_PI = 0x0013;
+  XL_SQRT = 0x0014;
+  XL_EXP = 0x0015;
+  XL_LN = 0x0016;
+  XL_LOG10 = 0x0017;
+  XL_ABS = 0x0018;
+  XL_INT = 0x0019;
+  XL_SIGN = 0x001A;
+  XL_ROUND = 0x001B;
+  XL_LOOKUP = 0x001C;
+  XL_INDEX = 0x001D;
+  XL_REPT = 0x001E;
+  XL_MID = 0x001F;
+  XL_LEN = 0x0020;
+  XL_VALUE = 0x0021;
+  XL_TRUE = 0x0022;
+  XL_FALSE = 0x0023;
+  XL_AND = 0x0024;
+  XL_OR = 0x0025;
+  XL_NOT = 0x0026;
+  XL_MOD = 0x0027;
+  XL_DCOUNT = 0x0028;
+  XL_DSUM = 0x0029;
+  XL_DAVERAGE = 0x002A;
+  XL_DMIN = 0x002B;
+  XL_DMAX = 0x002C;
+  XL_DSTDEV = 0x002D;
+  XL_VAR = 0x002E;
+  XL_DVAR = 0x002F;
+  XL_TEXT = 0x0030;
+  XL_LINEST = 0x0031;
+  XL_TREND = 0x0032;
+  XL_LOGEST = 0x0033;
+  XL_GROWTH = 0x0034;
+  XL_GOTO = 0x0035;
+  XL_HALT = 0x0036;
+  XL_RETURN = 0x0037;
+  XL_PV = 0x0038;
+  XL_FV = 0x0039;
+  XL_NPER = 0x003A;
+  XL_PMT = 0x003B;
+  XL_RATE = 0x003C;
+  XL_MIRR = 0x003D;
+  XL_IRR = 0x003E;
+  XL_RAND = 0x003F;
+  XL_MATCH = 0x0040;
+  XL_DATE = 0x0041;
+  XL_TIME = 0x0042;
+  XL_DAY = 0x0043;
+  XL_MONTH = 0x0044;
+  XL_YEAR = 0x0045;
+  XL_WEEKDAY = 0x0046;
+  XL_HOUR = 0x0047;
+  XL_MINUTE = 0x0048;
+  XL_SECOND = 0x0049;
+  XL_NOW = 0x004A;
+  XL_AREAS = 0x004B;
+  XL_ROWS = 0x004C;
+  XL_COLUMNS = 0x004D;
+  XL_OFFSET = 0x004E;
+  XL_ABSREF = 0x004F;
+  XL_RELREF = 0x0050;
+  XL_ARGUMENT = 0x0051;
+  XL_SEARCH = 0x0052;
+  XL_TRANSPOSE = 0x0053;
+  XL_ERROR = 0x0054;
+  XL_STEP = 0x0055;
+  XL_TYPE = 0x0056;
+  XL_ECHO = 0x0057;
+  XL_SET_NAME = 0x0058;
+  XL_CALLER = 0x0059;
+  XL_DEREF = 0x005A;
+  XL_WINDOWS = 0x005B;
+  XL_SERIES = 0x005C;
+  XL_DOCUMENTS = 0x005D;
+  XL_ACTIVE_CELL = 0x005E;
+  XL_SELECTION = 0x005F;
+  XL_RESULT = 0x0060;
+  XL_ATAN2 = 0x0061;
+  XL_ASIN = 0x0062;
+  XL_ACOS = 0x0063;
+  XL_CHOOSE = 0x0064;
+  XL_HLOOKUP = 0x0065;
+  XL_VLOOKUP = 0x0066;
+  XL_LINKS = 0x0067;
+  XL_INPUT = 0x0068;
+  XL_ISREF = 0x0069;
+  XL_GET_FORMULA = 0x006A;
+  XL_GET_NAME = 0x006B;
+  XL_SET_VALUE = 0x006C;
+  XL_LOG = 0x006D;
+  XL_EXEC = 0x006E;
+  XL_CHAR = 0x006F;
+  XL_LOWER = 0x0070;
+  XL_UPPER = 0x0071;
+  XL_PROPER = 0x0072;
+  XL_LEFT = 0x0073;
+  XL_RIGHT = 0x0074;
+  XL_EXACT = 0x0075;
+  XL_TRIM = 0x0076;
+  XL_REPLACE = 0x0077;
+  XL_SUBSTITUTE = 0x0078;
+  XL_CODE = 0x0079;
+  XL_NAMES = 0x007A;
+  XL_DIRECTORY = 0x007B;
+  XL_FIND = 0x007C;
+  XL_CELL = 0x007D;
+  XL_ISERR = 0x007E;
+  XL_ISTEXT = 0x007F;
+  XL_ISNUMBER = 0x0080;
+  XL_ISBLANK = 0x0081;
+  XL_T = 0x0082;
+  XL_N = 0x0083;
+  XL_FOPEN = 0x0084;
+  XL_FCLOSE = 0x0085;
+  XL_FSIZE = 0x0086;
+  XL_FREADLN = 0x0087;
+  XL_FREAD = 0x0088;
+  XL_FWRITELN = 0x0089;
+  XL_FWRITE = 0x008A;
+  XL_FPOS = 0x008B;
+  XL_DATEVALUE = 0x008C;
+  XL_TIMEVALUE = 0x008D;
+  XL_SLN = 0x008E;
+  XL_SYD = 0x008F;
+  XL_DDB = 0x0090;
+  XL_GET_DEF = 0x0091;
+  XL_REFTEXT = 0x0092;
+  XL_TEXTREF = 0x0093;
+  XL_INDIRECT = 0x0094;
+  XL_REGISTER = 0x0095;
+  XL_CALL = 0x0096;
+  XL_ADD_BAR = 0x0097;
+  XL_ADD_MENU = 0x0098;
+  XL_ADD_COMMAND = 0x0099;
+  XL_ENABLE_COMMAND = 0x009A;
+  XL_CHECK_COMMAND = 0x009B;
+  XL_RENAME_COMMAND = 0x009C;
+  XL_SHOW_BAR = 0x009D;
+  XL_DELETE_MENU = 0x009E;
+  XL_DELETE_COMMAND = 0x009F;
+  XL_GET_CHART_ITEM = 0x00A0;
+  XL_DIALOG_BOX = 0x00A1;
+  XL_CLEAN = 0x00A2;
+  XL_MDETERM = 0x00A3;
+  XL_MINVERSE = 0x00A4;
+  XL_MMULT = 0x00A5;
+  XL_FILES = 0x00A6;
+  XL_IPMT = 0x00A7;
+  XL_PPMT = 0x00A8;
+  XL_COUNTA = 0x00A9;
+  XL_CANCEL_KEY = 0x00AA;
+  XL_FOR = 0x00AB;
+  XL_WHILE = 0x00AC;
+  XL_BREAK = 0x00AD;
+  XL_NEXT = 0x00AE;
+  XL_INITIATE = 0x00AF;
+  XL_REQUEST = 0x00B0;
+  XL_POKE = 0x00B1;
+  XL_EXECUTE = 0x00B2;
+  XL_TERMINATE = 0x00B3;
+  XL_RESTATE = 0x00B4;
+  XL_HELP = 0x00B5;
+  XL_GET_BAR = 0x00B6;
+  XL_PRODUCT = 0x00B7;
+  XL_FACT = 0x00B8;
+  XL_GET_CELL = 0x00B9;
+  XL_GET_WORKSPACE = 0x00BA;
+  XL_GET_WINDOW = 0x00BB;
+  XL_GET_DOCUMENT = 0x00BC;
+  XL_DPRODUCT = 0x00BD;
+  XL_ISNONTEXT = 0x00BE;
+  XL_GET_NOTE = 0x00BF;
+  XL_NOTE = 0x00C0;
+  XL_STDEVP = 0x00C1;
+  XL_VARP = 0x00C2;
+  XL_DSTDEVP = 0x00C3;
+  XL_DVARP = 0x00C4;
+  XL_TRUNC = 0x00C5;
+  XL_ISLOGICAL = 0x00C6;
+  XL_DCOUNTA = 0x00C7;
+  XL_DELETE_BAR = 0x00C8;
+  XL_UNREGISTER = 0x00C9;
+  XL_USDOLLAR = 0x00CC;
+  XL_FINDB = 0x00CD;
+  XL_SEARCHB = 0x00CE;
+  XL_REPLACEB = 0x00CF;
+  XL_LEFTB = 0x00D0;
+  XL_RIGHTB = 0x00D1;
+  XL_MIDB = 0x00D2;
+  XL_LENB = 0x00D3;
+  XL_ROUNDUP = 0x00D4;
+  XL_ROUNDDOWN = 0x00D5;
+  XL_ASC = 0x00D6;
+  XL_DBCS = 0x00D7;
+  XL_RANK = 0x00D8;
+  XL_ADDRESS = 0x00DB;
+  XL_DAYS360 = 0x00DC;
+  XL_TODAY = 0x00DD;
+  XL_VDB = 0x00DE;
+  XL_ELSE = 0x00DF;
+  XL_ELSE_IF = 0x00E0;
+  XL_END_IF = 0x00E1;
+  XL_FOR_CELL = 0x00E2;
+  XL_MEDIAN = 0x00E3;
+  XL_SUMPRODUCT = 0x00E4;
+  XL_SINH = 0x00E5;
+  XL_COSH = 0x00E6;
+  XL_TANH = 0x00E7;
+  XL_ASINH = 0x00E8;
+  XL_ACOSH = 0x00E9;
+  XL_ATANH = 0x00EA;
+  XL_DGET = 0x00EB;
+  XL_CREATE_OBJECT = 0x00EC;
+  XL_VOLATILE = 0x00ED;
+  XL_LAST_ERROR = 0x00EE;
+  XL_CUSTOM_UNDO = 0x00EF;
+  XL_CUSTOM_REPEAT = 0x00F0;
+  XL_FORMULA_CONVERT = 0x00F1;
+  XL_GET_LINK_INFO = 0x00F2;
+  XL_TEXT_BOX = 0x00F3;
+  XL_INFO = 0x00F4;
+  XL_GROUP = 0x00F5;
+  XL_GET_OBJECT = 0x00F6;
+  XL_DB = 0x00F7;
+  XL_PAUSE = 0x00F8;
+  XL_RESUME = 0x00FB;
+  XL_FREQUENCY = 0x00FC;
+  XL_ADD_TOOLBAR = 0x00FD;
+  XL_DELETE_TOOLBAR = 0x00FE;
+  XL_USER_DEFINED_FUNCTION = 0x00FF;
+  XL_RESET_TOOLBAR = 0x0100;
+  XL_EVALUATE = 0x0101;
+  XL_GET_TOOLBAR = 0x0102;
+  XL_GET_TOOL = 0x0103;
+  XL_SPELLING_CHECK = 0x0104;
+  XL_ERROR_TYPE = 0x0105;
+  XL_APP_TITLE = 0x0106;
+  XL_WINDOW_TITLE = 0x0107;
+  XL_SAVE_TOOLBAR = 0x0108;
+  XL_ENABLE_TOOL = 0x0109;
+  XL_PRESS_TOOL = 0x010A;
+  XL_REGISTER_ID = 0x010B;
+  XL_GET_WORKBOOK = 0x010C;
+  XL_AVEDEV = 0x010D;
+  XL_BETADIST = 0x010E;
+  XL_GAMMALN = 0x010F;
+  XL_BETAINV = 0x0110;
+  XL_BINOMDIST = 0x0111;
+  XL_CHIDIST = 0x0112;
+  XL_CHIINV = 0x0113;
+  XL_COMBIN = 0x0114;
+  XL_CONFIDENCE = 0x0115;
+  XL_CRITBINOM = 0x0116;
+  XL_EVEN = 0x0117;
+  XL_EXPONDIST = 0x0118;
+  XL_FDIST = 0x0119;
+  XL_FINV = 0x011A;
+  XL_FISHER = 0x011B;
+  XL_FISHERINV = 0x011C;
+  XL_FLOOR = 0x011D;
+  XL_GAMMADIST = 0x011E;
+  XL_GAMMAINV = 0x011F;
+  XL_CEILING = 0x0120;
+  XL_HYPGEOMDIST = 0x0121;
+  XL_LOGNORMDIST = 0x0122;
+  XL_LOGINV = 0x0123;
+  XL_NEGBINOMDIST = 0x0124;
+  XL_NORMDIST = 0x0125;
+  XL_NORMSDIST = 0x0126;
+  XL_NORMINV = 0x0127;
+  XL_NORMSINV = 0x0128;
+  XL_STANDARDIZE = 0x0129;
+  XL_ODD = 0x012A;
+  XL_PERMUT = 0x012B;
+  XL_POISSON = 0x012C;
+  XL_TDIST = 0x012D;
+  XL_WEIBULL = 0x012E;
+  XL_SUMXMY2 = 0x012F;
+  XL_SUMX2MY2 = 0x0130;
+  XL_SUMX2PY2 = 0x0131;
+  XL_CHITEST = 0x0132;
+  XL_CORREL = 0x0133;
+  XL_COVAR = 0x0134;
+  XL_FORECAST = 0x0135;
+  XL_FTEST = 0x0136;
+  XL_INTERCEPT = 0x0137;
+  XL_PEARSON = 0x0138;
+  XL_RSQ = 0x0139;
+  XL_STEYX = 0x013A;
+  XL_SLOPE = 0x013B;
+  XL_TTEST = 0x013C;
+  XL_PROB = 0x013D;
+  XL_DEVSQ = 0x013E;
+  XL_GEOMEAN = 0x013F;
+  XL_HARMEAN = 0x0140;
+  XL_SUMSQ = 0x0141;
+  XL_KURT = 0x0142;
+  XL_SKEW = 0x0143;
+  XL_ZTEST = 0x0144;
+  XL_LARGE = 0x0145;
+  XL_SMALL = 0x0146;
+  XL_QUARTILE = 0x0147;
+  XL_PERCENTILE = 0x0148;
+  XL_PERCENTRANK = 0x0149;
+  XL_MODE = 0x014A;
+  XL_TRIMMEAN = 0x014B;
+  XL_TINV = 0x014C;
+  XL_MOVIE_COMMAND = 0x014E;
+  XL_GET_MOVIE = 0x014F;
+  XL_CONCATENATE = 0x0150;
+  XL_POWER = 0x0151;
+  XL_PIVOT_ADD_DATA = 0x0152;
+  XL_GET_PIVOT_TABLE = 0x0153;
+  XL_GET_PIVOT_FIELD = 0x0154;
+  XL_GET_PIVOT_ITEM = 0x0155;
+  XL_RADIANS = 0x0156;
+  XL_DEGREES = 0x0157;
+  XL_SUBTOTAL = 0x0158;
+  XL_SUMIF = 0x0159;
+  XL_COUNTIF = 0x015A;
+  XL_COUNTBLANK = 0x015B;
+  XL_SCENARIO_GET = 0x015C;
+  XL_OPTIONS_LISTS_GET = 0x015D;
+  XL_ISPMT = 0x015E;
+  XL_DATEDIF = 0x015F;
+  XL_DATESTRING = 0x0160;
+  XL_NUMBERSTRING = 0x0161;
+  XL_ROMAN = 0x0162;
+  XL_OPEN_DIALOG = 0x0163;
+  XL_SAVE_DIALOG = 0x0164;
+  XL_VIEWGET = 0x0165;
+  XL_GET_PIVOT_DATA = 0x0166;
+  XL_HYPERLINK = 0x0167;
+  XL_PHONETIC = 0x0168;
+  XL_AVERAGEA = 0x0169;
+  XL_MAXA = 0x016A;
+  XL_MINA = 0x016B;
+  XL_STDEVPA = 0x016C;
+  XL_VARPA = 0x016D;
+  XL_STDEVA = 0x016E;
+  XL_VARA = 0x016F;
+  XL_BAHTTEXT = 0x0170;
+  XL_THAIDAYOFWEEK = 0x0171;
+  XL_THAIDIGIT = 0x0172;
+  XL_THAIMONTHOFYEAR = 0x0173;
+  XL_THAINUMSOUND = 0x0174;
+  XL_THAINUMSTRING = 0x0175;
+  XL_THAISTRINGLENGTH = 0x0176;
+  XL_ISTHAIDIGIT = 0x0177;
+  XL_ROUNDBAHTDOWN = 0x0178;
+  XL_ROUNDBAHTUP = 0x0179;
+  XL_THAIYEAR = 0x017A;
+  XL_RTD = 0x017B;
+  // The following functions are macro commands from
+  // https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/0b8acba5-86d2-4854-836e-0afaee743d44.
+  // Note that the functions listed below are off by 0x8000. As you can see in
+  // the description of PtgFuncVar
+  // (https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/5d105171-6b73-4f40-a7cd-6bf2aae15e83),
+  // the values are always prepended by a bit equal to 1. Hence 0x8000.
+  XL_BEEP = 0x8000;
+  XL_OPEN = 0x8001;
+  XL_OPEN_LINKS = 0x8002;
+  XL_CLOSE_ALL = 0x8003;
+  XL_SAVE = 0x8004;
+  XL_SAVE_AS = 0x8005;
+  XL_FILE_DELETE = 0x8006;
+  XL_PAGE_SETUP = 0x8007;
+  XL_PRINT = 0x8008;
+  XL_PRINTER_SETUP = 0x8009;
+  XL_QUIT = 0x800A;
+  XL_NEW_WINDOW = 0x800B;
+  XL_ARRANGE_ALL = 0x800C;
+  XL_WINDOW_SIZE = 0x800D;
+  XL_WINDOW_MOVE = 0x800E;
+  XL_FULL = 0x800F;
+  XL_CLOSE = 0x8010;
+  XL_RUN = 0x8011;
+  XL_SET_PRINT_AREA = 0x8016;
+  XL_SET_PRINT_TITLES = 0x8017;
+  XL_SET_PAGE_BREAK = 0x8018;
+  XL_REMOVE_PAGE_BREAK = 0x8019;
+  XL_FONT = 0x801A;
+  XL_DISPLAY = 0x801B;
+  XL_PROTECT_DOCUMENT = 0x801C;
+  XL_PRECISION = 0x801D;
+  XL_A1_R1C1 = 0x801E;
+  XL_CALCULATE_NOW = 0x801F;
+  XL_CALCULATION = 0x8020;
+  XL_DATA_FIND = 0x8022;
+  XL_EXTRACT = 0x8023;
+  XL_DATA_DELETE = 0x8024;
+  XL_SET_DATABASE = 0x8025;
+  XL_SET_CRITERIA = 0x8026;
+  XL_SORT = 0x8027;
+  XL_DATA_SERIES = 0x8028;
+  XL_TABLE = 0x8029;
+  XL_FORMAT_NUMBER = 0x802A;
+  XL_ALIGNMENT = 0x802B;
+  XL_STYLE = 0x802C;
+  XL_BORDER = 0x802D;
+  XL_CELL_PROTECTION = 0x802E;
+  XL_COLUMN_WIDTH = 0x802F;
+  XL_UNDO = 0x8030;
+  XL_CUT = 0x8031;
+  XL_COPY = 0x8032;
+  XL_PASTE = 0x8033;
+  XL_CLEAR = 0x8034;
+  XL_PASTE_SPECIAL = 0x8035;
+  XL_EDIT_DELETE = 0x8036;
+  XL_INSERT = 0x8037;
+  XL_FILL_RIGHT = 0x8038;
+  XL_FILL_DOWN = 0x8039;
+  XL_DEFINE_NAME = 0x803D;
+  XL_CREATE_NAMES = 0x80E;
+  XL_FORMULA_GOTO = 0x803F;
+  XL_FORMULA_FIND = 0x8040;
+  XL_SELECT_LAST_CELL = 0x8041;
+  XL_SHOW_ACTIVE_CELL = 0x8042;
+  XL_GALLERY_AREA = 0x8043;
+  XL_GALLERY_BAR = 0x8044;
+  XL_GALLERY_COLUMN = 0x8045;
+  XL_GALLERY_LINE = 0x8046;
+  XL_GALLERY_PIE = 0x8047;
+  XL_GALLERY_SCATTER = 0x8048;
+  XL_COMBINATION = 0x8049;
+  XL_PREFERRED = 0x0804A;
+  XL_ADD_OVERLAY = 0x804B;
+  XL_GRIDLINES = 0x804C;
+  XL_SET_PREFERRED = 0x804D;
+  XL_AXES = 0x804E;
+  XL_LEGEND = 0x804F;
+  XL_ATTACH_TEXT = 0x8050;
+  XL_ADD_ARROW = 0x8051;
+  XL_SELECT_CHART = 0x8052;
+  XL_SELECT_PLOT_AREA = 0x8053;
+  XL_PATTERNS = 0x8054;
+  XL_MAIN_CHART = 0x8055;
+  XL_OVERLAY = 0x8056;
+  XL_SCALE = 0x8057;
+  XL_FORMAT_LEGEND = 0x8058;
+  XL_FORMAT_TEXT = 0x8059;
+  XL_EDIT_REPEAT = 0x805A;
+  XL_PARSE = 0x805B;
+  XL_JUSTIFY = 0x805C;
+  XL_HIDE = 0x805D;
+  XL_UNHIDE = 0x805E;
+  XL_WORKSPACE = 0x805F;
+  XL_FORMULA = 0x8060;
+  XL_FORMULA_FILL = 0x8061;
+  XL_FORMULA_ARRAY = 0x8062;
+  XL_FORMULA_DATA_FIND_NEXT = 0x8063;
+  XL_FORMULA_DATA_FIND_PREV = 0x8064;
+  XL_FORMULA_FIND_NEXT = 0x8065;
+  XL_FORMULA_FIND_PREV = 0x8066;
+  XL_ACTIVATE = 0x8067;
+  XL_ACTIVATE_NEXT = 0x8068;
+  XL_ACTIVATE_PREV = 0x8069;
+  XL_UNLOCKED_NEXT = 0x806A;
+  XL_UNLOCKED_PREV = 0x806B;
+  XL_COPY_PICTURE = 0x806C;
+  XL_SELECT = 0x806D;
+  XL_DELETE_NAME = 0x806E;
+  XL_DELETE_FORMAT = 0x806F;
+  XL_VLINE = 0x8070;
+  XL_HLINE = 0x8071;
+  XL_VPAGE = 0x8072;
+  XL_HPAGE = 0x8073;
+  XL_VSCROLL = 0x8074;
+  XL_HSCROLL = 0x8075;
+  XL_ALERT = 0x8076;
+  XL_NEW = 0x8077;
+  XL_CANCEL_COPY = 0x8078;
+  XL_SHOW_CLIPBOARD = 0x8079;
+  XL_MESSAGE = 0x807A;
+  XL_PASTE_LINK = 0x807C;
+  XL_APP_ACTIVATE = 0x807D;
+  XL_DELETE_ARROW = 0x807E;
+  XL_ROW_HEIGHT = 0x807F;
+  XL_FORMAT_MOVE = 0x8080;
+  XL_FORMAT_SIZE = 0x8081;
+  XL_FORMULA_REPLACE = 0x8082;
+  XL_SEND_KEYS = 0x8083;
+  XL_SELECT_SPECIAL = 0x8084;
+  XL_APPLY_NAMES = 0x8085;
+  XL_REPLACE_FONT = 0x8086;
+  XL_FREEZE_PANES = 0x8087;
+  XL_SHOW_INFO = 0x8088;
+  XL_SPLIT = 0x8089;
+  XL_ON_WINDOW = 0x808A;
+  XL_ON_DATA = 0x808B;
+  XL_DISABLE_INPUT = 0x808C;
+  XL_OUTLINE = 0x808E;
+  XL_LIST_NAMES = 0x808F;
+  XL_FILE_CLOSE = 0x8090;
+  XL_SAVE_WORKBOOK = 0x8091;
+  XL_DATA_FORM = 0x8092;
+  XL_COPY_CHART = 0x8093;
+  XL_ON_TIME = 0x8094;
+  XL_WAIT = 0x8095;
+  XL_FORMAT_FONT = 0x8096;
+  XL_FILL_UP = 0x8097;
+  XL_FILL_LEFT = 0x8098;
+  XL_DELETE_OVERLAY = 0x8099;
+  XL_SHORT_MENUS = 0x809B;
+  XL_SET_UPDATE_STATUS = 0x809F;
+  XL_COLOR_PALETTE = 0x80A1;
+  XL_DELETE_STYLE = 0x80A2;
+  XL_WINDOW_RESTORE = 0x80A3;
+  XL_WINDOW_MAXIMIZE = 0x80A4;
+  XL_CHANGE_LINK = 0x80A6;
+  XL_CALCULATE_DOCUMENT = 0x80A7;
+  XL_ON_KEY = 0x80A8;
+  XL_APP_RESTORE = 0x80A9;
+  XL_APP_MOVE = 0x80AA;
+  XL_APP_SIZE = 0x80AB;
+  XL_APP_MINIMIZE = 0x80AC;
+  XL_APP_MAXIMIZE = 0x80AD;
+  XL_BRING_TO_FRONT = 0x80AE;
+  XL_SEND_TO_BACK = 0x80AF;
+  XL_MAIN_CHART_TYPE = 0x80B9;
+  XL_OVERLAY_CHART_TYPE = 0x80BA;
+  XL_SELECT_END = 0x80BB;
+  XL_OPEN_MAIL = 0x80BC;
+  XL_SEND_MAIL = 0x80BD;
+  XL_STANDARD_FONT = 0x80BE;
+  XL_CONSOLIDATE = 0x80BF;
+  XL_SORT_SPECIAL = 0x80C0;
+  XL_GALLERY_3D_AREA = 0x80C1;
+  XL_GALLERY_3D_COLUMN = 0x80C2;
+  XL_GALLERY_3D_LINE = 0x80C3;
+  XL_GALLERY_3D_PIE = 0x80C4;
+  XL_VIEW_3D = 0x80C5;
+  XL_GOAL_SEEK = 0x80C6;
+  XL_WORKGROUP = 0x80C7;
+  XL_FILL_GROUP = 0x80C8;
+  XL_UPDATE_LINK = 0x80C9;
+  XL_PROMOTE = 0x80CA;
+  XL_DEMOTE = 0x80CB;
+  XL_SHOW_DETAIL = 0x80CC;
+  XL_UNGROUP = 0x80CE;
+  XL_OBJECT_PRPOERTIES = 0x80CF;
+  XL_SAVE_NEW_OBJECT = 0x80D0;
+  XL_SHARE = 0x80D1;
+  XL_SHARE_NAME = 0x80D2;
+  XL_DUPLICATE = 0x80D3;
+  XL_APPLY_STYLE = 0x80D4;
+  XL_ASSIGN_TO_OBJECT = 0x80D5;
+  XL_OBJECT_PROTECTION = 0x80D6;
+  XL_HIDE_OBJECT = 0x80D7;
+  XL_SET_EXTRACT = 0x80D8;
+  XL_CREATE_PUBLISHER = 0x80D9;
+  XL_SUBSCRIBE_TO = 0x80DA;
+  XL_ATTRIBUTES = 0x80DB;
+  XL_SHOW_TOOLBAR = 0x80DC;
+  XL_PRINT_PREVIEW = 0x80DE;
+  XL_EDIT_COLOR = 0x80DF;
+  XL_SHOW_LEVELS = 0x80E0;
+  XL_FORMAT_MAIN = 0x80E1;
+  XL_FORMAT_OVERLAY = 0x80E2;
+  XL_ON_RECALC = 0x80E3;
+  XL_EDIT_SERIES = 0x80E4;
+  XL_DEFINE_STYLE = 0x80E5;
+  XL_LINE_PRINT = 0x80F0;
+  XL_ENTER_DATA = 0x80F3;
+  XL_GALLERY_RADAR = 0x80F9;
+  XL_MERGE_STYLES = 0x80FA;
+  XL_EDITION_OPTIONS = 0x80FB;
+  XL_PASTE_PICTURE = 0x80FC;
+  XL_PASTE_PICTURE_LINK = 0x80FD;
+  XL_SPELLING = 0x80FE;
+  XL_ZOOM = 0x8100;
+  XL_INSERT_OBJECT = 0x8103;
+  XL_WINDOW_MINIMIZE = 0x8104;
+  XL_SOUND_NOTE = 0x8109;
+  XL_SOUND_PLAY = 0x810A;
+  XL_FORMAT_SHAPE = 0x810B;
+  XL_EXTEND_POLYGON = 0x810C;
+  XL_FORMAT_AUTO = 0x810D;
+  XL_GALLERY_3D_BAR = 0x8110;
+  XL_GALLERY_3D_SURFACE = 0x8111;
+  XL_FILL_AUTO = 0x8112;
+  XL_CUSTOMIZE_TOOLBAR = 0x8114;
+  XL_ADD_TOOL = 0x8115;
+  XL_EDIT_OBJECT = 0x8116;
+  XL_ON_DOUBLECLICK = 0x8117;
+  XL_ON_ENTRY = 0x8118;
+  XL_WORKBOOK_ADD = 0x8119;
+  XL_WORKBOOK_MOVE = 0x811A;
+  XL_WORKBOOK_COPY = 0x811B;
+  XL_WORKBOOK_OPTIONS = 0x811C;
+  XL_SAVE_WORKSPACE = 0x811D;
+  XL_CHART_WIZARD = 0x8120;
+  XL_DELETE_TOOL = 0x8121;
+  XL_MOVE_TOOL = 0x8122;
+  XL_WORKBOOK_SELECT = 0x8123;
+  XL_WORKBOOK_ACTIVATE = 0x8124;
+  XL_ASSIGN_TO_TOOL = 0x8125;
+  XL_COPY_TOOL = 0x8127;
+  XL_RESET_TOOL = 0x8128;
+  XL_CONSTRAIN_NUMERIC = 0x8129;
+  XL_PASTE_TOOL = 0x812A;
+  XL_WORKBOOK_NEW = 0x812E;
+  XL_SCENARIO_CELLS = 0x8131;
+  XL_SCENARIO_DELETE = 0x8132;
+  XL_SCENARIO_ADD = 0x8133;
+  XL_SCERNARIO_EDIT = 0x8134;
+  XL_SCENARIO_SHOW = 0x8135;
+  XL_SCENARIO_SHOW_NEXT = 0x8136;
+  XL_SCENRAIO_SUMMARY = 0x8137;
+  XL_PIVOT_TABLE_WIZARD = 0x8138;
+  XL_PIVOT_FIELD_PROPERTIES = 0x8139;
+  XL_PIVOT_FIELD = 0x813A;
+  XL_PIVOT_ITEM = 0x813B;
+  XL_PIVOT_ADD_FIELDS = 0x813C;
+  XL_OPTIONS_CALCULATION = 0x813E;
+  XL_OPTIONS_EDIT = 0x813F;
+  XL_OPTIONS_VIEW = 0x8140;
+  XL_ADDIN_MANAGER = 0x8141;
+  XL_MENU_EDITOR = 0x8142;
+  XL_ATTACH_TOOLBARS = 0x8143;
+  XL_VBAACTIVATE = 0x8144;
+  XL_OPTIONS_CHART = 0x8145;
+  XL_VBA_INSERT_FILE = 0x8148;
+  XL_VBA_PROCEDURE_DEFINITION = 0x814A;
+  XL_ROUTING_SLIP = 0x8150;
+  XL_ROUTE_DOCUMENT = 0x8152;
+  XL_MAIL_LOGON = 0x8153;
+  XL_INSERT_PICTURE = 0x8156;
+  XL_EDIT_TOOL = 0x8157;
+  XL_GALLERY_DOUGHNUT = 0x8158;
+  XL_CHART_TREND = 0x815E;
+  XL_PIVOT_ITEM_PROPERTIES = 0x8160;
+  XL_WORKBOOK_INSERT = 0x8162;
+  XL_OPTIONS_TRANSITION = 0x8163;
+  XL_OPTIONS_GENERAL = 0x8164;
+  XL_FILTER_ADVANCED = 0x8172;
+  XL_MAIL_ADD_MAILER = 0x8175;
+  XL_MAIL_DELETE_MAILER = 0x8176;
+  XL_MAIL_REPLY = 0x8177;
+  XL_MAIL_REPLY_ALL = 0x8178;
+  XL_MAIL_FORWARD = 0x8179;
+  XL_MAIL_NEXT_LETTER = 0x817A;
+  XL_DATA_LABEL = 0x817B;
+  XL_INSERT_TITLE = 0x817C;
+  XL_FONT_PROPERTIES = 0x817D;
+  XL_MACRO_OPTIONS = 0x817E;
+  XL_WORKBOOK_HIDE = 0x817F;
+  XL_WORKBOOK_UNHIDE = 0x8180;
+  XL_WORKBOOK_DELETE = 0x8181;
+  XL_WORKBOOK_NAME = 0x8182;
+  XL_GALLERY_CUSTOM = 0x8184;
+  XL_ADD_CHART_AUTOFORMAT = 0x8186;
+  XL_DELETE_CHART_AUTOFORMAT = 0x8187;
+  XL_CHART_ADD_DATA = 0x8188;
+  XL_AUTO_OUTLINE = 0x8189;
+  XL_TAB_ORDER = 0x818A;
+  XL_SHOW_DIALOG = 0x818B;
+  XL_SELECT_ALL = 0x818C;
+  XL_UNGROUP_SHEETS = 0x818D;
+  XL_SUBTOTAL_CREATE = 0x818E;
+  XL_SUBTOTAL_REMOVE = 0x818F;
+  XL_RENAME_OBJECT = 0x8190;
+  XL_WORKBOOK_SCROLL = 0x819C;
+  XL_WORKBOOK_NEXT = 0x819D;
+  XL_WORKBOOK_PREV = 0x819E;
+  XL_WORKBOOK_TAB_SPLIT = 0x819F;
+  XL_FULL_SCREEN = 0x81A0;
+  XL_WORKBOOK_PROTECT = 0x81A1;
+  XL_SCROLLBAR_PROPERTIES = 0x81A4;
+  XL_PIVOT_SHOW_PAGES = 0x81A5;
+  XL_TEXT_TO_COLUMNS = 0x81A6;
+  XL_FORMAT_CHARTTPE = 0x81A7;
+  XL_LINK_FORMAT = 0x81A8;
+  XL_TRACER_DISPLAY = 0x81A9;
+  XL_TRACER_NAVIGATE = 0x81AE;
+  XL_TRACER_CLEAR = 0x81AF;
+  XL_TRACER_ERROR = 0x81B0;
+  XL_PIVOT_FIELD_GROUP = 0x81B1;
+  XL_PIVOT_FIELD_UNGROUP = 0x81B2;
+  XL_CHECKBOX_PROPERTIES = 0x81B3;
+  XL_LABEL_PROPERTIES = 0x81B4;
+  XL_LISTBOX_PROPERTIES = 0x81B5;
+  XL_EDITBOX_PROPERTIES = 0x81B6;
+  XL_PIVOT_REFRESH = 0x81B7;
+  XL_LINK_COMBO = 0x81B8;
+  XL_OPEN_TEXT = 0x81B9;
+  XL_HIDE_DIALOG = 0x81BA;
+  XL_SET_DIALOG_FOCUS = 0x81BB;
+  XL_ENABLE_OBJECT = 0x81BC;
+  XL_PUSHBUTTON_PROPERTIES = 0x81BD;
+  XL_SET_DIALOG_DEFAULT = 0x81BE;
+  XL_FILTER = 0x81BF;
+  XL_FILTER_SHOW_ALL = 0x81C0;
+  XL_CLEAR_OUTLINE = 0x81C1;
+  XL_FUNCTION_WIZARD = 0x81C2;
+  XL_ADD_LIST_ITEM = 0x81C3;
+  XL_SET_LIST_ITEM = 0x81C4;
+  XL_REMOVE_LIST_ITEM = 0x81C5;
+  XL_SELECT_LIST_ITEM = 0x81C6;
+  XL_SET_CONTROL_VALUE = 0x81C7;
+  XL_SAVE_COPY_AS = 0x81C8;
+  XL_OPTIONS_LISTS_ADD = 0x81CA;
+  XL_OPTIONS_LISTS_DELETE = 0x81CB;
+  XL_SERIES_AXES = 0x81CC;
+  XL_SERIES_X = 0x81CD;
+  XL_SERIES_Y = 0x81CE;
+  XL_ERRORBAR_X = 0x81CF;
+  XL_ERRORBAR_Y = 0x81D0;
+  XL_FORMAT_CHART = 0x81D1;
+  XL_SERIES_ORDER = 0x81D2;
+  XL_MAIL_LOGOFF = 0x81D3;
+  XL_CLEAR_ROUTING_SLIP = 0x81D4;
+  XL_APP_ACTIVATE_MICROSOFT = 0x81D5;
+  XL_MAIL_EDIT_MAILER = 0x81D6;
+  XL_ON_SHEET = 0x81D7;
+  XL_STANDARD_WIDTH = 0x81D8;
+  XL_SCENARIO_MERGE = 0x81D9;
+  XL_SUMMARY_INFO = 0x81DA;
+  XL_FIND_FILE = 0x81DB;
+  XL_ACTIVE_CELL_FONT = 0x81DC;
+  XL_ENABLE_TIPWIZARD = 0x81DD;
+  XL_VBA_MAKE_ADDIN = 0x81DE;
+  XL_INSERTDATATABLE = 0x81E0;
+  XL_WORKGROUP_OPTIONS = 0x81E1;
+  XL_MAIL_SEND_MAILER = 0x81E2;
+  XL_AUTOCORRECT = 0x81E5;
+  XL_POST_DOCUMENT = 0x81E9;
+  XL_PICKLIST = 0x81EB;
+  XL_VIEW_SHOW = 0x81ED;
+  XL_VIEW_DEFINE = 0x81EE;
+  XL_VIEW_DELETE = 0x81EF;
+  XL_SHEET_BACKGROUND = 0x81FD;
+  XL_INSERT_MAP_OBJECT = 0x81FE;
+  XL_OPTIONS_MENONO = 0x81FF;
+  XL_MSOCHECKS = 0x8205;
+  XL_NORMAL = 0x8206;
+  XL_LAYOUT = 0x8207;
+  XL_RM_PRINT_AREA = 0x8208;
+  XL_CLEAR_PRINT_AREA = 0x8209;
+  XL_ADD_PRINT_AREA = 0x820A;
+  XL_MOVE_BRK = 0x820B;
+  XL_HIDECURR_NOTE = 0x8221;
+  XL_HIDEALL_NOTES = 0x8222;
+  XL_DELETE_NOTE = 0x8223;
+  XL_TRAVERSE_NOTES = 0x8224;
+  XL_ACTIVATE_NOTES = 0x8225;
+  XL_PROTECT_REVISIONS = 0x826C;
+  XL_UNPROTECT_REVISIONS = 0x826D;
+  XL_OPTIONS_ME = 0x8287;
+  XL_WEB_PUBLISH = 0x828D;
+  XL_NEWWEBQUERY = 0x829B;
+  XL_PIVOT_TABLE_CHART = 0x82A1;
+  XL_OPTIONS_SAVE = 0x82F1;
+  XL_OPTIONS_SPELL = 0x82F3;
+  XL_HIDEALL_INKANNOTS = 0x828;
+}
+
+message XlConstantExpr {
+  oneof kind {
+    XlConstantMissArg miss_arg = 1;
+    XlStr str = 2;
+    XlConstantErr err = 3;
+    XlConstantBool bool = 4;
+    XlConstantInt int = 5;
+    XlConstantNum num = 6;
+    XlConstantArray array = 7;
+  }
+}
+
+message XlConstantMissArg {}
+
+message XlStr {
+  optional bytes value = 1;
+  optional XlStrOptions options = 2;
+}
+
+message XlStrOptions {
+  optional bool is_16bit = 1;
+  optional XlAsianPhoneticSettings asian_phonetic_settings = 2;
+  optional XlRichTextSettings rich_text_settings = 3;
+}
+
+message XlAsianPhoneticSettings {
+  // TODO: Parse Asian phonetic settings.
+}
+
+message XlRichTextSettings {
+  // TODO: Parse rich text settings.
+}
+
+message XlConstantErr {
+  optional XlErrorCode code = 1;
+}
+
+enum XlErrorCode {
+  XL_ERROR_UNKNOWN = 0;
+  XL_ERROR_NULL = 1;
+  XL_ERROR_DIV = 2;
+  XL_ERROR_VALUE = 3;
+  XL_ERROR_REF = 4;
+  XL_ERROR_NAME = 5;
+  XL_ERROR_NUM = 6;
+  XL_ERROR_NOT_AVAILABLE = 7;
+  XL_ERROR_GETTING_DATA = 8;
+}
+
+message XlConstantBool {
+  optional bool value = 1;
+}
+
+message XlConstantInt {
+  // 16-bit integer value in the range from 0 to 65535.
+  optional uint32 value = 1;
+}
+
+message XlConstantNum {
+  optional float value = 1;
+}
+
+message XlConstantValueArray {
+  optional uint32 num_columns = 1;
+  optional uint32 num_rows = 2;
+  repeated XlConstantExpr constants = 3;
+}
+
+message XlConstantArray {
+  optional XlConstantValueArray constant_value_array = 1;
+}
+
+message XlOperand {
+  oneof kind {
+    XlOperandName name = 1;
+    XlOperandRef ref = 2;
+    XlOperandArea area = 3;
+    XlOperandMem mem = 4;
+  }
+}
+
+message XlOperandName {
+  // References a name defined in an Lbl or ExternName record in BIFF objects.
+  oneof kind {
+    XlInternalNameReference internal = 1;
+    XlExternalNameReference external = 2;
+  }
+}
+
+message XlInternalNameReference {
+  // Zero-based ID of defined name. This is basically the zero-based index of
+  // the defined name in which it appeared. Note: this differs from the original
+  // index provided by the data object this appears in, which is one-based. e.g.
+  // for BIFF8 see here:
+  // https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/5f05c166-dfe3-4bbf-85aa-31c09c0258c0.
+  optional uint32 id = 1;
+}
+
+message XlExternalNameReference {
+  // Zero-based ID of external defined name. This is basically the zero-based
+  // index of the external defined name in which it appeared. Note: this differs
+  // from the original index provided by the data object this appears in, which
+  // is one-based. e.g. for BIFF8 see here:
+  // https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/f9eba5de-1ff6-4d52-9753-f9c1e446c774.
+  optional uint32 id = 1;
+  optional XlExternalSheetReference sheet_ref = 2;
+}
+
+message XlOperandRef {
+  oneof kind {
+    // RefN tokens aren't separately represented here; they should be covered by
+    // XlBasicRef.
+    XlBasicRef ref = 1;
+    XlRef3d ref_3d = 2;
+  }
+  optional XlCellAddress cell_address = 3;
+  optional bool has_error = 4;
+}
+
+message XlBasicRef {}
+
+message XlSheetReference {
+  optional XlStr name = 1;
+  // One-based sheet index.
+  optional uint32 idx = 2;
+}
+
+message XlSheetReferenceRange {
+  optional XlSheetReference first_sheet = 1;
+  // Note: it's possible that the last sheet index is actually less than the
+  // first sheet index (e.g. in corrupted files), so clients need to be careful
+  // with this.
+  optional XlSheetReference last_sheet = 2;
+}
+
+message XlExternalSheetReference {
+  optional XlStr doc = 1;
+  optional bool is_internal_reference = 2;
+  oneof kind {
+    bool sheet_not_found = 3;
+    bool is_global_reference = 4;
+    XlSheetReference sheet = 5;
+    XlSheetReferenceRange range = 6;
+  }
+}
+
+message XlRef3d {
+  optional XlExternalSheetReference sheet_ref = 1;
+}
+
+message XlCellAddress {
+  // BIFF2-5:
+  // (0 to 16383) if absolute, or (-8192 to 8191) if offset.
+  // BIFF8:
+  // (0 to 65535) if absolute, or (-32768 to 32767) if offset.
+  optional uint32 row_idx = 1;
+  // (0 to 255) if absolute, or (-128 to 127) if offset.
+  optional uint32 col_idx = 2;
+  // True if the row index is relative, false if absolute.
+  optional bool is_relative_row = 3;
+  // True if the column index is relative, false if absolute.
+  optional bool is_relative_col = 4;
+}
+
+message XlCellRange {
+  optional XlCellAddress first_cell_address = 1;
+  // Note: it's possible that the last cell address is actually less than the
+  // first cell address (e.g. in corrupted files), so clients need to be careful
+  // with this.
+  optional XlCellAddress last_cell_address = 2;
+}
+
+message XlOperandArea {
+  oneof kind {
+    // AreaN tokens aren't separately represented here; they should be covered
+    // by XlBasicArea.
+    XlBasicArea area = 1;
+    XlArea3d area_3d = 2;
+  }
+  optional XlCellRange cell_range = 3;
+  optional bool has_error = 4;
+}
+
+message XlBasicArea {}
+
+message XlArea3d {
+  optional XlExternalSheetReference sheet_ref = 1;
+}
+
+message XlOperandMem {
+  oneof kind {
+    XlMemArea mem_area = 1;
+    XlMemNoMem mem_no_mem = 2;
+    XlMemFunc mem_func = 3;
+  }
+  optional XlExpression expression = 4;
+  optional bool has_error = 5;
+}
+
+// Represents the result of the sub expression in a MemArea expression.
+message XlMemAreaResult {
+  repeated XlCellRange cell_ranges = 1;
+}
+
+message XlMemArea {
+  optional XlMemAreaResult expression_result = 1;
+}
+
+message XlMemNoMem {}
+
+message XlMemFunc {}
+
+message XlControl {
+  oneof kind {
+    XlExp exp = 3;
+    // Tbl tbl = 2; TODO: Not sure if this should be included.
+    XlParen paren = 1;
+    XlControlAttr attr = 2;
+  }
+}
+
+// Marks that the formula is part of an array or shared formula. See
+// https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/f9aa266f-f1e9-4341-a232-e9f7ec94b8f1.
+message XlExp {
+  // Cell address of the base formula.
+  optional XlCellAddress cell_address = 1;
+}
+
+// Represents parentheses.
+message XlParen {
+  optional XlExpression expression = 1;
+}
+
+message XlControlAttr {
+  // TODO: Unclear if we should just mark the formula as volatile, or include
+  // this separate control node.
+  optional XlAttrVolatileFormula volatile_formula = 1;
+  optional XlAttrIfFunctionControl if_function_control = 2;
+
+  // TODO: Include this function control? Main benefit would be determining if
+  // the jump table in the control token has a valid jump table.
+  // optional ChooseFunctionControl choose_function_control = 3;
+
+  // TODO: Include this control? Unclear if malware author could plug it in
+  // _not_ in conjunction with an IF or CHOOSE function control, and whether
+  // Office would parse and allow it.
+  // optional Skip skip = 4;
+
+  // Note: There is a tAttrSum token; this is written as a SUM function instead.
+
+  optional XlAttrAssign assign = 3;
+}
+
+message XlAttrVolatileFormula {
+  optional XlExpression expression = 1;
+}
+
+// A tAttrIf token follows the first parameter of an IF function (condition). If
+// the condition result is true, control skips the 'false' parameter
+// (false_expression below). If the condition result is false, control skips the
+// 'true' parameter (true_expression below). This promises that the last
+// processed subexpression is the condition of the IF function.
+// TODO: Unclear if IF functions always have this control token.
+message XlAttrIfFunctionControl {
+  optional XlExpression condition = 1;
+  optional XlExpression true_expression = 2;
+  optional XlExpression false_expression = 3;
+}
+
+message XlAttrAssign {
+  optional XlStr name = 1;
+  optional XlExpression value = 2;
+}
