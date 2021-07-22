@@ -1887,7 +1887,8 @@ TEST_F(WindowTest, DeleteLayoutManagerBeforeOwnedProps) {
     Window w(nullptr);
     w.Init(ui::LAYER_NOT_DRAWN);
     w.SetLayoutManager(new DeletionTestLayoutManager(&tracker));
-    w.SetProperty(kDeletionTestPropertyKey, new DeletionTestProperty(&tracker));
+    w.SetProperty(kDeletionTestPropertyKey,
+                  std::make_unique<DeletionTestProperty>(&tracker));
   }
   EXPECT_TRUE(tracker.property_deleted());
   EXPECT_TRUE(tracker.layout_manager_deleted());

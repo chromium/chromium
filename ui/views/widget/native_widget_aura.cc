@@ -734,10 +734,8 @@ void NativeWidgetAura::SetOpacity(float opacity) {
 void NativeWidgetAura::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
   DCHECK(!aspect_ratio.IsEmpty());
   if (window_) {
-    // aura::client::kAspectRatio is owned, which allows for passing in this
-    // raw pointer.
-    window_->SetProperty(aura::client::kAspectRatio,
-                         new gfx::SizeF(aspect_ratio));
+    // aura::client::kAspectRatio is owned, which allows for passing by value.
+    window_->SetProperty(aura::client::kAspectRatio, gfx::SizeF(aspect_ratio));
   }
 }
 

@@ -62,8 +62,10 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::vector<views::BubbleDialogDelegate*>,
                                    nullptr)
 
 std::vector<BubbleDialogDelegate*>& GetAnchorVector(View* view) {
-  if (view->GetProperty(kAnchorVector) == nullptr)
-    view->SetProperty(kAnchorVector, new std::vector<BubbleDialogDelegate*>());
+  if (!view->GetProperty(kAnchorVector)) {
+    return *(view->SetProperty(
+        kAnchorVector, std::make_unique<std::vector<BubbleDialogDelegate*>>()));
+  }
 
   return *(view->GetProperty(kAnchorVector));
 }
