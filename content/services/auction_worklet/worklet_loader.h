@@ -38,15 +38,24 @@ class WorkletLoader {
     Result& operator=(Result&&);
 
     // True if the script was loaded & parsed successfully.
-    bool success() const { return script_.get() && !script_->IsEmpty(); }
+    bool success() const { return state_.get() && !state_->script.IsEmpty(); }
 
     // Should only be called on the V8 thread. Requires success() to be true.
     v8::Global<v8::UnboundScript> TakeScript();
 
    private:
-    scoped_refptr<AuctionV8Helper> v8_helper_;
-    std::unique_ptr<v8::Global<v8::UnboundScript>, base::OnTaskRunnerDeleter>
-        script_;
+    // Will be deleted on v8_helper_->v8_runner(). See https://crbug.com/1231690
+    // for why this is structured this way.
+    struct V8Data {
+      V8Data(scoped_refptr<AuctionV8Helper> v8_helper,
+             v8::Global<v8::UnboundScript> script);
+      ~V8Data();
+
+      scoped_refptr<AuctionV8Helper> v8_helper;
+      v8::Global<v8::UnboundScript> script;
+    };
+
+    std::unique_ptr<V8Data, base::OnTaskRunnerDeleter> state_;
   };
 
   // On success, `worklet_script` is compiled script, not bound to any context.

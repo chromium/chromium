@@ -104,7 +104,7 @@ TEST_F(WorkletLoaderTest, Success) {
 // Make sure the V8 isolate is released before the callback is invoked on
 // success, so that the loader and helper can be torn down without crashing
 // during the callback.
-TEST_F(WorkletLoaderTest, DISABLED_DeleteDuringCallbackSuccess) {
+TEST_F(WorkletLoaderTest, DeleteDuringCallbackSuccess) {
   AddJavascriptResponse(&url_loader_factory_, url_, kValidScript);
   auto v8_helper = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
   base::RunLoop run_loop;

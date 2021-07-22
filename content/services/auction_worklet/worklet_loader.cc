@@ -21,14 +21,13 @@
 namespace auction_worklet {
 
 WorkletLoader::Result::Result()
-    : script_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {}
+    : state_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {}
 
 WorkletLoader::Result::Result(scoped_refptr<AuctionV8Helper> v8_helper,
                               v8::Global<v8::UnboundScript> script)
-    : v8_helper_(std::move(v8_helper)),
-      script_(new v8::Global<v8::UnboundScript>(std::move(script)),
-              base::OnTaskRunnerDeleter(v8_helper_->v8_runner())) {
-  DCHECK(v8_helper_->v8_runner()->RunsTasksInCurrentSequence());
+    : state_(new V8Data(v8_helper, std::move(script)),
+             base::OnTaskRunnerDeleter(v8_helper->v8_runner())) {
+  DCHECK(v8_helper->v8_runner()->RunsTasksInCurrentSequence());
 }
 
 WorkletLoader::Result::Result(Result&&) = default;
@@ -36,11 +35,14 @@ WorkletLoader::Result::~Result() = default;
 WorkletLoader::Result& WorkletLoader::Result::operator=(Result&&) = default;
 
 v8::Global<v8::UnboundScript> WorkletLoader::Result::TakeScript() {
-  DCHECK(v8_helper_->v8_runner()->RunsTasksInCurrentSequence());
-  v8::Global<v8::UnboundScript> result = script_->Pass();
-  script_.reset();
-  return result;
+  DCHECK(state_->v8_helper->v8_runner()->RunsTasksInCurrentSequence());
+  return state_->script.Pass();
 }
+
+WorkletLoader::Result::V8Data::V8Data(scoped_refptr<AuctionV8Helper> v8_helper,
+                                      v8::Global<v8::UnboundScript> script)
+    : v8_helper(std::move(v8_helper)), script(std::move(script)) {}
+WorkletLoader::Result::V8Data::~V8Data() = default;
 
 WorkletLoader::WorkletLoader(
     network::mojom::URLLoaderFactory* url_loader_factory,
