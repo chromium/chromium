@@ -223,9 +223,6 @@ void HistoryClustersHandler::QueryHistoryService(
   history::QueryOptions query_options;
   query_options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
   query_options.end_time = end_time;
-  // Make sure to look back far enough to find some visits.
-  query_options.begin_time =
-      query_options.end_time.LocalMidnight() - base::TimeDelta::FromDays(90);
   history_service->QueryHistory(
       base::UTF8ToUTF16(query), query_options,
       base::BindOnce(&HistoryClustersHandler::OnHistoryQueryResults,
