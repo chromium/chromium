@@ -104,6 +104,7 @@ public class PlayerManager {
     private long mNativeAxTree;
     private PlayerAccessibilityDelegate mAccessibilityDelegate;
     private WebContentsAccessibilityImpl mWebContentsAccessibility;
+    private final boolean mShouldCompressBitmaps;
 
     // The minimum ratio value of a sub-frame's area to its parent, for the sub-frame to be
     // considered 'large'.
@@ -123,15 +124,17 @@ public class PlayerManager {
      * @param listener                          Interface that includes a number of callbacks.
      * @param ignoreInitialScrollOffset         If true the initial scroll state that is recorded at
      *                                          capture time is ignored.
+     * @param shouldCompressBitmaps             If true bitmaps outside the viewport are compressed.
      */
     public PlayerManager(GURL url, Context context,
             NativePaintPreviewServiceProvider nativePaintPreviewServiceProvider,
             String directoryKey, @NonNull Listener listener, int backgroundColor,
-            boolean ignoreInitialScrollOffset) {
+            boolean ignoreInitialScrollOffset, boolean shouldCompressBitmaps) {
         TraceEvent.begin("PlayerManager");
         TraceEvent.startAsync(sInitEvent, hashCode());
         mContext = context;
         mListener = listener;
+        mShouldCompressBitmaps = shouldCompressBitmaps;
         mDelegate = getCompositorDelegateFactory().create(nativePaintPreviewServiceProvider, url,
                 directoryKey, false, this::onCompositorReady, mListener::onCompositorError);
         mHostView = new FrameLayout(mContext);
@@ -179,7 +182,7 @@ public class PlayerManager {
                 mRootFrameData.getContentHeight(), mRootFrameData.getInitialScrollX(),
                 mRootFrameData.getInitialScrollY(), true, mPlayerSwipeRefreshHandler,
                 mPlayerGestureListener, mListener::onFirstPaint, mListener::isAccessibilityEnabled,
-                this::initializeAccessibility);
+                this::initializeAccessibility, mShouldCompressBitmaps);
         buildSubFrameCoordinators(mRootFrameCoordinator, mRootFrameData);
         mHostView.addView(mRootFrameCoordinator.getView(),
                 new FrameLayout.LayoutParams(
@@ -360,7 +363,7 @@ public class PlayerManager {
                     new PlayerFrameCoordinator(mContext, mDelegate, childFrame.getGuid(),
                             childFrame.getContentWidth(), childFrame.getContentHeight(),
                             childFrame.getInitialScrollX(), childFrame.getInitialScrollY(), false,
-                            null, mPlayerGestureListener, null, null, null);
+                            null, mPlayerGestureListener, null, null, null, mShouldCompressBitmaps);
             buildSubFrameCoordinators(childCoordinator, childFrame);
             frameCoordinator.addSubFrame(childCoordinator, frame.getSubFrameClips()[i]);
         }

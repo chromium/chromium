@@ -25,10 +25,12 @@ public class PlayerFrameBitmapStateController {
     private final PlayerCompositorDelegate mCompositorDelegate;
     private final PlayerFrameMediatorDelegate mMediatorDelegate;
     private final SequencedTaskRunner mTaskRunner;
+    private final boolean mShouldCompressBitmaps;
 
     PlayerFrameBitmapStateController(UnguessableToken guid, PlayerFrameViewport viewport,
             Size contentSize, PlayerCompositorDelegate compositorDelegate,
-            PlayerFrameMediatorDelegate mediatorDelegate, SequencedTaskRunner taskRunner) {
+            PlayerFrameMediatorDelegate mediatorDelegate, SequencedTaskRunner taskRunner,
+            boolean shouldCompressBitmaps) {
         mGuid = guid;
         mViewport = viewport;
         mContentSize = contentSize;
@@ -38,6 +40,7 @@ public class PlayerFrameBitmapStateController {
         }
         mMediatorDelegate = mediatorDelegate;
         mTaskRunner = taskRunner;
+        mShouldCompressBitmaps = shouldCompressBitmaps;
     }
 
     void destroy() {
@@ -76,7 +79,7 @@ public class PlayerFrameBitmapStateController {
             invalidateLoadingBitmaps();
             mLoadingBitmapState = new PlayerFrameBitmapState(mGuid, mViewport.getWidth(),
                     Math.round(mViewport.getHeight() / 2.0f), mViewport.getScale(), mContentSize,
-                    mCompositorDelegate, this, mTaskRunner);
+                    mCompositorDelegate, this, mTaskRunner, mShouldCompressBitmaps);
             if (mVisibleBitmapState == null) {
                 mLoadingBitmapState.skipWaitingForVisibleBitmaps();
                 swap(mLoadingBitmapState);

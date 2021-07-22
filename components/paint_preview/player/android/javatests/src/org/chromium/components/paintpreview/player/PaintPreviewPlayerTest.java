@@ -220,7 +220,7 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
 
                         @Override
                         public void onAccessibilityNotSupported() {}
-                    }, 0xffffffff, false);
+                    }, 0xffffffff, false, true);
             mPlayerManager.setCompressOnClose(false);
         });
         compositorErrorCallback.waitForFirst();
@@ -433,7 +433,7 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
 
                         @Override
                         public void onAccessibilityNotSupported() {}
-                    }, 0xffffffff, false);
+                    }, 0xffffffff, false, true);
             mPlayerManager.setCompressOnClose(false);
             getActivity().setContentView(mPlayerManager.getView());
         });

@@ -291,22 +291,22 @@ public class PlayerFrameBitmapPainterTest {
         FakeShadowBitmapFactory.setBitmaps(bitmapMap);
         CompressibleBitmap[][] bitmaps = new CompressibleBitmap[3][2];
         CompressibleBitmap compressibleBitmap00 =
-                new CompressibleBitmap(bitmap00, taskRunner, false);
+                new CompressibleBitmap(bitmap00, taskRunner, false, true);
         compressibleBitmap00.setIgnoreMissingAlphaForTesting(true);
         CompressibleBitmap compressibleBitmap10 =
-                new CompressibleBitmap(bitmap10, taskRunner, false);
+                new CompressibleBitmap(bitmap10, taskRunner, false, true);
         compressibleBitmap10.setIgnoreMissingAlphaForTesting(true);
         CompressibleBitmap compressibleBitmap01 =
-                new CompressibleBitmap(bitmap01, taskRunner, false);
+                new CompressibleBitmap(bitmap01, taskRunner, false, true);
         compressibleBitmap01.setIgnoreMissingAlphaForTesting(true);
         CompressibleBitmap compressibleBitmap11 =
-                new CompressibleBitmap(bitmap11, taskRunner, false);
+                new CompressibleBitmap(bitmap11, taskRunner, false, true);
         compressibleBitmap11.setIgnoreMissingAlphaForTesting(true);
         CompressibleBitmap compressibleBitmap20 =
-                new CompressibleBitmap(bitmap20, taskRunner, false);
+                new CompressibleBitmap(bitmap20, taskRunner, false, true);
         compressibleBitmap20.setIgnoreMissingAlphaForTesting(true);
         CompressibleBitmap compressibleBitmap21 =
-                new CompressibleBitmap(bitmap21, taskRunner, false);
+                new CompressibleBitmap(bitmap21, taskRunner, false, true);
         compressibleBitmap21.setIgnoreMissingAlphaForTesting(true);
         bitmaps[0][0] = compressibleBitmap00;
         bitmaps[1][0] = compressibleBitmap10;
