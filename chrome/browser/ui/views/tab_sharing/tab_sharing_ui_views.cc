@@ -123,10 +123,15 @@ GlobalRenderFrameHostId GetGlobalId(WebContents* web_contents) {
 }
 
 uint32_t GetHash(const ui::ImageModel& image) {
+  if (image.IsEmpty()) {
+    return 0;
+  }
+
   const SkBitmap* const bitmap = image.GetImage().ToSkBitmap();
   if (!bitmap) {
     return 0;
   }
+
   return base::FastHash(base::make_span(
       static_cast<uint8_t*>(bitmap->getPixels()), bitmap->computeByteSize()));
 }
@@ -447,6 +452,10 @@ void TabSharingUIViews::MaybeUpdateFavicon(
 }
 
 ui::ImageModel TabSharingUIViews::TabFavicon(WebContents* web_contents) const {
+  if (!favicons_used_for_switch_to_tab_button_) {
+    return ui::ImageModel();
+  }
+
   if (!web_contents) {
     return ui::ImageModel::FromImage(favicon::GetDefaultFavicon());
   }
