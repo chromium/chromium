@@ -4,10 +4,7 @@
 
 /*
   This file is for recording Chrome Browser's language settings metrics on the
-  frontend. See languages_metrics_proxy.js for ChromeOS-specific metrics. Note
-  that this file and languages_metrics_proxy refer to two separate histograms,
-  but there is some overlap in the actions they track. This will be resolved in
-  crbug/1109431, when ChromeOS's language settings migration is complete.
+  frontend.
 */
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
