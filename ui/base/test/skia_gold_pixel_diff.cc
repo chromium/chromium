@@ -120,6 +120,14 @@ bool BotModeEnabled(const base::CommandLine* command_line) {
          env->HasVar("CHROMIUM_TEST_LAUNCHER_BOT_MODE");
 }
 
+// Returns true if it's running on CQ under 'without patch'. Otherwise
+// returns false.
+// The implementation is a bit hacky because there's no good indicator.
+bool IsTryjobWithoutPatch(const base::CommandLine* command_line) {
+  return BotModeEnabled(command_line) &&
+         command_line->HasSwitch(switches::kTestLauncherBatchLimit);
+}
+
 }  // namespace
 
 SkiaGoldPixelDiff::SkiaGoldPixelDiff() = default;
@@ -254,6 +262,13 @@ bool SkiaGoldPixelDiff::UploadToSkiaGoldServer(
   cmd.AppendSwitchPath("work-dir", working_dir_);
 
   if (!BotModeEnabled(base::CommandLine::ForCurrentProcess())) {
+    cmd.AppendSwitch(kDryRun);
+  }
+  // For CQ, if a Skia Gold gtest fails, then swarming runs the suite
+  // without patch, and the test succeed. The success job will override
+  // the failed job, and the failed test will not show on the triage dashboard.
+  // To resolve this, we use dryrun mode for 'run without patch'.
+  if (IsTryjobWithoutPatch(base::CommandLine::ForCurrentProcess())) {
     cmd.AppendSwitch(kDryRun);
   }
 
