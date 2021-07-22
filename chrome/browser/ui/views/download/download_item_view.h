@@ -121,6 +121,8 @@ class DownloadItemView : public views::View,
                                   float new_device_scale_factor) override;
 
  private:
+  class ContextMenuButton;
+
   // Sets the current mode to |mode| and updates UI appropriately.
   void SetMode(download::DownloadItemMode mode);
   download::DownloadItemMode GetMode() const;
