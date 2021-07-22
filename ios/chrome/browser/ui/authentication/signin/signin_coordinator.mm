@@ -186,7 +186,7 @@ constexpr int kDefaultSignInWebSignInDismissalCount = 3;
   const int maxDismissalCount = base::GetFieldTrialParamByFeatureAsInt(
       signin::kMICEWebSignIn, kConsecutiveActiveDismissalLimitParam,
       kDefaultSignInWebSignInDismissalCount);
-  if (userPrefService->GetInteger(prefs::kSigninWebSignDismissalCount) >
+  if (userPrefService->GetInteger(prefs::kSigninWebSignDismissalCount) >=
       maxDismissalCount) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::
