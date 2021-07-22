@@ -419,6 +419,9 @@ crbug.com/1215747 [ android android-nexus-5x skia-renderer-gl ] Pixel_OffscreenC
 # Flaky on Android, haven't investigated why yet.
 crbug.com/1221258 [ android ] Pixel_OffscreenCanvas2DResizeOnWorker [ Failure ]
 
+# Pixel tests are flakily asserting in GPU process on SkiaRenderer/Vulkan
+crbug.com/1230743 [ linux skia-renderer-vulkan ] Pixel_* [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
