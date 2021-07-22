@@ -6312,6 +6312,24 @@
             "value": true
           }
         }
+      },
+      {
+        "policies": {
+          "ScrollToTextFragmentEnabled": false
+        },
+        "prefs": {
+          "scroll_to_text_fragment_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "scroll_to_text_fragment_enabled": {
+            "default_value": true
+          }
+        }
       }
     ]
   },
