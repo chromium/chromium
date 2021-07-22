@@ -117,7 +117,7 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   bool IsReportAlreadyStored(int64_t impression_id,
                              absl::optional<int64_t> dedup_key)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
-  int GetCapacityForStoringConversion(const std::string& serialized_origin)
+  bool HasCapacityForStoringConversion(const std::string& serialized_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   enum class MaybeReplaceLowerPriorityReportResult {

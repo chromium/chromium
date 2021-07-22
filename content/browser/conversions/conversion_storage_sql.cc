@@ -5,7 +5,6 @@
 #include "content/browser/conversions/conversion_storage_sql.h"
 
 #include <stdint.h>
-#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -389,9 +388,7 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   const std::string serialized_conversion_destination =
       conversion_destination.Serialize();
 
-  int capacity =
-      GetCapacityForStoringConversion(serialized_conversion_destination);
-  if (capacity == 0)
+  if (!HasCapacityForStoringConversion(serialized_conversion_destination))
     return false;
 
   const url::Origin& reporting_origin = conversion.reporting_origin();
@@ -1010,7 +1007,7 @@ bool ConversionStorageSql::IsReportAlreadyStored(
   return count > 0;
 }
 
-int ConversionStorageSql::GetCapacityForStoringConversion(
+bool ConversionStorageSql::HasCapacityForStoringConversion(
     const std::string& serialized_origin) {
   // This query should be reasonably optimized via conversion_destination_idx.
   // The conversion origin is the second column in a multi-column index where
@@ -1028,8 +1025,8 @@ int ConversionStorageSql::GetCapacityForStoringConversion(
   statement.BindString(0, serialized_origin);
   if (!statement.Step())
     return false;
-  int count = static_cast<int>(statement.ColumnInt64(0));
-  return std::max(0, delegate_->GetMaxConversionsPerOrigin() - count);
+  int64_t count = statement.ColumnInt64(0);
+  return count < delegate_->GetMaxConversionsPerOrigin();
 }
 
 std::vector<StorableImpression> ConversionStorageSql::GetActiveImpressions(
