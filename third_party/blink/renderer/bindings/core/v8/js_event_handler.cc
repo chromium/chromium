@@ -105,12 +105,12 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
     }
     arguments = {
         ScriptValue(isolate,
-                    ToV8Traits<IDLStringV2>::ToV8(script_state_of_listener,
-                                                  error_event->message())
+                    ToV8Traits<IDLString>::ToV8(script_state_of_listener,
+                                                error_event->message())
                         .ToLocalChecked()),
         ScriptValue(isolate,
-                    ToV8Traits<IDLStringV2>::ToV8(script_state_of_listener,
-                                                  error_event->filename())
+                    ToV8Traits<IDLString>::ToV8(script_state_of_listener,
+                                                error_event->filename())
                         .ToLocalChecked()),
         ScriptValue(isolate,
                     ToV8Traits<IDLUnsignedLong>::ToV8(script_state_of_listener,
