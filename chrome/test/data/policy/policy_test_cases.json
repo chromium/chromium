@@ -5191,19 +5191,57 @@
   "BuiltInDnsClientEnabled": {
     "os": [
       "win",
-      "linux",
+      "linux"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "async_dns.enabled": {
+            "location": "local_state",
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "BuiltInDnsClientEnabled": true
+        },
+        "prefs": {
+          "async_dns.enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  "BuiltInDnsClientEnabled.FeatureEnabledByDefault": {
+    "os": [
       "mac",
       "android",
       "chromeos"
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "async_dns.enabled": {
+            "location": "local_state",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
-          "BuiltInDnsClientEnabled": true
+          "BuiltInDnsClientEnabled": false
         },
         "prefs": {
           "async_dns.enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": false
           }
         }
       }
@@ -5219,12 +5257,23 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "async_dns.additional_dns_query_types_enabled": {
+            "location": "local_state",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "AdditionalDnsQueryTypesEnabled": false
         },
         "prefs": {
           "async_dns.additional_dns_query_types_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": false
           }
         }
       }
