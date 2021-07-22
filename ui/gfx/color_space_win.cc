@@ -5,6 +5,7 @@
 #include "ui/gfx/color_space_win.h"
 
 #include "base/logging.h"
+#include "third_party/skia/include/third_party/skcms/skcms.h"
 
 namespace gfx {
 

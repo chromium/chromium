@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/metal_util/device.h"
+#include "third_party/skia/include/third_party/skcms/skcms.h"
 #include "ui/gfx/color_space.h"
 
 namespace {

@@ -12,13 +12,13 @@
 
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
-#include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/color_space_export.h"
 
 struct skcms_Matrix3x3;
 struct skcms_TransferFunction;
 class SkColorSpace;
+enum SkYUVColorSpace : int;
 
 namespace skia {
 class Matrix44;

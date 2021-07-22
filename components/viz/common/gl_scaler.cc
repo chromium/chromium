@@ -13,6 +13,7 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "gpu/GLES2/gl2chromium.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "third_party/skia/include/third_party/skcms/skcms.h"
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
