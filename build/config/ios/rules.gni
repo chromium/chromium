@@ -1949,6 +1949,17 @@ template("ios_xctest_test") {
       "$ios_sdk_platform_path/Developer/usr/lib/libXCTestBundleInject.dylib",
     ]
 
+    # Xcode 13 now depends on XCTestCore. To keep things future proof, copy over
+    # everything that Xcode copies.
+    if (xcode_version_int >= 1300) {
+      extra_system_frameworks += [
+        "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestCore.framework",
+        "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUIAutomation.framework",
+        "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUnit.framework",
+        "$ios_sdk_platform_path/Developer/usr/lib/libXCTestSwiftSupport.dylib",
+      ]
+    }
+
     _xctest_bundle = _xctest_target + "_bundle"
     if (!is_fat_secondary_toolchain) {
       if (!defined(bundle_deps)) {
