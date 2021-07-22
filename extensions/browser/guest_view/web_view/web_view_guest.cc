@@ -50,7 +50,6 @@
 #include "extensions/browser/api/guest_view/web_view/web_view_internal_api.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/bad_message.h"
-#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extension_web_contents_observer.h"
@@ -861,42 +860,6 @@ WebViewGuest::WebViewGuest(WebContents* owner_web_contents)
 }
 
 WebViewGuest::~WebViewGuest() {
-}
-
-void WebViewGuest::ReadyToCommitNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // Return early if no declarative content scripts are present.
-  //
-  // Note - more granular checks (e.g. against URL patterns) are desirable for
-  // performance (to avoid creating unnecessary URLLoaderFactory), but not
-  // necessarily for security (because there are anyway no OOPIFs inside the
-  // GuestView process - https://crbug.com/614463).  At the same time, more
-  // granular checks are difficult to achieve, because the UserScript objects
-  // are not retained (i.e. only UserScriptIDs are available) by
-  // WebViewContentScriptManager.
-  WebViewContentScriptManager* script_manager =
-      WebViewContentScriptManager::Get(browser_context());
-  int embedder_process_id =
-      owner_web_contents()->GetMainFrame()->GetProcess()->GetID();
-  std::set<std::string> script_ids = script_manager->GetContentScriptIDSet(
-      embedder_process_id, view_instance_id());
-  if (script_ids.empty())
-    return;
-
-  // At ReadyToCommitNavigation time there is no need to trigger an explicit
-  // push of URLLoaderFactoryBundle to the renderer - it is sufficient if the
-  // factories are pushed slightly later - during the commit.
-  constexpr bool kPushToRendererNow = false;
-
-  // Content scripts run in an isolated world associated with the origin of the
-  // <webview> embedder.
-  navigation_handle->GetRenderFrameHost()
-      ->MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
-          {owner_web_contents()->GetMainFrame()->GetLastCommittedOrigin()},
-          kPushToRendererNow);
-
-  ContentScriptTracker::ReadyToCommitNavigationWithGuestViewContentScripts(
-      base::PassKey<WebViewGuest>(), owner_web_contents(), navigation_handle);
 }
 
 void WebViewGuest::DidFinishNavigation(

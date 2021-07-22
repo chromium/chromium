@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
+#include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -19,12 +20,14 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/guest_view/web_view/web_view_content_script_manager.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/content_script_injection_url_getter.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/user_script.h"
 
 namespace extensions {
@@ -231,6 +234,16 @@ void HandleProgrammaticContentScriptInjection(
       pass_key, frame, extension);
 }
 
+bool DoContentScriptsMatch(const UserScriptList& content_script_list,
+                           content::RenderFrameHost* frame,
+                           const GURL& url) {
+  return base::ranges::any_of(
+      content_script_list.begin(), content_script_list.end(),
+      [frame, &url](const std::unique_ptr<UserScript>& script) {
+        return DoesContentScriptMatch(*script, frame, url);
+      });
+}
+
 // If `extension`'s manifest declares that it may inject JavaScript content
 // script into the `frame` / `url`, then DoContentScriptsMatch returns true.
 // Otherwise it may return either true or false.
@@ -242,32 +255,56 @@ void HandleProgrammaticContentScriptInjection(
 bool DoContentScriptsMatch(const Extension& extension,
                            content::RenderFrameHost* frame,
                            const GURL& url) {
-  const UserScriptList& manifest_scripts =
-      ContentScriptsInfo::GetContentScripts(&extension);
+  auto* guest = guest_view::GuestViewBase::FromWebContents(
+      content::WebContents::FromRenderFrameHost(frame));
+  if (guest) {
+    // Return true if `extension` is an owner of `guest` and it registered
+    // content scripts using the `webview.addContentScripts` API.
+    GURL owner_site_url = guest->GetOwnerSiteURL();
+    if (owner_site_url.SchemeIs(kExtensionScheme) &&
+        owner_site_url.host_piece() == extension.id()) {
+      WebViewContentScriptManager* script_manager =
+          WebViewContentScriptManager::Get(frame->GetBrowserContext());
+      int embedder_process_id =
+          guest->owner_web_contents()->GetMainFrame()->GetProcess()->GetID();
+      std::set<std::string> script_ids = script_manager->GetContentScriptIDSet(
+          embedder_process_id, guest->view_instance_id());
 
-  auto does_script_match = [frame,
-                            &url](const std::unique_ptr<UserScript>& script) {
-    return DoesContentScriptMatch(*script, frame, url);
-  };
-
-  if (base::ranges::any_of(manifest_scripts.begin(), manifest_scripts.end(),
-                           does_script_match)) {
-    return true;
+      // Note - more granular checks (e.g. against URL patterns) are desirable
+      // for performance (to avoid creating unnecessary URLLoaderFactory via
+      // URLLoaderFactoryManager), but not necessarily for security (because
+      // there are anyway no OOPIFs inside the webView process -
+      // https://crbug.com/614463).  At the same time, more granular checks are
+      // difficult to achieve, because the UserScript objects are not retained
+      // (i.e. only UserScriptIDs are available) by WebViewContentScriptManager.
+      if (!script_ids.empty())
+        return true;
+    }
   }
 
-  // `manager` can be null for some unit tests which do not initialize the
-  // ExtensionSystem.
-  UserScriptManager* manager =
-      ExtensionSystem::Get(frame->GetProcess()->GetBrowserContext())
-          ->user_script_manager();
-  if (manager) {
-    const UserScriptList& dynamic_scripts =
-        manager->GetUserScriptLoaderForExtension(extension.id())
-            ->GetLoadedDynamicScripts();
-    return base::ranges::any_of(dynamic_scripts.begin(), dynamic_scripts.end(),
-                                does_script_match);
+  if (!guest || PermissionsData::CanExecuteScriptEverywhere(
+                    extension.id(), extension.location())) {
+    // Return true if manifest-declared content scripts match.
+    const UserScriptList& manifest_scripts =
+        ContentScriptsInfo::GetContentScripts(&extension);
+    if (DoContentScriptsMatch(manifest_scripts, frame, url))
+      return true;
+
+    // Return true if dynamic content scripts match.  Note that `manager` can be
+    // null for some unit tests which do not initialize the ExtensionSystem.
+    UserScriptManager* manager =
+        ExtensionSystem::Get(frame->GetProcess()->GetBrowserContext())
+            ->user_script_manager();
+    if (manager) {
+      const UserScriptList& dynamic_scripts =
+          manager->GetUserScriptLoaderForExtension(extension.id())
+              ->GetLoadedDynamicScripts();
+      if (DoContentScriptsMatch(dynamic_scripts, frame, url))
+        return true;
+    }
   }
 
+  // Otherwise, no content script from `extension` can run in `frame` at `url`.
   return false;
 }
 
@@ -372,37 +409,6 @@ void ContentScriptTracker::RenderFrameDeleted(
   auto& process_data =
       RenderProcessHostUserData::GetOrCreate(*frame->GetProcess());
   process_data.RemoveFrame(frame);
-}
-
-// static
-void ContentScriptTracker::ReadyToCommitNavigationWithGuestViewContentScripts(
-    base::PassKey<WebViewGuest> pass_key,
-    content::WebContents* outer_web_contents,
-    content::NavigationHandle* navigation) {
-  // Only Chrome Apps and Extensions can inject content scripts.  OTOH,
-  // <webview> tag can be used by Chrome Apps and/or WebUI pages.  Do nothing
-  // for WebUI and only continue when the `outer_web_contents` is a Chrome App.
-  url::Origin outer_origin =
-      outer_web_contents->GetMainFrame()->GetLastCommittedOrigin();
-  if (outer_origin.scheme() != kExtensionScheme)
-    return;
-  ExtensionId app_id = outer_origin.host();
-
-  // Store `extension_id` in `content_scripts_for_process`.
-  // ContentScriptTracker never removes entries from this set - once a renderer
-  // process gains an ability to talk on behalf of a content script, it retains
-  // this ability forever.  Note that the set will be destroyed together with
-  // the RenderProcessHost (see also a comment inside
-  // ContentScriptsSet::GetOrCreate).
-  //
-  // TODO(lukasza): false positives in ContentScriptTracker are okay, but
-  // ideally we would only populate `content_scripts_for_process` below if
-  // content script URL patterns actually match the target URL of the
-  // navigation.
-  content::RenderProcessHost* inner_process =
-      navigation->GetRenderFrameHost()->GetProcess();
-  auto& process_data = RenderProcessHostUserData::GetOrCreate(*inner_process);
-  process_data.AddContentScript(app_id);
 }
 
 // static
