@@ -40,7 +40,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace chromeos {
+namespace ash {
 namespace first_run {
 
 namespace {
@@ -139,7 +139,7 @@ bool ShouldLaunchHelpApp(Profile* profile) {
   if (!IsRegularUserOrSupervisedChild(user_manager))
     return false;
 
-  if (chromeos::switches::ShouldSkipOobePostLogin())
+  if (switches::ShouldSkipOobePostLogin())
     return false;
 
   if (command_line->HasSwitch(switches::kForceFirstRunUI)) {
@@ -177,4 +177,4 @@ void LaunchHelpApp(Profile* profile) {
 }
 
 }  // namespace first_run
-}  // namespace chromeos
+}  // namespace ash

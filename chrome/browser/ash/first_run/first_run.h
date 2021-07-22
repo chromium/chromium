@@ -9,9 +9,9 @@ class Profile;
 
 namespace user_prefs {
 class PrefRegistrySyncable;
-}
+}  // namespace user_prefs
 
-namespace chromeos {
+namespace ash {
 namespace first_run {
 
 // Registers preferences related to ChromeOS first-run tutorial.
@@ -25,15 +25,6 @@ bool ShouldLaunchHelpApp(Profile* profile);
 // immediately, but visible only after the session has begun.
 void LaunchHelpApp(Profile* profile);
 
-}  // namespace first_run
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace first_run {
-using ::chromeos::first_run::LaunchHelpApp;
-using ::chromeos::first_run::ShouldLaunchHelpApp;
 }  // namespace first_run
 }  // namespace ash
 

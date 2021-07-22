@@ -10,7 +10,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
 
-namespace chromeos {
+namespace ash {
 
 class DriveWebContentsManager;
 
@@ -92,6 +92,11 @@ class DriveFirstRunController {
   DISALLOW_COPY_AND_ASSIGN(DriveFirstRunController);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::DriveFirstRunController;
 }  // namespace chromeos
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos

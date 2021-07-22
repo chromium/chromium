@@ -22,7 +22,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -180,4 +180,4 @@ IN_PROC_BROWSER_TEST_F(DriveFirstRunTest, TimedOut) {
   EXPECT_TRUE(timed_out());
 }
 
-}  // namespace chromeos
+}  // namespace ash

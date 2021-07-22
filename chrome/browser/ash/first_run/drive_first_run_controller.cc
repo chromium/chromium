@@ -48,7 +48,7 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -450,4 +450,4 @@ void DriveFirstRunController::ShowNotification() {
       NotificationHandler::Type::TRANSIENT, notification, /*metadata=*/nullptr);
 }
 
-}  // namespace chromeos
+}  // namespace ash
