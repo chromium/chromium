@@ -6,11 +6,14 @@
     width: 100%;
   }
 
+  ntp-module-header {
+    margin-bottom: 8px;
+  }
+
   #files {
     display: flex;
     flex-direction: column;
     margin-bottom: 12px;
-    margin-top: 15px;
   }
 
   .file:hover {
@@ -69,6 +72,17 @@
     width: 24px;
   }
 </style>
+<ntp-module-header
+    show-dismiss-button show-info-button-dropdown
+    dismiss-text="[[i18nRecursive('',
+                                  'modulesDismissButtonText',
+                                  'modulesDriveFilesLower')]]"
+    disable-text="[[i18nRecursive('',
+                                  'modulesDisableButtonText',
+                                  'modulesDriveSentence2')]]"
+    icon-src="icons/drive_logo.svg">
+  [[i18n('modulesDriveTitle')]]
+</ntp-module-header>
 <div id="files">
   <template id="fileRepeat" is="dom-repeat" items="[[files]]">
     <a class="file" href="[[item.itemUrl.url]]">

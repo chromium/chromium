@@ -14,7 +14,6 @@ generate_grd("build_grdp") {
     "drive_folder.svg",
     "drive_form.svg",
     "drive_image.svg",
-    "drive_logo.svg",
     "drive_pdf.svg",
     "drive_sheets.svg",
     "drive_slides.svg",

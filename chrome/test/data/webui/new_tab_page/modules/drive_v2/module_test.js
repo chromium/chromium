@@ -81,7 +81,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     assertTrue(!module);
   });
 
-  test('module has height of 56 with only one file', async () => {
+  test('module has height of 86 with only one file', async () => {
     const data = {
       files: [
         {
@@ -96,10 +96,10 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     await testProxy.handler.whenCalled('getFiles');
     module.$.fileRepeat.render();
 
-    assertEquals(56, module.offsetHeight);
+    assertEquals(86, module.offsetHeight);
   });
 
-  test('module has height of 112 with two files', async () => {
+  test('module has height of 142 with two files', async () => {
     const data = {
       files: [
         {
@@ -117,10 +117,10 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     await testProxy.handler.whenCalled('getFiles');
     module.$.fileRepeat.render();
 
-    assertEquals(112, module.offsetHeight);
+    assertEquals(142, module.offsetHeight);
   });
 
-  test('module has height of 168 with 3 files', async () => {
+  test('module has height of 198 with 3 files', async () => {
     const data = {
       files: [
         {
@@ -141,6 +141,6 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     await testProxy.handler.whenCalled('getFiles');
     module.$.fileRepeat.render();
 
-    assertEquals(168, module.offsetHeight);
+    assertEquals(198, module.offsetHeight);
   });
 });

@@ -11,6 +11,22 @@
     height: 22px;
   }
 
+  .icon-background {
+    align-items: center;
+    background-color: var(--ntp-module-scroll-button-color);
+    border-radius: 50%;
+    display: flex;
+    height: 18px;
+    justify-content: center;
+    margin-inline-end: 8px;
+    width: 18px;
+  }
+
+  .module-icon {
+    height: 10px;
+    width: 10px;
+  }
+
   #title {
     color: var(--cr-primary-text-color);
     font-size: 15px;
@@ -44,6 +60,21 @@
     margin-inline-end: -10px;
   }
 
+  :host([modules-redesigned-enabled_]) #menuButton {
+    background-color: var(--ntp-module-scroll-button-color);
+    height: 18px;
+    margin: 0;
+    width: 18px;
+  }
+
+  :host([modules-redesigned-enabled_]) #menuButton:hover {
+    background-color: var(--ntp-module-scroll-button-hover-color);
+  }
+
+  :host([modules-redesigned-enabled_]) .dropdown-item {
+    font-size: 13px;
+  }
+
   #description {
     color: var(--cr-secondary-text-color);
     font-size: 12px;
@@ -52,6 +83,11 @@
   }
 </style>
 <div id="titleContainer">
+  <template is="dom-if" if="[[iconSrc]]">
+    <div class="icon-background">
+      <img class="module-icon" src="[[iconSrc]]"></img>
+    </div>
+  </template>
   <span id="title"><slot></slot></span>
   <template is="dom-if" if="[[chipText]]">
     <div id="chip">[[chipText]]</div>
@@ -84,4 +120,9 @@
       on-click="onCustomizeButtonClick_">
     [[i18n('modulesCustomizeButtonText')]]
   </button>
+  <template is="dom-if" if="[[showInfoButtonDropdown]]">
+    <button id="infoButton" class="dropdown-item">
+      [[i18n('moduleInfoButtonTitle')]]
+    </button>
+  </template>
 </cr-action-menu>

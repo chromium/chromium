@@ -2,13 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import '../module_header.js';
 
-import {loadTimeData} from '../../i18n_setup.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior, loadTimeData} from '../../i18n_setup.js';
 import {DriveProxy} from '../drive/drive_module_proxy.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
-class DriveModuleElement extends PolymerElement {
+/**
+ * The Drive module, which serves as an inside look in to recent activity within
+ * a user's Google Drive.
+ * @polymer
+ * @extends {PolymerElement}
+ */
+class DriveModuleElement extends mixinBehaviors
+([I18nBehavior], PolymerElement) {
   static get is() {
     return 'ntp-drive-module-redesigned';
   }

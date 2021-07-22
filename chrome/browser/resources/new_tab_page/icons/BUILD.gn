@@ -16,6 +16,7 @@ generate_grd("build_grdp") {
     "colored_header.svg",
     "colors.svg",
     "copy.svg",
+    "drive_logo.svg",
     "facebook.svg",
     "generic_globe.svg",
     "google_logo.svg",

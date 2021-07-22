@@ -68,7 +68,7 @@ constexpr char kDriveFolderIconResourceName[] =
     "realbox/icons/drive_folder.svg";
 constexpr char kDriveFormIconResourceName[] = "realbox/icons/drive_form.svg";
 constexpr char kDriveImageIconResourceName[] = "realbox/icons/drive_image.svg";
-constexpr char kDriveLogoIconResourceName[] = "realbox/icons/drive_logo.svg";
+constexpr char kDriveLogoIconResourceName[] = "icons/drive_logo.svg";
 constexpr char kDrivePdfIconResourceName[] = "realbox/icons/drive_pdf.svg";
 constexpr char kDriveSheetsIconResourceName[] =
     "realbox/icons/drive_sheets.svg";
