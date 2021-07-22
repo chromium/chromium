@@ -45,13 +45,6 @@ NSAttributedString* AttributedStringFromStringWithLink(
     NSDictionary* text_attributes,
     NSDictionary* link_attributes);
 
-// Deprecated.
-// Prefer |AttributedStringFromStringWithLink|. Do not use LabelLinkController.
-// Parses a string with an embedded link inside, delineated by "BEGIN_LINK" and
-// "END_LINK". Returns the string without the delimiters. The function
-// asserts that there is at most one link.
-StringWithTag ParseStringWithLink(NSString* text);
-
 // Parses a string with embedded links inside, delineated by "BEGIN_LINK" and
 // "END_LINK". Returns the string without the delimiters and a list of all
 // ranges for text contained inside the tag delimiters.

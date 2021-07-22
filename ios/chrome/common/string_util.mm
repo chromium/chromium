@@ -36,10 +36,6 @@ StringWithTags& StringWithTags::operator=(StringWithTags&& other) = default;
 
 StringWithTags::~StringWithTags() = default;
 
-StringWithTag ParseStringWithLink(NSString* text) {
-  return ParseStringWithTag(text, kBeginLinkTag, kEndLinkTag);
-}
-
 StringWithTags ParseStringWithLinks(NSString* text) {
   return ParseStringWithTags(text, kBeginLinkTag, kEndLinkTag);
 }
@@ -48,7 +44,8 @@ NSAttributedString* AttributedStringFromStringWithLink(
     NSString* text,
     NSDictionary* text_attributes,
     NSDictionary* link_attributes) {
-  StringWithTag parsed_string = ParseStringWithLink(text);
+  StringWithTag parsed_string =
+      ParseStringWithTag(text, kBeginLinkTag, kEndLinkTag);
   NSMutableAttributedString* attributed_string =
       [[NSMutableAttributedString alloc] initWithString:parsed_string.string
                                              attributes:text_attributes];

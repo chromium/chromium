@@ -149,69 +149,6 @@ TEST_F(StringUtilTest, AttributedStringFromStringWithLinkWithEmptyLink) {
   EXPECT_NSEQ(test_case.textAttributes, resultTextAttributes);
 }
 
-TEST_F(StringUtilTest, ParseStringWithLink) {
-  struct TestCase {
-    NSString* input;
-    StringWithTag expected;
-  };
-
-  const TestCase kAllTestCases[] = {
-      TestCase{
-          @"Text without link.",
-          StringWithTag{
-              @"Text without link.",
-              NSRange{NSNotFound, 0},
-          },
-      },
-      TestCase{
-          @"Text with empty link BEGIN_LINK END_LINK.",
-          StringWithTag{
-              @"Text with empty link .",
-              NSRange{21, 0},
-          },
-      },
-      TestCase{
-          @"Text with BEGIN_LINK and no end link.",
-          StringWithTag{
-              @"Text with BEGIN_LINK and no end link.",
-              NSRange{NSNotFound, 0},
-          },
-      },
-      TestCase{
-          @"Text with no begin link and END_LINK.",
-          StringWithTag{
-              @"Text with no begin link and END_LINK.",
-              NSRange{NSNotFound, 0},
-          },
-      },
-      TestCase{@"Text with END_LINK before BEGIN_LINK.",
-               StringWithTag{
-                   @"Text with END_LINK before BEGIN_LINK.",
-                   NSRange{NSNotFound, 0},
-               }},
-      TestCase{
-          @"Text with valid BEGIN_LINK link END_LINK and spaces.",
-          StringWithTag{
-              @"Text with valid link and spaces.",
-              NSRange{16, 4},
-          },
-      },
-      TestCase{
-          @"Text with valid BEGIN_LINKlinkEND_LINK and no spaces.",
-          StringWithTag{
-              @"Text with valid link and no spaces.",
-              NSRange{16, 4},
-          },
-      },
-  };
-
-  for (const TestCase& test_case : kAllTestCases) {
-    const StringWithTag result = ParseStringWithLink(test_case.input);
-    EXPECT_NSEQ(result.string, test_case.expected.string);
-    EXPECT_EQ(result.range, test_case.expected.range);
-  }
-}
-
 TEST_F(StringUtilTest, ParseStringWithLinks) {
   struct TestCase {
     NSString* input;
