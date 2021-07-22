@@ -786,15 +786,17 @@ void DidDownloadPaymentCredentialIconAndShowUserPrompt(
                 WrapPersistent(options)));
 }
 
-void CreatePublicKeyCredentialForPaymentCredential(
+void OnIsUserVerifyingPlatformAuthenticatorAvailableForPaymentCredentialCreate(
     const PaymentCredentialCreationOptions* options,
-    ScriptPromiseResolver* resolver) {
+    std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
+    bool is_available) {
   // TODO(kenrb): Much of this could eventually be deduplicated with the
   // PublicKeyCredential handling code in CredentialsContainer::create(), but
   // it is preferable to keep these separate during the experimentation stage
   // for SecurePaymentConfirmation because this is subject to a lot of change
   // and possibly removal.
 
+  auto* resolver = scoped_resolver->Release();
   if (!options->rp() || !options->rp()->hasId() || !options->instrument() ||
       !options->instrument()->displayName() || !options->instrument()->icon()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -818,6 +820,14 @@ void CreatePublicKeyCredentialForPaymentCredential(
 
   if (!RuntimeEnabledFeatures::SecurePaymentConfirmationDebugEnabled()) {
     // PaymentCredentials is only supported with user-verifying authenticators.
+    if (!is_available) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "A user verifying platform authenticator is required for payments.",
+          "NotAllowedError"));
+      return;
+    }
+
     auto selection_criteria =
         mojom::blink::AuthenticatorSelectionCriteria::New();
     selection_criteria->authenticator_attachment =
@@ -918,6 +928,17 @@ void CreatePublicKeyCredentialForPaymentCredential(
       WTF::Bind(&DidDownloadPaymentCredentialIconAndShowUserPrompt,
                 std::make_unique<ScopedPromiseResolver>(resolver),
                 std::move(mojo_options), WrapPersistent(options)));
+}
+
+void CreatePublicKeyCredentialForPaymentCredential(
+    const PaymentCredentialCreationOptions* options,
+    ScriptPromiseResolver* resolver) {
+  auto* authenticator =
+      CredentialManagerProxy::From(resolver->GetScriptState())->Authenticator();
+  authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(WTF::Bind(
+      &OnIsUserVerifyingPlatformAuthenticatorAvailableForPaymentCredentialCreate,
+      WrapPersistent(options),
+      std::make_unique<ScopedPromiseResolver>(resolver)));
 }
 
 }  // namespace
