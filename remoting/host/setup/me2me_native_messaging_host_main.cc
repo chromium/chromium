@@ -47,6 +47,8 @@
 #include "base/process/process_info.h"
 #include "base/win/registry.h"
 #include "remoting/host/pairing_registry_delegate_win.h"
+
+#include <windows.h>
 #endif  // defined(OS_WIN)
 
 #if defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS_ASH)

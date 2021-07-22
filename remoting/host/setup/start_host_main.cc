@@ -39,6 +39,8 @@
 
 #if defined(OS_WIN)
 #include "base/process/process_info.h"
+
+#include <windows.h>
 #endif  // defined(OS_WIN)
 
 namespace remoting {
