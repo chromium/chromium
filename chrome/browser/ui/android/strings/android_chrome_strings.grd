@@ -4043,6 +4043,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Quick Action Search Widget Icon
       </message>
 
+      <!-- Dino Widget -->
+      <message name="IDS_DINO_WIDGET_TEXT" desc="Text displayed on the Dino Widget">
+              Chrome Dino
+      </message>
+
       <!-- Launcher Shortcuts -->
       <message name="IDS_DISABLED_INCOGNITO_LAUNCHER_SHORTCUT_MESSAGE" desc="Text for a toast displayed prompting the user to remove the disabled 'New Incognito tab' app shortcut and recreate it.">
         Remove and recreate this shortcut
