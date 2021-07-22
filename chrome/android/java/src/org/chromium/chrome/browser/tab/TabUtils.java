@@ -100,7 +100,7 @@ public class TabUtils {
             // The device is a phone, do not check the tab size.
             return false;
         }
-        Activity activity = ((TabImpl) tab).getActivity();
+        Activity activity = getActivity(tab);
         if (activity == null) {
             // It is possible that we are in custom tabs or tests, and need to access the activity
             // differently.
