@@ -10,15 +10,22 @@ import './signin_shared_css.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'signin-email-confirmation-app',
+/** @polymer */
+class SigninEmailConfirmationAppElement extends PolymerElement {
+  static get is() {
+    return 'signin-email-confirmation-app';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     const args = /** @type {{lastEmail: string, newEmail: string}} */
         (JSON.parse(chrome.getVariableValue('dialogArguments')));
     const {lastEmail, newEmail} = args;
@@ -29,16 +36,19 @@ Polymer({
             'signinEmailConfirmationCreateProfileButtonSubtitle', newEmail);
     this.$.startSyncRadioButtonSubtitle.textContent = loadTimeData.getStringF(
         'signinEmailConfirmationStartSyncButtonSubtitle', newEmail);
-  },
+  }
 
   /** @private */
   onConfirm_() {
-    const action = this.$$('cr-radio-group').selected;
+    const action = this.shadowRoot.querySelector('cr-radio-group').selected;
     chrome.send('dialogClose', [JSON.stringify({'action': action})]);
-  },
+  }
 
   /** @private */
   onCancel_() {
     chrome.send('dialogClose', [JSON.stringify({'action': 'cancel'})]);
-  },
-});
+  }
+}
+
+customElements.define(
+    SigninEmailConfirmationAppElement.is, SigninEmailConfirmationAppElement);

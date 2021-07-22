@@ -11,8 +11,8 @@ import './signin_shared_css.js';
 import './signin_vars_css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EnterpriseProfileInfo, EnterpriseProfileWelcomeBrowserProxy, EnterpriseProfileWelcomeBrowserProxyImpl} from './enterprise_profile_welcome_browser_proxy.js';
 
@@ -30,72 +30,82 @@ document.addEventListener('DOMContentLoaded', () => {
   document.body.style.width = 'auto';
 });
 
-Polymer({
-  is: 'enterprise-profile-welcome-app',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const EnterpriseProfileWelcomeAppElementBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class EnterpriseProfileWelcomeAppElement extends
+    EnterpriseProfileWelcomeAppElementBase {
+  static get is() {
+    return 'enterprise-profile-welcome-app';
+  }
 
-  behaviors: [
-    WebUIListenerBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** Whether the account is managed */
-    showEnterpriseBadge_: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      /** Whether the account is managed */
+      showEnterpriseBadge_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** URL for the profile picture */
-    pictureUrl_: {
-      type: String,
-    },
+      /** URL for the profile picture */
+      pictureUrl_: String,
 
-    /** The title about enterprise management */
-    enterpriseTitle_: {
-      type: String,
-    },
+      /** The title about enterprise management */
+      enterpriseTitle_: String,
 
-    /** The detailed info about enterprise management */
-    enterpriseInfo_: {
-      type: String,
-    },
+      /** The detailed info about enterprise management */
+      enterpriseInfo_: String,
 
-    /** @private */
-    isModalDialog_: {
-      type: Boolean,
-      reflectToAttribute: true,
-      value() {
-        return loadTimeData.getBoolean('isModalDialog');
+      /** @private */
+      isModalDialog_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value() {
+          return loadTimeData.getBoolean('isModalDialog');
+        }
+      },
+
+      /** The label for the button to proceed with the flow */
+      proceedLabel_: String,
+
+      /** @private */
+      disable_proceed_button_: {
+        type: Boolean,
+        value: false,
       }
-    },
+    };
+  }
 
-    /** The label for the button to proceed with the flow */
-    proceedLabel_: {
-      type: String,
-    },
+  constructor() {
+    super();
 
-    /** @private */
-    disable_proceed_button_: {
-      type: Boolean,
-      value: false,
-    }
-  },
+    /** @private {!EnterpriseProfileWelcomeBrowserProxy} */
+    this.enterpriseProfileWelcomeBrowserProxy_ =
+        EnterpriseProfileWelcomeBrowserProxyImpl.getInstance();
+  }
 
-  /** @private {?EnterpriseProfileWelcomeBrowserProxy} */
-  enterpriseProfileWelcomeBrowserProxy_: null,
 
   /** @override */
   ready() {
-    this.enterpriseProfileWelcomeBrowserProxy_ =
-        EnterpriseProfileWelcomeBrowserProxyImpl.getInstance();
+    super.ready();
+
     this.addWebUIListener(
         'on-profile-info-changed',
         (/** @type {!EnterpriseProfileInfo} */ info) =>
             this.setProfileInfo_(info));
     this.enterpriseProfileWelcomeBrowserProxy_.initialized().then(
         info => this.setProfileInfo_(info));
-  },
+  }
 
   /**
    * Called when the proceed button is clicked.
@@ -104,7 +114,7 @@ Polymer({
   onProceed_() {
     this.disable_proceed_button_ = true;
     this.enterpriseProfileWelcomeBrowserProxy_.proceed();
-  },
+  }
 
   /**
    * Called when the cancel button is clicked.
@@ -112,7 +122,7 @@ Polymer({
    */
   onCancel_() {
     this.enterpriseProfileWelcomeBrowserProxy_.cancel();
-  },
+  }
 
   /**
    * @param {!EnterpriseProfileInfo} info
@@ -125,5 +135,8 @@ Polymer({
     this.enterpriseTitle_ = info.enterpriseTitle;
     this.enterpriseInfo_ = info.enterpriseInfo;
     this.proceedLabel_ = info.proceedLabel;
-  },
-});
+  }
+}
+
+customElements.define(
+    EnterpriseProfileWelcomeAppElement.is, EnterpriseProfileWelcomeAppElement);

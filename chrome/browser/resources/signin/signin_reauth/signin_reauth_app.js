@@ -10,44 +10,63 @@ import './signin_shared_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SigninReauthBrowserProxy, SigninReauthBrowserProxyImpl} from './signin_reauth_browser_proxy.js';
 
-Polymer({
-  is: 'signin-reauth-app',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SigninReauthAppElementBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class SigninReauthAppElement extends SigninReauthAppElementBase {
+  static get is() {
+    return 'signin-reauth-app';
+  }
 
-  behaviors: [WebUIListenerBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @private */
-    accountImageSrc_: {
-      type: String,
-      value() {
-        return loadTimeData.getString('accountImageUrl');
+  static get properties() {
+    return {
+      /** @private */
+      accountImageSrc_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('accountImageUrl');
+        },
       },
-    },
 
-    /** @private */
-    confirmButtonHidden_: {type: Boolean, value: true},
+      /** @private */
+      confirmButtonHidden_: {type: Boolean, value: true},
 
-    /** @private */
-    cancelButtonHidden_: {type: Boolean, value: true}
-  },
+      /** @private */
+      cancelButtonHidden_: {type: Boolean, value: true}
+    };
+  }
 
-  /** @private {SigninReauthBrowserProxy} */
-  signinReauthBrowserProxy_: null,
+  constructor() {
+    super();
+
+    /** @private {!SigninReauthBrowserProxy} */
+    this.signinReauthBrowserProxy_ = SigninReauthBrowserProxyImpl.getInstance();
+  }
+
 
   /** @override */
-  attached() {
-    this.signinReauthBrowserProxy_ = SigninReauthBrowserProxyImpl.getInstance();
+  connectedCallback() {
+    super.connectedCallback();
+
     this.addWebUIListener(
         'reauth-type-received', this.onReauthTypeReceived_.bind(this));
     this.signinReauthBrowserProxy_.initialize();
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -57,12 +76,12 @@ Polymer({
     this.signinReauthBrowserProxy_.confirm(
         this.getConsentDescription_(),
         this.getConsentConfirmation_(e.composedPath()));
-  },
+  }
 
   /** @private */
   onCancel_() {
     this.signinReauthBrowserProxy_.cancel();
-  },
+  }
 
   /**
    * @param {boolean} requiresReauth Whether the user will be asked to
@@ -73,7 +92,7 @@ Polymer({
     this.confirmButtonHidden_ = false;
     this.$.confirmButton.focus();
     this.cancelButtonHidden_ = false;
-  },
+  }
 
   /** @return {!Array<string>} Text of the consent description elements. */
   getConsentDescription_() {
@@ -83,7 +102,7 @@ Polymer({
             .map(element => element.innerHTML.trim());
     assert(consentDescription);
     return consentDescription;
-  },
+  }
 
   /**
    * @param {!Array<!HTMLElement>} path Path of the click event. Must contain
@@ -100,5 +119,7 @@ Polymer({
     }
     assertNotReached('No consent confirmation element found.');
     return '';
-  },
-});
+  }
+}
+
+customElements.define(SigninReauthAppElement.is, SigninReauthAppElement);

@@ -13,60 +13,76 @@ import './signin_shared_css.js';
 import './signin_vars_css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ProfileCustomizationBrowserProxy, ProfileCustomizationBrowserProxyImpl, ProfileInfo} from './profile_customization_browser_proxy.js';
 
-Polymer({
-  is: 'profile-customization-app',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const ProfileCustomizationAppElementBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
 
-  behaviors: [
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+class ProfileCustomizationAppElement extends
+    ProfileCustomizationAppElementBase {
+  static get is() {
+    return 'profile-customization-app';
+  }
 
-  properties: {
-    /** Whether the account is managed (Enterprise) */
-    isManaged_: {
-      type: Boolean,
-      value: false,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** Local profile name, editable by user input */
-    profileName_: {
-      type: String,
-      value: '',
-    },
+  static get properties() {
+    return {
+      /** Whether the account is managed (Enterprise) */
+      isManaged_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** URL for the profile picture */
-    pictureUrl_: {
-      type: String,
-    },
+      /** Local profile name, editable by user input */
+      profileName_: {
+        type: String,
+        value: '',
+      },
 
-    /** Welcome title for the bubble */
-    welcomeTitle_: {
-      type: String,
-    },
-  },
+      /** URL for the profile picture */
+      pictureUrl_: String,
 
-  /** @private {?ProfileCustomizationBrowserProxy} */
-  profileCustomizationBrowserProxy_: null,
+      /** Welcome title for the bubble */
+      welcomeTitle_: String,
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {!ProfileCustomizationBrowserProxy} */
+    this.profileCustomizationBrowserProxy_ =
+        ProfileCustomizationBrowserProxyImpl.getInstance();
+  }
+
+
 
   /** @override */
   ready() {
+    super.ready();
+
     // profileName_ is only set now, because it triggers a validation of the
     // input which crashes if it's done too early.
     this.profileName_ = loadTimeData.getString('profileName');
-    this.profileCustomizationBrowserProxy_ =
-        ProfileCustomizationBrowserProxyImpl.getInstance();
     this.addWebUIListener(
         'on-profile-info-changed',
         (/** @type {!ProfileInfo} */ info) => this.setProfileInfo_(info));
     this.profileCustomizationBrowserProxy_.initialized().then(
         info => this.setProfileInfo_(info));
-  },
+  }
 
   /**
    * Called when the Done button is clicked. Sends the profile name back to
@@ -75,7 +91,7 @@ Polymer({
    */
   onDoneCustomizationClicked_() {
     this.profileCustomizationBrowserProxy_.done(this.profileName_);
-  },
+  }
 
   /**
    * Returns whether the Done button should be disabled.
@@ -84,7 +100,7 @@ Polymer({
    */
   isDoneButtonDisabled_() {
     return !this.profileName_ || !this.$.nameInput.validate();
-  },
+  }
 
   /**
    * @param {!ProfileInfo} profileInfo
@@ -96,5 +112,8 @@ Polymer({
     this.pictureUrl_ = profileInfo.pictureUrl;
     this.isManaged_ = profileInfo.isManaged;
     this.welcomeTitle_ = profileInfo.welcomeTitle;
-  },
-});
+  }
+}
+
+customElements.define(
+    ProfileCustomizationAppElement.is, ProfileCustomizationAppElement);

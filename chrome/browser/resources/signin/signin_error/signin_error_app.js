@@ -10,82 +10,98 @@ import './strings.m.js';
 import './signin_shared_css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'signin-error-app',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SigninErrorAppElementBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
 
-  behaviors: [
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+class SigninErrorAppElement extends SigninErrorAppElementBase {
+  static get is() {
+    return 'signin-error-app';
+  }
 
-  properties: {
-    /** @private {boolean} */
-    isSystemProfile_: {
-      type: Boolean,
-      value: () => loadTimeData.getBoolean('isSystemProfile'),
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private {boolean} */
-    switchButtonUnavailable_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    hideNormalError_: {
-      type: Boolean,
-      value: () => loadTimeData.getString('signinErrorMessage').length === 0,
-    },
-
-    /**
-     * An array of booleans indicating whether profile blocking messages should
-     * be hidden. Position 0 corresponds to the #profile-blocking-error-message
-     * container, and subsequent positions correspond to each of the 3 related
-     * messages respectively.
-     * @private {!Array<boolean>}
-     */
-    hideProfileBlockingErrors_: {
-      type: Array,
-      value: function() {
-        const hide = [
-          'profileBlockedMessage',
-          'profileBlockedAddPersonSuggestion',
-          'profileBlockedRemoveProfileSuggestion',
-        ].map(id => loadTimeData.getString(id).length === 0);
-
-        // Hide the container itself if all of each children are also hidden.
-        hide.unshift(hide.every(hideEntry => hideEntry));
-
-        return hide;
+  static get properties() {
+    return {
+      /** @private {boolean} */
+      isSystemProfile_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isSystemProfile'),
       },
-    },
-  },
+
+      /** @private {boolean} */
+      switchButtonUnavailable_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      hideNormalError_: {
+        type: Boolean,
+        value: () => loadTimeData.getString('signinErrorMessage').length === 0,
+      },
+
+      /**
+       * An array of booleans indicating whether profile blocking messages
+       * should be hidden. Position 0 corresponds to the
+       * #profile-blocking-error-message container, and subsequent positions
+       * correspond to each of the 3 related messages respectively.
+       * @private {!Array<boolean>}
+       */
+      hideProfileBlockingErrors_: {
+        type: Array,
+        value: function() {
+          const hide = [
+            'profileBlockedMessage',
+            'profileBlockedAddPersonSuggestion',
+            'profileBlockedRemoveProfileSuggestion',
+          ].map(id => loadTimeData.getString(id).length === 0);
+
+          // Hide the container itself if all of each children are also hidden.
+          hide.unshift(hide.every(hideEntry => hideEntry));
+
+          return hide;
+        },
+      },
+    };
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.addWebUIListener('switch-button-unavailable', () => {
       this.switchButtonUnavailable_ = true;
       // Move focus to the only displayed button in this case.
-      this.$$('#confirmButton').focus();
+      this.shadowRoot.querySelector('#confirmButton').focus();
     });
-  },
+  }
 
   /** @private */
   onConfirm_() {
     chrome.send('confirm');
-  },
+  }
 
   /** @private */
   onSwitchToExistingProfile_() {
     chrome.send('switchToExistingProfile');
-  },
+  }
 
   /** @private */
   onLearnMore_() {
     chrome.send('learnMore');
-  },
-});
+  }
+}
+
+customElements.define(SigninErrorAppElement.is, SigninErrorAppElement);

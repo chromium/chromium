@@ -12,94 +12,111 @@ import './signin_vars_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SyncConfirmationBrowserProxy, SyncConfirmationBrowserProxyImpl} from './sync_confirmation_browser_proxy.js';
 
-Polymer({
-  is: 'sync-confirmation-app',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SyncConfirmationAppElementBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
 
-  behaviors: [
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
+  static get is() {
+    return 'sync-confirmation-app';
+  }
 
-  properties: {
-    /** @private */
-    accountImageSrc_: {
-      type: String,
-      value() {
-        return loadTimeData.getString('accountPictureUrl');
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /** @private */
+      accountImageSrc_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('accountPictureUrl');
+        },
       },
-    },
 
-    /** @private */
-    isNewDesignModalDialog_: {
-      type: Boolean,
-      reflectToAttribute: true,
-      value() {
-        return loadTimeData.getBoolean('isModalDialog') &&
-            loadTimeData.getBoolean('isNewDesign');
-      }
-    },
-
-    /** @private */
-    isNewDesign_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isNewDesign');
-      }
-    },
-
-    /** @private */
-    highlightColor_: {
-      type: String,
-      value() {
-        if (!loadTimeData.valueExists('highlightColor')) {
-          return '';
+      /** @private */
+      isNewDesignModalDialog_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value() {
+          return loadTimeData.getBoolean('isModalDialog') &&
+              loadTimeData.getBoolean('isNewDesign');
         }
+      },
 
-        return loadTimeData.getString('highlightColor');
+      /** @private */
+      isNewDesign_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isNewDesign');
+        }
+      },
+
+      /** @private */
+      highlightColor_: {
+        type: String,
+        value() {
+          if (!loadTimeData.valueExists('highlightColor')) {
+            return '';
+          }
+
+          return loadTimeData.getString('highlightColor');
+        }
+      },
+
+      /** @private */
+      showEnterpriseBadge_: {
+        type: Boolean,
+        value: false,
       }
-    },
+    };
+  }
 
-    /** @private */
-    showEnterpriseBadge_: {
-      type: Boolean,
-      value: false,
-    }
-  },
+  constructor() {
+    super();
 
-  /** @private {?SyncConfirmationBrowserProxy} */
-  syncConfirmationBrowserProxy_: null,
-
-  /** @override */
-  attached() {
+    /** @private {!SyncConfirmationBrowserProxy} */
     this.syncConfirmationBrowserProxy_ =
         SyncConfirmationBrowserProxyImpl.getInstance();
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+
     this.addWebUIListener(
         'account-info-changed', this.handleAccountInfoChanged_.bind(this));
     this.syncConfirmationBrowserProxy_.requestAccountInfo();
-  },
+  }
 
   /** @private */
   onConfirm_(e) {
     this.syncConfirmationBrowserProxy_.confirm(
         this.getConsentDescription_(), this.getConsentConfirmation_(e.path));
-  },
+  }
 
   /** @private */
   onUndo_() {
     this.syncConfirmationBrowserProxy_.undo();
-  },
+  }
 
   /** @private */
   onGoToSettings_(e) {
     this.syncConfirmationBrowserProxy_.goToSettings(
         this.getConsentDescription_(), this.getConsentConfirmation_(e.path));
-  },
+  }
 
   /**
    * @param {!Array<!HTMLElement>} path Path of the click event. Must contain
@@ -116,7 +133,7 @@ Polymer({
     }
     assertNotReached('No consent confirmation element found.');
     return '';
-  },
+  }
 
   /** @return {!Array<string>} Text of the consent description elements. */
   getConsentDescription_() {
@@ -126,7 +143,7 @@ Polymer({
             .map(element => element.innerHTML.trim());
     assert(consentDescription.length);
     return consentDescription;
-  },
+  }
 
   /**
    * Called when the account image changes.
@@ -139,6 +156,8 @@ Polymer({
   handleAccountInfoChanged_(accountInfo) {
     this.accountImageSrc_ = accountInfo.src;
     this.showEnterpriseBadge_ = accountInfo.showEnterpriseBadge;
-  },
+  }
+}
 
-});
+customElements.define(
+    SyncConfirmationAppElement.is, SyncConfirmationAppElement);

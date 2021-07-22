@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://enterprise-profile-welcome/enterprise_profile_welcome_app.js';
+import {EnterpriseProfileWelcomeAppElement} from 'chrome://enterprise-profile-welcome/enterprise_profile_welcome_app.js';
 
 import {EnterpriseProfileInfo, EnterpriseProfileWelcomeBrowserProxyImpl} from 'chrome://enterprise-profile-welcome/enterprise_profile_welcome_browser_proxy.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
@@ -48,7 +48,7 @@ suite('EnterpriseProfileWelcomeTest', function() {
    */
   function checkImageUrl(expectedUrl) {
     assertTrue(isChildVisible(app, '#avatar'));
-    const img = app.$$('#avatar');
+    const img = app.shadowRoot.querySelector('#avatar');
     assertEquals(expectedUrl, img.src);
   }
 
@@ -58,20 +58,20 @@ suite('EnterpriseProfileWelcomeTest', function() {
    */
   function checkHeaderColor(expectedColor) {
     assertTrue(isChildVisible(app, '#headerContainer'));
-    const headerElement = app.$$('#headerContainer');
+    const headerElement = app.shadowRoot.querySelector('#headerContainer');
     assertEquals(
         expectedColor, getComputedStyle(headerElement).backgroundColor);
   }
 
   test('proceed', async function() {
     assertTrue(isChildVisible(app, '#proceedButton'));
-    app.$$('#proceedButton').click();
+    app.shadowRoot.querySelector('#proceedButton').click();
     await browserProxy.whenCalled('proceed');
   });
 
   test('cancel', async function() {
     assertTrue(isChildVisible(app, '#cancelButton'));
-    app.$$('#cancelButton').click();
+    app.shadowRoot.querySelector('#cancelButton').click();
     await browserProxy.whenCalled('cancel');
   });
 
@@ -80,15 +80,17 @@ suite('EnterpriseProfileWelcomeTest', function() {
     function checkTextValues(
         expectedEnterpriseTitle, expectedEnterpriseInfo, expectedProceedLabel) {
       assertTrue(isChildVisible(app, '#enterpriseTitle'));
-      const enterpriseTitleElement = app.$$('#enterpriseTitle');
+      const enterpriseTitleElement =
+          app.shadowRoot.querySelector('#enterpriseTitle');
       assertEquals(
           expectedEnterpriseTitle, enterpriseTitleElement.textContent.trim());
       assertTrue(isChildVisible(app, '#enterpriseInfo'));
-      const enterpriseInfoElement = app.$$('#enterpriseInfo');
+      const enterpriseInfoElement =
+          app.shadowRoot.querySelector('#enterpriseInfo');
       assertEquals(
           expectedEnterpriseInfo, enterpriseInfoElement.textContent.trim());
       assertTrue(isChildVisible(app, '#proceedButton'));
-      const proceedButton = app.$$('#proceedButton');
+      const proceedButton = app.shadowRoot.querySelector('#proceedButton');
       assertEquals(expectedProceedLabel, proceedButton.textContent.trim());
     }
 

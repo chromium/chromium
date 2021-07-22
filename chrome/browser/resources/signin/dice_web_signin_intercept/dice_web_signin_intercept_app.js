@@ -11,46 +11,67 @@ import './signin_vars_css.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AccountInfo, DiceWebSigninInterceptBrowserProxy, DiceWebSigninInterceptBrowserProxyImpl, InterceptionParameters} from './dice_web_signin_intercept_browser_proxy.js';
 
-Polymer({
-  is: 'dice-web-signin-intercept-app',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const DiceWebSigninInterceptAppElementBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class DiceWebSigninInterceptAppElement extends
+    DiceWebSigninInterceptAppElementBase {
+  static get is() {
+    return 'dice-web-signin-intercept-app';
+  }
 
-  behaviors: [
-    WebUIListenerBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @private {InterceptionParameters} */
-    InterceptionParameters_: Object,
+  static get properties() {
+    return {
+      /** @private {InterceptionParameters} */
+      InterceptionParameters_: Object,
 
-    /** @private {boolean} */
-    acceptButtonClicked_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private {string} */
-    guestLink_: {
-      type: String,
-      value() {
-        return loadTimeData.getString('guestLink');
+      /** @private {boolean} */
+      acceptButtonClicked_: {
+        type: Boolean,
+        value: false,
       },
-    },
-  },
 
-  /** @private {?DiceWebSigninInterceptBrowserProxy} */
-  diceWebSigninInterceptBrowserProxy_: null,
+      /** @private {string} */
+      guestLink_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('guestLink');
+        },
+      },
+    };
+  }
 
-  /** @override */
-  attached() {
+
+  constructor() {
+    super();
+
+    /** @private {!DiceWebSigninInterceptBrowserProxy} */
     this.diceWebSigninInterceptBrowserProxy_ =
         DiceWebSigninInterceptBrowserProxyImpl.getInstance();
+
+    /** @private {?InterceptionParameters} */
+    this.interceptionParameters_ = null;
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+
     this.addWebUIListener(
         'interception-parameters-changed',
         this.handleParametersChanged_.bind(this));
@@ -60,22 +81,22 @@ Polymer({
       // |showGuestOption| is constant during the lifetime of this bubble,
       // therefore it's safe to set the listener only during initialization.
       if (this.interceptionParameters_.showGuestOption) {
-        this.$$('#footer-description a')
+        this.shadowRoot.querySelector('#footer-description a')
             .addEventListener('click', () => this.onGuest_());
       }
     });
-  },
+  }
 
   /** @private */
   onAccept_() {
     this.acceptButtonClicked_ = true;
     this.diceWebSigninInterceptBrowserProxy_.accept();
-  },
+  }
 
   /** @private */
   onCancel_() {
     this.diceWebSigninInterceptBrowserProxy_.cancel();
-  },
+  }
 
   /** @private */
   onGuest_() {
@@ -84,7 +105,7 @@ Polymer({
     }
     this.acceptButtonClicked_ = true;
     this.diceWebSigninInterceptBrowserProxy_.guest();
-  },
+  }
 
   /**
    * Called when the interception parameters are updated.
@@ -97,5 +118,8 @@ Polymer({
         '--header-background-color', parameters.headerBackgroundColor);
     this.style.setProperty('--header-text-color', parameters.headerTextColor);
     this.notifyPath('interceptionParameters_.interceptedAccount.isManaged');
-  },
-});
+  }
+}
+
+customElements.define(
+    DiceWebSigninInterceptAppElement.is, DiceWebSigninInterceptAppElement);

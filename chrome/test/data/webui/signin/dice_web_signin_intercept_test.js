@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_app.js';
-
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {DiceWebSigninInterceptAppElement} from 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_app.js';
 import {AccountInfo, DiceWebSigninInterceptBrowserProxyImpl, InterceptionParameters} from 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_browser_proxy.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
@@ -61,30 +60,31 @@ suite('DiceWebSigninInterceptTest', function() {
   function checkTextValues(
       expectedHeaderText, expectedBodyTitle, expectedBodyText,
       expectedConfirmLabel, expectedCancelLabel) {
-    const headerTextElement = app.$$('#headerText');
+    const headerTextElement = app.shadowRoot.querySelector('#headerText');
     assertEquals(expectedHeaderText, headerTextElement.textContent);
-    const titleElement = app.$$('#title');
+    const titleElement = app.shadowRoot.querySelector('#title');
     assertEquals(expectedBodyTitle, titleElement.textContent);
-    const contentsElement = app.$$('#contents');
+    const contentsElement = app.shadowRoot.querySelector('#contents');
     assertEquals(expectedBodyText, contentsElement.textContent);
-    const confirmButton = app.$$('#acceptButton');
+    const confirmButton = app.shadowRoot.querySelector('#acceptButton');
     assertEquals(expectedConfirmLabel, confirmButton.textContent.trim());
-    const cancelButton = app.$$('#cancelButton');
+    const cancelButton = app.shadowRoot.querySelector('#cancelButton');
     assertEquals(expectedCancelLabel, cancelButton.textContent.trim());
   }
 
   function checkImageUrl(elementId, expectedUrl) {
     assertTrue(isChildVisible(app, elementId));
-    const img = app.$$(elementId);
+    const img = app.shadowRoot.querySelector(elementId);
     assertEquals(expectedUrl, img.src);
   }
 
   test('ClickAccept', function() {
     assertTrue(isChildVisible(app, '#acceptButton'));
     const spinner =
-        /** @type {PaperSpinnerLiteElement} */ (app.$$('paper-spinner-lite'));
-    const acceptButton = app.$$('#acceptButton');
-    const cancelButton = app.$$('#cancelButton');
+        /** @type {PaperSpinnerLiteElement} */ (
+            app.shadowRoot.querySelector('paper-spinner-lite'));
+    const acceptButton = app.shadowRoot.querySelector('#acceptButton');
+    const cancelButton = app.shadowRoot.querySelector('#cancelButton');
     assertFalse(spinner.active);
     assertFalse(acceptButton.disabled);
     assertFalse(cancelButton.disabled);
@@ -100,7 +100,7 @@ suite('DiceWebSigninInterceptTest', function() {
 
   test('ClickCancel', function() {
     assertTrue(isChildVisible(app, '#cancelButton'));
-    app.$$('#cancelButton').click();
+    app.shadowRoot.querySelector('#cancelButton').click();
     return browserProxy.whenCalled('cancel');
   });
 
