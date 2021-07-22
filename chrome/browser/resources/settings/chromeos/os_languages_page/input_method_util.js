@@ -160,10 +160,6 @@ cr.define('settings.input_method_util', function() {
     [SettingsType.LATIN_SETTINGS]: {
       physicalKeyboard: [{
         name: OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
-        dependentOptions: [
-          OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION,
-          OptionType.ENABLE_PREDICTION
-        ]
       }],
       virtualKeyboard: [
         {name: OptionType.ENABLE_SOUND_ON_KEYPRESS}, {
