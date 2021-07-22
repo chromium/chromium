@@ -238,7 +238,7 @@ void SyncServiceImpl::Initialize() {
   if (HasDisableReason(DISABLE_REASON_ENTERPRISE_POLICY) ||
       (HasDisableReason(DISABLE_REASON_NOT_SIGNED_IN) &&
        auth_manager_->IsActiveAccountInfoFullyLoaded())) {
-    StopAndClearImpl();
+    StopAndClear();
   }
 
   // Note: We need to record the initial state *after* calling
@@ -352,7 +352,7 @@ void SyncServiceImpl::AccountStateChanged() {
   if (!IsSignedIn()) {
     // The account was signed out, so shut down.
     sync_disabled_by_admin_ = false;
-    StopAndClearImpl();
+    StopAndClear();
     DCHECK(!engine_);
   } else {
     // Either a new account was signed in, or the existing account's
@@ -613,25 +613,6 @@ void SyncServiceImpl::ResetEngine(ShutdownReason reason) {
   }
 }
 
-void SyncServiceImpl::StopAndClearImpl() {
-  ClearUnrecoverableError();
-  ResetEngine(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
-  // Note: ResetEngine(DISABLE_SYNC_AND_CLEAR_DATA) does *not* clear prefs which
-  // are directly user-controlled such as the set of selected types here, so
-  // that if the user ever chooses to enable Sync again, they start off
-  // with their previous settings by default. We do however require going
-  // through first-time setup again and set SyncRequested to false.
-  sync_prefs_.ClearFirstSetupComplete();
-  sync_prefs_.ClearPassphrasePromptMutedProductVersion();
-  // For explicit passphrase users, clear the encryption key, such that they
-  // will need to reenter it if sync gets re-enabled.
-  sync_prefs_.ClearEncryptionBootstrapToken();
-  SetSyncRequestedAndIgnoreNotification(false);
-  // Also let observers know that Sync-the-feature is now fully disabled
-  // (before it possibly starts up again in transport-only mode).
-  NotifyObservers();
-}
-
 SyncUserSettings* SyncServiceImpl::GetUserSettings() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return user_settings_.get();
@@ -890,7 +871,7 @@ void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
       // actions in the popup. The current experience might not be optimal for
       // the user. We just dismiss the dialog.
       if (IsSetupInProgress()) {
-        StopAndClearImpl();
+        StopAndClear();
         expect_sync_configuration_aborted_ = true;
       }
       // Trigger an unrecoverable error to stop syncing.
@@ -1434,7 +1415,7 @@ void SyncServiceImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
   }
 
   if (is_sync_managed) {
-    StopAndClearImpl();
+    StopAndClear();
   } else {
     // Sync is no longer disabled by policy. Try starting it up if appropriate.
     DCHECK(!engine_);
@@ -1681,10 +1662,22 @@ void SyncServiceImpl::AddTrustedVaultRecoveryMethodFromWeb(
 void SyncServiceImpl::StopAndClear() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1229171): StopAndClearImpl() also sets SyncRequested to
-  // false, so it should be trivial to merge these two methods.
+  ClearUnrecoverableError();
+  ResetEngine(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
+  // Note: ResetEngine(DISABLE_SYNC_AND_CLEAR_DATA) does *not* clear prefs which
+  // are directly user-controlled such as the set of selected types here, so
+  // that if the user ever chooses to enable Sync again, they start off with
+  // their previous settings by default. We do however require going through
+  // first-time setup again and set SyncRequested to false.
+  sync_prefs_.ClearFirstSetupComplete();
+  sync_prefs_.ClearPassphrasePromptMutedProductVersion();
+  // For explicit passphrase users, clear the encryption key, such that they
+  // will need to reenter it if sync gets re-enabled.
+  sync_prefs_.ClearEncryptionBootstrapToken();
   SetSyncRequestedAndIgnoreNotification(false);
-  StopAndClearImpl();
+  // Also let observers know that Sync-the-feature is now fully disabled
+  // (before it possibly starts up again in transport-only mode).
+  NotifyObservers();
 }
 
 void SyncServiceImpl::SetSyncAllowedByPlatform(bool allowed) {

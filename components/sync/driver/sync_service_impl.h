@@ -306,13 +306,6 @@ class SyncServiceImpl : public SyncService,
                                 const std::string& message,
                                 UnrecoverableErrorReason reason);
 
-  // Stops the sync engine and clears the local sync data.
-  // Does NOT set IsSyncRequested to false, use StopAndClear() or
-  // SyncUserSettings::SetSyncRequested() for that.
-  // TODO(crbug.com/1229171): Either rename this method, or merge it with
-  // StopAndClear.
-  void StopAndClearImpl();
-
   // Puts the engine's sync scheduler into NORMAL mode.
   // Called when configuration is complete.
   void StartSyncingWithServer();

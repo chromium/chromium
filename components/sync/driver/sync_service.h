@@ -314,8 +314,8 @@ class SyncService : public KeyedService {
   // ACTIONS / STATE CHANGE REQUESTS
   //////////////////////////////////////////////////////////////////////////////
 
-  // Stops sync-the-feature and clears all local data. Sync-the-transport may
-  // remain active after calling this.
+  // Stops and disables Sync-the-feature and clears all local data.
+  // Sync-the-transport may remain active after calling this.
   virtual void StopAndClear() = 0;
 
   // Controls whether sync is allowed at the platform level. If set to false
