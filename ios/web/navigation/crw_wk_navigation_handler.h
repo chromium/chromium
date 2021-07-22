@@ -55,8 +55,7 @@ class WKBackForwardListItemHolder;
     registerLoadRequestForURL:(const GURL&)URL
        sameDocumentNavigation:(BOOL)sameDocumentNavigation
                hasUserGesture:(BOOL)hasUserGesture
-            rendererInitiated:(BOOL)renderedInitiated
-        placeholderNavigation:(BOOL)placeholderNavigation;
+            rendererInitiated:(BOOL)renderedInitiated;
 
 // Instructs the delegate to display the webView.
 - (void)navigationHandlerDisplayWebView:

@@ -5555,11 +5555,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "use-js-error-page",
-    "owners": [ "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "use-lookalikes-for-navigation-suggestions",
     "owners": [ "jdeblasio", "meacer" ],
     "expiry_milestone": 86

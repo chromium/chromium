@@ -66,7 +66,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // ensureAppLaunchedWithConfiguration for each test.
   if ([self isRunningTest:@selector(testRestoreErrorPage)]) {
     config.features_disabled.push_back(kEnableCloseAllTabsConfirmation);
-    config.features_enabled.push_back(web::features::kUseJSForErrorPage);
   } else {
     config.features_enabled.push_back(kEnableCloseAllTabsConfirmation);
   }

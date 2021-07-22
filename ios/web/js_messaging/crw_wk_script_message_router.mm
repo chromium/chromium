@@ -89,10 +89,6 @@
       didReceiveScriptMessage:(WKScriptMessage*)message {
   // Ignore frame registration messages from internal placeholder pages.
   GURL url = net::GURLWithNSURL(message.frameInfo.request.URL);
-  if (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-      web::wk_navigation_util::IsPlaceholderUrl(url)) {
-    return;
-  }
 
   NSMapTable* webViewToHandlerMap = [_handlers objectForKey:message.name];
   DCHECK(webViewToHandlerMap);

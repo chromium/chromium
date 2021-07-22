@@ -121,9 +121,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
       web_state);
   ErrorPageControllerBridge::CreateForWebState(web_state);
 
-  if (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage)) {
-    InvalidUrlTabHelper::CreateForWebState(web_state);
-  }
+  InvalidUrlTabHelper::CreateForWebState(web_state);
 
   if (base::FeatureList::IsEnabled(kInfobarOverlayUI)) {
     InfobarOverlayRequestInserter::CreateForWebState(web_state);

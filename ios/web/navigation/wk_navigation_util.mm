@@ -35,7 +35,6 @@ const int kMaxSessionSize = 75;
 
 const char kRestoreSessionSessionHashPrefix[] = "session=";
 const char kRestoreSessionTargetUrlHashPrefix[] = "targetUrl=";
-const char kOriginalUrlKey[] = "for";
 NSString* const kReferrerHeaderName = @"Referer";
 
 int GetSafeItemRange(int last_committed_item_index,
@@ -63,26 +62,16 @@ int GetSafeItemRange(int last_committed_item_index,
 }
 
 bool IsWKInternalUrl(const GURL& url) {
-  return (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-          IsPlaceholderUrl(url)) ||
-         IsRestoreSessionUrl(url);
+  return IsRestoreSessionUrl(url);
 }
 
 bool IsWKInternalUrl(NSURL* url) {
-  return (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-          IsPlaceholderUrl(url)) ||
-         IsRestoreSessionUrl(url);
+  return IsRestoreSessionUrl(url);
 }
 
 bool URLNeedsUserAgentType(const GURL& url) {
   if (web::GetWebClient()->IsAppSpecificURL(url))
     return false;
-
-  if (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-      url.SchemeIs(url::kAboutScheme) && IsPlaceholderUrl(url)) {
-    return !web::GetWebClient()->IsAppSpecificURL(
-        ExtractUrlFromPlaceholderUrl(url));
-  }
 
   if (url.SchemeIs(url::kAboutScheme))
     return false;
@@ -188,44 +177,6 @@ bool ExtractTargetURL(const GURL& restore_session_url, GURL* target_url) {
   }
 
   return success;
-}
-
-bool IsPlaceholderUrl(const GURL& url) {
-  DCHECK(!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage));
-  return url.IsAboutBlank() && base::StartsWith(url.query(), kOriginalUrlKey,
-                                                base::CompareCase::SENSITIVE);
-}
-
-bool IsPlaceholderUrl(NSURL* url) {
-  DCHECK(!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage));
-  // about:blank NSURLs don't have nil host and query, so use absolute string
-  // matching.
-  return [url.scheme isEqual:@"about"] &&
-         ([url.absoluteString hasPrefix:@"about:blank?for="] ||
-          [url.absoluteString hasPrefix:@"about://blank?for="]);
-}
-
-GURL CreatePlaceholderUrlForUrl(const GURL& original_url) {
-  DCHECK(!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage));
-  if (!original_url.is_valid())
-    return GURL::EmptyGURL();
-
-  GURL placeholder_url = net::AppendQueryParameter(
-      GURL(url::kAboutBlankURL), kOriginalUrlKey, original_url.spec());
-  DCHECK(placeholder_url.is_valid());
-  return placeholder_url;
-}
-
-GURL ExtractUrlFromPlaceholderUrl(const GURL& url) {
-  DCHECK(!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage));
-  std::string value;
-  if (IsPlaceholderUrl(url) &&
-      net::GetValueForKeyInQuery(url, kOriginalUrlKey, &value)) {
-    GURL decoded_url(value);
-    if (decoded_url.is_valid())
-      return decoded_url;
-  }
-  return GURL::EmptyGURL();
 }
 
 }  // namespace wk_navigation_util

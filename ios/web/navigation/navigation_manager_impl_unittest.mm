@@ -2342,28 +2342,6 @@ TEST_F(NavigationManagerTest, ReusePendingItemForHistoryNavigation) {
   EXPECT_EQ(original_item0, manager_->GetPendingItem());
 }
 
-// Tests that AddPendingItem does not create a new NavigationItem if the new
-// pending item is a reload of app-specific URL.
-TEST_F(NavigationManagerTest, ReusePendingItemForReloadAppSpecificURL) {
-  if (base::FeatureList::IsEnabled(features::kUseJSForErrorPage))
-    return;
-
-  // Simulate a previous app-specific navigation.
-  NSString* url = @"about:blank?for=chrome%3A%2F%2Fnewtab";
-  [mock_wk_list_ setCurrentURL:url];
-  NavigationItem* original_item = manager_->GetItemAtIndex(0);
-
-  OCMExpect([mock_web_view_ URL]).andReturn([[NSURL alloc] initWithString:url]);
-
-  manager_->AddPendingItem(GURL("chrome://newtab"), Referrer(),
-                           ui::PAGE_TRANSITION_RELOAD,
-                           web::NavigationInitiationType::BROWSER_INITIATED,
-                           /*is_post_navigation=*/false,
-                           /*is_using_https_as_default_scheme=*/false);
-
-  EXPECT_EQ(original_item, manager_->GetPendingItem());
-}
-
 // Tests that transient URL rewriters are only applied to a new pending item.
 TEST_F(NavigationManagerTest, TransientURLRewritersOnlyUsedForPendingItem) {
   manager_->AddPendingItem(GURL("http://www.0.com"), Referrer(),
@@ -2734,22 +2712,6 @@ TEST_F(NavigationManagerTest, HideInternalRedirectUrl) {
   NavigationItem* item = manager_->GetItemAtIndex(0);
   ASSERT_TRUE(item);
   EXPECT_EQ(target_url, item->GetVirtualURL());
-  EXPECT_EQ(url, item->GetURL());
-}
-
-// Tests that the virtual URL of a placeholder item is updated to the original
-// URL.
-TEST_F(NavigationManagerTest, HideInternalPlaceholderUrl) {
-  if (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage))
-    return;
-
-  GURL original_url = GURL("http://www.1.com?query=special%26chars");
-  GURL url = wk_navigation_util::CreatePlaceholderUrlForUrl(original_url);
-  NSString* url_spec = base::SysUTF8ToNSString(url.spec());
-  [mock_wk_list_ setCurrentURL:url_spec];
-  NavigationItem* item = manager_->GetItemAtIndex(0);
-  ASSERT_TRUE(item);
-  EXPECT_EQ(original_url, item->GetVirtualURL());
   EXPECT_EQ(url, item->GetURL());
 }
 

@@ -13,9 +13,7 @@
 
 namespace web {
 
-using wk_navigation_util::CreatePlaceholderUrlForUrl;
 using wk_navigation_util::CreateRedirectUrl;
-using wk_navigation_util::IsPlaceholderUrl;
 using wk_navigation_util::IsRestoreSessionUrl;
 using wk_navigation_util::ExtractTargetURL;
 
@@ -138,33 +136,20 @@ ErrorRetryCommand ErrorRetryStateMachine::DidFinishNavigation(
     case ErrorRetryState::kLoadingPlaceholder:
       // (1) Placeholder load for initial failure succeeded.
       if (@available(iOS 13, *)) {
-        // This DCHECK is hit on iOS 12 when navigating to restricted URL. See
-        // crbug.com/1000366 for more details.
-        DCHECK_EQ(web_view_url, CreatePlaceholderUrlForUrl(url_));
+        NOTREACHED();
       }
       state_ = ErrorRetryState::kReadyToDisplayError;
       return ErrorRetryCommand::kLoadError;
 
     case ErrorRetryState::kRetryPlaceholderNavigation:
-      if (IsPlaceholderUrl(web_view_url)) {
-        // (11) Explicitly keep the state the same so after rewriting to the non
-        // placeholder url the else block will trigger.
-        DCHECK_EQ(web_view_url, CreatePlaceholderUrlForUrl(url_));
-        state_ = ErrorRetryState::kRetryPlaceholderNavigation;
-        return ErrorRetryCommand::kRewriteToWebViewURL;
-      } else {
         // The url was written by kRewriteToWebViewURL in the if block, so on
         // this navigation load an error view.
         state_ = ErrorRetryState::kReadyToDisplayError;
         return ErrorRetryCommand::kLoadError;
-      }
     case ErrorRetryState::kNewRequest:
       if (IsRestoreSessionUrl(web_view_url)) {
         // (8) Initial load of restore_session.html. Don't change state or
         // issue command. Wait for the client-side redirect.
-      } else if (IsPlaceholderUrl(web_view_url)) {
-        state_ = ErrorRetryState::kNavigatingToFailedNavigationItem;
-        return ErrorRetryCommand::kRewriteToWebViewURL;
       } else {
         // (2) Initial load succeeded.
         state_ = ErrorRetryState::kNoNavigationError;
@@ -178,12 +163,6 @@ ErrorRetryCommand ErrorRetryStateMachine::DidFinishNavigation(
       break;
 
     case ErrorRetryState::kDisplayingError:
-      if (web_view_url == CreatePlaceholderUrlForUrl(url_)) {
-        // (4) Back/forward to or reload of placeholder URL. Rewrite WebView URL
-        // to prepare for retry.
-        state_ = ErrorRetryState::kNavigatingToFailedNavigationItem;
-        return ErrorRetryCommand::kRewriteToWebViewURL;
-      }
 
       if (IsRestoreSessionUrl(web_view_url)) {
         GURL target_url;

@@ -500,18 +500,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 @synthesize serverRespondsWithContent = _serverRespondsWithContent;
 @synthesize serverResponseDelay = _serverResponseDelay;
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-
-  // Error page Workflow Feature is enabled by test name. This is done because
-  // it is inefficient to use ensureAppLaunchedWithConfiguration for each test.
-  // This should be removed once test config is modified.
-  if ([self isRunningTest:@selector(testNavigateBackToDistilledPage)]) {
-    config.features_enabled.push_back(web::features::kUseJSForErrorPage);
-  }
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   GREYAssertNil([ReadingListAppInterface clearEntries],

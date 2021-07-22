@@ -164,16 +164,6 @@ void NavigationContextImpl::SetLoadingHtmlString(bool is_loading_html_string) {
   is_loading_html_string_ = is_loading_html_string;
 }
 
-bool NavigationContextImpl::IsPlaceholderNavigation() const {
-  DCHECK(!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage));
-  return is_placeholder_navigation_;
-}
-
-void NavigationContextImpl::SetPlaceholderNavigation(bool flag) {
-  DCHECK(!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage));
-  is_placeholder_navigation_ = flag;
-}
-
 void NavigationContextImpl::SetMimeType(NSString* mime_type) {
   mime_type_ = mime_type;
 }

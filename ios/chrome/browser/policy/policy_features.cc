@@ -48,8 +48,5 @@ bool ShouldInstallURLBlocklistPolicyHandlers() {
 
 bool IsURLBlocklistEnabled() {
   return ShouldInstallURLBlocklistPolicyHandlers() &&
-         base::FeatureList::IsEnabled(kURLBlocklistIOS) &&
-         // The error page shown for blocked URLs requires
-         // |web::features::kUseJSForErrorPage| to be enabled.
-         base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage);
+         base::FeatureList::IsEnabled(kURLBlocklistIOS);
 }

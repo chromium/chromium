@@ -136,8 +136,6 @@ void WebTestWithWebState::LoadHtml(NSString* html, const GURL& url) {
   // |-loadHTMLString:baseURL| that doesn't create a navigation entry.
   if (!web_state()->GetNavigationManager()->GetItemCount()) {
     GURL placeholder_url(url::kAboutBlankURL);
-    if (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage))
-      placeholder_url = wk_navigation_util::CreatePlaceholderUrlForUrl(url);
 
     NavigationManager::WebLoadParams params(placeholder_url);
     web_state()->GetNavigationManager()->LoadURLWithParams(params);

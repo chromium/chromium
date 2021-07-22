@@ -389,36 +389,6 @@ TEST_F(WebStateImplTest, ObserverTest) {
   EXPECT_EQ(nullptr, observer->web_state());
 }
 
-// Tests that placeholder navigations are not visible to WebStateObservers.
-TEST_F(WebStateImplTest, PlaceholderNavigationNotExposedToObservers) {
-  if (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage))
-    return;
-
-  FakeWebStateObserver observer(web_state_.get());
-  GURL placeholder_url =
-      wk_navigation_util::CreatePlaceholderUrlForUrl(GURL("chrome://newtab"));
-  std::unique_ptr<NavigationContextImpl> context =
-      NavigationContextImpl::CreateNavigationContext(
-          web_state_.get(), placeholder_url,
-          /*has_user_gesture=*/true,
-          ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK,
-          /*is_renderer_initiated=*/true);
-  context->SetPlaceholderNavigation(true);
-  // Test that OnPageLoaded() is not called.
-  web_state_->OnPageLoaded(placeholder_url, /*load_success=*/true);
-  EXPECT_FALSE(observer.load_page_info());
-  web_state_->OnPageLoaded(placeholder_url, /*load_success=*/false);
-  EXPECT_FALSE(observer.load_page_info());
-
-  // Test that OnNavigationStarted() is not called.
-  web_state_->OnNavigationStarted(context.get());
-  EXPECT_FALSE(observer.did_start_navigation_info());
-
-  // Test that OnNavigationFinished() is not called.
-  web_state_->OnNavigationFinished(context.get());
-  EXPECT_FALSE(observer.did_finish_navigation_info());
-}
-
 // Tests that WebStateDelegate methods appropriately called.
 TEST_F(WebStateImplTest, DelegateTest) {
   FakeWebStateDelegate delegate;

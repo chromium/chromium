@@ -81,25 +81,21 @@ class NavigationContextImpl;
 // Calls |registerLoadRequestForURL| with empty referrer and link or client
 // redirect transition based on user interaction state. Returns navigation
 // context for this request.
-// TODO(crbug.com/1038303): Remove |placeholderNavigation|.
 - (std::unique_ptr<web::NavigationContextImpl>)
     registerLoadRequestForURL:(const GURL&)URL
        sameDocumentNavigation:(BOOL)sameDocumentNavigation
                hasUserGesture:(BOOL)hasUserGesture
-            rendererInitiated:(BOOL)rendererInitiated
-        placeholderNavigation:(BOOL)placeholderNavigation;
+            rendererInitiated:(BOOL)rendererInitiated;
 
 // Creates a page change request and registers it with the navigation handler.
 // Returns navigation context for this request.
-// TODO(crbug.com/1038303): Remove |placeholderNavigation|.
 - (std::unique_ptr<web::NavigationContextImpl>)
     registerLoadRequestForURL:(const GURL&)requestURL
                      referrer:(const web::Referrer&)referrer
                    transition:(ui::PageTransition)transition
        sameDocumentNavigation:(BOOL)sameDocumentNavigation
                hasUserGesture:(BOOL)hasUserGesture
-            rendererInitiated:(BOOL)rendererInitiated
-        placeholderNavigation:(BOOL)placeholderNavigation;
+            rendererInitiated:(BOOL)rendererInitiated;
 
 // Loads |data| of type |MIMEType| and replaces last committed URL with the
 // given |URL|.

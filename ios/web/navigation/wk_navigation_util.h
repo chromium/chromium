@@ -92,17 +92,6 @@ GURL CreateRedirectUrl(const GURL& target_url);
 // "targetUrl=" prefix, returns false.
 bool ExtractTargetURL(const GURL& restore_session_url, GURL* target_url);
 
-// Returns true if |URL| is a placeholder navigation URL.
-bool IsPlaceholderUrl(const GURL& url);
-bool IsPlaceholderUrl(NSURL* url);
-
-// Creates the URL for the placeholder navigation required for Native View and
-// WebUI URLs.
-GURL CreatePlaceholderUrlForUrl(const GURL& original_url);
-
-// Extracts the original URL from the placeholder URL.
-GURL ExtractUrlFromPlaceholderUrl(const GURL& url);
-
 }  // namespace wk_navigation_util
 }  // namespace web
 

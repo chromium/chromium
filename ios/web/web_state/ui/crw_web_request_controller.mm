@@ -35,8 +35,6 @@
 #endif
 
 using web::wk_navigation_util::ExtractTargetURL;
-using web::wk_navigation_util::ExtractUrlFromPlaceholderUrl;
-using web::wk_navigation_util::IsPlaceholderUrl;
 using web::wk_navigation_util::IsRestoreSessionUrl;
 using web::wk_navigation_util::IsWKInternalUrl;
 using web::wk_navigation_util::kReferrerHeaderName;
@@ -194,8 +192,7 @@ enum class BackForwardNavigationType {
                                    transition:loadHTMLTransition
                        sameDocumentNavigation:NO
                                hasUserGesture:YES
-                            rendererInitiated:NO
-                        placeholderNavigation:NO];
+                            rendererInitiated:NO];
   }
   context->SetLoadingHtmlString(true);
   context->SetMimeType(@"text/html");
@@ -223,8 +220,7 @@ enum class BackForwardNavigationType {
                        transition:ui::PageTransition::PAGE_TRANSITION_RELOAD
            sameDocumentNavigation:NO
                    hasUserGesture:YES
-                rendererInitiated:rendererInitiated
-            placeholderNavigation:NO];
+                rendererInitiated:rendererInitiated];
     [self.navigationHandler.navigationStates
            setContext:std::move(navigationContext)
         forNavigation:navigation];
@@ -237,8 +233,7 @@ enum class BackForwardNavigationType {
     registerLoadRequestForURL:(const GURL&)URL
        sameDocumentNavigation:(BOOL)sameDocumentNavigation
                hasUserGesture:(BOOL)hasUserGesture
-            rendererInitiated:(BOOL)rendererInitiated
-        placeholderNavigation:(BOOL)placeholderNavigation {
+            rendererInitiated:(BOOL)rendererInitiated {
   // Get the navigation type from the last main frame load request, and try to
   // map that to a PageTransition.
   WKNavigationType navigationType =
@@ -278,8 +273,7 @@ enum class BackForwardNavigationType {
                            transition:transition
                sameDocumentNavigation:sameDocumentNavigation
                        hasUserGesture:hasUserGesture
-                    rendererInitiated:rendererInitiated
-                placeholderNavigation:placeholderNavigation];
+                    rendererInitiated:rendererInitiated];
   context->SetWKNavigationType(navigationType);
   return context;
 }
@@ -290,8 +284,7 @@ enum class BackForwardNavigationType {
                    transition:(ui::PageTransition)transition
        sameDocumentNavigation:(BOOL)sameDocumentNavigation
                hasUserGesture:(BOOL)hasUserGesture
-            rendererInitiated:(BOOL)rendererInitiated
-        placeholderNavigation:(BOOL)placeholderNavigation {
+            rendererInitiated:(BOOL)rendererInitiated {
   // Transfer time is registered so that further transitions within the time
   // envelope are not also registered as links.
   [_delegate
@@ -304,17 +297,13 @@ enum class BackForwardNavigationType {
   if (item) {
     // Update the existing pending entry.
     // Typically on PAGE_TRANSITION_CLIENT_REDIRECT.
-    // Don't update if request is a placeholder entry because the pending item
-    // should have the original target URL.
     // Don't update if pending URL has a different origin, because client
     // redirects can not change the origin. It is possible to have more than one
     // pending navigations, so the redirect does not necesserily belong to the
     // pending navigation item.
     // Do not do it for localhost address as this is needed to have
     // pre-rendering in tests.
-    if ((base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) ||
-         !placeholderNavigation) &&
-        item->GetURL().GetOrigin() == requestURL.GetOrigin() &&
+    if (item->GetURL().GetOrigin() == requestURL.GetOrigin() &&
         !net::IsLocalhost(requestURL)) {
       self.navigationManagerImpl->UpdatePendingItemUrl(requestURL);
     }
@@ -350,8 +339,6 @@ enum class BackForwardNavigationType {
       web::NavigationContextImpl::CreateNavigationContext(
           self.webState, requestURL, hasUserGesture, transition,
           rendererInitiated);
-  if (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage))
-    context->SetPlaceholderNavigation(placeholderNavigation);
   context->SetNavigationItemUniqueID(item->GetUniqueID());
   context->SetIsPost([self.navigationHandler isCurrentNavigationItemPOST]);
   context->SetIsSameDocument(sameDocumentNavigation);
@@ -359,10 +346,7 @@ enum class BackForwardNavigationType {
   // If WKWebView.loading is used for WebState::IsLoading, do not set it for
   // renderer-initated navigation otherwise WebState::IsLoading will remain true
   // after hash change in the web page.
-  if (!IsWKInternalUrl(requestURL) &&
-      (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) ||
-       !placeholderNavigation) &&
-      !rendererInitiated) {
+  if (!IsWKInternalUrl(requestURL) && !rendererInitiated) {
     self.webState->SetIsLoading(true);
   }
 
@@ -391,9 +375,6 @@ enum class BackForwardNavigationType {
   // placeholder URLs because this may be the only opportunity to update
   // |isLoading| for native view reload.
 
-  if (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-      context && context->IsPlaceholderNavigation())
-    return;
 
   if (context && IsRestoreSessionUrl(context->GetUrl()))
     return;
@@ -514,23 +495,13 @@ enum class BackForwardNavigationType {
   // Set |item| to nullptr here to avoid any use-after-free issues, as it can
   // be cleared by the call to -registerLoadRequestForURL below.
   item = nullptr;
-  GURL contextURL =
-      (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-       IsPlaceholderUrl(navigationURL))
-          ? ExtractUrlFromPlaceholderUrl(navigationURL)
-          : navigationURL;
-  BOOL isPlaceholderURL =
-      base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage)
-          ? NO
-          : IsPlaceholderUrl(navigationURL);
   std::unique_ptr<web::NavigationContextImpl> navigationContext =
-      [self registerLoadRequestForURL:contextURL
+      [self registerLoadRequestForURL:navigationURL
                              referrer:self.currentNavItemReferrer
                            transition:self.currentTransition
                sameDocumentNavigation:sameDocumentNavigation
                        hasUserGesture:YES
-                    rendererInitiated:NO
-                placeholderNavigation:isPlaceholderURL];
+                    rendererInitiated:NO];
 
   if (self.navigationManagerImpl->IsRestoreSessionInProgress()) {
     if (self.navigationManagerImpl->RestoreSessionFromCache(navigationURL)) {
@@ -576,8 +547,7 @@ enum class BackForwardNavigationType {
                            transition:self.currentTransition
                sameDocumentNavigation:sameDocumentNavigation
                        hasUserGesture:YES
-                    rendererInitiated:NO
-                placeholderNavigation:NO];
+                    rendererInitiated:NO];
   WKNavigation* navigation = nil;
   if (navigationURL == net::GURLWithNSURL(self.webView.URL)) {
     navigation = [self.webView reload];

@@ -252,13 +252,6 @@ TEST_F(CRWWebControllerTest, CancelCommittedNavigation) {
   [navigation_delegate_ webView:mock_web_view_
               didFailNavigation:navigation
                       withError:error];
-  if (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage)) {
-    NavigationManagerImpl& navigation_manager =
-        web_controller().webStateImpl->GetNavigationManagerImpl();
-    NavigationItemImpl* item = navigation_manager.GetLastCommittedItemImpl();
-    EXPECT_EQ(ErrorRetryState::kNoNavigationError,
-              item->error_retry_state_machine().state());
-  }
 }
 
 // Tests returning pending item stored in navigation context.
@@ -1031,9 +1024,6 @@ TEST_F(CRWWebControllerPolicyDeciderTest, CancelRequest) {
 // Tests that navigations are cancelled if |ShouldAllowRequest| returns a
 // PolicyDecision which returns true from |ShouldBlockNavigation()|.
 TEST_F(CRWWebControllerPolicyDeciderTest, CancelRequestAndDisplayError) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(web::features::kUseJSForErrorPage);
-
   FakeWebStatePolicyDecider policy_decider(web_state());
   NSError* error = [NSError errorWithDomain:@"Error domain"
                                        code:123

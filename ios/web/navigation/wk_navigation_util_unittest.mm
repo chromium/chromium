@@ -366,65 +366,6 @@ TEST_F(WKNavigationUtilTest, CreateAndExtractTargetURL) {
   EXPECT_EQ(target_url, extracted_url);
 }
 
-TEST_F(WKNavigationUtilTest, IsPlaceholderUrl) {
-  if (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage))
-    return;
-
-  // Valid placeholder URLs.
-  EXPECT_TRUE(IsPlaceholderUrl(GURL("about:blank?for=")));
-  EXPECT_TRUE(IsPlaceholderUrl(GURL("about:blank?for=chrome%3A%2F%2Fnewtab")));
-  EXPECT_TRUE(IsPlaceholderUrl([NSURL URLWithString:@"about:blank?for="]));
-  EXPECT_TRUE(IsPlaceholderUrl(GURL("about:blank?for=chrome%3A%2F%2Fnewtab")));
-  EXPECT_TRUE(IsPlaceholderUrl(
-      [NSURL URLWithString:@"about:blank?for=chrome%3A%2F%2Fnewtab"]));
-
-  // Not an about:blank URL.
-  EXPECT_FALSE(IsPlaceholderUrl(GURL::EmptyGURL()));
-  EXPECT_FALSE(IsPlaceholderUrl([NSURL URLWithString:@""]));
-
-  // Missing ?for= query parameter.
-  EXPECT_FALSE(IsPlaceholderUrl(GURL("about:blank")));
-  EXPECT_FALSE(IsPlaceholderUrl([NSURL URLWithString:@"about:blank"]));
-  EXPECT_FALSE(IsPlaceholderUrl(GURL("about:blank?chrome:%3A%2F%2Fnewtab")));
-  EXPECT_FALSE(IsPlaceholderUrl(
-      [NSURL URLWithString:@"about:blank?chrome:%3A%2F%2Fnewtab"]));
-}
-
-TEST_F(WKNavigationUtilTest, EncodReturnsEmptyOnInvalidUrls) {
-  if (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage))
-    return;
-
-  EXPECT_EQ(GURL::EmptyGURL(), CreatePlaceholderUrlForUrl(GURL::EmptyGURL()));
-  EXPECT_EQ(GURL::EmptyGURL(), CreatePlaceholderUrlForUrl(GURL("notaurl")));
-}
-
-TEST_F(WKNavigationUtilTest, EncodeDecodeValidUrls) {
-  if (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage))
-    return;
-
-  {
-    GURL original("chrome://chrome-urls");
-    GURL encoded("about:blank?for=chrome%3A%2F%2Fchrome-urls");
-    EXPECT_EQ(encoded, CreatePlaceholderUrlForUrl(original));
-    EXPECT_EQ(original, ExtractUrlFromPlaceholderUrl(encoded));
-  }
-  {
-    GURL original("about:blank");
-    GURL encoded("about:blank?for=about%3Ablank");
-    EXPECT_EQ(encoded, CreatePlaceholderUrlForUrl(original));
-    EXPECT_EQ(original, ExtractUrlFromPlaceholderUrl(encoded));
-  }
-}
-
-// Tests that invalid URLs will be rejected in decoding.
-TEST_F(WKNavigationUtilTest, DecodeRejectInvalidUrls) {
-  if (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage))
-    return;
-
-  GURL encoded("about:blank?for=thisisnotanurl");
-  EXPECT_EQ(GURL::EmptyGURL(), ExtractUrlFromPlaceholderUrl(encoded));
-}
-
 // Tests that app specific urls and non-placeholder about: urls do not need a
 // user agent type, but normal urls and placeholders do.
 TEST_F(WKNavigationUtilTest, URLNeedsUserAgentType) {
@@ -438,13 +379,8 @@ TEST_F(WKNavigationUtilTest, URLNeedsUserAgentType) {
   EXPECT_FALSE(URLNeedsUserAgentType(
       non_user_agent_urls.ReplaceComponents(scheme_replacements)));
 
-  if (base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
-    // about:blank pages.
-    EXPECT_FALSE(URLNeedsUserAgentType(GURL("about:blank")));
-  } else {
-    // Not a placeholder.
-    EXPECT_TRUE(URLNeedsUserAgentType(GURL("about:blank?for=")));
-  }
+  // about:blank pages.
+  EXPECT_FALSE(URLNeedsUserAgentType(GURL("about:blank")));
   // Normal URL.
   EXPECT_TRUE(URLNeedsUserAgentType(GURL("http://www.0.com")));
 
@@ -455,9 +391,6 @@ TEST_F(WKNavigationUtilTest, URLNeedsUserAgentType) {
   GURL app_specific(
       url::SchemeHostPort(kTestAppSpecificScheme, "foo", 0).Serialize());
   EXPECT_FALSE(URLNeedsUserAgentType(app_specific));
-  if (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage))
-    EXPECT_FALSE(
-        URLNeedsUserAgentType(CreatePlaceholderUrlForUrl(app_specific)));
 }
 
 }  // namespace wk_navigation_util

@@ -443,10 +443,6 @@ extern const char kUpdateHistoryEntryPointsInIncognitoDescription[];
 extern const char kURLBlocklistIOSName[];
 extern const char kURLBlocklistIOSDescription[];
 
-// Title and description for the flag to enable the new error page workflow.
-extern const char kUseJSForErrorPageName[];
-extern const char kUseJSForErrorPageDescription[];
-
 // Title and description for the flag to control if Google Payments API calls
 // should use the sandbox servers.
 extern const char kWalletServiceUseSandboxName[];

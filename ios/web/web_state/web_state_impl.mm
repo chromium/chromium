@@ -741,20 +741,7 @@ GURL WebStateImpl::GetCurrentURL(URLVerificationTrustLevel* trust_level) const {
 
   web::NavigationItemImpl* item =
       navigation_manager_->GetLastCommittedItemImpl();
-  GURL lastCommittedURL;
-  if (item) {
-    if (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-        (wk_navigation_util::IsPlaceholderUrl(item->GetURL()) ||
-         item->error_retry_state_machine().state() ==
-             ErrorRetryState::kReadyToDisplayError)) {
-      // When webView.URL is a placeholder URL, |currentURLWithTrustLevel:|
-      // returns virtual URL if one is available.
-      lastCommittedURL = item->GetVirtualURL();
-    } else {
-      // Otherwise document URL is returned.
-      lastCommittedURL = item->GetURL();
-    }
-  }
+  GURL lastCommittedURL = item ? item->GetURL() : GURL();
 
   bool equalOrigins;
   if (result.SchemeIs(url::kAboutScheme) &&
@@ -829,10 +816,7 @@ void WebStateImpl::CreateFullPagePdf(
 void WebStateImpl::OnNavigationStarted(web::NavigationContextImpl* context) {
   // Navigation manager loads internal URLs to restore session history and
   // create back-forward entries for WebUI. Do not trigger external callbacks.
-  if ((!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-       context->IsPlaceholderNavigation()) ||
-      (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-       [CRWErrorPageHelper isErrorPageFileURL:context->GetUrl()]) ||
+  if ([CRWErrorPageHelper isErrorPageFileURL:context->GetUrl()] ||
       wk_navigation_util::IsRestoreSessionUrl(context->GetUrl())) {
     return;
   }
@@ -849,10 +833,7 @@ void WebStateImpl::OnNavigationRedirected(web::NavigationContextImpl* context) {
 void WebStateImpl::OnNavigationFinished(web::NavigationContextImpl* context) {
   // Navigation manager loads internal URLs to restore session history and
   // create back-forward entries for WebUI. Do not trigger external callbacks.
-  if ((!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-       context->IsPlaceholderNavigation()) ||
-      (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-       [CRWErrorPageHelper isErrorPageFileURL:context->GetUrl()]) ||
+  if ([CRWErrorPageHelper isErrorPageFileURL:context->GetUrl()] ||
       wk_navigation_util::IsRestoreSessionUrl(context->GetUrl())) {
     return;
   }

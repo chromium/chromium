@@ -601,8 +601,7 @@ class BlockedUrlPolicyAppLauncherTabHelperTest
 TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, BlockedUrl) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeatures(
-      /*enabled_features=*/{kURLBlocklistIOS,
-                            web::features::kUseJSForErrorPage},
+      /*enabled_features=*/{kURLBlocklistIOS},
       /*disabled_features=*/{});
 
   NSString* url_string = @"itms-apps://itunes.apple.com/us/app/appname/id123";
@@ -623,8 +622,7 @@ TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, BlockedUrl) {
 TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, MAYBE_AllowedUrl) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeatures(
-      /*enabled_features=*/{kURLBlocklistIOS,
-                            web::features::kUseJSForErrorPage},
+      /*enabled_features=*/{kURLBlocklistIOS},
       /*disabled_features=*/{});
 
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",

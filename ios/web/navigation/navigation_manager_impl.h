@@ -396,8 +396,6 @@ class NavigationManagerImpl : public NavigationManager {
   // restore callbacks.
   void FinalizeSessionRestore();
 
-  bool IsPlaceholderUrl(const GURL& url) const;
-
   // The primary delegate for this manager.
   NavigationManagerDelegate* delegate_;
 
