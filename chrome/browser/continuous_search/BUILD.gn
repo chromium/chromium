@@ -8,7 +8,6 @@ android_library("java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   sources = [
-    "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchChipView.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchContainerCoordinator.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchContainerMediator.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchContainerProperties.java",
@@ -79,7 +78,6 @@ android_resources("java_resources") {
     "android/java/res/layout/continuous_search_list_ad.xml",
     "android/java/res/layout/continuous_search_list_item.xml",
     "android/java/res/layout/continuous_search_list_provider.xml",
-    "android/java/res/values/dimens.xml",
     "android/java/res/values/styles.xml",
   ]
 
@@ -93,10 +91,7 @@ generate_jni("jni_headers") {
 android_library("javatests") {
   testonly = true
 
-  sources = [
-    "android/javatests/org/chromium/chrome/browser/continuous_search/ContinuousSearchChipViewTest.java",
-    "android/javatests/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabHelperTest.java",
-  ]
+  sources = [ "android/javatests/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabHelperTest.java" ]
 
   deps = [
     ":data_structures_java",
@@ -118,7 +113,6 @@ android_library("javatests") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
-    "//ui/android:ui_java_test_support",
     "//url:gurl_java",
   ]
 }
