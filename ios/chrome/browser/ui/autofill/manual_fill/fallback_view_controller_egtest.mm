@@ -85,18 +85,6 @@ constexpr char kFormHTMLFile[] = "/readonly_form.html";
 // Tests that normal fields have Manual Fallback icons after tapping a readonly
 // field.
 - (void)testNormalFieldHasManualFallbackIconsAfterReadonlyField {
-  // TODO(crbug.com/1162301): Re-enable this test for iPad after fixing this
-  // issue.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
-
-  // TODO(crbug.com/1223279): Re-enable this test on iOS 13 after fixing the
-  // flake.
-  if (@available(iOS 13, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test flakes on iOS 13.");
-  }
-
   // Tap the readonly field.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementReadonly)];
