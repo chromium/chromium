@@ -7259,3 +7259,7 @@ crbug.com/1231431 external/wpt/html/cross-origin-embedder-policy/reporting-to-en
 crbug.com/1231431 virtual/coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure ]
 crbug.com/1231431 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure ]
 crbug.com/1231431 virtual/plz-service-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure ]
+
+# Sheriff 2021-07-22
+crbug.com/1222097 [ Mac ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Pass Failure ]
+crbug.com/1222097 [ Mac ] virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Pass Failure ]
