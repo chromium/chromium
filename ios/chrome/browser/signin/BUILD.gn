@@ -124,6 +124,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "authentication_service_unittest.mm",
+    "chrome_account_manager_service_unittest.mm",
     "chrome_identity_service_observer_bridge_unittest.mm",
     "gaia_auth_fetcher_ios_ns_url_session_bridge_unittests.mm",
     "gaia_auth_fetcher_ios_unittest.mm",
@@ -137,6 +138,7 @@ source_set("unit_tests") {
     "//base",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/prefs:test_support",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
@@ -156,6 +158,7 @@ source_set("unit_tests") {
     "//ios/net",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/web/common",
     "//ios/web/public/test",

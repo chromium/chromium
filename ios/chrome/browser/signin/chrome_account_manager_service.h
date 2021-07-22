@@ -9,6 +9,8 @@
 
 #include "base/strings/string_piece.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
+#import "ios/chrome/browser/signin/pattern_account_restriction.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 
 class PrefService;
@@ -44,6 +46,18 @@ class ChromeAccountManagerService : public KeyedService {
 
   // KeyedService implementation.
   void Shutdown() override;
+
+ private:
+  // Updates PatternAccountRestriction with the current pref_service_. If
+  // pref_service_ is null, no identity will be filtered.
+  void UpdateRestriction();
+
+  // Used to retrieve restricted patterns.
+  PrefService* pref_service_ = nullptr;
+  // Used to filter ChromeIdentities.
+  PatternAccountRestriction restriction_;
+  // Used to listen pref change.
+  PrefChangeRegistrar registrar_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_CHROME_ACCOUNT_MANAGER_SERVICE_H_
