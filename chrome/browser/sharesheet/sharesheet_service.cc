@@ -149,6 +149,7 @@ void SharesheetService::OnTargetSelected(gfx::NativeWindow native_window,
     delegate->OnActionLaunched();
     share_action->LaunchAction(delegate, share_action_view, std::move(intent));
   } else if (type == TargetType::kArcApp || type == TargetType::kWebApp) {
+    DCHECK(intent);
     LaunchApp(target_name, std::move(intent));
     delegate->CloseSharesheet(SharesheetResult::kSuccess);
   }
