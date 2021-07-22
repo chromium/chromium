@@ -852,9 +852,17 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, EnrollmentForced) {
   EXPECT_TRUE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
+// This test is flaky on ChromeOS. https://crbug.com/1231472
+#if defined(OS_CHROMEOS)
+#define MAYBE_ZeroTouchForcedAttestationFail \
+  DISABLED_ZeroTouchForcedAttestationFail
+#else
+#define MAYBE_ZeroTouchForcedAttestationFail ZeroTouchForcedAttestationFail
+#endif
 // Zero touch with attestation authentication fail. Attestation fails because we
 // send empty cert request. Should switch to interactive authentication.
-IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, ZeroTouchForcedAttestationFail) {
+IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest,
+                       MAYBE_ZeroTouchForcedAttestationFail) {
   auto initial_enrollment =
       enterprise_management::DeviceInitialEnrollmentStateResponse::
           INITIAL_ENROLLMENT_MODE_ZERO_TOUCH_ENFORCED;
