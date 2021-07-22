@@ -87,12 +87,10 @@ export function networkCardTestSuite() {
   });
 
   test('CardDrawerInitializedCorrectly', () => {
-    // Ensure ip-config-info-drawer displays in correct slot and based on
-    // current network.
     return initializeNetworkCard('wifiGuid').then(() => {
       const ipConfigInfoDrawerElement =
           /** @type {!IpConfigInfoDrawerElement} */ (
-              networkCardElement.$$('#ipConfigInfoDrawer[slot=routines]'));
+              networkCardElement.$$('#ipConfigInfoDrawer'));
       assertTrue(
           isVisible(/** @type {!HTMLElement} */ (ipConfigInfoDrawerElement)));
       assertDeepEquals(fakeWifiNetwork, ipConfigInfoDrawerElement.network);
