@@ -48,6 +48,7 @@ const debug_suites_list = [
   'OnboardingSelectComponentsPageTest',
   'OnboardingUpdatePageTest',
   'OnboardingWaitForManualWpDisablePageTest',
+  'ReimagingAccelerometerCalibrationPageTest',
   'ReimagingFirmwareUpdatePageTest',
   'ReimagingDeviceInformationPageTest',
   'ReimagingProvisioningPageTest',

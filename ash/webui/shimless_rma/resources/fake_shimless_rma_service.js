@@ -45,6 +45,12 @@ export class FakeShimlessRmaService {
      */
     this.automaticallyTriggerProvisioningObservation_ = false;
 
+    /**
+     * Control automatically triggering calibration observations.
+     * @private {boolean}
+     */
+    this.automaticallyTriggerCalibrationObservation_ = false;
+
     this.reset();
   }
 
@@ -458,6 +464,10 @@ export class FakeShimlessRmaService {
               /** @type {!CalibrationComponent} */ (component),
               /** @type {number} */ (progress));
         });
+    if (this.automaticallyTriggerCalibrationObservation_) {
+      this.triggerCalibrationObserver(
+          CalibrationComponent.kAccelerometer, 100, 1500);
+    }
   }
 
   /**
@@ -488,6 +498,13 @@ export class FakeShimlessRmaService {
    */
   automaticallyTriggerProvisioningObservation() {
     this.automaticallyTriggerProvisioningObservation_ = true;
+  }
+
+  /**
+   * Trigger calibration observations when an observer is added.
+   */
+  automaticallyTriggerCalibrationObservation() {
+    this.automaticallyTriggerCalibrationObservation_ = true;
   }
 
   /**

@@ -11,6 +11,7 @@ import './onboarding_select_components_page.js';
 import './onboarding_update_page.js';
 import './onboarding_wait_for_manual_wp_disable_page.js';
 import './onboarding_wp_disable_complete_page.js';
+import './reimaging_accelerometer_calibration_page.js';
 import './reimaging_device_information_page.js';
 import './reimaging_firmware_update_page.js';
 import './reimaging_provisioning_page.js';
@@ -120,6 +121,12 @@ const StateComponentMapping = {
     btnNext: ButtonState.VISIBLE,
     btnCancel: ButtonState.HIDDEN,
     btnBack: ButtonState.VISIBLE,
+  },
+  [RmaState.kCalibrateComponents]: {
+    componentIs: 'reimaging-accelerometer-calibration-page',
+    buttonNext: ButtonState.VISIBLE,
+    buttonCancel: ButtonState.HIDDEN,
+    buttonBack: ButtonState.VISIBLE,
   },
   [RmaState.kProvisionDevice]: {
     componentIs: 'reimaging-provisioning-page',

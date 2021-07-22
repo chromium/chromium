@@ -74,6 +74,20 @@ export let CalibrationObserverRemote =
     ash.shimlessRma.mojom.CalibrationObserverRemote;
 
 /**
+ * Type alias for CalibrationObserverReceiver.
+ * @typedef {ash.shimlessRma.mojom.CalibrationObserverReceiver}
+ */
+export let CalibrationObserverReceiver =
+    ash.shimlessRma.mojom.CalibrationObserverReceiver;
+
+/**
+ * Type alias for CalibrationObserverInterface.
+ * @typedef {ash.shimlessRma.mojom.CalibrationObserverInterface}
+ */
+export let CalibrationObserverInterface =
+    ash.shimlessRma.mojom.CalibrationObserverInterface;
+
+/**
  * Type alias for ProvisioningObserverRemote.
  * @typedef {ash.shimlessRma.mojom.ProvisioningObserverRemote}
  */
