@@ -19,7 +19,6 @@ import android.text.format.Formatter;
 import android.view.View;
 
 import androidx.annotation.ColorRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -38,7 +37,6 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.content_public.browser.ContentFeatureList;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -93,36 +91,6 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     public static final String PREF_CLEAR_DATA = "clear_data";
     // Buttons:
     public static final String PREF_RESET_SITE = "reset_site_button";
-
-    // Defining the order for content settings based on http://crbug.com/610358
-    private static final int[] SETTINGS_ORDER = {
-            ContentSettingsType.COOKIES,
-            ContentSettingsType.GEOLOCATION,
-            ContentSettingsType.MEDIASTREAM_CAMERA,
-            ContentSettingsType.MEDIASTREAM_MIC,
-            ContentSettingsType.NOTIFICATIONS,
-            ContentSettingsType.JAVASCRIPT,
-            ContentSettingsType.POPUPS,
-            ContentSettingsType.ADS,
-            ContentSettingsType.BACKGROUND_SYNC,
-            ContentSettingsType.AUTOMATIC_DOWNLOADS,
-            ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER,
-            ContentSettingsType.SOUND,
-            ContentSettingsType.MIDI_SYSEX,
-            ContentSettingsType.CLIPBOARD_READ_WRITE,
-            ContentSettingsType.NFC,
-            ContentSettingsType.BLUETOOTH_SCANNING,
-            ContentSettingsType.VR,
-            ContentSettingsType.AR,
-            ContentSettingsType.IDLE_DETECTION,
-            ContentSettingsType.SENSORS,
-    };
-
-    private static final int[] CHOOSER_PERMISSIONS = {
-            ContentSettingsType.USB_CHOOSER_DATA,
-            // Bluetooth is only shown when WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND is enabled.
-            ContentSettingsType.BLUETOOTH_CHOOSER_DATA,
-    };
 
     private static boolean arrayContains(int[] array, int element) {
         for (int e : array) {
@@ -184,34 +152,6 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         }
     }
 
-    /**
-     * @param types A list of ContentSettingsTypes
-     * @return The highest priority permission that is available in SiteSettings. Returns DEFAULT
-     *         when called with empty list or only with entries not represented in this UI.
-     */
-    public static @ContentSettingsType int getHighestPriorityPermission(
-            @ContentSettingsType @NonNull int[] types) {
-        for (@ContentSettingsType int setting : SETTINGS_ORDER) {
-            for (@ContentSettingsType int type : types) {
-                if (setting == type) {
-                    return type;
-                }
-            }
-        }
-        for (@ContentSettingsType int setting : CHOOSER_PERMISSIONS) {
-            for (@ContentSettingsType int type : types) {
-                if (type == ContentSettingsType.BLUETOOTH_CHOOSER_DATA
-                        && !ContentFeatureList.isEnabled(
-                                ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND)) {
-                    continue;
-                }
-                if (setting == type) {
-                    return type;
-                }
-            }
-        }
-        return ContentSettingsType.DEFAULT;
-    }
 
     /**
      * @return The status of the actionable content settings flag
@@ -544,7 +484,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
     private void setupContentSettingsPreferences() {
         mMaxPermissionOrder = findPreference(PREF_PERMISSIONS_HEADER).getOrder();
-        for (@ContentSettingsType int type : SETTINGS_ORDER) {
+        for (@ContentSettingsType int type : SiteSettingsUtil.SETTINGS_ORDER) {
             Preference preference = isActionableContentSettingsEnabled()
                     ? new ChromeSwitchPreference(getStyledContext())
                     : new ListPreference(getStyledContext());
@@ -816,7 +756,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         for (ChosenObjectInfo info : mSite.getChosenObjectInfo()) {
             ChromeImageViewPreference preference =
                     new ChromeImageViewPreference(getStyledContext());
-            assert arrayContains(CHOOSER_PERMISSIONS, info.getContentSettingsType());
+            assert arrayContains(
+                    SiteSettingsUtil.CHOOSER_PERMISSIONS, info.getContentSettingsType());
             preference.setKey(CHOOSER_PERMISSION_PREFERENCE_KEY);
             preference.setIcon(getContentSettingsIcon(info.getContentSettingsType(), null));
             preference.setTitle(info.getName());
