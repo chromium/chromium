@@ -195,12 +195,30 @@ notifying your reviewers, in case the results require major changes in your CL.
 ## 16. Add reviewers to review your code
 
 Click `Find Owners` or run `git cl owners` to find file owners to review your
-code and instruct them about which parts you want them to focus on. Add anyone
-else you think should review your code. The blame functionality in Code Search
-is a good way to identify reviewers who may be familiar with the parts of code
-your CL touches. For your CL to land, you need an approval from an owner for
-each file you've changed, unless you are an owner of some files, in which case
-you don't need separate owner approval for those files.
+code and instruct them about which parts you want them to focus on. Prefer
+owners who are more specific to files you are modifying, as they usually
+have the best domain knowledge (i.e. prefer `//chrome/foo/bar/OWNERS` over
+`//chrome/OWNERS`). Next, add anyone else you think should review your code. The
+blame functionality in Code Search is a good way to identify reviewers who may
+be familiar with the parts of code your CL touches. For your CL to land, you
+need an approval from an owner for each file you've changed, unless you are an
+owner of some files, in which case you don't need separate owner approval for
+those files.
+
+You are expected to wait for all actively participating reviewers to CR+1 the
+change before submitting (CQ+2), even if your CL already has all required owners
+reviews. Other than preventing confusion and mistakes, this expectation exists
+because:
+1. Participating reviewers are [helping you write sustainable code](cr_respect),
+   and letting them sign off is respectful of their efforts.
+1. The owners system is not perfect, and sometimes you will need an owner who
+   *can* approve the whole change, but will delegate approval of pieces to
+   other, more knowledgeable owners.
+
+If this expectation needs to be broken, then the reason should be justified in a
+comment, and appropriate extra care may be appropriate (e.g. getting a
+post-submit review, monitoring for failing or flaky tests, reverting if any
+problems occur, etc).
 
 ## 17. Start Your Review
 
@@ -227,6 +245,9 @@ Finally, click `Reply` on the CL to ensure that your reviewers receive a
 notification. Doing this signals that your CL is ready for review again, since
 the assumption is that your CL is not ready for review until you hit reply.
 
+To ensure a fast, productive, and respectful review, please follow the
+guidelines in [Respectful Changes][respectful-changes].
+
 If your change is simple and you feel confident that your reviewer will approve
 your CL on the next iteration, you can set Auto-Submit +1. The CL will proceed
 to the next step automatically after approval. This feature is useful if your
@@ -237,11 +258,12 @@ this flag also puts the onus on your reviewer to land the CL.
 
 Once you have obtained a Looks Good To Me (LGTM), which is reflected by a
 Code-Review+1 in Gerrit, from at least one owner for each file, then you have
-the minimum prerequisite to land your changes. It may be helpful to wait for all
-of your reviewers to approve your changes as well, even if they're not owners.
-Don't use `chrome/OWNERS` as a blanket stamp if your CL makes significant
-changes to subsystems. Click `Submit to CQ` to try your change in the commit
-queue (CQ), which will land it if successful.
+the minimum prerequisite to land your changes. As mentioned above, you are
+generally expected to wait for all of your reviewers to approve your changes as
+well, even if you already have OWNERS approval. Don't use `chrome/OWNERS` as a
+blanket stamp if your CL makes significant changes to subsystems. Click
+`Submit to CQ` (Commit-Queue +2) to both try your change in the commit queue
+(CQ) and automatically land it if successful.
 
 Just because your CL made it through the CQ doesn't mean you're in the clear
 yet. There might be internal non-public try job failures, or bugs that went
@@ -262,3 +284,4 @@ branches. Mark the associated crbug as "fixed".
 [contributing]: contributing.md
 [simple-chrome]: https://chromium.googlesource.com/chromiumos/docs/+/HEAD/simple_chrome_workflow.md
 [uploading-a-change-for-review]: contributing.md#Uploading-a-change-for-review
+[respectful-changes]: cl_respect.md
