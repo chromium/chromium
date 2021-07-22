@@ -5,9 +5,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_throttle.h"
 
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
@@ -18,8 +16,9 @@
 namespace safe_browsing {
 
 SafeBrowsingNavigationThrottle::SafeBrowsingNavigationThrottle(
-    content::NavigationHandle* handle)
-    : content::NavigationThrottle(handle) {}
+    content::NavigationHandle* handle,
+    SafeBrowsingUIManager* manager)
+    : content::NavigationThrottle(handle), manager_(manager) {}
 
 const char* SafeBrowsingNavigationThrottle::GetNameForLogging() {
   return "SafeBrowsingNavigationThrottle";
@@ -27,20 +26,18 @@ const char* SafeBrowsingNavigationThrottle::GetNameForLogging() {
 
 content::NavigationThrottle::ThrottleCheckResult
 SafeBrowsingNavigationThrottle::WillFailRequest() {
-  SafeBrowsingService* service = g_browser_process->safe_browsing_service();
-  if (!service) {
+  if (!manager_) {
     return content::NavigationThrottle::PROCEED;
   }
 
   security_interstitials::UnsafeResource resource;
   content::NavigationHandle* handle = navigation_handle();
-  scoped_refptr<SafeBrowsingUIManager> manager = service->ui_manager();
 
-  if (manager->PopUnsafeResourceForURL(handle->GetURL(), &resource)) {
+  if (manager_->PopUnsafeResourceForURL(handle->GetURL(), &resource)) {
     SafeBrowsingBlockingPage* blocking_page =
-        manager->blocking_page_factory()->CreateSafeBrowsingPage(
-            manager.get(), handle->GetWebContents(), handle->GetURL(),
-            {resource}, true);
+        manager_->blocking_page_factory()->CreateSafeBrowsingPage(
+            manager_, handle->GetWebContents(), handle->GetURL(), {resource},
+            true);
     MaybeTriggerSecurityInterstitialShownEvent(
         handle->GetWebContents(), handle->GetURL(),
         SafeBrowsingUIManager::GetThreatTypeStringForInterstitial(
