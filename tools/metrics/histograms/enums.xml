@@ -26004,7 +26004,7 @@ Called by update_document_policy_enum.py.-->
 <enum name="EnterpriseUploadJobSuccess">
   <summary>
     Number of UploadJob retries as defined in
-    chrome/browser/chromeos/policy/upload_job_impl.cc.
+    chrome/browser/ash/policy/uploading/upload_job_impl.cc.
   </summary>
   <int value="0" label="No retries"/>
   <int value="1" label="1 retry"/>

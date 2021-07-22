@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/uploading/upload_job_impl.h"
+#include "chrome/browser/ash/policy/uploading/upload_job_impl.h"
 
 #include <stddef.h>
 

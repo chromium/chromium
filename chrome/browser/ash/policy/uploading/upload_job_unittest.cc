@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/uploading/upload_job.h"
+#include "chrome/browser/ash/policy/uploading/upload_job.h"
 
 #include <stddef.h>
 
@@ -19,7 +19,7 @@
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/policy/uploading/upload_job_impl.h"
+#include "chrome/browser/ash/policy/uploading/upload_job_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/fake_oauth2_access_token_manager.h"

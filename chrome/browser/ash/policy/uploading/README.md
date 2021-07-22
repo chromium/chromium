@@ -1,4 +1,4 @@
-chrome/browser/chromeos/policy/uploading
+chrome/browser/ash/policy/uploading
 ========================================
 
 This directory should contain code that handles periodically scheduled

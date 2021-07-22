@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/uploading/heartbeat_scheduler.h"
+#include "chrome/browser/ash/policy/uploading/heartbeat_scheduler.h"
 
 #include <memory>
 #include <vector>

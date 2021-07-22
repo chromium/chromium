@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_UPLOADING_UPLOAD_JOB_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_UPLOADING_UPLOAD_JOB_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_UPLOADING_UPLOAD_JOB_IMPL_H_
+#define CHROME_BROWSER_ASH_POLICY_UPLOADING_UPLOAD_JOB_IMPL_H_
 
 #include <map>
 #include <memory>
@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
-#include "chrome/browser/chromeos/policy/uploading/upload_job.h"
+#include "chrome/browser/ash/policy/uploading/upload_job.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
@@ -195,4 +195,4 @@ class UploadJobImpl : public UploadJob,
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_UPLOADING_UPLOAD_JOB_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_UPLOADING_UPLOAD_JOB_IMPL_H_

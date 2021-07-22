@@ -14,7 +14,7 @@
 #include "base/sequenced_task_runner.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/policy/core/cached_policy_key_loader.h"
-#include "chrome/browser/chromeos/policy/value_validation/onc_user_policy_value_validator.h"
+#include "chrome/browser/ash/policy/value_validation/onc_user_policy_value_validator.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "components/policy/proto/device_management_backend.pb.h"

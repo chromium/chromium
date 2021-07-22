@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/ash/policy/status_collector/child_status_collector.h"
-#include "chrome/browser/chromeos/policy/uploading/status_uploader.h"
+#include "chrome/browser/ash/policy/uploading/status_uploader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/system/statistics_provider.h"

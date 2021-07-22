@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_UPLOADING_SYSTEM_LOG_UPLOADER_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_UPLOADING_SYSTEM_LOG_UPLOADER_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_UPLOADING_SYSTEM_LOG_UPLOADER_H_
+#define CHROME_BROWSER_ASH_POLICY_UPLOADING_SYSTEM_LOG_UPLOADER_H_
 
 #include <stdint.h>
 
@@ -18,8 +18,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/policy/uploading/upload_job.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/chromeos/policy/uploading/upload_job.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -198,4 +198,4 @@ class SystemLogUploader : public UploadJob::Delegate {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_UPLOADING_SYSTEM_LOG_UPLOADER_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_UPLOADING_SYSTEM_LOG_UPLOADER_H_
