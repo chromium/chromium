@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
@@ -83,7 +82,9 @@ public class PasswordCheckFragmentView extends PreferenceFragmentCompat {
         // by the system.
         mComponentDelegate.onDestroyFragment();
         if (getActivity().isFinishing()
-                && mPasswordCheckReferrer == PasswordCheckReferrer.LEAK_DIALOG) {
+                && (mPasswordCheckReferrer == PasswordCheckReferrer.LEAK_DIALOG
+                        || mPasswordCheckReferrer
+                                == PasswordCheckReferrer.PHISHED_WARNING_DIALOG)) {
             mComponentDelegate.destroy();
         }
     }
