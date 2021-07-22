@@ -114,6 +114,22 @@ TEST_F(ManifestParserTest, ValidNoContentParses) {
   ASSERT_TRUE(manifest->shortcuts.IsEmpty());
 }
 
+TEST_F(ManifestParserTest, UnrecognizedFieldsIgnored) {
+  auto& manifest = ParseManifest(
+      R"({
+        "unrecognizable_manifest_field": ["foo"],
+        "name": "bar"
+      })");
+
+  // Unrecognized Manifest fields are not a parsing error.
+  EXPECT_EQ(0u, GetErrorCount());
+
+  // Check that subsequent fields parsed.
+  ASSERT_FALSE(IsManifestEmpty(manifest));
+  ASSERT_EQ(manifest->name, "bar");
+  ASSERT_EQ(DefaultDocumentUrl().BaseAsString(), manifest->scope.GetString());
+}
+
 TEST_F(ManifestParserTest, MultipleErrorsReporting) {
   auto& manifest = ParseManifest(
       "{ \"name\": 42, \"short_name\": 4, \"id\": 12,"
