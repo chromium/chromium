@@ -54,9 +54,6 @@ bool IsOfflinePagesDescriptivePendingStatusEnabled();
 // opened in CCTs instead of new tabs.
 bool ShouldOfflinePagesInDownloadHomeOpenInCct();
 
-// Controls whether we should show a dinosaur page with alternate UI.
-bool ShouldShowAlternateDinoPage();
-
 // Returns an experiment tag provided by the field trial. This experiment tag
 // will be included in a custom header in all requests sent to Offline Prefetch
 // Server. The server will use this this optional tag to decide how to process
