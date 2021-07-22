@@ -106,8 +106,7 @@
 
 #pragma mark Keyboard State Detection
 
-// Update keyboard state by looking at keyboard frame and the existence of some
-// classes to detect split view or pickers.
+// Update keyboard state by looking at keyboard frame.
 - (void)updateKeyboardState {
   UIView* keyboardView = KeyboardObserverHelper.keyboardView;
 
@@ -116,40 +115,18 @@
   BOOL isVisible = CGRectGetMinY(keyboardFrame) < windowHeight;
   BOOL isUndocked = CGRectGetMaxY(keyboardFrame) < windowHeight;
   BOOL isHardware = isVisible && CGRectGetMaxY(keyboardFrame) > windowHeight;
-  BOOL isSplit = [self viewIsSplit:keyboardView];
 
   // Only notify if a change is detected.
   if (isVisible != self.keyboardState.isVisible ||
       isUndocked != self.keyboardState.isUndocked ||
-      isSplit != self.keyboardState.isSplit ||
       isHardware != self.keyboardState.isHardware ||
       keyboardView != self.keyboardView) {
-    self.keyboardState = {isVisible, isUndocked, isSplit, isHardware};
+    self.keyboardState = {isVisible, isUndocked, isHardware};
     self.keyboardView = keyboardView;
     dispatch_async(dispatch_get_main_queue(), ^{
       [self.consumer keyboardWillChangeToState:self.keyboardState];
     });
   }
-}
-
-// Checks for the presence of split image views under the given |view|.
-- (BOOL)viewIsSplit:(UIView*)view {
-  // Don't waste time going through the accessory views.
-  if ([NSStringFromClass([view class]) rangeOfString:@"FormInputAccessoryView"]
-          .location != NSNotFound) {
-    return NO;
-  }
-
-  for (UIView* subview in view.subviews) {
-    if ([NSStringFromClass([subview class]) rangeOfString:@"SplitImage"]
-            .location != NSNotFound) {
-      return subview.subviews.count > 1;
-    }
-    if ([self viewIsSplit:subview])
-      return YES;
-  }
-
-  return NO;
 }
 
 @end

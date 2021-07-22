@@ -15,8 +15,6 @@ typedef struct {
   BOOL isVisible;
   // Is YES if keyboard is or becoming undocked from bottom of screen.
   BOOL isUndocked;
-  // Is YES if keyboard is or becoming split in more than one piece.
-  BOOL isSplit;
   // Is YES if a hardware keyboard is in use and only the top part of the
   // software keyboard is showing.
   BOOL isHardware;
