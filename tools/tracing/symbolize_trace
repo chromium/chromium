@@ -8,7 +8,6 @@ This executable script symbolizes proto perfetto traces.
 """
 
 import optparse
-import logging
 import sys
 
 import symbolize_trace
@@ -36,9 +35,9 @@ def main():
   # Argument error checking
   trace_file = None
   if not args:
-    raise ValueError('Proto trace file argument is required.')
+    raise Exception('Proto trace file argument is required.')
   elif len(args) > 1:
-    raise ValueError('Too many arguments passed. Pass only one proto trace file.')
+    raise Exception('Too many arguments passed. Pass only one proto trace file.')
   else:
     trace_file = args[0]
 

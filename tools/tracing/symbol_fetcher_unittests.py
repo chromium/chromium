@@ -157,7 +157,8 @@ class SymbolFetcherTestCase(unittest.TestCase):
                                              architecture='x86_64',
                                              bitness='64')
 
-    with self.assertRaisesRegex(Exception, 'Failed to extract trace OS name.'):
+    exception_msg = 'Failed to extract trace OS name: ' + self.trace_file
+    with self.assertRaisesRegex(Exception, exception_msg):
       symbol_fetcher.GetTraceBreakpadSymbols(self.cloud_storage_bucket,
                                              metadata, self.breakpad_output_dir)
 
@@ -170,7 +171,8 @@ class SymbolFetcherTestCase(unittest.TestCase):
                                              architecture='x86_64',
                                              bitness='64')
 
-    with self.assertRaisesRegex(Exception, 'Trace OS is not supported: blah'):
+    exception_msg = 'Trace OS "blah" is not supported: ' + self.trace_file
+    with self.assertRaisesRegex(Exception, exception_msg):
       symbol_fetcher.GetTraceBreakpadSymbols(self.cloud_storage_bucket,
                                              metadata, self.breakpad_output_dir)
 
@@ -197,8 +199,8 @@ class SymbolFetcherTestCase(unittest.TestCase):
                                              architecture='x86_64',
                                              bitness='64')
 
-    with self.assertRaisesRegex(Exception,
-                                'Failed to extract trace version number.'):
+    exception_msg = 'Failed to extract trace version number: ' + self.trace_file
+    with self.assertRaisesRegex(Exception, exception_msg):
       symbol_fetcher.GetTraceBreakpadSymbols(self.cloud_storage_bucket,
                                              metadata, self.breakpad_output_dir)
 
@@ -211,8 +213,9 @@ class SymbolFetcherTestCase(unittest.TestCase):
                                              architecture='x86_64',
                                              bitness='64')
 
-    with self.assertRaisesRegex(Exception,
-                                'Expected OS to be Linux or Mac: Android'):
+    exception_msg = ('Expected OS "Android" to be Linux or Mac: ' +
+                     self.trace_file)
+    with self.assertRaisesRegex(Exception, exception_msg):
       symbol_fetcher._FetchBreakpadSymbols(self.cloud_storage_bucket, metadata,
                                            self.breakpad_output_dir)
 

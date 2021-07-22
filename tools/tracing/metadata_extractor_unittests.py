@@ -272,10 +272,10 @@ class ExtractMetadataTestCase(unittest.TestCase):
                                                      self.trace_file)
     trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
 
+    exception_msg = 'OS name "blah" not recognized: ' + self.trace_file
     with self.assertRaises(Exception) as context:
       extractor.Initialize()
-
-    self.assertTrue('OS name blah not recognized.' in str(context.exception))
+    self.assertEqual(exception_msg, str(context.exception))
 
 
 if __name__ == '__main__':

@@ -28,10 +28,7 @@ class ExtractBreakpadTestCase(unittest.TestCase):
       pass
 
   def tearDown(self):
-    if len(os.listdir(self.test_build_dir)) == 0:
-      os.rmdir(self.test_build_dir)
-    else:
-      shutil.rmtree(self.test_build_dir)
+    shutil.rmtree(self.test_build_dir)
     shutil.rmtree(self.test_breakpad_dir)
     shutil.rmtree(self.test_dump_syms_dir)
 
@@ -56,7 +53,7 @@ class ExtractBreakpadTestCase(unittest.TestCase):
     breakpad_file_extractor.ExtractBreakpadFiles(dump_syms_path, build_dir,
                                                  breakpad_dir)
 
-    expected_cmd = [dump_syms_path, test_input_file.name]
+    expected_cmd = [dump_syms_path, test_input_file.name, '-c', '-r']
     breakpad_file_extractor._RunDumpSyms.assert_called_once_with(
         expected_cmd, test_output_file_path)
 
@@ -106,11 +103,11 @@ class ExtractBreakpadTestCase(unittest.TestCase):
 
     # Check that each call expected call to _RunDumpSyms() has been made.
     expected_calls = [
-        call([self.test_dump_syms_binary, input_files[0].name],
+        call([self.test_dump_syms_binary, input_files[0].name, '-c', '-r'],
              output_file_paths[0]),
-        call([self.test_dump_syms_binary, input_files[1].name],
+        call([self.test_dump_syms_binary, input_files[1].name, '-c', '-r'],
              output_file_paths[1]),
-        call([self.test_dump_syms_binary, input_files[2].name],
+        call([self.test_dump_syms_binary, input_files[2].name, '-c', '-r'],
              output_file_paths[2])
     ]
     breakpad_file_extractor._RunDumpSyms.assert_has_calls(expected_calls,
@@ -131,7 +128,7 @@ class ExtractBreakpadTestCase(unittest.TestCase):
 
   def testDumpSymsNotFound(self):
     breakpad_file_extractor._RunDumpSyms = MagicMock()
-    with self.assertRaisesRegex(FileNotFoundError, '^dump_syms is missing\.'):
+    with self.assertRaisesRegex(FileNotFoundError, 'dump_syms is missing.'):
       breakpad_file_extractor.ExtractBreakpadFiles('fake/path/dump_syms',
                                                    self.test_build_dir,
                                                    self.test_breakpad_dir)
@@ -150,7 +147,22 @@ class ExtractBreakpadTestCase(unittest.TestCase):
 
   def testSymbolizedNoFiles(self):
     with self.assertRaisesRegex(
-        Exception, '^Could not create breakpad symbols from any files'):
+        Exception, 'Could not create breakpad symbols from any files'):
+      breakpad_file_extractor.ExtractBreakpadFiles(self.test_dump_syms_binary,
+                                                   self.test_build_dir,
+                                                   self.test_breakpad_dir)
+
+  def testIgnoredwp(self):
+    dwp_file1 = os.path.join(self.test_build_dir, 'name.so.dwp')
+    dwp_file2 = os.path.join(self.test_build_dir, 'name.so.dwo')
+    with open(dwp_file1, 'w') as file1:
+      file1.write('MODULE Linux x86_64 34984AB4EF948C name1.so')
+    with open(dwp_file2, 'w') as file2:
+      file2.write('MODULE Linux x86_64 34984AB4EF948C name2.so')
+
+    exception_msg = ('Could not create breakpad symbols from any files from ' +
+                     self.test_build_dir + '.')
+    with self.assertRaisesRegex(Exception, exception_msg):
       breakpad_file_extractor.ExtractBreakpadFiles(self.test_dump_syms_binary,
                                                    self.test_build_dir,
                                                    self.test_breakpad_dir)

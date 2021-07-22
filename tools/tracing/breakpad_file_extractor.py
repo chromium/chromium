@@ -16,9 +16,10 @@ def ExtractBreakpadFiles(dump_syms_path, build_dir, breakpad_output_dir):
   Args:
     dump_syms_path: The path to the dump_syms binary that should be run.
     build_dir: The path to the input directory containing the binaries that
-    dump_syms will use.
+      dump_syms will use. If the directory '|build_dir|/lib.unstipped'
+      exists, dump_syms is run on this directory instead.
     breakpad_base_dir: The output directory for the breakpad symbol files
-    produced.
+      produced.
 
   Raises:
     FileNotFoundError: If the dump_syms binary or the input and output
@@ -48,7 +49,7 @@ def ExtractBreakpadFiles(dump_syms_path, build_dir, breakpad_output_dir):
     if os.path.isfile(input_file_path) and _IsValidBinaryPath(input_file_path):
       # Construct absolute file paths for input and output files.
       output_file_path = os.path.join(breakpad_output_dir, file + '.breakpad')
-      cmd = [dump_syms_path, input_file_path]
+      cmd = [dump_syms_path, input_file_path, '-c', '-r']
       if _RunDumpSyms(cmd, output_file_path):
         breakpad_file_count += 1
 
@@ -102,7 +103,8 @@ def _DumpSymsExists(dump_syms_path, build_dir):
 def _IsValidBinaryPath(path):
   # Get the file name from the full file path.
   file_name = os.path.basename(path)
-  if file_name.endswith('partition.so'):
+  if file_name.endswith('partition.so') or file_name.endswith(
+      '.dwp') or file_name.endswith('.dwo'):
     return False
   return 'chrome' in file_name or file_name.endswith(
       '.so') or file_name.endswith('.exe')

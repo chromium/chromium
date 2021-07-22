@@ -82,6 +82,10 @@ class MetadataExtractor:
                 version_code=self.version_code,
                 modules=self.modules))
 
+  @property
+  def trace_file(self):
+    return self._trace_file
+
   def Initialize(self):
     """Extracts metadata from perfetto system trace.
     """
@@ -141,7 +145,8 @@ class MetadataExtractor:
     elif raw_os_name == 'Fuschia':
       return OSName.FUSCHIA
     else:
-      raise Exception('OS name %s not recognized.' % (raw_os_name))
+      raise Exception('OS name "%s" not recognized: %s' %
+                      (raw_os_name, self._trace_file))
 
   def InitializeForTesting(self,
                            version_number=None,

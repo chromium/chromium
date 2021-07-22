@@ -35,9 +35,10 @@ def GetTraceBreakpadSymbols(cloud_storage_bucket, metadata,
 
   metadata.Initialize()
   if metadata.os_name is None:
-    raise Exception('Failed to extract trace OS name.')
+    raise Exception('Failed to extract trace OS name: ' + metadata.trace_file)
   if metadata.version_number is None:
-    raise Exception('Failed to extract trace version number.')
+    raise Exception('Failed to extract trace version number: ' +
+                    metadata.trace_file)
 
   # Extract symbols by platform.
   if metadata.os_name == OSName.ANDROID:
@@ -47,7 +48,8 @@ def GetTraceBreakpadSymbols(cloud_storage_bucket, metadata,
   elif metadata.os_name == OSName.LINUX or metadata.os_name == OSName.MAC:
     _FetchBreakpadSymbols(cloud_storage_bucket, metadata, breakpad_output_dir)
   else:
-    raise Exception('Trace OS is not supported: ' + metadata.os_name)
+    raise Exception('Trace OS "%s" is not supported: %s' %
+                    (metadata.os_name, metadata.trace_file))
 
   logging.info('Breakpad symbols located at: ' +
                os.path.abspath(breakpad_output_dir))
@@ -88,7 +90,8 @@ def _FetchBreakpadSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
         logging.warning('Architecture not found, so using x86-64.')
       folder = 'mac64'
   else:
-    raise Exception('Expected OS to be Linux or Mac: ' + metadata.os_name)
+    raise Exception('Expected OS "%s" to be Linux or Mac: %s' %
+                    (metadata.os_name, metadata.trace_file))
 
   # Build Google Cloud Storage path to the symbols.
   gsc_folder = 'desktop-*/' + metadata.version_number + '/' + folder
