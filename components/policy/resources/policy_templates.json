@@ -3662,6 +3662,7 @@
         'items': {'type': 'string'},
       },
       'supported_on': ['chrome.*:79-','android:79-','chrome_os:79-'],
+      'future_on': ['ios'],
       'features': {
         'per_profile': True,
         'dynamic_refresh': False,

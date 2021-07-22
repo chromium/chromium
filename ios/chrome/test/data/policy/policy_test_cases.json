@@ -491,6 +491,18 @@
       }
     ]
   },
+  "SyncTypesListDisabled": {
+    "os": [ "ios" ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "SyncTypesListDisabled": ["preferences", "bookmarks"] },
+        "prefs": {
+          "sync.preferences": { "value": false },
+          "sync.bookmarks": { "value": false}
+        }
+      }
+    ]
+  },
   "TranslateEnabled": {
     "os": [
       "ios"
