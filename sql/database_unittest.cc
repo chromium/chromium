@@ -175,19 +175,92 @@ class SQLDatabaseTest : public testing::Test,
   std::unique_ptr<Database> db_;
 };
 
-TEST_P(SQLDatabaseTest, Execute) {
-  // Valid statement should return true.
-  ASSERT_TRUE(db_->Execute("CREATE TABLE foo (a, b)"));
+TEST_P(SQLDatabaseTest, Execute_ValidStatement) {
+  ASSERT_TRUE(db_->Execute("CREATE TABLE data(contents TEXT)"));
   EXPECT_EQ(SQLITE_OK, db_->GetErrorCode());
+}
 
-  // Invalid statement should fail.
+TEST_P(SQLDatabaseTest, Execute_InvalidStatement) {
   {
     sql::test::ScopedErrorExpecter error_expecter;
     error_expecter.ExpectError(SQLITE_ERROR);
-    EXPECT_FALSE(db_->Execute("CREATE TAB foo (a, b"));
+    EXPECT_FALSE(db_->Execute("CREATE TABLE data("));
     EXPECT_TRUE(error_expecter.SawExpectedErrors());
   }
   EXPECT_EQ(SQLITE_ERROR, db_->GetErrorCode());
+}
+
+TEST_P(SQLDatabaseTest, ExecuteScriptForTesting_OneLineValid) {
+  ASSERT_TRUE(db_->ExecuteScriptForTesting("CREATE TABLE data(contents TEXT)"));
+  EXPECT_EQ(SQLITE_OK, db_->GetErrorCode());
+}
+
+TEST_P(SQLDatabaseTest, ExecuteScriptForTesting_OneLineInvalid) {
+  ASSERT_FALSE(db_->ExecuteScriptForTesting("CREATE TABLE data("));
+  EXPECT_EQ(SQLITE_ERROR, db_->GetErrorCode());
+}
+
+TEST_P(SQLDatabaseTest, ExecuteScriptForTesting_ExtraContents) {
+  EXPECT_TRUE(db_->ExecuteScriptForTesting("CREATE TABLE data1(id)"))
+      << "Minimal statement";
+  EXPECT_TRUE(db_->ExecuteScriptForTesting("CREATE TABLE data2(id);"))
+      << "Extra semicolon";
+  EXPECT_TRUE(db_->ExecuteScriptForTesting("CREATE TABLE data3(id) -- Comment"))
+      << "Trailing comment";
+
+  EXPECT_TRUE(db_->ExecuteScriptForTesting(
+      "CREATE TABLE data4(id);CREATE TABLE data5(id)"))
+      << "Extra statement without whitespace";
+  EXPECT_TRUE(db_->ExecuteScriptForTesting(
+      "CREATE TABLE data6(id); CREATE TABLE data7(id)"))
+      << "Extra statement separated by whitespace";
+
+  EXPECT_TRUE(db_->ExecuteScriptForTesting("CREATE TABLE data8(id);-- Comment"))
+      << "Comment without whitespace";
+  EXPECT_TRUE(
+      db_->ExecuteScriptForTesting("CREATE TABLE data9(id); -- Comment"))
+      << "Comment sepatated by whitespace";
+}
+
+TEST_P(SQLDatabaseTest, ExecuteScriptForTesting_MultipleValidLines) {
+  EXPECT_TRUE(db_->ExecuteScriptForTesting(R"(
+      CREATE TABLE data1(contents TEXT);
+      CREATE TABLE data2(contents TEXT);
+      CREATE TABLE data3(contents TEXT);
+  )"));
+  EXPECT_EQ(SQLITE_OK, db_->GetErrorCode());
+
+  // DoesColumnExist() is implemented directly on top of a SQLite call. The
+  // other schema functions use sql::Statement infrastructure to query the
+  // schema table.
+  EXPECT_TRUE(db_->DoesColumnExist("data1", "contents"));
+  EXPECT_TRUE(db_->DoesColumnExist("data2", "contents"));
+  EXPECT_TRUE(db_->DoesColumnExist("data3", "contents"));
+}
+
+TEST_P(SQLDatabaseTest, ExecuteScriptForTesting_StopsOnCompileError) {
+  EXPECT_FALSE(db_->ExecuteScriptForTesting(R"(
+      CREATE TABLE data1(contents TEXT);
+      CREATE TABLE data1();
+      CREATE TABLE data3(contents TEXT);
+  )"));
+  EXPECT_EQ(SQLITE_ERROR, db_->GetErrorCode());
+
+  EXPECT_TRUE(db_->DoesColumnExist("data1", "contents"));
+  EXPECT_FALSE(db_->DoesColumnExist("data3", "contents"));
+}
+
+TEST_P(SQLDatabaseTest, ExecuteScriptForTesting_StopsOnStepError) {
+  EXPECT_FALSE(db_->ExecuteScriptForTesting(R"(
+      CREATE TABLE data1(contents TEXT UNIQUE);
+      INSERT INTO data1(contents) VALUES('value1');
+      INSERT INTO data1(contents) VALUES('value1');
+      CREATE TABLE data3(contents TEXT);
+  )"));
+  EXPECT_EQ(SQLITE_CONSTRAINT_UNIQUE, db_->GetErrorCode());
+
+  EXPECT_TRUE(db_->DoesColumnExist("data1", "contents"));
+  EXPECT_FALSE(db_->DoesColumnExist("data3", "contents"));
 }
 
 TEST_P(SQLDatabaseTest, CachedStatement) {

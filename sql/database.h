@@ -398,14 +398,22 @@ class COMPONENT_EXPORT(SQL) Database {
   // Executes a SQL statement. Returns true for success, and false for failure.
   //
   // `sql` should be a single SQL statement. Production code should not execute
-  // multiple SQL statements at once, to facilitate crash debugging.
-  //
-  // TODO(crbug.com/1230443): Migrate testing code that executes multiple SQL
-  // statements to a separate method.
+  // multiple SQL statements at once, to facilitate crash debugging. Test code
+  // should use ExecuteScriptForTesting().
   //
   // `sql` cannot have parameters. Statements with parameters can be handled by
   // sql::Statement. See GetCachedStatement() and GetUniqueStatement().
   bool Execute(const char* sql) WARN_UNUSED_RESULT;
+
+  // Executes a sequence of SQL statements.
+  //
+  // Returns true if all statements execute successfully. If a statement fails,
+  // stops and returns false. Calls should be wrapped in ASSERT_TRUE().
+  //
+  // The database's error handler is not invoked when errors occur. This method
+  // is a convenience for setting up a complex on-disk database state, such as
+  // an old schema version with test contents.
+  bool ExecuteScriptForTesting(const char* sql_script) WARN_UNUSED_RESULT;
 
   // Returns a statement for the given SQL using the statement cache. It can
   // take a nontrivial amount of work to parse and compile a statement, so
