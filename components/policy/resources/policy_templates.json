@@ -6449,7 +6449,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'future_on': ['chrome_os', 'chrome.*'],
+      'supported_on': ['chrome_os:94-', 'chrome.*:94-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -6494,7 +6494,7 @@
           'required': ['devices', 'urls']
         }
       },
-      'future_on': ['chrome_os', 'chrome.*'],
+      'supported_on': ['chrome_os:94-', 'chrome.*:94-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
