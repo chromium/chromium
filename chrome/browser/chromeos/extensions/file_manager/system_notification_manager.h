@@ -8,6 +8,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
@@ -85,6 +86,13 @@ class SystemNotificationManager {
                        file_manager_private::CopyOrMoveProgressStatus& status);
 
   /**
+   * Processes volume mount completed events.
+   */
+  void HandleMountCompletedEvent(
+      file_manager_private::MountCompletedEvent& event,
+      const Volume& volume);
+
+  /**
    * Returns the message center display service that manages notifications.
    */
   NotificationDisplayService* GetNotificationDisplayService();
@@ -113,6 +121,19 @@ class SystemNotificationManager {
   std::unique_ptr<message_center::Notification>
   MakeDriveConfirmDialogNotification(const extensions::Event& event,
                                      base::Value::ListView& event_arguments);
+
+  /**
+   * Click handler for the removable device notification.
+   */
+  void HandleRemovableNotificationClick(const std::string& path,
+                                        absl::optional<int> button_index);
+
+  /**
+   * Makes a notification instance for removable devices.
+   */
+  std::unique_ptr<message_center::Notification> MakeRemovableNotification(
+      file_manager_private::MountCompletedEvent& event,
+      const Volume& volume);
 
   /**
    * Helper function bound to notification instances that hides notifications.

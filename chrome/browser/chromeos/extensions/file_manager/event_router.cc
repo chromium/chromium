@@ -903,6 +903,7 @@ void EventRouter::DispatchMountCompletedEvent(
   util::VolumeToVolumeMetadata(profile_, volume, &event.volume_metadata);
   event.should_notify =
       ShouldShowNotificationForVolume(profile_, *device_event_router_, volume);
+  notification_manager_->HandleMountCompletedEvent(event, volume);
   BroadcastEvent(profile_,
                  extensions::events::FILE_MANAGER_PRIVATE_ON_MOUNT_COMPLETED,
                  file_manager_private::OnMountCompleted::kEventName,

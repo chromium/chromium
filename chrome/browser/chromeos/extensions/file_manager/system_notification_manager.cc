@@ -10,6 +10,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/drive/drivefs_native_message_host.h"
 #include "chrome/browser/chromeos/extensions/file_manager/drivefs_event_router.h"
+#include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -355,6 +358,80 @@ void SystemNotificationManager::HandleCopyEvent(
       break;
     default:
       DLOG(WARNING) << "Unhandled copy event for type " << status.type;
+      break;
+  }
+
+  if (notification) {
+    GetNotificationDisplayService()->Display(
+        NotificationHandler::Type::TRANSIENT, *notification,
+        /*metadata=*/nullptr);
+  }
+}
+
+const char* kRemovableNotificationId = "swa-removable-device-id";
+
+void SystemNotificationManager::HandleRemovableNotificationClick(
+    const std::string& path,
+    absl::optional<int> button_index) {
+  if (button_index) {
+    if (button_index.value() == 0) {
+      base::FilePath volume_root(path);
+      platform_util::ShowItemInFolder(profile_, volume_root);
+    } else {
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile_, chromeos::settings::mojom::kExternalStorageSubpagePath);
+    }
+  }
+
+  GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
+                                         kRemovableNotificationId);
+}
+
+std::unique_ptr<message_center::Notification>
+SystemNotificationManager::MakeRemovableNotification(
+    file_manager_private::MountCompletedEvent& event,
+    const Volume& volume) {
+  std::unique_ptr<message_center::Notification> notification =
+      ash::CreateSystemNotification(
+          message_center::NOTIFICATION_TYPE_SIMPLE, kRemovableNotificationId,
+          l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_DETECTION_TITLE),
+          l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE),
+          std::u16string(), GURL(), message_center::NotifierId(),
+          message_center::RichNotificationData(),
+          new message_center::HandleNotificationClickDelegate(
+              base::BindRepeating(
+                  &SystemNotificationManager::HandleRemovableNotificationClick,
+                  weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value())),
+          kNotificationGoogleIcon,
+          message_center::SystemNotificationWarningLevel::NORMAL);
+
+  std::vector<message_center::ButtonInfo> notification_buttons;
+  notification_buttons.push_back(message_center::ButtonInfo(
+      l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_BUTTON_LABEL)));
+  notification_buttons.push_back(
+      message_center::ButtonInfo(l10n_util::GetStringUTF16(
+          IDS_REMOVABLE_DEVICE_OPEN_SETTTINGS_BUTTON_LABEL)));
+  notification->set_buttons(notification_buttons);
+
+  return notification;
+}
+
+void SystemNotificationManager::HandleMountCompletedEvent(
+    file_manager_private::MountCompletedEvent& event,
+    const Volume& volume) {
+  if (!swa_enabled_) {
+    return;
+  }
+  std::unique_ptr<message_center::Notification> notification;
+
+  switch (event.event_type) {
+    case file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT:
+      if (event.should_notify) {
+        notification = MakeRemovableNotification(event, volume);
+      }
+      break;
+    default:
+      DLOG(WARNING) << "Unhandled mount event for type " << event.event_type;
       break;
   }
 
