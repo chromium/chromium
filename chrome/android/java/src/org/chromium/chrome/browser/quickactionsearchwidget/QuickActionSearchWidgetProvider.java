@@ -48,6 +48,18 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
         }
     }
 
+    /**
+     * A sub class of {@link QuickActionSearchWidgetProvider} that provides the widget that
+     * only contains a touch surface for launching the Dino game.
+     */
+    public static class QuickActionSearchWidgetProviderDino
+            extends QuickActionSearchWidgetProvider {
+        @Override
+        protected int getWidgetType() {
+            return QuickActionSearchWidgetType.DINO;
+        }
+    }
+
     @Override
     public void onUpdate(
             final Context context, final AppWidgetManager manager, final int[] widgetIds) {
@@ -89,7 +101,9 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      * This function is expected to be called exactly once after native libraries are initialized.
      */
     public static void initialize() {
-        setWidgetEnabled(ChromeFeatureList.isEnabled(ChromeFeatureList.QUICK_ACTION_SEARCH_WIDGET));
+        setWidgetEnabled(ChromeFeatureList.isEnabled(ChromeFeatureList.QUICK_ACTION_SEARCH_WIDGET),
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.QUICK_ACTION_SEARCH_WIDGET_DINO_VARIANT));
     }
 
     /**
@@ -98,23 +112,41 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      *
      * @param shouldEnableQuickActionSearchWidget a boolean indicating whether the widget component
      *                                            should be enabled or not.
+     * @param shouldEnableDinoVariant a boolean indicating whether the widget component of the Dino
+     *         variant should be enabled.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static void setWidgetEnabled(boolean shouldEnableQuickActionSearchWidget) {
-        int componentEnabledState = shouldEnableQuickActionSearchWidget
+    public static void setWidgetEnabled(
+            boolean shouldEnableQuickActionSearchWidget, boolean shouldEnableDinoVariant) {
+        setWidgetComponentEnabled(
+                QuickActionSearchWidgetProviderSmall.class, shouldEnableQuickActionSearchWidget);
+        setWidgetComponentEnabled(
+                QuickActionSearchWidgetProviderMedium.class, shouldEnableQuickActionSearchWidget);
+        setWidgetComponentEnabled(
+                QuickActionSearchWidgetProviderDino.class, shouldEnableDinoVariant);
+    }
+
+    /**
+     * Enables/Disables the given widget component for a variation of the Quick Action Search
+     * Widget.
+     *
+     * @param component The {@link QuickActionSearchWidgetProvider} subclass corresponding to the
+     *         widget that is to be disabled.
+     * @param shouldEnableWidgetComponent a boolean indicating whether the widget component should
+     *         be enabled or not.
+     */
+    private static void setWidgetComponentEnabled(
+            final Class<? extends QuickActionSearchWidgetProvider> component,
+            final boolean shouldEnableWidgetComponent) {
+        Context context = ContextUtils.getApplicationContext();
+
+        int componentEnabledState = shouldEnableWidgetComponent
                 ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
                 : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
 
-        Context context = ContextUtils.getApplicationContext();
-        ComponentName smallWidgetComponentName =
-                new ComponentName(context, QuickActionSearchWidgetProviderSmall.class);
-        ComponentName mediumWidgetComponentName =
-                new ComponentName(context, QuickActionSearchWidgetProviderMedium.class);
-
+        ComponentName componentName = new ComponentName(context, component);
         context.getPackageManager().setComponentEnabledSetting(
-                smallWidgetComponentName, componentEnabledState, PackageManager.DONT_KILL_APP);
-        context.getPackageManager().setComponentEnabledSetting(
-                mediumWidgetComponentName, componentEnabledState, PackageManager.DONT_KILL_APP);
+                componentName, componentEnabledState, PackageManager.DONT_KILL_APP);
     }
 
     /** Sets a QuickActionSearchWidgetProviderDelegate to facilitate tests. */
