@@ -622,3 +622,119 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithBrowserWindow) {
                                      ash::kShellWindowId_DeskContainerB),
             browser_window->parent());
 }
+
+// Tests that the windows and tabs count histogram is recorded properly.
+IN_PROC_BROWSER_TEST_F(DesksClientTest,
+                       DeskTemplateWindowAndTabCountHistogram) {
+  ASSERT_TRUE(DesksClient::Get());
+
+  base::HistogramTester histogram_tester;
+
+  Profile* profile = browser()->profile();
+
+  // Create a Chrome settings app.
+  web_app::WebAppProvider::Get(profile)
+      ->system_web_app_manager()
+      .InstallSystemAppsForTesting();
+  web_app::AppId settings_app_id = *web_app::GetAppIdForSystemWebApp(
+      profile, web_app::SystemAppType::SETTINGS);
+  apps::AppLaunchParams params(
+      settings_app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      WindowOpenDisposition::NEW_WINDOW,
+      apps::mojom::AppLaunchSource::kSourceTest);
+  params.restore_id = kSettingsWindowId;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->BrowserAppLauncher()
+      ->LaunchAppWithParams(std::move(params));
+  web_app::FlushSystemWebAppLaunchesForTesting(profile);
+
+  // Create a new browser and add a few tabs to it.
+  Browser::CreateParams browser_params(Browser::TYPE_NORMAL,
+                                       browser()->profile(),
+                                       /*user_gesture=*/false);
+  Browser* browser1 = Browser::Create(browser_params);
+  chrome::AddTabAt(browser1, GURL(kExampleUrl1), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser1, GURL(kExampleUrl2), /*index=*/-1,
+                   /*foreground=*/true);
+  browser1->window()->Show();
+
+  Browser* browser2 = Browser::Create(browser_params);
+  chrome::AddTabAt(browser2, GURL(kExampleUrl1), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser2, GURL(kExampleUrl2), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser2, GURL(kExampleUrl3), /*index=*/-1,
+                   /*foreground=*/true);
+  browser2->window()->Show();
+
+  base::RunLoop run_loop;
+  std::unique_ptr<ash::DeskTemplate> desk_template;
+  DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
+      base::BindLambdaForTesting(
+          [&](bool success,
+              std::unique_ptr<ash::DeskTemplate> captured_desk_template) {
+            run_loop.Quit();
+            ASSERT_TRUE(captured_desk_template);
+            desk_template = std::move(captured_desk_template);
+          }));
+  run_loop.Run();
+  ASSERT_TRUE(desk_template);
+
+  full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
+  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
+  EXPECT_EQ(app_id_to_launch_list.size(), 2u);
+
+  constexpr char kWindowCountHistogramName[] = "Ash.DeskTemplate.WindowCount";
+  constexpr char kTabCountHistogramName[] = "Ash.DeskTemplate.TabCount";
+  constexpr char kWindowAndTabCountHistogramName[] =
+      "Ash.DeskTemplate.WindowAndTabCount";
+  // NOTE: there is an existing browser with 1 tab created by BrowserMain().
+  histogram_tester.ExpectBucketCount(kWindowCountHistogramName, 4, 1);
+  histogram_tester.ExpectBucketCount(kTabCountHistogramName, 6, 1);
+  histogram_tester.ExpectBucketCount(kWindowAndTabCountHistogramName, 7, 1);
+}
+
+// Tests that the launch from template histogram is recorded properly.
+IN_PROC_BROWSER_TEST_F(DesksClientTest,
+                       DeskTemplateLaunchFromTemplateHistogram) {
+  ASSERT_TRUE(DesksClient::Get());
+
+  base::HistogramTester histogram_tester;
+
+  // Create a new browser.
+  Browser::CreateParams params(Browser::TYPE_NORMAL, browser()->profile(),
+                               /*user_gesture=*/false);
+  Browser* browser = Browser::Create(params);
+  browser->window()->Show();
+
+  // Save the template.
+  base::RunLoop run_loop;
+  std::unique_ptr<ash::DeskTemplate> desk_template;
+  DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
+      base::BindLambdaForTesting(
+          [&](bool success,
+              std::unique_ptr<ash::DeskTemplate> captured_desk_template) {
+            run_loop.Quit();
+            ASSERT_TRUE(captured_desk_template);
+            desk_template = std::move(captured_desk_template);
+          }));
+  run_loop.Run();
+  ASSERT_TRUE(desk_template);
+
+  // Set the template we created as the template we want to launch.
+  ash::DeskTemplate* desk_template_ptr = desk_template.get();
+  SetLaunchTemplate(std::move(desk_template));
+
+  int launches = 5;
+  for (int i = 0; i < launches; i++) {
+    ash::DeskSwitchAnimationWaiter waiter;
+    DesksClient::Get()->LaunchDeskTemplate(
+        desk_template_ptr->uuid().AsLowercaseString(), base::DoNothing());
+    waiter.Wait();
+  }
+
+  constexpr char kLaunchFromTemplateHistogramName[] =
+      "Ash.DeskTemplate.LaunchFromTemplate";
+  histogram_tester.ExpectTotalCount(kLaunchFromTemplateHistogramName, launches);
+}
