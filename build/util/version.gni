@@ -48,7 +48,7 @@ if (is_mac) {
       "webview_dev_version_code = \"@WEBVIEW_DEV_VERSION_CODE@\" "
 
   if (target_cpu == "arm64" || target_cpu == "x64") {
-    _version_dictionary_template += "monochrome_32_version_code = \"@MONOCHROME_32_VERSION_CODE@\" " + "monochrome_32_64_version_code = \"@MONOCHROME_32_64_VERSION_CODE@\" " + "monochrome_64_32_version_code = \"@MONOCHROME_64_32_VERSION_CODE@\" " + "monochrome_64_version_code = \"@MONOCHROME_64_VERSION_CODE@\" " + "trichrome_32_version_code = \"@TRICHROME_32_VERSION_CODE@\" " + "trichrome_32_64_version_code = \"@TRICHROME_32_64_VERSION_CODE@\" " + "trichrome_64_32_version_code = \"@TRICHROME_64_32_VERSION_CODE@\" " + "trichrome_64_version_code = \"@TRICHROME_64_VERSION_CODE@\" " + "webview_32_stable_version_code = \"@WEBVIEW_32_STABLE_VERSION_CODE@\" " + "webview_32_beta_version_code = \"@WEBVIEW_32_BETA_VERSION_CODE@\" " + "webview_32_dev_version_code = \"@WEBVIEW_32_DEV_VERSION_CODE@\" "
+    _version_dictionary_template += "monochrome_32_version_code = \"@MONOCHROME_32_VERSION_CODE@\" " + "monochrome_32_64_version_code = \"@MONOCHROME_32_64_VERSION_CODE@\" " + "monochrome_64_32_version_code = \"@MONOCHROME_64_32_VERSION_CODE@\" " + "monochrome_64_version_code = \"@MONOCHROME_64_VERSION_CODE@\" " + "trichrome_32_version_code = \"@TRICHROME_32_VERSION_CODE@\" " + "trichrome_32_64_version_code = \"@TRICHROME_32_64_VERSION_CODE@\" " + "trichrome_64_32_version_code = \"@TRICHROME_64_32_VERSION_CODE@\" " + "trichrome_64_version_code = \"@TRICHROME_64_VERSION_CODE@\" " + "webview_32_stable_version_code = \"@WEBVIEW_32_STABLE_VERSION_CODE@\" " + "webview_32_beta_version_code = \"@WEBVIEW_32_BETA_VERSION_CODE@\" " + "webview_32_dev_version_code = \"@WEBVIEW_32_DEV_VERSION_CODE@\" " + "webview_64_stable_version_code = \"@WEBVIEW_64_STABLE_VERSION_CODE@\" " + "webview_64_beta_version_code = \"@WEBVIEW_64_BETA_VERSION_CODE@\" " + "webview_64_dev_version_code = \"@WEBVIEW_64_DEV_VERSION_CODE@\" "
   }
 
   _script_arguments += [
@@ -114,6 +114,9 @@ if (is_mac) {
                            "webview_32_beta_version_code",
                            "webview_32_dev_version_code",
                            "webview_32_stable_version_code",
+                           "webview_64_beta_version_code",
+                           "webview_64_dev_version_code",
+                           "webview_64_stable_version_code",
                          ])
 
   chrome_version_name = chrome_version_full
@@ -142,6 +145,9 @@ if (is_mac) {
       "AndroidWebview32Stable: $webview_32_stable_version_code",
       "AndroidWebview32Beta: $webview_32_beta_version_code",
       "AndroidWebview32Dev: $webview_32_dev_version_code",
+      "AndroidWebview64Stable: $webview_64_stable_version_code",
+      "AndroidWebview64Beta: $webview_64_beta_version_code",
+      "AndroidWebview64Dev: $webview_64_dev_version_code",
     ]
   }
 

@@ -329,7 +329,11 @@ android_test_apk("weblayer_bundle_test_apk") {
 }
 
 instrumentation_test_runner("weblayer_bundle_test") {
-  apk_under_test = "//android_webview:system_webview_bundle_apks"
+  if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
+    apk_under_test = "//android_webview:system_webview_64_bundle_apks"
+  } else {
+    apk_under_test = "//android_webview:system_webview_bundle_apks"
+  }
 
   # TODO(cduvall): use_webview_provider is needed to make sure a custom WebView
   # is installable. Unfortunately, bundles are not currently supported for the

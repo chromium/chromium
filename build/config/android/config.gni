@@ -248,7 +248,11 @@ if (is_android || is_chromeos) {
     enable_arsc_obfuscation = true
 
     # The target to use as the system WebView implementation.
-    system_webview_apk_target = "//android_webview:system_webview_apk"
+    if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
+      system_webview_apk_target = "//android_webview:system_webview_64_apk"
+    } else {
+      system_webview_apk_target = "//android_webview:system_webview_apk"
+    }
 
     # Where to write failed expectations for bots to read.
     expectations_failure_dir = "$root_build_dir/failed_expectations"

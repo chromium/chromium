@@ -199,7 +199,11 @@ template("trichrome_library_apk_tmpl") {
 
     # http://crbug.com/1042107.
     if (is_component_build) {
-      main_component_library = "libmonochrome.cr.so"
+      if (android_64bit_target_cpu && invoker.is_64_bit_browser) {
+        main_component_library = "libmonochrome_64.cr.so"
+      } else {
+        main_component_library = "libmonochrome.cr.so"
+      }
     }
 
     if (!is_java_debug) {

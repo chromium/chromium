@@ -110,7 +110,13 @@ template("system_webview_apk_or_module_tmpl") {
     _pure_32_bit =
         android_64bit_target_cpu && defined(invoker.include_64_bit_webview) &&
         !invoker.include_64_bit_webview
-    not_needed([ "_pure_32_bit" ])
+    _pure_64_bit =
+        android_64bit_target_cpu && defined(invoker.include_32_bit_webview) &&
+        !invoker.include_32_bit_webview
+    not_needed([
+                 "_pure_32_bit",
+                 "_pure_64_bit",
+               ])
 
     # Flag whether additional deps and libs should be included for each ABI.
     _include_primary_support = false
@@ -123,7 +129,7 @@ template("system_webview_apk_or_module_tmpl") {
         shared_libraries = [ "//android_webview:libwebviewchromium" ]
         _include_primary_support = true
       }
-      if (android_64bit_target_cpu) {
+      if (android_64bit_target_cpu && !_pure_64_bit) {
         secondary_abi_shared_libraries = [ "//android_webview:libwebviewchromium($android_secondary_abi_toolchain)" ]
         _include_secondary_support = true
       }
@@ -258,18 +264,24 @@ template("system_webview_apk_or_module_tmpl") {
         if (android_channel == "dev") {
           if (_pure_32_bit) {
             version_code = webview_32_dev_version_code
+          } else if (_pure_64_bit) {
+            version_code = webview_64_dev_version_code
           } else {
             version_code = webview_dev_version_code
           }
         } else if (android_channel == "beta") {
           if (_pure_32_bit) {
             version_code = webview_32_beta_version_code
+          } else if (_pure_64_bit) {
+            version_code = webview_64_beta_version_code
           } else {
             version_code = webview_beta_version_code
           }
         } else {
           if (_pure_32_bit) {
             version_code = webview_32_stable_version_code
+          } else if (_pure_64_bit) {
+            version_code = webview_64_stable_version_code
           } else {
             version_code = webview_stable_version_code
           }

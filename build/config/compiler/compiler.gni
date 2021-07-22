@@ -200,7 +200,8 @@ declare_args() {
   # Set to true to use lld, the LLVM linker.
   # In late bring-up on macOS (see docs/mac_lld.md), and not functional at all for
   # iOS. The default linker everywhere else.
-  use_lld = is_clang && (!is_apple || (target_os == "mac" && chrome_pgo_phase != 1))
+  use_lld =
+      is_clang && (!is_apple || (target_os == "mac" && chrome_pgo_phase != 1))
 }
 
 declare_args() {
@@ -304,7 +305,8 @@ if (forbid_non_component_debug_builds) {
 # toolchain there to build relatively small binaries.
 assert(
     ignore_elf32_limitations || !is_android || target_os == "chromeos" ||
-        is_component_build || symbol_level < 2 || use_debug_fission,
+        is_component_build || symbol_level < 2 || use_debug_fission ||
+        (android_64bit_target_cpu && skip_secondary_abi_for_cq),
     "Android 32-bit non-component builds without DWARF Fission cannot " +
         "have symbol_level=2 due to 4GiB file size limit, see " +
         "https://crbug.com/648948. " + "If you really want to try this out, " +
