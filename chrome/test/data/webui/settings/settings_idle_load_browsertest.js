@@ -8,9 +8,9 @@ GEN('#include "content/public/test/browser_test.h"');
  * @constructor
  * @extends testing.Test
  */
-function SettingsIdleLoadV3BrowserTest() {}
+function SettingsIdleLoadBrowserTest() {}
 
-SettingsIdleLoadV3BrowserTest.prototype = {
+SettingsIdleLoadBrowserTest.prototype = {
   __proto__: testing.Test.prototype,
 
   /** @override */
@@ -21,7 +21,7 @@ SettingsIdleLoadV3BrowserTest.prototype = {
   isAsync: true,
 };
 
-TEST_F('SettingsIdleLoadV3BrowserTest', 'All', function() {
+TEST_F('SettingsIdleLoadBrowserTest', 'All', function() {
   // Run all registered tests.
   mocha.run();
 });

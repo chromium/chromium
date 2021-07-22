@@ -10,7 +10,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "content/public/test/browser_test.h"');
 
 // eslint-disable-next-line no-var
-var WebUIResourcesV3BrowserTest = class extends PolymerTest {
+var WebUIResourcesBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
     throw 'this is abstract and should be overridden by subclasses';
@@ -23,14 +23,14 @@ var WebUIResourcesV3BrowserTest = class extends PolymerTest {
 };
 
 // eslint-disable-next-line no-var
-var WebUIResourcesListPropertyUpdateBehaviorV3Test =
-    class extends WebUIResourcesV3BrowserTest {
+var WebUIResourcesListPropertyUpdateBehaviorTest =
+    class extends WebUIResourcesBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://test/test_loader.html?module=resources/list_property_update_behavior_tests.js';
   }
 };
 
-TEST_F('WebUIResourcesListPropertyUpdateBehaviorV3Test', 'All', function() {
+TEST_F('WebUIResourcesListPropertyUpdateBehaviorTest', 'All', function() {
   mocha.run();
 });

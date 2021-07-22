@@ -14,7 +14,7 @@ GEN('#include "build/chromeos_buildflags.h"');
 
 /** Test fixture for shared Polymer 3 components. */
 // eslint-disable-next-line no-var
-var CrComponentsV3BrowserTest = class extends PolymerTest {
+var CrComponentsBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
     return 'chrome://dummyurl';
@@ -27,15 +27,14 @@ var CrComponentsV3BrowserTest = class extends PolymerTest {
 };
 
 // eslint-disable-next-line no-var
-var CrComponentsManagedFootnoteV3Test =
-    class extends CrComponentsV3BrowserTest {
+var CrComponentsManagedFootnoteTest = class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://test/test_loader.html?module=cr_components/managed_footnote_test.js';
   }
 };
 
-TEST_F('CrComponentsManagedFootnoteV3Test', 'All', function() {
+TEST_F('CrComponentsManagedFootnoteTest', 'All', function() {
   mocha.run();
 });
 
@@ -46,15 +45,14 @@ GEN('#if defined(USE_NSS_CERTS)');
  * certificate-manager component in the context of the Settings privacy page.
  */
 // eslint-disable-next-line no-var
-var CrComponentsCertificateManagerV3Test =
-    class extends CrComponentsV3BrowserTest {
+var CrComponentsCertificateManagerTest = class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=cr_components/certificate_manager_test.js';
   }
 };
 
-TEST_F('CrComponentsCertificateManagerV3Test', 'All', function() {
+TEST_F('CrComponentsCertificateManagerTest', 'All', function() {
   mocha.run();
 });
 
@@ -69,28 +67,28 @@ GEN('#if defined(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS_ASH)');
  * in the context of the Settings privacy page.
  */
 // eslint-disable-next-line no-var
-var CrComponentsCertificateManagerProvisioningV3Test =
-    class extends CrComponentsCertificateManagerV3Test {
+var CrComponentsCertificateManagerProvisioningTest =
+    class extends CrComponentsCertificateManagerTest {
   /** @override */
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=cr_components/certificate_manager_provisioning_test.js';
   }
 };
 
-TEST_F('CrComponentsCertificateManagerProvisioningV3Test', 'All', function() {
+TEST_F('CrComponentsCertificateManagerProvisioningTest', 'All', function() {
   mocha.run();
 });
 
 GEN('#endif  // defined(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS_ASH)');
 
 // eslint-disable-next-line no-var
-var CrComponentsManagedDialogV3Test = class extends CrComponentsV3BrowserTest {
+var CrComponentsManagedDialogTest = class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://test/test_loader.html?module=cr_components/managed_dialog_test.js';
   }
 };
 
-TEST_F('CrComponentsManagedDialogV3Test', 'All', function() {
+TEST_F('CrComponentsManagedDialogTest', 'All', function() {
   mocha.run();
 });
