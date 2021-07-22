@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/test/assistant_ash_test_base.h"
@@ -366,6 +367,28 @@ class AssistantPageClamshellTest : public AssistantPageViewTest,
 };
 
 INSTANTIATE_TEST_SUITE_P(Bubble, AssistantPageClamshellTest, testing::Bool());
+
+TEST_P(AssistantPageClamshellTest, PressingAssistantKeyShowsAssistantPage) {
+  ShowAssistantUi(AssistantEntryPoint::kHotkey);
+
+  EXPECT_TRUE(Shell::Get()->app_list_controller()->IsVisible());
+  EXPECT_TRUE(page_view()->GetVisible());
+}
+
+TEST_P(AssistantPageClamshellTest,
+       OpeningLauncherThenPressingAssistantKeyShowsAssistantPage) {
+  OpenLauncher();
+  ShowAssistantUi(AssistantEntryPoint::kHotkey);
+
+  EXPECT_TRUE(page_view()->GetVisible());
+}
+
+TEST_P(AssistantPageClamshellTest, PressingAssistantKeyTwiceClosesLauncher) {
+  ShowAssistantUi(AssistantEntryPoint::kHotkey);
+  CloseAssistantUi(AssistantExitPoint::kHotkey);
+
+  EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible());
+}
 
 TEST_P(AssistantPageClamshellTest, ShouldFocusTextFieldWhenOpeningWithHotkey) {
   ShowAssistantUi(AssistantEntryPoint::kHotkey);
