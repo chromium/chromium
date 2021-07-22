@@ -614,6 +614,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
     }
   }
   title_label_->SetText(title, is_filename);
+  domain_label_->SetText(domain, absl::nullopt);
 
   const bool alternate_layout = UseAlternateHoverCardFormat();
   if (alert_state_ != old_alert_state) {
@@ -652,13 +653,6 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
       thumbnail_view_->SetRoundedCorners(corners, corner_radius_.value_or(0));
     }
   }
-
-  domain_label_->SetText(domain, absl::nullopt);
-
-  // Because we may have changed the card's contents, if the card has yet to be
-  // shown, ensure that it starts at the correct size.
-  if (!GetWidget()->IsVisible())
-    SizeToContents();
 }
 
 void TabHoverCardBubbleView::SetTextFade(double percent) {

@@ -277,6 +277,7 @@ void TabHoverCardController::UpdateOrShowCard(
   if (update_type == TabController::HoverCardUpdateType::kTabDataChanged) {
     DCHECK(IsHoverCardShowingForTab(tab));
     UpdateCardContent(tab);
+    slide_animator_->UpdateTargetBounds();
     return;
   }
 
@@ -332,6 +333,7 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
 
   CreateHoverCard(target_tab_);
   UpdateCardContent(target_tab_);
+  slide_animator_->UpdateTargetBounds();
   MaybeStartThumbnailObservation(target_tab_, is_initial);
 
   // Ensure the hover card Widget assumes the highest z-order to avoid occlusion

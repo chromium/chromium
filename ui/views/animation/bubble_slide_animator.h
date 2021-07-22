@@ -67,6 +67,16 @@ class VIEWS_EXPORT BubbleSlideAnimator : public AnimationDelegateViews,
   // bounds.
   void SnapToAnchorView(View* desired_anchor_view);
 
+  // Retargets the current animation or snaps the bubble to its correct size
+  // and position if there is no current animation.
+  //
+  // Call if the bubble contents change size in a way that would require the
+  // bubble to be resized/repositioned. If you would like a new animation to
+  // always play to the new bounds, call AnimateToAnchorView() instead.
+  //
+  // Note: This method expects the bubble to have a valid anchor view.
+  void UpdateTargetBounds();
+
   // Stops the animation without snapping the widget to a particular anchor
   // view.
   void StopAnimation();
