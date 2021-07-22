@@ -11843,10 +11843,20 @@ class BackForwardCacheBrowserTestAllowCacheControlNoStore
   }
 };
 
+// TODO(https://crbug.com/1231849): flaky on Cast Linux.
+#if defined(OS_LINUX)
+#define MAYBE_PagesWithCacheControlNoStoreEnterBfcacheAndEvicted \
+  DISABLED_PagesWithCacheControlNoStoreEnterBfcacheAndEvicted
+#else
+#define MAYBE_PagesWithCacheControlNoStoreEnterBfcacheAndEvicted \
+  PagesWithCacheControlNoStoreEnterBfcacheAndEvicted
+#endif
+
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // but does not get restored and gets evicted.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestAllowCacheControlNoStore,
-                       PagesWithCacheControlNoStoreEnterBfcacheAndEvicted) {
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestAllowCacheControlNoStore,
+    MAYBE_PagesWithCacheControlNoStoreEnterBfcacheAndEvicted) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/main_document");
   net::test_server::ControllableHttpResponse response2(embedded_test_server(),
@@ -12356,11 +12366,21 @@ class BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange
   }
 };
 
+// TODO(https://crbug.com/1231849): flaky on Cast Linux.
+#if defined(OS_LINUX)
+#define MAYBE_PagesWithCacheControlNoStoreRestoreFromBackForwardCache \
+  DISABLED_PagesWithCacheControlNoStoreRestoreFromBackForwardCache
+#else
+#define MAYBE_PagesWithCacheControlNoStoreRestoreFromBackForwardCache \
+  PagesWithCacheControlNoStoreRestoreFromBackForwardCache
+#endif
+
+
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and gets restored if cookies do not change.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange,
-    PagesWithCacheControlNoStoreRestoreFromBackForwardCache) {
+    MAYBE_PagesWithCacheControlNoStoreRestoreFromBackForwardCache) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/main_document");
   net::test_server::ControllableHttpResponse response2(embedded_test_server(),
