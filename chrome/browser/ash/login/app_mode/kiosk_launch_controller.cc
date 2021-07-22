@@ -652,10 +652,17 @@ void KioskLaunchController::OnNetworkConfigRequested() {
 
 void KioskLaunchController::OnNetworkConfigFinished() {
   network_ui_state_ = NetworkUIState::kNotShowing;
-  splash_screen_view_->UpdateAppLaunchState(
-      AppLaunchSplashScreenView::AppLaunchState::kPreparingProfile);
+
+  if (splash_screen_view_) {
+    splash_screen_view_->UpdateAppLaunchState(
+        AppLaunchSplashScreenView::AppLaunchState::kPreparingProfile);
+  }
+
   app_state_ = AppState::kInitNetwork;
-  app_launcher_->RestartLauncher();
+
+  if (app_launcher_) {
+    app_launcher_->RestartLauncher();
+  }
 }
 
 void KioskLaunchController::OnNetworkStateChanged(bool online) {
