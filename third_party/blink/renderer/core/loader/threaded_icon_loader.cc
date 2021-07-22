@@ -119,7 +119,7 @@ void ThreadedIconLoader::DecodeAndResizeImageOnBackgroundThread(
   }
 
   decoded_icon_ = image_frame->Bitmap();
-  if (!resize_dimensions_) {
+  if (!resize_dimensions_ || resize_dimensions_->IsEmpty()) {
     notify_complete(1.0);
     return;
   }
