@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "base/logging.h"
-#include "build/build_config.h"
 #include "media/base/bit_reader.h"
 #include "media/formats/mp4/rcheck.h"
 #include "media/formats/mpeg/adts_constants.h"
@@ -29,9 +28,8 @@ AAC::AAC(const AAC& other) = default;
 AAC::~AAC() = default;
 
 bool AAC::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
-#if defined(OS_ANDROID)
   codec_specific_data_ = data;
-#endif
+
   if (data.empty())
     return false;
 

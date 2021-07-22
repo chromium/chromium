@@ -408,9 +408,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
           profile = aac.GetProfile();
           channel_layout = aac.GetChannelLayout(has_sbr_);
           sample_per_second = aac.GetOutputSamplesPerSecond(has_sbr_);
-#if defined(OS_ANDROID)
           extra_data = aac.codec_specific_data();
-#endif
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
         } else if (audio_type == kAC3) {
           codec = kCodecAC3;
