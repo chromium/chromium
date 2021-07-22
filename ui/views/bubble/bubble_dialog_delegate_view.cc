@@ -351,6 +351,21 @@ class BubbleDialogDelegate::BubbleWidgetObserver : public WidgetObserver {
       this};
 };
 
+class BubbleDialogDelegate::ThemeObserver : public ViewObserver {
+ public:
+  explicit ThemeObserver(BubbleDialogDelegate* delegate) : delegate_(delegate) {
+    observation_.Observe(delegate->GetContentsView());
+  }
+
+  void OnViewThemeChanged(views::View* view) override {
+    delegate_->UpdateColorsFromTheme();
+  }
+
+ private:
+  BubbleDialogDelegate* const delegate_;
+  base::ScopedObservation<View, ViewObserver> observation_{this};
+};
+
 BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
                                            BubbleBorder::Arrow arrow,
                                            BubbleBorder::Shadow shadow)
@@ -364,6 +379,16 @@ BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
   set_margins(layout_provider->GetDialogInsetsForContentType(
       DialogContentType::kText, DialogContentType::kText));
   set_title_margins(layout_provider->GetInsetsMetric(INSETS_DIALOG_TITLE));
+
+  RegisterWidgetInitializedCallback(base::BindOnce(
+      [](BubbleDialogDelegate* bubble_delegate) {
+        bubble_delegate->theme_observer_ =
+            std::make_unique<ThemeObserver>(bubble_delegate);
+        // Call the theme callback to make sure the initial theme is picked up
+        // by the BubbleDialogDelegate.
+        bubble_delegate->UpdateColorsFromTheme();
+      },
+      this));
 }
 
 BubbleDialogDelegate::~BubbleDialogDelegate() {
@@ -714,13 +739,6 @@ gfx::Size BubbleDialogDelegateView::GetMaximumSize() const {
   return gfx::Size();
 }
 
-void BubbleDialogDelegateView::OnThemeChanged() {
-  View::OnThemeChanged();
-  UpdateColorsFromTheme();
-}
-
-void BubbleDialogDelegateView::Init() {}
-
 void BubbleDialogDelegate::SetAnchorView(View* anchor_view) {
   if (anchor_view && anchor_view->GetWidget()) {
     anchor_widget_observer_ =
@@ -784,9 +802,11 @@ void BubbleDialogDelegate::SizeToContents() {
   GetWidget()->SetBounds(bubble_bounds);
 }
 
-void BubbleDialogDelegateView::UpdateColorsFromTheme() {
+void BubbleDialogDelegate::UpdateColorsFromTheme() {
+  View* const contents_view = GetContentsView();
+  DCHECK(contents_view);
   if (!color_explicitly_set()) {
-    set_color_internal(GetNativeTheme()->GetSystemColor(
+    set_color_internal(contents_view->GetNativeTheme()->GetSystemColor(
         ui::NativeTheme::kColorId_BubbleBackground));
   }
   BubbleFrameView* frame_view = GetBubbleFrameView();
@@ -795,9 +815,10 @@ void BubbleDialogDelegateView::UpdateColorsFromTheme() {
 
   // When there's an opaque layer, the bubble border background won't show
   // through, so explicitly paint a background color.
-  SetBackground(layer() && layer()->fills_bounds_opaquely()
-                    ? CreateSolidBackground(color())
-                    : nullptr);
+  contents_view->SetBackground(
+      contents_view->layer() && contents_view->layer()->fills_bounds_opaquely()
+          ? CreateSolidBackground(color())
+          : nullptr);
 }
 
 void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {

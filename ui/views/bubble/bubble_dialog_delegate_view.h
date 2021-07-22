@@ -285,6 +285,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   class AnchorViewObserver;
   class AnchorWidgetObserver;
   class BubbleWidgetObserver;
+  class ThemeObserver;
 
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
                            VisibleWidgetShowsInkDropOnAttaching);
@@ -298,6 +299,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   friend class AnchorViewObserver;
   friend class AnchorWidgetObserver;
   friend class BubbleWidgetObserver;
+  friend class ThemeObserver;
 
   friend class BubbleBorderDelegate;
   friend class BubbleWindowTargeter;
@@ -316,6 +318,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
 
   void OnDeactivate();
 
+  // Update the bubble color from the NativeTheme unless it was explicitly set.
+  void UpdateColorsFromTheme();
+
   // Notify this bubble that it is now the primary anchored bubble. When a new
   // bubble becomes the primary anchor, the previous primary silently loses its
   // primary status. This method is only called when this bubble becomes primary
@@ -333,6 +338,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   std::unique_ptr<AnchorViewObserver> anchor_view_observer_;
   std::unique_ptr<AnchorWidgetObserver> anchor_widget_observer_;
   std::unique_ptr<BubbleWidgetObserver> bubble_widget_observer_;
+  std::unique_ptr<ThemeObserver> theme_observer_;
   bool adjust_if_offscreen_ = true;
   bool focus_traversable_from_anchor_view_ = true;
   ViewTracker highlighted_button_tracker_;
@@ -405,17 +411,9 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public BubbleDialogDelegate,
   gfx::Size GetMinimumSize() const final;
   gfx::Size GetMaximumSize() const final;
 
-  void OnThemeChanged() override;
-
-  // Perform view initialization on the contents for bubble sizing.
-  void Init() override;
-
  private:
   FRIEND_TEST_ALL_PREFIXES(BubbleDelegateTest, CreateDelegate);
   FRIEND_TEST_ALL_PREFIXES(BubbleDelegateTest, NonClientHitTest);
-
-  // Update the bubble color from the NativeTheme unless it was explicitly set.
-  void UpdateColorsFromTheme();
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, BubbleDialogDelegateView, View)
