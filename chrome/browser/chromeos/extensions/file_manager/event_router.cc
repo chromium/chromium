@@ -450,6 +450,8 @@ EventRouter::EventRouter(Profile* profile)
           base::BindRepeating(&EventRouter::DispatchDirectoryChangeEventImpl,
                               base::Unretained(this))) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Notification manager can call into Drive FS for dialog handling.
+  notification_manager_->SetDriveFSEventRouter(drivefs_event_router_.get());
   ObserveEvents();
 }
 
