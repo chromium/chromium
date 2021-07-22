@@ -631,6 +631,12 @@ bool AwContentBrowserClient::BindAssociatedReceiverFromFrame(
         render_frame_host);
     return true;
   }
+  if (interface_name == mojom::FrameHost::Name_) {
+    AwRenderViewHostExt::BindFrameHost(
+        mojo::PendingAssociatedReceiver<mojom::FrameHost>(std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
 
   return false;
 }

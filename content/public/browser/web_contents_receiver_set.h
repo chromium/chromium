@@ -24,9 +24,6 @@ class OfflinePageTabHelper;
 class SupervisedUserNavigationObserver;
 class SyncEncryptionKeysTabHelper;
 
-namespace android_webview {
-class AwRenderViewHostExt;
-}
 namespace chrome_browser_net {
 class NetErrorTabHelper;
 }
@@ -124,7 +121,6 @@ class WebContentsFrameReceiverSetPassKey {
   friend class ::LiteVideoObserver;
   friend class ::SupervisedUserNavigationObserver;
   friend class ::SyncEncryptionKeysTabHelper;
-  friend class ::android_webview::AwRenderViewHostExt;
   friend class ::chrome_browser_net::NetErrorTabHelper;
   friend class ::extensions::ChromeWebViewPermissionHelperDelegate;
   friend class ::extensions::ExtensionFrameHost;

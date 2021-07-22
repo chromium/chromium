@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/web_contents_receiver_set.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -38,6 +38,12 @@ class AwRenderViewHostExtClient {
 class AwRenderViewHostExt : public content::WebContentsObserver,
                             mojom::FrameHost {
  public:
+  // Binds the Mojo receiver for the FrameHost endpoint to the
+  // AwRenderViewHostExt associated with the RenderFrameHost.
+  static void BindFrameHost(
+      mojo::PendingAssociatedReceiver<mojom::FrameHost> receiver,
+      content::RenderFrameHost* rfh);
+
   // To send receive messages to a RenderView we take the WebContents instance,
   // as it internally handles RenderViewHost instances changing underneath us.
   AwRenderViewHostExt(
@@ -110,7 +116,7 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
 
   content::GlobalRenderFrameHostId main_frame_global_id_;
 
-  content::WebContentsFrameReceiverSet<mojom::FrameHost> frame_host_receivers_;
+  content::RenderFrameHostReceiverSet<mojom::FrameHost> frame_host_receivers_;
 
   // Associated channel to the webview LocalMainFrame extensions.
   mojo::AssociatedRemote<mojom::LocalMainFrame> local_main_frame_remote_;

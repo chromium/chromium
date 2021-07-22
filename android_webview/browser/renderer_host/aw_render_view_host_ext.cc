@@ -5,6 +5,7 @@
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
 
 #include "android_webview/browser/aw_browser_context.h"
+#include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/aw_contents_client_bridge.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
@@ -52,14 +53,28 @@ void ShouldOverrideUrlLoadingOnUI(
 
 }  // namespace
 
+// static
+void AwRenderViewHostExt::BindFrameHost(
+    mojo::PendingAssociatedReceiver<mojom::FrameHost> receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* aw_contents = AwContents::FromWebContents(web_contents);
+  if (!aw_contents)
+    return;
+  auto* aw_rvh_ext = aw_contents->render_view_host_ext();
+  if (!aw_rvh_ext)
+    return;
+  aw_rvh_ext->frame_host_receivers_.Bind(rfh, std::move(receiver));
+}
+
 AwRenderViewHostExt::AwRenderViewHostExt(AwRenderViewHostExtClient* client,
                                          content::WebContents* contents)
     : content::WebContentsObserver(contents),
       client_(client),
       has_new_hit_test_data_(false),
-      frame_host_receivers_(contents,
-                            this,
-                            content::WebContentsFrameReceiverSetPassKey()) {
+      frame_host_receivers_(contents, this) {
   DCHECK(client_);
 }
 
