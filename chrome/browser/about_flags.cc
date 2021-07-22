@@ -4904,6 +4904,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDownloadAutoResumptionNativeDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(download::features::kDownloadAutoResumptionNative)},
 
+    {"download-progress-message",
+     flag_descriptions::kDownloadProgressMessageName,
+     flag_descriptions::kDownloadProgressMessageDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDownloadProgressMessage)},
+
     {"download-later", flag_descriptions::kDownloadLaterName,
      flag_descriptions::kDownloadLaterDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(download::features::kDownloadLater)},

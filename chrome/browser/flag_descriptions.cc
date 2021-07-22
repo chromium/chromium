@@ -982,6 +982,10 @@ const char kDownloadLaterDebugOnWifiName[] =
 const char kDownloadLaterDebugOnWifiNameDescription[] =
     "Show download later dialog on WIFI.";
 
+const char kDownloadProgressMessageName[] = "Show download progress message";
+const char kDownloadProgressMessageDescription[] =
+    "Shows download progress message UI.";
+
 const char kEnableLayoutNGName[] = "Enable LayoutNG";
 const char kEnableLayoutNGDescription[] =
     "Enable Blink's next generation layout engine.";

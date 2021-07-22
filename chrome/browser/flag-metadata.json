@@ -1261,6 +1261,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "download-progress-message",
+    "owners": [ "shaktisahu" ],
+    "expiry_milestone": 96
+  },
+  {
     "name": "download-shelf-webui",
     "owners": [ "robliao", "chrome-webui-for-features@google.com" ],
     "expiry_milestone": 98
