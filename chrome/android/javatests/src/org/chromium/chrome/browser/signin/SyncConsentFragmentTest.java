@@ -44,6 +44,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
@@ -259,6 +260,9 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    // Flaky on Android Marshmallow, see
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=1231491
+    @DisabledTest
     public void testSigninFragmentForcedSigninWithRegularChild() throws IOException {
         HistogramDelta countHistogram =
                 new HistogramDelta("Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
