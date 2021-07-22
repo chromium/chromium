@@ -44,7 +44,7 @@
 #include "ui/ozone/public/ozone_switches.h"
 
 #if defined(HEADLESS_USE_EMBEDDED_RESOURCES)
-#include "headless/embedded_resource_pak.h"
+#include "headless/embedded_resource_pak.h"  // nogncheck
 #endif
 
 #if defined(OS_MAC) || defined(OS_WIN)

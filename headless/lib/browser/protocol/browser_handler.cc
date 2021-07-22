@@ -9,7 +9,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "headless/lib/browser/headless_browser_impl.h"
-#include "headless/lib/browser/headless_web_contents_impl.h"
+#include "headless/lib/browser/headless_web_contents_impl.h"  // nogncheck http://crbug.com/1227378
 
 namespace headless {
 namespace protocol {

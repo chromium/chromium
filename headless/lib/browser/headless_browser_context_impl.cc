@@ -23,7 +23,7 @@
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/headless_permission_manager.h"
-#include "headless/lib/browser/headless_web_contents_impl.h"
+#include "headless/lib/browser/headless_web_contents_impl.h"  // nogncheck http://crbug.com/1227378
 #include "ui/base/resource/resource_bundle.h"
 
 #if defined(HEADLESS_USE_POLICY)
