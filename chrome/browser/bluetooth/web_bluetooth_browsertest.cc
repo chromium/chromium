@@ -12,7 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
-#include "chrome/browser/bluetooth/chrome_bluetooth_delegate.h"
+#include "chrome/browser/bluetooth/chrome_bluetooth_delegate_impl_client.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/permissions/bluetooth_delegate_impl.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/variations/variations_associated_data.h"
@@ -339,9 +340,11 @@ class FakeBluetoothChooser : public content::BluetoothChooser {
   absl::optional<std::string> device_to_select_;
 };
 
-class TestBluetoothDelegate : public ChromeBluetoothDelegate {
+class TestBluetoothDelegate : public permissions::BluetoothDelegateImpl {
  public:
-  TestBluetoothDelegate() = default;
+  TestBluetoothDelegate()
+      : permissions::BluetoothDelegateImpl(
+            std::make_unique<ChromeBluetoothDelegateImplClient>()) {}
   ~TestBluetoothDelegate() override = default;
   TestBluetoothDelegate(const TestBluetoothDelegate&) = delete;
   TestBluetoothDelegate& operator=(const TestBluetoothDelegate&) = delete;
@@ -362,7 +365,8 @@ class TestBluetoothDelegate : public ChromeBluetoothDelegate {
       content::RenderFrameHost* frame,
       const content::BluetoothChooser::EventHandler& event_handler) override {
     if (use_real_chooser_) {
-      return ChromeBluetoothDelegate::RunBluetoothChooser(frame, event_handler);
+      return permissions::BluetoothDelegateImpl::RunBluetoothChooser(
+          frame, event_handler);
     }
     return std::make_unique<FakeBluetoothChooser>(event_handler,
                                                   device_to_select_);

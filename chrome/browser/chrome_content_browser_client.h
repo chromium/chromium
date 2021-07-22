@@ -62,6 +62,10 @@ enum class SmsFetchFailureType;
 struct ServiceWorkerVersionBaseInfo;
 }  // namespace content
 
+namespace permissions {
+class BluetoothDelegateImpl;
+}
+
 namespace safe_browsing {
 class RealTimeUrlLookupServiceBase;
 class SafeBrowsingService;
@@ -92,7 +96,6 @@ namespace net {
 class IsolationInfo;
 }
 
-class ChromeBluetoothDelegate;
 class ChromeFontAccessDelegate;
 class ChromeHidDelegate;
 class ChromeSerialDelegate;
@@ -827,7 +830,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<ChromeFontAccessDelegate> font_access_delegate_;
   std::unique_ptr<ChromeWebAuthenticationDelegate> web_authentication_delegate_;
 #endif
-  std::unique_ptr<ChromeBluetoothDelegate> bluetooth_delegate_;
+  std::unique_ptr<permissions::BluetoothDelegateImpl> bluetooth_delegate_;
 
 #if BUILDFLAG(ENABLE_VR)
   std::unique_ptr<vr::ChromeXrIntegrationClient> xr_integration_client_;

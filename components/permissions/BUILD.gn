@@ -19,6 +19,8 @@ component("permissions_common") {
 
 source_set("permissions") {
   sources = [
+    "bluetooth_delegate_impl.cc",
+    "bluetooth_delegate_impl.h",
     "chooser_controller.cc",
     "chooser_controller.h",
     "chooser_title_util.cc",

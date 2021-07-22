@@ -20,10 +20,10 @@ The legacy permissions system is implemented by `bluetooth_allowed_devices.h`,
 which is created per origin.
 
 The new permissions system is implemented by providing an implementation for
-the `//content/public/browser/bluetooth_delegate.h` interface. In Chrome, the
-implementation of this interface is provided by
-`//chrome/browser/chrome_bluetooth_delegate.h` which forwards permission
-queries to `//chrome/browser/bluetooth/bluetooth_chooser_context.h`. This
+the `//content/public/browser/bluetooth_delegate.h` interface. In Chrome and
+WebLayer, the implementation of this interface is provided by
+`//components/permissions/bluetooth_delegate_impl.h` which forwards permission
+queries to `//components/permissions/contexts/bluetooth_chooser_context.h`. This
 class uses `//components/permissions/chooser_context_base.h` as the base.
 This base class is also in use by other device APIs, like WebUSB. The new
 permission system enables Web Bluetooth permissions to be persistent and to

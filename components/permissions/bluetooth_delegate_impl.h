@@ -1,12 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_BLUETOOTH_CHROME_BLUETOOTH_DELEGATE_H_
-#define CHROME_BROWSER_BLUETOOTH_CHROME_BLUETOOTH_DELEGATE_H_
+#ifndef COMPONENTS_PERMISSIONS_BLUETOOTH_DELEGATE_IMPL_H_
+#define COMPONENTS_PERMISSIONS_BLUETOOTH_DELEGATE_IMPL_H_
 
 #include <list>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/scoped_observation.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "content/public/browser/bluetooth_delegate.h"
-#include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
 
 namespace blink {
@@ -30,17 +30,46 @@ class BluetoothDevice;
 class BluetoothUUID;
 }  // namespace device
 
-// Provides an interface for managing device permissions for Web Bluetooth and
-// Web Bluetooth Scanning API. This is the Chrome-specific implementation of the
-// BluetoothDelegate.
-class ChromeBluetoothDelegate : public content::BluetoothDelegate {
- public:
-  ChromeBluetoothDelegate();
-  ~ChromeBluetoothDelegate() override;
+namespace permissions {
 
-  // Move-only class.
-  ChromeBluetoothDelegate(const ChromeBluetoothDelegate&) = delete;
-  ChromeBluetoothDelegate& operator=(const ChromeBluetoothDelegate&) = delete;
+class BluetoothChooserContext;
+
+// Provides an interface for managing device permissions for Web Bluetooth and
+// Web Bluetooth Scanning API.
+class BluetoothDelegateImpl : public content::BluetoothDelegate {
+ public:
+  // Provides embedder-level functionality to BluetoothDelegateImpl.
+  class Client {
+   public:
+    Client() = default;
+    virtual ~Client() = default;
+
+    Client(const Client&) = delete;
+    Client& operator=(const Client&) = delete;
+
+    // Provides access to a BluetoothChooserContext without transferring
+    // ownership.
+    virtual permissions::BluetoothChooserContext* GetBluetoothChooserContext(
+        content::RenderFrameHost* frame) = 0;
+
+    // See content::BluetoothDelegate::RunBluetoothChooser.
+    virtual std::unique_ptr<content::BluetoothChooser> RunBluetoothChooser(
+        content::RenderFrameHost* frame,
+        const content::BluetoothChooser::EventHandler& event_handler) = 0;
+
+    // See content::BluetoothDelegate::ShowBluetoothScanningPrompt.
+    virtual std::unique_ptr<content::BluetoothScanningPrompt>
+    ShowBluetoothScanningPrompt(
+        content::RenderFrameHost* frame,
+        const content::BluetoothScanningPrompt::EventHandler&
+            event_handler) = 0;
+  };
+
+  explicit BluetoothDelegateImpl(std::unique_ptr<Client> client);
+  ~BluetoothDelegateImpl() override;
+
+  BluetoothDelegateImpl(const BluetoothDelegateImpl&) = delete;
+  BluetoothDelegateImpl& operator=(const BluetoothDelegateImpl&) = delete;
 
   // BluetoothDelegate implementation:
   std::unique_ptr<content::BluetoothChooser> RunBluetoothChooser(
@@ -87,11 +116,11 @@ class ChromeBluetoothDelegate : public content::BluetoothDelegate {
   // self-delete when the last observer is removed from the |owning_delegate|'s
   // |chooser_observers_| map.
   class ChooserContextPermissionObserver
-      : public permissions::ObjectPermissionContextBase::PermissionObserver {
+      : public ObjectPermissionContextBase::PermissionObserver {
    public:
     explicit ChooserContextPermissionObserver(
-        ChromeBluetoothDelegate* owning_delegate,
-        permissions::ObjectPermissionContextBase* context);
+        BluetoothDelegateImpl* owning_delegate,
+        ObjectPermissionContextBase* context);
     ~ChooserContextPermissionObserver() override;
 
     ChooserContextPermissionObserver(const ChooserContextPermissionObserver&) =
@@ -99,26 +128,29 @@ class ChromeBluetoothDelegate : public content::BluetoothDelegate {
     ChooserContextPermissionObserver& operator=(
         const ChooserContextPermissionObserver) = delete;
 
-    // permissions::ObjectPermissionContextBase::PermissionObserver:
+    // ObjectPermissionContextBase::PermissionObserver:
     void OnPermissionRevoked(const url::Origin& origin) override;
 
     void AddFramePermissionObserver(FramePermissionObserver* observer);
     void RemoveFramePermissionObserver(FramePermissionObserver* observer);
 
    private:
-    ChromeBluetoothDelegate* owning_delegate_;
+    BluetoothDelegateImpl* owning_delegate_;
     base::ObserverList<FramePermissionObserver> observer_list_;
     std::list<FramePermissionObserver*> observers_pending_removal_;
     bool is_traversing_observers_ = false;
-    base::ScopedObservation<
-        permissions::ObjectPermissionContextBase,
-        permissions::ObjectPermissionContextBase::PermissionObserver>
+    base::ScopedObservation<ObjectPermissionContextBase,
+                            ObjectPermissionContextBase::PermissionObserver>
         observer_{this};
   };
+
+  std::unique_ptr<Client> client_;
 
   std::map<content::RenderFrameHost*,
            std::unique_ptr<ChooserContextPermissionObserver>>
       chooser_observers_;
 };
 
-#endif  // CHROME_BROWSER_BLUETOOTH_CHROME_BLUETOOTH_DELEGATE_H_
+}  // namespace permissions
+
+#endif  // COMPONENTS_PERMISSIONS_BLUETOOTH_DELEGATE_IMPL_H_

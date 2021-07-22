@@ -31,7 +31,7 @@
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/after_startup_task_utils.h"
-#include "chrome/browser/bluetooth/chrome_bluetooth_delegate.h"
+#include "chrome/browser/bluetooth/chrome_bluetooth_delegate_impl_client.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
@@ -207,6 +207,7 @@
 #include "components/payments/content/payment_handler_navigation_throttle.h"
 #include "components/payments/content/payment_request_display_manager.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
+#include "components/permissions/bluetooth_delegate_impl.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/quota_permission_context_impl.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
@@ -5068,8 +5069,10 @@ void ChromeContentBrowserClient::CreateWebUsbService(
 }
 
 content::BluetoothDelegate* ChromeContentBrowserClient::GetBluetoothDelegate() {
-  if (!bluetooth_delegate_)
-    bluetooth_delegate_ = std::make_unique<ChromeBluetoothDelegate>();
+  if (!bluetooth_delegate_) {
+    bluetooth_delegate_ = std::make_unique<permissions::BluetoothDelegateImpl>(
+        std::make_unique<ChromeBluetoothDelegateImplClient>());
+  }
   return bluetooth_delegate_.get();
 }
 
