@@ -44,6 +44,13 @@ constexpr CGFloat kCornerRadius = 12.;
       childNavigationController =
           static_cast<UIViewController<ChildConsistencySheetViewController>*>(
               navigationController);
+
+  // If the child controller updates its view due to an external action such
+  // as adding or removing an identity then force a layout to ensure the child
+  // height is up-to-date.
+  [childNavigationController.view setNeedsLayout];
+  [childNavigationController.view layoutIfNeeded];
+
   CGFloat height =
       [childNavigationController layoutFittingHeightForWidth:width];
   CGFloat maxViewHeight =
@@ -53,6 +60,13 @@ constexpr CGFloat kCornerRadius = 12.;
 
 - (void)didUpdateControllerViewFrame {
   self.backgroundView.frame = self.view.bounds;
+}
+
+- (void)preferredContentSizeDidChangeForChildContentContainer:
+    (id<UIContentContainer>)container {
+  [super preferredContentSizeDidChangeForChildContentContainer:container];
+  [self.layoutDelegate
+          preferredContentSizeDidChangeForChildConsistencySheetViewController];
 }
 
 #pragma mark - Properties

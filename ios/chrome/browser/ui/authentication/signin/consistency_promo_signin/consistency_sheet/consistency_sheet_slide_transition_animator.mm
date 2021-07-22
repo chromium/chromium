@@ -55,15 +55,24 @@ const CGFloat kAnimationDuration = 0.25;
   }
   [transitionContext.containerView addSubview:toView];
 
-  CGFloat viewControllerWidth = self.navigationController.view.frame.size.width;
-  CGSize toViewSize =
-      [self.navigationController layoutFittingSizeForWidth:viewControllerWidth];
+  // Save the pre-layout frame for the navigation and destination views. These
+  // will be replaced with the post-layout frames if the underlying child view
+  // controller requires a layout change in |layoutFittingSizeForWidth:|.
+  CGRect viewControllerFrame = self.navigationController.view.frame;
+  CGRect fromViewFrame = fromView.frame;
+
+  CGSize toViewSize = [self.navigationController
+      layoutFittingSizeForWidth:viewControllerFrame.size.width];
+
+  // Restore frame layouts used prior to the layout change.
+  fromView.frame = fromViewFrame;
+
   CGFloat sizeDifference = toViewSize.height - fromView.frame.size.height;
   CGRect fromViewFrameAfterAnimation = fromView.frame;
   CGRect toViewFrameBeforeAnimation = fromView.frame;
   CGRect toViewFrameAfterAnimation =
       CGRectMake(0, 0, toViewSize.width, toViewSize.height);
-  CGRect navigationFrameAfterAnimation = self.navigationController.view.frame;
+  CGRect navigationFrameAfterAnimation = viewControllerFrame;
 
   switch (self.animation) {
     case ConsistencySheetSlideAnimationPopping:
@@ -87,6 +96,8 @@ const CGFloat kAnimationDuration = 0.25;
       break;
   }
 
+  // Restore frame to pre-layout value before triggering animations.
+  self.navigationController.view.frame = viewControllerFrame;
   NSTimeInterval duration = [self transitionDuration:transitionContext];
   void (^animations)() = ^() {
     [UIView addKeyframeWithRelativeStartTime:.0

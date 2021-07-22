@@ -15,6 +15,15 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Margins used for bottom margin in "Add account" button.
+// This takes into consideration the existing footer and header
+// margins in ConsistencyAccountChooserTableViewController.
+constexpr CGFloat kContentMargin = 16.;
+
+}  // namespace
+
 @interface ConsistencyAccountChooserViewController ()
 
 @property(nonatomic, strong)
@@ -39,6 +48,13 @@
     [subView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
   ]];
   [self didMoveToParentViewController:self.tableViewController];
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  CGFloat width = self.tableViewController.tableView.contentSize.width;
+  self.preferredContentSize =
+      CGSizeMake(width, [self layoutFittingHeightForWidth:width]);
 }
 
 #pragma mark - Properties
@@ -79,15 +95,18 @@
 #pragma mark - ChildConsistencySheetViewController
 
 - (CGFloat)layoutFittingHeightForWidth:(CGFloat)width {
-  NSArray* childViewControllers =
-      self.navigationController.childViewControllers;
-  DCHECK(childViewControllers.count > 0);
-  // Get the height of the first navigation view.
-  CGFloat firstViewHeight = [childViewControllers[0] view].bounds.size.height;
-  // Get the screen height.
   CGFloat screenHeight =
       self.navigationController.view.window.bounds.size.height;
-  return MAX(screenHeight / 2., firstViewHeight);
+  CGFloat rowHeight = self.tableViewController.tableView.contentSize.height;
+  // If |screenHeight| is undefined during a transition, use |rowHeight|.
+  CGFloat height =
+      screenHeight == 0 ? rowHeight : MIN(screenHeight / 2, rowHeight);
+
+  // Note that there is an additional unaccounted margin height from the footer
+  // and header margins that are not accounted for here.
+  return height + self.navigationController.navigationBar.frame.size.height +
+         self.navigationController.view.window.safeAreaInsets.bottom +
+         kContentMargin;
 }
 
 @end

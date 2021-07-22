@@ -133,18 +133,31 @@ CGFloat kSectionFooterHeight = 8.;
   TableViewModel* model = self.tableViewModel;
   [model deleteAllItemsFromSectionWithIdentifier:IdentitySectionIdentifier];
   [self loadIdentityItems];
-  [self.tableView reloadData];
+
+  NSUInteger sectionIndex =
+      [model sectionForSectionIdentifier:IdentitySectionIdentifier];
+  NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
+  [self.tableView reloadSections:indexSet
+                withRowAnimation:UITableViewRowAnimationFade];
 }
 
 - (void)reloadIdentityForIdentityItemConfigurator:
     (IdentityItemConfigurator*)configurator {
   TableViewModel* model = self.tableViewModel;
-  NSArray* items =
-      [model itemsInSectionWithIdentifier:IdentitySectionIdentifier];
-  for (TableViewIdentityItem* item in items) {
+  NSInteger section =
+      [model sectionForSectionIdentifier:IdentitySectionIdentifier];
+  NSInteger itemCount = [model numberOfItemsInSection:section];
+  for (NSInteger itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
+    NSIndexPath* path = [NSIndexPath indexPathForItem:itemIndex
+                                            inSection:section];
+    TableViewIdentityItem* item =
+        base::mac::ObjCCastStrict<TableViewIdentityItem>(
+            [model itemAtIndexPath:path]);
     if ([item.gaiaID isEqual:configurator.gaiaID]) {
       [configurator configureIdentityChooser:item];
       [self reconfigureCellsForItems:@[ item ]];
+      [self.tableView reloadRowsAtIndexPaths:@[ path ]
+                            withRowAnimation:UITableViewRowAnimationNone];
       break;
     }
   }

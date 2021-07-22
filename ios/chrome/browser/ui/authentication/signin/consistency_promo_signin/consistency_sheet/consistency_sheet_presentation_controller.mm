@@ -22,7 +22,8 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
 
 }  // namespace
 
-@interface ConsistencySheetPresentationController ()
+@interface ConsistencySheetPresentationController () <
+    ConsistencySheetNavigationControllerLayoutDelegate>
 
 // View controller to present.
 @property(nonatomic, strong)
@@ -87,6 +88,7 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
   DCHECK(!self.backgroundDimmerView);
   DCHECK(!self.presented);
   self.presented = YES;
+  self.navigationController.layoutDelegate = self;
 
   // Accessibility.
   self.containerView.accessibilityViewIsModal = YES;
@@ -136,6 +138,7 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
   DCHECK(self.backgroundDimmerView);
   DCHECK(self.presented);
   self.presented = NO;
+  self.navigationController.layoutDelegate = nil;
   // Remove dimmer color and update the views.
   __weak __typeof(self) weakSelf = self;
   [self.presentedViewController.transitionCoordinator
@@ -158,6 +161,12 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
   CGRect presentedFrame = [self frameOfPresentedViewInContainerView];
   self.presentedViewController.view.frame = presentedFrame;
   [self.navigationController didUpdateControllerViewFrame];
+}
+
+#pragma mark - ConsistencySheetNavigationControllerLayoutDelegate
+
+- (void)preferredContentSizeDidChangeForChildConsistencySheetViewController {
+  [self containerViewDidLayoutSubviews];
 }
 
 @end
