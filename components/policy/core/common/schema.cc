@@ -231,12 +231,13 @@ bool StrategyAllowInvalidListEntry(SchemaOnErrorStrategy strategy) {
   return strategy == SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY;
 }
 
-void SchemaErrorFound(std::string* error_path,
-                      std::string* error,
+void SchemaErrorFound(std::string* out_error_path,
+                      std::string* out_error,
                       const std::string& msg) {
-  if (error_path)
-    *error_path = "";
-  *error = msg;
+  if (out_error_path)
+    *out_error_path = "";
+  if (out_error)
+    *out_error = msg;
 }
 
 void AddListIndexPrefixToPath(int index, std::string* path) {
@@ -1192,10 +1193,10 @@ Schema Schema::Wrap(const SchemaData* data) {
 
 bool Schema::Validate(const base::Value& value,
                       SchemaOnErrorStrategy strategy,
-                      std::string* error_path,
-                      std::string* error) const {
+                      std::string* out_error_path,
+                      std::string* out_error) const {
   if (!valid()) {
-    SchemaErrorFound(error_path, error, "The schema is invalid.");
+    SchemaErrorFound(out_error_path, out_error, "The schema is invalid.");
     return false;
   }
 
@@ -1206,7 +1207,7 @@ bool Schema::Validate(const base::Value& value,
       return true;
     }
 
-    SchemaErrorFound(error_path, error,
+    SchemaErrorFound(out_error_path, out_error,
                      "The value type doesn't match the schema type.");
     return false;
   }
@@ -1217,7 +1218,7 @@ bool Schema::Validate(const base::Value& value,
       SchemaList schema_list = GetMatchingProperties(dict_item.first);
       if (schema_list.empty()) {
         // Unknown property was detected.
-        SchemaErrorFound(error_path, error,
+        SchemaErrorFound(out_error_path, out_error,
                          "Unknown property: " + dict_item.first);
         if (!StrategyAllowUnknown(strategy))
           return false;
@@ -1225,10 +1226,11 @@ bool Schema::Validate(const base::Value& value,
         for (const auto& subschema : schema_list) {
           std::string new_error;
           const bool validation_result = subschema.Validate(
-              dict_item.second, strategy, error_path, &new_error);
+              dict_item.second, strategy, out_error_path, &new_error);
           if (!new_error.empty()) {
-            AddDictKeyPrefixToPath(dict_item.first, error_path);
-            *error = std::move(new_error);
+            AddDictKeyPrefixToPath(dict_item.first, out_error_path);
+            if (out_error)
+              *out_error = std::move(new_error);
           }
           if (!validation_result) {
             // Invalid property was detected.
@@ -1244,7 +1246,7 @@ bool Schema::Validate(const base::Value& value,
         continue;
 
       SchemaErrorFound(
-          error_path, error,
+          out_error_path, out_error,
           "Missing or invalid required property: " + required_property);
       return false;
     }
@@ -1253,10 +1255,11 @@ bool Schema::Validate(const base::Value& value,
       const base::Value& list_item = value.GetList()[index];
       std::string new_error;
       const bool validation_result =
-          GetItems().Validate(list_item, strategy, error_path, &new_error);
+          GetItems().Validate(list_item, strategy, out_error_path, &new_error);
       if (!new_error.empty()) {
-        AddListIndexPrefixToPath(index, error_path);
-        *error = std::move(new_error);
+        AddListIndexPrefixToPath(index, out_error_path);
+        if (out_error)
+          *out_error = std::move(new_error);
       }
       if (!validation_result && !StrategyAllowInvalidListEntry(strategy))
         return false;  // Invalid list item was detected.
@@ -1264,13 +1267,13 @@ bool Schema::Validate(const base::Value& value,
   } else if (value.is_int()) {
     if (node_->extra != kInvalid &&
         !ValidateIntegerRestriction(node_->extra, value.GetInt())) {
-      SchemaErrorFound(error_path, error, "Invalid value for integer");
+      SchemaErrorFound(out_error_path, out_error, "Invalid value for integer");
       return false;
     }
   } else if (value.is_string()) {
     if (node_->extra != kInvalid &&
         !ValidateStringRestriction(node_->extra, value.GetString().c_str())) {
-      SchemaErrorFound(error_path, error, "Invalid value for string");
+      SchemaErrorFound(out_error_path, out_error, "Invalid value for string");
       return false;
     }
   }
@@ -1280,11 +1283,11 @@ bool Schema::Validate(const base::Value& value,
 
 bool Schema::Normalize(base::Value* value,
                        SchemaOnErrorStrategy strategy,
-                       std::string* error_path,
-                       std::string* error,
-                       bool* changed) const {
+                       std::string* out_error_path,
+                       std::string* out_error,
+                       bool* out_changed) const {
   if (!valid()) {
-    SchemaErrorFound(error_path, error, "The schema is invalid.");
+    SchemaErrorFound(out_error_path, out_error, "The schema is invalid.");
     return false;
   }
 
@@ -1295,7 +1298,7 @@ bool Schema::Normalize(base::Value* value,
       return true;
     }
 
-    SchemaErrorFound(error_path, error,
+    SchemaErrorFound(out_error_path, out_error,
                      "The value type doesn't match the schema type.");
     return false;
   }
@@ -1307,7 +1310,7 @@ bool Schema::Normalize(base::Value* value,
       SchemaList schema_list = GetMatchingProperties(dict_item.first);
       if (schema_list.empty()) {
         // Unknown property was detected.
-        SchemaErrorFound(error_path, error,
+        SchemaErrorFound(out_error_path, out_error,
                          "Unknown property: " + dict_item.first);
         if (!StrategyAllowUnknown(strategy))
           return false;
@@ -1315,11 +1318,13 @@ bool Schema::Normalize(base::Value* value,
       } else {
         for (const auto& subschema : schema_list) {
           std::string new_error;
-          const bool normalization_result = subschema.Normalize(
-              &dict_item.second, strategy, error_path, &new_error, changed);
+          const bool normalization_result =
+              subschema.Normalize(&dict_item.second, strategy, out_error_path,
+                                  &new_error, out_changed);
           if (!new_error.empty()) {
-            AddDictKeyPrefixToPath(dict_item.first, error_path);
-            *error = std::move(new_error);
+            AddDictKeyPrefixToPath(dict_item.first, out_error_path);
+            if (out_error)
+              *out_error = std::move(new_error);
           }
           if (!normalization_result) {
             // Invalid property was detected.
@@ -1335,13 +1340,13 @@ bool Schema::Normalize(base::Value* value,
         continue;
 
       SchemaErrorFound(
-          error_path, error,
+          out_error_path, out_error,
           "Missing or invalid required property: " + required_property);
       return false;
     }
 
-    if (changed && !drop_list.empty())
-      *changed = true;
+    if (out_changed && !drop_list.empty())
+      *out_changed = true;
     for (const auto& drop_key : drop_list)
       value->RemoveKey(drop_key);
     return true;
@@ -1356,10 +1361,11 @@ bool Schema::Normalize(base::Value* value,
       base::Value& list_item = list[index];
       std::string new_error;
       const bool normalization_result = GetItems().Normalize(
-          &list_item, strategy, error_path, &new_error, changed);
+          &list_item, strategy, out_error_path, &new_error, out_changed);
       if (!new_error.empty()) {
-        AddListIndexPrefixToPath(index, error_path);
-        *error = new_error;
+        AddListIndexPrefixToPath(index, out_error_path);
+        if (out_error)
+          *out_error = new_error;
       }
       if (!normalization_result) {
         // Invalid list item was detected.
@@ -1371,14 +1377,14 @@ bool Schema::Normalize(base::Value* value,
         ++write_index;
       }
     }
-    if (changed && write_index < list.size())
-      *changed = true;
+    if (out_changed && write_index < list.size())
+      *out_changed = true;
     list.resize(write_index);
     *value = base::Value(std::move(list));
     return true;
   }
 
-  return Validate(*value, strategy, error_path, error);
+  return Validate(*value, strategy, out_error_path, out_error);
 }
 
 void Schema::MaskSensitiveValues(base::Value* value) const {

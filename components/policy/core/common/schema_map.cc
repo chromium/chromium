@@ -66,15 +66,14 @@ void SchemaMap::FilterBundle(PolicyBundle* bundle,
       const std::string& policy_name = it_map->first;
       PolicyMap::Entry& entry = it_map->second;
       const Schema policy_schema = schema->GetProperty(policy_name);
-      // TODO (https://crbug.com/1219503) remove this dummy string
-      std::string error;
 
       const bool has_value = entry.value();
       const bool is_valid =
           has_value &&
           policy_schema.Normalize(entry.value(), SCHEMA_ALLOW_UNKNOWN,
-                                  /* error_path= */ nullptr, &error,
-                                  /* changed = */ nullptr);
+                                  /* out_error_path=*/nullptr,
+                                  /* out_error=*/nullptr,
+                                  /* out_changed=*/nullptr);
       if (drop_invalid_component_policies && (!has_value || !is_valid)) {
         it_map = policy_map.EraseIt(it_map);
         continue;
