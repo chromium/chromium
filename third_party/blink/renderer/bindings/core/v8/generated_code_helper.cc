@@ -140,7 +140,7 @@ absl::optional<size_t> FindIndexInEnumStringTable(
     base::span<const char* const> enum_value_table,
     const char* enum_type_name,
     ExceptionState& exception_state) {
-  const String& str_value = NativeValueTraits<IDLStringV2>::NativeValue(
+  const String& str_value = NativeValueTraits<IDLString>::NativeValue(
       isolate, value, exception_state);
   if (UNLIKELY(exception_state.HadException()))
     return absl::nullopt;
@@ -381,7 +381,7 @@ void CSSPropertyAttributeSet(const v8::FunctionCallbackInfo<v8::Value>& info) {
       V8CSSStyleDeclaration::ToWrappableUnsafe(v8_receiver);
   v8::Local<v8::Value> v8_property_value = info[0];
   auto&& arg1_value =
-      NativeValueTraits<IDLStringTreatNullAsEmptyStringV2>::NativeValue(
+      NativeValueTraits<IDLStringTreatNullAsEmptyString>::NativeValue(
           isolate, v8_property_value, exception_state);
   if (UNLIKELY(exception_state.HadException())) {
     return;
@@ -438,7 +438,7 @@ void PerformAttributeSetCEReactionsReflectTypeString(
     const QualifiedName& content_attribute,
     const char* interface_name,
     const char* attribute_name) {
-  PerformAttributeSetCEReactionsReflect<IDLStringV2, const AtomicString&,
+  PerformAttributeSetCEReactionsReflect<IDLString, const AtomicString&,
                                         &Element::setAttribute>(
       info, content_attribute, interface_name, attribute_name);
 }
@@ -448,7 +448,7 @@ void PerformAttributeSetCEReactionsReflectTypeStringLegacyNullToEmptyString(
     const QualifiedName& content_attribute,
     const char* interface_name,
     const char* attribute_name) {
-  PerformAttributeSetCEReactionsReflect<IDLStringTreatNullAsEmptyStringV2,
+  PerformAttributeSetCEReactionsReflect<IDLStringTreatNullAsEmptyString,
                                         const AtomicString&,
                                         &Element::setAttribute>(
       info, content_attribute, interface_name, attribute_name);
@@ -460,7 +460,7 @@ void PerformAttributeSetCEReactionsReflectTypeStringOrNull(
     const char* interface_name,
     const char* attribute_name) {
   PerformAttributeSetCEReactionsReflect<
-      IDLNullable<IDLStringV2>, const AtomicString&, &Element::setAttribute>(
+      IDLNullable<IDLString>, const AtomicString&, &Element::setAttribute>(
       info, content_attribute, interface_name, attribute_name);
 }
 
