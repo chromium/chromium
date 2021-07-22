@@ -9,6 +9,7 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -16,6 +17,7 @@ import android.view.ViewTreeObserver.OnGlobalFocusChangeListener;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -846,10 +848,14 @@ public class ContextualSearchManager
         List<String> inPanelRelatedSearches =
                 buildRelatedSearches(false, searchTerm, showDefaultSearchInPanel);
 
+        int defaultQueryWidthSpInBar = ContextualSearchFieldTrial.getDefaultChipWidthSpInBar();
+        int defaultQueryWidthSpInPanel = ContextualSearchFieldTrial.getDefaultChipWidthSpInPanel();
+
         mSearchPanel.onSearchTermResolved(message, resolvedSearchTerm.thumbnailUrl(),
                 resolvedSearchTerm.quickActionUri(), resolvedSearchTerm.quickActionCategory(),
                 resolvedSearchTerm.cardTagEnum(), inBarRelatedSearches, showDefaultSearchInBar,
-                inPanelRelatedSearches, showDefaultSearchInPanel);
+                spToPx(defaultQueryWidthSpInBar), inPanelRelatedSearches, showDefaultSearchInPanel,
+                spToPx(defaultQueryWidthSpInPanel));
         if (!TextUtils.isEmpty(resolvedSearchTerm.caption())) {
             // Call #onSetCaption() to set the caption. For entities, the caption should not be
             // regarded as an answer. In the future, when quick actions are added, doesAnswer will
@@ -2048,6 +2054,18 @@ public class ContextualSearchManager
         relatedSearches.addAll(queries);
 
         return relatedSearches;
+    }
+
+    /**
+     *  Converts scale-independent pixels (sp) to pixels on the screen (px).
+     *
+     *  @param sp Scale-independent pixels.
+     *  @return   The physical pixels on the screen which correspond to the
+     *            scale-independent pixels.
+     */
+    private @Px int spToPx(int sp) {
+        return (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_SP, sp, mActivity.getResources().getDisplayMetrics());
     }
 
     // ============================================================================================

@@ -11,6 +11,7 @@ import android.graphics.RectF;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.components.browser_ui.widget.chips.Chip;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.LocalizationUtils;
@@ -715,11 +717,43 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
             int quickActionCategory, @CardTag int cardTagEnum,
             @Nullable List<String> relatedSearchesInBar, boolean showDefaultSearchInBar,
             @Nullable List<String> relatedSearchesInContent, boolean showDefaultSearchInContent) {
+        onSearchTermResolved(searchTerm, thumbnailUrl, quickActionUri, quickActionCategory,
+                cardTagEnum, relatedSearchesInBar, showDefaultSearchInBar,
+                Chip.SHOW_WHOLE_TEXT /* defaultQueryInBarTextMaxWidthPx */,
+                relatedSearchesInContent, showDefaultSearchInContent,
+                Chip.SHOW_WHOLE_TEXT /* defaultQueryInContentTextMaxWidthPx */);
+    }
+
+    /**
+     * Handles showing the resolved search term in the SearchBar.
+     * @param searchTerm The string that represents the search term.
+     * @param thumbnailUrl The URL of the thumbnail to display.
+     * @param quickActionUri The URI for the intent associated with the quick action.
+     * @param quickActionCategory The {@code QuickActionCategory} for the quick action.
+     * @param cardTagEnum The {@link CardTag} that the server returned if there was a card,
+     *        or {@code 0}.
+     * @param relatedSearchesInBar Related Searches suggestions to be displayed in the Bar.
+     * @param showDefaultSearchInBar Whether the first query is the default query in the bar.
+     * @param defaultQueryInBarTextMaxWidthPx The bar's default query text max width in pixels.
+     * @param relatedSearchesInContent Related Searches suggestions to be displayed in the content
+     *        portion of the Panel.
+     * @param showDefaultSearchInContent Whether the first query is the default query in the
+     *         content.
+     * @param defaultQueryInContentTextMaxWidthPx The content's default query text max width in
+     *         pixels.
+     */
+    @Override
+    public void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
+            int quickActionCategory, @CardTag int cardTagEnum,
+            @Nullable List<String> relatedSearchesInBar, boolean showDefaultSearchInBar,
+            @Px int defaultQueryInBarTextMaxWidthPx,
+            @Nullable List<String> relatedSearchesInContent, boolean showDefaultSearchInContent,
+            @Px int defaultQueryInContentTextMaxWidthPx) {
         boolean hadInBarSuggestions = getRelatedSearchesInBarControl().hasReleatedSearchesToShow();
         getRelatedSearchesInBarControl().setRelatedSearchesSuggestions(
-                relatedSearchesInBar, showDefaultSearchInBar);
-        getRelatedSearchesInContentControl().setRelatedSearchesSuggestions(
-                relatedSearchesInContent, showDefaultSearchInContent);
+                relatedSearchesInBar, showDefaultSearchInBar, defaultQueryInBarTextMaxWidthPx);
+        getRelatedSearchesInContentControl().setRelatedSearchesSuggestions(relatedSearchesInContent,
+                showDefaultSearchInContent, defaultQueryInContentTextMaxWidthPx);
         mPanelMetrics.onSearchTermResolved();
         if (cardTagEnum == CardTag.CT_DEFINITION
                 || cardTagEnum == CardTag.CT_CONTEXTUAL_DEFINITION) {

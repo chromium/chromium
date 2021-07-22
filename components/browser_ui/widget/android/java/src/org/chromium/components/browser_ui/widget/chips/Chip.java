@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.widget.chips;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 
 import org.chromium.ui.widget.ChipView;
@@ -20,6 +21,9 @@ public class Chip {
 
     /** An id to use for the StringRes when we don't have a valid ID. */
     public static final int INVALID_STRING_RES_ID = -1;
+
+    /** An value to use for {@link #textMaxWidthPx} when the whole text will be shown. */
+    public static final int SHOW_WHOLE_TEXT = 0;
 
     /** An id used to identify this chip. */
     public final int id;
@@ -36,6 +40,12 @@ public class Chip {
      */
     @Nullable
     public final String rawText;
+
+    /**
+     * The text max width in pixels, if the text wider than the width, ellipsis will be show at the
+     * end of the text. If set to {@link #SHOW_WHOLE_TEXT}, the text will not be ellipsized.
+     */
+    public @Px int textMaxWidthPx = SHOW_WHOLE_TEXT;
 
     /** The accessibility text to use for the chip. */
     public String contentDescription;

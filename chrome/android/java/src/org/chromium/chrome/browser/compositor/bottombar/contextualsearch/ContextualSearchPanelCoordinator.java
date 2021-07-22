@@ -163,6 +163,13 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
             boolean showDefaultSearchInContent) {}
 
     @Override
+    public void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
+            int quickActionCategory, int cardTagEnum, @Nullable List<String> inBarRelatedSearches,
+            boolean showDefaultSearchInBar, int defaultQueryInBarTextMaxWidthPx,
+            @Nullable List<String> inContentRelatedSearches, boolean showDefaultSearchInContent,
+            int defaultQueryInContentTextMaxWidthPx) {}
+
+    @Override
     public void setCaption(String caption) {}
 
     @Override

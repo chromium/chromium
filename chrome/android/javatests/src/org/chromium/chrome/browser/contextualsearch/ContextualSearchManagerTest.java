@@ -105,6 +105,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.components.browser_ui.widget.chips.Chip;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.navigation_interception.NavigationParams;
 import org.chromium.content_public.browser.SelectionClient;
@@ -4046,6 +4047,40 @@ public class ContextualSearchManagerTest {
                     mPanel.getSearchBarControl().getSearchTerm(), Matchers.is("Intelligence"));
             Criteria.checkThat(mPanel.getRelatedSearchesInBarControl().getSelectedChipForTest(),
                     Matchers.is(0));
+        });
+
+        // Close the panel
+        closePanel();
+        // TODO(donnd): Validate UMA metrics once we log in-bar selections.
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    public void testRelatedSearchesInBarWithDefaultQuery_Ellipsize() throws Exception {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.setFeatureFlagsOverride(ENABLE_RELATED_SEARCHES_IN_BAR);
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
+                ContextualSearchFieldTrial.RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME,
+                "true");
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
+                ContextualSearchFieldTrial
+                        .RELATED_SEARCHES_DEFAULT_QUERY_CHIP_MAX_WIDTH_SP_PARAM_NAME,
+                "60");
+        FeatureList.setTestValues(testValues);
+        mFakeServer.reset();
+
+        FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
+        ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
+        Assert.assertTrue("Related Searches results should have been returned but were not!",
+                !resolvedSearchTerm.relatedSearchesJson().isEmpty());
+        // Select a chip in the Bar, which should expand the panel.
+        tapPeekingBarToExpandAndAssert();
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    mPanel.getRelatedSearchesInBarControl().getChipsForTest().get(0).textMaxWidthPx,
+                    Matchers.not(Chip.SHOW_WHOLE_TEXT));
         });
 
         // Close the panel

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
@@ -67,6 +68,8 @@ public class RelatedSearchesControl {
 
     /** Whether the first query is the default query. */
     private boolean mDisplayDefaultQuery;
+
+    private @Px int mDefaultQueryTextMaxWidthPx = Chip.SHOW_WHOLE_TEXT;
 
     /** Whether the view is visible. */
     private boolean mIsVisible;
@@ -183,9 +186,10 @@ public class RelatedSearchesControl {
      * Sets the Related Searches suggestions to show in this view.
      * @param relatedSearches An {@code List} of suggested queries or {@code null} when none.
      * @param firstQueryIsDefault Whether the first query is the default query.
+     * @param defaultQueryTextMaxWidthPx The default query text max width in pixels.
      */
-    void setRelatedSearchesSuggestions(
-            @Nullable List<String> relatedSearches, boolean displayDefaultQuery) {
+    void setRelatedSearchesSuggestions(@Nullable List<String> relatedSearches,
+            boolean displayDefaultQuery, @Px int defaultQueryTextMaxWidthPx) {
         if (mControlView == null) {
             int layoutId = mIsInBarControl
                     ? R.layout.contextual_search_related_searches_view
@@ -200,6 +204,7 @@ public class RelatedSearchesControl {
         mRelatedSearchesSuggestions = relatedSearches;
         mChips = null;
         mDisplayDefaultQuery = displayDefaultQuery;
+        mDefaultQueryTextMaxWidthPx = defaultQueryTextMaxWidthPx;
         if (hasReleatedSearchesToShow()) {
             show();
         } else {
@@ -237,6 +242,11 @@ public class RelatedSearchesControl {
     @VisibleForTesting
     public void selectChipForTest(int chipIndex) {
         mControlView.selectChipForTest(chipIndex);
+    }
+
+    @VisibleForTesting
+    public List<Chip> getChipsForTest() {
+        return mControlView.getChipsForTest(); // IN-TEST
     }
 
     @VisibleForTesting
@@ -479,6 +489,9 @@ public class RelatedSearchesControl {
                     Chip chip = new Chip(index, suggestion, ChipView.INVALID_ICON_ID,
                             () -> handleChipTapped(index));
                     chip.enabled = true;
+                    if (index == 0 && mDisplayDefaultQuery) {
+                        chip.textMaxWidthPx = mDefaultQueryTextMaxWidthPx;
+                    }
                     mChips.add(chip);
                 }
                 mDidShowAnySuggestions = true;
@@ -627,6 +640,11 @@ public class RelatedSearchesControl {
         @VisibleForTesting
         void selectChipForTest(int chipIndex) {
             mChipsProvider.selectChipForTest(chipIndex);
+        }
+
+        @VisibleForTesting
+        List<Chip> getChipsForTest() {
+            return mChipsProvider.getChips();
         }
     }
 }
