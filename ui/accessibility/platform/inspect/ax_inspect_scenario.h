@@ -70,10 +70,6 @@ class AX_EXPORT AXInspectScenario {
   // the next function evaluated.
   std::vector<std::string> execute;
 
-  // A list of strings indicating that event recording should be terminated
-  // when one of them is present in a formatted tree.
-  std::vector<std::string> run_until;
-
   // A list of property filters which defines generated output of a formatted
   // tree.
   std::vector<AXPropertyFilter> property_filters;
@@ -101,10 +97,6 @@ class AX_EXPORT AXInspectScenario {
     // Delays a test until a string returned by a script defined by the
     // directive is present in the dump.
     kExecuteAndWaitFor,
-
-    // Indicates event recording should continue at least until a specific
-    // event has been received.
-    kRunUntil,
 
     // Invokes default action on an accessible object defined by the
     // directive.

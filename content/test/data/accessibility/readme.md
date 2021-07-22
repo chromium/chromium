@@ -273,22 +273,6 @@ wait for. If a string is not returned, the tree dumper will not wait.
 ready and all `@WAIT-FOR:` strings have been found.
 Example: `@EXECUTE-AND-WAIT-FOR: foo()`
 
-#### -RUN-UNTIL-EVENT
-
-Indicates event recording should continue at least until a specific event has
-been received. This is a platform-dependent directive.
-
-You may need to write an event test that keeps dumping events until a
-specific event line. In this case, use `@WIN-RUN-UNTIL-EVENT` (or similar for
-other platforms) with a substring that should occur in the event log, e.g.,
-`@WIN-RUN-UNTIL-EVENT:IA2_EVENT_TEXT_CARET_MOVED`.
-Note that `@*-RUN-UNTIL-EVENT` is only used in dump events tests, and not used
-in dump tree tests.
-
-If you add multiple `@*-RUN-UNTIL-EVENT` directives, the test will finish once
-any of them are satisfied. Note that any other events that come along with the
-last event will also be logged.
-
 #### @DEFAULT-ACTION-ON
 
 Invokes default action on an accessible object defined by the directive.

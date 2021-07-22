@@ -91,26 +91,15 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
       switches::kDisableAXMenuList, "false");
 }
 
-std::vector<std::string> DumpAccessibilityTreeTest::Dump(
-    std::vector<std::string>& unused) {
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-
-  // To make sure we've handled all accessibility events, add a sentinel by
-  // calling SignalEndOfTest and waiting for a kEndOfTest event in response.
-  AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
-                                         ax::mojom::Event::kEndOfTest);
-  BrowserAccessibilityManager* manager =
-      web_contents->GetRootBrowserAccessibilityManager();
-  manager->SignalEndOfTest();
-  waiter.WaitForNotification();
+std::vector<std::string> DumpAccessibilityTreeTest::Dump() {
+  WaitForFinalTreeContents();
 
   std::unique_ptr<AXTreeFormatter> formatter(CreateFormatter());
   formatter->SetPropertyFilters(scenario_.property_filters,
                                 AXTreeFormatter::kFiltersDefaultSet);
   formatter->SetNodeFilters(scenario_.node_filters);
   std::string actual_contents =
-      formatter->Format(GetRootAccessibilityNode(web_contents));
+      formatter->Format(GetRootAccessibilityNode(GetWebContents()));
   std::string escaped_contents = net::EscapeNonASCII(actual_contents);
 
   return base::SplitString(escaped_contents, "\n", base::KEEP_WHITESPACE,

@@ -48,7 +48,7 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
         formatter->EvaluateScript(root, instructions, start_index, end_index));
   }
 
-  std::vector<std::string> Dump(std::vector<std::string>& unused) override {
+  std::vector<std::string> Dump() override {
     std::vector<std::string> dump;
     std::unique_ptr<AXTreeFormatter> formatter(CreateFormatter());
     BrowserAccessibility* root = GetManager()->GetRoot();
@@ -70,12 +70,10 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
         actual_contents = formatter->EvaluateScript(
             root, scenario_.script_instructions, start_index, index);
       } else {
-        std::vector<std::string> run_until{wait_for};
         auto pair = CaptureEvents(
             base::BindOnce(&DumpAccessibilityScriptTest::EvaluateScript,
                            base::Unretained(this), formatter.get(), root,
-                           scenario_.script_instructions, start_index, index),
-            run_until);
+                           scenario_.script_instructions, start_index, index));
         actual_contents = pair.first.GetString();
         for (auto event : pair.second) {
           if (base::StartsWith(event, wait_for)) {

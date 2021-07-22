@@ -40,7 +40,7 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
-  std::vector<std::string> Dump(std::vector<std::string>& unused) override;
+  std::vector<std::string> Dump() override;
 
   template <const char* type>
   void RunTypedTest(const base::FilePath::CharType* file_path) {

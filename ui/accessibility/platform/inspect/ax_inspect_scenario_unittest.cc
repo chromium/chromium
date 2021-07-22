@@ -37,12 +37,6 @@ TEST(AXInspectScenarioTest, ExecuteAndWaitFor) {
   EXPECT_THAT(scenario.execute, testing::ElementsAre("open_modal()"));
 }
 
-TEST(AXInspectScenarioTest, RunUntil) {
-  AXInspectScenario scenario =
-      AXInspectScenario::From("@MAC", {"@MAC-RUN-UNTIL-EVENT:AXRowCollapsed"});
-  EXPECT_THAT(scenario.run_until, testing::ElementsAre("AXRowCollapsed"));
-}
-
 TEST(AXInspectScenarioTest, PropertyFilters) {
   AXInspectScenario scenario = AXInspectScenario::From(
       "@MAC", {"@MAC-ALLOW:AXRoleDescription", "@MAC-ALLOW-EMPTY:AXARIALive",

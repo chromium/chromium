@@ -71,8 +71,6 @@ AXInspectScenario::Directive AXInspectScenario::ParseDirective(
     return kWaitFor;
   if (directive == "@EXECUTE-AND-WAIT-FOR")
     return kExecuteAndWaitFor;
-  if (directive == directive_prefix + "-RUN-UNTIL-EVENT")
-    return kRunUntil;
   if (directive == "@DEFAULT-ACTION-ON")
     return kDefaultActionOn;
   if (directive == directive_prefix + "-ALLOW")
@@ -100,9 +98,6 @@ void AXInspectScenario::ProcessDirective(Directive directive,
       break;
     case kExecuteAndWaitFor:
       execute.push_back(value);
-      break;
-    case kRunUntil:
-      run_until.push_back(value);
       break;
     case kDefaultActionOn:
       default_action_on.push_back(value);

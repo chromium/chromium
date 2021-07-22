@@ -51,6 +51,10 @@ bool AXMenuList::OnNativeClickAction() {
     select->HidePopup();
   else
     select->ShowPopup();
+
+  // Send notification that action has been handled.
+  AXObjectCache().HandleClicked(GetNode());
+
   return true;
 }
 

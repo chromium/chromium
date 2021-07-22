@@ -89,7 +89,7 @@ class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
     return property_filters;
   }
 
-  std::vector<std::string> Dump(std::vector<std::string>& run_until) override;
+  std::vector<std::string> Dump() override;
 
   void OnDiffFailed() override;
   void RunEventTest(const base::FilePath::CharType* file_path);
@@ -99,10 +99,8 @@ class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
   std::string final_tree_;
 };
 
-std::vector<std::string> DumpAccessibilityEventsTest::Dump(
-    std::vector<std::string>& run_until) {
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
+std::vector<std::string> DumpAccessibilityEventsTest::Dump() {
+  WebContentsImpl* web_contents = GetWebContents();
 
   // Save a copy of the accessibility tree (as a text dump); we'll
   // log this for the user later if the test fails.
@@ -117,10 +115,8 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
 
     // Dump the event logs, running them through any filters specified
     // in the HTML file.
-    std::tie(go_results, event_logs) =
-        CaptureEvents(base::BindOnce(&ExecuteScriptAndGetValue,
-                                     web_contents->GetMainFrame(), "go()"),
-                      run_until);
+    std::tie(go_results, event_logs) = CaptureEvents(base::BindOnce(
+        &ExecuteScriptAndGetValue, web_contents->GetMainFrame(), "go()"));
     run_go_again = go_results.is_bool() && go_results.GetBool();
     // Save a copy of the final accessibility tree (as a text dump); we'll
     // log this for the user later if the test fails.
@@ -530,8 +526,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        MAYBE_AccessibilityEventsCaretBrowsingEnabled) {
   // This actually enables caret browsing without setting the pref.
-  shell()->web_contents()->GetMutableRendererPrefs()->caret_browsing_enabled =
-      true;
+  GetWebContents()->GetMutableRendererPrefs()->caret_browsing_enabled = true;
   // This notifies accessibility that caret browsing is on so that it sends
   // accessibility events when the caret moves.
   BrowserAccessibilityStateImpl::GetInstance()->SetCaretBrowsingState(true);
@@ -754,9 +749,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("menulist-collapse-next.html"));
 }
 
-// https://crbug.com/719030
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       DISABLED_AccessibilityEventsMenuListExpand) {
+                       AccessibilityEventsMenuListExpand) {
   RunEventTest(FILE_PATH_LITERAL("menulist-expand.html"));
 }
 
@@ -765,16 +759,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("menulist-focus.html"));
 }
 
-// https://crbug.com/719030
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       DISABLED_AccessibilityEventsMenuListNext) {
+                       AccessibilityEventsMenuListNext) {
   RunEventTest(FILE_PATH_LITERAL("menulist-next.html"));
-}
-
-// http://crbug.com/719030
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       DISABLED_AccessibilityEventsMenuListPopup) {
-  RunEventTest(FILE_PATH_LITERAL("menulist-popup.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
