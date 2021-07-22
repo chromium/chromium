@@ -130,6 +130,7 @@ src/webgpu/api/operation/texture_view/write.spec.ts
 src/webgpu/api/operation/vertex_state/basic.spec.ts
 src/webgpu/api/operation/vertex_state/correctness.spec.ts
 src/webgpu/api/operation/vertex_state/index_format.spec.ts
+src/webgpu/api/validation/util/command_buffer_maker.ts
 src/webgpu/api/validation/validation_test.ts
 src/webgpu/api/validation/attachment_compatibility.spec.ts
 src/webgpu/api/validation/createBindGroup.spec.ts

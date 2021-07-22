@@ -62,9 +62,9 @@
   'wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:compute=false;binding0InBundle=false;*',
   'wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:compute=true;binding0InBundle=false;*',
 
-  'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:setVertexBufferOffset_and_attributeOffset:format="uint8x2";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:setVertexBuffer_offset_and_attribute_offset:format="uint8x2";*',
 
-  'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:nonZeroArrayStride_and_attributeOffset:format="uint8x2";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:non_zero_array_stride_and_attribute_offset:format="uint8x2";*',
 
   'wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read";access="read";atomic=false;baseType="i32";*',
   'wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="write";access="write";atomic=false;baseType="i32";*',
@@ -82,7 +82,7 @@
   'wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="workgroup";access="write";atomic=false;baseType="i32";*',
   'wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="workgroup";access="write";atomic=true;baseType="i32";*',
 
-  'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertexFormat_to_shaderFormat_conversion:format="uint8x2";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertex_format_to_shader_format_conversion:format="uint8x2";*',
 
   'wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="none";orientation="none";dstColorFormat="rgba8unorm";*',
   'wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="none";orientation="flipY";dstColorFormat="rgba8unorm";*',
@@ -123,4 +123,8 @@
   'wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,layout_related:required_bytes_in_copy:method="CopyB2T";format="r8unorm";*',
   'wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,layout_related:required_bytes_in_copy:method="CopyT2B";format="r8unorm";*',
 
+  'wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,layout_related:texel_block_alignment_on_offset:method="WriteTexture";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:array_stride_zero:format="uint8x2";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertex_buffer_used_multiple_times_interleaved:format="uint8x2";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertex_buffer_used_multiple_times_overlapped:format="uint8x2";*',
 ]

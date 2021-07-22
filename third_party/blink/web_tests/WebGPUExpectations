@@ -152,6 +152,10 @@ crbug.com/dawn/991 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource
 crbug.com/dawn/1009 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:* [ Slow Failure ]
 crbug.com/dawn/1009 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:* [ Slow Failure ]
 
+# Possible test bug, unsure
+crbug.com/dawn/1019 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertex_buffer_used_multiple_times_interleaved:* [ Failure ]
+crbug.com/dawn/1019 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertex_buffer_used_multiple_times_interleaved:* [ Failure ]
+
 ###
 ### Test bugs (fixed upstream)
 ###
@@ -306,12 +310,19 @@ crbug.com/1087130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation
 # Nvidia only, worker only, very flaky
 [ Linux ] wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,render_pass,storeop2:* [ Failure ]
 
-crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:buffersWithVaryingStepMode:* [ Crash Failure ]
-crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:nonZeroArrayStride_and_attributeOffset:* [ Crash Failure ]
-crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:setVertexBufferOffset_and_attributeOffset:* [ Crash Failure ]
-crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertexFormat_to_shaderFormat_conversion:* [ Crash Failure ]
+crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:buffers_with_varying_step_mode:* [ Crash Failure ]
+crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:non_zero_array_stride_and_attribute_offset:* [ Crash Failure ]
+crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:setVertexBuffer_offset_and_attribute_offset:* [ Crash Failure ]
+crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertex_format_to_shader_format_conversion:* [ Crash Failure ]
+crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:discontiguous_location_and_attribs:* [ Crash Failure ]
+crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:max_buffers_and_attribs:* [ Crash Failure ]
+crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:overlapping_attributes:* [ Crash Failure ]
+crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:array_stride_zero:* [ Crash Failure ]
+crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertex_buffer_used_multiple_times_interleaved:* [ Crash Failure ]
+crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertex_buffer_used_multiple_times_overlapped:* [ Crash Failure ]
 
-crbug.com/1213657 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:* [ Slow Crash Failure ]
+# and possibly crbug.com/1231840
+crbug.com/1213657 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:* [ Slow Crash Failure Timeout ]
 
 # UNASSIGNED-CoreValidation-Shader-InterfaceTypeMismatch | Attribute type of `VK_FORMAT_R8G8_UINT` at location 0 does not match vertex shader input type of `ptr to input sint32`
 crbug.com/tint/996 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:* [ Crash Failure ]
@@ -342,11 +353,12 @@ crbug.com/tint/993 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,executio
 crbug.com/tint/993 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="private";* [ Failure ]
 
 # Tint validation errors in HLSL transformation
-crbug.com/tint/994 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertexFormat_to_shaderFormat_conversion:* [ Failure ]
+crbug.com/tint/994 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertex_format_to_shader_format_conversion:* [ Failure ]
 # Pipeline compilation failure
 crbug.com/tint/995 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_attribute_contained_in_stride:* [ Skip ]
-crbug.com/tint/995 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:setVertexBufferOffset_and_attributeOffset:* [ Skip ]
-crbug.com/tint/995 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:nonZeroArrayStride_and_attributeOffset:* [ Skip ]
+crbug.com/tint/995 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:setVertexBuffer_offset_and_attribute_offset:* [ Skip ]
+crbug.com/tint/995 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:non_zero_array_stride_and_attribute_offset:* [ Skip ]
+crbug.com/tint/995 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:array_stride_zero:* [ Skip ]
 
 # Missing State: 0x1000: D3D12_RESOURCE_STATE_RESOLVE_DEST
 crbug.com/dawn/988 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pass,resolve:render_pass_resolve:* [ Failure ]
