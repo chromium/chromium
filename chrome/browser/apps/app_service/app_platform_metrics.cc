@@ -6,6 +6,7 @@
 
 #include <set>
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/util/values/values_util.h"
@@ -535,6 +536,8 @@ void AppPlatformMetrics::OnAppTypeInitialized(apps::mojom::AppType app_type) {
   if (should_record_metrics_on_new_day_) {
     RecordAppsCount(app_type);
   }
+
+  initialized_app_types.insert(app_type);
 }
 
 void AppPlatformMetrics::OnAppRegistryCacheWillBeDestroyed(
@@ -542,7 +545,22 @@ void AppPlatformMetrics::OnAppRegistryCacheWillBeDestroyed(
   apps::AppRegistryCache::Observer::Observe(nullptr);
 }
 
-void AppPlatformMetrics::OnAppUpdate(const apps::AppUpdate& update) {}
+void AppPlatformMetrics::OnAppUpdate(const apps::AppUpdate& update) {
+  if (!ShouldRecordUkm()) {
+    return;
+  }
+
+  if (!update.ReadinessChanged() ||
+      update.Readiness() != apps::mojom::Readiness::kReady) {
+    return;
+  }
+
+  InstallTime install_time =
+      base::Contains(initialized_app_types, update.AppType())
+          ? InstallTime::kRunning
+          : InstallTime::kInit;
+  RecordAppsInstallUkm(update, install_time);
+}
 
 void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   if (!update.StateChanged()) {
@@ -772,6 +790,28 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
     }
   }
   app_id_running_time_per_five_minutes_.clear();
+}
+
+void AppPlatformMetrics::RecordAppsInstallUkm(const apps::AppUpdate& update,
+                                              InstallTime install_time) {
+  AppTypeName app_type_name =
+      GetAppTypeName(profile_, update.AppType(), update.AppId(),
+                     apps::mojom::LaunchContainer::kLaunchContainerNone);
+  if (!ShouldRecordUkmForAppTypeName(app_type_name)) {
+    return;
+  }
+
+  ukm::SourceId source_id = GetSourceId(update.AppId());
+  if (source_id == ukm::kInvalidSourceId) {
+    return;
+  }
+
+  ukm::builders::ChromeOSApp_InstalledApp builder(source_id);
+  builder.SetAppType((int)app_type_name)
+      .SetInstallSource((int)update.InstallSource())
+      .SetInstallTime((int)install_time)
+      .SetUserDeviceMatrix(user_type_by_device_type_)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 bool AppPlatformMetrics::ShouldRecordUkm() {
