@@ -61,6 +61,18 @@ export class ModuleRegistry {
     });
     const descriptors =
         this.descriptors_.filter(d => !disabledIds.includes(d.id));
+
+    const order = await NewTabPageProxy.getInstance().handler.getModulesOrder();
+    const orderedIds = order.moduleIds;
+    // Only conform to the persisted order if there exists one in the pref.
+    // |orderedIds| will be an empty array if the user has not reordered
+    // the modules before.
+    if (orderedIds.length > 0) {
+      descriptors.sort((a, b) => {
+        return orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id);
+      });
+    }
+
     const elements =
         await Promise.all(descriptors.map(d => d.initialize(timeout)));
     return elements.map((e, i) => ({element: e, descriptor: descriptors[i]}))

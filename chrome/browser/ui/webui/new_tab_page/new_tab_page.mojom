@@ -249,6 +249,9 @@ interface PageHandler {
   OnModulesLoadedWithData();
   // Sets the order of modules.
   SetModulesOrder(array<string> module_ids);
+  // Returns the order of modules or an empty array if the user has not
+  // reordered them before.
+  GetModulesOrder() => (array<string> module_ids);
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at

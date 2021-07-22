@@ -585,6 +585,16 @@ void NewTabPageHandler::SetModulesOrder(
   profile_->GetPrefs()->Set(prefs::kNtpModulesOrder, module_ids_value);
 }
 
+void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
+  std::vector<std::string> module_ids;
+  const auto* module_ids_value =
+      profile_->GetPrefs()->GetList(prefs::kNtpModulesOrder);
+  for (const auto& id : module_ids_value->GetList()) {
+    module_ids.push_back(id.GetString());
+  }
+  std::move(callback).Run(std::move(module_ids));
+}
+
 void NewTabPageHandler::OnPromoDataUpdated() {
   if (promo_load_start_time_.has_value()) {
     base::TimeDelta duration = base::TimeTicks::Now() - *promo_load_start_time_;
