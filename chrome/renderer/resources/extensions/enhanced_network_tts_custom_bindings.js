@@ -21,13 +21,23 @@ class EnhancedNetworkTtsAdapter {
   }
 
   /**
-   * Gets the audio data for the input |text|. The audio data is generated
-   * from a Google API that uses enhanced voices.
-   * @param {!string} text
-   * @return {!Promise<{bytes: !Array<number>}>} the encoded audio data.
+   * The max length for the utterance in a |TtsRequest|.
+   * @return {!number}
    */
-  getAudioData(text) {
-    return this.enhancedNetworkTts_.getAudioData(text);
+  get MAX_CHARACTER_SIZE() {
+    return ash.enhancedNetworkTts.mojom.ENHANCED_NETWORK_TTS_MAX_CHARACTER_SIZE;
+  }
+
+  /**
+   * Gets the Text-to-Speech data for the |request|. The data is generated from
+   * a Google API that uses enhanced voices.
+   * @param {!ash.enhancedNetworkTts.mojom.TtsRequest} request
+   * @return {!Promise<{response: !ash.enhancedNetworkTts.mojom.TtsResponse}>}
+   *     the response containing the Text-to-Speech data if the request proceeds
+   *     successfully, or an error code if the request fails.
+   */
+  getAudioData(request) {
+    return this.enhancedNetworkTts_.getAudioData(request);
   }
 }
 

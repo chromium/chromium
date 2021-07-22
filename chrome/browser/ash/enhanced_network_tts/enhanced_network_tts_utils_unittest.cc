@@ -16,29 +16,44 @@ namespace ash {
 namespace enhanced_network_tts {
 
 namespace {
+// Template for a request that contains all variables.
+constexpr char kTemplateRequest[] =
+    R"({
+        "text": {
+          "text_parts": ["%s"]
+        },
+        "voice_settings": {
+          "voice_criteria_and_selections": [{
+            "criteria": {"language": "%s"},
+            "selection": {"default_voice": "%s"}
+          }]
+        }
+      })";
 
-// Template for a request.
-constexpr char kTemplateRequest[] = R"({
-                                        "text": {
-                                          "text_parts": ["%s"]
-                                        }
-                                      })";
+// Template for a request that only contains an utterance.
+constexpr char kTemplateUtteranceOnlyRequest[] =
+    R"({"text": {"text_parts": ["%s"]}})";
 
 // Template for a server response.
-constexpr char kTemplateResponse[] = R"([{
-                                      "metadata": {}
-                                    }
-                                    ,
-                                    {
-                                      "text": {}
-                                    }
-                                    ,
-                                    {
-                                      "audio": {
-                                        "bytes": "%s"
-                                      }
-                                    }
-                                    ])";
+constexpr char kTemplateResponse[] =
+    R"([
+        {"metadata": {}},
+        {"text": {
+          "timingInfo": [
+            {
+              "text": "test1",
+              "location": {
+                "textLocation": {"length": 5},
+                "timeLocation": {
+                  "timeOffset": "0.01s",
+                  "duration": "0.14s"
+                }
+              }
+            }
+          ]}
+        },
+        {"audio": {"bytes": "%s"}}
+      ])";
 
 // Function to remove all spaces and line breaks from a given string
 std::string RemoveSpaceAndLineBreak(std::string str) {
@@ -52,19 +67,51 @@ std::string RemoveSpaceAndLineBreak(std::string str) {
 using EnhancedNetworkTtsUtilsTest = testing::Test;
 
 TEST_F(EnhancedNetworkTtsUtilsTest, FormatJsonRequest) {
-  const std::string input_text = "Hello, World!";
+  const std::string utterance = "Hello, World!";
+  const std::string voice = "test_name";
+  const std::string language = "en-US";
+  const std::string expected_text = base::StringPrintf(
+      kTemplateRequest, utterance.c_str(), language.c_str(), voice.c_str());
+  const std::string formated_text =
+      FormatJsonRequest(mojom::TtsRequest::New(utterance, voice, language));
+
+  EXPECT_EQ(RemoveSpaceAndLineBreak(formated_text),
+            RemoveSpaceAndLineBreak(expected_text));
+}
+
+TEST_F(EnhancedNetworkTtsUtilsTest, FormatJsonRequestWithUtteranceOnly) {
+  const std::string utterance = "Hello, World!";
   const std::string expected_text =
-      base::StringPrintf(kTemplateRequest, input_text.c_str());
-  const std::string formated_text = FormatJsonRequest(input_text);
+      base::StringPrintf(kTemplateUtteranceOnlyRequest, utterance.c_str());
+  const std::string formated_text = FormatJsonRequest(
+      mojom::TtsRequest::New(utterance, absl::nullopt, absl::nullopt));
 
   EXPECT_EQ(RemoveSpaceAndLineBreak(formated_text),
             RemoveSpaceAndLineBreak(expected_text));
 }
 
 TEST_F(EnhancedNetworkTtsUtilsTest, GetResultOnError) {
-  std::vector<uint8_t> result = GetResultOnError();
+  mojom::TtsResponsePtr result =
+      GetResultOnError(mojom::TtsRequestError::kReceivedUnexpectedData);
+  EXPECT_TRUE(result->is_error_code());
+  EXPECT_EQ(result->get_error_code(),
+            mojom::TtsRequestError::kReceivedUnexpectedData);
 
-  EXPECT_EQ(result, std::vector<uint8_t>());
+  result = GetResultOnError(mojom::TtsRequestError::kServerError);
+  EXPECT_TRUE(result->is_error_code());
+  EXPECT_EQ(result->get_error_code(), mojom::TtsRequestError::kServerError);
+
+  result = GetResultOnError(mojom::TtsRequestError::kOverLength);
+  EXPECT_TRUE(result->is_error_code());
+  EXPECT_EQ(result->get_error_code(), mojom::TtsRequestError::kOverLength);
+
+  result = GetResultOnError(mojom::TtsRequestError::kRequestOverride);
+  EXPECT_TRUE(result->is_error_code());
+  EXPECT_EQ(result->get_error_code(), mojom::TtsRequestError::kRequestOverride);
+
+  result = GetResultOnError(mojom::TtsRequestError::kEmptyUtterance);
+  EXPECT_TRUE(result->is_error_code());
+  EXPECT_EQ(result->get_error_code(), mojom::TtsRequestError::kEmptyUtterance);
 }
 
 TEST_F(EnhancedNetworkTtsUtilsTest, UnpackJsonResponseSucceed) {
@@ -76,9 +123,10 @@ TEST_F(EnhancedNetworkTtsUtilsTest, UnpackJsonResponseSucceed) {
   const std::unique_ptr<base::Value> json =
       base::JSONReader::ReadDeprecated(encoded_response);
 
-  std::vector<uint8_t> result = UnpackJsonResponse(*json);
+  mojom::TtsResponsePtr result = UnpackJsonResponse(*json);
 
-  EXPECT_EQ(result, std::vector<uint8_t>({1, 2, 5}));
+  EXPECT_TRUE(result->is_data());
+  EXPECT_EQ(result->get_data()->audio, std::vector<uint8_t>({1, 2, 5}));
 }
 
 TEST_F(EnhancedNetworkTtsUtilsTest,
@@ -87,9 +135,11 @@ TEST_F(EnhancedNetworkTtsUtilsTest,
   const std::unique_ptr<base::Value> json =
       base::JSONReader::ReadDeprecated(encoded_response);
 
-  std::vector<uint8_t> result = UnpackJsonResponse(*json);
+  mojom::TtsResponsePtr result = UnpackJsonResponse(*json);
 
-  EXPECT_EQ(result, std::vector<uint8_t>());
+  EXPECT_TRUE(result->is_error_code());
+  EXPECT_EQ(result->get_error_code(),
+            mojom::TtsRequestError::kReceivedUnexpectedData);
 }
 
 TEST_F(EnhancedNetworkTtsUtilsTest,
@@ -102,9 +152,11 @@ TEST_F(EnhancedNetworkTtsUtilsTest,
   const std::unique_ptr<base::Value> json =
       base::JSONReader::ReadDeprecated(encoded_response);
 
-  std::vector<uint8_t> result = UnpackJsonResponse(*json);
+  mojom::TtsResponsePtr result = UnpackJsonResponse(*json);
 
-  EXPECT_EQ(result, std::vector<uint8_t>());
+  EXPECT_TRUE(result->is_error_code());
+  EXPECT_EQ(result->get_error_code(),
+            mojom::TtsRequestError::kReceivedUnexpectedData);
 }
 
 }  // namespace enhanced_network_tts

@@ -41,24 +41,46 @@ void EnhancedNetworkTtsImpl::BindReceiverAndURLFactory(
   url_loader_factory_ = url_loader_factory;
 }
 
-void EnhancedNetworkTtsImpl::GetAudioData(const std::string& text,
+void EnhancedNetworkTtsImpl::GetAudioData(mojom::TtsRequestPtr request,
                                           GetAudioDataCallback callback) {
-  std::unique_ptr<network::SimpleURLLoader> url_loader = MakeRequestLoader();
-  url_loader->AttachStringForUpload(FormatJsonRequest(text),
-                                    kNetworkRequestUploadType);
-  ongoing_server_requests_.push_back(std::move(url_loader));
-  const UrlLoaderList::iterator last_request =
-      std::prev(ongoing_server_requests_.end());
+  // Return early if the utterance is empty.
+  if (request->utterance.empty()) {
+    std::move(callback).Run(
+        GetResultOnError(mojom::TtsRequestError::kEmptyUtterance));
+    return;
+  }
+
+  // Return early if the utterance is over length limit.
+  if (request->utterance.size() > mojom::kEnhancedNetworkTtsMaxCharacterSize) {
+    std::move(callback).Run(
+        GetResultOnError(mojom::TtsRequestError::kOverLength));
+    return;
+  }
+
+  // If the prior request is not finished, we override it and process any
+  // unfinished audio callback.
+  if (ongoing_server_request_)
+    ongoing_server_request_.reset();
+
+  if (ProcessOngoingAudioCallback(
+          GetResultOnError(mojom::TtsRequestError::kRequestOverride)))
+    DVLOG(1) << "Multiple HTTP requests for Enhance Network TTS, override the "
+                "prior one.";
+
+  ongoing_audio_callback_ = std::move(callback);
+  ongoing_server_request_ = MakeRequestLoader();
+  ongoing_server_request_->AttachStringForUpload(
+      FormatJsonRequest(std::move(request)), kNetworkRequestUploadType);
   network::SimpleURLLoader::BodyAsStringCallback body_as_string_callback =
       base::BindOnce(&EnhancedNetworkTtsImpl::OnServerResponseReceived,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     last_request);
-  ongoing_server_requests_.back()->DownloadToString(
-      url_loader_factory_.get(), std::move(body_as_string_callback),
-      kEnhancedNetworkTtsMaxResponseSize);
+                     weak_factory_.GetWeakPtr());
+  ongoing_server_request_->DownloadToString(url_loader_factory_.get(),
+                                            std::move(body_as_string_callback),
+                                            kEnhancedNetworkTtsMaxResponseSize);
 }
 
 data_decoder::mojom::JsonParser* EnhancedNetworkTtsImpl::GetJsonParser() {
+  // TODO(crbug.com/1217301): Sets an explicit disconnect handler.
   if (!json_parser_) {
     data_decoder_.GetService()->BindJsonParser(
         json_parser_.BindNewPipeAndPassReceiver());
@@ -88,14 +110,22 @@ EnhancedNetworkTtsImpl::MakeRequestLoader() {
 }
 
 void EnhancedNetworkTtsImpl::OnServerResponseReceived(
-    GetAudioDataCallback audio_callback,
-    const UrlLoaderList::iterator server_request_it,
     const std::unique_ptr<std::string> json_response) {
-  ongoing_server_requests_.erase(server_request_it);
+  // If the server request has been overridden, we process the audio callback
+  // if necessary.
+  if (!ongoing_server_request_) {
+    ProcessOngoingAudioCallback(
+        GetResultOnError(mojom::TtsRequestError::kRequestOverride));
+    DVLOG(1) << "Multiple HTTP requests for Enhance Network TTS, override the "
+                "prior one.";
+  }
+
+  ongoing_server_request_.reset();
 
   if (!json_response) {
     DVLOG(1) << "HTTP request for Enhance Network TTS failed.";
-    std::move(audio_callback).Run(GetResultOnError());
+    ProcessOngoingAudioCallback(
+        GetResultOnError(mojom::TtsRequestError::kServerError));
     return;
   }
 
@@ -103,23 +133,32 @@ void EnhancedNetworkTtsImpl::OnServerResponseReceived(
   GetJsonParser()->Parse(
       *json_response,
       base::BindOnce(&EnhancedNetworkTtsImpl::OnResponseJsonParsed,
-                     weak_factory_.GetWeakPtr(), std::move(audio_callback)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void EnhancedNetworkTtsImpl::OnResponseJsonParsed(
-    GetAudioDataCallback audio_callback,
     const absl::optional<base::Value> json_data,
     const absl::optional<std::string>& error) {
   const bool success = json_data.has_value() && !error.has_value();
 
   // Extract results for the request.
   if (success) {
-    std::move(audio_callback).Run(UnpackJsonResponse(*json_data));
+    ProcessOngoingAudioCallback(UnpackJsonResponse(*json_data));
   } else {
     DVLOG(1) << "Parsing server response JSON failed with error: "
              << error.value_or("No reason reported.");
-    std::move(audio_callback).Run(GetResultOnError());
+    ProcessOngoingAudioCallback(
+        GetResultOnError(mojom::TtsRequestError::kReceivedUnexpectedData));
   }
+}
+
+bool EnhancedNetworkTtsImpl::ProcessOngoingAudioCallback(
+    mojom::TtsResponsePtr response) {
+  if (!ongoing_audio_callback_.is_null()) {
+    std::move(ongoing_audio_callback_).Run(std::move(response));
+    return true;
+  }
+  return false;
 }
 
 }  // namespace enhanced_network_tts

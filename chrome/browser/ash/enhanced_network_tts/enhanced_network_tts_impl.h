@@ -44,13 +44,10 @@ class EnhancedNetworkTtsImpl : public mojom::EnhancedNetworkTts {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // ash::enhanced_network_tts::mojom::EnhancedNetworkTts:
-  void GetAudioData(const std::string& text,
+  void GetAudioData(mojom::TtsRequestPtr request,
                     GetAudioDataCallback callback) override;
 
  private:
-  // List of URL loader objects.
-  using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
-
   // Create or reuse a connection to the data decoder service for safe JSON
   // parsing.
   data_decoder::mojom::JsonParser* GetJsonParser();
@@ -61,20 +58,24 @@ class EnhancedNetworkTtsImpl : public mojom::EnhancedNetworkTts {
   // Called when the ReadAloud server responds with audio data, which is
   // encoded as a JSON string.
   void OnServerResponseReceived(
-      GetAudioDataCallback audio_callback,
-      const UrlLoaderList::iterator server_request_it,
       const std::unique_ptr<std::string> json_response);
 
   // Called when the data decoder service provides parsed JSON data for a
   // server response.
-  void OnResponseJsonParsed(GetAudioDataCallback audio_callback,
-                            absl::optional<base::Value> json_data,
+  void OnResponseJsonParsed(absl::optional<base::Value> json_data,
                             const absl::optional<std::string>& error);
 
-  // A list of currently-ongoing HTTP requests to the ReadAloud server. This
-  // helps us to better track the network requests.
-  // TODO(crbug.com/1217301): Consider only allowing one request at a time.
-  UrlLoaderList ongoing_server_requests_;
+  // Sends the response to the |ongoing_audio_callback_|. Returns true if the
+  // callback exists and proceeded with the |response|. False if the callback
+  // has been resolved before this method.
+  bool ProcessOngoingAudioCallback(mojom::TtsResponsePtr response);
+
+  // The currently-ongoing HTTP request to the ReadAloud server. This helps us
+  // to better track the network request.
+  std::unique_ptr<network::SimpleURLLoader> ongoing_server_request_;
+
+  // The GetAudioDataCallback for the currently-ongoing HTTP request.
+  GetAudioDataCallback ongoing_audio_callback_;
 
   // Decoder for data decoding service.
   data_decoder::DataDecoder data_decoder_;
