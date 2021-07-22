@@ -82,7 +82,6 @@ group("closure_compile") {
 
   if (!is_official_build) {
     deps += [
-      "//chromeos/components/demo_mode_app_ui:closure_compile",
       "//chromeos/components/sample_system_web_app_ui:closure_compile",
       "//chromeos/components/telemetry_extension_ui:closure_compile",
     ]

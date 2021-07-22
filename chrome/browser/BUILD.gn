@@ -2437,7 +2437,6 @@ static_library("browser") {
     if (!is_official_build) {
       deps += [
         "//chromeos/components/demo_mode_app_ui",
-        "//chromeos/components/demo_mode_app_ui/mojom",
         "//chromeos/components/telemetry_extension_ui",
         "//chromeos/components/telemetry_extension_ui/mojom",
       ]
