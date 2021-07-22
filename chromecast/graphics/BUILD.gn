@@ -76,6 +76,7 @@ cast_source_set("graphics") {
       "//components/viz/common",
       "//ui/base/ime/init",
       "//ui/events:gesture_detection",
+      "//ui/touch_selection",
       "//ui/views",
       "//ui/wm",
       "//ui/wm/public",

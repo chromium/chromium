@@ -13,6 +13,7 @@ include_rules = [
   "+ui/gl/test",
   "+ui/ozone/public",
   "+ui/platform_window",
+  "+ui/touch_selection",
   "+ui/views",
   "+ui/wm/core",
   "+ui/wm/public",

@@ -29,6 +29,7 @@
 #include "ui/display/screen.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/platform_window_init_properties.h"
+#include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/wm/core/default_screen_position_client.h"
 
 #if defined(OS_FUCHSIA)
@@ -239,6 +240,9 @@ void CastWindowManagerAura::Setup() {
   window_tree_host_->compositor()->SetDisplayVSyncParameters(
       base::TimeTicks(), base::TimeDelta::FromMilliseconds(250));
 #endif
+
+  // Chromecast devices do not support cut/copy/paste.
+  DCHECK(!ui::TouchSelectionMenuRunner::GetInstance());
 }
 
 bool CastWindowManagerAura::HasRoundedWindowCorners() const {
