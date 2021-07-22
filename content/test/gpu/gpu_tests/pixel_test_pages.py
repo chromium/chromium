@@ -618,7 +618,7 @@ class PixelTestPages(object):
     # portions of the image are prone to noise, hence the large max different
     # pixels value.
     filter_effect_fuzzy_algo = algo.FuzzyMatchingAlgorithm(
-        max_different_pixels=57500, pixel_delta_threshold=10)
+        max_different_pixels=57500, pixel_delta_threshold=15)
 
     return [
         # On macOS, test the IOSurface 2D Canvas compositing path.
