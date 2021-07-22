@@ -23,6 +23,12 @@ message PrefetchMetadata {
   optional string badge_id = 8;
 }
 message Content {
+  enum Alignment {
+    ALIGNMENT_UNSPECIFIED = 0;
+    DEFAULT = 1;
+    CENTER = 2;
+  }
   repeated PrefetchMetadata prefetch_metadata = 4;
+  optional Alignment alignment = 5;
   optional XSurfaceContent xsurface_content = 1000;
 }

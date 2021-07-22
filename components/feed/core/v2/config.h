@@ -104,6 +104,7 @@ struct Config {
       feedwire::Capability::REQUEST_SCHEDULE,
       feedwire::Capability::UI_THEME_V2,
       feedwire::Capability::UNDO_FOR_DISMISS_COMMAND,
+      feedwire::Capability::CONTENT_LIFETIME,
   };
 
   Config();

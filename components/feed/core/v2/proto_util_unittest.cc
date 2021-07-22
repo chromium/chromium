@@ -69,8 +69,8 @@ TEST(ProtoUtilTest, DefaultCapabilities) {
           feedwire::Capability::MATERIAL_NEXT_BASELINE,
           feedwire::Capability::UI_THEME_V2,
           feedwire::Capability::UNDO_FOR_DISMISS_COMMAND,
-          feedwire::Capability::PREFETCH_METADATA,
-          feedwire::Capability::SHARE));
+          feedwire::Capability::PREFETCH_METADATA, feedwire::Capability::SHARE,
+          feedwire::Capability::CONTENT_LIFETIME));
 }
 
 TEST(ProtoUtilTest, HeartsEnabled) {
@@ -115,7 +115,8 @@ TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {
           feedwire::Capability::MATERIAL_NEXT_BASELINE,
           feedwire::Capability::UI_THEME_V2,
           feedwire::Capability::UNDO_FOR_DISMISS_COMMAND,
-          feedwire::Capability::PREFETCH_METADATA));
+          feedwire::Capability::PREFETCH_METADATA,
+          feedwire::Capability::CONTENT_LIFETIME));
 }
 
 TEST(ProtoUtilTest, NoticeCardAcknowledged) {
