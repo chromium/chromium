@@ -8,7 +8,7 @@ PerfTestRunner.measureTime({
   description: "This benchmark tests Sanitizer sanitize function for a large DOM tree",
   run: function() {
     s = new Sanitizer();
-    fragment = s.sanitize(value);
+    fragment = s.sanitizeFor("template", value);
   },
   iterationCount: 5
 });
