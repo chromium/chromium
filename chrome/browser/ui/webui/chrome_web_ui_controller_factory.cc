@@ -206,6 +206,7 @@
 #include "chrome/browser/ui/webui/chromeos/cryptohome_ui.h"
 #include "chrome/browser/ui/webui/chromeos/drive_internals_ui.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
+#include "chrome/browser/ui/webui/chromeos/enterprise_casting/enterprise_casting_ui.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_start_reauth_ui.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/password_change_ui.h"
@@ -800,6 +801,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::DriveInternalsUI>;
   if (url.host_piece() == chrome::kChromeUILauncherInternalsHost)
     return &NewWebUI<chromeos::LauncherInternalsUI>;
+  if (base::FeatureList::IsEnabled(features::kEnterpriseCastingUI) &&
+      url.host_piece() == chrome::kChromeUIEnterpriseCastingHost)
+    return &NewWebUI<chromeos::EnterpriseCastingUI>;
   if (url.host_piece() == chromeos::kChromeUIHelpAppHost)
     return &NewComponentUI<chromeos::HelpAppUI, ChromeHelpAppUIDelegate>;
   if (url.host_piece() == chrome::kChromeUIMobileSetupHost)

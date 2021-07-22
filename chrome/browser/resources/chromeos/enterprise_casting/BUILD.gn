@@ -1,0 +1,48 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos, "enterprise_casting is Chrome OS only.")
+
+mojo_grdp_file = "$target_gen_dir/mojo_resources.grdp"
+resources_grd_file = "$target_gen_dir/resources.grd"
+
+generate_grd("build_mojo_grdp") {
+  input_files = [ "enterprise_casting.mojom-webui.js" ]
+  input_files_base_dir = rebase_path(
+          "${root_gen_dir}/mojom-webui/chrome/browser/ui/webui/chromeos/enterprise_casting",
+          "$root_build_dir")
+  deps = [ "//chrome/browser/ui/webui/chromeos/enterprise_casting:mojo_bindings_webui_js" ]
+
+  grd_prefix = "enterprise_casting"
+  out_grd = mojo_grdp_file
+}
+
+generate_grd("build_grd") {
+  input_files = [ "index.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_mojo_grdp" ]
+  grdp_files = [ mojo_grdp_file ]
+
+  grd_prefix = "enterprise_casting"
+  out_grd = resources_grd_file
+}
+
+grit("resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = resources_grd_file
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/enterprise_casting_resources.h",
+    "grit/enterprise_casting_resources_map.cc",
+    "grit/enterprise_casting_resources_map.h",
+    "enterprise_casting_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}

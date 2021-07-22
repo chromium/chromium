@@ -187,6 +187,8 @@
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_ui.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_picker.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
+#include "chrome/browser/ui/webui/chromeos/enterprise_casting/enterprise_casting.mojom.h"
+#include "chrome/browser/ui/webui/chromeos/enterprise_casting/enterprise_casting_ui.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
@@ -893,6 +895,10 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       launcher_internals::mojom::PageHandlerFactory,
       chromeos::LauncherInternalsUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      enterprise_casting::mojom::PageHandlerFactory,
+      chromeos::EnterpriseCastingUI>(map);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)

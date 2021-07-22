@@ -1,0 +1,11 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module enterprise_casting.mojom;
+
+// Interface for creating enterprise_casting handlers. Implemented by the WebUI
+// controller and used by chrome://enterprise-casting.
+interface PageHandlerFactory {
+  // TODO(b/193421383): Add a CreatePageHandler method.
+};

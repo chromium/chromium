@@ -73,6 +73,8 @@ const char kChromeUIDriveInternalsHost[] = "drive-internals";
 const char kChromeUIEDUCoexistenceLoginURLV1[] = "chrome://chrome-signin/edu";
 const char kChromeUIEDUCoexistenceLoginURLV2[] =
     "chrome://chrome-signin/edu-coexistence";
+const char kChromeUIEnterpriseCastingHost[] = "enterprise-casting";
+const char kChromeUIEnterpriseCastingURL[] = "chrome://enterprise-casting/";
 const char kChromeUIExtensionIconHost[] = "extension-icon";
 const char kChromeUIExtensionIconURL[] = "chrome://extension-icon/";
 const char kChromeUIExtensionsHost[] = "extensions";
