@@ -22,9 +22,6 @@ class GpoEditorWriter(template_writer.TemplateWriter):
   def IsVersionSupported(self, policy, supported_on):
     # Include deprecated policies in the 'DeprecatedPolicies' group, even if
     # they aren't supported anymore.
-    #
-    # TODO(crbug.com/463990): Eventually exclude some policies, e.g. if they
-    # were deprecated a long time ago.
     major_version = self._GetChromiumMajorVersion()
     if not major_version:
       return True
