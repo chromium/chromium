@@ -6821,12 +6821,12 @@
                         "QueryTiles",
                         "QueryTilesInNTP",
                         "QueryTilesLocalOrdering",
-                        "QueryTilesRemoveTrendingAfterInactivity",
                         "QueryTilesSegmentation"
                     ],
                     "disable_features": [
                         "QueryTilesEnableQueryEditing",
-                        "QueryTilesInOmnibox"
+                        "QueryTilesInOmnibox",
+                        "QueryTilesRemoveTrendingAfterInactivity"
                     ]
                 }
             ]
