@@ -95,11 +95,16 @@ async function createPaymentCredential(icon) { // eslint-disable-line no-unused-
 /**
  * Creates a secure payment confirmation credential and returns its identifier.
  * @param {string} icon - The URL of the icon for the credential.
- * @return {string} - The base64 encoded identifier of the new credential.
+ * @return {string} - The base64 encoded identifier of the new credential,
+ * or the error message.
  */
 async function createCredentialAndReturnItsIdentifier(icon) { // eslint-disable-line no-unused-vars, max-len
-  const credential = await createAndReturnPaymentCredential(icon);
-  return btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
+  try {
+    const credential = await createAndReturnPaymentCredential(icon);
+    return btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
+  } catch (e) {
+    return e.toString();
+  }
 }
 
 /**

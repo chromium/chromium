@@ -625,6 +625,22 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
 
+// b.com cannot create a credential with RP = "a.com".
+IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
+                       RelyingPartyIsEnforced) {
+  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  NavigateTo("b.com", "/secure_payment_confirmation.html");
+  RespondToFutureEnrollments(/*confirm=*/true);
+  EXPECT_EQ(
+      "SecurityError: The relying party ID is not a registrable domain suffix "
+      "of, nor equal to the current domain.",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("createCredentialAndReturnItsIdentifier($1)",
+                             GetDefaultIconURL()))
+          .ExtractString());
+}
+
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
                        ConfirmPaymentInCrossOriginIframe) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
@@ -808,15 +824,13 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, NonexistentIcon) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
 
-  EXPECT_EQ(
-      "a JavaScript error: \"NetworkError: Unable to download payment "
-      "instrument icon.\"\n",
-      content::EvalJs(
-          GetActiveWebContents(),
-          content::JsReplace(
-              "createCredentialAndReturnItsIdentifier($1)",
-              https_server()->GetURL("a.com", "/nonexistent.png").spec()))
-          .error);
+  EXPECT_EQ("NetworkError: Unable to download payment instrument icon.",
+            content::EvalJs(
+                GetActiveWebContents(),
+                content::JsReplace(
+                    "createCredentialAndReturnItsIdentifier($1)",
+                    https_server()->GetURL("a.com", "/nonexistent.png").spec()))
+                .ExtractString());
 
   ExpectEnrollDialogShown(
       SecurePaymentConfirmationEnrollDialogShown::kCouldNotShow, 1);
@@ -835,14 +849,12 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, InsecureIcon) {
   std::string icon_url =
       embedded_test_server()->GetURL("a.com", "/icon.png").spec();
 
-  EXPECT_EQ(
-      "a JavaScript error: \"SecurityError: 'instrument.icon' should be a "
-      "secure URL\"\n",
-      content::EvalJs(
-          GetActiveWebContents(),
-          content::JsReplace("createCredentialAndReturnItsIdentifier($1)",
-                             icon_url))
-          .error);
+  EXPECT_EQ("SecurityError: 'instrument.icon' should be a secure URL",
+            content::EvalJs(
+                GetActiveWebContents(),
+                content::JsReplace("createCredentialAndReturnItsIdentifier($1)",
+                                   icon_url))
+                .ExtractString());
   ExpectNoEnrollDialogShown();
   ExpectNoEnrollDialogResult();
   ExpectNoEnrollSystemPromptResult();
@@ -916,15 +928,14 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   RespondToFutureEnrollments(/*confirm=*/true);
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/false);
   EXPECT_EQ(
-      "a JavaScript error: \"NotAllowedError: The operation either timed out "
-      "or was not allowed. See: "
-      "https://www.w3.org/TR/webauthn-2/"
-      "#sctn-privacy-considerations-client.\"\n",
+      "NotAllowedError: The operation either timed out or was not allowed. "
+      "See: "
+      "https://www.w3.org/TR/webauthn-2/#sctn-privacy-considerations-client.",
       content::EvalJs(
           GetActiveWebContents(),
           content::JsReplace("createCredentialAndReturnItsIdentifier($1)",
                              GetDefaultIconURL()))
-          .error);
+          .ExtractString());
 
   ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
                           1);
