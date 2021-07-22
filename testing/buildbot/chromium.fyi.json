@@ -96620,7 +96620,7 @@
               "os": "Windows-10-19042"
             }
           ],
-          "hard_timeout": 900,
+          "hard_timeout": 1200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
