@@ -1,0 +1,51 @@
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<script>
+// TODO(crbug.com/1231615): We were not able to test this with reference tests.
+test(function(t) {
+    var canvas, ctx;
+    canvas = document.createElement("canvas");
+    canvas.width = 200;
+    canvas.height = 200;
+    document.body.appendChild(canvas);
+
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = 'rgba(0,0,255,1)';
+    ctx.fillRect(50,50,75,50);
+    ctx.globalAlpha = 0.5;
+
+    ctx.beginLayer();
+
+    ctx.fillStyle = 'rgba(225,0,0,1)';
+    ctx.fillRect(60,60,75,50);
+
+    ctx.endLayer();
+
+    ctx.fillRect(70,70,75,50);
+
+    var three = ctx.getImageData(71,71,1,1);
+    var two = ctx.getImageData(134,71,1,1);
+    var one = ctx.getImageData(144,119,1,1);
+
+    // All three rectangles intersect.
+    assert_approx_equals(three.data[0], 56, 2);
+    assert_approx_equals(three.data[1], 0, 2);
+    assert_approx_equals(three.data[2], 191, 2);
+    assert_approx_equals(three.data[3], 255, 2);
+
+    // Only the red and the last rectangle.
+    assert_approx_equals(two.data[0], 75, 2);
+    assert_approx_equals(two.data[1], 0, 2);
+    assert_approx_equals(two.data[2], 171, 2);
+    assert_approx_equals(two.data[3], 191, 2);
+
+    // Just the last rectangle, which should have alpha 0.5.
+    assert_approx_equals(one.data[0], 0, 2);
+    assert_approx_equals(one.data[1], 0, 2);
+    assert_approx_equals(one.data[2], 255, 2);
+    assert_approx_equals(one.data[3], 128, 2);
+
+}, "Test that ensure layers restores style values upon endLayer.");
+</script>
+</body>
