@@ -188,7 +188,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @CalledByNative
-    private static WebAuthSecurityChecksResults createWebAuthSecurityChecksResults(
+    private static RenderFrameHost.WebAuthSecurityChecksResults createWebAuthSecurityChecksResults(
             @AuthenticatorStatus.EnumType int securityCheckResult, boolean isCrossOrigin) {
         return new WebAuthSecurityChecksResults(securityCheckResult, isCrossOrigin);
     }
@@ -235,7 +235,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         void terminateRendererDueToBadMessage(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller, int reason);
         boolean isProcessBlocked(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
-        WebAuthSecurityChecksResults performGetAssertionWebAuthSecurityChecks(
+        RenderFrameHost.WebAuthSecurityChecksResults performGetAssertionWebAuthSecurityChecks(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller,
                 String relyingPartyId, Origin effectiveOrigin);
         int performMakeCredentialWebAuthSecurityChecks(long nativeRenderFrameHostAndroid,
