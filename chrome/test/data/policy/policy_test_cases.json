@@ -6043,11 +6043,11 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {
-          "RoamingProfileLocation": "${roaming_app_data}"
+          "RoamingProfileLocation": "C:\\Users\\test_user_name\\AppData\\Roaming"
         },
         "prefs": {
           "sync.local_sync_backend_dir": {
-            "value": "C:\\Users\\chrome-bot\\AppData\\Roaming"
+            "value": "C:\\Users\\test_user_name\\AppData\\Roaming"
           }
         }
       }
@@ -6061,11 +6061,11 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {
-          "RoamingProfileLocation": "/Users/${user_name}/chrome_roaming_profile_dir"
+          "RoamingProfileLocation": "/Users/test_user_name/chrome_roaming_profile_dir"
         },
         "prefs": {
           "sync.local_sync_backend_dir": {
-            "value": "/Users/chrome-bot/chrome_roaming_profile_dir"
+            "value": "/Users/test_user_name/chrome_roaming_profile_dir"
           }
         }
       }
