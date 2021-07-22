@@ -266,9 +266,8 @@ void PowerButtonController::OnPowerButtonEvent(
     if (screen_off_when_power_button_down_ || !force_off_on_button_up_)
       return;
 
-    if (menu_timer_was_running || menu_was_partially_opened ||
-        (menu_shown_when_power_button_down_ &&
-         pre_shutdown_timer_was_running)) {
+    if (menu_timer_was_running || (menu_shown_when_power_button_down_ &&
+                                   pre_shutdown_timer_was_running)) {
       display_controller_->SetBacklightsForcedOff(true);
       LockScreenIfRequired();
     }

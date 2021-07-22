@@ -1055,7 +1055,7 @@ TEST_F(PowerButtonControllerTest, MenuNavigation) {
 }
 
 // Tests that the partially shown menu will be dismissed by power button up in
-// tablet mode, and screen will be turned off at the same time.
+// tablet mode, and screen should not be turned off at the same time.
 TEST_F(PowerButtonControllerTest, PartiallyShownMenuInTabletMode) {
   EnableTabletMode(true);
 
@@ -1074,7 +1074,8 @@ TEST_F(PowerButtonControllerTest, PartiallyShownMenuInTabletMode) {
   EXPECT_FALSE(power_button_test_api_->ShowMenuAnimationDone());
   // The partially shown menu should be dismissed by power button up.
   EXPECT_FALSE(power_button_test_api_->IsMenuOpened());
-  EXPECT_TRUE(power_manager_client()->backlights_forced_off());
+  // Screen should not be turned off with power button released.
+  EXPECT_FALSE(power_manager_client()->backlights_forced_off());
 }
 
 class PowerButtonControllerWithPositionTest
