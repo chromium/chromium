@@ -7,6 +7,7 @@ package org.chromium.android_webview;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
@@ -63,6 +64,7 @@ public class AwSettings {
     public static final int FORCE_DARK_OFF = ForceDarkMode.FORCE_DARK_OFF;
     public static final int FORCE_DARK_AUTO = ForceDarkMode.FORCE_DARK_AUTO;
     public static final int FORCE_DARK_ON = ForceDarkMode.FORCE_DARK_ON;
+    public static final int FORCE_DARK_MODES_COUNT = 3;
 
     @ForceDarkMode
     private int mForceDarkMode = ForceDarkMode.FORCE_DARK_AUTO;
@@ -72,9 +74,12 @@ public class AwSettings {
     // This option requires RuntimeEnabledFeatures::MetaColorSchemeEnabled()
     public static final int PREFER_MEDIA_QUERY_OVER_FORCE_DARK =
             ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK;
+    public static final int FORCE_DARK_STRATEGY_COUNT = 3;
 
     @ForceDarkBehavior
     private int mForceDarkBehavior = ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK;
+
+    private Context mContext;
 
     // This class must be created on the UI thread. Afterwards, it can be
     // used from any thread. Internally, the class uses a message queue
@@ -259,6 +264,7 @@ public class AwSettings {
             boolean supportsLegacyQuirks, boolean allowEmptyDocumentPersistence,
             boolean allowGeolocationOnInsecureOrigins,
             boolean doNotUpdateSelectionOnMutatingSelectionRange) {
+        mContext = context;
         boolean hasInternetPermission = context.checkPermission(
                 android.Manifest.permission.INTERNET,
                 Process.myPid(),
@@ -298,6 +304,10 @@ public class AwSettings {
                     < Build.VERSION_CODES.R;
         }
         // Defer initializing the native side until a native WebContents instance is set.
+    }
+
+    public int getUiModeNight() {
+        return mContext.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
     }
 
     @CalledByNative

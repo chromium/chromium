@@ -87013,6 +87013,24 @@ Called by update_scheduler_enums.py.-->
   <int value="2" label="Cross-domain redirect"/>
 </enum>
 
+<enum name="WebViewForceDarkBehavior">
+  <int value="0" label="Force dark only"/>
+  <int value="1" label="Media query only"/>
+  <int value="2" label="Prefer media query over force dark"/>
+</enum>
+
+<enum name="WebViewForceDarkMode">
+  <int value="0" label="OS undefined, WebView off"/>
+  <int value="1" label="OS undefined, WebView auto"/>
+  <int value="2" label="OS undefined, WebView on"/>
+  <int value="3" label="OS no, WebView off"/>
+  <int value="4" label="OS no, WebView auto"/>
+  <int value="5" label="OS no, WebView on"/>
+  <int value="6" label="OS yes, WebView off"/>
+  <int value="7" label="OS yes, WebView auto"/>
+  <int value="8" label="OS yes, WebView on"/>
+</enum>
+
 <enum name="WebViewMixedContentMode">
   <int value="0" label="Always allow"/>
   <int value="1" label="Never allow"/>
