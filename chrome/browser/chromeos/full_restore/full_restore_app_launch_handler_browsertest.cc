@@ -2159,6 +2159,11 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
         ->profile_path_to_restore_data_.clear();
   }
 
+  bool HasWindowInfo(int32_t restore_window_id) {
+    return ::full_restore::FullRestoreReadHandler::GetInstance()->HasWindowInfo(
+        restore_window_id);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -2182,11 +2187,14 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   // Close app_browser so that the SWA can be relaunched.
   web_app::CloseAndWait(app_browser);
 
+  ASSERT_FALSE(HasWindowInfo(window_id));
+
   // Set should restore.
   app_launch_handler->SetShouldRestore();
 
   // Wait for the restoration.
   content::RunAllTasksUntilIdle();
+  ASSERT_TRUE(HasWindowInfo(window_id));
 
   // Get the restored browser for the system web app.
   Browser* restore_app_browser = GetBrowserForWindowId(window_id);
@@ -2199,6 +2207,42 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
       window->GetProperty(::full_restore::kRestoreWindowIdKey);
 
   EXPECT_EQ(window_id, restore_window_id);
+}
+
+// Verify that when the full restore doesn't start, the browser window of the
+// SWA doesn't have the restore info.
+IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
+                       LaunchSWAWithoutRestore) {
+  Browser* app_browser = LaunchSystemWebApp();
+  ASSERT_TRUE(app_browser);
+  ASSERT_NE(browser(), app_browser);
+
+  // Get the window id.
+  aura::Window* window = app_browser->window()->GetNativeWindow();
+  int32_t window_id = window->GetProperty(::full_restore::kWindowIdKey);
+
+  SaveWindowInfo(window);
+  WaitForAppLaunchInfoSaved();
+
+  // Create FullRestoreAppLaunchHandler.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
+
+  // Close app_browser so that the SWA can be relaunched.
+  web_app::CloseAndWait(app_browser);
+
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_FALSE(HasWindowInfo(window_id));
+
+  Browser* new_app_browser = LaunchSystemWebApp();
+
+  ASSERT_TRUE(new_app_browser);
+  ASSERT_NE(browser(), new_app_browser);
+
+  window = new_app_browser->window()->GetNativeWindow();
+  auto* window_state = ash::WindowState::Get(window);
+  EXPECT_FALSE(window_state->HasRestoreBounds());
 }
 
 IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,

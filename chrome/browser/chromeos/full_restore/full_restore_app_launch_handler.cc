@@ -144,6 +144,8 @@ void FullRestoreAppLaunchHandler::MaybePostRestore() {
 
 void FullRestoreAppLaunchHandler::MaybeRestore() {
   restore_start_time_ = base::TimeTicks::Now();
+  ::full_restore::FullRestoreReadHandler::GetInstance()->SetCheckRestoreData(
+      profile_->GetPath());
 
   if (should_launch_browser_) {
     LaunchBrowser();

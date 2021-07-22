@@ -89,6 +89,11 @@ void FullRestoreReadHandler::SetActiveProfilePath(
   active_profile_path_ = profile_path;
 }
 
+void FullRestoreReadHandler::SetCheckRestoreData(
+    const base::FilePath& profile_path) {
+  should_check_restore_data_.insert(profile_path);
+}
+
 void FullRestoreReadHandler::OnTaskCreated(const std::string& app_id,
                                            int32_t task_id,
                                            int32_t session_id) {
@@ -178,8 +183,10 @@ bool FullRestoreReadHandler::HasBrowser(const base::FilePath& profile_path) {
 }
 
 bool FullRestoreReadHandler::HasWindowInfo(int32_t restore_window_id) {
-  if (!SessionID::IsValidValue(restore_window_id))
+  if (!SessionID::IsValidValue(restore_window_id) ||
+      !base::Contains(should_check_restore_data_, active_profile_path_)) {
     return false;
+  }
 
   auto it = window_id_to_app_restore_info_.find(restore_window_id);
   if (it == window_id_to_app_restore_info_.end())
@@ -258,8 +265,10 @@ void FullRestoreReadHandler::ModifyWidgetParams(
     // TODO(sammiequon): Separate full restore and desk templates logic.
     window_info = DeskTemplateReadHandler::GetInstance()->GetWindowInfo(
         restore_window_id);
-    if (!window_info)
+    if (!window_info &&
+        base::Contains(should_check_restore_data_, active_profile_path_)) {
       window_info = GetWindowInfo(restore_window_id);
+    }
   }
   if (!window_info)
     return;
