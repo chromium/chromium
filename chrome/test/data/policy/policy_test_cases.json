@@ -291,6 +291,14 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "policy.url_blocklist": {
+            "default_value": []
+          }
+        }
+      },
+      {
         "policies": {
           "DisabledSchemes": [
             "file"
@@ -300,6 +308,25 @@
           "policy.url_blocklist": {
             "value": [
               "file://*"
+            ]
+          }
+        }
+      },
+      {
+        "note": "If both DisabledSchemes and URLBlocklist are set, their values are merged in the pref.",
+        "policies": {
+          "DisabledSchemes": [
+            "file"
+          ],
+          "URLBlocklist": [
+            "google.com"
+          ]
+        },
+        "prefs": {
+          "policy.url_blocklist": {
+            "value": [
+              "file://*",
+              "google.com"
             ]
           }
         }
@@ -3861,12 +3888,30 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "hardware.audio_capture_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
         "policies": {
           "AudioCaptureAllowed": false
         },
         "prefs": {
           "hardware.audio_capture_enabled": {
             "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "AudioCaptureAllowed": true
+        },
+        "prefs": {
+          "hardware.audio_capture_enabled": {
+            "value": true
           }
         }
       }
@@ -3881,13 +3926,25 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "hardware.audio_capture_allowed_urls": {
+            "default_value": []
+          }
+        }
+      },
+      {
         "policies": {
           "AudioCaptureAllowedUrls": [
             "[*.]google.com"
           ]
         },
         "prefs": {
-          "hardware.audio_capture_allowed_urls": {}
+          "hardware.audio_capture_allowed_urls": {
+            "value": [
+              "[*.]google.com"
+            ]
+          }
         }
       }
     ]
@@ -3901,12 +3958,30 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "hardware.video_capture_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
         "policies": {
           "VideoCaptureAllowed": false
         },
         "prefs": {
           "hardware.video_capture_enabled": {
             "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "VideoCaptureAllowed": true
+        },
+        "prefs": {
+          "hardware.video_capture_enabled": {
+            "value": true
           }
         }
       }
@@ -3921,13 +3996,25 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "hardware.video_capture_allowed_urls": {
+            "default_value": []
+          }
+        }
+      },
+      {
         "policies": {
           "VideoCaptureAllowedUrls": [
             "[*.]google.com"
           ]
         },
         "prefs": {
-          "hardware.video_capture_allowed_urls": {}
+          "hardware.video_capture_allowed_urls": {
+            "value": [
+              "[*.]google.com"
+            ]
+          }
         }
       }
     ]
@@ -4946,13 +5033,25 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "policy.url_blocklist": {
+            "default_value": []
+          }
+        }
+      },
+      {
         "policies": {
           "URLBlacklist": [
             "google.com"
           ]
         },
         "prefs": {
-          "policy.url_blocklist": {}
+          "policy.url_blocklist": {
+            "value": [
+              "google.com"
+            ]
+          }
         }
       }
     ]
@@ -4967,13 +5066,43 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "policy.url_blocklist": {
+            "default_value": []
+          }
+        }
+      },
+      {
         "policies": {
           "URLBlocklist": [
             "google.com"
           ]
         },
         "prefs": {
-          "policy.url_blocklist": {}
+          "policy.url_blocklist": {
+            "value": [
+              "google.com"
+            ]
+          }
+        }
+      },
+      {
+        "note": "URLBlacklist is deprecated, URLBlocklist overwrites it if both are set.",
+        "policies": {
+          "URLBlacklist": [
+            "example.com"
+          ],
+          "URLBlocklist": [
+            "google.com"
+          ]
+        },
+        "prefs": {
+          "policy.url_blocklist": {
+            "value": [
+              "google.com"
+            ]
+          }
         }
       }
     ]
@@ -4988,13 +5117,25 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "policy.url_allowlist": {
+            "default_value": []
+          }
+        }
+      },
+      {
         "policies": {
           "URLWhitelist": [
             "google.com"
           ]
         },
         "prefs": {
-          "policy.url_allowlist": {}
+          "policy.url_allowlist": {
+            "value": [
+              "google.com"
+            ]
+          }
         }
       }
     ]
@@ -5009,13 +5150,43 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "policy.url_allowlist": {
+            "default_value": []
+          }
+        }
+      },
+      {
         "policies": {
           "URLAllowlist": [
             "google.com"
           ]
         },
         "prefs": {
-          "policy.url_allowlist": {}
+          "policy.url_allowlist": {
+            "value": [
+              "google.com"
+            ]
+          }
+        }
+      },
+      {
+        "note": "URLWhitelist is deprecated, URLAllowlist overwrites it if both are set.",
+        "policies": {
+          "URLWhitelist": [
+            "example.com"
+          ],
+          "URLAllowlist": [
+            "google.com"
+          ]
+        },
+        "prefs": {
+          "policy.url_allowlist": {
+            "value": [
+              "google.com"
+            ]
+          }
         }
       }
     ]
@@ -8808,11 +8979,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "url_keyed_anonymized_data_collection.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
         "policies": {
           "UrlKeyedAnonymizedDataCollectionEnabled": false
         },
         "prefs": {
-          "url_keyed_anonymized_data_collection.enabled": {}
+          "url_keyed_anonymized_data_collection.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "UrlKeyedAnonymizedDataCollectionEnabled": true
+        },
+        "prefs": {
+          "url_keyed_anonymized_data_collection.enabled": {
+            "value": true
+          }
         }
       }
     ]
