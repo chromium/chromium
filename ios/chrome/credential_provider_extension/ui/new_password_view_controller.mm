@@ -84,12 +84,22 @@
 
 - (NSString*)tableView:(UITableView*)tableView
     titleForFooterInSection:(NSInteger)section {
-  NSString* baseLocalizedString = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_FOOTER",
-      @"Disclaimer telling users what will happen to their passwords");
-  return [baseLocalizedString
-      stringByReplacingOccurrencesOfString:@"$1"
-                                withString:@"example@google.com"];
+  // TODO (crbug.com/1232064): Replace with actual email once that is passed to
+  // extension.
+  NSString* userEmail = @"example@google.com";
+
+  if (userEmail) {
+    NSString* baseLocalizedString = NSLocalizedString(
+        @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_FOOTER",
+        @"Disclaimer telling users what will happen to their passwords");
+    return [baseLocalizedString stringByReplacingOccurrencesOfString:@"$1"
+                                                          withString:userEmail];
+  } else {
+    return NSLocalizedString(
+        @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_FOOTER_NO_EMAIL",
+        @"Disclaimer telling non-logged in users what will happen to their "
+        @"passwords");
+  }
 }
 
 #pragma mark - UITableViewDelegate
