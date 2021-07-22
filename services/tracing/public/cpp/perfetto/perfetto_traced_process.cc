@@ -39,12 +39,19 @@
 
 namespace tracing {
 namespace {
+#if defined(OS_POSIX)
+// Set to use the dummy producer for Chrome OS browser_tests and
+// content_browsertests to keep the system producer from causing flakes.
+static bool g_system_producer_enabled = true;
+#endif
+
 std::unique_ptr<SystemProducer> NewSystemProducer(
     base::tracing::PerfettoTaskRunner* runner,
     const char* socket_name) {
 #if defined(OS_POSIX)
   DCHECK(socket_name);
-  return std::make_unique<PosixSystemProducer>(socket_name, runner);
+  if (g_system_producer_enabled)
+    return std::make_unique<PosixSystemProducer>(socket_name, runner);
 #endif  // defined(OS_POSIX)
   return std::make_unique<DummyProducer>(runner);
 }
@@ -367,6 +374,14 @@ void PerfettoTracedProcess::ShouldAllowSystemConsumerSession(
 
   bool result = allow_system_consumer_callback_.Run();
   result_callback(result);
+}
+
+void PerfettoTracedProcess::SetSystemProducerEnabledForTesting(bool enabled) {
+#if defined(OS_POSIX)
+  // If set to disabled, use the dummy implementation to prevent the real system
+  // producer from interfering with browser tests.
+  g_system_producer_enabled = enabled;
+#endif
 }
 
 void PerfettoTracedProcess::SetupSystemTracing(

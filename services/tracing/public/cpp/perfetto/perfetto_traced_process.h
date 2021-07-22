@@ -207,6 +207,9 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   // Overrides SetAllowSystemTracingConsumerCallback() for testing.
   void SetAllowSystemTracingConsumerForTesting(bool allow);
 
+  // Enables or disables system tracing for browser tests.
+  static void SetSystemProducerEnabledForTesting(bool enabled);
+
   // Called to initialize system tracing, i.e., connecting to a system Perfetto
   // daemon as a producer. If |system_socket| isn't provided, Perfetto's default
   // socket name is used.

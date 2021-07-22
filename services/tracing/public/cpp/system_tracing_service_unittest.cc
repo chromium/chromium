@@ -25,6 +25,10 @@ class SystemTracingServiceTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   void SetUp() override {
+    // Disable system producer since the tests will exercise producer socket
+    // connection.
+    PerfettoTracedProcess::SetSystemProducerEnabledForTesting(false);
+
     // The test connects to the mock system service.
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     system_service_ = std::make_unique<MockSystemService>(temp_dir_);

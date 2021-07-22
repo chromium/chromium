@@ -402,6 +402,9 @@ class BackgroundTracingManagerBrowserTest : public ContentBrowserTest {
     // do this in the test constructor before the browser prevents the blocking
     // call.
     CHECK(tmp_dir_.CreateUniqueTempDir());
+    // browser_tests disables system tracing by default. This test needs to
+    // override the setting to exercise the feature.
+    tracing::PerfettoTracedProcess::SetSystemProducerEnabledForTesting(true);
   }
 
   void PreRunTestOnMainThread() override {
