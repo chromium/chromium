@@ -2,6 +2,7 @@ include_rules = [
   "+components/back_forward_cache",
   "+components/content_settings/core/common",
   "+components/history/core/browser",
+  "+components/no_state_prefetch/browser",
   "+components/page_info",
   "+components/safe_browsing/core/browser",
   "+components/safe_browsing/core/common",

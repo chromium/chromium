@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/ui_manager.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -10,10 +10,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/safe_browsing/safe_browsing_subresource_tab_helper.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
+#include "components/safe_browsing/content/browser/safe_browsing_subresource_tab_helper.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"

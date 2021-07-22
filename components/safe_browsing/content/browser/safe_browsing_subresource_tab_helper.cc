@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/safe_browsing_subresource_tab_helper.h"
+#include "components/safe_browsing/content/browser/safe_browsing_subresource_tab_helper.h"
 
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/safe_browsing/ui_manager.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"

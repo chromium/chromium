@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/ui_manager.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/values.h"
-#include "chrome/browser/safe_browsing/ui_manager.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/safe_browsing/content/browser/safe_browsing_controller_client.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
@@ -32,6 +31,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -199,7 +199,7 @@ class TestSafeBrowsingUIManagerDelegate
   TestingPrefServiceSimple pref_service_;
 };
 
-class SafeBrowsingUIManagerTest : public ChromeRenderViewHostTestHarness {
+class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
  public:
   SafeBrowsingUIManagerTest() {
     auto ui_manager_delegate =
@@ -214,7 +214,7 @@ class SafeBrowsingUIManagerTest : public ChromeRenderViewHostTestHarness {
   ~SafeBrowsingUIManagerTest() override {}
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+    content::RenderViewHostTestHarness::SetUp();
     SafeBrowsingUIManager::CreateAllowlistForTesting(web_contents());
   }
 

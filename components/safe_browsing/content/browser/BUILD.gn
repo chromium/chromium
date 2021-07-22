@@ -36,13 +36,19 @@ if (safe_browsing_mode > 0) {
       "safe_browsing_blocking_page.cc",
       "safe_browsing_blocking_page.h",
       "safe_browsing_blocking_page_factory.h",
+      "safe_browsing_subresource_tab_helper.cc",
+      "safe_browsing_subresource_tab_helper.h",
+      "ui_manager.cc",
+      "ui_manager.h",
     ]
 
     deps = [
       ":browser",
       "//base",
+      "//components/no_state_prefetch/browser",
       "//components/prefs",
       "//components/safe_browsing/content/browser/triggers",
+      "//components/safe_browsing/core/browser",
       "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common:safe_browsing_prefs",
       "//components/security_interstitials/content:security_interstitial_page",
@@ -174,11 +180,17 @@ source_set("unit_tests") {
   ]
 
   if (safe_browsing_mode > 0) {
-    sources += [ "safe_browsing_metrics_collector_unittest.cc" ]
+    sources += [
+      "safe_browsing_metrics_collector_unittest.cc",
+      "ui_manager_unittest.cc",
+    ]
     deps += [
       "//components/prefs",
       "//components/prefs:test_support",
+      "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
       "//components/safe_browsing/core/common:safe_browsing_prefs",
+      "//components/security_interstitials/content:security_interstitial_page",
+      "//components/security_interstitials/core",
     ]
   }
 

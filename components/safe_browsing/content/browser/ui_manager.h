@@ -5,8 +5,8 @@
 // The Safe Browsing service is responsible for downloading anti-phishing and
 // anti-malware tables and checking urls against them.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_UI_MANAGER_H_
-#define CHROME_BROWSER_SAFE_BROWSING_UI_MANAGER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_UI_MANAGER_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_UI_MANAGER_H_
 
 #include <string>
 #include <vector>
@@ -217,4 +217,4 @@ class SafeBrowsingUIManager : public BaseUIManager {
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_UI_MANAGER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_UI_MANAGER_H_

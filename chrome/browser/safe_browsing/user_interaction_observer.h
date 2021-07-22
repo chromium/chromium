@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_SAFE_BROWSING_USER_INTERACTION_OBSERVER_H_
 
 #include "base/time/default_clock.h"
-#include "chrome/browser/safe_browsing/ui_manager.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"

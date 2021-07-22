@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_UI_MANAGER_DELEGATE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_UI_MANAGER_DELEGATE_H_
 
-#include "chrome/browser/safe_browsing/ui_manager.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
 
 namespace safe_browsing {
 

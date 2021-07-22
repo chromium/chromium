@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_SUBRESOURCE_TAB_HELPER_H_
-#define CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_SUBRESOURCE_TAB_HELPER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_SUBRESOURCE_TAB_HELPER_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_SUBRESOURCE_TAB_HELPER_H_
 
 #include "base/supports_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -44,4 +44,4 @@ class SafeBrowsingSubresourceTabHelper : public content::WebContentsObserver,
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_SUBRESOURCE_TAB_HELPER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_SUBRESOURCE_TAB_HELPER_H_

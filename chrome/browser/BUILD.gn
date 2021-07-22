@@ -6707,6 +6707,7 @@ static_library("browser") {
 
   if (safe_browsing_mode != 0) {
     deps += [
+      "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
       "//components/safe_browsing/content/browser/download:download_stats",
       "//components/safe_browsing/content/common:file_type_policies",
       "//components/safe_browsing/content/common/proto:download_file_types_proto",
