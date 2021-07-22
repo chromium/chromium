@@ -1,8 +1,6 @@
 {
+  "extends": "../configs/tsconfig.common.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "noImplicitAny": true
+    "outDir": "./.build"
   }
 }

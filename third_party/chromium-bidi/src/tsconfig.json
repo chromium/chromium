@@ -1,17 +1,8 @@
 {
+  "extends": "./configs/tsconfig.common.json",
   "compilerOptions": {
     "outDir": "./.build",
-    "sourceMap": true,
-    "esModuleInterop": true,
-    "allowJs": true,
-    "checkJs": true,
-    "target": "ESNext",
-    "moduleResolution": "node",
     "module": "ESNext",
-    "declaration": true,
-    "declarationMap": true,
-    "resolveJsonModule": true,
-    "noImplicitAny": true
   },
   "files": ["index.ts"]
 }
