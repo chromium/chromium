@@ -34,7 +34,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager_impl.h"
-#include "chrome/browser/nearby_sharing/fast_initiation_manager.h"
+#include "chrome/browser/nearby_sharing/fast_initiation_advertiser.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
@@ -1434,8 +1434,8 @@ void NearbySharingServiceImpl::OnGetBluetoothAdapter(
 void NearbySharingServiceImpl::StartFastInitiationAdvertising() {
   NS_LOG(VERBOSE) << __func__ << ": Starting fast initiation advertising.";
 
-  fast_initiation_manager_ =
-      FastInitiationManager::Factory::Create(bluetooth_adapter_);
+  fast_initiation_advertiser_ =
+      FastInitiationAdvertiser::Factory::Create(bluetooth_adapter_);
 
   // TODO(crbug/1147652): The call to update the advertising interval is
   // removed to prevent a Bluez crash. We need to either reduce the global
@@ -1445,8 +1445,8 @@ void NearbySharingServiceImpl::StartFastInitiationAdvertising() {
 
   // TODO(crbug.com/1100686): Determine whether to call StartAdvertising() with
   // kNotify or kSilent.
-  fast_initiation_manager_->StartAdvertising(
-      FastInitiationManager::FastInitType::kNotify,
+  fast_initiation_advertiser_->StartAdvertising(
+      FastInitiationAdvertiser::FastInitType::kNotify,
       base::BindOnce(
           &NearbySharingServiceImpl::OnStartFastInitiationAdvertising,
           weak_ptr_factory_.GetWeakPtr()),
@@ -1463,24 +1463,24 @@ void NearbySharingServiceImpl::OnStartFastInitiationAdvertising() {
 }
 
 void NearbySharingServiceImpl::OnStartFastInitiationAdvertisingError() {
-  fast_initiation_manager_.reset();
+  fast_initiation_advertiser_.reset();
   NS_LOG(ERROR) << __func__ << ": Failed to start FastInitiation advertising.";
 }
 
 void NearbySharingServiceImpl::StopFastInitiationAdvertising() {
-  if (!fast_initiation_manager_) {
+  if (!fast_initiation_advertiser_) {
     NS_LOG(VERBOSE) << __func__
                     << ": Not advertising FastInitiation, ignoring.";
     return;
   }
 
-  fast_initiation_manager_->StopAdvertising(
+  fast_initiation_advertiser_->StopAdvertising(
       base::BindOnce(&NearbySharingServiceImpl::OnStopFastInitiationAdvertising,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NearbySharingServiceImpl::OnStopFastInitiationAdvertising() {
-  fast_initiation_manager_.reset();
+  fast_initiation_advertiser_.reset();
   NS_LOG(VERBOSE) << __func__ << ": Stopped advertising FastInitiation";
 
   // TODO(crbug/1147652): The call to update the advertising interval is
@@ -1860,7 +1860,7 @@ void NearbySharingServiceImpl::InvalidateFastInitiationAdvertising() {
     return;
   }
 
-  if (fast_initiation_manager_) {
+  if (fast_initiation_advertiser_) {
     NS_LOG(VERBOSE) << __func__ << ": Already advertising fast init, ignoring.";
     return;
   }

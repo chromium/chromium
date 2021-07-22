@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/nearby_sharing/fast_initiation_manager.h"
+#include "chrome/browser/nearby_sharing/fast_initiation_advertiser.h"
 
 #include <memory>
 #include <utility>
@@ -95,15 +95,15 @@ class FakeBluetoothAdvertisement : public device::BluetoothAdvertisement {
   ~FakeBluetoothAdvertisement() override = default;
 };
 
-class NearbySharingFastInitiationManagerTest : public testing::Test {
+class NearbySharingFastInitiationAdvertiserTest : public testing::Test {
  public:
-  NearbySharingFastInitiationManagerTest(
-      const NearbySharingFastInitiationManagerTest&) = delete;
-  NearbySharingFastInitiationManagerTest& operator=(
-      const NearbySharingFastInitiationManagerTest&) = delete;
+  NearbySharingFastInitiationAdvertiserTest(
+      const NearbySharingFastInitiationAdvertiserTest&) = delete;
+  NearbySharingFastInitiationAdvertiserTest& operator=(
+      const NearbySharingFastInitiationAdvertiserTest&) = delete;
 
  protected:
-  NearbySharingFastInitiationManagerTest() = default;
+  NearbySharingFastInitiationAdvertiserTest() = default;
 
   void SetUp() override {
     mock_adapter_ = base::MakeRefCounted<
@@ -111,25 +111,25 @@ class NearbySharingFastInitiationManagerTest : public testing::Test {
     ON_CALL(*mock_adapter_, IsPresent()).WillByDefault(Return(true));
     ON_CALL(*mock_adapter_, IsPowered()).WillByDefault(Return(true));
     ON_CALL(*mock_adapter_, RegisterAdvertisementWithArgsStruct(_))
-        .WillByDefault(Invoke(this, &NearbySharingFastInitiationManagerTest::
+        .WillByDefault(Invoke(this, &NearbySharingFastInitiationAdvertiserTest::
                                         OnAdapterRegisterAdvertisement));
 
-    fast_initiation_manager_ =
-        std::make_unique<FastInitiationManager>(mock_adapter_);
+    fast_initiation_advertiser_ =
+        std::make_unique<FastInitiationAdvertiser>(mock_adapter_);
   }
 
   void OnAdapterRegisterAdvertisement(RegisterAdvertisementArgs* args) {
     register_args_ = base::WrapUnique(args);
   }
 
-  void StartAdvertising(FastInitiationManager::FastInitType type) {
-    fast_initiation_manager_->StartAdvertising(
+  void StartAdvertising(FastInitiationAdvertiser::FastInitType type) {
+    fast_initiation_advertiser_->StartAdvertising(
         type,
         base::BindOnce(
-            &NearbySharingFastInitiationManagerTest::OnStartAdvertising,
+            &NearbySharingFastInitiationAdvertiserTest::OnStartAdvertising,
             base::Unretained(this)),
         base::BindOnce(
-            &NearbySharingFastInitiationManagerTest::OnStartAdvertisingError,
+            &NearbySharingFastInitiationAdvertiserTest::OnStartAdvertisingError,
             base::Unretained(this)));
     auto service_uuid_list =
         std::make_unique<device::BluetoothAdvertisement::UUIDList>();
@@ -139,7 +139,7 @@ class NearbySharingFastInitiationManagerTest : public testing::Test {
     auto expected_payload =
         std::vector<uint8_t>(std::begin(kNearbySharingFastPairId),
                              std::end(kNearbySharingFastPairId));
-    if (type == FastInitiationManager::FastInitType::kNotify) {
+    if (type == FastInitiationAdvertiser::FastInitType::kNotify) {
       expected_payload.insert(std::end(expected_payload),
                               std::begin(kFastInitMetadataTypeNotify),
                               std::end(kFastInitMetadataTypeNotify));
@@ -155,8 +155,8 @@ class NearbySharingFastInitiationManagerTest : public testing::Test {
   }
 
   void StopAdvertising() {
-    fast_initiation_manager_->StopAdvertising(base::BindOnce(
-        &NearbySharingFastInitiationManagerTest::OnStopAdvertising,
+    fast_initiation_advertiser_->StopAdvertising(base::BindOnce(
+        &NearbySharingFastInitiationAdvertiserTest::OnStopAdvertising,
         base::Unretained(this)));
   }
 
@@ -173,39 +173,41 @@ class NearbySharingFastInitiationManagerTest : public testing::Test {
   bool called_on_stop_advertising() { return called_on_stop_advertising_; }
 
   scoped_refptr<NiceMock<MockBluetoothAdapterWithAdvertisements>> mock_adapter_;
-  std::unique_ptr<FastInitiationManager> fast_initiation_manager_;
+  std::unique_ptr<FastInitiationAdvertiser> fast_initiation_advertiser_;
   std::unique_ptr<RegisterAdvertisementArgs> register_args_;
   bool called_on_start_advertising_ = false;
   bool called_on_start_advertising_error_ = false;
   bool called_on_stop_advertising_ = false;
 };
 
-TEST_F(NearbySharingFastInitiationManagerTest,
+TEST_F(NearbySharingFastInitiationAdvertiserTest,
        TestStartAdvertising_Success_TypeNotify) {
-  StartAdvertising(FastInitiationManager::FastInitType::kNotify);
+  StartAdvertising(FastInitiationAdvertiser::FastInitType::kNotify);
   auto fake_advertisement = base::MakeRefCounted<FakeBluetoothAdvertisement>();
   std::move(register_args_->callback).Run(fake_advertisement);
 
   EXPECT_TRUE(called_on_start_advertising());
   EXPECT_FALSE(called_on_start_advertising_error());
   EXPECT_FALSE(called_on_stop_advertising());
-  EXPECT_TRUE(fake_advertisement->HasObserver(fast_initiation_manager_.get()));
+  EXPECT_TRUE(
+      fake_advertisement->HasObserver(fast_initiation_advertiser_.get()));
 }
 
-TEST_F(NearbySharingFastInitiationManagerTest,
+TEST_F(NearbySharingFastInitiationAdvertiserTest,
        TestStartAdvertising_Success_TypeSilent) {
-  StartAdvertising(FastInitiationManager::FastInitType::kSilent);
+  StartAdvertising(FastInitiationAdvertiser::FastInitType::kSilent);
   auto fake_advertisement = base::MakeRefCounted<FakeBluetoothAdvertisement>();
   std::move(register_args_->callback).Run(fake_advertisement);
 
   EXPECT_TRUE(called_on_start_advertising());
   EXPECT_FALSE(called_on_start_advertising_error());
   EXPECT_FALSE(called_on_stop_advertising());
-  EXPECT_TRUE(fake_advertisement->HasObserver(fast_initiation_manager_.get()));
+  EXPECT_TRUE(
+      fake_advertisement->HasObserver(fast_initiation_advertiser_.get()));
 }
 
-TEST_F(NearbySharingFastInitiationManagerTest, TestStartAdvertising_Error) {
-  StartAdvertising(FastInitiationManager::FastInitType::kNotify);
+TEST_F(NearbySharingFastInitiationAdvertiserTest, TestStartAdvertising_Error) {
+  StartAdvertising(FastInitiationAdvertiser::FastInitType::kNotify);
   std::move(register_args_->error_callback)
       .Run(device::BluetoothAdvertisement::ErrorCode::
                INVALID_ADVERTISEMENT_ERROR_CODE);
@@ -216,21 +218,22 @@ TEST_F(NearbySharingFastInitiationManagerTest, TestStartAdvertising_Error) {
 }
 
 // Regression test for crbug.com/1109581.
-TEST_F(NearbySharingFastInitiationManagerTest,
+TEST_F(NearbySharingFastInitiationAdvertiserTest,
        TestStartAdvertising_DeleteInErrorCallback) {
-  fast_initiation_manager_->StartAdvertising(
-      FastInitiationManager::FastInitType::kNotify, base::DoNothing(),
-      base::BindLambdaForTesting([&]() { fast_initiation_manager_.reset(); }));
+  fast_initiation_advertiser_->StartAdvertising(
+      FastInitiationAdvertiser::FastInitType::kNotify, base::DoNothing(),
+      base::BindLambdaForTesting(
+          [&]() { fast_initiation_advertiser_.reset(); }));
 
   std::move(register_args_->error_callback)
       .Run(device::BluetoothAdvertisement::ErrorCode::
                INVALID_ADVERTISEMENT_ERROR_CODE);
 
-  EXPECT_FALSE(fast_initiation_manager_);
+  EXPECT_FALSE(fast_initiation_advertiser_);
 }
 
-TEST_F(NearbySharingFastInitiationManagerTest, TestStopAdvertising) {
-  StartAdvertising(FastInitiationManager::FastInitType::kNotify);
+TEST_F(NearbySharingFastInitiationAdvertiserTest, TestStopAdvertising) {
+  StartAdvertising(FastInitiationAdvertiser::FastInitType::kNotify);
   auto fake_advertisement = base::MakeRefCounted<FakeBluetoothAdvertisement>();
   std::move(register_args_->callback).Run(fake_advertisement);
 
@@ -241,17 +244,19 @@ TEST_F(NearbySharingFastInitiationManagerTest, TestStopAdvertising) {
   EXPECT_TRUE(called_on_stop_advertising());
 }
 
-TEST_F(NearbySharingFastInitiationManagerTest, TestAdvertisementReleased) {
-  StartAdvertising(FastInitiationManager::FastInitType::kNotify);
+TEST_F(NearbySharingFastInitiationAdvertiserTest, TestAdvertisementReleased) {
+  StartAdvertising(FastInitiationAdvertiser::FastInitType::kNotify);
   auto fake_advertisement = base::MakeRefCounted<FakeBluetoothAdvertisement>();
   std::move(register_args_->callback).Run(fake_advertisement);
 
-  EXPECT_TRUE(fake_advertisement->HasObserver(fast_initiation_manager_.get()));
+  EXPECT_TRUE(
+      fake_advertisement->HasObserver(fast_initiation_advertiser_.get()));
 
   fake_advertisement->ReleaseAdvertisement();
 
   EXPECT_TRUE(called_on_start_advertising());
   EXPECT_FALSE(called_on_start_advertising_error());
   EXPECT_FALSE(called_on_stop_advertising());
-  EXPECT_FALSE(fake_advertisement->HasObserver(fast_initiation_manager_.get()));
+  EXPECT_FALSE(
+      fake_advertisement->HasObserver(fast_initiation_advertiser_.get()));
 }

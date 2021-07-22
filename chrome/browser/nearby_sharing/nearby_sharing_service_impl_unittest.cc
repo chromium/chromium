@@ -38,7 +38,7 @@
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager_impl.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connections_manager.h"
-#include "chrome/browser/nearby_sharing/fast_initiation_manager.h"
+#include "chrome/browser/nearby_sharing/fast_initiation_advertiser.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
@@ -81,19 +81,19 @@ using SendSurfaceState = NearbySharingService::SendSurfaceState;
 using NearbyProcessShutdownReason =
     chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason;
 
-class FakeFastInitiationManager : public FastInitiationManager {
+class FakeFastInitiationAdvertiser : public FastInitiationAdvertiser {
  public:
-  explicit FakeFastInitiationManager(
+  explicit FakeFastInitiationAdvertiser(
       scoped_refptr<device::BluetoothAdapter> adapter,
       bool should_succeed_on_start,
       base::OnceCallback<void()> on_stop_advertising_callback,
       base::OnceCallback<void()> on_destroy_callback)
-      : FastInitiationManager(adapter),
+      : FastInitiationAdvertiser(adapter),
         should_succeed_on_start_(should_succeed_on_start),
         on_stop_advertising_callback_(std::move(on_stop_advertising_callback)),
         on_destroy_callback_(std::move(on_destroy_callback)) {}
 
-  ~FakeFastInitiationManager() override {
+  ~FakeFastInitiationAdvertiser() override {
     std::move(on_destroy_callback_).Run();
   }
 
@@ -123,49 +123,52 @@ class FakeFastInitiationManager : public FastInitiationManager {
   base::OnceCallback<void()> on_destroy_callback_;
 };
 
-class FakeFastInitiationManagerFactory : public FastInitiationManager::Factory {
+class FakeFastInitiationAdvertiserFactory
+    : public FastInitiationAdvertiser::Factory {
  public:
-  explicit FakeFastInitiationManagerFactory(bool should_succeed_on_start)
+  explicit FakeFastInitiationAdvertiserFactory(bool should_succeed_on_start)
       : should_succeed_on_start_(should_succeed_on_start) {}
 
-  std::unique_ptr<FastInitiationManager> CreateInstance(
+  std::unique_ptr<FastInitiationAdvertiser> CreateInstance(
       scoped_refptr<device::BluetoothAdapter> adapter) override {
-    auto fake_fast_initiation_manager = std::make_unique<
-        FakeFastInitiationManager>(
-        adapter, should_succeed_on_start_,
-        base::BindOnce(&FakeFastInitiationManagerFactory::OnStopAdvertising,
-                       weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(
-            &FakeFastInitiationManagerFactory::OnFastInitiationManagerDestroyed,
-            weak_ptr_factory_.GetWeakPtr()));
-    last_fake_fast_initiation_manager_ = fake_fast_initiation_manager.get();
-    return std::move(fake_fast_initiation_manager);
+    auto fake_fast_initiation_advertiser =
+        std::make_unique<FakeFastInitiationAdvertiser>(
+            adapter, should_succeed_on_start_,
+            base::BindOnce(
+                &FakeFastInitiationAdvertiserFactory::OnStopAdvertising,
+                weak_ptr_factory_.GetWeakPtr()),
+            base::BindOnce(&FakeFastInitiationAdvertiserFactory::
+                               OnFastInitiationAdvertiserDestroyed,
+                           weak_ptr_factory_.GetWeakPtr()));
+    last_fake_fast_initiation_advertiser_ =
+        fake_fast_initiation_advertiser.get();
+    return std::move(fake_fast_initiation_advertiser);
   }
 
   void OnStopAdvertising() { stop_advertising_called_ = true; }
 
-  void OnFastInitiationManagerDestroyed() {
-    fast_initiation_manager_destroyed_ = true;
-    last_fake_fast_initiation_manager_ = nullptr;
+  void OnFastInitiationAdvertiserDestroyed() {
+    fast_initiation_advertiser_destroyed_ = true;
+    last_fake_fast_initiation_advertiser_ = nullptr;
   }
 
   size_t StartAdvertisingCount() {
-    return last_fake_fast_initiation_manager_
-               ? last_fake_fast_initiation_manager_
+    return last_fake_fast_initiation_advertiser_
+               ? last_fake_fast_initiation_advertiser_
                      ->start_advertising_call_count()
                : 0;
   }
 
-  bool StopAdvertisingCalledAndManagerDestroyed() {
-    return stop_advertising_called_ && fast_initiation_manager_destroyed_;
+  bool StopAdvertisingCalledAndAdvertiserDestroyed() {
+    return stop_advertising_called_ && fast_initiation_advertiser_destroyed_;
   }
 
  private:
-  FakeFastInitiationManager* last_fake_fast_initiation_manager_ = nullptr;
+  FakeFastInitiationAdvertiser* last_fake_fast_initiation_advertiser_ = nullptr;
   bool should_succeed_on_start_ = false;
   bool stop_advertising_called_ = false;
-  bool fast_initiation_manager_destroyed_ = false;
-  base::WeakPtrFactory<FakeFastInitiationManagerFactory> weak_ptr_factory_{
+  bool fast_initiation_advertiser_destroyed_ = false;
+  base::WeakPtrFactory<FakeFastInitiationAdvertiserFactory> weak_ptr_factory_{
       this};
 };
 
@@ -434,7 +437,7 @@ class NearbySharingServiceImplTest : public testing::Test {
             });
 
     service_ = CreateService();
-    SetFakeFastInitiationManagerFactory(/*should_succeed_on_start=*/true);
+    SetFakeFastInitiationAdvertiserFactory(/*should_succeed_on_start=*/true);
 
     service_->set_free_disk_space_for_testing(kFreeDiskSpace);
 
@@ -458,7 +461,7 @@ class NearbySharingServiceImplTest : public testing::Test {
         nullptr);
     NearbyShareContactManagerImpl::Factory::SetFactoryForTesting(nullptr);
     NearbyShareCertificateManagerImpl::Factory::SetFactoryForTesting(nullptr);
-    FastInitiationManager::Factory::SetFactoryForTesting(nullptr);
+    FastInitiationAdvertiser::Factory::SetFactoryForTesting(nullptr);
   }
 
   std::unique_ptr<NearbySharingServiceImpl> CreateService() {
@@ -509,12 +512,12 @@ class NearbySharingServiceImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetFakeFastInitiationManagerFactory(bool should_succeed_on_start) {
-    fast_initiation_manager_factory_ =
-        std::make_unique<FakeFastInitiationManagerFactory>(
+  void SetFakeFastInitiationAdvertiserFactory(bool should_succeed_on_start) {
+    fast_initiation_advertiser_factory_ =
+        std::make_unique<FakeFastInitiationAdvertiserFactory>(
             should_succeed_on_start);
-    FastInitiationManager::Factory::SetFactoryForTesting(
-        fast_initiation_manager_factory_.get());
+    FastInitiationAdvertiser::Factory::SetFactoryForTesting(
+        fast_initiation_advertiser_factory_.get());
   }
 
   bool IsBluetoothPresent() { return is_bluetooth_present_; }
@@ -1075,8 +1078,8 @@ class NearbySharingServiceImplTest : public testing::Test {
   std::unique_ptr<TestSessionController> session_controller_;
   std::unique_ptr<NearbySharingServiceImpl> service_;
   std::unique_ptr<base::ScopedDisallowBlocking> disallow_blocking_;
-  std::unique_ptr<FakeFastInitiationManagerFactory>
-      fast_initiation_manager_factory_;
+  std::unique_ptr<FakeFastInitiationAdvertiserFactory>
+      fast_initiation_advertiser_factory_;
   bool is_bluetooth_present_ = true;
   bool is_bluetooth_powered_ = true;
   device::BluetoothAdapter::Observer* adapter_observer_ = nullptr;
@@ -1197,7 +1200,7 @@ TEST_F(NearbySharingServiceImplTest, StartFastInitiationAdvertising) {
       NearbySharingService::StatusCodes::kOk,
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
-  EXPECT_EQ(1u, fast_initiation_manager_factory_->StartAdvertisingCount());
+  EXPECT_EQ(1u, fast_initiation_advertiser_factory_->StartAdvertisingCount());
 
   // Call RegisterSendSurface a second time and make sure StartAdvertising is
   // not called again.
@@ -1205,12 +1208,12 @@ TEST_F(NearbySharingServiceImplTest, StartFastInitiationAdvertising) {
       NearbySharingService::StatusCodes::kError,
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
-  EXPECT_EQ(1u, fast_initiation_manager_factory_->StartAdvertisingCount());
+  EXPECT_EQ(1u, fast_initiation_advertiser_factory_->StartAdvertisingCount());
 }
 
 TEST_F(NearbySharingServiceImplTest, StartFastInitiationAdvertisingError) {
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
-  SetFakeFastInitiationManagerFactory(/*should_succeed_on_start=*/false);
+  SetFakeFastInitiationAdvertiserFactory(/*should_succeed_on_start=*/false);
   MockTransferUpdateCallback transfer_callback;
   MockShareTargetDiscoveredCallback discovery_callback;
   EXPECT_EQ(
@@ -1228,7 +1231,7 @@ TEST_F(NearbySharingServiceImplTest,
       NearbySharingService::StatusCodes::kOk,
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kBackground));
-  EXPECT_EQ(0u, fast_initiation_manager_factory_->StartAdvertisingCount());
+  EXPECT_EQ(0u, fast_initiation_advertiser_factory_->StartAdvertisingCount());
 }
 
 TEST_F(NearbySharingServiceImplTest,
@@ -1263,12 +1266,12 @@ TEST_F(NearbySharingServiceImplTest, StopFastInitiationAdvertising) {
       NearbySharingService::StatusCodes::kOk,
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
-  EXPECT_EQ(1u, fast_initiation_manager_factory_->StartAdvertisingCount());
+  EXPECT_EQ(1u, fast_initiation_advertiser_factory_->StartAdvertisingCount());
   EXPECT_EQ(
       NearbySharingService::StatusCodes::kOk,
       service_->UnregisterSendSurface(&transfer_callback, &discovery_callback));
-  EXPECT_TRUE(fast_initiation_manager_factory_
-                  ->StopAdvertisingCalledAndManagerDestroyed());
+  EXPECT_TRUE(fast_initiation_advertiser_factory_
+                  ->StopAdvertisingCalledAndAdvertiserDestroyed());
 }
 
 TEST_F(NearbySharingServiceImplTest,
@@ -1281,8 +1284,8 @@ TEST_F(NearbySharingServiceImplTest,
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
   SetBluetoothIsPresent(false);
-  EXPECT_TRUE(fast_initiation_manager_factory_
-                  ->StopAdvertisingCalledAndManagerDestroyed());
+  EXPECT_TRUE(fast_initiation_advertiser_factory_
+                  ->StopAdvertisingCalledAndAdvertiserDestroyed());
 }
 
 TEST_F(NearbySharingServiceImplTest,
@@ -1295,8 +1298,8 @@ TEST_F(NearbySharingServiceImplTest,
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
   SetBluetoothIsPowered(false);
-  EXPECT_TRUE(fast_initiation_manager_factory_
-                  ->StopAdvertisingCalledAndManagerDestroyed());
+  EXPECT_TRUE(fast_initiation_advertiser_factory_
+                  ->StopAdvertisingCalledAndAdvertiserDestroyed());
 }
 
 TEST_F(NearbySharingServiceImplTest, RegisterSendSurface_BluetoothNotPresent) {

@@ -49,7 +49,7 @@
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
 #include "net/base/network_change_notifier.h"
 
-class FastInitiationManager;
+class FastInitiationAdvertiser;
 class NearbyConnectionsManager;
 class NearbyShareContactManager;
 class NearbyShareCertificateManager;
@@ -421,7 +421,7 @@ class NearbySharingServiceImpl
       process_reference_;
   std::unique_ptr<PowerClient> power_client_;
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  std::unique_ptr<FastInitiationManager> fast_initiation_manager_;
+  std::unique_ptr<FastInitiationAdvertiser> fast_initiation_advertiser_;
   std::unique_ptr<NearbyNotificationManager> nearby_notification_manager_;
   NearbyShareHttpNotifier nearby_share_http_notifier_;
   std::unique_ptr<NearbyShareClientFactory> http_client_factory_;

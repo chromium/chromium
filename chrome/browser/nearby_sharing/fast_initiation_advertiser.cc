@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/nearby_sharing/fast_initiation_manager.h"
+#include "chrome/browser/nearby_sharing/fast_initiation_advertiser.h"
 
 #include <string>
 
@@ -29,40 +29,41 @@ const int8_t kAdjustedTxPower = -66;
 }  // namespace
 
 // static
-FastInitiationManager::Factory*
-    FastInitiationManager::Factory::factory_instance_ = nullptr;
+FastInitiationAdvertiser::Factory*
+    FastInitiationAdvertiser::Factory::factory_instance_ = nullptr;
 
 // static
-std::unique_ptr<FastInitiationManager> FastInitiationManager::Factory::Create(
+std::unique_ptr<FastInitiationAdvertiser>
+FastInitiationAdvertiser::Factory::Create(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   if (factory_instance_)
     return factory_instance_->CreateInstance(adapter);
 
-  return std::make_unique<FastInitiationManager>(adapter);
+  return std::make_unique<FastInitiationAdvertiser>(adapter);
 }
 
 // static
-void FastInitiationManager::Factory::SetFactoryForTesting(
-    FastInitiationManager::Factory* factory) {
+void FastInitiationAdvertiser::Factory::SetFactoryForTesting(
+    FastInitiationAdvertiser::Factory* factory) {
   factory_instance_ = factory;
 }
 
-FastInitiationManager::FastInitiationManager(
+FastInitiationAdvertiser::FastInitiationAdvertiser(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   DCHECK(adapter && adapter->IsPresent() && adapter->IsPowered());
   adapter_ = adapter;
 }
 
-FastInitiationManager::~FastInitiationManager() {
+FastInitiationAdvertiser::~FastInitiationAdvertiser() {
   StopAdvertising(base::DoNothing());
 }
 
-void FastInitiationManager::AdvertisementReleased(
+void FastInitiationAdvertiser::AdvertisementReleased(
     device::BluetoothAdvertisement* advertisement) {
   StopAdvertising(base::DoNothing());
 }
 
-void FastInitiationManager::StartAdvertising(
+void FastInitiationAdvertiser::StartAdvertising(
     FastInitType type,
     base::OnceCallback<void()> callback,
     base::OnceCallback<void()> error_callback) {
@@ -71,7 +72,7 @@ void FastInitiationManager::StartAdvertising(
   RegisterAdvertisement(type, std::move(callback), std::move(error_callback));
 }
 
-void FastInitiationManager::StopAdvertising(
+void FastInitiationAdvertiser::StopAdvertising(
     base::OnceCallback<void()> callback) {
   if (!advertisement_) {
     std::move(callback).Run();
@@ -82,8 +83,8 @@ void FastInitiationManager::StopAdvertising(
   UnregisterAdvertisement(std::move(callback));
 }
 
-void FastInitiationManager::RegisterAdvertisement(
-    FastInitiationManager::FastInitType type,
+void FastInitiationAdvertiser::RegisterAdvertisement(
+    FastInitiationAdvertiser::FastInitType type,
     base::OnceClosure callback,
     base::OnceClosure error_callback) {
   auto advertisement_data =
@@ -106,14 +107,14 @@ void FastInitiationManager::RegisterAdvertisement(
 
   adapter_->RegisterAdvertisement(
       std::move(advertisement_data),
-      base::BindOnce(&FastInitiationManager::OnRegisterAdvertisement,
+      base::BindOnce(&FastInitiationAdvertiser::OnRegisterAdvertisement,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      base::BindOnce(&FastInitiationManager::OnRegisterAdvertisementError,
+      base::BindOnce(&FastInitiationAdvertiser::OnRegisterAdvertisementError,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(error_callback)));
 }
 
-void FastInitiationManager::OnRegisterAdvertisement(
+void FastInitiationAdvertiser::OnRegisterAdvertisement(
     base::OnceClosure callback,
     scoped_refptr<device::BluetoothAdvertisement> advertisement) {
   advertisement_ = advertisement;
@@ -121,45 +122,45 @@ void FastInitiationManager::OnRegisterAdvertisement(
   std::move(callback).Run();
 }
 
-void FastInitiationManager::OnRegisterAdvertisementError(
+void FastInitiationAdvertiser::OnRegisterAdvertisementError(
     base::OnceClosure error_callback,
     device::BluetoothAdvertisement::ErrorCode error_code) {
-  NS_LOG(ERROR)
-      << "FastInitiationManager::StartAdvertising() failed with error code = "
-      << error_code;
+  NS_LOG(ERROR) << "FastInitiationAdvertiser::StartAdvertising() failed with "
+                   "error code = "
+                << error_code;
   std::move(error_callback).Run();
   // |this| might be destroyed here, do not access local fields.
 }
 
-void FastInitiationManager::UnregisterAdvertisement(
+void FastInitiationAdvertiser::UnregisterAdvertisement(
     base::OnceClosure callback) {
   stop_callback_ = std::move(callback);
   advertisement_->RemoveObserver(this);
   advertisement_->Unregister(
-      base::BindOnce(&FastInitiationManager::OnUnregisterAdvertisement,
+      base::BindOnce(&FastInitiationAdvertiser::OnUnregisterAdvertisement,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&FastInitiationManager::OnUnregisterAdvertisementError,
+      base::BindOnce(&FastInitiationAdvertiser::OnUnregisterAdvertisementError,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FastInitiationManager::OnUnregisterAdvertisement() {
+void FastInitiationAdvertiser::OnUnregisterAdvertisement() {
   advertisement_.reset();
   std::move(stop_callback_).Run();
   // |this| might be destroyed here, do not access local fields.
 }
 
-void FastInitiationManager::OnUnregisterAdvertisementError(
+void FastInitiationAdvertiser::OnUnregisterAdvertisementError(
     device::BluetoothAdvertisement::ErrorCode error_code) {
   NS_LOG(WARNING)
-      << "FastInitiationManager::StopAdvertising() failed with error code = "
+      << "FastInitiationAdvertiser::StopAdvertising() failed with error code = "
       << error_code;
   advertisement_.reset();
   std::move(stop_callback_).Run();
   // |this| might be destroyed here, do not access local fields.
 }
 
-std::vector<uint8_t> FastInitiationManager::GenerateFastInitV1Metadata(
-    FastInitiationManager::FastInitType type) {
+std::vector<uint8_t> FastInitiationAdvertiser::GenerateFastInitV1Metadata(
+    FastInitiationAdvertiser::FastInitType type) {
   std::vector<uint8_t> metadata;
   uint8_t versionConverted = (static_cast<uint8_t>(kVersion) & kVersionBitmask)
                              << 5;
