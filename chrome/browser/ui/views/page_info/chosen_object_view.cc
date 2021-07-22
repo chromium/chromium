@@ -66,6 +66,11 @@ ChosenObjectView::ChosenObjectView(
   delete_button_ = row_view_->AddControl(std::move(delete_button));
 
   UpdateIconImage(/*is_deleted=*/false);
+  // Set flex rule, defined in `PageInfoRowView`, to wrap the subtitle text but
+  // size the parent view to match the content.
+  SetProperty(views::kFlexBehaviorKey,
+              views::FlexSpecification(base::BindRepeating(
+                  &PageInfoRowView::FlexRule, base::Unretained(row_view_))));
 }
 
 void ChosenObjectView::AddObserver(ChosenObjectViewObserver* observer) {

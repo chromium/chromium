@@ -13,6 +13,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/widget/widget.h"
 
 PageInfoRowView::PageInfoRowView() {
   auto button_insets = ChromeLayoutProvider::Get()->GetInsetsMetric(
@@ -69,6 +70,24 @@ views::Label* PageInfoRowView::AddSecondaryLabel(std::u16string text) {
   return labels_wrapper_->AddChildView(std::move(secondary_label));
 }
 
+gfx::Size PageInfoRowView::FlexRule(
+    const views::View* view,
+    const views::SizeBounds& maximum_size) const {
+  gfx::Size preferred_size = GetPreferredSize();
+  if (!maximum_size.width().is_bounded()) {
+    return preferred_size;
+  }
+
+  const int maximum_width = maximum_size.width().value();
+  // If content view contains scrollbar, update the preferred width to account
+  // for it.
+  const int scrollbar_width =
+      std::max(PageInfoViewFactory::kMinBubbleWidth - maximum_width, 0);
+  const int width =
+      std::max(preferred_size.width() - scrollbar_width, maximum_width);
+  return gfx::Size(width, views::View::GetHeightForWidth(width));
+}
+
 gfx::Size PageInfoRowView::CalculatePreferredSize() const {
   // Secondary labels can be multiline. To wrap them properly, calculate here
   // the width of the row without them. This way, if a secondary label is too
@@ -88,6 +107,5 @@ gfx::Size PageInfoRowView::CalculatePreferredSize() const {
                      .width();
   }
   width = std::max(width, min_width);
-
   return gfx::Size(width, views::View::GetHeightForWidth(width));
 }

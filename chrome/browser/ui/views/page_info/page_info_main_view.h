@@ -113,7 +113,8 @@ class PageInfoMainView : public views::View,
   // The button that opens up "Site Settings".
   views::View* site_settings_link_ = nullptr;
 
-  // The view that contains the "Permissions" table of the bubble.
+  // The view that contains the scroll view with permission rows and the reset
+  // button, surrounded by separators.
   views::View* permissions_view_ = nullptr;
 
   // The view that contains `SecurityInformationView` and a certificate button.

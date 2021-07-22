@@ -249,14 +249,15 @@ class PageInfoBubbleViewTestApi {
   }
 
   bool ValidatePermissionsChildrenCount(int expected_count) {
-    // In page info v2, not-empty permission section have separators as first
-    // and last child with a reset all button after all permission rows.
-    const int kSeparatorsCount = 3;
-    const int actual_count = permissions_view()->children().size();
+    // In page info v2, not-empty permission section has a reset all button
+    // after all permission rows.
+    const int kAdditionalViewsCount = 1;
+    const int actual_count =
+        permissions_view() ? permissions_view()->children().size() : 0;
     if (expected_count == 0 || !is_version_two_) {
       return expected_count == actual_count;
     } else {
-      return expected_count + kSeparatorsCount == actual_count;
+      return expected_count + kAdditionalViewsCount == actual_count;
     }
   }
 
@@ -281,8 +282,7 @@ class PageInfoBubbleViewTestApi {
   }
 
   const views::View::Views& GetChosenObjectChildren() {
-    // For page info v2, first child is a separator view.
-    const int object_view_index = is_version_two_ ? 1 : 0;
+    const int object_view_index = 0;
     ChosenObjectView* object_view = static_cast<ChosenObjectView*>(
         permissions_view()->children()[object_view_index]);
     views::View* row_view = object_view->children()[0];
@@ -768,7 +768,6 @@ TEST_P(PageInfoBubbleViewTest, ResetPermissionInfoWithUsbDevice) {
       .NotifyClick(event);
   api_->SetPermissionInfo(list);
   EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren));
-  EXPECT_EQ(api_->permissions_view()->children().size(), 0u);
   EXPECT_FALSE(api_->reset_permissions_button());
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
 }
@@ -968,7 +967,6 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoForUsbGuard) {
 // Test UI construction and reconstruction with policy USB devices.
 TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithPolicySerialPorts) {
   constexpr size_t kExpectedChildren = 0;
-  EXPECT_EQ(kExpectedChildren, api_->permissions_view()->children().size());
   EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren));
 
   // Add the policy setting to prefs.

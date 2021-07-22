@@ -31,6 +31,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -39,6 +40,12 @@
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #endif
 
+namespace {
+
+constexpr int kMinPermissionRowHeight = 40;
+constexpr float kMaxPermissionRowCount = 10.5;
+
+}  // namespace
 
 PageInfoMainView::PageInfoMainView(
     PageInfo* presenter,
@@ -76,8 +83,8 @@ PageInfoMainView::PageInfoMainView(
 
   layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
   permissions_view_ = layout->AddView(std::make_unique<views::View>());
-  permissions_view_->SetID(
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_VIEW);
+  permissions_view_->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical);
 
   layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
   site_settings_view_ = layout->AddView(CreateContainerView());
@@ -172,9 +179,18 @@ void PageInfoMainView::SetPermissionInfo(
     return;
   }
 
-  permissions_view_->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical);
   permissions_view_->AddChildView(PageInfoViewFactory::CreateSeparator());
+
+  auto* scroll_view =
+      permissions_view_->AddChildView(std::make_unique<views::ScrollView>());
+  scroll_view->ClipHeightTo(0,
+                            kMinPermissionRowHeight * kMaxPermissionRowCount);
+  scroll_view->SetDrawOverflowIndicator(false);
+  auto* content_view =
+      scroll_view->SetContents(std::make_unique<views::View>());
+  content_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical);
+  content_view->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_VIEW);
 
   // If there is a permission that supports one time grants, offset all other
   // permissions to align toggles.
@@ -187,10 +203,12 @@ void PageInfoMainView::SetPermissionInfo(
   }
 
   for (const auto& permission : permission_info_list) {
-    auto* selector = permissions_view_->AddChildView(
-        std::make_unique<PermissionToggleRowView>(
+    auto* selector =
+        content_view->AddChildView(std::make_unique<PermissionToggleRowView>(
             ui_delegate_, navigation_handler_, permission, should_show_spacer));
     selector->AddObserver(this);
+    selector->SetProperty(views::kCrossAxisAlignmentKey,
+                          views::LayoutAlignment::kStretch);
     selector_rows_.push_back(std::move(selector));
   }
 
@@ -202,12 +220,12 @@ void PageInfoMainView::SetPermissionInfo(
             ->GetObjectDisplayName(object->chooser_object->value));
     object_view->AddObserver(this);
     chosen_object_rows_.push_back(
-        permissions_view_->AddChildView(std::move(object_view)));
+        content_view->AddChildView(std::move(object_view)));
   }
 
   const int controls_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_VERTICAL);
-  reset_button_ = permissions_view_->AddChildView(
+  reset_button_ = content_view->AddChildView(
       std::make_unique<views::MdTextButton>(base::BindRepeating(
           [=](PageInfoMainView* view) {
             for (auto* selector_row : view->selector_rows_) {

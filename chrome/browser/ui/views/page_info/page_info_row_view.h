@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ROW_VIEW_H_
 
 #include "ui/base/models/image_model.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -41,6 +42,8 @@ class PageInfoRowView : public views::View {
   }
 
   int GetFirstLineHeight();
+  gfx::Size FlexRule(const views::View* view,
+                     const views::SizeBounds& maximum_size) const;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
