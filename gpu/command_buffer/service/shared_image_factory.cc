@@ -191,16 +191,12 @@ SharedImageFactory::SharedImageFactory(
     auto external_vk_image_factory =
         std::make_unique<ExternalVkImageFactory>(context_state);
     factories_.push_back(std::move(external_vk_image_factory));
-#endif
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-    auto ozone_factory =
-        std::make_unique<SharedImageBackingFactoryOzone>(context_state);
-    factories_.push_back(std::move(ozone_factory));
-#else
-    // Others
+#endif  // defined(OS_ANDROID)
+#else  // BUILDFLAG(ENABLE_VULKAN)
+    // Others (ChromeOS is handled below for compat with WebGPU)
     LOG(ERROR) << "ERROR: gr_context_type_ is GrContextType::kVulkan and "
                   "interop_backing_factory_ is not set";
-#endif
+#endif  // BUILDFLAG(ENABLE_VULKAN)
   } else {
     // gr_context_type_ != GrContextType::kVulkan
 #if defined(OS_ANDROID) && BUILDFLAG(ENABLE_VULKAN)
@@ -232,6 +228,15 @@ SharedImageFactory::SharedImageFactory(
                                   : nullptr);
     factories_.push_back(std::move(gl_image_backing_factory));
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (gpu_preferences.enable_webgpu ||
+      gr_context_type_ == GrContextType::kVulkan) {
+    auto ozone_factory =
+        std::make_unique<SharedImageBackingFactoryOzone>(context_state);
+    factories_.push_back(std::move(ozone_factory));
+  }
+#endif  // IS_CHROMEOS_ASH
 
 #if defined(OS_FUCHSIA)
   vulkan_context_provider_ = context_state->vk_context_provider();
