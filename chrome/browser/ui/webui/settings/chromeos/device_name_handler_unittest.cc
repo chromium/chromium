@@ -9,10 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/policy/handlers/fake_device_name_policy_handler.h"
-#include "chrome/browser/chromeos/device_name_store.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/testing_pref_service.h"
+#include "chrome/browser/chromeos/fake_device_name_store.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +19,9 @@ namespace settings {
 
 class TestDeviceNameHandler : public DeviceNameHandler {
  public:
-  explicit TestDeviceNameHandler(content::WebUI* web_ui) : DeviceNameHandler() {
+  explicit TestDeviceNameHandler(content::WebUI* web_ui,
+                                 DeviceNameStore* fake_device_name_store)
+      : DeviceNameHandler(fake_device_name_store) {
     set_web_ui(web_ui);
   }
 
@@ -39,32 +38,23 @@ class DeviceNameHandlerTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
-    handler_ = std::make_unique<TestDeviceNameHandler>(web_ui());
+    handler_ = std::make_unique<TestDeviceNameHandler>(
+        web_ui(), &fake_device_name_store_);
     handler()->AllowJavascriptForTesting();
     web_ui()->ClearTrackedCalls();
-
-    DeviceNameStore::RegisterLocalStatePrefs(local_state_.registry());
-
-    local_state()->SetString(prefs::kDeviceName, "TestDeviceName");
     feature_list_.InitAndEnableFeature(ash::features::kEnableHostnameSetting);
-    DeviceNameStore::Initialize(&local_state_,
-                                &fake_device_name_policy_handler_);
   }
 
-  void TearDown() override { DeviceNameStore::Shutdown(); }
+  void TearDown() override { FakeDeviceNameStore::Shutdown(); }
 
   TestDeviceNameHandler* handler() { return handler_.get(); }
   content::TestWebUI* web_ui() { return &web_ui_; }
-  TestingPrefServiceSimple* local_state() { return &local_state_; }
 
  private:
   // Run on the UI thread.
   content::BrowserTaskEnvironment task_environment_;
 
-  // Test backing store for prefs.
-  TestingPrefServiceSimple local_state_;
-
-  policy::FakeDeviceNamePolicyHandler fake_device_name_policy_handler_;
+  FakeDeviceNameStore fake_device_name_store_;
   content::TestWebUI web_ui_;
   std::unique_ptr<TestDeviceNameHandler> handler_;
   base::test::ScopedFeatureList feature_list_;
@@ -85,7 +75,7 @@ TEST_F(DeviceNameHandlerTest, DeviceNameMetadata_DeviceName) {
 
   std::string device_name;
   ASSERT_TRUE(returned_data->GetString("deviceName", &device_name));
-  EXPECT_EQ("TestDeviceName", device_name);
+  EXPECT_EQ(FakeDeviceNameStore::kDefaultDeviceName, device_name);
 }
 
 }  // namespace settings

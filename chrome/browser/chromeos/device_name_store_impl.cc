@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/device_name_store_impl.h"
 
+#include "chrome/browser/chromeos/device_name_applier_impl.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -16,12 +17,22 @@ const char kDefaultDeviceName[] = "ChromeOS";
 DeviceNameStoreImpl::DeviceNameStoreImpl(
     PrefService* prefs,
     policy::DeviceNamePolicyHandler* handler)
-    : prefs_(prefs), handler_(handler) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(prefs_);
-  if (prefs_->GetString(prefs::kDeviceName).empty()) {
+    : DeviceNameStoreImpl(prefs,
+                          handler,
+                          std::make_unique<DeviceNameApplierImpl>()) {}
+
+DeviceNameStoreImpl::DeviceNameStoreImpl(
+    PrefService* prefs,
+    policy::DeviceNamePolicyHandler* handler,
+    std::unique_ptr<DeviceNameApplier> device_name_applier)
+    : prefs_(prefs),
+      handler_(handler),
+      device_name_applier_(std::move(device_name_applier)) {
+  if (GetDeviceName().empty()) {
+    device_name_applier_->SetDeviceName(kDefaultDeviceName);
     prefs_->SetString(prefs::kDeviceName, kDefaultDeviceName);
   }
+
   handler_->AddObserver(this);
 }
 
@@ -30,24 +41,40 @@ DeviceNameStoreImpl::~DeviceNameStoreImpl() {
 }
 
 std::string DeviceNameStoreImpl::GetDeviceName() const {
-  policy::DeviceNamePolicyHandler::DeviceNamePolicy device_name_policy =
-      handler_->GetDeviceNamePolicy();
-  if (device_name_policy == policy::DeviceNamePolicyHandler::DeviceNamePolicy::
-                                kPolicyHostnameChosenByAdmin) {
-    return *handler_->GetHostnameChosenByAdministrator();
-  } else if (device_name_policy ==
-             policy::DeviceNamePolicyHandler::DeviceNamePolicy::
-                 kPolicyHostnameNotConfigurable) {
-    return kDefaultDeviceName;
-  } else {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    DCHECK(prefs_);
-    return prefs_->GetString(prefs::kDeviceName);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(prefs_);
+  return prefs_->GetString(prefs::kDeviceName);
+}
+
+std::string DeviceNameStoreImpl::ComputeDeviceName() const {
+  switch (handler_->GetDeviceNamePolicy()) {
+    case policy::DeviceNamePolicyHandler::DeviceNamePolicy::
+        kPolicyHostnameChosenByAdmin:
+      return *handler_->GetHostnameChosenByAdministrator();
+
+    case policy::DeviceNamePolicyHandler::DeviceNamePolicy::
+        kPolicyHostnameNotConfigurable:
+      return kDefaultDeviceName;
+
+    case policy::DeviceNamePolicyHandler::DeviceNamePolicy::
+        kPolicyHostnameConfigurableByManagedUser:
+      return GetDeviceName();
+
+    case policy::DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy:
+      return GetDeviceName();
   }
 }
 
+void DeviceNameStoreImpl::UpdateDeviceName() {
+  const std::string new_device_name = ComputeDeviceName();
+  if (GetDeviceName() == new_device_name)
+    return;
+  device_name_applier_->SetDeviceName(new_device_name);
+  prefs_->SetString(prefs::kDeviceName, new_device_name);
+}
+
 void DeviceNameStoreImpl::OnHostnamePolicyChanged() {
-  // TODO: Update name in set in |prefs|
+  UpdateDeviceName();
 }
 
 }  // namespace chromeos

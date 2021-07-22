@@ -14,6 +14,14 @@
 namespace chromeos {
 namespace settings {
 
+DeviceNameHandler::DeviceNameHandler()
+    : DeviceNameHandler(DeviceNameStore::GetInstance()) {}
+
+DeviceNameHandler::DeviceNameHandler(DeviceNameStore* device_name_store)
+    : device_name_store_(device_name_store) {}
+
+DeviceNameHandler::~DeviceNameHandler() = default;
+
 void DeviceNameHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getDeviceNameMetadata",
@@ -30,8 +38,7 @@ void DeviceNameHandler::HandleGetDeviceNameMetadata(
   CHECK(args->GetString(0, &callback_id));
 
   base::DictionaryValue metadata;
-  metadata.SetString("deviceName",
-                     DeviceNameStore::GetInstance()->GetDeviceName());
+  metadata.SetString("deviceName", device_name_store_->GetDeviceName());
 
   ResolveJavascriptCallback(base::Value(callback_id), metadata);
 }

@@ -53,8 +53,6 @@ class DeviceNameStore {
   virtual std::string GetDeviceName() const = 0;
 
  protected:
-  friend class DeviceNameStoreTest;
-
   DeviceNameStore();
   virtual ~DeviceNameStore();
 

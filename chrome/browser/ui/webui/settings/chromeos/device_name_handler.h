@@ -13,14 +13,17 @@ class ListValue;
 }
 
 namespace chromeos {
+
+class DeviceNameStore;
+
 namespace settings {
 
 // DeviceNameHandler handles calls from WebUI JS related to getting and setting
 // the device name.
 class DeviceNameHandler : public ::settings::SettingsPageUIHandler {
  public:
-  DeviceNameHandler() = default;
-  ~DeviceNameHandler() override = default;
+  DeviceNameHandler();
+  ~DeviceNameHandler() override;
 
   // SettingsPageUIHandler implementation.
   void RegisterMessages() override;
@@ -31,6 +34,11 @@ class DeviceNameHandler : public ::settings::SettingsPageUIHandler {
   void HandleGetDeviceNameMetadata(const base::ListValue* args);
 
  private:
+  friend class TestDeviceNameHandler;
+
+  explicit DeviceNameHandler(DeviceNameStore* device_name_store);
+
+  DeviceNameStore* device_name_store_;
   DISALLOW_COPY_AND_ASSIGN(DeviceNameHandler);
 };
 
