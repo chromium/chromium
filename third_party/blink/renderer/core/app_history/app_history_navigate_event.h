@@ -42,10 +42,11 @@ class AppHistoryNavigateEvent final : public Event,
 
   void SetUrl(const KURL& url) { url_ = url; }
 
+  String navigationType() { return navigation_type_; }
+  AppHistoryDestination* destination() { return destination_; }
   bool canRespond() const { return can_respond_; }
   bool userInitiated() const { return user_initiated_; }
   bool hashChange() const { return hash_change_; }
-  AppHistoryDestination* destination() { return destination_; }
   AbortSignal* signal() { return signal_; }
   FormData* formData() const { return form_data_; }
   ScriptValue info() const { return info_; }
@@ -63,10 +64,11 @@ class AppHistoryNavigateEvent final : public Event,
   void Trace(Visitor*) const final;
 
  private:
+  String navigation_type_;
+  Member<AppHistoryDestination> destination_;
   bool can_respond_;
   bool user_initiated_;
   bool hash_change_;
-  Member<AppHistoryDestination> destination_;
   Member<AbortSignal> signal_;
   Member<FormData> form_data_;
   ScriptValue info_;

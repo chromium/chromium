@@ -404,6 +404,22 @@ ScriptPromise AppHistory::forward(ScriptState* script_state,
               exception_state);
 }
 
+String DetermineNavigationType(WebFrameLoadType type) {
+  switch (type) {
+    case WebFrameLoadType::kStandard:
+      return "push";
+    case WebFrameLoadType::kBackForward:
+      return "traverse";
+    case WebFrameLoadType::kReload:
+    case WebFrameLoadType::kReloadBypassingCache:
+      return "reload";
+    case WebFrameLoadType::kReplaceCurrentItem:
+      return "replace";
+  }
+  NOTREACHED();
+  return String();
+}
+
 AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
     const KURL& url,
     HTMLFormElement* form,
@@ -429,6 +445,24 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   const KURL& current_url = GetSupplementable()->Url();
 
   auto* init = AppHistoryNavigateEventInit::Create();
+  init->setNavigationType(DetermineNavigationType(type));
+
+  SerializedScriptValue* destination_state = nullptr;
+  if (destination_item)
+    destination_state = destination_item->GetAppHistoryState();
+  else if (navigate_serialized_state_)
+    destination_state = navigate_serialized_state_.get();
+  AppHistoryDestination* destination =
+      MakeGarbageCollected<AppHistoryDestination>(
+          url, event_type != NavigateEventType::kCrossDocument,
+          destination_state);
+  if (type == WebFrameLoadType::kBackForward) {
+    const String& key = destination_item->GetAppHistoryKey();
+    destination->SetTraverseProperties(key, destination_item->GetAppHistoryId(),
+                                       keys_to_indices_.at(key));
+  }
+  init->setDestination(destination);
+
   init->setCancelable(involvement != UserNavigationInvolvement::kBrowserUI ||
                       type != WebFrameLoadType::kBackForward);
   init->setCanRespond(
@@ -439,14 +473,6 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   init->setHashChange(event_type == NavigateEventType::kFragment &&
                       url != current_url &&
                       EqualIgnoringFragmentIdentifier(url, current_url));
-
-  SerializedScriptValue* destination_state = nullptr;
-  if (destination_item)
-    destination_state = destination_item->GetAppHistoryState();
-  else if (navigate_serialized_state_)
-    destination_state = navigate_serialized_state_.get();
-  init->setDestination(MakeGarbageCollected<AppHistoryDestination>(
-      url, event_type != NavigateEventType::kCrossDocument, destination_state));
 
   init->setUserInitiated(involvement != UserNavigationInvolvement::kNone);
   init->setFormData(form ? FormData::Create(form, ASSERT_NO_EXCEPTION)

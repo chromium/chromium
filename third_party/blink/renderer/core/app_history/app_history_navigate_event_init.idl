@@ -3,11 +3,19 @@
 // found in the LICENSE file.
 
 // https://github.com/WICG/app-history/
+enum AppHistoryNavigationType {
+  "reload",
+  "push",
+  "replace",
+  "traverse"
+};
+
 dictionary AppHistoryNavigateEventInit : EventInit {
+  AppHistoryNavigationType navigationType = "push";
+  required AppHistoryDestination destination;
   boolean canRespond = false;
   boolean userInitiated = false;
   boolean hashChange = false;
-  required AppHistoryDestination destination;
   // AbortSignal signal;
   FormData? formData = null;
   any info;

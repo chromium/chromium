@@ -26,7 +26,18 @@ class CORE_EXPORT AppHistoryDestination final : public ScriptWrappable {
       : url_(url), same_document_(same_document), state_(state) {}
   ~AppHistoryDestination() final = default;
 
+  void SetTraverseProperties(const String& key,
+                             const String& id,
+                             int64_t index) {
+    key_ = key;
+    id_ = id;
+    index_ = index;
+  }
+
+  const String& key() const { return key_; }
+  const String& id() const { return id_; }
   const KURL& url() const { return url_; }
+  int64_t index() const { return index_; }
   bool sameDocument() const { return same_document_; }
   ScriptValue getState(ScriptState* script_state) {
     v8::Isolate* isolate = script_state->GetIsolate();
@@ -35,7 +46,10 @@ class CORE_EXPORT AppHistoryDestination final : public ScriptWrappable {
   }
 
  private:
+  String key_;
+  String id_;
   KURL url_;
+  int64_t index_ = -1;
   bool same_document_;
   scoped_refptr<SerializedScriptValue> state_;
 };

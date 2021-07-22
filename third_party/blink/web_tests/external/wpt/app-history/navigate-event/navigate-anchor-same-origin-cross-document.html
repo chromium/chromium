@@ -5,6 +5,7 @@
 <script>
 async_test(t => {
   appHistory.onnavigate = t.step_func_done(e => {
+    assert_equals(e.navigationType, "push");
     assert_true(e.cancelable);
     assert_true(e.canRespond);
     assert_false(e.userInitiated);
@@ -13,6 +14,9 @@ async_test(t => {
     assert_equals(new URL(e.destination.url).pathname,
                   "/app-history/navigate-event/foo.html");
     assert_false(e.destination.sameDocument);
+    assert_equals(e.destination.key, null);
+    assert_equals(e.destination.id, null);
+    assert_equals(e.destination.index, -1);
     e.preventDefault();
   });
   a.click();

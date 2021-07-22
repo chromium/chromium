@@ -533,6 +533,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_app_history_entry.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_event.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_event.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_app_history_navigation_type.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_app_history_navigation_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_application_cache.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_application_cache.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_application_cache_error_event.cc",

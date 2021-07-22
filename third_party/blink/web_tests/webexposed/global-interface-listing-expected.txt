@@ -249,6 +249,9 @@ interface AppHistory : EventTarget
     setter onnavigatesuccess
 interface AppHistoryDestination
     attribute @@toStringTag
+    getter id
+    getter index
+    getter key
     getter sameDocument
     getter url
     method constructor
@@ -269,6 +272,7 @@ interface AppHistoryNavigateEvent : Event
     getter formData
     getter hashChange
     getter info
+    getter navigationType
     getter signal
     getter userInitiated
     method constructor

@@ -21,10 +21,11 @@ AppHistoryNavigateEvent::AppHistoryNavigateEvent(
     AppHistoryNavigateEventInit* init)
     : Event(type, init),
       ExecutionContextClient(context),
+      navigation_type_(init->navigationType()),
+      destination_(init->destination()),
       can_respond_(init->canRespond()),
       user_initiated_(init->userInitiated()),
       hash_change_(init->hashChange()),
-      destination_(init->destination()),
       signal_(MakeGarbageCollected<AbortSignal>(context)),
       form_data_(init->formData()),
       info_(init->hasInfo()
