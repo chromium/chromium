@@ -6168,20 +6168,6 @@ ci.memory_builder(
     ),
 )
 
-# TODO(https://crbug.com/1200904): Remove this after migration
-ci.memory_builder(
-    name = "Linux TSan (bionic)",
-    branch_selector = branches.STANDARD_MILESTONE,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux|TSan v2",
-        short_name = "tst",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    main_console_view = "main",
-    tree_closing = False,
-    os = os.LINUX_BIONIC,
-)
-
 ci.memory_builder(
     name = "Linux TSan Tests",
     branch_selector = branches.STANDARD_MILESTONE,

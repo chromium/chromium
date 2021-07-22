@@ -1442,16 +1442,6 @@ try_.chromium_linux_builder(
     goma_jobs = goma.jobs.J150,
 )
 
-# TODO(crbug.com/1200904): Remove after migration
-try_.chromium_linux_builder(
-    name = "linux_chromium_tsan_rel_ng_bionic",
-    branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_main,
-    goma_jobs = goma.jobs.J150,
-    os = os.LINUX_BIONIC,
-    main_list_view = "try",
-)
-
 try_.chromium_linux_builder(
     name = "linux_chromium_tsan_rel_ng",
     branch_selector = branches.STANDARD_MILESTONE,

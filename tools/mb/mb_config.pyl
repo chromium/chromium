@@ -543,8 +543,6 @@
       'Linux Chromium OS ASan LSan Builder': 'asan_lsan_chromeos_release_trybot',
       'Linux ChromiumOS MSan Builder': 'chromeos_msan_release_bot',
       'Linux MSan Builder': 'msan_release_bot',
-      # TODO(crbug.com/1200904): Remove after migration
-      'Linux TSan (bionic)': 'tsan_disable_nacl_release_bot',
       'Linux TSan Builder': 'tsan_disable_nacl_release_bot',
       'Mac ASan 64 Builder': 'asan_minimal_symbols_disable_nacl_release_bot_dcheck_always_on',
       'WebKit Linux ASAN': 'asan_lsan_release_bot_blink',
@@ -1059,8 +1057,6 @@
       'linux_chromium_msan_rel_ng': 'msan_release_bot',
 
       'linux_chromium_tsan_rel_ng': 'tsan_disable_nacl_release_trybot',
-      # TODO(crbug.com/1200904): Remove after migration
-      'linux_chromium_tsan_rel_ng_bionic': 'tsan_disable_nacl_release_trybot',
 
       # This is intentionally a release_bot and not a release_trybot to match
       # the CI configuration, where no debug builder exists.

@@ -557,9 +557,7 @@
       'Mac10.15 Tests', # https://crbug.com/1042757
       'Mac10.15 Tests (dbg)', # https://crbug.com/1201386
       'mac-code-coverage', # https://crbug.com/1201386
-      'Linux TSan (bionic)',  # https://crbug.com/368525
       'Linux TSan Tests',  # https://crbug.com/368525
-      # TODO(crbug.com/1200904): Remove after migration
       'Win10 Tests x64 (dbg)',
     ],
     'modifications': {
@@ -777,12 +775,6 @@
   },
   'cc_unittests': {
     'modifications': {
-      # TODO(crbug.com/1200904): Remove after migration
-      'Linux TSan (bionic)': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
       'Linux TSan Tests': {
         'swarming': {
           'shards': 3,
@@ -1141,12 +1133,6 @@
           'shards': 5,
         },
       },
-      # TODO(crbug.com/1200904): Remove after migration
-      'Linux TSan (bionic)': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
       'Linux TSan Tests': {
         'swarming': {
           'shards': 2,
@@ -1209,12 +1195,6 @@
       'Linux ASan Tests (sandboxed)': {
         'swarming': {
           'shards': 10, # https://crbug.com/1103330
-        },
-      },
-      # TODO(crbug.com/1200904): Remove after migration
-      'Linux TSan (bionic)': {
-        'swarming': {
-          'shards': 15,
         },
       },
       'Linux TSan Tests': {
@@ -1465,8 +1445,6 @@
   'crashpad_tests': {
     'remove_from': [
       'linux-win_cross-rel', # https://crbug.com/762167
-      # TODO(crbug.com/1200904): Remove after migration
-      'Linux TSan (bionic)',
       # https://crbug.com/crashpad/304
       'Linux TSan Tests',
       'ToTLinuxTSan',
@@ -1597,22 +1575,6 @@
         },
       },
       'Linux CFI': {
-        'args': [
-          '--use-gpu-in-tests',
-          '--no-xvfb',
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'gpu': '10de:1cb3',
-              'os': 'Ubuntu',
-              'pool': 'chromium.tests.gpu',
-            },
-          ],
-        },
-      },
-      # TODO(crbug.com/1200904): Remove after migration
-      'Linux TSan (bionic)': {
         'args': [
           '--use-gpu-in-tests',
           '--no-xvfb',
@@ -1795,13 +1757,6 @@
         # crbug.com/865455
         'swarming': {
           'shards': 5,
-        },
-      },
-      # TODO(crbug.com/1200904): Remove after migration
-      'Linux TSan (bionic)': {
-        # These are slow on the TSan bots for some reason, crbug.com/794372
-        'swarming': {
-          'shards': 32, # Adjusted for testing, see https://crbug.com/1179567
         },
       },
       'Linux TSan Tests': {
@@ -2158,8 +2113,6 @@
   },
   'nacl_helper_nonsfi_unittests': {
     'remove_from': [
-      # TODO(crbug.com/1200904): Remove after migration
-      'Linux TSan (bionic)',  # Sets enable_nacl=false.
       'Linux TSan Tests',  # Sets enable_nacl=false.
     ],
   },
@@ -2167,8 +2120,6 @@
     'remove_from': [
       'ToTMacASan',  # The mac asan tot bot sets enable_nacl=false
       'linux-win_cross-rel',  # Sets enable_nacl=false, https://crbug.com/774186
-      # TODO(crbug.com/1200904): Remove after migration
-      'Linux TSan (bionic)',  # The TSan bot sets enable_nacl=false
       'Linux TSan Tests',  # The TSan bot sets enable_nacl=false
       'Mac ASan 64 Tests (1)',  # The mac asan bot sets enable_nacl=false
     ],
@@ -2207,12 +2158,6 @@
         'swarming': {
           'shards': 2,
         },
-      },
-      # TODO(crbug.com/1200904): Remove after migration
-      'Linux TSan (bionic)': {
-        'swarming': {
-          'shards': 4,
-        }
       },
       'Linux TSan Tests': {
         'swarming': {
@@ -2659,12 +2604,6 @@
           'shards': 4,
         },
       },
-      # TODO(crbug.com/1200904): Remove after migration
-      'Linux TSan (bionic)': {
-        'swarming': {
-          'shards': 6,
-        },
-      },
       'Linux TSan Tests': {
         'swarming': {
           'shards': 6,
@@ -2914,12 +2853,6 @@
       'Linux ChromiumOS MSan Tests': {
         # These are very slow on the Chrome OS MSAN trybot for some reason.
         # crbug.com/865455
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      # TODO(crbug.com/1200904): Remove after migration
-      'Linux TSan (bionic)': {
         'swarming': {
           'shards': 2,
         },
@@ -3183,12 +3116,6 @@
         # crbug.com/794372
         'swarming': {
           'shards': 5,
-        },
-      },
-      # TODO(crbug.com/1200904): Remove after migration
-      'Linux TSan (bionic)': {
-        'swarming': {
-          'shards': 2,
         },
       },
       'Linux TSan Tests': {
