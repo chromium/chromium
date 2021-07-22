@@ -163,17 +163,8 @@ crbug.com/dawn/1009 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,executi
 # This test runs first, and is often slow due to some browser startup not being complete.
 crbug.com/953991 wpt_internal/webgpu/000_run_me_first.html [ Slow ]
 
-crbug.com/dawn/773 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,smaller_getMappedRange:* [ Failure ]
-crbug.com/dawn/773 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,full_getMappedRange:* [ Failure ]
-
-crbug.com/dawn/773 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mapAsync:* [ Failure Crash ]
-
-# Also crashes on Linux crbug.com/dawn/969
-crbug.com/dawn/773 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map:remapped_for_write:* [ Failure Crash ]
-crbug.com/dawn/773 wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,buffers,map:remapped_for_write:* [ Failure Crash ]
-
-crbug.com/1231108 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map:mapAsync,read:* [ Failure ]
-crbug.com/1231108 wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,buffers,map:mapAsync,read:* [ Failure ]
+crbug.com/dawn/999 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,smaller_getMappedRange:* [ Failure ]
+crbug.com/dawn/999 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,full_getMappedRange:* [ Failure ]
 
 crbug.com/dawn/746 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,shader_module,compilation_info:offset_and_length:valid=false;unicode=true [ Failure ]
 
