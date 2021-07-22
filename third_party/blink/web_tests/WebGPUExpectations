@@ -252,6 +252,8 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:u
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:1d:* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth16unorm";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="stencil8";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_upload_to_stencil_aspect:stencilFormat="stencil8";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_upload_to_stencil_aspect:stencilFormat="stencil8";* [ Failure ]
 
 # Unimplemented validation in Tint. Skipped because it causes test timeouts
 crbug.com/tint/480 wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:initializer_type:* [ Skip ]
@@ -289,6 +291,8 @@ crbug.com/1083478 [ Mac ] wpt_internal/webgpu/webgpu/web_platform/reftests/canva
 
 # Stencil textures with more than one mip level are disabled on Metal
 crbug.com/dawn/838 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24plus-stencil8";* [ Failure ]
+crbug.com/dawn/838 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_upload_to_stencil_aspect:stencilFormat="depth24plus-stencil8";mipLevel=2;* [ Failure ]
+crbug.com/dawn/838 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_upload_to_stencil_aspect:stencilFormat="depth24plus-stencil8";mipLevel=2;* [ Failure ]
 
 crbug.com/tint/993 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="workgroup";* [ Failure ]
 # Timeout + compilation failure
