@@ -38,6 +38,7 @@
 #include "components/viz/common/features.h"
 #include "content/browser/gpu/gpu_memory_buffer_manager_singleton.h"
 #include "content/browser/gpu/gpu_process_host.h"
+#include "content/browser/media/frameless_media_interface_proxy.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
@@ -64,6 +65,7 @@
 #include "gpu/ipc/host/shader_disk_cache.h"
 #include "gpu/vulkan/buildflags.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/clients/mojo_video_decoder.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/switches.h"
@@ -414,6 +416,74 @@ NOINLINE void IntentionallyCrashBrowserForUnusableGpuProcess() {
   LOG(FATAL) << "GPU process isn't usable. Goodbye.";
 }
 
+gpu::VideoCodecProfile ToGpuVideoCodecProfile(
+    media::VideoCodecProfile profile) {
+  switch (profile) {
+    case media::VIDEO_CODEC_PROFILE_UNKNOWN:
+      return gpu::VIDEO_CODEC_PROFILE_UNKNOWN;
+    case media::H264PROFILE_BASELINE:
+      return gpu::H264PROFILE_BASELINE;
+    case media::H264PROFILE_MAIN:
+      return gpu::H264PROFILE_MAIN;
+    case media::H264PROFILE_EXTENDED:
+      return gpu::H264PROFILE_EXTENDED;
+    case media::H264PROFILE_HIGH:
+      return gpu::H264PROFILE_HIGH;
+    case media::H264PROFILE_HIGH10PROFILE:
+      return gpu::H264PROFILE_HIGH10PROFILE;
+    case media::H264PROFILE_HIGH422PROFILE:
+      return gpu::H264PROFILE_HIGH422PROFILE;
+    case media::H264PROFILE_HIGH444PREDICTIVEPROFILE:
+      return gpu::H264PROFILE_HIGH444PREDICTIVEPROFILE;
+    case media::H264PROFILE_SCALABLEBASELINE:
+      return gpu::H264PROFILE_SCALABLEBASELINE;
+    case media::H264PROFILE_SCALABLEHIGH:
+      return gpu::H264PROFILE_SCALABLEHIGH;
+    case media::H264PROFILE_STEREOHIGH:
+      return gpu::H264PROFILE_STEREOHIGH;
+    case media::H264PROFILE_MULTIVIEWHIGH:
+      return gpu::H264PROFILE_MULTIVIEWHIGH;
+    case media::VP8PROFILE_ANY:
+      return gpu::VP8PROFILE_ANY;
+    case media::VP9PROFILE_PROFILE0:
+      return gpu::VP9PROFILE_PROFILE0;
+    case media::VP9PROFILE_PROFILE1:
+      return gpu::VP9PROFILE_PROFILE1;
+    case media::VP9PROFILE_PROFILE2:
+      return gpu::VP9PROFILE_PROFILE2;
+    case media::VP9PROFILE_PROFILE3:
+      return gpu::VP9PROFILE_PROFILE3;
+    case media::HEVCPROFILE_MAIN:
+      return gpu::HEVCPROFILE_MAIN;
+    case media::HEVCPROFILE_MAIN10:
+      return gpu::HEVCPROFILE_MAIN10;
+    case media::HEVCPROFILE_MAIN_STILL_PICTURE:
+      return gpu::HEVCPROFILE_MAIN_STILL_PICTURE;
+    case media::DOLBYVISION_PROFILE0:
+      return gpu::DOLBYVISION_PROFILE0;
+    case media::DOLBYVISION_PROFILE4:
+      return gpu::DOLBYVISION_PROFILE4;
+    case media::DOLBYVISION_PROFILE5:
+      return gpu::DOLBYVISION_PROFILE5;
+    case media::DOLBYVISION_PROFILE7:
+      return gpu::DOLBYVISION_PROFILE7;
+    case media::THEORAPROFILE_ANY:
+      return gpu::THEORAPROFILE_ANY;
+    case media::AV1PROFILE_PROFILE_MAIN:
+      return gpu::AV1PROFILE_PROFILE_MAIN;
+    case media::AV1PROFILE_PROFILE_HIGH:
+      return gpu::AV1PROFILE_PROFILE_HIGH;
+    case media::AV1PROFILE_PROFILE_PRO:
+      return gpu::AV1PROFILE_PROFILE_PRO;
+    case media::DOLBYVISION_PROFILE8:
+      return gpu::DOLBYVISION_PROFILE8;
+    case media::DOLBYVISION_PROFILE9:
+      return gpu::DOLBYVISION_PROFILE9;
+  }
+  NOTREACHED();
+  return gpu::VIDEO_CODEC_PROFILE_UNKNOWN;
+}
+
 #if defined(OS_WIN)
 void CollectExtraDevicePerfInfo(const gpu::GPUInfo& gpu_info,
                                 gpu::DevicePerfInfo* device_perf_info) {
@@ -622,7 +692,7 @@ bool GpuDataManagerImplPrivate::GpuAccessAllowedForHardwareGpu(
   return gpu_access_allowed_for_hardware_gpu_;
 }
 
-void GpuDataManagerImplPrivate::RequestDxdiagDx12VulkanGpuInfoIfNeeded(
+void GpuDataManagerImplPrivate::RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
     GpuDataManagerImpl::GpuInfoRequest request,
     bool delayed) {
   if (request & GpuDataManagerImpl::kGpuInfoRequestDxDiag) {
@@ -639,6 +709,11 @@ void GpuDataManagerImplPrivate::RequestDxdiagDx12VulkanGpuInfoIfNeeded(
 
   if (request & GpuDataManagerImpl::kGpuInfoRequestDawnInfo)
     RequestDawnInfo();
+
+  if (request & GpuDataManagerImpl::kGpuInfoRequestVideo) {
+    DCHECK(!delayed) << "|delayed| is not supported for Mojo Media requests";
+    RequestMojoMediaVideoCapabilities();
+  }
 }
 
 void GpuDataManagerImplPrivate::RequestDxDiagNodeData() {
@@ -827,6 +902,40 @@ void GpuDataManagerImplPrivate::RequestDawnInfo() {
   auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
                          ? GetUIThreadTaskRunner({})
                          : GetIOThreadTaskRunner({});
+  task_runner->PostTask(FROM_HERE, std::move(task));
+}
+
+void GpuDataManagerImplPrivate::RequestMojoMediaVideoCapabilities() {
+  base::OnceClosure task = base::BindOnce([]() {
+    auto media_interface_proxy =
+        std::make_unique<FramelessMediaInterfaceProxy>();
+
+    mojo::PendingRemote<media::mojom::VideoDecoder> pending_remote_decoder;
+    media_interface_proxy->CreateVideoDecoder(
+        pending_remote_decoder.InitWithNewPipeAndPassReceiver());
+    DCHECK(pending_remote_decoder.is_valid());
+
+    mojo::Remote<media::mojom::VideoDecoder> remote_decoder(
+        std::move(pending_remote_decoder));
+    DCHECK(remote_decoder.is_connected());
+
+    auto* remote_decoder_ptr = remote_decoder.get();
+    DCHECK(remote_decoder_ptr);
+    remote_decoder_ptr->GetSupportedConfigs(base::BindOnce(
+        [](mojo::Remote<media::mojom::VideoDecoder> /* remote_decoder */,
+           const media::SupportedVideoDecoderConfigs& configs,
+           media::VideoDecoderType /* decoder_type */) {
+          GpuDataManagerImpl* manager = GpuDataManagerImpl::GetInstance();
+          DCHECK(manager);
+          manager->UpdateMojoMediaVideoCapabilities(configs);
+        },
+        std::move(remote_decoder)));
+  });
+
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? GetUIThreadTaskRunner({})
+                         : GetIOThreadTaskRunner({});
+  DCHECK(task_runner);
   task_runner->PostTask(FROM_HERE, std::move(task));
 }
 
@@ -1064,7 +1173,7 @@ void GpuDataManagerImplPrivate::PostCreateThreads() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kNoDelayForDX12VulkanInfoCollection)) {
     // This is for the info collection test of the gpu integration tests.
-    RequestDxdiagDx12VulkanGpuInfoIfNeeded(
+    RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
         GpuDataManagerImpl::kGpuInfoRequestDx12Vulkan,
         /*delayed=*/false);
   } else {
@@ -1072,8 +1181,9 @@ void GpuDataManagerImplPrivate::PostCreateThreads() {
     // information for UMA at the start of the browser.
     // Not to affect Chrome startup, this is done in a delayed mode,  i.e., 120
     // seconds after Chrome startup.
-    RequestDxdiagDx12VulkanGpuInfoIfNeeded(
-        GpuDataManagerImpl::kGpuInfoRequestDx12, /*delayed=*/true);
+    RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
+        GpuDataManagerImpl::kGpuInfoRequestDx12,
+        /*delayed=*/true);
   }
   // Observer for display change.
   display_observer_.emplace(owner_);
@@ -1168,6 +1278,20 @@ void GpuDataManagerImplPrivate::UpdateGpuExtraInfo(
   gpu_extra_info_ = gpu_extra_info;
   observer_list_->Notify(FROM_HERE,
                          &GpuDataManagerObserver::OnGpuExtraInfoUpdate);
+}
+
+void GpuDataManagerImplPrivate::UpdateMojoMediaVideoCapabilities(
+    const media::SupportedVideoDecoderConfigs& configs) {
+  gpu_info_.video_decoder_capabilities.clear();
+  for (const auto& config : configs) {
+    gpu::VideoDecodeAcceleratorSupportedProfile profile;
+    profile.profile = ToGpuVideoCodecProfile(config.profile_min);
+    profile.min_resolution = config.coded_size_min;
+    profile.max_resolution = config.coded_size_max;
+    profile.encrypted_only = config.require_encrypted;
+    gpu_info_.video_decoder_capabilities.push_back(profile);
+  }
+  NotifyGpuInfoUpdate();
 }
 
 gpu::GpuFeatureInfo GpuDataManagerImplPrivate::GetGpuFeatureInfo() const {

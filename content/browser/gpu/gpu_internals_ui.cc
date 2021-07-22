@@ -606,17 +606,31 @@ base::Value GetVideoAcceleratorsInfo() {
   gpu::GPUInfo gpu_info = GpuDataManagerImpl::GetInstance()->GetGPUInfo();
   auto info = base::Value(base::Value::Type::LIST);
 
-  for (const auto& profile :
-       gpu_info.video_decode_accelerator_capabilities.supported_profiles) {
-    std::string codec_string =
-        base::StringPrintf("Decode %s", GetProfileName(profile.profile));
-    std::string resolution_string = base::StringPrintf(
-        "%s to %s pixels%s", profile.min_resolution.ToString().c_str(),
-        profile.max_resolution.ToString().c_str(),
-        profile.encrypted_only ? " (encrypted)" : "");
-    info.Append(display::BuildGpuInfoEntry(codec_string, resolution_string));
+  struct {
+    const gpu::VideoDecodeAcceleratorSupportedProfiles& capabilities;
+    std::string name;
+  } kVideoDecoderImplementations[] = {
+      {gpu_info.video_decoder_capabilities, "Decoding (VideoDecoder)"},
+      {gpu_info.video_decode_accelerator_capabilities.supported_profiles,
+       "Decoding (Legacy VideoDecodeAccelerator)"},
+  };
+
+  for (const auto& implementation : kVideoDecoderImplementations) {
+    if (implementation.capabilities.empty())
+      continue;
+    info.Append(display::BuildGpuInfoEntry(implementation.name, ""));
+    for (const auto& profile : implementation.capabilities) {
+      std::string codec_string =
+          base::StringPrintf("Decode %s", GetProfileName(profile.profile));
+      std::string resolution_string = base::StringPrintf(
+          "%s to %s pixels%s", profile.min_resolution.ToString().c_str(),
+          profile.max_resolution.ToString().c_str(),
+          profile.encrypted_only ? " (encrypted)" : "");
+      info.Append(display::BuildGpuInfoEntry(codec_string, resolution_string));
+    }
   }
 
+  info.Append(display::BuildGpuInfoEntry("Encoding", ""));
   for (const auto& profile :
        gpu_info.video_encode_accelerator_supported_profiles) {
     std::string codec_string =
@@ -784,8 +798,10 @@ void GpuMessageHandler::OnBrowserBridgeInitialized(
 
   // Tell GpuDataManager it should have full GpuInfo. If the
   // Gpu process has not run yet, this will trigger its launch.
-  GpuDataManagerImpl::GetInstance()->RequestDxdiagDx12VulkanGpuInfoIfNeeded(
-      GpuDataManagerImpl::kGpuInfoRequestAll, /*delayed=*/false);
+  GpuDataManagerImpl::GetInstance()
+      ->RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
+          GpuDataManagerImpl::kGpuInfoRequestAll,
+          /*delayed=*/false);
 
   // Run callback immediately in case the info is ready and no update in the
   // future.

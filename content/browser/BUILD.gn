@@ -149,6 +149,7 @@ source_set("browser") {
     "//media/midi",
     "//media/midi:mojo",
     "//media/mojo:buildflags",
+    "//media/mojo/clients",
     "//media/mojo/mojom",
     "//media/mojo/services",
     "//media/webrtc",

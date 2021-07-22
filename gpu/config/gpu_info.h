@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -397,7 +398,10 @@ struct GPU_EXPORT GPUInfo {
   OverlayInfo overlay_info;
 #endif
 
+  // Video decoding uses two backends: the legacy VDA and the new VideoDecoder.
   VideoDecodeAcceleratorCapabilities video_decode_accelerator_capabilities;
+  VideoDecodeAcceleratorSupportedProfiles video_decoder_capabilities;
+
   VideoEncodeAcceleratorSupportedProfiles
       video_encode_accelerator_supported_profiles;
   bool jpeg_decode_accelerator_supported;

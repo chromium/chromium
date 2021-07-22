@@ -96,11 +96,11 @@ bool GpuDataManagerImpl::GpuAccessAllowed(std::string* reason) {
   return private_->GpuAccessAllowed(reason);
 }
 
-void GpuDataManagerImpl::RequestDxdiagDx12VulkanGpuInfoIfNeeded(
+void GpuDataManagerImpl::RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
     GpuInfoRequest request,
     bool delayed) {
   base::AutoLock auto_lock(lock_);
-  private_->RequestDxdiagDx12VulkanGpuInfoIfNeeded(request, delayed);
+  private_->RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(request, delayed);
 }
 
 bool GpuDataManagerImpl::IsEssentialGpuInfoAvailable() {
@@ -250,6 +250,12 @@ void GpuDataManagerImpl::UpdateGpuExtraInfo(
     const gfx::GpuExtraInfo& gpu_extra_info) {
   base::AutoLock auto_lock(lock_);
   private_->UpdateGpuExtraInfo(gpu_extra_info);
+}
+
+void GpuDataManagerImpl::UpdateMojoMediaVideoCapabilities(
+    const media::SupportedVideoDecoderConfigs& configs) {
+  base::AutoLock auto_lock(lock_);
+  private_->UpdateMojoMediaVideoCapabilities(configs);
 }
 
 gpu::GpuFeatureInfo GpuDataManagerImpl::GetGpuFeatureInfo() const {

@@ -19,6 +19,7 @@ source_set("clients") {
 
     "//media/test/*",
 
+    "//content/browser:*",
     "//chrome/browser:*",
 
     "//chrome/browser/thumbnail/generator",

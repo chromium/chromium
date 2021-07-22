@@ -38,6 +38,11 @@ namespace gpu {
 struct GpuPreferences;
 }
 
+namespace media {
+struct SupportedVideoDecoderConfig;
+using SupportedVideoDecoderConfigs = std::vector<SupportedVideoDecoderConfig>;
+}  // namespace media
+
 namespace content {
 
 class GpuDataManagerImplPrivate;
@@ -51,8 +56,10 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
     kGpuInfoRequestVulkan = 1 << 2,
     kGpuInfoRequestDawnInfo = 1 << 3,
     kGpuInfoRequestDx12Vulkan = kGpuInfoRequestVulkan | kGpuInfoRequestDx12,
+    kGpuInfoRequestVideo = 1 << 4,
     kGpuInfoRequestAll = kGpuInfoRequestDxDiag | kGpuInfoRequestDx12 |
-                         kGpuInfoRequestVulkan | kGpuInfoRequestDawnInfo,
+                         kGpuInfoRequestVulkan | kGpuInfoRequestDawnInfo |
+                         kGpuInfoRequestVideo,
   };
 
   // Getter for the singleton. This will return NULL on failure.
@@ -88,7 +95,7 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   void StartUmaTimer();
 
   // Requests complete GPU info if it has not already been requested
-  void RequestDxdiagDx12VulkanGpuInfoIfNeeded(
+  void RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
       GpuDataManagerImpl::GpuInfoRequest request,
       bool delayed);
 
@@ -124,6 +131,8 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
                             const absl::optional<gpu::GpuFeatureInfo>&
                                 gpu_feature_info_for_hardware_gpu);
   void UpdateGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info);
+  void UpdateMojoMediaVideoCapabilities(
+      const media::SupportedVideoDecoderConfigs& configs);
 
   gpu::GpuFeatureInfo GetGpuFeatureInfo() const;
 

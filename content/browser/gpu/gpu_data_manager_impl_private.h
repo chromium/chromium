@@ -32,6 +32,11 @@ namespace base {
 class CommandLine;
 }
 
+namespace media {
+struct SupportedVideoDecoderConfig;
+using SupportedVideoDecoderConfigs = std::vector<SupportedVideoDecoderConfig>;
+}  // namespace media
+
 namespace content {
 
 class CONTENT_EXPORT GpuDataManagerImplPrivate {
@@ -46,7 +51,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   std::vector<std::string> GetDawnInfoList() const;
   bool GpuAccessAllowed(std::string* reason) const;
   bool GpuAccessAllowedForHardwareGpu(std::string* reason) const;
-  void RequestDxdiagDx12VulkanGpuInfoIfNeeded(
+  void RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
       GpuDataManagerImpl::GpuInfoRequest request,
       bool delayed);
   bool IsEssentialGpuInfoAvailable() const;
@@ -86,6 +91,8 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
                             const absl::optional<gpu::GpuFeatureInfo>&
                                 gpu_feature_info_for_hardware_gpu);
   void UpdateGpuExtraInfo(const gfx::GpuExtraInfo& process_info);
+  void UpdateMojoMediaVideoCapabilities(
+      const media::SupportedVideoDecoderConfigs& configs);
 
   gpu::GpuFeatureInfo GetGpuFeatureInfo() const;
   gpu::GpuFeatureInfo GetGpuFeatureInfoForHardwareGpu() const;
@@ -207,6 +214,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   void RequestGpuSupportedDx12Version(bool delayed);
   void RequestGpuSupportedVulkanVersion(bool delayed);
   void RequestDawnInfo();
+  void RequestMojoMediaVideoCapabilities();
 
   void RecordCompositingMode();
 

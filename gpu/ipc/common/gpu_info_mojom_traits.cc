@@ -424,6 +424,7 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
 #endif
          data.ReadVideoDecodeAcceleratorCapabilities(
              &out->video_decode_accelerator_capabilities) &&
+         data.ReadVideoDecoderCapabilities(&out->video_decoder_capabilities) &&
          data.ReadVideoEncodeAcceleratorSupportedProfiles(
              &out->video_encode_accelerator_supported_profiles) &&
          data.ReadImageDecodeAcceleratorSupportedProfiles(
