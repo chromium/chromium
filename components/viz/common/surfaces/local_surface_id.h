@@ -136,7 +136,9 @@ class VIZ_COMMON_EXPORT LocalSurfaceId {
 
   std::string ToString() const;
 
-  // Returns whether this LocalSurfaceId was generated after |other|.
+  // Returns whether this LocalSurfaceId was generated after |other|. In the
+  // case where both `this` and `other` have advanced separate sequences, then
+  // this will return false.
   bool IsNewerThan(const LocalSurfaceId& other) const;
 
   // Returns whether this LocalSurfaceId was generated after |other| or equal to

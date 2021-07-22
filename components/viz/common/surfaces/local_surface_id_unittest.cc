@@ -56,3 +56,25 @@ TEST(LocalSurfaceIdTest, VerifyToString) {
 
   logging::SetMinLogLevel(previous_log_lvl);
 }
+
+// Test that when two allocators have advanced different sequence numbers, that
+// IsNewerThan gives prcedence to neither sequence. Instead reporting that
+// neither is newer than the other.
+TEST(LocalSurfaceIdTest, NewerThan) {
+  const base::UnguessableToken token =
+      base::UnguessableToken::Deserialize(0x111111, 0);
+  // Consider a base case of (6, 2). Here `id1` has only the child advancing.
+  // While `id2` only the parent advanced.
+  const viz::LocalSurfaceId id1(6, 3, token);
+  const viz::LocalSurfaceId id2(8, 2, token);
+  const viz::LocalSurfaceId id3(8, 3, token);
+  // This represents both the parent and child sequence having been advanced in
+  // parallel. We do not give precedence to either sequence, and such treat
+  // neither as newer than the other.
+  EXPECT_FALSE(id1.IsNewerThan(id2));
+  EXPECT_FALSE(id2.IsNewerThan(id1));
+  // This represents the merged LocalSurfaceId that would be submitted to Viz.
+  // It would be newer than both of the separately advanced sequences.
+  EXPECT_TRUE(id3.IsNewerThan(id1));
+  EXPECT_TRUE(id3.IsNewerThan(id2));
+}

@@ -648,11 +648,18 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedAfterActivation(
                             activation_time - rotation_target.first);
         rotation_metrics_.pop_front();
       } else {
-        // Activation from a previous surface that is early than our rotation
-        // target.
-        // TODO(jonross): Switch to an early break when
-        // viz::LocalSurfaceId::IsNewerThan can properly handle mixed changes of
-        // sequence numbers. (crbug.com/1180188)
+        // The embedded surface may have updated the
+        // LocalSurfaceId::child_sequence_number while we were updating the
+        // parent_sequence_number for `rotation_target`. For example starting
+        // from (6, 2) the child advances to (6, 3), and the parent advances to
+        // (7, 2). viz::LocalSurfaceId::IsNewerThan will return false in these
+        // mixed sequence advancements.
+        //
+        // Subsequently we would merge the two into (7, 3) which will become the
+        // actually submitted surface to Viz.
+        //
+        // As such we have now received a surface that is not for our target, so
+        // we break here and await the next frame from the child.
         break;
       }
     }
