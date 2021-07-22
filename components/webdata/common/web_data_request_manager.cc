@@ -41,7 +41,8 @@ WebDataRequest::WebDataRequest(WebDataRequestManager* manager,
                        ? base::SequencedTaskRunnerHandle::Get()
                        : nullptr),
       atomic_manager_(reinterpret_cast<base::subtle::AtomicWord>(manager)),
-      consumer_(consumer),
+      consumer_(consumer ? consumer->GetWebDataServiceConsumerWeakPtr()
+                         : nullptr),
       handle_(handle) {
   DCHECK(IsActive());
   static_assert(sizeof(atomic_manager_) == sizeof(manager), "size mismatch");
@@ -53,7 +54,7 @@ WebDataRequestManager* WebDataRequest::GetManager() {
 }
 
 WebDataServiceConsumer* WebDataRequest::GetConsumer() {
-  return consumer_;
+  return consumer_.get();
 }
 
 scoped_refptr<base::SequencedTaskRunner> WebDataRequest::GetTaskRunner() {
