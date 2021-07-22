@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_APP_LIST_BUBBLE_SCROLLABLE_APPS_GRID_VIEW_H_
-#define ASH_APP_LIST_BUBBLE_SCROLLABLE_APPS_GRID_VIEW_H_
+#ifndef ASH_APP_LIST_VIEWS_SCROLLABLE_APPS_GRID_VIEW_H_
+#define ASH_APP_LIST_VIEWS_SCROLLABLE_APPS_GRID_VIEW_H_
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/views/apps_grid_view.h"
@@ -46,4 +46,4 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
 
 }  // namespace ash
 
-#endif  // ASH_APP_LIST_BUBBLE_SCROLLABLE_APPS_GRID_VIEW_H_
+#endif  // ASH_APP_LIST_VIEWS_SCROLLABLE_APPS_GRID_VIEW_H_

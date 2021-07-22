@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_ASSISTANT_PAGE_H_
-#define ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_ASSISTANT_PAGE_H_
+#ifndef ASH_APP_LIST_VIEWS_ASSISTANT_APP_LIST_BUBBLE_ASSISTANT_PAGE_H_
+#define ASH_APP_LIST_VIEWS_ASSISTANT_APP_LIST_BUBBLE_ASSISTANT_PAGE_H_
 
 #include "ash/ash_export.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -41,4 +41,4 @@ class ASH_EXPORT AppListBubbleAssistantPage : public views::View {
 
 }  // namespace ash
 
-#endif  // ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_ASSISTANT_PAGE_H_
+#endif  // ASH_APP_LIST_VIEWS_ASSISTANT_APP_LIST_BUBBLE_ASSISTANT_PAGE_H_

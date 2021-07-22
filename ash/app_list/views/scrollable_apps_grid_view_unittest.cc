@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/bubble/scrollable_apps_grid_view.h"
+#include "ash/app_list/views/scrollable_apps_grid_view.h"
 
 #include <memory>
 #include <string>

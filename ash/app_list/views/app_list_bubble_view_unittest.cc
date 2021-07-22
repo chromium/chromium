@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/bubble/app_list_bubble_view.h"
+#include "ash/app_list/views/app_list_bubble_view.h"
 
 #include <memory>
 #include <string>
@@ -10,13 +10,13 @@
 
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/app_list/bubble/app_list_bubble_apps_page.h"
-#include "ash/app_list/bubble/app_list_bubble_assistant_page.h"
-#include "ash/app_list/bubble/app_list_bubble_search_page.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/test_app_list_client.h"
+#include "ash/app_list/views/app_list_bubble_apps_page.h"
+#include "ash/app_list/views/app_list_bubble_search_page.h"
+#include "ash/app_list/views/assistant/app_list_bubble_assistant_page.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"

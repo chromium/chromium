@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_APPS_PAGE_H_
-#define ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_APPS_PAGE_H_
+#ifndef ASH_APP_LIST_VIEWS_APP_LIST_BUBBLE_APPS_PAGE_H_
+#define ASH_APP_LIST_VIEWS_APP_LIST_BUBBLE_APPS_PAGE_H_
 
 #include <memory>
 
-#include "ash/app_list/bubble/scrollable_apps_grid_view.h"
+#include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/ash_export.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -52,4 +52,4 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View {
 
 }  // namespace ash
 
-#endif  // ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_APPS_PAGE_H_
+#endif  // ASH_APP_LIST_VIEWS_APP_LIST_BUBBLE_APPS_PAGE_H_

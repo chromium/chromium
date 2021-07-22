@@ -7,9 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "ash/app_list/app_list_bubble_event_filter.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/app_list/bubble/app_list_bubble_event_filter.h"
-#include "ash/app_list/bubble/app_list_bubble_view.h"
+#include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"

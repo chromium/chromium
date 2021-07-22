@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_VIEW_H_
-#define ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_VIEW_H_
+#ifndef ASH_APP_LIST_VIEWS_APP_LIST_BUBBLE_VIEW_H_
+#define ASH_APP_LIST_VIEWS_APP_LIST_BUBBLE_VIEW_H_
 
 #include "ash/ash_export.h"
 #include "ash/search_box/search_box_view_delegate.h"
@@ -70,4 +70,4 @@ class ASH_EXPORT AppListBubbleView : public views::BubbleDialogDelegateView,
 
 }  // namespace ash
 
-#endif  // ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_VIEW_H_
+#endif  // ASH_APP_LIST_VIEWS_APP_LIST_BUBBLE_VIEW_H_

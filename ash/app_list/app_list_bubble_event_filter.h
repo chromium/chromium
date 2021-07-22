@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_EVENT_FILTER_H_
-#define ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_EVENT_FILTER_H_
+#ifndef ASH_APP_LIST_APP_LIST_BUBBLE_EVENT_FILTER_H_
+#define ASH_APP_LIST_APP_LIST_BUBBLE_EVENT_FILTER_H_
 
 #include "ash/ash_export.h"
 #include "base/callback.h"
@@ -51,4 +51,4 @@ class ASH_EXPORT AppListBubbleEventFilter : public ui::EventHandler {
 
 }  // namespace ash
 
-#endif  // ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_EVENT_FILTER_H_
+#endif  // ASH_APP_LIST_APP_LIST_BUBBLE_EVENT_FILTER_H_

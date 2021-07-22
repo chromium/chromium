@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_APP_LIST_BUBBLE_RECENT_APPS_VIEW_H_
-#define ASH_APP_LIST_BUBBLE_RECENT_APPS_VIEW_H_
+#ifndef ASH_APP_LIST_VIEWS_RECENT_APPS_VIEW_H_
+#define ASH_APP_LIST_VIEWS_RECENT_APPS_VIEW_H_
 
 #include <memory>
 #include <string>
@@ -41,4 +41,4 @@ class ASH_EXPORT RecentAppsView : public views::View {
 
 }  // namespace ash
 
-#endif  // ASH_APP_LIST_BUBBLE_RECENT_APPS_VIEW_H_
+#endif  // ASH_APP_LIST_VIEWS_RECENT_APPS_VIEW_H_

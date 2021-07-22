@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/bubble/app_list_bubble_event_filter.h"
+#include "ash/app_list/app_list_bubble_event_filter.h"
 
 #include <memory>
 

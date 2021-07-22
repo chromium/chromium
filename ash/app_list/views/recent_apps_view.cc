@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/bubble/recent_apps_view.h"
+#include "ash/app_list/views/recent_apps_view.h"
 
 #include <algorithm>
 #include <memory>

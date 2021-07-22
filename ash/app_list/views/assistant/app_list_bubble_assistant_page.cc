@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/bubble/app_list_bubble_assistant_page.h"
+#include "ash/app_list/views/assistant/app_list_bubble_assistant_page.h"
 
 #include <memory>
 
