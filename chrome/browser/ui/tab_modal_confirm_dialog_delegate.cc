@@ -4,24 +4,18 @@
 
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 
-#include "chrome/browser/chrome_notification_types.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 
-using content::NavigationController;
 using content::WebContents;
 
 TabModalConfirmDialogDelegate::TabModalConfirmDialogDelegate(
     WebContents* web_contents)
-    : close_delegate_(nullptr), closing_(false) {
-  NavigationController* controller = &web_contents->GetController();
-  registrar_.Add(this, content::NOTIFICATION_LOAD_START,
-                 content::Source<NavigationController>(controller));
-}
+    : content::WebContentsObserver(web_contents),
+      close_delegate_(nullptr),
+      closing_(false) {}
 
 TabModalConfirmDialogDelegate::~TabModalConfirmDialogDelegate() {
   // If we end up here, the window has been closed, so make sure we don't close
@@ -47,17 +41,6 @@ void TabModalConfirmDialogDelegate::Accept() {
   closing_ = true;
   OnAccepted();
   CloseDialog();
-}
-
-void TabModalConfirmDialogDelegate::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(content::NOTIFICATION_LOAD_START, type);
-
-  // Close the dialog if we load a page (because the action might not apply to
-  // the same page anymore).
-  Close();
 }
 
 void TabModalConfirmDialogDelegate::Close() {
@@ -126,4 +109,10 @@ absl::optional<int> TabModalConfirmDialogDelegate::GetDefaultDialogButton() {
 absl::optional<int> TabModalConfirmDialogDelegate::GetInitiallyFocusedButton() {
   // Use the default, don't override.
   return absl::nullopt;
+}
+
+void TabModalConfirmDialogDelegate::DidStartLoading() {
+  // Close the dialog if we load a page (because the action might not apply to
+  // the same page anymore).
+  Close();
 }

@@ -10,8 +10,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -36,7 +35,7 @@ class TabModalConfirmDialogCloseDelegate {
 
 // This class acts as the delegate for a simple tab-modal dialog confirming
 // whether the user wants to execute a certain action.
-class TabModalConfirmDialogDelegate : public content::NotificationObserver {
+class TabModalConfirmDialogDelegate : public content::WebContentsObserver {
  public:
   explicit TabModalConfirmDialogDelegate(content::WebContents* web_contents);
   ~TabModalConfirmDialogDelegate() override;
@@ -102,18 +101,13 @@ class TabModalConfirmDialogDelegate : public content::NotificationObserver {
   virtual absl::optional<int> GetDefaultDialogButton();
   virtual absl::optional<int> GetInitiallyFocusedButton();
 
+  // content::WebContentObserver:
+  void DidStartLoading() override;
+
  protected:
   TabModalConfirmDialogCloseDelegate* close_delegate() {
     return close_delegate_;
   }
-
-  // content::NotificationObserver implementation.
-  // Watch for a new load or a closed tab and dismiss the dialog if they occur.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
-  content::NotificationRegistrar registrar_;
 
  private:
   // It is guaranteed that exactly one of OnAccepted(), OnCanceled() or

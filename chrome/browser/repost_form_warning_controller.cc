@@ -11,9 +11,7 @@
 
 RepostFormWarningController::RepostFormWarningController(
     content::WebContents* web_contents)
-    : TabModalConfirmDialogDelegate(web_contents),
-      content::WebContentsObserver(web_contents) {
-}
+    : TabModalConfirmDialogDelegate(web_contents) {}
 
 RepostFormWarningController::~RepostFormWarningController() {
 }
