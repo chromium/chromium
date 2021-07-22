@@ -148,6 +148,8 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
                                       media::mojom::BlobPtr blob);
 
   void NotifyShutterDoneOnMojoThread();
+  void NotifyResultMetadataOnMojoThread(cros::mojom::CameraMetadataPtr metadata,
+                                        cros::mojom::StreamType streamType);
 
   std::string device_id_;
 
@@ -180,15 +182,14 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   base::Lock capture_intent_lock_;
   cros::mojom::CaptureIntent capture_intent_ GUARDED_BY(capture_intent_lock_);
 
-  // Those maps will be changed and used from different threads.
-  base::Lock metadata_observers_lock_;
-  uint32_t next_metadata_observer_id_ GUARDED_BY(metadata_observers_lock_);
+  // Those maps will be changed and used only on the mojo thread.
+  uint32_t next_metadata_observer_id_ = 0;
   base::flat_map<uint32_t, mojo::Remote<cros::mojom::ResultMetadataObserver>>
-      metadata_observers_ GUARDED_BY(metadata_observers_lock_);
+      metadata_observers_;
   base::flat_map<cros::mojom::StreamType, base::flat_set<uint32_t>>
-      stream_metadata_observer_ids_ GUARDED_BY(metadata_observers_lock_);
+      stream_metadata_observer_ids_;
 
-  uint32_t next_camera_event_observer_id_;
+  uint32_t next_camera_event_observer_id_ = 0;
   base::flat_map<uint32_t, mojo::Remote<cros::mojom::CameraEventObserver>>
       camera_event_observers_;
 

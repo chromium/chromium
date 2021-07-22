@@ -145,13 +145,11 @@ cros::mojom::CaptureIntent CameraAppDeviceImpl::GetCaptureIntent() {
 void CameraAppDeviceImpl::OnResultMetadataAvailable(
     const cros::mojom::CameraMetadataPtr& metadata,
     cros::mojom::StreamType streamType) {
-  base::AutoLock lock(metadata_observers_lock_);
-
-  const auto& observer_ids = stream_metadata_observer_ids_[streamType];
-
-  for (auto& id : observer_ids) {
-    metadata_observers_[id]->OnMetadataAvailable(metadata.Clone());
-  }
+  mojo_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CameraAppDeviceImpl::NotifyResultMetadataOnMojoThread,
+                     weak_ptr_factory_for_mojo_.GetWeakPtr(), metadata.Clone(),
+                     streamType));
 }
 
 void CameraAppDeviceImpl::OnShutterDone() {
@@ -265,8 +263,6 @@ void CameraAppDeviceImpl::AddResultMetadataObserver(
     AddResultMetadataObserverCallback callback) {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
 
-  base::AutoLock lock(metadata_observers_lock_);
-
   uint32_t id = next_metadata_observer_id_++;
   metadata_observers_[id] =
       mojo::Remote<cros::mojom::ResultMetadataObserver>(std::move(observer));
@@ -279,8 +275,6 @@ void CameraAppDeviceImpl::RemoveResultMetadataObserver(
     uint32_t id,
     RemoveResultMetadataObserverCallback callback) {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
-
-  base::AutoLock lock(metadata_observers_lock_);
 
   if (metadata_observers_.erase(id) == 0) {
     std::move(callback).Run(false);
@@ -378,6 +372,17 @@ void CameraAppDeviceImpl::NotifyShutterDoneOnMojoThread() {
 
   for (auto& observer : camera_event_observers_) {
     observer.second->OnShutterDone();
+  }
+}
+
+void CameraAppDeviceImpl::NotifyResultMetadataOnMojoThread(
+    cros::mojom::CameraMetadataPtr metadata,
+    cros::mojom::StreamType streamType) {
+  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
+
+  const auto& observer_ids = stream_metadata_observer_ids_[streamType];
+  for (auto& id : observer_ids) {
+    metadata_observers_[id]->OnMetadataAvailable(metadata.Clone());
   }
 }
 
