@@ -153,9 +153,8 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 
   ProxyPrefs::ProxyMode proxy_mode;
   if (mode) {
-    std::string string_mode;
-    CHECK(mode->GetAsString(&string_mode));
-    CHECK(ProxyPrefs::StringToProxyMode(string_mode, &proxy_mode));
+    CHECK(mode->is_string());
+    CHECK(ProxyPrefs::StringToProxyMode(mode->GetString(), &proxy_mode));
   } else if (server_mode) {
     switch (server_mode->GetInt()) {
       case PROXY_SERVER_MODE:
@@ -190,27 +189,25 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                       ProxyConfigDictionary::CreateAutoDetect());
       break;
     case ProxyPrefs::MODE_PAC_SCRIPT: {
-      std::string pac_url_string;
-      if (pac_url && pac_url->GetAsString(&pac_url_string)) {
+      if (pac_url && pac_url->is_string()) {
         bool mandatory =
             pac_mandatory && pac_mandatory->GetIfBool().value_or(false);
-        prefs->SetValue(
-            proxy_config::prefs::kProxy,
-            ProxyConfigDictionary::CreatePacScript(pac_url_string, mandatory));
+        prefs->SetValue(proxy_config::prefs::kProxy,
+                        ProxyConfigDictionary::CreatePacScript(
+                            pac_url->GetString(), mandatory));
       } else {
         NOTREACHED();
       }
       break;
     }
     case ProxyPrefs::MODE_FIXED_SERVERS: {
-      std::string proxy_server;
-      std::string bypass_list_string;
-      if (server->GetAsString(&proxy_server)) {
-        if (bypass_list)
-          bypass_list->GetAsString(&bypass_list_string);
-        prefs->SetValue(proxy_config::prefs::kProxy,
-                        ProxyConfigDictionary::CreateFixedServers(
-                            proxy_server, bypass_list_string));
+      if (server->is_string()) {
+        prefs->SetValue(
+            proxy_config::prefs::kProxy,
+            ProxyConfigDictionary::CreateFixedServers(
+                server->GetString(), bypass_list && bypass_list->is_string()
+                                         ? bypass_list->GetString()
+                                         : std::string()));
       }
       break;
     }
@@ -232,12 +229,11 @@ const base::Value* ProxyPolicyHandler::GetProxyPolicyValue(
     return nullptr;
 
   const base::Value* policy_value = nullptr;
-  std::string tmp;
-  if (!settings->Get(policy_name, &policy_value) || policy_value->is_none() ||
-      (policy_value->is_string() && policy_value->GetAsString(&tmp) &&
-       tmp.empty())) {
+  if (!settings->Get(policy_name, &policy_value) || policy_value->is_none())
     return nullptr;
-  }
+  const std::string* tmp = policy_value->GetIfString();
+  if (tmp && tmp->empty())
+    return nullptr;
   return policy_value;
 }
 
@@ -259,12 +255,13 @@ bool ProxyPolicyHandler::CheckProxyModeAndServerMode(const PolicyMap& policies,
                        IDS_POLICY_OVERRIDDEN,
                        key::kProxyMode);
     }
-    if (!mode->GetAsString(mode_value)) {
+    if (!mode->is_string()) {
       errors->AddError(key::kProxySettings, key::kProxyMode,
                        IDS_POLICY_TYPE_ERROR,
                        base::Value::GetTypeName(base::Value::Type::BOOLEAN));
       return false;
     }
+    *mode_value = mode->GetString();
 
     ProxyPrefs::ProxyMode mode;
     if (!ProxyPrefs::StringToProxyMode(*mode_value, &mode)) {

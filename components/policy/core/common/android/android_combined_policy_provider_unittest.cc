@@ -78,9 +78,8 @@ TEST_F(AndroidCombinedPolicyProviderTest, FlushPolices) {
   const base::Value* value = map.GetValue("TestPolicy");
   ASSERT_NE(nullptr, value);
   EXPECT_EQ(base::Value::Type::STRING, value->type());
-  std::string out_value;
-  EXPECT_TRUE(value->GetAsString(&out_value));
-  EXPECT_EQ("TestValue", out_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ("TestValue", value->GetString());
   // If the manager is deleted (by going out of scope) without being shutdown
   // first it DCHECKs.
   manager.Shutdown();

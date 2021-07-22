@@ -252,8 +252,7 @@ bool StringMappingListPolicyHandler::Convert(const base::Value* input,
   int index = -1;
   for (const auto& entry : list_value->GetList()) {
     ++index;
-    std::string entry_value;
-    if (!entry.GetAsString(&entry_value)) {
+    if (!entry.is_string()) {
       if (errors) {
         errors->AddError(policy_name(), index, IDS_POLICY_TYPE_ERROR,
                          base::Value::GetTypeName(base::Value::Type::STRING));
@@ -261,7 +260,7 @@ bool StringMappingListPolicyHandler::Convert(const base::Value* input,
       continue;
     }
 
-    std::unique_ptr<base::Value> mapped_value = Map(entry_value);
+    std::unique_ptr<base::Value> mapped_value = Map(entry.GetString());
     if (mapped_value) {
       if (output)
         output->Append(std::move(mapped_value));

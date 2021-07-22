@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -109,10 +110,9 @@ void URLBlocklistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   // handling URLBlocklists.
   if (disabled_schemes) {
     for (const auto& entry : disabled_schemes->GetList()) {
-      std::string entry_value;
-      if (entry.GetAsString(&entry_value)) {
-        entry_value.append("://*");
-        merged_url_blocklist.emplace_back(std::move(entry_value));
+      if (entry.is_string()) {
+        merged_url_blocklist.emplace_back(
+            base::StrCat({entry.GetString(), "://*"}));
       }
     }
   }
