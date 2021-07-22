@@ -58,6 +58,7 @@
     <color name="default_bg_color_blue_dark">@color/modern_blue_600</color>
     <color name="default_bg_color_blue_light">@color/modern_blue_300</color>
     <color name="default_scrim_color">@color/black_alpha_65</color>
+    <color name="incognito_card_bg_color">@color/baseline_neutral_900_with_neutral_200_alpha_5_with_primary_200_alpha_2</color>
 
     <!-- Chip Colors -->
     <color name="default_chip_outline_color_light">@color/modern_grey_300</color>
