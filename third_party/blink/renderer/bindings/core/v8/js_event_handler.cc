@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/events/before_unload_event.h"
@@ -91,6 +91,7 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
   HeapVector<ScriptValue> arguments;
   ScriptState* script_state_of_listener =
       event_handler_->CallbackRelevantScriptState();
+  v8::Isolate* isolate = script_state_of_listener->GetIsolate();
 
   if (special_error_event_handling) {
     auto* error_event = To<ErrorEvent>(&event);
@@ -100,17 +101,27 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
     ScriptValue error_attribute = error_event->error(script_state_of_listener);
     if (error_attribute.IsEmpty() ||
         error_event->target()->InterfaceName() == event_target_names::kWorker) {
-      error_attribute =
-          ScriptValue::CreateNull(script_state_of_listener->GetIsolate());
+      error_attribute = ScriptValue::CreateNull(isolate);
     }
     arguments = {
-        ScriptValue::From(script_state_of_listener, error_event->message()),
-        ScriptValue::From(script_state_of_listener, error_event->filename()),
-        ScriptValue::From(script_state_of_listener, error_event->lineno()),
-        ScriptValue::From(script_state_of_listener, error_event->colno()),
+        ScriptValue(isolate,
+                    ToV8Traits<IDLStringV2>::ToV8(script_state_of_listener,
+                                                  error_event->message())
+                        .ToLocalChecked()),
+        ScriptValue(isolate,
+                    ToV8Traits<IDLStringV2>::ToV8(script_state_of_listener,
+                                                  error_event->filename())
+                        .ToLocalChecked()),
+        ScriptValue(isolate,
+                    ToV8Traits<IDLUnsignedLong>::ToV8(script_state_of_listener,
+                                                      error_event->lineno())
+                        .ToLocalChecked()),
+        ScriptValue(isolate, ToV8Traits<IDLUnsignedLong>::ToV8(
+                                 script_state_of_listener, error_event->colno())
+                                 .ToLocalChecked()),
         error_attribute};
   } else {
-    arguments = {ScriptValue::From(script_state_of_listener, js_event)};
+    arguments.push_back(ScriptValue(isolate, js_event));
   }
 
   if (!event_handler_->IsRunnableOrThrowException(
@@ -123,7 +134,7 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
   if (!event_handler_
            ->InvokeWithoutRunnabilityCheck(event.currentTarget(), arguments)
            .To(&result) ||
-      GetIsolate()->IsExecutionTerminating())
+      isolate->IsExecutionTerminating())
     return;
   v8::Local<v8::Value> v8_return_value = result.V8Value();
 
