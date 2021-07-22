@@ -104,7 +104,6 @@ void UnregisterFileHandlersWithOsTask(const AppId& app_id,
 
 void UnregisterFileHandlersWithOs(const AppId& app_id,
                                   Profile* profile,
-                                  std::unique_ptr<ShortcutInfo> info,
                                   base::OnceCallback<void(bool)> callback) {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,

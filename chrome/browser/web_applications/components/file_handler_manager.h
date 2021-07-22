@@ -72,7 +72,6 @@ class FileHandlerManager {
   // separately but they are still enabled and disabled here.
   void DisableAndUnregisterOsFileHandlers(
       const AppId& app_id,
-      std::unique_ptr<ShortcutInfo> info,
       base::OnceCallback<void(bool)> callback);
 
   // Updates the file handling origin trial expiry timer based on a currently

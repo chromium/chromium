@@ -184,7 +184,7 @@ TEST_F(WebFileTasksFileHandlingEnabledTests,
   EXPECT_EQ(2u, tasks.size());
   tasks.clear();
 
-  file_handler_manager()->DisableAndUnregisterOsFileHandlers(kGraphrId, nullptr,
+  file_handler_manager()->DisableAndUnregisterOsFileHandlers(kGraphrId,
                                                              base::DoNothing());
 
   // Graphr should no longer be found.

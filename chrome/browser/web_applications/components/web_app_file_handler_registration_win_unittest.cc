@@ -240,7 +240,7 @@ TEST_F(WebAppFileHandlerRegistrationWinTest,
   ASSERT_EQ(2u, storage.GetNumberOfProfiles());
   AddAndVerifyFileAssociations(profile2, kAppName, " (Profile 2)");
 
-  UnregisterFileHandlersWithOs(app_id(), profile(), nullptr, base::DoNothing());
+  UnregisterFileHandlersWithOs(app_id(), profile(), base::DoNothing());
   base::ThreadPoolInstance::Get()->FlushForTesting();
   base::RunLoop().RunUntilIdle();
   base::ThreadPoolInstance::Get()->FlushForTesting();
@@ -289,7 +289,7 @@ TEST_F(WebAppFileHandlerRegistrationWinTest,
   ASSERT_EQ(3u, storage.GetNumberOfProfiles());
   AddAndVerifyFileAssociations(profile3, kAppName, " (Profile 3)");
 
-  UnregisterFileHandlersWithOs(app_id(), profile(), nullptr, base::DoNothing());
+  UnregisterFileHandlersWithOs(app_id(), profile(), base::DoNothing());
   base::ThreadPoolInstance::Get()->FlushForTesting();
   base::RunLoop().RunUntilIdle();
   base::ThreadPoolInstance::Get()->FlushForTesting();
@@ -323,7 +323,7 @@ TEST_F(WebAppFileHandlerRegistrationWinTest, UnregisterFileHandlersForWebApp) {
       ShellUtil::GetApplicationPathForProgId(
           GetProgIdForApp(profile()->GetPath(), app_id()));
 
-  UnregisterFileHandlersWithOs(app_id(), profile(), nullptr, base::DoNothing());
+  UnregisterFileHandlersWithOs(app_id(), profile(), base::DoNothing());
   base::ThreadPoolInstance::Get()->FlushForTesting();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(base::PathExists(app_specific_launcher_path));

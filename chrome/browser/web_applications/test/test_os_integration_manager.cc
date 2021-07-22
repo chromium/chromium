@@ -115,7 +115,6 @@ void TestOsIntegrationManager::UninstallAllOsHooks(
 void TestOsIntegrationManager::UpdateOsHooks(
     const AppId& app_id,
     base::StringPiece old_name,
-    std::unique_ptr<ShortcutInfo> old_shortcut,
     FileHandlerUpdateAction file_handlers_need_os_update,
     const WebApplicationInfo& web_app_info) {
   if (file_handlers_need_os_update != FileHandlerUpdateAction::kNoUpdate)

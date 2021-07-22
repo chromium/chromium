@@ -40,7 +40,6 @@ class TestOsIntegrationManager : public OsIntegrationManager {
                            UninstallOsHooksCallback callback) override;
   void UpdateOsHooks(const AppId& app_id,
                      base::StringPiece old_name,
-                     std::unique_ptr<ShortcutInfo> old_shortcut,
                      FileHandlerUpdateAction file_handlers_need_os_update,
                      const WebApplicationInfo& web_app_info) override;
 

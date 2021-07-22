@@ -115,7 +115,6 @@ class OsIntegrationManager {
   virtual void UpdateOsHooks(
       const AppId& app_id,
       base::StringPiece old_name,
-      std::unique_ptr<ShortcutInfo> old_shortcut,
       FileHandlerUpdateAction file_handlers_need_os_update,
       const WebApplicationInfo& web_app_info);
 
@@ -239,7 +238,6 @@ class OsIntegrationManager {
                                std::unique_ptr<ShortcutInfo> shortcut_info,
                                DeleteShortcutsCallback callback);
   virtual void UnregisterFileHandlers(const AppId& app_id,
-                                      std::unique_ptr<ShortcutInfo> info,
                                       base::OnceCallback<void(bool)> callback);
   virtual void UnregisterProtocolHandlers(
       const AppId& app_id,
@@ -251,10 +249,6 @@ class OsIntegrationManager {
   virtual void UpdateShortcuts(const AppId& app_id, base::StringPiece old_name);
   virtual void UpdateShortcutsMenu(const AppId& app_id,
                                    const WebApplicationInfo& web_app_info);
-  virtual void UpdateFileHandlersWithShortcutInfo(
-      const AppId& app_id,
-      FileHandlerUpdateAction file_handlers_need_os_update,
-      std::unique_ptr<ShortcutInfo> info);
   virtual void UpdateProtocolHandlers(const AppId& app_id);
 
   // Utility methods:

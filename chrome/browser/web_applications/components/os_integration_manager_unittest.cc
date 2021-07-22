@@ -107,7 +107,6 @@ class MockOsIntegrationManager : public OsIntegrationManager {
   MOCK_METHOD(void,
               UnregisterFileHandlers,
               (const AppId& app_id,
-               std::unique_ptr<ShortcutInfo> info,
                base::OnceCallback<void(bool)> callback),
               (override));
   MOCK_METHOD(void,
@@ -122,10 +121,9 @@ class MockOsIntegrationManager : public OsIntegrationManager {
 
   // Update:
   MOCK_METHOD(void,
-              UpdateFileHandlersWithShortcutInfo,
+              UpdateFileHandlers,
               (const AppId& app_id,
-               FileHandlerUpdateAction file_handlers_need_os_update,
-               std::unique_ptr<ShortcutInfo> info),
+               FileHandlerUpdateAction file_handlers_need_os_update),
               (override));
   MOCK_METHOD(void,
               UpdateShortcuts,
@@ -279,8 +277,7 @@ TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
   EXPECT_CALL(manager, DeleteShortcuts(app_id, kExpectedShortcutPath,
                                        testing::_, testing::_))
       .WillOnce(base::test::RunOnceCallback<3>(true));
-  EXPECT_CALL(manager, UnregisterFileHandlers(app_id, testing::_, testing::_))
-      .Times(1);
+  EXPECT_CALL(manager, UnregisterFileHandlers(app_id, testing::_)).Times(1);
   EXPECT_CALL(manager, UnregisterProtocolHandlers(app_id, testing::_)).Times(1);
   EXPECT_CALL(manager, UnregisterUrlHandlers(app_id)).Times(1);
   EXPECT_CALL(manager, UnregisterWebAppOsUninstallation(app_id)).Times(1);
@@ -310,16 +307,15 @@ TEST_F(OsIntegrationManagerTest, UpdateOsHooksEverything) {
   base::StringPiece old_name = "test-name";
 
   EXPECT_CALL(manager,
-              UpdateFileHandlersWithShortcutInfo(
-                  app_id, FileHandlerUpdateAction::kUpdate, testing::_))
+              UpdateFileHandlers(app_id, FileHandlerUpdateAction::kUpdate))
       .Times(1);
   EXPECT_CALL(manager, UpdateShortcuts(app_id, old_name)).Times(1);
   EXPECT_CALL(manager, UpdateShortcutsMenu(app_id, testing::_)).Times(1);
   EXPECT_CALL(manager, UpdateUrlHandlers(app_id, testing::_)).Times(1);
   EXPECT_CALL(manager, UpdateProtocolHandlers(app_id)).Times(1);
 
-  manager.UpdateOsHooks(app_id, old_name, nullptr,
-                        FileHandlerUpdateAction::kUpdate, web_app_info);
+  manager.UpdateOsHooks(app_id, old_name, FileHandlerUpdateAction::kUpdate,
+                        web_app_info);
 }
 
 }  // namespace

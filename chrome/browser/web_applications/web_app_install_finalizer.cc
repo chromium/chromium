@@ -364,13 +364,17 @@ void WebAppInstallFinalizer::FinalizeUpdate(
 
   FileHandlerUpdateAction file_handlers_need_os_update =
       file_handlers_helper_->WillUpdateApp(app_id, web_app_info);
-  // Grab the shortcut info before the app is removed from the database.
-  os_integration_manager().GetShortcutInfoForApp(
-      app_id,
-      base::BindOnce(&WebAppInstallFinalizer::FinalizeUpdateWithShortcutInfo,
-                     weak_ptr_factory_.GetWeakPtr(), should_update_os_hooks,
-                     file_handlers_need_os_update, std::move(callback), app_id,
-                     web_app_info));
+
+  CommitCallback commit_callback = base::BindOnce(
+      &WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id,
+      existing_web_app->name(), should_update_os_hooks,
+      file_handlers_need_os_update, web_app_info);
+
+  // Prepare copy-on-write to update existing app.
+  SetWebAppManifestFieldsAndWriteData(
+      web_app_info, std::make_unique<WebApp>(*existing_web_app),
+      std::move(commit_callback));
 }
 
 void WebAppInstallFinalizer::Start() {
@@ -564,26 +568,6 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
   std::move(callback).Run(app_id, InstallResultCode::kSuccessNewInstall);
 }
 
-void WebAppInstallFinalizer::FinalizeUpdateWithShortcutInfo(
-    bool should_update_os_hooks,
-    FileHandlerUpdateAction file_handlers_need_os_update,
-    InstallFinalizedCallback callback,
-    const AppId app_id,
-    const WebApplicationInfo& web_app_info,
-    std::unique_ptr<ShortcutInfo> old_shortcut) {
-  // Prepare copy-on-write to update existing app.
-  const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);
-  auto web_app = std::make_unique<WebApp>(*existing_web_app);
-  CommitCallback commit_callback = base::BindOnce(
-      &WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id,
-      existing_web_app->name(), std::move(old_shortcut), should_update_os_hooks,
-      file_handlers_need_os_update, web_app_info);
-
-  SetWebAppManifestFieldsAndWriteData(web_app_info, std::move(web_app),
-                                      std::move(commit_callback));
-}
-
 bool WebAppInstallFinalizer::ShouldUpdateOsHooks(const AppId& app_id) {
 #if defined(OS_CHROMEOS)
   // OS integration should always be enabled on ChromeOS.
@@ -601,7 +585,6 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     InstallFinalizedCallback callback,
     AppId app_id,
     std::string old_name,
-    std::unique_ptr<ShortcutInfo> old_shortcut,
     bool should_update_os_hooks,
     FileHandlerUpdateAction file_handlers_need_os_update,
     const WebApplicationInfo& web_app_info,
@@ -614,8 +597,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
 
   if (should_update_os_hooks) {
     os_integration_manager().UpdateOsHooks(
-        app_id, old_name, std::move(old_shortcut), file_handlers_need_os_update,
-        web_app_info);
+        app_id, old_name, file_handlers_need_os_update, web_app_info);
   }
   registrar().NotifyWebAppManifestUpdated(app_id, old_name);
   std::move(callback).Run(app_id, InstallResultCode::kSuccessAlreadyInstalled);

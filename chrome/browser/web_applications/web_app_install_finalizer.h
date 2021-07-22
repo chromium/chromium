@@ -29,7 +29,6 @@ class WebApp;
 class WebAppIconManager;
 class WebAppPolicyManager;
 class WebAppRegistrar;
-struct ShortcutInfo;
 
 class WebAppInstallFinalizer final : public InstallFinalizer {
  public:
@@ -108,16 +107,6 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
   void OnDatabaseCommitCompletedForInstall(InstallFinalizedCallback callback,
                                            AppId app_id,
                                            bool success);
-  // TODO(crbug.com/1206036): Replace |should_update_os_hooks| and
-  // |file_handlers_need_os_update| with an OsHooksResults bitset to match the
-  // granularity we have during install.
-  void FinalizeUpdateWithShortcutInfo(
-      bool should_update_os_hooks,
-      FileHandlerUpdateAction file_handlers_need_os_update,
-      InstallFinalizedCallback callback,
-      const AppId app_id,
-      const WebApplicationInfo& web_app_info,
-      std::unique_ptr<ShortcutInfo> old_shortcut);
 
   bool ShouldUpdateOsHooks(const AppId& app_id);
 
@@ -125,7 +114,6 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
       InstallFinalizedCallback callback,
       AppId app_id,
       std::string old_name,
-      std::unique_ptr<ShortcutInfo> old_shortcut,
       bool should_update_os_hooks,
       FileHandlerUpdateAction file_handlers_need_os_update,
       const WebApplicationInfo& web_app_info,
