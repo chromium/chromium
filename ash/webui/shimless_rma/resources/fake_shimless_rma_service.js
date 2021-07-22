@@ -166,45 +166,43 @@ export class FakeShimlessRmaService {
   /**
    * @return {!Promise<!{version: string}>}
    */
-  getCurrentChromeVersion() {
-    return this.methods_.resolveMethod('getCurrentChromeVersion');
+  getCurrentOsVersion() {
+    return this.methods_.resolveMethod('getCurrentOsVersion');
   }
 
   /**
    * @param {string} version
    */
-  setGetCurrentChromeVersionResult(version) {
-    this.methods_.setResult('getCurrentChromeVersion', {version: version});
+  setGetCurrentOsVersionResult(version) {
+    this.methods_.setResult('getCurrentOsVersion', {version: version});
   }
 
   /**
    * @return {!Promise<!{updateAvailable: boolean}>}
    */
-  checkForChromeUpdates() {
-    return this.methods_.resolveMethod('checkForChromeUpdates');
+  checkForOsUpdates() {
+    return this.methods_.resolveMethod('checkForOsUpdates');
   }
 
   /**
    * @param {boolean} available
    */
-  setCheckForChromeUpdatesResult(available) {
-    this.methods_.setResult(
-        'checkForChromeUpdates', {updateAvailable: available});
+  setCheckForOsUpdatesResult(available) {
+    this.methods_.setResult('checkForOsUpdates', {updateAvailable: available});
   }
 
   /**
    * @return {!Promise<!StateResult>}
    */
-  updateChrome() {
-    return this.getNextStateForMethod_('updateChrome', RmaState.kUpdateChrome);
+  updateOs() {
+    return this.getNextStateForMethod_('updateOs', RmaState.kUpdateOs);
   }
 
   /**
    * @return {!Promise<!StateResult>}
    */
-  updateChromeSkipped() {
-    return this.getNextStateForMethod_(
-        'updateChromeSkipped', RmaState.kUpdateChrome);
+  updateOsSkipped() {
+    return this.getNextStateForMethod_('updateOsSkipped', RmaState.kUpdateOs);
   }
 
   /**
@@ -653,10 +651,10 @@ export class FakeShimlessRmaService {
 
     this.methods_.register('networkSelectionComplete');
 
-    this.methods_.register('getCurrentChromeVersion');
-    this.methods_.register('checkForChromeUpdates');
-    this.methods_.register('updateChrome');
-    this.methods_.register('updateChromeSkipped');
+    this.methods_.register('getCurrentOsVersion');
+    this.methods_.register('checkForOsUpdates');
+    this.methods_.register('updateOs');
+    this.methods_.register('updateOsSkipped');
 
     this.methods_.register('setSameOwner');
     this.methods_.register('setDifferentOwner');

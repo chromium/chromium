@@ -44,7 +44,7 @@ export function shimlessRMAAppTest() {
 
     // Initialize the fake data.
     service.setStates(states);
-    service.setGetCurrentChromeVersionResult(chromeVersion);
+    service.setGetCurrentOsVersionResult(chromeVersion);
 
     component = /** @type {!ShimlessRmaElement} */ (
         document.createElement('shimless-rma'));
@@ -137,7 +137,7 @@ export function shimlessRMAAppTest() {
     await clickNext();
     assertFalse(initialPage.hidden);
 
-    resolver.resolve({state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk});
+    resolver.resolve({state: RmaState.kUpdateOs, error: RmadErrorCode.kOk});
     await flushTasks();
 
     const updatePage =

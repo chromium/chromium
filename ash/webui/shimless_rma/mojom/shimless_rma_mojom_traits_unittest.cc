@@ -67,7 +67,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, StatesMatch) {
                                                 rmad::RmadState::StateCase>(
       {{mojom::RmaState::kWelcomeScreen, rmad::RmadState::kWelcome},
        {mojom::RmaState::kConfigureNetwork, rmad::RmadState::kSelectNetwork},
-       {mojom::RmaState::kUpdateChrome, rmad::RmadState::kUpdateChrome},
+       {mojom::RmaState::kUpdateOs, rmad::RmadState::kUpdateChrome},
        {mojom::RmaState::kSelectComponents, rmad::RmadState::kComponentsRepair},
        {mojom::RmaState::kChooseDestination,
         rmad::RmadState::kDeviceDestination},

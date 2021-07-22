@@ -39,11 +39,10 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void NetworkSelectionComplete(
       NetworkSelectionCompleteCallback callback) override;
 
-  void GetCurrentChromeVersion(
-      GetCurrentChromeVersionCallback callback) override;
-  void CheckForChromeUpdates(CheckForChromeUpdatesCallback callback) override;
-  void UpdateChrome(UpdateChromeCallback callback) override;
-  void UpdateChromeSkipped(UpdateChromeCallback callback) override;
+  void GetCurrentOsVersion(GetCurrentOsVersionCallback callback) override;
+  void CheckForOsUpdates(CheckForOsUpdatesCallback callback) override;
+  void UpdateOs(UpdateOsCallback callback) override;
+  void UpdateOsSkipped(UpdateOsCallback callback) override;
 
   void SetSameOwner(SetSameOwnerCallback callback) override;
   void SetDifferentOwner(SetDifferentOwnerCallback callback) override;

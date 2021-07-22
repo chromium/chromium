@@ -94,7 +94,7 @@ export class OnboardingUpdatePageElement extends PolymerElement {
    * @private
    */
   getCurrentVersionText_() {
-    this.shimlessRmaService_.getCurrentChromeVersion().then((res) => {
+    this.shimlessRmaService_.getCurrentOsVersion().then((res) => {
       this.currentVersion = res.version;
       this.currentVersionText_ = `Current version ${this.currentVersion}`;
     });
@@ -104,7 +104,7 @@ export class OnboardingUpdatePageElement extends PolymerElement {
   /** @protected */
   onUpdateCheckButtonClicked_() {
     this.checkInProgress_ = true;
-    this.shimlessRmaService_.checkForChromeUpdates().then((res) => {
+    this.shimlessRmaService_.checkForOsUpdates().then((res) => {
       if (res.updateAvailable) {
         this.updateAvailable_ = true;
         // TODO(joonbug): i18n string

@@ -42,7 +42,7 @@ MojomRmaState EnumTraits<MojomRmaState, ProtoRmadState>::ToMojom(
     case ProtoRmadState::kSelectNetwork:
       return MojomRmaState::kConfigureNetwork;
     case ProtoRmadState::kUpdateChrome:
-      return MojomRmaState::kUpdateChrome;
+      return MojomRmaState::kUpdateOs;
     case ProtoRmadState::kComponentsRepair:
       return MojomRmaState::kSelectComponents;
     case ProtoRmadState::kDeviceDestination:
@@ -86,7 +86,7 @@ bool EnumTraits<MojomRmaState, ProtoRmadState>::FromMojom(MojomRmaState state,
     case MojomRmaState::kConfigureNetwork:
       *out = ProtoRmadState::kSelectNetwork;
       return true;
-    case MojomRmaState::kUpdateChrome:
+    case MojomRmaState::kUpdateOs:
       *out = ProtoRmadState::kUpdateChrome;
       return true;
     case MojomRmaState::kSelectComponents:

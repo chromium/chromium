@@ -10,7 +10,7 @@ import {Component, ComponentRepairState, ComponentType, Network, RmadErrorCode, 
 export const fakeStates = [
   {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
   {state: RmaState.kConfigureNetwork, error: RmadErrorCode.kOk},
-  {state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk},
+  {state: RmaState.kUpdateOs, error: RmadErrorCode.kOk},
   {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
   {state: RmaState.kChooseWriteProtectDisableMethod, error: RmadErrorCode.kOk},
   {state: RmaState.kWaitForManualWPDisable, error: RmadErrorCode.kOk},

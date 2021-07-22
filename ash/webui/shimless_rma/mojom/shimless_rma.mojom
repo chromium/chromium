@@ -47,9 +47,7 @@ enum RmaState {
   kUnknown,
   kWelcomeScreen,
   kConfigureNetwork,
-  // TODO(crbug.com/1218175): Rename to kUpdateOs to avoid confusion over Chrome
-  // overloading.
-  kUpdateChrome,
+  kUpdateOs,
   kSelectComponents,
   kChooseDestination,
   kChooseWriteProtectDisableMethod,
@@ -272,24 +270,16 @@ interface ShimlessRmaService {
   NetworkSelectionComplete() => (RmaState state, RmadErrorCode error);
 
   ///////////////////////////////////////
-  // Methods for kUpdateChrome state.
+  // Methods for kUpdateOs state.
   //
   // Returns a string representation of the OS version.
-  // TODO(crbug.com/1218175): Rename to GetCurrentOsVersion to avoid confusion
-  // over Chrome overloading.
-  GetCurrentChromeVersion() => (string version);
+  GetCurrentOsVersion() => (string version);
   // Returns true if there is an OS update available, false otherwise.
-  // TODO(crbug.com/1218175): Rename to CheckForOsUpdates to avoid confusion
-  // over Chrome overloading.
-  CheckForChromeUpdates() => (bool update_available);
+  CheckForOsUpdates() => (bool update_available);
   // Attempts to start a Chrome OS update.
-  // TODO(crbug.com/1218175): Rename to UpdateOs to avoid confusion over Chrome
-  // overloading.
-  UpdateChrome() => (RmaState state, RmadErrorCode error);
+  UpdateOs() => (RmaState state, RmadErrorCode error);
   // Skips OS update.
-  // TODO(crbug.com/1218175): Rename to UpdateOsSkipped to avoid confusion over
-  // Chrome overloading.
-  UpdateChromeSkipped() => (RmaState state, RmadErrorCode error);
+  UpdateOsSkipped() => (RmaState state, RmadErrorCode error);
 
   ///////////////////////////////////////
   // Methods for kChooseDestination state.

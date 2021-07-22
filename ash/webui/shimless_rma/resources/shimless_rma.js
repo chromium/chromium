@@ -86,7 +86,7 @@ const StateComponentMapping = {
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.VISIBLE,
   },
-  [RmaState.kUpdateChrome]: {
+  [RmaState.kUpdateOs]: {
     componentIs: 'onboarding-update-page',
     buttonNext: ButtonState.VISIBLE,
     buttonCancel: ButtonState.VISIBLE,

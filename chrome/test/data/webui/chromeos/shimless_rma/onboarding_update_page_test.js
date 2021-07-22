@@ -40,8 +40,8 @@ export function onboardingUpdatePageTest() {
     assertFalse(!!component);
 
     // Initialize the fake data.
-    service.setGetCurrentChromeVersionResult(version);
-    service.setCheckForChromeUpdatesResult(updateAvailable);
+    service.setGetCurrentOsVersionResult(version);
+    service.setCheckForOsUpdatesResult(updateAvailable);
 
     component = /** @type {!OnboardingUpdatePageElement} */ (
         document.createElement('onboarding-update-page'));

@@ -40,8 +40,8 @@ function setupFakeShimlessRmaService_() {
 
   service.setStates(fakeStates);
 
-  service.setGetCurrentChromeVersionResult(fakeChromeVersion[0]);
-  service.setCheckForChromeUpdatesResult(false);
+  service.setGetCurrentOsVersionResult(fakeChromeVersion[0]);
+  service.setCheckForOsUpdatesResult(false);
 
   service.setGetComponentListResult(fakeComponents);
   service.setReimageRequiredResult(false);
