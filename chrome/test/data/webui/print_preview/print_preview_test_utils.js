@@ -345,9 +345,25 @@ export function createDestinationStore() {
  * @return {!Destination} The Google Drive destination.
  */
 export function getGoogleDriveDestination(account) {
+  return isChromeOS || isLacros ?
+      new Destination(
+          'Save to Drive CrOS', DestinationType.LOCAL, DestinationOrigin.LOCAL,
+          'Save to Google Drive', DestinationConnectionStatus.ONLINE) :
+      getCloudDestination(
+          Destination.GooglePromotedId.DOCS, Destination.GooglePromotedId.DOCS,
+          account);
+}
+
+/**
+ * @param {string} id
+ * @param {string} name
+ * @param {string} account The user account the destination should be
+ *     associated with.
+ * @return {!Destination} The cloud destination.
+ */
+export function getCloudDestination(id, name, account) {
   return new Destination(
-      Destination.GooglePromotedId.DOCS, DestinationType.GOOGLE,
-      DestinationOrigin.COOKIES, Destination.GooglePromotedId.DOCS,
+      id, DestinationType.GOOGLE, DestinationOrigin.COOKIES, name,
       DestinationConnectionStatus.ONLINE, {account: account});
 }
 

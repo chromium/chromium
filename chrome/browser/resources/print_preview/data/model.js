@@ -999,9 +999,25 @@ Polymer({
     if (!Array.isArray(recentDestinations)) {
       recentDestinations = [recentDestinations];
     }
+
+    // Remove unsupported privet printers from the sticky settings,
+    // to free up these spots for supported printers.
+    recentDestinations = recentDestinations.filter(d => {
+      return d.origin !== DestinationOrigin.PRIVET;
+    });
+
+    // <if expr="chromeos or lacros">
+    // Remove Cloud Print Drive destination. The Chrome OS version will always
+    // be shown in the dropdown and is still supported.
+    recentDestinations = recentDestinations.filter(d => {
+      return d.id !== Destination.GooglePromotedId.DOCS;
+    });
+    // </if>
+
     // Initialize recent destinations early so that the destination store can
     // start trying to fetch them.
     this.setSetting('recentDestinations', recentDestinations);
+    savedSettings.recentDestinations = recentDestinations;
 
     this.stickySettings_ = savedSettings;
   },
@@ -1114,7 +1130,7 @@ Polymer({
     this.initialized_ = true;
     this.updateManaged_();
     this.stickySettings_ = null;
-    this.fire('sticky-settings-changed', this.getStickySettings_());
+    this.fire('sticky-setting-changed', this.getStickySettings_());
   },
 
   /**

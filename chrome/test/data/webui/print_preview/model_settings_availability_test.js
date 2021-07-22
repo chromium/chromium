@@ -9,7 +9,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 
-import {getCddTemplate, getGoogleDriveDestination, getSaveAsPdfDestination} from './print_preview_test_utils.js';
+import {getCddTemplate, getCloudDestination, getSaveAsPdfDestination} from './print_preview_test_utils.js';
 
 suite('ModelSettingsAvailabilityTest', function() {
   /** @type {!PrintPreviewModelElement} */
@@ -225,8 +225,13 @@ suite('ModelSettingsAvailabilityTest', function() {
       assertTrue(model.settings.color.available);
     });
 
-    // Google Drive always has an unavailableValue of true.
-    model.set('destination', getGoogleDriveDestination('foo@chromium.org'));
+    // Google Drive always has an unavailableValue of true when using the cloud
+    // destination.
+    model.set(
+        'destination',
+        getCloudDestination(
+            Destination.GooglePromotedId.DOCS,
+            Destination.GooglePromotedId.DOCS, 'foo@chromium.org'));
     const capabilities =
         getCddTemplate(Destination.GooglePromotedId.DOCS).capabilities;
     delete capabilities.printer.color;

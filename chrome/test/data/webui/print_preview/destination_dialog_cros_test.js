@@ -15,7 +15,7 @@ import {eventToPromise, waitAfterNextRender} from '../test_util.m.js';
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
 import {NativeLayerCrosStub, setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
-import {createDestinationStore, getDestinations, getGoogleDriveDestination, setupTestListenerElement} from './print_preview_test_utils.js';
+import {createDestinationStore, getCloudDestination, getDestinations, setupTestListenerElement} from './print_preview_test_utils.js';
 
 window.destination_dialog_cros_test = {};
 const destination_dialog_cros_test = window.destination_dialog_cros_test;
@@ -204,8 +204,14 @@ suite(destination_dialog_cros_test.suiteName, function() {
         // couple different accounts.
         const user1 = 'foo@chromium.org';
         const user2 = 'bar@chromium.org';
-        cloudPrintInterface.setPrinter(getGoogleDriveDestination(user1));
-        cloudPrintInterface.setPrinter(getGoogleDriveDestination(user2));
+        const driveDestination1 = getCloudDestination(
+            Destination.GooglePromotedId.DOCS,
+            Destination.GooglePromotedId.DOCS, user1);
+        const driveDestination2 = getCloudDestination(
+            Destination.GooglePromotedId.DOCS,
+            Destination.GooglePromotedId.DOCS, user2);
+        cloudPrintInterface.setPrinter(driveDestination1);
+        cloudPrintInterface.setPrinter(driveDestination2);
         // Override so that privet printers will also be fetched, since we are
         // simulating the case where the enterprise override is enabled.
         loadTimeData.overrideValues({'forceEnablePrivetPrinting': true});

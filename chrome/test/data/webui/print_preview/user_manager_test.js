@@ -7,10 +7,11 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {CloudPrintInterfaceStub} from 'chrome://test/print_preview/cloud_print_interface_stub.js';
 import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
-import {createDestinationStore, getDestinations, getGoogleDriveDestination, setupTestListenerElement} from 'chrome://test/print_preview/print_preview_test_utils.js';
+import {createDestinationStore, getCloudDestination, getDestinations, setupTestListenerElement} from 'chrome://test/print_preview/print_preview_test_utils.js';
 
 // <if expr="chromeos or lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
+
 // </if>
 
 suite('UserManagerTest', function() {
@@ -46,7 +47,8 @@ suite('UserManagerTest', function() {
     // </if>
     cloudPrintInterface = new CloudPrintInterfaceStub();
     CloudPrintInterfaceImpl.instance_ = cloudPrintInterface;
-    cloudPrintInterface.setPrinter(getGoogleDriveDestination(account1));
+    cloudPrintInterface.setPrinter(
+        getCloudDestination('FooCloud', 'FooCloudName', account1));
 
     userManager = document.createElement('print-preview-user-manager');
 
@@ -88,7 +90,8 @@ suite('UserManagerTest', function() {
           assertEquals(2, cloudPrintInterface.getCallCount('search'));
 
           // Simulate signing in to a second account.
-          cloudPrintInterface.setPrinter(getGoogleDriveDestination(account2));
+          cloudPrintInterface.setPrinter(
+              getCloudDestination('BarCloud', 'BarCloudName', account2));
           cloudPrintInterface.resetResolver('search');
           webUIListenerCallback('check-for-account-update');
           return cloudPrintInterface.whenCalled('search');

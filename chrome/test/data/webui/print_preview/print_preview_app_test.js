@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {CloudPrintInterfaceStub} from 'chrome://test/print_preview/cloud_print_interface_stub.js';
 import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
-import {getCddTemplate, getGoogleDriveDestination} from 'chrome://test/print_preview/print_preview_test_utils.js';
+import {getCddTemplate, getCloudDestination} from 'chrome://test/print_preview/print_preview_test_utils.js';
 import {TestPluginProxy} from 'chrome://test/print_preview/test_plugin_proxy.js';
 
 // <if expr="chromeos or lacros">
@@ -93,8 +93,9 @@ suite(print_preview_app_test.suiteName, function() {
   test(
       assert(print_preview_app_test.TestNames.PrintToGoogleDrive), async () => {
         await initialize();
-        // Set up the UI to have Google Drive as the printer.
-        page.destination_ = getGoogleDriveDestination('foo@chromium.org');
+        // Set up the UI to have a cloud printer.
+        page.destination_ =
+            getCloudDestination('FooCloud', 'FooName', 'foo@chromium.org');
         page.destination_.capabilities = getCddTemplate(page.destination_.id);
 
         // Trigger print.
@@ -106,7 +107,7 @@ suite(print_preview_app_test.suiteName, function() {
         const args = await cloudPrintInterface.whenCalled('submit');
         assertEquals('sample data', args.data);
         assertEquals('DocumentABC123', args.documentTitle);
-        assertEquals(Destination.GooglePromotedId.DOCS, args.destination.id);
+        assertEquals('FooCloud', args.destination.id);
         assertEquals('1.0', JSON.parse(args.printTicket).version);
       });
 

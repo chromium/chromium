@@ -436,25 +436,29 @@ suite(destination_settings_test.suiteName, function() {
               // This will result in the destination store setting the most
               // recent destination.
               assertEquals(
-                  isChromeOS || isLacros ? 'ID2' : '__google__docs',
+                  isChromeOS || isLacros ? 'Save to Drive CrOS' :
+                                           '__google__docs',
                   destinationSettings.destination.id);
               assertFalse(
                   destinationSettings.$$('#destinationSelect').disabled);
 
-              const dropdownItems = isChromeOS || isLacros ?
-                  [
-                    makeLocalDestinationKey('ID2'),
-                    makeLocalDestinationKey('ID3'),
-                    makeLocalDestinationKey('ID4'),
-                    'Save as PDF/local/',
-                    driveDestinationKey,
-                  ] :
-                  [
-                    driveDestinationKey,
-                    makeLocalDestinationKey('ID2'),
-                    makeLocalDestinationKey('ID3'),
-                    'Save as PDF/local/',
-                  ];
+              let dropdownItems;
+              if (isChromeOS || isLacros) {
+                dropdownItems = [
+                  makeLocalDestinationKey('ID2'),
+                  makeLocalDestinationKey('ID3'),
+                  makeLocalDestinationKey('ID4'),
+                  'Save as PDF/local/',
+                  driveDestinationKey,
+                ];
+              } else {
+                dropdownItems = [
+                  driveDestinationKey,
+                  makeLocalDestinationKey('ID2'),
+                  makeLocalDestinationKey('ID3'),
+                  'Save as PDF/local/',
+                ];
+              }
               assertDropdownItems(dropdownItems);
             });
       });
@@ -677,21 +681,25 @@ suite(destination_settings_test.suiteName, function() {
             'BarCloud', DestinationType.GOOGLE, DestinationOrigin.COOKIES,
             'BarCloudName', DestinationConnectionStatus.ONLINE,
             {account: account2});
-        cloudPrintInterface.setPrinter(getGoogleDriveDestination(defaultUser));
-        cloudPrintInterface.setPrinter(driveUser2);
+        if (!isChromeOS && !isLacros) {
+          cloudPrintInterface.setPrinter(
+              getGoogleDriveDestination(defaultUser));
+          cloudPrintInterface.setPrinter(driveUser2);
+        }
         cloudPrintInterface.setPrinter(cloudPrinterUser1);
         cloudPrintInterface.setPrinter(cloudPrinterUser2);
 
         recentDestinations = [
           cloudPrinterUser1, cloudPrinterUser2, destinations[0]
         ].map(destination => makeRecentDestination(destination));
+        const whenPrinter = cloudPrintInterface.whenCalled('printer');
 
         initialize();
         flush();
 
         const dropdown = destinationSettings.$$('#destinationSelect');
 
-        return cloudPrintInterface.whenCalled('printer')
+        return whenPrinter
             .then(() => {
               // Wait for the drive destination to be displayed.
               return waitBeforeNextRender(destinationSettings);
