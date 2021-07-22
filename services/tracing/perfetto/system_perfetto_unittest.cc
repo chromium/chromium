@@ -997,6 +997,16 @@ TEST_F(SystemPerfettoTest, RespectsFeaturePreAndroidPie) {
 }
 #endif  // defined(OS_ANDROID)
 
+TEST_F(SystemPerfettoTest, EnablePerfettoSystemTracingDefaultState) {
+#if defined(OS_CHROMEOS)
+  EXPECT_EQ(features::kEnablePerfettoSystemTracing.default_state,
+            base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+  EXPECT_EQ(features::kEnablePerfettoSystemTracing.default_state,
+            base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+}
+
 TEST_F(SystemPerfettoTest, SetupSystemTracing) {
   ClearAndRestoreSystemProducerScope saved_system_producer;
   EXPECT_FALSE(PerfettoTracedProcess::Get()->system_producer());

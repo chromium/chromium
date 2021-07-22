@@ -36,7 +36,13 @@ const base::Feature kTracingServiceInProcess {
 };
 
 const base::Feature kEnablePerfettoSystemTracing{
-    "EnablePerfettoSystemTracing", base::FEATURE_DISABLED_BY_DEFAULT};
+  "EnablePerfettoSystemTracing",
+#if defined(OS_CHROMEOS)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // Controls whether trace points are implemented using Perfetto's client library
 // (enabled) or legacy TraceLog (disabled).
