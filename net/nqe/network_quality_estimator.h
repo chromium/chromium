@@ -383,16 +383,6 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // |observed_http_rtt| with the expected HTTP and transport RTT.
   bool IsHangingRequest(base::TimeDelta observed_http_rtt) const;
 
-  // Returns the current network signal strength by querying the platform APIs.
-  // Set to INT32_MIN when the value is unavailable. Otherwise, must be between
-  // 0 and 4 (both inclusive). This may take into account many different radio
-  // technology inputs. 0 represents very poor signal strength while 4
-  // represents a very strong signal strength. The range is capped between 0 and
-  // 4 to ensure that a change in the value indicates a non-negligible change in
-  // the signal quality. To reduce the number of Android API calls, it returns
-  // a null value if the signal strength was recently obtained.
-  virtual absl::optional<int32_t> GetCurrentSignalStrengthWithThrottling();
-
   // Forces computation of effective connection type, and notifies observers
   // if there is a change in its value.
   void ComputeEffectiveConnectionType();
@@ -496,11 +486,6 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // main frame request is observed.
   void RecordAccuracyAfterMainFrame(base::TimeDelta measuring_duration) const;
 
-  // Obtains the current cellular signal strength value and updates
-  // |min_signal_strength_since_connection_change_| and
-  // |max_signal_strength_since_connection_change_|.
-  void UpdateSignalStrength();
-
   // Updates the provided |http_rtt| based on all provided RTT values.
   void UpdateHttpRttUsingAllRttValues(
       base::TimeDelta* http_rtt,
@@ -534,11 +519,6 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // Returns true if the socket watcher can run the callback to notify the RTT
   // observations.
   bool ShouldSocketWatcherNotifyRTT(base::TimeTicks now);
-
-  // Caps and returns the current value of effective connection type based on
-  // the current signal strength. If the signal strength is reported as low, a
-  // value lower than |effective_connection_type_| may be returned.
-  EffectiveConnectionType GetCappedECTBasedOnSignalStrength() const;
 
   // When RTT counts are low, it may be impossible to predict accurate ECT. In
   // that case, we just give the highest value.
@@ -635,11 +615,6 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // the last computation was more than
   // |effective_connection_type_recomputation_interval_| ago).
   EffectiveConnectionType effective_connection_type_;
-
-  // Minimum and maximum signal strength level observed since last connection
-  // change. Updated on connection change and main frame requests.
-  absl::optional<int32_t> min_signal_strength_since_connection_change_;
-  absl::optional<int32_t> max_signal_strength_since_connection_change_;
 
   // Stores the qualities of different networks.
   std::unique_ptr<nqe::internal::NetworkQualityStore> network_quality_store_;

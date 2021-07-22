@@ -436,7 +436,6 @@ NetworkQualityEstimatorParams::NetworkQualityEstimatorParams(
               "throughput_hanging_requests_cwnd_size_multiplier",
               1)),
       weight_multiplier_per_second_(GetWeightMultiplierPerSecond(params_)),
-      weight_multiplier_per_signal_strength_level_(0.8),
       forced_effective_connection_type_(
           GetInitForcedEffectiveConnectionType(params_)),
       forced_effective_connection_type_on_cellular_only_(
@@ -499,29 +498,12 @@ NetworkQualityEstimatorParams::NetworkQualityEstimatorParams(
               "socket_watchers_min_notification_interval_msec",
               200))),
       use_end_to_end_rtt_(true),
-      cap_ect_based_on_signal_strength_(
-          GetStringValueForVariationParamWithDefaultValue(
-              params_,
-              "cap_ect_based_on_signal_strength",
-              "true") != "false"),
       upper_bound_typical_kbps_multiplier_(
           GetDoubleValueForVariationParamWithDefaultValue(
               params_,
               "upper_bound_typical_kbps_multiplier",
               3.5)),
 
-      // |get_signal_strength_and_detailed_network_id_| is false by default.
-      get_signal_strength_and_detailed_network_id_(
-          GetStringValueForVariationParamWithDefaultValue(
-              params_,
-              "get_signal_strength_and_detailed_network_id",
-              "false") == "true"),
-      // Default 30 minutes.
-      wifi_signal_strength_query_interval_(
-          base::TimeDelta::FromSeconds(GetValueForVariationParam(
-              params_,
-              "wifi_signal_strength_query_interval_seconds",
-              30 * 60))),
       adjust_rtt_based_on_rtt_counts_(
           GetStringValueForVariationParamWithDefaultValue(
               params_,
@@ -536,9 +518,6 @@ NetworkQualityEstimatorParams::NetworkQualityEstimatorParams(
          hanging_request_http_rtt_upper_bound_http_rtt_multiplier_ == -1 ||
          hanging_request_http_rtt_upper_bound_transport_rtt_multiplier_ >=
              hanging_request_http_rtt_upper_bound_http_rtt_multiplier_);
-
-  DCHECK_GE(1.0, weight_multiplier_per_signal_strength_level_);
-  DCHECK_LE(0.0, weight_multiplier_per_signal_strength_level_);
 
   DCHECK_LT(0, hanging_request_duration_http_rtt_multiplier());
   DCHECK_LT(0, hanging_request_http_rtt_upper_bound_http_rtt_multiplier());

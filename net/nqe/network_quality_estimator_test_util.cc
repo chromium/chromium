@@ -327,19 +327,6 @@ nqe::internal::NetworkID TestNetworkQualityEstimator::GetCurrentNetworkID()
                                   INT32_MIN);
 }
 
-absl::optional<int32_t>
-TestNetworkQualityEstimator::GetCurrentSignalStrengthWithThrottling() {
-  if (current_cellular_signal_strength_) {
-    return current_cellular_signal_strength_;
-  }
-  return NetworkQualityEstimator::GetCurrentSignalStrengthWithThrottling();
-}
-
-void TestNetworkQualityEstimator::SetCurrentSignalStrength(
-    int32_t signal_strength) {
-  current_cellular_signal_strength_ = signal_strength;
-}
-
 TestNetworkQualityEstimator::LocalHttpTestServer::LocalHttpTestServer(
     const base::FilePath& document_root) {
   AddDefaultHandlers(document_root);

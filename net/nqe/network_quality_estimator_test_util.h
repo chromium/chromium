@@ -211,8 +211,6 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
     transport_rtt_observation_count_last_ect_computation_ = count;
   }
 
-  void SetCurrentSignalStrength(int32_t signal_strength);
-
   // Returns count of ping RTTs received from H2/spdy connections.
   size_t ping_rtt_received_count() const { return ping_rtt_received_count_; }
 
@@ -227,10 +225,6 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   using NetworkQualityEstimator::AddAndNotifyObserversOfRTT;
   using NetworkQualityEstimator::AddAndNotifyObserversOfThroughput;
   using NetworkQualityEstimator::IsHangingRequest;
-
-  // NetworkQualityEstimator implementation that returns the overridden
-  // network id and signal strength (instead of invoking platform APIs).
-  absl::optional<int32_t> GetCurrentSignalStrengthWithThrottling() override;
 
  private:
   class LocalHttpTestServer : public EmbeddedTestServer {
@@ -283,8 +277,6 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
 
   // If set, GetRTTEstimateInternal() would return the set value.
   absl::optional<base::TimeDelta> start_time_null_end_to_end_rtt_;
-
-  absl::optional<int32_t> current_cellular_signal_strength_;
 
   LocalHttpTestServer embedded_test_server_;
 

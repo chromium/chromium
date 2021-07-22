@@ -89,49 +89,11 @@ bool RequestSchemeIsHTTPOrHTTPS(const URLRequest& request) {
 
 nqe::internal::NetworkID DoGetCurrentNetworkID(
     NetworkQualityEstimatorParams* params) {
-  // It is possible that the connection type changed between when
-  // GetConnectionType() was called and when the API to determine the
-  // network name was called. Check if that happened and retry until the
-  // connection type stabilizes. This is an imperfect solution but should
-  // capture majority of cases, and should not significantly affect estimates
-  // (that are approximate to begin with).
-  while (true) {
     nqe::internal::NetworkID network_id(
         NetworkChangeNotifier::GetConnectionType(), std::string(), INT32_MIN);
 
-    if (!params || !params->get_signal_strength_and_detailed_network_id())
-      return network_id;
-
-    switch (network_id.type) {
-      case NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN:
-      case NetworkChangeNotifier::ConnectionType::CONNECTION_NONE:
-      case NetworkChangeNotifier::ConnectionType::CONNECTION_BLUETOOTH:
-      case NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET:
-        break;
-      case NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI:
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_WIN)
-        network_id.id = GetWifiSSID();
-#endif
-        break;
-      case NetworkChangeNotifier::ConnectionType::CONNECTION_2G:
-      case NetworkChangeNotifier::ConnectionType::CONNECTION_3G:
-      case NetworkChangeNotifier::ConnectionType::CONNECTION_4G:
-      case NetworkChangeNotifier::ConnectionType::CONNECTION_5G:
-#if defined(OS_ANDROID)
-        network_id.id = android::GetTelephonyNetworkOperator();
-#endif
-        break;
-      default:
-        NOTREACHED() << "Unexpected connection type = " << network_id.type;
-        break;
-    }
-
-    if (network_id.type == NetworkChangeNotifier::GetConnectionType())
       return network_id;
   }
-  NOTREACHED();
-}
 
 }  // namespace
 
@@ -152,23 +114,23 @@ NetworkQualityEstimator::NetworkQualityEstimator(
           params_.get(),
           tick_clock_,
           params_->weight_multiplier_per_second(),
-          params_->weight_multiplier_per_signal_strength_level()),
+          1.0 /*params_->weight_multiplier_per_signal_strength_level()*/),
       rtt_ms_observations_{
           ObservationBuffer(
               params_.get(),
               tick_clock_,
               params_->weight_multiplier_per_second(),
-              params_->weight_multiplier_per_signal_strength_level()),
+              1.0 /*params_->weight_multiplier_per_signal_strength_level()*/),
           ObservationBuffer(
               params_.get(),
               tick_clock_,
               params_->weight_multiplier_per_second(),
-              params_->weight_multiplier_per_signal_strength_level()),
+              1.0 /*params_->weight_multiplier_per_signal_strength_level()*/),
           ObservationBuffer(
               params_.get(),
               tick_clock_,
               params_->weight_multiplier_per_second(),
-              params_->weight_multiplier_per_signal_strength_level())},
+              1.0 /*params_->weight_multiplier_per_signal_strength_level()*/)},
       effective_connection_type_at_last_main_frame_(
           EFFECTIVE_CONNECTION_TYPE_UNKNOWN),
       effective_connection_type_recomputation_interval_(
@@ -540,29 +502,7 @@ void NetworkQualityEstimator::OnConnectionTypeChanged(
   for (int i = 0; i < nqe::internal::OBSERVATION_CATEGORY_COUNT; ++i)
     rtt_ms_observations_[i].Clear();
 
-#if defined(OS_ANDROID)
-
-  bool is_cell_connection =
-      NetworkChangeNotifier::IsConnectionCellular(current_network_id_.type);
-  bool is_wifi_connection =
-      (current_network_id_.type == NetworkChangeNotifier::CONNECTION_WIFI);
-
-  if (params_->weight_multiplier_per_signal_strength_level() < 1.0 &&
-      (is_cell_connection || is_wifi_connection)) {
-    bool signal_strength_available =
-        min_signal_strength_since_connection_change_ &&
-        max_signal_strength_since_connection_change_;
-
-    std::string histogram_name =
-        is_cell_connection ? "NQE.CellularSignalStrength.LevelAvailable"
-                           : "NQE.WifiSignalStrength.LevelAvailable";
-
-    base::UmaHistogramBoolean(histogram_name, signal_strength_available);
-  }
-#endif  // OS_ANDROID
   current_network_id_.signal_strength = INT32_MIN;
-  min_signal_strength_since_connection_change_.reset();
-  max_signal_strength_since_connection_change_.reset();
   network_quality_ = nqe::internal::NetworkQuality();
   end_to_end_rtt_ = absl::nullopt;
   effective_connection_type_ = EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
@@ -627,91 +567,6 @@ void NetworkQualityEstimator::ContinueGatherEstimatesForNextConnectionType(
   ComputeEffectiveConnectionType();
 }
 
-absl::optional<int32_t>
-NetworkQualityEstimator::GetCurrentSignalStrengthWithThrottling() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!params_->get_signal_strength_and_detailed_network_id())
-    return absl::nullopt;
-
-  if (params_->weight_multiplier_per_signal_strength_level() >= 1.0)
-    return absl::nullopt;
-
-  if ((current_network_id_.type != NetworkChangeNotifier::CONNECTION_WIFI) &&
-      !NetworkChangeNotifier::IsConnectionCellular(current_network_id_.type)) {
-    return absl::nullopt;
-  }
-
-  // Do not call more than once per |wifi_signal_strength_query_interval|
-  // duration.
-  if (last_signal_strength_check_timestamp_.has_value() &&
-      (tick_clock_->NowTicks() - last_signal_strength_check_timestamp_.value() <
-       params_->wifi_signal_strength_query_interval()) &&
-      (last_signal_strength_check_timestamp_.value() >
-       last_connection_change_)) {
-    return absl::nullopt;
-  }
-
-  last_signal_strength_check_timestamp_ = tick_clock_->NowTicks();
-
-  if (current_network_id_.type == NetworkChangeNotifier::CONNECTION_WIFI) {
-    UMA_HISTOGRAM_BOOLEAN("NQE.SignalStrengthQueried.WiFi", true);
-
-#if defined(OS_ANDROID)
-    return android::GetWifiSignalLevel();
-#endif  // OS_ANDROID
-  }
-
-  if (NetworkChangeNotifier::IsConnectionCellular(current_network_id_.type)) {
-    UMA_HISTOGRAM_BOOLEAN("NQE.SignalStrengthQueried.Cellular", true);
-#if defined(OS_ANDROID)
-    return android::cellular_signal_strength::GetSignalStrengthLevel();
-#endif  // OS_ANDROID
-  }
-
-  return absl::nullopt;
-}
-
-void NetworkQualityEstimator::UpdateSignalStrength() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  int32_t past_signal_strength = current_network_id_.signal_strength;
-  absl::optional<int32_t> new_signal_strength =
-      GetCurrentSignalStrengthWithThrottling();
-
-  // A fresh value is unavailable. So, return early.
-  if (!new_signal_strength)
-    return;
-
-  // Check if there is no change in the signal strength.
-  if (past_signal_strength == new_signal_strength.value())
-    return;
-
-  // Check if the signal strength is unavailable.
-  if (new_signal_strength.value() == INT32_MIN)
-    return;
-
-  DCHECK(new_signal_strength.value() >= 0 && new_signal_strength.value() <= 4);
-
-  // Record the network quality we experienced for the previous signal strength
-  // (for when we return to that signal strength).
-  network_quality_store_->Add(current_network_id_,
-                              nqe::internal::CachedNetworkQuality(
-                                  tick_clock_->NowTicks(), network_quality_,
-                                  effective_connection_type_));
-
-  current_network_id_.signal_strength = new_signal_strength.value();
-  // Update network quality from cached value for new signal strength.
-  ReadCachedNetworkQualityEstimate();
-
-  min_signal_strength_since_connection_change_ =
-      std::min(min_signal_strength_since_connection_change_.value_or(INT32_MAX),
-               current_network_id_.signal_strength);
-  max_signal_strength_since_connection_change_ =
-      std::max(max_signal_strength_since_connection_change_.value_or(INT32_MIN),
-               current_network_id_.signal_strength);
-}
-
 void NetworkQualityEstimator::RecordNetworkIDAvailability() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (current_network_id_.type ==
@@ -756,8 +611,6 @@ void NetworkQualityEstimator::RecordMetricsOnMainFrameRequest() const {
 void NetworkQualityEstimator::ComputeEffectiveConnectionType() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  UpdateSignalStrength();
-
   const base::TimeTicks now = tick_clock_->NowTicks();
 
   const EffectiveConnectionType past_type = effective_connection_type_;
@@ -775,27 +628,6 @@ void NetworkQualityEstimator::ComputeEffectiveConnectionType() {
 
   network_quality_ = nqe::internal::NetworkQuality(http_rtt, transport_rtt,
                                                    downstream_throughput_kbps);
-  net::EffectiveConnectionType signal_strength_capped_ect =
-      GetCappedECTBasedOnSignalStrength();
-
-  if (signal_strength_capped_ect != effective_connection_type_) {
-    DCHECK_LE(signal_strength_capped_ect, effective_connection_type_);
-    UMA_HISTOGRAM_EXACT_LINEAR(
-        "NQE.CellularSignalStrength.ECTReduction",
-        effective_connection_type_ - signal_strength_capped_ect,
-        static_cast<int>(EFFECTIVE_CONNECTION_TYPE_LAST));
-
-    effective_connection_type_ = signal_strength_capped_ect;
-
-    // Reset |network_quality_| based on the updated effective connection type.
-    network_quality_ = nqe::internal::NetworkQuality(
-        params_->TypicalNetworkQuality(effective_connection_type_).http_rtt(),
-        params_->TypicalNetworkQuality(effective_connection_type_)
-            .transport_rtt(),
-        params_->TypicalNetworkQuality(effective_connection_type_)
-            .downstream_throughput_kbps());
-  }
-
   ClampKbpsBasedOnEct();
 
   UMA_HISTOGRAM_ENUMERATION("NQE.EffectiveConnectionType.OnECTComputation",
@@ -928,85 +760,6 @@ void NetworkQualityEstimator::AdjustHttpRttBasedOnRTTCounts(
   UMA_HISTOGRAM_TIMES("NQE.HttpRttReduction.BasedOnRTTCounts",
                       *http_rtt - upper_bound_http_rtt);
   *http_rtt = upper_bound_http_rtt;
-}
-
-EffectiveConnectionType
-NetworkQualityEstimator::GetCappedECTBasedOnSignalStrength() const {
-  if (!params_->cap_ect_based_on_signal_strength())
-    return effective_connection_type_;
-
-  // Check if signal strength is available.
-  if (current_network_id_.signal_strength == INT32_MIN)
-    return effective_connection_type_;
-
-  if (effective_connection_type_ == EFFECTIVE_CONNECTION_TYPE_UNKNOWN ||
-      effective_connection_type_ == EFFECTIVE_CONNECTION_TYPE_OFFLINE) {
-    return effective_connection_type_;
-  }
-
-  // Do not cap ECT if the signal strength is high.
-  if (current_network_id_.signal_strength > 2)
-    return effective_connection_type_;
-
-  DCHECK_LE(0, current_network_id_.signal_strength);
-
-  // When signal strength is 0, the device is almost offline.
-  if (current_network_id_.signal_strength == 0) {
-    switch (current_network_id_.type) {
-      case NetworkChangeNotifier::CONNECTION_2G:
-      case NetworkChangeNotifier::CONNECTION_3G:
-        return std::min(effective_connection_type_,
-                        EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
-      case NetworkChangeNotifier::CONNECTION_4G:
-      case NetworkChangeNotifier::CONNECTION_5G:
-      case NetworkChangeNotifier::CONNECTION_WIFI:
-        return std::min(effective_connection_type_,
-                        EFFECTIVE_CONNECTION_TYPE_2G);
-      default:
-        NOTREACHED();
-        return effective_connection_type_;
-    }
-  }
-
-  if (current_network_id_.signal_strength == 1) {
-    switch (current_network_id_.type) {
-      case NetworkChangeNotifier::CONNECTION_2G:
-        return std::min(effective_connection_type_,
-                        EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
-      case NetworkChangeNotifier::CONNECTION_3G:
-        return std::min(effective_connection_type_,
-                        EFFECTIVE_CONNECTION_TYPE_2G);
-      case NetworkChangeNotifier::CONNECTION_4G:
-      case NetworkChangeNotifier::CONNECTION_5G:
-      case NetworkChangeNotifier::CONNECTION_WIFI:
-        return std::min(effective_connection_type_,
-                        EFFECTIVE_CONNECTION_TYPE_3G);
-      default:
-        NOTREACHED();
-        return effective_connection_type_;
-    }
-  }
-
-  if (current_network_id_.signal_strength == 2) {
-    switch (current_network_id_.type) {
-      case NetworkChangeNotifier::CONNECTION_2G:
-        return std::min(effective_connection_type_,
-                        EFFECTIVE_CONNECTION_TYPE_2G);
-      case NetworkChangeNotifier::CONNECTION_3G:
-        return std::min(effective_connection_type_,
-                        EFFECTIVE_CONNECTION_TYPE_3G);
-      case NetworkChangeNotifier::CONNECTION_4G:
-      case NetworkChangeNotifier::CONNECTION_5G:
-      case NetworkChangeNotifier::CONNECTION_WIFI:
-        return std::min(effective_connection_type_,
-                        EFFECTIVE_CONNECTION_TYPE_4G);
-      default:
-        NOTREACHED();
-        return effective_connection_type_;
-    }
-  }
-  NOTREACHED();
-  return effective_connection_type_;
 }
 
 EffectiveConnectionType NetworkQualityEstimator::GetEffectiveConnectionType()
