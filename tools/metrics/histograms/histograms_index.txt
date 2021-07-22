@@ -19,6 +19,7 @@ tools/metrics/histograms/histograms_xml/cloud/histograms.xml
 tools/metrics/histograms/histograms_xml/commerce/histograms.xml
 tools/metrics/histograms/histograms_xml/compositing/histograms.xml
 tools/metrics/histograms/histograms_xml/content/histograms.xml
+tools/metrics/histograms/histograms_xml/content_creation/histograms.xml
 tools/metrics/histograms/histograms_xml/cookie/histograms.xml
 tools/metrics/histograms/histograms_xml/cras/histograms.xml
 tools/metrics/histograms/histograms_xml/cros/histograms.xml

@@ -1,0 +1,276 @@
+<!--
+Copyright 2021 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of content creation
+histograms along with a detailed description for each histogram. It includes
+histograms for the following features:
+  - Shared Highlighting
+  - Note Creation
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="NoteCreation.CreationStatus" enum="BooleanCreated"
+    expires_after="2021-12-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records whether user created a note when they were in the creation flow of
+    the feature.
+  </summary>
+</histogram>
+
+<histogram name="NoteCreation.Funnel" enum="NoteCreationFunnel"
+    expires_after="2021-12-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the different states of the funnel that a user goes through in the
+    note creation feature.
+  </summary>
+</histogram>
+
+<histogram name="NoteCreation.NoteShared" enum="BooleanShared"
+    expires_after="2021-12-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>Records whether the created note was shared or not.</summary>
+</histogram>
+
+<histogram name="NoteCreation.NumberOfTemplateChanges"
+    units="Number of changes" expires_after="2021-12-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the number of times the user changed templates when creating a note.
+  </summary>
+</histogram>
+
+<histogram name="NoteCreation.SelectedTemplate" enum="NoteTemplate"
+    expires_after="2021-12-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records which template the user selected when creating their note.
+  </summary>
+</histogram>
+
+<histogram name="NoteCreation.ShareDestination" enum="NoteShareDestination"
+    expires_after="2021-12-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the destination type (first or third party) for the shared note.
+  </summary>
+</histogram>
+
+<histogram name="NoteCreation.TimeTo{action}" units="ms"
+    expires_after="2021-12-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the amount of time taken to accomplish {action} from the time the
+    creation flow was started.
+  </summary>
+  <token key="action">
+    <variant name=".DismissCreationDialog"
+        summary="The user dismissed the creation dialog."/>
+    <variant name=".DismissShare"
+        summary="The user dismissed the sharing dialog for their newly
+                 created note."/>
+    <variant name=".SelectTemplate"
+        summary="The user selected a template for their note, completing the
+                 creation flow."/>
+    <variant name=".ShareCreation"
+        summary="The user shared their newly created note."/>
+  </token>
+</histogram>
+
+<histogram name="SharedHighlights.AndroidShareSheet.SharedState"
+    enum="LinkGenerationSharedStatus" expires_after="2021-11-12">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records the status of the link generation when a user shares content using
+    the feature on Android.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.AsyncTask.Iterations" units="iterations"
+    expires_after="2021-12-31">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates number of iterations it took for AsyncFindBuffer to finish the
+    search. AsyncFindBuffer is used only for validating generated text fragment
+    selectors for Shared Highlighting.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.AsyncTask.SearchDuration" units="ms"
+    expires_after="2021-12-31">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Time it took in milliseconds for AsyncFindBuffer to finish the search.
+    AsyncFindBuffer is used only for validating generated text fragment
+    selectors for Shared Highlighting.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.Desktop.CopiedLinkType"
+    enum="LinkGenerationCopiedLinkType" expires_after="2021-11-12">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records the type of shared highlighting link the user copied on desktop.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Error"
+    enum="LinkGenerationError" expires_after="2021-12-31">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records errors that caused text fragment selector generation to fail.
+    Recorded for all the failed link generation runs. This histogram is a
+    superset of |SharedHighlights.LinkGenerated.Error.Requested|.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Error.Iterations"
+    units="iterations" expires_after="2021-12-31">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates number of iterations it took for the unsuccessful text fragment
+    selector generation run.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Error.Requested"
+    enum="LinkGenerationError" expires_after="2021-12-31">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records errors that caused text fragment selector generation to fail.
+    Recorded only for failure cases that were requested by users.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Error.TimeToGenerate"
+    units="ms" expires_after="2021-12-31">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Time it took in millisecons for a failed text fragment selector generation
+    attempt.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Iterations" units="iterations"
+    expires_after="2021-12-31">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates number of iterations it took to successfully generate text
+    fragment selector.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.ParamLength" units="characters"
+    expires_after="2021-12-31">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Number of charaters in successfully generated text fragment selector. For
+    example, for #:=:text=sample%20text, it would be the
+    len(&quot;sample%20text&quot;) which is 13. Recorded only when selector
+    generation was successful.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.SelectionLength"
+    units="characters" expires_after="2021-12-31">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Number of characters in the user selected text, that text fragment selector
+    is generated for. Recorded regardless of generation success.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.SelectorParameters"
+    enum="TextFragmentAnchorParameters" expires_after="2021-12-31">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates which parameters were specified in a text fragment selector.
+    Recorded only when selector generation was successful.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.StateAtRequest"
+    enum="LinkGenerationState" expires_after="2021-11-12">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records the state of the link generation when link to text request is
+    received from the browser process.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.TimeToGenerate" units="ms"
+    expires_after="2021-12-31">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    How long it took in milliseconds to successfully generate text fragment
+    selector.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated{Requested}"
+    units="BooleanSuccess" expires_after="2021-12-31">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates whether text fragment selector generation was successful for
+    {Requested}.
+  </summary>
+  <token key="Requested">
+    <variant name="" summary="all cases"/>
+    <variant name=".RequestedAfterReady"
+        summary="cases when selector is requested after its ready."/>
+    <variant name=".RequestedBeforeReady"
+        summary="cases when selector is requested before its ready."/>
+  </token>
+</histogram>
+
+<histogram name="SharedHighlights.LinkToTextDiagnoseStatus"
+    enum="LinkToTextDiagnoseStatus" expires_after="2021-11-12">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records the status of link to text flow on Android for diagnostic purposes.
+    Intended to be temporary for debug purposes.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
