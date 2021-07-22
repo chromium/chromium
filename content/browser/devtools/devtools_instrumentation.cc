@@ -977,6 +977,15 @@ void ReportSameSiteCookieIssue(
     const net::SiteForCookies& site_for_cookies,
     blink::mojom::SameSiteCookieOperation operation,
     const absl::optional<std::string>& devtools_request_id) {
+  auto exclusion_reasons =
+      BuildExclusionReasons(excluded_cookie->access_result.status);
+  auto warning_reasons =
+      BuildWarningReasons(excluded_cookie->access_result.status);
+  if (exclusion_reasons->empty() && warning_reasons->empty()) {
+    // If we don't report any reason, there is no point in informing DevTools.
+    return;
+  }
+
   std::unique_ptr<protocol::Audits::AffectedRequest> affected_request;
   if (devtools_request_id) {
     // We can report the url here, because if devtools_request_id is set, the
@@ -989,10 +998,8 @@ void ReportSameSiteCookieIssue(
 
   auto same_site_details =
       protocol::Audits::SameSiteCookieIssueDetails::Create()
-          .SetCookieExclusionReasons(
-              BuildExclusionReasons(excluded_cookie->access_result.status))
-          .SetCookieWarningReasons(
-              BuildWarningReasons(excluded_cookie->access_result.status))
+          .SetCookieExclusionReasons(std::move(exclusion_reasons))
+          .SetCookieWarningReasons(std::move(warning_reasons))
           .SetOperation(BuildCookieOperation(operation))
           .SetCookieUrl(url.spec())
           .SetRequest(std::move(affected_request))
