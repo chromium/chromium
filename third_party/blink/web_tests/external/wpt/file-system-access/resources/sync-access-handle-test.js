@@ -12,5 +12,6 @@ function sync_access_handle_test(test, description) {
     const fileHandle = await dir.getFileHandle('OPFS.test', {create: true});
     const syncHandle = await fileHandle.createSyncAccessHandle();
     await test(t, syncHandle);
+    await syncHandle.close();
   }, description);
 }

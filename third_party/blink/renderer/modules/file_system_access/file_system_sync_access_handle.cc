@@ -27,34 +27,92 @@ FileSystemSyncAccessHandle::FileSystemSyncAccessHandle(
   DCHECK(access_handle_remote_.is_bound());
 }
 
-ScriptPromise FileSystemSyncAccessHandle::close(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  auto promise = resolver->Promise();
-
-  // TODO(fivedots): Add logic to close file delegate, and deal with
-  // closures during IO operations, as done in Storage Foundation API.
-
-  if (!access_handle_remote_.is_bound()) {
-    // If the backend went away, no need to tell it that the handle was closed.
-    resolver->Resolve();
-    return promise;
-  }
-
-  access_handle_remote_->Close(
-      WTF::Bind([](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
-                WrapPersistent(resolver)));
-  return promise;
-}
-
 void FileSystemSyncAccessHandle::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(file_delegate_);
   visitor->Trace(access_handle_remote_);
+  visitor->Trace(queued_close_resolver_);
+}
+
+ScriptPromise FileSystemSyncAccessHandle::close(ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto promise = resolver->Promise();
+
+  if (is_closed_ || !access_handle_remote_.is_bound()) {
+    // close() is idempotent.
+    resolver->Resolve();
+    return promise;
+  }
+
+  is_closed_ = true;
+
+  DCHECK(!queued_close_resolver_) << "Close logic kicked off twice";
+  queued_close_resolver_ = resolver;
+
+  if (!io_pending_) {
+    // Pretend that a close() promise was queued behind an I/O operation, and
+    // the operation just finished. This is less logic than handling the
+    // non-queued case separately.
+    DispatchQueuedClose();
+  }
+
+  return promise;
+}
+
+void FileSystemSyncAccessHandle::DispatchQueuedClose() {
+  DCHECK(!io_pending_)
+      << "Dispatching close() concurrently with other I/O operations is racy";
+
+  if (!queued_close_resolver_)
+    return;
+
+  DCHECK(is_closed_) << "close() resolver queued without setting closed_";
+  ScriptPromiseResolver* resolver = queued_close_resolver_;
+  queued_close_resolver_ = nullptr;
+
+  worker_pool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      CrossThreadBindOnce(&DoClose, WrapCrossThreadPersistent(this),
+                          WrapCrossThreadPersistent(resolver),
+                          resolver_task_runner_));
+}
+
+// static
+void FileSystemSyncAccessHandle::DoClose(
+    CrossThreadPersistent<FileSystemSyncAccessHandle> access_handle,
+    CrossThreadPersistent<ScriptPromiseResolver> resolver,
+    scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
+  DCHECK(access_handle->file_delegate_->IsValid())
+      << "file I/O operation queued after file closed";
+  access_handle->file_delegate_->Close();
+
+  PostCrossThreadTask(
+      *resolver_task_runner, FROM_HERE,
+      CrossThreadBindOnce(&FileSystemSyncAccessHandle::DidClose,
+                          std::move(access_handle), std::move(resolver)));
+}
+
+void FileSystemSyncAccessHandle::DidClose(
+    CrossThreadPersistent<ScriptPromiseResolver> resolver) {
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid())
+    return;
+  ScriptState::Scope scope(script_state);
+
+  access_handle_remote_->Close(
+      WTF::Bind([](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
+                std::move(resolver)));
 }
 
 ScriptPromise FileSystemSyncAccessHandle::flush(
     ScriptState* script_state,
     ExceptionState& exception_state) {
+  if (is_closed_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The file was already closed");
+    return ScriptPromise();
+  }
+
   if (!EnterOperation()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -118,7 +176,7 @@ uint64_t FileSystemSyncAccessHandle::read(
     return 0;
   }
 
-  if (!file_delegate()->IsValid()) {
+  if (!file_delegate()->IsValid() || is_closed_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The access handle was already closed");
     return 0;
@@ -152,7 +210,7 @@ uint64_t FileSystemSyncAccessHandle::write(
   }
 
   uint64_t file_offset = options->at();
-  if (!file_delegate()->IsValid()) {
+  if (!file_delegate()->IsValid() || is_closed_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The access handle was already closed");
     return 0;

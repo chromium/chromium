@@ -64,8 +64,7 @@ bool FileSystemAccessRegularFileDelegate::Flush() {
 }
 
 void FileSystemAccessRegularFileDelegate::Close() {
-  // TODO(crbug.com/1218431): Implement this method.
-  NOTIMPLEMENTED();
+  backing_file_.Close();
 }
 
 }  // namespace blink

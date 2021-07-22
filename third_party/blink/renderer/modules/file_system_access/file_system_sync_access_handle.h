@@ -35,10 +35,10 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
   FileSystemSyncAccessHandle& operator=(const FileSystemSyncAccessHandle&) =
       delete;
 
-  ScriptPromise close(ScriptState*);
-
   // GarbageCollected
   void Trace(Visitor* visitor) const override;
+
+  ScriptPromise close(ScriptState*);
 
   ScriptPromise flush(ScriptState*, ExceptionState&);
 
@@ -51,6 +51,17 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
                  ExceptionState&);
 
  private:
+  void DispatchQueuedClose();
+
+  // Performs the file I/O part of close().
+  static void DoClose(
+      CrossThreadPersistent<FileSystemSyncAccessHandle> access_handle,
+      CrossThreadPersistent<ScriptPromiseResolver> resolver,
+      scoped_refptr<base::SequencedTaskRunner> file_task_runner);
+
+  // Performs the post file-I/O part of close(), on the foreground thread.
+  void DidClose(CrossThreadPersistent<ScriptPromiseResolver> resolver);
+
   // Performs the file I/O part of flush().
   static void DoFlush(
       CrossThreadPersistent<FileSystemSyncAccessHandle> access_handle,
@@ -71,6 +82,7 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
   void ExitOperation() {
     DCHECK(io_pending_);
     io_pending_ = false;
+    DispatchQueuedClose();
   }
   FileSystemAccessFileDelegate* file_delegate() {
     DCHECK(io_pending_);
@@ -123,6 +135,14 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
   // {io_pending_} should only be set with the {EnterOperation()} and
   // {ExitOperation()} functions.
   bool io_pending_ = false;
+
+  bool is_closed_ = false;
+
+  // Non-null when a close() I/O is queued behind another I/O operation.
+  //
+  // Set when close() is called while another I/O operation is underway. Cleared
+  // when the queued close() operation is queued.
+  Member<ScriptPromiseResolver> queued_close_resolver_;
 
   // Schedules resolving Promises with file I/O results.
   const scoped_refptr<base::SequencedTaskRunner> resolver_task_runner_;
