@@ -3070,11 +3070,31 @@
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "browser.show_home_button": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ShowHomeButton": false
+        },
+        "prefs": {
+          "browser.show_home_button": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "ShowHomeButton": true
         },
         "prefs": {
-          "browser.show_home_button": {}
+          "browser.show_home_button": {
+            "value": true
+          }
         }
       }
     ]
@@ -8208,11 +8228,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "arc.status_reporting_enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
         "policies": {
           "ReportArcStatusEnabled": false
         },
         "prefs": {
-          "arc.status_reporting_enabled": {}
+          "arc.status_reporting_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ReportArcStatusEnabled": true
+        },
+        "prefs": {
+          "arc.status_reporting_enabled": {
+            "value": true
+          }
         }
       }
     ]
@@ -8258,11 +8298,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "multidevice.sms_connect_allowed": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "SmsMessagesAllowed": false
         },
         "prefs": {
-          "multidevice.sms_connect_allowed": {}
+          "multidevice.sms_connect_allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "SmsMessagesAllowed": true
+        },
+        "prefs": {
+          "multidevice.sms_connect_allowed": {
+            "value": true
+          }
         }
       }
     ]
@@ -8273,11 +8333,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "wifi_sync.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "WifiSyncAndroidAllowed": false
         },
         "prefs": {
-          "wifi_sync.allowed": {}
+          "wifi_sync.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "WifiSyncAndroidAllowed": true
+        },
+        "prefs": {
+          "wifi_sync.allowed": {
+            "value": true
+          }
         }
       }
     ]
@@ -8288,11 +8368,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "smart_lock_signin.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "SmartLockSigninAllowed": false
         },
         "prefs": {
-          "smart_lock_signin.allowed": {}
+          "smart_lock_signin.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "SmartLockSigninAllowed": true
+        },
+        "prefs": {
+          "smart_lock_signin.allowed": {
+            "value": true
+          }
         }
       }
     ]
@@ -8303,11 +8403,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "tether.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "InstantTetheringAllowed": false
         },
         "prefs": {
-          "tether.allowed": {}
+          "tether.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "InstantTetheringAllowed": true
+        },
+        "prefs": {
+          "tether.allowed": {
+            "value": true
+          }
         }
       }
     ]
@@ -8318,11 +8438,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "phone_hub.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "PhoneHubAllowed": false
         },
         "prefs": {
-          "phone_hub.allowed": {}
+          "phone_hub.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "PhoneHubAllowed": true
+        },
+        "prefs": {
+          "phone_hub.allowed": {
+            "value": true
+          }
         }
       }
     ]
@@ -8333,11 +8473,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "phone_hub_notifications.allowed": {
+            "default_value": true
+          }
+        }
+      },
+      {
         "policies": {
           "PhoneHubNotificationsAllowed": false
         },
         "prefs": {
-          "phone_hub_notifications.allowed": {}
+          "phone_hub_notifications.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "PhoneHubNotificationsAllowed": true
+        },
+        "prefs": {
+          "phone_hub_notifications.allowed": {
+            "value": true
+          }
         }
       }
     ]
@@ -8348,11 +8508,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "phone_hub_task_continuation.allowed": {
+            "default_value": true
+          }
+        }
+      },
+      {
         "policies": {
           "PhoneHubTaskContinuationAllowed": false
         },
         "prefs": {
-          "phone_hub_task_continuation.allowed": {}
+          "phone_hub_task_continuation.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "PhoneHubTaskContinuationAllowed": true
+        },
+        "prefs": {
+          "phone_hub_task_continuation.allowed": {
+            "value": true
+          }
         }
       }
     ]
@@ -8363,12 +8543,30 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "nearby_sharing.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "NearbyShareAllowed": false
         },
         "prefs": {
           "nearby_sharing.enabled": {
             "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "NearbyShareAllowed": true
+        },
+        "prefs": {
+          "nearby_sharing.enabled": {
+            "default_value": false
           }
         }
       }
@@ -8759,11 +8957,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "settings.voice_interaction.hotword.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "VoiceInteractionHotwordEnabled": false
+        },
+        "prefs": {
+          "settings.voice_interaction.hotword.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "VoiceInteractionHotwordEnabled": true
         },
         "prefs": {
-          "settings.voice_interaction.hotword.enabled": {}
+          "settings.voice_interaction.hotword.enabled": {
+            "value": true
+          }
         }
       }
     ]
@@ -8777,11 +8995,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "web_package.signed_exchange.enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
         "policies": {
           "SignedHTTPExchangeEnabled": false
         },
         "prefs": {
-          "web_package.signed_exchange.enabled": {}
+          "web_package.signed_exchange.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "SignedHTTPExchangeEnabled": true
+        },
+        "prefs": {
+          "web_package.signed_exchange.enabled": {
+            "value": true
+          }
         }
       }
     ]
@@ -8852,6 +9090,14 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "lock_screen_reauthentication_enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
         "policies": {
           "LockScreenReauthenticationEnabled": true
         },
@@ -8879,11 +9125,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "crostini.vm_management_cli_allowed_by_policy": {
+            "default_value": true
+          }
+        }
+      },
+      {
         "policies": {
           "VmManagementCliAllowed": false
         },
         "prefs": {
-          "crostini.vm_management_cli_allowed_by_policy": {}
+          "crostini.vm_management_cli_allowed_by_policy": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "VmManagementCliAllowed": true
+        },
+        "prefs": {
+          "crostini.vm_management_cli_allowed_by_policy": {
+            "value": true
+          }
         }
       }
     ]
@@ -8897,11 +9163,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "browser.shared_clipboard_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
         "policies": {
           "SharedClipboardEnabled": false
         },
         "prefs": {
-          "browser.shared_clipboard_enabled": {}
+          "browser.shared_clipboard_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "SharedClipboardEnabled": true
+        },
+        "prefs": {
+          "browser.shared_clipboard_enabled": {
+            "value": true
+          }
         }
       }
     ]
@@ -8921,12 +9207,30 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "browser.click_to_call_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
         "policies": {
           "ClickToCallEnabled": false
         },
         "prefs": {
           "browser.click_to_call_enabled": {
             "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ClickToCallEnabled": true
+        },
+        "prefs": {
+          "browser.click_to_call_enabled": {
+            "value": true
           }
         }
       }
@@ -8944,11 +9248,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "login_display_password_button_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "LoginDisplayPasswordButtonEnabled": false
         },
         "prefs": {
-          "login_display_password_button_enabled": {}
+          "login_display_password_button_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "LoginDisplayPasswordButtonEnabled": true
+        },
+        "prefs": {
+          "login_display_password_button_enabled": {
+            "value": true
+          }
         }
       }
     ]
@@ -8957,7 +9281,17 @@
     "os": [
       "chromeos"
     ],
+    "can_be_recommended": true,
     "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "settings.suggested_content_enabled": {
+            "value": false,
+            "check_for_recommended": false
+          }
+        }
+      },
       {
         "policies": {
           "SuggestedContentEnabled": false
@@ -8965,6 +9299,16 @@
         "prefs": {
           "settings.suggested_content_enabled": {
             "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "SuggestedContentEnabled": true
+        },
+        "prefs": {
+          "settings.suggested_content_enabled": {
+            "value": true
           }
         }
       }
@@ -8976,12 +9320,30 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "borealis.allowed_for_user": {
+            "default_value": true
+          }
+        }
+      },
+      {
         "policies": {
           "UserBorealisAllowed": false
         },
         "prefs": {
           "borealis.allowed_for_user": {
             "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "UserBorealisAllowed": true
+        },
+        "prefs": {
+          "borealis.allowed_for_user": {
+            "value": true
           }
         }
       }
@@ -9192,7 +9554,7 @@
     "reason_for_missing_test": "Chrome OS device policy used by update_engine only, not used in Chrome."
   },
   "ReportDeviceLocation": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
   "SystemTimezone": {
     "reason_for_missing_test": "Maps into CrosSettings"
@@ -10485,11 +10847,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "settings.voice_interaction.context.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "VoiceInteractionContextEnabled": false
+        },
+        "prefs": {
+          "settings.voice_interaction.context.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "VoiceInteractionContextEnabled": true
         },
         "prefs": {
-          "settings.voice_interaction.context.enabled": {}
+          "settings.voice_interaction.context.enabled": {
+            "value": true
+          }
         }
       }
     ]
