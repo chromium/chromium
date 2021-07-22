@@ -7265,3 +7265,4 @@ crbug.com/1231431 virtual/plz-service-worker/external/wpt/html/cross-origin-embe
 # Sheriff 2021-07-22
 crbug.com/1222097 [ Mac ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Pass Failure ]
 crbug.com/1222097 [ Mac ] virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Pass Failure ]
+crbug.com/1231915 [ Mac10.12 ] external/wpt/selection/textcontrols/selectionchange-bubble.html [ Pass Timeout ]
