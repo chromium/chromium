@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
-#include "third_party/blink/renderer/modules/mediastream/media_stream_video_track_signal_observer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -109,13 +108,6 @@ PushableMediaStreamVideoSource::PushableMediaStreamVideoSource(
     : MediaStreamVideoSource(std::move(main_task_runner)),
       broker_(AdoptRef(new Broker(this))) {}
 
-PushableMediaStreamVideoSource::PushableMediaStreamVideoSource(
-    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-    const base::WeakPtr<MediaStreamVideoSource>& upstream_source)
-    : MediaStreamVideoSource(std::move(main_task_runner)),
-      upstream_source_(upstream_source),
-      broker_(AdoptRef(new Broker(this))) {}
-
 PushableMediaStreamVideoSource::~PushableMediaStreamVideoSource() {
   broker_->OnSourceDestroyedOrStopped();
 }
@@ -124,40 +116,6 @@ void PushableMediaStreamVideoSource::PushFrame(
     scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks estimated_capture_time) {
   broker_->PushFrame(std::move(video_frame), estimated_capture_time);
-}
-
-void PushableMediaStreamVideoSource::RequestRefreshFrame() {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  if (upstream_source_)
-    upstream_source_->RequestRefreshFrame();
-  if (signal_observer_)
-    signal_observer_->RequestFrame();
-}
-
-void PushableMediaStreamVideoSource::OnFrameDropped(
-    media::VideoCaptureFrameDropReason reason) {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  if (upstream_source_)
-    upstream_source_->OnFrameDropped(reason);
-}
-
-VideoCaptureFeedbackCB PushableMediaStreamVideoSource::GetFeedbackCallback()
-    const {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  if (upstream_source_) {
-    return WTF::BindRepeating(
-        [](const base::WeakPtr<MediaStreamVideoSource>& source,
-           const media::VideoCaptureFeedback& feedback) {
-          if (!source)
-            return;
-
-          PushableMediaStreamVideoSource* pushable_source =
-              static_cast<PushableMediaStreamVideoSource*>(source.get());
-          pushable_source->GetInternalFeedbackCallback().Run(feedback);
-        },
-        GetWeakPtr());
-  }
-  return VideoCaptureFeedbackCB();
 }
 
 void PushableMediaStreamVideoSource::StartSourceImpl(
@@ -177,21 +135,6 @@ void PushableMediaStreamVideoSource::StopSourceImpl() {
 base::WeakPtr<MediaStreamVideoSource>
 PushableMediaStreamVideoSource::GetWeakPtr() const {
   return weak_factory_.GetWeakPtr();
-}
-
-VideoCaptureFeedbackCB
-PushableMediaStreamVideoSource::GetInternalFeedbackCallback() const {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  if (!upstream_source_)
-    return VideoCaptureFeedbackCB();
-
-  return upstream_source_->GetFeedbackCallback();
-}
-
-void PushableMediaStreamVideoSource::SetSignalObserver(
-    MediaStreamVideoTrackSignalObserver* observer) {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  signal_observer_ = observer;
 }
 
 }  // namespace blink

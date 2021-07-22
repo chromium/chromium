@@ -31,10 +31,6 @@ blink_modules_sources("breakout_box") {
     "pushable_media_stream_video_source.h",
     "transferred_frame_queue_underlying_source.cc",
     "transferred_frame_queue_underlying_source.h",
-    "video_track_signal_underlying_sink.cc",
-    "video_track_signal_underlying_sink.h",
-    "video_track_signal_underlying_source.cc",
-    "video_track_signal_underlying_source.h",
   ]
   deps = [
     "//third_party/blink/renderer/modules/mediastream:mediastream",
@@ -56,8 +52,6 @@ source_set("unit_tests") {
     "pushable_media_stream_video_source_test.cc",
     "stream_test_utils.cc",
     "stream_test_utils.h",
-    "video_track_signal_underlying_sink_test.cc",
-    "video_track_signal_underlying_source_test.cc",
   ]
 
   deps = [

@@ -16,7 +16,4 @@ interface MediaStreamTrackProcessor {
 
   // This stream returns VideoFrame or AudioFrame objects.
   [CallWith=ScriptState] readonly attribute ReadableStream readable;
-
-  // This stream accepts MediaStreamTrackSignal objects
-  [CallWith=ScriptState] readonly attribute WritableStream writableControl;
 };
