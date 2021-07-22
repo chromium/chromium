@@ -60,11 +60,11 @@ KNOWN_TYP_TEST_RUNNERS = {
     'run_blinkpy_tests.py',
     'run_mac_signing_tests.py',
     'run_mini_installer_tests.py',
-    'run_polymer_tools_tests.py',
 }
 
 KNOWN_TYP_VPYTHON3_TEST_RUNNERS = {
     'monochrome_python_tests.py',
+    'run_polymer_tools_tests.py',
 }
 
 class IsolatedScriptTestAdapter(common.BaseIsolatedScriptArgsAdapter):
