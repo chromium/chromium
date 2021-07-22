@@ -114,4 +114,10 @@
 <message desc="Sample text around which will be drawn a Select to Speak visual preview. This should be less than one line long." name="IDS_SELECT_TO_SPEAK_OPTIONS_SAMPLE_TEXT">
   The quick brown fox jumped over the lazy dog.
 </message>
+<message desc="Title of the dialog shown to users the first time they use Select to speak after the natural voices update." name="IDS_SELECT_TO_SPEAK_NATURAL_VOICE_DIALOG_TITLE">
+  Use natural voice?
+</message>
+<message desc="Content of the dialog shown to users the first time they use Select to speak after the natural voices update." name="IDS_SELECT_TO_SPEAK_NATURAL_VOICE_DIALOG_DESCRIPTION">
+  You can use a natural, human-like voice when your device is online. Text will be sent to Google for processing. You can turn this off any time in Settings.
+</message>
 </grit-part>

@@ -192,6 +192,16 @@ export class SelectToSpeak {
           this.navigationControlFlag_ = result;
         });
 
+    /**
+     * Feature flag controlling availability of enhanced network voices
+     * @type {boolean}
+     */
+    this.enhancedVoicesFlag_ = false;
+    chrome.accessibilityPrivate.isFeatureEnabled(
+        AccessibilityFeature.ENHANCED_NETWORK_VOICES, (result) => {
+          this.enhancedVoicesFlag_ = result;
+        });
+
     /** @private {number} Default speech rate set in system settings. */
     this.systemSpeechRate_ = 1.0;
     chrome.settingsPrivate.getPref(SPEECH_RATE_KEY, (pref) => {
@@ -922,21 +932,23 @@ export class SelectToSpeak {
    */
   startSpeech_(text) {
     this.prepareForSpeech_(true /* clearFocusRing */);
-    const options = this.prefsManager_.speechOptions();
-    // Without nodes to anchor on, navigate is not supported.
-    this.supportsNavigationPanel_ = false;
-    options.onEvent = (event) => {
-      if (event.type === 'start') {
-        this.onStateChanged_(SelectToSpeakState.SPEAKING);
-        this.updateUi_();
-      } else if (
-          event.type === 'end' || event.type === 'interrupted' ||
-          event.type === 'cancelled') {
-        // Automatically dismiss when we're at the end.
-        this.onStateChanged_(SelectToSpeakState.INACTIVE);
-      }
-    };
-    this.ttsManager_.speak(text, options);
+    this.maybeShowEnhancedVoicesDialog_(() => {
+      const options = this.prefsManager_.speechOptions();
+      // Without nodes to anchor on, navigate is not supported.
+      this.supportsNavigationPanel_ = false;
+      options.onEvent = (event) => {
+        if (event.type === 'start') {
+          this.onStateChanged_(SelectToSpeakState.SPEAKING);
+          this.updateUi_();
+        } else if (
+            event.type === 'end' || event.type === 'interrupted' ||
+            event.type === 'cancelled') {
+          // Automatically dismiss when we're at the end.
+          this.onStateChanged_(SelectToSpeakState.INACTIVE);
+        }
+      };
+      this.ttsManager_.speak(text, options);
+    });
   }
 
   /**
@@ -958,37 +970,39 @@ export class SelectToSpeak {
    * @private
    */
   startSpeechQueue_(nodes, opt_params) {
-    const params = opt_params || {};
-    const clearFocusRing = params.clearFocusRing || false;
-    let startCharIndex = params.startCharIndex;
-    let endCharIndex = params.endCharIndex;
+    this.maybeShowEnhancedVoicesDialog_(() => {
+      const params = opt_params || {};
+      const clearFocusRing = params.clearFocusRing || false;
+      let startCharIndex = params.startCharIndex;
+      let endCharIndex = params.endCharIndex;
 
-    this.prepareForSpeech_(clearFocusRing /* clear the focus ring */);
+      this.prepareForSpeech_(clearFocusRing /* clear the focus ring */);
 
-    if (nodes.length === 0) {
-      return;
-    }
+      if (nodes.length === 0) {
+        return;
+      }
 
-    // Remember the original first and last node in the given list, as
-    // |startCharIndex| and |endCharIndex| pertain to them. If, after SVG
-    // resorting, the first or last nodes are re-ordered, do not clip them.
-    const originalFirstNode = nodes[0];
-    const originalLastNode = nodes[nodes.length - 1];
-    // Sort any SVG child nodes, if present, by visual reading order.
-    NodeUtils.sortSvgNodesByReadingOrder(nodes);
-    // Override start or end index if original nodes were sorted.
-    if (originalFirstNode !== nodes[0]) {
-      startCharIndex = undefined;
-    }
-    if (originalLastNode !== nodes[nodes.length - 1]) {
-      endCharIndex = undefined;
-    }
+      // Remember the original first and last node in the given list, as
+      // |startCharIndex| and |endCharIndex| pertain to them. If, after SVG
+      // resorting, the first or last nodes are re-ordered, do not clip them.
+      const originalFirstNode = nodes[0];
+      const originalLastNode = nodes[nodes.length - 1];
+      // Sort any SVG child nodes, if present, by visual reading order.
+      NodeUtils.sortSvgNodesByReadingOrder(nodes);
+      // Override start or end index if original nodes were sorted.
+      if (originalFirstNode !== nodes[0]) {
+        startCharIndex = undefined;
+      }
+      if (originalLastNode !== nodes[nodes.length - 1]) {
+        endCharIndex = undefined;
+      }
 
-    this.supportsNavigationPanel_ = this.isNavigationPanelSupported_(nodes);
-    this.updateNodeGroups_(nodes, startCharIndex, endCharIndex);
+      this.supportsNavigationPanel_ = this.isNavigationPanelSupported_(nodes);
+      this.updateNodeGroups_(nodes, startCharIndex, endCharIndex);
 
-    // Play TTS according to the current state variables.
-    this.startCurrentNodeGroup_();
+      // Play TTS according to the current state variables.
+      this.startCurrentNodeGroup_();
+    });
   }
 
   /**
@@ -1538,6 +1552,38 @@ export class SelectToSpeak {
       paused: this.isPaused_(),
       speechRateMultiplier: this.speechRateMultiplier_,
     });
+  }
+
+  /**
+   * Shows a dialog to the user on first-run after enhanced voices update,
+   * showing privacy disclaimer and asking if the user wants to turn on enhanced
+   * network voices.
+   *
+   * @param {function()} callback Called back after user has confirmed or
+   *     canceled in the dialog.
+   */
+  maybeShowEnhancedVoicesDialog_(callback) {
+    if (this.enhancedVoicesFlag_ &&
+        !this.prefsManager_.enhancedVoicesDialogShown()) {
+      // TODO(crbug.com/1230227): Style this dialog to match UX mocks.
+      const title =
+          chrome.i18n.getMessage('select_to_speak_natural_voice_dialog_title');
+      const description = chrome.i18n.getMessage(
+          'select_to_speak_natural_voice_dialog_description');
+      chrome.accessibilityPrivate.showConfirmationDialog(
+          title, description, (confirm) => {
+            this.prefsManager_.setEnhancedNetworkVoicesFromDialog(confirm);
+            if (callback !== undefined) {
+              callback();
+            }
+          });
+    } else {
+      // Flag not set or already shown, so we can continue the control flow
+      // synchronously.
+      if (callback !== undefined) {
+        callback();
+      }
+    }
   }
 
   /**

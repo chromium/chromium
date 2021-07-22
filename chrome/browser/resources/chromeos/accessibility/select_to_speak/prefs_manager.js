@@ -42,6 +42,9 @@ export class PrefsManager {
 
     /** @private {boolean} */
     this.enhancedNetworkVoicesEnabled_ = true;
+
+    /** @private {boolean} */
+    this.enhancedVoicesDialogShown_ = false;
   }
 
   /**
@@ -231,7 +234,8 @@ export class PrefsManager {
       chrome.storage.sync.get(
           [
             'voice', 'rate', 'pitch', 'wordHighlight', 'highlightColor',
-            'backgroundShading', 'navigationControls', 'enhancedNetworkVoices'
+            'backgroundShading', 'navigationControls', 'enhancedNetworkVoices',
+            'enhancedVoicesDialogShown'
           ],
           (prefs) => {
             if (prefs['voice']) {
@@ -265,6 +269,14 @@ export class PrefsManager {
             } else {
               chrome.storage.sync.set({
                 'enhancedNetworkVoices': this.enhancedNetworkVoicesEnabled_
+              });
+            }
+            if (prefs['enhancedVoicesDialogShown'] !== undefined) {
+              this.enhancedVoicesDialogShown_ =
+                  prefs['enhancedVoicesDialogShown'];
+            } else {
+              chrome.storage.sync.set({
+                'enhancedVoicesDialogShown': this.enhancedVoicesDialogShown_
               });
             }
             if (prefs['rate'] && prefs['pitch']) {
@@ -371,6 +383,32 @@ export class PrefsManager {
    */
   enhancedNetworkVoicesEnabled() {
     return this.enhancedNetworkVoicesEnabled_;
+  }
+
+  /**
+   * Gets whether the initial popup authorizing enhanced network voices has been
+   * shown to the user or not.
+   *
+   * @returns {boolean} True if the initial popup dialog has been shown already.
+   */
+  enhancedVoicesDialogShown() {
+    return this.enhancedVoicesDialogShown_;
+  }
+
+  /**
+   * Sets whether enhanced network voices are enabled or not from initial popup.
+   * @param {boolean} enabled Specifies if the user enabled enhanced voices in
+   *     the popup.
+   */
+  setEnhancedNetworkVoicesFromDialog(enabled) {
+    if (enabled !== undefined) {
+      this.enhancedNetworkVoicesEnabled_ = enabled;
+      chrome.storage.sync.set(
+          {'enhancedNetworkVoices': this.enhancedNetworkVoicesEnabled_});
+      this.enhancedVoicesDialogShown_ = true;
+      chrome.storage.sync.set(
+          {'enhancedVoicesDialogShown': this.enhancedVoicesDialogShown_});
+    }
   }
 }
 
