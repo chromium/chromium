@@ -161,7 +161,7 @@
   </message>
 <if expr="chromeos">
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2" desc="Description of the Account Manager Settings page. Shown just below the title of the page.">
-    This page allows you to manage your signed-in Google accounts. These accounts will be available in Chromium browser and Play Store apps, as well as services like Gmail, Drive, and YouTube. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    You can manage your signed-in Google Accounts. Your Google Accounts are used for Chromium browser, Play Store, Gmail, and more. If you want to add an account for someone else, like a family member, add a new person to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> instead. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
 </if>
 

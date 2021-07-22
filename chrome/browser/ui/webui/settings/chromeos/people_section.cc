@@ -367,13 +367,15 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
         {"accountListHeader", IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER_V2},
         {"accountListHeaderChild",
          IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER_CHILD},
-        {"accountManagerDescription",
-         IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2},
         {"accountManagerChildDescription",
          IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION_V2},
         {"accountManagerSecondaryAccountsDisabledText",
          IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT_V2},
     };
+    html_source->AddString(
+        "accountManagerDescription",
+        l10n_util::GetStringFUTF16(IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2,
+                                   ui::GetChromeOSDeviceName()));
     html_source->AddLocalizedStrings(kLocalizedStringsV2);
   } else {
     static constexpr webui::LocalizedString kLocalizedStringsV1[] = {

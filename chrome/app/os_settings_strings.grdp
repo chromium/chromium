@@ -1509,7 +1509,7 @@ Press an assigned switch to remove assignment
     Manage your accounts here. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION_V2" desc="Description of the Account Manager Settings page for child users. Shown just below the title of the page.">
-    This page allows you to manage your signed-in Google accounts. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    This page allows you to manage your signed-in Google Accounts. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_FIRST_MESSAGE" desc="Description of the Account Manager Settings page for child users. Shown just below the link to learn more about account management.">
      Bookmarks, passwords, and other browser data are synced with the primary account.
