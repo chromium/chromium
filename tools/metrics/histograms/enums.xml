@@ -45062,6 +45062,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="19" label="Release Notes Notification"/>
   <int value="20" label="Full restore"/>
   <int value="21" label="Smart text selection context menu"/>
+  <int value="22" label="Discover Tab Notification"/>
 </enum>
 
 <enum name="LaunchType">

@@ -39,6 +39,10 @@ class AppPlatformMetricsService {
   void Start(AppRegistryCache& app_registry_cache,
              InstanceRegistry& instance_registry);
 
+  apps::AppPlatformMetrics* AppPlatformMetrics() {
+    return app_platform_app_metrics_.get();
+  }
+
  private:
   // Helper function to check if a new day has arrived.
   void CheckForNewDay();
@@ -56,7 +60,7 @@ class AppPlatformMetricsService {
   // A periodic timer that checks if five minutes have arrived.
   base::RepeatingTimer five_minutes_timer_;
 
-  std::unique_ptr<AppPlatformMetrics> app_platform_app_metrics_;
+  std::unique_ptr<apps::AppPlatformMetrics> app_platform_app_metrics_;
 };
 
 }  // namespace apps

@@ -432,6 +432,12 @@ void RecordAppLaunchMetrics(Profile* profile,
   RecordAppLaunchSource(launch_source);
   RecordAppLaunchPerAppType(
       GetAppTypeName(profile, app_type, app_id, container));
+
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  if (proxy && proxy->AppPlatformMetrics()) {
+    proxy->AppPlatformMetrics()->RecordAppLaunchUkm(app_type, app_id,
+                                                    launch_source, container);
+  }
 }
 
 AppPlatformMetrics::AppPlatformMetrics(
@@ -530,6 +536,34 @@ void AppPlatformMetrics::OnTenMinutes() {
 
 void AppPlatformMetrics::OnFiveMinutes() {
   RecordAppsUsageTime();
+}
+
+void AppPlatformMetrics::RecordAppLaunchUkm(
+    apps::mojom::AppType app_type,
+    const std::string& app_id,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::LaunchContainer container) {
+  if (app_type == apps::mojom::AppType::kUnknown || !ShouldRecordUkm()) {
+    return;
+  }
+
+  apps::AppTypeName app_type_name =
+      GetAppTypeName(profile_, app_type, app_id, container);
+
+  if (!ShouldRecordUkmForAppTypeName(app_type_name)) {
+    return;
+  }
+
+  ukm::SourceId source_id = GetSourceId(app_id);
+  if (source_id == ukm::kInvalidSourceId) {
+    return;
+  }
+
+  ukm::builders::ChromeOSApp_Launch builder(source_id);
+  builder.SetAppType((int)app_type_name)
+      .SetLaunchSource((int)launch_source)
+      .SetUserDeviceMatrix(GetUserTypeByDeviceTypeMetrics())
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void AppPlatformMetrics::OnAppTypeInitialized(apps::mojom::AppType app_type) {

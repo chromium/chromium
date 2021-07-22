@@ -146,6 +146,12 @@ apps::InstanceRegistry& AppServiceProxyChromeOs::InstanceRegistry() {
   return instance_registry_;
 }
 
+apps::AppPlatformMetrics* AppServiceProxyChromeOs::AppPlatformMetrics() {
+  return app_platform_metrics_service_
+             ? app_platform_metrics_service_->AppPlatformMetrics()
+             : nullptr;
+}
+
 void AppServiceProxyChromeOs::Uninstall(
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source,
@@ -262,6 +268,12 @@ void AppServiceProxyChromeOs::UninstallForTesting(
     base::OnceClosure callback) {
   UninstallImpl(app_id, apps::mojom::UninstallSource::kUnknown, parent_window,
                 std::move(callback));
+}
+
+void AppServiceProxyChromeOs::SetAppPlatformMetricsServiceForTesting(
+    std::unique_ptr<apps::AppPlatformMetricsService>
+        app_platform_metrics_service) {
+  app_platform_metrics_service_ = std::move(app_platform_metrics_service);
 }
 
 void AppServiceProxyChromeOs::Shutdown() {
