@@ -49,6 +49,17 @@ const char kBrowserSubprocessPath[]         = "browser-subprocess-path";
 // flaky [like monitoring of memory pressure]).
 const char kBrowserTest[] = "browser-test";
 
+// After a zygote forks a new process, change the stack canary. This switch is
+// useful so not all forked processes use the same canary (a secret value),
+// which can be vulnerable to information leaks and brute force attacks. See
+// https://crbug.com/1206626.
+// This requires that all functions on the stack at the time
+// content::RunZygote() is called be compiled without stack canaries.
+// Valid values are "enable" or "disable".
+const char kChangeStackGuardOnFork[] = "change-stack-guard-on-fork";
+const char kChangeStackGuardOnForkEnabled[] = "enable";
+const char kChangeStackGuardOnForkDisabled[] = "disable";
+
 // Causes the Conversion Measurement API to run without delays or noise.
 const char kConversionsDebugMode[] = "conversions-debug-mode";
 

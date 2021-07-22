@@ -308,6 +308,23 @@
 #define STACK_UNINITIALIZED
 #endif
 
+// Attribute "no_stack_protector" disables -fstack-protector for the specified
+// function.
+//
+// "stack_protector" is enabled on most POSIX builds. The flag adds a canary
+// to each stack frame, which on function return is checked against a reference
+// canary. If the canaries do not match, it's likely that a stack buffer
+// overflow has occurred, so immediately crashing will prevent exploitation in
+// many cases.
+//
+// In some cases it's desirable to remove this, e.g. on hot functions, or if
+// we have purposely changed the reference canary.
+#if defined(COMPILER_GCC) || defined(__clang__)
+#define NO_STACK_PROTECTOR __attribute__((no_stack_protector))
+#else
+#define NO_STACK_PROTECTOR
+#endif
+
 // The ANALYZER_ASSUME_TRUE(bool arg) macro adds compiler-specific hints
 // to Clang which control what code paths are statically analyzed,
 // and is meant to be used in conjunction with assert & assert-like functions.

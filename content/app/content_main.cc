@@ -8,6 +8,7 @@
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/debug/activity_tracker.h"
 #include "base/debug/debugger.h"
 #include "base/debug/stack_trace.h"
@@ -215,8 +216,11 @@ void InitializeMojo(mojo::core::Configuration* config) {
 
 }  // namespace
 
-int RunContentProcess(const ContentMainParams& params,
-                      ContentMainRunner* content_main_runner) {
+// This function must be marked with NO_STACK_PROTECTOR or it may crash on
+// return, see the --change-stack-guard-on-fork command line flag.
+int NO_STACK_PROTECTOR
+RunContentProcess(const ContentMainParams& params,
+                  ContentMainRunner* content_main_runner) {
   ContentMainParams content_main_params(params);
 
   int exit_code = -1;
@@ -407,7 +411,9 @@ int RunContentProcess(const ContentMainParams& params,
   return exit_code;
 }
 
-int ContentMain(const ContentMainParams& params) {
+// This function must be marked with NO_STACK_PROTECTOR or it may crash on
+// return, see the --change-stack-guard-on-fork command line flag.
+int NO_STACK_PROTECTOR ContentMain(const ContentMainParams& params) {
   auto runner = ContentMainRunner::Create();
   return RunContentProcess(params, runner.get());
 }

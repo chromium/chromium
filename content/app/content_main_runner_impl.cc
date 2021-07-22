@@ -17,7 +17,9 @@
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/debug/debugger.h"
 #include "base/debug/leak_annotations.h"
 #include "base/debug/stack_trace.h"
@@ -131,10 +133,6 @@
 #if !defined(OS_MAC)
 #include "content/public/common/zygote/zygote_fork_delegate_linux.h"
 #endif
-#if !defined(OS_MAC) && !defined(OS_ANDROID)
-#include "content/zygote/zygote_main.h"
-#include "sandbox/linux/services/libc_interceptor.h"
-#endif
 
 #endif  // OS_POSIX || OS_FUCHSIA
 
@@ -161,12 +159,14 @@
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#include "base/stack_canary_linux.h"
 #include "content/browser/sandbox_host_linux.h"
 #include "content/browser/zygote_host/zygote_host_impl_linux.h"
 #include "content/common/zygote/zygote_communication_linux.h"
 #include "content/common/zygote/zygote_handle_impl_linux.h"
 #include "content/public/common/zygote/sandbox_support_linux.h"
 #include "content/public/common/zygote/zygote_handle.h"
+#include "content/zygote/zygote_main.h"
 #include "media/base/media_switches.h"
 #endif
 
@@ -516,7 +516,9 @@ struct MainFunction {
 // subprocesses that are launched via the zygote.  This function
 // fills in some process-launching bits around ZygoteMain().
 // Returns the exit code of the subprocess.
-int RunZygote(ContentMainDelegate* delegate) {
+// This function must be marked with NO_STACK_PROTECTOR or it may crash on
+// return, see the --change-stack-guard-on-fork command line flag.
+int NO_STACK_PROTECTOR RunZygote(ContentMainDelegate* delegate) {
   static const MainFunction kMainFunctions[] = {
     {switches::kGpuProcess, GpuMain},
     {switches::kRendererProcess, RendererMain},
@@ -539,12 +541,23 @@ int RunZygote(ContentMainDelegate* delegate) {
     return 1;
   }
 
-  delegate->ZygoteForked();
-
   // Zygote::HandleForkRequest may have reallocated the command
   // line so update it here with the new version.
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
+
+  // Re-randomize our stack canary, so processes don't share a single
+  // stack canary.
+  base::ScopedClosureRunner stack_canary_debug_message;
+  if (command_line.GetSwitchValueASCII(switches::kChangeStackGuardOnFork) ==
+      switches::kChangeStackGuardOnForkEnabled) {
+    base::ResetStackCanaryIfPossible();
+    stack_canary_debug_message.ReplaceClosure(
+        base::BindOnce(&base::SetStackSmashingEmitsDebugMessage));
+  }
+
+  delegate->ZygoteForked();
+
   std::string process_type =
       command_line.GetSwitchValueASCII(switches::kProcessType);
 
@@ -597,9 +610,12 @@ int RunBrowserProcessMain(const MainFunctionParams& main_function_params,
 
 // Run the FooMain() for a given process type.
 // Returns the exit code for this process.
-int RunOtherNamedProcessTypeMain(const std::string& process_type,
-                                 const MainFunctionParams& main_function_params,
-                                 ContentMainDelegate* delegate) {
+// This function must be marked with NO_STACK_PROTECTOR or it may crash on
+// return, see the --change-stack-guard-on-fork command line flag.
+int NO_STACK_PROTECTOR
+RunOtherNamedProcessTypeMain(const std::string& process_type,
+                             const MainFunctionParams& main_function_params,
+                             ContentMainDelegate* delegate) {
 #if defined(OS_WIN)
   if (delegate->ShouldHandleConsoleControlEvents())
     InstallConsoleControlHandler(/*is_browser_process=*/false);
@@ -904,7 +920,9 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
   return -1;
 }
 
-int ContentMainRunnerImpl::Run(bool start_minimal_browser) {
+// This function must be marked with NO_STACK_PROTECTOR or it may crash on
+// return, see the --change-stack-guard-on-fork command line flag.
+int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run(bool start_minimal_browser) {
   DCHECK(is_initialized_);
   DCHECK(!is_shutdown_);
   const base::CommandLine& command_line =

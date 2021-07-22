@@ -1302,6 +1302,8 @@ component("base") {
         "base_paths_posix.cc",
         "debug/elf_reader.cc",
         "debug/elf_reader.h",
+        "stack_canary_linux.cc",
+        "stack_canary_linux.h",
       ]
     }
   }
@@ -2801,6 +2803,21 @@ if (is_apple) {
   }
 }
 
+if (!is_nacl && (is_linux || is_chromeos)) {
+  # This test must compile with -fstack-protector-all
+  source_set("stack_canary_linux_unittests") {
+    testonly = true
+
+    sources = [ "stack_canary_linux_unittest.cc" ]
+    cflags = [ "-fstack-protector-all" ]
+
+    deps = [
+      "//base",
+      "//testing/gtest",
+    ]
+  }
+}
+
 if (is_fuchsia) {
   fidl_library("testfidl") {
     library_name = "base.testfidl"
@@ -3270,6 +3287,10 @@ test("base_unittests") {
       "debug/proc_maps_linux_unittest.cc",
       "files/scoped_file_linux_unittest.cc",
     ]
+
+    if (!is_nacl) {
+      deps += [ ":stack_canary_linux_unittests" ]
+    }
   }
 
   if (is_mac) {

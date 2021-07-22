@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_main_delegate.h"
@@ -55,8 +56,10 @@ DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
 }
 #elif defined(OS_POSIX)
 extern "C" {
-__attribute__((visibility("default")))
-int ChromeMain(int argc, const char** argv);
+// This function must be marked with NO_STACK_PROTECTOR or it may crash on
+// return, see the --change-stack-guard-on-fork command line flag.
+__attribute__((visibility("default"))) int NO_STACK_PROTECTOR
+ChromeMain(int argc, const char** argv);
 }
 #endif
 
