@@ -696,6 +696,9 @@ class AuctionRunnerTest : public testing::Test, public AuctionRunner::Delegate {
     // the test.
     EXPECT_EQ(std::string(), bad_message_);
     mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+
+    // Give off-thread things a chance to delete.
+    task_environment_.RunUntilIdle();
   }
 
   void OnBadMessage(const std::string& reason) {
