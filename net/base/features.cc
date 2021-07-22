@@ -140,7 +140,7 @@ const base::Feature kTLS13KeyUpdate{"TLS13KeyUpdate",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kPostQuantumCECPQ2{"PostQuantumCECPQ2",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+                                       base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kPostQuantumCECPQ2SomeDomains{
     "PostQuantumCECPQ2SomeDomains", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::FeatureParam<std::string> kPostQuantumCECPQ2InitialLetters(
