@@ -6682,13 +6682,10 @@ crbug.com/1205184 [ Mac11.0 ] external/wpt/IndexedDB/interleaved-cursors-large.h
 # Sheriff 2021-05-03
 crbug.com/1205133 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-color.html [ Pass Timeout ]
 crbug.com/1205133 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-color.html [ Pass Timeout ]
-crbug.com/1205020 virtual/oopr-canvas2d/fast/canvas/canvas-blend-image.html [ Failure Pass Timeout ]
 crbug.com/1205012 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Pass Timeout ]
 crbug.com/1197465 [ Linux ] virtual/scroll-unification/fast/events/mouse-cursor-no-mousemove.html [ Failure Pass ]
 crbug.com/1093041 fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Failure Pass ]
 crbug.com/1093041 virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Failure Pass Timeout ]
-crbug.com/1093041 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Failure Pass Timeout ]
-crbug.com/1146560 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Failure Pass Timeout ]
 
 # Sheriff 2021-05-10
 crbug.com/1207319 external/wpt/html/cross-origin-embedder-policy/credentialless/cache-storage.tentative.https.html [ Pass Timeout ]
@@ -6697,7 +6694,6 @@ crbug.com/1207337 virtual/scroll-unification/fast/scroll-snap/animate-fling-to-s
 # Sheriff 2021-05-04
 crbug.com/1205659 [ Mac ] external/wpt/IndexedDB/key-generators/reading-autoincrement-indexes.any.worker.html [ Pass Timeout ]
 crbug.com/1205659 [ Mac ] storage/indexeddb/empty-blob-file.html [ Pass Timeout ]
-crbug.com/1205673 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-alpha.html [ Pass Timeout ]
 crbug.com/1205673 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-wheel-scrolling-single-tick.html [ Failure Pass ]
 
 # Browser Infra 2021-05-04
@@ -6709,7 +6705,6 @@ crbug.com/1205796 [ Mac10.12 ] external/wpt/html/dom/idlharness.https.html?inclu
 crbug.com/1205796 [ Mac10.14 ] external/wpt/html/dom/idlharness.https.html?include=HTML.* [ Failure ]
 
 # Blink_web_tests 2021-05-06
-crbug.com/1205669 [ Mac10.13 ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-global-alpha.html [ Pass Timeout ]
 crbug.com/1205669 [ Mac10.13 ] external/wpt/fetch/api/idlharness.any.sharedworker.html [ Failure ]
 crbug.com/1205669 [ Mac10.13 ] external/wpt/gamepad/idlharness.https.window.html [ Failure ]
 crbug.com/1205669 [ Mac10.13 ] external/wpt/input-device-capabilities/idlharness.window.html [ Failure ]
@@ -7091,7 +7086,6 @@ crbug.com/1201406 [ Mac11.0 ] http/tests/inspector-protocol/webauthn/webauthn-se
 crbug.com/1201406 [ Mac11.0 ] http/tests/inspector-protocol/webauthn/webauthn-user-verification.js [ Crash Timeout ]
 crbug.com/1201406 [ Mac11.0 ] plugins/focus-change-4-change-focus-and-blur.html [ Timeout ]
 crbug.com/1201406 [ Mac11.0 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-same-2-yes-port.sub.https.html [ Timeout ]
-crbug.com/1201406 [ Mac11.0 ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-gradient-over-image.html [ Timeout ]
 crbug.com/1201406 [ Mac11.0 ] virtual/synchronous_html_parser/http/tests/inspector-protocol/webauthn/webauthn-clear-credentials.js [ Crash Timeout ]
 crbug.com/1201406 [ Mac11.0 ] virtual/synchronous_html_parser/http/tests/inspector-protocol/webauthn/webauthn-get-credentials.js [ Crash ]
 crbug.com/1201406 [ Mac11.0 ] virtual/synchronous_html_parser/http/tests/inspector-protocol/webauthn/webauthn-set-aps.js [ Crash ]
