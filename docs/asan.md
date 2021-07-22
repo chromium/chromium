@@ -150,7 +150,7 @@ the useful options are listed on this page, others can be obtained from running
 an ASanified binary with `ASAN_OPTIONS=help=1`. Note that Chromium sets its own
 defaults for some options, so the default behavior may be different from that
 observed in other projects.
-See `base/debug/sanitizer_options.cc` for more details.
+See `build/sanitizers/sanitizer_options.cc` for more details.
 
 ## NaCl support under ASan
 
