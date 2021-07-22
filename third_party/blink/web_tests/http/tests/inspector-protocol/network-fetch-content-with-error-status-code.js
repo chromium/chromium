@@ -8,50 +8,84 @@
   await dp.Network.enable();
   testRunner.log('Network Enabled');
 
+  const events = [];
+
+  const gotAllEvents = new Promise((resolve) => {
+    let eventHandler = (event) => {
+      events.push(event);
+      if (events.length == 8) {
+        resolve();
+      }
+    };
+    dp.Network.onRequestWillBeSent(eventHandler);
+    dp.Network.onRequestWillBeSentExtraInfo(eventHandler);
+    dp.Network.onResponseReceived(eventHandler);
+    dp.Network.onResponseReceivedExtraInfo(eventHandler);
+  });
+
+  session.evaluate(`
+    xhr = new XMLHttpRequest();
+    xhr.open('GET', '${url}', true);
+    xhr.setRequestHeader('Authorization', '');
+    xhr.responseType = 'blob';
+    xhr.send();
+  `);
+  testRunner.log('Evaled fetch command in page');
+  await gotAllEvents;
+
   let getRequestEventParams;
   let optionsRequestEventParams;
-  dp.Network.onRequestWillBeSent(event => {
-    if (event.params.request.method === 'GET') {
-      getRequestEventParams = event.params;
-    } else if (event.params.request.method === 'OPTIONS') {
-      optionsRequestEventParams = event.params;
-      optionsRequestInitiatorRequestId = event.params.initiator.requestId;
-    }
-  });
-
   let getRequestExtra = false;
   let optionsRequestExtra = false;
-  dp.Network.onRequestWillBeSentExtraInfo(event => {
-    if (event.params.requestId === getRequestEventParams.requestId) {
-      getRequestExtra = true;
-    } else if (event.params.requestId === optionsRequestEventParams.requestId) {
-      optionsRequestExtra = true;
-    }
-  });
-
   let getResponseExtra = false;
   let optionsResponseExtra = false;
-  dp.Network.onResponseReceivedExtraInfo(event => {
-    if (event.params.requestId === getRequestEventParams.requestId) {
-      getResponseExtra = true;
-    } else if (event.params.requestId === optionsRequestEventParams.requestId) {
-      optionsResponseExtra = true;
-    }
-  });
-
   let getResponseEventParams;
   let optionsResponseEventParams;
-  dp.Network.onResponseReceived(event => {
-    if (event.params.requestId === getRequestEventParams.requestId) {
-      getResponseEventParams = event.params;
-    } else if (event.params.requestId === optionsRequestEventParams.requestId) {
-      optionsResponseEventParams = event.params;
-    }
 
-    if (getResponseEventParams && optionsResponseEventParams) {
-      printResultsAndFinish();
+  events.forEach((event) => {
+    if (event.method == 'Network.requestWillBeSent') {
+      if (event.params.request.method === 'GET') {
+        getRequestEventParams = event.params;
+      } else if (event.params.request.method === 'OPTIONS') {
+        optionsRequestEventParams = event.params;
+        optionsRequestInitiatorRequestId = event.params.initiator.requestId;
+      }
     }
   });
+  events.forEach((event) => {
+    if (event.method == 'Network.requestWillBeSentExtraInfo') {
+      if (event.params.requestId === getRequestEventParams.requestId) {
+        getRequestExtra = true;
+      } else if (
+          event.params.requestId === optionsRequestEventParams.requestId) {
+        optionsRequestExtra = true;
+      }
+    }
+  });
+  events.forEach((event) => {
+    if (event.method == 'Network.responseReceivedExtraInfo') {
+      if (event.params.requestId === getRequestEventParams.requestId) {
+        getResponseExtra = true;
+      } else if (
+          event.params.requestId === optionsRequestEventParams.requestId) {
+        optionsResponseExtra = true;
+      }
+    }
+  });
+  events.forEach((event) => {
+    if (event.method == 'Network.responseReceived') {
+      if (event.params.requestId === getRequestEventParams.requestId) {
+        getResponseEventParams = event.params;
+      } else if (
+          event.params.requestId === optionsRequestEventParams.requestId) {
+        optionsResponseEventParams = event.params;
+      }
+    }
+  });
+
+  if (getResponseEventParams && optionsResponseEventParams) {
+    printResultsAndFinish();
+  }
 
   async function printResultsAndFinish() {
     const optionsRequestReferencedGetRequest =
@@ -81,15 +115,4 @@
     testRunner.log('Response Body: ' + message.result.body);
     testRunner.completeTest();
   }
-
-
-  session.evaluate(`
-    xhr = new XMLHttpRequest();
-    xhr.open('GET', '${url}', true);
-    xhr.setRequestHeader('Authorization', '');
-    xhr.responseType = 'blob';
-    xhr.send();
-  `);
-  testRunner.log('Evaled fetch command in page');
-
 })
