@@ -30,12 +30,6 @@ RenderFrameHostImpl* GetFocusedRenderFrameHostImpl(RenderWidgetHost* widget) {
 
 }  // namespace
 
-// The amount of time in milliseconds that the browser process will wait for a
-// response from the renderer.
-// TODO(rsesek): Using the histogram data, find the best upper-bound for this
-// value.
-const float kWaitTimeout = 1500;
-
 TextInputClientMac::TextInputClientMac()
     : character_index_(UINT32_MAX), lock_(), condition_(&lock_) {}
 
@@ -88,7 +82,7 @@ uint32_t TextInputClientMac::GetCharacterIndexAtPoint(RenderWidgetHost* rwh,
 
   // http://crbug.com/121917
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-  condition_.TimedWait(base::TimeDelta::FromMilliseconds(kWaitTimeout));
+  condition_.TimedWait(wait_timeout_);
   AfterRequest();
 
   base::TimeDelta delta(base::TimeTicks::Now() - start);
@@ -112,7 +106,7 @@ gfx::Rect TextInputClientMac::GetFirstRectForRange(RenderWidgetHost* rwh,
 
   // http://crbug.com/121917
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-  condition_.TimedWait(base::TimeDelta::FromMilliseconds(kWaitTimeout));
+  condition_.TimedWait(wait_timeout_);
   AfterRequest();
 
   base::TimeDelta delta(base::TimeTicks::Now() - start);
