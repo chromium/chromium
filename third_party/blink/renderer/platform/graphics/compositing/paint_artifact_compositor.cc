@@ -1445,7 +1445,24 @@ Vector<cc::Layer*> PaintArtifactCompositor::SynthesizedClipLayersForTesting()
 
 void PaintArtifactCompositor::ClearPropertyTreeChangedState() {
   for (auto& layer : pending_layers_) {
+    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+      // The chunks ref-counted property tree state keeps the |layer|'s non-ref
+      // property tree pointers alive and all chunk property tree states should
+      // be descendants of the |layer|'s. Therefore, we can just CHECK that the
+      // first chunk's references are keeping the |layer|'s property tree state
+      // alive.
+      CHECK(!layer.Chunks().IsEmpty());
+      const auto& layer_state = layer.GetPropertyTreeState();
+      const auto& first_chunk_state =
+          layer.Chunks().begin()->properties.GetPropertyTreeState();
+      CHECK(
+          layer_state.Transform().IsAncestorOf(first_chunk_state.Transform()));
+      CHECK(layer_state.Clip().IsAncestorOf(first_chunk_state.Clip()));
+      CHECK(layer_state.Effect().IsAncestorOf(first_chunk_state.Effect()));
+    }
+
     layer.GetPropertyTreeState().ClearChangedTo(PropertyTreeState::Root());
+
     PaintChunkSubset chunks =
         layer.GetGraphicsLayer() &&
                 layer.GetGraphicsLayer()->PaintsContentOrHitTest()
