@@ -42,11 +42,20 @@
     </style>
     <settings-section page-title="$i18n{aboutPageTitle}" section="about">
       <div class="cr-row two-line first">
+<if expr="not lacros or not _google_chrome">
         <img id="product-logo" on-click="onProductLogoTap_"
             srcset="chrome://theme/current-channel-logo@1x 1x,
                     chrome://theme/current-channel-logo@2x 2x"
             alt="$i18n{aboutProductLogoAlt}"
             role="presentation">
+</if>
+<if expr="_google_chrome and lacros">
+        <img id="product-logo" on-click="onProductLogoTap_"
+            srcset="chrome://theme/IDR_PRODUCT_LOGO_32_CANARY@1x 1x,
+                    chrome://theme/IDR_PRODUCT_LOGO_32_CANARY@2x 2x"
+            alt="$i18n{aboutProductLogoAlt}"
+            role="presentation">
+</if>
         <h1 class="product-title">$i18n{aboutProductTitle}</h1>
       </div>
       <div class="cr-row two-line">
