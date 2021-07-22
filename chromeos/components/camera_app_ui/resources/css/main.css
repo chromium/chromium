@@ -192,8 +192,6 @@ body.taking.video #options-group :not(#open-ptz-panel) {
 }
 
 #shutters-group {
-  --shutter-size: 60px;
-
   bottom: var(--shutter-vertical-center);
   display: flex;
   flex-direction: column;
