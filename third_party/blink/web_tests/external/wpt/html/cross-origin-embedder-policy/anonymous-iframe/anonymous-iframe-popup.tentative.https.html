@@ -1,0 +1,53 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<body>
+<script>
+const {ORIGIN, REMOTE_ORIGIN} = get_host_info();
+
+// Create an anonymous iframe.
+const normal_iframe = document.createElement('iframe');
+const anonymous_iframe = document.createElement('iframe');
+promise_setup(async t => {
+  await new Promise(async resolve => {
+    normal_iframe.onload = () => resolve();
+    normal_iframe.src = ORIGIN + `/common/blank.html`;
+    document.body.append(normal_iframe);
+  });
+
+  await new Promise(async resolve => {
+    anonymous_iframe.onload = () => resolve();
+    anonymous_iframe.src = ORIGIN + `/common/blank.html`;
+    anonymous_iframe.anonymous = true;
+    document.body.append(anonymous_iframe);
+  });
+});
+
+// Create cross-origin popup from iframes. The opener should be blocked for
+// anonymous iframe and work for normal iframe.
+promise_test(async t => {
+  src_popup = REMOTE_ORIGIN + `/common/blank.html`;
+  // Opener from normal iframe should be available.
+  const popup_1 = normal_iframe.contentWindow.open(src_popup);
+  assert_equals(popup_1.opener, normal_iframe.contentWindow);
+  // Opener from normal iframe should be blocked.
+  const popup_2 = anonymous_iframe.contentWindow.open(src_popup);
+  assert_equals(popup_2, null);
+}, 'Cross-origin popup from anonymous iframe');
+
+// Create a same-origin popup from iframes. The opener should be blocked for
+// anonymous iframe and work for normal iframe.
+promise_test(async t => {
+  src_popup = ORIGIN + `/common/blank.html`;
+  // Opener from normal iframe should be available.
+  const popup_1 = normal_iframe.contentWindow.open(src_popup);
+  assert_equals(popup_1.opener, normal_iframe.contentWindow);
+  // Opener from normal iframe should be blocked.
+  const popup_2 = anonymous_iframe.contentWindow.open(src_popup);
+  assert_equals(popup_2, null);
+}, 'Same-origin popup from anonymous iframe');
+
+</script>
+</body>

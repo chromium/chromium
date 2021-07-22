@@ -6317,6 +6317,9 @@ void RenderFrameHostImpl::CreateNewWindow(
         params->frame_name.clear();
     }
   }
+  if (anonymous_) {
+    params->opener_suppressed = true;
+  }
 
   // The initial empty document in the popup inherits the COEP of its opener (if
   // any).

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Cross-origin popup from anonymous iframe assert_equals: expected null but got object "[object Window]"
+FAIL Same-origin popup from anonymous iframe assert_equals: expected null but got object "[object Window]"
+Harness: the test ran to completion.
+
