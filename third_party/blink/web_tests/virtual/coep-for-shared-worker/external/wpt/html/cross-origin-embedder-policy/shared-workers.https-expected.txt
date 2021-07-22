@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS default policy (derived from response)
+PASS "require-corp" (derived from response)
+PASS default policy (derived from owner set due to use of local scheme - blob URL)
+FAIL "require-corp" (derived from owner set due to use of local scheme - blob URL) assert_equals: expected "failure" but got "success"
+PASS default policy (derived from owner set due to use of local scheme - data URL)
+FAIL "require-corp" (derived from owner set due to use of local scheme - data URL) assert_equals: expected "failure" but got "success"
+Harness: the test ran to completion.
+

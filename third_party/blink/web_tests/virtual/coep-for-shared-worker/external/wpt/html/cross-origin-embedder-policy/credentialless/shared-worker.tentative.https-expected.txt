@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS shared-worker
+PASS fetch same-origin
+PASS fetch same-origin + credentialless worker
+PASS fetch cross-origin
+PASS fetch cross-origin + credentialless worker
+Harness: the test ran to completion.
+

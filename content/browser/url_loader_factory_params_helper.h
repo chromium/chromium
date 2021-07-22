@@ -85,6 +85,7 @@ class URLLoaderFactoryParamsHelper {
       mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer,
       mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
+      network::mojom::ClientSecurityStatePtr client_security_state,
       base::StringPiece debug_tag);
 
   // Creates URLLoaderFactoryParams for Early Hints preload.

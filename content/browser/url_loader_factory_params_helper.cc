@@ -194,6 +194,8 @@ URLLoaderFactoryParamsHelper::CreateForPrefetch(
 }
 
 // static
+// TODO(crbug.com/1231019): make sure client_security_state is no longer nullptr
+// anywhere.
 network::mojom::URLLoaderFactoryParamsPtr
 URLLoaderFactoryParamsHelper::CreateForWorker(
     RenderProcessHost* process,
@@ -204,6 +206,7 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
     mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
+    network::mojom::ClientSecurityStatePtr client_security_state,
     base::StringPiece debug_tag) {
   return CreateParams(
       process,
@@ -211,8 +214,7 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       request_initiator,  // request_initiator_origin_lock
       false,              // is_trusted
       absl::nullopt,      // top_frame_token
-      isolation_info,
-      nullptr,  // client_security_state
+      isolation_info, std::move(client_security_state),
       std::move(coep_reporter),
       false,  // allow_universal_access_from_file_urls
       false,  // is_for_isolated_world

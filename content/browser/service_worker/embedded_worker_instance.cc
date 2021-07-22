@@ -784,6 +784,8 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
   mojo::PendingReceiver<network::mojom::URLLoaderFactory>
       default_factory_receiver = factory_bundle->pending_default_factory()
                                      .InitWithNewPipeAndPassReceiver();
+  // TODO(crbug.com/1231019): make sure client_security_state is no longer
+  // nullptr anywhere.
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
           rph, origin,
@@ -794,6 +796,7 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
           static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
               ->CreateAuthCertObserverForServiceWorker(),
           NetworkServiceDevToolsObserver::MakeSelfOwned(devtools_worker_token),
+          /*client_security_state=*/nullptr,
           "EmbeddedWorkerInstance::CreateFactoryBundle");
   bool bypass_redirect_checks = false;
 

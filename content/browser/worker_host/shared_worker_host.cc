@@ -326,8 +326,6 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
       default_factory_receiver =
           pending_default_factory.InitWithNewPipeAndPassReceiver();
 
-  // TODO(https://crbug.com/1060832): Implement COEP reporter for shared
-  // workers.
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       CreateNetworkFactoryParamsForSubresources();
   url::Origin origin = url::Origin::Create(instance_.url());
@@ -343,7 +341,6 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
   devtools_instrumentation::WillCreateURLLoaderFactoryForSharedWorker(
       this, &factory_params->factory_override);
 
-  // TODO(yhirano): Support COEP.
   GetProcessHost()->CreateURLLoaderFactory(std::move(default_factory_receiver),
                                            std::move(factory_params));
 
@@ -353,14 +350,19 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
 network::mojom::URLLoaderFactoryParamsPtr
 SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
   url::Origin origin = GetStorageKey().origin();
-
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter;
-  if (coep_reporter_) {
-    DCHECK(base::FeatureList::IsEnabled(blink::features::kCOEPForSharedWorker));
-    coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
+  network::mojom::ClientSecurityStatePtr client_security_state;
+  if (base::FeatureList::IsEnabled(blink::features::kCOEPForSharedWorker)) {
+    // TODO(crbug.com/1231019): make sure client_security_state is no longer
+    // nullptr anywhere.
+    client_security_state = network::mojom::ClientSecurityState::New();
+    client_security_state->cross_origin_embedder_policy =
+        cross_origin_embedder_policy();
+    if (coep_reporter_) {
+      coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
+    }
   }
-
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
           GetProcessHost(), origin,
@@ -370,8 +372,9 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
           std::move(coep_reporter),
           /*url_loader_network_observer=*/mojo::NullRemote(),
           /*devtools_observer=*/mojo::NullRemote(),
-          /*debug_tag=*/"SharedWorkerHost::CreateNetworkFactoryForSubresource");
-  // TODO(lyf): support COEP.
+          std::move(client_security_state),
+          /*debug_tag=*/
+          "SharedWorkerHost::CreateNetworkFactoryForSubresource");
   return factory_params;
 }
 
