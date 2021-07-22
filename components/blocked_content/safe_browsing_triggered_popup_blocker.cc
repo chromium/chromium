@@ -40,7 +40,8 @@ using safe_browsing::SubresourceFilterLevel;
 const base::Feature kAbusiveExperienceEnforce{"AbusiveExperienceEnforce",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
-SafeBrowsingTriggeredPopupBlocker::PageData::PageData() = default;
+SafeBrowsingTriggeredPopupBlocker::PageData::PageData(content::Page& page)
+    : PageUserData(page) {}
 
 SafeBrowsingTriggeredPopupBlocker::PageData::~PageData() {
   if (is_triggered_) {
@@ -48,6 +49,11 @@ SafeBrowsingTriggeredPopupBlocker::PageData::~PageData() {
                              num_popups_blocked_);
   }
 }
+
+SafeBrowsingTriggeredPopupBlocker::NavigationHandleData::NavigationHandleData(
+    content::NavigationHandle&) {}
+SafeBrowsingTriggeredPopupBlocker::NavigationHandleData::
+    ~NavigationHandleData() = default;
 
 // static
 void SafeBrowsingTriggeredPopupBlocker::RegisterProfilePrefs(
@@ -79,17 +85,20 @@ void SafeBrowsingTriggeredPopupBlocker::MaybeCreate(
 SafeBrowsingTriggeredPopupBlocker::~SafeBrowsingTriggeredPopupBlocker() =
     default;
 
-bool SafeBrowsingTriggeredPopupBlocker::ShouldApplyAbusivePopupBlocker() {
+bool SafeBrowsingTriggeredPopupBlocker::ShouldApplyAbusivePopupBlocker(
+    content::Page& page) {
   LogAction(Action::kConsidered);
-  if (!current_page_data_->is_triggered())
+  PageData& page_data = GetPageData(page);
+
+  if (!page_data.is_triggered())
     return false;
 
   if (!IsEnabled(web_contents()))
     return false;
 
   LogAction(Action::kBlocked);
-  current_page_data_->inc_num_popups_blocked();
-  web_contents()->GetMainFrame()->AddMessageToConsole(
+  page_data.inc_num_popups_blocked();
+  page.GetMainDocument().AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError, kAbusiveEnforceMessage);
   return true;
 }
@@ -97,8 +106,7 @@ bool SafeBrowsingTriggeredPopupBlocker::ShouldApplyAbusivePopupBlocker() {
 SafeBrowsingTriggeredPopupBlocker::SafeBrowsingTriggeredPopupBlocker(
     content::WebContents* web_contents,
     subresource_filter::SubresourceFilterObserverManager* observer_manager)
-    : content::WebContentsObserver(web_contents),
-      current_page_data_(std::make_unique<PageData>()) {
+    : content::WebContentsObserver(web_contents) {
   DCHECK(observer_manager);
   scoped_observation_.Observe(observer_manager);
 }
@@ -109,7 +117,9 @@ void SafeBrowsingTriggeredPopupBlocker::DidFinishNavigation(
     return;
 
   absl::optional<SubresourceFilterLevel> level;
-  level_for_next_committed_navigation_.swap(level);
+  NavigationHandleData* data =
+      NavigationHandleData::GetOrCreateForNavigationHandle(*navigation_handle);
+  data->level_for_next_committed_navigation().swap(level);
 
   // Only care about main frame navigations that commit.
   if (!navigation_handle->HasCommitted() ||
@@ -117,14 +127,13 @@ void SafeBrowsingTriggeredPopupBlocker::DidFinishNavigation(
     return;
   }
 
-  DCHECK(current_page_data_);
-  current_page_data_ = std::make_unique<PageData>();
   if (navigation_handle->IsErrorPage())
     return;
 
   // Log a warning only if we've matched a warn-only safe browsing list.
   if (level == SubresourceFilterLevel::ENFORCE) {
-    current_page_data_->set_is_triggered(true);
+    GetPageData(navigation_handle->GetRenderFrameHost()->GetPage())
+        .set_is_triggered(true);
     LogAction(Action::kEnforcedSite);
     // When a page is restored from back-forward cache, we don't get
     // OnSafeBrowsingChecksComplete callback, so |level| will always
@@ -170,7 +179,10 @@ void SafeBrowsingTriggeredPopupBlocker::OnSafeBrowsingChecksComplete(
   }
 
   if (match_level.has_value()) {
-    level_for_next_committed_navigation_ = match_level;
+    NavigationHandleData* data =
+        NavigationHandleData::GetOrCreateForNavigationHandle(
+            *navigation_handle);
+    data->level_for_next_committed_navigation() = match_level;
   }
 }
 
@@ -192,6 +204,14 @@ bool SafeBrowsingTriggeredPopupBlocker::IsEnabled(
       ->GetBoolean(prefs::kAbusiveExperienceInterventionEnforce);
 }
 
+SafeBrowsingTriggeredPopupBlocker::PageData&
+SafeBrowsingTriggeredPopupBlocker::GetPageData(content::Page& page) {
+  return *PageData::GetOrCreateForPage(page);
+}
+
+PAGE_USER_DATA_KEY_IMPL(SafeBrowsingTriggeredPopupBlocker::PageData)
+NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(
+    SafeBrowsingTriggeredPopupBlocker::NavigationHandleData)
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SafeBrowsingTriggeredPopupBlocker)
 
 }  // namespace blocked_content

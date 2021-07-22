@@ -129,7 +129,8 @@ TEST_P(SubresourceFilterAbusiveTest, ConfigCombination) {
   SimulateNavigateAndCommit(url, main_rfh());
 
   bool disallow_requests = !CreateAndNavigateDisallowedSubframe(main_rfh());
-  bool disallow_popups = popup_blocker_->ShouldApplyAbusivePopupBlocker();
+  bool disallow_popups =
+      popup_blocker_->ShouldApplyAbusivePopupBlocker(main_rfh()->GetPage());
 
   bool any_activation_enforce =
       bas_level_ == METADATA_ENFORCE ||

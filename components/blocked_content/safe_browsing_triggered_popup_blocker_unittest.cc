@@ -33,6 +33,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_renderer_host.h"
@@ -138,7 +139,7 @@ class SafeBrowsingTriggeredPopupBlockerTest
 
   HostContentSettingsMap* settings_map() { return settings_map_.get(); }
 
- private:
+ protected:
   std::unique_ptr<content::NavigationThrottle> CreateThrottle(
       content::NavigationHandle* handle) {
     return std::make_unique<
@@ -188,7 +189,8 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
     simulator->Redirect(test_case.redirect_url);
     simulator->Commit();
     EXPECT_EQ(test_case.expect_strong_blocker,
-              popup_blocker()->ShouldApplyAbusivePopupBlocker());
+              popup_blocker()->ShouldApplyAbusivePopupBlocker(
+                  web_contents()->GetPrimaryPage()));
   }
 }
 
@@ -198,7 +200,8 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest, MatchingURL_BlocksPopupAndLogs) {
   NavigateAndCommit(url);
   EXPECT_TRUE(GetMainFrameConsoleMessages().empty());
 
-  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
   EXPECT_EQ(1u, GetMainFrameConsoleMessages().size());
   EXPECT_EQ(GetMainFrameConsoleMessages().front(), kAbusiveEnforceMessage);
 }
@@ -219,6 +222,8 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
   params.user_gesture = true;
   params.triggering_event_info =
       blink::mojom::TriggeringEventInfo::kFromUntrustedEvent;
+  params.source_render_frame_id = main_rfh()->GetRoutingID();
+  params.source_render_process_id = main_rfh()->GetProcess()->GetID();
 
   MaybeBlockPopup(web_contents(), nullptr,
                   std::make_unique<TestPopupNavigationDelegate>(
@@ -258,7 +263,8 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
 TEST_F(SafeBrowsingTriggeredPopupBlockerTest, NoMatch_NoBlocking) {
   const GURL url("https://example.test/");
   NavigateAndCommit(url);
-  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
   EXPECT_TRUE(GetMainFrameConsoleMessages().empty());
 }
 
@@ -277,16 +283,20 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest, OnlyBlockOnMatchingUrls) {
   MarkUrlAsAbusiveEnforce(url2);
 
   NavigateAndCommit(url1);
-  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
 
   NavigateAndCommit(url2);
-  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
 
   NavigateAndCommit(url3);
-  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
 
   NavigateAndCommit(url1);
-  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
 }
 
 TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
@@ -296,11 +306,13 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
 
   MarkUrlAsAbusiveEnforce(url);
   NavigateAndCommit(url);
-  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
 
   // This is merely a same document navigation, keep the popup blocker.
   NavigateAndCommit(hash_url);
-  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
 }
 
 TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
@@ -310,18 +322,21 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
 
   MarkUrlAsAbusiveEnforce(url);
   NavigateAndCommit(url);
-  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
 
   // Abort the navigation before it commits.
   content::NavigationSimulator::NavigateAndFailFromDocument(
       fail_url, net::ERR_ABORTED, main_rfh());
-  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
 
   // Committing an error page should probably reset the blocker though, despite
   // the fact that it is probably a bug for an error page to spawn popups.
   content::NavigationSimulator::NavigateAndFailFromDocument(
       fail_url, net::ERR_CONNECTION_RESET, main_rfh());
-  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
 }
 
 TEST_F(SafeBrowsingTriggeredPopupBlockerTest, LogActions) {
@@ -350,12 +365,14 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest, LogActions) {
   histogram_tester.ExpectTotalCount(kActionHistogram, total_count);
 
   // Block two popups.
-  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
   check_histogram(SafeBrowsingTriggeredPopupBlocker::Action::kConsidered, 1);
   check_histogram(SafeBrowsingTriggeredPopupBlocker::Action::kBlocked, 1);
   histogram_tester.ExpectTotalCount(kActionHistogram, total_count);
 
-  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
   check_histogram(SafeBrowsingTriggeredPopupBlocker::Action::kConsidered, 2);
   check_histogram(SafeBrowsingTriggeredPopupBlocker::Action::kBlocked, 2);
   histogram_tester.ExpectTotalCount(kActionHistogram, total_count);
@@ -372,7 +389,8 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest, LogActions) {
   histogram_tester.ExpectTotalCount(kActionHistogram, total_count);
 
   // Let one popup through.
-  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
   check_histogram(SafeBrowsingTriggeredPopupBlocker::Action::kConsidered, 3);
   histogram_tester.ExpectTotalCount(kActionHistogram, total_count);
 
@@ -382,7 +400,8 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest, LogActions) {
   histogram_tester.ExpectTotalCount(kActionHistogram, total_count);
 
   // Let one popup through.
-  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
   check_histogram(SafeBrowsingTriggeredPopupBlocker::Action::kConsidered, 4);
   histogram_tester.ExpectTotalCount(kActionHistogram, total_count);
 
@@ -395,7 +414,8 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest, LogBlockMetricsOnClose) {
   MarkUrlAsAbusiveEnforce(url_enforce);
 
   NavigateAndCommit(url_enforce);
-  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_TRUE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
 
   histogram_tester.ExpectTotalCount(kNumBlockedHistogram, 0);
   // Simulate deleting the web contents.
@@ -417,7 +437,8 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
   EXPECT_EQ(1u, GetMainFrameConsoleMessages().size());
   EXPECT_EQ(GetMainFrameConsoleMessages().front(), kAbusiveWarnMessage);
 
-  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
 }
 
 TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
@@ -436,7 +457,77 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
   EXPECT_EQ(GetMainFrameConsoleMessages().back(),
             subresource_filter::kActivationWarningConsoleMessage);
 
-  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker());
+  EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker(
+      web_contents()->GetPrimaryPage()));
+}
+
+TEST_F(SafeBrowsingTriggeredPopupBlockerTest, NonPrimaryFrameTree) {
+  const GURL url1("https://example.first/");
+  const GURL url2("https://example.second/");
+  // Only mark url2 as abusive.
+  MarkUrlAsAbusiveEnforce(url2);
+
+  {
+    // Simulate a navigation in the primary main frame to an url not marked as
+    // abusive.
+    content::MockNavigationHandle handle(url1, main_rfh());
+    handle.set_has_committed(true);
+    auto throttle = CreateThrottle(&handle);
+    auto result = throttle->WillProcessResponse();
+    if (result.action() == content::NavigationThrottle::ThrottleAction::DEFER) {
+      base::RunLoop loop;
+      throttle->set_resume_callback_for_testing(loop.QuitClosure());
+      loop.Run();
+    }
+    popup_blocker()->DidFinishNavigation(&handle);
+    EXPECT_FALSE(
+        popup_blocker()->ShouldApplyAbusivePopupBlocker(main_rfh()->GetPage()));
+  }
+
+  {
+    // Reset the state.
+    NavigateAndCommit(url1);
+    EXPECT_FALSE(
+        popup_blocker()->ShouldApplyAbusivePopupBlocker(main_rfh()->GetPage()));
+
+    // Simulate a navigation in the primary main frame to an url marked as
+    // abusive.
+    content::MockNavigationHandle handle(url2, main_rfh());
+    handle.set_has_committed(true);
+    auto throttle = CreateThrottle(&handle);
+    auto result = throttle->WillProcessResponse();
+    if (result.action() == content::NavigationThrottle::ThrottleAction::DEFER) {
+      base::RunLoop loop;
+      throttle->set_resume_callback_for_testing(loop.QuitClosure());
+      loop.Run();
+    }
+    popup_blocker()->DidFinishNavigation(&handle);
+    EXPECT_TRUE(
+        popup_blocker()->ShouldApplyAbusivePopupBlocker(main_rfh()->GetPage()));
+  }
+
+  {
+    // Reset the state.
+    NavigateAndCommit(url1);
+    EXPECT_FALSE(
+        popup_blocker()->ShouldApplyAbusivePopupBlocker(main_rfh()->GetPage()));
+
+    // Simulate a navigation in a non-primary main frame to an url marked as
+    // abusive.
+    content::MockNavigationHandle handle(url2, main_rfh());
+    handle.set_has_committed(true);
+    handle.set_is_in_primary_main_frame(false);
+    auto throttle = CreateThrottle(&handle);
+    auto result = throttle->WillProcessResponse();
+    if (result.action() == content::NavigationThrottle::ThrottleAction::DEFER) {
+      base::RunLoop loop;
+      throttle->set_resume_callback_for_testing(loop.QuitClosure());
+      loop.Run();
+    }
+    popup_blocker()->DidFinishNavigation(&handle);
+    EXPECT_TRUE(
+        popup_blocker()->ShouldApplyAbusivePopupBlocker(main_rfh()->GetPage()));
+  }
 }
 
 }  // namespace blocked_content
