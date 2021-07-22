@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
@@ -26,21 +27,28 @@ namespace desks_storage {
 
 namespace {
 
-constexpr char kJunkFileName[] = "01.template";
-constexpr char kJunkData[] = "dsjadsueAUWLKD293958";
+constexpr char kJunkData[] = "This is not valid template data.";
+constexpr char kTemplateNameFormat[] = "%s.template";
+constexpr char kUuidFormat[] = "1c186d5a-502e-49ce-9ee1-00000000000%d";
 
-// Search |uuid_list| for |uuid_query| returns true if found false if not.
-//
-// we don't know what order the dir_reader will read the files back to us so
-// instead of relying on the operation returning the uuids in order we can
-// simply run a linear search for each of the uuids we expect to find.
-//
-// we don't use std::find here because we want to run each member through
-// the string compare method.
+const base::FilePath kInvalidFilePath = base::FilePath("?");
+const std::string kTestUuid1 = base::StringPrintf(kUuidFormat, 1);
+const std::string kTestUuid2 = base::StringPrintf(kUuidFormat, 2);
+const std::string kTestUuid3 = base::StringPrintf(kUuidFormat, 3);
+const std::string kTestUuid4 = base::StringPrintf(kUuidFormat, 4);
+const base::Time kTestTime1 = base::Time();
+const std::string kTestFileName1 =
+    base::StringPrintf(kTemplateNameFormat, kTestUuid1.c_str());
+
+// Search |entry_list| for |entry_query| as a uuid and returns true if
+// found, false if not.
 bool FindUuidInUuidList(const std::string& uuid_query,
-                        const std::vector<std::string>& uuid_list) {
-  for (const std::string& uuid : uuid_list) {
-    if (uuid.compare(uuid_query) == 0)
+                        const std::vector<ash::DeskTemplate*>& entry_list) {
+  base::GUID guid = base::GUID::ParseCaseInsensitive(uuid_query);
+  DCHECK(guid.is_valid());
+
+  for (auto* entry : entry_list) {
+    if (entry->uuid() == guid)
       return true;
   }
 
@@ -53,7 +61,7 @@ void VerifyEntryAddedCorrectly(DeskModel::AddOrUpdateEntryStatus status) {
 }
 
 void WriteJunkData(const base::FilePath& temp_dir) {
-  base::FilePath full_path = temp_dir.Append(std::string(kJunkFileName));
+  base::FilePath full_path = temp_dir.Append(kTestFileName1);
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -66,21 +74,23 @@ class LocalDeskDataManagerTest : public testing::Test {
  public:
   LocalDeskDataManagerTest()
       : sample_desk_template_one_(
-            std::make_unique<ash::DeskTemplate>(std::string("01"),
+            std::make_unique<ash::DeskTemplate>(kTestUuid1,
                                                 std::string("desk_01"),
-                                                base::Time::Now())),
+                                                kTestTime1)),
         sample_desk_template_two_(
-            std::make_unique<ash::DeskTemplate>(std::string("02"),
+            std::make_unique<ash::DeskTemplate>(kTestUuid2,
                                                 std::string("desk_02"),
                                                 base::Time::Now())),
         sample_desk_template_three_(
-            std::make_unique<ash::DeskTemplate>(std::string("03"),
+            std::make_unique<ash::DeskTemplate>(kTestUuid3,
                                                 std::string("desk_03"),
                                                 base::Time::Now())),
         modified_sample_desk_template_one_(
-            std::make_unique<ash::DeskTemplate>(std::string("01"),
+            std::make_unique<ash::DeskTemplate>(kTestUuid1,
                                                 std::string("desk_01_mod"),
-                                                base::Time::Now())) {
+                                                kTestTime1)),
+        task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
+        data_manager_(std::unique_ptr<LocalDeskDataManager>()) {
     sample_desk_template_one_->set_desk_restore_data(
         std::make_unique<full_restore::RestoreData>());
     sample_desk_template_two_->set_desk_restore_data(
@@ -98,6 +108,7 @@ class LocalDeskDataManagerTest : public testing::Test {
 
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+    data_manager_ = std::make_unique<LocalDeskDataManager>(temp_dir_.GetPath());
     testing::Test::SetUp();
   }
 
@@ -106,182 +117,178 @@ class LocalDeskDataManagerTest : public testing::Test {
   std::unique_ptr<ash::DeskTemplate> sample_desk_template_two_;
   std::unique_ptr<ash::DeskTemplate> sample_desk_template_three_;
   std::unique_ptr<ash::DeskTemplate> modified_sample_desk_template_one_;
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<LocalDeskDataManager> data_manager_;
 };
 
 TEST_F(LocalDeskDataManagerTest, CanAddEntry) {
-  base::test::TaskEnvironment task_environment(
-      base::test::TaskEnvironment::MainThreadType::IO);
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
 
-  LocalDeskDataManager data_manager(temp_dir_.GetPath());
-
-  data_manager.AddOrUpdateEntry(std::move(sample_desk_template_one_),
-                                base::BindOnce(&VerifyEntryAddedCorrectly));
+  task_environment_.RunUntilIdle();
 }
 
-TEST_F(LocalDeskDataManagerTest, CanGetAllUuids) {
-  base::test::TaskEnvironment task_environment(
-      base::test::TaskEnvironment::MainThreadType::IO);
+TEST_F(LocalDeskDataManagerTest, CanGetAllEntries) {
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
 
-  LocalDeskDataManager data_manager(temp_dir_.GetPath());
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_two_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
 
-  data_manager.AddOrUpdateEntry(std::move(sample_desk_template_one_),
-                                base::BindOnce(&VerifyEntryAddedCorrectly));
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_three_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
 
-  data_manager.AddOrUpdateEntry(std::move(sample_desk_template_two_),
-                                base::BindOnce(&VerifyEntryAddedCorrectly));
-
-  data_manager.AddOrUpdateEntry(std::move(sample_desk_template_three_),
-                                base::BindOnce(&VerifyEntryAddedCorrectly));
-
-  // Because we're using a SequencedTaskRunner we can assume that all of the
-  // previous tasks have been completed by the time we actually attempt to
-  // read the UUIDs.
-  data_manager.GetAllUuids(
-      base::BindLambdaForTesting([](DeskModel::GetAllUuidsStatus status,
-                                    const std::vector<std::string>& uuids) {
-        EXPECT_EQ(status, DeskModel::GetAllUuidsStatus::kOk);
-        EXPECT_EQ(uuids.size(), static_cast<unsigned long>(3));
-        EXPECT_TRUE(FindUuidInUuidList(std::string("01"), uuids));
-        EXPECT_TRUE(FindUuidInUuidList(std::string("02"), uuids));
-        EXPECT_TRUE(FindUuidInUuidList(std::string("03"), uuids));
+  base::RunLoop loop;
+  data_manager_->GetAllEntries(
+      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
+                                     std::vector<ash::DeskTemplate*> entries) {
+        EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
+        EXPECT_EQ(entries.size(), 3ul);
+        EXPECT_TRUE(FindUuidInUuidList(kTestUuid1, entries));
+        EXPECT_TRUE(FindUuidInUuidList(kTestUuid2, entries));
+        EXPECT_TRUE(FindUuidInUuidList(kTestUuid3, entries));
 
         // Sanity check for the search function.
-        EXPECT_FALSE(FindUuidInUuidList(std::string("04"), uuids));
+        EXPECT_FALSE(FindUuidInUuidList(kTestUuid4, entries));
+        loop.Quit();
       }));
+  loop.Run();
 }
 
 TEST_F(LocalDeskDataManagerTest, CanGetEntryByUuid) {
-  base::test::TaskEnvironment task_environment(
-      base::test::TaskEnvironment::MainThreadType::IO);
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
 
-  LocalDeskDataManager data_manager(temp_dir_.GetPath());
+  data_manager_->GetEntryByUUID(
+      kTestUuid1,
+      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
+                                     std::unique_ptr<ash::DeskTemplate> entry) {
+        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, status);
 
-  data_manager.AddOrUpdateEntry(std::move(sample_desk_template_one_),
-                                base::BindOnce(&VerifyEntryAddedCorrectly));
-
-  data_manager.GetEntryByUUID(
-      std::string("01"),
-      base::BindLambdaForTesting(
-          [](DeskModel::GetEntryByUuidStatus status,
-             std::unique_ptr<ash::DeskTemplate> result_template) {
-            EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, status);
-
-            EXPECT_EQ(result_template->uuid(),
-                      base::GUID::ParseCaseInsensitive(std::string("01")));
-            EXPECT_EQ(result_template->template_name(),
-                      base::UTF8ToUTF16(std::string("desk_01")));
-            EXPECT_EQ(result_template->created_time(), base::Time());
-          }));
-}
-
-TEST_F(LocalDeskDataManagerTest, GetEntryByUuidFailsIfEntryDoesntExist) {
-  base::test::TaskEnvironment task_environment(
-      base::test::TaskEnvironment::MainThreadType::IO);
-
-  LocalDeskDataManager data_manager(temp_dir_.GetPath());
-
-  data_manager.GetEntryByUUID(
-      std::string("01"),
-      base::BindLambdaForTesting([](DeskModel::GetEntryByUuidStatus status,
-                                    std::unique_ptr<ash::DeskTemplate> _) {
-        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kNotFound, status);
+        EXPECT_EQ(entry->uuid(), base::GUID::ParseCaseInsensitive(kTestUuid1));
+        EXPECT_EQ(entry->template_name(),
+                  base::UTF8ToUTF16(std::string("desk_01")));
+        EXPECT_EQ(entry->created_time(), kTestTime1);
       }));
+
+  task_environment_.RunUntilIdle();
 }
 
-TEST_F(LocalDeskDataManagerTest, GetEntryByUuidFailsIfEntryHasBadData) {
-  base::test::TaskEnvironment task_environment(
-      base::test::TaskEnvironment::MainThreadType::IO);
+TEST_F(LocalDeskDataManagerTest,
+       GetEntryByUuidReturnsNotFoundIfEntryDoesNotExist) {
+  base::RunLoop loop;
+  data_manager_->GetEntryByUUID(
+      kTestUuid1,
+      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
+                                     std::unique_ptr<ash::DeskTemplate> entry) {
+        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kNotFound, status);
+        loop.Quit();
+      }));
+  loop.Run();
+}
 
-  auto task_runner = task_environment.GetMainThreadTaskRunner();
+TEST_F(LocalDeskDataManagerTest, DeskTemplateIsIgnoredIfItHasBadData) {
+  auto task_runner = task_environment_.GetMainThreadTaskRunner();
   task_runner->PostTask(FROM_HERE,
                         base::BindOnce(&WriteJunkData, temp_dir_.GetPath()));
 
-  LocalDeskDataManager data_manager(temp_dir_.GetPath());
-
-  data_manager.GetEntryByUUID(
-      std::string("01"),
-      base::BindLambdaForTesting([](DeskModel::GetEntryByUuidStatus status,
-                                    std::unique_ptr<ash::DeskTemplate> _) {
-        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kFailure, status);
+  base::RunLoop loop;
+  data_manager_->GetEntryByUUID(
+      kTestUuid1,
+      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
+                                     std::unique_ptr<ash::DeskTemplate> entry) {
+        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kNotFound, status);
+        loop.Quit();
       }));
+  loop.Run();
+}
+
+TEST_F(LocalDeskDataManagerTest,
+       GetEntryByUuidReturnsFailureIfDeskManagerHasInvalidPath) {
+  data_manager_ = std::make_unique<LocalDeskDataManager>(kInvalidFilePath);
+
+  base::RunLoop loop;
+  data_manager_->GetEntryByUUID(
+      kTestUuid1,
+      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
+                                     std::unique_ptr<ash::DeskTemplate> entry) {
+        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kFailure, status);
+        loop.Quit();
+      }));
+  loop.Run();
 }
 
 TEST_F(LocalDeskDataManagerTest, CanUpdateEntry) {
-  base::test::TaskEnvironment task_environment(
-      base::test::TaskEnvironment::MainThreadType::IO);
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
 
-  LocalDeskDataManager data_manager(temp_dir_.GetPath());
+  data_manager_->AddOrUpdateEntry(std::move(modified_sample_desk_template_one_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
 
-  data_manager.AddOrUpdateEntry(std::move(sample_desk_template_one_),
-                                base::BindOnce(&VerifyEntryAddedCorrectly));
+  base::RunLoop loop;
+  data_manager_->GetEntryByUUID(
+      kTestUuid1,
+      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
+                                     std::unique_ptr<ash::DeskTemplate> entry) {
+        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, status);
 
-  data_manager.AddOrUpdateEntry(std::move(modified_sample_desk_template_one_),
-                                base::BindOnce(&VerifyEntryAddedCorrectly));
-
-  data_manager.GetEntryByUUID(
-      std::string("01"),
-      base::BindLambdaForTesting(
-          [](DeskModel::GetEntryByUuidStatus status,
-             std::unique_ptr<ash::DeskTemplate> result_template) {
-            EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, status);
-
-            EXPECT_EQ(result_template->uuid(),
-                      base::GUID::ParseCaseInsensitive(std::string("01")));
-            EXPECT_EQ(result_template->template_name(),
-                      base::UTF8ToUTF16(std::string("desk_01_mod")));
-            EXPECT_EQ(result_template->created_time(), base::Time());
-          }));
+        EXPECT_EQ(entry->uuid(), base::GUID::ParseCaseInsensitive(kTestUuid1));
+        EXPECT_EQ(entry->template_name(),
+                  base::UTF8ToUTF16(std::string("desk_01_mod")));
+        EXPECT_EQ(entry->created_time(), kTestTime1);
+        loop.Quit();
+      }));
+  loop.Run();
 }
 
 TEST_F(LocalDeskDataManagerTest, CanDeleteEntry) {
-  base::test::TaskEnvironment task_environment(
-      base::test::TaskEnvironment::MainThreadType::IO);
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
 
-  LocalDeskDataManager data_manager(temp_dir_.GetPath());
+  base::RunLoop loop;
 
-  data_manager.AddOrUpdateEntry(std::move(sample_desk_template_one_),
-                                base::BindOnce(&VerifyEntryAddedCorrectly));
-
-  data_manager.DeleteEntry(
-      std::string("01"),
-      base::BindLambdaForTesting([](DeskModel::DeleteEntryStatus status) {
+  data_manager_->DeleteEntry(
+      kTestUuid1,
+      base::BindLambdaForTesting([&](DeskModel::DeleteEntryStatus status) {
         EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
       }));
 
-  data_manager.GetAllUuids(
-      base::BindLambdaForTesting([](DeskModel::GetAllUuidsStatus status,
-                                    const std::vector<std::string>& uuids) {
-        EXPECT_EQ(status, DeskModel::GetAllUuidsStatus::kOk);
-        EXPECT_EQ(uuids.size(), 0ul);
+  data_manager_->GetAllEntries(
+      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
+                                     std::vector<ash::DeskTemplate*> entries) {
+        EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
+        EXPECT_EQ(entries.size(), 0ul);
+        loop.Quit();
       }));
+
+  loop.Run();
 }
 
 TEST_F(LocalDeskDataManagerTest, CanDeleteAllEntries) {
-  base::test::TaskEnvironment task_environment(
-      base::test::TaskEnvironment::MainThreadType::IO);
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
 
-  LocalDeskDataManager data_manager(temp_dir_.GetPath());
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_two_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
 
-  data_manager.AddOrUpdateEntry(std::move(sample_desk_template_one_),
-                                base::BindOnce(&VerifyEntryAddedCorrectly));
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_three_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
 
-  data_manager.AddOrUpdateEntry(std::move(sample_desk_template_two_),
-                                base::BindOnce(&VerifyEntryAddedCorrectly));
+  base::RunLoop loop;
 
-  data_manager.AddOrUpdateEntry(std::move(sample_desk_template_three_),
-                                base::BindOnce(&VerifyEntryAddedCorrectly));
-
-  data_manager.DeleteAllEntries(
-      base::BindLambdaForTesting([](DeskModel::DeleteEntryStatus status) {
+  data_manager_->DeleteAllEntries(
+      base::BindLambdaForTesting([&](DeskModel::DeleteEntryStatus status) {
         EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
       }));
 
-  data_manager.GetAllUuids(
-      base::BindLambdaForTesting([](DeskModel::GetAllUuidsStatus status,
-                                    const std::vector<std::string>& uuids) {
-        EXPECT_EQ(status, DeskModel::GetAllUuidsStatus::kOk);
-        EXPECT_EQ(uuids.size(), 0ul);
+  data_manager_->GetAllEntries(
+      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
+                                     std::vector<ash::DeskTemplate*> entries) {
+        EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
+        EXPECT_EQ(entries.size(), 0ul);
+        loop.Quit();
       }));
+  loop.Run();
 }
 
 }  // namespace desks_storage
