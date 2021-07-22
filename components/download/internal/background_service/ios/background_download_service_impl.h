@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/clock.h"
 #include "components/download/internal/background_service/model_impl.h"
 #include "components/download/internal/background_service/service_config_impl.h"
 #include "components/download/public/background_service/background_download_service.h"
@@ -31,7 +32,8 @@ class BackgroundDownloadServiceImpl : public BackgroundDownloadService,
   BackgroundDownloadServiceImpl(
       std::unique_ptr<ClientSet> clients,
       std::unique_ptr<Model> model,
-      std::unique_ptr<BackgroundDownloadTaskHelper> download_helper);
+      std::unique_ptr<BackgroundDownloadTaskHelper> download_helper,
+      base::Clock* clock);
   ~BackgroundDownloadServiceImpl() override;
 
  private:
@@ -65,11 +67,13 @@ class BackgroundDownloadServiceImpl : public BackgroundDownloadService,
   void OnDownloadFinished(DownloadClient download_client,
                           const std::string& guid,
                           bool success,
-                          const base::FilePath& file_path);
+                          const base::FilePath& file_path,
+                          int64_t file_size);
 
   void OnDownloadUpdated(DownloadClient download_client,
                          const std::string& guid,
                          int64_t bytes_downloaded);
+  void MaybeUpdateProgress(const std::string& guid, uint64_t bytes_downloaded);
 
   std::unique_ptr<Configuration> config_;
   ServiceConfigImpl service_config_;
@@ -78,6 +82,8 @@ class BackgroundDownloadServiceImpl : public BackgroundDownloadService,
   std::unique_ptr<BackgroundDownloadTaskHelper> download_helper_;
   absl::optional<bool> init_success_;
   std::map<std::string, DownloadParams::StartCallback> start_callbacks_;
+  base::Time update_time_;
+  base::Clock* clock_;
 
   base::WeakPtrFactory<BackgroundDownloadServiceImpl> weak_ptr_factory_{this};
 };

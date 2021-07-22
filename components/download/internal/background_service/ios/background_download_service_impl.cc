@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/download/internal/background_service/client_set.h"
 #include "components/download/internal/background_service/config.h"
@@ -20,6 +21,9 @@
 
 namespace download {
 namespace {
+
+// Interval to throttle the download update that results in a database update.
+const base::TimeDelta kUpdateInterval = base::TimeDelta::FromSeconds(5);
 
 void InvokeStartCallback(const std::string& guid,
                          DownloadParams::StartResult result,
@@ -35,12 +39,14 @@ void InvokeStartCallback(const std::string& guid,
 BackgroundDownloadServiceImpl::BackgroundDownloadServiceImpl(
     std::unique_ptr<ClientSet> clients,
     std::unique_ptr<Model> model,
-    std::unique_ptr<BackgroundDownloadTaskHelper> download_helper)
+    std::unique_ptr<BackgroundDownloadTaskHelper> download_helper,
+    base::Clock* clock)
     : config_(std::make_unique<Configuration>()),
       service_config_(config_.get()),
       clients_(std::move(clients)),
       model_(std::move(model)),
-      download_helper_(std::move(download_helper)) {
+      download_helper_(std::move(download_helper)),
+      clock_(clock) {
   model_->Initialize(this);
 }
 
@@ -175,7 +181,8 @@ void BackgroundDownloadServiceImpl::OnDownloadFinished(
     DownloadClient download_client,
     const std::string& guid,
     bool success,
-    const base::FilePath& file_path) {
+    const base::FilePath& file_path,
+    int64_t file_size) {
   download::Client* client = clients_->GetClient(download_client);
   if (!client)
     return;
@@ -189,6 +196,14 @@ void BackgroundDownloadServiceImpl::OnDownloadFinished(
 
     return;
   }
+
+  Entry* entry = model_->Get(guid);
+  if (!entry)
+    return;
+
+  entry->bytes_downloaded = base::saturated_cast<uint64_t>(file_size);
+  model_->Update(*entry);
+
   CompletionInfo completion_info;
   completion_info.path = file_path;
   client->OnDownloadSucceeded(guid, completion_info);
@@ -198,12 +213,28 @@ void BackgroundDownloadServiceImpl::OnDownloadUpdated(
     DownloadClient download_client,
     const std::string& guid,
     int64_t bytes_downloaded) {
+  uint64_t bytes_count = base::saturated_cast<uint64_t>(bytes_downloaded);
+  MaybeUpdateProgress(guid, bytes_count);
+
   download::Client* client = clients_->GetClient(download_client);
   if (!client)
     return;
 
-  client->OnDownloadUpdated(guid, /*bytes_uploaded*/ 0u,
-                            static_cast<uint64_t>(bytes_downloaded));
+  client->OnDownloadUpdated(guid, /*bytes_uploaded*/ 0u, bytes_count);
+}
+
+void BackgroundDownloadServiceImpl::MaybeUpdateProgress(
+    const std::string& guid,
+    uint64_t bytes_downloaded) {
+  // Throttle the model update frequency.
+  if (clock_->Now() - update_time_ < kUpdateInterval)
+    return;
+
+  update_time_ = clock_->Now();
+  Entry* entry = model_->Get(guid);
+  DCHECK_GE(bytes_downloaded, 0u);
+  entry->bytes_downloaded = bytes_downloaded;
+  model_->Update(*entry);
 }
 
 }  // namespace download

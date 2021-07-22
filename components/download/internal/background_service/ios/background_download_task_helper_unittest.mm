@@ -56,12 +56,14 @@ class BackgroundDownloadTaskHelperTest : public PlatformTest {
     base::RunLoop loop;
     helper_->StartDownload(
         kGuid, params.request_params, params.scheduling_params,
-        base::BindLambdaForTesting([&](bool, const base::FilePath& file_path) {
-          std::string content;
-          ASSERT_TRUE(base::ReadFileToString(file_path, &content));
-          EXPECT_EQ(kDefaultResponseContent, content);
-          loop.Quit();
-        }),
+        base::BindLambdaForTesting(
+            [&](bool, const base::FilePath& file_path, int64_t file_size) {
+              std::string content;
+              ASSERT_TRUE(base::ReadFileToString(file_path, &content));
+              EXPECT_EQ(kDefaultResponseContent, content);
+              EXPECT_EQ(file_size, static_cast<int64_t>(content.size()));
+              loop.Quit();
+            }),
         base::DoNothing());
     loop.Run();
     DCHECK(request_sent_);

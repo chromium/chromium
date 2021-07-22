@@ -24,6 +24,9 @@ MapEntriesToMetadataForClients(const std::set<DownloadClient>& clients,
     meta_data.guid = entry->guid;
     // iOS currently doesn't support pause.
     meta_data.paused = false;
+    // Unlike other platforms that uses history db through download driver, the
+    // current size on iOS is always based on background download proto db
+    // record.
     meta_data.current_size = entry->bytes_downloaded;
     if (entry->state == Entry::State::COMPLETE) {
       // TODO(xingliu): Implement the response headers and url chain with

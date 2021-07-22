@@ -8,6 +8,7 @@
 
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/default_clock.h"
 #include "components/download/internal/background_service/client_set.h"
 #include "components/download/internal/background_service/download_store.h"
 #include "components/download/internal/background_service/ios/background_download_service_impl.h"
@@ -72,5 +73,6 @@ BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<download::BackgroundDownloadServiceImpl>(
       std::move(client_set), std::move(model),
       download::BackgroundDownloadTaskHelper::Create(
-          storage_dir.Append(kFilesStorageDir)));
+          storage_dir.Append(kFilesStorageDir)),
+      base::DefaultClock::GetInstance());
 }

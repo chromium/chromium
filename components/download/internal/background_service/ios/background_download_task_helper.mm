@@ -50,9 +50,10 @@ using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
 }
 
 - (void)invokeCompletionHandler:(bool)success
-                       filePath:(base::FilePath)filePath {
+                       filePath:(base::FilePath)filePath
+                       fileSize:(int64_t)fileSize {
   if (_completionCallback)
-    std::move(_completionCallback).Run(success, filePath);
+    std::move(_completionCallback).Run(success, filePath, fileSize);
 }
 
 #pragma mark - NSURLSessionDownloadDelegate
@@ -83,29 +84,48 @@ using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
     didFinishDownloadingToURL:(NSURL*)location {
   DVLOG(1) << __func__;
   if (!location) {
-    [self invokeCompletionHandler:/*success=*/false filePath:base::FilePath()];
+    [self invokeCompletionHandler:/*success=*/false
+                         filePath:base::FilePath()
+                         fileSize:0];
     return;
   }
 
   // Make sure the target directory exists.
   if (!base::CreateDirectory(_downloadDir)) {
     LOG(ERROR) << "Failed to create dir:" << _downloadDir;
-    [self invokeCompletionHandler:/*success=*/false filePath:base::FilePath()];
+    [self invokeCompletionHandler:/*success=*/false
+                         filePath:base::FilePath()
+                         fileSize:0];
     return;
   }
 
   // Move the downloaded file from platform temporary directory to download
-  // service's target directory.
+  // service's target directory. This must happen immediately on the current
+  // thread or iOS may delete the file.
   const base::FilePath tempPath =
       base::mac::NSStringToFilePath([location path]);
   base::FilePath newFile = _downloadDir.AppendASCII(_guid);
   if (!base::Move(tempPath, newFile)) {
     LOG(ERROR) << "Failed to move file from:" << tempPath
                << ", to:" << _downloadDir;
-    [self invokeCompletionHandler:/*success=*/false filePath:base::FilePath()];
+    [self invokeCompletionHandler:/*success=*/false
+                         filePath:base::FilePath()
+                         fileSize:0];
     return;
   }
-  [self invokeCompletionHandler:/*success=*/true filePath:newFile];
+
+  // Get the file size on current thread.
+  int64_t fileSize = 0;
+  if (!base::GetFileSize(newFile, &fileSize)) {
+    LOG(ERROR) << "Failed to get file size from:" << newFile;
+    [self invokeCompletionHandler:/*success=*/false
+                         filePath:base::FilePath()
+                         fileSize:0];
+    return;
+  }
+  [self invokeCompletionHandler:/*success=*/true
+                       filePath:newFile
+                       fileSize:fileSize];
 }
 
 #pragma mark - NSURLSessionDelegate
