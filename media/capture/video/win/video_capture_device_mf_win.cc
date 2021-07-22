@@ -1123,6 +1123,19 @@ void VideoCaptureDeviceMFWin::AllocateAndStart(
       std::make_unique<CapabilityWin>(best_match_video_capability);
 
   is_started_ = true;
+
+  base::UmaHistogramEnumeration(
+      "Media.VideoCapture.Win.Device.InternalPixelFormat",
+      best_match_video_capability.source_pixel_format,
+      media::VideoPixelFormat::PIXEL_FORMAT_MAX);
+  base::UmaHistogramEnumeration(
+      "Media.VideoCapture.Win.Device.CapturePixelFormat",
+      best_match_video_capability.supported_format.pixel_format,
+      media::VideoPixelFormat::PIXEL_FORMAT_MAX);
+  base::UmaHistogramEnumeration(
+      "Media.VideoCapture.Win.Device.RequestedPixelFormat",
+      params.requested_format.pixel_format,
+      media::VideoPixelFormat::PIXEL_FORMAT_MAX);
 }
 
 void VideoCaptureDeviceMFWin::StopAndDeAllocate() {

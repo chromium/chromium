@@ -4448,6 +4448,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Win.Device.CapturePixelFormat"
+    enum="VideoPixelFormatUnion" expires_after="2022-02-28">
+  <owner>ilnik@google.com</owner>
+  <owner>video-cmi-mpp@google.com</owner>
+  <summary>
+    Counts the pixel formats produced by the VideoCaptureDevice on Windows. This
+    is recorded when the camera is opened.
+  </summary>
+</histogram>
+
+<histogram name="Media.VideoCapture.Win.Device.InternalPixelFormat"
+    enum="VideoPixelFormatUnion" expires_after="2022-02-28">
+  <owner>ilnik@google.com</owner>
+  <owner>video-cmi-mpp@google.com</owner>
+  <summary>
+    Counts the pixel formats used internaly by Windows VideoCaptureEngine. This
+    is recorded when the camera is opened.
+  </summary>
+</histogram>
+
+<histogram name="Media.VideoCapture.Win.Device.RequestedPixelFormat"
+    enum="VideoPixelFormatUnion" expires_after="2022-02-28">
+  <owner>ilnik@google.com</owner>
+  <owner>video-cmi-mpp@google.com</owner>
+  <summary>
+    Counts the pixel formats requested by the consumer on Windows. This is
+    recorded when the camera is opened.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Win.ErrorEvent" enum="Hresult"
     expires_after="2022-06-17">
   <owner>toprice@chromium.org</owner>
