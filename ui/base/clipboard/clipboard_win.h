@@ -21,6 +21,9 @@ class MessageWindow;
 
 namespace ui {
 
+// Documentation on the underlying Win32 API this ultimately abstracts is
+// available at
+// https://docs.microsoft.com/en-us/windows/win32/dataxchg/clipboard.
 class ClipboardWin : public Clipboard {
  public:
   ClipboardWin(const ClipboardWin&) = delete;

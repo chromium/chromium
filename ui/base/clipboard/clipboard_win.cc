@@ -476,9 +476,8 @@ void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
   if (start_index < html_start || end_index < start_index)
     return;
 
-  std::vector<size_t> offsets;
-  offsets.push_back(start_index - html_start);
-  offsets.push_back(end_index - html_start);
+  std::vector<size_t> offsets = {start_index - html_start,
+                                 end_index - html_start};
   markup->assign(base::UTF8ToUTF16AndAdjustOffsets(cf_html.data() + html_start,
                                                    &offsets));
   // Ensure the Fragment points within the string; see https://crbug.com/607181.

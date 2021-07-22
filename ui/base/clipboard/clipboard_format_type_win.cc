@@ -20,6 +20,8 @@
 namespace ui {
 
 // ClipboardFormatType implementation.
+// Windows formats are backed by "Clipboard Formats", documented here:
+// https://docs.microsoft.com/en-us/windows/win32/dataxchg/clipboard-formats
 ClipboardFormatType::ClipboardFormatType() = default;
 
 ClipboardFormatType::ClipboardFormatType(UINT native_format)

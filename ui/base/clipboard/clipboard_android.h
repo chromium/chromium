@@ -18,6 +18,8 @@
 
 namespace ui {
 
+// Documentation on the underlying Android API this ultimately abstracts is
+// available at https://developer.android.com/guide/topics/text/copy-paste.
 class ClipboardAndroid : public Clipboard {
  public:
   // Callback called whenever the clipboard is modified.  The parameter

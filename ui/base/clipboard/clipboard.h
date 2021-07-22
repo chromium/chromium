@@ -271,7 +271,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // is defined by ClipboardFormatType. A single PortableFormat might be
   // represented by several system-specific ClipboardFormatTypes. For example,
   // on Linux the kText PortableFormat maps to "text/plain", "STRING", and
-  // several other formats. On windows it maps to CF_UNICODETEXT.
+  // several other formats. On Windows it maps to CF_UNICODETEXT.
   //
   // The order below is the order in which data will be written to the
   // clipboard, so more specific types must be listed before less specific
@@ -279,6 +279,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // clipboard to contain a bitmap, HTML markup representing the image, a URL to
   // the image, and the image's alt text. Having the types follow this order
   // maximizes the amount of data that can be extracted by various programs.
+  // Documentation on motivation for format ordering is also available here:
+  // https://docs.microsoft.com/en-us/windows/win32/dataxchg/clipboard-formats#multiple-clipboard-formats
   enum class PortableFormat {
     kBitmap,  // Bitmap from shared memory.
     kHtml,

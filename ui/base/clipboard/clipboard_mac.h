@@ -17,6 +17,10 @@
 
 namespace ui {
 
+// Documentation on the underlying MacOS API this ultimately abstracts is
+// available at https://developer.apple.com/documentation/appkit/nspasteboard
+// and
+// https://developer.apple.com/library/archive/documentation/General/Conceptual/Devpedia-CocoaApp/Pasteboard.html.
 class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
  public:
   ClipboardMac(const ClipboardMac&) = delete;

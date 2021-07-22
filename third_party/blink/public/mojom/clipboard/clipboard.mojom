@@ -40,6 +40,32 @@ struct ClipboardFiles {
 // Individual operations are atomic, but successive operations are not.
 // Therefore, it's possible that one may see text available from
 // ReadAvailableTypes(), but that a subsequent ReadText() may then fail.
+//
+// Security and Privacy Model:
+// Native: Operating systems (OS's) generally provide clipboard access as-is to
+// native applications (including Chrome), trusting that users who install these
+// applications trust the apps' clipboard use to be safe. This means both
+// formats and payloads read/written by native applications are used by OS's
+// as-is. Native applications also often trust other native applications
+// in this manner, and may have existing vulnerabilities that untrusted content
+// (ex. from the web) could potentially exploit.
+//
+// Web: As browsers and users view web content as untrusted by default, the
+// browser must limit and secure web content from interaction with the OS, that
+// has a more trusted security model, and vice versa.
+//
+// Security: Content written to the clipboard should generally be sanitized
+// to protect insecure / out-of-date decoders in native applications from
+// malicious, untrusted, web-originated content. For example, PNG images should
+// be sanitized due to PNG vulnerabilities that may exist in native decoders.
+// Native applications tend to not be sandboxed, have lower update rates, and
+// have higher levels of system permissions than web applications, so failure
+// to properly sanitize may lead to sandbox escapes and remote code execution.
+//
+// Privacy: Content read from the clipboard should generally sanitize any
+// content that users may not reasonably expect to be on their clipboard.
+// Failure to do so may lead to users leaking sensitive information,
+// that may for example be held in metadata.
 interface ClipboardHost {
   // Returns a token which uniquely identifies clipboard state.
   // This can be used to version the data on the clipboard and determine

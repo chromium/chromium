@@ -12,6 +12,8 @@
 namespace ui {
 
 // ClipboardFormatType implementation.
+// MacOS formats are implemented via Uniform Type Identifiers, documented here:
+// https://developer.apple.com/library/archive/documentation/General/Conceptual/DevPedia-CocoaCore/UniformTypeIdentifier.html#//apple_ref/doc/uid/TP40008195-CH60
 ClipboardFormatType::ClipboardFormatType() : data_(nil) {}
 
 ClipboardFormatType::ClipboardFormatType(NSString* native_format)
