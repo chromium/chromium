@@ -70,6 +70,7 @@ Example:
 import base64
 from six.moves import BaseHTTPServer
 import cgi
+import codecs
 import glob
 import google.protobuf.text_format
 import hashlib
@@ -1663,8 +1664,8 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
       state_keys: The state keys to set.
     """
     if dmtoken in self._registered_tokens:
-      self._registered_tokens[dmtoken]['state_keys'] = [key.encode('hex')
-              for key in state_keys]
+      self._registered_tokens[dmtoken]['state_keys'] = [
+        str(codecs.getencoder('hex')(key)[0]) for key in state_keys]
       self.WriteClientState()
 
   def LookupToken(self, dmtoken):
