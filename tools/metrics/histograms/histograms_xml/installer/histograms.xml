@@ -21,6 +21,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="InstallerDownloadSources">
+  <variant name="HttpPeer" summary="Download Source: HTTP Peer"/>
+  <variant name="HttpServer" summary="Download Source: HTTP Server"/>
+  <variant name="HttpsServer" summary="Download Source: HTTPS Server"/>
+</variants>
+
 <histogram name="Installer.AttemptsCount.Total" units="count"
     expires_after="2019-01-30">
   <obsolete>
@@ -194,15 +200,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Installer.SuccessfulMBsDownloadedFrom" units="MB"
-    expires_after="2019-01-30">
+<histogram
+    name="Installer.SuccessfulMBsDownloadedFrom{InstallerDownloadSources}"
+    units="MB" expires_after="2019-01-30">
   <obsolete>
     Removed long time ago. Replaced by UpdateEngine metrics.
   </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     Number of MBs downloaded from during an update that completed successfully.
+    {InstallerDownloadSources}
   </summary>
+  <token key="InstallerDownloadSources" variants="InstallerDownloadSources">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Installer.TimeToRebootMinutes" units="Minutes"
@@ -219,8 +230,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Installer.TotalMBsDownloadedFrom" units="MB"
-    expires_after="2019-01-30">
+<histogram name="Installer.TotalMBsDownloadedFrom{InstallerDownloadSources}"
+    units="MB" expires_after="2019-01-30">
   <obsolete>
     Removed long time ago. Replaced by UpdateEngine metrics.
   </obsolete>
@@ -228,7 +239,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Total number of MBs downloaded since the last successful update. This also
     includes all the bytes downloaded during any prior failed attempts.
+    {InstallerDownloadSources}
   </summary>
+  <token key="InstallerDownloadSources" variants="InstallerDownloadSources">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Installer.UpdateDurationMinutes" units="Minutes"

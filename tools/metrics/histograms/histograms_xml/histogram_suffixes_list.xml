@@ -5813,21 +5813,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Favicons.DownloadAttempts"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="FCMInvalidationNonSyncPerUserTopics" separator=".">
-<!-- Note that the histogram "FCMInvalidations.SubscriptionResponseCodeForTopic"
-    also uses the SyncModelType suffixes. -->
-
-  <suffix name="OTHER" label="OTHER"/>
-  <affected-histogram name="FCMInvalidations.SubscriptionResponseCodeForTopic"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="FCMInvalidationSenders" separator=".">
-  <suffix name="Drive" label="The message was sent with the Drive sender ID"/>
-  <suffix name="Policy" label="The message was sent with the Policy sender ID"/>
-  <suffix name="Sync" label="The message was sent with the Sync sender ID"/>
-  <affected-histogram name="FCMInvalidations.FCMMessageStatus"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="FeedElementType" separator=".">
   <suffix name="CardLargeImage" label="Card with a large image"/>
   <suffix name="CardSmallImage" label="Card with a small image"/>
@@ -6860,24 +6845,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="GCM.IgnoredWriteResult"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ImageAnnotationServiceAnnotationType" separator="."
-    ordering="prefix">
-  <suffix name="DescCaption"
-      label="Caption annotations from the description engine"/>
-  <suffix name="DescLabel"
-      label="Label annotations from the description engine"/>
-  <suffix name="DescOcr"
-      label="OCR (text extraction) annotations from the description engine"/>
-  <suffix name="DescUnknown"
-      label="Annotations of an unknown type from the description engine"/>
-  <suffix name="Ocr"
-      label="OCR (text extraction) annotations from the specialized OCR
-             engine"/>
-  <affected-histogram name="ImageAnnotationService.AccessibilityV1.Confidence"/>
-  <affected-histogram name="ImageAnnotationService.AccessibilityV1.Empty"/>
-  <affected-histogram name="ImageAnnotationService.AccessibilityV1.Status"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ImageDecoderFileTypes" separator=".">
   <obsolete>
     Removed as of 11/29/2016.
@@ -6891,49 +6858,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Blink.DecodedImage.EffectiveDimensionsLocation"/>
   <affected-histogram name="Blink.DecodedImage.XCanvasExpansion"/>
   <affected-histogram name="Blink.DecodedImage.YCanvasExpansion"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ImageFetcherCacheStrategy" separator=".">
-  <suffix name="BestEffort" label="LRU cache strategy."/>
-  <suffix name="HoldUntilExpired" label="Hold the cache file until expired."/>
-  <affected-histogram name="ImageFetcher.CacheMetadataCount"/>
-  <affected-histogram name="ImageFetcher.CacheSize"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ImageFetcherClients" separator=".">
-  <suffix name="AnswerSuggestions"
-      label="Showing cache patterns only for AnswerSuggestions."/>
-  <suffix name="AssistantDetails"
-      label="Showing cache patterns only for AssistantDetails."/>
-  <suffix name="AutofillImageFetcher"
-      label="Show customized card art image for credit card."/>
-  <suffix name="ContextualSuggestions"
-      label="Showing cache patterns only for ContextualSuggestions."/>
-  <suffix name="Cryptids" label="Asset fetcher for cryptid rendering."/>
-  <suffix name="EduAccountLoginProfileImageFetcher"
-      label="Profile image fetcher for EDU account login flow"/>
-  <suffix name="EntitySuggestions"
-      label="Showing cache patterns only for EntitySuggestions."/>
-  <suffix name="Feed" label="Showing cache patterns only for Feed."/>
-  <suffix name="Internal" label="Showing cache patterns only for Internal."/>
-  <suffix name="NewTabPageAnimatedLogo"
-      label="Showing cache patterns only for NewTabPageAnimatedLogo."/>
-  <suffix name="OfflinePages"
-      label="Showing cache patterns only for OfflinePages."/>
-  <suffix name="QueryTiles" label="Showing Query tiles images."/>
-  <suffix name="VideoTutorialsIPH"
-      label="Showing thumbnails for video tutorials IPH."/>
-  <suffix name="VideoTutorialsList"
-      label="Showing thumbnails for video tutorials list view."/>
-  <suffix name="WebNotes"
-      label="Images fetched and used to render Web Notes templates."/>
-  <affected-histogram name="ImageFetcher.Events"/>
-  <affected-histogram name="ImageFetcher.ImageLoadFromCacheTime"/>
-  <affected-histogram name="ImageFetcher.ImageLoadFromCacheTimeJava"/>
-  <affected-histogram name="ImageFetcher.ImageLoadFromNativeTimeJava"/>
-  <affected-histogram name="ImageFetcher.ImageLoadFromNetworkAfterCacheHit"/>
-  <affected-histogram name="ImageFetcher.ImageLoadFromNetworkTime"/>
-  <affected-histogram name="ImageFetcher.RequestStatusCode"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="IMEAutoCorrect" separator=".">
@@ -7027,23 +6951,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="WebCore.IndexedDB.LevelDBWriteErrors.PFE"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="IndexId" separator="." ordering="prefix,1">
-  <suffix name="CrosSettings" label="Cros Settings"/>
-  <suffix name="HelpApp" label="Help App"/>
-  <suffix name="HelpAppLauncher" label="Help App Launcher"/>
-  <affected-histogram name="LocalSearchService.AddOrUpdateLatency"/>
-  <affected-histogram name="LocalSearchService.Backend"/>
-  <affected-histogram name="LocalSearchService.ClearIndexLatency"/>
-  <affected-histogram name="LocalSearchService.DailySearch"/>
-  <affected-histogram name="LocalSearchService.DeleteLatency"/>
-  <affected-histogram name="LocalSearchService.NumberDocuments"/>
-  <affected-histogram name="LocalSearchService.NumberResults"/>
-  <affected-histogram name="LocalSearchService.NumberSearchPerformedDone"/>
-  <affected-histogram name="LocalSearchService.ResponseStatus"/>
-  <affected-histogram name="LocalSearchService.SearchLatency"/>
-  <affected-histogram name="LocalSearchService.UpdateDocumentsLatency"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="InputEventPredictionAccuracy" separator=".">
   <suffix name="Long" label="predicted time between 20 to 35ms."/>
   <suffix name="Middle" label="predicted time between 10 to 20ms."/>
@@ -7055,14 +6962,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram
       name="Event.InputEventPrediction.Accuracy.Scroll.UnderPredict"/>
   <affected-histogram name="Event.InputEventPrediction.Accuracy.Touch"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="InstallerDownloadSources" separator="">
-  <suffix name="HttpPeer" label="Download Source: HTTP Peer"/>
-  <suffix name="HttpServer" label="Download Source: HTTP Server"/>
-  <suffix name="HttpsServer" label="Download Source: HTTPS Server"/>
-  <affected-histogram name="Installer.SuccessfulMBsDownloadedFrom"/>
-  <affected-histogram name="Installer.TotalMBsDownloadedFrom"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Instant" separator="_">
@@ -16019,14 +15918,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram
       name="Search.SearchEngineListedInPromoDialog.ExistingDevice"/>
   <affected-histogram name="Search.SearchEngineListedInPromoDialog.NewDevice"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SecurityInterstitialLookalikeType" separator="."
-    ordering="prefix">
-  <suffix name="lookalike" label=""/>
-  <affected-histogram name="interstitial.decision"/>
-  <affected-histogram name="interstitial.decision.repeat_visit"/>
-  <affected-histogram name="interstitial.interaction"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SecurityInterstitialSBType" separator="."

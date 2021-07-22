@@ -21,6 +21,56 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="ImageAnnotationServiceAnnotationType">
+  <variant name="DescCaption."
+      summary="Caption annotations from the description engine"/>
+  <variant name="DescLabel."
+      summary="Label annotations from the description engine"/>
+  <variant name="DescOcr."
+      summary="OCR (text extraction) annotations from the description engine"/>
+  <variant name="DescUnknown."
+      summary="Annotations of an unknown type from the description engine"/>
+  <variant name="Ocr."
+      summary="OCR (text extraction) annotations from the specialized OCR
+               engine"/>
+</variants>
+
+<variants name="ImageFetcherCacheStrategy">
+  <variant name=".BestEffort" summary="LRU cache strategy."/>
+  <variant name=".HoldUntilExpired"
+      summary="Hold the cache file until expired."/>
+</variants>
+
+<variants name="ImageFetcherClients">
+  <variant name=".AnswerSuggestions"
+      summary="Showing cache patterns only for AnswerSuggestions."/>
+  <variant name=".AssistantDetails"
+      summary="Showing cache patterns only for AssistantDetails."/>
+  <variant name=".AutofillImageFetcher"
+      summary="Show customized card art image for credit card."/>
+  <variant name=".ContextualSuggestions"
+      summary="Showing cache patterns only for ContextualSuggestions."/>
+  <variant name=".Cryptids" summary="Asset fetcher for cryptid rendering."/>
+  <variant name=".EduAccountLoginProfileImageFetcher"
+      summary="Profile image fetcher for EDU account login flow"/>
+  <variant name=".EntitySuggestions"
+      summary="Showing cache patterns only for EntitySuggestions."/>
+  <variant name=".Feed" summary="Showing cache patterns only for Feed."/>
+  <variant name=".Internal"
+      summary="Showing cache patterns only for Internal."/>
+  <variant name=".NewTabPageAnimatedLogo"
+      summary="Showing cache patterns only for NewTabPageAnimatedLogo."/>
+  <variant name=".OfflinePages"
+      summary="Showing cache patterns only for OfflinePages."/>
+  <variant name=".QueryTiles" summary="Showing Query tiles images."/>
+  <variant name=".VideoTutorialsIPH"
+      summary="Showing thumbnails for video tutorials IPH."/>
+  <variant name=".VideoTutorialsList"
+      summary="Showing thumbnails for video tutorials list view."/>
+  <variant name=".WebNotes"
+      summary="Images fetched and used to render Web Notes templates."/>
+</variants>
+
 <histogram name="Image.ResampleMS" units="?" expires_after="M79">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <summary>
@@ -52,19 +102,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="ImageAnnotationService.AccessibilityV1.Confidence"
-    units="%" expires_after="2020-03-31">
-<!-- Name completed by histogram_suffixes name="ImageAnnotationServiceAnnotationType" -->
-
-  <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
-  <summary>
-    For each annotation of the given type returned by the image annotation
-    server, records the confidence (as a percentage) produced by the ML model
-    for the annotation.
-  </summary>
-</histogram>
-
 <histogram name="ImageAnnotationService.AccessibilityV1.DescType"
     enum="ImageAnnotationServiceDescType" expires_after="2020-03-31">
   <owner>amoylan@chromium.org</owner>
@@ -72,20 +109,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     For each annotation backend run by the image annotation server, records the
     gRPC status reported.
-  </summary>
-</histogram>
-
-<histogram base="true" name="ImageAnnotationService.AccessibilityV1.Empty"
-    enum="BooleanEmpty" expires_after="2020-03-31">
-<!-- Name completed by histogram_suffixes name="ImageAnnotationServiceAnnotationType" -->
-
-  <owner>amoylan@chromium.org</owner>
-  <owner>martis@chromium.org</owner>
-  <summary>
-    For each annotation of the given type returned by the image annotation
-    server, records whether or not the text of the annotation was empty. This is
-    sometimes valid, e.g. for text extraction (OCR) on an image that does not
-    contain any text.
   </summary>
 </histogram>
 
@@ -209,103 +232,181 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="ImageAnnotationService.AccessibilityV1.Status"
-    enum="GoogleRpcCode" expires_after="2020-03-31">
-<!-- Name completed by histogram_suffixes name="ImageAnnotationServiceAnnotationType" -->
+<histogram
+    name="ImageAnnotationService.{ImageAnnotationServiceAnnotationType}AccessibilityV1.Confidence"
+    units="%" expires_after="2020-03-31">
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each annotation of the given type returned by the image annotation
+    server, records the confidence (as a percentage) produced by the ML model
+    for the annotation. {ImageAnnotationServiceAnnotationType}
+  </summary>
+  <token key="ImageAnnotationServiceAnnotationType"
+      variants="ImageAnnotationServiceAnnotationType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
 
+<histogram
+    name="ImageAnnotationService.{ImageAnnotationServiceAnnotationType}AccessibilityV1.Empty"
+    enum="BooleanEmpty" expires_after="2020-03-31">
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each annotation of the given type returned by the image annotation
+    server, records whether or not the text of the annotation was empty. This is
+    sometimes valid, e.g. for text extraction (OCR) on an image that does not
+    contain any text. {ImageAnnotationServiceAnnotationType}
+  </summary>
+  <token key="ImageAnnotationServiceAnnotationType"
+      variants="ImageAnnotationServiceAnnotationType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram
+    name="ImageAnnotationService.{ImageAnnotationServiceAnnotationType}AccessibilityV1.Status"
+    enum="GoogleRpcCode" expires_after="2020-03-31">
   <owner>amoylan@chromium.org</owner>
   <owner>martis@chromium.org</owner>
   <summary>
     For each annotation backend run by the image annotation server, records the
-    gRPC status reported.
+    gRPC status reported. {ImageAnnotationServiceAnnotationType}
   </summary>
+  <token key="ImageAnnotationServiceAnnotationType"
+      variants="ImageAnnotationServiceAnnotationType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="ImageFetcher.CacheMetadataCount" units="records"
-    expires_after="2022-06-01">
-<!-- Name completed by histogram_suffixes name="ImageFetcherCacheStrategy" -->
-
+<histogram name="ImageFetcher.CacheMetadataCount{ImageFetcherCacheStrategy}"
+    units="records" expires_after="2022-06-01">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
   <summary>
     The total number of metadata entries in the image fetcher cache metadata
     database for a given cache strategy. Recorded during cache eviction process.
+    {ImageFetcherCacheStrategy}
   </summary>
+  <token key="ImageFetcherCacheStrategy" variants="ImageFetcherCacheStrategy">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="ImageFetcher.CacheSize" units="KB"
+<histogram name="ImageFetcher.CacheSize{ImageFetcherCacheStrategy}" units="KB"
     expires_after="2022-06-01">
-<!-- Name completed by histogram_suffixes name="ImageFetcherCacheStrategy" -->
-
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
   <summary>
     The total size of the cache for a given cache strategy. Recorded during
-    cache eviction process.
+    cache eviction process. {ImageFetcherCacheStrategy}
   </summary>
+  <token key="ImageFetcherCacheStrategy" variants="ImageFetcherCacheStrategy">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram name="ImageFetcher.Events" enum="ImageFetcherEvent"
-    expires_after="2022-06-01">
+<histogram name="ImageFetcher.Events{ImageFetcherClients}"
+    enum="ImageFetcherEvent" expires_after="2022-06-01">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
     Events that track the lifecycle and performance of the cached_image_fetcher.
     The events reported include: success/failure conditions, various recoverable
-    errors and a couple of dead-end errors.
+    errors and a couple of dead-end errors. {ImageFetcherClients}
   </summary>
+  <token key="ImageFetcherClients" variants="ImageFetcherClients">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="ImageFetcher.ImageLoadFromCacheTime" units="ms"
-    expires_after="2022-06-01">
+<histogram name="ImageFetcher.ImageLoadFromCacheTimeJava{ImageFetcherClients}"
+    units="ms" expires_after="2022-06-01">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
     The time it takes for cached_image_fetcher to load an image from the cache
-    in native.
+    in Java. {ImageFetcherClients}
   </summary>
+  <token key="ImageFetcherClients" variants="ImageFetcherClients">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="ImageFetcher.ImageLoadFromCacheTimeJava" units="ms"
-    expires_after="2022-06-01">
+<histogram name="ImageFetcher.ImageLoadFromCacheTime{ImageFetcherClients}"
+    units="ms" expires_after="2022-06-01">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
     The time it takes for cached_image_fetcher to load an image from the cache
-    in Java.
+    in native. {ImageFetcherClients}
   </summary>
+  <token key="ImageFetcherClients" variants="ImageFetcherClients">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="ImageFetcher.ImageLoadFromNativeTimeJava" units="ms"
-    expires_after="2022-06-01">
+<histogram name="ImageFetcher.ImageLoadFromNativeTimeJava{ImageFetcherClients}"
+    units="ms" expires_after="2022-06-01">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
     The time it takes for cached_image_fetcher to load an image from native
-    code. Only recorded on successful loads.
+    code. Only recorded on successful loads. {ImageFetcherClients}
   </summary>
+  <token key="ImageFetcherClients" variants="ImageFetcherClients">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="ImageFetcher.ImageLoadFromNetworkAfterCacheHit" units="ms"
-    expires_after="2022-06-01">
+<histogram
+    name="ImageFetcher.ImageLoadFromNetworkAfterCacheHit{ImageFetcherClients}"
+    units="ms" expires_after="2022-06-01">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
     The time it takes for cached_image_fetcher to load an image from the network
-    after a cache hit.
+    after a cache hit. {ImageFetcherClients}
   </summary>
+  <token key="ImageFetcherClients" variants="ImageFetcherClients">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="ImageFetcher.ImageLoadFromNetworkTime" units="ms"
-    expires_after="2022-06-01">
+<histogram name="ImageFetcher.ImageLoadFromNetworkTime{ImageFetcherClients}"
+    units="ms" expires_after="2022-06-01">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
     The time it takes for cached_image_fetcher to load an image from the
-    network.
+    network. {ImageFetcherClients}
   </summary>
+  <token key="ImageFetcherClients" variants="ImageFetcherClients">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="ImageFetcher.LoadImageMetadata" units="ms"
@@ -317,15 +418,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ImageFetcher.RequestStatusCode"
+<histogram name="ImageFetcher.RequestStatusCode{ImageFetcherClients}"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-06-01">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>
     Android: The integer status code of network requests made by the image data
     fetcher. This code includes both protocol(1xx-5xx) and non-protocol(-xxx)
-    errors. Recorded when a request completes.
+    errors. Recorded when a request completes. {ImageFetcherClients}
   </summary>
+  <token key="ImageFetcherClients" variants="ImageFetcherClients">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="ImageFetcher.TimeSinceLastCacheLRUEviction" units="ms"

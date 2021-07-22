@@ -21,56 +21,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="SecurityInterstitialLookalikeType">
+  <variant name="lookalike." summary=""/>
+</variants>
+
 <histogram name="interstitial.captive_portal"
     enum="CaptivePortalBlockingPageEvent" expires_after="M85">
   <owner>meacer@chromium.org</owner>
   <summary>
     User action when the user is shown a captive portal error page.
-  </summary>
-</histogram>
-
-<histogram name="interstitial.decision" enum="SecurityInterstitialDecision"
-    expires_after="M94">
-  <owner>estark@chromium.org</owner>
-  <owner>carlosil@chromium.org</owner>
-  <summary>
-    User decision when presented with a security interstitial. As of M44,
-    subresource interstitials were split into their own entries. As of M52,
-    social_engineering_ads* and social_engineering_landing* interstitial reasons
-    are split into their own entries from phishing*. As of M90,
-    social_engineering_ads* and social_engineering_landing* interstitial reasons
-    have been removed because they don't trigger interstitials.
-
-    This metric is used to populate a dashboard on go/crsb-site.
-  </summary>
-</histogram>
-
-<histogram name="interstitial.decision.repeat_visit"
-    enum="SecurityInterstitialDecision" expires_after="M94">
-  <owner>carlosil@chromium.org</owner>
-  <owner>security-enamel@chromium.org</owner>
-  <summary>
-    User decision when presented with a security interstitial, on a site that
-    the user had previously visited. As of M44, subresource interstitials were
-    split into their own entries. As of M52, social_engineering_ads* and
-    social_engineering_landing* interstitial reasons are split into their own
-    entries from phishing*. As of M90, social_engineering_ads* and
-    social_engineering_landing* interstitial reasons have been removed because
-    they don't trigger interstitials.
-  </summary>
-</histogram>
-
-<histogram name="interstitial.interaction"
-    enum="SecurityInterstitialInteraction" expires_after="M94">
-  <owner>estark@chromium.org</owner>
-  <owner>carlosil@chromium.org</owner>
-  <summary>
-    User interactions with a security interstitial. As of M44, subresource
-    interstitials were split into their own entries. As of M52,
-    social_engineering_ads* and social_engineering_landing* interstitial reasons
-    are split into their own entries from phishing*. As of M90,
-    social_engineering_ads* and social_engineering_landing* interstitial reasons
-    have been removed because they don't trigger interstitials.
   </summary>
 </histogram>
 
@@ -262,6 +221,66 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     a Certificate Transparency error that the user has seen multiple times (in
     which case a special message is added to the interstitial).
   </summary>
+</histogram>
+
+<histogram name="interstitial.{SecurityInterstitialLookalikeType}decision"
+    enum="SecurityInterstitialDecision" expires_after="M94">
+  <owner>estark@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
+  <summary>
+    User decision when presented with a security interstitial. As of M44,
+    subresource interstitials were split into their own entries. As of M52,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    are split into their own entries from phishing*. As of M90,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    have been removed because they don't trigger interstitials.
+
+    This metric is used to populate a dashboard on go/crsb-site.
+    {SecurityInterstitialLookalikeType}
+  </summary>
+  <token key="SecurityInterstitialLookalikeType"
+      variants="SecurityInterstitialLookalikeType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="interstitial.{SecurityInterstitialLookalikeType}decision.repeat_visit"
+    enum="SecurityInterstitialDecision" expires_after="M94">
+  <owner>carlosil@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    User decision when presented with a security interstitial, on a site that
+    the user had previously visited. As of M44, subresource interstitials were
+    split into their own entries. As of M52, social_engineering_ads* and
+    social_engineering_landing* interstitial reasons are split into their own
+    entries from phishing*. As of M90, social_engineering_ads* and
+    social_engineering_landing* interstitial reasons have been removed because
+    they don't trigger interstitials. {SecurityInterstitialLookalikeType}
+  </summary>
+  <token key="SecurityInterstitialLookalikeType"
+      variants="SecurityInterstitialLookalikeType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="interstitial.{SecurityInterstitialLookalikeType}interaction"
+    enum="SecurityInterstitialInteraction" expires_after="M94">
+  <owner>estark@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
+  <summary>
+    User interactions with a security interstitial. As of M44, subresource
+    interstitials were split into their own entries. As of M52,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    are split into their own entries from phishing*. As of M90,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    have been removed because they don't trigger interstitials.
+    {SecurityInterstitialLookalikeType}
+  </summary>
+  <token key="SecurityInterstitialLookalikeType"
+      variants="SecurityInterstitialLookalikeType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="TypedNavigationUpgradeThrottle.Event"

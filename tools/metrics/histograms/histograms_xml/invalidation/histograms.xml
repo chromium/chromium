@@ -46,18 +46,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Net error codes for failed subscription requests.</summary>
 </histogram>
 
-<histogram name="FCMInvalidations.FCMMessageStatus"
+<histogram name="FCMInvalidations.FCMMessageStatus{FCMInvalidationSenders}"
     enum="FCMInvalidationMessageStatus" expires_after="never">
 <!-- expires-never: For monitoring FCM based invalidations. -->
-
-<!-- Name completed by histogram_suffixes name="FCMInvalidationSenders" -->
 
   <owner>melandory@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
     Status of the message from the FCM channel. Recorded upon receiving response
-    from the FCM channel.
+    from the FCM channel. {FCMInvalidationSenders}
   </summary>
+  <token key="FCMInvalidationSenders">
+    <variant name=""/>
+    <variant name=".Drive"
+        summary="The message was sent with the Drive sender ID"/>
+    <variant name=".Policy"
+        summary="The message was sent with the Policy sender ID"/>
+    <variant name=".Sync"
+        summary="The message was sent with the Sync sender ID"/>
+  </token>
 </histogram>
 
 <histogram name="FCMInvalidations.InitialTokenRetrievalStatus"
@@ -108,7 +115,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="FCMInvalidations.SubscriptionResponseCodeForTopic"
+<histogram
+    name="FCMInvalidations.SubscriptionResponseCodeForTopic{FCMInvalidationNonSyncPerUserTopics}"
     enum="HttpResponseCode" expires_after="never">
 <!-- expires-never: For monitoring FCM based invalidations. -->
 
@@ -118,7 +126,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     For each subcription request to the FCM Per-User-Topic server, log the
     response received from the server per topic. Note: This is only recorded
     with a data type suffix. The base version is never recorded.
+    {FCMInvalidationNonSyncPerUserTopics}
   </summary>
+  <token key="FCMInvalidationNonSyncPerUserTopics">
+    <variant name=""/>
+    <variant name=".OTHER" summary="OTHER"/>
+  </token>
 </histogram>
 
 <histogram name="FCMInvalidations.TokenStateOnRegistrationRequest2"
