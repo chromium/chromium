@@ -18,8 +18,8 @@ bool PdfInternalPluginDelegate::IsAllowedFrame(
   return false;
 }
 
-std::unique_ptr<chrome_pdf::PdfViewWebPlugin::PrintClient>
-PdfInternalPluginDelegate::CreatePrintClient() {
+std::unique_ptr<chrome_pdf::PdfViewWebPlugin::Client>
+PdfInternalPluginDelegate::CreateClient() {
   return nullptr;
 }
 

@@ -23,8 +23,7 @@ class ChromePdfInternalPluginDelegate final
 
   // `pdf::PdfInternalPluginDelegate`:
   bool IsAllowedFrame(const blink::WebFrame& frame) const override;
-  std::unique_ptr<chrome_pdf::PdfViewWebPlugin::PrintClient> CreatePrintClient()
-      override;
+  std::unique_ptr<chrome_pdf::PdfViewWebPlugin::Client> CreateClient() override;
 
  private:
   content::RenderFrame* render_frame_;

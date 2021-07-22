@@ -9,16 +9,12 @@
 #include "base/check.h"
 #include "chrome/common/pdf_util.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/renderer/pdf/chrome_pdf_view_web_plugin_client.h"
 #include "pdf/pdf_view_web_plugin.h"
-#include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(ENABLE_PRINTING)
-#include "chrome/renderer/pdf/chrome_pdf_view_web_plugin_print_client.h"
-#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 ChromePdfInternalPluginDelegate::ChromePdfInternalPluginDelegate(
     content::RenderFrame* render_frame)
@@ -43,11 +39,7 @@ bool ChromePdfInternalPluginDelegate::IsAllowedFrame(
   return IsPdfInternalPluginAllowedOrigin(parent_frame->GetSecurityOrigin());
 }
 
-std::unique_ptr<chrome_pdf::PdfViewWebPlugin::PrintClient>
-ChromePdfInternalPluginDelegate::CreatePrintClient() {
-#if BUILDFLAG(ENABLE_PRINTING)
-  return std::make_unique<ChromePdfViewWebPluginPrintClient>(render_frame_);
-#else   // !BUILDFLAG(ENABLE_PRINTING)
-  return nullptr;
-#endif  // BUILDFLAG(ENABLE_PRINTING)
+std::unique_ptr<chrome_pdf::PdfViewWebPlugin::Client>
+ChromePdfInternalPluginDelegate::CreateClient() {
+  return std::make_unique<ChromePdfViewWebPluginClient>(render_frame_);
 }

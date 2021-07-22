@@ -112,16 +112,18 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     virtual blink::WebPluginContainer* Container() = 0;
   };
 
-  class PrintClient {
+  // Allows for dependency injections into `PdfViewWebPlugin`.
+  class Client {
    public:
-    virtual ~PrintClient() = default;
+    virtual ~Client() = default;
 
-    virtual void Print(const blink::WebElement& element) = 0;
+    // Prints the given `element`.
+    virtual void Print(const blink::WebElement& element) {}
   };
 
   PdfViewWebPlugin(
+      std::unique_ptr<Client> client,
       mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote,
-      std::unique_ptr<PrintClient> print_client,
       const blink::WebPluginParams& params);
   PdfViewWebPlugin(const PdfViewWebPlugin& other) = delete;
   PdfViewWebPlugin& operator=(const PdfViewWebPlugin& other) = delete;
@@ -275,18 +277,17 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   blink::WebString selected_text_;
 
+  std::unique_ptr<Client> const client_;
+
+  // May be unbound in unit tests.
+  mojo::AssociatedRemote<pdf::mojom::PdfService> const pdf_service_remote_;
+
   // The id of the current find operation, or -1 if no current operation is
   // present.
   int find_identifier_ = -1;
 
   blink::WebTextInputType text_input_type_ =
       blink::WebTextInputType::kWebTextInputTypeNone;
-
-  // May be unbound in unit tests.
-  mojo::AssociatedRemote<pdf::mojom::PdfService> const pdf_service_remote_;
-
-  // May be null in unit tests, or if there is no printing support.
-  std::unique_ptr<PrintClient> const print_client_;
 
   blink::WebPluginParams initial_params_;
 

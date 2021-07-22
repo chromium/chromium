@@ -204,12 +204,14 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
 }  // namespace
 
 PdfViewWebPlugin::PdfViewWebPlugin(
+    std::unique_ptr<Client> client,
     mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote,
-    std::unique_ptr<PrintClient> print_client,
     const blink::WebPluginParams& params)
-    : pdf_service_remote_(std::move(pdf_service_remote)),
-      print_client_(std::move(print_client)),
-      initial_params_(params) {}
+    : client_(std::move(client)),
+      pdf_service_remote_(std::move(pdf_service_remote)),
+      initial_params_(params) {
+  DCHECK(client_);
+}
 
 PdfViewWebPlugin::~PdfViewWebPlugin() = default;
 
@@ -844,10 +846,7 @@ bool PdfViewWebPlugin::Redo() {
 }
 
 void PdfViewWebPlugin::OnInvokePrintDialog(int32_t /*result*/) {
-  if (!print_client_)
-    return;
-
-  print_client_->Print(Container()->GetElement());
+  client_->Print(Container()->GetElement());
 }
 
 pdf::mojom::PdfService* PdfViewWebPlugin::GetPdfService() {

@@ -52,7 +52,7 @@ blink::WebPlugin* CreateInternalPlugin(
   render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
       pdf_service_remote.BindNewEndpointAndPassReceiver());
   return new chrome_pdf::PdfViewWebPlugin(
-      std::move(pdf_service_remote), delegate->CreatePrintClient(), params);
+      delegate->CreateClient(), std::move(pdf_service_remote), params);
 }
 
 }  // namespace pdf
