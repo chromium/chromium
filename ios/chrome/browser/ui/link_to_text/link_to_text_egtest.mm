@@ -203,7 +203,8 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
 }
 
 // Tests that a link can be generated for a simple text selection.
-- (void)testGenerateLinkForSimpleText {
+// TODO(crbug.com/1232101) Re-enable flakey tests.
+- (void)DISABLE_testGenerateLinkForSimpleText {
   // TODO(crbug.com/1149603): Re-enable this test on iPad once presenting
   // popovers work.
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -297,7 +298,8 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
   }
 }
 
-- (void)DISABLED_testInputDisablesGenerateLink {
+// TODO(crbug.com/1232101) Re-enable flakey tests.
+- (void)DISABLE_testInputDisablesGenerateLink {
   // In order to make the menu show up later in the test, the pasteboard can't
   // be empty.
   UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
