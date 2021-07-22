@@ -274,10 +274,47 @@ TEST_F(ManifestParserTest, IdParseRules) {
     ASSERT_EQ(0u, GetErrorCount());
     EXPECT_EQ("start?query=a", manifest->id);
   }
+  // Invalid type.
+  {
+    auto& manifest =
+        ParseManifest("{\"start_url\": \"/start?query=a\", \"id\": 1}");
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("start?query=a", manifest->id);
+  }
   // Empty string.
   {
     auto& manifest =
         ParseManifest("{ \"start_url\": \"/start?query=a\", \"id\": \"\" }");
+    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_EQ("", manifest->id);
+  }
+  // Full url.
+  {
+    auto& manifest = ParseManifest(
+        "{ \"start_url\": \"/start?query=a\", \"id\": \"http://foo.com/foo\" "
+        "}");
+    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_EQ("foo", manifest->id);
+  }
+  // Full url with different origin.
+  {
+    auto& manifest = ParseManifest(
+        "{ \"start_url\": \"/start?query=a\", \"id\": "
+        "\"http://another.com/foo\" }");
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("start?query=a", manifest->id);
+  }
+  // Relative path
+  {
+    auto& manifest =
+        ParseManifest("{ \"start_url\": \"/start?query=a\", \"id\": \".\" }");
+    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_EQ("", manifest->id);
+  }
+  // Absolute path
+  {
+    auto& manifest =
+        ParseManifest("{ \"start_url\": \"/start?query=a\", \"id\": \"/\" }");
     ASSERT_EQ(0u, GetErrorCount());
     EXPECT_EQ("", manifest->id);
   }

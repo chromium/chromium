@@ -340,23 +340,27 @@ String ManifestParser::ParseId(const JSONObject* object,
     return String();
   }
 
-  absl::optional<String> id = ParseString(object, "id", NoTrim);
-  if (id.has_value()) {
+  if (!start_url.IsValid()) {
+    ManifestUmaUtil::ParseIdResult(
+        ManifestUmaUtil::ParseIdResultType::kInvalidStartUrl);
+    return String();
+  }
+  KURL start_url_origin = KURL(SecurityOrigin::Create(start_url)->ToString());
+
+  KURL id = ParseURL(object, "id", start_url_origin,
+                     ParseURLRestrictions::kSameOriginOnly);
+  if (id.IsValid()) {
     ManifestUmaUtil::ParseIdResult(
         ManifestUmaUtil::ParseIdResultType::kSucceed);
-    return *id;
   } else {
-    // If id is not specified, sets to start_url with origin stripped.
-    if (start_url.IsValid()) {
-      ManifestUmaUtil::ParseIdResult(
-          ManifestUmaUtil::ParseIdResultType::kDefaultToStartUrl);
-      return start_url.GetString().Substring(start_url.PathStart() + 1);
-    } else {
-      ManifestUmaUtil::ParseIdResult(
-          ManifestUmaUtil::ParseIdResultType::kInvalidStartUrl);
-      return String();
-    }
+    // If id is not specified, sets to start_url
+    ManifestUmaUtil::ParseIdResult(
+        ManifestUmaUtil::ParseIdResultType::kDefaultToStartUrl);
+    id = start_url;
   }
+  // TODO(https://crbug.com/1231765): rename the field to relative_id to reflect
+  // the actual value.
+  return id.GetString().Substring(id.PathStart() + 1);
 }
 
 KURL ManifestParser::ParseStartURL(const JSONObject* object) {
