@@ -53,6 +53,7 @@ class FieldFormatterStateMapTest : public ::testing::Test {
                                 /*client_profile_validator=*/nullptr,
                                 /*history_service=*/nullptr,
                                 /*strike_database=*/nullptr,
+                                /*image_fetcher=*/nullptr,
                                 /*is_off_the_record=*/false);
     alternative_state_name_map_updater_ =
         std::make_unique<autofill::AlternativeStateNameMapUpdater>(

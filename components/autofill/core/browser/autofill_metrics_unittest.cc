@@ -4280,6 +4280,7 @@ TEST_F(AutofillMetricsTest, AutofillProfileIsEnabledAtStartup) {
                        /*client_profile_validator=*/nullptr,
                        /*history_service=*/nullptr,
                        /*strike_database=*/nullptr,
+                       /*image_fetcher=*/nullptr,
                        /*is_off_the_record=*/false);
   histogram_tester.ExpectUniqueSample("Autofill.Address.IsEnabled.Startup",
                                       true, 1);
@@ -4297,6 +4298,7 @@ TEST_F(AutofillMetricsTest, AutofillProfileIsDisabledAtStartup) {
                        /*client_profile_validator=*/nullptr,
                        /*history_service=*/nullptr,
                        /*strike_database=*/nullptr,
+                       /*image_fetcher=*/nullptr,
                        /*is_off_the_record=*/false);
   histogram_tester.ExpectUniqueSample("Autofill.Address.IsEnabled.Startup",
                                       false, 1);
@@ -4314,6 +4316,7 @@ TEST_F(AutofillMetricsTest, AutofillCreditCardIsEnabledAtStartup) {
                        /*client_profile_validator=*/nullptr,
                        /*history_service=*/nullptr,
                        /*strike_database=*/nullptr,
+                       /*image_fetcher=*/nullptr,
                        /*is_off_the_record=*/false);
   histogram_tester.ExpectUniqueSample("Autofill.CreditCard.IsEnabled.Startup",
                                       true, 1);
@@ -4331,6 +4334,7 @@ TEST_F(AutofillMetricsTest, AutofillCreditCardIsDisabledAtStartup) {
                        /*client_profile_validator=*/nullptr,
                        /*history_service=*/nullptr,
                        /*strike_database=*/nullptr,
+                       /*image_fetcher=*/nullptr,
                        /*is_off_the_record=*/false);
   histogram_tester.ExpectUniqueSample("Autofill.CreditCard.IsEnabled.Startup",
                                       false, 1);

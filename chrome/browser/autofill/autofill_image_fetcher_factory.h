@@ -9,16 +9,17 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class Profile;
+
 namespace autofill {
 
 class AutofillImageFetcher;
 
 class AutofillImageFetcherFactory : public BrowserContextKeyedServiceFactory {
  public:
-  // Returns the AutofillImageFetcher for |context|, creating it if it is not
+  // Returns the AutofillImageFetcher for |profile|, creating it if it is not
   // yet created.
-  static AutofillImageFetcher* GetForBrowserContext(
-      content::BrowserContext* context);
+  static AutofillImageFetcher* GetForProfile(Profile* profile);
 
   static AutofillImageFetcherFactory* GetInstance();
 

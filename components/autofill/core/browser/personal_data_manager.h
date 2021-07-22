@@ -53,6 +53,7 @@ class PrefService;
 class RemoveAutofillTester;
 
 namespace autofill {
+class AutofillImageFetcher;
 class AutofillInteractiveTest;
 class PersonalDataManagerObserver;
 class PersonalDataManagerFactory;
@@ -92,7 +93,8 @@ class PersonalDataManager : public KeyedService,
   // account, and is wiped on signout and browser exit. This can be a nullptr
   // if personal_data_manager should use |profile_database| for all data.
   // If passed in, the |account_database| is used by default for server cards.
-  // |pref_service| must outlive this instance. |is_off_the_record| informs this
+  // |pref_service| must outlive this instance. |image_fetcher| is to fetch the
+  // customized images for autofill data. |is_off_the_record| informs this
   // instance whether the user is currently operating in an off-the-record
   // context.
   void Init(scoped_refptr<AutofillWebDataService> profile_database,
@@ -103,6 +105,7 @@ class PersonalDataManager : public KeyedService,
             AutofillProfileValidator* client_profile_validator,
             history::HistoryService* history_service,
             StrikeDatabaseBase* strike_database,
+            AutofillImageFetcher* image_fetcher,
             bool is_off_the_record);
 
   // KeyedService:
@@ -814,6 +817,9 @@ class PersonalDataManager : public KeyedService,
 
   // The sync service this instances uses. Must outlive this instance.
   syncer::SyncService* sync_service_ = nullptr;
+
+  // The image fetcher to fetch customized images for Autofill data.
+  AutofillImageFetcher* image_fetcher_ = nullptr;
 
   // Whether the user is currently operating in an off-the-record context.
   // Default value is false.

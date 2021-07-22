@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 #include "components/autofill/core/browser/ui/label_formatter.h"
 #include "components/autofill/core/browser/ui/label_formatter_utils.h"
 #include "components/autofill/core/browser/ui/suggestion_selection.h"
@@ -275,6 +276,7 @@ void PersonalDataManager::Init(
     AutofillProfileValidator* client_profile_validator,
     history::HistoryService* history_service,
     StrikeDatabaseBase* strike_database,
+    AutofillImageFetcher* image_fetcher,
     bool is_off_the_record) {
   CountryNames::SetLocaleString(app_locale_);
   database_helper_->Init(profile_database, account_database);
@@ -301,6 +303,8 @@ void PersonalDataManager::Init(
   identity_manager_ = identity_manager;
   if (identity_manager_)
     identity_manager_->AddObserver(this);
+
+  image_fetcher_ = image_fetcher;
 
   is_off_the_record_ = is_off_the_record;
 

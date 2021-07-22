@@ -86,7 +86,8 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
       GetApplicationContext()->GetLocalState(),
       IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
       AutofillProfileValidatorFactory::GetInstance(), history_service,
-      strike_database, chrome_browser_state->IsOffTheRecord());
+      strike_database, /*image_fetcher=*/nullptr,
+      chrome_browser_state->IsOffTheRecord());
   return service;
 }
 
