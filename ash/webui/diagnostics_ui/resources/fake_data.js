@@ -311,7 +311,6 @@ export let fakeWifiNetwork = {
   },
 };
 
-
 /** @type {!Network} */
 export let fakeEthernetNetwork = {
   state: NetworkState.kOnline,

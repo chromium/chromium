@@ -1538,6 +1538,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_NETWORK_DIAGNOSTICS_IP_CONFIG_INFO_DRAWER_TITLE" desc="This element is the header for a collapsible content area responsible to showcasing IP related configuration data." >
         IP Configuration
       </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_IP_ADDRESS" desc="Label for `IP Address` data-point in network card." >
+        IP Address
+      </message>
 
       <!-- Personalization App -->
       <message name="IDS_PERSONALIZATION_APP_TITLE" desc="Name of the system web app for personalizing ChromeOS.">
