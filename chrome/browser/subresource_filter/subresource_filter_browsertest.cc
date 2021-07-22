@@ -872,63 +872,93 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                        PopupNavigatesBackToAboutBlank_FilterChecked) {
+  const GURL kInitialPopupUrl =
+      embedded_test_server()->GetURL("b.com", "/title2.html");
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/title1.html");
+
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetWithRules({testing::CreateSuffixRule("ad=true")}));
 
-  // Block disallowed resources.
-  Configuration config(subresource_filter::mojom::ActivationLevel::kEnabled,
-                       subresource_filter::ActivationScope::ALL_SITES);
+  // Activate only on the initial tab URL - title1.html.
+  Configuration config(
+      subresource_filter::mojom::ActivationLevel::kEnabled,
+      subresource_filter::ActivationScope::ACTIVATION_LIST,
+      subresource_filter::ActivationList::PHISHING_INTERSTITIAL);
   ResetConfiguration(std::move(config));
+  ConfigureAsPhishingURL(kInitialUrl);
 
-  content::WebContentsAddedObserver popup_observer;
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title1.html"));
+  ui_test_utils::NavigateToURL(browser(), kInitialUrl);
 
+  content::WebContents* initial_web_contents = web_contents();
+  content::WebContents* popup_web_contents = nullptr;
   base::HistogramTester tester;
-  ASSERT_TRUE(ExecJs(web_contents(),
-                     content::JsReplace("popup = window.open($1, 'name1');",
-                                        embedded_test_server()->GetURL(
-                                            "b.com", "/title2.html"))));
 
+  // Open a popup to the `kInitialPopupUrl` and wait for it to load. This should
+  // not activate.
   {
-    content::TitleWatcher title_watcher(popup_observer.GetWebContents(),
-                                        u"Title Of Awesomeness");
+    content::WebContentsAddedObserver popup_observer;
+    ASSERT_TRUE(ExecJs(initial_web_contents,
+                       content::JsReplace("popup = window.open($1, 'name1');",
+                                          kInitialPopupUrl)));
+    // `popup_observer.GetWebContents()` waits until a new WebContents is
+    // created.
+    popup_web_contents = popup_observer.GetWebContents();
+
+    // CAUTION - web_contents() now points to `popup_web_contents` - not
+    // `initial_web_contents`!
+
     // Wait for popup to finish loading
+    content::TitleWatcher title_watcher(popup_web_contents,
+                                        u"Title Of Awesomeness");
     EXPECT_EQ(u"Title Of Awesomeness", title_watcher.WaitAndGetTitle());
   }
 
-  // Check histograms agree that activation was not inherited.
+  ASSERT_NE(popup_web_contents, nullptr);
+  ASSERT_EQ(initial_web_contents->GetLastCommittedURL(), kInitialUrl);
+  ASSERT_EQ(popup_web_contents->GetLastCommittedURL(), kInitialPopupUrl);
+
+  // Check that activation did not happen.
   tester.ExpectBucketCount(kPageLoadActivationStateHistogram,
                            static_cast<int>(mojom::ActivationLevel::kEnabled),
-                           1);
+                           0);
   tester.ExpectTotalCount(kPageLoadActivationStateDidInheritHistogram, 0);
 
-  ASSERT_TRUE(
-      ExecJs(web_contents(), "popup = window.open('about:blank', 'name1');"));
+  // Now have the initial tab navigate the popup to about:blank and wait for it
+  // to finish.
+  {
+    content::TestNavigationObserver observer(popup_web_contents);
+    ASSERT_TRUE(ExecJs(initial_web_contents,
+                       "popup = window.open('about:blank', 'name1');"));
+    observer.Wait();
+  }
 
-  ASSERT_TRUE(ExecJs(web_contents(), R"SCRIPT(
-    // Get reference to popup without changing its location.
-    popup = window.open('', 'name1');
-    doc = popup.document;
-    doc.open();
-    doc.write(
-      "<html><body>Rewritten. <img src='/ad_tagging/pixel.png?ad=true' " +
-      "onload='window.document.title = \"loaded\";' " +
-      "onerror='window.document.title = \"failed\";'></body></html>");
-    doc.close();
-    )SCRIPT"));
+  // Now have the initial tab insert content into the popup. Ensure that we're
+  // using the activation of the opener, i.e. the initial tab, so the content
+  // should be blocked.
+  {
+    ASSERT_TRUE(ExecJs(initial_web_contents, R"SCRIPT(
+      // Get reference to popup without changing its location.
+      popup = window.open('', 'name1');
+      doc = popup.document;
+      doc.open();
+      doc.write(
+        "<html><body>Rewritten. <img src='/ad_tagging/pixel.png?ad=true' " +
+        "onload='window.document.title = \"loaded\";' " +
+        "onerror='window.document.title = \"failed\";'></body></html>");
+      doc.close();
+      )SCRIPT"));
 
-  content::TitleWatcher title_watcher(popup_observer.GetWebContents(),
-                                      u"failed");
-  title_watcher.AlsoWaitForTitle(u"loaded");
+    content::TitleWatcher title_watcher(popup_web_contents, u"failed");
+    title_watcher.AlsoWaitForTitle(u"loaded");
 
-  // Check the load was blocked.
-  EXPECT_EQ(u"failed", title_watcher.WaitAndGetTitle());
+    // Check the load was blocked.
+    EXPECT_EQ(u"failed", title_watcher.WaitAndGetTitle());
+  }
 
   // Check the new histograms agree that activation was inherited.
   tester.ExpectBucketCount(kPageLoadActivationStateHistogram,
                            static_cast<int>(mojom::ActivationLevel::kEnabled),
-                           2);
+                           1);
   tester.ExpectBucketCount(kPageLoadActivationStateDidInheritHistogram,
                            static_cast<int>(mojom::ActivationLevel::kEnabled),
                            1);
