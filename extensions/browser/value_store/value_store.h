@@ -79,9 +79,9 @@ class ValueStore {
     void Merge(const Status& status);
 
     // The status code.
-    StatusCode code;
+    StatusCode code = OK;
 
-    BackingStoreRestoreStatus restore_status;
+    BackingStoreRestoreStatus restore_status = RESTORE_NONE;
 
     // Message associated with the status (error) if there is one.
     std::string message;
@@ -95,6 +95,8 @@ class ValueStore {
     ReadResult(ReadResult&& other);
     ~ReadResult();
     ReadResult& operator=(ReadResult&& rhs);
+    ReadResult(const ReadResult&) = delete;
+    ReadResult& operator=(const ReadResult&) = delete;
 
     // Gets the settings read from the storage. Note that this represents
     // the root object. If you request the value for key "foo", that value will
@@ -112,8 +114,6 @@ class ValueStore {
    private:
     std::unique_ptr<base::DictionaryValue> settings_;
     Status status_;
-
-    DISALLOW_COPY_AND_ASSIGN(ReadResult);
   };
 
   // The result of a write operation (Set/Remove/Clear).
@@ -124,6 +124,8 @@ class ValueStore {
     WriteResult(WriteResult&& other);
     ~WriteResult();
     WriteResult& operator=(WriteResult&& rhs);
+    WriteResult(const WriteResult&) = delete;
+    WriteResult& operator=(const WriteResult&) = delete;
 
     // Gets the list of changes to the settings which resulted from the write.
     // Won't be present if the NO_GENERATE_CHANGES WriteOptions was given.
@@ -136,8 +138,6 @@ class ValueStore {
    private:
     ValueStoreChangeList changes_;
     Status status_;
-
-    DISALLOW_COPY_AND_ASSIGN(WriteResult);
   };
 
   // Options for write operations.
@@ -153,7 +153,7 @@ class ValueStore {
   };
   typedef int WriteOptions;
 
-  virtual ~ValueStore() {}
+  virtual ~ValueStore() = default;
 
   // Gets the amount of space being used by a single value, in bytes.
   // Note: The GetBytesInUse methods are only used by extension settings at the

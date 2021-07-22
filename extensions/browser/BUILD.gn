@@ -868,7 +868,6 @@ source_set("unit_tests") {
     "updater/safe_manifest_parser_unittest.cc",
     "updater/update_data_provider_unittest.cc",
     "updater/update_service_unittest.cc",
-    "value_store/leveldb_scoped_database_unittest.cc",
     "value_store/leveldb_value_store_unittest.cc",
     "value_store/testing_value_store_unittest.cc",
     "value_store/value_store_change_unittest.cc",

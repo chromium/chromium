@@ -10,7 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/value_store/settings_namespace.h"
-#include "extensions/common/extension_id.h"
+#include "extensions/browser/value_store/value_store_client_id.h"
 
 class ValueStore;
 
@@ -37,29 +37,30 @@ class ValueStoreFactory : public base::RefCountedThreadSafe<ValueStoreFactory> {
   virtual std::unique_ptr<ValueStore> CreateSettingsStore(
       settings_namespace::Namespace settings_namespace,
       ModelType model_type,
-      const ExtensionId& extension_id) = 0;
+      const ValueStoreClientId& id) = 0;
 
   // Delete all settings for specified given extension in the specified
   // namespace/model_type.
   virtual void DeleteSettings(settings_namespace::Namespace settings_namespace,
                               ModelType model_type,
-                              const ExtensionId& extension_id) = 0;
+                              const ValueStoreClientId& id) = 0;
 
   // Are there any settings stored in the specified namespace/model_type for
   // the given extension?
   virtual bool HasSettings(settings_namespace::Namespace settings_namespace,
                            ModelType model_type,
-                           const ExtensionId& extension_id) = 0;
+                           const ValueStoreClientId& id) = 0;
 
+  // TODO(crbug.com/1226956): Remove reference to extensions.
   // Return all extension ID's with settings stored in the given
   // namespace/model_type.
-  virtual std::set<ExtensionId> GetKnownExtensionIDs(
+  virtual std::set<ValueStoreClientId> GetKnownExtensionIDs(
       settings_namespace::Namespace settings_namespace,
       ModelType model_type) const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<ValueStoreFactory>;
-  virtual ~ValueStoreFactory() {}
+  virtual ~ValueStoreFactory() = default;
 };
 
 }  // namespace extensions

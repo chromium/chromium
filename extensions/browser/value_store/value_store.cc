@@ -10,7 +10,7 @@
 
 // Implementation of Status.
 
-ValueStore::Status::Status() : code(OK), restore_status(RESTORE_NONE) {}
+ValueStore::Status::Status() = default;
 
 ValueStore::Status::Status(StatusCode code, const std::string& message)
     : Status(code, RESTORE_NONE, message) {}

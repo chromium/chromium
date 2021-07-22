@@ -30,6 +30,8 @@ class ValueStoreFrontend::Backend : public base::RefCountedThreadSafe<Backend> {
       : store_factory_(store_factory),
         backend_type_(backend_type),
         task_runner_(task_runner) {}
+  Backend(const Backend&) = delete;
+  Backend& operator=(const Backend&) = delete;
 
   void Get(const std::string& key, ValueStoreFrontend::ReadCallback callback) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -113,8 +115,6 @@ class ValueStoreFrontend::Backend : public base::RefCountedThreadSafe<Backend> {
   std::unique_ptr<ValueStore> storage_;
 
   base::FilePath db_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(Backend);
 };
 
 ValueStoreFrontend::ValueStoreFrontend(

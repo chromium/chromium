@@ -11,6 +11,8 @@ namespace extensions {
 
 namespace settings_namespace {
 
+// TODO(crbug.com/1226956): Move extensions specific namespaces out of
+// ValueStore.
 // The namespaces of the storage areas that have ValueStore.
 enum Namespace {
   LOCAL,    // "local"    i.e. chrome.storage.local

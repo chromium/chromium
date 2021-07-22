@@ -37,6 +37,9 @@ class LeveldbValueStore : public ValueStore,
   // Must be deleted on the FILE thread.
   ~LeveldbValueStore() override;
 
+  LeveldbValueStore(const LeveldbValueStore&) = delete;
+  LeveldbValueStore& operator=(const LeveldbValueStore&) = delete;
+
   // ValueStore implementation.
   size_t GetBytesInUse(const std::string& key) override;
   size_t GetBytesInUse(const std::vector<std::string>& keys) override;
@@ -72,8 +75,6 @@ class LeveldbValueStore : public ValueStore,
 
   // Commits the changes in |batch| to the database.
   ValueStore::Status WriteToDb(leveldb::WriteBatch* batch);
-
-  DISALLOW_COPY_AND_ASSIGN(LeveldbValueStore);
 };
 
 #endif  // EXTENSIONS_BROWSER_VALUE_STORE_LEVELDB_VALUE_STORE_H_

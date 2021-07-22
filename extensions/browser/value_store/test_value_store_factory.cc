@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "extensions/browser/value_store/leveldb_value_store.h"
 #include "extensions/browser/value_store/testing_value_store.h"
+#include "extensions/browser/value_store/value_store_client_id.h"
 
 namespace {
 
@@ -22,10 +23,10 @@ TestValueStoreFactory::StorageHelper::StorageHelper() = default;
 
 TestValueStoreFactory::StorageHelper::~StorageHelper() = default;
 
-std::set<ExtensionId>
+std::set<ValueStoreClientId>
 TestValueStoreFactory::StorageHelper::GetKnownExtensionIDs(
     ModelType model_type) const {
-  std::set<ExtensionId> ids;
+  std::set<ValueStoreClientId> ids;
   switch (model_type) {
     case ValueStoreFactory::ModelType::APP:
       for (const auto& key : app_stores_)
@@ -45,51 +46,51 @@ void TestValueStoreFactory::StorageHelper::Reset() {
 }
 
 ValueStore* TestValueStoreFactory::StorageHelper::AddValueStore(
-    const ExtensionId& extension_id,
+    const ValueStoreClientId& id,
     ValueStore* value_store,
     ModelType model_type) {
   if (model_type == ValueStoreFactory::ModelType::APP) {
-    DCHECK(app_stores_.find(extension_id) == app_stores_.end());
-    app_stores_[extension_id] = value_store;
+    DCHECK(app_stores_.find(id) == app_stores_.end());
+    app_stores_[id] = value_store;
   } else {
-    DCHECK(extension_stores_.find(extension_id) == extension_stores_.end());
-    extension_stores_[extension_id] = value_store;
+    DCHECK(extension_stores_.find(id) == extension_stores_.end());
+    extension_stores_[id] = value_store;
   }
   return value_store;
 }
 
 void TestValueStoreFactory::StorageHelper::DeleteSettings(
-    const ExtensionId& extension_id,
+    const ValueStoreClientId& id,
     ModelType model_type) {
   switch (model_type) {
     case ValueStoreFactory::ModelType::APP:
-      app_stores_.erase(extension_id);
+      app_stores_.erase(id);
       break;
     case ValueStoreFactory::ModelType::EXTENSION:
-      extension_stores_.erase(extension_id);
+      extension_stores_.erase(id);
       break;
   }
 }
 
 bool TestValueStoreFactory::StorageHelper::HasSettings(
-    const ExtensionId& extension_id,
+    const ValueStoreClientId& id,
     ModelType model_type) const {
   switch (model_type) {
     case ValueStoreFactory::ModelType::APP:
-      return app_stores_.find(extension_id) != app_stores_.end();
+      return app_stores_.find(id) != app_stores_.end();
     case ValueStoreFactory::ModelType::EXTENSION:
-      return extension_stores_.find(extension_id) != extension_stores_.end();
+      return extension_stores_.find(id) != extension_stores_.end();
   }
   NOTREACHED();
   return false;
 }
 
 ValueStore* TestValueStoreFactory::StorageHelper::GetExisting(
-    const ExtensionId& extension_id) const {
-  auto it = app_stores_.find(extension_id);
+    const ValueStoreClientId& id) const {
+  auto it = app_stores_.find(id);
   if (it != app_stores_.end())
     return it->second;
-  it = extension_stores_.find(extension_id);
+  it = extension_stores_.find(id);
   if (it != extension_stores_.end())
     return it->second;
   return nullptr;
@@ -100,7 +101,7 @@ TestValueStoreFactory::TestValueStoreFactory() = default;
 TestValueStoreFactory::TestValueStoreFactory(const base::FilePath& db_path)
     : db_path_(db_path) {}
 
-TestValueStoreFactory::~TestValueStoreFactory() {}
+TestValueStoreFactory::~TestValueStoreFactory() = default;
 
 std::unique_ptr<ValueStore> TestValueStoreFactory::CreateRulesStore() {
   if (db_path_.empty())
@@ -133,13 +134,13 @@ TestValueStoreFactory::StorageHelper& TestValueStoreFactory::GetStorageHelper(
 std::unique_ptr<ValueStore> TestValueStoreFactory::CreateSettingsStore(
     SettingsNamespace settings_namespace,
     ModelType model_type,
-    const ExtensionId& extension_id) {
+    const ValueStoreClientId& id) {
   std::unique_ptr<ValueStore> settings_store(CreateRulesStore());
   // Note: This factory is purposely keeping the raw pointers to each ValueStore
   //       created. Tests using TestValueStoreFactory must be careful to keep
   //       those ValueStore's alive for the duration of their test.
   GetStorageHelper(settings_namespace)
-      .AddValueStore(extension_id, settings_store.get(), model_type);
+      .AddValueStore(id, settings_store.get(), model_type);
   return settings_store;
 }
 
@@ -149,18 +150,17 @@ ValueStore* TestValueStoreFactory::LastCreatedStore() const {
 
 void TestValueStoreFactory::DeleteSettings(SettingsNamespace settings_namespace,
                                            ModelType model_type,
-                                           const ExtensionId& extension_id) {
-  GetStorageHelper(settings_namespace).DeleteSettings(extension_id, model_type);
+                                           const ValueStoreClientId& id) {
+  GetStorageHelper(settings_namespace).DeleteSettings(id, model_type);
 }
 
 bool TestValueStoreFactory::HasSettings(SettingsNamespace settings_namespace,
                                         ModelType model_type,
-                                        const ExtensionId& extension_id) {
-  return GetStorageHelper(settings_namespace)
-      .HasSettings(extension_id, model_type);
+                                        const ValueStoreClientId& id) {
+  return GetStorageHelper(settings_namespace).HasSettings(id, model_type);
 }
 
-std::set<ExtensionId> TestValueStoreFactory::GetKnownExtensionIDs(
+std::set<ValueStoreClientId> TestValueStoreFactory::GetKnownExtensionIDs(
     SettingsNamespace settings_namespace,
     ModelType model_type) const {
   return const_cast<TestValueStoreFactory*>(this)
@@ -169,14 +169,14 @@ std::set<ExtensionId> TestValueStoreFactory::GetKnownExtensionIDs(
 }
 
 ValueStore* TestValueStoreFactory::GetExisting(
-    const ExtensionId& extension_id) const {
-  ValueStore* existing_store = local_helper_.GetExisting(extension_id);
+    const ValueStoreClientId& id) const {
+  ValueStore* existing_store = local_helper_.GetExisting(id);
   if (existing_store)
     return existing_store;
-  existing_store = sync_helper_.GetExisting(extension_id);
+  existing_store = sync_helper_.GetExisting(id);
   if (existing_store)
     return existing_store;
-  existing_store = managed_helper_.GetExisting(extension_id);
+  existing_store = managed_helper_.GetExisting(id);
   DCHECK(existing_store != nullptr);
   return existing_store;
 }

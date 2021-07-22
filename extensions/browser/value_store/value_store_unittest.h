@@ -22,7 +22,7 @@ typedef ValueStore* (*ValueStoreTestParam)(const base::FilePath& file_path);
 class ValueStoreTest : public testing::TestWithParam<ValueStoreTestParam> {
  public:
   ValueStoreTest();
-  virtual ~ValueStoreTest();
+  ~ValueStoreTest() override;
 
   void SetUp() override;
   void TearDown() override;

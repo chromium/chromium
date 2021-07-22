@@ -10,12 +10,14 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "extensions/browser/value_store/leveldb_value_store.h"
+#include "extensions/browser/value_store/value_store_client_id.h"
 #include "extensions/common/constants.h"
 
 using base::AutoLock;
 
 namespace {
 
+// TODO(crbug.com/1226956): Update extensions specific UMA logging.
 // Statistics are logged to UMA with these strings as part of histogram name.
 // They can all be found under Extensions.Database.Open.<client>. Changing this
 // needs to synchronize with histograms.xml, AND will also become incompatible
@@ -41,23 +43,23 @@ LegacyValueStoreFactory::ModelSettings::ModelSettings(
     : data_path_(data_path) {}
 
 base::FilePath LegacyValueStoreFactory::ModelSettings::GetDBPath(
-    const ExtensionId& extension_id) const {
-  return data_path_.AppendASCII(extension_id);
+    const ValueStoreClientId& id) const {
+  return data_path_.AppendASCII(id);
 }
 
 bool LegacyValueStoreFactory::ModelSettings::DeleteData(
-    const ExtensionId& extension_id) {
-  return base::DeletePathRecursively(GetDBPath(extension_id));
+    const ValueStoreClientId& id) {
+  return base::DeletePathRecursively(GetDBPath(id));
 }
 
 bool LegacyValueStoreFactory::ModelSettings::DataExists(
-    const ExtensionId& extension_id) const {
-  return ValidDBExists(GetDBPath(extension_id));
+    const ValueStoreClientId& id) const {
+  return ValidDBExists(GetDBPath(id));
 }
 
-std::set<ExtensionId>
+std::set<ValueStoreClientId>
 LegacyValueStoreFactory::ModelSettings::GetKnownExtensionIDs() const {
-  std::set<ExtensionId> result;
+  std::set<ValueStoreClientId> result;
 
   // Leveldb databases are directories inside |base_path_|.
   base::FileEnumerator extension_dirs(data_path_, false,
@@ -123,7 +125,7 @@ LegacyValueStoreFactory::SettingsRoot::GetModel(ModelType model_type) {
   return nullptr;
 }
 
-std::set<ExtensionId>
+std::set<ValueStoreClientId>
 LegacyValueStoreFactory::SettingsRoot::GetKnownExtensionIDs(
     ModelType model_type) const {
   switch (model_type) {
@@ -135,7 +137,7 @@ LegacyValueStoreFactory::SettingsRoot::GetKnownExtensionIDs(
       return extensions_->GetKnownExtensionIDs();
   }
   NOTREACHED();
-  return std::set<ExtensionId>();
+  return std::set<ValueStoreClientId>();
 }
 
 //
@@ -177,39 +179,39 @@ std::unique_ptr<ValueStore> LegacyValueStoreFactory::CreateStateStore() {
 std::unique_ptr<ValueStore> LegacyValueStoreFactory::CreateSettingsStore(
     settings_namespace::Namespace settings_namespace,
     ModelType model_type,
-    const ExtensionId& extension_id) {
+    const ValueStoreClientId& id) {
   const ModelSettings* settings_root =
       GetSettingsRoot(settings_namespace).GetModel(model_type);
   DCHECK(settings_root != nullptr);
-  return std::make_unique<LeveldbValueStore>(
-      kSettingsDatabaseUMAClientName, settings_root->GetDBPath(extension_id));
+  return std::make_unique<LeveldbValueStore>(kSettingsDatabaseUMAClientName,
+                                             settings_root->GetDBPath(id));
 }
 
 void LegacyValueStoreFactory::DeleteSettings(
     settings_namespace::Namespace settings_namespace,
     ModelType model_type,
-    const ExtensionId& extension_id) {
+    const ValueStoreClientId& id) {
   ModelSettings* model_settings =
       GetSettingsRoot(settings_namespace).GetModel(model_type);
   if (model_settings == nullptr) {
     NOTREACHED();
     return;
   }
-  model_settings->DeleteData(extension_id);
+  model_settings->DeleteData(id);
 }
 
 bool LegacyValueStoreFactory::HasSettings(
     settings_namespace::Namespace settings_namespace,
     ModelType model_type,
-    const ExtensionId& extension_id) {
+    const ValueStoreClientId& id) {
   const ModelSettings* model_settings =
       GetSettingsRoot(settings_namespace).GetModel(model_type);
   if (model_settings == nullptr)
     return false;
-  return model_settings->DataExists(extension_id);
+  return model_settings->DataExists(id);
 }
 
-std::set<ExtensionId> LegacyValueStoreFactory::GetKnownExtensionIDs(
+std::set<ValueStoreClientId> LegacyValueStoreFactory::GetKnownExtensionIDs(
     settings_namespace::Namespace settings_type,
     ModelType model_type) const {
   return GetSettingsRoot(settings_type).GetKnownExtensionIDs(model_type);

@@ -12,17 +12,23 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/value_store/value_store.h"
+#include "extensions/browser/value_store/value_store_client_id.h"
 #include "extensions/browser/value_store/value_store_factory.h"
-#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
 // A factory to create legacy ValueStore instances for storing extension
 // state/rules/settings. "legacy" refers to the initial storage implementation
-// which created a settings database per extension.
+// which created a settings database per extension. This factory was created as
+// part of a refactoring for crbug.com/453946 which was never finished. Because
+// it was never finished, this is the only implementation of ValueStoreFactory.
+// TODO(crbug.com/453946): Finish this refactoring or merge
+// legacy_value_store_factory with value_store_factory_impl.
 class LegacyValueStoreFactory : public ValueStoreFactory {
  public:
   explicit LegacyValueStoreFactory(const base::FilePath& profile_path);
+  LegacyValueStoreFactory(const LegacyValueStoreFactory&) = delete;
+  LegacyValueStoreFactory& operator=(const LegacyValueStoreFactory&) = delete;
 
   bool RulesDBExists() const;
   bool StateDBExists() const;
@@ -33,15 +39,15 @@ class LegacyValueStoreFactory : public ValueStoreFactory {
   std::unique_ptr<ValueStore> CreateSettingsStore(
       settings_namespace::Namespace settings_namespace,
       ModelType model_type,
-      const ExtensionId& extension_id) override;
+      const ValueStoreClientId& id) override;
 
   void DeleteSettings(settings_namespace::Namespace settings_namespace,
                       ModelType model_type,
-                      const ExtensionId& extension_id) override;
+                      const ValueStoreClientId& id) override;
   bool HasSettings(settings_namespace::Namespace settings_namespace,
                    ModelType model_type,
-                   const ExtensionId& extension_id) override;
-  std::set<ExtensionId> GetKnownExtensionIDs(
+                   const ValueStoreClientId& id) override;
+  std::set<ValueStoreClientId> GetKnownExtensionIDs(
       settings_namespace::Namespace settings_namespace,
       ModelType model_type) const override;
 
@@ -53,17 +59,17 @@ class LegacyValueStoreFactory : public ValueStoreFactory {
   class ModelSettings {
    public:
     explicit ModelSettings(const base::FilePath& data_path);
+    ModelSettings(const ModelSettings&) = delete;
+    ModelSettings& operator=(const ModelSettings&) = delete;
 
-    base::FilePath GetDBPath(const ExtensionId& extension_id) const;
-    bool DeleteData(const ExtensionId& extension_id);
-    bool DataExists(const ExtensionId& extension_id) const;
-    std::set<ExtensionId> GetKnownExtensionIDs() const;
+    base::FilePath GetDBPath(const ValueStoreClientId& id) const;
+    bool DeleteData(const ValueStoreClientId& id);
+    bool DataExists(const ValueStoreClientId& id) const;
+    std::set<ValueStoreClientId> GetKnownExtensionIDs() const;
 
    private:
     // The path containing all settings databases under this root.
     const base::FilePath data_path_;
-
-    DISALLOW_COPY_AND_ASSIGN(ModelSettings);
   };
 
   // Manages two collections of legacy settings databases (apps & extensions)
@@ -76,16 +82,18 @@ class LegacyValueStoreFactory : public ValueStoreFactory {
                  const std::string& extension_dirname,
                  const std::string& app_dirname);
     ~SettingsRoot();
+    SettingsRoot(const SettingsRoot&) = delete;
+    SettingsRoot& operator=(const SettingsRoot&) = delete;
 
-    std::set<ExtensionId> GetKnownExtensionIDs(ModelType model_type) const;
+    std::set<ValueStoreClientId> GetKnownExtensionIDs(
+        ModelType model_type) const;
     const ModelSettings* GetModel(ModelType model_type) const;
     ModelSettings* GetModel(ModelType model_type);
 
    private:
+    // TODO(crbug.com/1226956): Remove references to extensions and Chrome Apps.
     std::unique_ptr<ModelSettings> extensions_;
     std::unique_ptr<ModelSettings> apps_;
-
-    DISALLOW_COPY_AND_ASSIGN(SettingsRoot);
   };
 
   ~LegacyValueStoreFactory() override;
@@ -102,8 +110,6 @@ class LegacyValueStoreFactory : public ValueStoreFactory {
   SettingsRoot local_settings_;
   SettingsRoot sync_settings_;
   SettingsRoot managed_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(LegacyValueStoreFactory);
 };
 
 }  // namespace extensions

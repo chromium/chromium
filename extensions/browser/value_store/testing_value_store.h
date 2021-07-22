@@ -20,6 +20,8 @@ class TestingValueStore : public ValueStore {
  public:
   TestingValueStore();
   ~TestingValueStore() override;
+  TestingValueStore(const TestingValueStore&) = delete;
+  TestingValueStore& operator=(const TestingValueStore&) = delete;
 
   // Sets the error code for requests. If OK, errors won't be thrown.
   // Defaults to OK.
@@ -51,11 +53,9 @@ class TestingValueStore : public ValueStore {
 
  private:
   base::DictionaryValue storage_;
-  int read_count_;
-  int write_count_;
+  int read_count_ = 0;
+  int write_count_ = 0;
   ValueStore::Status status_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingValueStore);
 };
 
 #endif  // EXTENSIONS_BROWSER_VALUE_STORE_TESTING_VALUE_STORE_H_

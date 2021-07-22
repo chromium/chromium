@@ -24,16 +24,19 @@ class ValueStoreFactory;
 // A frontend for a LeveldbValueStore, for use on the UI thread.
 class ValueStoreFrontend {
  public:
+  // TODO(crbug.com/1226956): Move extensions specific enum out of ValueStore.
   // The kind of extensions data stored in a backend.
   enum class BackendType { RULES, STATE };
 
   using ReadCallback = base::OnceCallback<void(std::unique_ptr<base::Value>)>;
 
   ValueStoreFrontend(
-      const scoped_refptr<extensions::ValueStoreFactory>& store_factory,
+      const scoped_refptr<ValueStoreFactory>& store_factory,
       BackendType backend_type,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
   ~ValueStoreFrontend();
+  ValueStoreFrontend(const ValueStoreFrontend&) = delete;
+  ValueStoreFrontend& operator=(const ValueStoreFrontend&) = delete;
 
   // Retrieves a value from the database asynchronously, passing a copy to
   // |callback| when ready. NULL is passed if no matching entry is found.
@@ -53,8 +56,6 @@ class ValueStoreFrontend {
   scoped_refptr<Backend> backend_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValueStoreFrontend);
 };
 
 }  // namespace extensions

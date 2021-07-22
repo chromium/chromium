@@ -6,6 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "extensions/browser/value_store/legacy_value_store_factory.h"
+#include "extensions/browser/value_store/value_store_client_id.h"
 
 namespace extensions {
 
@@ -28,25 +29,24 @@ std::unique_ptr<ValueStore> ValueStoreFactoryImpl::CreateStateStore() {
 std::unique_ptr<ValueStore> ValueStoreFactoryImpl::CreateSettingsStore(
     SettingsNamespace settings_namespace,
     ModelType model_type,
-    const ExtensionId& extension_id) {
+    const ValueStoreClientId& id) {
   return legacy_factory_->CreateSettingsStore(settings_namespace, model_type,
-                                              extension_id);
+                                              id);
 }
 
 void ValueStoreFactoryImpl::DeleteSettings(SettingsNamespace settings_namespace,
                                            ModelType model_type,
-                                           const ExtensionId& extension_id) {
-  legacy_factory_->DeleteSettings(settings_namespace, model_type, extension_id);
+                                           const ValueStoreClientId& id) {
+  legacy_factory_->DeleteSettings(settings_namespace, model_type, id);
 }
 
 bool ValueStoreFactoryImpl::HasSettings(SettingsNamespace settings_namespace,
                                         ModelType model_type,
-                                        const ExtensionId& extension_id) {
-  return legacy_factory_->HasSettings(settings_namespace, model_type,
-                                      extension_id);
+                                        const ValueStoreClientId& id) {
+  return legacy_factory_->HasSettings(settings_namespace, model_type, id);
 }
 
-std::set<ExtensionId> ValueStoreFactoryImpl::GetKnownExtensionIDs(
+std::set<ValueStoreClientId> ValueStoreFactoryImpl::GetKnownExtensionIDs(
     SettingsNamespace settings_namespace,
     ModelType model_type) const {
   return legacy_factory_->GetKnownExtensionIDs(settings_namespace, model_type);

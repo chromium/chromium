@@ -27,6 +27,9 @@ class Iterator;
 // calling any other *protected* method.
 class LazyLevelDb {
  public:
+  LazyLevelDb(const LazyLevelDb&) = delete;
+  LazyLevelDb& operator=(const LazyLevelDb&) = delete;
+
   // Creates a new database iterator. This iterator *must* be deleted before
   // this database is closed.
   ValueStore::Status CreateIterator(
@@ -95,8 +98,6 @@ class LazyLevelDb {
   base::HistogramBase* open_histogram_ = nullptr;
   base::HistogramBase* db_restore_histogram_ = nullptr;
   base::HistogramBase* value_restore_histogram_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(LazyLevelDb);
 };
 
 #endif  // EXTENSIONS_BROWSER_VALUE_STORE_LAZY_LEVELDB_H_

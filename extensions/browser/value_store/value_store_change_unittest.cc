@@ -6,13 +6,10 @@
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "extensions/browser/value_store/value_store_change.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::DictionaryValue;
 using base::Value;
-using extensions::DictionaryBuilder;
-using extensions::ListBuilder;
 
 namespace {
 
@@ -55,39 +52,39 @@ TEST(ValueStoreChangeTest, NonNullValues) {
 
 TEST(ValueStoreChangeTest, ToValue) {
   // Create a mildly complicated structure that has dots in it.
-  std::unique_ptr<base::DictionaryValue> value =
-      DictionaryBuilder()
-          .Set("key", "value")
-          .Set("key.with.dots", "value.with.dots")
-          .Set("tricked", DictionaryBuilder().Set("you", "nodots").Build())
-          .Set("tricked.you", "with.dots")
-          .Build();
+  base::Value inner_dict(base::Value::Type::DICTIONARY);
+  inner_dict.SetKey("you", base::Value("nodots"));
+
+  base::Value value(base::Value::Type::DICTIONARY);
+  value.SetKey("key", base::Value("value"));
+  value.SetKey("key.with.dots", base::Value("value.with.dots"));
+  value.SetKey("tricked", std::move(inner_dict));
+  value.SetKey("tricked.you", base::Value("with.dots"));
 
   ValueStoreChangeList change_list;
+  change_list.push_back(ValueStoreChange("key", value.Clone(), value.Clone()));
   change_list.push_back(
-      ValueStoreChange("key", value->Clone(), value->Clone()));
-  change_list.push_back(
-      ValueStoreChange("key.with.dots", value->Clone(), value->Clone()));
+      ValueStoreChange("key.with.dots", value.Clone(), value.Clone()));
 
   base::Value changes_value = ValueStoreChange::ToValue(std::move(change_list));
 
-  DictionaryBuilder v1(*value);
-  DictionaryBuilder v2(*value);
-  DictionaryBuilder v3(*value);
-  DictionaryBuilder v4(*value);
-  std::unique_ptr<base::DictionaryValue> expected_from_json =
-      DictionaryBuilder()
-          .Set("key", DictionaryBuilder()
-                          .Set("oldValue", v1.Build())
-                          .Set("newValue", v2.Build())
-                          .Build())
-          .Set("key.with.dots", DictionaryBuilder()
-                                    .Set("oldValue", v3.Build())
-                                    .Set("newValue", v4.Build())
-                                    .Build())
-          .Build();
+  base::Value v1(value.Clone());
+  base::Value v2(value.Clone());
+  base::Value v3(value.Clone());
+  base::Value v4(value.Clone());
 
-  EXPECT_TRUE(changes_value.Equals(expected_from_json.get()));
+  base::Value inner_dict2(base::Value::Type::DICTIONARY);
+  base::Value inner_dict3(base::Value::Type::DICTIONARY);
+
+  inner_dict2.SetKey("oldValue", std::move(v1));
+  inner_dict2.SetKey("newValue", std::move(v2));
+  inner_dict3.SetKey("oldValue", std::move(v3));
+  inner_dict3.SetKey("newValue", std::move(v4));
+
+  base::Value expected_from_json(base::Value::Type::DICTIONARY);
+  expected_from_json.SetKey("key", std::move(inner_dict2));
+  expected_from_json.SetKey("key.with.dots", std::move(inner_dict3));
+  EXPECT_EQ(changes_value, expected_from_json);
 }
 
 }  // namespace

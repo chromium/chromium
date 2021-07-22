@@ -13,9 +13,8 @@
 #include "base/path_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/value_store/test_value_store_factory.h"
-#include "extensions/common/extension_paths.h"
+#include "extensions/browser/value_store/value_store_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -28,13 +27,13 @@ class ValueStoreFrontendTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     base::FilePath test_data_dir;
-    ASSERT_TRUE(
-        base::PathService::Get(extensions::DIR_TEST_DATA, &test_data_dir));
-    base::FilePath src_db(test_data_dir.AppendASCII("value_store_db"));
+    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+    base::FilePath src_db(
+        test_data_dir.AppendASCII("extensions/test/data/value_store_db"));
     db_path_ = temp_dir_.GetPath().AppendASCII("temp_db");
     base::CopyDirectory(src_db, db_path_, true);
 
-    factory_ = new extensions::TestValueStoreFactory(db_path_);
+    factory_ = new TestValueStoreFactory(db_path_);
 
     ResetStorage();
   }
@@ -48,7 +47,7 @@ class ValueStoreFrontendTest : public testing::Test {
   void ResetStorage() {
     storage_ = std::make_unique<ValueStoreFrontend>(
         factory_, ValueStoreFrontend::BackendType::RULES,
-        GetExtensionFileTaskRunner());
+        value_store::GetValueStoreTaskRunner());
   }
 
   bool Get(const std::string& key, std::unique_ptr<base::Value>* output) {
@@ -64,7 +63,7 @@ class ValueStoreFrontendTest : public testing::Test {
     *output = std::move(result);
   }
 
-  scoped_refptr<extensions::TestValueStoreFactory> factory_;
+  scoped_refptr<TestValueStoreFactory> factory_;
   std::unique_ptr<ValueStoreFrontend> storage_;
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;

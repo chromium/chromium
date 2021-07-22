@@ -10,8 +10,8 @@
 #include <set>
 
 #include "base/files/file_path.h"
+#include "extensions/browser/value_store/value_store_client_id.h"
 #include "extensions/browser/value_store/value_store_factory.h"
-#include "extensions/common/extension_id.h"
 
 class ValueStore;
 
@@ -24,6 +24,8 @@ class TestValueStoreFactory : public ValueStoreFactory {
  public:
   TestValueStoreFactory();
   explicit TestValueStoreFactory(const base::FilePath& db_path);
+  TestValueStoreFactory(const TestValueStoreFactory&) = delete;
+  TestValueStoreFactory& operator=(const TestValueStoreFactory&) = delete;
 
   // ValueStoreFactory
   std::unique_ptr<ValueStore> CreateRulesStore() override;
@@ -31,14 +33,14 @@ class TestValueStoreFactory : public ValueStoreFactory {
   std::unique_ptr<ValueStore> CreateSettingsStore(
       settings_namespace::Namespace settings_namespace,
       ModelType model_type,
-      const ExtensionId& extension_id) override;
+      const ValueStoreClientId& id) override;
   void DeleteSettings(settings_namespace::Namespace settings_namespace,
                       ModelType model_type,
-                      const ExtensionId& extension_id) override;
+                      const ValueStoreClientId& id) override;
   bool HasSettings(settings_namespace::Namespace settings_namespace,
                    ModelType model_type,
-                   const ExtensionId& extension_id) override;
-  std::set<ExtensionId> GetKnownExtensionIDs(
+                   const ValueStoreClientId& id) override;
+  std::set<ValueStoreClientId> GetKnownExtensionIDs(
       settings_namespace::Namespace settings_namespace,
       ModelType model_type) const override;
 
@@ -47,7 +49,7 @@ class TestValueStoreFactory : public ValueStoreFactory {
   // deleted at any time.
   ValueStore* LastCreatedStore() const;
   // Return a previously created |ValueStore| for an extension.
-  ValueStore* GetExisting(const ExtensionId& extension_id) const;
+  ValueStore* GetExisting(const ValueStoreClientId& id) const;
   // Reset this class (as if just created).
   void Reset();
 
@@ -58,21 +60,22 @@ class TestValueStoreFactory : public ValueStoreFactory {
    public:
     StorageHelper();
     ~StorageHelper();
-    std::set<ExtensionId> GetKnownExtensionIDs(ModelType model_type) const;
-    ValueStore* AddValueStore(const ExtensionId& extension_id,
+    StorageHelper(const StorageHelper&) = delete;
+    StorageHelper& operator=(const StorageHelper&) = delete;
+
+    std::set<ValueStoreClientId> GetKnownExtensionIDs(
+        ModelType model_type) const;
+    ValueStore* AddValueStore(const ValueStoreClientId& id,
                               ValueStore* value_store,
                               ModelType model_type);
-    void DeleteSettings(const ExtensionId& extension_id, ModelType model_type);
-    bool HasSettings(const ExtensionId& extension_id,
-                     ModelType model_type) const;
+    void DeleteSettings(const ValueStoreClientId& id, ModelType model_type);
+    bool HasSettings(const ValueStoreClientId& id, ModelType model_type) const;
     void Reset();
-    ValueStore* GetExisting(const ExtensionId& extension_id) const;
+    ValueStore* GetExisting(const ValueStoreClientId& id) const;
 
    private:
-    std::map<ExtensionId, ValueStore*> app_stores_;
-    std::map<ExtensionId, ValueStore*> extension_stores_;
-
-    DISALLOW_COPY_AND_ASSIGN(StorageHelper);
+    std::map<ValueStoreClientId, ValueStore*> app_stores_;
+    std::map<ValueStoreClientId, ValueStore*> extension_stores_;
   };
 
   StorageHelper& GetStorageHelper(
@@ -87,8 +90,6 @@ class TestValueStoreFactory : public ValueStoreFactory {
   StorageHelper local_helper_;
   StorageHelper sync_helper_;
   StorageHelper managed_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestValueStoreFactory);
 };
 
 }  // namespace extensions

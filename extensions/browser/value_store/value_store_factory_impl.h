@@ -12,8 +12,8 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/value_store/value_store.h"
+#include "extensions/browser/value_store/value_store_client_id.h"
 #include "extensions/browser/value_store/value_store_factory.h"
-#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -24,6 +24,8 @@ class LegacyValueStoreFactory;
 class ValueStoreFactoryImpl : public ValueStoreFactory {
  public:
   explicit ValueStoreFactoryImpl(const base::FilePath& profile_path);
+  ValueStoreFactoryImpl(const ValueStoreFactoryImpl&) = delete;
+  ValueStoreFactoryImpl& operator=(const ValueStoreFactoryImpl&) = delete;
 
   // ValueStoreFactory
   std::unique_ptr<ValueStore> CreateRulesStore() override;
@@ -31,14 +33,14 @@ class ValueStoreFactoryImpl : public ValueStoreFactory {
   std::unique_ptr<ValueStore> CreateSettingsStore(
       settings_namespace::Namespace settings_namespace,
       ModelType model_type,
-      const ExtensionId& extension_id) override;
+      const ValueStoreClientId& id) override;
   void DeleteSettings(settings_namespace::Namespace settings_namespace,
                       ModelType model_type,
-                      const ExtensionId& extension_id) override;
+                      const ValueStoreClientId& id) override;
   bool HasSettings(settings_namespace::Namespace settings_namespace,
                    ModelType model_type,
-                   const ExtensionId& extension_id) override;
-  std::set<ExtensionId> GetKnownExtensionIDs(
+                   const ValueStoreClientId& id) override;
+  std::set<ValueStoreClientId> GetKnownExtensionIDs(
       settings_namespace::Namespace settings_namespace,
       ModelType model_type) const override;
 
@@ -47,8 +49,6 @@ class ValueStoreFactoryImpl : public ValueStoreFactory {
   ~ValueStoreFactoryImpl() override;
 
   scoped_refptr<LegacyValueStoreFactory> legacy_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValueStoreFactoryImpl);
 };
 
 }  // namespace extensions

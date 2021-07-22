@@ -35,8 +35,8 @@ INSTANTIATE_TEST_SUITE_P(LeveldbValueStore,
 
 class LeveldbValueStoreUnitTest : public testing::Test {
  public:
-  LeveldbValueStoreUnitTest() {}
-  ~LeveldbValueStoreUnitTest() override {}
+  LeveldbValueStoreUnitTest() = default;
+  ~LeveldbValueStoreUnitTest() override = default;
 
  protected:
   void SetUp() override {
@@ -109,7 +109,6 @@ TEST_F(LeveldbValueStoreUnitTest, RestoreKeyTest) {
 // (unless absolutely necessary), and instead only removes corrupted keys.
 TEST_F(LeveldbValueStoreUnitTest, RestoreDoesMinimumNecessary) {
   const char* kNotCorruptKeys[] = {"a", "n", "z"};
-  const size_t kNotCorruptKeysSize = 3u;
   const char kCorruptKey1[] = "f";
   const char kCorruptKey2[] = "s";
   const char kValue[] = "value";
@@ -117,9 +116,9 @@ TEST_F(LeveldbValueStoreUnitTest, RestoreDoesMinimumNecessary) {
 
   // Insert a collection of non-corrupted pairs.
   std::unique_ptr<base::Value> value(new base::Value(kValue));
-  for (size_t i = 0; i < kNotCorruptKeysSize; ++i) {
+  for (auto* kNotCorruptKey : kNotCorruptKeys) {
     ASSERT_TRUE(store()
-                    ->Set(ValueStore::DEFAULTS, kNotCorruptKeys[i], *value)
+                    ->Set(ValueStore::DEFAULTS, kNotCorruptKey, *value)
                     .status()
                     .ok());
   }
@@ -139,12 +138,12 @@ TEST_F(LeveldbValueStoreUnitTest, RestoreDoesMinimumNecessary) {
 
   // We should still have all valid pairs present in the database.
   std::string value_string;
-  for (size_t i = 0; i < kNotCorruptKeysSize; ++i) {
-    result = store()->Get(kNotCorruptKeys[i]);
+  for (auto* kNotCorruptKey : kNotCorruptKeys) {
+    result = store()->Get(kNotCorruptKey);
     EXPECT_TRUE(result.status().ok());
     ASSERT_EQ(ValueStore::RESTORE_NONE, result.status().restore_status);
-    EXPECT_TRUE(result.settings().HasKey(kNotCorruptKeys[i]));
-    EXPECT_TRUE(result.settings().GetString(kNotCorruptKeys[i], &value_string));
+    EXPECT_TRUE(result.settings().HasKey(kNotCorruptKey));
+    EXPECT_TRUE(result.settings().GetString(kNotCorruptKey, &value_string));
     EXPECT_EQ(kValue, value_string);
   }
 }
@@ -158,14 +157,13 @@ TEST_F(LeveldbValueStoreUnitTest, RestoreDoesMinimumNecessary) {
 TEST_F(LeveldbValueStoreUnitTest, RestoreFullDatabase) {
   const std::string kLolCats("I can haz leveldb filez?");
   const char* kNotCorruptKeys[] = {"a", "n", "z"};
-  const size_t kNotCorruptKeysSize = 3u;
   const char kValue[] = "value";
 
   // Generate a database.
   std::unique_ptr<base::Value> value(new base::Value(kValue));
-  for (size_t i = 0; i < kNotCorruptKeysSize; ++i) {
+  for (auto* kNotCorruptKey : kNotCorruptKeys) {
     ASSERT_TRUE(store()
-                    ->Set(ValueStore::DEFAULTS, kNotCorruptKeys[i], *value)
+                    ->Set(ValueStore::DEFAULTS, kNotCorruptKey, *value)
                     .status()
                     .ok());
   }
