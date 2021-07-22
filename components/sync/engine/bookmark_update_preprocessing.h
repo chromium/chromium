@@ -33,9 +33,10 @@ void AdaptTitleForBookmark(const sync_pb::SyncEntity& update_entity,
                            sync_pb::EntitySpecifics* specifics,
                            bool specifics_were_encrypted);
 
-// Populates |specifics->bookmark().guid()| from the various supported sources,
-// or no-op if specifics already have the field set. |specifics| must not be
-// null. Returns true if |specifics| were updated.
+// Tries to populates |specifics->bookmark().guid()| from the various supported
+// sources, or no-op if a) specifics already have the field set; or b) the GUID
+// cannot be inferred. |specifics| must not be null. Returns true if |specifics|
+// were updated.
 bool AdaptGuidForBookmark(const sync_pb::SyncEntity& update_entity,
                           sync_pb::EntitySpecifics* specifics);
 

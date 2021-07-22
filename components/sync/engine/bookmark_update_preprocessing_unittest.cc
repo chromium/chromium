@@ -27,7 +27,8 @@ enum class ExpectedBookmarkGuidSource {
   kValidOCII = 1,
   kDeprecatedLeftEmpty = 2,
   kInferred = 3,
-  kMaxValue = kInferred,
+  kLeftEmptyPossiblyForClientTag = 4,
+  kMaxValue = kLeftEmptyPossiblyForClientTag,
 };
 
 TEST(BookmarkUpdatePreprocessingTest, ShouldPropagateUniquePosition) {
@@ -133,6 +134,26 @@ TEST(BookmarkUpdatePreprocessingTest, ShouldInferGuid) {
                                       /*sample=*/
                                       ExpectedBookmarkGuidSource::kInferred,
                                       /*count=*/1);
+}
+
+TEST(BookmarkUpdatePreprocessingTest,
+     ShouldNotInferGuidIfNoOriginatorInformation) {
+  const std::string kOriginatorClientItemId = "1";
+
+  sync_pb::SyncEntity entity;
+  entity.mutable_specifics()->mutable_bookmark();
+
+  base::HistogramTester histogram_tester;
+  sync_pb::EntitySpecifics specifics = entity.specifics();
+  EXPECT_FALSE(AdaptGuidForBookmark(entity, &specifics));
+
+  EXPECT_FALSE(specifics.bookmark().has_guid());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarkGUIDSource2",
+      /*sample=*/
+      ExpectedBookmarkGuidSource::kLeftEmptyPossiblyForClientTag,
+      /*count=*/1);
 }
 
 // Tests that inferred GUIDs are computed deterministically.
