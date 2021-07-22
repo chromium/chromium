@@ -883,4 +883,55 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
             download_item_observer.upload_observer()->GetFileUrl());
 }
 
+IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
+                       DownloadLargeFileSuccess) {
+  SetCloudFSCPolicy(GetAllAllowedTestPolicy());
+  StartWprUsingFSCCaptureDir("box.com.large_download.wpr");
+
+  StartDownloadByNavigatingToEmbeddedServerUrl(
+      "/enterprise/connectors/file_system/downloads/cipd/"
+      "large_download_gibben.mobi");
+  BoxDownloadItemObserver download_item_observer(
+      download_manager_observer()->GetLatestDownloadItem());
+
+  // Sign in to authorize Chrome to upload to Box.com.
+  download_item_observer.WaitForSignInConfirmationDialog();
+  download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation();
+  download_item_observer.sign_in_observer()->AuthorizeWithUserAndPasswordSFA(
+      GetBoxAccountUserName(), GetBoxAccountPassword());
+
+  EXPECT_TRUE(
+      download_item_observer.fetch_access_token_observer()->WaitForFetch());
+
+  // Check that the download shelf is displaying the expected "uploading"
+  // text.
+  DownloadItemView* item_view = GetItemViewForLastDownload();
+  download_item_observer.upload_observer()->WaitForUploadStart();
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_DOWNLOAD_STATUS_UPLOADING,
+                l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_CONNECTOR_BOX)),
+            item_view->GetStatusTextForTesting());
+
+  EXPECT_TRUE(
+      download_item_observer.upload_observer()->WaitForUploadCompletion());
+  download_manager_observer()->WaitForDownloadToFinish();
+  EXPECT_TRUE(
+      download_item_observer.upload_observer()->WaitForTmpFileDeletion());
+
+  // Check that the download shelf is displaying the expected "uploaded"
+  // text.
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_DOWNLOAD_STATUS_UPLOADED,
+                l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_CONNECTOR_BOX)),
+            item_view->GetStatusTextForTesting());
+
+  // Open the downloaded item.
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
+  item_view->OpenItemForTesting();
+  tab_waiter.Wait();
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
+            download_item_observer.upload_observer()->GetFileUrl());
+}
+
 }  // namespace enterprise_connectors
