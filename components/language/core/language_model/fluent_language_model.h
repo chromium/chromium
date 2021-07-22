@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_LANGUAGE_CORE_BROWSER_FLUENT_LANGUAGE_MODEL_H_
-#define COMPONENTS_LANGUAGE_CORE_BROWSER_FLUENT_LANGUAGE_MODEL_H_
+#ifndef COMPONENTS_LANGUAGE_CORE_LANGUAGE_MODEL_FLUENT_LANGUAGE_MODEL_H_
+#define COMPONENTS_LANGUAGE_CORE_LANGUAGE_MODEL_FLUENT_LANGUAGE_MODEL_H_
 
 #include <memory>
 #include <string>
@@ -35,4 +35,4 @@ class FluentLanguageModel : public LanguageModel {
 
 }  // namespace language
 
-#endif  // COMPONENTS_LANGUAGE_CORE_BROWSER_FLUENT_LANGUAGE_MODEL_H_
+#endif  // COMPONENTS_LANGUAGE_CORE_LANGUAGE_MODEL_FLUENT_LANGUAGE_MODEL_H_

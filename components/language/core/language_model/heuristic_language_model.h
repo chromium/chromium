@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_LANGUAGE_CORE_BROWSER_HEURISTIC_LANGUAGE_MODEL_H_
-#define COMPONENTS_LANGUAGE_CORE_BROWSER_HEURISTIC_LANGUAGE_MODEL_H_
+#ifndef COMPONENTS_LANGUAGE_CORE_LANGUAGE_MODEL_HEURISTIC_LANGUAGE_MODEL_H_
+#define COMPONENTS_LANGUAGE_CORE_LANGUAGE_MODEL_HEURISTIC_LANGUAGE_MODEL_H_
 
 #include <string>
 #include <unordered_map>
@@ -129,4 +129,4 @@ std::vector<std::string> GetHistogramLanguages(
 
 }  // namespace language
 
-#endif  // COMPONENTS_LANGUAGE_CORE_BROWSER_HEURISTIC_LANGUAGE_MODEL_H_
+#endif  // COMPONENTS_LANGUAGE_CORE_LANGUAGE_MODEL_HEURISTIC_LANGUAGE_MODEL_H_

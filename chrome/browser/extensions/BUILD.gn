@@ -840,6 +840,7 @@ static_library("extensions") {
     "//components/keyed_service/content",
     "//components/language/core/browser",
     "//components/language/core/common",
+    "//components/language/core/language_model",
     "//components/live_caption:constants",
     "//components/nacl/common:buildflags",
     "//components/navigation_interception",

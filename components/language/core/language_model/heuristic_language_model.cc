@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/language/core/browser/heuristic_language_model.h"
+#include "components/language/core/language_model/heuristic_language_model.h"
 
 #include <algorithm>
 #include <unordered_set>

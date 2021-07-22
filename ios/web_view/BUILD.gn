@@ -268,6 +268,7 @@ source_set("web_view_sources") {
     "//components/keyed_service/ios",
     "//components/language/core/browser",
     "//components/language/core/common",
+    "//components/language/core/language_model",
     "//components/language/ios/browser",
     "//components/leveldb_proto",
     "//components/metrics:library_support",

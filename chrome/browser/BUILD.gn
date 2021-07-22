@@ -2066,6 +2066,7 @@ static_library("browser") {
     "//components/language/content/browser/ulp_language_code_locator",
     "//components/language/core/browser",
     "//components/language/core/common",
+    "//components/language/core/language_model",
     "//components/lens",
     "//components/leveldb_proto",
     "//components/live_caption:constants",

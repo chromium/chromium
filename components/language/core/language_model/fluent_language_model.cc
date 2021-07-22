@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/language/core/browser/fluent_language_model.h"
+#include "components/language/core/language_model/fluent_language_model.h"
 
 #include "base/strings/string_split.h"
 #include "components/language/core/browser/language_prefs.h"

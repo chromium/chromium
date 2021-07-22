@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/language/core/browser/baseline_language_model.h"
+#include "components/language/core/language_model/baseline_language_model.h"
 
 #include <cmath>
 

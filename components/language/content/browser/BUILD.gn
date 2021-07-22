@@ -26,6 +26,7 @@ static_library("browser") {
     "//components/language/content/browser/ulp_language_code_locator:ulp_language_code_locator",
     "//components/language/core/browser:browser",
     "//components/language/core/common:common",
+    "//components/language/core/language_model:language_model",
     "//components/prefs:prefs",
     "//content/public/browser",
     "//net",
