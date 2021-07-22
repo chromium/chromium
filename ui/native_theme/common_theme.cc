@@ -406,6 +406,14 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
     case NativeTheme::kColorId_ShadowBase:
       return gfx::kGoogleGrey800;
 
+    case NativeTheme::kColorId_ShadowValueAmbientShadowElevationTwo:
+      return SkColorSetA(base_theme->GetUnprocessedSystemColor(
+                             NativeTheme::kColorId_ShadowBase, color_scheme),
+                         0x26);
+    case NativeTheme::kColorId_ShadowValueKeyShadowElevationTwo:
+      return SkColorSetA(base_theme->GetUnprocessedSystemColor(
+                             NativeTheme::kColorId_ShadowBase, color_scheme),
+                         0x4d);
     case NativeTheme::kColorId_ShadowValueAmbientShadowElevationThree:
       return SkColorSetA(base_theme->GetUnprocessedSystemColor(
                              NativeTheme::kColorId_ShadowBase, color_scheme),

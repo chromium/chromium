@@ -19,8 +19,13 @@ namespace ash {
 namespace ambient {
 namespace util {
 
-// Appearance of the text shadow.
+// Appearance of the text shadow. If changing the elevation, also change the
+// colors accordingly.
 constexpr int kTextShadowElevation = 2;
+constexpr ui::NativeTheme::ColorId kTextShadowKeyShadowColor =
+    ui::NativeTheme::kColorId_ShadowValueKeyShadowElevationTwo;
+constexpr ui::NativeTheme::ColorId kTextShadowAmbientShadowColor =
+    ui::NativeTheme::kColorId_ShadowValueAmbientShadowElevationTwo;
 
 bool IsShowing(LockScreen::ScreenType type) {
   return LockScreen::HasInstance() && LockScreen::Get()->screen_type() == type;
@@ -54,16 +59,14 @@ gfx::ShadowValues GetTextShadowValues(const ui::NativeTheme* theme) {
   // If the theme does not exist the shadow values are being created in
   // order to calculate margins. In that case the color plays no role so set it
   // to gfx::kPlaceholderColor.
-  // Currently an elevation of 2 falls back to MakeMdShadowValues so use
-  // kColorId_ShadowBase, which is the base shadow color for MdShadowValues,
-  // until MakeMdShadowValues is refactored to take in it’s own
-  // |key_shadow_color| and |ambient_shadow_color|.
-  // TODO(elainechien): crbug.com/1056950
-  SkColor shadow_base_color =
-      theme ? theme->GetSystemColor(ui::NativeTheme::kColorId_ShadowBase)
+  SkColor key_shadow_color =
+      theme ? theme->GetSystemColor(kTextShadowKeyShadowColor)
+            : gfx::kPlaceholderColor;
+  SkColor ambient_shadow_color =
+      theme ? theme->GetSystemColor(kTextShadowAmbientShadowColor)
             : gfx::kPlaceholderColor;
   return gfx::ShadowValue::MakeShadowValues(
-      kTextShadowElevation, shadow_base_color, shadow_base_color);
+      kTextShadowElevation, key_shadow_color, ambient_shadow_color);
 }
 
 bool IsAmbientModeTopicTypeAllowed(::ambient::TopicType topic_type) {

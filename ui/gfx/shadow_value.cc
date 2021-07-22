@@ -85,6 +85,12 @@ ShadowValues ShadowValue::MakeShadowValues(int elevation,
   const int kBlurCorrection = 2;
 
   switch (elevation) {
+    case 2: {
+      ShadowValue key = {Vector2d(0, 1), kBlurCorrection * 2, key_shadow_color};
+      ShadowValue ambient = {Vector2d(0, 2), kBlurCorrection * 6,
+                             ambient_shadow_color};
+      return {key, ambient};
+    }
     case 3: {
       ShadowValue key = {Vector2d(0, 1), 12, key_shadow_color};
       ShadowValue ambient = {Vector2d(0, 4), 64, ambient_shadow_color};

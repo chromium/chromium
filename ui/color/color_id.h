@@ -159,6 +159,10 @@
     NativeTheme::kColorId_CustomTabBarForegroundColor) \
   E(kColorSeparator, NativeTheme::kColorId_SeparatorColor) \
   E(kColorShadowBase, NativeTheme::kColorId_ShadowBase) \
+  E(kColorShadowValueAmbientShadowElevationTwo, \
+    NativeTheme::kColorId_ShadowValueAmbientShadowElevationTwo) \
+  E(kColorShadowValueKeyShadowElevationTwo, \
+    NativeTheme::kColorId_ShadowValueKeyShadowElevationTwo) \
   E(kColorShadowValueAmbientShadowElevationThree, \
     NativeTheme::kColorId_ShadowValueAmbientShadowElevationThree) \
   E(kColorShadowValueKeyShadowElevationThree, \

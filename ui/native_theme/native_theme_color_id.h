@@ -109,6 +109,8 @@
   OP(kColorId_SeparatorColor),                                                 \
   /* Shadow */                                                                 \
   OP(kColorId_ShadowBase),                                                     \
+  OP(kColorId_ShadowValueAmbientShadowElevationTwo),                           \
+  OP(kColorId_ShadowValueKeyShadowElevationTwo),                               \
   OP(kColorId_ShadowValueAmbientShadowElevationThree),                         \
   OP(kColorId_ShadowValueKeyShadowElevationThree),                             \
   OP(kColorId_ShadowValueAmbientShadowElevationSixteen),                       \
