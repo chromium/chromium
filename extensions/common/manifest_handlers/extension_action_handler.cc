@@ -72,10 +72,19 @@ bool ExtensionActionHandler::Parse(Extension* extension,
     if (extension->was_installed_by_default())
       return true;  // Don't synthesize actions for default extensions.
 
-    // Set an empty page action. We use a page action (instead of a browser
-    // action) because the action should not be seen as enabled on every page.
-    auto action_info = std::make_unique<ActionInfo>(ActionInfo::TYPE_PAGE);
+    // Set an empty action. Manifest v2 extensions use page actions, whereas
+    // manifest v3 use generic "actions". We use a page action (instead of a
+    // browser action) for MV2 because the action should not be seen as enabled
+    // on every page. We achieve the same in MV3 by adjusting the default
+    // state to be disabled by default.
+    const ActionInfo::Type type = extension->manifest_version() >= 3
+                                      ? ActionInfo::TYPE_ACTION
+                                      : ActionInfo::TYPE_PAGE;
+    auto action_info = std::make_unique<ActionInfo>(type);
     action_info->synthesized = true;
+    if (type == ActionInfo::TYPE_ACTION)
+      action_info->default_state = ActionInfo::STATE_DISABLED;
+
     ActionInfo::SetExtensionActionInfo(extension, std::move(action_info));
   }
 
