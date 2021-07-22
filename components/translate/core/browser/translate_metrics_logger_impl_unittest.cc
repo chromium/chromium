@@ -12,6 +12,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
+#include "components/language/core/browser/language_prefs.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -1458,6 +1460,60 @@ TEST_F(TranslateMetricsLoggerImplTest, LogUIInteraction) {
                                         UIInteraction::kCloseUIExplicitly, 2);
   histogram_tester()->ExpectBucketCount(kTranslateUiInteractionEvent,
                                         UIInteraction::kCloseUILostFocus, 1);
+}
+
+TEST_F(TranslateMetricsLoggerImplTest, LogApplicationStartMetrics) {
+  // Make the TranslatePrefs for this test.
+  sync_preferences::TestingPrefServiceSyncable pref_service;
+  language::LanguagePrefs::RegisterProfilePrefs(pref_service.registry());
+  TranslatePrefs::RegisterProfilePrefs(pref_service.registry());
+  std::unique_ptr<TranslatePrefs> translate_prefs =
+      std::make_unique<TranslatePrefs>(&pref_service);
+
+  // Add values to always translate language, never translate language, and
+  // never translate site.
+  translate_prefs->AddLanguagePairToAlwaysTranslateList("es", "x");
+  translate_prefs->AddLanguagePairToAlwaysTranslateList("de", "x");
+
+  translate_prefs->BlockLanguage("en");
+  translate_prefs->BlockLanguage("fr");
+
+  translate_prefs->AddSiteToNeverPromptList("a");
+  translate_prefs->AddSiteToNeverPromptList("b");
+  translate_prefs->AddSiteToNeverPromptList("c");
+  translate_prefs->AddSiteToNeverPromptList("d");
+
+  // Record the session start metrics
+  TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
+      std::move(translate_prefs));
+
+  // Check that the expected values were recorded to each histogram
+  histogram_tester()->ExpectTotalCount(
+      kTranslateApplicationStartAlwaysTranslateLanguage, 2);
+  histogram_tester()->ExpectBucketCount(
+      kTranslateApplicationStartAlwaysTranslateLanguage,
+      base::HashMetricName("es"), 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslateApplicationStartAlwaysTranslateLanguage,
+      base::HashMetricName("de"), 1);
+
+  histogram_tester()->ExpectUniqueSample(
+      kTranslateApplicationStartAlwaysTranslateLanguageCount, 2, 1);
+
+  histogram_tester()->ExpectTotalCount(
+      kTranslateApplicationStartNeverTranslateLanguage, 2);
+  histogram_tester()->ExpectBucketCount(
+      kTranslateApplicationStartNeverTranslateLanguage,
+      base::HashMetricName("en"), 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslateApplicationStartNeverTranslateLanguage,
+      base::HashMetricName("fr"), 1);
+
+  histogram_tester()->ExpectUniqueSample(
+      kTranslateApplicationStartNeverTranslateLanguageCount, 2, 1);
+
+  histogram_tester()->ExpectUniqueSample(
+      kTranslateApplicationStartNeverTranslateSiteCount, 4, 1);
 }
 
 }  // namespace testing

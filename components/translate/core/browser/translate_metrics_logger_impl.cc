@@ -7,6 +7,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
+#include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -61,8 +63,53 @@ const char kTranslatePageLoadRankerVersion[] =
 const char kTranslatePageLoadTriggerDecision[] =
     "Translate.PageLoad.TriggerDecision";
 
+// Application frequency UMA histograms.
+const char kTranslateApplicationStartAlwaysTranslateLanguage[] =
+    "Translate.ApplicationStart.AlwaysTranslateLanguage";
+const char kTranslateApplicationStartAlwaysTranslateLanguageCount[] =
+    "Translate.ApplicationStart.AlwaysTranslateLanguage.Count";
+const char kTranslateApplicationStartNeverTranslateLanguage[] =
+    "Translate.ApplicationStart.NeverTranslateLanguage";
+const char kTranslateApplicationStartNeverTranslateLanguageCount[] =
+    "Translate.ApplicationStart.NeverTranslateLanguage.Count";
+const char kTranslateApplicationStartNeverTranslateSiteCount[] =
+    "Translate.ApplicationStart.NeverTranslateSite.Count";
+
 TranslationType NullTranslateMetricsLogger::GetNextManualTranslationType() {
   return TranslationType::kUninitialized;
+}
+
+void TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
+    std::unique_ptr<TranslatePrefs> translate_prefs) {
+  // TODO(1229371): These histograms are only recorded when Chrome starts up
+  // using the preferences of whatever profile is logged in at the time. This
+  // information should be recroded each time a profile logs in.
+
+  std::vector<std::string> always_translate_languages =
+      translate_prefs->GetAlwaysTranslateLanguages();
+  for (const auto& always_translate_language : always_translate_languages) {
+    base::UmaHistogramSparse(kTranslateApplicationStartAlwaysTranslateLanguage,
+                             base::HashMetricName(always_translate_language));
+  }
+  base::UmaHistogramCounts100(
+      kTranslateApplicationStartAlwaysTranslateLanguageCount,
+      always_translate_languages.size());
+
+  std::vector<std::string> never_translate_languages =
+      translate_prefs->GetNeverTranslateLanguages();
+  for (const auto& never_translate_language : never_translate_languages) {
+    base::UmaHistogramSparse(kTranslateApplicationStartNeverTranslateLanguage,
+                             base::HashMetricName(never_translate_language));
+  }
+  base::UmaHistogramCounts100(
+      kTranslateApplicationStartNeverTranslateLanguageCount,
+      never_translate_languages.size());
+
+  std::vector<std::string> never_translate_sites =
+      translate_prefs->GetNeverPromptSitesBetween(base::Time::UnixEpoch(),
+                                                  base::Time::Now());
+  base::UmaHistogramCounts100(kTranslateApplicationStartNeverTranslateSiteCount,
+                              never_translate_sites.size());
 }
 
 TranslateMetricsLoggerImpl::TranslateMetricsLoggerImpl(

@@ -41,6 +41,75 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Translate.ApplicationStart.AlwaysTranslateLanguage"
+    enum="LocaleCodeISO639" expires_after="M98">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The language codes of the languages in the user's always translate language
+    list. If the user has multiple languages in this list, then a separate entry
+    is recorded for each language.
+
+    This histogram is recorded when Chrome starts up using the preferences of
+    whatever profile is logged in at the time.
+  </summary>
+</histogram>
+
+<histogram name="Translate.ApplicationStart.AlwaysTranslateLanguage.Count"
+    units="languages" expires_after="M98">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The number of languages in the user's always translate language list.
+
+    This histogram is recorded when Chrome starts up using the preferences of
+    whatever profile is logged in at the time.
+  </summary>
+</histogram>
+
+<histogram name="Translate.ApplicationStart.NeverTranslateLanguage"
+    enum="LocaleCodeISO639" expires_after="M98">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The language code of the languages in the user's never translate language
+    list. If the user has multiple languages in this list, then a separate entry
+    is recorded for each language.
+
+    This histogram is recorded when Chrome starts up using the preferences of
+    whatever profile is logged in at the time.
+  </summary>
+</histogram>
+
+<histogram name="Translate.ApplicationStart.NeverTranslateLanguage.Count"
+    units="languages" expires_after="M98">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The number of languages in the user's never translate language list.
+
+    This histogram is recorded when Chrome starts up using the preferences of
+    whatever profile is logged in at the time.
+  </summary>
+</histogram>
+
+<histogram name="Translate.ApplicationStart.NeverTranslateSite.Count"
+    units="sites" expires_after="M98">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The number of sites in the user's never translate site list.
+
+    This histogram is recorded when Chrome starts up using the preferences of
+    whatever profile is logged in at the time.
+  </summary>
+</histogram>
+
 <histogram name="Translate.BubbleUiEvent" enum="TranslateBubbleUiEvent"
     expires_after="2021-12-12">
   <owner>groby@google.com</owner>
