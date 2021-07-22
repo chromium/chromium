@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
@@ -37,13 +35,6 @@ bool DeviceState::PropertyChanged(const std::string& key,
     return GetBooleanValue(key, value, &scanning_);
   } else if (key == shill::kSupportNetworkScanProperty) {
     return GetBooleanValue(key, value, &support_network_scan_);
-  } else if ((base::FeatureList::IsEnabled(
-                  ash::features::kCellularAllowPerNetworkRoaming) &&
-              key == shill::kCellularPolicyAllowRoamingProperty) ||
-             (!base::FeatureList::IsEnabled(
-                  ash::features::kCellularAllowPerNetworkRoaming) &&
-              key == shill::kCellularAllowRoamingProperty)) {
-    return GetBooleanValue(key, value, &allow_roaming_);
   } else if (key == shill::kProviderRequiresRoamingProperty) {
     return GetBooleanValue(key, value, &provider_requires_roaming_);
   } else if (key == shill::kHomeProviderProperty) {

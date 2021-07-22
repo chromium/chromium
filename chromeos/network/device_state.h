@@ -41,7 +41,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   // Cellular specific accessors
   const std::string& operator_name() const { return operator_name_; }
   const std::string& country_code() const { return country_code_; }
-  bool allow_roaming() const { return allow_roaming_; }
   bool provider_requires_roaming() const { return provider_requires_roaming_; }
   bool support_network_scan() const { return support_network_scan_; }
   const std::string& technology_family() const { return technology_family_; }
@@ -104,7 +103,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   // Cellular specific properties
   std::string operator_name_;
   std::string country_code_;
-  bool allow_roaming_ = false;
   bool provider_requires_roaming_ = false;
   bool support_network_scan_ = false;
   bool scanning_ = false;
