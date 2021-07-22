@@ -744,6 +744,7 @@ chrome_java_resources = [
   "java/res/values-large/dimens.xml",
   "java/res/values-night/colors.xml",
   "java/res/values-night/drawables.xml",
+  "java/res/values-night/styles.xml",
   "java/res/values-sw600dp-v17/styles.xml",
   "java/res/values-sw600dp-v26/styles.xml",
   "java/res/values-sw600dp-v27/styles.xml",

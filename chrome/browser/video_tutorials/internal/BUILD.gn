@@ -121,6 +121,7 @@ if (is_android) {
     ]
 
     deps = [
+      "//chrome/android:chrome_app_java_resources",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
       "//chrome/browser/video_tutorials:java_resources",
       "//components/browser_ui/widget/android:java_resources",
@@ -179,6 +180,7 @@ if (is_android) {
     ]
     deps = [
       ":java",
+      ":java_resources",
       "//base:base_java",
       "//base:base_java_test_support",
       "//chrome/browser/flags:java",

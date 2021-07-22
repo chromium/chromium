@@ -112,7 +112,8 @@ public class SyncConsentFragmentTest {
 
     @Rule
     public final ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(DummyUiActivity.class, R.style.ColorOverlay);
+            new ThemedDummyUiActivityTestRule<>(
+                    DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =

@@ -173,7 +173,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      */
     @CallSuper
     protected void applyThemeOverlays() {
-        setTheme(R.style.ColorOverlay);
+        setTheme(R.style.ColorOverlay_ChromiumAndroid);
 
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DYNAMIC_COLOR_ANDROID)) {
             new ColorDelegateImpl().applyDynamicColorsIfAvailable(this);

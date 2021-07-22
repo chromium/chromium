@@ -485,4 +485,10 @@
         <item name="drawableHeight">24dp</item>
     </style>
 
+    <style name="ColorOverlay.ChromiumAndroid" parent="ColorOverlay.ChromiumAndroid.DayNight">
+        <!-- TODO(https://crbug.com/1216642): Move color attributes here. -->
+    </style>
+    <style name="ColorOverlay.ChromiumAndroid.DayNight" parent="ColorOverlay">
+      <!-- TODO(https://crbug.com/1216642): Move color attributes here. -->
+    </style>
 </resources>

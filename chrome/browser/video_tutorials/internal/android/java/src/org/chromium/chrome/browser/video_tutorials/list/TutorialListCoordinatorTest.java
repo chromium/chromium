@@ -45,7 +45,8 @@ import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 public class TutorialListCoordinatorTest {
     @Rule
     public ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(DummyUiActivity.class, R.style.ColorOverlay);
+            new ThemedDummyUiActivityTestRule<>(
+                    DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
 
     private Activity mActivity;
     private View mContentView;

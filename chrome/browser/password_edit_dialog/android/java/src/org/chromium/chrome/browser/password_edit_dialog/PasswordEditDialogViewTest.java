@@ -39,8 +39,8 @@ public class PasswordEditDialogViewTest {
 
     @ClassRule
     public static ThemedDummyUiActivityTestRule<DummyUiActivity> sActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(
-                    DummyUiActivity.class, org.chromium.chrome.R.style.ColorOverlay);
+            new ThemedDummyUiActivityTestRule<>(DummyUiActivity.class,
+                    org.chromium.chrome.R.style.ColorOverlay_ChromiumAndroid);
 
     private static Activity sActivity;
 

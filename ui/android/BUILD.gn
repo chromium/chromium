@@ -194,6 +194,7 @@ android_resources("ui_java_resources") {
     "java/res/values-ldrtl/values.xml",
     "java/res/values-night/colors.xml",
     "java/res/values-night/dimens.xml",
+    "java/res/values-night/styles.xml",
     "java/res/values-sw600dp/values.xml",
     "java/res/values-sw720dp-v17/values.xml",
     "java/res/values-v17/styles.xml",
@@ -207,6 +208,7 @@ android_resources("ui_java_resources") {
     "java/res/values/semantic_colors_adaptive.xml",
     "java/res/values/semantic_colors_non_adaptive.xml",
     "java/res/values/strings.xml",
+    "java/res/values/styles.xml",
     "java/res/values/values.xml",
   ]
 
