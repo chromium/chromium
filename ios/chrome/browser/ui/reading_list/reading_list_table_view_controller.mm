@@ -315,6 +315,12 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  UITableViewCell* cell = [self tableView:tableView
+                    cellForRowAtIndexPath:indexPath];
+  if ([cell isKindOfClass:[SettingsSwitchCell class]]) {
+    DCHECK(IsReadingListMessagesEnabled());
+    return;
+  }
   if (self.editing) {
     // Update the selected item counts and the toolbar buttons.
     NSInteger sectionID =
