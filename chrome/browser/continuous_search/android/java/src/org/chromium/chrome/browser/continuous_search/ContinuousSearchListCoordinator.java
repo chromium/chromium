@@ -48,27 +48,29 @@ public class ContinuousSearchListCoordinator {
         ModelList listItems = new ModelList();
         mRecyclerViewAdapter = new SimpleRecyclerViewAdapter(listItems);
         mResources = resources;
+        mListMediator = new ContinuousSearchListMediator(browserControlsStateProvider, listItems,
+                mRootViewModel, setLayoutVisibility, themeColorProvider, resources);
 
+        boolean twoLineChip = mListMediator.shouldShowResultTitle();
         mRecyclerViewAdapter.registerType(ListItemType.PROVIDER,
                 (parent)
-                        -> inflateListItemView(parent, ListItemType.PROVIDER),
+                        -> inflateListItemView(parent, ListItemType.PROVIDER, false),
                 ContinuousSearchListViewBinder::bindProvider);
         mRecyclerViewAdapter.registerType(ListItemType.SEARCH_RESULT,
                 (parent)
-                        -> inflateListItemView(parent, ListItemType.SEARCH_RESULT),
+                        -> inflateListItemView(parent, ListItemType.SEARCH_RESULT, twoLineChip),
                 ContinuousSearchListViewBinder::bindListItem);
         mRecyclerViewAdapter.registerType(ListItemType.AD,
                 (parent)
-                        -> inflateListItemView(parent, ListItemType.AD),
+                        -> inflateListItemView(parent, ListItemType.AD, twoLineChip),
                 ContinuousSearchListViewBinder::bindListItem);
 
-        mListMediator = new ContinuousSearchListMediator(browserControlsStateProvider, listItems,
-                mRootViewModel, setLayoutVisibility, themeColorProvider, resources);
         mTabSupplier = tabSupplier;
         mTabSupplier.addObserver(mListMediator);
     }
 
-    private View inflateListItemView(ViewGroup parentView, @ListItemType int listItemType) {
+    private View inflateListItemView(
+            ViewGroup parentView, @ListItemType int listItemType, boolean twoLineChip) {
         int layoutId = R.layout.continuous_search_list_provider;
         switch (listItemType) {
             case ListItemType.SEARCH_RESULT:
@@ -79,7 +81,10 @@ public class ContinuousSearchListCoordinator {
                 break;
         }
 
-        return LayoutInflater.from(parentView.getContext()).inflate(layoutId, parentView, false);
+        View view =
+                LayoutInflater.from(parentView.getContext()).inflate(layoutId, parentView, false);
+        if (twoLineChip) ((ContinuousSearchChipView) view).initTwoLineChipView();
+        return view;
     }
 
     void initializeLayout(ViewGroup container) {
@@ -117,8 +122,10 @@ public class ContinuousSearchListCoordinator {
         private final int mSidePaddingPx;
 
         public SpaceItemDecoration(Resources resources) {
-            mChipSpacingPx = (int) resources.getDimensionPixelSize(R.dimen.chip_list_chip_spacing);
-            mSidePaddingPx = (int) resources.getDimensionPixelSize(R.dimen.chip_list_side_padding);
+            mChipSpacingPx =
+                    (int) resources.getDimensionPixelSize(R.dimen.csn_chip_list_chip_spacing);
+            mSidePaddingPx =
+                    (int) resources.getDimensionPixelSize(R.dimen.csn_chip_list_side_padding);
         }
 
         @Override
