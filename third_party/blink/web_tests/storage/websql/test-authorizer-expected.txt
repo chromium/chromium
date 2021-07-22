@@ -19,6 +19,8 @@ SQLITE_ALTER_TABLE statement succeeded.
 SQLITE_ALTER_TABLE statement succeeded.
 SQLITE_ALTER_TABLE statement succeeded.
 SQLITE_ALTER_TABLE statement succeeded.
+SQLITE_ADD_COLUMN statement succeeded.
+SQLITE_DROP_COLUMN statement failed: could not prepare statement (1 SQL logic error)
 SQLITE_TRANSACTION statement failed: could not prepare statement (23 not authorized)
 SQLITE_ATTACH statement failed: could not prepare statement (23 not authorized)
 SQLITE_DETACH statement failed: could not prepare statement (23 not authorized)
@@ -59,6 +61,8 @@ SQLITE_ALTER_TABLE statement failed: could not prepare statement (23 not authori
 SQLITE_ALTER_TABLE statement failed: could not prepare statement (1 no such table: TestTable)
 SQLITE_ALTER_TABLE statement failed: could not prepare statement (23 not authorized)
 SQLITE_ALTER_TABLE statement failed: could not prepare statement (23 not authorized)
+SQLITE_ADD_COLUMN statement failed: could not prepare statement (23 not authorized)
+SQLITE_DROP_COLUMN statement failed: could not prepare statement (1 no such column: "Bla")
 SQLITE_TRANSACTION statement failed: could not prepare statement (23 not authorized)
 SQLITE_ATTACH statement failed: could not prepare statement (23 not authorized)
 SQLITE_DETACH statement failed: could not prepare statement (23 not authorized)
