@@ -49,20 +49,28 @@ You can alson run the Server by using script `./runBiDiServer.sh`. It will write
 
 ## Running the Tests
 
-**Note**: Most of the tests currently fail, but this is how to run them.
+### Unit tests
 
-The tests are written using Python, in order to learn how to eventually do this
+Running:
+
+    npm run unit
+
+### e2e tests
+
+**Note**: Most of the e2e tests currently fail, but this is how to run them.
+
+The e2e tests are written using Python, in order to learn how to eventually do this
 in web-platform-tests. Python 3.6+ and some dependencies are required:
 
     python3 -m pip install --user -r tests/requirements.txt
 
 Running:
 
-    python3 -m pytest --rootdir=tests
+    npm run e2e
 
-This will run the tests against an already running server on port 8080. Use the `PORT` environment variable to connect to another port:
+This will run the e2e tests against an already running server on port 8080. Use the `PORT` environment variable to connect to another port:
 
-    PORT=8081 python3 -m pytest --rootdir=tests
+    PORT=8081 npm run e2e
 
 ## How does it work?
 
