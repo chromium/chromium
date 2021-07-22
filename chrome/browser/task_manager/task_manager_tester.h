@@ -58,6 +58,10 @@ class TaskManagerTester {
   // |row_index| belongs.
   void GetRowsGroupRange(int row, int* out_start, int* out_length);
 
+  // Get all task titles associated with a WebContents and return them in a
+  // vector.
+  std::vector<std::u16string> GetWebContentsTaskTitles();
+
  private:
   explicit TaskManagerTester(const base::RepeatingClosure& on_resource_change);
 

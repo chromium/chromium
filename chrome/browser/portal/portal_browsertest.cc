@@ -180,21 +180,6 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, HttpBasicAuthenticationInPortal) {
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
 
-namespace {
-
-std::vector<std::u16string> GetRendererTaskTitles(
-    task_manager::TaskManagerTester* tester) {
-  std::vector<std::u16string> renderer_titles;
-  renderer_titles.reserve(tester->GetRowCount());
-  for (int row = 0; row < tester->GetRowCount(); row++) {
-    if (tester->GetTabId(row) != SessionID::InvalidValue())
-      renderer_titles.push_back(tester->GetRowTitle(row));
-  }
-  return renderer_titles;
-}
-
-}  // namespace
-
 // The task manager should show the portal tasks, and update the tasks after
 // activation as tab contents become portals and vice versa.
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerUpdatesAfterActivation) {
@@ -221,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerUpdatesAfterActivation) {
       1, expected_tab_title_before_activation);
   task_manager::browsertest_util::WaitForTaskManagerRows(1,
                                                          expected_portal_title);
-  EXPECT_THAT(GetRendererTaskTitles(tester.get()),
+  EXPECT_THAT(tester->GetWebContentsTaskTitles(),
               ::testing::ElementsAre(expected_tab_title_before_activation,
                                      expected_portal_title));
 
@@ -231,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerUpdatesAfterActivation) {
       1, expected_tab_title_after_activation);
   task_manager::browsertest_util::WaitForTaskManagerRows(1,
                                                          expected_portal_title);
-  EXPECT_THAT(GetRendererTaskTitles(tester.get()),
+  EXPECT_THAT(tester->GetWebContentsTaskTitles(),
               ::testing::ElementsAre(expected_tab_title_after_activation,
                                      expected_portal_title));
 }
@@ -295,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerOrderingOfDependentRows) {
                                                          expected_tab_title);
   task_manager::browsertest_util::WaitForTaskManagerRows(
       kNumTabs * kPortalsPerTab, expected_portal_title);
-  EXPECT_THAT(GetRendererTaskTitles(tester.get()), expected_titles);
+  EXPECT_THAT(tester->GetWebContentsTaskTitles(), expected_titles);
 }
 
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, PdfViewerLoadsInPortal) {

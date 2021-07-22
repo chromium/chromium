@@ -501,23 +501,6 @@ INSTANTIATE_TEST_SUITE_P(
     MetricsChromeBackForwardCacheBrowserTest,
     testing::ValuesIn(MetricsChromeBackForwardCacheBrowserTestValues()));
 
-namespace {
-
-// TODO(johannkoenig): Deduplicate this with
-// chrome/browser/portal/portal_browsertest.cc.
-std::vector<std::u16string> GetRendererTaskTitles(
-    task_manager::TaskManagerTester* tester) {
-  std::vector<std::u16string> renderer_titles;
-  renderer_titles.reserve(tester->GetRowCount());
-  for (int row = 0; row < tester->GetRowCount(); row++) {
-    if (tester->GetTabId(row) != SessionID::InvalidValue())
-      renderer_titles.push_back(tester->GetRowTitle(row));
-  }
-  return renderer_titles;
-}
-
-}  // namespace
-
 // Ensure that BackForwardCache RenderFrameHosts are shown in the Task Manager.
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
                        ShowMainFrameInTaskManager) {
@@ -555,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
       1, expected_url_b_active_title);
   task_manager::browsertest_util::WaitForTaskManagerRows(
       1, expected_url_a_cached_title);
-  EXPECT_THAT(GetRendererTaskTitles(tester.get()),
+  EXPECT_THAT(tester->GetWebContentsTaskTitles(),
               ::testing::ElementsAre(expected_url_b_active_title,
                                      expected_url_a_cached_title));
 
@@ -572,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
       1, expected_url_a_active_title);
   task_manager::browsertest_util::WaitForTaskManagerRows(
       1, expected_url_b_cached_title);
-  EXPECT_THAT(GetRendererTaskTitles(tester.get()),
+  EXPECT_THAT(tester->GetWebContentsTaskTitles(),
               ::testing::ElementsAre(expected_url_a_active_title,
                                      expected_url_b_cached_title));
 }
@@ -624,7 +607,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
       1, expected_url_a_cached_subframe_b_title);
   task_manager::browsertest_util::WaitForTaskManagerRows(
       1, expected_url_a_cached_subframe_c_title);
-  EXPECT_THAT(GetRendererTaskTitles(tester.get()),
+  EXPECT_THAT(tester->GetWebContentsTaskTitles(),
               ::testing::ElementsAre(expected_url_b_active_title,
                                      expected_url_a_cached_title,
                                      expected_url_a_cached_subframe_b_title,
@@ -665,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
       1, expected_url_b_active_title);
   task_manager::browsertest_util::WaitForTaskManagerRows(
       1, expected_url_a_cached_title);
-  EXPECT_THAT(GetRendererTaskTitles(tester.get()),
+  EXPECT_THAT(tester->GetWebContentsTaskTitles(),
               ::testing::ElementsAre(expected_url_b_active_title,
                                      expected_url_a_cached_title));
 }

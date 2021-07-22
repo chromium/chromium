@@ -185,6 +185,17 @@ void TaskManagerTester::GetRowsGroupRange(int row,
   return model_->GetRowsGroupRange(row, out_start, out_length);
 }
 
+std::vector<std::u16string> TaskManagerTester::GetWebContentsTaskTitles() {
+  std::vector<std::u16string> titles;
+  titles.reserve(GetRowCount());
+  for (int row = 0; row < GetRowCount(); row++) {
+    // Exclude tasks which are not associated with a WebContents.
+    if (GetTabId(row) != SessionID::InvalidValue())
+      titles.push_back(GetRowTitle(row));
+  }
+  return titles;
+}
+
 TaskManagerInterface* TaskManagerTester::task_manager() {
   return model_->observed_task_manager();
 }
