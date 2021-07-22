@@ -75,7 +75,7 @@
 
 - (void)consistencyDefaultAccountMediatorNoIdentities:
     (ConsistencyDefaultAccountMediator*)mediator {
-  [self.delegate consistencyDefaultAccountCoordinatorSkip:self];
+  [self.delegate consistencyDefaultAccountCoordinatorAllIdentityRemoved:self];
 }
 
 #pragma mark - ConsistencyDefaultAccountActionDelegate
