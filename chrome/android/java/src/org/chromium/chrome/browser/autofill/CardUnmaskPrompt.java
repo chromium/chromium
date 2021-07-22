@@ -70,6 +70,8 @@ public class CardUnmaskPrompt
     private final ProgressBar mVerificationProgressBar;
     private final TextView mVerificationView;
     private final long mSuccessMessageDurationMilliseconds;
+    private final int mGooglePayDrawableId;
+    private final boolean mIsCardLocal;
 
     private int mThisYear;
     private int mThisMonth;
@@ -148,6 +150,8 @@ public class CardUnmaskPrompt
             boolean defaultToStoringLocally, boolean shouldOfferWebauthn,
             boolean defaultUseScreenlockChecked, long successMessageDurationMilliseconds) {
         mDelegate = delegate;
+        mGooglePayDrawableId = googlePayDrawableId;
+        mIsCardLocal = isCardLocal;
 
         LayoutInflater inflater = LayoutInflater.from(context);
         View v = inflater.inflate(R.layout.autofill_card_unmask_prompt, null);
@@ -179,25 +183,11 @@ public class CardUnmaskPrompt
 
         Resources resources = context.getResources();
         String modalDialogTitle = null;
-        if (!isCardLocal) {
-            Drawable mInlineTitleIcon = resources.getDrawable(googlePayDrawableId);
-            // The first character will be replaced by the logo, and the consecutive spaces after
-            // are used as padding.
-            SpannableString titleWithLogo = new SpannableString("   " + title);
-            // How much the original logo should scale up in size to match height of text.
-            float scaleFactor = mTitleView.getTextSize() / mInlineTitleIcon.getIntrinsicHeight();
-            mInlineTitleIcon.setBounds(
-                    /* left */ 0, /* top */ 0,
-                    /* right */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicWidth()),
-                    /* bottom */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicHeight()));
-            titleWithLogo.setSpan(new ImageSpan(mInlineTitleIcon, ImageSpan.ALIGN_CENTER),
-                    /* start */ 0,
-                    /* end */ 1,
-                    /* flags */ Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-            mTitleView.setText(titleWithLogo, BufferType.SPANNABLE);
-        } else {
+        if (isCardLocal) {
             mTitleView.setVisibility(View.GONE);
             modalDialogTitle = title;
+        } else {
+            updateTitleForCustomView(title, context);
         }
         PropertyModel.Builder dialogModelBuilder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -291,13 +281,36 @@ public class CardUnmaskPrompt
     }
 
     public void update(String title, String instructions, boolean shouldRequestExpirationDate) {
-        mDialogModel.set(ModalDialogProperties.TITLE, title);
+        if (mIsCardLocal) {
+            mDialogModel.set(ModalDialogProperties.TITLE, title);
+        } else {
+            updateTitleForCustomView(title, mContext);
+            mDialogModel.set(ModalDialogProperties.CUSTOM_VIEW, mMainView);
+        }
         mInstructions.setText(instructions);
         mShouldRequestExpirationDate = shouldRequestExpirationDate;
         if (mShouldRequestExpirationDate && (mThisYear == -1 || mThisMonth == -1)) {
             new CalendarTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
         showExpirationDateInputsInputs();
+    }
+
+    private void updateTitleForCustomView(String title, Context context) {
+        Drawable mInlineTitleIcon = context.getResources().getDrawable(mGooglePayDrawableId);
+        // The first character will be replaced by the logo, and the consecutive spaces after
+        // are used as padding.
+        SpannableString titleWithLogo = new SpannableString("   " + title);
+        // How much the original logo should scale up in size to match height of text.
+        float scaleFactor = mTitleView.getTextSize() / mInlineTitleIcon.getIntrinsicHeight();
+        mInlineTitleIcon.setBounds(
+                /* left */ 0, /* top */ 0,
+                /* right */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicWidth()),
+                /* bottom */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicHeight()));
+        titleWithLogo.setSpan(new ImageSpan(mInlineTitleIcon, ImageSpan.ALIGN_CENTER),
+                /* start */ 0,
+                /* end */ 1,
+                /* flags */ Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        mTitleView.setText(titleWithLogo, BufferType.SPANNABLE);
     }
 
     public void dismiss(@DialogDismissalCause int dismissalCause) {
