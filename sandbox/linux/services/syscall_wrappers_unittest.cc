@@ -113,6 +113,9 @@ TEST(SyscallWrappers, Stat) {
   int res = sys_stat(tmp_file.full_file_name(),
                      reinterpret_cast<struct kernel_stat*>(page1_end - 1));
   ASSERT_EQ(res, -1);
+  if (res < 0 && errno == EOVERFLOW) {
+    GTEST_SKIP();
+  }
   ASSERT_EQ(errno, EFAULT);
 
   // Now, check that we have the correctly sized stat structure.
