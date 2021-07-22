@@ -17,6 +17,10 @@
 ] Promise<void> flush();
 
 [
+  CallWith=ScriptState, RaisesException
+] Promise<unsigned long long> getSize();
+
+[
   RaisesException
 ] unsigned long long read([AllowShared] ArrayBufferView buffer,
                            FileSystemReadWriteOptions options);

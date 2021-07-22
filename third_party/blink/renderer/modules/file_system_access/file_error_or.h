@@ -9,6 +9,7 @@
 
 #include "base/files/file.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
 namespace blink {
 
@@ -25,9 +26,9 @@ class FileErrorOr {
   FileErrorOr(base::File::Error error) : error_(error) {}
   FileErrorOr(ValueType&& value)
       : maybe_value_(absl::in_place, std::move(value)) {}
-  FileErrorOr(const FileErrorOr&) = delete;
+  FileErrorOr(const FileErrorOr&) = default;
   FileErrorOr(FileErrorOr&&) = default;
-  FileErrorOr& operator=(const FileErrorOr&) = delete;
+  FileErrorOr& operator=(const FileErrorOr&) = default;
   FileErrorOr& operator=(FileErrorOr&&) = default;
   ~FileErrorOr() = default;
 
@@ -46,5 +47,14 @@ class FileErrorOr {
 };
 
 }  // namespace blink
+
+namespace WTF {
+// TODO: When the {FileErrorOr<>} class gets moved to //base, then this class
+// should be move into the "main" cross thread copier header file.
+template <>
+struct CrossThreadCopier<blink::FileErrorOr<int64_t>>
+    : public WTF::CrossThreadCopierPassThrough<blink::FileErrorOr<int64_t>> {};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_ERROR_OR_H_

@@ -164,6 +164,65 @@ void FileSystemSyncAccessHandle::DidFlush(
   resolver->Resolve();
 }
 
+ScriptPromise FileSystemSyncAccessHandle::getSize(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (is_closed_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The file was already closed");
+    return ScriptPromise();
+  }
+
+  if (!EnterOperation()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Another I/O operation is in progress on the same file");
+    return ScriptPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  worker_pool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      CrossThreadBindOnce(&DoGetSize, WrapCrossThreadPersistent(this),
+                          WrapCrossThreadPersistent(resolver),
+                          resolver_task_runner_));
+  return resolver->Promise();
+}
+
+// static
+void FileSystemSyncAccessHandle::DoGetSize(
+    CrossThreadPersistent<FileSystemSyncAccessHandle> access_handle,
+    CrossThreadPersistent<ScriptPromiseResolver> resolver,
+    scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
+  DCHECK(access_handle->file_delegate()->IsValid())
+      << "file I/O operation queued after file closed";
+  FileErrorOr<int64_t> result = access_handle->file_delegate()->GetLength();
+
+  PostCrossThreadTask(
+      *resolver_task_runner, FROM_HERE,
+      CrossThreadBindOnce(&FileSystemSyncAccessHandle::DidGetSize,
+                          std::move(access_handle), std::move(resolver),
+                          result));
+}
+
+void FileSystemSyncAccessHandle::DidGetSize(
+    CrossThreadPersistent<ScriptPromiseResolver> resolver,
+    FileErrorOr<int64_t> result) {
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid())
+    return;
+  ScriptState::Scope scope(script_state);
+
+  ExitOperation();
+  if (result.is_error()) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
+        "getSize failed"));
+    return;
+  }
+  resolver->Resolve(result.value());
+}
+
 uint64_t FileSystemSyncAccessHandle::read(
     MaybeShared<DOMArrayBufferView> buffer,
     FileSystemReadWriteOptions* options,

@@ -7153,6 +7153,8 @@ crbug.com/1218431 external/wpt/file-system-access/sandboxed_FileSystemSyncAccess
 crbug.com/1218431 virtual/file-system-access-access-handle/external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-flush.https.tentative.worker.html [ Pass ]
 crbug.com/1218431 external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-close.https.tentative.worker.html [ Skip ]
 crbug.com/1218431 virtual/file-system-access-access-handle/external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-close.https.tentative.worker.html [ Pass ]
+crbug.com/1218431 external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-getSize.https.tentative.worker.html [ Skip ]
+crbug.com/1218431 virtual/file-system-access-access-handle/external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-getSize.https.tentative.worker.html [ Pass ]
 
 # DevTools roll
 crbug.com/1187573 http/tests/devtools/throttling/mobile-throttling.js [ Skip ]
