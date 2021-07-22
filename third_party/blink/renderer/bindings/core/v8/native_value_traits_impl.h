@@ -238,8 +238,8 @@ class CORE_EXPORT NativeValueTraitsStringAdapter {
 }  // namespace bindings
 
 template <bindings::IDLStringConvMode mode>
-struct NativeValueTraits<IDLByteStringBase<mode>>
-    : public NativeValueTraitsBase<IDLByteStringBase<mode>> {
+struct NativeValueTraits<IDLByteStringBaseV2<mode>>
+    : public NativeValueTraitsBase<IDLByteStringBaseV2<mode>> {
   // http://heycam.github.io/webidl/#es-ByteString
   static bindings::NativeValueTraitsStringAdapter NativeValue(
       v8::Isolate* isolate,
@@ -273,33 +273,33 @@ struct NativeValueTraits<IDLByteStringBase<mode>>
 };
 
 template <>
-struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLByteString>>
-    : public NativeValueTraitsBase<IDLNullable<IDLByteString>> {
+struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLByteStringV2>>
+    : public NativeValueTraitsBase<IDLNullable<IDLByteStringV2>> {
   static decltype(auto) NativeValue(v8::Isolate* isolate,
                                     v8::Local<v8::Value> value,
                                     ExceptionState& exception_state) {
-    return NativeValueTraits<IDLByteStringBase<
+    return NativeValueTraits<IDLByteStringBaseV2<
         bindings::IDLStringConvMode::kNullable>>::NativeValue(isolate, value,
                                                               exception_state);
   }
 };
 
 template <>
-struct CORE_EXPORT NativeValueTraits<IDLOptional<IDLByteString>>
-    : public NativeValueTraitsBase<IDLOptional<IDLByteString>> {
+struct CORE_EXPORT NativeValueTraits<IDLOptional<IDLByteStringV2>>
+    : public NativeValueTraitsBase<IDLOptional<IDLByteStringV2>> {
   static decltype(auto) NativeValue(v8::Isolate* isolate,
                                     v8::Local<v8::Value> value,
                                     ExceptionState& exception_state) {
     if (value->IsUndefined())
       return bindings::NativeValueTraitsStringAdapter();
-    return NativeValueTraits<IDLByteString>::NativeValue(isolate, value,
-                                                         exception_state);
+    return NativeValueTraits<IDLByteStringV2>::NativeValue(isolate, value,
+                                                           exception_state);
   }
 };
 
 template <bindings::IDLStringConvMode mode>
-struct NativeValueTraits<IDLStringBase<mode>>
-    : public NativeValueTraitsBase<IDLStringBase<mode>> {
+struct NativeValueTraits<IDLStringBaseV2<mode>>
+    : public NativeValueTraitsBase<IDLStringBaseV2<mode>> {
   // https://heycam.github.io/webidl/#es-DOMString
   static bindings::NativeValueTraitsStringAdapter NativeValue(
       v8::Isolate* isolate,
@@ -332,39 +332,39 @@ struct NativeValueTraits<IDLStringBase<mode>>
 };
 
 template <>
-struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLString>>
-    : public NativeValueTraitsBase<IDLNullable<IDLString>> {
+struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLStringV2>>
+    : public NativeValueTraitsBase<IDLNullable<IDLStringV2>> {
   static decltype(auto) NativeValue(v8::Isolate* isolate,
                                     v8::Local<v8::Value> value,
                                     ExceptionState& exception_state) {
-    return NativeValueTraits<IDLStringBase<
+    return NativeValueTraits<IDLStringBaseV2<
         bindings::IDLStringConvMode::kNullable>>::NativeValue(isolate, value,
                                                               exception_state);
   }
 };
 
 template <>
-struct CORE_EXPORT NativeValueTraits<IDLOptional<IDLString>>
-    : public NativeValueTraitsBase<IDLOptional<IDLString>> {
+struct CORE_EXPORT NativeValueTraits<IDLOptional<IDLStringV2>>
+    : public NativeValueTraitsBase<IDLOptional<IDLStringV2>> {
   static decltype(auto) NativeValue(v8::Isolate* isolate,
                                     v8::Local<v8::Value> value,
                                     ExceptionState& exception_state) {
     if (value->IsUndefined())
       return bindings::NativeValueTraitsStringAdapter();
-    return NativeValueTraits<IDLString>::NativeValue(isolate, value,
-                                                     exception_state);
+    return NativeValueTraits<IDLStringV2>::NativeValue(isolate, value,
+                                                       exception_state);
   }
 };
 
 template <bindings::IDLStringConvMode mode>
-struct NativeValueTraits<IDLUSVStringBase<mode>>
-    : public NativeValueTraitsBase<IDLUSVStringBase<mode>> {
+struct NativeValueTraits<IDLUSVStringBaseV2<mode>>
+    : public NativeValueTraitsBase<IDLUSVStringBaseV2<mode>> {
   // http://heycam.github.io/webidl/#es-USVString
   static bindings::NativeValueTraitsStringAdapter NativeValue(
       v8::Isolate* isolate,
       v8::Local<v8::Value> value,
       ExceptionState& exception_state) {
-    String string = NativeValueTraits<IDLStringBase<mode>>::NativeValue(
+    String string = NativeValueTraits<IDLStringBaseV2<mode>>::NativeValue(
         isolate, value, exception_state);
     if (exception_state.HadException())
       return bindings::NativeValueTraitsStringAdapter();
@@ -375,34 +375,34 @@ struct NativeValueTraits<IDLUSVStringBase<mode>>
 };
 
 template <>
-struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLUSVString>>
-    : public NativeValueTraitsBase<IDLNullable<IDLUSVString>> {
+struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLUSVStringV2>>
+    : public NativeValueTraitsBase<IDLNullable<IDLUSVStringV2>> {
   static decltype(auto) NativeValue(v8::Isolate* isolate,
                                     v8::Local<v8::Value> value,
                                     ExceptionState& exception_state) {
-    return NativeValueTraits<IDLUSVStringBase<
+    return NativeValueTraits<IDLUSVStringBaseV2<
         bindings::IDLStringConvMode::kNullable>>::NativeValue(isolate, value,
                                                               exception_state);
   }
 };
 
 template <>
-struct CORE_EXPORT NativeValueTraits<IDLOptional<IDLUSVString>>
-    : public NativeValueTraitsBase<IDLOptional<IDLUSVString>> {
+struct CORE_EXPORT NativeValueTraits<IDLOptional<IDLUSVStringV2>>
+    : public NativeValueTraitsBase<IDLOptional<IDLUSVStringV2>> {
   static decltype(auto) NativeValue(v8::Isolate* isolate,
                                     v8::Local<v8::Value> value,
                                     ExceptionState& exception_state) {
     if (value->IsUndefined())
       return bindings::NativeValueTraitsStringAdapter();
-    return NativeValueTraits<IDLUSVString>::NativeValue(isolate, value,
-                                                        exception_state);
+    return NativeValueTraits<IDLUSVStringV2>::NativeValue(isolate, value,
+                                                          exception_state);
   }
 };
 
 template <bindings::IDLStringConvMode mode>
-struct NativeValueTraits<IDLStringStringContextTrustedHTMLBase<mode>>
+struct NativeValueTraits<IDLStringStringContextTrustedHTMLBaseV2<mode>>
     : public NativeValueTraitsBase<
-          IDLStringStringContextTrustedHTMLBase<mode>> {
+          IDLStringStringContextTrustedHTMLBaseV2<mode>> {
   static String NativeValue(v8::Isolate* isolate,
                             v8::Local<v8::Value> value,
                             ExceptionState& exception_state,
@@ -412,7 +412,7 @@ struct NativeValueTraits<IDLStringStringContextTrustedHTMLBase<mode>>
       return trusted_html->toString();
     }
 
-    auto&& string = NativeValueTraits<IDLStringBase<mode>>::NativeValue(
+    auto&& string = NativeValueTraits<IDLStringBaseV2<mode>>::NativeValue(
         isolate, value, exception_state);
     if (exception_state.HadException())
       return String();
@@ -422,23 +422,23 @@ struct NativeValueTraits<IDLStringStringContextTrustedHTMLBase<mode>>
 
 template <>
 struct CORE_EXPORT
-    NativeValueTraits<IDLNullable<IDLStringStringContextTrustedHTML>>
+    NativeValueTraits<IDLNullable<IDLStringStringContextTrustedHTMLV2>>
     : public NativeValueTraitsBase<
-          IDLNullable<IDLStringStringContextTrustedHTML>> {
+          IDLNullable<IDLStringStringContextTrustedHTMLV2>> {
   static String NativeValue(v8::Isolate* isolate,
                             v8::Local<v8::Value> value,
                             ExceptionState& exception_state,
                             ExecutionContext* execution_context) {
-    return NativeValueTraits<IDLStringStringContextTrustedHTMLBase<
+    return NativeValueTraits<IDLStringStringContextTrustedHTMLBaseV2<
         bindings::IDLStringConvMode::kNullable>>::
         NativeValue(isolate, value, exception_state, execution_context);
   }
 };
 
 template <bindings::IDLStringConvMode mode>
-struct NativeValueTraits<IDLStringStringContextTrustedScriptBase<mode>>
+struct NativeValueTraits<IDLStringStringContextTrustedScriptBaseV2<mode>>
     : public NativeValueTraitsBase<
-          IDLStringStringContextTrustedScriptBase<mode>> {
+          IDLStringStringContextTrustedScriptBaseV2<mode>> {
   static String NativeValue(v8::Isolate* isolate,
                             v8::Local<v8::Value> value,
                             ExceptionState& exception_state,
@@ -448,7 +448,7 @@ struct NativeValueTraits<IDLStringStringContextTrustedScriptBase<mode>>
       return trusted_script->toString();
     }
 
-    auto&& string = NativeValueTraits<IDLStringBase<mode>>::NativeValue(
+    auto&& string = NativeValueTraits<IDLStringBaseV2<mode>>::NativeValue(
         isolate, value, exception_state);
     if (exception_state.HadException())
       return String();
@@ -459,23 +459,23 @@ struct NativeValueTraits<IDLStringStringContextTrustedScriptBase<mode>>
 
 template <>
 struct CORE_EXPORT
-    NativeValueTraits<IDLNullable<IDLStringStringContextTrustedScript>>
+    NativeValueTraits<IDLNullable<IDLStringStringContextTrustedScriptV2>>
     : public NativeValueTraitsBase<
-          IDLNullable<IDLStringStringContextTrustedScript>> {
+          IDLNullable<IDLStringStringContextTrustedScriptV2>> {
   static String NativeValue(v8::Isolate* isolate,
                             v8::Local<v8::Value> value,
                             ExceptionState& exception_state,
                             ExecutionContext* execution_context) {
-    return NativeValueTraits<IDLStringStringContextTrustedScriptBase<
+    return NativeValueTraits<IDLStringStringContextTrustedScriptBaseV2<
         bindings::IDLStringConvMode::kNullable>>::
         NativeValue(isolate, value, exception_state, execution_context);
   }
 };
 
 template <bindings::IDLStringConvMode mode>
-struct NativeValueTraits<IDLUSVStringStringContextTrustedScriptURLBase<mode>>
+struct NativeValueTraits<IDLUSVStringStringContextTrustedScriptURLBaseV2<mode>>
     : public NativeValueTraitsBase<
-          IDLUSVStringStringContextTrustedScriptURLBase<mode>> {
+          IDLUSVStringStringContextTrustedScriptURLBaseV2<mode>> {
   static String NativeValue(v8::Isolate* isolate,
                             v8::Local<v8::Value> value,
                             ExceptionState& exception_state,
@@ -485,7 +485,7 @@ struct NativeValueTraits<IDLUSVStringStringContextTrustedScriptURLBase<mode>>
       return trusted_script_url->toString();
     }
 
-    auto&& string = NativeValueTraits<IDLUSVStringBase<mode>>::NativeValue(
+    auto&& string = NativeValueTraits<IDLUSVStringBaseV2<mode>>::NativeValue(
         isolate, value, exception_state);
     if (exception_state.HadException())
       return String();
@@ -496,14 +496,14 @@ struct NativeValueTraits<IDLUSVStringStringContextTrustedScriptURLBase<mode>>
 
 template <>
 struct CORE_EXPORT
-    NativeValueTraits<IDLNullable<IDLUSVStringStringContextTrustedScriptURL>>
+    NativeValueTraits<IDLNullable<IDLUSVStringStringContextTrustedScriptURLV2>>
     : public NativeValueTraitsBase<
-          IDLNullable<IDLUSVStringStringContextTrustedScriptURL>> {
+          IDLNullable<IDLUSVStringStringContextTrustedScriptURLV2>> {
   static String NativeValue(v8::Isolate* isolate,
                             v8::Local<v8::Value> value,
                             ExceptionState& exception_state,
                             ExecutionContext* execution_context) {
-    return NativeValueTraits<IDLUSVStringStringContextTrustedScriptURLBase<
+    return NativeValueTraits<IDLUSVStringStringContextTrustedScriptURLBaseV2<
         bindings::IDLStringConvMode::kNullable>>::
         NativeValue(isolate, value, exception_state, execution_context);
   }

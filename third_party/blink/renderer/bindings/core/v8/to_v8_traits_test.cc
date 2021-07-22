@@ -144,51 +144,52 @@ TEST(ToV8TraitsTest, String) {
   const String string("string");
   const char* const charptr_string = "charptrString";
   // ByteString
-  TEST_TOV8_TRAITS(scope, IDLByteString, "string", string);
-  TEST_TOV8_TRAITS(scope, IDLByteString, "charptrString", charptr_string);
+  TEST_TOV8_TRAITS(scope, IDLByteStringV2, "string", string);
+  TEST_TOV8_TRAITS(scope, IDLByteStringV2, "charptrString", charptr_string);
   // DOMString
-  TEST_TOV8_TRAITS(scope, IDLString, "string", string);
-  TEST_TOV8_TRAITS(scope, IDLString, "charptrString", charptr_string);
-  TEST_TOV8_TRAITS(scope, IDLStringTreatNullAsEmptyString, "string", string);
-  TEST_TOV8_TRAITS(scope, IDLStringTreatNullAsEmptyString, "charptrString",
+  TEST_TOV8_TRAITS(scope, IDLStringV2, "string", string);
+  TEST_TOV8_TRAITS(scope, IDLStringV2, "charptrString", charptr_string);
+  TEST_TOV8_TRAITS(scope, IDLStringTreatNullAsEmptyStringV2, "string", string);
+  TEST_TOV8_TRAITS(scope, IDLStringTreatNullAsEmptyStringV2, "charptrString",
                    charptr_string);
   // USVString
-  TEST_TOV8_TRAITS(scope, IDLUSVString, "string", string);
-  TEST_TOV8_TRAITS(scope, IDLUSVString, "charptrString", charptr_string);
+  TEST_TOV8_TRAITS(scope, IDLUSVStringV2, "string", string);
+  TEST_TOV8_TRAITS(scope, IDLUSVStringV2, "charptrString", charptr_string);
   // [StringContext=TrustedHTML] DOMString
-  TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedHTML, "string", string);
-  TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedHTML, "charptrString",
+  TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedHTMLV2, "string",
+                   string);
+  TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedHTMLV2, "charptrString",
                    charptr_string);
   TEST_TOV8_TRAITS(scope,
-                   IDLStringStringContextTrustedHTMLTreatNullAsEmptyString,
+                   IDLStringStringContextTrustedHTMLTreatNullAsEmptyStringV2,
                    "string", string);
   TEST_TOV8_TRAITS(scope,
-                   IDLStringStringContextTrustedHTMLTreatNullAsEmptyString,
+                   IDLStringStringContextTrustedHTMLTreatNullAsEmptyStringV2,
                    "charptrString", charptr_string);
   // [StringContext=TrustedScript] DOMString
-  TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedScript, "string",
+  TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedScriptV2, "string",
                    string);
-  TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedScript, "charptrString",
-                   charptr_string);
+  TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedScriptV2,
+                   "charptrString", charptr_string);
   TEST_TOV8_TRAITS(scope,
-                   IDLStringStringContextTrustedScriptTreatNullAsEmptyString,
+                   IDLStringStringContextTrustedScriptTreatNullAsEmptyStringV2,
                    "string", string);
   TEST_TOV8_TRAITS(scope,
-                   IDLStringStringContextTrustedScriptTreatNullAsEmptyString,
+                   IDLStringStringContextTrustedScriptTreatNullAsEmptyStringV2,
                    "charptrString", charptr_string);
   // [StringContext=TrustedScriptURL] USVString
-  TEST_TOV8_TRAITS(scope, IDLUSVStringStringContextTrustedScriptURL, "string",
+  TEST_TOV8_TRAITS(scope, IDLUSVStringStringContextTrustedScriptURLV2, "string",
                    string);
-  TEST_TOV8_TRAITS(scope, IDLUSVStringStringContextTrustedScriptURL,
+  TEST_TOV8_TRAITS(scope, IDLUSVStringStringContextTrustedScriptURLV2,
                    "charptrString", charptr_string);
 }
 
 TEST(ToV8TraitsTest, EmptyString) {
   const V8TestingScope scope;
   const String empty_string("");
-  TEST_TOV8_TRAITS(scope, IDLString, "", empty_string);
+  TEST_TOV8_TRAITS(scope, IDLStringV2, "", empty_string);
   const char* const empty = "";
-  TEST_TOV8_TRAITS(scope, IDLString, "", empty);
+  TEST_TOV8_TRAITS(scope, IDLStringV2, "", empty);
 }
 
 TEST(ToV8TraitsTest, Object) {
@@ -197,7 +198,7 @@ TEST(ToV8TraitsTest, Object) {
   string_vector.push_back("hello");
   string_vector.push_back("world");
   ScriptValue value(scope.GetIsolate(),
-                    ToV8Traits<IDLSequence<IDLString>>::ToV8(
+                    ToV8Traits<IDLSequence<IDLStringV2>>::ToV8(
                         scope.GetScriptState(), string_vector));
   TEST_TOV8_TRAITS(scope, IDLObject, "hello,world", value);
   v8::Local<v8::Value> actual;
@@ -236,7 +237,7 @@ TEST(ToV8TraitsTest, Vector) {
   Vector<String> string_vector;
   string_vector.push_back("foo");
   string_vector.push_back("bar");
-  TEST_TOV8_TRAITS(scope, IDLSequence<IDLString>, "foo,bar", string_vector);
+  TEST_TOV8_TRAITS(scope, IDLSequence<IDLStringV2>, "foo,bar", string_vector);
 }
 
 TEST(ToV8TraitsTest, HeapVector) {
@@ -316,11 +317,11 @@ TEST(ToV8TraitsTest, StringVectorVector) {
   compound_vector.push_back(string_vector2);
 
   EXPECT_EQ(2U, compound_vector.size());
-  TEST_TOV8_TRAITS(scope, IDLSequence<IDLSequence<IDLString>>, "foo,bar,quux",
+  TEST_TOV8_TRAITS(scope, IDLSequence<IDLSequence<IDLStringV2>>, "foo,bar,quux",
                    compound_vector);
 
   v8::Local<v8::Value> actual;
-  ASSERT_TRUE(ToV8Traits<IDLSequence<IDLSequence<IDLString>>>::ToV8(
+  ASSERT_TRUE(ToV8Traits<IDLSequence<IDLSequence<IDLStringV2>>>::ToV8(
                   scope.GetScriptState(), compound_vector)
                   .ToLocal(&actual))
       << "ToV8 throws an exception.";
@@ -393,7 +394,7 @@ TEST(ToV8TraitsTest, PairVector) {
   Vector<std::pair<String, int8_t>> pair_vector;
   pair_vector.push_back(std::make_pair("one", 1));
   pair_vector.push_back(std::make_pair("two", 2));
-  using ByteRecord = IDLRecord<IDLString, IDLByte>;
+  using ByteRecord = IDLRecord<IDLStringV2, IDLByte>;
   TEST_TOV8_TRAITS(scope, ByteRecord, "[object Object]", pair_vector);
   v8::Local<v8::Value> actual;
   ASSERT_TRUE(ToV8Traits<ByteRecord>::ToV8(scope.GetScriptState(), pair_vector)
@@ -419,7 +420,7 @@ TEST(ToV8TraitsTest, PairHeapVector) {
       "one", MakeGarbageCollected<GarbageCollectedScriptWrappable>("foo")));
   pair_heap_vector.push_back(std::make_pair(
       "two", MakeGarbageCollected<GarbageCollectedScriptWrappable>("bar")));
-  using HeapRecord = IDLRecord<IDLString, GarbageCollectedScriptWrappable>;
+  using HeapRecord = IDLRecord<IDLStringV2, GarbageCollectedScriptWrappable>;
   TEST_TOV8_TRAITS(scope, HeapRecord, "[object Object]", pair_heap_vector);
   v8::Local<v8::Value> actual;
   ASSERT_TRUE(
@@ -450,9 +451,9 @@ TEST(ToV8TraitsTest, PairHeapVector) {
 TEST(ToV8TraitsTest, NullStringInputForNoneNullableType) {
   const V8TestingScope scope;
   const String null_string;
-  TEST_TOV8_TRAITS(scope, IDLString, "", null_string);
+  TEST_TOV8_TRAITS(scope, IDLStringV2, "", null_string);
   const char* const null = nullptr;
-  TEST_TOV8_TRAITS(scope, IDLString, "", null);
+  TEST_TOV8_TRAITS(scope, IDLStringV2, "", null);
 }
 
 TEST(ToV8TraitsTest, Nullable) {
@@ -476,16 +477,16 @@ TEST(ToV8TraitsTest, Nullable) {
 
 TEST(ToV8TraitsTest, NullableString) {
   const V8TestingScope scope;
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLString>, "null", String());
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLString>, "string", String("string"));
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLString>, "", String(""));
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLStringV2>, "null", String());
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLStringV2>, "string", String("string"));
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLStringV2>, "", String(""));
   const char* const null = nullptr;
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLString>, "null", null);
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLStringV2>, "null", null);
   const char* const charptr_string = "charptrString";
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLString>, "charptrString",
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLStringV2>, "charptrString",
                    charptr_string);
   const char* const charptr_empty_string = "";
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLString>, "", charptr_empty_string);
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLStringV2>, "", charptr_empty_string);
 }
 
 TEST(ToV8TraitsTest, NullableObject) {

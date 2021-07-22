@@ -248,7 +248,7 @@ def bind_blink_api_arguments(code_node, cg_context):
 // https://heycam.github.io/webidl/#dfn-attribute-setter
 // step 4.6.1. Let S be ? ToString(V).
 const auto&& arg1_value_string =
-    NativeValueTraits<IDLString>::NativeValue(
+    NativeValueTraits<IDLStringV2>::NativeValue(
         ${isolate}, ${v8_property_value}, ${exception_state});
 if (UNLIKELY(${exception_state}.HadException()))
   return;
