@@ -322,7 +322,12 @@ export let fakeEthernetNetwork = {
   guid: 'ethernetGuid',
   name: 'ethernetName',
   macAddress: '81:C5:A6:30:3F:31',
-  ipConfig: null,
+  ipConfig: {
+    ipAddress: '192.168.86.197',
+    gateway: '192.168.86.1',
+    nameServers: ['192.168.86.1'],
+    routingPrefix: 24,
+  },
 };
 
 /** @type {!Network} */

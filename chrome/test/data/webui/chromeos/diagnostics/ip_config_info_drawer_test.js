@@ -116,13 +116,13 @@ export function ipConfigInfoDrawerTestSuite() {
   });
 
   test('ConfigDrawerOpenDisplaysNameServersBasedOnNetwork', () => {
-    // Ethernet currently has no ipConfig object.
     return initializeIpConfigInfoDrawerElement()
         // Opening drawer to test visibility and content of data points.
         .then(() => getDrawerToggle().click())
         .then(() => {
           dx_utils.assertDataPointHasExpectedHeaderAndValue(
-              ipConfigInfoDrawerElement, '#nameServers', 'Name servers', '');
+              ipConfigInfoDrawerElement, '#nameServers', 'Name servers',
+              `${fakeEthernetNetwork.ipConfig.nameServers.join(', ')}`);
         });
   });
 }
