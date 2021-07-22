@@ -54,4 +54,14 @@ export function ethernetInfoTestSuite() {
           fakeEthernetNetwork.ipConfig.ipAddress);
     });
   });
+
+  test('EthernetInfoAuthenticationBasedOnNetwork', () => {
+    return initializeEthernetInfo(fakeEthernetNetwork).then(() => {
+      const expectedHeader =
+          ethernetInfoElement.i18n('networkAuthenticationLabel');
+      // TODO(ashleydp): Update test when authenticaton data provided.
+      assertDataPointHasExpectedHeaderAndValue(
+          ethernetInfoElement, '#authentication', expectedHeader, '');
+    });
+  });
 }
