@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -193,6 +194,61 @@ String ExceptionMessages::OrdinalNumber(int number) {
       break;
   }
   return String::Number(number) + suffix;
+}
+
+String ExceptionMessages::IndexExceedsMaximumBound(const char* name,
+                                                   bool eq,
+                                                   const String& given,
+                                                   const String& bound) {
+  StringBuilder result;
+  result.Append("The ");
+  result.Append(name);
+  result.Append(" provided (");
+  result.Append(given);
+  result.Append(") is greater than ");
+  result.Append(eq ? "or equal to " : "");
+  result.Append("the maximum bound (");
+  result.Append(bound);
+  result.Append(").");
+  return result.ToString();
+}
+
+String ExceptionMessages::IndexExceedsMinimumBound(const char* name,
+                                                   bool eq,
+                                                   const String& given,
+                                                   const String& bound) {
+  StringBuilder result;
+  result.Append("The ");
+  result.Append(name);
+  result.Append(" provided (");
+  result.Append(given);
+  result.Append(") is less than ");
+  result.Append(eq ? "or equal to " : "");
+  result.Append("the minimum bound (");
+  result.Append(bound);
+  result.Append(").");
+  return result.ToString();
+}
+
+String ExceptionMessages::IndexOutsideRange(const char* name,
+                                            const String& given,
+                                            const String& lower_bound,
+                                            BoundType lower_type,
+                                            const String& upper_bound,
+                                            BoundType upper_type) {
+  StringBuilder result;
+  result.Append("The ");
+  result.Append(name);
+  result.Append(" provided (");
+  result.Append(given);
+  result.Append(") is outside the range ");
+  result.Append(lower_type == kExclusiveBound ? '(' : '[');
+  result.Append(lower_bound);
+  result.Append(", ");
+  result.Append(upper_bound);
+  result.Append(upper_type == kExclusiveBound ? ')' : ']');
+  result.Append('.');
+  return result.ToString();
 }
 
 String ExceptionMessages::ReadOnly(const char* detail) {

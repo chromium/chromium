@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -92,36 +91,16 @@ class PLATFORM_EXPORT ExceptionMessages {
   static String IndexExceedsMaximumBound(const char* name,
                                          NumberType given,
                                          NumberType bound) {
-    bool eq = given == bound;
-    StringBuilder result;
-    result.Append("The ");
-    result.Append(name);
-    result.Append(" provided (");
-    result.Append(FormatNumber(given));
-    result.Append(") is greater than ");
-    result.Append(eq ? "or equal to " : "");
-    result.Append("the maximum bound (");
-    result.Append(FormatNumber(bound));
-    result.Append(").");
-    return result.ToString();
+    return IndexExceedsMaximumBound(name, given == bound, FormatNumber(given),
+                                    FormatNumber(bound));
   }
 
   template <typename NumberType>
   static String IndexExceedsMinimumBound(const char* name,
                                          NumberType given,
                                          NumberType bound) {
-    bool eq = given == bound;
-    StringBuilder result;
-    result.Append("The ");
-    result.Append(name);
-    result.Append(" provided (");
-    result.Append(FormatNumber(given));
-    result.Append(") is less than ");
-    result.Append(eq ? "or equal to " : "");
-    result.Append("the minimum bound (");
-    result.Append(FormatNumber(bound));
-    result.Append(").");
-    return result.ToString();
+    return IndexExceedsMinimumBound(name, given == bound, FormatNumber(given),
+                                    FormatNumber(bound));
   }
 
   template <typename NumberType>
@@ -131,19 +110,9 @@ class PLATFORM_EXPORT ExceptionMessages {
                                   BoundType lower_type,
                                   NumberType upper_bound,
                                   BoundType upper_type) {
-    StringBuilder result;
-    result.Append("The ");
-    result.Append(name);
-    result.Append(" provided (");
-    result.Append(FormatNumber(given));
-    result.Append(") is outside the range ");
-    result.Append(lower_type == kExclusiveBound ? '(' : '[');
-    result.Append(FormatNumber(lower_bound));
-    result.Append(", ");
-    result.Append(FormatNumber(upper_bound));
-    result.Append(upper_type == kExclusiveBound ? ')' : ']');
-    result.Append('.');
-    return result.ToString();
+    return IndexOutsideRange(name, FormatNumber(given),
+                             FormatNumber(lower_bound), lower_type,
+                             FormatNumber(upper_bound), upper_type);
   }
 
   static String InvalidArity(const char* expected, unsigned provided);
@@ -182,6 +151,23 @@ class PLATFORM_EXPORT ExceptionMessages {
   }
 
   static String OrdinalNumber(int number);
+
+  static String IndexExceedsMaximumBound(const char* name,
+                                         bool eq,
+                                         const String& given,
+                                         const String& bound);
+
+  static String IndexExceedsMinimumBound(const char* name,
+                                         bool eq,
+                                         const String& given,
+                                         const String& bound);
+
+  static String IndexOutsideRange(const char* name,
+                                  const String& given,
+                                  const String& lower_bound,
+                                  BoundType lower_type,
+                                  const String& upper_bound,
+                                  BoundType upper_type);
 };
 
 template <>
