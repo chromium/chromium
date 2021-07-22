@@ -8,10 +8,12 @@ import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -147,6 +149,15 @@ public class HistoryActivityScrollingTest {
 
         mOrigItemsCount = mAdapter.getItemCount();
         Assert.assertTrue("At least one item should be loaded to adapter", mOrigItemsCount > 0);
+    }
+
+    @After
+    public void tearDown() {
+        if (mActivityTestRule.getActivity() == null) {
+            // IntentsTestRule assumes the Activity was started when tearing down the rule, so we
+            // need to work around that.
+            Intents.init();
+        }
     }
 
     private void launchHistoryActivity() {

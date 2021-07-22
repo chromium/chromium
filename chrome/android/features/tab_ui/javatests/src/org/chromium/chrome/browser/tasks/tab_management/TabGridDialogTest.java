@@ -161,6 +161,9 @@ public class TabGridDialogTest {
 
     @Before
     public void setUp() {
+        // Since we don't use IntentsTestRule to start an Activity, we have to call init() here.
+        // IntentsTestRule will call release() regardless of whether an Activity was started.
+        Intents.init();
         TabUiFeatureUtilities.setTabManagementModuleSupportedForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
         Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
@@ -1160,12 +1163,10 @@ public class TabGridDialogTest {
     }
 
     private void triggerShareGroupAndVerify(ChromeTabbedActivity cta) {
-        Intents.init();
         selectTabGridDialogToolbarMenuItem(cta, "Share group");
         intended(allOf(hasAction(equalTo(Intent.ACTION_CHOOSER)),
                 hasExtras(hasEntry(equalTo(Intent.EXTRA_INTENT),
                         allOf(hasAction(equalTo(Intent.ACTION_SEND)), hasType("text/plain"))))));
-        Intents.release();
     }
 
     private void waitForDialogHidingAnimation(ChromeTabbedActivity cta) {

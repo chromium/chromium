@@ -97,6 +97,9 @@ public class PriceTrackingDialogTest {
 
     @Before
     public void setUp() throws Exception {
+        // Since we don't use IntentsTestRule to start an Activity, we have to call init() here.
+        // IntentsTestRule will call release() regardless of whether an Activity was started.
+        Intents.init();
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
         CriteriaHelper.pollUiThread(
@@ -168,7 +171,6 @@ public class PriceTrackingDialogTest {
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS + "/enable_price_notification/true"})
     public void testPriceAlertsButton() {
-        Intents.init();
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         MenuUtils.invokeCustomMenuActionSync(
@@ -182,7 +184,6 @@ public class PriceTrackingDialogTest {
         } else {
             intended(hasAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS));
         }
-        Intents.release();
     }
 
     @Test
