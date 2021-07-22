@@ -248,6 +248,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.Failure{BluetoothTransportTypes}"
+    units="ms" expires_after="2022-07-19">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Measures the amount of time taken to connect to a device when initiated via
+    user interaction with the UI. {BluetoothTransportTypes}
+  </summary>
+  <token key="BluetoothTransportTypes" variants="BluetoothTransportTypes">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.Success{BluetoothTransportTypes}"
+    units="ms" expires_after="2022-07-19">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Measures the amount of time taken to connect to a device when initiated via
+    user interaction with the UI. {BluetoothTransportTypes}
+  </summary>
+  <token key="BluetoothTransportTypes" variants="BluetoothTransportTypes">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
     name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result.FailureReason{UserInitiatedReconnectionUISurfaces}"
     enum="BluetoothConnectionFailureReason" expires_after="2022-03-05">
   <owner>khorimoto@chromium.org</owner>

@@ -18,8 +18,11 @@ js_type_check("closure_compile_module") {
 }
 
 js_library("bluetooth_metrics_utils") {
-  externs_list =
-      chrome_extension_public_externs + [ "$externs_path/metrics_private.js" ]
+  externs_list = chrome_extension_public_externs + [
+                   "$externs_path/metrics_private.js",
+                   "$externs_path/bluetooth.js",
+                   "$externs_path/bluetooth_private.js",
+                 ]
 }
 
 js_library("bluetooth_dialog.m") {

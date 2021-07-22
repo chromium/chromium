@@ -97,6 +97,13 @@ DEVICE_BLUETOOTH_EXPORT void RecordPoweredState(bool is_powered);
 DEVICE_BLUETOOTH_EXPORT void RecordUiSurfaceDisplayed(
     BluetoothUiSurface ui_surface);
 
+// Record how long it took for an attempted user initiated bluetooth device
+// reconnection to occur.
+DEVICE_BLUETOOTH_EXPORT void RecordUserInitiatedReconnectionAttemptDuration(
+    absl::optional<ConnectionFailureReason> failure_reason,
+    BluetoothTransport transport,
+    base::TimeDelta duration);
+
 }  // namespace device
 
 #endif  // DEVICE_BLUETOOTH_CHROMEOS_BLUETOOTH_UTILS_H_

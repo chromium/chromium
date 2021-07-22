@@ -18,7 +18,7 @@ import {Polymer, html, flush} from '//resources/polymer/v3_0/polymer/polymer_bun
 
 import '//resources/cr_components/chromeos/bluetooth/bluetooth_dialog.m.js';
 import {CrScrollableBehavior} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
-import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from '//resources/cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js';
+import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics, recordUserInitiatedReconnectionAttemptDuration} from '//resources/cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
@@ -540,11 +540,15 @@ Polymer({
       this.recordDeviceSelectionDuration_(isPaired, device.transport);
     }
 
+    const connectionStartTimestampMs = Date.now();
     const address = device.address;
     this.bluetoothPrivate.connect(address, result => {
       if (isPaired) {
         const connectResult = chrome.runtime.lastError ? undefined : result;
         chrome.bluetoothPrivate.recordReconnection(connectResult);
+        recordUserInitiatedReconnectionAttemptDuration(
+            Date.now() - connectionStartTimestampMs, device.transport,
+            connectResult);
       }
 
       // If |pairingDevice_| has changed, ignore the connect result.

@@ -61,8 +61,12 @@ void BluetoothSetDiscoveringError() {
   LOG(ERROR) << "BluetoothSetDiscovering failed.";
 }
 
+// |reconnection_attempt_timestamp| can be null if the current device was not
+// previously paired before connection attempt.
 void OnBluetoothDeviceConnect(
     bool was_device_already_paired,
+    device::BluetoothTransport transport,
+    base::Time reconnection_attempt_timestamp,
     absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   if (was_device_already_paired) {
     device::RecordUserInitiatedReconnectionAttemptResult(
@@ -70,6 +74,13 @@ void OnBluetoothDeviceConnect(
             ? absl::make_optional(GetConnectionFailureReason(*error_code))
             : absl::nullopt,
         device::UserInitiatedReconnectionUISurfaces::kSystemTray);
+    device::RecordUserInitiatedReconnectionAttemptDuration(
+        error_code
+            ? absl::make_optional(GetConnectionFailureReason(*error_code))
+            : absl::nullopt,
+        transport,
+        base::DefaultClock::GetInstance()->Now() -
+            reconnection_attempt_timestamp);
   }
   if (error_code) {
     LOG(ERROR) << "Failed to connect to device, error code ["
@@ -248,17 +259,24 @@ void TrayBluetoothHelperLegacy::ConnectToBluetoothDevice(
       return;
     }
 
-    device->Connect(/*pairing_delegate=*/nullptr,
-                    base::BindOnce(&OnBluetoothDeviceConnect,
-                                   /*was_device_already_paired=*/true));
+    device->Connect(
+        /*pairing_delegate=*/nullptr,
+        base::BindOnce(&OnBluetoothDeviceConnect,
+                       /*was_device_already_paired=*/true, device->GetType(),
+                       base::DefaultClock::GetInstance()->Now()));
     return;
   }
 
   // Simply connect without pairing for devices which do not support pairing.
   if (!device->IsPairable()) {
-    device->Connect(/*pairing_delegate=*/nullptr,
-                    base::BindOnce(&OnBluetoothDeviceConnect,
-                                   /*was_device_already_paired=*/false));
+    // Use a null timestamp to represent the fact that the device was not
+    // already paired.
+    base::Time reconnection_attempt_timestamp;
+    device->Connect(
+        /*pairing_delegate=*/nullptr,
+        base::BindOnce(&OnBluetoothDeviceConnect,
+                       /*was_device_already_paired=*/false, device->GetType(),
+                       reconnection_attempt_timestamp));
     return;
   }
 
