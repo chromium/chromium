@@ -83,8 +83,8 @@ bool EcdsaSha256TrustTokenRequestSigner::Verify(
                           data.data(), data.size());
 }
 
-std::string EcdsaSha256TrustTokenRequestSigner::GetAlgorithmIdentifier() {
-  return "EcdsaSha256TrustTokenRequestSigner";
+std::string EcdsaSha256TrustTokenRequestSigner::GetAlgorithmIdentifier() const {
+  return "ecdsa_secp256r1_sha256";
 }
 
 }  // namespace network

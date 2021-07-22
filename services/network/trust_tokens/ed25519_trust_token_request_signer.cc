@@ -38,7 +38,7 @@ bool Ed25519TrustTokenRequestSigner::Verify(
                         verification_key.data());
 }
 
-std::string Ed25519TrustTokenRequestSigner::GetAlgorithmIdentifier() {
+std::string Ed25519TrustTokenRequestSigner::GetAlgorithmIdentifier() const {
   return "ed25519";
 }
 
