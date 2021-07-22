@@ -203,6 +203,8 @@ GL_FUNCTIONS = [
 { 'return_type': 'void',
   'versions' : [{'name': 'glBlitFramebuffer',
                  'extensions': ['GL_ARB_framebuffer_object']},
+                {'name': 'glBlitFramebufferNV',
+                 'extensions': ['GL_NV_framebuffer_blit']},
                 {'name': 'glBlitFramebufferANGLE'},
                 {'name': 'glBlitFramebufferEXT'}],
   'arguments': 'GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, '

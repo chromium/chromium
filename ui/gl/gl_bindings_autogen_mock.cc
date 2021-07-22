@@ -420,6 +420,21 @@ void GL_BINDING_CALL MockGLInterface::Mock_glBlitFramebufferEXT(GLint srcX0,
                               dstY1, mask, filter);
 }
 
+void GL_BINDING_CALL MockGLInterface::Mock_glBlitFramebufferNV(GLint srcX0,
+                                                               GLint srcY0,
+                                                               GLint srcX1,
+                                                               GLint srcY1,
+                                                               GLint dstX0,
+                                                               GLint dstY0,
+                                                               GLint dstX1,
+                                                               GLint dstY1,
+                                                               GLbitfield mask,
+                                                               GLenum filter) {
+  MakeGlMockFunctionUnique("glBlitFramebufferNV");
+  interface_->BlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1,
+                              dstY1, mask, filter);
+}
+
 void GL_BINDING_CALL MockGLInterface::Mock_glBufferData(GLenum target,
                                                         GLsizeiptr size,
                                                         const void* data,
@@ -5494,6 +5509,8 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBlitFramebufferANGLE);
   if (strcmp(name, "glBlitFramebufferEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBlitFramebufferEXT);
+  if (strcmp(name, "glBlitFramebufferNV") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(Mock_glBlitFramebufferNV);
   if (strcmp(name, "glBufferData") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBufferData);
   if (strcmp(name, "glBufferSubData") == 0)
