@@ -137,7 +137,7 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
     if (cache_duration_in_secs)
       hint.mutable_max_cache_duration()->set_seconds(*cache_duration_in_secs);
     proto::PageHint* page_hint = hint.add_page_hints();
-    page_hint->add_whitelisted_optimizations()->set_optimization_type(
+    page_hint->add_allowlisted_optimizations()->set_optimization_type(
         optimization_guide::proto::PERFORMANCE_HINTS);
     page_hint->set_page_pattern("whatever/*");
 
@@ -936,7 +936,7 @@ TEST_P(HintCacheTest, ProcessHintsNoUpdateData) {
 }
 
 TEST_P(HintCacheTest,
-       ProcessHintsWithNoPageHintsOrWhitelistedOptimizationsAndUpdateData) {
+       ProcessHintsWithNoPageHintsOrAllowlistedOptimizationsAndUpdateData) {
   const int kMemoryCacheSize = 5;
   CreateAndInitializeHintCache(kMemoryCacheSize);
 
@@ -958,14 +958,14 @@ TEST_P(HintCacheTest,
 }
 
 TEST_P(HintCacheTest,
-       ProcessHintsWithNoPageHintsButHasWhitelistedOptimizationsAndUpdateData) {
+       ProcessHintsWithNoPageHintsButHasAllowlistedOptimizationsAndUpdateData) {
   const int kMemoryCacheSize = 5;
   CreateAndInitializeHintCache(kMemoryCacheSize);
 
   proto::Hint hint;
   hint.set_key("whatever.com");
   hint.set_key_representation(proto::HOST);
-  hint.add_whitelisted_optimizations()->set_optimization_type(
+  hint.add_allowlisted_optimizations()->set_optimization_type(
       optimization_guide::proto::DEFER_ALL_SCRIPT);
 
   google::protobuf::RepeatedPtrField<proto::Hint> hints;

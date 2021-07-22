@@ -80,7 +80,7 @@ void AddBloomFilterToConfig(
       bloom_filter.bytes().size());
   optimization_guide::proto::OptimizationFilter* of_proto =
       is_allowlist ? config->add_optimization_allowlists()
-                   : config->add_optimization_blacklists();
+                   : config->add_optimization_blocklists();
   of_proto->set_optimization_type(optimization_type);
   std::unique_ptr<optimization_guide::proto::BloomFilter> bloom_filter_proto =
       std::make_unique<optimization_guide::proto::BloomFilter>();
@@ -104,7 +104,7 @@ std::unique_ptr<optimization_guide::proto::GetHintsResponse> BuildHintsResponse(
     optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
     page_hint->set_page_pattern("page pattern");
     optimization_guide::proto::Optimization* opt =
-        page_hint->add_whitelisted_optimizations();
+        page_hint->add_allowlisted_optimizations();
     opt->set_optimization_type(optimization_guide::proto::DEFER_ALL_SCRIPT);
   }
   for (const auto& url : urls) {
@@ -115,7 +115,7 @@ std::unique_ptr<optimization_guide::proto::GetHintsResponse> BuildHintsResponse(
     optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
     page_hint->set_page_pattern(url);
     optimization_guide::proto::Optimization* opt =
-        page_hint->add_whitelisted_optimizations();
+        page_hint->add_allowlisted_optimizations();
     opt->set_optimization_type(
         optimization_guide::proto::COMPRESS_PUBLIC_IMAGES);
     opt->mutable_public_image_metadata()->add_url("someurl");
@@ -383,7 +383,7 @@ class OptimizationGuideHintsManagerTest
     optimization_guide::proto::PageHint* page_hint1 = hint1->add_page_hints();
     page_hint1->set_page_pattern("/news/");
     optimization_guide::proto::Optimization* default_opt =
-        page_hint1->add_whitelisted_optimizations();
+        page_hint1->add_allowlisted_optimizations();
     default_opt->set_optimization_type(optimization_guide::proto::NOSCRIPT);
     // Add another hint so somedomain.org hint is not in-memory initially.
     optimization_guide::proto::Hint* hint2 = config.add_hints();
@@ -391,7 +391,7 @@ class OptimizationGuideHintsManagerTest
     hint2->set_key_representation(optimization_guide::proto::HOST);
     hint2->set_version("someversion");
     optimization_guide::proto::Optimization* opt =
-        hint2->add_whitelisted_optimizations();
+        hint2->add_allowlisted_optimizations();
     opt->set_optimization_type(optimization_guide::proto::NOSCRIPT);
 
     ProcessHints(config, version, should_wait);
@@ -495,7 +495,7 @@ TEST_F(OptimizationGuideHintsManagerTest,
   optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
   page_hint->set_page_pattern("noscript_default_2g");
   optimization_guide::proto::Optimization* optimization =
-      page_hint->add_whitelisted_optimizations();
+      page_hint->add_allowlisted_optimizations();
   optimization->set_optimization_type(optimization_guide::proto::NOSCRIPT);
   optimization_guide::BloomFilter bloom_filter(
       kDefaultHostBloomFilterNumHashFunctions, kDefaultHostBloomFilterNumBits);
@@ -573,7 +573,7 @@ TEST_F(OptimizationGuideHintsManagerTest,
   optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
   page_hint->set_page_pattern("noscript_default_2g");
   optimization_guide::proto::Optimization* optimization =
-      page_hint->add_whitelisted_optimizations();
+      page_hint->add_allowlisted_optimizations();
   optimization->set_optimization_type(optimization_guide::proto::NOSCRIPT);
 
   std::string encoded_config;
@@ -614,7 +614,7 @@ TEST_F(OptimizationGuideHintsManagerTest, ParseTwoConfigVersions) {
   optimization_guide::proto::PageHint* page_hint1 = hint1->add_page_hints();
   page_hint1->set_page_pattern("/news/");
   optimization_guide::proto::Optimization* optimization1 =
-      page_hint1->add_whitelisted_optimizations();
+      page_hint1->add_allowlisted_optimizations();
   optimization1->set_optimization_type(
       optimization_guide::proto::RESOURCE_LOADING);
 
@@ -1282,7 +1282,7 @@ TEST_F(OptimizationGuideHintsManagerTest,
   hint1->set_key_representation(optimization_guide::proto::HOST);
   hint1->set_version("someversion");
   optimization_guide::proto::Optimization* opt1 =
-      hint1->add_whitelisted_optimizations();
+      hint1->add_allowlisted_optimizations();
   opt1->set_optimization_type(optimization_guide::proto::RESOURCE_LOADING);
   ProcessHints(config, "1.0.0.0");
 
@@ -1314,7 +1314,7 @@ TEST_F(OptimizationGuideHintsManagerTest,
   hint1->set_key_representation(optimization_guide::proto::HOST);
   hint1->set_version("someversion");
   optimization_guide::proto::Optimization* opt1 =
-      hint1->add_whitelisted_optimizations();
+      hint1->add_allowlisted_optimizations();
   opt1->set_optimization_type(optimization_guide::proto::RESOURCE_LOADING);
   opt1->set_tuning_version(123456);
   ProcessHints(config, "1.0.0.0");
@@ -1362,7 +1362,7 @@ TEST_F(
   hint1->set_key_representation(optimization_guide::proto::HOST);
   hint1->set_version("someversion");
   optimization_guide::proto::Optimization* opt1 =
-      hint1->add_whitelisted_optimizations();
+      hint1->add_allowlisted_optimizations();
   opt1->set_optimization_type(optimization_guide::proto::RESOURCE_LOADING);
   opt1->set_tuning_version(UINT64_MAX);
   ProcessHints(config, "1.0.0.0");
@@ -1412,7 +1412,7 @@ TEST_F(
   optimization_guide::proto::PageHint* ph1 = hint1->add_page_hints();
   ph1->set_page_pattern("*");
   optimization_guide::proto::Optimization* opt1 =
-      ph1->add_whitelisted_optimizations();
+      ph1->add_allowlisted_optimizations();
   opt1->set_optimization_type(optimization_guide::proto::RESOURCE_LOADING);
   opt1->set_tuning_version(UINT64_MAX);
   ProcessHints(config, "1.0.0.0");
@@ -1462,7 +1462,7 @@ TEST_F(
   optimization_guide::proto::PageHint* ph1 = hint1->add_page_hints();
   ph1->set_page_pattern(url_with_hints().spec());
   optimization_guide::proto::Optimization* opt1 =
-      ph1->add_whitelisted_optimizations();
+      ph1->add_allowlisted_optimizations();
   opt1->set_optimization_type(optimization_guide::proto::RESOURCE_LOADING);
   opt1->set_tuning_version(UINT64_MAX);
   ProcessHints(config, "1.0.0.0");
@@ -1509,7 +1509,7 @@ TEST_F(OptimizationGuideHintsManagerTest,
   hint1->set_key_representation(optimization_guide::proto::HOST);
   hint1->set_version("someversion");
   optimization_guide::proto::Optimization* opt1 =
-      hint1->add_whitelisted_optimizations();
+      hint1->add_allowlisted_optimizations();
   opt1->set_optimization_type(optimization_guide::proto::RESOURCE_LOADING);
   opt1->set_tuning_version(123456);
   ProcessHints(config, "1.0.0.0");
@@ -1549,7 +1549,7 @@ TEST_F(OptimizationGuideHintsManagerTest,
   hint1->set_key_representation(optimization_guide::proto::HOST);
   hint1->set_version("someversion");
   optimization_guide::proto::Optimization* opt1 =
-      hint1->add_whitelisted_optimizations();
+      hint1->add_allowlisted_optimizations();
   opt1->set_optimization_type(optimization_guide::proto::RESOURCE_LOADING);
   ProcessHints(config, "1.0.0.0");
 
@@ -1616,7 +1616,7 @@ TEST_F(OptimizationGuideHintsManagerTest,
   optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
   page_hint->set_page_pattern("/news/");
   optimization_guide::proto::Optimization* opt =
-      page_hint->add_whitelisted_optimizations();
+      page_hint->add_allowlisted_optimizations();
   opt->set_optimization_type(optimization_guide::proto::PERFORMANCE_HINTS);
   optimization_guide::proto::PerformanceHint* performance_hint =
       opt->mutable_performance_hints_metadata()->add_performance_hints();
@@ -1657,7 +1657,7 @@ TEST_F(OptimizationGuideHintsManagerTest,
   optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
   page_hint->set_page_pattern("/news/");
   optimization_guide::proto::Optimization* opt =
-      page_hint->add_whitelisted_optimizations();
+      page_hint->add_allowlisted_optimizations();
   opt->set_optimization_type(optimization_guide::proto::COMPRESS_PUBLIC_IMAGES);
   opt->mutable_public_image_metadata()->add_url("someimage");
 
@@ -1695,7 +1695,7 @@ TEST_F(OptimizationGuideHintsManagerTest,
   optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
   page_hint->set_page_pattern("/news/");
   optimization_guide::proto::Optimization* opt =
-      page_hint->add_whitelisted_optimizations();
+      page_hint->add_allowlisted_optimizations();
   opt->set_optimization_type(optimization_guide::proto::LOADING_PREDICTOR);
   opt->mutable_loading_predictor_metadata()->add_subresources()->set_url(
       "https://resource.com/");
@@ -1733,7 +1733,7 @@ TEST_F(OptimizationGuideHintsManagerTest,
   optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
   page_hint->set_page_pattern("/news/");
   optimization_guide::proto::Optimization* opt =
-      page_hint->add_whitelisted_optimizations();
+      page_hint->add_allowlisted_optimizations();
   opt->set_optimization_type(optimization_guide::proto::LOADING_PREDICTOR);
   optimization_guide::proto::LoadingPredictorMetadata lp_metadata;
   lp_metadata.add_subresources()->set_url("https://resource.com/");
@@ -1887,7 +1887,7 @@ TEST_F(OptimizationGuideHintsManagerTest,
   optimization_guide::proto::PageHint* page_hint1 = hint1->add_page_hints();
   page_hint1->set_page_pattern("https://m.host.com");
   optimization_guide::proto::Optimization* optimization1 =
-      page_hint1->add_whitelisted_optimizations();
+      page_hint1->add_allowlisted_optimizations();
   optimization1->set_optimization_type(
       optimization_guide::proto::LITE_PAGE_REDIRECT);
   optimization_guide::BloomFilter blocklist_bloom_filter(
@@ -1933,7 +1933,7 @@ TEST_F(OptimizationGuideHintsManagerTest,
   optimization_guide::proto::PageHint* page_hint1 = hint1->add_page_hints();
   page_hint1->set_page_pattern("https://notfiltered.com");
   optimization_guide::proto::Optimization* optimization1 =
-      page_hint1->add_whitelisted_optimizations();
+      page_hint1->add_allowlisted_optimizations();
   optimization1->set_optimization_type(
       optimization_guide::proto::LITE_PAGE_REDIRECT);
   optimization_guide::BloomFilter blocklist_bloom_filter(
@@ -2021,7 +2021,7 @@ TEST_F(OptimizationGuideHintsManagerTest,
 
 TEST_F(
     OptimizationGuideHintsManagerTest,
-    CanApplyOptimizationAsyncReturnsRightAwayIfNotAllowedToFetchAndNotWhitelistedByAvailableHint) {
+    CanApplyOptimizationAsyncReturnsRightAwayIfNotAllowedToFetchAndNotAllowlistedByAvailableHint) {
   base::HistogramTester histogram_tester;
 
   hints_manager()->RegisterOptimizationTypes(
@@ -2066,7 +2066,7 @@ TEST_F(OptimizationGuideHintsManagerTest, RemoveFetchedEntriesByHintKeys_Host) {
   hint->set_key_representation(optimization_guide::proto::FULL_URL);
   hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
   optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
-  page_hint->add_whitelisted_optimizations()->set_optimization_type(
+  page_hint->add_allowlisted_optimizations()->set_optimization_type(
       optimization_guide::proto::PERFORMANCE_HINTS);
   page_hint->set_page_pattern("whatever/*");
 
@@ -2106,7 +2106,7 @@ TEST_F(OptimizationGuideHintsManagerTest, RemoveFetchedEntriesByHintKeys_URL) {
   hint->set_key_representation(optimization_guide::proto::FULL_URL);
   hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
   optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
-  page_hint->add_whitelisted_optimizations()->set_optimization_type(
+  page_hint->add_allowlisted_optimizations()->set_optimization_type(
       optimization_guide::proto::PERFORMANCE_HINTS);
   page_hint->set_page_pattern("whatever/*");
 
@@ -2148,7 +2148,7 @@ TEST_F(OptimizationGuideHintsManagerTest, PurgeFetchedEntries) {
   hint->set_key_representation(optimization_guide::proto::FULL_URL);
   hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
   optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
-  page_hint->add_whitelisted_optimizations()->set_optimization_type(
+  page_hint->add_allowlisted_optimizations()->set_optimization_type(
       optimization_guide::proto::PERFORMANCE_HINTS);
   page_hint->set_page_pattern("whatever/*");
 

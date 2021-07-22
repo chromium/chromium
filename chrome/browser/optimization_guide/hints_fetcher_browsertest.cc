@@ -477,7 +477,7 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherEnabled) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
-  // Whitelist NoScript for https_url()'s' host.
+  // Allowlist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
 
   // Expect that the browser initialization will record at least one sample
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
   const base::HistogramTester* histogram_tester = GetHistogramTester();
   GURL url = https_url();
 
-  // Whitelist NoScript for https_url()'s' host.
+  // Allowlist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
 
   // Expect that the browser initialization will record at least one sample
@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
-  // Whitelist NoScript for https_url()'s' host.
+  // Allowlist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
 
   // Expect that the browser initialization will record at least one sample
@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
-  // Whitelist NoScript for https_url()'s' host.
+  // Allowlist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
 
   // Expect that the browser initialization will record at least one sample
@@ -611,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
-  // Whitelist NoScript for https_url()'s' host.
+  // Allowlist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
 
   // Expect that the browser initialization will record at least one sample
@@ -684,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherClearFetchedHints) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
   GURL url = https_url();
 
-  // Whitelist NoScript for https_url()'s' host.
+  // Allowlist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
 
   // Expect that the browser initialization will record at least one sample
@@ -739,7 +739,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherOverrideTimer) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kFetchHintsOverrideTimer);
 
-  // Whitelist NoScript for https_url()'s' host.
+  // Allowlist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
 
   // Expect that the browser initialization will record at least one sample
@@ -783,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
   // Set the network to be offline.
   SetNetworkConnectionOffline();
 
-  // Whitelist NoScript for https_url()'s' host.
+  // Allowlist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
 
   // No HintsFetch should occur because the connection is offline.
@@ -794,7 +794,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherFetches) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
-  // Whitelist NoScript for https_url()'s' host.
+  // Allowlist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
 
   // Expect that the browser initialization will record at least one sample
@@ -825,7 +825,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
   {
     base::HistogramTester histogram_tester;
 
-    // Whitelist NoScript for https_url()'s' host.
+    // Allowlist NoScript for https_url()'s' host.
     SetUpComponentUpdateHints(https_url());
 
     RetryForHistogramUntilCountReached(
@@ -1051,7 +1051,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
                        HintsFetcher_NavigationFetch_URLKeyedNotRefetched) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
-  // Whitelist NoScript for https_url()'s' host.
+  // Allowlist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
 
   RetryForHistogramUntilCountReached(
@@ -1157,7 +1157,7 @@ IN_PROC_BROWSER_TEST_F(
     HintsFetcher_NavigationFetch_FetchWithNewlyRegisteredOptType) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
-  // Whitelist NoScript for https_url()'s' host.
+  // Allowlist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
 
   RetryForHistogramUntilCountReached(
@@ -1250,7 +1250,7 @@ IN_PROC_BROWSER_TEST_F(
     HintsFetcher_NavigationFetch_CacheNotClearedOnLaunchedOptTypes) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
-  // Whitelist NoScript for https_url()'s' host.
+  // Allowlist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
 
   RetryForHistogramUntilCountReached(
@@ -1354,7 +1354,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageBrowserTest,
 
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
-  // Whitelist NoScript for https_url()'s' host.
+  // Allowlist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
 
   // Expect that the browser initialization will record at least one sample

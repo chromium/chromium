@@ -125,10 +125,10 @@ bool CanProcessComponentVersion(
   return true;
 }
 
-// Returns whether |optimization_type| is whitelisted by |optimizations|. If
-// it is whitelisted, this will return true and |optimization_metadata| will be
+// Returns whether |optimization_type| is allowlisted by |optimizations|. If
+// it is allowlisted, this will return true and |optimization_metadata| will be
 // populated with the metadata provided by the hint, if applicable. If
-// |page_hint| is not provided or |optimization_type| is not whitelisted, this
+// |page_hint| is not provided or |optimization_type| is not allowlisted, this
 // will return false.
 bool IsOptimizationTypeAllowed(
     const google::protobuf::RepeatedPtrField<
@@ -551,7 +551,7 @@ void OptimizationGuideHintsManager::UpdateComponentHints(
   }
 
   ProcessOptimizationFilters(config->optimization_allowlists(),
-                             config->optimization_blacklists());
+                             config->optimization_blocklists());
 
   // Don't store hints in the store if it's off the record.
   if (update_data && !profile_->IsOffTheRecord()) {
@@ -1017,9 +1017,9 @@ void OptimizationGuideHintsManager::RegisterOptimizationTypes(
       std::unique_ptr<optimization_guide::proto::Configuration> manual_config =
           optimization_guide::switches::ParseComponentConfigFromCommandLine();
       if (manual_config->optimization_allowlists_size() > 0 ||
-          manual_config->optimization_blacklists_size() > 0) {
+          manual_config->optimization_blocklists_size() > 0) {
         ProcessOptimizationFilters(manual_config->optimization_allowlists(),
-                                   manual_config->optimization_blacklists());
+                                   manual_config->optimization_blocklists());
       }
     } else {
       DCHECK(hints_component_info_);
@@ -1135,14 +1135,14 @@ OptimizationGuideHintsManager::CanApplyOptimization(
 
   absl::optional<uint64_t> tuning_version;
 
-  // First, check if the optimization type is whitelisted by a URL-keyed hint.
+  // First, check if the optimization type is allowlisted by a URL-keyed hint.
   const optimization_guide::proto::Hint* url_keyed_hint =
       hint_cache_->GetURLKeyedHint(navigation_url);
   if (url_keyed_hint) {
     DCHECK_EQ(url_keyed_hint->page_hints_size(), 1);
     if (url_keyed_hint->page_hints_size() > 0) {
       bool is_allowed = IsOptimizationTypeAllowed(
-          url_keyed_hint->page_hints(0).whitelisted_optimizations(),
+          url_keyed_hint->page_hints(0).allowlisted_optimizations(),
           optimization_type, optimization_metadata, &tuning_version);
       if (is_allowed || tuning_version) {
         MaybeLogOptimizationAutotuningUKMForNavigation(
@@ -1180,7 +1180,7 @@ OptimizationGuideHintsManager::CanApplyOptimization(
   }
 
   bool is_allowed = IsOptimizationTypeAllowed(
-      loaded_hint->whitelisted_optimizations(), optimization_type,
+      loaded_hint->allowlisted_optimizations(), optimization_type,
       optimization_metadata, &tuning_version);
   if (is_allowed || tuning_version) {
     MaybeLogOptimizationAutotuningUKMForNavigation(
@@ -1199,7 +1199,7 @@ OptimizationGuideHintsManager::CanApplyOptimization(
     return optimization_guide::OptimizationTypeDecision::kNotAllowedByHint;
 
   is_allowed = IsOptimizationTypeAllowed(
-      matched_page_hint->whitelisted_optimizations(), optimization_type,
+      matched_page_hint->allowlisted_optimizations(), optimization_type,
       optimization_metadata, &tuning_version);
   MaybeLogOptimizationAutotuningUKMForNavigation(
       navigation_id, optimization_type, tuning_version);
@@ -1498,7 +1498,7 @@ void OptimizationGuideHintsManager::AddHintForTesting(
   optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
   page_hint->set_page_pattern("*");
   optimization_guide::proto::Optimization* optimization =
-      page_hint->add_whitelisted_optimizations();
+      page_hint->add_allowlisted_optimizations();
   optimization->set_optimization_type(optimization_type);
   if (!metadata) {
     hint_cache_->AddHintForTesting(url, std::move(hint));

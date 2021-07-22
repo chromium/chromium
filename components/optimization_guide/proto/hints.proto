@@ -209,11 +209,11 @@ message PageHint {
   // separated by the ‘*’ wildcard character (with an implicit ‘*’ at the
   // beginning and end).
   optional string page_pattern = 1;
-  // An ordered set of optimizations that should be whitelisted for this page
+  // An ordered set of optimizations that should be allowlisted for this page
   // pattern.
   //
   // The client will use the first optimization that it supports.
-  repeated Optimization whitelisted_optimizations = 3;
+  repeated Optimization allowlisted_optimizations = 3;
 }
 
 message Hint {
@@ -222,11 +222,11 @@ message Hint {
   // The key that applies to this hint. The key_representation field describes
   // the form in which this key takes. Guaranteed to be non-empty.
   optional string key = 2;
-  // An unordered set of optimizations that should be whitelisted for this
+  // An unordered set of optimizations that should be allowlisted for this
   // hint.
   //
   // This field is currently only specified for key_representation of HOST.
-  repeated Optimization whitelisted_optimizations = 3;
+  repeated Optimization allowlisted_optimizations = 3;
   // An ordered set of per-page hints. Only the first PageHint record
   // that matches a committed page URL should be used for that page load.
   repeated PageHint page_hints = 4;
@@ -298,15 +298,15 @@ message Configuration {
   // details for that key that it wants to provide as the client will only
   // look at that one record to decide which optimization to apply.
   repeated Hint hints = 1;
-  // A set of per-optimization blacklists.
+  // A set of per-optimization blocklists.
   //
   // It is guaranteed that an optimization type will not have filters in both
-  // |optimization_blacklists| and |optimization_allowlists|.
-  repeated OptimizationFilter optimization_blacklists = 2;
+  // |optimization_blocklists| and |optimization_allowlists|.
+  repeated OptimizationFilter optimization_blocklists = 2;
   // A set of per-optimization allowlists.
   //
   // It is guaranteed that an optimization type will not have filters in both
-  // |optimization_blacklists| and |optimization_allowlists|.
+  // |optimization_blocklists| and |optimization_allowlists|.
   repeated OptimizationFilter optimization_allowlists = 3;
 }
 

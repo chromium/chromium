@@ -344,7 +344,7 @@ bool HintCache::ProcessAndCacheHints(
     if (hint_key.empty())
       continue;
 
-    if (hint.page_hints().empty() && hint.whitelisted_optimizations().empty())
+    if (hint.page_hints().empty() && hint.allowlisted_optimizations().empty())
       continue;
 
     base::Time expiry_time =

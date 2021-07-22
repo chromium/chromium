@@ -28,13 +28,13 @@ class TestHintsComponentCreator {
   TestHintsComponentCreator();
   ~TestHintsComponentCreator();
 
-  // Creates component data based on |whitelisted_hosts| and
+  // Creates component data based on |allowlisted_hosts| and
   // |page_pattern| with page hints for type |optimization_type| blocking
   // resources specified by |resource_patterns|, and returns the
   // HintsComponentInfo for it.
   optimization_guide::HintsComponentInfo CreateHintsComponentInfoWithPageHints(
       optimization_guide::proto::OptimizationType optimization_type,
-      const std::vector<std::string>& whitelisted_hosts,
+      const std::vector<std::string>& allowlisted_hosts,
       const std::string& page_pattern);
 
  private:

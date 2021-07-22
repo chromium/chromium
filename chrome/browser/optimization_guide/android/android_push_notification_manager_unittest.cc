@@ -539,7 +539,7 @@ TEST_F(AndroidPushNotificationManagerJavaTest, Pushed_URL_SuccessCase) {
   hint->set_key_representation(proto::FULL_URL);
   hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
   proto::PageHint* page_hint = hint->add_page_hints();
-  page_hint->add_whitelisted_optimizations()->set_optimization_type(
+  page_hint->add_allowlisted_optimizations()->set_optimization_type(
       proto::PERFORMANCE_HINTS);
   page_hint->set_page_pattern("whatever/*");
 
@@ -584,7 +584,7 @@ TEST_F(AndroidPushNotificationManagerJavaTest, Pushed_Host_SuccessCase) {
   hint->set_key_representation(proto::FULL_URL);
   hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
   proto::PageHint* page_hint = hint->add_page_hints();
-  page_hint->add_whitelisted_optimizations()->set_optimization_type(
+  page_hint->add_allowlisted_optimizations()->set_optimization_type(
       proto::PERFORMANCE_HINTS);
   page_hint->set_page_pattern("whatever/*");
 
@@ -629,7 +629,7 @@ TEST_F(AndroidPushNotificationManagerJavaTest, PushedJava_URL_SuccessCase) {
   hint->set_key_representation(proto::FULL_URL);
   hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
   proto::PageHint* page_hint = hint->add_page_hints();
-  page_hint->add_whitelisted_optimizations()->set_optimization_type(
+  page_hint->add_allowlisted_optimizations()->set_optimization_type(
       proto::PERFORMANCE_HINTS);
   page_hint->set_page_pattern("whatever/*");
 
@@ -674,7 +674,7 @@ TEST_F(AndroidPushNotificationManagerJavaTest, PushedJava_Host_SuccessCase) {
   hint->set_key_representation(proto::FULL_URL);
   hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
   proto::PageHint* page_hint = hint->add_page_hints();
-  page_hint->add_whitelisted_optimizations()->set_optimization_type(
+  page_hint->add_allowlisted_optimizations()->set_optimization_type(
       proto::PERFORMANCE_HINTS);
   page_hint->set_page_pattern("whatever/*");
 
@@ -720,7 +720,7 @@ TEST_F(AndroidPushNotificationManagerJavaTest,
   hint->set_key_representation(proto::FULL_URL);
   hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
   proto::PageHint* page_hint = hint->add_page_hints();
-  page_hint->add_whitelisted_optimizations()->set_optimization_type(
+  page_hint->add_allowlisted_optimizations()->set_optimization_type(
       proto::PERFORMANCE_HINTS);
   page_hint->set_page_pattern("whatever/*");
 
@@ -765,7 +765,7 @@ TEST_F(AndroidPushNotificationManagerJavaTest,
   hint->set_key_representation(proto::FULL_URL);
   hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
   proto::PageHint* page_hint = hint->add_page_hints();
-  page_hint->add_whitelisted_optimizations()->set_optimization_type(
+  page_hint->add_allowlisted_optimizations()->set_optimization_type(
       proto::PERFORMANCE_HINTS);
   page_hint->set_page_pattern("whatever/*");
 
@@ -808,7 +808,7 @@ TEST_F(AndroidPushNotificationManagerJavaTest, Pushed_HintKeyRequired) {
   hint->set_key_representation(proto::FULL_URL);
   hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
   proto::PageHint* page_hint = hint->add_page_hints();
-  page_hint->add_whitelisted_optimizations()->set_optimization_type(
+  page_hint->add_allowlisted_optimizations()->set_optimization_type(
       proto::PERFORMANCE_HINTS);
   page_hint->set_page_pattern("whatever/*");
 

@@ -1533,7 +1533,7 @@ class SubresourceRedirectWithHintsServerBrowserTest
     hint->set_key(HttpsURLWithPath(url).spec());
     optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
     page_hint->set_page_pattern(HttpsURLWithPath(url).spec());
-    auto* optimization = page_hint->add_whitelisted_optimizations();
+    auto* optimization = page_hint->add_allowlisted_optimizations();
     optimization->set_optimization_type(
         optimization_guide::proto::OptimizationType::COMPRESS_PUBLIC_IMAGES);
     auto* public_image_metadata = optimization->mutable_public_image_metadata();

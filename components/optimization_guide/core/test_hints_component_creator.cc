@@ -58,7 +58,7 @@ TestHintsComponentCreator::CreateHintsComponentInfoWithPageHints(
     page_hint->set_page_pattern(page_pattern);
 
     optimization_guide::proto::Optimization* optimization =
-        page_hint->add_whitelisted_optimizations();
+        page_hint->add_allowlisted_optimizations();
     optimization->set_optimization_type(optimization_type);
   }
 
@@ -96,7 +96,7 @@ TestHintsComponentCreator::CreateHintsComponentInfoWithPageHints(
       reinterpret_cast<const char*>(&blocklist_bloom_filter.bytes()[0]),
       blocklist_bloom_filter.bytes().size());
   optimization_guide::proto::OptimizationFilter* blocklist_optimization_filter =
-      config.add_optimization_blacklists();
+      config.add_optimization_blocklists();
   blocklist_optimization_filter->set_optimization_type(
       optimization_guide::proto::FAST_HOST_HINTS);
   blocklist_optimization_filter->mutable_bloom_filter()->set_num_hash_functions(
