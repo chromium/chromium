@@ -262,16 +262,12 @@ void DockKeyboard() {
   [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
 
-  // TODO(crbug.com/1220724): iOS 15 phones seem to act more like iPads now,
-  // dismissing the keyboard when tapping on the option above. Confirm that this
-  // is expected and either fix, or remove this comment.
+  // On iPad and iOS 15 the picker is a table view in a popover, we need to
+  // dismiss that first.
   BOOL isIOS15 = NO;
   if (@available(iOS 15, *)) {
     isIOS15 = YES;
   }
-
-  // On iPad the picker is a table view in a popover, we need to dismiss that
-  // first.
   if ([ChromeEarlGrey isIPadIdiom] || isIOS15) {
     // Tap in the web view so the popover dismisses.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
