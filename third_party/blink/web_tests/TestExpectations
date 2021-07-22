@@ -6739,10 +6739,6 @@ crbug.com/1208213 external/wpt/css/css-transforms/add-child-in-empty-layer.html 
 # Sheriff 2021-05-12
 crbug.com/1095540 [ Debug Linux ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/resize-corner-tracking-touch.html [ Failure Pass ]
 
-# Sheriff 2021-05-13
-crbug.com/1208774 [ Mac ] external/wpt/webcodecs/videoDecoder-codec-specific.any.html?h264_annexb [ Failure Pass ]
-crbug.com/1208774 [ Mac ] external/wpt/webcodecs/videoDecoder-codec-specific.any.worker.html?h264_annexb [ Failure Pass ]
-
 # For SkiaRenderer on MacOS
 crbug.com/1208173 [ Mac ] animations/animation-paused-hardware.html [ Failure ]
 crbug.com/1208173 [ Mac ] animations/missing-values-first-keyframe.html [ Failure ]
