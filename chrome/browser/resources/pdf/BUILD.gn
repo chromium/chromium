@@ -320,7 +320,6 @@ js_library("pdf_viewer") {
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:promise_resolver.m",
     "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
   ]
   externs_list = [ "$externs_path/resources_private.js" ]
 }

@@ -25,11 +25,11 @@
     box-shadow: 0 0 0 6px var(--focus-border-color);
   }
 
-  :host-context(.focus-outline-visible):host(:focus) #thumbnail {
+  :host(:focus-visible) #thumbnail {
     box-shadow: 0 0 0 2px var(--focus-border-color);
   }
 
-  :host-context(.focus-outline-visible):host([is-active]:focus) #thumbnail {
+  :host([is-active]:focus-visible) #thumbnail {
     box-shadow: 0 0 0 8px var(--focus-border-color);
   }
 

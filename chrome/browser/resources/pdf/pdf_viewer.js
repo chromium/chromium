@@ -13,7 +13,6 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {hasKeyModifiers, listenOnce} from 'chrome://resources/js/util.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -301,8 +300,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     /** @private {?InkController} */
     this.inkController_ = null;
     // </if>
-
-    FocusOutlineManager.forDocument(document);
   }
 
   /** @override */
