@@ -246,12 +246,10 @@ class TabHoverCardBubbleView::ThumbnailView
  public:
   // Specifies which (if any) of the corners of the preview image will be
   // rounded. See SetRoundedCorners() below for more information.
-  enum class RoundedCorners { kNone, kTopCorners, kBottomCorners };
+  enum RoundedCorners { kNone, kTopCorners, kBottomCorners };
 
-  explicit ThumbnailView(TabHoverCardBubbleView* bubble_view)
-      : AnimationDelegateViews(this),
-        bubble_view_(bubble_view),
-        image_transition_animation_(this) {
+  ThumbnailView()
+      : AnimationDelegateViews(this), image_transition_animation_(this) {
     constexpr base::TimeDelta kImageTransitionDuration =
         kHoverCardSlideDuration;
     image_transition_animation_.SetDuration(kImageTransitionDuration);
@@ -263,7 +261,26 @@ class TabHoverCardBubbleView::ThumbnailView
     image_fading_out_->SetPaintToLayer();
     image_fading_out_->layer()->SetOpacity(0.0f);
 
+    // Because all preview images should be the same size, we can just set the
+    // preferred size of this view and then use a FillLayout to force the to
+    // ImageViews to the correct size.
+    SetPreferredSize(TabStyle::GetPreviewImageSize());
     SetLayoutManager(std::make_unique<views::FillLayout>());
+  }
+
+  // Set the preview image to be visible. Included to match with Hide().
+  void Show() { SetVisible(true); }
+
+  // Set the preview image to not be visible. Stops any current fade animation
+  // and clears out all of the images to prevent flicker when the preview image
+  // transitions from visible to invisible and vice-versa.
+  void Hide() {
+    SetVisible(false);
+    // This will result in the fading image being discarded via the canceled
+    // event.
+    image_transition_animation_.End();
+    target_tab_image_->SetImage(gfx::ImageSkia());
+    target_tab_image_->SetBackground(nullptr);
   }
 
   // Sets the appropriate rounded corners for the preview image, for platforms
@@ -291,14 +308,14 @@ class TabHoverCardBubbleView::ThumbnailView
   // Sets the new preview image. The old image will be faded out.
   void SetTargetTabImage(gfx::ImageSkia preview_image) {
     StartFadeOut();
-    SetImage(target_tab_image_, preview_image, ImageType::kThumbnail);
-    image_type_ = ImageType::kThumbnail;
+    SetImage(target_tab_image_, preview_image, /* is_placeholder = */ false);
+    showing_placeholder_image_ = false;
   }
 
   // Clears the preview image and replaces it with a placeholder image. The old
   // image will be faded out.
   void SetPlaceholderImage() {
-    if (image_type_ == ImageType::kPlaceholder)
+    if (showing_placeholder_image_)
       return;
 
     // Theme provider may be null if there is no associated widget. In that case
@@ -322,74 +339,44 @@ class TabHoverCardBubbleView::ThumbnailView
     constexpr gfx::Size kNoPreviewImageSize{64, 64};
     const gfx::ImageSkia no_preview_image = gfx::CreateVectorIcon(
         kGlobeIcon, kNoPreviewImageSize.width(), foreground_color);
-    SetImage(target_tab_image_, no_preview_image, ImageType::kPlaceholder);
-    image_type_ = ImageType::kPlaceholder;
-  }
-
-  void ClearImage() {
-    if (image_type_ == ImageType::kNone)
-      return;
-
-    StartFadeOut();
-    SetImage(target_tab_image_, gfx::ImageSkia(), ImageType::kNone);
-    image_type_ = ImageType::kNone;
-  }
-
-  void SetWaitingForImage() {
-    if (image_type_ == ImageType::kNone) {
-      image_type_ = ImageType::kNoneButWaiting;
-      InvalidateLayout();
-    }
+    SetImage(target_tab_image_, no_preview_image, /* is_placeholder = */ true);
+    showing_placeholder_image_ = true;
   }
 
  private:
-  enum class ImageType { kNone, kNoneButWaiting, kPlaceholder, kThumbnail };
-
   // Creates an image view with the appropriate default properties.
   static std::unique_ptr<views::ImageView> CreateImageView() {
     auto image_view = std::make_unique<views::ImageView>();
-    image_view->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
+    using Alignment = views::ImageView::Alignment;
+    image_view->SetHorizontalAlignment(Alignment::kCenter);
+    image_view->SetVerticalAlignment(Alignment::kCenter);
     return image_view;
   }
 
   // Sets `image` on `image_view_`, configuring the image appropriately based
   // on whether it's a placeholder or not.
-  void SetImage(views::ImageView* image_view,
-                gfx::ImageSkia image,
-                ImageType image_type) {
+  static void SetImage(views::ImageView* image_view,
+                       gfx::ImageSkia image,
+                       bool is_placeholder) {
     image_view->SetImage(image);
-    switch (image_type) {
-      case ImageType::kNone:
-      case ImageType::kNoneButWaiting:
+    if (is_placeholder) {
+      image_view->SetImage(image);
+      image_view->SetImageSize(image.size());
+
+      // Also possibly regenerate the background if it has changed.
+      const SkColor background_color = image_view->GetThemeProvider()->GetColor(
+          ThemeProperties::COLOR_HOVER_CARD_NO_PREVIEW_BACKGROUND);
+      if (!image_view->background() ||
+          image_view->background()->get_color() != background_color) {
         image_view->SetBackground(
-            views::CreateSolidBackground(bubble_view_->color()));
-        break;
-      case ImageType::kPlaceholder:
-        image_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
-        image_view->SetImageSize(image.size());
-        image_view->SetBackground(views::CreateSolidBackground(
-            image_view->GetThemeProvider()->GetColor(
-                ThemeProperties::COLOR_HOVER_CARD_NO_PREVIEW_BACKGROUND)));
-        break;
-      case ImageType::kThumbnail:
-        image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-        image_view->SetImageSize(
-            GetPreviewImageSize(image.size(), TabStyle::GetPreviewImageSize()));
-        image_view->SetBackground(nullptr);
-        break;
+            views::CreateSolidBackground(background_color));
+      }
+    } else {
+      const gfx::Size preview_size = TabStyle::GetPreviewImageSize();
+      image_view->SetImage(image);
+      image_view->SetImageSize(GetPreviewImageSize(image.size(), preview_size));
+      image_view->SetBackground(nullptr);
     }
-  }
-
-  // views::View:
-  gfx::Size GetMinimumSize() const override { return gfx::Size(); }
-
-  gfx::Size CalculatePreferredSize() const override {
-    return image_type_ == ImageType::kNone ? gfx::Size()
-                                           : TabStyle::GetPreviewImageSize();
-  }
-
-  gfx::Size GetMaximumSize() const override {
-    return TabStyle::GetPreviewImageSize();
   }
 
   // views::AnimationDelegateViews:
@@ -399,7 +386,7 @@ class TabHoverCardBubbleView::ThumbnailView
 
   void AnimationEnded(const gfx::Animation* animation) override {
     image_fading_out_->layer()->SetOpacity(0.0f);
-    SetImage(image_fading_out_, gfx::ImageSkia(), ImageType::kNone);
+    image_fading_out_->SetImage(gfx::ImageSkia());
   }
 
   void AnimationCanceled(const gfx::Animation* animation) override {
@@ -417,6 +404,8 @@ class TabHoverCardBubbleView::ThumbnailView
       return;
 
     gfx::ImageSkia old_image = target_tab_image_->GetImage();
+    if (old_image.isNull())
+      return;
 
     if (image_transition_animation_.is_animating()) {
       // If we're already animating and we've barely faded out the previous old
@@ -436,17 +425,15 @@ class TabHoverCardBubbleView::ThumbnailView
       // (while we swap the new image in behind) we have to rewind the
       // animation.
       image_transition_animation_.SetCurrentValue(1.0 - current_value);
-      SetImage(image_fading_out_, old_image, image_type_);
+      SetImage(image_fading_out_, old_image, showing_placeholder_image_);
       AnimationProgressed(&image_transition_animation_);
 
     } else {
-      SetImage(image_fading_out_, old_image, image_type_);
+      SetImage(image_fading_out_, old_image, showing_placeholder_image_);
       image_fading_out_->layer()->SetOpacity(1.0f);
       image_transition_animation_.Start();
     }
   }
-
-  TabHoverCardBubbleView* const bubble_view_;
 
   // Displays the image that we are trying to display for the target/current
   // tab. Placed under `image_fading_out_` so that it is revealed as the
@@ -462,10 +449,10 @@ class TabHoverCardBubbleView::ThumbnailView
   // times (it's not necessarily a single smooth animation).
   gfx::LinearAnimation image_transition_animation_;
 
-  // Records what type of image `target_tab_image_` is showing. Used to
-  // configure `image_fading_out_` when the target image becomes the previous
-  // image and fades out.
-  ImageType image_type_ = ImageType::kNone;
+  // Records whether `target_tab_image_` is showing a placeholder image. Used
+  // to configure `image_fading_out_` when the target image becomes the
+  // previous image and fades out.
+  bool showing_placeholder_image_ = false;
 };
 
 // static
@@ -504,13 +491,12 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
 
   if (TabHoverCardController::AreHoverCardImagesEnabled()) {
     if (UseAlternateHoverCardFormat()) {
-      thumbnail_view_ =
-          AddChildViewAt(std::make_unique<ThumbnailView>(this), 0);
+      thumbnail_view_ = AddChildViewAt(std::make_unique<ThumbnailView>(), 0);
       thumbnail_view_->SetRoundedCorners(
           ThumbnailView::RoundedCorners::kTopCorners,
           corner_radius_.value_or(0));
     } else {
-      thumbnail_view_ = AddChildView(std::make_unique<ThumbnailView>(this));
+      thumbnail_view_ = AddChildView(std::make_unique<ThumbnailView>());
       thumbnail_view_->SetRoundedCorners(
           ThumbnailView::RoundedCorners::kBottomCorners,
           corner_radius_.value_or(0));
@@ -544,13 +530,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   title_label_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kScaleToMaximum)
-          .WithOrder(2));
-  thumbnail_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kScaleToMaximum)
-          .WithOrder(1));
+                               views::MaximumFlexSizeRule::kScaleToMaximum));
 
   // Set up widget.
 
@@ -594,9 +574,9 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   // Preview image is never visible for the active tab.
   if (thumbnail_view_) {
     if (tab->IsActive())
-      thumbnail_view_->ClearImage();
+      thumbnail_view_->Hide();
     else
-      thumbnail_view_->SetWaitingForImage();
+      thumbnail_view_->Show();
   }
 
   std::u16string title;

@@ -1546,7 +1546,6 @@ const FeatureEntry::FeatureParam kTabHoverCardImagesAlternateFormat[] = {
     {features::kTabHoverCardImagesNotReadyDelayParameterName, "500"},
     {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
     {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
-    {features::kTabHoverCardImagesCrossfadePreviewAtParameterName, "0.25"},
     {features::kTabHoverCardAlternateFormat, "1"}};
 
 const FeatureEntry::FeatureVariation kTabHoverCardImagesVariations[] = {
