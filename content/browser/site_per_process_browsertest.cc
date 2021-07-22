@@ -506,7 +506,7 @@ bool CheckIntersectsViewport(bool expected, FrameTreeNode* node) {
 // testing viewport intersection. Note this does not recurse into child frames
 // and re-layout in the same way since children might be in a different origin.
 void LayoutNonRecursiveForTestingViewportIntersection(
-    WebContents* web_contents) {
+    const ToRenderFrameHost& execution_target) {
   static const char kRafScript[] = R"(
       let width = window.innerWidth;
       let height = window.innerHeight * 0.75;
@@ -516,8 +516,8 @@ void LayoutNonRecursiveForTestingViewportIntersection(
         child.height = height;
       }
   )";
-  ASSERT_TRUE(
-      EvalJsAfterLifecycleUpdate(web_contents, kRafScript, "").error.empty());
+  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(execution_target, kRafScript, "")
+                  .error.empty());
 }
 
 void GenerateTapDownGesture(RenderWidgetHost* rwh) {
@@ -15066,6 +15066,97 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   EXPECT_NE(js_process, web_contents()->GetMainFrame()->GetProcess());
+}
+
+// Tests that when a non-root frame in an iframe, performs a RAF to emulate a
+// scroll, that metrics are reported.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollByRAF) {
+  base::HistogramTester histogram_tester;
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(b))"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  ASSERT_EQ(1U, root->child_count());
+
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "   +--Site B ------- proxies for A\n"
+      "        +--Site B -- proxies for A\n"
+      "Where A = http://a.com/\n"
+      "      B = http://b.com/",
+      DepictFrameTree(root));
+
+  // Layout all three frames, so that the animation has a region to mark dirty.
+  LayoutNonRecursiveForTestingViewportIntersection(root->current_frame_host());
+  LayoutNonRecursiveForTestingViewportIntersection(
+      root->child_at(0)->current_frame_host());
+  LayoutNonRecursiveForTestingViewportIntersection(
+      root->child_at(0)->child_at(0)->current_frame_host());
+
+  // Add a div to the nested iframe, so that it can be animated.
+  RenderFrameSubmissionObserver frame_observer(root->child_at(0)->child_at(0));
+  std::string addContent(R"(
+      var d = document.createElement('div');
+      d.id = 'animationtarget';
+      d.innerHTML = 'Hey Listen!';
+      document.body.appendChild(d);
+    )");
+  ASSERT_TRUE(
+      EvalJsAfterLifecycleUpdate(
+          root->child_at(0)->child_at(0)->current_frame_host(), "", addContent)
+          .error.empty());
+  frame_observer.WaitForAnyFrameSubmission();
+
+  // Fetch the initial metrics, as adding a div can incidentally trigger RAF
+  // metrics.
+  FetchHistogramsFromChildProcesses();
+  auto initial_samples = histogram_tester.GetAllSamples(
+      "Graphics.Smoothness.PercentDroppedFrames.MainThread.RAF");
+  ASSERT_EQ(initial_samples.size(), 0u);
+
+  const int pre_scroll_frame_count = frame_observer.render_frame_count();
+
+  // Run a RAF that takes more than one frame, as metrics due to not track
+  // frames where WillBeginMainFrame occurs before it is triggered. Subsequent
+  // RAFs in the sequence will be measured.
+  std::string scrollByRAF(R"(
+     var offset = 0;
+      function run() {
+        let child = document.getElementById("animationtarget");
+        var rect = child.getBoundingClientRect();
+        child.style = 'transform: translateY(' + parseInt(offset)+'px);';
+        offset += 1;
+        requestAnimationFrame(run);
+      }
+      run();
+     )");
+  ASSERT_TRUE(
+      EvalJsAfterLifecycleUpdate(
+          root->child_at(0)->child_at(0)->current_frame_host(), scrollByRAF, "")
+          .error.empty());
+
+  // There will have been one frame before the RAF sequence. The minimum for
+  // reporting if 100 frames, however we need to wait at least one extra frame.
+  // On Android the animation begins during the initial call to
+  // EvalJsAfterLifecycleUpdate. However on Linux the first translate is not
+  // applied until the subsequent frame. So we wait for the minimum, then verify
+  // afterwards.
+  const int kExpectedNumberFrames = 101 + pre_scroll_frame_count;
+  while (frame_observer.render_frame_count() < kExpectedNumberFrames)
+    frame_observer.WaitForAnyFrameSubmission();
+
+  // We now wait for FrameSequenceTracker to time out in order for it to report.
+  // This will occur once the minimum 100 frames have been produced, and 5s have
+  // passed. If the test times out then the bug is back.
+  while (histogram_tester
+             .GetAllSamples(
+                 "Graphics.Smoothness.PercentDroppedFrames.MainThread.RAF")
+             .empty()) {
+    frame_observer.WaitForAnyFrameSubmission();
+    FetchHistogramsFromChildProcesses();
+  }
 }
 
 // Check that a urn:uuid subframe instantiated from a same-origin WebBundle

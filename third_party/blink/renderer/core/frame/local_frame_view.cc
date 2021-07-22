@@ -167,6 +167,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/cursor.h"
@@ -533,7 +534,7 @@ cc::AnimationHost* LocalFrameView::GetCompositorAnimationHost() const {
     return GetScrollingContext()->GetCompositorAnimationHost();
 
   if (!GetFrame().LocalFrameRoot().IsMainFrame())
-    return nullptr;
+    return frame_->GetWidgetForLocalRoot()->AnimationHost();
 
   // TODO(kenrb): Compositor animation host and timeline for the main frame
   // still live on ScrollingCoordinator. https://crbug.com/680606.
