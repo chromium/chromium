@@ -47,9 +47,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PosixSystemProducer
   // Lets tests ignore the SDK check (Perfetto only runs on post Android Pie
   // devices by default, so for trybots on older OSs we need to ignore the check
   // for our test system service).
-  //
-  // TODO(nuskos): We need to make this possible for telemetry as well, since
-  // they might have side loaded the app.
   void SetDisallowPreAndroidPieForTesting(bool disallow);
   // |socket| must remain alive as long as PosixSystemProducer is around
   // trying to connect to it.

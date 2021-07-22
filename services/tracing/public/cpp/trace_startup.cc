@@ -93,11 +93,8 @@ void InitTracingPostThreadPoolStartAndFeatureList() {
   if (g_tracing_initialized_after_threadpool_and_featurelist)
     return;
   g_tracing_initialized_after_threadpool_and_featurelist = true;
-  // TODO(nuskos): We should switch these to DCHECK once we're reasonably
-  // confident we've ensured this is called properly in all processes. Probably
-  // after M78 release has been cut (since we'll verify in the rollout of M78).
-  CHECK(base::ThreadPoolInstance::Get());
-  CHECK(base::FeatureList::GetInstance());
+  DCHECK(base::ThreadPoolInstance::Get());
+  DCHECK(base::FeatureList::GetInstance());
 
   PerfettoTracedProcess::Get()->OnThreadPoolAvailable();
 
