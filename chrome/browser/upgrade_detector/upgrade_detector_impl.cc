@@ -529,17 +529,26 @@ void UpgradeDetectorImpl::Shutdown() {
   UpgradeDetector::Shutdown();
 }
 
-base::TimeDelta UpgradeDetectorImpl::GetHighAnnoyanceLevelDelta() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return stages_[kStagesIndexHigh] - stages_[kStagesIndexElevated];
-}
-
-base::Time UpgradeDetectorImpl::GetHighAnnoyanceDeadline() {
+base::Time UpgradeDetectorImpl::GetAnnoyanceLevelDeadline(
+    UpgradeNotificationAnnoyanceLevel level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Time detected_time = upgrade_detected_time();
   if (detected_time.is_null())
     return detected_time;
-  return detected_time + stages_[kStagesIndexHigh];
+  switch (level) {
+    case UpgradeDetector::UPGRADE_ANNOYANCE_NONE:
+      return detected_time;
+    case UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW:
+    case UpgradeDetector::UPGRADE_ANNOYANCE_LOW:
+    case UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED:
+    case UpgradeDetector::UPGRADE_ANNOYANCE_GRACE:
+    case UpgradeDetector::UPGRADE_ANNOYANCE_HIGH:
+      return detected_time + GetThresholdForLevel(level);
+    case UpgradeDetector::UPGRADE_ANNOYANCE_CRITICAL:
+      return upgrade_notification_stage() == UPGRADE_ANNOYANCE_CRITICAL
+                 ? detected_time
+                 : base::Time();
+  }
 }
 
 void UpgradeDetectorImpl::OnUpdate(const BuildState* build_state) {

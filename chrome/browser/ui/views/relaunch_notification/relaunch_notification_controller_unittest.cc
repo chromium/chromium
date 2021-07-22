@@ -125,13 +125,27 @@ class FakeUpgradeDetector : public UpgradeDetector {
     set_upgrade_detected_time(this->clock()->Now());
   }
 
-  // UpgradeDetector:
-  base::TimeDelta GetHighAnnoyanceLevelDelta() override {
-    return high_threshold_ / 3;
+  base::TimeDelta GetHighAnnoyanceLevelDelta() {
+    return GetAnnoyanceLevelDeadline(UpgradeDetector::UPGRADE_ANNOYANCE_HIGH) -
+           GetAnnoyanceLevelDeadline(
+               UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED);
   }
 
-  base::Time GetHighAnnoyanceDeadline() override {
-    return upgrade_detected_time() + high_threshold_;
+  // UpgradeDetector:
+  base::Time GetAnnoyanceLevelDeadline(
+      FakeUpgradeDetector::UpgradeNotificationAnnoyanceLevel level) override {
+    switch (level) {
+      case UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED:
+        return upgrade_detected_time() + (2 / 3 * high_threshold_);
+      case UpgradeDetector::UPGRADE_ANNOYANCE_HIGH:
+        return upgrade_detected_time() + high_threshold_;
+      case UpgradeDetector::UPGRADE_ANNOYANCE_GRACE:
+      case UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW:
+      case UpgradeDetector::UPGRADE_ANNOYANCE_LOW:
+      case UpgradeDetector::UPGRADE_ANNOYANCE_NONE:
+      case UpgradeDetector::UPGRADE_ANNOYANCE_CRITICAL:
+        return base::Time();
+    }
   }
 
   // Sets the annoyance level to |level| and broadcasts the change to all
@@ -301,7 +315,8 @@ TEST_F(RelaunchNotificationControllerTest, RecommendedByPolicy) {
 
   // First move time to the high annoyance deadline.
   base::Time high_annoyance_deadline =
-      upgrade_detector()->GetHighAnnoyanceDeadline();
+      upgrade_detector()->GetAnnoyanceLevelDeadline(
+          UpgradeDetector::UPGRADE_ANNOYANCE_HIGH);
   FastForwardBy(high_annoyance_deadline - GetMockClock()->Now());
 
   EXPECT_CALL(mock_controller_delegate, NotifyRelaunchRecommended());
@@ -311,10 +326,10 @@ TEST_F(RelaunchNotificationControllerTest, RecommendedByPolicy) {
 
   // The timer should be running to reshow at the detector's delta.
   EXPECT_CALL(mock_controller_delegate, NotifyRelaunchRecommended());
-  FastForwardBy(upgrade_detector()->GetHighAnnoyanceLevelDelta());
+  FastForwardBy(fake_upgrade_detector().GetHighAnnoyanceLevelDelta());
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
   EXPECT_CALL(mock_controller_delegate, NotifyRelaunchRecommended());
-  FastForwardBy(upgrade_detector()->GetHighAnnoyanceLevelDelta());
+  FastForwardBy(fake_upgrade_detector().GetHighAnnoyanceLevelDelta());
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 
   // Drop back to elevated to stop the reshows and ensure there are none.
@@ -322,7 +337,7 @@ TEST_F(RelaunchNotificationControllerTest, RecommendedByPolicy) {
   fake_upgrade_detector().BroadcastLevelChange(
       UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED);
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
-  FastForwardBy(upgrade_detector()->GetHighAnnoyanceLevelDelta());
+  FastForwardBy(fake_upgrade_detector().GetHighAnnoyanceLevelDelta());
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 
   // And closed if the level drops back to very low.
@@ -599,7 +614,8 @@ TEST_F(RelaunchNotificationControllerTest, PeriodChangeRecommended) {
 
   // First move time to the high annoyance deadline.
   base::Time high_annoyance_deadline =
-      upgrade_detector()->GetHighAnnoyanceDeadline();
+      upgrade_detector()->GetAnnoyanceLevelDeadline(
+          UpgradeDetector::UPGRADE_ANNOYANCE_HIGH);
   FastForwardBy(high_annoyance_deadline - GetMockClock()->Now());
 
   // Get up to high annoyance so that the reshow timer is running.
@@ -609,7 +625,7 @@ TEST_F(RelaunchNotificationControllerTest, PeriodChangeRecommended) {
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 
   // Advance time partway to the reshow, but not all the way there.
-  FastForwardBy(upgrade_detector()->GetHighAnnoyanceLevelDelta() * 0.9);
+  FastForwardBy(fake_upgrade_detector().GetHighAnnoyanceLevelDelta() * 0.9);
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 
   // Now shorten the period dramatically and expect an immediate reshow.
@@ -621,7 +637,7 @@ TEST_F(RelaunchNotificationControllerTest, PeriodChangeRecommended) {
 
   // And expect another reshow at the new delta.
   base::TimeDelta short_reshow_delta =
-      upgrade_detector()->GetHighAnnoyanceLevelDelta();
+      fake_upgrade_detector().GetHighAnnoyanceLevelDelta();
   EXPECT_CALL(mock_controller_delegate, NotifyRelaunchRecommended());
   FastForwardBy(short_reshow_delta);
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
@@ -637,7 +653,7 @@ TEST_F(RelaunchNotificationControllerTest, PeriodChangeRecommended) {
 
   // Move forward the rest of the way to the new delta and expect a reshow.
   base::TimeDelta long_reshow_delta =
-      upgrade_detector()->GetHighAnnoyanceLevelDelta();
+      fake_upgrade_detector().GetHighAnnoyanceLevelDelta();
   EXPECT_CALL(mock_controller_delegate, NotifyRelaunchRecommended());
   FastForwardBy(long_reshow_delta - short_reshow_delta);
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
@@ -654,7 +670,7 @@ TEST_F(RelaunchNotificationControllerTest, PeriodChangeRecommended) {
   // And ensure that moving forward the rest of the way to the new delta causes
   // a reshow.
   EXPECT_CALL(mock_controller_delegate, NotifyRelaunchRecommended());
-  FastForwardBy(upgrade_detector()->GetHighAnnoyanceLevelDelta() -
+  FastForwardBy(fake_upgrade_detector().GetHighAnnoyanceLevelDelta() -
                 long_reshow_delta * 0.1);
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 }
@@ -676,7 +692,8 @@ TEST_F(RelaunchNotificationControllerTest, PeriodChangeRequired) {
 
   // Move forward partway to the current deadline. Nothing should happen.
   base::Time high_annoyance_deadline =
-      upgrade_detector()->GetHighAnnoyanceDeadline();
+      upgrade_detector()->GetAnnoyanceLevelDeadline(
+          UpgradeDetector::UPGRADE_ANNOYANCE_HIGH);
   FastForwardBy((high_annoyance_deadline - GetMockClock()->Now()) / 2);
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 
@@ -703,7 +720,8 @@ TEST_F(RelaunchNotificationControllerTest, PeriodChangeRequired) {
 
   // Jumping to the new deadline relaunches the browser.
   EXPECT_CALL(mock_controller_delegate, OnRelaunchDeadlineExpired());
-  FastForwardBy(upgrade_detector()->GetHighAnnoyanceDeadline() -
+  FastForwardBy(upgrade_detector()->GetAnnoyanceLevelDeadline(
+                    UpgradeDetector::UPGRADE_ANNOYANCE_HIGH) -
                 GetMockClock()->Now());
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 
@@ -735,7 +753,8 @@ TEST_F(RelaunchNotificationControllerTest, DeadlineShortenGracePeriod) {
 
   // Move forward partway to the current deadline. Nothing should happen.
   base::Time high_annoyance_deadline =
-      upgrade_detector()->GetHighAnnoyanceDeadline();
+      upgrade_detector()->GetAnnoyanceLevelDeadline(
+          UpgradeDetector::UPGRADE_ANNOYANCE_HIGH);
   FastForwardBy((high_annoyance_deadline - GetMockClock()->Now()) / 2);
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 
@@ -766,7 +785,8 @@ TEST_F(RelaunchNotificationControllerTest, DeviceSleepBeforeNotification) {
 
   // Assume device goes to sleep beyond the deadline.
   base::Time high_annoyance_deadline =
-      upgrade_detector()->GetHighAnnoyanceDeadline();
+      upgrade_detector()->GetAnnoyanceLevelDeadline(
+          UpgradeDetector::UPGRADE_ANNOYANCE_HIGH);
   FastForwardBy((high_annoyance_deadline - GetMockClock()->Now()) * 1.2);
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 
@@ -882,7 +902,8 @@ TEST_F(RelaunchNotificationControllerTest, NotifyAllWithShortestPeriod) {
   EXPECT_CALL(mock_controller_delegate, OnRelaunchDeadlineExpired());
   FastForwardBy(base::TimeDelta::FromHours(1));
   ASSERT_EQ(GetMockClock()->Now(),
-            upgrade_detector()->GetHighAnnoyanceDeadline());
+            upgrade_detector()->GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH));
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 }
 

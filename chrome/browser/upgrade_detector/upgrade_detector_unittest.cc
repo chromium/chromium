@@ -32,10 +32,10 @@ class TestUpgradeDetector : public UpgradeDetector {
   ~TestUpgradeDetector() override = default;
 
   // Overriding pure virtual functions for testing.
-  base::TimeDelta GetHighAnnoyanceLevelDelta() override {
-    return base::TimeDelta();
+  base::Time GetAnnoyanceLevelDeadline(
+      UpgradeNotificationAnnoyanceLevel level) override {
+    return base::Time();
   }
-  base::Time GetHighAnnoyanceDeadline() override { return base::Time(); }
 
   // Exposed for testing.
   using UpgradeDetector::AdjustDeadline;

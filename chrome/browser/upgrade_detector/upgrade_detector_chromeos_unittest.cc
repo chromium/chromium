@@ -41,6 +41,12 @@ class TestUpgradeDetectorChromeos : public UpgradeDetectorChromeos {
   using UpgradeDetector::GetDefaultRelaunchWindow;
   using UpgradeDetectorChromeos::UPGRADE_AVAILABLE_REGULAR;
 
+  base::TimeDelta GetHighAnnoyanceLevelDelta() {
+    return GetAnnoyanceLevelDeadline(UpgradeDetector::UPGRADE_ANNOYANCE_HIGH) -
+           GetAnnoyanceLevelDeadline(
+               UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED);
+  }
+
   DISALLOW_COPY_AND_ASSIGN(TestUpgradeDetectorChromeos);
 };
 
@@ -224,7 +230,8 @@ TEST_F(UpgradeDetectorChromeosTest, TestHighAnnoyanceDeadline) {
   EXPECT_CALL(mock_observer, OnUpgradeRecommended()).Times(testing::AtLeast(1));
   NotifyUpdateReadyToInstall("1.0.0.0");
 
-  const auto deadline = upgrade_detector.GetHighAnnoyanceDeadline();
+  const auto deadline = upgrade_detector.GetAnnoyanceLevelDeadline(
+      UpgradeDetector::UPGRADE_ANNOYANCE_HIGH);
 
   // Another new version of ChromeOS is ready to install after high
   // annoyance reached.
@@ -236,7 +243,9 @@ TEST_F(UpgradeDetectorChromeosTest, TestHighAnnoyanceDeadline) {
   NotifyUpdateReadyToInstall("1.0.0.0");
 
   // Deadline wasn't changed because of new upgrade detected.
-  EXPECT_EQ(upgrade_detector.GetHighAnnoyanceDeadline(), deadline);
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            deadline);
   upgrade_detector.Shutdown();
   RunUntilIdle();
 }
@@ -567,7 +576,9 @@ TEST_F(UpgradeDetectorChromeosTest, TestOverrideThresholds) {
   base::Time deadline = upgrade_detector.upgrade_detected_time() + delta;
   EXPECT_CALL(mock_observer, OnUpgradeRecommended());
   upgrade_detector.OverrideHighAnnoyanceDeadline(deadline);
-  EXPECT_EQ(upgrade_detector.GetHighAnnoyanceDeadline(), deadline);
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            deadline);
   EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
             UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED);
   ::testing::Mock::VerifyAndClear(&mock_observer);
@@ -682,4 +693,91 @@ TEST_F(UpgradeDetectorChromeosTest, TestInvalidateUpdate) {
 
   upgrade_detector.Shutdown();
   RunUntilIdle();
+}
+
+// Tests correct deadlines are set when an upgrade is detected.
+TEST_F(UpgradeDetectorChromeosTest, AnnoyanceLevelDeadlines) {
+  TestUpgradeDetectorChromeos upgrade_detector(GetMockClock(),
+                                               GetMockTickClock());
+  ::testing::StrictMock<MockUpgradeObserver> mock_observer(&upgrade_detector);
+  upgrade_detector.Init();
+
+  // Deadline not set before upgrade detected.
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            base::Time());
+
+  // Pretend that an upgrade was just detected now.
+  NotifyUpdateReadyToInstall("1.0.0.0");
+  base::Time detect_time = upgrade_detector.upgrade_detected_time();
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            detect_time + base::TimeDelta::FromDays(7));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_GRACE),
+            detect_time + base::TimeDelta::FromDays(7) -
+                base::TimeDelta::FromHours(1));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED),
+            detect_time + base::TimeDelta::FromDays(4));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_LOW),
+            detect_time);
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW),
+            detect_time);
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_NONE),
+            detect_time);
+
+  // Drop the period and notice change in the deadlines.
+  EXPECT_CALL(mock_observer, OnUpgradeRecommended());
+  SetNotificationPeriodPref(base::TimeDelta::FromDays(1));
+  RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            detect_time + base::TimeDelta::FromHours(24));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_GRACE),
+            detect_time + base::TimeDelta::FromHours(23));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED),
+            detect_time);
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_LOW),
+            detect_time);
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW),
+            detect_time);
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_NONE),
+            detect_time);
+
+  // Set heads up period and notice change in the deadlines.
+  EXPECT_CALL(mock_observer, OnUpgradeRecommended());
+  SetHeadsUpPeriodPref(base::TimeDelta::FromHours(10));
+  RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            detect_time + base::TimeDelta::FromHours(24));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_GRACE),
+            detect_time + base::TimeDelta::FromHours(23));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED),
+            detect_time + base::TimeDelta::FromHours(14));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_LOW),
+            detect_time);
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW),
+            detect_time);
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_NONE),
+            detect_time);
+
+  upgrade_detector.Shutdown();
 }

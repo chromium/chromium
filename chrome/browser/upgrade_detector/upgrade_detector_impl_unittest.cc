@@ -691,3 +691,65 @@ TEST_F(UpgradeDetectorImplTest, TestDeadlineAdjustmentCustomPeriod) {
 
   upgrade_detector.Shutdown();
 }
+
+// Tests correct deadlines are set when an upgrade is detected.
+TEST_F(UpgradeDetectorImplTest, AnnoyanceLevelDeadlines) {
+  TestUpgradeDetectorImpl upgrade_detector(GetMockClock(), GetMockTickClock());
+  ::testing::StrictMock<MockUpgradeObserver> mock_observer(&upgrade_detector);
+  upgrade_detector.Init();
+
+  // Deadline not set before upgrade detected.
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            base::Time());
+
+  // Pretend that an upgrade was just detected now.
+  upgrade_detector.UpgradeDetected(
+      TestUpgradeDetectorImpl::UPGRADE_AVAILABLE_REGULAR);
+  base::Time detect_time = upgrade_detector.upgrade_detected_time();
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            detect_time + base::TimeDelta::FromDays(7));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_GRACE),
+            detect_time + base::TimeDelta::FromDays(7) -
+                base::TimeDelta::FromHours(1));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED),
+            detect_time + base::TimeDelta::FromDays(4));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_LOW),
+            detect_time + base::TimeDelta::FromDays(2));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW),
+            detect_time + base::TimeDelta::FromHours(1));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_NONE),
+            detect_time);
+
+  // Drop the period and notice change in the deadlines.
+  SetNotificationPeriodPref(base::TimeDelta::FromDays(1));
+  RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            detect_time + base::TimeDelta::FromHours(24));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_GRACE),
+            detect_time + base::TimeDelta::FromHours(23));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED),
+            detect_time + base::TimeDelta::FromHours(16));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_LOW),
+            detect_time + base::TimeDelta::FromHours(8));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW),
+            detect_time + base::TimeDelta::FromHours(1));
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_NONE),
+            detect_time);
+
+  upgrade_detector.Shutdown();
+}

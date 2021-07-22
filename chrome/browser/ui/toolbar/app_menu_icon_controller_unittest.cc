@@ -47,20 +47,16 @@ class FakeUpgradeDetector : public UpgradeDetector {
   }
 
   // UpgradeDetector:
-  base::TimeDelta GetHighAnnoyanceLevelDelta() override;
-  base::Time GetHighAnnoyanceDeadline() override;
+  base::Time GetAnnoyanceLevelDeadline(
+      UpgradeNotificationAnnoyanceLevel level) override;
 
  private:
 
   DISALLOW_COPY_AND_ASSIGN(FakeUpgradeDetector);
 };
 
-base::TimeDelta FakeUpgradeDetector::GetHighAnnoyanceLevelDelta() {
-  // This value is not important for this test.
-  return base::TimeDelta();
-}
-
-base::Time FakeUpgradeDetector::GetHighAnnoyanceDeadline() {
+base::Time FakeUpgradeDetector::GetAnnoyanceLevelDeadline(
+    UpgradeNotificationAnnoyanceLevel level) {
   // This value is not important for this test.
   return base::Time();
 }

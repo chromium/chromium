@@ -99,7 +99,8 @@ void RelaunchNotificationController::OnUpgradeRecommended() {
   UpgradeDetector::UpgradeNotificationAnnoyanceLevel current_level =
       upgrade_detector_->upgrade_notification_stage();
   const base::Time current_high_deadline =
-      upgrade_detector_->GetHighAnnoyanceDeadline();
+      upgrade_detector_->GetAnnoyanceLevelDeadline(
+          UpgradeDetector::UPGRADE_ANNOYANCE_HIGH);
 
   // Nothing to do if there has been no change in the level and deadline. If
   // appropriate, a notification for this level has already been shown.
@@ -304,7 +305,10 @@ void RelaunchNotificationController::StartReshowTimer() {
   DCHECK(!last_relaunch_notification_time_.is_null());
   // Use the delta between the elevated and high annoyance levels as the
   // reshow period.
-  const auto reshow_period = upgrade_detector_->GetHighAnnoyanceLevelDelta();
+  const auto reshow_period = upgrade_detector_->GetAnnoyanceLevelDeadline(
+                                 UpgradeDetector::UPGRADE_ANNOYANCE_HIGH) -
+                             upgrade_detector_->GetAnnoyanceLevelDeadline(
+                                 UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED);
   // Compute the next time to show the notification.
   const auto desired_run_time =
       last_relaunch_notification_time_ + reshow_period;

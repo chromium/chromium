@@ -94,12 +94,27 @@ void UpgradeDetectorChromeos::Shutdown() {
   initialized_ = false;
 }
 
-base::TimeDelta UpgradeDetectorChromeos::GetHighAnnoyanceLevelDelta() {
-  return high_deadline_ - elevated_deadline_;
-}
-
-base::Time UpgradeDetectorChromeos::GetHighAnnoyanceDeadline() {
-  return high_deadline_;
+base::Time UpgradeDetectorChromeos::GetAnnoyanceLevelDeadline(
+    UpgradeNotificationAnnoyanceLevel level) {
+  const base::Time detected_time = upgrade_detected_time();
+  if (detected_time.is_null())
+    return detected_time;
+  switch (level) {
+    case UpgradeDetector::UPGRADE_ANNOYANCE_NONE:
+    case UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW:
+    case UpgradeDetector::UPGRADE_ANNOYANCE_LOW:
+      return detected_time;
+    case UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED:
+      return elevated_deadline_;
+    case UpgradeDetector::UPGRADE_ANNOYANCE_GRACE:
+      return grace_deadline_;
+    case UpgradeDetector::UPGRADE_ANNOYANCE_HIGH:
+      return high_deadline_;
+    case UpgradeDetector::UPGRADE_ANNOYANCE_CRITICAL:
+      return upgrade_notification_stage() == UPGRADE_ANNOYANCE_CRITICAL
+                 ? detected_time
+                 : base::Time();
+  }
 }
 
 void UpgradeDetectorChromeos::OverrideHighAnnoyanceDeadline(

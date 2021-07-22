@@ -152,12 +152,10 @@ class UpgradeDetector {
     return upgrade_notification_stage_;
   }
 
-  // Returns the delta between "elevated" and "high" annoyance levels.
-  virtual base::TimeDelta GetHighAnnoyanceLevelDelta() = 0;
-
-  // Returns the tick count at which "high" annoyance level will be (or was)
-  // reached, or a null tick count if an upgrade has not yet been detected.
-  virtual base::Time GetHighAnnoyanceDeadline() = 0;
+  // Returns the time at which `level` annoyance level will be (or was) reached,
+  // or a null time object if an upgrade has not yet been detected.
+  virtual base::Time GetAnnoyanceLevelDeadline(
+      UpgradeNotificationAnnoyanceLevel level) = 0;
 
   // Overrides the "high" annoyance deadline, setting it to |deadline|. On
   // Chrome OS, this also sets the "elevated" annoyance deadline to the time at

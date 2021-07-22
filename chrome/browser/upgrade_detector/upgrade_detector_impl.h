@@ -39,8 +39,8 @@ class UpgradeDetectorImpl : public UpgradeDetector,
   // UpgradeDetector:
   void Init() override;
   void Shutdown() override;
-  base::TimeDelta GetHighAnnoyanceLevelDelta() override;
-  base::Time GetHighAnnoyanceDeadline() override;
+  base::Time GetAnnoyanceLevelDeadline(
+      UpgradeNotificationAnnoyanceLevel level) override;
 
   // BuildStateObserver:
   void OnUpdate(const BuildState* build_state) override;

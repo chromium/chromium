@@ -35,8 +35,8 @@ class UpgradeDetectorChromeos : public UpgradeDetector,
   // UpgradeDetector:
   void Init() override;
   void Shutdown() override;
-  base::TimeDelta GetHighAnnoyanceLevelDelta() override;
-  base::Time GetHighAnnoyanceDeadline() override;
+  base::Time GetAnnoyanceLevelDeadline(
+      UpgradeNotificationAnnoyanceLevel level) override;
   void OverrideHighAnnoyanceDeadline(base::Time deadline) override;
   void ResetOverriddenDeadline() override;
 

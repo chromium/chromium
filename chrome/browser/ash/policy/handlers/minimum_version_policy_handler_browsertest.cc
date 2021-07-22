@@ -671,13 +671,17 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, RelaunchNotificationOverride) {
   UpgradeDetector* upgrade_detector = UpgradeDetector::GetInstance();
   EXPECT_EQ(upgrade_detector->upgrade_notification_stage(),
             UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED);
-  EXPECT_EQ(upgrade_detector->GetHighAnnoyanceDeadline(), deadline);
+  EXPECT_EQ(upgrade_detector->GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            deadline);
 
   // Revoking update required should reset the overridden the relaunch
   // notifications.
   SetDevicePolicyAndWaitForSettingChange(
       base::Value(base::Value::Type::DICTIONARY));
-  EXPECT_NE(upgrade_detector->GetHighAnnoyanceDeadline(), deadline);
+  EXPECT_NE(upgrade_detector->GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            deadline);
 }
 
 class MinimumVersionNoUsersLoginTest : public MinimumVersionPolicyTestBase {
