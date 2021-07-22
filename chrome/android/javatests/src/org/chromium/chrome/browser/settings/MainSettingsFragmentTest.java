@@ -6,13 +6,18 @@ package org.chromium.chrome.browser.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
 import android.os.Build;
@@ -23,6 +28,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.test.filters.LargeTest;
+import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -37,6 +43,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -145,32 +152,6 @@ public class MainSettingsFragmentTest {
             // Reset the actual service if the mock is used.
             TemplateUrlServiceFactory.setInstanceForTesting(mActualTemplateUrlService);
         }
-    }
-
-    private void launchSettingsActivity() {
-        mSettingsActivityTestRule.startSettingsActivity();
-        mMainSettings = mSettingsActivityTestRule.getFragment();
-        Assert.assertNotNull("SettingsActivity failed to launch.", mMainSettings);
-    }
-
-    private void configureMockSearchEngine() {
-        // Cache the actual Url Service, so the test can put it back after tests.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mActualTemplateUrlService = TemplateUrlServiceFactory.get(); });
-
-        TemplateUrlServiceFactory.setInstanceForTesting(mMockTemplateUrlService);
-        Mockito.doReturn(mMockSearchEngine)
-                .when(mMockTemplateUrlService)
-                .getDefaultSearchEngineTemplateUrl();
-
-        Mockito.doReturn(SEARCH_ENGINE_SHORT_NAME).when(mMockSearchEngine).getShortName();
-    }
-
-    private void waitForOptionsMenu() {
-        CriteriaHelper.pollUiThread(() -> {
-            return mSettingsActivityTestRule.getActivity().findViewById(R.id.menu_id_general_help)
-                    != null;
-        });
     }
 
     @Test
@@ -387,6 +368,49 @@ public class MainSettingsFragmentTest {
         activity.finish();
         CriteriaHelper.pollUiThread(() -> activity.isDestroyed());
         Assert.assertNull(PasswordCheckFactory.getPasswordCheckInstance());
+    }
+
+    @Test
+    @MediumTest
+    public void testSyncPromoNotShownAfterBeingDismissed() throws Exception {
+        launchSettingsActivity();
+        onViewWaiting(allOf(withId(R.id.signin_promo_view_container), isDisplayed()));
+        onView(withId(R.id.signin_promo_close_button)).perform(click());
+        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+
+        // Close settings activity.
+        Activity activity = mMainSettings.getActivity();
+        ApplicationTestUtils.finishActivity(activity);
+
+        // Launch settings activity again.
+        mSettingsActivityTestRule.startSettingsActivity();
+        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+    }
+
+    private void launchSettingsActivity() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        mMainSettings = mSettingsActivityTestRule.getFragment();
+        Assert.assertNotNull("SettingsActivity failed to launch.", mMainSettings);
+    }
+
+    private void configureMockSearchEngine() {
+        // Cache the actual Url Service, so the test can put it back after tests.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mActualTemplateUrlService = TemplateUrlServiceFactory.get(); });
+
+        TemplateUrlServiceFactory.setInstanceForTesting(mMockTemplateUrlService);
+        Mockito.doReturn(mMockSearchEngine)
+                .when(mMockTemplateUrlService)
+                .getDefaultSearchEngineTemplateUrl();
+
+        Mockito.doReturn(SEARCH_ENGINE_SHORT_NAME).when(mMockSearchEngine).getShortName();
+    }
+
+    private void waitForOptionsMenu() {
+        CriteriaHelper.pollUiThread(() -> {
+            return mSettingsActivityTestRule.getActivity().findViewById(R.id.menu_id_general_help)
+                    != null;
+        });
     }
 
     /**

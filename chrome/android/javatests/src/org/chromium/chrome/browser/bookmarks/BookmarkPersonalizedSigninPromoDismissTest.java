@@ -63,7 +63,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     @Before
     public void setUp() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(null);
-        BookmarkPromoHeader.setPrefPersonalizedSigninPromoDeclinedForTests(false);
+        SigninPromoController.setPrefSigninPromoDeclinedBookmarksForTests(false);
         SigninPromoController.setSigninPromoImpressionsCountBookmarksForTests(0);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -77,7 +77,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     @After
     public void tearDown() {
         SigninPromoController.setSigninPromoImpressionsCountBookmarksForTests(0);
-        BookmarkPromoHeader.setPrefPersonalizedSigninPromoDeclinedForTests(false);
+        SigninPromoController.setPrefSigninPromoDeclinedBookmarksForTests(false);
     }
 
     @Test
@@ -91,17 +91,6 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
         closeBookmarkManager();
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
-    }
-
-    private void closeBookmarkManager() {
-        if (mSyncTestRule.getActivity().isTablet()) {
-            ChromeTabbedActivity chromeTabbedActivity =
-                    (ChromeTabbedActivity) mSyncTestRule.getActivity();
-            ChromeTabUtils.closeCurrentTab(
-                    InstrumentationRegistry.getInstrumentation(), chromeTabbedActivity);
-        } else {
-            onView(withId(R.id.close_menu_id)).perform(click());
-        }
     }
 
     @Test
@@ -120,5 +109,16 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
         assertEquals(1, SigninPromoController.getSigninPromoImpressionsCountBookmarks());
+    }
+
+    private void closeBookmarkManager() {
+        if (mSyncTestRule.getActivity().isTablet()) {
+            ChromeTabbedActivity chromeTabbedActivity =
+                    (ChromeTabbedActivity) mSyncTestRule.getActivity();
+            ChromeTabUtils.closeCurrentTab(
+                    InstrumentationRegistry.getInstrumentation(), chromeTabbedActivity);
+        } else {
+            onView(withId(R.id.close_menu_id)).perform(click());
+        }
     }
 }

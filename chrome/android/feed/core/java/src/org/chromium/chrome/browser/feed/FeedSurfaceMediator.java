@@ -637,9 +637,7 @@ public class FeedSurfaceMediator
      */
     private boolean createSignInPromoIfNeeded() {
         if (!SignInPromo.shouldCreatePromo()
-                || !SigninPromoController.hasNotReachedImpressionLimit(
-                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)
-                || SigninPromoController.shouldHideSyncPromoForNTP(
+                || !SigninPromoController.canShowSyncPromo(
                         SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)) {
             return false;
         }

@@ -866,8 +866,7 @@ public final class ChromePreferenceKeys {
     /**
      * Personalized signin promo preference.
      */
-    public static final String SIGNIN_PROMO_PERSONALIZED_DECLINED =
-            "signin_promo_bookmarks_declined";
+    public static final String SIGNIN_PROMO_BOOKMARKS_DECLINED = "signin_promo_bookmarks_declined";
     /**
      * Whether the user dismissed the personalized sign in promo from the Settings.
      * Default value is false.

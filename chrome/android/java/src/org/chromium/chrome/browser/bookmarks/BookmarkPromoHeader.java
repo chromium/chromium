@@ -95,8 +95,7 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
                     ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT);
         }
 
-        if (SigninPromoController.hasNotReachedImpressionLimit(
-                    SigninAccessPoint.BOOKMARK_MANAGER)) {
+        if (SigninPromoController.canShowSyncPromo(SigninAccessPoint.BOOKMARK_MANAGER)) {
             mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
             mProfileDataCache.addObserver(this);
             mSigninPromoController = new SigninPromoController(
@@ -173,19 +172,8 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
      * Saves that the personalized signin promo was declined and updates the UI.
      */
     private void setPersonalizedSigninPromoDeclined() {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.SIGNIN_PROMO_PERSONALIZED_DECLINED, true);
         mPromoState = calculatePromoState();
         triggerPromoUpdate();
-    }
-
-    /**
-     * @return Whether the user declined the personalized signin promo.
-     */
-    @VisibleForTesting
-    static boolean wasPersonalizedSigninPromoDeclined() {
-        return SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.SIGNIN_PROMO_PERSONALIZED_DECLINED, false);
     }
 
     /**
@@ -193,9 +181,7 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
      */
     private boolean shouldShowBookmarkSigninPromo() {
         return mSignInManager.isSignInAllowed()
-                && SigninPromoController.hasNotReachedImpressionLimit(
-                        SigninAccessPoint.BOOKMARK_MANAGER)
-                && !wasPersonalizedSigninPromoDeclined();
+                && SigninPromoController.canShowSyncPromo(SigninAccessPoint.BOOKMARK_MANAGER);
     }
 
     private @PromoState int calculatePromoState() {
@@ -277,11 +263,5 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
     @VisibleForTesting
     static void forcePromoStateForTests(@Nullable @PromoState Integer promoState) {
         sPromoStateForTests = promoState;
-    }
-
-    @VisibleForTesting
-    static void setPrefPersonalizedSigninPromoDeclinedForTests(boolean isDeclined) {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.SIGNIN_PROMO_PERSONALIZED_DECLINED, isDeclined);
     }
 }

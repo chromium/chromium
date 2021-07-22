@@ -69,8 +69,8 @@ public class SigninPromoControllerTest {
 
     @Test
     public void shouldShowSyncPromoForNTPWhenNoAccountOnDevice() {
-        Assert.assertFalse(SigninPromoController.shouldHideSyncPromoForNTP(
-                SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+        Assert.assertTrue(
+                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
 
     @Test
@@ -83,8 +83,8 @@ public class SigninPromoControllerTest {
                 .when(mFakeAccountManagerFacade)
                 .canOfferExtendedSyncPromos(account);
 
-        Assert.assertTrue(SigninPromoController.shouldHideSyncPromoForNTP(
-                SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+        Assert.assertFalse(
+                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
 
     @Test
@@ -94,8 +94,8 @@ public class SigninPromoControllerTest {
         mAccountManagerTestRule.addAccount(account);
         mAccountManagerTestRule.addAccount("test.account.secondary@gmail.com");
 
-        Assert.assertTrue(SigninPromoController.shouldHideSyncPromoForNTP(
-                SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+        Assert.assertFalse(
+                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
 
     @Test
@@ -111,7 +111,7 @@ public class SigninPromoControllerTest {
         mAccountManagerTestRule.addAccount("test.account.default@gmail.com");
         mAccountManagerTestRule.addAccount(secondAccount);
 
-        Assert.assertFalse(SigninPromoController.shouldHideSyncPromoForNTP(
-                SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+        Assert.assertTrue(
+                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
 }

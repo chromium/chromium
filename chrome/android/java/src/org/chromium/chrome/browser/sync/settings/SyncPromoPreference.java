@@ -14,8 +14,6 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -141,10 +139,7 @@ public class SyncPromoPreference
             return;
         }
 
-        boolean personalizedPromoDismissed = SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.SIGNIN_PROMO_SETTINGS_PERSONALIZED_DISMISSED, false);
-        if (!personalizedPromoDismissed
-                && SigninPromoController.hasNotReachedImpressionLimit(SigninAccessPoint.SETTINGS)) {
+        if (SigninPromoController.canShowSyncPromo(SigninAccessPoint.SETTINGS)) {
             IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                     Profile.getLastUsedRegularProfile());
             if (identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null) {
@@ -192,8 +187,6 @@ public class SyncPromoPreference
     }
 
     public void onPromoDismissClicked() {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.SIGNIN_PROMO_SETTINGS_PERSONALIZED_DISMISSED, true);
         setupPromoHidden();
     }
 
