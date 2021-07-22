@@ -2251,6 +2251,21 @@
             ]
         }
     ],
+    "CommerceMerchantViewer": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210721",
+                    "params": {
+                        "delete_all_merchants_on_clear_history": "true"
+                    }
+                }
+            ]
+        }
+    ],
     "CompositeAfterPaint": [
         {
             "platforms": [
