@@ -1,8 +1,6 @@
     <style include="cr-shared-style settings-shared">
       #create-password-box {
         margin-bottom: 1em;
-        /* In order to line up with the encryption radio box text. */
-        margin-inline-start: var(--cr-section-indent-width);
       }
 
       #create-password-box .list-item {
@@ -15,6 +13,10 @@
 
       .passphrase-reset-icon {
         margin-inline-end: 8px;
+      }
+
+      cr-radio-button[name='encrypt-with-passphrase'] {
+        align-items: start;
       }
     </style>
 
@@ -38,35 +40,33 @@
                 hidden="[[existingPassphraseLabel]]">
               $i18nRaw{encryptWithSyncPassphraseLabel}
             </span>
+            <template is="dom-if" if="[[creatingNewPassphrase_]]" restamp>
+              <div id="create-password-box">
+                <div class="list-item">
+                  <span>$i18nRaw{passphraseExplanationText}</span>
+                </div>
+                <cr-input id="passphraseInput" type="password"
+                    value="{{passphrase_}}"
+                    placeholder="$i18n{passphrasePlaceholder}"
+                    error-message="$i18n{emptyPassphraseError}"
+                    on-keypress="onNewPassphraseInputKeypress_">
+                </cr-input>
+                <cr-input id="passphraseConfirmationInput" type="password"
+                    value="{{confirmation_}}"
+                    placeholder="$i18n{passphraseConfirmationPlaceholder}"
+                    error-message="$i18n{mismatchedPassphraseError}"
+                    on-keypress="onNewPassphraseInputKeypress_">
+                </cr-input>
+                <cr-button id="saveNewPassphrase"
+                    on-click="onSaveNewPassphraseClick_" class="action-button"
+                    disabled="[[!isSaveNewPassphraseEnabled_(
+                                  passphrase_, confirmation_)]]">
+                  $i18n{save}
+                </cr-button>
+              </div>
+            </template>
           </cr-radio-button>
         </cr-radio-group>
       </div>
     </template>
 
-    <template is="dom-if" if="[[creatingNewPassphrase_]]" restamp>
-      <div class="list-frame">
-        <div id="create-password-box">
-          <div class="list-item">
-            <span>$i18nRaw{passphraseExplanationText}</span>
-          </div>
-          <cr-input id="passphraseInput" type="password"
-              value="{{passphrase_}}"
-              placeholder="$i18n{passphrasePlaceholder}"
-              error-message="$i18n{emptyPassphraseError}"
-              on-keypress="onNewPassphraseInputKeypress_">
-          </cr-input>
-          <cr-input id="passphraseConfirmationInput" type="password"
-              value="{{confirmation_}}"
-              placeholder="$i18n{passphraseConfirmationPlaceholder}"
-              error-message="$i18n{mismatchedPassphraseError}"
-              on-keypress="onNewPassphraseInputKeypress_">
-          </cr-input>
-          <cr-button id="saveNewPassphrase"
-              on-click="onSaveNewPassphraseClick_" class="action-button"
-              disabled="[[!isSaveNewPassphraseEnabled_(
-                            passphrase_, confirmation_)]]">
-            $i18n{save}
-          </cr-button>
-        </div>
-      </div>
-    </template>
