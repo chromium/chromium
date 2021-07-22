@@ -1,0 +1,18 @@
+# Copyright (c) 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build_overrides/build.gni")
+
+declare_args() {
+  if (build_with_chromium) {
+    # This argument is used in DevTools to resolve to the correct location
+    # for any script/file referenced in the DevTools build scripts. Since
+    # DevTools supports both a standalone build and build integration with
+    # Chromium, we need to differentiate between the two versions.
+    devtools_location = "third_party/devtools-frontend/src/"
+  } else {
+    # DevTools is building a standalone version
+    devtools_location = ""
+  }
+}
