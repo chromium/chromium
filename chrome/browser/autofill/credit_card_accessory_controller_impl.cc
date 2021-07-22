@@ -9,6 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/containers/cxx20_erase_vector.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/preferences/autofill/autofill_profile_bridge.h"
@@ -111,11 +114,13 @@ void CreditCardAccessoryControllerImpl::RegisterFillingSourceObserver(
 
 absl::optional<autofill::AccessorySheetData>
 CreditCardAccessoryControllerImpl::GetSheetData() const {
-  bool valid_manager = web_contents_->GetFocusedFrame() && GetManager();
+  autofill::BrowserAutofillManager* autofill_manager = GetManager();
+  bool valid_manager = web_contents_->GetFocusedFrame() && autofill_manager;
   std::vector<UserInfo> info_to_add;
-  bool allow_filling = valid_manager && ShouldAllowCreditCardFallbacks(
-                                            GetManager()->client(),
-                                            GetManager()->last_query_form());
+  bool allow_filling =
+      valid_manager &&
+      ShouldAllowCreditCardFallbacks(autofill_manager->client(),
+                                     autofill_manager->last_query_form());
 
   if (!cached_server_cards_.empty()) {
     // Add the cached server cards first, so that they show up on the top of the
@@ -128,11 +133,10 @@ CreditCardAccessoryControllerImpl::GetSheetData() const {
   }
   // Only add cards that are not present in the cache. Otherwise, we might
   // show duplicates.
+  bool add_all_cards = cached_server_cards_.empty() || !valid_manager;
   for (auto* card : cards_cache_) {
-    if (cached_server_cards_.empty() ||
-        !GetManager()
-             ->credit_card_access_manager()
-             ->IsCardPresentInUnmaskedCache(*card)) {
+    if (add_all_cards || !autofill_manager->credit_card_access_manager()
+                              ->IsCardPresentInUnmaskedCache(*card)) {
       info_to_add.push_back(TranslateCard(card, allow_filling));
     }
   }
@@ -160,7 +164,12 @@ void CreditCardAccessoryControllerImpl::OnFillingTriggered(
   content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
   if (!rfh)
     return;  // Without focused frame, driver and manager will be undefined.
-  DCHECK(GetDriver());
+  if (!GetDriver() || !GetManager()) {
+    // Even with a valid frame, driver or manager might be invalid. Log these
+    // cases to check how we can recover and fail gracefully so users can retry.
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
 
   // Credit card number fields have a GUID populated to allow deobfuscation
   // before filling.
@@ -184,7 +193,6 @@ void CreditCardAccessoryControllerImpl::OnFillingTriggered(
   switch (matching_card->record_type()) {
     case CreditCard::RecordType::MASKED_SERVER_CARD:
     case CreditCard::RecordType::VIRTUAL_CARD:
-      DCHECK(GetManager());
       last_focused_field_id_ = focused_field_id;
       GetManager()->credit_card_access_manager()->FetchCreditCard(matching_card,
                                                                   AsWeakPtr());
@@ -330,6 +338,9 @@ CreditCardAccessoryControllerImpl::CreditCardAccessoryControllerImpl(
 }
 
 void CreditCardAccessoryControllerImpl::FetchSuggestions() {
+  DCHECK(web_contents_->GetFocusedFrame());
+  autofill::BrowserAutofillManager* autofill_manager = GetManager();
+  DCHECK(autofill_manager);
   if (!personal_data_manager_) {
     cards_cache_.clear();  // No data available.
     virtual_cards_cache_.clear();
@@ -353,27 +364,25 @@ void CreditCardAccessoryControllerImpl::FetchSuggestions() {
       cards_cache_ = std::move(cards_to_suggest_with_virtual_cards);
     }
   }
-  if (!GetManager() || !GetManager()->credit_card_access_manager()) {
+  if (!autofill_manager->credit_card_access_manager()) {
     cached_server_cards_.clear();  // No data available.
-  } else {
-    cached_server_cards_ =
-        GetManager()->credit_card_access_manager()->GetCachedUnmaskedCards();
-    // If the feature to show unmasked cached cards in manual filling view is
-    // enabled, show all cached cards in the view. Even if not, still show
-    // virtual cards in the manual filling view if they exist. All other cards
-    // are dropped.
-    if (!base::FeatureList::IsEnabled(
-            autofill::features::
-                kAutofillShowUnmaskedCachedCardInManualFillingView)) {
-      auto not_virtual_card = [](const CachedServerCardInfo* card_info) {
-        return card_info->card.record_type() != CreditCard::VIRTUAL_CARD;
-      };
-      // Remove any cards that are not virtual cards.
-      cached_server_cards_.erase(
-          base::ranges::remove_if(cached_server_cards_, not_virtual_card),
-          cached_server_cards_.end());
-    }
+    return;
   }
+  cached_server_cards_ =
+      autofill_manager->credit_card_access_manager()->GetCachedUnmaskedCards();
+  // If the feature to show unmasked cached cards in manual filling view is
+  // enabled, show all cached cards in the view. Even if not, still show
+  // virtual cards in the manual filling view if they exist. All other cards
+  // are dropped.
+  if (base::FeatureList::IsEnabled(
+          autofill::features::
+              kAutofillShowUnmaskedCachedCardInManualFillingView)) {
+    return;
+  }
+  auto not_virtual_card = [](const CachedServerCardInfo* card_info) {
+    return card_info->card.record_type() != CreditCard::VIRTUAL_CARD;
+  };
+  base::EraseIf(cached_server_cards_, not_virtual_card);
 }
 
 base::WeakPtr<ManualFillingController>
@@ -395,11 +404,12 @@ autofill::AutofillDriver* CreditCardAccessoryControllerImpl::GetDriver() {
 autofill::BrowserAutofillManager*
 CreditCardAccessoryControllerImpl::GetManager() const {
   DCHECK(web_contents_->GetFocusedFrame());
-  return af_manager_for_testing_
-             ? af_manager_for_testing_
-             : autofill::ContentAutofillDriver::GetForRenderFrameHost(
-                   web_contents_->GetFocusedFrame())
-                   ->browser_autofill_manager();
+  if (af_manager_for_testing_)
+    return af_manager_for_testing_;
+  autofill::ContentAutofillDriver* driver =
+      autofill::ContentAutofillDriver::GetForRenderFrameHost(
+          web_contents_->GetFocusedFrame());
+  return driver ? driver->browser_autofill_manager() : nullptr;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CreditCardAccessoryControllerImpl)
