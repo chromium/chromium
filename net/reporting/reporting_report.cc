@@ -15,6 +15,7 @@
 namespace net {
 
 ReportingReport::ReportingReport(
+    const absl::optional<base::UnguessableToken>& reporting_source,
     const NetworkIsolationKey& network_isolation_key,
     const GURL& url,
     const std::string& user_agent,
@@ -24,7 +25,8 @@ ReportingReport::ReportingReport(
     int depth,
     base::TimeTicks queued,
     int attempts)
-    : network_isolation_key(network_isolation_key),
+    : reporting_source(reporting_source),
+      network_isolation_key(network_isolation_key),
       url(url),
       user_agent(user_agent),
       group(group),
@@ -32,12 +34,15 @@ ReportingReport::ReportingReport(
       body(std::move(body)),
       depth(depth),
       queued(queued),
-      attempts(attempts) {}
+      attempts(attempts) {
+  // If |reporting_source| is present, it must not be empty.
+  DCHECK(!(reporting_source.has_value() && reporting_source->is_empty()));
+}
 
 ReportingReport::~ReportingReport() = default;
 
 ReportingEndpointGroupKey ReportingReport::GetGroupKey() const {
-  return ReportingEndpointGroupKey(network_isolation_key,
+  return ReportingEndpointGroupKey(network_isolation_key, reporting_source,
                                    url::Origin::Create(url), group);
 }
 

@@ -10,8 +10,10 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -24,6 +26,16 @@ struct NET_EXPORT ReportingEndpointGroupKey {
   ReportingEndpointGroupKey(const NetworkIsolationKey& network_isolation_key,
                             const url::Origin& origin,
                             const std::string& group_name);
+
+  ReportingEndpointGroupKey(
+      const NetworkIsolationKey& network_isolation_key,
+      absl::optional<base::UnguessableToken> reporting_source,
+      const url::Origin& origin,
+      const std::string& group_name);
+
+  ReportingEndpointGroupKey(
+      const ReportingEndpointGroupKey& other,
+      const absl::optional<base::UnguessableToken>& reporting_source);
 
   ReportingEndpointGroupKey(const ReportingEndpointGroupKey& other);
   ReportingEndpointGroupKey(ReportingEndpointGroupKey&& other);
@@ -38,6 +50,11 @@ struct NET_EXPORT ReportingEndpointGroupKey {
   // The NetworkIsolationKey the group is scoped to. Needed to prevent leaking
   // third party contexts across sites.
   NetworkIsolationKey network_isolation_key;
+
+  // Source token for the document or worker which configured this endpoint, if
+  // this was configured with the Reporting-Endpoints header. For endpoint
+  // groups configured with the Report-To header, this will be nullopt.
+  absl::optional<base::UnguessableToken> reporting_source;
 
   // Origin that configured this endpoint group.
   url::Origin origin;

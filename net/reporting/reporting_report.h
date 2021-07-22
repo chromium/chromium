@@ -9,9 +9,11 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/reporting/reporting_endpoint.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -36,15 +38,17 @@ struct NET_EXPORT ReportingReport {
   };
 
   // TODO(chlily): Remove |attempts| argument as it is (almost?) always 0.
-  ReportingReport(const NetworkIsolationKey& network_isolation_key,
-                  const GURL& url,
-                  const std::string& user_agent,
-                  const std::string& group,
-                  const std::string& type,
-                  std::unique_ptr<const base::Value> body,
-                  int depth,
-                  base::TimeTicks queued,
-                  int attempts);
+  ReportingReport(
+      const absl::optional<base::UnguessableToken>& reporting_source,
+      const NetworkIsolationKey& network_isolation_key,
+      const GURL& url,
+      const std::string& user_agent,
+      const std::string& group,
+      const std::string& type,
+      std::unique_ptr<const base::Value> body,
+      int depth,
+      base::TimeTicks queued,
+      int attempts);
 
   ~ReportingReport();
 
@@ -60,6 +64,17 @@ struct NET_EXPORT ReportingReport {
 
   // Whether the report is part of an ongoing delivery attempt.
   bool IsUploadPending() const;
+
+  // The reporting source token for the document or worker which triggered this
+  // report, if it can be associated with one, or nullopt otherwise (Network
+  // reports, such as NEL, for instance, do not support such attribution.)
+  // This is used to identify appropriate endpoints to deliver this report to;
+  // reports with an attached source token may be delivered to a named endpoint
+  // with a matching source, but are also eligible to be delivered to an
+  // endpoint group without a source. Reports without a source token can only be
+  // delivered to endpoint groups without one.
+  // (Not included in the delivered report.)
+  absl::optional<base::UnguessableToken> reporting_source;
 
   // The NIK of the request that triggered this report. (Not included in the
   // delivered report.)

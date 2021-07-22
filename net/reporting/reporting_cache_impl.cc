@@ -15,6 +15,7 @@
 #include "base/time/tick_clock.h"
 #include "net/base/url_util.h"
 #include "net/log/net_log.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -36,8 +37,8 @@ void ReportingCacheImpl::AddReport(
     base::TimeTicks queued,
     int attempts) {
   auto report = std::make_unique<ReportingReport>(
-      network_isolation_key, url, user_agent, group_name, type, std::move(body),
-      depth, queued, attempts);
+      absl::nullopt, network_isolation_key, url, user_agent, group_name, type,
+      std::move(body), depth, queued, attempts);
 
   auto inserted = reports_.insert(std::move(report));
   DCHECK(inserted.second);
