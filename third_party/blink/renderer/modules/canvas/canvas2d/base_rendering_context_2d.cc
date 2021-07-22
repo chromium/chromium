@@ -138,39 +138,8 @@ void BaseRenderingContext2D::restore() {
 }
 
 void BaseRenderingContext2D::beginLayer() {
-  if (isContextLost())
-    return;
-
-  ValidateStateStack();
-
-  DCHECK_GE(state_stack_.size(), 1u);
-
-  // GetOrCreatePaintCanvas() can call RestoreMatrixClipStack which syncs
-  // canvas to state_stack_. Get the canvas before adjusting state_stack_ to
-  // ensure canvas is synced prior to adjusting state_stack_.
-  cc::PaintCanvas* canvas = GetOrCreatePaintCanvas();
-
-  state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
-      GetState(), CanvasRenderingContext2DState::kDontCopyClipList,
-      CanvasRenderingContext2DState::SaveType::kBeginEndLayer));
-  layer_count_++;
-
-  PaintFlags flags;
-  GetState().FillStyle()->ApplyToFlags(flags);
-  flags.setColor(GetState().FillStyle()->PaintColor());
-  flags.setBlendMode(GetState().GlobalComposite());
-  flags.setAlpha(globalAlpha() * 255);
-  // TODO(crbug.com/1231277): Add filter and shadows to flags.
-
-  if (canvas)
-    canvas->saveLayer(nullptr, &flags);
-
-  ValidateStateStack();
-
-  // Reset compositing attributes.
-  setGlobalAlpha(1.0);
-  setGlobalCompositeOperation("source-over");
-  // TODO(crbug.com/1231277): Reset filter.
+  // TODO(crbug.com/1220266): Implementation coming later.
+  return;
 }
 
 void BaseRenderingContext2D::endLayer() {
