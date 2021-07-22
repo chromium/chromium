@@ -179,6 +179,8 @@ class MockInputHandler : public cc::InputHandler {
                     gfx::Vector2dF* target_offset));
   MOCK_METHOD1(ScrollEndForSnapFling, void(bool));
 
+  bool ScrollbarScrollIsActive() override { return false; }
+
  private:
   bool is_scrolling_root_ = true;
 

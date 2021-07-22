@@ -740,7 +740,14 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
       // TODO(davemoore): This should never happen, but bug #326635 showed some
       // surprising crashes.
       CHECK(input_handler_);
-      HandlePointerMove(event_with_callback, mouse_event.PositionInWidget());
+      // This should stay in sync with EventHandler::HandleMouseMoveOrLeaveEvent
+      // for main-thread scrollbar interactions.
+      bool should_cancel_scrollbar_drag =
+          (mouse_event.button == WebPointerProperties::Button::kNoButton &&
+           !(mouse_event.GetModifiers() &
+             WebInputEvent::Modifiers::kRelativeMotionEvent));
+      HandlePointerMove(event_with_callback, mouse_event.PositionInWidget(),
+                        should_cancel_scrollbar_drag);
       return DID_NOT_HANDLE;
     }
     case WebInputEvent::Type::kMouseLeave: {
@@ -1290,7 +1297,8 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleTouchMove(
                touch_event.touch_start_or_first_touch_move);
   if (touch_event.touches_length == 1) {
     cc::InputHandlerPointerResult pointer_result = HandlePointerMove(
-        event_with_callback, touch_event.touches[0].PositionInWidget());
+        event_with_callback, touch_event.touches[0].PositionInWidget(),
+        false /* should_cancel_scrollbar_drag */);
     if (pointer_result.type == cc::PointerResultType::kScrollbarScroll) {
       return DID_HANDLE;
     }
@@ -1536,7 +1544,24 @@ const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerDown(
 
 const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerMove(
     EventWithCallback* event_with_callback,
-    const gfx::PointF& position) {
+    const gfx::PointF& position,
+    bool should_cancel_scrollbar_drag) {
+  if (should_cancel_scrollbar_drag &&
+      input_handler_->ScrollbarScrollIsActive()) {
+    // If we're in a scrollbar drag and we see a mousemove with no buttons
+    // pressed, send a fake mouseup to cancel the drag. This can happen if the
+    // window loses focus during the drag (e.g. from Alt-Tab or opening a
+    // right-click context menu).
+    auto mouseup_result = input_handler_->MouseUp(position);
+    if (mouseup_result.type == cc::PointerResultType::kScrollbarScroll) {
+      InjectScrollbarGestureScroll(WebInputEvent::Type::kGestureScrollEnd,
+                                   position, mouseup_result,
+                                   event_with_callback->latency_info(),
+                                   event_with_callback->event().TimeStamp(),
+                                   event_with_callback->metrics());
+    }
+  }
+
   cc::InputHandlerPointerResult pointer_result =
       input_handler_->MouseMoveAt(gfx::Point(position.x(), position.y()));
   if (pointer_result.type == cc::PointerResultType::kScrollbarScroll) {

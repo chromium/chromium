@@ -243,7 +243,8 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
       const gfx::PointF& position);
   const cc::InputHandlerPointerResult HandlePointerMove(
       EventWithCallback* event_with_callback,
-      const gfx::PointF& position);
+      const gfx::PointF& position,
+      bool should_cancel_scrollbar_drag);
   const cc::InputHandlerPointerResult HandlePointerUp(
       EventWithCallback* event_with_callback,
       const gfx::PointF& position);

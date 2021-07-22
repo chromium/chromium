@@ -381,6 +381,9 @@ class CC_EXPORT InputHandler {
   // being handled by the InputHandler or not.
   virtual void NotifyInputEvent() = 0;
 
+  // Returns true if ScrollbarController is in the middle of a scroll operation.
+  virtual bool ScrollbarScrollIsActive() = 0;
+
  protected:
   virtual ~InputHandler() = default;
   InputHandler() = default;

@@ -102,6 +102,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
       gfx::Vector2dF* out_target_position) override;
   void ScrollEndForSnapFling(bool did_finish) override;
   void NotifyInputEvent() override;
+  bool ScrollbarScrollIsActive() override;
 
   // =========== InputDelegateForCompositor Interface - This section implements
   // the interface that LayerTreeHostImpl uses to communicate with the input

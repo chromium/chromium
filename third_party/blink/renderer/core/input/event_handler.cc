@@ -1004,6 +1004,12 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
     mouse_event_manager_->ClearDragHeuristicState();
     capturing_mouse_events_element_ = nullptr;
     ReleaseMouseCaptureFromLocalRoot();
+
+    // If the scrollbar still thinks it's being dragged, tell it to stop.
+    // Can happen on Win if we lose focus (e.g. from Alt-Tab) mid-drag.
+    if (last_scrollbar_under_mouse_ &&
+        last_scrollbar_under_mouse_->PressedPart() != ScrollbarPart::kNoPart)
+      last_scrollbar_under_mouse_->MouseUp(mouse_event);
   }
 
   if (RuntimeEnabledFeatures::MiddleClickAutoscrollEnabled()) {
