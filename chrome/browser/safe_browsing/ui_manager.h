@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -36,6 +35,7 @@ class NoStatePrefetchContents;
 namespace safe_browsing {
 
 class BaseBlockingPage;
+class PingManager;
 
 struct HitReport;
 
@@ -108,12 +108,19 @@ class SafeBrowsingUIManager : public BaseUIManager {
     virtual history::HistoryService* GetHistoryService(
         content::BrowserContext* browser_context) = 0;
 
+    // Gets the PingManager. This may be null.
+    virtual PingManager* GetPingManagerIfExists() = 0;
+
+    // Gets the URLLoaderFactory attached to |browser_context|. Guaranteed to be
+    // non-null if GetPingManagerIfExists() is non-null.
+    virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
+        content::BrowserContext* browser_context) = 0;
+
     // Returns true if metrics reporting is enabled.
     virtual bool IsMetricsAndCrashReportingEnabled() = 0;
   };
 
   SafeBrowsingUIManager(
-      const scoped_refptr<SafeBrowsingService>& service,
       std::unique_ptr<Delegate> delegate,
       std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory,
       const GURL& default_safe_page);
@@ -194,9 +201,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
       content::WebContents* contents,
       const GURL& blocked_url,
       const UnsafeResource& unsafe_resource) override;
-
-  // Safebrowsing service.
-  scoped_refptr<SafeBrowsingService> sb_service_;
 
   std::unique_ptr<Delegate> delegate_;
 

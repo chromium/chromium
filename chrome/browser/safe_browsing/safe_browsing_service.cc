@@ -279,7 +279,7 @@ void SafeBrowsingService::AddDownloadManager(
 
 SafeBrowsingUIManager* SafeBrowsingService::CreateUIManager() {
   return new SafeBrowsingUIManager(
-      this, std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
+      std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
       std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
       GURL(chrome::kChromeUINewTabURL));
 }

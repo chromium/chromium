@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_subresource_tab_helper.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/prefs/pref_service.h"
@@ -23,6 +22,7 @@
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
@@ -40,12 +40,10 @@ using safe_browsing::SBThreatType;
 namespace safe_browsing {
 
 SafeBrowsingUIManager::SafeBrowsingUIManager(
-    const scoped_refptr<SafeBrowsingService>& service,
     std::unique_ptr<Delegate> delegate,
     std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory,
     const GURL& default_safe_page)
-    : sb_service_(service),
-      delegate_(std::move(delegate)),
+    : delegate_(std::move(delegate)),
       blocking_page_factory_(std::move(blocking_page_factory)),
       default_safe_page_(default_safe_page) {}
 
@@ -56,12 +54,6 @@ void SafeBrowsingUIManager::Stop(bool shutdown) {
 
   if (shutdown) {
     shut_down_ = true;
-
-    // Tests require this variable to be nulled out to avoid errors due to mocks
-    // being leaked.
-    // TODO(crbug.com/1226567): Eliminate the need for this as part of
-    // eliminating this class' dependence on SafeBrowsingService altogether.
-    sb_service_ = nullptr;
   }
 }
 
@@ -178,14 +170,14 @@ void SafeBrowsingUIManager::MaybeReportSafeBrowsingHit(
 
   // The service may delete the ping manager (i.e. when user disabling service,
   // etc). This happens on the IO thread.
-  if (shut_down_ || !sb_service_->ping_manager())
+  if (shut_down_ || !delegate_->GetPingManagerIfExists())
     return;
 
   DVLOG(1) << "ReportSafeBrowsingHit: " << hit_report.malicious_url << " "
            << hit_report.page_url << " " << hit_report.referrer_url << " "
            << hit_report.is_subresource << " " << hit_report.threat_type;
-  sb_service_->ping_manager()->ReportSafeBrowsingHit(
-      sb_service_->GetURLLoaderFactory(web_contents->GetBrowserContext()),
+  delegate_->GetPingManagerIfExists()->ReportSafeBrowsingHit(
+      delegate_->GetURLLoaderFactory(web_contents->GetBrowserContext()),
       hit_report);
 }
 
@@ -270,13 +262,13 @@ void SafeBrowsingUIManager::SendSerializedThreatDetails(
 
   // The service may delete the ping manager (i.e. when user disabling service,
   // etc). This happens on the IO thread.
-  if (shut_down_ || !sb_service_->ping_manager())
+  if (shut_down_ || !delegate_->GetPingManagerIfExists())
     return;
 
   if (!serialized.empty()) {
     DVLOG(1) << "Sending serialized threat details.";
-    sb_service_->ping_manager()->ReportThreatDetails(
-        sb_service_->GetURLLoaderFactory(browser_context), serialized);
+    delegate_->GetPingManagerIfExists()->ReportThreatDetails(
+        delegate_->GetURLLoaderFactory(browser_context), serialized);
   }
 }
 

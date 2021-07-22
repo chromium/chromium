@@ -150,9 +150,8 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
 
 class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
  public:
-  explicit MockSafeBrowsingUIManager(SafeBrowsingService* service)
+  MockSafeBrowsingUIManager()
       : SafeBrowsingUIManager(
-            service,
             std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
             std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
             GURL(chrome::kChromeUINewTabURL)) {}
@@ -323,11 +322,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     // Inject service classes.
     csd_service_ = std::make_unique<MockClientSideDetectionService>();
     database_manager_ = new StrictMock<MockSafeBrowsingDatabaseManager>();
-    ui_manager_ = new StrictMock<MockSafeBrowsingUIManager>(
-        // TODO(crbug/925153): Port consumers of the SafeBrowsingService to
-        // use the interface in components/safe_browsing, and remove this cast.
-        static_cast<safe_browsing::SafeBrowsingService*>(
-            SafeBrowsingService::CreateSafeBrowsingService()));
+    ui_manager_ = new StrictMock<MockSafeBrowsingUIManager>();
 
     identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                    signin::ConsentLevel::kSync);

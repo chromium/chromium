@@ -147,12 +147,9 @@ class TestSafeBrowsingUIManager : public SafeBrowsingUIManager {
  public:
   TestSafeBrowsingUIManager();
   explicit TestSafeBrowsingUIManager(
-      const scoped_refptr<SafeBrowsingService>& service);
-  explicit TestSafeBrowsingUIManager(
       std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory);
   void SendSerializedThreatDetails(content::BrowserContext* browser_context,
                                    const std::string& serialized) override;
-  void SetSafeBrowsingService(SafeBrowsingService* sb_service);
   std::list<std::string>* GetThreatDetails();
 
  protected:

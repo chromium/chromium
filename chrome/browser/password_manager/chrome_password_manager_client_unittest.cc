@@ -747,11 +747,8 @@ TEST_F(ChromePasswordManagerClientTest,
   // achieved by attaching an observer (SafeBrowsingUserInteractionObserver) to
   // the current WebContents. Create an observer and attach it to simulate a
   // delayed warning.
-  auto safe_browsing_service =
-      base::MakeRefCounted<safe_browsing::TestSafeBrowsingService>();
   auto ui_manager =
-      base::MakeRefCounted<safe_browsing::TestSafeBrowsingUIManager>(
-          safe_browsing_service);
+      base::MakeRefCounted<safe_browsing::TestSafeBrowsingUIManager>();
   security_interstitials::UnsafeResource resource;
   safe_browsing::SafeBrowsingUserInteractionObserver::CreateForWebContents(
       test_web_contents.get(), resource, /* is_main_frame= */ true, ui_manager);

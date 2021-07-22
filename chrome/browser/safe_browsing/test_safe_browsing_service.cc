@@ -76,7 +76,6 @@ void TestSafeBrowsingService::SetDatabaseManager(
 
 void TestSafeBrowsingService::SetUIManager(
     TestSafeBrowsingUIManager* ui_manager) {
-  ui_manager->SetSafeBrowsingService(this);
   ui_manager_ = ui_manager;
 }
 
@@ -202,15 +201,6 @@ void TestSafeBrowsingServiceFactory::UseV4LocalDatabaseManager() {
 // TestSafeBrowsingUIManager functions:
 TestSafeBrowsingUIManager::TestSafeBrowsingUIManager()
     : SafeBrowsingUIManager(
-          nullptr,
-          std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
-          std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
-          GURL(chrome::kChromeUINewTabURL)) {}
-
-TestSafeBrowsingUIManager::TestSafeBrowsingUIManager(
-    const scoped_refptr<SafeBrowsingService>& service)
-    : SafeBrowsingUIManager(
-          service,
           std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
           std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
           GURL(chrome::kChromeUINewTabURL)) {}
@@ -218,15 +208,9 @@ TestSafeBrowsingUIManager::TestSafeBrowsingUIManager(
 TestSafeBrowsingUIManager::TestSafeBrowsingUIManager(
     std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory)
     : SafeBrowsingUIManager(
-          nullptr,
           std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
           std::move(blocking_page_factory),
           GURL(chrome::kChromeUINewTabURL)) {}
-
-void TestSafeBrowsingUIManager::SetSafeBrowsingService(
-    SafeBrowsingService* sb_service) {
-  sb_service_ = sb_service;
-}
 
 void TestSafeBrowsingUIManager::SendSerializedThreatDetails(
     content::BrowserContext* browser_context,

@@ -165,7 +165,6 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
   // The safe browsing UI manager does not need a service for this test.
   MockSafeBrowsingUIManager()
       : SafeBrowsingUIManager(
-            nullptr,
             std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
             std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
             GURL(chrome::kChromeUINewTabURL)),

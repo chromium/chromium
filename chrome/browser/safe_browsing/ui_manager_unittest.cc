@@ -188,6 +188,11 @@ class TestSafeBrowsingUIManagerDelegate
       content::BrowserContext* browser_context) override {
     return nullptr;
   }
+  PingManager* GetPingManagerIfExists() override { return nullptr; }
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
+      content::BrowserContext* browser_context) override {
+    return nullptr;
+  }
   bool IsMetricsAndCrashReportingEnabled() override { return false; }
 
   void set_is_hosting_extension(bool is_hosting_extension) {
@@ -208,7 +213,7 @@ class SafeBrowsingUIManagerTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<TestSafeBrowsingUIManagerDelegate>();
     raw_ui_manager_delegate_ = ui_manager_delegate.get();
     ui_manager_ = new SafeBrowsingUIManager(
-        nullptr, std::move(ui_manager_delegate),
+        std::move(ui_manager_delegate),
         std::make_unique<TestSafeBrowsingBlockingPageFactory>(),
         GURL("chrome://new-tab-page/"));
   }
