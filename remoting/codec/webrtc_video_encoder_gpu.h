@@ -5,6 +5,7 @@
 #ifndef REMOTING_CODEC_WEBRTC_VIDEO_ENCODER_GPU_H_
 #define REMOTING_CODEC_WEBRTC_VIDEO_ENCODER_GPU_H_
 
+#include "base/containers/flat_map.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "build/build_config.h"

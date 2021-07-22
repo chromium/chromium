@@ -5,11 +5,8 @@
 #ifndef MEDIA_BASE_VIDEO_FRAME_METADATA_H_
 #define MEDIA_BASE_VIDEO_FRAME_METADATA_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "media/base/media_export.h"
 #include "media/base/video_transformation.h"
