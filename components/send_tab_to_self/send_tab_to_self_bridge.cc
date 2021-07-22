@@ -676,6 +676,11 @@ void SendTabToSelfBridge::SetTargetDeviceInfoList() {
 
     SharingDeviceNames device_names = GetSharingDeviceNames(device.get());
 
+    // Don't include this device if it has the same name as the local device.
+    if (device_names.full_name == local_device_name_) {
+      continue;
+    }
+
     // Only keep one device per device name. We only keep the first occurrence
     // which is the most recent.
     if (unique_device_names.insert(device_names.full_name).second) {

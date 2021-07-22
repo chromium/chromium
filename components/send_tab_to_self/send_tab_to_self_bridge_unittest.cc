@@ -776,7 +776,7 @@ TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_NoLocalDevice) {
 
   std::unique_ptr<syncer::DeviceInfo> other_local_device =
       CreateDevice("other_local_guid", kLocalDeviceName, clock()->Now());
-  AddTestDevice(local_device.get());
+  AddTestDevice(other_local_device.get());
 
   std::unique_ptr<syncer::DeviceInfo> other_device =
       CreateDevice("other_guid", "other_device_name", clock()->Now());
