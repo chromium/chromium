@@ -16427,7 +16427,8 @@ class OmniboxPedalImplementationsWithoutTranslationConsoleTest
   }
 };
 
-TEST_F(OmniboxPedalImplementationsTest, PedalClearBrowsingDataExecutes) {
+TEST_F(OmniboxPedalImplementationsTest,
+       DISABLED_PedalClearBrowsingDataExecutes) {
   MockAutocompleteProviderClient client;
   OmniboxPedalProvider provider(client, true);
 
@@ -16451,7 +16452,7 @@ TEST_F(OmniboxPedalImplementationsWithoutTranslationConsoleTest,
 }
 
 TEST_F(OmniboxPedalImplementationsTest,
-       PedalIncognitoClearBrowsingDataExecutes) {
+       DISABLED_PedalIncognitoClearBrowsingDataExecutes) {
   MockAutocompleteProviderClient client;
   EXPECT_CALL(client, IsOffTheRecord()).WillOnce(testing::Return(true));
   OmniboxPedalProvider provider(client, true);
@@ -16479,7 +16480,7 @@ TEST_F(OmniboxPedalImplementationsWithoutTranslationConsoleTest,
 }
 
 TEST_F(OmniboxPedalImplementationsTest,
-       UnorderedSynonymExpressionsAreConceptMatches) {
+       DISABLED_UnorderedSynonymExpressionsAreConceptMatches) {
   TestLiteralConceptExpressions();
 }
 

@@ -46,6 +46,7 @@ class OmniboxPedalClearBrowsingData : public OmniboxPedal {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_ONE_OPTIONAL_GOOGLE_CHROME
         {
             false,
             true,
@@ -61,6 +62,7 @@ class OmniboxPedalClearBrowsingData : public OmniboxPedal {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_ONE_REQUIRED_INFORMATION,
         },
+#endif
     };
   }
 
@@ -108,6 +110,7 @@ class OmniboxPedalManagePasswords : public OmniboxPedal {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_PASSWORDS_ONE_OPTIONAL_GOOGLE_CHROME
         {
             false,
             true,
@@ -123,6 +126,7 @@ class OmniboxPedalManagePasswords : public OmniboxPedal {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_PASSWORDS_ONE_REQUIRED_CREDENTIALS,
         },
+#endif
     };
   }
 
@@ -146,6 +150,7 @@ class OmniboxPedalUpdateCreditCard : public OmniboxPedal {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CREDIT_CARD_ONE_OPTIONAL_GOOGLE_CHROME
         {
             false,
             true,
@@ -161,6 +166,7 @@ class OmniboxPedalUpdateCreditCard : public OmniboxPedal {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CREDIT_CARD_ONE_REQUIRED_CREDIT_CARD_INFORMATION,
         },
+#endif
     };
   }
 
@@ -184,6 +190,7 @@ class OmniboxPedalLaunchIncognito : public OmniboxPedal {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_LAUNCH_INCOGNITO_ONE_OPTIONAL_GOOGLE_CHROME
         {
             false,
             true,
@@ -199,6 +206,7 @@ class OmniboxPedalLaunchIncognito : public OmniboxPedal {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_LAUNCH_INCOGNITO_ONE_REQUIRED_INCOGNITO_WINDOW,
         },
+#endif
     };
   }
 
@@ -231,6 +239,7 @@ class OmniboxPedalTranslate : public OmniboxPedal {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_TRANSLATE_ONE_OPTIONAL_GOOGLE_CHROME
         {
             false,
             true,
@@ -246,6 +255,7 @@ class OmniboxPedalTranslate : public OmniboxPedal {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_TRANSLATE_ONE_REQUIRED_THIS_PAGE,
         },
+#endif
     };
   }
 
@@ -284,6 +294,7 @@ class OmniboxPedalUpdateChrome : public OmniboxPedal {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CHROME_ONE_REQUIRED_GOOGLE_CHROME
         {
             true,
             true,
@@ -294,6 +305,7 @@ class OmniboxPedalUpdateChrome : public OmniboxPedal {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CHROME_ONE_REQUIRED_INSTALL,
         },
+#endif
     };
   }
 
@@ -317,6 +329,7 @@ class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_RUN_CHROME_SAFETY_CHECK_ONE_OPTIONAL_ACTIVATE
         {
             false,
             true,
@@ -337,6 +350,7 @@ class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_RUN_CHROME_SAFETY_CHECK_ONE_REQUIRED_PASSWORDS,
         },
+#endif
     };
   }
 
@@ -360,6 +374,7 @@ class OmniboxPedalManageSecuritySettings : public OmniboxPedal {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SECURITY_SETTINGS_ANY_OPTIONAL_GOOGLE_CHROME
         {
             false,
             false,
@@ -375,6 +390,7 @@ class OmniboxPedalManageSecuritySettings : public OmniboxPedal {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SECURITY_SETTINGS_ONE_OPTIONAL_ALTER,
         },
+#endif
     };
   }
 
@@ -397,6 +413,7 @@ class OmniboxPedalManageCookies : public OmniboxPedal {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_COOKIES_ONE_REQUIRED_COOKIE_SETTINGS
         {
             true,
             true,
@@ -412,6 +429,7 @@ class OmniboxPedalManageCookies : public OmniboxPedal {
             false,
             IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_COOKIES_ANY_OPTIONAL_THIRD_PARTY,
         },
+#endif
     };
   }
 
@@ -434,6 +452,7 @@ class OmniboxPedalManageAddresses : public OmniboxPedal {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_ADDRESSES_ONE_REQUIRED_CONTROL
         {
             true,
             true,
@@ -449,6 +468,7 @@ class OmniboxPedalManageAddresses : public OmniboxPedal {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_ADDRESSES_ONE_OPTIONAL_GOOGLE_CHROME,
         },
+#endif
     };
   }
 
@@ -471,6 +491,7 @@ class OmniboxPedalManageSync : public OmniboxPedal {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SYNC_ONE_REQUIRED_SYNC_SETTINGS
         {
             true,
             true,
@@ -482,6 +503,7 @@ class OmniboxPedalManageSync : public OmniboxPedal {
             IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SYNC_ANY_REQUIRED_GOOGLE_CHROME,
         },
     };
+#endif
   }
 
  protected:
@@ -504,6 +526,7 @@ class OmniboxPedalManageSiteSettings : public OmniboxPedal {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SITE_SETTINGS_ONE_REQUIRED_SITE_PERMISSIONS
         {
             true,
             true,
@@ -514,6 +537,7 @@ class OmniboxPedalManageSiteSettings : public OmniboxPedal {
             false,
             IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SITE_SETTINGS_ANY_REQUIRED_GOOGLE_CHROME,
         },
+#endif
     };
   }
 
@@ -558,6 +582,7 @@ class OmniboxPedalCreateGoogleDoc : public OmniboxPedalAuthRequired {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_DOC_ONE_REQUIRED_GOOGLE_WORKSPACE
         {
             true,
             true,
@@ -573,6 +598,7 @@ class OmniboxPedalCreateGoogleDoc : public OmniboxPedalAuthRequired {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_DOC_ONE_REQUIRED_DOCUMENT,
         },
+#endif
     };
   }
 
@@ -600,6 +626,7 @@ class OmniboxPedalCreateGoogleSheet : public OmniboxPedalAuthRequired {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SHEET_ANY_REQUIRED_CREATE
         {
             true,
             false,
@@ -615,6 +642,7 @@ class OmniboxPedalCreateGoogleSheet : public OmniboxPedalAuthRequired {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SHEET_ONE_REQUIRED_SPREADSHEET,
         },
+#endif
     };
   }
 
@@ -642,6 +670,7 @@ class OmniboxPedalCreateGoogleSlide : public OmniboxPedalAuthRequired {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SLIDE_ONE_REQUIRED_CREATE
         {
             true,
             true,
@@ -657,6 +686,7 @@ class OmniboxPedalCreateGoogleSlide : public OmniboxPedalAuthRequired {
             false,
             IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SLIDE_ANY_REQUIRED_WORKSPACE,
         },
+#endif
     };
   }
 
@@ -684,6 +714,7 @@ class OmniboxPedalCreateGoogleCalendarEvent : public OmniboxPedalAuthRequired {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_CALENDAR_EVENT_ANY_REQUIRED_SCHEDULE
         {
             true,
             false,
@@ -699,6 +730,7 @@ class OmniboxPedalCreateGoogleCalendarEvent : public OmniboxPedalAuthRequired {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_CALENDAR_EVENT_ONE_REQUIRED_MEETING,
         },
+#endif
     };
   }
 
@@ -726,6 +758,7 @@ class OmniboxPedalCreateGoogleSite : public OmniboxPedalAuthRequired {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SITE_ANY_REQUIRED_CREATE
         {
             true,
             false,
@@ -741,6 +774,7 @@ class OmniboxPedalCreateGoogleSite : public OmniboxPedalAuthRequired {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SITE_ONE_REQUIRED_WEBSITE,
         },
+#endif
     };
   }
 
@@ -768,6 +802,7 @@ class OmniboxPedalCreateGoogleKeepNote : public OmniboxPedalAuthRequired {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_KEEP_NOTE_ANY_REQUIRED_CREATE
         {
             true,
             false,
@@ -783,6 +818,7 @@ class OmniboxPedalCreateGoogleKeepNote : public OmniboxPedalAuthRequired {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_KEEP_NOTE_ONE_REQUIRED_NOTES,
         },
+#endif
     };
   }
 
@@ -810,6 +846,7 @@ class OmniboxPedalCreateGoogleForm : public OmniboxPedalAuthRequired {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_FORM_ANY_REQUIRED_CREATE
         {
             true,
             false,
@@ -825,6 +862,7 @@ class OmniboxPedalCreateGoogleForm : public OmniboxPedalAuthRequired {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_FORM_ONE_REQUIRED_SURVEY,
         },
+#endif
     };
   }
 
@@ -847,6 +885,7 @@ class OmniboxPedalSeeChromeTips : public OmniboxPedal {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_SEE_CHROME_TIPS_ONE_OPTIONAL_MAKE_THE_MOST_OF
         {
             false,
             true,
@@ -862,6 +901,7 @@ class OmniboxPedalSeeChromeTips : public OmniboxPedal {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_SEE_CHROME_TIPS_ONE_REQUIRED_NEW_CHROME_FEATURES,
         },
+#endif
     };
   }
 
@@ -889,6 +929,7 @@ class OmniboxPedalManageGoogleAccount : public OmniboxPedalAuthRequired {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_GOOGLE_ACCOUNT_ONE_REQUIRED_GOOGLE_ACCOUNT
         {
             true,
             true,
@@ -904,6 +945,7 @@ class OmniboxPedalManageGoogleAccount : public OmniboxPedalAuthRequired {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_GOOGLE_ACCOUNT_ONE_REQUIRED_CONTROL,
         },
+#endif
     };
   }
 
@@ -931,6 +973,7 @@ class OmniboxPedalChangeGooglePassword : public OmniboxPedalAuthRequired {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CHANGE_GOOGLE_PASSWORD_ONE_REQUIRED_GOOGLE_ACCOUNT_PASSWORD
         {
             true,
             true,
@@ -946,6 +989,7 @@ class OmniboxPedalChangeGooglePassword : public OmniboxPedalAuthRequired {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_CHANGE_GOOGLE_PASSWORD_ONE_REQUIRED_CHANGE,
         },
+#endif
     };
   }
 
@@ -969,6 +1013,7 @@ class OmniboxPedalCloseIncognitoWindows : public OmniboxPedal {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CLOSE_INCOGNITO_WINDOWS_ONE_REQUIRED_CLOSE
         {
             true,
             true,
@@ -984,6 +1029,7 @@ class OmniboxPedalCloseIncognitoWindows : public OmniboxPedal {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_CLOSE_INCOGNITO_WINDOWS_ONE_OPTIONAL_BROWSERS,
         },
+#endif
     };
   }
 
@@ -1011,6 +1057,7 @@ class OmniboxPedalPlayChromeDinoGame : public OmniboxPedal {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_OPTIONAL_PLAY
         {
             false,
             true,
@@ -1031,6 +1078,7 @@ class OmniboxPedalPlayChromeDinoGame : public OmniboxPedal {
             true,
             IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_OPTIONAL_GAME,
         },
+#endif
     };
   }
 

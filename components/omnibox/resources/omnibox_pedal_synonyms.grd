@@ -127,69 +127,6 @@
       <message name="IDS_OMNIBOX_PEDALS_IGNORE_GROUP" is_accessibility_with_no_ui="true" desc="The common IGNORE group (a.k.a. 'stop words'). These token sequences will be removed from input before checking for matches.">
         inside, within, for, how, the, an, do, in, my, on, to, a, i
       </message>
-      <!-- Pedal #1: CLEAR_BROWSING_DATA -->
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_ONE_OPTIONAL_GOOGLE_CHROME" is_accessibility_with_no_ui="true" desc="Synonyms for the CLEAR_BROWSING_DATA Pedal's 'google chrome' group. To trigger, exactly ONE of this group is OPTIONAL.">
-        google chrome, browsing, browser, chrome
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_ONE_REQUIRED_DELETE" is_accessibility_with_no_ui="true" desc="Synonyms for the CLEAR_BROWSING_DATA Pedal's 'delete' group. To trigger, exactly ONE of this group is REQUIRED.">
-        delete, remove, clear, erase, wipe
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_ONE_REQUIRED_INFORMATION" is_accessibility_with_no_ui="true" desc="Synonyms for the CLEAR_BROWSING_DATA Pedal's 'information' group. To trigger, exactly ONE of this group is REQUIRED.">
-        information, cookies, history, cache, data, info
-      </message>
-
-      <!-- Pedal #2: MANAGE_PASSWORDS -->
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_PASSWORDS_ONE_OPTIONAL_GOOGLE_CHROME" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_PASSWORDS Pedal's 'google chrome' group. To trigger, exactly ONE of this group is OPTIONAL.">
-        google chrome, browser, chrome
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_PASSWORDS_ONE_REQUIRED_MANAGER" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_PASSWORDS Pedal's 'manager' group. To trigger, exactly ONE of this group is REQUIRED.">
-        manager, change, manage, update, edit, save, show, view
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_PASSWORDS_ONE_REQUIRED_CREDENTIALS" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_PASSWORDS Pedal's 'credentials' group. To trigger, exactly ONE of this group is REQUIRED.">
-        credentials, passwords, password
-      </message>
-
-      <!-- Pedal #3: UPDATE_CREDIT_CARD -->
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CREDIT_CARD_ONE_OPTIONAL_GOOGLE_CHROME" is_accessibility_with_no_ui="true" desc="Synonyms for the UPDATE_CREDIT_CARD Pedal's 'google chrome' group. To trigger, exactly ONE of this group is OPTIONAL.">
-        google chrome, browser, chrome
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CREDIT_CARD_ONE_REQUIRED_CHANGE" is_accessibility_with_no_ui="true" desc="Synonyms for the UPDATE_CREDIT_CARD Pedal's 'change' group. To trigger, exactly ONE of this group is REQUIRED.">
-        change, manage, update, edit, save
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CREDIT_CARD_ONE_REQUIRED_CREDIT_CARD_INFORMATION" is_accessibility_with_no_ui="true" desc="Synonyms for the UPDATE_CREDIT_CARD Pedal's 'credit card information' group. To trigger, exactly ONE of this group is REQUIRED.">
-        credit card information, card information, credit card info, payment methods, credit cards, credit card, card info, payments, payment, cards
-      </message>
-
-      <!-- Pedal #4: LAUNCH_INCOGNITO -->
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_LAUNCH_INCOGNITO_ONE_OPTIONAL_GOOGLE_CHROME" is_accessibility_with_no_ui="true" desc="Synonyms for the LAUNCH_INCOGNITO Pedal's 'google chrome' group. To trigger, exactly ONE of this group is OPTIONAL.">
-        google chrome, browser, chrome
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_LAUNCH_INCOGNITO_ONE_OPTIONAL_CREATE" is_accessibility_with_no_ui="true" desc="Synonyms for the LAUNCH_INCOGNITO Pedal's 'create' group. To trigger, exactly ONE of this group is OPTIONAL.">
-        create, launch, enter, start, open
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_LAUNCH_INCOGNITO_ONE_REQUIRED_INCOGNITO_WINDOW" is_accessibility_with_no_ui="true" desc="Synonyms for the LAUNCH_INCOGNITO Pedal's 'incognito window' group. To trigger, exactly ONE of this group is REQUIRED.">
-        incognito window, incognito mode, private window, incognito tab, private mode, private tab, incognito
-      </message>
-
-      <!-- Pedal #5: TRANSLATE -->
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_TRANSLATE_ONE_OPTIONAL_GOOGLE_CHROME" is_accessibility_with_no_ui="true" desc="Synonyms for the TRANSLATE Pedal's 'google chrome' group. To trigger, exactly ONE of this group is OPTIONAL.">
-        google chrome, browser, chrome
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_TRANSLATE_ONE_REQUIRED_CHANGE_LANGUAGE" is_accessibility_with_no_ui="true" desc="Synonyms for the TRANSLATE Pedal's 'change language' group. To trigger, exactly ONE of this group is REQUIRED.">
-        change language, translate
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_TRANSLATE_ONE_REQUIRED_THIS_PAGE" is_accessibility_with_no_ui="true" desc="Synonyms for the TRANSLATE Pedal's 'this page' group. To trigger, exactly ONE of this group is REQUIRED.">
-        this page, web page, webpage, page, this
-      </message>
-
-      <!-- Pedal #6: UPDATE_CHROME -->
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CHROME_ONE_REQUIRED_GOOGLE_CHROME" is_accessibility_with_no_ui="true" desc="Synonyms for the UPDATE_CHROME Pedal's 'google chrome' group. To trigger, exactly ONE of this group is REQUIRED.">
-        google chrome, browser, chrome
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CHROME_ONE_REQUIRED_INSTALL" is_accessibility_with_no_ui="true" desc="Synonyms for the UPDATE_CHROME Pedal's 'install' group. To trigger, exactly ONE of this group is REQUIRED.">
-        install, updates, upgrade, update
-      </message>
-
       <!-- Pedal #7: RUN_CHROME_SAFETY_CHECK -->
       <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_RUN_CHROME_SAFETY_CHECK_ONE_OPTIONAL_ACTIVATE" is_accessibility_with_no_ui="true" desc="Synonyms for the RUN_CHROME_SAFETY_CHECK Pedal's 'activate' group. To trigger, exactly ONE of this group is OPTIONAL.">
         activate, perform, run, use
@@ -213,17 +150,6 @@
       </message>
       <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SECURITY_SETTINGS_ONE_OPTIONAL_ALTER" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_SECURITY_SETTINGS Pedal's 'alter' group. To trigger, exactly ONE of this group is OPTIONAL.">
         alter, use
-      </message>
-
-      <!-- Pedal #9: MANAGE_COOKIES -->
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_COOKIES_ONE_REQUIRED_COOKIE_SETTINGS" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_COOKIES Pedal's 'cookie settings' group. To trigger, exactly ONE of this group is REQUIRED.">
-        cookie settings, do not track, cookies
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_COOKIES_ANY_REQUIRED_GOOGLE_CHROME" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_COOKIES Pedal's 'google chrome' group. To trigger, ANY number of this group is REQUIRED.">
-        google chrome, disallow, browser, control, google, chrome, manage, block, allow, alter, use
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_COOKIES_ANY_OPTIONAL_THIRD_PARTY" is_accessibility_with_no_ui="true" desc="Synonyms for the MANAGE_COOKIES Pedal's 'third party' group. To trigger, ANY number of this group is OPTIONAL.">
-        third party, all
       </message>
 
       <!-- Pedal #10: MANAGE_ADDRESSES -->
@@ -361,31 +287,6 @@
       </message>
       <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CHANGE_GOOGLE_PASSWORD_ONE_REQUIRED_CHANGE" is_accessibility_with_no_ui="true" desc="Synonyms for the CHANGE_GOOGLE_PASSWORD Pedal's 'change' group. To trigger, exactly ONE of this group is REQUIRED.">
         change, update, reset, fix
-      </message>
-
-      <!-- Pedal #26: CLOSE_INCOGNITO_WINDOWS -->
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CLOSE_INCOGNITO_WINDOWS_ONE_REQUIRED_CLOSE" is_accessibility_with_no_ui="true" desc="Synonyms for the CLOSE_INCOGNITO_WINDOWS Pedal's 'close' group. To trigger, exactly ONE of this group is REQUIRED.">
-        close, exit, quit
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CLOSE_INCOGNITO_WINDOWS_ONE_REQUIRED_INCOGNITO" is_accessibility_with_no_ui="true" desc="Synonyms for the CLOSE_INCOGNITO_WINDOWS Pedal's 'incognito' group. To trigger, exactly ONE of this group is REQUIRED.">
-        incognito
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_CLOSE_INCOGNITO_WINDOWS_ONE_OPTIONAL_BROWSERS" is_accessibility_with_no_ui="true" desc="Synonyms for the CLOSE_INCOGNITO_WINDOWS Pedal's 'browsers' group. To trigger, exactly ONE of this group is OPTIONAL.">
-        browsers, windows, browser, window, tabs
-      </message>
-
-      <!-- Pedal #27: PLAY_CHROME_DINO_GAME -->
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_OPTIONAL_PLAY" is_accessibility_with_no_ui="true" desc="Synonyms for the PLAY_CHROME_DINO_GAME Pedal's 'play' group. To trigger, exactly ONE of this group is OPTIONAL.">
-        play, run
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_REQUIRED_GOOGLE_CHROME" is_accessibility_with_no_ui="true" desc="Synonyms for the PLAY_CHROME_DINO_GAME Pedal's 'google chrome' group. To trigger, exactly ONE of this group is REQUIRED.">
-        google chrome, chrome
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_REQUIRED_DINOSAUR" is_accessibility_with_no_ui="true" desc="Synonyms for the PLAY_CHROME_DINO_GAME Pedal's 'dinosaur' group. To trigger, exactly ONE of this group is REQUIRED.">
-        dinosaur, dino
-      </message>
-      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_OPTIONAL_GAME" is_accessibility_with_no_ui="true" desc="Synonyms for the PLAY_CHROME_DINO_GAME Pedal's 'game' group. To trigger, exactly ONE of this group is OPTIONAL.">
-        game
       </message>
 
     </messages>
