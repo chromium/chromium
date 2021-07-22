@@ -237,7 +237,7 @@ void SigninViewController::ShowModalSyncConfirmationDialog() {
 }
 
 void SigninViewController::ShowModalEnterpriseConfirmationDialog(
-    const std::string& domain_name,
+    const AccountInfo& account_info,
     SkColor profile_color,
     base::OnceCallback<void(bool)> callback) {
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
@@ -247,12 +247,10 @@ void SigninViewController::ShowModalEnterpriseConfirmationDialog(
   // is closed.
   delegate_ =
       SigninViewControllerDelegate::CreateEnterpriseConfirmationDelegate(
-          browser_, domain_name, profile_color,
+          browser_, account_info, profile_color,
           base::BindOnce(
               [](Browser* browser, base::OnceCallback<void(bool)> callback,
-                 bool result) {
-                std::move(callback).Run(result);
-              },
+                 bool result) { std::move(callback).Run(result); },
               base::Unretained(browser_), std::move(callback)));
   delegate_observation_.Observe(delegate_);
   chrome::RecordDialogCreation(

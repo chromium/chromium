@@ -14,10 +14,13 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class Browser;
+struct AccountInfo;
 
 namespace base {
 class FilePath;
@@ -28,12 +31,13 @@ class FilePath;
 class EnterpriseProfileWelcomeHandler
     : public content::WebUIMessageHandler,
       public ProfileAttributesStorage::Observer,
-      public BrowserListObserver {
+      public BrowserListObserver,
+      public signin::IdentityManager::Observer {
  public:
   EnterpriseProfileWelcomeHandler(
       Browser* browser,
       EnterpriseProfileWelcomeUI::ScreenType type,
-      const std::string& domain_name,
+      const AccountInfo& account_info,
       SkColor profile_color,
       base::OnceCallback<void(bool)> proceed_callback);
   ~EnterpriseProfileWelcomeHandler() override;
@@ -57,6 +61,9 @@ class EnterpriseProfileWelcomeHandler
 
   // BrowserListObserver:
   void OnBrowserRemoved(Browser* browser) override;
+
+  // signin::IdentityManager::Observer:
+  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
   // Access to construction parameters for tests.
   EnterpriseProfileWelcomeUI::ScreenType GetTypeForTesting();
@@ -82,14 +89,21 @@ class EnterpriseProfileWelcomeHandler
   // Returns the ProfilesAttributesEntry associated with the current profile.
   ProfileAttributesEntry* GetProfileEntry() const;
 
+  std::string GetPictureUrl();
+
   base::FilePath profile_path_;
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
       observed_profile_{this};
 
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      observed_account_{this};
+
   Browser* browser_ = nullptr;
   const EnterpriseProfileWelcomeUI::ScreenType type_;
   const std::string domain_name_;
+  const CoreAccountId account_id_;
   SkColor profile_color_;
   base::OnceCallback<void(bool)> proceed_callback_;
 };

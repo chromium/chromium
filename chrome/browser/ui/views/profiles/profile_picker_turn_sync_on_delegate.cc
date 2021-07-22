@@ -121,7 +121,7 @@ void ProfilePickerTurnSyncOnDelegate::ShowMergeSyncDataConfirmation(
 }
 
 void ProfilePickerTurnSyncOnDelegate::ShowEnterpriseAccountConfirmation(
-    const std::string& email,
+    const AccountInfo& account_info,
     DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
   enterprise_account_ = true;
   if (!IsEnterpriseFlowEnabled()) {
@@ -136,7 +136,7 @@ void ProfilePickerTurnSyncOnDelegate::ShowEnterpriseAccountConfirmation(
       controller_->FinishAndOpenBrowser(
           base::BindOnce(&DiceTurnSyncOnHelper::Delegate::
                              ShowEnterpriseAccountConfirmationForBrowser,
-                         email, /*prompt_for_new_profile=*/false,
+                         account_info.email, /*prompt_for_new_profile=*/false,
                          std::move(wrapped_callback)),
           /*enterprise_sync_consent_needed=*/true);
     }

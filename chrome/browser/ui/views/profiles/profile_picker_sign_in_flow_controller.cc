@@ -252,10 +252,6 @@ const ui::ThemeProvider* ProfilePickerSignInFlowController::GetThemeProvider()
   return &ThemeService::GetThemeProviderForProfile(profile_);
 }
 
-std::string ProfilePickerSignInFlowController::GetUserDomain() const {
-  return gaia::ExtractDomainName(email_);
-}
-
 void ProfilePickerSignInFlowController::SwitchToSyncConfirmation() {
   host_->ShowScreen(
       contents(), GURL(chrome::kChromeUISyncConfirmationURL),
@@ -425,9 +421,12 @@ void ProfilePickerSignInFlowController::
           ->GetWebUI()
           ->GetController()
           ->GetAs<EnterpriseProfileWelcomeUI>();
-  enterprise_profile_welcome_ui->Initialize(/*browser=*/nullptr, type,
-                                            GetUserDomain(), GetProfileColor(),
-                                            std::move(proceed_callback));
+
+  enterprise_profile_welcome_ui->Initialize(
+      /*browser=*/nullptr, type,
+      IdentityManagerFactory::GetForProfile(profile_)
+          ->FindExtendedAccountInfoByEmailAddress(email_),
+      GetProfileColor(), std::move(proceed_callback));
 }
 
 void ProfilePickerSignInFlowController::FinishAndOpenBrowser(

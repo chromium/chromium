@@ -20,6 +20,7 @@
 
 class Browser;
 class GURL;
+struct AccountInfo;
 
 namespace content {
 class WebContents;
@@ -65,7 +66,7 @@ class SigninViewControllerDelegateViews
     BUILDFLAG(IS_CHROMEOS_LACROS)
   static std::unique_ptr<views::WebView> CreateEnterpriseConfirmationWebView(
       Browser* browser,
-      const std::string& domain_name,
+      const AccountInfo& account_info,
       SkColor profile_color,
       base::OnceCallback<void(bool)> callback);
 #endif

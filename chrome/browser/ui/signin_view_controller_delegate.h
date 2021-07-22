@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 
 class Browser;
+struct AccountInfo;
 struct CoreAccountId;
 
 namespace content {
@@ -69,7 +70,7 @@ class SigninViewControllerDelegate {
   // should delete itself when the window it's managing is closed.
   static SigninViewControllerDelegate* CreateEnterpriseConfirmationDelegate(
       Browser* browser,
-      const std::string& email,
+      const AccountInfo& account_info,
       SkColor profile_color,
       base::OnceCallback<void(bool)> callback);
 #endif

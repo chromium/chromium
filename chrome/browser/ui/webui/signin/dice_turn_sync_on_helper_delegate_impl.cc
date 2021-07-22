@@ -71,7 +71,7 @@ void OnEmailConfirmation(DiceTurnSyncOnHelper::SigninChoiceCallback callback,
   NOTREACHED();
 }
 
-void OnProfileCheckComplete(const std::string& email,
+void OnProfileCheckComplete(const AccountInfo& account_info,
                             DiceTurnSyncOnHelper::SigninChoiceCallback callback,
                             Browser* browser,
                             bool prompt_for_new_profile) {
@@ -81,7 +81,7 @@ void OnProfileCheckComplete(const std::string& email,
             ->GetProfileAttributesStorage()
             .GetProfileAttributesWithPath(browser->profile()->GetPath());
     browser->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
-        gaia::ExtractDomainName(email), GenerateNewProfileColor(entry).color,
+        account_info, GenerateNewProfileColor(entry).color,
         base::BindOnce(
             [](DiceTurnSyncOnHelper::SigninChoiceCallback callback,
                Browser* browser, bool prompt_for_new_profile,
@@ -99,7 +99,7 @@ void OnProfileCheckComplete(const std::string& email,
   }
 
   DiceTurnSyncOnHelper::Delegate::ShowEnterpriseAccountConfirmationForBrowser(
-      email, /*prompt_for_new_profile=*/prompt_for_new_profile,
+      account_info.email, /*prompt_for_new_profile=*/prompt_for_new_profile,
       std::move(callback), browser);
 }
 
@@ -124,13 +124,13 @@ void DiceTurnSyncOnHelperDelegateImpl::ShowLoginError(
 }
 
 void DiceTurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(
-    const std::string& email,
+    const AccountInfo& account_info,
     DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
   browser_ = EnsureBrowser(browser_, profile_);
   // Checking whether to show the prompt for a new profile is sometimes
   // asynchronous.
   ui::CheckShouldPromptForNewProfile(
-      profile_, base::BindOnce(&OnProfileCheckComplete, email,
+      profile_, base::BindOnce(&OnProfileCheckComplete, account_info,
                                std::move(callback), browser_));
 }
 

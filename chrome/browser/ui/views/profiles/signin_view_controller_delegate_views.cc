@@ -89,7 +89,7 @@ SigninViewControllerDelegateViews::CreateReauthConfirmationWebView(
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
     Browser* browser,
-    const std::string& domain_name,
+    const AccountInfo& account_info,
     SkColor profile_color,
     base::OnceCallback<void(bool)> callback) {
   std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
@@ -105,7 +105,7 @@ SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
   web_dialog_ui->Initialize(
       browser,
       EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation,
-      domain_name, profile_color, std::move(callback));
+      account_info, profile_color, std::move(callback));
 
   return web_view;
 }
@@ -340,12 +340,12 @@ SigninViewControllerDelegate::CreateReauthConfirmationDelegate(
 SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateEnterpriseConfirmationDelegate(
     Browser* browser,
-    const std::string& domain_name,
+    const AccountInfo& account_info,
     SkColor profile_color,
     base::OnceCallback<void(bool)> callback) {
   return new SigninViewControllerDelegateViews(
       SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
-          browser, domain_name, profile_color, std::move(callback)),
+          browser, account_info, profile_color, std::move(callback)),
       browser, ui::MODAL_TYPE_WINDOW, true, false);
 }
 #endif

@@ -43,7 +43,7 @@ class ForcedEnterpriseSigninInterceptionHandle
     DCHECK(browser_);
     DCHECK(callback_);
     ShowEnterpriseProfileInterceptionDialog(
-        bubble_parameters.intercepted_account.email,
+        bubble_parameters.intercepted_account,
         bubble_parameters.profile_highlight_color);
   }
 
@@ -54,13 +54,13 @@ class ForcedEnterpriseSigninInterceptionHandle
   }
 
  private:
-  void ShowEnterpriseProfileInterceptionDialog(const std::string email,
+  void ShowEnterpriseProfileInterceptionDialog(const AccountInfo& account_info,
                                                SkColor profile_color) {
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
     if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
       browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
-          gaia::ExtractDomainName(email), profile_color,
+          account_info, profile_color,
           base::BindOnce(&ForcedEnterpriseSigninInterceptionHandle::
                              OnEnterpriseInterceptionDialogClosed,
                          base::Unretained(this)));
@@ -68,7 +68,7 @@ class ForcedEnterpriseSigninInterceptionHandle
     }
 #endif
     DiceTurnSyncOnHelper::Delegate::ShowEnterpriseAccountConfirmationForBrowser(
-        email, true,
+        account_info.email, true,
         base::BindOnce(
             [](base::OnceCallback<void(bool)> callback,
                DiceTurnSyncOnHelper::SigninChoice choice) {

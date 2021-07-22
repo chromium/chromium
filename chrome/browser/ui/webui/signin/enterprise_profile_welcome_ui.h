@@ -11,6 +11,7 @@
 
 class Browser;
 class EnterpriseProfileWelcomeHandler;
+struct AccountInfo;
 
 namespace content {
 class WebUI;
@@ -36,7 +37,7 @@ class EnterpriseProfileWelcomeUI : public SigninWebDialogUI {
   // Initializes the EnterpriseProfileWelcomeUI.
   void Initialize(Browser* browser,
                   ScreenType type,
-                  const std::string& domain_name,
+                  const AccountInfo& account_info,
                   SkColor profile_color,
                   base::OnceCallback<void(bool)> proceed_callback);
 

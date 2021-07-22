@@ -76,10 +76,6 @@ class ProfilePickerSignInFlowController
   // Returns theme provider based on `profile_`.
   const ui::ThemeProvider* GetThemeProvider() const;
 
-  // Returns the domain of the email of the signed-in user or an empty string
-  // if the user is not signed-in.
-  std::string GetUserDomain() const;
-
   // Getter of the path of profile which is displayed on the profile switch
   // screen. Returns an empty path if no such screen has been displayed.
   base::FilePath switch_profile_path() const { return switch_profile_path_; }

@@ -381,7 +381,7 @@ void DiceTurnSyncOnHelper::OnRegisteredForPolicy(const std::string& dm_token,
           prefs::kUserAcceptedAccountManagement)) {
     // Allow user to create a new profile before continuing with sign-in.
     delegate_->ShowEnterpriseAccountConfirmation(
-        account_info_.email,
+        account_info_,
         base::BindOnce(&DiceTurnSyncOnHelper::OnEnterpriseAccountConfirmation,
                        weak_pointer_factory_.GetWeakPtr()));
     return;

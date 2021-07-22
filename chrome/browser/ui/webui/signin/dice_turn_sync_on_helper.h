@@ -94,7 +94,7 @@ class DiceTurnSyncOnHelper
     // sync being disabled even before fetching enterprise policies (e.g. sync
     // engine gets a 'disabled-by-enterprise' error from the server).
     virtual void ShowEnterpriseAccountConfirmation(
-        const std::string& email,
+        const AccountInfo& account_info,
         SigninChoiceCallback callback) = 0;
 
     // Shows a sync confirmation screen offering to open the Sync settings.

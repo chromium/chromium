@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/signin_view_controller.h"
@@ -23,8 +24,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
 
@@ -68,12 +71,13 @@ SkColor GetFrameColor(SkColor theme_color) {
 EnterpriseProfileWelcomeHandler::EnterpriseProfileWelcomeHandler(
     Browser* browser,
     EnterpriseProfileWelcomeUI::ScreenType type,
-    const std::string& domain_name,
+    const AccountInfo& account_info,
     SkColor profile_color,
     base::OnceCallback<void(bool)> proceed_callback)
     : browser_(browser),
       type_(type),
-      domain_name_(domain_name),
+      domain_name_(gaia::ExtractDomainName(account_info.email)),
+      account_id_(account_info.account_id),
       profile_color_(profile_color),
       proceed_callback_(std::move(proceed_callback)) {
   DCHECK(proceed_callback_);
@@ -130,13 +134,28 @@ void EnterpriseProfileWelcomeHandler::OnBrowserRemoved(Browser* browser) {
     browser_ = nullptr;
 }
 
+void EnterpriseProfileWelcomeHandler::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+  if (info.account_id == account_id_ && !info.account_image.IsEmpty()) {
+    UpdateProfileInfo(profile_path_);
+    observed_account_.Reset();
+  }
+}
+
 void EnterpriseProfileWelcomeHandler::OnJavascriptAllowed() {
-  observed_profile_.Observe(
-      &g_browser_process->profile_manager()->GetProfileAttributesStorage());
+  if (type_ !=
+      EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation) {
+    observed_profile_.Observe(
+        &g_browser_process->profile_manager()->GetProfileAttributesStorage());
+  } else {
+    observed_account_.Observe(
+        IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui())));
+  }
 }
 
 void EnterpriseProfileWelcomeHandler::OnJavascriptDisallowed() {
   observed_profile_.Reset();
+  observed_account_.Reset();
 }
 
 void EnterpriseProfileWelcomeHandler::HandleInitialized(
@@ -179,16 +198,11 @@ base::Value EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("backgroundColor", color_utils::SkColorToRgbaString(
                                            GetFrameColor(profile_color_)));
-
-  ProfileAttributesEntry* entry = GetProfileEntry();
-  const int avatar_icon_size = kAvatarSize * web_ui()->GetDeviceScaleFactor();
-  gfx::Image icon =
-      profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(avatar_icon_size), true,
-                                   avatar_icon_size, avatar_icon_size);
-  dict.SetStringKey("pictureUrl", webui::GetBitmapDataUrl(icon.AsBitmap()));
+  dict.SetStringKey("pictureUrl", GetPictureUrl());
 
   std::string enterprise_title;
   std::string enterprise_info;
+  ProfileAttributesEntry* entry = GetProfileEntry();
 
   switch (type_) {
     case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled:
@@ -239,6 +253,28 @@ ProfileAttributesEntry* EnterpriseProfileWelcomeHandler::GetProfileEntry()
           .GetProfileAttributesWithPath(profile_path_);
   DCHECK(entry);
   return entry;
+}
+
+std::string EnterpriseProfileWelcomeHandler::GetPictureUrl() {
+  absl::optional<gfx::Image> icon;
+  if (type_ ==
+      EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation) {
+    AccountInfo account_info =
+        IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
+            ->FindExtendedAccountInfoByAccountId(account_id_);
+    DCHECK(!account_info.IsEmpty());
+    icon = account_info.account_image.IsEmpty()
+               ? ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+                     profiles::GetPlaceholderAvatarIconResourceID())
+               : account_info.account_image;
+  }
+
+  const int avatar_icon_size = kAvatarSize * web_ui()->GetDeviceScaleFactor();
+  return webui::GetBitmapDataUrl(
+      profiles::GetSizedAvatarIcon(
+          icon.value_or(GetProfileEntry()->GetAvatarIcon(avatar_icon_size)),
+          true, avatar_icon_size, avatar_icon_size)
+          .AsBitmap());
 }
 
 EnterpriseProfileWelcomeUI::ScreenType

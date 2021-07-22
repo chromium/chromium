@@ -52,11 +52,11 @@ EnterpriseProfileWelcomeUI::~EnterpriseProfileWelcomeUI() = default;
 void EnterpriseProfileWelcomeUI::Initialize(
     Browser* browser,
     EnterpriseProfileWelcomeUI::ScreenType type,
-    const std::string& domain_name,
+    const AccountInfo& account_info,
     SkColor profile_color,
     base::OnceCallback<void(bool)> proceed_callback) {
   auto handler = std::make_unique<EnterpriseProfileWelcomeHandler>(
-      browser, type, domain_name, profile_color, std::move(proceed_callback));
+      browser, type, account_info, profile_color, std::move(proceed_callback));
   handler_ = handler.get();
 
   if (type ==

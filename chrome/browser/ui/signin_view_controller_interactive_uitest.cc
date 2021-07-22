@@ -208,14 +208,14 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
 // interception dialog.
 IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
                        EnterpriseConfirmationDefaultFocus) {
-  signin::MakePrimaryAccountAvailable(GetIdentityManager(), "alice@gmail.com",
-                                      signin::ConsentLevel::kSync);
+  auto account_info = signin::MakePrimaryAccountAvailable(
+      GetIdentityManager(), "alice@gmail.com", signin::ConsentLevel::kSync);
   content::TestNavigationObserver content_observer(
       GURL("chrome://enterprise-profile-welcome/"));
   content_observer.StartWatchingNewWebContents();
   bool result;
   browser()->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
-      "domain.com", SK_ColorWHITE,
+      account_info, SK_ColorWHITE,
       base::BindOnce(
           [](Browser* browser, bool* result, bool create) {
             browser->signin_view_controller()->CloseModalSignin();

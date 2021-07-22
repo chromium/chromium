@@ -131,7 +131,7 @@ class ForcedSigninDiceTurnSyncOnHelperDelegate
   }
 
   void ShowEnterpriseAccountConfirmation(
-      const std::string& email,
+      const AccountInfo& account_info,
       DiceTurnSyncOnHelper::SigninChoiceCallback callback) override {
     std::move(callback).Run(
         DiceTurnSyncOnHelper ::SigninChoice::SIGNIN_CHOICE_CONTINUE);
