@@ -259,15 +259,17 @@
           </template>
         </settings-subpage>
       </template>
-      <template is="dom-if" route-path="/privacy/review">
-        <settings-subpage id="privacy-review"
-            class="multi-card"
-            page-title="$i18n{privacyReviewLabel}"
-            associated-control="[[$$('#privacyReviewLinkRow')]]">
-          <settings-privacy-review-page prefs="{{prefs}}"
-              focus-config="[[focusConfig_]]">
-          </settings-privacy-review-page>
-        </settings-subpage>
+      <template is="dom-if" if="[[enablePrivacyReview_]]">
+        <template is="dom-if" route-path="/privacy/review">
+          <settings-subpage id="privacy-review"
+              class="multi-card"
+              page-title="$i18n{privacyReviewLabel}"
+              associated-control="[[$$('#privacyReviewLinkRow')]]">
+            <settings-privacy-review-page prefs="{{prefs}}"
+                focus-config="[[focusConfig_]]">
+            </settings-privacy-review-page>
+          </settings-subpage>
+        </template>
       </template>
       <template is="dom-if" route-path="/cookies">
         <settings-subpage id="cookies" page-title="$i18n{cookiePageTitle}"
