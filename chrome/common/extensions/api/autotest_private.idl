@@ -501,6 +501,8 @@ namespace autotestPrivate {
     HotseatSwipeDescriptor swipeUp;
     HotseatState state;
     boolean isAnimating;
+    // Whether the shelf is hidden with auto-hide enabled.
+    boolean isAutoHidden;
   };
 
   // The ui information of shelf components, including hotseat and

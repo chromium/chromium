@@ -4849,6 +4849,7 @@ AutotestPrivateGetShelfUIInfoForStateFunction::Run() {
     hotseat_ui_info.swipe_up = std::move(swipe_up_descriptor);
     hotseat_ui_info.is_animating = hotseat_info.is_animating;
     hotseat_ui_info.state = GetHotseatState(hotseat_info.hotseat_state);
+    hotseat_ui_info.is_auto_hidden = hotseat_info.is_auto_hidden;
 
     shelf_ui_info.hotseat_info = std::move(hotseat_ui_info);
   }

@@ -74,6 +74,9 @@ struct ASH_PUBLIC_EXPORT HotseatInfo {
 
   // The current hotseat state.
   HotseatState hotseat_state = HotseatState::kHidden;
+
+  // Indicates whether the hotseat is being autohidden.
+  bool is_auto_hidden = false;
 };
 
 }  // namespace ash
