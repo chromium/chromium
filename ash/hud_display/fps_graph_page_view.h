@@ -21,7 +21,7 @@ struct PresentationFeedback;
 namespace ash {
 namespace hud_display {
 
-class Grid;
+class ReferenceLines;
 
 // Draws several graphs per UI compositor frame.  Every time
 // OnDidPresentCompositorFrame() is called a new value is appended to the end
@@ -64,7 +64,7 @@ class FPSGraphPageView : public GraphPageViewBase,
     return frame_rate_for_last_half_second_;
   }
 
-  // Sets grid top label to the maximum of the observed refresh rate.
+  // Sets top reference line label to the maximum of the observed refresh rate.
   void UpdateTopLabel(float f_refresh_rate);
 
   // Updates the stats with |feedback|.
@@ -77,7 +77,7 @@ class FPSGraphPageView : public GraphPageViewBase,
   // Active display refresh rate.
   Graph refresh_rate_;
 
-  Grid* grid_;  // not owned
+  ReferenceLines* reference_lines_;  // not owned
 
   float frame_rate_for_last_half_second_;
 

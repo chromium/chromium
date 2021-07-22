@@ -75,7 +75,7 @@ class SettingsButton : public views::ImageButton {
     SetImage(views::Button::ButtonState::STATE_NORMAL,
              gfx::CreateVectorIcon(vector_icons::kSettingsIcon,
                                    kHUDSettingsIconSize, kHUDDefaultColor));
-    SetBorder(views::CreateEmptyBorder(gfx::Insets(kSettingsIconBorder)));
+    SetBorder(views::CreateEmptyBorder(gfx::Insets(kHUDSettingsIconBorder)));
     SetProperty(kHUDClickHandler, HTCLIENT);
 
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
@@ -173,7 +173,7 @@ HUDHeaderView::HUDHeaderView(HUDDisplayView* hud) {
   views::View* header_background =
       AddChildView(std::make_unique<views::View>());
   header_background->SetBackground(std::make_unique<SolidSourceBackground>(
-      kHUDBackground, kTabOverlayCornerRadius));
+      kHUDBackground, kHUDTabOverlayCornerRadius));
 
   views::View* header_buttons = AddChildView(std::make_unique<views::View>());
   header_buttons
@@ -197,7 +197,7 @@ HUDHeaderView::HUDHeaderView(HUDDisplayView* hud) {
   // background padding.
   views::View* padding = AddChildView(std::make_unique<views::View>());
   padding->SetBackground(std::make_unique<BottomLeftOuterBackground>(
-      kHUDBackground, kTabOverlayCornerRadius));
+      kHUDBackground, kHUDTabOverlayCornerRadius));
 
   SetLayoutManager(std::make_unique<HUDHeaderLayout>(header_buttons, padding));
 }

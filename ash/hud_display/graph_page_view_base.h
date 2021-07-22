@@ -17,8 +17,8 @@ class ImageButton;
 namespace ash {
 namespace hud_display {
 
-class Grid;
 class Legend;
+class ReferenceLines;
 
 // Interface for a single graph page.
 class GraphPageViewBase : public views::View {
@@ -36,16 +36,17 @@ class GraphPageViewBase : public views::View {
   // Adds default legend.
   void CreateLegend(const std::vector<Legend::Entry>& entries);
 
-  // Put grid in its dedicated container. See Grid class for details.
-  Grid* CreateGrid(float left,
-                   float top,
-                   float right,
-                   float bottom,
-                   const std::u16string& x_unit,
-                   const std::u16string& y_unit,
-                   int horizontal_points_number,
-                   int horizontal_ticks_interval,
-                   float vertical_ticks_interval);
+  // Put the |ReferenceLines| object in its dedicated container. See
+  // |ReferenceLines| for details.
+  ReferenceLines* CreateReferenceLines(float left,
+                                       float top,
+                                       float right,
+                                       float bottom,
+                                       const std::u16string& x_unit,
+                                       const std::u16string& y_unit,
+                                       int horizontal_points_number,
+                                       int horizontal_ticks_interval,
+                                       float vertical_ticks_interval);
 
  protected:
   void RefreshLegendValues();
@@ -53,8 +54,8 @@ class GraphPageViewBase : public views::View {
  private:
   void OnButtonPressed();
 
-  // Container for the Grid object.
-  views::View* grid_container_ = nullptr;  // not owned
+  // Container for the |ReferenceLines| object.
+  views::View* reference_lines_container_ = nullptr;  // not owned
 
   // Container for the legend object.
   views::View* legend_container_ = nullptr;              // not owned

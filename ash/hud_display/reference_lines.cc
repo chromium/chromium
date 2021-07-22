@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/hud_display/grid.h"
+#include "ash/hud_display/reference_lines.h"
 
 #include "ash/hud_display/hud_constants.h"
 #include "base/strings/stringprintf.h"
@@ -21,7 +21,7 @@ namespace hud_display {
 
 namespace {
 
-constexpr SkColor kGridColor = SkColorSetRGB(162, 162, 220);
+constexpr SkColor kHUDGraphReferenceLineColor = SkColorSetRGB(162, 162, 220);
 
 std::u16string GenerateLabelText(float value, const std::u16string& dimention) {
   if (value == (int)value) {
@@ -35,20 +35,19 @@ std::u16string GenerateLabelText(float value, const std::u16string& dimention) {
 
 }  // anonymous namespace
 
-BEGIN_METADATA(Grid, views::View)
+BEGIN_METADATA(ReferenceLines, views::View)
 END_METADATA
 
-// Grid is not transparent.
-Grid::Grid(float left,
-           float top,
-           float right,
-           float bottom,
-           const std::u16string& x_unit,
-           const std::u16string& y_unit,
-           int horizontal_points_number,
-           int horizontal_ticks_interval,
-           float vertical_ticks_interval)
-    : color_(kGridColor),
+ReferenceLines::ReferenceLines(float left,
+                               float top,
+                               float right,
+                               float bottom,
+                               const std::u16string& x_unit,
+                               const std::u16string& y_unit,
+                               int horizontal_points_number,
+                               int horizontal_ticks_interval,
+                               float vertical_ticks_interval)
+    : color_(kHUDGraphReferenceLineColor),
       left_(left),
       top_(top),
       right_(right),
@@ -89,9 +88,9 @@ Grid::Grid(float left,
   left_bottom_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
 
-Grid::~Grid() = default;
+ReferenceLines::~ReferenceLines() = default;
 
-void Grid::Layout() {
+void ReferenceLines::Layout() {
   // Align all the right labels on their left edge.
   gfx::Size right_top_label_size = right_top_label_->GetPreferredSize();
   gfx::Size right_middle_label_size = right_middle_label_->GetPreferredSize();
@@ -110,7 +109,7 @@ void Grid::Layout() {
 
   left_bottom_label_->SetSize(left_bottom_label_->GetPreferredSize());
 
-  constexpr int label_border = 3;  // Offset to labels from the grid lines.
+  constexpr int label_border = 3;  // Offset to labels from the reference lines.
 
   const gfx::Point right_top_label_position(
       bounds().width() - right_top_label_size.width() - label_border,
@@ -134,16 +133,16 @@ void Grid::Layout() {
   views::View::Layout();
 }
 
-void Grid::OnPaint(gfx::Canvas* canvas) {
+void ReferenceLines::OnPaint(gfx::Canvas* canvas) {
   SkPath dotted_path;
   SkPath solid_path;
 
-  // Draw 50% dotted line.
+  // Draw dashed line at 50%.
   dotted_path.moveTo({0, bounds().height() / 2.0f});
   dotted_path.lineTo(
       {static_cast<SkScalar>(bounds().width()), bounds().height() / 2.0f});
 
-  // Draw outside rectangle and ticks
+  // Draw border and ticks.
   solid_path.addRect(SkRect::MakeXYWH(bounds().x(), bounds().y(),
                                       bounds().width(), bounds().height()));
 
@@ -168,11 +167,11 @@ void Grid::OnPaint(gfx::Canvas* canvas) {
 
   // Horizontal interval ticks (drawn vertically).
   if (horizontal_points_number_ > 0 && horizontal_ticks_interval_ > 0) {
-    // Add one more tick if graph width is not a multiply of tick width.
+    // Add one more tick if graph width is not a multiple of tick width.
     const int h_ticks =
         horizontal_points_number_ / horizontal_ticks_interval_ +
         (horizontal_points_number_ % horizontal_ticks_interval_ ? 1 : 0);
-    // interval between ticks in pixels.
+    // Interval between ticks in pixels.
     const SkScalar tick_per_pixels = bounds().width() /
                                      (float)horizontal_points_number_ *
                                      horizontal_ticks_interval_;
@@ -190,7 +189,7 @@ void Grid::OnPaint(gfx::Canvas* canvas) {
   flags.setAntiAlias(true);
   flags.setBlendMode(SkBlendMode::kSrc);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setStrokeWidth(kGridLineWidth);
+  flags.setStrokeWidth(kHUDGraphReferenceLineWidth);
   flags.setColor(color_);
   canvas->DrawPath(solid_path, flags);
 
@@ -200,7 +199,7 @@ void Grid::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawPath(dotted_path, flags);
 }
 
-void Grid::SetTopLabel(float top) {
+void ReferenceLines::SetTopLabel(float top) {
   top_ = top;
   right_top_label_->SetText(GenerateLabelText(top_, y_unit_));
   right_middle_label_->SetText(
@@ -210,7 +209,7 @@ void Grid::SetTopLabel(float top) {
   InvalidateLayout();
 }
 
-void Grid::SetBottomLabel(float bottom) {
+void ReferenceLines::SetBottomLabel(float bottom) {
   bottom_ = bottom;
   right_bottom_label_->SetText(GenerateLabelText(bottom_, y_unit_));
   right_middle_label_->SetText(
@@ -220,7 +219,7 @@ void Grid::SetBottomLabel(float bottom) {
   InvalidateLayout();
 }
 
-void Grid::SetLeftLabel(float left) {
+void ReferenceLines::SetLeftLabel(float left) {
   left_ = left;
   left_bottom_label_->SetText(GenerateLabelText(left_, x_unit_));
 
@@ -228,7 +227,7 @@ void Grid::SetLeftLabel(float left) {
   InvalidateLayout();
 }
 
-void Grid::SetVerticalTicsInterval(float interval) {
+void ReferenceLines::SetVerticalTicksInterval(float interval) {
   interval == std::abs(interval) >= 1 ? 0 : std::abs(interval);
   if (interval == vertical_ticks_interval_)
     return;

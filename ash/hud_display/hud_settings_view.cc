@@ -17,6 +17,7 @@
 #include "cc/debug/layer_tree_debug_state.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/host/host_frame_sink_manager.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
@@ -36,6 +37,12 @@
 namespace ash {
 namespace hud_display {
 namespace {
+
+constexpr SkColor kHUDDisabledButtonColor =
+    SkColorSetA(kHUDDefaultColor, 0xFF * 0.5);
+
+// Thickness of border around settings.
+constexpr int kHUDSettingsBorderWidth = 1;
 
 ui::ScopedAnimationDurationScaleMode* scoped_animation_duration_scale_mode =
     nullptr;
@@ -249,7 +256,7 @@ AnimationSpeedControl::AnimationSpeedControl() {
   auto add_speed_point = [](AnimationSpeedControl* self, views::View* container,
                             std::vector<float>& multipliers, float multiplier,
                             const std::u16string& text) {
-    const int kLabelBorderWidth = 3;
+    constexpr int kLabelBorderWidth = 3;
     views::Label* label = container->AddChildView(
         std::make_unique<views::Label>(text, views::style::CONTEXT_LABEL));
     label->SetAutoColorReadabilityEnabled(false);
@@ -326,7 +333,7 @@ void AnimationSpeedControl::Layout() {
     label->SetPreferredSize(max_size);
 
   gfx::Size hints_total_size = hints_container_->GetPreferredSize();
-  // Slider should negin in the middle of the first label, and end in the
+  // Slider should begin in the middle of the first label, and end in the
   // middle of the last label. But ripple overlays border, so we set total
   // width to match the total hints width and adjust border to make slider
   // correct size.
@@ -419,7 +426,8 @@ HUDSettingsView::HUDSettingsView(HUDDisplayView* hud_display) {
           views::BoxLayout::Orientation::kVertical));
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
-  SetBorder(views::CreateSolidBorder(1, kHUDDefaultColor));
+  SetBorder(
+      views::CreateSolidBorder(kHUDSettingsBorderWidth, kHUDDefaultColor));
 
   // We want the HUD to be draggable when clicked on the whitespace, so we do
   // not want the buttons to extend past the minimum size. To overcome the

@@ -25,7 +25,7 @@ class Graph {
   // Graph screen size (that is used in Layout()) should match (ring buffer
   // size - 1) to prevent scaling, because RingBuffer always keeps one element
   // unused.
-  using Data = base::RingBuffer<float, kDefaultGraphWidth + 1>;
+  using Data = base::RingBuffer<float, kHUDGraphWidth + 1>;
 
   enum class Baseline {
     BASELINE_BOTTOM,  // Positive values will be drawn from the bottom border

@@ -12,7 +12,7 @@
 namespace ash {
 namespace hud_display {
 
-enum class DisplayMode;
+enum class HUDDisplayMode;
 class GraphsContainerView;
 class HUDHeaderView;
 class HUDSettingsView;
@@ -42,7 +42,7 @@ class HUDDisplayView : public views::View {
   int NonClientHitTest(const gfx::Point& point);
 
   // Changes UI display mode.
-  void SetDisplayMode(const DisplayMode display_mode);
+  void SetDisplayMode(const HUDDisplayMode display_mode);
 
   // Callback from SettingsButton.
   void OnSettingsToggle();

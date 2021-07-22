@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_HUD_DISPLAY_GRID_H_
-#define ASH_HUD_DISPLAY_GRID_H_
+#ifndef ASH_HUD_DISPLAY_REFERENCE_LINES_H_
+#define ASH_HUD_DISPLAY_REFERENCE_LINES_H_
 
 #include <string>
 
@@ -22,41 +22,41 @@ class Label;
 namespace ash {
 namespace hud_display {
 
-// Draws grid on top of the graphs.
-class Grid : public views::View {
+// Draws opaque reference lines on top of the graphs.
+class ReferenceLines : public views::View {
  public:
-  METADATA_HEADER(Grid);
+  METADATA_HEADER(ReferenceLines);
 
   // |left|, |top|, |right|, |bottom| are labels to be attached to the axes.
   // |x_unit|, |y_unit| - dimentional labels, like "s", "Gb", ...
   // To draw horizontal ticks, graph data is assumed to have
   // |horizontal_points_number| points horizontally along the full graph width,
   // and ticks will be drawn every |horizontal_ticks_interval| from the right.
-  // |vertical_ticks_interval| must be in between [0,1] (as grid data values).
-  Grid(float left,
-       float top,
-       float right,
-       float bottom,
-       const std::u16string& x_unit,
-       const std::u16string& y_unit,
-       int horizontal_points_number,
-       int horizontal_ticks_interval,
-       float vertical_ticks_interval);
+  // |vertical_ticks_interval| must be in between [0,1] (as graph data values).
+  ReferenceLines(float left,
+                 float top,
+                 float right,
+                 float bottom,
+                 const std::u16string& x_unit,
+                 const std::u16string& y_unit,
+                 int horizontal_points_number,
+                 int horizontal_ticks_interval,
+                 float vertical_ticks_interval);
 
-  Grid(const Grid&) = delete;
-  Grid& operator=(const Grid&) = delete;
+  ReferenceLines(const ReferenceLines&) = delete;
+  ReferenceLines& operator=(const ReferenceLines&) = delete;
 
-  ~Grid() override;
+  ~ReferenceLines() override;
 
   // views::View
   void Layout() override;
   void OnPaint(gfx::Canvas* canvas) override;
 
-  // The following methods update grid parameters.
+  // The following methods update reference line parameters.
   void SetTopLabel(float top);
   void SetBottomLabel(float bottom);
   void SetLeftLabel(float left);
-  void SetVerticalTicsInterval(float interval);
+  void SetVerticalTicksInterval(float interval);
 
   float top_label() const { return top_; }
 
@@ -87,4 +87,4 @@ class Grid : public views::View {
 }  // namespace hud_display
 }  // namespace ash
 
-#endif  // ASH_HUD_DISPLAY_GRID_H_
+#endif  // ASH_HUD_DISPLAY_REFERENCE_LINES_H_

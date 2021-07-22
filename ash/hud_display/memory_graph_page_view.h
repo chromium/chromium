@@ -11,7 +11,7 @@
 namespace ash {
 namespace hud_display {
 
-class Grid;
+class ReferenceLines;
 
 // MemoryGraphPageView class draws memory graphs.
 class MemoryGraphPageView : public GraphPageViewBase {
@@ -30,7 +30,7 @@ class MemoryGraphPageView : public GraphPageViewBase {
   void UpdateData(const DataSource::Snapshot& snapshot) override;
 
  private:
-  // This is used to re-layout grid when total ram size is known.
+  // This is used to re-layout reference lines when total ram size is known.
   double total_ram_ = 0;
 
   // --- Stacked:
@@ -54,7 +54,7 @@ class MemoryGraphPageView : public GraphPageViewBase {
   // Share of the total RAM occupied by Chrome browser process shared RSS.
   Graph graph_chrome_rss_shared_;
 
-  Grid* grid_ = nullptr;  // not owned.
+  ReferenceLines* reference_lines_ = nullptr;  // not owned.
 };
 
 }  // namespace hud_display

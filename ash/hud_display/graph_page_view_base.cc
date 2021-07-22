@@ -4,10 +4,10 @@
 
 #include "ash/hud_display/graph_page_view_base.h"
 
-#include "ash/hud_display/grid.h"
 #include "ash/hud_display/hud_constants.h"
 #include "ash/hud_display/hud_properties.h"
 #include "ash/hud_display/legend.h"
+#include "ash/hud_display/reference_lines.h"
 #include "ash/hud_display/solid_source_background.h"
 #include "base/bind.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -92,14 +92,15 @@ END_METADATA
 GraphPageViewBase::GraphPageViewBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
-  // There are two overlaid children: grid and container for the legend.
+  // There are two overlaid children: reference lines and legend container.
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  // Grid is added after this object is fully initialized, but it should be
-  // located under control elements (or they will never receive events). This
-  // way we need to create a separate container for it.
-  grid_container_ = AddChildView(std::make_unique<views::View>());
-  grid_container_->SetLayoutManager(std::make_unique<views::FillLayout>());
+  // |ReferenceLines| object is added after this object is fully initialized,
+  // but it should be located under control elements (or they will never receive
+  // events). This way we need to create a separate container for it.
+  reference_lines_container_ = AddChildView(std::make_unique<views::View>());
+  reference_lines_container_->SetLayoutManager(
+      std::make_unique<views::FillLayout>());
 
   // Legend is floating in its own container. Invisible border of
   // kLegendPositionOffset makes it float on top of the graph.
@@ -142,20 +143,21 @@ void GraphPageViewBase::CreateLegend(
   legend_container_->SetVisible(true);
 }
 
-// Put grid in its dedicated container.
-Grid* GraphPageViewBase::CreateGrid(float left,
-                                    float top,
-                                    float right,
-                                    float bottom,
-                                    const std::u16string& x_unit,
-                                    const std::u16string& y_unit,
-                                    int horizontal_points_number,
-                                    int horizontal_ticks_interval,
-                                    float vertical_ticks_interval) {
-  DCHECK(grid_container_->children().empty());
-  return grid_container_->AddChildView(std::make_unique<Grid>(
-      left, top, right, bottom, x_unit, y_unit, horizontal_points_number,
-      horizontal_ticks_interval, vertical_ticks_interval));
+ReferenceLines* GraphPageViewBase::CreateReferenceLines(
+    float left,
+    float top,
+    float right,
+    float bottom,
+    const std::u16string& x_unit,
+    const std::u16string& y_unit,
+    int horizontal_points_number,
+    int horizontal_ticks_interval,
+    float vertical_ticks_interval) {
+  DCHECK(reference_lines_container_->children().empty());
+  return reference_lines_container_->AddChildView(
+      std::make_unique<ReferenceLines>(
+          left, top, right, bottom, x_unit, y_unit, horizontal_points_number,
+          horizontal_ticks_interval, vertical_ticks_interval));
 }
 
 void GraphPageViewBase::RefreshLegendValues() {

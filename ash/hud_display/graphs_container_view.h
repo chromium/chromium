@@ -17,7 +17,7 @@
 namespace ash {
 namespace hud_display {
 
-enum class DisplayMode;
+enum class HUDDisplayMode;
 
 // GraphsContainerView class draws a bunch of graphs.
 class GraphsContainerView : public views::View {
@@ -31,7 +31,7 @@ class GraphsContainerView : public views::View {
 
 
   // Updates graphs display to match given mode.
-  void SetMode(DisplayMode mode);
+  void SetMode(HUDDisplayMode mode);
 
   // Schedules new data update on the thread pool.
   void RequestDataUpdate();

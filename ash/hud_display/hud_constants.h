@@ -18,37 +18,34 @@ constexpr SkColor kHUDDefaultColor =
 
 constexpr SkColor kHUDBackground = SkColorSetARGB(kHUDAlpha, 17, 17, 17);
 constexpr SkColor kHUDLegendBackground = kHUDBackground;
-constexpr SkColor kHUDDisabledButtonColor =
-    SkColorSetA(kHUDDefaultColor, 0xFF * 0.5);
 
 // Radius of rounded corners for tabs.
-// Must be be divisible by 3 to make kTabOverlayWidth integer.
-constexpr int kTabOverlayCornerRadius = 9;
+// Must be divisible by 3 to make kTabOverlayWidth an integer.
+constexpr int kHUDTabOverlayCornerRadius = 9;
 
 // Border around settings icon in the settings button.
-constexpr int kSettingsIconBorder = 5;
+constexpr int kHUDSettingsIconBorder = 5;
 
 // Settings button icon size.
 constexpr int kHUDSettingsIconSize = 18;
 
-// Visible border inside the HUDDisplayView rectangle around contents.
-// HUDDisplayView does not use insets itself. Children substitute this inset
+// Visible border inside the |HUDDisplayView| rectangle around contents.
+// |HUDDisplayView| does not use insets itself. Children substitute this inset
 // where needed.
 constexpr int kHUDInset = 5;
 
 // Defines both the pixel width of the graphs and the amount of data stored
 // in each graph ring buffer.
-static constexpr size_t kDefaultGraphWidth = 190;
+static constexpr size_t kHUDGraphWidth = 190;
 
-// Grid takes 1 pixel around, inset graph.
-constexpr int kGridLineWidth = 1;
+// Thickness of reference lines on and around the graphs.
+constexpr int kHUDGraphReferenceLineWidth = 1;
 
 // HUD display modes.
-enum class DisplayMode {
-  CPU_DISPLAY =
-      1,  // First value should be different from default Views::ID = 0.
-  MEMORY_DISPLAY,
-  FPS_DISPLAY,
+enum class HUDDisplayMode {
+  CPU = 1,  // First value should be different from default Views::ID = 0.
+  MEMORY,
+  FPS,
 };
 
 }  // namespace hud_display

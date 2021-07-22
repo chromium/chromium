@@ -24,22 +24,22 @@ BEGIN_METADATA(CpuGraphPageView, GraphPageViewBase)
 END_METADATA
 
 CpuGraphPageView::CpuGraphPageView(const base::TimeDelta refresh_interval)
-    : cpu_other_(kDefaultGraphWidth,
+    : cpu_other_(kHUDGraphWidth,
                  Graph::Baseline::BASELINE_BOTTOM,
                  Graph::Fill::SOLID,
                  Graph::Style::LINES,
                  SkColorSetA(SK_ColorMAGENTA, kHUDAlpha)),
-      cpu_system_(kDefaultGraphWidth,
+      cpu_system_(kHUDGraphWidth,
                   Graph::Baseline::BASELINE_BOTTOM,
                   Graph::Fill::SOLID,
                   Graph::Style::LINES,
                   SkColorSetA(SK_ColorRED, kHUDAlpha)),
-      cpu_user_(kDefaultGraphWidth,
+      cpu_user_(kHUDGraphWidth,
                 Graph::Baseline::BASELINE_BOTTOM,
                 Graph::Fill::SOLID,
                 Graph::Style::LINES,
                 SkColorSetA(SK_ColorBLUE, kHUDAlpha)),
-      cpu_idle_(kDefaultGraphWidth,
+      cpu_idle_(kHUDGraphWidth,
                 Graph::Baseline::BASELINE_BOTTOM,
                 Graph::Fill::SOLID,
                 Graph::Style::LINES,
@@ -49,9 +49,9 @@ CpuGraphPageView::CpuGraphPageView(const base::TimeDelta refresh_interval)
   constexpr float vertical_ticks_interval = (10 / 100.0);
   // -XX seconds on the left, 100% top, 0 seconds on the right, 0% on the
   // bottom. Seconds and Gigabytes are dimensions. Number of data points is
-  // cpu_other_.GetDataBufferSize(), horizontal grid ticks are drawn every 10
+  // cpu_other_.GetDataBufferSize(), horizontal tick marks are drawn every 10
   // seconds.
-  CreateGrid(
+  CreateReferenceLines(
       /*left=*/static_cast<int>(-data_width * refresh_interval.InSecondsF()),
       /*top=*/100, /*right=*/0, /*bottom=*/0,
       /*x_unit=*/u"s",
@@ -89,8 +89,8 @@ void CpuGraphPageView::OnPaint(gfx::Canvas* canvas) {
 
   // Layout graphs.
   gfx::Rect rect = GetContentsBounds();
-  // Adjust to grid width.
-  rect.Inset(kGridLineWidth, kGridLineWidth);
+  // Adjust bounds to not overlap with bordering reference lines.
+  rect.Inset(kHUDGraphReferenceLineWidth, kHUDGraphReferenceLineWidth);
   cpu_other_.Layout(rect, nullptr /* base*/);
   cpu_system_.Layout(rect, &cpu_other_);
   cpu_user_.Layout(rect, &cpu_system_);
