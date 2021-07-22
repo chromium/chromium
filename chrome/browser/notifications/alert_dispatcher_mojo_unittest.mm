@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/process/process_handle.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -23,6 +24,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -77,13 +79,13 @@ class FakeMacNotificationProviderFactory
       public mac_notifications::mojom::MacNotificationProvider {
  public:
   explicit FakeMacNotificationProviderFactory(base::OnceClosure on_disconnect)
-      : on_disconnect_(std::move(on_disconnect)) {}
+      : MacNotificationProviderFactory(/*in_process=*/false),
+        on_disconnect_(std::move(on_disconnect)) {}
   ~FakeMacNotificationProviderFactory() override = default;
 
   // MacNotificationProviderFactory:
   mojo::Remote<mac_notifications::mojom::MacNotificationProvider>
-  LaunchProvider(bool in_process) override {
-    EXPECT_FALSE(in_process);
+  LaunchProvider() override {
     mojo::Remote<mac_notifications::mojom::MacNotificationProvider> remote;
     provider_receiver_.Bind(remote.BindNewPipeAndPassReceiver());
     provider_receiver_.set_disconnect_handler(std::move(on_disconnect_));
@@ -102,6 +104,10 @@ class FakeMacNotificationProviderFactory
   }
 
   MockNotificationService& service() { return mock_service_; }
+
+  mac_notifications::mojom::MacNotificationActionHandler* handler() {
+    return handler_remote_.get();
+  }
 
   void disconnect() {
     handler_remote_.reset();
@@ -129,6 +135,25 @@ message_center::Notification CreateNotification() {
       base::MakeRefCounted<message_center::NotificationDelegate>());
 }
 
+mac_notifications::mojom::NotificationMetadataPtr CreateNotificationMetadata() {
+  auto profile_identifier = mac_notifications::mojom::ProfileIdentifier::New(
+      "profile", /*incognito=*/false);
+  auto notification_identifier =
+      mac_notifications::mojom::NotificationIdentifier::New(
+          "notification_id", std::move(profile_identifier));
+  return mac_notifications::mojom::NotificationMetadata::New(
+      std::move(notification_identifier), /*notification_type=*/0,
+      /*origin_url=*/GURL("https://example.com"), base::GetCurrentProcId());
+}
+
+mac_notifications::mojom::NotificationActionInfoPtr
+CreateNotificationActionInfo() {
+  auto meta = CreateNotificationMetadata();
+  return mac_notifications::mojom::NotificationActionInfo::New(
+      std::move(meta), NotificationOperation::NOTIFICATION_CLICK,
+      /*button_index=*/-1, /*reply=*/absl::nullopt);
+}
+
 }  // namespace
 
 class NotificationDispatcherMojoTest : public testing::Test {
@@ -154,6 +179,10 @@ class NotificationDispatcherMojoTest : public testing::Test {
   }
 
   MockNotificationService& service() { return provider_factory_->service(); }
+
+  mac_notifications::mojom::MacNotificationActionHandler* handler() {
+    return provider_factory_->handler();
+  }
 
  protected:
   void ExpectDisconnect(base::OnceClosure callback) {
@@ -318,4 +347,25 @@ TEST_F(NotificationDispatcherMojoTest, KillServiceTiming) {
                                     delay, /*expected_count=*/1);
   histograms.ExpectUniqueTimeSample("Notifications.macOS.ServiceProcessKilled",
                                     delay, /*expected_count=*/1);
+}
+
+TEST_F(NotificationDispatcherMojoTest, DidActivateNotification) {
+  base::HistogramTester histograms;
+  // Show a new notification.
+  EmulateNoNotifications();
+  EXPECT_CALL(service(), DisplayNotification);
+  notification_dispatcher_->DisplayNotification(
+      NotificationHandler::Type::WEB_PERSISTENT, profile_,
+      CreateNotification());
+
+  // Wait until the action handler has been bound.
+  task_environment_.RunUntilIdle();
+  handler()->OnNotificationAction(CreateNotificationActionInfo());
+
+  // Handling responses is async, make sure we wait for all tasks to complete.
+  task_environment_.RunUntilIdle();
+
+  histograms.ExpectUniqueSample("Notifications.macOS.ActionReceived.Alert",
+                                /*sample=*/true,
+                                /*expected_count=*/1);
 }

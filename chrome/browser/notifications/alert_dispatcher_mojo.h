@@ -16,12 +16,15 @@
 #include "chrome/browser/notifications/alert_dispatcher_mac.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class MacNotificationProviderFactory;
 
 // Connects to the macOS notification service via mojo to manage notifications.
-class NotificationDispatcherMojo : public NotificationDispatcherMac {
+class NotificationDispatcherMojo
+    : public NotificationDispatcherMac,
+      public mac_notifications::mojom::MacNotificationActionHandler {
  public:
   explicit NotificationDispatcherMojo(
       std::unique_ptr<MacNotificationProviderFactory> provider_factory);
@@ -47,6 +50,10 @@ class NotificationDispatcherMojo : public NotificationDispatcherMac {
   void GetAllDisplayedNotifications(
       GetAllDisplayedNotificationsCallback callback) override;
 
+  // mac_notifications::mojom::MacNotificationActionHandler:
+  void OnNotificationAction(
+      mac_notifications::mojom::NotificationActionInfoPtr info) override;
+
  private:
   void CheckIfNotificationsRemaining();
   void OnServiceDisconnectedGracefully(bool gracefully);
@@ -65,6 +72,8 @@ class NotificationDispatcherMojo : public NotificationDispatcherMac {
   std::unique_ptr<MacNotificationProviderFactory> provider_factory_;
   mojo::Remote<mac_notifications::mojom::MacNotificationProvider> provider_;
   mojo::Remote<mac_notifications::mojom::MacNotificationService> service_;
+  mojo::Receiver<mac_notifications::mojom::MacNotificationActionHandler>
+      handler_{this};
   base::CancelableOnceClosure no_notifications_checker_;
   base::TimeTicks service_start_time_;
 };

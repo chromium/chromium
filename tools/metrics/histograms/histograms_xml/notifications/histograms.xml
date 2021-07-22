@@ -562,28 +562,39 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
-    name="Notifications.Permissions.UNNotification.Banners.PermissionStatus"
+    name="Notifications.Permissions.UNNotification.{Style}.PermissionStatus"
     enum="UNNotificationPermissionStatus" expires_after="2021-10-25">
   <owner>adelm@google.com</owner>
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The permission status for sending out UNNotifications through the
-    Notification Platform Bridge Mac UNNotification. This is recorded while
-    instantiating the bridge.
+    MacNotificationServiceUN. This is recorded when instantiating the service
+    which happens at Chrome startup and each time we start the service after
+    shutting it down when there were no more notifications on screen.
   </summary>
+  <token key="Style">
+    <variant name="Alerts"/>
+    <variant name="Banners"/>
+  </token>
 </histogram>
 
-<histogram name="Notifications.Permissions.UNNotification.Banners.Style"
+<histogram name="Notifications.Permissions.UNNotification.{Style}.Style"
     enum="UNNotificationStyle" expires_after="M94">
   <owner>adelm@google.com</owner>
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The style of notifications being used for sending out UNNotifications
-    through the Notification Platform Bridge Mac UNNotification. This is
-    recorded while instantiating the bridge.
+    through the MacNotificationServiceUN. This is recorded when instantiating
+    the service which happens at Chrome startup and each time we start the
+    service after shutting it down when there were no more notifications on
+    screen.
   </summary>
+  <token key="Style">
+    <variant name="Alerts"/>
+    <variant name="Banners"/>
+  </token>
 </histogram>
 
 <histogram name="Notifications.PerNotificationActions"

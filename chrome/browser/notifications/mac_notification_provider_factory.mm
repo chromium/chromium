@@ -52,11 +52,12 @@ LaunchInProcessProvider() {
 
 }  // namespace
 
-MacNotificationProviderFactory::MacNotificationProviderFactory() = default;
+MacNotificationProviderFactory::MacNotificationProviderFactory(bool in_process)
+    : in_process_(in_process) {}
 
 MacNotificationProviderFactory::~MacNotificationProviderFactory() = default;
 
 mojo::Remote<mac_notifications::mojom::MacNotificationProvider>
-MacNotificationProviderFactory::LaunchProvider(bool in_process) {
-  return in_process ? LaunchInProcessProvider() : LaunchOutOfProcessProvider();
+MacNotificationProviderFactory::LaunchProvider() {
+  return in_process_ ? LaunchInProcessProvider() : LaunchOutOfProcessProvider();
 }

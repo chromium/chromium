@@ -12,6 +12,8 @@ source_set("mac_notifications") {
     "mac_notification_service_un.mm",
     "mac_notification_service_utils.h",
     "mac_notification_service_utils.mm",
+    "unnotification_metrics.h",
+    "unnotification_metrics.mm",
   ]
 
   deps = [

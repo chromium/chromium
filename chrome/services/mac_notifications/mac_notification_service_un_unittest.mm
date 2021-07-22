@@ -52,6 +52,8 @@ class MacNotificationServiceUNTest : public testing::Test {
       // Expect the MacNotificationServiceUN ctor to register a delegate with
       // the UNNotificationCenter and ask for notification permissions.
       ExpectAndUpdateUNUserNotificationCenterDelegate(/*expect_not_nil=*/true);
+      [[mock_notification_center_ expect]
+          getNotificationSettingsWithCompletionHandler:[OCMArg any]];
       [[[mock_notification_center_ expect] ignoringNonObjectArgs]
           requestAuthorizationWithOptions:0
                         completionHandler:[OCMArg any]];

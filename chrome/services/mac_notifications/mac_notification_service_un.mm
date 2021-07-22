@@ -18,6 +18,7 @@
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_utils_mac.h"
+#include "chrome/services/mac_notifications/unnotification_metrics.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "ui/gfx/image/image.h"
 
@@ -93,6 +94,7 @@ MacNotificationServiceUN::MacNotificationServiceUN(
       notification_center_([notification_center retain]),
       category_manager_(notification_center) {
   [notification_center_ setDelegate:delegate_.get()];
+  LogUNNotificationSettings(notification_center_.get());
   // TODO(crbug.com/1129366): Determine when to ask for permissions.
   RequestPermission();
 }

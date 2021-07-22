@@ -30,32 +30,26 @@ namespace {
 
 // Loads the profile and process the Notification response
 void DoProcessMacNotificationResponse(
-    NotificationCommon::Operation operation,
-    NotificationHandler::Type type,
-    const std::string& profileId,
-    bool incognito,
-    const GURL& origin,
-    const std::string& notificationId,
-    const absl::optional<int>& actionIndex,
-    const absl::optional<std::u16string>& reply,
-    const absl::optional<bool>& byUser) {
+    mac_notifications::mojom::NotificationActionInfoPtr info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Profile ID can be empty for system notifications, which are not bound to a
-  // profile, but system notifications are transient and thus not handled by
-  // this NotificationPlatformBridge.
-  // When transient notifications are supported, this should route the
-  // notification response to the system NotificationDisplayService.
-  DCHECK(!profileId.empty());
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  DCHECK(profile_manager);
 
-  ProfileManager* profileManager = g_browser_process->profile_manager();
-  DCHECK(profileManager);
+  absl::optional<int> action_index;
+  if (info->button_index !=
+      notification_constants::kNotificationInvalidButtonIndex) {
+    action_index = info->button_index;
+  }
 
-  profileManager->LoadProfile(
-      profileId, incognito,
-      base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
-                     operation, type, origin, notificationId, actionIndex,
-                     reply, byUser));
+  profile_manager->LoadProfile(
+      info->meta->id->profile->id, info->meta->id->profile->incognito,
+      base::BindOnce(
+          &NotificationDisplayServiceImpl::ProfileLoadedCallback,
+          static_cast<NotificationCommon::Operation>(info->operation),
+          static_cast<NotificationHandler::Type>(info->meta->type),
+          info->meta->origin_url, info->meta->id->id, action_index,
+          absl::nullopt /* reply */, true /* by_user */));
 }
 
 }  // namespace
@@ -116,141 +110,72 @@ std::u16string CreateMacNotificationContext(
   return etldplusone;
 }
 
-bool VerifyMacNotificationData(NSDictionary* response) {
-  if (!response[notification_constants::kNotificationButtonIndex] ||
-      !response[notification_constants::kNotificationOperation] ||
-      !response[notification_constants::kNotificationId] ||
-      !response[notification_constants::kNotificationProfileId] ||
-      !response[notification_constants::kNotificationIncognito] ||
-      !response[notification_constants::kNotificationCreatorPid] ||
-      !response[notification_constants::kNotificationType] ||
-      !response[notification_constants::kNotificationIsAlert]) {
-    LOG(ERROR) << "Missing required key";
+bool VerifyMacNotificationData(
+    const mac_notifications::mojom::NotificationActionInfoPtr& info) {
+  if (!info || !info->meta || !info->meta->id || !info->meta->id->profile) {
+    LOG(ERROR) << "Missing required data";
     return false;
   }
 
-  NSNumber* buttonIndex =
-      response[notification_constants::kNotificationButtonIndex];
-  NSNumber* operation =
-      response[notification_constants::kNotificationOperation];
-  NSString* notificationId = response[notification_constants::kNotificationId];
-  NSString* profileId =
-      response[notification_constants::kNotificationProfileId];
-  NSNumber* notificationType =
-      response[notification_constants::kNotificationType];
-  NSNumber* creatorPid =
-      response[notification_constants::kNotificationCreatorPid];
-
-  if (creatorPid.unsignedIntValue != static_cast<NSInteger>(getpid())) {
+  if (info->meta->creator_pid != base::GetCurrentProcId()) {
     return false;
   }
 
-  if (buttonIndex.intValue <
+  if (info->button_index <
           notification_constants::kNotificationInvalidButtonIndex ||
-      buttonIndex.intValue >=
-          static_cast<int>(blink::kNotificationMaxActions)) {
-    LOG(ERROR) << "Invalid number of buttons supplied " << buttonIndex.intValue;
+      info->button_index >= static_cast<int>(blink::kNotificationMaxActions)) {
+    LOG(ERROR) << "Invalid number of buttons supplied " << info->button_index;
     return false;
   }
 
-  if (operation.unsignedIntValue > NotificationCommon::OPERATION_MAX) {
-    LOG(ERROR) << operation.unsignedIntValue
+  if (static_cast<int32_t>(info->operation) >
+      NotificationCommon::OPERATION_MAX) {
+    LOG(ERROR) << static_cast<int32_t>(info->operation)
                << " does not correspond to a valid operation.";
     return false;
   }
 
-  if (notificationId.length <= 0) {
+  if (info->meta->id->id.empty()) {
     LOG(ERROR) << "Notification Id is empty";
     return false;
   }
 
-  if (profileId.length <= 0) {
+  if (info->meta->id->profile->id.empty()) {
     LOG(ERROR) << "ProfileId not provided";
     return false;
   }
 
-  if (notificationType.unsignedIntValue >
-      static_cast<unsigned int>(NotificationHandler::Type::MAX)) {
-    LOG(ERROR) << notificationType.unsignedIntValue
+  if (info->meta->type > static_cast<int>(NotificationHandler::Type::MAX)) {
+    LOG(ERROR) << info->meta->type
                << " Does not correspond to a valid operation.";
     return false;
   }
 
   // Origin is not actually required but if it's there it should be a valid one.
-  NSString* origin = response[notification_constants::kNotificationOrigin];
-  if (origin && origin.length) {
-    std::string notificationOrigin = base::SysNSStringToUTF8(origin);
-    GURL url(notificationOrigin);
-    if (!url.is_valid())
-      return false;
-  }
+  if (!info->meta->origin_url.is_empty() && !info->meta->origin_url.is_valid())
+    return false;
 
   return true;
 }
 
-void ProcessMacNotificationResponse(NSDictionary* response) {
-  bool isAlert =
-      [response[notification_constants::kNotificationIsAlert] boolValue];
-  bool isValid = VerifyMacNotificationData(response);
-  LogMacNotificationActionReceived(isAlert, isValid);
+void ProcessMacNotificationResponse(
+    bool is_alert,
+    mac_notifications::mojom::NotificationActionInfoPtr info) {
+  bool is_valid = VerifyMacNotificationData(info);
+  LogMacNotificationActionReceived(is_alert, is_valid);
 
-  if (!isValid)
+  if (!is_valid)
     return;
 
-  NSNumber* buttonIndex =
-      response[notification_constants::kNotificationButtonIndex];
-  NSNumber* operation =
-      response[notification_constants::kNotificationOperation];
-
-  std::string notificationOrigin = base::SysNSStringToUTF8(
-      response[notification_constants::kNotificationOrigin]);
-  std::string notificationId = base::SysNSStringToUTF8(
-      response[notification_constants::kNotificationId]);
-  std::string profileId = base::SysNSStringToUTF8(
-      response[notification_constants::kNotificationProfileId]);
-  NSNumber* isIncognito =
-      response[notification_constants::kNotificationIncognito];
-  NSNumber* notificationType =
-      response[notification_constants::kNotificationType];
-
   absl::optional<int> actionIndex;
-  if (buttonIndex.intValue !=
+  if (info->button_index !=
       notification_constants::kNotificationInvalidButtonIndex) {
-    actionIndex = buttonIndex.intValue;
+    actionIndex = info->button_index;
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(DoProcessMacNotificationResponse,
-                     static_cast<NotificationCommon::Operation>(
-                         operation.unsignedIntValue),
-                     static_cast<NotificationHandler::Type>(
-                         notificationType.unsignedIntValue),
-                     profileId, [isIncognito boolValue],
-                     GURL(notificationOrigin), notificationId, actionIndex,
-                     absl::nullopt /* reply */, true /* byUser */));
-}
-
-void ProcessMacNotificationResponse(
-    mac_notifications::mojom::NotificationActionInfoPtr info) {
-  NSDictionary* dict = @{
-    notification_constants::
-    kNotificationId : base::SysUTF8ToNSString(info->meta->id->id),
-    notification_constants::kNotificationProfileId :
-        base::SysUTF8ToNSString(info->meta->id->profile->id),
-    notification_constants::
-    kNotificationIncognito : @(info->meta->id->profile->incognito),
-    notification_constants::kNotificationOrigin :
-        base::SysUTF8ToNSString(info->meta->origin_url.spec()),
-    notification_constants::kNotificationType : @(info->meta->type),
-    notification_constants::
-    kNotificationCreatorPid : @(info->meta->creator_pid),
-    notification_constants::
-    kNotificationOperation : @(static_cast<int>(info->operation)),
-    notification_constants::kNotificationButtonIndex : @(info->button_index),
-    notification_constants::kNotificationIsAlert : @YES,
-  };
-  ProcessMacNotificationResponse(dict);
+      base::BindOnce(DoProcessMacNotificationResponse, std::move(info)));
 }
 
 bool IsAlertNotificationMac(const message_center::Notification& notification) {

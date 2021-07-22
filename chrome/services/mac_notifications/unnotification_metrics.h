@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NOTIFICATIONS_UNNOTIFICATION_METRICS_H_
-#define CHROME_BROWSER_NOTIFICATIONS_UNNOTIFICATION_METRICS_H_
+#ifndef CHROME_SERVICES_MAC_NOTIFICATIONS_UNNOTIFICATION_METRICS_H_
+#define CHROME_SERVICES_MAC_NOTIFICATIONS_UNNOTIFICATION_METRICS_H_
 
 #import <Foundation/Foundation.h>
 
 @class UNUserNotificationCenter;
+
+namespace mac_notifications {
 
 // This file is used to record metrics specific for UNNotifications.
 
@@ -29,12 +31,10 @@ enum class UNNotificationPermissionStatus {
   kMaxValue = kPermissionGranted,
 };
 
-// Log the type of notifications being used.
+// Requests and log the current notifications settings and permissions.
 API_AVAILABLE(macosx(10.14))
-void LogUNNotificationBannerStyle(UNUserNotificationCenter* center);
+void LogUNNotificationSettings(UNUserNotificationCenter* center);
 
-// Log the permission status for sending out notifications.
-API_AVAILABLE(macosx(10.14))
-void LogUNNotificationBannerPermissionStatus(UNUserNotificationCenter* center);
+}  // namespace mac_notifications
 
-#endif  // CHROME_BROWSER_NOTIFICATIONS_UNNOTIFICATION_METRICS_H_
+#endif  // CHROME_SERVICES_MAC_NOTIFICATIONS_UNNOTIFICATION_METRICS_H_

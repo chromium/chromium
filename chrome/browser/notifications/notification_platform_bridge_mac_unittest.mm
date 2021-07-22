@@ -19,9 +19,6 @@
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/browser/notifications/stub_alert_dispatcher_mac.h"
-#include "chrome/browser/notifications/stub_notification_center_mac.h"
-#include "chrome/browser/ui/cocoa/notifications/notification_builder_mac.h"
-#include "chrome/browser/ui/cocoa/notifications/notification_response_builder_mac.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -55,11 +52,6 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("Default");
-    notification_center_.reset([[StubNotificationCenter alloc] init]);
-  }
-
-  void TearDown() override {
-    [notification_center_ removeAllDeliveredNotifications];
   }
 
  protected:
@@ -124,14 +116,20 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
     return notification;
   }
 
-  NSUserNotificationCenter* notification_center() {
-    return notification_center_.get();
+  std::unique_ptr<NotificationDispatcherMac> CreateBannerDispatcher() {
+    auto banner_dispatcher = std::make_unique<StubNotificationDispatcherMac>();
+    banner_dispatcher_ = banner_dispatcher.get();
+    return banner_dispatcher;
   }
 
   std::unique_ptr<NotificationDispatcherMac> CreateAlertDispatcher() {
     auto alert_dispatcher = std::make_unique<StubNotificationDispatcherMac>();
     alert_dispatcher_ = alert_dispatcher.get();
     return alert_dispatcher;
+  }
+
+  StubNotificationDispatcherMac* banner_dispatcher() {
+    return banner_dispatcher_;
   }
 
   StubNotificationDispatcherMac* alert_dispatcher() {
@@ -144,7 +142,7 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   TestingProfile* profile_ = nullptr;
-  base::scoped_nsobject<StubNotificationCenter> notification_center_;
+  StubNotificationDispatcherMac* banner_dispatcher_ = nullptr;
   StubNotificationDispatcherMac* alert_dispatcher_ = nullptr;
 };
 
@@ -154,21 +152,19 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoButtons) {
       CreateBanner("Title", "Context", "https://gmail.com", nullptr, nullptr);
 
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      notification_center(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   *notification, nullptr);
-  NSArray* notifications = [notification_center() deliveredNotifications];
+  const auto& notifications = banner_dispatcher()->notifications();
 
-  EXPECT_EQ(1u, [notifications count]);
+  EXPECT_EQ(1u, notifications.size());
 
-  NSUserNotification* delivered_notification = notifications[0];
-  EXPECT_NSEQ(@"Title", [delivered_notification title]);
-  EXPECT_NSEQ(@"Context", [delivered_notification informativeText]);
-  EXPECT_NSEQ(@"gmail.com", [delivered_notification subtitle]);
-  EXPECT_NSEQ(@"Settings", [delivered_notification actionButtonTitle]);
-
-  if (!base::mac::IsAtLeastOS11())
-    EXPECT_NSEQ(@"Close", [delivered_notification otherButtonTitle]);
+  const auto& delivered_notification = notifications[0];
+  EXPECT_EQ(u"Title", delivered_notification->title);
+  EXPECT_EQ(u"Context", delivered_notification->body);
+  EXPECT_EQ(u"gmail.com", delivered_notification->subtitle);
+  EXPECT_TRUE(delivered_notification->buttons.empty());
+  EXPECT_TRUE(delivered_notification->show_settings_button);
 
   histogram_tester.ExpectUniqueSample("Notifications.macOS.Delivered.Banner",
                                       /*sample=*/true, /*expected_count=*/1);
@@ -176,7 +172,7 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoButtons) {
 
 TEST_F(NotificationPlatformBridgeMacTest, TestIncognitoProfile) {
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      notification_center(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher());
   std::unique_ptr<Notification> notification =
       CreateBanner("Title", "Context", "https://gmail.com", nullptr, nullptr);
 
@@ -190,22 +186,20 @@ TEST_F(NotificationPlatformBridgeMacTest, TestIncognitoProfile) {
                   *notification, /*metadata=*/nullptr);
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, incogito_profile,
                   *notification, /*metadata=*/nullptr);
-  EXPECT_EQ(2u, [[notification_center() deliveredNotifications] count]);
+  EXPECT_EQ(2u, banner_dispatcher()->notifications().size());
 
   // Close the one for the incognito profile.
   bridge->Close(incogito_profile, "id1");
-  NSArray* notifications = [notification_center() deliveredNotifications];
-  ASSERT_EQ(1u, [notifications count]);
+  const auto& notifications = banner_dispatcher()->notifications();
+  ASSERT_EQ(1u, notifications.size());
 
   // Expect that the remaining notification is for the regular profile.
-  NSUserNotification* remaining_notification = notifications[0];
-  EXPECT_EQ(false, [[remaining_notification userInfo]
-                           [notification_constants::kNotificationIncognito]
-                       boolValue]);
+  const auto& remaining_notification = notifications[0];
+  EXPECT_EQ(false, remaining_notification->meta->id->profile->incognito);
 
   // Close the one for the regular profile.
   bridge->Close(profile(), "id1");
-  EXPECT_EQ(0u, [[notification_center() deliveredNotifications] count]);
+  EXPECT_EQ(0u, banner_dispatcher()->notifications().size());
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoSettings) {
@@ -214,21 +208,19 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoSettings) {
       /*require_interaction=*/false, /*show_settings_button=*/false);
 
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      notification_center(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   *notification, nullptr);
-  NSArray* notifications = [notification_center() deliveredNotifications];
+  const auto& notifications = banner_dispatcher()->notifications();
 
-  EXPECT_EQ(1u, [notifications count]);
+  EXPECT_EQ(1u, notifications.size());
 
-  NSUserNotification* delivered_notification = notifications[0];
-  EXPECT_NSEQ(@"Title", [delivered_notification title]);
-  EXPECT_NSEQ(@"Context", [delivered_notification informativeText]);
-  EXPECT_NSEQ(@"gmail.com", [delivered_notification subtitle]);
-  EXPECT_FALSE([delivered_notification hasActionButton]);
-
-  if (!base::mac::IsAtLeastOS11())
-    EXPECT_NSEQ(@"Close", [delivered_notification otherButtonTitle]);
+  const auto& delivered_notification = notifications[0];
+  EXPECT_EQ(u"Title", delivered_notification->title);
+  EXPECT_EQ(u"Context", delivered_notification->body);
+  EXPECT_EQ(u"gmail.com", delivered_notification->subtitle);
+  EXPECT_TRUE(delivered_notification->buttons.empty());
+  EXPECT_FALSE(delivered_notification->show_settings_button);
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayOneButton) {
@@ -236,21 +228,18 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayOneButton) {
       "Title", "Context", "https://gmail.com", "Button 1", nullptr);
 
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      notification_center(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   *notification, nullptr);
 
-  NSArray* notifications = [notification_center() deliveredNotifications];
-  EXPECT_EQ(1u, [notifications count]);
-  NSUserNotification* delivered_notification = notifications[0];
-  EXPECT_NSEQ(@"Title", [delivered_notification title]);
-  EXPECT_NSEQ(@"Context", [delivered_notification informativeText]);
-  EXPECT_NSEQ(@"gmail.com", [delivered_notification subtitle]);
-
-  if (!base::mac::IsAtLeastOS11()) {
-    EXPECT_NSEQ(@"Close", [delivered_notification otherButtonTitle]);
-    EXPECT_NSEQ(@"More", [delivered_notification actionButtonTitle]);
-  }
+  const auto& notifications = banner_dispatcher()->notifications();
+  EXPECT_EQ(1u, notifications.size());
+  const auto& delivered_notification = notifications[0];
+  EXPECT_EQ(u"Title", delivered_notification->title);
+  EXPECT_EQ(u"Context", delivered_notification->body);
+  EXPECT_EQ(u"gmail.com", delivered_notification->subtitle);
+  EXPECT_EQ(1u, delivered_notification->buttons.size());
+  EXPECT_TRUE(delivered_notification->show_settings_button);
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayProgress) {
@@ -262,18 +251,18 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayProgress) {
   notification->set_type(message_center::NOTIFICATION_TYPE_PROGRESS);
 
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      notification_center(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   *notification, nullptr);
 
   // Progress notifications are considered alerts
-  EXPECT_EQ(0u, [[notification_center() deliveredNotifications] count]);
-  const auto& displayedAlerts = alert_dispatcher()->notifications();
-  ASSERT_EQ(1u, displayedAlerts.size());
+  EXPECT_EQ(0u, banner_dispatcher()->notifications().size());
+  const auto& displayed_alerts = alert_dispatcher()->notifications();
+  ASSERT_EQ(1u, displayed_alerts.size());
 
-  const auto& deliveredNotification = displayedAlerts[0];
+  const auto& delivered_notification = displayed_alerts[0];
   std::u16string expected = base::FormatPercent(kSamplePercent) + u" - Title";
-  EXPECT_EQ(expected, deliveredNotification->title);
+  EXPECT_EQ(expected, delivered_notification->title);
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestCloseNotification) {
@@ -281,25 +270,25 @@ TEST_F(NotificationPlatformBridgeMacTest, TestCloseNotification) {
       "Title", "Context", "https://gmail.com", "Button 1", nullptr);
 
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      notification_center(), CreateAlertDispatcher());
-  EXPECT_EQ(0u, [[notification_center() deliveredNotifications] count]);
+      CreateBannerDispatcher(), CreateAlertDispatcher());
+  EXPECT_EQ(0u, banner_dispatcher()->notifications().size());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   *notification, nullptr);
-  EXPECT_EQ(1u, [[notification_center() deliveredNotifications] count]);
+  EXPECT_EQ(1u, banner_dispatcher()->notifications().size());
 
   bridge->Close(profile(), "id1");
-  EXPECT_EQ(0u, [[notification_center() deliveredNotifications] count]);
+  EXPECT_EQ(0u, banner_dispatcher()->notifications().size());
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestGetDisplayed) {
   std::unique_ptr<Notification> notification = CreateBanner(
       "Title", "Context", "https://gmail.com", "Button 1", nullptr);
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      notification_center(), CreateAlertDispatcher());
-  EXPECT_EQ(0u, [[notification_center() deliveredNotifications] count]);
+      CreateBannerDispatcher(), CreateAlertDispatcher());
+  EXPECT_EQ(0u, banner_dispatcher()->notifications().size());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   *notification, nullptr);
-  EXPECT_EQ(1u, [[notification_center() deliveredNotifications] count]);
+  EXPECT_EQ(1u, banner_dispatcher()->notifications().size());
 
   int notification_count = -1;
   bridge->GetDisplayed(
@@ -313,21 +302,18 @@ TEST_F(NotificationPlatformBridgeMacTest, TestQuitRemovesNotifications) {
       "Title", "Context", "https://gmail.com", "Button 1", nullptr);
   {
     auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-        notification_center(), CreateAlertDispatcher());
-    EXPECT_EQ(0u, [[notification_center() deliveredNotifications] count]);
+        CreateBannerDispatcher(), CreateAlertDispatcher());
+    EXPECT_EQ(0u, banner_dispatcher()->notifications().size());
     bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                     *notification, nullptr);
-    EXPECT_EQ(1u, [[notification_center() deliveredNotifications] count]);
+    EXPECT_EQ(1u, banner_dispatcher()->notifications().size());
   }
-
-  // The destructor of the bridge should close all notifications.
-  EXPECT_EQ(0u, [[notification_center() deliveredNotifications] count]);
 }
 
 TEST_F(NotificationPlatformBridgeMacTest,
        TestProfileShutdownRemovesNotifications) {
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      notification_center(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher());
 
   std::unique_ptr<Notification> notification = CreateBanner(
       "Title", "Context", "https://gmail.com", "Button 1", "Button 2");
@@ -342,24 +328,22 @@ TEST_F(NotificationPlatformBridgeMacTest,
                   *notification, /*metadata=*/nullptr);
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, incognito_profile,
                   *notification, /*metadata=*/nullptr);
-  EXPECT_EQ(2u, [[notification_center() deliveredNotifications] count]);
+  EXPECT_EQ(2u, banner_dispatcher()->notifications().size());
 
   // Start shutdown of the incognito profile.
   bridge->DisplayServiceShutDown(incognito_profile);
 
   // Expect all notifications for that profile to be closed.
-  NSArray* notifications = [notification_center() deliveredNotifications];
-  ASSERT_EQ(1u, [notifications count]);
-  NSUserNotification* remaining_notification = notifications[0];
-  EXPECT_EQ(false, [[remaining_notification userInfo]
-                           [notification_constants::kNotificationIncognito]
-                       boolValue]);
+  const auto& notifications = banner_dispatcher()->notifications();
+  ASSERT_EQ(1u, notifications.size());
+  const auto& remaining_notification = notifications[0];
+  EXPECT_EQ(false, remaining_notification->meta->id->profile->incognito);
 }
 
 // Regression test for crbug.com/1182795
 TEST_F(NotificationPlatformBridgeMacTest, TestNullProfileShutdown) {
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      notification_center(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher());
   // Emulate shutdown of the null profile.
   bridge->DisplayServiceShutDown(/*profile=*/nullptr);
 }
@@ -369,10 +353,10 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayAlert) {
   std::unique_ptr<Notification> alert =
       CreateAlert("Title", "Context", "https://gmail.com", "Button 1", nullptr);
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      notification_center(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(), *alert,
                   nullptr);
-  EXPECT_EQ(0u, [[notification_center() deliveredNotifications] count]);
+  EXPECT_EQ(0u, banner_dispatcher()->notifications().size());
   EXPECT_EQ(1u, alert_dispatcher()->notifications().size());
   histogram_tester.ExpectUniqueSample("Notifications.macOS.Delivered.Alert",
                                       /*sample=*/true, /*expected_count=*/1);
@@ -384,12 +368,12 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayBannerAndAlert) {
   std::unique_ptr<Notification> banner = CreateBanner(
       "Title", "Context", "https://gmail.com", "Button 1", nullptr);
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      notification_center(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   Notification("notification_id1", *banner), nullptr);
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   Notification("notification_id2", *alert), nullptr);
-  EXPECT_EQ(1u, [[notification_center() deliveredNotifications] count]);
+  EXPECT_EQ(1u, banner_dispatcher()->notifications().size());
   EXPECT_EQ(1u, alert_dispatcher()->notifications().size());
 }
 
@@ -397,14 +381,14 @@ TEST_F(NotificationPlatformBridgeMacTest, TestCloseAlert) {
   std::unique_ptr<Notification> alert =
       CreateAlert("Title", "Context", "https://gmail.com", "Button 1", nullptr);
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      notification_center(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher());
   EXPECT_EQ(0u, alert_dispatcher()->notifications().size());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(), *alert,
                   nullptr);
   EXPECT_EQ(1u, alert_dispatcher()->notifications().size());
 
   bridge->Close(profile(), "id1");
-  EXPECT_EQ(0u, [[notification_center() deliveredNotifications] count]);
+  EXPECT_EQ(0u, banner_dispatcher()->notifications().size());
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestQuitRemovesBannersAndAlerts) {
@@ -413,26 +397,27 @@ TEST_F(NotificationPlatformBridgeMacTest, TestQuitRemovesBannersAndAlerts) {
   std::unique_ptr<Notification> alert =
       CreateAlert("Title", "Context", "https://gmail.com", "Button 1", nullptr);
 
+  auto banner_dispatcher = std::make_unique<MockNotificationDispatcherMac>();
+  MockNotificationDispatcherMac* banner_dispatcher_ptr =
+      banner_dispatcher.get();
   auto alert_dispatcher = std::make_unique<MockNotificationDispatcherMac>();
   MockNotificationDispatcherMac* alert_dispatcher_ptr = alert_dispatcher.get();
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      notification_center(), std::move(alert_dispatcher));
+      std::move(banner_dispatcher), std::move(alert_dispatcher));
 
-  EXPECT_EQ(0u, [[notification_center() deliveredNotifications] count]);
+  EXPECT_EQ(0u, banner_dispatcher_ptr->notifications().size());
   EXPECT_EQ(0u, alert_dispatcher_ptr->notifications().size());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   Notification("notification_id1", *notification), nullptr);
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   Notification("notification_id2", *alert), nullptr);
-  EXPECT_EQ(1u, [[notification_center() deliveredNotifications] count]);
+  EXPECT_EQ(1u, banner_dispatcher_ptr->notifications().size());
   EXPECT_EQ(1u, alert_dispatcher_ptr->notifications().size());
 
-  // Destructing the bridge should close all alerts.
+  // Destructing the bridge should close all alerts and banners.
+  EXPECT_CALL(*banner_dispatcher_ptr, CloseAllNotifications());
   EXPECT_CALL(*alert_dispatcher_ptr, CloseAllNotifications());
   bridge.reset();
-
-  // Banners should be closed as well.
-  EXPECT_EQ(0u, [[notification_center() deliveredNotifications] count]);
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayETLDPlusOne) {
@@ -441,7 +426,7 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayETLDPlusOne) {
       "Button 1", nullptr);
 
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      notification_center(), CreateAlertDispatcher());
+      CreateBannerDispatcher(), CreateAlertDispatcher());
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   Notification("notification_id1", *notification), nullptr);
 
@@ -472,46 +457,12 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayETLDPlusOne) {
   bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
                   Notification("notification_id6", *notification), nullptr);
 
-  NSArray* notifications = [notification_center() deliveredNotifications];
-  EXPECT_EQ(6u, [notifications count]);
-  NSUserNotification* delivered_notification = notifications[0];
-  EXPECT_NSEQ(@"test.co.uk", [delivered_notification subtitle]);
-  delivered_notification = notifications[1];
-  EXPECT_NSEQ(@"mail.appspot.com", [delivered_notification subtitle]);
-  delivered_notification = notifications[2];
-  EXPECT_NSEQ(@"tests.peter.sh", [delivered_notification subtitle]);
-  delivered_notification = notifications[3];
-  EXPECT_NSEQ(@"peter.sh", [delivered_notification subtitle]);
-  delivered_notification = notifications[4];
-  EXPECT_NSEQ(@"localhost:8080", [delivered_notification subtitle]);
-  delivered_notification = notifications[5];
-  EXPECT_NSEQ(@"93.186.186.172", [delivered_notification subtitle]);
-}
-
-TEST_F(NotificationPlatformBridgeMacTest, DidActivateNotification) {
-  base::HistogramTester histogram_tester;
-  auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
-      notification_center(), CreateAlertDispatcher());
-
-  base::scoped_nsobject<NSUserNotification> toast(
-      [[NSUserNotification alloc] init]);
-  toast.get().userInfo = @{
-    notification_constants::kNotificationOrigin : @"https://google.com",
-    notification_constants::kNotificationId : @"notificationId",
-    notification_constants::kNotificationProfileId : @"profileId",
-    notification_constants::kNotificationIncognito : @YES,
-    notification_constants::kNotificationType : @0,
-    notification_constants::
-    kNotificationCreatorPid : @(base::GetCurrentProcId()),
-  };
-
-  [[notification_center() delegate] userNotificationCenter:notification_center()
-                                   didActivateNotification:toast.get()];
-
-  // Handling responses is async, make sure we wait for all tasks to complete.
-  task_environment_.RunUntilIdle();
-
-  histogram_tester.ExpectUniqueSample(
-      "Notifications.macOS.ActionReceived.Banner", /*sample=*/true,
-      /*expected_count=*/1);
+  const auto& notifications = banner_dispatcher()->notifications();
+  EXPECT_EQ(6u, notifications.size());
+  EXPECT_EQ(u"test.co.uk", notifications[0]->subtitle);
+  EXPECT_EQ(u"mail.appspot.com", notifications[1]->subtitle);
+  EXPECT_EQ(u"tests.peter.sh", notifications[2]->subtitle);
+  EXPECT_EQ(u"peter.sh", notifications[3]->subtitle);
+  EXPECT_EQ(u"localhost:8080", notifications[4]->subtitle);
+  EXPECT_EQ(u"93.186.186.172", notifications[5]->subtitle);
 }

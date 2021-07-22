@@ -22,35 +22,6 @@
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
-
-namespace {
-
-// Handles notification actions from the macOS notification service and calls
-// the given |on_action| closure after each action.
-class MacNotificationActionHandlerImpl
-    : public mac_notifications::mojom::MacNotificationActionHandler {
- public:
-  explicit MacNotificationActionHandlerImpl(base::RepeatingClosure on_action)
-      : on_action_(std::move(on_action)) {}
-  MacNotificationActionHandlerImpl(const MacNotificationActionHandlerImpl&) =
-      delete;
-  MacNotificationActionHandlerImpl& operator=(
-      const MacNotificationActionHandlerImpl&) = delete;
-  ~MacNotificationActionHandlerImpl() override = default;
-
-  // mac_notifications::mojom::MacNotificationActionHandler:
-  void OnNotificationAction(
-      mac_notifications::mojom::NotificationActionInfoPtr info) override {
-    ProcessMacNotificationResponse(std::move(info));
-    on_action_.Run();
-  }
-
- private:
-  base::RepeatingClosure on_action_;
-};
-
-}  // namespace
 
 NotificationDispatcherMojo::NotificationDispatcherMojo(
     std::unique_ptr<MacNotificationProviderFactory> provider_factory)
@@ -62,9 +33,9 @@ void NotificationDispatcherMojo::DisplayNotification(
     NotificationHandler::Type notification_type,
     Profile* profile,
     const message_center::Notification& notification) {
+  no_notifications_checker_.Cancel();
   GetOrCreateService()->DisplayNotification(
       CreateMacNotification(notification_type, profile, notification));
-  no_notifications_checker_.Cancel();
 }
 
 void NotificationDispatcherMojo::CloseNotificationWithId(
@@ -95,6 +66,7 @@ void NotificationDispatcherMojo::GetDisplayedNotificationsForProfileId(
     const std::string& profile_id,
     bool incognito,
     GetDisplayedNotificationsCallback callback) {
+  no_notifications_checker_.Cancel();
   GetOrCreateService()->GetDisplayedNotifications(
       mac_notifications::mojom::ProfileIdentifier::New(profile_id, incognito),
       base::BindOnce(&NotificationDispatcherMojo::DispatchGetNotificationsReply,
@@ -103,11 +75,19 @@ void NotificationDispatcherMojo::GetDisplayedNotificationsForProfileId(
 
 void NotificationDispatcherMojo::GetAllDisplayedNotifications(
     GetAllDisplayedNotificationsCallback callback) {
+  no_notifications_checker_.Cancel();
   GetOrCreateService()->GetDisplayedNotifications(
       /*profile=*/nullptr,
       base::BindOnce(
           &NotificationDispatcherMojo::DispatchGetAllNotificationsReply,
           base::Unretained(this), std::move(callback)));
+}
+
+void NotificationDispatcherMojo::OnNotificationAction(
+    mac_notifications::mojom::NotificationActionInfoPtr info) {
+  ProcessMacNotificationResponse(/*is_alert=*/!provider_factory_->in_process(),
+                                 std::move(info));
+  CheckIfNotificationsRemaining();
 }
 
 void NotificationDispatcherMojo::CheckIfNotificationsRemaining() {
@@ -134,7 +114,7 @@ void NotificationDispatcherMojo::CheckIfNotificationsRemaining() {
 
 void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
     bool gracefully) {
-  if (service_) {
+  if (service_ && !provider_factory_->in_process()) {
     base::TimeDelta elapsed = base::TimeTicks::Now() - service_start_time_;
     base::UmaHistogramCustomTimes(
         "Notifications.macOS.ServiceProcessRuntime", elapsed,
@@ -150,26 +130,19 @@ void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
   no_notifications_checker_.Cancel();
   provider_.reset();
   service_.reset();
+  handler_.reset();
 }
 
 mac_notifications::mojom::MacNotificationService*
 NotificationDispatcherMojo::GetOrCreateService() {
   if (!service_) {
     service_start_time_ = base::TimeTicks::Now();
-    mojo::PendingRemote<mac_notifications::mojom::MacNotificationActionHandler>
-        handler_remote;
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<MacNotificationActionHandlerImpl>(base::BindRepeating(
-            &NotificationDispatcherMojo::CheckIfNotificationsRemaining,
-            base::Unretained(this))),
-        handler_remote.InitWithNewPipeAndPassReceiver());
-
-    provider_ = provider_factory_->LaunchProvider(/*in_process=*/false);
+    provider_ = provider_factory_->LaunchProvider();
     provider_.set_disconnect_handler(base::BindOnce(
         &NotificationDispatcherMojo::OnServiceDisconnectedGracefully,
         base::Unretained(this), /*gracefully=*/false));
     provider_->BindNotificationService(service_.BindNewPipeAndPassReceiver(),
-                                       std::move(handler_remote));
+                                       handler_.BindNewPipeAndPassRemote());
   }
   return service_.get();
 }
