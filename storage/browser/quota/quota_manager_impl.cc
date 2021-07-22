@@ -2134,7 +2134,7 @@ void QuotaManagerImpl::DidGetBucket(
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
     QuotaErrorOr<BucketInfo> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DidDatabaseWork(result.ok());
+  DidDatabaseWork(result.ok() || result.error() != QuotaError::kDatabaseError);
   std::move(callback).Run(std::move(result));
 }
 

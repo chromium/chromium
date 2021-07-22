@@ -520,6 +520,8 @@ class QuotaManagerImplTest : public testing::Test {
     quota_manager_impl_->SetQuotaChangeCallbackForTesting(std::move(cb));
   }
 
+  bool is_db_disabled() { return quota_manager_impl_->db_disabled_; }
+
   QuotaStatusCode status() const { return quota_status_; }
   const UsageInfoEntries& usage_info() const { return usage_info_; }
   int64_t usage() const { return usage_; }
@@ -661,6 +663,7 @@ TEST_F(QuotaManagerImplTest, GetBucket) {
   GetBucket(storage_key, "bucket_b", kTemp);
   ASSERT_FALSE(bucket_.ok());
   EXPECT_EQ(bucket_.error(), QuotaError::kNotFound);
+  ASSERT_FALSE(is_db_disabled());
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Simple) {
