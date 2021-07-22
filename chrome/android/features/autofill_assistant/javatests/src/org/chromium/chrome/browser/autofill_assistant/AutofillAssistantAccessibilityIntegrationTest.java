@@ -31,15 +31,14 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
-import android.support.test.InstrumentationRegistry;
-
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
@@ -61,7 +60,6 @@ import org.chromium.chrome.browser.autofill_assistant.proto.TextInputProto.Input
 import org.chromium.chrome.browser.autofill_assistant.proto.TextInputSectionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.UserFormSectionProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -77,11 +75,12 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantAccessibilityIntegrationTest {
-    @Rule
-    public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
+    private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
-    private static final String TEST_PAGE = "/components/test/data/autofill_assistant/html/"
-            + "autofill_assistant_target_website.html";
+    @Rule
+    public final TestRule mRulesChain =
+            RuleChain.outerRule(mTestRule).around(new AutofillAssistantCustomTabTestRule(
+                    mTestRule, "autofill_assistant_target_website.html"));
 
     private void runScript(AutofillAssistantTestScript script) {
         AutofillAssistantTestService testService =
@@ -94,18 +93,6 @@ public class AutofillAssistantAccessibilityIntegrationTest {
                                 .setTalkbackSheetSizeFraction(0.5f)
                                 .build());
         startAutofillAssistant(mTestRule.getActivity(), testService);
-    }
-
-    @Before
-    public void setUp() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(),
-                mTestRule.getTestServer().getURL(TEST_PAGE)));
-        mTestRule.getActivity()
-                .getRootUiCoordinatorForTesting()
-                .getScrimCoordinator()
-                .disableAnimationForTesting(true);
     }
 
     private void setAccessibilityEnabledForTesting(Boolean value) {

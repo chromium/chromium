@@ -30,17 +30,17 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
 import android.os.Build.VERSION_CODES;
-import android.support.test.InstrumentationRegistry;
 import android.util.Base64;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
@@ -73,7 +73,6 @@ import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
-import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,16 +83,17 @@ import java.util.Map;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantTriggerScriptIntegrationTest {
-    @Rule
-    public ChromeTabbedActivityTestRule mTestRule = new ChromeTabbedActivityTestRule();
-
-    private static final String HTML_DIRECTORY = "/components/test/data/autofill_assistant/html/";
     private static final String TEST_PAGE_A = "autofill_assistant_target_website.html";
 
-    private EmbeddedTestServer mTestServer;
+    private final ChromeTabbedActivityTestRule mTestRule = new ChromeTabbedActivityTestRule();
+    private final AutofillAssistantChromeTabTestRule mTabTestRule =
+            new AutofillAssistantChromeTabTestRule(mTestRule, TEST_PAGE_A);
+
+    @Rule
+    public final TestRule mRulesChain = RuleChain.outerRule(mTestRule).around(mTabTestRule);
 
     private String getURL(String page) {
-        return mTestServer.getURL(HTML_DIRECTORY + page);
+        return mTabTestRule.getURL(page);
     }
 
     private AutofillAssistantTestServiceRequestSender setupTriggerScripts(
@@ -131,20 +131,11 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Before
     public void setUp() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        mTestRule.startMainActivityWithURL(getURL(TEST_PAGE_A));
-
         // Enable MSBB.
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                                 AutofillAssistantUiController.getProfile(), true));
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        mTestServer.stopAndDestroyServer();
     }
 
     @Test

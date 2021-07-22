@@ -43,7 +43,6 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toVisibleCssSelector;
 
-import android.support.test.InstrumentationRegistry;
 import android.widget.DatePicker;
 
 import androidx.test.espresso.matcher.ViewMatchers;
@@ -53,6 +52,8 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.LocaleUtils;
@@ -97,7 +98,6 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression;
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression.Chunk;
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.WebContents;
@@ -116,11 +116,11 @@ import java.util.Locale;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantCollectUserDataIntegrationTest {
-    @Rule
-    public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
+    private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
-    private static final String TEST_PAGE = "/components/test/data/autofill_assistant/html/"
-            + "form_target_website.html";
+    @Rule
+    public final TestRule mRulesChain = RuleChain.outerRule(mTestRule).around(
+            new AutofillAssistantCustomTabTestRule(mTestRule, "form_target_website.html"));
 
     private AutofillAssistantCollectUserDataTestHelper mHelper;
 
@@ -130,10 +130,6 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(),
-                mTestRule.getTestServer().getURL(TEST_PAGE)));
         mHelper = new AutofillAssistantCollectUserDataTestHelper();
     }
 

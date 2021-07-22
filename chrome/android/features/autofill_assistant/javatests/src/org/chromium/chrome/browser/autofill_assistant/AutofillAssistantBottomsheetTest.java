@@ -37,16 +37,16 @@ import static org.chromium.chrome.browser.autofill_assistant.proto.ConfigureBott
 import static org.chromium.chrome.browser.autofill_assistant.proto.ConfigureBottomSheetProto.ViewportResizing.RESIZE_VISUAL_VIEWPORT;
 
 import android.graphics.Rect;
-import android.support.test.InstrumentationRegistry;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.GeneralLocation;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
@@ -79,7 +79,6 @@ import org.chromium.chrome.browser.autofill_assistant.proto.TextInputProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TextInputSectionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.UserFormSectionProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
@@ -93,23 +92,12 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantBottomsheetTest {
+    private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
+
     @Rule
-    public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
-
-    private static final String TEST_PAGE = "/components/test/data/autofill_assistant/html/"
-            + "bottomsheet_behaviour_target_website.html";
-
-    @Before
-    public void setUp() {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(),
-                mTestRule.getTestServer().getURL(TEST_PAGE)));
-        mTestRule.getActivity()
-                .getRootUiCoordinatorForTesting()
-                .getScrimCoordinator()
-                .disableAnimationForTesting(true);
-    }
+    public final TestRule mRulesChain =
+            RuleChain.outerRule(mTestRule).around(new AutofillAssistantCustomTabTestRule(
+                    mTestRule, "bottomsheet_behaviour_target_website.html"));
 
     private AutofillAssistantTestScript makeScriptWithActionArray(
             ArrayList<ActionProto> actionsList) {

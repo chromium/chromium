@@ -21,7 +21,7 @@ class AutofillAssistantCustomTabTestRule
     }
 
     @Override
-    public void start() {
+    public void startActivity() {
         getTestRule().startCustomTabActivityWithIntent(
                 CustomTabsTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(),
@@ -29,5 +29,5 @@ class AutofillAssistantCustomTabTestRule
     }
 
     @Override
-    public void stop() {}
+    public void cleanupAfterTest() {}
 }

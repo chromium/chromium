@@ -25,13 +25,12 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 import static org.chromium.ui.test.util.ViewUtils.hasBackgroundColor;
 
-import android.support.test.InstrumentationRegistry;
-
 import androidx.test.filters.MediumTest;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
@@ -48,7 +47,6 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ShowProgressBarProto
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.widget.ChromeImageView;
@@ -63,24 +61,17 @@ import java.util.Locale;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantProgressBarIntegrationTest {
-    @Rule
-    public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
+    private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
-    private static final String TEST_PAGE = "/components/test/data/autofill_assistant/html/"
-            + "form_target_website.html";
+    @Rule
+    public final TestRule mRulesChain =
+            RuleChain.outerRule(mTestRule).around(new AutofillAssistantCustomTabTestRule(
+                    mTestRule, "autofill_assistant_target_website.html"));
 
     private void runScript(AutofillAssistantTestScript script) {
         AutofillAssistantTestService testService =
                 new AutofillAssistantTestService(Collections.singletonList(script));
         startAutofillAssistant(mTestRule.getActivity(), testService);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(),
-                mTestRule.getTestServer().getURL(TEST_PAGE)));
     }
 
     private StepProgressBarConfiguration getDefaultStepProgressBarConfiguration() {

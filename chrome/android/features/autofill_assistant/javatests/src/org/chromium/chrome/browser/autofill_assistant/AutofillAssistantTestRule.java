@@ -26,8 +26,8 @@ abstract class AutofillAssistantTestRule<T extends ChromeActivityTestRule> imple
         return mTestRule;
     }
 
-    abstract void start();
-    abstract void stop();
+    abstract void startActivity();
+    abstract void cleanupAfterTest();
 
     @Override
     public Statement apply(final Statement base, Description description) {
@@ -35,14 +35,18 @@ abstract class AutofillAssistantTestRule<T extends ChromeActivityTestRule> imple
             @Override
             public void evaluate() throws Throwable {
                 AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-                start();
+                startActivity();
                 setPortraitOrientation();
+                mTestRule.getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getScrimCoordinator()
+                        .disableAnimationForTesting(true);
                 try {
                     base.evaluate();
                 } finally {
                     restoreOrientation();
                 }
-                stop();
+                cleanupAfterTest();
             }
         };
     }

@@ -25,13 +25,13 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toClientId;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
-import android.support.test.InstrumentationRegistry;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
@@ -78,7 +78,6 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ValueReferenceProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ViewProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.WaitForDomProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
@@ -91,11 +90,12 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantInterruptIntegrationTest {
-    @Rule
-    public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
+    private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
-    private static final String TEST_PAGE = "/components/test/data/autofill_assistant/html/"
-            + "autofill_assistant_target_website.html";
+    @Rule
+    public final TestRule mRulesChain =
+            RuleChain.outerRule(mTestRule).around(new AutofillAssistantCustomTabTestRule(
+                    mTestRule, "autofill_assistant_target_website.html"));
 
     private static final String MAIN_SCRIPT_PATH = "main_script";
     private static final String INTERRUPT_SCRIPT_PATH = "interrupt_script";
@@ -104,15 +104,6 @@ public class AutofillAssistantInterruptIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(),
-                mTestRule.getTestServer().getURL(TEST_PAGE)));
-        mTestRule.getActivity()
-                .getRootUiCoordinatorForTesting()
-                .getScrimCoordinator()
-                .disableAnimationForTesting(true);
-
         mHelper = new AutofillAssistantCollectUserDataTestHelper();
     }
 

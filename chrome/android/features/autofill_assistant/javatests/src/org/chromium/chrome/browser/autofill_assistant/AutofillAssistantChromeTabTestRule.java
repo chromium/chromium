@@ -27,12 +27,12 @@ class AutofillAssistantChromeTabTestRule
     }
 
     @Override
-    public void start() {
+    public void startActivity() {
         getTestRule().startMainActivityWithURL(getURL(mTestPage));
     }
 
     @Override
-    public void stop() {
+    public void cleanupAfterTest() {
         mTestServer.stopAndDestroyServer();
     }
 }
