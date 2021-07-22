@@ -82,9 +82,6 @@ void GpuWatchdogPowerTest::SetUp() {
   // Report GPU init complete.
   watchdog_thread_->OnInitComplete();
 
-  // Add a power monitor observer.
-  watchdog_thread_->AddPowerObserver();
-
   // Wait until the power observer is added on the watchdog thread
   watchdog_thread_->WaitForPowerObserverAddedForTesting();
 }

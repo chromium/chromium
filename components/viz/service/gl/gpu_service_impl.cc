@@ -595,8 +595,6 @@ void GpuServiceImpl::InitializeWithHost(
 
   media_gpu_channel_manager_ = std::make_unique<media::MediaGpuChannelManager>(
       gpu_channel_manager_.get());
-  if (watchdog_thread())
-    watchdog_thread()->AddPowerObserver();
 
   // Create and Initialize compositor gpu thread.
   compositor_gpu_thread_ =

@@ -93,10 +93,6 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
 
   ~GpuWatchdogThread() override;
 
-  // Must be called after a PowerMonitor has been created. Can be called from
-  // any thread.
-  void AddPowerObserver();
-
   // Notifies the watchdog when Chrome is backgrounded / foregrounded. Should
   // only be used if Chrome is completely backgrounded and not expected to
   // render (all windows backgrounded and not producing frames).
@@ -154,7 +150,7 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
                     int init_factor,
                     int restart_factor,
                     bool test_mode);
-  void OnAddPowerObserver();
+  void AddPowerObserver();
   void RestartWatchdogTimeoutTask(PauseResumeSource source_of_request);
   void StopWatchdogTimeoutTask(PauseResumeSource source_of_request);
   void UpdateInitializationFlag();
@@ -291,9 +287,8 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   // The GPU watchdog is paused. The timeout task is temporarily stopped.
   bool is_paused_ = false;
 
-  // Whether the watchdog thread has been called and added to the power monitor
-  // observer.
-  bool is_add_power_observer_called_ = false;
+  // Whether the watchdog thread has added the power monitor observer.
+  // Read/Write by the watchdog thread only.
   bool is_power_observer_added_ = false;
 
   // whether GpuWatchdogThreadEvent::kGpuWatchdogStart has been recorded.
