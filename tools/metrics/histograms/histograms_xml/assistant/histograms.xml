@@ -228,7 +228,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.VoiceSearch.AgsaVersion{Timing}" units="Version"
-    expires_after="2021-08-29">
+    expires_after="2022-08-22">
   <owner>wylieb@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
   <owner>jds@google.com</owner>
@@ -242,9 +242,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.VoiceSearch.ConsentOutcome"
-    enum="AssistantConsentOutcome" expires_after="2022-01-02">
+    enum="AssistantConsentOutcome" expires_after="2022-08-22">
   <owner>wylieb@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
+  <owner>jds@google.com</owner>
   <summary>
     (Android only) Reports the outcome of the consent dialog shown for the
     assistant.
