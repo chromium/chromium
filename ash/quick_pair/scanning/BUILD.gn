@@ -32,6 +32,9 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fast_pair/fake_fast_pair_scanner.cc",
+    "fast_pair/fake_fast_pair_scanner.h",
+    "fast_pair/fast_pair_scanner.h",
     "mock_scanner_broker.cc",
     "mock_scanner_broker.h",
     "scanner_broker.h",
@@ -41,6 +44,7 @@ static_library("test_support") {
     "//ash/quick_pair/common",
     "//base",
     "//base/test:test_support",
+    "//device/bluetooth",
     "//testing/gtest",
   ]
 }
