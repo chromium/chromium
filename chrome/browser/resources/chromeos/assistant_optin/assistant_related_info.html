@@ -97,15 +97,13 @@
       </div>
       <div class="line"></div>
       <setting-zippy id="zippy">
-        <div slot="title" aria-hidden="true">
+        <div slot="title">
           [[i18nDynamic(locale, 'assistantScreenContextTitle')]]
         </div>
-        <div slot="content" aria-hidden="true"
-            hidden="[[childName_]]">
+        <div slot="content" hidden="[[childName_]]">
           [[i18nDynamic(locale, 'assistantScreenContextDesc')]]
         </div>
-        <div slot="content" aria-hidden="true"
-            hidden="[[!childName_]]">
+        <div slot="content" hidden="[[!childName_]]">
           [[i18nDynamic(locale,
               'assistantScreenContextDescForChild', childName_)]]
         </div>
