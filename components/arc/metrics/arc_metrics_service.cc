@@ -59,6 +59,13 @@ constexpr char kAppTypeSystemServer[] = "SystemServer";
 constexpr char kAppTypeSystem[] = "SystemApp";
 constexpr char kAppTypeOther[] = "Other";
 
+// Logs UMA enum values to facilitate finding feedback reports in Xamine.
+template <typename T>
+void LogStabilityUmaEnum(const std::string& name, T sample) {
+  base::UmaHistogramEnumeration(name, sample);
+  VLOG(1) << name << ": " << static_cast<std::underlying_type_t<T>>(sample);
+}
+
 std::string AnrSourceToTableName(mojom::AnrSource value) {
   switch (value) {
     case mojom::AnrSource::OTHER:
@@ -362,7 +369,7 @@ void ArcMetricsService::NotifyOOMKillCount(unsigned long count) {
 void ArcMetricsService::ReportArcCorePriAbiMigEvent(
     mojom::ArcCorePriAbiMigEvent event_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  UMA_HISTOGRAM_ENUMERATION("Arc.AbiMigration.Event", event_type);
+  LogStabilityUmaEnum("Arc.AbiMigration.Event", event_type);
 }
 
 void ArcMetricsService::ReportArcCorePriAbiMigFailedTries(
@@ -435,9 +442,8 @@ void ArcMetricsService::ReportClipboardDragDropEvent(
 void ArcMetricsService::ReportAnr(mojom::AnrPtr anr) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::UmaHistogramEnumeration("Arc.Anr.Overall", anr->type);
-
-  base::UmaHistogramEnumeration("Arc.Anr." + AnrSourceToTableName(anr->source),
-                                anr->type);
+  LogStabilityUmaEnum("Arc.Anr." + AnrSourceToTableName(anr->source),
+                      anr->type);
 }
 
 void ArcMetricsService::ReportLowLatencyStylusLibApiUsage(
@@ -593,9 +599,9 @@ ArcMetricsService::IntentHelperObserver::~IntentHelperObserver() = default;
 void ArcMetricsService::IntentHelperObserver::OnConnectionClosed() {
   // Ignore closed connections due to the container shutting down.
   if (!arc_bridge_service_observer_->arc_bridge_closing_) {
-    base::UmaHistogramEnumeration(arc_metrics_service_->histogram_namer_.Run(
-                                      "Arc.Session.MojoDisconnection"),
-                                  MojoConnectionType::INTENT_HELPER);
+    LogStabilityUmaEnum(arc_metrics_service_->histogram_namer_.Run(
+                            "Arc.Session.MojoDisconnection"),
+                        MojoConnectionType::INTENT_HELPER);
   }
 }
 
@@ -610,9 +616,9 @@ ArcMetricsService::AppLauncherObserver::~AppLauncherObserver() = default;
 void ArcMetricsService::AppLauncherObserver::OnConnectionClosed() {
   // Ignore closed connections due to the container shutting down.
   if (!arc_bridge_service_observer_->arc_bridge_closing_) {
-    base::UmaHistogramEnumeration(arc_metrics_service_->histogram_namer_.Run(
-                                      "Arc.Session.MojoDisconnection"),
-                                  MojoConnectionType::APP_LAUNCHER);
+    LogStabilityUmaEnum(arc_metrics_service_->histogram_namer_.Run(
+                            "Arc.Session.MojoDisconnection"),
+                        MojoConnectionType::APP_LAUNCHER);
   }
 }
 
