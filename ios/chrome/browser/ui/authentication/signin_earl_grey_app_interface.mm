@@ -87,7 +87,7 @@
       chrome_test_util::GetOriginalBrowserState();
 
   return !IdentityManagerFactory::GetForBrowserState(browserState)
-              ->HasPrimaryAccount(signin::ConsentLevel::kSync);
+              ->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 + (id<GREYMatcher>)identityCellMatcherForEmail:(NSString*)email {

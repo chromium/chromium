@@ -270,23 +270,16 @@ TEST_F(SettingsTableViewControllerMICETest,
   ASSERT_EQ(nil, sync_item.detailText);
 }
 
-// Verifies that the sign-in setting item is replaced by the managed sign-in
-// item if sign-in is disabled through the "Allow Chrome Sign-in" option.
+// Verifies that the sign-in setting row is removed if sign-in is disabled
+// through the "Allow Chrome Sign-in" option.
 TEST_F(SettingsTableViewControllerMICETest, SigninDisabled) {
   chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   CreateController();
   CheckController();
 
-  NSArray* signin_items = [controller().tableViewModel
-      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
-                                       SettingsSectionIdentifierSignIn];
-  ASSERT_EQ(1U, signin_items.count);
-
-  TableViewImageItem* signin_item =
-      static_cast<TableViewImageItem*>(signin_items[0]);
-  ASSERT_NSEQ(signin_item.title,
-              l10n_util::GetNSString(IDS_IOS_NOT_SIGNED_IN_SETTING_TITLE));
-  ASSERT_NE(signin_item.image, nil);
+  ASSERT_FALSE([controller().tableViewModel
+      hasSectionForSectionIdentifier:SettingsSectionIdentifier::
+                                         SettingsSectionIdentifierSignIn]);
 }
 
 // Verifies that the Sync icon displays the off state (with OFF in detail text)

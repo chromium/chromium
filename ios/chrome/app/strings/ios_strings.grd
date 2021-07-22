@@ -2292,9 +2292,6 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_TITLE" desc="The title of the Signed In Accounts view [iOS only] [30em]">
         You're signed in
       </message>
-      <message name="IDS_IOS_NOT_SIGNED_IN_SETTING_TITLE" desc="The title shown when the user has disabled Chrome sign-in [iOS only]">
-        Sign-in Is Disabled
-      </message>
       <message name="IDS_IOS_SIGN_IN_AGAIN" desc="Title displayed when there is an authentication failure in sign-in and the user needs to attempt to sign in again. [Length: 20em] [iOS only]">
         Sign In Again
       </message>

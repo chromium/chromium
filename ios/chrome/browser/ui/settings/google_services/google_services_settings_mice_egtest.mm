@@ -110,9 +110,9 @@ void DismissSignOut() {
   // Verify that sign-in is disabled.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:StaticTextWithAccessibilityLabelId(
-                                          IDS_IOS_NOT_SIGNED_IN_SETTING_TITLE)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSettingsSignInCellId)]
+      assertWithMatcher:grey_notVisible()];
 
   // Verify signed out.
   [SigninEarlGrey verifySignedOut];
@@ -171,9 +171,9 @@ void DismissSignOut() {
   // Verify that sign-in is disabled.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:StaticTextWithAccessibilityLabelId(
-                                          IDS_IOS_NOT_SIGNED_IN_SETTING_TITLE)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSettingsSignInCellId)]
+      assertWithMatcher:grey_notVisible()];
 
   // Verify signed out.
   [SigninEarlGrey verifySignedOut];
@@ -238,9 +238,9 @@ void DismissSignOut() {
   // Verify that sign-in is disabled.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:StaticTextWithAccessibilityLabelId(
-                                          IDS_IOS_NOT_SIGNED_IN_SETTING_TITLE)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSettingsSignInCellId)]
+      assertWithMatcher:grey_notVisible()];
 
   // Verify signed out.
   [SigninEarlGrey verifySignedOut];
@@ -295,9 +295,9 @@ void DismissSignOut() {
   // Verify that the user is signed out and sign-in is disabled.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:StaticTextWithAccessibilityLabelId(
-                                          IDS_IOS_NOT_SIGNED_IN_SETTING_TITLE)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSettingsSignInCellId)]
+      assertWithMatcher:grey_notVisible()];
   [SigninEarlGrey verifySignedOut];
 
   [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];

@@ -546,14 +546,12 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  // If sign-in is disabled there should not be a sign-in promo.
-  if (!signin::IsSigninAllowed(_browserState->GetPrefs())) {
+  // If sign-in is disabled by policy there should not be a sign-in promo.
+  if (!signin::IsSigninAllowedByPolicy(_browserState->GetPrefs())) {
     // Ensure that the user sign-in state always reflects the sign-in allowed
     // preference.
     DCHECK(!authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
-    item = signin::IsSigninAllowedByPolicy(_browserState->GetPrefs())
-               ? [self signinDisabledTextItem]
-               : [self signinDisabledByPolicyTextItem];
+    item = [self signinDisabledByPolicyTextItem];
   } else if (self.shouldDisplaySyncPromo || self.shouldDisplaySigninPromo) {
     // Create the sign-in promo mediator if it doesn't exist.
     if (!_signinPromoViewMediator) {
@@ -579,7 +577,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     [_signinPromoViewMediator signinPromoViewIsVisible];
 
     item = signinPromoItem;
-  } else if (!authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  } else if (signin::IsSigninAllowed(_browserState->GetPrefs()) &&
+             !authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     AccountSignInItem* signInTextItem =
         [[AccountSignInItem alloc] initWithType:SettingsItemTypeSignInButton];
     signInTextItem.accessibilityIdentifier = kSettingsSignInCellId;
@@ -714,23 +713,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   signinDisabledItem.tintColor = [UIColor colorNamed:kGrey300Color];
   signinDisabledItem.accessibilityIdentifier = kSettingsSignInDisabledCellId;
-  signinDisabledItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  return signinDisabledItem;
-}
-
-- (TableViewItem*)signinDisabledTextItem {
-  TableViewImageItem* signinDisabledItem =
-      [[TableViewImageItem alloc] initWithType:SettingsItemTypeSigninDisabled];
-  signinDisabledItem.title =
-      l10n_util::GetNSString(IDS_IOS_NOT_SIGNED_IN_SETTING_TITLE);
-  signinDisabledItem.image =
-      CircularImageFromImage(ios::GetChromeBrowserProvider()
-                                 .GetSigninResourcesProvider()
-                                 ->GetDefaultAvatar(),
-                             kAccountProfilePhotoDimension);
-  signinDisabledItem.enabled = NO;
-  signinDisabledItem.accessibilityIdentifier = kSettingsSignInDisabledCellId;
-
   signinDisabledItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return signinDisabledItem;
 }
@@ -1544,18 +1526,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   }
 }
 
-// Reloads all sign-in promos and default buttons.
-- (void)reloadSigninSection {
-  [self updateSigninSection];
-
-  NSUInteger index = [self.tableViewModel
-      sectionForSectionIdentifier:SettingsSectionIdentifierAccount];
-  NSIndexSet* indexSet =
-      [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, index + 1)];
-  [self.tableView reloadSections:indexSet
-                withRowAnimation:UITableViewRowAnimationNone];
-}
-
 // Updates the Sync & Google services item to display the right icon and status
 // message in the detail text of the cell.
 - (void)updateSyncAndGoogleServicesItem:
@@ -1861,7 +1831,10 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     // Update the Cell.
     [self reconfigureCellsForItems:@[ _showMemoryDebugToolsItem ]];
   } else if (observableBoolean == _allowChromeSigninPreference) {
-    [self reloadSigninSection];
+    [self updateSigninSection];
+    // The Identity section may be added or removed depending on sign-in is
+    // allowed. Reload all sections in the model to account for the change.
+    [self.tableView reloadData];
   } else if (observableBoolean == _articlesEnabled) {
     self.articlesForYouItem.on = [_articlesEnabled value];
     [self reconfigureCellsForItems:@[ self.articlesForYouItem ]];
