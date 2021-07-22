@@ -17,11 +17,6 @@
 #include "components/domain_reliability/clear_mode.h"
 #include "content/public/browser/content_browser_client.h"
 
-#if !defined(OS_ANDROID)
-#include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
-#include "content/public/browser/host_zoom_map.h"
-#endif
-
 namespace sync_preferences {
 class PrefServiceSyncable;
 }
@@ -134,18 +129,6 @@ class OffTheRecordProfileImpl : public Profile {
   bool IsSignedIn() override;
 
  private:
-#if !defined(OS_ANDROID)
-  // Allows a profile to track changes in zoom levels in its parent profile.
-  void TrackZoomLevelsFromParent();
-#endif  // !defined(OS_ANDROID)
-
-#if !defined(OS_ANDROID)
-  // Callback function for tracking parent's zoom level changes.
-  void OnParentZoomLevelChanged(
-      const content::HostZoomMap::ZoomLevelChange& change);
-  void UpdateDefaultZoomLevel();
-#endif  // !defined(OS_ANDROID)
-
   // The real underlying profile.
   Profile* profile_;
   // Prevent |profile_| from being destroyed first.
@@ -154,11 +137,6 @@ class OffTheRecordProfileImpl : public Profile {
   const OTRProfileID otr_profile_id_;
 
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
-
-#if !defined(OS_ANDROID)
-  base::CallbackListSubscription track_zoom_subscription_;
-  base::CallbackListSubscription parent_default_zoom_level_subscription_;
-#endif  // !defined(OS_ANDROID)
 
   // Time we were started.
   base::Time start_time_;

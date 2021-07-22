@@ -321,9 +321,9 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapSanitizationBrowserTest, ClearOnStartup) {
 
 // Test four things:
 //  1. Host zoom maps of parent profile and child profile are different.
-//  2. Child host zoom map inherits zoom level at construction.
+//  2. Child host zoom map doesn't inherit zoom level at construction.
 //  3. Change of zoom level doesn't propagate from child to parent.
-//  4. Change of zoom level propagates from parent to child.
+//  4. Change of zoom level doesn't propagates from parent to child.
 IN_PROC_BROWSER_TEST_F(HostZoomMapBrowserTest,
                        OffTheRecordProfileHostZoomMap) {
   // Constants for test case.
@@ -352,9 +352,9 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapBrowserTest,
   // Verify.
   EXPECT_NE(parent_zoom_map, child_zoom_map);
 
-  EXPECT_EQ(parent_zoom_map->GetZoomLevelForHostAndScheme("http", host),
-            child_zoom_map->GetZoomLevelForHostAndScheme("http", host)) <<
-                "Child must inherit from parent.";
+  EXPECT_NE(parent_zoom_map->GetZoomLevelForHostAndScheme("http", host),
+            child_zoom_map->GetZoomLevelForHostAndScheme("http", host))
+      << "Child should not inherit from parent.";
 
   child_zoom_map->SetZoomLevelForHost(host, zoom_level_30);
   ASSERT_EQ(
@@ -370,14 +370,14 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapBrowserTest,
       parent_zoom_map->GetZoomLevelForHostAndScheme("http", host),
       zoom_level_40);
 
-  EXPECT_EQ(parent_zoom_map->GetZoomLevelForHostAndScheme("http", host),
-            child_zoom_map->GetZoomLevelForHostAndScheme("http", host)) <<
-                "Parent change should propagate to child.";
+  EXPECT_NE(parent_zoom_map->GetZoomLevelForHostAndScheme("http", host),
+            child_zoom_map->GetZoomLevelForHostAndScheme("http", host))
+      << "Parent change must not propagate to child.";
   base::RunLoop().RunUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_F(HostZoomMapBrowserTest,
-                       ParentDefaultZoomPropagatesToIncognitoChild) {
+                       ParentDefaultZoomDoesNotPropagatesToIncognitoChild) {
   Profile* parent_profile = browser()->profile();
   Profile* child_profile =
       static_cast<ProfileImpl*>(parent_profile)
@@ -396,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapBrowserTest,
 
   parent_profile->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(
       new_default_zoom_level);
-  EXPECT_EQ(new_default_zoom_level, child_host_zoom_map->GetDefaultZoomLevel());
+  EXPECT_NE(new_default_zoom_level, child_host_zoom_map->GetDefaultZoomLevel());
 }
 
 // TODO(1115597): Flaky on linux and cros.

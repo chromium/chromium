@@ -4,10 +4,8 @@
 
 #include "chrome/browser/profiles/off_the_record_profile_impl.h"
 
-#include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -112,9 +110,6 @@
 
 using content::BrowserThread;
 using content::DownloadManagerDelegate;
-#if !defined(OS_ANDROID)
-using content::HostZoomMap;
-#endif
 
 namespace {
 
@@ -179,10 +174,6 @@ void OffTheRecordProfileImpl::Init() {
   CHECK(!IsIncognitoProfile() ||
         IncognitoModePrefs::GetAvailability(profile_->GetPrefs()) !=
             IncognitoModePrefs::DISABLED);
-
-#if !defined(OS_ANDROID)
-  TrackZoomLevelsFromParent();
-#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   ChromePluginServiceFilter::GetInstance()->RegisterProfile(this);
@@ -261,31 +252,6 @@ OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {
     base::RecordAction(base::UserMetricsAction("IncognitoMode_Ended"));
   }
 }
-
-#if !defined(OS_ANDROID)
-void OffTheRecordProfileImpl::TrackZoomLevelsFromParent() {
-  // Here we only want to use zoom levels stored in the main-context's default
-  // storage partition. We're not interested in zoom levels in special
-  // partitions, e.g. those used by WebViewGuests.
-  HostZoomMap* host_zoom_map = HostZoomMap::GetDefaultForBrowserContext(this);
-  HostZoomMap* parent_host_zoom_map =
-      HostZoomMap::GetDefaultForBrowserContext(profile_);
-  host_zoom_map->CopyFrom(parent_host_zoom_map);
-  // Observe parent profile's HostZoomMap changes so they can also be applied
-  // to this profile's HostZoomMap.
-  track_zoom_subscription_ = parent_host_zoom_map->AddZoomLevelChangedCallback(
-      base::BindRepeating(&OffTheRecordProfileImpl::OnParentZoomLevelChanged,
-                          base::Unretained(this)));
-  if (!profile_->GetZoomLevelPrefs())
-    return;
-
-  // Also track changes to the parent profile's default zoom level.
-  parent_default_zoom_level_subscription_ =
-      profile_->GetZoomLevelPrefs()->RegisterDefaultZoomLevelCallback(
-          base::BindRepeating(&OffTheRecordProfileImpl::UpdateDefaultZoomLevel,
-                              base::Unretained(this)));
-}
-#endif  // !defined(OS_ANDROID)
 
 std::string OffTheRecordProfileImpl::GetProfileUserName() const {
   // Incognito profile should not return the username.
@@ -635,38 +601,6 @@ std::unique_ptr<Profile> Profile::CreateOffTheRecordProfile(
 bool OffTheRecordProfileImpl::IsSignedIn() {
   return false;
 }
-
-#if !defined(OS_ANDROID)
-void OffTheRecordProfileImpl::OnParentZoomLevelChanged(
-    const HostZoomMap::ZoomLevelChange& change) {
-  HostZoomMap* host_zoom_map = HostZoomMap::GetDefaultForBrowserContext(this);
-  switch (change.mode) {
-    case HostZoomMap::ZOOM_CHANGED_TEMPORARY_ZOOM:
-      return;
-    case HostZoomMap::ZOOM_CHANGED_FOR_HOST:
-      host_zoom_map->SetZoomLevelForHost(change.host, change.zoom_level);
-      return;
-    case HostZoomMap::ZOOM_CHANGED_FOR_SCHEME_AND_HOST:
-      host_zoom_map->SetZoomLevelForHostAndScheme(change.scheme,
-          change.host,
-          change.zoom_level);
-      return;
-    case HostZoomMap::PAGE_SCALE_IS_ONE_CHANGED:
-      return;
-  }
-}
-
-void OffTheRecordProfileImpl::UpdateDefaultZoomLevel() {
-  HostZoomMap* host_zoom_map = HostZoomMap::GetDefaultForBrowserContext(this);
-  double default_zoom_level =
-      profile_->GetZoomLevelPrefs()->GetDefaultZoomLevelPref();
-  host_zoom_map->SetDefaultZoomLevel(default_zoom_level);
-  // HostZoomMap does not trigger zoom notification events when the default
-  // zoom level is set, so we need to do it here.
-  zoom::ZoomEventManager::GetForBrowserContext(this)
-      ->OnDefaultZoomLevelChanged();
-}
-#endif  // !defined(OS_ANDROID)
 
 void OffTheRecordProfileImpl::RecordMainFrameNavigation() {
   main_frame_navigations_++;
