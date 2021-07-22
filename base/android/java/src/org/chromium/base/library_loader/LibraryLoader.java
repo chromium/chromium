@@ -408,8 +408,7 @@ public class LibraryLoader {
         }
     }
 
-    @CheckDiscard(
-            "Can't use @RemovableInRelease because Release build with ENABLE_ASSERTS needs it")
+    @CheckDiscard("")
     public void enableJniChecks() {
         if (!BuildConfig.ENABLE_ASSERTS) return;
 

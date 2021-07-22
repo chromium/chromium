@@ -10,7 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.annotations.RemovableInRelease;
+import org.chromium.base.annotations.CheckDiscard;
 
 /**
  * Base class for tasks which connects to Google Play Services using given GoogleApiClient,
@@ -76,7 +76,7 @@ public abstract class ConnectedTask<T extends ChromeGoogleApiClient> implements 
     /**
      * Returns a name of a task (for debug logging).
      */
-    @RemovableInRelease
+    @CheckDiscard("getName() is only for debug logging")
     protected abstract String getName();
 
     /**

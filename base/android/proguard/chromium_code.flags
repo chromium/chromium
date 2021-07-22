@@ -69,6 +69,10 @@
   @org.chromium.base.annotations.RemovableInRelease boolean *(...) return false;
 }
 
+-assumenosideeffects class org.chromium.base.Log {
+  static boolean isDebug() return false;
+}
+
 # Never inline classes, methods, or fields  with this annotation, but allow
 # shrinking and obfuscation.
 # Relevant to fields when they are needed to store strong refrences to objects
