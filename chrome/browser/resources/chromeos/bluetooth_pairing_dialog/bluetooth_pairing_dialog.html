@@ -5,7 +5,9 @@
     width: 100%;
   }
 </style>
-<bluetooth-dialog id="deviceDialog" no-cancel on-close="onDialogClose_"
-    pairing-device="[[pairingDevice_]]"
-    dialog-title="$i18n{bluetoothPairDeviceTitle}">
-</bluetooth-dialog>
+<template is="dom-if" if="[[!isBluetoothRevampEnabled_]]" restamp>
+  <bluetooth-dialog id="deviceDialog" no-cancel on-close="onDialogClose_"
+      pairing-device="[[pairingDevice_]]"
+      dialog-title="$i18n{bluetoothPairDeviceTitle}">
+  </bluetooth-dialog>
+</template>
