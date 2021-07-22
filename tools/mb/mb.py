@@ -392,6 +392,9 @@ class MetaBuildWrapper(object):
     subp.add_argument('--expectations-dir',
                       metavar='PATH',
                       help='path to dir containing expectation files')
+    subp.add_argument('--skip-dcheck-check',
+                      help='Skip check for dcheck_always_on.',
+                      action='store_true')
     subp.set_defaults(func=self.CmdValidate)
 
     subp = subps.add_parser('zip',
@@ -847,7 +850,8 @@ class MetaBuildWrapper(object):
     validation.CheckDuplicateConfigs(errs, self.configs, self.mixins,
                                      self.builder_groups, FlattenConfig)
 
-    self._ValidateEach(errs, validation.CheckDebugDCheckOrOfficial)
+    if not self.args.skip_dcheck_check:
+      self._ValidateEach(errs, validation.CheckDebugDCheckOrOfficial)
 
     if errs:
       raise MBErr(('mb config file %s has problems:\n  ' %
