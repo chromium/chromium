@@ -70,8 +70,8 @@ DeskTemplateAppLaunchHandler::GetWindowInfo(int restore_window_id) {
   // Try to find the window info associated with `restore_window_id`.
   const full_restore::RestoreData::AppIdToLaunchList& launch_list =
       restore_data_clone_->app_id_to_launch_list();
-  for (auto it = launch_list.begin(); it != launch_list.end(); ++it) {
-    const std::string& app_id = it->first;
+  for (const auto& it : launch_list) {
+    const std::string& app_id = it.first;
     const full_restore::AppRestoreData* app_restore_data =
         restore_data_clone_->GetAppRestoreData(app_id, restore_window_id);
     if (app_restore_data)
@@ -136,6 +136,19 @@ void DeskTemplateAppLaunchHandler::LaunchBrowsers() {
       Browser::CreateParams create_params = Browser::CreateParams(
           Browser::TYPE_NORMAL, profile_, /*user_gesture=*/false);
       create_params.restore_id = window_iter.first;
+
+      absl::optional<chromeos::WindowStateType> window_state_type(
+          window_iter.second->window_state_type);
+      if (window_state_type) {
+        create_params.initial_show_state =
+            chromeos::ToWindowShowState(*window_state_type);
+      }
+
+      absl::optional<gfx::Rect> current_bounds(
+          window_iter.second->current_bounds);
+      if (current_bounds)
+        create_params.initial_bounds = *current_bounds;
+
       Browser* browser = Browser::Create(create_params);
 
       absl::optional<int32_t> active_tab_index =
@@ -145,6 +158,15 @@ void DeskTemplateAppLaunchHandler::LaunchBrowsers() {
             browser, urls->at(i), /*index=*/-1,
             /*foreground=*/(active_tab_index && i == *active_tab_index));
       }
+
+      // We need to handle minimized windows separately since unlike other
+      // window types, it's not shown.
+      if (window_state_type &&
+          *window_state_type == chromeos::WindowStateType::kMinimized) {
+        browser->window()->Minimize();
+        continue;
+      }
+
       browser->window()->ShowInactive();
     }
   }
