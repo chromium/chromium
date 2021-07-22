@@ -150,8 +150,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
       WebSwapResult,
       base::TimeTicks timestamp);
 
-  void ReportSwapResultHistogram(WebSwapResult);
-
   // The caller owns the |clock| which must outlive the PaintTiming.
   void SetTickClockForTesting(const base::TickClock* clock);
 

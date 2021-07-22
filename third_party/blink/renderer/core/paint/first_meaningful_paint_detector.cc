@@ -178,7 +178,6 @@ void FirstMeaningfulPaintDetector::ReportPresentationTime(
   //
   // TODO(crbug.com/738235): Consider not reporting any timestamp when failing
   // for reasons other than kDidNotSwapSwapFails.
-  paint_timing_->ReportSwapResultHistogram(result);
   provisional_first_meaningful_paint_presentation_ = timestamp;
 
   probe::PaintTiming(GetDocument(), "firstMeaningfulPaintCandidate",

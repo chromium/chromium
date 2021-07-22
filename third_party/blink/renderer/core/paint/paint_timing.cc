@@ -299,7 +299,6 @@ void PaintTiming::ReportPresentationTime(PaintEvent event,
   //
   // TODO(crbug.com/738235): Consider not reporting any timestamp when failing
   // for reasons other than kDidNotSwapSwapFails.
-  ReportSwapResultHistogram(result);
   switch (event) {
     case PaintEvent::kFirstPaint:
       SetFirstPaintPresentation(timestamp);
@@ -323,7 +322,6 @@ void PaintTiming::ReportFirstPaintAfterBackForwardCacheRestorePresentationTime(
     WebSwapResult result,
     base::TimeTicks timestamp) {
   DCHECK(IsMainThread());
-  ReportSwapResultHistogram(result);
   SetFirstPaintAfterBackForwardCacheRestorePresentation(timestamp, index);
 }
 
@@ -405,11 +403,6 @@ void PaintTiming::SetRequestAnimationFrameAfterBackForwardCacheRestore(
   DCHECK_LT(count, current_rafs.size());
   DCHECK_EQ(current_rafs[count], base::TimeTicks());
   current_rafs[count] = now;
-}
-
-void PaintTiming::ReportSwapResultHistogram(WebSwapResult result) {
-  UMA_HISTOGRAM_ENUMERATION("PageLoad.Internal.Renderer.PaintTiming.SwapResult",
-                            result);
 }
 
 void PaintTiming::OnRestoredFromBackForwardCache() {

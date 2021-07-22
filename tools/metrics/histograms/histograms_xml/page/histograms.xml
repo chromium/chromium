@@ -2114,6 +2114,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PageLoad.Internal.Renderer.PaintTiming.SwapResult"
     enum="SwapResult" expires_after="M81">
+  <obsolete>
+    Removed as of 2021-07.
+  </obsolete>
   <owner>panicker@chromium.org</owner>
   <summary>
     For first paint, first contentful paint, first meaningful paint, first text
