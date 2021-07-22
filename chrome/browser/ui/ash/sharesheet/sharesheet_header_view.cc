@@ -29,6 +29,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/url_formatter/url_formatter.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -392,7 +393,21 @@ std::vector<std::u16string> SharesheetHeaderView::ExtractShareText() {
       text_fields.push_back(base::UTF8ToUTF16(extracted_text));
 
     if (extracted_url.is_valid()) {
-      text_fields.push_back(base::ASCIIToUTF16(extracted_url.spec()));
+      // We format the URL to match the location bar so the user is not
+      // surprised by what is being shared. This means:
+      // - International characters are unescaped (human readable) where safe.
+      // - Characters representing emojis are unescaped.
+      // - No elisions that change the meaning of the URL.
+      // - Spaces are not unescaped. We cannot share a URL with unescaped spaces
+      // as the receiving program may think the URL ends at the space. Hence we
+      // align the preview with the content to be shared.
+      const auto format_types = url_formatter::kFormatUrlOmitDefaults &
+                                ~url_formatter::kFormatUrlOmitHTTP;
+      const auto formatted_text = url_formatter::FormatUrl(
+          extracted_url, format_types, net::UnescapeRule::NORMAL,
+          /*new_parsed=*/nullptr,
+          /*prefix_end=*/nullptr, /*offset_for_adjustment=*/nullptr);
+      text_fields.push_back(formatted_text);
       text_icon_ = TextPlaceholderIcon::kLink;
     }
   }
