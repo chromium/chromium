@@ -19,6 +19,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -76,9 +77,10 @@ public class ClearBrowsingDataTabsFragment extends Fragment {
         }
         tabLayout.addOnTabSelectedListener(new TabSelectListener());
 
-        // Remove elevation to avoid shadow between title and tabs.
+        // Set outline provider to null to prevent shadow from being drawn between title and tabs.
         SettingsActivity activity = (SettingsActivity) getActivity();
-        activity.getSupportActionBar().setElevation(0.0f);
+        AppBarLayout appBarLayout = activity.findViewById(R.id.app_bar_layout);
+        appBarLayout.setOutlineProvider(null);
 
         return view;
     }
