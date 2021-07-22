@@ -101,6 +101,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Boolean that indicates whether the prediction is in the same direction as
     the real trajectory at the same prediction time. True means the direction is
     not the same (wrong direction).
+
+    Temporarily not logged in favor of
+    Renderer.DelegatedInkTrail.PredictionExperiment*.WrongDirection since 02-26.
+    Will be reenabled in M95, after experimentation.
   </summary>
 </histogram>
 
@@ -111,6 +115,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     {Direction}shoot distance in pixels between a predicted point and the
     corresponding interpolated real point that occurred at the prediction time.
+
+    Temporarily not logged in favor of
+    Renderer.DelegatedInkTrail.PredictionExperiment*.{Direction}Prediction since
+    02-26. Will be reenabled in M95, after experimentation.
   </summary>
   <token key="Direction">
     <variant name="Over"/>
@@ -127,6 +135,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     ink trail deltas which are the difference beween a predicted delegated ink
     point and its corresponding interpolated real position that occurred at
     {Type} time.
+
+    Temporarily not logged in favor of
+    Renderer.DelegatedInkTrail.PredictionExperiment*.{Type}Jitter since 02-26.
+    Will be reenabled in M95, after experimentation.
   </summary>
   <token key="Type">
     <variant name="Prediction" summary="prediction"/>
