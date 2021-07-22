@@ -88,7 +88,7 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
 
   int GetStride(size_t plane) const override {
     DCHECK_LT(plane, handle_.planes.size());
-    return handle_.planes[plane].stride;
+    return base::checked_cast<int>(handle_.planes[plane].stride);
   }
 
  private:
@@ -139,6 +139,11 @@ class ScenicClientNativePixmapFactory : public gfx::ClientNativePixmapFactory {
           handle.planes[i].stride < min_stride) {
         return nullptr;
       }
+
+      // The stride must be a valid integer in order to be consistent with the
+      // gfx::ClientNativePixmap::GetStride() API.
+      if (!base::IsValueInRangeForNumericType<int>(handle.planes[i].stride))
+        return nullptr;
 
       base::CheckedNumeric<size_t> min_size =
           base::CheckedNumeric<size_t>(handle.planes[i].stride) * plane_height;
