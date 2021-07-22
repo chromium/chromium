@@ -309,6 +309,14 @@ void EnrollmentScreen::ProcessRetry() {
   Show(context());
 }
 
+bool EnrollmentScreen::HandleAccelerator(LoginAcceleratorAction action) {
+  if (action == LoginAcceleratorAction::kCancelScreenAction) {
+    OnCancel();
+    return true;
+  }
+  return false;
+}
+
 void EnrollmentScreen::OnCancel() {
   if (enrollment_succeeded_) {
     // Cancellation is the same to confirmation after the successful enrollment.
@@ -551,7 +559,6 @@ void EnrollmentScreen::UMA(policy::MetricEnrollment sample) {
 
 void EnrollmentScreen::ShowSigninScreen() {
   view_->Show();
-  view_->ShowSigninScreen();
 }
 
 void EnrollmentScreen::RecordEnrollmentErrorMetrics() {

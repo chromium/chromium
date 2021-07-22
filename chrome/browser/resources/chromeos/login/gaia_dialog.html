@@ -148,10 +148,11 @@
         <webview id="signin-frame" class="flex" name="[[webviewName]]">
         </webview>
       </div>
-      <div slot="back-navigation">
+      <div slot="back-navigation" hidden$="[[navigationHidden]]">
         <oobe-back-button id="signin-back-button"
             disabled="[[!navigationEnabled]]"
-            hidden$="[[navigationHidden]]"
+            hidden="[[isBackButtonHidden(hideBackButtonIfCantGoBack,
+                                         canGoBack)]]"
             on-click="onBackButtonClicked_">
         </oobe-back-button>
       </div>

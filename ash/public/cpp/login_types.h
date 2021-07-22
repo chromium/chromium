@@ -69,6 +69,9 @@ enum class OobeDialogState {
 
   // Showing user creation screen.
   USER_CREATION = 15,
+
+  // Showing enrollment screen with the possibility to cancel.
+  ENROLLMENT_CANCEL_ENABLED = 16,
 };
 
 // Supported multi-profile user behavior values.
