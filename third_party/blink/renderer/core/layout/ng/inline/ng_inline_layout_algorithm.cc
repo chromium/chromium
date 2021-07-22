@@ -222,7 +222,6 @@ void NGInlineLayoutAlgorithm::CreateLine(
   if (quirks_mode_ && line_style.Display() == EDisplay::kListItem)
     box->ComputeTextMetrics(line_style, *box->font);
 
-  bool has_logical_text_items = false;
   for (NGInlineItemResult& item_result : *line_items) {
     DCHECK(item_result.item);
     const NGInlineItem& item = *item_result.item;
@@ -270,14 +269,12 @@ void NGInlineLayoutAlgorithm::CreateLine(
                            box->text_top, item_result.inline_size,
                            box->text_height, item.BidiLevel());
       }
-      has_logical_text_items = true;
 
       // Text boxes always need full paint invalidations.
       item.GetLayoutObject()->ClearNeedsLayoutWithFullPaintInvalidation();
 
     } else if (item.Type() == NGInlineItem::kControl) {
       PlaceControlItem(item, *line_info, &item_result, line_box, box);
-      has_logical_text_items = true;
     } else if (item.Type() == NGInlineItem::kOpenTag) {
       box = HandleOpenTag(item, item_result, line_box, box_states_);
     } else if (item.Type() == NGInlineItem::kCloseTag) {

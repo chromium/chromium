@@ -210,7 +210,6 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
   LayoutUnit max_cell_block_size;
   absl::optional<float> row_percent;
   bool is_constrained = false;
-  bool is_empty = true;
   bool has_rowspan_start = false;
   wtf_size_t start_cell_index = cell_block_constraints->size();
   NGRowBaselineTabulator row_baseline_tabulator;
@@ -218,7 +217,6 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
   // Gather block sizes of all cells.
   for (NGBlockNode cell = To<NGBlockNode>(row.FirstChild()); cell;
        cell = To<NGBlockNode>(cell.NextSibling())) {
-    is_empty = false;
     colspan_cell_tabulator->FindNextFreeColumn();
     const ComputedStyle& cell_style = cell.Style();
     const NGBoxStrut cell_borders = table_borders.CellBorder(

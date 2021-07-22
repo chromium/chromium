@@ -353,7 +353,6 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
     return column.is_constrained && column.max_inline_size == LayoutUnit();
   };
 
-  float total_percent = 0.0f;
   LayoutUnit total_percent_inline_size;
   LayoutUnit total_auto_max_inline_size;
   LayoutUnit total_fixed_inline_size;
@@ -364,7 +363,6 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
     all_columns_count++;
     if (column.percent) {
       percent_columns_count++;
-      total_percent += *column.percent;
       total_percent_inline_size +=
           column.ResolvePercentInlineSize(target_inline_size);
     } else if (TreatAsFixed(column)) {

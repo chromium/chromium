@@ -559,9 +559,7 @@ void NGSvgTextLayoutAlgorithm::ApplyAnchoring(
                      [i](const auto& range) {
                        return range.start_index <= i && i <= range.end_index;
                      });
-    bool in_text_path = false;
     if (text_path_iter != text_path_ranges.end()) {
-      in_text_path = true;
       // Anchoring should be scoped within the <textPath>.
       // Non-anchored text following <textPath> will be handled in
       // PositionOnPath().
