@@ -161,8 +161,7 @@ public class AdaptiveToolbarStatePredictor {
      *
      * @param callback A callback for results.
      */
-    @VisibleForTesting
-    void readFromSegmentationPlatform(Callback<Pair<Boolean, Integer>> callback) {
+    public void readFromSegmentationPlatform(Callback<Pair<Boolean, Integer>> callback) {
         if (sSegmentationResultsForTesting != null) {
             callback.onResult(sSegmentationResultsForTesting);
             return;

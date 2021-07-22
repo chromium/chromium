@@ -18,4 +18,5 @@ SignalFilterProcessorTest.*
 SignalKeyInternalTest.*
 SignalKeyTest.*
 SignalStorageConfigTest.*
+StatsTest.*
 UserActionSignalHandlerTest.*

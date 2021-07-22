@@ -12,6 +12,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStats;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
@@ -50,6 +51,7 @@ public class AdaptiveToolbarPreferenceFragment extends PreferenceFragmentCompat 
             return true;
         });
         mRadioButtonGroup.setEnabled(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
+        AdaptiveToolbarStats.recordToolbarShortcutToggleState(/* onStartup= */ true);
     }
 
     /**
@@ -59,5 +61,6 @@ public class AdaptiveToolbarPreferenceFragment extends PreferenceFragmentCompat 
     private void onSettingsToggleStateChanged(boolean isChecked) {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(isChecked);
         mRadioButtonGroup.setEnabled(isChecked);
+        AdaptiveToolbarStats.recordToolbarShortcutToggleState(/* onStartup= */ false);
     }
 }
