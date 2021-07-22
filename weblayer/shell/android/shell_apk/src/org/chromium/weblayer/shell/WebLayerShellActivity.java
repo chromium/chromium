@@ -206,6 +206,9 @@ public class WebLayerShellActivity extends AppCompatActivity {
             attrs.flags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
             mActivity.getWindow().setAttributes(attrs);
 
+            // Hide the controls bar as we need to give WebLayer all available screen space.
+            mActivity.findViewById(R.id.controls).setVisibility(View.GONE);
+
             View decorView = mActivity.getWindow().getDecorView();
             // Caching the system ui visibility is ok for shell, but likely not ok for
             // real code.
@@ -223,6 +226,8 @@ public class WebLayerShellActivity extends AppCompatActivity {
             if (mActivity == null) return;
             View decorView = mActivity.getWindow().getDecorView();
             decorView.setSystemUiVisibility(mSystemVisibilityToRestore);
+
+            mActivity.findViewById(R.id.controls).setVisibility(View.VISIBLE);
 
             final WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
             if ((attrs.flags & WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS) != 0) {

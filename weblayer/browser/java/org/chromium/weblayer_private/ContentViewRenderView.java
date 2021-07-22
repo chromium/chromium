@@ -91,6 +91,9 @@ public class ContentViewRenderView
 
     private boolean mSelectionHandlesActive;
 
+    private boolean mRequiresAlphaChannel;
+    private boolean mZOrderMediaOverlay;
+
     // The time stamp when a configuration was detected (if any).
     // This is used along with a timeout to determine if a resize surface resize
     // is due to screen rotation.
@@ -206,6 +209,8 @@ public class ContentViewRenderView
         private final SurfaceEventListener mListener;
         private final FrameLayout mParent;
         private final boolean mAllowSurfaceControl;
+        private final boolean mRequiresAlphaChannel;
+        private final boolean mZOrderMediaOverlay;
         private final Runnable mEvict;
 
         private boolean mRanCallbacks;
@@ -246,16 +251,18 @@ public class ContentViewRenderView
 
         public SurfaceData(@BrowserEmbeddabilityMode int mode, FrameLayout parent,
                 SurfaceEventListener listener, int backgroundColor, boolean allowSurfaceControl,
-                Runnable evict) {
+                boolean requiresAlphaChannel, boolean zOrderMediaOverlay, Runnable evict) {
             mMode = mode;
             mListener = listener;
             mParent = parent;
             mAllowSurfaceControl = allowSurfaceControl;
+            mRequiresAlphaChannel = requiresAlphaChannel;
+            mZOrderMediaOverlay = zOrderMediaOverlay;
             mEvict = evict;
             switch (mode) {
                 case BrowserEmbeddabilityMode.UNSUPPORTED: {
                     mSurfaceView = new SurfaceView(parent.getContext());
-                    mSurfaceView.setZOrderMediaOverlay(true);
+                    mSurfaceView.setZOrderMediaOverlay(mZOrderMediaOverlay);
                     mSurfaceView.setBackgroundColor(backgroundColor);
 
                     mSurfaceCallback = new SurfaceHolderCallback(this);
@@ -322,6 +329,14 @@ public class ContentViewRenderView
 
         public boolean getAllowSurfaceControl() {
             return mAllowSurfaceControl;
+        }
+
+        public boolean getRequiresAlphaChannel() {
+            return mRequiresAlphaChannel;
+        }
+
+        public boolean getZOrderMediaOverlay() {
+            return mZOrderMediaOverlay;
         }
 
         public void addCallback(ValueCallback<Boolean> callback) {
@@ -728,10 +743,12 @@ public class ContentViewRenderView
 
     public void requestMode(
             @BrowserEmbeddabilityMode int mode, @Nullable ValueCallback<Boolean> callback) {
-        boolean allowSurfaceControl = !mSelectionHandlesActive;
+        boolean allowSurfaceControl = !mSelectionHandlesActive && !mRequiresAlphaChannel;
         if (mRequested != null
                 && (mRequested.getMode() != mode
-                        || mRequested.getAllowSurfaceControl() != allowSurfaceControl)) {
+                        || mRequested.getAllowSurfaceControl() != allowSurfaceControl
+                        || mRequested.getRequiresAlphaChannel() != mRequiresAlphaChannel
+                        || mRequested.getZOrderMediaOverlay() != mZOrderMediaOverlay)) {
             if (mRequested != mCurrent) {
                 mRequested.markForDestroy(false /* hasNextSurface */);
                 mRequested.destroy();
@@ -742,7 +759,8 @@ public class ContentViewRenderView
         if (mRequested == null) {
             SurfaceEventListenerImpl listener = new SurfaceEventListenerImpl();
             mRequested = new SurfaceData(mode, mSurfaceParent, listener, mBackgroundColor,
-                    allowSurfaceControl, this::evictCachedSurface);
+                    allowSurfaceControl, mRequiresAlphaChannel, mZOrderMediaOverlay,
+                    this::evictCachedSurface);
             listener.setRequestData(mRequested);
         }
         assert mRequested.getMode() == mode;
@@ -853,6 +871,22 @@ public class ContentViewRenderView
 
     public InsetObserverView getInsetObserverView() {
         return mInsetObserverView;
+    }
+
+    public void setSurfaceProperties(boolean requiresAlphaChannel, boolean zOrderMediaOverlay) {
+        if (mRequiresAlphaChannel == requiresAlphaChannel
+                && mZOrderMediaOverlay == zOrderMediaOverlay) {
+            return;
+        }
+        mRequiresAlphaChannel = requiresAlphaChannel;
+        mZOrderMediaOverlay = zOrderMediaOverlay;
+
+        if (mCurrent == null) return;
+        if (mCurrent.getMode() != BrowserEmbeddabilityMode.UNSUPPORTED) return;
+        requestMode(mCurrent.getMode(), null);
+
+        ContentViewRenderViewJni.get().setRequiresAlphaChannel(
+                mNativeContentViewRenderView, requiresAlphaChannel);
     }
 
     /**
@@ -994,5 +1028,7 @@ public class ContentViewRenderView
         void evictCachedSurface(long nativeContentViewRenderView);
         ResourceManager getResourceManager(long nativeContentViewRenderView);
         void updateBackgroundColor(long nativeContentViewRenderView);
+        void setRequiresAlphaChannel(
+                long nativeContentViewRenderView, boolean requiresAlphaChannel);
     }
 }

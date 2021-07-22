@@ -67,6 +67,8 @@ public final class BrowserViewController
     // accessible (ContentView provides it's own accessible implementation that interacts with
     // WebContents).
     private final ContentView mContentView;
+    // Child of mContentViewRenderView, holds the SurfaceView for WebXR.
+    private final FrameLayout mArViewHolder;
     // Child of mContentViewRenderView, holds top-view from client.
     private final BrowserControlsContainerView mTopControlsContainerView;
     // Child of mContentViewRenderView, holds bottom-view from client.
@@ -125,6 +127,12 @@ public final class BrowserViewController
         mContentViewRenderView.addView(mContentView,
                 new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
                         RelativeLayout.LayoutParams.MATCH_PARENT));
+
+        mArViewHolder = new FrameLayout(context);
+        mArViewHolder.setVisibility(View.GONE);
+        mContentViewRenderView.addView(mArViewHolder,
+                new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+
         mContentViewRenderView.addView(mTopControlsContainerView,
                 new RelativeLayout.LayoutParams(
                         LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
@@ -249,6 +257,14 @@ public final class BrowserViewController
 
     public FrameLayout getWebContentsOverlayView() {
         return mWebContentsOverlayView;
+    }
+
+    public ViewGroup getArViewHolder() {
+        return mArViewHolder;
+    }
+
+    public void setSurfaceProperties(boolean requiresAlphaChannel, boolean zOrderMediaOverlay) {
+        mContentViewRenderView.setSurfaceProperties(requiresAlphaChannel, zOrderMediaOverlay);
     }
 
     // Returns the index at which the infobar container view should be inserted.

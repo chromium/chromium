@@ -20,7 +20,6 @@ public class ArCompositorDelegateProviderImpl implements ArCompositorDelegatePro
 
     @Override
     public ArCompositorDelegate create(WebContents webContents) {
-        // TODO(crbug.com/1057106): Implement a WebLayer specific version of this delegate.
-        return null;
+        return new ArCompositorDelegateImpl(webContents);
     }
 }

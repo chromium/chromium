@@ -164,7 +164,16 @@ void ContentViewRenderView::UpdateBackgroundColor(JNIEnv* env) {
   if (!compositor_)
     return;
   compositor_->SetBackgroundColor(
-      Java_ContentViewRenderView_getBackgroundColor(env, java_obj_));
+      requires_alpha_channel_
+          ? SK_ColorTRANSPARENT
+          : Java_ContentViewRenderView_getBackgroundColor(env, java_obj_));
+}
+
+void ContentViewRenderView::SetRequiresAlphaChannel(
+    JNIEnv* env,
+    jboolean requires_alpha_channel) {
+  requires_alpha_channel_ = requires_alpha_channel;
+  UpdateBackgroundColor(env);
 }
 
 void ContentViewRenderView::UpdateLayerTreeHost() {

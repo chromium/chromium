@@ -64,6 +64,7 @@ class ContentViewRenderView : public content::CompositorClient {
   void EvictCachedSurface(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetResourceManager(JNIEnv* env);
   void UpdateBackgroundColor(JNIEnv* env);
+  void SetRequiresAlphaChannel(JNIEnv* env, jboolean requires_alpha_channel);
 
   // CompositorClient implementation
   void UpdateLayerTreeHost() override;
@@ -78,6 +79,7 @@ class ContentViewRenderView : public content::CompositorClient {
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
   bool use_transparent_background_ = false;
+  bool requires_alpha_channel_ = false;
   content::WebContents* web_contents_ = nullptr;
 
   std::unique_ptr<content::Compositor> compositor_;

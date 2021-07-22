@@ -303,6 +303,7 @@ android_library("java") {
 
   if (enable_arcore) {
     sources += [
+      "org/chromium/weblayer_private/ArCompositorDelegateImpl.java",
       "org/chromium/weblayer_private/ArCompositorDelegateProviderImpl.java",
       "org/chromium/weblayer_private/ArCoreVersionUtils.java",
     ]

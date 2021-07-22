@@ -25,7 +25,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "device/base/features.h"
 #include "media/base/media_switches.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
@@ -175,10 +174,6 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
   };
 
   std::vector<base::Feature> disabled_features = {
-    // TODO(crbug.com/1177948): enable WebAR.
-    ::features::kWebXr,
-    ::features::kWebXrArModule,
-    device::features::kWebXrHitTest,
     // TODO(crbug.com/1091212): make Notification triggers work with
     // WebLayer.
     ::features::kNotificationTriggers,
