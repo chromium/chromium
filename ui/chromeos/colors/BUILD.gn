@@ -8,5 +8,6 @@ style_variable_generator("cros_colors") {
   sources = [
     "cros_colors.json5",
     "cros_palette.json5",
+    "cros_typography.json5",
   ]
 }

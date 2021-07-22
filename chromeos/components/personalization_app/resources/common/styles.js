@@ -19,35 +19,6 @@ styles.innerHTML = `
 
       /* copied from |AshColorProvider| |kSecondToneOpacity| constant. */
       --personalization-app-second-tone-opacity: 0.3;
-
-      --personalization-app-font-google-sans: 'Google Sans', 'Noto Sans',
-          sans-serif;
-      --personalization-app-font-roboto: Roboto, 'Noto Sans', sans-serif;
-
-      --personalization-app-typeface-headline-1: {
-        font-family: var(--personalization-app-font-google-sans);
-        font-weight: 500;
-        font-size: 15px;
-        line-height: 22px;
-      };
-      --personalization-app-typeface-body-2: {
-        font-family: var(--personalization-app-font-roboto);
-        font-weight: 400;
-        font-size: 13px;
-        line-height: 20px;
-      };
-      --personalization-app-typeface-display-6: {
-        font-family: var(--personalization-app-font-google-sans);
-        font-weight: 500;
-        font-size: 22px;
-        line-height: 28px;
-      };
-      --personalization-app-typeface-annotation-2: {
-        font-family: var(--personalization-app-font-roboto);
-        font-weight: 400;
-        font-size: 11px;
-        line-height: 16px;
-      };
     }
     iron-list {
       height: 100%;
@@ -133,8 +104,8 @@ styles.innerHTML = `
       z-index: 2;
     }
     .photo-text-container > p {
-      @apply --personalization-app-typeface-annotation-2;
       color: white;
+      font: var(--cros-annotation-2-font);
       margin: 0;
       max-width: 100%;
       overflow: hidden;
@@ -144,7 +115,7 @@ styles.innerHTML = `
       white-space: nowrap;
     }
     .photo-text-container > p:first-child {
-      @apply --personalization-app-typeface-headline-1;
+      font: var(--cros-headline-1-font);
     }
     .photo-gradient-mask {
       border-radius: 12px;
