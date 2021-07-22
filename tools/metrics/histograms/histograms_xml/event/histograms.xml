@@ -572,9 +572,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Scrollbar.GpuSwap2"
-    units="microseconds" expires_after="2021-08-29">
-  <owner>nzolghadr@chromium.org</owner>
-  <owner>dlibby@microsoft.com</owner>
+    units="microseconds" expires_after="2022-08-29">
+  <owner>flackr@chromium.org</owner>
+  <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between gpu starts to swap the first ScrollUpdate gesture event in a
