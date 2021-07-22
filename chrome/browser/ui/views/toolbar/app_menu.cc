@@ -856,20 +856,22 @@ bool AppMenu::IsShowing() const {
   return menu_runner_.get() && menu_runner_->IsRunning();
 }
 
-void AppMenu::GetLabelStyle(int command_id, LabelStyle* style) const {
-  if (IsRecentTabsCommand(command_id)) {
-    const gfx::FontList* font_list =
-        recent_tabs_menu_model_delegate_->GetLabelFontListForCommandId(
-            command_id);
-    // Only fill in |*color| if there's a font list - otherwise this method will
-    // override the color for every recent tab item, not just the header.
-    if (font_list) {
-      // TODO(ellyjones): Use CONTEXT_MENU instead of CONTEXT_LABEL.
-      style->foreground = views::style::GetColor(
-          *root_, views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
-      style->font_list = *font_list;
-    }
-  }
+const gfx::FontList* AppMenu::GetLabelFontList(int command_id) const {
+  return IsRecentTabsCommand(command_id)
+             ? recent_tabs_menu_model_delegate_->GetLabelFontListForCommandId(
+                   command_id)
+             : nullptr;
+}
+
+absl::optional<SkColor> AppMenu::GetLabelColor(int command_id) const {
+  // Only return a color if there's a font list - otherwise this method will
+  // return a color for every recent tab item, not just the header.
+  // TODO(ellyjones): Use CONTEXT_MENU instead of CONTEXT_LABEL.
+  return GetLabelFontList(command_id)
+             ? absl::optional<SkColor>(
+                   views::style::GetColor(*root_, views::style::CONTEXT_LABEL,
+                                          views::style::STYLE_PRIMARY))
+             : absl::nullopt;
 }
 
 std::u16string AppMenu::GetTooltipText(int command_id,

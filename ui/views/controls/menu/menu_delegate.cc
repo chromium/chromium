@@ -22,7 +22,13 @@ std::u16string MenuDelegate::GetLabel(int id) const {
   return std::u16string();
 }
 
-void MenuDelegate::GetLabelStyle(int id, LabelStyle* style) const {}
+const gfx::FontList* MenuDelegate::GetLabelFontList(int id) const {
+  return nullptr;
+}
+
+absl::optional<SkColor> MenuDelegate::GetLabelColor(int id) const {
+  return absl::nullopt;
+}
 
 std::u16string MenuDelegate::GetTooltipText(
     int id,

@@ -26,6 +26,10 @@
 #include <windows.h>
 #endif
 
+namespace gfx {
+class FontList;
+}  // namespace gfx
+
 namespace views {
 
 namespace internal {
@@ -402,8 +406,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Returns the flags passed to DrawStringRect.
   int GetDrawStringFlags();
 
-  // Returns the style for the menu text.
-  void GetLabelStyle(MenuDelegate::LabelStyle* style) const;
+  // Returns the font list and font color to use for menu text.
+  const gfx::FontList GetFontList() const;
+  const absl::optional<SkColor> GetMenuLabelColor() const;
 
   // If this menu item has no children a child is added showing it has no
   // children. Otherwise AddEmtpyMenus is recursively invoked on child menu
@@ -428,8 +433,7 @@ class VIEWS_EXPORT MenuItemView : public View {
                        bool render_selection);
 
   // Paints the right-side icon and text.
-  void PaintMinorIconAndText(gfx::Canvas* canvas,
-                             const MenuDelegate::LabelStyle& style);
+  void PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color);
 
   // Destroys the window used to display this menu and recursively destroys
   // the windows used to display all descendants.
@@ -493,9 +497,6 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   void invalidate_dimensions() { dimensions_.height = 0; }
   bool is_dimensions_valid() const { return dimensions_.height > 0; }
-
-  SkColor GetMinorIconColor(
-      const MenuDelegate::LabelStyle& default_style) const;
 
   // The delegate. This is only valid for the root menu item. You shouldn't
   // use this directly, instead use GetDelegate() which walks the tree as

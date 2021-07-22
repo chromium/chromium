@@ -915,20 +915,24 @@ int MenuItemView::GetDrawStringFlags() {
   return flags;
 }
 
-void MenuItemView::GetLabelStyle(MenuDelegate::LabelStyle* style) const {
-  // Start with the default font:
-  style->font_list = MenuConfig::instance().font_list;
-
-  // Replace it with the touchable font in touchable menus:
-  if (GetMenuController() && GetMenuController()->use_touchable_layout()) {
-    style->font_list =
-        style::GetFont(style::CONTEXT_TOUCH_MENU, style::STYLE_PRIMARY);
+const gfx::FontList MenuItemView::GetFontList() const {
+  if (const MenuDelegate* delegate = GetDelegate()) {
+    if (const gfx::FontList* font_list =
+            delegate->GetLabelFontList(GetCommand())) {
+      return *font_list;
+    }
   }
+  if (GetMenuController() && GetMenuController()->use_touchable_layout())
+    return style::GetFont(style::CONTEXT_TOUCH_MENU, style::STYLE_PRIMARY);
+  return MenuConfig::instance().font_list;
+}
 
-  // Then let the delegate replace any part of |style|.
-  const MenuDelegate* delegate = GetDelegate();
-  if (delegate)
-    delegate->GetLabelStyle(GetCommand(), style);
+const absl::optional<SkColor> MenuItemView::GetMenuLabelColor() const {
+  if (const MenuDelegate* delegate = GetDelegate()) {
+    if (const auto& label_color = delegate->GetLabelColor(GetCommand()))
+      return label_color;
+  }
+  return absl::nullopt;
 }
 
 void MenuItemView::AddEmptyMenus() {
@@ -977,17 +981,18 @@ void MenuItemView::PaintButton(gfx::Canvas* canvas, PaintButtonMode mode) {
   PaintBackground(canvas, mode, render_selection);
 
   // Calculate some colors.
-  MenuDelegate::LabelStyle style;
-  style.foreground = GetTextColor(/*minor=*/false, render_selection);
-  GetLabelStyle(&style);
+  SkColor fg_color = GetTextColor(/*minor=*/false, render_selection);
+  if (const auto& label_color = GetMenuLabelColor())
+    fg_color = label_color.value();
+  SkColor icon_color = color_utils::DeriveDefaultIconColor(fg_color);
 
-  SkColor icon_color = color_utils::DeriveDefaultIconColor(style.foreground);
+  const gfx::FontList& font_list = GetFontList();
 
   // Calculate the margins.
   int top_margin = GetTopMargin();
   const int bottom_margin = GetBottomMargin();
   const int available_height = height() - top_margin - bottom_margin;
-  const int text_height = style.font_list.GetHeight();
+  const int text_height = font_list.GetHeight();
   const int total_text_height =
       secondary_title().empty() ? text_height : text_height * 2;
   top_margin += (available_height - total_text_height) / 2;
@@ -1018,25 +1023,25 @@ void MenuItemView::PaintButton(gfx::Canvas* canvas, PaintButtonMode mode) {
   int flags = GetDrawStringFlags();
   if (mode == PaintButtonMode::kForDrag)
     flags |= gfx::Canvas::NO_SUBPIXEL_RENDERING;
-  canvas->DrawStringRectWithFlags(title(), style.font_list, style.foreground,
-                                  text_bounds, flags);
+  canvas->DrawStringRectWithFlags(title(), font_list, fg_color, text_bounds,
+                                  flags);
 
   // The rest should be drawn with the minor foreground color.
-  style.foreground = GetTextColor(/*minor=*/true, render_selection);
+  fg_color = GetTextColor(/*minor=*/true, render_selection);
   if (!secondary_title().empty()) {
     text_bounds.set_y(text_bounds.y() + text_height);
-    canvas->DrawStringRectWithFlags(secondary_title(), style.font_list,
-                                    style.foreground, text_bounds, flags);
+    canvas->DrawStringRectWithFlags(secondary_title(), font_list, fg_color,
+                                    text_bounds, flags);
   }
 
-  PaintMinorIconAndText(canvas, style);
+  PaintMinorIconAndText(canvas, fg_color);
 
   if (ShouldShowNewBadge()) {
     NewBadge::DrawNewBadge(canvas, this,
                            label_start +
-                               gfx::GetStringWidth(title(), style.font_list) +
+                               gfx::GetStringWidth(title(), font_list) +
                                NewBadge::kNewBadgeHorizontalMargin,
-                           top_margin, style.font_list);
+                           top_margin, font_list);
   }
 
   // Set the submenu indicator (arrow) image and color.
@@ -1099,9 +1104,7 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
   }
 }
 
-void MenuItemView::PaintMinorIconAndText(
-    gfx::Canvas* canvas,
-    const MenuDelegate::LabelStyle& style) {
+void MenuItemView::PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color) {
   std::u16string minor_text = GetMinorText();
   const ui::ImageModel minor_icon = GetMinorIcon();
   if (minor_text.empty() && minor_icon.IsEmpty())
@@ -1123,8 +1126,8 @@ void MenuItemView::PaintMinorIconAndText(
       gfx::RenderText::CreateRenderText();
   if (!minor_text.empty()) {
     render_text->SetText(minor_text);
-    render_text->SetFontList(style.font_list);
-    render_text->SetColor(style.foreground);
+    render_text->SetFontList(GetFontList());
+    render_text->SetColor(color);
     render_text->SetDisplayRect(minor_text_bounds);
     render_text->SetHorizontalAlignment(base::i18n::IsRTL() ? gfx::ALIGN_LEFT
                                                             : gfx::ALIGN_RIGHT);
@@ -1233,8 +1236,7 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
   dimensions.children_width = child_size.width();
   const MenuConfig& menu_config = MenuConfig::instance();
 
-  MenuDelegate::LabelStyle style;
-  GetLabelStyle(&style);
+  const gfx::FontList& font_list = GetFontList();
 
   if (GetMenuController() && GetMenuController()->use_touchable_layout()) {
     dimensions.height = menu_config.touchable_menu_height;
@@ -1249,7 +1251,7 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
     // Calculate total item width to make sure the current |title_|
     // has enough room within the context menu.
     int label_start = GetLabelStartForThisItem();
-    int string_width = gfx::GetStringWidth(title_, style.font_list);
+    int string_width = gfx::GetStringWidth(title_, font_list);
     int item_width = string_width + label_start + item_right_margin_;
 
     item_width = std::max(item_width, menu_config.touchable_menu_min_width);
@@ -1285,24 +1287,22 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
 
   dimensions.height += GetBottomMargin() + GetTopMargin();
 
-  int string_width = gfx::GetStringWidth(title_, style.font_list);
+  int string_width = gfx::GetStringWidth(title_, font_list);
   int label_start = GetLabelStartForThisItem();
   dimensions.standard_width = string_width + label_start + item_right_margin_;
 
   // Determine the length of the right-side text.
   dimensions.minor_text_width =
-      (minor_text.empty() ? 0
-                          : gfx::GetStringWidth(minor_text, style.font_list));
+      (minor_text.empty() ? 0 : gfx::GetStringWidth(minor_text, font_list));
 
   if (ShouldShowNewBadge())
     dimensions.minor_text_width +=
-        NewBadge::GetNewBadgeSize(style.font_list).width() +
+        NewBadge::GetNewBadgeSize(font_list).width() +
         2 * NewBadge::kNewBadgeHorizontalMargin;
 
   // Determine the height to use.
-  int label_text_height = secondary_title().empty()
-                              ? style.font_list.GetHeight()
-                              : style.font_list.GetHeight() * 2;
+  int label_text_height = secondary_title().empty() ? font_list.GetHeight()
+                                                    : font_list.GetHeight() * 2;
   dimensions.height =
       std::max(dimensions.height,
                label_text_height + GetBottomMargin() + GetTopMargin());
