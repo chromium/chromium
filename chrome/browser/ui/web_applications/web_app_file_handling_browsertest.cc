@@ -688,11 +688,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 class WebAppFileHandlingPermissionDialogTest
     : public WebAppFileHandlingBrowserTest {
  public:
-  WebAppFileHandlingPermissionDialogTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kFileHandlingPermissionUiV2}, {});
-  }
-
   void SetUpOnMainThread() override {
     WebAppFileHandlingBrowserTest::SetUpOnMainThread();
     InstallFileHandlingPWA();

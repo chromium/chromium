@@ -63,8 +63,7 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
     return nullptr;
   }
 
-  if (base::FeatureList::IsEnabled(features::kFileHandlingPermissionUiV2) &&
-      delegate->Requests().size() == 1U &&
+  if (delegate->Requests().size() == 1U &&
       delegate->Requests()[0]->GetRequestType() ==
           permissions::RequestType::kFileHandling) {
     return FileHandlingPermissionPrompt::Create(web_contents, delegate);
