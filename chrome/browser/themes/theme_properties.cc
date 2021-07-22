@@ -96,8 +96,6 @@ SkColor GetLightModeColor(int id) {
       return gfx::kGoogleGrey100;
 
     // Properties not stored in theme pack.
-    case ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR:
-      return gfx::kGoogleGrey300;
     case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR:
     case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_INACTIVE:
       return SkColorSetA(SK_ColorBLACK, 0x40);
@@ -172,8 +170,6 @@ absl::optional<SkColor> GetIncognitoColor(int id) {
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE:
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE:
       return gfx::kGoogleGrey400;
-    case ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR:
-      return SkColorSetRGB(0x28, 0x28, 0x28);
     case ThemeProperties::COLOR_NTP_LINK:
       return gfx::kGoogleBlue300;
     // TODO(http://crbug.com/878664): Remove COLOR_OMNIBOX_xxx when these are

@@ -57,16 +57,6 @@ class InfoBarViewTest : public BrowserWithTestWindowTest {
   DISALLOW_COPY_AND_ASSIGN(InfoBarViewTest);
 };
 
-TEST_F(InfoBarViewTest, GetDrawSeparator) {
-  // Add multiple infobars.  The top infobar should not draw a separator; the
-  // others should.
-  for (int i = 0; i < 3; ++i) {
-    InfoBarView* infobar = TestInfoBarDelegate::Create(infobar_manager());
-    ASSERT_TRUE(infobar);
-    EXPECT_EQ(i > 0, infobar->GetDrawSeparator());
-  }
-}
-
 // Regression test for crbug.com/834728 .
 TEST_F(InfoBarViewTest, LayoutOnHiddenInfoBar) {
   // Calling Layout() on an infobar inside a container should not crash.

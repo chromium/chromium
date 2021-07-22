@@ -356,7 +356,7 @@ SkColor ThemeHelper::GetDefaultColor(
       // The active color is overridden in GtkUi.
       return SkColorSetA(
           GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier),
-          0x6E);
+          gfx::kGoogleGreyAlpha500);
     case TP::COLOR_LOCATION_BAR_BORDER:
       return SkColorSetA(SK_ColorBLACK, 0x4D);
     case TP::COLOR_TOOLBAR_TOP_SEPARATOR:
@@ -383,9 +383,9 @@ SkColor ThemeHelper::GetDefaultColor(
           GetColor(TP::COLOR_TOOLBAR, incognito, theme_supplier));
     }
     case TP::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR:
-      if (IsDefaultTheme(theme_supplier))
-        break;
-      return GetColor(TP::COLOR_LOCATION_BAR_BORDER, incognito, theme_supplier);
+      return SkColorSetA(
+          GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier),
+          0x3A);
     case TP::COLOR_NTP_TEXT_LIGHT:
       return IncreaseLightness(
           GetColor(TP::COLOR_NTP_TEXT, incognito, theme_supplier), 0.40);
