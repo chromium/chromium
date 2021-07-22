@@ -22,7 +22,7 @@
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/headless_devtools_agent_host_client.h"
-#include "headless/lib/browser/headless_web_contents_impl.h"  // nogncheck http://crbug.com/1227378
+#include "headless/lib/browser/headless_web_contents_impl.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "ui/events/devices/device_data_manager.h"
