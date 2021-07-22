@@ -91,8 +91,7 @@ class PageSpecificContentSettingsDelegate
   void OnWebDatabaseAccessAllowed(const url::Origin& origin) override;
 
   // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   // The pending protocol handler, if any. This can be set if
   // registerProtocolHandler was invoked without user gesture.
