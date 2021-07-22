@@ -135,6 +135,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.Frame{ScoreType}"
+    units="pixels" expires_after="M95">
+  <owner>jonross@chromium.org</owner>
+  <owner>mabian@microsoft.com</owner>
+  <owner>joalmei@microsoft.com</owner>
+  <summary>
+    Distance in pixels between a predicted point and the corresponding
+    interpolated real point that occurred at the prediction time.
+
+    The difference between {ScoreType} and Frame{ScoreType} is that the former
+    uses prediction time and the later uses frame time.
+
+    Part of a series of predicted point experimentation histograms. This
+    experiment predicts {Number} in the future.
+  </summary>
+  <token key="Number">
+    <variant name="0" summary="1 predicted point, 12ms"/>
+    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
+    <variant name="2" summary="1 predicted point, 6ms"/>
+    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
+  </token>
+  <token key="ScoreType">
+    <variant name="OverPrediction" summary="Positive score values"/>
+    <variant name="PredictionScore" summary="Score abolute value"/>
+    <variant name="UnderPrediction" summary="Negative score values"/>
+  </token>
+</histogram>
+
+<histogram
     name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.WrongDirection"
     enum="BooleanDirection" expires_after="M95">
   <owner>jonross@chromium.org</owner>
@@ -155,13 +184,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
-    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.{Direction}Prediction"
+    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.{ScoreType}"
     units="pixels" expires_after="M95">
   <owner>jonross@chromium.org</owner>
   <owner>mabian@microsoft.com</owner>
+  <owner>joalmei@microsoft.com</owner>
   <summary>
-    {Direction}-shoot distance in pixels between a predicted point and the
-    corresponding interpolated real point that occurred at the prediction time.
+    Distance in pixels between a predicted point and the corresponding
+    interpolated real point that occurred at the prediction time.
 
     Part of a series of predicted point experimentation histograms. This
     experiment predicts {Number} in the future.
@@ -172,9 +202,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="2" summary="1 predicted point, 6ms"/>
     <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
   </token>
-  <token key="Direction">
-    <variant name="Over"/>
-    <variant name="Under"/>
+  <token key="ScoreType">
+    <variant name="OverPrediction" summary="Positive score values"/>
+    <variant name="PredictionScore" summary="Score abolute value"/>
+    <variant name="UnderPrediction" summary="Negative score values"/>
   </token>
 </histogram>
 
