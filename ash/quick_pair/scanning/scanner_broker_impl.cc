@@ -33,7 +33,7 @@ void ScannerBrokerImpl::OnGetAdapter(
   if (start_scanning_on_adapter_callbacks_.empty())
     return;
 
-  QP_LOG(INFO) << __func__ << ": Running saved callbacks.";
+  QP_LOG(VERBOSE) << __func__ << ": Running saved callbacks.";
 
   for (auto& callback : start_scanning_on_adapter_callbacks_)
     std::move(callback).Run();
@@ -51,10 +51,11 @@ void ScannerBrokerImpl::RemoveObserver(Observer* observer) {
 
 void ScannerBrokerImpl::StartScanning(Protocol protocol) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  QP_LOG(INFO) << __func__ << ": protocol=" << protocol;
+  QP_LOG(VERBOSE) << __func__ << ": protocol=" << protocol;
 
   if (!adapter_) {
-    QP_LOG(INFO) << __func__ << ": No adapter yet, saving callback for later.";
+    QP_LOG(VERBOSE) << __func__
+                    << ": No adapter yet, saving callback for later.";
 
     start_scanning_on_adapter_callbacks_.push_back(
         base::BindOnce(&ScannerBrokerImpl::StartScanning,
@@ -70,7 +71,7 @@ void ScannerBrokerImpl::StartScanning(Protocol protocol) {
 }
 
 void ScannerBrokerImpl::StopScanning(Protocol protocol) {
-  QP_LOG(INFO) << __func__ << ": protocol=" << protocol;
+  QP_LOG(VERBOSE) << __func__ << ": protocol=" << protocol;
 
   switch (protocol) {
     case Protocol::kFastPair:
@@ -80,11 +81,11 @@ void ScannerBrokerImpl::StopScanning(Protocol protocol) {
 }
 
 void ScannerBrokerImpl::StartFastPairScanning() {
-  QP_LOG(INFO) << "Starting Fast Pair Scanning.";
+  QP_LOG(VERBOSE) << "Starting Fast Pair Scanning.";
 }
 
 void ScannerBrokerImpl::StopFastPairScanning() {
-  QP_LOG(INFO) << "Stoping Fast Pair Scanning.";
+  QP_LOG(VERBOSE) << "Stoping Fast Pair Scanning.";
 }
 
 void ScannerBrokerImpl::NotifyDeviceFound(scoped_refptr<Device> device) {

@@ -67,7 +67,7 @@ void Mediator::OnDeviceLost(scoped_refptr<Device> device) {
 }
 
 void Mediator::SetFastPairState(bool is_enabled) {
-  QP_LOG(INFO) << __func__ << ": " << is_enabled;
+  QP_LOG(VERBOSE) << __func__ << ": " << is_enabled;
 
   if (is_enabled)
     scanner_broker_->StartScanning(Protocol::kFastPair);
