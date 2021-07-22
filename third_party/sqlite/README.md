@@ -70,6 +70,9 @@ to thoroughly review.
    Create the branch at
    [Gerrit/branches](https://chromium-review.googlesource.com/admin/repos/chromium/deps/sqlite,branches).
 
+   Note: To create a release branch, you must be listed as a member in the
+   [sqlite-owners Gerrit group](https://chromium-review.googlesource.com/admin/groups/3cb0e9e73693fd6377da67b63a28b815ef5c94cc,members)
+
 2. Checkout the new Chromium release branch.
 
     Get the version from the [README.chromium](https://source.chromium.org/chromium/chromium/src/+/main:third_party/sqlite/README.chromium).
