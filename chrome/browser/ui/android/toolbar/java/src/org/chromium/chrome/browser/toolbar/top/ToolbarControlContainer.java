@@ -114,6 +114,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
     }
 
     @Override
+    // TODO(crbug.com/1231201): work out why this is causing a lint error
+    @SuppressWarnings("Override")
     public boolean gatherTransparentRegion(Region region) {
         // Reset the translation on the control container before attempting to compute the
         // transparent region.

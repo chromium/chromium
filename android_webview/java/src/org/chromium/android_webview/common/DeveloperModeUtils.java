@@ -15,7 +15,6 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.common.services.ServiceNames;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 
 import java.util.HashMap;
@@ -67,7 +66,7 @@ public final class DeveloperModeUtils {
         try {
             context.startForegroundService(intent);
         } catch (IllegalStateException e) {
-            assert BuildInfo.isAtLeastS()
+            assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 : "Unable to start DeveloperUiService, this is only expected on Android S";
         }
     }

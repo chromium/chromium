@@ -2,8 +2,8 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.webview"
-    platformBuildVersionCode="30"
-    platformBuildVersionName="11"
+    platformBuildVersionCode="31"
+    platformBuildVersionName="12"
     android:isolatedSplits="true">
   <queries>  # DIFF-ANCHOR: 0c3a615d
     <intent>  # DIFF-ANCHOR: 28c960ba
@@ -15,7 +15,7 @@
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
   <uses-permission android:name="android.permission.INTERNET"/>
-  <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="30"/>
+  <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="31"/>
   <application
       android:name="org.chromium.android_webview.nonembedded.WebViewApkApplication"
       android:extractNativeLibs="True"

@@ -7,6 +7,7 @@ package org.chromium.ui.base;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.os.Build;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.BackgroundColorSpan;
@@ -18,7 +19,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -149,7 +149,7 @@ public class ClipboardAndroidTest extends DummyUiActivityTestCase {
     // Only first URL is returned on S+ if clipboard contains multiple URLs.
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(BuildInfo.ANDROID_S_API_SDK_INT)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.S)
     public void hasUrlAndGetUrlMixTextAndLinkTest() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { Clipboard.getInstance().setText(MIX_TEXT_URL); });
@@ -163,7 +163,7 @@ public class ClipboardAndroidTest extends DummyUiActivityTestCase {
     // Only first URL is returned on S+ if clipboard contains multiple URLs.
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(BuildInfo.ANDROID_S_API_SDK_INT)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.S)
     public void hasUrlAndGetUrlMixTextAndLinkWithoutProtocolTest() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { Clipboard.getInstance().setText(MIX_TEXT_URL_NO_PROTOCOL); });

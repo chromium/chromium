@@ -65,7 +65,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
   </issue>
   <issue id="MissingPermission" severity="ignore"/>
   <issue id="MissingQuantity" severity="ignore"/>
-  <issue id="MissingRegistered" severity="ignore"/>
   <issue id="MissingTranslation">
     <ignore regexp="restriction_values.xml.*"/>
   </issue>

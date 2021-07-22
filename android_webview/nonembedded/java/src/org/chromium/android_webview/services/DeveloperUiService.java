@@ -28,7 +28,6 @@ import org.chromium.android_webview.common.Flag;
 import org.chromium.android_webview.common.FlagOverrideHelper;
 import org.chromium.android_webview.common.ProductionSupportedFlagList;
 import org.chromium.android_webview.common.services.IDeveloperUiService;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -92,7 +91,7 @@ public final class DeveloperUiService extends Service {
                     try {
                         enableDeveloperMode();
                     } catch (IllegalStateException e) {
-                        assert BuildInfo.isAtLeastS()
+                        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                             : "Unable enable developer mode, this is only expected on Android S";
                         String msg = "Unable to create foreground service (client is likely in "
                                 + "background). Continuing as a background service.";

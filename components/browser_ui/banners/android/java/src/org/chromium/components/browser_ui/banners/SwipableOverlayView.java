@@ -425,6 +425,8 @@ public abstract class SwipableOverlayView extends FrameLayout {
      * this ensures no child animation within this view's layout will be clipped by a SurfaceView.
      */
     @Override
+    // TODO(crbug.com/1231201): work out why this is causing a lint error
+    @SuppressWarnings("Override")
     public boolean gatherTransparentRegion(Region region) {
         float translationY = getTranslationY();
         setTranslationY(0);

@@ -25,4 +25,8 @@ public final class GlueApiHelperForR {
     public static PacProcessor getPacProcessor() {
         return PacProcessorImpl.getInstance();
     }
+
+    public static PacProcessor createPacProcessor() {
+        return PacProcessorImpl.createInstance();
+    }
 }
