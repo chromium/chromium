@@ -1310,7 +1310,10 @@ test("views_unittests") {
   if (is_fuchsia) {
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/font_capabilities.test-cmx",
+
+      # These tests use SwiftShader (crbug.com/1022542), which uses JIT.
       "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+
       "//build/config/fuchsia/test/present_view_capabilities.test-cmx",
       "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
     ]
