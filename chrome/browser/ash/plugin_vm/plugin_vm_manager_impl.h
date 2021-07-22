@@ -15,7 +15,7 @@
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher.pb.h"
-#include "chromeos/dbus/vm_plugin_dispatcher_client.h"
+#include "chromeos/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;

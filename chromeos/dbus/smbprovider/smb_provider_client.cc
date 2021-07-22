@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/smb_provider_client.h"
+#include "chromeos/dbus/smbprovider/smb_provider_client.h"
 
 #include <memory>
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_VIRTUAL_FILE_PROVIDER_CLIENT_H_
-#define CHROMEOS_DBUS_VIRTUAL_FILE_PROVIDER_CLIENT_H_
+#ifndef CHROMEOS_DBUS_VIRTUAL_FILE_PROVIDER_VIRTUAL_FILE_PROVIDER_CLIENT_H_
+#define CHROMEOS_DBUS_VIRTUAL_FILE_PROVIDER_VIRTUAL_FILE_PROVIDER_CLIENT_H_
 
 #include <stdint.h>
 
@@ -24,8 +24,8 @@ namespace chromeos {
 // forward read requests to Chrome. From the reading process's perspective, the
 // file descriptor behaves like a regular file descriptor (unlike a pipe, it
 // supports seek), while actually there is no real file associated with it.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) VirtualFileProviderClient
-    : public DBusClient {
+class COMPONENT_EXPORT(CHROMEOS_DBUS_VIRTUAL_FILE_PROVIDER)
+    VirtualFileProviderClient : public DBusClient {
  public:
   using GenerateVirtualFileIdCallback =
       base::OnceCallback<void(const absl::optional<std::string>& id)>;
@@ -52,4 +52,4 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) VirtualFileProviderClient
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DBUS_VIRTUAL_FILE_PROVIDER_CLIENT_H_
+#endif  // CHROMEOS_DBUS_VIRTUAL_FILE_PROVIDER_VIRTUAL_FILE_PROVIDER_CLIENT_H_

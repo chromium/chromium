@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_FAKE_SMB_PROVIDER_CLIENT_H_
-#define CHROMEOS_DBUS_FAKE_SMB_PROVIDER_CLIENT_H_
+#ifndef CHROMEOS_DBUS_SMBPROVIDER_FAKE_SMB_PROVIDER_CLIENT_H_
+#define CHROMEOS_DBUS_SMBPROVIDER_FAKE_SMB_PROVIDER_CLIENT_H_
 
 #include <map>
 #include <string>
 #include <vector>
 
-#include "chromeos/dbus/smb_provider_client.h"
+#include "base/component_export.h"
+#include "base/macros.h"
+#include "chromeos/dbus/smbprovider/smb_provider_client.h"
 
 namespace chromeos {
 
 // A fake implementation of SmbProviderClient.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeSmbProviderClient
+class COMPONENT_EXPORT(CHROMEOS_DBUS_SMBPROVIDER) FakeSmbProviderClient
     : public SmbProviderClient {
  public:
   FakeSmbProviderClient();
@@ -83,4 +85,4 @@ namespace ash {
 using ::chromeos::FakeSmbProviderClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_FAKE_SMB_PROVIDER_CLIENT_H_
+#endif  // CHROMEOS_DBUS_SMBPROVIDER_FAKE_SMB_PROVIDER_CLIENT_H_

@@ -28,13 +28,10 @@ component("dbus") {
   deps = [
     ":metrics_event_proto",
     ":plugin_vm_service_proto",
-    ":runtime_probe_proto",
-    ":smbprovider_proto",
     ":update_engine_proto",
     ":vm_applications_apps_proto",
     ":vm_disk_management_proto",
     ":vm_permission_service_proto",
-    ":vm_plugin_dispatcher_proto",
     ":vm_sk_forwarding_proto",
     "//base",
     "//chromeos/dbus/anomaly_detector",
@@ -49,6 +46,13 @@ component("dbus") {
     "//chromeos/dbus/image_loader",
     "//chromeos/dbus/oobe_config",
     "//chromeos/dbus/oobe_config:proto",
+    "//chromeos/dbus/runtime_probe",
+    "//chromeos/dbus/runtime_probe:proto",
+    "//chromeos/dbus/smbprovider",
+    "//chromeos/dbus/smbprovider:proto",
+    "//chromeos/dbus/virtual_file_provider",
+    "//chromeos/dbus/vm_plugin_dispatcher",
+    "//chromeos/dbus/vm_plugin_dispatcher:proto",
     "//components/account_id",
     "//components/device_event_log",
     "//components/policy/proto",
@@ -61,20 +65,8 @@ component("dbus") {
     "dbus_clients_browser.h",
     "dbus_thread_manager.cc",
     "dbus_thread_manager.h",
-    "fake_runtime_probe_client.cc",
-    "fake_runtime_probe_client.h",
-    "fake_smb_provider_client.cc",
-    "fake_smb_provider_client.h",
     "fake_update_engine_client.cc",
     "fake_update_engine_client.h",
-    "fake_virtual_file_provider_client.cc",
-    "fake_virtual_file_provider_client.h",
-    "fake_vm_plugin_dispatcher_client.cc",
-    "fake_vm_plugin_dispatcher_client.h",
-    "runtime_probe_client.cc",
-    "runtime_probe_client.h",
-    "smb_provider_client.cc",
-    "smb_provider_client.h",
     "update_engine_client.cc",
     "update_engine_client.h",
     "usb/fake_usbguard_client.cc",
@@ -84,10 +76,6 @@ component("dbus") {
     "usb/usbguard_observer.h",
     "util/version_loader.cc",
     "util/version_loader.h",
-    "virtual_file_provider_client.cc",
-    "virtual_file_provider_client.h",
-    "vm_plugin_dispatcher_client.cc",
-    "vm_plugin_dispatcher_client.h",
   ]
 }
 
@@ -230,29 +218,11 @@ proto_library("plugin_vm_service_proto") {
   proto_out_dir = "chromeos/dbus/plugin_vm_service"
 }
 
-proto_library("runtime_probe_proto") {
-  sources =
-      [ "//third_party/cros_system_api/dbus/runtime_probe/runtime_probe.proto" ]
-
-  # chromeos side uses full runtime, so we don't specify lite runtime in proto
-  # file, instead we specify lite runtime here.
-  cc_generator_options = "lite=true:"
-
-  proto_out_dir = "chromeos/dbus/runtime_probe"
-}
-
 proto_library("seneschal_proto") {
   sources =
       [ "//third_party/cros_system_api/dbus/seneschal/seneschal_service.proto" ]
 
   proto_out_dir = "chromeos/dbus/seneschal"
-}
-
-proto_library("smbprovider_proto") {
-  sources =
-      [ "//third_party/cros_system_api/dbus/smbprovider/directory_entry.proto" ]
-
-  proto_out_dir = "chromeos/dbus/smbprovider"
 }
 
 proto_library("update_engine_proto") {
@@ -286,10 +256,4 @@ proto_library("vm_permission_service_proto") {
   sources = [ "//third_party/cros_system_api/dbus/vm_permission_service/vm_permission_service.proto" ]
 
   proto_out_dir = "chromeos/dbus/vm_permission_service"
-}
-
-proto_library("vm_plugin_dispatcher_proto") {
-  sources = [ "//third_party/cros_system_api/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher.proto" ]
-
-  proto_out_dir = "chromeos/dbus/vm_plugin_dispatcher"
 }

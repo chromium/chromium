@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/smb_client/discovery/host_locator.h"
 #include "chrome/browser/ash/smb_client/discovery/network_scanner.h"
 #include "chrome/browser/ash/smb_client/smb_url.h"
-#include "chromeos/dbus/smb_provider_client.h"
+#include "chromeos/dbus/smbprovider/smb_provider_client.h"
 
 namespace ash {
 namespace smb_client {

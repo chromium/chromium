@@ -3588,6 +3588,7 @@ if (!is_android) {
         "//chromeos/components/help_app_ui/search:mojo_bindings",
         "//chromeos/components/media_app_ui:buildflags",
         "//chromeos/dbus/cros_disks",
+        "//chromeos/dbus/vm_plugin_dispatcher",
         "//chromeos/ui/frame:test_support",
         "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
         "//components/reporting/storage:test_support",

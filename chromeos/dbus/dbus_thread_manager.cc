@@ -27,7 +27,7 @@
 #include "chromeos/dbus/image_loader/image_loader_client.h"
 #include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "chromeos/dbus/oobe_config/oobe_configuration_client.h"
-#include "chromeos/dbus/runtime_probe_client.h"
+#include "chromeos/dbus/runtime_probe/runtime_probe_client.h"
 #include "chromeos/dbus/shill/modem_messaging_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
@@ -37,7 +37,7 @@
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "chromeos/dbus/shill/sms_client.h"
-#include "chromeos/dbus/smb_provider_client.h"
+#include "chromeos/dbus/smbprovider/smb_provider_client.h"
 #include "chromeos/dbus/update_engine_client.h"
 
 namespace chromeos {

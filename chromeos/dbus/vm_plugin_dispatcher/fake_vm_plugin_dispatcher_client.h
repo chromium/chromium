@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_FAKE_VM_PLUGIN_DISPATCHER_CLIENT_H_
-#define CHROMEOS_DBUS_FAKE_VM_PLUGIN_DISPATCHER_CLIENT_H_
+#ifndef CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER_FAKE_VM_PLUGIN_DISPATCHER_CLIENT_H_
+#define CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER_FAKE_VM_PLUGIN_DISPATCHER_CLIENT_H_
 
+#include "base/component_export.h"
+#include "base/macros.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/vm_plugin_dispatcher_client.h"
+#include "chromeos/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 
 namespace chromeos {
 
-class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeVmPluginDispatcherClient
-    : public VmPluginDispatcherClient {
+class COMPONENT_EXPORT(CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER)
+    FakeVmPluginDispatcherClient : public VmPluginDispatcherClient {
  public:
   FakeVmPluginDispatcherClient();
   ~FakeVmPluginDispatcherClient() override;
@@ -88,4 +90,4 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeVmPluginDispatcherClient
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DBUS_FAKE_VM_PLUGIN_DISPATCHER_CLIENT_H_
+#endif  // CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER_FAKE_VM_PLUGIN_DISPATCHER_CLIENT_H_

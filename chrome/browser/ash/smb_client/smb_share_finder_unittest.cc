@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/smb_client/discovery/in_memory_host_locator.h"
 #include "chrome/browser/ash/smb_client/smb_constants.h"
 #include "chrome/browser/ash/smb_client/smb_url.h"
-#include "chromeos/dbus/fake_smb_provider_client.h"
+#include "chromeos/dbus/smbprovider/fake_smb_provider_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

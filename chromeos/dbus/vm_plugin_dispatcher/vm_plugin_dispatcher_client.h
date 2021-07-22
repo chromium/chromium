@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER_CLIENT_H_
-#define CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER_CLIENT_H_
+#ifndef CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER_VM_PLUGIN_DISPATCHER_CLIENT_H_
+#define CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER_VM_PLUGIN_DISPATCHER_CLIENT_H_
 
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
@@ -18,8 +19,8 @@ namespace chromeos {
 
 // VmPluginDispatcherClient is used to communicate with the Plugin VM
 // Dispatcher, which manages plugin VMs.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) VmPluginDispatcherClient
-    : public DBusClient {
+class COMPONENT_EXPORT(CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER)
+    VmPluginDispatcherClient : public DBusClient {
  public:
   // Used to observe changes to VM tool's state and VM's state.
   class Observer : public base::CheckedObserver {
@@ -88,4 +89,4 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) VmPluginDispatcherClient
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER_CLIENT_H_
+#endif  // CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER_VM_PLUGIN_DISPATCHER_CLIENT_H_

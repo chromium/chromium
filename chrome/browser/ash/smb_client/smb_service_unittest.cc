@@ -43,7 +43,7 @@
 #include "chromeos/components/smbfs/smbfs_mounter.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_smb_provider_client.h"
+#include "chromeos/dbus/smbprovider/fake_smb_provider_client.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
