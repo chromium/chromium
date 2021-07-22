@@ -6,7 +6,8 @@ def main(request, response):
     # Read request body
     request.body
     time.sleep(delay)
-    response.headers.set(b"Content-type", b"text/plain")
+    if not b"notype" in request.GET:
+        response.headers.set(b"Content-type", b"text/plain")
     response.write_status_headers()
     time.sleep(delay)
     for i in range(count):

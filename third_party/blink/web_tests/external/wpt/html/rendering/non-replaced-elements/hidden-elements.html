@@ -4,13 +4,24 @@
 <script src="/resources/testharnessreport.js"></script>
 <div hidden></div>
 <script>
-const kLocalNames = [
-  "area", "base", "basefont", "datalist", "head", "link", "meta", "noembed",
-  "noframes", "param", "rp", "script", "source", "style", "template",
-  "track", "title",
+const kNotHiddenElementLocalNames = [
+  "source", "track",
 ];
 
-for (let name of kLocalNames) {
+const kHiddenElementLocalNames = [
+  "area", "base", "basefont", "datalist", "head", "link", "meta", "noembed",
+  "noframes", "param", "rp", "script", "style", "template", "title",
+];
+
+for (let name of kNotHiddenElementLocalNames) {
+  test(function() {
+    let element = document.createElement(name);
+    document.body.appendChild(element);
+    assert_equals(getComputedStyle(element).display, "inline");
+  }, `${name} should not be hidden`);
+}
+
+for (let name of kHiddenElementLocalNames) {
   test(function() {
     let element = document.createElement(name);
     document.body.appendChild(element);

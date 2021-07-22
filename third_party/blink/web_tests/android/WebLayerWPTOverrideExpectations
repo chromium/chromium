@@ -801,6 +801,7 @@ crbug.com/1050754 external/wpt/external/wpt/WebIDL/ecmascript-binding/global-obj
 crbug.com/1050754 external/wpt/external/wpt/WebIDL/ecmascript-binding/window-named-properties-object.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/css/css-color-adjust/print-color-adjust-parsing.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/fetch/api/basic/scheme-data.any.sharedworker.html [ Failure ]
+crbug.com/1050754 external/wpt/external/wpt/fetch/api/basic/stream-response.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/fetch/api/basic/stream-safe-creation.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
 crbug.com/1050754 external/wpt/external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Failure ]

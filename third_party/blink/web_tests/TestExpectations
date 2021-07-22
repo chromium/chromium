@@ -195,7 +195,7 @@ crbug.com/1124352 external/wpt/picture-in-picture/picture-in-picture-element.htm
 crbug.com/1124352 external/wpt/picture-in-picture/shadow-dom.html [ Crash Pass ]
 
 crbug.com/1174966 [ Mac ] external/wpt/webrtc/RTCPeerConnection-restartIce.https.html [ Failure Pass Timeout ]
-crbug.com/1174965 [ Mac ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDtlsTransport-state.html [ Pass Failure ]
+crbug.com/1174965 [ Mac ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDtlsTransport-state.html [ Failure Pass ]
 
 # These tests require portals, and some require cross-origin portals.
 # Keep this in sync with VirtualTestSuites.
@@ -2614,6 +2614,8 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac10.12 ] external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-video.https.html [ Timeout ]
+crbug.com/626703 [ Win7 ] external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-video.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/selection/textcontrols/selectionchange-bubble.html [ Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/selection/textcontrols/selectionchange-bubble.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/selection/textcontrols/selectionchange-bubble.html [ Timeout ]
@@ -3081,7 +3083,7 @@ crbug.com/626703 [ Mac10.15 ] virtual/plz-dedicated-worker/external/wpt/html/cro
 crbug.com/626703 [ Win10 ] external/wpt/html/cross-origin-embedder-policy/cross-origin-isolated-permission.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/parsing/background-image-computed.sub.html [ Crash Pass ]
 crbug.com/1167095 [ Mac ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Failure Pass Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/webrtc-encoded-transform/sframe-transform-buffer-source.html [ Failure Crash Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/webrtc-encoded-transform/sframe-transform-buffer-source.html [ Crash Failure Timeout ]
 crbug.com/626703 external/wpt/websockets/stream/tentative/close.any.worker.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/multi-globals/workers-coep-report.https.html [ Failure Pass ]
 crbug.com/626703 [ Mac10.15 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/http-response-code.any.html [ Crash Failure ]
@@ -6666,7 +6668,7 @@ crbug.com/1203963 [ Mac10.14 ] external/wpt/input-device-capabilities/idlharness
 crbug.com/1203963 [ Mac10.14 ] external/wpt/periodic-background-sync/idlharness.https.any.html [ Failure Pass Timeout ]
 crbug.com/1203963 [ Mac10.14 ] external/wpt/storage/idlharness.https.any.html [ Failure Pass Timeout ]
 crbug.com/1203963 [ Mac10.14 ] external/wpt/storage/idlharness.https.any.worker.html [ Failure Pass Timeout ]
-crbug.com/1203963 [ Mac10.14 ] external/wpt/webusb/idlharness.https.any.html [ Pass Failure Timeout ]
+crbug.com/1203963 [ Mac10.14 ] external/wpt/webusb/idlharness.https.any.html [ Failure Pass Timeout ]
 crbug.com/1203963 [ Mac10.14 ] external/wpt/xhr/idlharness.any.sharedworker.html [ Failure Pass Timeout ]
 crbug.com/1198443 [ Mac10.14 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/request-upload.any.html [ Failure Pass Timeout ]
 crbug.com/1198443 [ Mac10.14 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/request-upload.any.worker.html [ Failure Pass Timeout ]
@@ -7203,7 +7205,7 @@ crbug.com/1228246 http/tests/inspector-protocol/network/same-site-issue-warn-coo
 crbug.com/1228246 http/tests/inspector-protocol/network/webbundle.js [ Crash Failure Pass Skip Timeout ]
 
 # linux_layout_tests_layout_ng_disabled needs its own baselines.
-crbug.com/1231699 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-composite.html [ Pass Failure ]
+crbug.com/1231699 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-composite.html [ Failure Pass ]
 
 # Other devtools flaky tests outside of http/tests/inspector-protocol/network.
 crbug.com/1228261 http/tests/devtools/console/console-context-selector.js [ Crash Failure Pass Skip Timeout ]
@@ -7259,6 +7261,6 @@ crbug.com/1231431 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-em
 crbug.com/1231431 virtual/plz-service-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure ]
 
 # Sheriff 2021-07-22
-crbug.com/1222097 [ Mac ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Pass Failure ]
-crbug.com/1222097 [ Mac ] virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Pass Failure ]
+crbug.com/1222097 [ Mac ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Failure Pass ]
+crbug.com/1222097 [ Mac ] virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Failure Pass ]
 crbug.com/1231915 [ Mac10.12 ] external/wpt/selection/textcontrols/selectionchange-bubble.html [ Pass Timeout ]
