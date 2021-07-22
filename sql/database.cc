@@ -1333,6 +1333,9 @@ scoped_refptr<Database::StatementRef> Database::GetStatementImpl(
       << "Unused text: " << std::string(unused_sql) << "\n"
       << "in prepared SQL statement: " << std::string(sql);
 #endif  // DCHECK_IS_ON()
+
+  DCHECK(sqlite_statement) << "No SQL statement in string: " << sql;
+
   return base::MakeRefCounted<StatementRef>(this, sqlite_statement, true);
 }
 
@@ -1385,6 +1388,8 @@ bool Database::IsSQLValid(const char* sql) {
       << "Unused text: " << std::string(unused_sql) << "\n"
       << "in SQL statement: " << std::string(sql);
 #endif  // DCHECK_IS_ON()
+
+  DCHECK(sqlite_statement) << "No SQL statement in string: " << sql;
 
   sqlite3_finalize(sqlite_statement);
   return true;

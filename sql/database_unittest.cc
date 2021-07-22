@@ -638,6 +638,30 @@ TEST_P(SQLDatabaseTest, IsSQLValid_ExtraContents) {
       << "Comment separated by whitespace";
 }
 
+TEST_P(SQLDatabaseTest, GetUniqueStatement_NoContents) {
+  EXPECT_DCHECK_DEATH(db_->GetUniqueStatement("")) << "Empty string";
+  EXPECT_DCHECK_DEATH(db_->GetUniqueStatement(" ")) << "Space";
+  EXPECT_DCHECK_DEATH(db_->GetUniqueStatement("\n")) << "Newline";
+  EXPECT_DCHECK_DEATH(db_->GetUniqueStatement("-- Comment")) << "Comment";
+}
+
+TEST_P(SQLDatabaseTest, GetCachedStatement_NoContents) {
+  EXPECT_DCHECK_DEATH(db_->GetCachedStatement(SQL_FROM_HERE, ""))
+      << "Empty string";
+  EXPECT_DCHECK_DEATH(db_->GetCachedStatement(SQL_FROM_HERE, " ")) << "Space";
+  EXPECT_DCHECK_DEATH(db_->GetCachedStatement(SQL_FROM_HERE, "\n"))
+      << "Newline";
+  EXPECT_DCHECK_DEATH(db_->GetCachedStatement(SQL_FROM_HERE, "-- Comment"))
+      << "Comment";
+}
+
+TEST_P(SQLDatabaseTest, IsSQLValid_NoContents) {
+  EXPECT_DCHECK_DEATH(db_->IsSQLValid("")) << "Empty string";
+  EXPECT_DCHECK_DEATH(db_->IsSQLValid(" ")) << "Space";
+  EXPECT_DCHECK_DEATH(db_->IsSQLValid("\n")) << "Newline";
+  EXPECT_DCHECK_DEATH(db_->IsSQLValid("-- Comment")) << "Comment";
+}
+
 // Test that Database::Raze() results in a database without the
 // tables from the original database.
 TEST_P(SQLDatabaseTest, Raze) {
