@@ -13,10 +13,17 @@ import {DeviceOperator} from './device_operator.js';
  * @extends {PhotoCapabilities}
  * @record
  */
-const CrosPhotoCapabilities = function() {};
-
-/** @type {!Array<string>} */
-CrosPhotoCapabilities.prototype.supportedEffects;
+export class CrosPhotoCapabilities {
+  /**
+   * @public
+   */
+  constructor() {
+    /**
+     * @type {!Array<string>}
+     */
+    this.supportedEffects;
+  }
+}
 
 /**
  * Creates the wrapper of JS image-capture and Mojo image-capture.
