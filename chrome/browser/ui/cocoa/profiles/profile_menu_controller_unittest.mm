@@ -5,8 +5,12 @@
 #import "chrome/browser/ui/cocoa/profiles/profile_menu_controller.h"
 
 #include "base/mac/scoped_nsobject.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #include "chrome/browser/ui/cocoa/test/run_loop_testing.h"
 #include "chrome/common/pref_names.h"
@@ -197,6 +201,13 @@ TEST_F(ProfileMenuControllerTest, InitialActiveBrowser) {
 // BrowserWindow::Show() and when a Browser becomes active. We don't need a full
 // BrowserWindow, so it is called manually.
 TEST_F(ProfileMenuControllerTest, SetActiveAndRemove) {
+  // Set the name of the default profile, so that's it's not empty.
+  const std::u16string kDefaultProfileName = u"DefaultProfile";
+  g_browser_process->profile_manager()
+      ->GetProfileAttributesStorage()
+      .GetProfileAttributesWithPath(browser()->profile()->GetPath())
+      ->SetLocalProfileName(kDefaultProfileName, false);
+
   NSMenu* menu = [controller() menu];
   TestingProfileManager* manager = profile_manager();
   TestingProfile* profile2 = manager->CreateTestingProfile("Profile 2");
@@ -210,10 +221,11 @@ TEST_F(ProfileMenuControllerTest, SetActiveAndRemove) {
   [controller() activeBrowserChangedTo:p2_browser.get()];
   VerifyProfileNamedIsActive(@"Profile 2", __LINE__);
 
-  // Close the browser and make sure it's still active.
+  // Close the browser and make sure the new active browser's profile is active.
   p2_browser.reset();
-  [controller() activeBrowserChangedTo:nil];
-  VerifyProfileNamedIsActive(@"Profile 2", __LINE__);
+  [controller() activeBrowserChangedTo:browser()];
+  VerifyProfileNamedIsActive(base::SysUTF16ToNSString(kDefaultProfileName),
+                             __LINE__);
 
   // Open a new browser and make sure it takes effect.
   Browser::CreateParams profile3_params(profile3, true);
@@ -222,9 +234,24 @@ TEST_F(ProfileMenuControllerTest, SetActiveAndRemove) {
   [controller() activeBrowserChangedTo:p3_browser.get()];
   VerifyProfileNamedIsActive(@"Profile 3", __LINE__);
 
+  // Close the browser and make sure the new active browser's profile is active.
   p3_browser.reset();
+  [controller() activeBrowserChangedTo:browser()];
+  VerifyProfileNamedIsActive(base::SysUTF16ToNSString(kDefaultProfileName),
+                             __LINE__);
+
+  // Close the browser.
+  std::unique_ptr<Browser> browser(release_browser());
+  browser->tab_strip_model()->CloseAllTabs();
+  browser.reset();
+  std::unique_ptr<BrowserWindow> browser_window(release_browser_window());
+  browser_window->Close();
+  browser_window.reset();
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+
   [controller() activeBrowserChangedTo:nil];
-  VerifyProfileNamedIsActive(@"Profile 3", __LINE__);
+  VerifyProfileNamedIsActive(base::SysUTF16ToNSString(kDefaultProfileName),
+                             __LINE__);
 }
 
 TEST_F(ProfileMenuControllerTest, DeleteActiveProfile) {

@@ -155,10 +155,10 @@ Browser* FindBrowserWithTabbedOrAnyType(
   if (match_current_workspace)
     match_types |= kMatchCurrentWorkspace;
 #endif
-  Browser* browser =
-      FindBrowserMatching(browser_list_impl->begin_last_active(),
-                          browser_list_impl->end_last_active(), profile,
-                          Browser::FEATURE_NONE, match_types, display_id);
+  Browser* browser = FindBrowserMatching(
+      browser_list_impl->begin_browsers_ordered_by_activation(),
+      browser_list_impl->end_browsers_ordered_by_activation(), profile,
+      Browser::FEATURE_NONE, match_types, display_id);
   // Fall back to a forward scan of all Browsers if no active one was found.
   return browser ? browser
                  : FindBrowserMatching(
@@ -250,7 +250,8 @@ Browser* FindLastActiveWithProfile(Profile* profile) {
   BrowserList* list = BrowserList::GetInstance();
   // We are only interested in last active browsers, so we don't fall back to
   // all browsers like FindBrowserWith* do.
-  return FindBrowserMatching(list->begin_last_active(), list->end_last_active(),
+  return FindBrowserMatching(list->begin_browsers_ordered_by_activation(),
+                             list->end_browsers_ordered_by_activation(),
                              profile, Browser::FEATURE_NONE, kMatchAny);
 }
 

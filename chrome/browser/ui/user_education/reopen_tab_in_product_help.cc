@@ -66,7 +66,13 @@ void ReopenTabInProductHelp::OnShowHelp() {
   auto* browser = BrowserList::GetInstance()->GetLastActive();
   if (!browser)
     return;
-  browser->window()->GetFeaturePromoController()->MaybeShowPromo(
+
+  auto* feature_promo_controller =
+      browser->window()->GetFeaturePromoController();
+  if (!feature_promo_controller)
+    return;
+
+  feature_promo_controller->MaybeShowPromo(
       feature_engagement::kIPHReopenTabFeature);
 }
 

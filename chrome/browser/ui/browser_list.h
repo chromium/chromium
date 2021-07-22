@@ -49,15 +49,14 @@ class BrowserList {
 
   Browser* get(size_t index) const { return browsers_[index]; }
 
-  // Returns iterated access to list of open browsers ordered by when
-  // they were last active. The underlying data structure is a vector
-  // and we push_back on recent access so a reverse iterator gives the
-  // latest accessed browser first.
-  const_reverse_iterator begin_last_active() const {
-    return last_active_browsers_.rbegin();
+  // Returns iterated access to list of open browsers ordered by activation. The
+  // underlying data structure is a vector and we push_back on recent access so
+  // a reverse iterator gives the latest accessed browser first.
+  const_reverse_iterator begin_browsers_ordered_by_activation() const {
+    return browsers_ordered_by_activation_.rbegin();
   }
-  const_reverse_iterator end_last_active() const {
-    return last_active_browsers_.rend();
+  const_reverse_iterator end_browsers_ordered_by_activation() const {
+    return browsers_ordered_by_activation_.rend();
   }
 
   // Returns the set of browsers that are currently in the closing state.
@@ -73,9 +72,8 @@ class BrowserList {
   static void AddBrowser(Browser* browser);
   static void RemoveBrowser(Browser* browser);
 
-  // Appends active browser windows to |last_active_browsers_|, and prepends
-  // minimized browser windows to |last_active_browsers_|, i.e., treat
-  // minimized windows as least recently active.
+  // Appends active browser windows to |browsers_ordered_by_activation_|.
+  // Prepends inactive browser windows to |browsers_ordered_by_activation_|.
   static void AddBrowserToActiveList(Browser* browser);
 
   // Adds and removes |observer| from the observer list for all desktops.
@@ -185,10 +183,11 @@ class BrowserList {
 
   // A vector of the browsers in this list, in the order they were added.
   BrowserVector browsers_;
-  // A vector of the browsers in this list that have been activated, in the
-  // reverse order in which they were last activated. Minimized browser windows,
-  // (e.g., created by session restore) are inserted at the front of the list.
-  BrowserVector last_active_browsers_;
+  // A vector of the browsers in this list, in reverse order of activation. I.e.
+  // the most recently used browser will be at the end. Inactive browser
+  // windows, (e.g., created by session restore) are inserted at the front of
+  // the list.
+  BrowserVector browsers_ordered_by_activation_;
   // A vector of the browsers that are currently in the closing state.
   BrowserSet currently_closing_browsers_;
 

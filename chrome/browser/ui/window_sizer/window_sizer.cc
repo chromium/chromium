@@ -90,8 +90,8 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
       window = browser_->window();
     } else {
       const BrowserList* browser_list = BrowserList::GetInstance();
-      for (auto it = browser_list->begin_last_active();
-           it != browser_list->end_last_active(); ++it) {
+      for (auto it = browser_list->begin_browsers_ordered_by_activation();
+           it != browser_list->end_browsers_ordered_by_activation(); ++it) {
         Browser* last_active = *it;
         if (last_active && last_active->is_type_normal()) {
           window = last_active->window();

@@ -1359,8 +1359,8 @@ void ChromeShelfController::CloseWindowedAppsFromRemovedExtension(
   const BrowserList* browser_list = BrowserList::GetInstance();
   std::vector<Browser*> browser_to_close;
   for (BrowserList::const_reverse_iterator it =
-           browser_list->begin_last_active();
-       it != browser_list->end_last_active(); ++it) {
+           browser_list->begin_browsers_ordered_by_activation();
+       it != browser_list->end_browsers_ordered_by_activation(); ++it) {
     Browser* browser = *it;
     if ((browser->is_type_app() || browser->is_type_app_popup()) &&
         app_id == web_app::GetAppIdFromApplicationName(browser->app_name()) &&

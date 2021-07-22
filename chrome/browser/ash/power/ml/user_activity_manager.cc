@@ -559,8 +559,9 @@ TabProperty UserActivityManager::UpdateOpenTabURL() {
   TabProperty property;
 
   // Find the active tab in the visible focused or topmost browser.
-  for (auto browser_iterator = browser_list->begin_last_active();
-       browser_iterator != browser_list->end_last_active();
+  for (auto browser_iterator =
+           browser_list->begin_browsers_ordered_by_activation();
+       browser_iterator != browser_list->end_browsers_ordered_by_activation();
        ++browser_iterator) {
     Browser* browser = *browser_iterator;
 

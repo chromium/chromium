@@ -24,7 +24,8 @@ std::unique_ptr<Browser> CreateBrowserWithTestWindowForParams(
                            ui::SHOW_STATE_MINIMIZED);
   // Tests generally expect TestBrowserWindows not to be active.
   window->set_is_active(params.initial_show_state != ui::SHOW_STATE_INACTIVE &&
-                        params.initial_show_state != ui::SHOW_STATE_DEFAULT);
+                        params.initial_show_state != ui::SHOW_STATE_DEFAULT &&
+                        params.initial_show_state != ui::SHOW_STATE_MINIMIZED);
 
   return std::unique_ptr<Browser>(Browser::Create(params));
 }

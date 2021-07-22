@@ -134,8 +134,8 @@ Browser* GetLastActiveBrowser(const Profile* profile,
                               const bool match_incognito_profile) {
   BrowserList* browser_list = BrowserList::GetInstance();
   Browser* target_browser = nullptr;
-  for (auto iter = browser_list->begin_last_active();
-       iter != browser_list->end_last_active(); ++iter) {
+  for (auto iter = browser_list->begin_browsers_ordered_by_activation();
+       iter != browser_list->end_browsers_ordered_by_activation(); ++iter) {
     Profile* browser_profile = (*iter)->profile();
     if (browser_profile == profile ||
         (match_incognito_profile &&

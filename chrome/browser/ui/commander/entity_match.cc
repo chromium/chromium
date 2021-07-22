@@ -125,8 +125,8 @@ std::vector<WindowMatch> WindowsMatchingInput(const Browser* browser_to_exclude,
   FuzzyFinder finder(input);
   std::vector<gfx::Range> ranges;
   for (BrowserList::const_reverse_iterator it =
-           browser_list->begin_last_active();
-       it != browser_list->end_last_active(); ++it) {
+           browser_list->begin_browsers_ordered_by_activation();
+       it != browser_list->end_browsers_ordered_by_activation(); ++it) {
     Browser* browser = *it;
     if (browser == browser_to_exclude || !browser->is_type_normal())
       continue;

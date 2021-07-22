@@ -100,7 +100,7 @@ class WorkerTaskProviderBrowserTest : public InProcessBrowserTest,
     profiles::SwitchToProfile(new_path, /* always_create = */ false,
                               base::DoNothing());
     BrowserList* browser_list = BrowserList::GetInstance();
-    return *browser_list->begin_last_active();
+    return *browser_list->begin_browsers_ordered_by_activation();
   }
 
   content::ServiceWorkerContext* GetServiceWorkerContext(Browser* browser) {

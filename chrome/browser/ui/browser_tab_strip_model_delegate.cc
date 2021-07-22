@@ -138,8 +138,8 @@ BrowserTabStripModelDelegate::GetExistingWindowsForMoveMenu() {
 
   const BrowserList* browser_list = BrowserList::GetInstance();
   for (BrowserList::const_reverse_iterator it =
-           browser_list->begin_last_active();
-       it != browser_list->end_last_active(); ++it) {
+           browser_list->begin_browsers_ordered_by_activation();
+       it != browser_list->end_browsers_ordered_by_activation(); ++it) {
     Browser* browser = *it;
 
     // We can only move into a tabbed view of the same profile, and not the same
