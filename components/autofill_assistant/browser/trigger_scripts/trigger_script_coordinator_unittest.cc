@@ -1393,4 +1393,24 @@ TEST_F(TriggerScriptCoordinatorTest, UiTimeoutInterruptedByNotNow) {
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
+TEST_F(TriggerScriptCoordinatorTest, StoppingTwiceDoesNotCrash) {
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_FORBIDDEN, ""));
+  EXPECT_CALL(*mock_ui_delegate_, Detach).Times(1);
+  EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(0);
+  coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
+                      mock_callback_.Get());
+
+  // Stopping coordinator after it was already stopped by a failed request.
+  coordinator_->Stop(
+      Metrics::TriggerScriptFinishedState::CCT_TO_TAB_NOT_SUPPORTED);
+
+  // Only the first event is logged (and nothing crashed).
+  EXPECT_THAT(GetUkmTriggerScriptFinished(ukm_recorder_),
+              ElementsAreArray(ToHumanReadableMetrics(
+                  {{navigation_ids_[0],
+                    {Metrics::TriggerScriptFinishedState::GET_ACTIONS_FAILED,
+                     TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE}}})));
+}
+
 }  // namespace autofill_assistant

@@ -297,6 +297,9 @@ void TriggerScriptCoordinator::OnUiTimeoutReached() {
 }
 
 void TriggerScriptCoordinator::Stop(Metrics::TriggerScriptFinishedState state) {
+  if (!callback_ || !trigger_context_) {
+    return;
+  }
   VLOG(2) << "Stopping with status " << state;
   TriggerScriptProto::TriggerUIType trigger_ui_type =
       GetTriggerUiTypeForVisibleScript();
@@ -592,6 +595,8 @@ void TriggerScriptCoordinator::RunCallback(
     TriggerScriptProto::TriggerUIType trigger_ui_type,
     Metrics::TriggerScriptFinishedState state,
     const absl::optional<TriggerScriptProto>& trigger_script) {
+  DCHECK(callback_);
+  DCHECK(trigger_context_);
   if (!finished_state_recorded_) {
     finished_state_recorded_ = true;
     Metrics::RecordTriggerScriptFinished(ukm_recorder_, ukm_source_id_,
