@@ -30,11 +30,11 @@ let WarningEnterOptions;
 let PTZPanelOptions;
 
 /**
- * @typedef {
+ * @typedef {(
  *   !DialogEnterOptions|
  *   !WarningEnterOptions|
  *   !PTZPanelOptions
- * }
+ * )}
  */
 let EnterOptions;
 
