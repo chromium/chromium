@@ -1785,6 +1785,10 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 - (void)onSyncStateChanged {
   [self reloadSyncAndGoogleServicesCell];
+  [self updateSigninSection];
+  // The Identity section may be added or removed depending on sign-in is
+  // allowed. Reload all sections in the model to account for the change.
+  [self.tableView reloadData];
 }
 
 #pragma mark - IdentityRefreshLogic

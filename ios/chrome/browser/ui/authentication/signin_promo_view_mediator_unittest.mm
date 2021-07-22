@@ -81,10 +81,12 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     // correctly.
     EXPECT_TRUE(ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
                     ->WaitForServiceCallbacksToComplete());
-    [mediator_ signinPromoViewIsRemoved];
-    EXPECT_EQ(ios::SigninPromoViewState::Invalid,
-              mediator_.signinPromoViewState);
-    mediator_ = nil;
+    if (mediator_) {
+      [mediator_ signinPromoViewIsRemoved];
+      EXPECT_EQ(ios::SigninPromoViewState::Invalid,
+                mediator_.signinPromoViewState);
+      mediator_ = nil;
+    }
     EXPECT_OCMOCK_VERIFY((id)consumer_);
     EXPECT_OCMOCK_VERIFY((id)signin_promo_view_);
     EXPECT_OCMOCK_VERIFY((id)primary_button_);
@@ -493,6 +495,74 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoWhileSignedIn) {
   EXPECT_TRUE(ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
                   ->WaitForServiceCallbacksToComplete());
   CheckSyncPromoWithAccountConfigurator(configurator_);
+}
+
+// Tests that the sign-in promo view being removed and the mediator being
+// deallocated while the sign-in is in progress, and tests the consumer is still
+// called at the end of the sign-in.
+TEST_F(SigninPromoViewMediatorTest,
+       RemoveSigninPromoAndDeallocMediatorWhileSignedIn) {
+  // Setup.
+  AddDefaultIdentity();
+  CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
+  [mediator_ signinPromoViewIsVisible];
+  __block ShowSigninCommandCompletionCallback completion;
+  id completion_arg =
+      [OCMArg checkWithBlock:^BOOL(ShowSigninCommandCompletionCallback value) {
+        completion = value;
+        return YES;
+      }];
+  __weak __typeof(mediator_) weak_mediator = mediator_;
+  id mediator_checker = [OCMArg checkWithBlock:^BOOL(id value) {
+    return value == weak_mediator;
+  }];
+  OCMExpect([consumer_ signinPromoViewMediator:mediator_checker
+                  shouldOpenSigninWithIdentity:expected_default_identity_
+                                   promoAction:signin_metrics::PromoAction::
+                                                   PROMO_ACTION_WITH_DEFAULT
+                                    completion:completion_arg]);
+  // Start sign-in with an identity.
+  [mediator_ signinPromoViewDidTapSigninWithDefaultAccount:signin_promo_view_];
+  // Remove the sign-in promo.
+  [mediator_ signinPromoViewIsRemoved];
+  EXPECT_EQ(ios::SigninPromoViewState::Invalid, mediator_.signinPromoViewState);
+  // Dealloc the mediator.
+  mediator_ = nil;
+  EXPECT_EQ(weak_mediator, nil);
+  // Finish the sign-in.
+  OCMExpect([consumer_ signinDidFinish]);
+  completion(YES);
+}
+
+// Tests that the sign-in promo view being removed, and tests the consumer is
+// still called at the end of the sign-in.
+TEST_F(SigninPromoViewMediatorTest, RemoveSigninPromoWhileSignedIn) {
+  // Setup.
+  AddDefaultIdentity();
+  CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
+  [mediator_ signinPromoViewIsVisible];
+  __block ShowSigninCommandCompletionCallback completion;
+  id completion_arg =
+      [OCMArg checkWithBlock:^BOOL(ShowSigninCommandCompletionCallback value) {
+        completion = value;
+        return YES;
+      }];
+  OCMExpect([consumer_ signinPromoViewMediator:mediator_
+                  shouldOpenSigninWithIdentity:expected_default_identity_
+                                   promoAction:signin_metrics::PromoAction::
+                                                   PROMO_ACTION_WITH_DEFAULT
+                                    completion:completion_arg]);
+  // Start sign-in with an identity.
+  [mediator_ signinPromoViewDidTapSigninWithDefaultAccount:signin_promo_view_];
+  // Remove the sign-in promo.
+  [mediator_ signinPromoViewIsRemoved];
+  EXPECT_EQ(ios::SigninPromoViewState::Invalid, mediator_.signinPromoViewState);
+  // Finish the sign-in.
+  OCMExpect([consumer_ signinDidFinish]);
+  completion(YES);
+  // Set mediator_ to nil to avoid the TearDown doesn't call
+  // -[mediator_ signinPromoViewIsRemoved] again.
+  mediator_ = nil;
 }
 
 }  // namespace
