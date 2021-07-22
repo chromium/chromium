@@ -269,16 +269,6 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that the "Add Credit Cards..." action works on OTR.
 - (void)testOTRAddCreditCardsActionOpensAddCreditCardSettings {
-#if TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1163116): Fails for ios14-beta/sdk-simulator.
-  EARL_GREY_TEST_DISABLED(@"Test disabled on simulator.");
-#endif
-  // TODO(crbug.com/1162354): Re-enable this test for iPad after fixing this
-  // issue.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
-
   [AutofillAppInterface saveLocalCreditCard];
 
   // Open a tab in incognito.
@@ -295,10 +285,12 @@ BOOL WaitForKeyboardToAppear() {
   [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
       performAction:grey_tap()];
 
-  // Try to scroll.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  // Scroll if not iPad.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    [[EarlGrey
+        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  }
 
   // Tap the "Add Credit Cards..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackAddCreditCardsMatcher()]
