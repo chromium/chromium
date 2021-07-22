@@ -837,7 +837,7 @@ void WebGL2RenderingContextBase::readPixels(GLint x,
 
   // Due to WebGL's same-origin restrictions, it is not possible to
   // taint the origin using the WebGL API.
-  DCHECK(canvas()->OriginClean());
+  DCHECK(Host()->OriginClean());
 
   if (!ValidateValueFitNonNegInt32("readPixels", "offset", offset))
     return;
