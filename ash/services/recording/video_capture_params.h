@@ -30,12 +30,14 @@ class VideoCaptureParams {
   virtual ~VideoCaptureParams() = default;
 
   // Returns a capture params instance for a fullscreen recording of a root
-  // window which has the given |frame_sink_id|. The resulting video will have a
-  // resolution equal to the given |frame_sink_size| in DIPs. |frame_sink_id|
-  // must be valid.
+  // window which has the given |frame_sink_id|. Using the given
+  // |frame_sink_size_dip| and |device_scale_factor|, the resulting video will
+  // have a resolution equal to the pixel size of the recorded frame sink.
+  // |frame_sink_id| must be valid.
   static std::unique_ptr<VideoCaptureParams> CreateForFullscreenCapture(
       viz::FrameSinkId frame_sink_id,
-      const gfx::Size& frame_sink_size);
+      const gfx::Size& frame_sink_size_dip,
+      float device_scale_factor);
 
   // Returns a capture params instance for a recording of a window. The given
   // |frame_sink_id| is either of that window (if it submits compositor frames
@@ -43,96 +45,123 @@ class VideoCaptureParams {
   // submit its compositor frames). In the latter case, the window must be
   // identifiable by a valid |subtree_capture_id| (created by calling
   // aura::window::MakeWindowCapturable() before recording starts).
-  // |window_size| is the initial size of the recorded window, and
-  // |frame_sink_size| is the current size of the frame sink.
+  // |window_size_dip| is the initial size of the recorded window, and
+  // |frame_sink_size_dip| is the current size of the frame sink.
+  // |device_scale_factor| will be used to compute and perform the capture at
+  // the pixel size of the window.
   // |frame_sink_id| must be valid.
   static std::unique_ptr<VideoCaptureParams> CreateForWindowCapture(
       viz::FrameSinkId frame_sink_id,
       viz::SubtreeCaptureId subtree_capture_id,
-      const gfx::Size& window_size,
-      const gfx::Size& frame_sink_size);
+      const gfx::Size& frame_sink_size_dip,
+      float device_scale_factor,
+      const gfx::Size& window_size_dip);
 
   // Returns a capture params instance for a recording of a partial region of a
-  // root window which has the given |frame_sink_id|. The video will be captured
-  // at a resolution equal to the given |frame_sink_size| in DIPs, but the
-  // resulting video frames will be cropped to the given |crop_region| in DIPs.
-  // |frame_sink_id| must be valid.
+  // root window which has the given |frame_sink_id|. Using the given
+  // |frame_sink_size_dip| and |device_scale_factor|, the video will be captured
+  // at a resolution equal to the size of the frame sink in pixels, but the
+  // resulting video frames will be cropped to the pixel bounds that corresponds
+  // to the given |crop_region_dip|. |frame_sink_id| must be valid.
   static std::unique_ptr<VideoCaptureParams> CreateForRegionCapture(
       viz::FrameSinkId frame_sink_id,
-      const gfx::Size& frame_sink_size,
-      const gfx::Rect& crop_region);
+      const gfx::Size& frame_sink_size_dip,
+      float device_scale_factor,
+      const gfx::Rect& crop_region_dip);
 
   const viz::FrameSinkId& frame_sink_id() const { return frame_sink_id_; }
-  gfx::Size current_frame_sink_size() const { return current_frame_sink_size_; }
+  float current_device_scale_factor() const {
+    return current_device_scale_factor_;
+  }
+  gfx::Size current_frame_sink_size_pixels() const {
+    return current_frame_sink_size_pixels_;
+  }
 
   // Initializes the given |capturer| (passed by ref) according to the capture
   // parameters. The given |capturer| must be bound before calling this.
   void InitializeVideoCapturer(
       mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer) const;
 
-  // Sets the desired resolution constraints on the given |capturer|. By default
-  // the size of the recorded frame sink is used. Sub classes can override this
-  // behavior if needed.
-  virtual void SetCapturerResolutionConstraints(
-      mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer) const;
-
   // Returns the bounds to which a video frame, whose
-  // |original_frame_visible_rect| is given, should be cropped. If no cropping
-  // is desired, |original_frame_visible_rect| is returned. All bounds are in
-  // DIPs.
+  // |original_frame_visible_rect_pixels| is given, should be cropped. If no
+  // cropping is desired, |original_frame_visible_rect_pixels| is returned.
   virtual gfx::Rect GetVideoFrameVisibleRect(
-      const gfx::Rect& original_frame_visible_rect) const;
+      const gfx::Rect& original_frame_visible_rect_pixels) const;
 
-  // Returns the size in DIPs with which the video encoder will be initialized.
+  // Returns the size in pixels with which the video encoder will be
+  // initialized.
   virtual gfx::Size GetVideoSize() const = 0;
 
   // Called when a window, being recorded by the given |capturer|, is moved to
   // a different display whose root window has the given |new_frame_sink_id|,
-  // and |new_frame_sink_size| which matches the new display's size.
+  // |new_frame_sink_size_dip|, and |new_device_scale_factor|.
   // The default implementation is to *crash* the service, as this is only valid
   // when recording a window.
   // Returns true if the video encoder needs to be reconfigured, which happens
-  // when the bounds of the new display is different than that of the old
-  // display. Returns false otherwise.
+  // when the pixel size of the window changes, resulting in a change in the
+  // size of the video. Returns false otherwise.
   virtual bool OnRecordedWindowChangingRoot(
       mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer,
       viz::FrameSinkId new_frame_sink_id,
-      const gfx::Size& new_frame_sink_size) WARN_UNUSED_RESULT;
+      const gfx::Size& new_frame_sink_size_dip,
+      float new_device_scale_factor) WARN_UNUSED_RESULT;
 
   // Called when a window being recorded by the given |capturer| is resized
   // (e.g. due to snapping, maximizing, user resizing, ... etc.) to
-  // |new_window_size| in DIPs.
+  // |new_window_size_dip|.
   // The default implementation is to *crash* the service, as this is only valid
   // when recording a window.
   // Returns true if the video encoder needs to be reconfigured, indicating that
-  // |new_window_size| will result in a change in the video size. False
-  // otherwise.
+  // there's a change in the pixel size of the recorded window, resulting in a
+  // change in the video size. False otherwise.
   virtual bool OnRecordedWindowSizeChanged(
       mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer,
-      const gfx::Size& new_window_size) WARN_UNUSED_RESULT;
+      const gfx::Size& new_window_size_dip) WARN_UNUSED_RESULT;
 
-  // Called when the dimensions of the frame sink being recorded is changed to
-  // |new_frame_sink_size| in DIPs, which will be used to update the resolution
-  // constraints on the given |capturer|.
-  // The default implementation updates the resolutions constraints requested
-  // from the capturer, so that capture happens at the new frame sink size.
-  // Implementations can override this by doing nothing, in this case the new
-  // video frames will letterbox to adhere to the initially requested resolution
-  // constraints.
-  // Returns true if the video encoder needs to be reconfigured, indicating an
-  // actual change in the video size. False otherwise.
-  virtual bool OnFrameSinkSizeChanged(
+  // Called when the frame sink being recorded changes its size or device scale
+  // factor to |new_frame_sink_size_dip| or |new_device_scale_factor|
+  // respectively. The |current_frame_sink_size_pixels_| will be updated, and
+  // OnVideoSizeMayHaveChanged() will be called. Subclasses should implement
+  // OnVideoSizeMayHaveChanged() to handle possible changes in the pixel size
+  // of the recorded surface, and hence a change in the output video size, which
+  // would require a video encoder reconfiguration.
+  // Returns true if the video encoder needs to be reconfigured. False
+  // otherwise.
+  bool OnFrameSinkSizeChanged(
       mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer,
-      const gfx::Size& new_frame_sink_size) WARN_UNUSED_RESULT;
+      const gfx::Size& new_frame_sink_size_dip,
+      float new_device_scale_factor) WARN_UNUSED_RESULT;
 
  protected:
   VideoCaptureParams(viz::FrameSinkId frame_sink_id,
                      viz::SubtreeCaptureId subtree_capture_id,
-                     const gfx::Size& current_frame_sink_size);
+                     const gfx::Size& current_frame_sink_size,
+                     float device_scale_factor);
+
+  // Sets the desired resolution constraints on the given |capturer|. Subclasses
+  // should override this to request a resolution from |capturer| that matches
+  // the pixel size of the recorded surface.
+  virtual void SetCapturerResolutionConstraints(
+      mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer) const = 0;
+
+  // Called when an event occurs that may lead to changing the size of the
+  // video (such as changing the device scale factor, or resizing a recorded
+  // window). Implementations should recompute the video size, and return true
+  // if there was actually a change in the video size that the video encoder
+  // needs to be reconfigured. Returns false otherwise.
+  virtual bool OnVideoSizeMayHaveChanged(
+      mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer) = 0;
+
+  // Computes and returns the pixel size of the frame sink according to the
+  // current values of |current_frame_sink_size_dips_| and
+  // |current_device_scale_factor_|.
+  gfx::Size CalculateFrameSinkSizeInPixels() const;
 
   viz::FrameSinkId frame_sink_id_;
   const viz::SubtreeCaptureId subtree_capture_id_;
-  gfx::Size current_frame_sink_size_;
+  gfx::Size current_frame_sink_size_dips_;
+  float current_device_scale_factor_;
+  gfx::Size current_frame_sink_size_pixels_;
 };
 
 }  // namespace recording

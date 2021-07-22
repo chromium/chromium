@@ -26,9 +26,10 @@ viz::FrameSinkId TestCaptureModeDelegate::GetCurrentFrameSinkId() const {
                             : viz::FrameSinkId();
 }
 
-gfx::Size TestCaptureModeDelegate::GetCurrentFrameSinkSize() const {
-  return recording_service_ ? recording_service_->GetCurrentFrameSinkSize()
-                            : gfx::Size();
+gfx::Size TestCaptureModeDelegate::GetCurrentFrameSinkSizeInPixels() const {
+  return recording_service_
+             ? recording_service_->GetCurrentFrameSinkSizeInPixels()
+             : gfx::Size();
 }
 
 gfx::Size TestCaptureModeDelegate::GetCurrentVideoSize() const {

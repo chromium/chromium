@@ -368,9 +368,6 @@ void VideoRecordingWatcher::OnWindowActivated(ActivationReason reason,
 void VideoRecordingWatcher::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t metrics) {
-  if (recording_source_ == CaptureModeSource::kFullscreen)
-    return;
-
   if (!(metrics & (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
                    DISPLAY_METRIC_DEVICE_SCALE_FACTOR))) {
     return;
@@ -382,7 +379,12 @@ void VideoRecordingWatcher::OnDisplayMetricsChanged(
     return;
 
   const auto& root_bounds = current_root_->bounds();
-  controller_->PushNewRootSizeToRecordingService(root_bounds.size());
+  controller_->PushNewRootSizeToRecordingService(
+      root_bounds.size(), current_root_->GetHost()->device_scale_factor());
+
+  // We don't show a dimming overlay when recording a fullscreen.
+  if (recording_source_ == CaptureModeSource::kFullscreen)
+    return;
 
   DCHECK(layer());
   layer()->SetBounds(root_bounds);

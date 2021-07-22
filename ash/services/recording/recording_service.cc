@@ -4,8 +4,11 @@
 
 #include "ash/services/recording/recording_service.h"
 
+#include <cmath>
+#include <cstdint>
 #include <cstdlib>
 
+#include "ash/constants/ash_features.h"
 #include "ash/services/recording/recording_encoder_muxer.h"
 #include "ash/services/recording/recording_service_constants.h"
 #include "ash/services/recording/video_capture_params.h"
@@ -32,23 +35,30 @@ namespace recording {
 
 namespace {
 
-// For a capture size of 320 by 240, we use a bitrate of 256 kbit/s. Based on
-// that, we calculate the bits per second per squared pixel.
+// For a capture size of 320 by 240, we use a bitrate of 256 kbit/s. This value
+// is used as the minimum bitrate that we don't go below regardless of the video
+// size.
 constexpr uint32_t kMinBitrateInBitsPerSecond = 256 * 1000;
-constexpr float kBitsPerSecondPerSquarePixel =
-    static_cast<float>(kMinBitrateInBitsPerSecond) / (320.f * 240.f);
 
-// The size within which we will try to fit a thumbnail image extracted from the
-// first valid video frame. The value was chosen to be suitable with the image
-// container in the notification UI.
+// The size (in DIPs) within which we will try to fit a thumbnail image
+// extracted from the first valid video frame. The value was chosen to be
+// suitable with the image container in the notification UI.
 constexpr gfx::Size kThumbnailSize{328, 184};
 
-// Calculates the bitrate used to initialize the video encoder based on the
-// given |capture_size|.
+// Calculates the bitrate (in bits/seconds) used to initialize the video encoder
+// based on the given |capture_size|.
 uint32_t CalculateVpxEncoderBitrate(const gfx::Size& capture_size) {
-  return std::max(kMinBitrateInBitsPerSecond,
-                  static_cast<uint32_t>(capture_size.GetArea() *
-                                        kBitsPerSecondPerSquarePixel));
+  // We use the Kush Gauge formula which goes like this:
+  // bitrate (bits/s) = width * height * frame rate * motion factor * 0.07.
+  // Here we use a motion factor = 1, which works well for our use cases.
+  // This formula gives a balance between the video quality and the file size so
+  // it doesn't become too large.
+  const uint32_t bitrate =
+      std::ceil(capture_size.GetArea() * kMaxFrameRate * 0.07f);
+
+  // Make sure to return a value that is divisible by 8 so that we work with
+  // whole bytes.
+  return std::max(kMinBitrateInBitsPerSecond, (bitrate & ~7));
 }
 
 // Given the desired |capture_size|, it creates and returns the options needed
@@ -159,13 +169,15 @@ void RecordingService::RecordFullscreen(
     mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
     const base::FilePath& webm_file_path,
     const viz::FrameSinkId& frame_sink_id,
-    const gfx::Size& frame_sink_size) {
+    const gfx::Size& frame_sink_size_dip,
+    float device_scale_factor) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
-  StartNewRecording(std::move(client), std::move(video_capturer),
-                    std::move(audio_stream_factory), webm_file_path,
-                    VideoCaptureParams::CreateForFullscreenCapture(
-                        frame_sink_id, frame_sink_size));
+  StartNewRecording(
+      std::move(client), std::move(video_capturer),
+      std::move(audio_stream_factory), webm_file_path,
+      VideoCaptureParams::CreateForFullscreenCapture(
+          frame_sink_id, frame_sink_size_dip, device_scale_factor));
 }
 
 void RecordingService::RecordWindow(
@@ -174,16 +186,17 @@ void RecordingService::RecordWindow(
     mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
     const base::FilePath& webm_file_path,
     const viz::FrameSinkId& frame_sink_id,
-    const gfx::Size& frame_sink_size,
+    const gfx::Size& frame_sink_size_dip,
+    float device_scale_factor,
     const viz::SubtreeCaptureId& subtree_capture_id,
-    const gfx::Size& window_size) {
+    const gfx::Size& window_size_dip) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
-  StartNewRecording(
-      std::move(client), std::move(video_capturer),
-      std::move(audio_stream_factory), webm_file_path,
-      VideoCaptureParams::CreateForWindowCapture(
-          frame_sink_id, subtree_capture_id, window_size, frame_sink_size));
+  StartNewRecording(std::move(client), std::move(video_capturer),
+                    std::move(audio_stream_factory), webm_file_path,
+                    VideoCaptureParams::CreateForWindowCapture(
+                        frame_sink_id, subtree_capture_id, frame_sink_size_dip,
+                        device_scale_factor, window_size_dip));
 }
 
 void RecordingService::RecordRegion(
@@ -192,14 +205,16 @@ void RecordingService::RecordRegion(
     mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
     const base::FilePath& webm_file_path,
     const viz::FrameSinkId& frame_sink_id,
-    const gfx::Size& frame_sink_size,
-    const gfx::Rect& crop_region) {
+    const gfx::Size& frame_sink_size_dip,
+    float device_scale_factor,
+    const gfx::Rect& crop_region_dip) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   StartNewRecording(std::move(client), std::move(video_capturer),
                     std::move(audio_stream_factory), webm_file_path,
                     VideoCaptureParams::CreateForRegionCapture(
-                        frame_sink_id, frame_sink_size, crop_region));
+                        frame_sink_id, frame_sink_size_dip, device_scale_factor,
+                        crop_region_dip));
 }
 
 void RecordingService::StopRecording() {
@@ -212,7 +227,8 @@ void RecordingService::StopRecording() {
 
 void RecordingService::OnRecordedWindowChangingRoot(
     const viz::FrameSinkId& new_frame_sink_id,
-    const gfx::Size& new_frame_sink_size) {
+    const gfx::Size& new_frame_sink_size_dip,
+    float new_device_scale_factor) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   if (!current_video_capture_params_) {
@@ -221,16 +237,18 @@ void RecordingService::OnRecordedWindowChangingRoot(
     return;
   }
 
-  // If there's a change in the new root's size, we must reconfigure the video
-  // encoder so that output video has the correct dimensions.
+  // If there's a change in the pixel size of the recorded window as a result of
+  // it moving to a different display, we must reconfigure the video encoder so
+  // that output video has the correct dimensions.
   if (current_video_capture_params_->OnRecordedWindowChangingRoot(
-          video_capturer_remote_, new_frame_sink_id, new_frame_sink_size)) {
+          video_capturer_remote_, new_frame_sink_id, new_frame_sink_size_dip,
+          new_device_scale_factor)) {
     ReconfigureVideoEncoder();
   }
 }
 
 void RecordingService::OnRecordedWindowSizeChanged(
-    const gfx::Size& new_window_size) {
+    const gfx::Size& new_window_size_dip) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   if (!current_video_capture_params_) {
@@ -240,13 +258,14 @@ void RecordingService::OnRecordedWindowSizeChanged(
   }
 
   if (current_video_capture_params_->OnRecordedWindowSizeChanged(
-          video_capturer_remote_, new_window_size)) {
+          video_capturer_remote_, new_window_size_dip)) {
     ReconfigureVideoEncoder();
   }
 }
 
 void RecordingService::OnFrameSinkSizeChanged(
-    const gfx::Size& new_frame_sink_size) {
+    const gfx::Size& new_frame_sink_size_dip,
+    float new_device_scale_factor) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   if (!current_video_capture_params_) {
@@ -255,10 +274,13 @@ void RecordingService::OnFrameSinkSizeChanged(
     return;
   }
 
-  // If there's a change in the new root's size, we must reconfigure the video
-  // encoder so that output video has the correct dimensions.
+  // A change in the pixel size of the frame sink may result in changing the
+  // pixel size of the captured target (e.g. window or region). we must
+  // reconfigure the video encoder so that output video has the correct
+  // dimensions.
   if (current_video_capture_params_->OnFrameSinkSizeChanged(
-          video_capturer_remote_, new_frame_sink_size)) {
+          video_capturer_remote_, new_frame_sink_size_dip,
+          new_device_scale_factor)) {
     ReconfigureVideoEncoder();
   }
 }
@@ -423,6 +445,7 @@ void RecordingService::ReconfigureVideoEncoder() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DCHECK(current_video_capture_params_);
 
+  ++number_of_video_encoder_reconfigures_;
   encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::InitializeVideoEncoder)
       .WithArgs(CreateVideoEncoderOptions(
           current_video_capture_params_->GetVideoSize()));

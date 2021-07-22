@@ -21,12 +21,20 @@ viz::FrameSinkId RecordingServiceTestApi::GetCurrentFrameSinkId() const {
   return recording_service_.current_video_capture_params_->frame_sink_id();
 }
 
-gfx::Size RecordingServiceTestApi::GetCurrentFrameSinkSize() const {
+float RecordingServiceTestApi::GetCurrentDeviceScaleFactor() const {
   DCHECK_CALLED_ON_VALID_THREAD(recording_service_.main_thread_checker_);
   DCHECK(recording_service_.current_video_capture_params_);
 
   return recording_service_.current_video_capture_params_
-      ->current_frame_sink_size();
+      ->current_device_scale_factor();
+}
+
+gfx::Size RecordingServiceTestApi::GetCurrentFrameSinkSizeInPixels() const {
+  DCHECK_CALLED_ON_VALID_THREAD(recording_service_.main_thread_checker_);
+  DCHECK(recording_service_.current_video_capture_params_);
+
+  return recording_service_.current_video_capture_params_
+      ->current_frame_sink_size_pixels();
 }
 
 gfx::Size RecordingServiceTestApi::GetCurrentVideoSize() const {
@@ -40,6 +48,12 @@ gfx::ImageSkia RecordingServiceTestApi::GetVideoThumbnail() const {
   DCHECK_CALLED_ON_VALID_THREAD(recording_service_.main_thread_checker_);
 
   return recording_service_.video_thumbnail_;
+}
+
+int RecordingServiceTestApi::GetNumberOfVideoEncoderReconfigures() const {
+  DCHECK_CALLED_ON_VALID_THREAD(recording_service_.main_thread_checker_);
+
+  return recording_service_.number_of_video_encoder_reconfigures_;
 }
 
 void RecordingServiceTestApi::RequestAndWaitForVideoFrame(

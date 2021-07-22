@@ -28,15 +28,27 @@ class RecordingServiceTestApi {
   // Gets the current frame sink id being captured by the service.
   viz::FrameSinkId GetCurrentFrameSinkId() const;
 
-  // Gets the current size of the frame sink being recorded.
-  gfx::Size GetCurrentFrameSinkSize() const;
+  // Gets the device scale factor value used by the recording service. This
+  // value will always be 1.f when recording at the DIPs sizes, and equal to the
+  // current DSF value of the display being recorded when recording at the pixel
+  // sizes (see |ash::features::kRecordAtPixelSize|).
+  float GetCurrentDeviceScaleFactor() const;
 
-  // Gets the current video size being captured by the service.
+  // Gets the current size of the frame sink being recorded in pixels.
+  gfx::Size GetCurrentFrameSinkSizeInPixels() const;
+
+  // Gets the current video size being captured by the service. This matches the
+  // the pixel size of the target being recorded.
   gfx::Size GetCurrentVideoSize() const;
 
   // Gets the thumbnail image that will be used by the service to provide it to
   // the client.
   gfx::ImageSkia GetVideoThumbnail() const;
+
+  // Gets the number of times the video encoder was reconfigured (not counting
+  // the first time it was configured) as a result of a change in the video
+  // size.
+  int GetNumberOfVideoEncoderReconfigures() const;
 
   // Requests a video frame from the video capturer and waits for it to be
   // delivered to the service. If the caller provided a non-null

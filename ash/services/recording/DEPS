@@ -3,6 +3,7 @@
 noparent = True
 
 include_rules = [
+  "+ash/constants",
   "+base",
   "+components/viz/common",
   "+media",
