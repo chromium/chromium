@@ -188,25 +188,25 @@ void ClearCurrentThreadIdentity();
 // May be chosen at compile time via: -DABSL_FORCE_THREAD_IDENTITY_MODE=<mode
 // index>
 #ifdef ABSL_THREAD_IDENTITY_MODE_USE_POSIX_SETSPECIFIC
-#error ABSL_THREAD_IDENTITY_MODE_USE_POSIX_SETSPECIFIC cannot be direcly set
+#error ABSL_THREAD_IDENTITY_MODE_USE_POSIX_SETSPECIFIC cannot be directly set
 #else
 #define ABSL_THREAD_IDENTITY_MODE_USE_POSIX_SETSPECIFIC 0
 #endif
 
 #ifdef ABSL_THREAD_IDENTITY_MODE_USE_TLS
-#error ABSL_THREAD_IDENTITY_MODE_USE_TLS cannot be direcly set
+#error ABSL_THREAD_IDENTITY_MODE_USE_TLS cannot be directly set
 #else
 #define ABSL_THREAD_IDENTITY_MODE_USE_TLS 1
 #endif
 
 #ifdef ABSL_THREAD_IDENTITY_MODE_USE_CPP11
-#error ABSL_THREAD_IDENTITY_MODE_USE_CPP11 cannot be direcly set
+#error ABSL_THREAD_IDENTITY_MODE_USE_CPP11 cannot be directly set
 #else
 #define ABSL_THREAD_IDENTITY_MODE_USE_CPP11 2
 #endif
 
 #ifdef ABSL_THREAD_IDENTITY_MODE
-#error ABSL_THREAD_IDENTITY_MODE cannot be direcly set
+#error ABSL_THREAD_IDENTITY_MODE cannot be directly set
 #elif defined(ABSL_FORCE_THREAD_IDENTITY_MODE)
 #define ABSL_THREAD_IDENTITY_MODE ABSL_FORCE_THREAD_IDENTITY_MODE
 #elif defined(_WIN32) && !defined(__MINGW32__)

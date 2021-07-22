@@ -205,6 +205,8 @@ set(ABSL_INTERNAL_DLL_FILES
   "strings/internal/cord_internal.h"
   "strings/internal/cord_rep_consume.h"
   "strings/internal/cord_rep_consume.cc"
+  "strings/internal/cord_rep_btree.cc"
+  "strings/internal/cord_rep_btree.h"
   "strings/internal/cord_rep_flat.h"
   "strings/internal/cord_rep_ring.cc"
   "strings/internal/cord_rep_ring.h"

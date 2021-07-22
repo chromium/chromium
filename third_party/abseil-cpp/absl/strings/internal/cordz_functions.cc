@@ -24,13 +24,6 @@
 #include "absl/base/internal/exponential_biased.h"
 #include "absl/base/internal/raw_logging.h"
 
-// TODO(b/162942788): weak 'cordz_disabled' value.
-// A strong version is in the 'cordz_disabled_hack_for_odr' library which can
-// be linked in to disable cordz at compile time.
-extern "C" {
-bool absl_internal_cordz_disabled ABSL_ATTRIBUTE_WEAK = false;
-}
-
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace cord_internal {
@@ -54,13 +47,6 @@ ABSL_CONST_INIT thread_local int64_t cordz_next_sample = kInitCordzNextSample;
 constexpr int64_t kIntervalIfDisabled = 1 << 16;
 
 ABSL_ATTRIBUTE_NOINLINE bool cordz_should_profile_slow() {
-  // TODO(b/162942788): check if profiling is disabled at compile time.
-  if (absl_internal_cordz_disabled) {
-    ABSL_RAW_LOG(WARNING, "Cordz info disabled at compile time");
-    // We are permanently disabled: set counter to highest possible value.
-    cordz_next_sample = std::numeric_limits<int64_t>::max();
-    return false;
-  }
 
   thread_local absl::base_internal::ExponentialBiased
       exponential_biased_generator;
