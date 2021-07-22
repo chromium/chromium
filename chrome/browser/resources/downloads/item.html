@@ -42,7 +42,6 @@
     flex: none;
     margin: 6px auto;
     min-height: 103px;
-    position: relative;
     width: var(--downloads-card-width);
   }
 
@@ -169,10 +168,6 @@
     max-width: 100%;
   }
 
-  div[role='gridcell'] {
-    display: inline;
-  }
-
   #name,
   #file-link {
     font-weight: 500;
@@ -253,6 +248,10 @@
     color: var(--controlled-by-active-link-color);
   }
 
+  .more-options {
+    display: flex;
+    flex-direction: column;
+  }
 
   cr-icon-button {
     --cr-icon-button-icon-size: 16px;
@@ -262,11 +261,12 @@
 
   #incognito {
     -webkit-mask-image: url(images/incognito_marker.svg);
+    align-self: flex-end;
     background-color: var(--cr-secondary-text-color);
-    bottom: 20px;
     height: 16px;
-    position: absolute;
-    right: 16px;
+    margin-block-end: 20px;
+    margin-block-start: auto;
+    margin-inline-end: 16px;
     width: 16px;
   }
 
@@ -341,42 +341,42 @@
     </template>
 
     <div id="safe" class="controls" hidden="[[isDangerous_]]">
-      <div role="gridcell">
+      <span role="gridcell" hidden="[[!hasShowInFolderLink_]]">
         <a is="action-link" id="show" on-click="onShowTap_"
-            hidden="[[!hasShowInFolderLink_]]" focus-row-control
+            focus-row-control
             focus-type="show">[[data.showInFolderText]]</a>
-      </div>
+      </span>
       <template is="dom-if" if="[[data.retry]]">
-        <div role="gridcell">
+        <span role="gridcell">
           <cr-button class="action-button" on-click="onRetryTap_"
               focus-row-control focus-type="retry">
             $i18n{controlRetry}
           </cr-button>
-        </div>
+        </span>
       </template>
       <template is="dom-if" if="[[pauseOrResumeText_]]">
-        <div role="gridcell">
+        <span role="gridcell">
           <cr-button on-click="onPauseOrResumeTap_" id="pauseOrResume"
               focus-row-control focus-type="pauseOrResume">
             [[pauseOrResumeText_]]
           </cr-button>
-        </div>
+        </span>
       </template>
       <template is="dom-if" if="[[showOpenNow_]]" restamp>
-        <div role="gridcell">
+        <span role="gridcell">
           <cr-button on-click="onOpenNowTap_" id="openNow" class="action-button"
                      focus-row-control focus-type="open">
             $i18n{controlOpenNow}
           </cr-button>
-        </div>
+        </span>
       </template>
       <template is="dom-if" if="[[showCancel_]]">
-        <div role="gridcell">
+        <span role="gridcell">
           <cr-button on-click="onCancelTap_" focus-row-control
               focus-type="cancel">
             $i18n{controlCancel}
           </cr-button>
-        </div>
+        </span>
       </template>
       <span id="controlled-by"><!-- Text populated dynamically. --></span>
     </div>
@@ -385,43 +385,44 @@
       <div id="dangerous" class="controls">
         <!-- Dangerous file types (e.g. .exe, .jar). -->
         <template is="dom-if" if="[[!isMalware_]]">
-          <div role="gridcell">
+          <span role="gridcell">
             <cr-button on-click="onDiscardDangerousTap_"
                 class="action-button" focus-row-control
                 focus-type="discard">$i18n{dangerDiscard}</cr-button>
-          </div>
-          <div role="gridcell">
+          </span>
+          <span role="gridcell">
             <cr-button on-click="onSaveDangerousTap_" focus-row-control
                 focus-type="save">
               $i18n{dangerSave}</cr-button>
-          </div>
+          </span>
         </template>
 
         <!-- Things that safe browsing has determined to be dangerous. -->
         <template is="dom-if" if="[[isMalware_]]">
-          <div role="gridcell">
+          <span role="gridcell">
             <cr-button on-click="onDiscardDangerousTap_"
                 class="action-button"
                 focus-row-control focus-type="discard">
               $i18n{controlRemoveFromList}</cr-button>
-          </div>
-          <div role="gridcell">
+          </span>
+          <span role="gridcell">
             <cr-button on-click="onSaveDangerousTap_" focus-row-control
                 focus-type="save">
               $i18n{dangerRestore}</cr-button>
-          </div>
+          </span>
         </template>
       </div>
     </template>
   </div>
-  <div role="gridcell">
-    <cr-icon-button class="icon-clear"
-        style$="[[computeRemoveStyle_(isDangerous_, showCancel_)]]"
-        id="remove" title="$i18n{controlRemoveFromList}"
-        aria-label$="[[controlRemoveFromListAriaLabel_]]"
-        on-click="onRemoveTap_" focus-row-control focus-type="remove">
-    </cr-icon-button>
-  </div>
-  <div id="incognito" title="$i18n{inIncognito}" hidden="[[!data.otr]]">
+  <div class="more-options">
+    <div role="gridcell">
+      <cr-icon-button class="icon-clear"
+          style$="[[computeRemoveStyle_(isDangerous_, showCancel_)]]"
+          id="remove" title="$i18n{controlRemoveFromList}"
+          aria-label$="[[controlRemoveFromListAriaLabel_]]"
+          on-click="onRemoveTap_" focus-row-control focus-type="remove">
+      </cr-icon-button>
+    </div>
+    <div id="incognito" title="$i18n{inIncognito}" hidden="[[!data.otr]]"></div>
   </div>
 </div>
