@@ -13,4 +13,11 @@
     <input-key key=[[accelerator.key]] key-state="alpha-numeric-selected">
     </input-key>
   </template>
+  <template is="dom-if" if=[[isEditable]]>
+    <input-key key="ctrl" key-state="not-selected"></input-key>
+    <input-key key="alt" key-state="not-selected"></input-key>
+    <input-key key="shift" key-state="not-selected"></input-key>
+    <input-key key="search" key-state="not-selected"></input-key>
+    <input-key key="key" key-state="not-selected"></input-key>
+  </template>
 </div>

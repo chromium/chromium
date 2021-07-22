@@ -41,13 +41,15 @@ export function acceleratorEditDialogTest() {
     await flush();
     const dialog = viewElement.shadowRoot.querySelector('cr-dialog');
     assertTrue(dialog.open);
-    const acceleratorElements = dialog.querySelectorAll('accelerator-view');
+    const acceleratorElements =
+        dialog.querySelectorAll('accelerator-edit-view');
     assertEquals(2, acceleratorElements.length);
     assertEquals(
         description, dialog.querySelector('#dialogTitle').textContent.trim());
 
-    const keys1 =
-        acceleratorElements[0].shadowRoot.querySelectorAll('input-key');
+    const accelView1 =
+        acceleratorElements[0].shadowRoot.querySelector('accelerator-view');
+    const keys1 = accelView1.shadowRoot.querySelectorAll('input-key');
     // SHIFT + CONTROL + g
     assertEquals(3, keys1.length);
     assertEquals(
@@ -57,8 +59,9 @@ export function acceleratorEditDialogTest() {
     assertEquals(
         'g', keys1[2].shadowRoot.querySelector('#key').textContent.trim());
 
-    const keys2 =
-        acceleratorElements[1].shadowRoot.querySelectorAll('input-key');
+    const accelView2 =
+        acceleratorElements[1].shadowRoot.querySelector('accelerator-view');
+    const keys2 = accelView2.shadowRoot.querySelectorAll('input-key');
     // CONTROL + c
     assertEquals(2, keys2.length);
     assertEquals(

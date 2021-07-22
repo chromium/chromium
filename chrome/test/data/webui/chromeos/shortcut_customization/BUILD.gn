@@ -13,6 +13,7 @@ js_type_check("closure_compile") {
                   ]
   deps = [
     ":accelerator_edit_dialog_test",
+    ":accelerator_edit_view_test",
     ":accelerator_row_test",
     ":accelerator_view_test",
     ":shortcut_customization_test",
@@ -51,6 +52,14 @@ js_library("accelerator_edit_dialog_test") {
   deps = [
     "../..:chai_assert",
     "//ash/webui/shortcut_customization_ui/resources:accelerator_edit_dialog",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("accelerator_edit_view_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/shortcut_customization_ui/resources:accelerator_edit_view",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
