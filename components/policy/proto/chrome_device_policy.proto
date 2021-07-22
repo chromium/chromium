@@ -1763,7 +1763,7 @@ message DeviceArcDataSnapshotHoursProto {
 // Setting that controls whether system-wide trace collection using the Perfetto
 // system tracing service is allowed.
 message DeviceSystemWideTracingEnabledProto {
-  optional bool enabled = 1 [default = true];
+  optional bool enabled = 1 [default = false];
 }
 
 // Setting that controls whether data access is enabled for Thunderbolt/USB4
