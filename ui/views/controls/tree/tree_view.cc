@@ -77,6 +77,12 @@ bool EventIsDoubleTapOrClick(const ui::LocatedEvent& event) {
   return !!(event.flags() & ui::EF_IS_DOUBLE_CLICK);
 }
 
+int GetSpaceThicknessForFocusRing() {
+  static const int kSpaceThicknessForFocusRing =
+      PlatformStyle::kFocusHaloThickness - PlatformStyle::kFocusHaloInset;
+  return kSpaceThicknessForFocusRing;
+}
+
 }  // namespace
 
 TreeView::TreeView()
@@ -991,6 +997,18 @@ void TreeView::UpdatePreferredSize() {
       root_.GetMaxWidth(this, text_offset_, root_shown_ ? 1 : 0) +
           kTextHorizontalPadding * 2,
       row_height_ * GetRowCount());
+
+  // When the editor is visible, more space is needed beyond the regular row,
+  // such as for drawing the focus ring.
+  // If this tree view is scrolled through layers, there is contension for
+  // updating layer bounds and scroll within the same layout call. So an
+  // extra row's height is added as the buffer space.
+  int horizontal_space = GetSpaceThicknessForFocusRing();
+  int vertical_space =
+      std::max(0, (empty_editor_size_.height() - font_list_.GetHeight()) / 2 -
+                      kTextVerticalPadding) +
+      GetSpaceThicknessForFocusRing() + row_height_;
+  preferred_size_.Enlarge(horizontal_space, vertical_space);
 }
 
 void TreeView::LayoutEditor() {
@@ -1021,8 +1039,12 @@ void TreeView::LayoutEditor() {
         gfx::Size(std::min(row_bounds.width(), content_bounds.width()),
                   std::min(row_bounds.height(), content_bounds.height())));
   }
+  // The visible bounds should include the focus ring which is outside the
+  // |row_bounds|.
+  gfx::Rect outter_bounds = row_bounds;
+  outter_bounds.Inset(gfx::Insets(-GetSpaceThicknessForFocusRing()));
   // Scroll as necessary to ensure that the editor is visible.
-  ScrollRectToVisible(row_bounds);
+  ScrollRectToVisible(outter_bounds);
   editor_->SetBoundsRect(row_bounds);
   editor_->Layout();
 }

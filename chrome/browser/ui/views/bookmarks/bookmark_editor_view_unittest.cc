@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_editor_view.h"
 
+#include <memory>
 #include <string>
 
 #include "base/strings/string_util.h"
@@ -17,8 +18,11 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/tree/tree_view.h"
+#include "ui/views/view_utils.h"
 
 using base::ASCIIToUTF16;
 using base::UTF8ToUTF16;
@@ -115,7 +119,8 @@ class BookmarkEditorViewTest : public testing::Test {
     editor_->ExecuteCommandDelete(std::move(non_empty_folder_confirmation_cb));
   }
 
-  views::TreeView* tree_view() { return editor_->tree_view_; }
+  views::TreeView* tree_view() const { return editor_->tree_view_; }
+  BookmarkEditorView* editor() const { return editor_.get(); }
 
   content::BrowserTaskEnvironment task_environment_;
 
@@ -565,4 +570,37 @@ TEST_F(BookmarkEditorViewTest, ConcurrentDeleteDuringConfirmationDialog) {
   ApplyEdits();
 
   EXPECT_EQ(nullptr, GetNode("f11a"));
+}
+
+// Add enough new folders to scroll to the bottom of the scroll view. Verify
+// that the editor at the end can still be fully visible.
+TEST_F(BookmarkEditorViewTest, EditorFullyShown) {
+  CreateEditor(profile_.get(), nullptr,
+               BookmarkEditor::EditDetails::EditNode(GetNode("oa")),
+               BookmarkEditorView::SHOW_TREE);
+  editor()->SetBounds(0, 0, 200, 200);
+
+  views::TreeView* tree = tree_view();
+  BookmarkEditorView::EditorNode* parent_node =
+      editor_tree_model()->GetRoot()->children()[1]->children()[0].get();
+  // Add more nodes to exceed the height of the viewport.
+  do {
+    tree->Expand(parent_node);
+    parent_node = AddNewFolder(parent_node);
+    editor()->Layout();
+  } while (tree->bounds().height() <= tree->parent()->bounds().height());
+
+  // Edit the last node which also has the focus.
+  tree->StartEditing(parent_node);
+  views::Textfield* editor = tree->editor();
+  EXPECT_TRUE(editor && editor->GetVisible());
+  views::FocusRing* focus_ring = views::FocusRing::Get(editor);
+  ASSERT_TRUE(focus_ring);
+  views::ScrollView* scroll_view =
+      views::ScrollView::GetScrollViewForContents(tree);
+  ASSERT_TRUE(scroll_view);
+  gfx::Point bottom_right = focus_ring->GetLocalBounds().bottom_right();
+  views::View::ConvertPointToTarget(focus_ring, scroll_view, &bottom_right);
+  // Confirm the bottom right of the focus ring is also visible.
+  EXPECT_TRUE(scroll_view->GetVisibleRect().Contains(bottom_right));
 }
