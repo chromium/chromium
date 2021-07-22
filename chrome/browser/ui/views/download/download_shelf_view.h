@@ -70,6 +70,8 @@ class DownloadShelfView : public DownloadShelf,
 
   // Updates |button| according to the active theme.
   void ConfigureButtonForTheme(views::MdTextButton* button);
+                            
+  DownloadItemView* GetViewOfLastDownloadItemForTesting();
 
  protected:
   // DownloadShelf:

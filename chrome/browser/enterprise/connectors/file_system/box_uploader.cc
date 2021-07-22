@@ -663,12 +663,14 @@ BoxUploader::TestObserver::~TestObserver() {
 
 void BoxUploader::TestObserver::OnUploadStart() {
   upload_status_ = Status::kInProgress;
+  if (stop_waiting_for_upload_to_start_)
+    std::move(stop_waiting_for_upload_to_start_).Run();
 }
 
 void BoxUploader::TestObserver::OnUploadDone(bool succeeded) {
   upload_status_ = succeeded ? Status::kSucceeded : Status::kFailed;
-  if (upload_run_loop_.running())
-    upload_run_loop_.Quit();
+  if (stop_waiting_for_upload_to_complete_)
+    std::move(stop_waiting_for_upload_to_complete_).Run();
 }
 
 void BoxUploader::TestObserver::OnFileDeletionStart() {
@@ -677,25 +679,38 @@ void BoxUploader::TestObserver::OnFileDeletionStart() {
 
 void BoxUploader::TestObserver::OnFileDeletionDone(bool succeeded) {
   tmp_file_deletion_status_ = succeeded ? Status::kSucceeded : Status::kFailed;
-  if (delete_run_loop_.running())
-    delete_run_loop_.Quit();
+  if (stop_waiting_for_deletion_to_complete_)
+    std::move(stop_waiting_for_deletion_to_complete_).Run();
 }
 
 void BoxUploader::TestObserver::OnDestruction() {
   uploader_.reset();
 }
 
-bool BoxUploader::TestObserver::WaitForUpload() {
-  if (upload_status_ != Status::kSucceeded && upload_status_ != Status::kFailed)
-    upload_run_loop_.Run();
+void BoxUploader::TestObserver::WaitForUploadStart() {
+  if (upload_status_ == Status::kInProgress)
+    return;
+  base::RunLoop run_loop;
+  stop_waiting_for_upload_to_start_ = run_loop.QuitClosure();
+  run_loop.Run();
+}
+
+bool BoxUploader::TestObserver::WaitForUploadCompletion() {
+  if (upload_status_ == Status::kSucceeded || upload_status_ == Status::kFailed)
+    return true;
+  base::RunLoop run_loop;
+  stop_waiting_for_upload_to_complete_ = run_loop.QuitClosure();
+  run_loop.Run();
   return upload_status_ == Status::kSucceeded;
 }
 
 bool BoxUploader::TestObserver::WaitForTmpFileDeletion() {
-  if ((tmp_file_deletion_status_ != Status::kSucceeded) &&
-      (tmp_file_deletion_status_ != Status::kFailed)) {
-    delete_run_loop_.Run();
-  }
+  if ((tmp_file_deletion_status_ == Status::kSucceeded) ||
+      (tmp_file_deletion_status_ == Status::kFailed))
+    return true;
+  base::RunLoop run_loop;
+  stop_waiting_for_deletion_to_complete_ = run_loop.QuitClosure();
+  run_loop.Run();
   return tmp_file_deletion_status_ == Status::kSucceeded;
 }
 

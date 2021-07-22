@@ -387,5 +387,9 @@ views::View* DownloadShelfView::GetDefaultFocusableChild() {
                                  : download_views_.back();
 }
 
+DownloadItemView* DownloadShelfView::GetViewOfLastDownloadItemForTesting() {
+  return download_views_.empty() ? nullptr : download_views_.back();
+}
+
 BEGIN_METADATA(DownloadShelfView, views::AccessiblePaneView)
 END_METADATA

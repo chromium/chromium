@@ -44,7 +44,8 @@ class BoxUploader {
     void OnFileDeletionStart();
     void OnFileDeletionDone(bool succeeded);
     void OnDestruction();
-    bool WaitForUpload();
+    void WaitForUploadStart();
+    bool WaitForUploadCompletion();
     bool WaitForTmpFileDeletion();
     GURL GetFileUrl();
 
@@ -53,8 +54,9 @@ class BoxUploader {
     GURL file_url_;
     Status upload_status_ = Status::kNotStarted;
     Status tmp_file_deletion_status_ = Status::kNotStarted;
-    base::RunLoop upload_run_loop_;
-    base::RunLoop delete_run_loop_;
+    base::OnceClosure stop_waiting_for_upload_to_start_;
+    base::OnceClosure stop_waiting_for_upload_to_complete_;
+    base::OnceClosure stop_waiting_for_deletion_to_complete_;
   };
 
   virtual ~BoxUploader();

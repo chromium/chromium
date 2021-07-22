@@ -25,6 +25,8 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/download/download_item_view.h"
+#include "chrome/browser/ui/views/download/download_shelf_view.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
@@ -803,6 +805,16 @@ class BoxCapturedSitesInteractiveTest : public InProcessBrowserTest {
     download_manager_observer_->WaitForDownloadCreation();
   }
 
+  DownloadItemView* GetItemViewForLastDownload() {
+    EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
+    DownloadShelfView* shelf = static_cast<DownloadShelfView*>(
+        browser()->window()->GetDownloadShelf());
+    EXPECT_TRUE(shelf);
+    DownloadItemView* item = shelf->GetViewOfLastDownloadItemForTesting();
+    EXPECT_TRUE(item);
+    return item;
+  }
+
   DownloadManagerObserver* download_manager_observer() {
     return download_manager_observer_.get();
   }
@@ -830,16 +842,45 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
 
   download_item_observer.WaitForSignInConfirmationDialog();
   download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation();
+
+  // Make sure that the download shelf is showing.
   EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
+
+  // Bypass the Box signin and authorize dialog.
   download_item_observer.sign_in_observer()->AuthorizeWithUserAndPasswordSFA(
       GetBoxAccountUserName(), GetBoxAccountPassword());
   EXPECT_TRUE(
       download_item_observer.fetch_access_token_observer()->WaitForFetch());
-  EXPECT_TRUE(download_item_observer.upload_observer()->WaitForUpload());
 
+  // Check that the download shelf is displaying the expected "uploading"
+  // text.
+  DownloadItemView* item_view = GetItemViewForLastDownload();
+  download_item_observer.upload_observer()->WaitForUploadStart();
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_DOWNLOAD_STATUS_UPLOADING,
+                l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_CONNECTOR_BOX)),
+            item_view->GetStatusTextForTesting());
+
+  EXPECT_TRUE(
+      download_item_observer.upload_observer()->WaitForUploadCompletion());
   download_manager_observer()->WaitForDownloadToFinish();
   EXPECT_TRUE(
       download_item_observer.upload_observer()->WaitForTmpFileDeletion());
+
+  // Check that the download shelf is displaying the expected "uploaded"
+  // text.
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_DOWNLOAD_STATUS_UPLOADED,
+                l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_CONNECTOR_BOX)),
+            item_view->GetStatusTextForTesting());
+
+  // Open the downloaded item.
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
+  item_view->OpenItemForTesting();
+  tab_waiter.Wait();
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
+            download_item_observer.upload_observer()->GetFileUrl());
 }
 
 }  // namespace enterprise_connectors

@@ -1414,6 +1414,14 @@ void DownloadItemView::ExecuteCommand(DownloadCommands::Command command) {
   commands_.ExecuteCommand(command);
 }
 
+std::u16string DownloadItemView::GetStatusTextForTesting() const {
+  return GetStatusTextAndStyle().first;
+}
+
+void DownloadItemView::OpenItemForTesting() {
+  OpenButtonPressed();
+}
+
 DEFINE_ENUM_CONVERTERS(download::DownloadItemMode,
                        {download::DownloadItemMode::kNormal, u"kNormal"},
                        {download::DownloadItemMode::kDangerous, u"kDangerous"},

@@ -109,6 +109,9 @@ class DownloadItemView : public views::View,
   // If user hasn't seen SBER opt-in text before, show SBER opt-in dialog first.
   void MaybeSubmitDownloadToFeedbackService(DownloadCommands::Command command);
 
+  std::u16string GetStatusTextForTesting() const;
+  void OpenItemForTesting();
+
  protected:
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
