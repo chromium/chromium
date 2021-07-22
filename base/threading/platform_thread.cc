@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <memory>
+#include <ostream>
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
@@ -27,6 +28,11 @@ const Feature kThreadPrioritiesFeature{"ThreadPriorities",
 std::atomic<bool> g_use_thread_priorities(true);
 
 }  // namespace
+
+std::ostream& operator<<(std::ostream& os, const PlatformThreadRef& ref) {
+  os << ref.id_;
+  return os;
+}
 
 // static
 void PlatformThread::SetCurrentThreadPriority(ThreadPriority priority) {

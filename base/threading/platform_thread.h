@@ -11,6 +11,8 @@
 
 #include <stddef.h>
 
+#include <iosfwd>
+
 #include "base/base_export.h"
 #include "base/macros.h"
 #include "base/time/time.h"
@@ -56,7 +58,7 @@ class PlatformThreadRef {
 #else  //  OS_POSIX
   typedef pthread_t RefType;
 #endif
-  constexpr PlatformThreadRef() : id_(0) {}
+  constexpr PlatformThreadRef() = default;
 
   explicit constexpr PlatformThreadRef(RefType id) : id_(id) {}
 
@@ -69,9 +71,16 @@ class PlatformThreadRef {
   bool is_null() const {
     return id_ == 0;
   }
+
  private:
-  RefType id_;
+  friend BASE_EXPORT std::ostream& operator<<(std::ostream& os,
+                                              const PlatformThreadRef& ref);
+
+  RefType id_ = 0;
 };
+
+BASE_EXPORT std::ostream& operator<<(std::ostream& os,
+                                     const PlatformThreadRef& ref);
 
 // Used to operate on threads.
 class PlatformThreadHandle {

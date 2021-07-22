@@ -20,11 +20,11 @@ Lock::~Lock() {
 }
 
 void Lock::AssertAcquired() const {
-  DCHECK(owning_thread_ref_ == PlatformThread::CurrentRef());
+  DCHECK_EQ(owning_thread_ref_, PlatformThread::CurrentRef());
 }
 
 void Lock::CheckHeldAndUnmark() {
-  DCHECK(owning_thread_ref_ == PlatformThread::CurrentRef());
+  DCHECK_EQ(owning_thread_ref_, PlatformThread::CurrentRef());
   owning_thread_ref_ = PlatformThreadRef();
 }
 
