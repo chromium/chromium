@@ -15,6 +15,9 @@ const char kTestScheme2[] = "test-scheme-2";
 
 class SchemeRegistryTest : public testing::Test {
   void TearDown() override {
+#if DCHECK_IS_ON()
+    WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+#endif
     SchemeRegistry::RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicy(
         kTestScheme);
   }
@@ -28,6 +31,9 @@ TEST_F(SchemeRegistryTest, NoCSPBypass) {
 }
 
 TEST_F(SchemeRegistryTest, FullCSPBypass) {
+#if DCHECK_IS_ON()
+  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+#endif
   SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy(
       kTestScheme);
   EXPECT_TRUE(
@@ -41,6 +47,9 @@ TEST_F(SchemeRegistryTest, FullCSPBypass) {
 }
 
 TEST_F(SchemeRegistryTest, PartialCSPBypass) {
+#if DCHECK_IS_ON()
+  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+#endif
   SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy(
       kTestScheme, SchemeRegistry::kPolicyAreaImage);
   EXPECT_FALSE(
@@ -77,6 +86,9 @@ TEST_F(SchemeRegistryTest, WebUIScheme) {
   EXPECT_FALSE(SchemeRegistry::IsWebUIScheme(kTestScheme));
   EXPECT_FALSE(SchemeRegistry::IsWebUIScheme(kChromeUIScheme));
 
+#if DCHECK_IS_ON()
+  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+#endif
   SchemeRegistry::RegisterURLSchemeAsWebUI(kTestScheme);
 
   EXPECT_TRUE(SchemeRegistry::IsWebUIScheme(kTestScheme));
@@ -103,6 +115,9 @@ TEST_F(SchemeRegistryTest, ExtensionScheme) {
   EXPECT_FALSE(SchemeRegistry::IsExtensionScheme(kTestScheme));
   EXPECT_FALSE(SchemeRegistry::IsExtensionScheme(kExtensionScheme));
 
+#if DCHECK_IS_ON()
+  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+#endif
   SchemeRegistry::RegisterURLSchemeAsExtension(kExtensionScheme);
 
   EXPECT_FALSE(SchemeRegistry::IsExtensionScheme(kTestScheme));
