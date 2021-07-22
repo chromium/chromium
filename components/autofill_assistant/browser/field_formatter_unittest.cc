@@ -35,6 +35,12 @@ using ::testing::_;
 using ::testing::Eq;
 using ::testing::IsSupersetOf;
 
+void AddReplacement(ValueExpression::Chunk* chunk,
+                    const std::string& match,
+                    const std::string& replacement) {
+  (*chunk->mutable_replacements())[match] = replacement;
+}
+
 class FieldFormatterStateMapTest : public ::testing::Test {
  public:
   FieldFormatterStateMapTest() = default;
@@ -261,6 +267,46 @@ TEST(FieldFormatterTest, FormatExpression) {
                                              /* quote_meta= */ false, &result)
                                 .proto_status());
   EXPECT_EQ(std::string(), result);
+}
+
+TEST(FieldFormatterTest, FormatExpressionWithReplacements) {
+  std::map<std::string, std::string> mappings = {
+      {"1", "A"}, {"2", "B"}, {"3", "+41"}};
+  std::string result;
+
+  ValueExpression value_expression;
+  auto* static_chunk = value_expression.add_chunk();
+  static_chunk->set_text("static");
+  AddReplacement(static_chunk, "static", "replacement1");
+  auto* match_chunk = value_expression.add_chunk();
+  match_chunk->set_key(1);
+  AddReplacement(match_chunk, "a", "replacement2");
+  AddReplacement(match_chunk, "A", "replacement3");
+  auto* no_match_chunk = value_expression.add_chunk();
+  no_match_chunk->set_key(2);
+  AddReplacement(no_match_chunk, "b", "replacement4");
+  EXPECT_EQ(ACTION_APPLIED, FormatExpression(value_expression, mappings,
+                                             /* quote_meta= */ false, &result)
+                                .proto_status());
+  EXPECT_EQ("replacement1replacement3B", result);
+
+  ValueExpression value_expression_regexp;
+  auto* regexp_chunk = value_expression_regexp.add_chunk();
+  regexp_chunk->set_key(3);
+  AddReplacement(regexp_chunk, "+41", "+0041");
+  EXPECT_EQ(ACTION_APPLIED, FormatExpression(value_expression_regexp, mappings,
+                                             /* quote_meta= */ false, &result)
+                                .proto_status());
+  EXPECT_EQ("+0041", result);
+  EXPECT_EQ(ACTION_APPLIED, FormatExpression(value_expression_regexp, mappings,
+                                             /* quote_meta= */ true, &result)
+                                .proto_status());
+  EXPECT_EQ("\\+41", result);
+  AddReplacement(regexp_chunk, "\\+41", "\\+0041");
+  EXPECT_EQ(ACTION_APPLIED, FormatExpression(value_expression_regexp, mappings,
+                                             /* quote_meta= */ true, &result)
+                                .proto_status());
+  EXPECT_EQ("\\+0041", result);
 }
 
 TEST(FieldFormatterTest, GetHumanReadableValueExpression) {

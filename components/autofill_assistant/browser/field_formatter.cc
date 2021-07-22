@@ -18,6 +18,8 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/re2/src/re2/stringpiece.h"
 
+namespace autofill_assistant {
+namespace field_formatter {
 namespace {
 // Regex to find placeholders of the form ${key}, where key is an arbitrary
 // string that does not contain curly braces. The first capture group is for
@@ -81,10 +83,17 @@ void GetNameAndAbbreviationViaAlternativeStateNameMap(
   }
 }
 
-}  // namespace
+std::string ApplyChunkReplacement(
+    const google::protobuf::Map<std::string, std::string>& replacements,
+    const std::string& value) {
+  const auto& it = replacements.find(value);
+  if (it != replacements.end()) {
+    return it->second;
+  }
+  return value;
+}
 
-namespace autofill_assistant {
-namespace field_formatter {
+}  // namespace
 
 absl::optional<std::string> FormatString(
     const std::string& pattern,
@@ -125,9 +134,10 @@ ClientStatus FormatExpression(
     std::string* out_value) {
   out_value->clear();
   for (const auto& chunk : value_expression.chunk()) {
+    std::string chunk_value;
     switch (chunk.chunk_case()) {
       case ValueExpression::Chunk::kText:
-        out_value->append(chunk.text());
+        chunk_value = chunk.text();
         break;
       case ValueExpression::Chunk::kKey: {
         auto rewrite_value =
@@ -136,15 +146,16 @@ ClientStatus FormatExpression(
           return ClientStatus(AUTOFILL_INFO_NOT_AVAILABLE);
         }
         if (quote_meta) {
-          out_value->append(re2::RE2::QuoteMeta(*rewrite_value));
+          chunk_value = re2::RE2::QuoteMeta(*rewrite_value);
         } else {
-          out_value->append(*rewrite_value);
+          chunk_value = *rewrite_value;
         }
         break;
       }
       case ValueExpression::Chunk::CHUNK_NOT_SET:
         return ClientStatus(INVALID_ACTION);
     }
+    out_value->append(ApplyChunkReplacement(chunk.replacements(), chunk_value));
   }
 
   return OkClientStatus();

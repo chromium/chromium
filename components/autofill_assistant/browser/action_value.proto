@@ -31,6 +31,11 @@ message ValueExpression {
       // A plain text.
       string text = 2;
     }
+
+    // If the chunk fully matches the key, it will be replaced. When used
+    // in a regular expression context, the key needs to be quoted. Similarly,
+    // the replacement will be substituted as is, without being quoted.
+    map<string, string> replacements = 3;
   }
   repeated Chunk chunk = 1;
 }
