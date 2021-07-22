@@ -1625,7 +1625,8 @@ void Range::GetBorderAndTextQuads(Vector<FloatQuad>& quads) const {
        node = NodeTraversal::Next(*node)) {
     if (!node->IsElementNode())
       continue;
-    if (selected_elements.Contains(node->parentNode()) ||
+    auto* parent_node = node->parentNode();
+    if ((parent_node && selected_elements.Contains(parent_node)) ||
         (!node->contains(start_container) && !node->contains(end_container))) {
       DCHECK_LE(StartPosition(), Position::BeforeNode(*node));
       DCHECK_GE(EndPosition(), Position::AfterNode(*node));
