@@ -3253,7 +3253,7 @@ Here are some things you can try to get started.
         <ph name="DESC_TEXT">$1<ex>Cannot connect to the internet. Click to try again.</ex></ph>: Retry
       </message>
       <message name="IDS_ASH_QUICK_ANSWERS_VIEW_REPORT_QUERY_IMPROVE_LABEL" desc="Description text of the report query button for the Quick Answers view.">
-        We want to improve this!
+        Help us improve this!
       </message>
       <message name="IDS_ASH_QUICK_ANSWERS_VIEW_REPORT_QUERY_REPORT_LABEL" desc="Description text of the report query button for the Quick Answers view.">
         Report this query
