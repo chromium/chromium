@@ -1484,6 +1484,7 @@ component("platform") {
     "weborigin/kurl_hash.h",
     "weborigin/origin_access_entry.cc",
     "weborigin/origin_access_entry.h",
+    "weborigin/referrer.cc",
     "weborigin/referrer.h",
     "weborigin/reporting_disposition.h",
     "weborigin/scheme_registry.cc",

@@ -28,33 +28,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBORIGIN_REFERRER_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBORIGIN_REFERRER_H_
+#include "third_party/blink/renderer/platform/weborigin/referrer.h"
 
-#include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 
 namespace blink {
 
-struct PLATFORM_EXPORT Referrer {
-  DISALLOW_NEW();
-  Referrer(const String& referrer,
-           network::mojom::ReferrerPolicy referrer_policy)
-      : referrer(referrer), referrer_policy(referrer_policy) {
-    DCHECK(referrer == NoReferrer() || KURL(NullURL(), referrer).IsValid());
-  }
-  Referrer();
-  // We use these strings instead of "no-referrer" and "client" in the spec.
-  static String NoReferrer() { return String(); }
-  static String ClientReferrerString() { return "about:client"; }
-
-  AtomicString referrer;
-  network::mojom::ReferrerPolicy referrer_policy;
-};
+Referrer::Referrer()
+    : referrer_policy(network::mojom::ReferrerPolicy::kDefault) {}
 
 }  // namespace blink
-
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBORIGIN_REFERRER_H_
