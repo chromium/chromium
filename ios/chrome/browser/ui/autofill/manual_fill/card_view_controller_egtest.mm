@@ -14,7 +14,6 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/testing/earl_grey/keyboard_app_interface.h"
 #include "ios/web/public/test/element_selector.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"

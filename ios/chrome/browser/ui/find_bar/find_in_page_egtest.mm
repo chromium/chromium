@@ -18,7 +18,6 @@
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/testing/earl_grey/keyboard_app_interface.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -91,15 +90,6 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
   // Open Find in Page view.
   [self openFindInPage];
 
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // If keyboard is undocked, then it can cover the find in page text field,
-    // causing the tests to fail.
-    if (![KeyboardAppInterface isKeyboardDocked]) {
-      [[EarlGrey
-          selectElementWithMatcher:[KeyboardAppInterface keyboardWindowMatcher]]
-          performAction:[KeyboardAppInterface keyboardDockAction]];
-    }
-  }
 }
 
 - (void)tearDown {
