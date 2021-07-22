@@ -7609,8 +7609,36 @@
     "os": [
       "chromeos"
     ],
+    "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
+        "note": "default value",
+        "policies": {},
+        "prefs": {
+          "settings.a11y.screen_magnifier": {
+            "default_value": false
+          },
+          "ash.docked_magnifier.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "value MagnifierType::kDisabled",
+        "policies": {
+          "ScreenMagnifierType": 0
+        },
+        "prefs": {
+          "settings.a11y.screen_magnifier": {
+            "value": false
+          },
+          "ash.docked_magnifier.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "value MagnifierType::kFull",
         "policies": {
           "ScreenMagnifierType": 1
         },
@@ -7619,7 +7647,39 @@
             "value": true
           },
           "ash.docked_magnifier.enabled": {
+            "note": "Another controller is overriding this value with the same user value, causing it to be marked as user controller and not recommended",
+            "check_for_recommended": false,
             "value": false
+          }
+        }
+      },
+      {
+        "note": "value MagnifierType::kDocked",
+        "policies": {
+          "ScreenMagnifierType": 2
+        },
+        "prefs": {
+          "settings.a11y.screen_magnifier": {
+            "note": "Another controller is overriding this value with the same user value, causing it to be marked as user controller and not recommended",
+            "check_for_recommended": false,
+            "value": false
+          },
+          "ash.docked_magnifier.enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "value out-of-range is ignored",
+        "policies": {
+          "ScreenMagnifierType": 3
+        },
+        "prefs": {
+          "settings.a11y.screen_magnifier": {
+            "default_value": false
+          },
+          "ash.docked_magnifier.enabled": {
+            "default_value": false
           }
         }
       }
