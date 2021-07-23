@@ -256,8 +256,10 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
   // Create the browser monitor which will inform the shelf of status changes.
   browser_status_monitor_ = std::make_unique<BrowserStatusMonitor>(this);
   if (base::FeatureList::IsEnabled(BrowserAppsTracker::kEnabled)) {
+    apps::AppServiceProxyChromeOs* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile);
     browser_apps_tracker_ = std::make_unique<BrowserAppsTracker>(
-        ash::Shell::Get()->activation_client());
+        proxy->AppRegistryCache(), ash::Shell::Get()->activation_client());
   }
 }
 

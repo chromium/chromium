@@ -9,16 +9,21 @@
 
 #include "base/containers/contains.h"
 #include "base/macros.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace {
@@ -32,10 +37,16 @@ Browser* GetBrowserWithTabStripModel(TabStripModel* tab_strip_model) {
 }
 
 std::string GetAppId(content::WebContents* contents) {
-  // TODO(crbug.com/1203992): this object isn't strictly necessary, we only
-  // really need GetAppIdForTab() function from shelf_controller_helper.cc
-  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-  return ShelfControllerHelper(profile).GetAppID(contents);
+  if (auto* helper = web_app::WebAppTabHelper::FromWebContents(contents)) {
+    const web_app::AppId& app_id = helper->GetAppId();
+    if (!app_id.empty()) {
+      return app_id;
+    }
+  }
+  if (auto* helper = extensions::TabHelper::FromWebContents(contents)) {
+    return helper->GetExtensionAppId();
+  }
+  return "";
 }
 
 bool IsBrowserVisible(Browser* browser) {
@@ -88,8 +99,11 @@ class BrowserAppsTracker::WebContentsObserver
 const base::Feature BrowserAppsTracker::kEnabled{
     "EnableBrowserAppsTracker", base::FEATURE_DISABLED_BY_DEFAULT};
 
-BrowserAppsTracker::BrowserAppsTracker(wm::ActivationClient* activation_client)
-    : browser_tab_strip_tracker_(this, nullptr),
+BrowserAppsTracker::BrowserAppsTracker(
+    apps::AppRegistryCache& app_registry_cache,
+    wm::ActivationClient* activation_client)
+    : apps::AppRegistryCache::Observer(&app_registry_cache),
+      browser_tab_strip_tracker_(this, nullptr),
       activation_client_(activation_client) {
   DCHECK(activation_client_);
   activation_client_->AddObserver(this);
@@ -191,6 +205,23 @@ void BrowserAppsTracker::OnWindowActivated(
   if (lost_active) {
     OnBrowserWindowUpdated(lost_active);
   }
+}
+
+void BrowserAppsTracker::OnAppUpdate(const apps::AppUpdate& update) {
+  // Sync app instances for existing tabs.
+  for (const auto& pair : browser_to_tab_map_) {
+    Browser* browser = pair.first;
+    TabStripModel* tab_strip_model = browser->tab_strip_model();
+    for (int i = 0; i < tab_strip_model->count(); ++i) {
+      content::WebContents* contents = tab_strip_model->GetWebContentsAt(i);
+      OnTabUpdated(browser, contents);
+    }
+  }
+}
+
+void BrowserAppsTracker::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  Observe(nullptr);
 }
 
 void BrowserAppsTracker::OnTabStripModelChangeInsert(

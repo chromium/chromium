@@ -56,6 +56,10 @@ AppId InstallWebAppWithUrlHandlers(
     const std::vector<apps::UrlHandlerInfo>& url_handlers);
 #endif
 
+// Synchronously uninstall a web app. May be used in unit tests and browser
+// tests.
+void UninstallWebApp(Profile* profile, const AppId& app_id);
+
 }  // namespace test
 }  // namespace web_app
 

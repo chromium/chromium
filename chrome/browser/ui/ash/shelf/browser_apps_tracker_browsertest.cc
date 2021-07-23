@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/shell.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/browser_app_status_observer.h"
 #include "chrome/browser/ui/ash/shelf/browser_apps_tracker.h"
@@ -188,13 +190,30 @@ class BrowserAppsTrackerTest : public InProcessBrowserTest {
     auto info = std::make_unique<WebApplicationInfo>();
     info->start_url = GURL(start_url);
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
-    return web_app::test::InstallWebApp(profile, std::move(info));
+    auto app_id = web_app::test::InstallWebApp(profile, std::move(info));
+    FlushAppService();
+    return app_id;
+  }
+
+  void UninstallWebApp(const web_app::AppId& app_id) {
+    Profile* profile = ProfileManager::GetPrimaryUserProfile();
+    web_app::test::UninstallWebApp(profile, app_id);
+    FlushAppService();
+  }
+
+  void FlushAppService() {
+    Profile* profile = ProfileManager::GetPrimaryUserProfile();
+    apps::AppServiceProxyFactory::GetForProfile(profile)
+        ->FlushMojoCallsForTesting();
   }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    Profile* profile = ProfileManager::GetPrimaryUserProfile();
+    apps::AppServiceProxyChromeOs* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile);
     tracker_ = std::make_unique<BrowserAppsTracker>(
-        ash::Shell::Get()->activation_client());
+        proxy->AppRegistryCache(), ash::Shell::Get()->activation_client());
     tracker_->Initialize();
 
     ASSERT_EQ(kAppAId, InstallWebApp("https://a.example.org"));
@@ -671,4 +690,34 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, Accessors) {
   EXPECT_FALSE(tracker_->IsAppRunning(kAppAId));
   EXPECT_FALSE(tracker_->IsAppRunning(kAppBId));
   EXPECT_FALSE(tracker_->IsAppRunning(kChromeAppId));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, AppInstall) {
+  auto* browser1 = CreateBrowser();
+  auto* tab1 = InsertForegroundTab(browser1, "https://c.example.org");
+  InsertForegroundTab(browser1, "https://d.example.org");
+  auto* tab3 = InsertForegroundTab(browser1, "https://c.example.org");
+
+  std::string app_id;
+  {
+    SCOPED_TRACE("install app");
+    Recorder recorder(tracker_.get());
+
+    app_id = InstallWebApp("https://c.example.org");
+    recorder.Verify({
+        {"added", app_id, browser1, tab1, kVisible, kInactive},
+        {"added", app_id, browser1, tab3, kVisible, kActive},
+    });
+  }
+
+  {
+    SCOPED_TRACE("uninstall app");
+    Recorder recorder(tracker_.get());
+
+    UninstallWebApp(app_id);
+    recorder.Verify({
+        {"removed", app_id, browser1, tab1, kVisible, kInactive},
+        {"removed", app_id, browser1, tab3, kVisible, kActive},
+    });
+  }
 }

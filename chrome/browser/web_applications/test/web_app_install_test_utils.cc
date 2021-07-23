@@ -148,5 +148,20 @@ AppId InstallWebAppWithUrlHandlers(
 }
 #endif
 
+void UninstallWebApp(Profile* profile, const AppId& app_id) {
+  WebAppProvider* const provider = WebAppProvider::Get(profile);
+  base::RunLoop run_loop;
+
+  DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
+  provider->install_finalizer().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      base::BindLambdaForTesting([&](bool uninstalled) {
+        EXPECT_TRUE(uninstalled);
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+}
+
 }  // namespace test
 }  // namespace web_app

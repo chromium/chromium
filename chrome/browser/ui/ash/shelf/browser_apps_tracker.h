@@ -15,10 +15,10 @@
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/browser_app_status_observer.h"
-#include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -37,11 +37,13 @@ class ActivationClient;
 // - browser instances (registered with app ID |extension_misc::kChromeAppId|).
 class BrowserAppsTracker : public TabStripModelObserver,
                            public aura::WindowObserver,
+                           public apps::AppRegistryCache::Observer,
                            public wm::ActivationChangeObserver {
  public:
   static const base::Feature kEnabled;
 
-  explicit BrowserAppsTracker(wm::ActivationClient* activation_client);
+  BrowserAppsTracker(apps::AppRegistryCache& app_registry_cache,
+                     wm::ActivationClient* activation_client);
   ~BrowserAppsTracker() override;
   BrowserAppsTracker(const BrowserAppsTracker&) = delete;
   BrowserAppsTracker& operator=(const BrowserAppsTracker&) = delete;
@@ -84,6 +86,11 @@ class BrowserAppsTracker : public TabStripModelObserver,
   void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
+
+  // apps::AppRegistryCache::Observer:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
 
  private:
   class WebContentsObserver;
