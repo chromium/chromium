@@ -637,10 +637,6 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
 
-  // Wait for the keyboard to appear.
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
-
   // Assert the password icon is not enabled and not visible.
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
       assertWithMatcher:grey_notVisible()];
@@ -658,10 +654,6 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementPassword)];
-
-  // Wait for the accessory icon to appear.
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
 
   // Tap on the passwords icon.
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
