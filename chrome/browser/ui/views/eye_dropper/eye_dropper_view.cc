@@ -131,7 +131,9 @@ EyeDropperView::EyeDropperView(content::RenderFrameHost* frame,
   widget->SetContentsView(this);
   MoveViewToFront();
   HideCursor();
-  pre_dispatch_handler_ = std::make_unique<PreEventDispatchHandler>(this);
+  pre_dispatch_handler_ = std::make_unique<PreEventDispatchHandler>(
+      this, content::WebContents::FromRenderFrameHost(render_frame_host_)
+                ->GetNativeView());
   widget->Show();
   CaptureInputIfNeeded();
   // The ignore selection time should be long enough to allow the user to see
@@ -269,6 +271,10 @@ void EyeDropperView::OnColorSelected() {
 
   // Use the last selected color and notify listener.
   listener_->ColorSelected(selected_color_.value());
+}
+
+void EyeDropperView::OnColorSelectionCanceled() {
+  listener_->ColorSelectionCanceled();
 }
 
 BEGIN_METADATA(EyeDropperView, views::WidgetDelegateView)

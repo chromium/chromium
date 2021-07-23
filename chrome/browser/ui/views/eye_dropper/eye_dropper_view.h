@@ -42,7 +42,7 @@ class EyeDropperView : public content::EyeDropper,
 
   class PreEventDispatchHandler : public ui::EventHandler {
    public:
-    explicit PreEventDispatchHandler(EyeDropperView* view);
+    PreEventDispatchHandler(EyeDropperView* view, gfx::NativeView parent);
     PreEventDispatchHandler(const PreEventDispatchHandler&) = delete;
     PreEventDispatchHandler& operator=(const PreEventDispatchHandler&) = delete;
     ~PreEventDispatchHandler() override;
@@ -51,6 +51,10 @@ class EyeDropperView : public content::EyeDropper,
     void OnMouseEvent(ui::MouseEvent* event) override;
 
     EyeDropperView* view_;
+#if defined(USE_AURA)
+    class KeyboardHandler;
+    std::unique_ptr<KeyboardHandler> keyboard_handler_;
+#endif
 #if defined(OS_MAC)
     id clickEventTap_;
     id notificationObserver_;
@@ -69,6 +73,7 @@ class EyeDropperView : public content::EyeDropper,
 
   // Handles color selection and notifies the listener.
   void OnColorSelected();
+  void OnColorSelectionCanceled();
 
   content::RenderFrameHost* render_frame_host_;
 

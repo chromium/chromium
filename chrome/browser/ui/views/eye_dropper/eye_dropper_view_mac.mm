@@ -6,6 +6,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+// Include Carbon to use the keycode names in Carbon's Event.h
+#include <Carbon/Carbon.h>
+
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper_view.h"
 #include "content/public/browser/render_frame_host.h"
 #include "skia/ext/skia_utils_mac.h"
@@ -29,7 +32,8 @@ EyeDropperViewMac::EyeDropperViewMac(content::EyeDropperListener* listener)
 EyeDropperViewMac::~EyeDropperViewMac() {}
 
 EyeDropperView::PreEventDispatchHandler::PreEventDispatchHandler(
-    EyeDropperView* view)
+    EyeDropperView* view,
+    gfx::NativeView parent)
     : view_(view) {
   // Ensure that this handler is called before color popup handler.
   clickEventTap_ = [NSEvent
@@ -39,6 +43,11 @@ EyeDropperView::PreEventDispatchHandler::PreEventDispatchHandler(
                                      if (eventType == NSLeftMouseDown ||
                                          eventType == NSRightMouseDown) {
                                        view_->OnColorSelected();
+                                       return nil;
+                                     } else if (eventType ==
+                                                    NSEventTypeKeyDown &&
+                                                [event keyCode] == kVK_Escape) {
+                                       view_->OnColorSelectionCanceled();
                                        return nil;
                                      }
 
