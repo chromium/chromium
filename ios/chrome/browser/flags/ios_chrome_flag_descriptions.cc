@@ -189,6 +189,13 @@ const char kEnableExtendedSyncPromosCapabilityDescription[] =
     "When enabled, starts reading the account capability to decide whether "
     "or not Chrome should display an extended sync promo";
 
+const char kEnableFREDefaultBrowserScreenName[] =
+    "Enable FRE default browser screen";
+const char kEnableFREDefaultBrowserScreenDescription[] =
+    "When enabled, displays the 'default browser' screen in the new FRE which "
+    "suggests changing the default browser in the Settings.app with a button "
+    "to go directly to it.";
+
 const char kEnableFREUIModuleIOSName[] = "Enable FRE UI module";
 const char kEnableFREUIModuleIOSDescription[] =
     "Enable the option of using new FRE UI module to show first run screens.";

@@ -25,6 +25,9 @@ const base::Feature kEnableIOSManagedSettingsUI{
 const base::Feature kSharedHighlightingIOS{"SharedHighlightingIOS",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEnableFREDefaultBrowserScreen{
+    "EnableFREDefaultBrowserScreen", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kEnableFREUIModuleIOS{"EnableFREUIModuleIOS",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 

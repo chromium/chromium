@@ -170,6 +170,10 @@ extern const char kEnableDiscoverFeedPreviewDescription[];
 extern const char kEnableExtendedSyncPromosCapabilityName[];
 extern const char kEnableExtendedSyncPromosCapabilityDescription[];
 
+// Title and description for the flag to enable FRE default browser screen.
+extern const char kEnableFREDefaultBrowserScreenName[];
+extern const char kEnableFREDefaultBrowserScreenDescription[];
+
 // Title and description for the flag to enable FRE UI module.
 extern const char kEnableFREUIModuleIOSName[];
 extern const char kEnableFREUIModuleIOSDescription[];

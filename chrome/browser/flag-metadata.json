@@ -1944,6 +1944,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "enable-fre-default-browser-screen",
+    "owners": [ "alionadangla", "gambard" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "enable-fre-ui-module-ios",
     "owners": [ "tinazwang", "gambard" ],
     "expiry_milestone": 99
