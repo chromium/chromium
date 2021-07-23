@@ -14,7 +14,7 @@
 
 namespace password_manager {
 
-class PasswordStore;
+class PasswordStoreInterface;
 struct PasswordForm;
 
 class FieldInfoManager {
@@ -38,7 +38,7 @@ class FieldInfoManagerImpl : public FieldInfoManager,
                              public PasswordStoreConsumer {
  public:
   explicit FieldInfoManagerImpl(
-      scoped_refptr<password_manager::PasswordStore> store);
+      scoped_refptr<password_manager::PasswordStoreInterface> store);
   ~FieldInfoManagerImpl() override;
 
   // FieldInfoManager:
@@ -58,7 +58,7 @@ class FieldInfoManagerImpl : public FieldInfoManager,
   std::map<std::pair<autofill::FormSignature, autofill::FieldSignature>,
            autofill::ServerFieldType>
       field_types_;
-  scoped_refptr<password_manager::PasswordStore> store_;
+  scoped_refptr<password_manager::PasswordStoreInterface> store_;
 };
 
 }  // namespace password_manager

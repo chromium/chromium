@@ -1275,12 +1275,14 @@ TEST_F(PasswordStoreTest, GetAllFieldInfo) {
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
-  store->AddFieldInfo(field_info1);
-  store->AddFieldInfo(field_info2);
+  FieldInfoStore* field_info_store = store->GetFieldInfoStore();
+
+  field_info_store->AddFieldInfo(field_info1);
+  field_info_store->AddFieldInfo(field_info2);
   MockPasswordStoreConsumer consumer;
   EXPECT_CALL(consumer, OnGetAllFieldInfo(
                             UnorderedElementsAre(field_info1, field_info2)));
-  store->GetAllFieldInfo(&consumer);
+  field_info_store->GetAllFieldInfo(&consumer);
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
@@ -1301,24 +1303,26 @@ TEST_F(PasswordStoreTest, RemoveFieldInfo) {
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
-  store->AddFieldInfo(field_info1);
-  store->AddFieldInfo(field_info2);
-  store->AddFieldInfo(field_info3);
+  FieldInfoStore* field_info_store = store->GetFieldInfoStore();
+
+  field_info_store->AddFieldInfo(field_info1);
+  field_info_store->AddFieldInfo(field_info2);
+  field_info_store->AddFieldInfo(field_info3);
 
   MockPasswordStoreConsumer consumer;
   EXPECT_CALL(consumer, OnGetAllFieldInfo(UnorderedElementsAre(
                             field_info1, field_info2, field_info3)));
-  store->GetAllFieldInfo(&consumer);
+  field_info_store->GetAllFieldInfo(&consumer);
   WaitForPasswordStore();
   testing::Mock::VerifyAndClearExpectations(&consumer);
 
-  store->RemoveFieldInfoByTime(base::Time::FromTimeT(150),
-                               base::Time::FromTimeT(250),
-                               base::NullCallback());
+  field_info_store->RemoveFieldInfoByTime(base::Time::FromTimeT(150),
+                                          base::Time::FromTimeT(250),
+                                          base::NullCallback());
 
   EXPECT_CALL(consumer, OnGetAllFieldInfo(
                             UnorderedElementsAre(field_info1, field_info3)));
-  store->GetAllFieldInfo(&consumer);
+  field_info_store->GetAllFieldInfo(&consumer);
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();

@@ -7,15 +7,19 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/password_manager/core/browser/field_info_store.h"
 #include "components/password_manager/core/browser/field_info_table.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 
 namespace password_manager {
 
 FieldInfoManagerImpl::FieldInfoManagerImpl(
-    scoped_refptr<password_manager::PasswordStore> store)
+    scoped_refptr<password_manager::PasswordStoreInterface> store)
     : store_(store) {
-  store_->GetAllFieldInfo(this);
+  FieldInfoStore* info_store = store_->GetFieldInfoStore();
+  if (info_store) {
+    info_store->GetAllFieldInfo(this);
+  }
 }
 
 FieldInfoManagerImpl::~FieldInfoManagerImpl() = default;
@@ -28,8 +32,11 @@ void FieldInfoManagerImpl::AddFieldType(
   // TODO(https://crbug.com/1051914): Enable on Android after making local
   // heuristics reliable.
   field_types_[std::make_pair(form_signature, field_signature)] = field_type;
-  store_->AddFieldInfo(
-      {form_signature, field_signature, field_type, base::Time::Now()});
+  FieldInfoStore* info_store = store_->GetFieldInfoStore();
+  if (info_store) {
+    info_store->AddFieldInfo(
+        {form_signature, field_signature, field_type, base::Time::Now()});
+  }
 #endif  // !defined(OS_ANDROID)
 }
 

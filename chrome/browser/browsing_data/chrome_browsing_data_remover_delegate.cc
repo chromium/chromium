@@ -895,9 +895,13 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
             nullable_filter, delete_begin_, delete_end_,
             CreateTaskCompletionClosure(TracingDataType::kPasswordsStatistics));
       }
-      password_store->RemoveFieldInfoByTime(
-          delete_begin_, delete_end_,
-          CreateTaskCompletionClosure(TracingDataType::kFieldInfo));
+      password_manager::FieldInfoStore* field_store =
+          password_store->GetFieldInfoStore();
+      if (field_store) {
+        field_store->RemoveFieldInfoByTime(
+            delete_begin_, delete_end_,
+            CreateTaskCompletionClosure(TracingDataType::kFieldInfo));
+      }
     }
   }
 

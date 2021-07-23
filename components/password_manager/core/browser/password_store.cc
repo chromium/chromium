@@ -318,6 +318,10 @@ SmartBubbleStatsStore* PasswordStore::GetSmartBubbleStatsStore() {
   return backend_->GetSmartBubbleStatsStore();
 }
 
+FieldInfoStore* PasswordStore::GetFieldInfoStore() {
+  return this;
+}
+
 void PasswordStore::ReportMetrics(const std::string& sync_username,
                                   bool custom_passphrase_sync_enabled,
                                   bool is_under_advanced_protection) {

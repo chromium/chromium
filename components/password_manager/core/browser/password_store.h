@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/field_info_store.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -57,7 +58,7 @@ struct FieldInfo;
 // from the UI thread.
 // PasswordStoreSync is a hidden base class because only PasswordSyncBridge
 // needs to access these methods.
-class PasswordStore : public PasswordStoreInterface {
+class PasswordStore : public PasswordStoreInterface, public FieldInfoStore {
  public:
   // Used to notify that unsynced credentials are about to be deleted.
   class UnsyncedCredentialsDeletionNotifier {
@@ -125,6 +126,7 @@ class PasswordStore : public PasswordStoreInterface {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
+  FieldInfoStore* GetFieldInfoStore() override;
 
   // Reports usage metrics for the database. |sync_username|, and
   // |custom_passphrase_sync_enabled|, and |is_under_advanced_protection|
@@ -153,21 +155,6 @@ class PasswordStore : public PasswordStoreInterface {
   // includes Android affiliated credentials.
   void GetMatchingInsecureCredentials(const std::string& signon_realm,
                                       InsecureCredentialsConsumer* consumer);
-
-  // Adds information about field. If the record for given form_signature and
-  // field_signature already exists, the new one will be ignored.
-  void AddFieldInfo(const FieldInfo& field_info);
-
-  // Retrieves all field info and notifies |consumer| on completion. The request
-  // will be cancelled if the consumer is destroyed.
-  void GetAllFieldInfo(PasswordStoreConsumer* consumer);
-
-  // Removes all leaked credentials in the given date range. If |completion| is
-  // not null, it will be posted to the |main_task_runner_| after deletions have
-  // been completed. Should be called on the UI thread.
-  void RemoveFieldInfoByTime(base::Time remove_begin,
-                             base::Time remove_end,
-                             base::OnceClosure completion);
 
   // Schedules the given |task| to be run on the PasswordStore's TaskRunner.
   bool ScheduleTask(base::OnceClosure task);
@@ -277,6 +264,12 @@ class PasswordStore : public PasswordStoreInterface {
 
   using InsecureCredentialsTask =
       base::OnceCallback<std::vector<InsecureCredential>()>;
+
+  void AddFieldInfo(const FieldInfo& field_info) override;
+  void GetAllFieldInfo(PasswordStoreConsumer* consumer) override;
+  void RemoveFieldInfoByTime(base::Time remove_begin,
+                             base::Time remove_end,
+                             base::OnceClosure completion) override;
 
   // Called on the main thread after initialization is completed.
   // |success| is true if initialization was successful. Sets the

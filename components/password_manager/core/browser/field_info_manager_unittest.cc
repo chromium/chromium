@@ -11,8 +11,10 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/password_manager/core/browser/field_info_store.h"
 #include "components/password_manager/core/browser/field_info_table.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_field_info_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,9 +46,15 @@ class FieldInfoManagerTest : public testing::Test {
                           autofill::FieldSignature(1u), SINGLE_USERNAME,
                           Time::FromTimeT(10)});
 
-    store_ = new MockPasswordStore;
-    store_->Init(/*prefs=*/nullptr);
-    EXPECT_CALL(*store_, GetAllFieldInfoImpl());
+    store_ = new testing::StrictMock<MockPasswordStoreInterface>();
+#if !defined(OS_ANDROID)
+    EXPECT_CALL(*store_, GetFieldInfoStore)
+        .WillRepeatedly(testing::Return(&mock_field_store_));
+    EXPECT_CALL(mock_field_store_, GetAllFieldInfo);
+#else
+    EXPECT_CALL(*store_, GetFieldInfoStore)
+        .WillRepeatedly(testing::Return(nullptr));
+#endif
     field_info_manager_ = std::make_unique<FieldInfoManagerImpl>(store_);
     task_environment_.RunUntilIdle();
   }
@@ -56,7 +64,8 @@ class FieldInfoManagerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-  scoped_refptr<MockPasswordStore> store_;
+  scoped_refptr<MockPasswordStoreInterface> store_;
+  MockFieldInfoStore mock_field_store_;
   std::vector<FieldInfo> test_data_;
   std::unique_ptr<FieldInfoManagerImpl> field_info_manager_;
 };
@@ -67,11 +76,11 @@ TEST_F(FieldInfoManagerTest, AddFieldType) {
                                               autofill::FieldSignature(1u)));
 
 #if defined(OS_ANDROID)
-  EXPECT_CALL(*store_, AddFieldInfoImpl).Times(0);
+  EXPECT_CALL(mock_field_store_, AddFieldInfo).Times(0);
 #else
-  EXPECT_CALL(*store_, AddFieldInfoImpl(FieldInfoHasData(
-                           autofill::FormSignature(101u),
-                           autofill::FieldSignature(1u), PASSWORD)));
+  EXPECT_CALL(mock_field_store_, AddFieldInfo(FieldInfoHasData(
+                                     autofill::FormSignature(101u),
+                                     autofill::FieldSignature(1u), PASSWORD)));
 #endif  //  !defined(OS_ANDROID)
 
   field_info_manager_->AddFieldType(autofill::FormSignature(101u),

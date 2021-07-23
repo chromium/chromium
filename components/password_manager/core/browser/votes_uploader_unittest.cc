@@ -20,7 +20,10 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/field_info_store.h"
+#include "components/password_manager/core/browser/field_info_table.h"
+#include "components/password_manager/core/browser/mock_field_info_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/vote_uploads_test_matchers.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -669,15 +672,20 @@ TEST_F(VotesUploaderTest, SaveSingleUsernameVote) {
   votes_uploader.set_saved_username(single_username_candidate_value);
 
   // Init store and expect that adding field info is called.
-  scoped_refptr<MockPasswordStore> store = new MockPasswordStore;
-  store->Init(/*prefs=*/nullptr);
+  scoped_refptr<MockPasswordStoreInterface> store =
+      new testing::StrictMock<MockPasswordStoreInterface>();
 
 #if defined(OS_ANDROID)
-  EXPECT_CALL(*store, AddFieldInfoImpl).Times(0);
+  EXPECT_CALL(*store, GetFieldInfoStore)
+      .WillRepeatedly(testing::Return(nullptr));
 #else
-  EXPECT_CALL(*store, AddFieldInfoImpl(FieldInfoHasData(
-                          kSingleUsernameFormSignature,
-                          kSingleUsernameFieldSignature, SINGLE_USERNAME)));
+  MockFieldInfoStore mock_field_store_;
+  EXPECT_CALL(*store, GetFieldInfoStore)
+      .WillRepeatedly(testing::Return(&mock_field_store_));
+  EXPECT_CALL(mock_field_store_,
+              AddFieldInfo(FieldInfoHasData(kSingleUsernameFormSignature,
+                                            kSingleUsernameFieldSignature,
+                                            SINGLE_USERNAME)));
 #endif  // defined(OS_ANDROID)
 
   // Init FieldInfoManager.
@@ -687,7 +695,6 @@ TEST_F(VotesUploaderTest, SaveSingleUsernameVote) {
 
   votes_uploader.MaybeSendSingleUsernameVote();
   task_environment_.RunUntilIdle();
-  store->ShutdownOnUIThread();
 }
 
 TEST_F(VotesUploaderTest, DontUploadSingleUsernameWhenAlreadyUploaded) {
