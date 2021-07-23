@@ -912,10 +912,7 @@ bool CanHandleWindowSnap() {
   if (!active_window)
     return false;
   WindowState* window_state = WindowState::Get(active_window);
-  // Disable window snapping shortcut key for full screen window due to
-  // http://crbug.com/135487.
-  return (window_state && window_state->IsUserPositionable() &&
-          !window_state->IsFullscreen());
+  return window_state && window_state->IsUserPositionable();
 }
 
 void HandleWindowSnap(AcceleratorAction action) {

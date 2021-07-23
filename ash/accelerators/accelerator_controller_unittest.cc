@@ -602,6 +602,16 @@ TEST_F(AcceleratorControllerTest, WindowSnap) {
     EXPECT_TRUE(window_state->IsMinimized());
     window_state->Restore();
     window_state->Activate();
+
+    controller_->PerformActionIfEnabled(TOGGLE_FULLSCREEN, {});
+    EXPECT_TRUE(window_state->IsFullscreen());
+    controller_->PerformActionIfEnabled(WINDOW_CYCLE_SNAP_LEFT, {});
+    EXPECT_TRUE(window_state->IsSnapped());
+    EXPECT_FALSE(window_state->IsFullscreen());
+    controller_->PerformActionIfEnabled(TOGGLE_FULLSCREEN, {});
+    controller_->PerformActionIfEnabled(WINDOW_CYCLE_SNAP_RIGHT, {});
+    EXPECT_TRUE(window_state->IsSnapped());
+    EXPECT_FALSE(window_state->IsFullscreen());
   }
   {
     controller_->PerformActionIfEnabled(WINDOW_MINIMIZE, {});
