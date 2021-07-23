@@ -12,12 +12,16 @@
 namespace {
 const char kCastPermissionUserDataKey[] =
     "chromecast.shell.CastPermissionUserDataKey";
-}
+}  // namespace
+
+namespace chromecast {
+namespace shell {
 
 CastPermissionUserData::CastPermissionUserData(
     content::WebContents* web_contents,
-    const std::string& app_id)
-    : app_id_(app_id) {
+    const std::string& app_id,
+    const GURL& app_web_url)
+    : app_id_(app_id), app_web_url_(app_web_url) {
   web_contents->SetUserData(&kCastPermissionUserDataKey,
                             base::WrapUnique(this));
 }
@@ -30,3 +34,6 @@ CastPermissionUserData* CastPermissionUserData::FromWebContents(
   return static_cast<CastPermissionUserData*>(
       web_contents->GetUserData(&kCastPermissionUserDataKey));
 }
+
+}  // namespace shell
+}  // namespace chromecast

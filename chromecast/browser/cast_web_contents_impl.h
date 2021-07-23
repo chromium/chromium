@@ -66,7 +66,8 @@ class CastWebContentsImpl : public CastWebContents,
   void ClearRenderWidgetHostView() override;
   void SetAppProperties(const std::string& session_id,
                         bool is_audio_app) override;
-  void SetCastPermissionUserData(const std::string& app_id) override;
+  void SetCastPermissionUserData(const std::string& app_id,
+                                 const GURL& app_web_url) override;
   void LoadUrl(const GURL& url) override;
   void ClosePage() override;
   void Stop(int error_code) override;

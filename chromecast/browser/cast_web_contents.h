@@ -258,7 +258,8 @@ class CastWebContents : public mojom::CastWebContents {
                                 bool is_audio_app) = 0;
 
   // TODO(b/191718807) need to pass App's page permissions here.
-  virtual void SetCastPermissionUserData(const std::string& app_id) = 0;
+  virtual void SetCastPermissionUserData(const std::string& app_id,
+                                         const GURL& app_web_url) = 0;
 
   // ===========================================================================
   // Page Lifetime

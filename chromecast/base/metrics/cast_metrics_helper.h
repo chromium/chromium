@@ -99,6 +99,11 @@ class CastMetricsHelper {
                                       const std::string& event);
   virtual void RecordApplicationEventWithValue(const std::string& event,
                                                int value);
+  virtual void RecordApplicationEventWithValue(const std::string& app_id,
+                                               const std::string& session_id,
+                                               const std::string& sdk_version,
+                                               const std::string& event,
+                                               int value);
 
   // Logs UMA record of the time the app made its first paint.
   virtual void LogTimeToFirstPaint();

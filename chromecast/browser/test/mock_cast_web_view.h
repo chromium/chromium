@@ -36,7 +36,7 @@ class MockCastWebContents : public CastWebContents {
               (override));
   MOCK_METHOD(void,
               SetCastPermissionUserData,
-              (const std::string& app_id),
+              (const std::string& app_id, const GURL& app_web_url),
               (override));
   MOCK_METHOD(void, LoadUrl, (const GURL&), (override));
   MOCK_METHOD(void, ClosePage, (), (override));

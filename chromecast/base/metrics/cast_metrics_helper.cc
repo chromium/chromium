@@ -338,6 +338,22 @@ void CastMetricsHelper::RecordApplicationEventWithValue(
   RecordSimpleAction(message);
 }
 
+void CastMetricsHelper::RecordApplicationEventWithValue(
+    const std::string& app_id,
+    const std::string& session_id,
+    const std::string& sdk_version,
+    const std::string& event,
+    int value) {
+  base::Value cast_event = CreateEventBase(event);
+  cast_event.SetKey("app_id", base::Value(app_id));
+  cast_event.SetKey("session_id", base::Value(session_id));
+  cast_event.SetKey("sdk_version", base::Value(sdk_version));
+  cast_event.SetKey("value", base::Value(value));
+  std::string message;
+  base::JSONWriter::Write(cast_event, &message);
+  RecordSimpleAction(message);
+}
+
 base::TimeTicks CastMetricsHelper::Now() {
   return tick_clock_ ? tick_clock_->NowTicks() : base::TimeTicks::Now();
 }

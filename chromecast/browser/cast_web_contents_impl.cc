@@ -357,9 +357,10 @@ void CastWebContentsImpl::SetAppProperties(const std::string& session_id,
       web_contents_, session_id, is_audio_app);
 }
 
-void CastWebContentsImpl::SetCastPermissionUserData(const std::string& app_id) {
+void CastWebContentsImpl::SetCastPermissionUserData(const std::string& app_id,
+                                                    const GURL& app_web_url) {
   DCHECK(web_contents_);
-  new CastPermissionUserData(web_contents_, app_id);
+  new shell::CastPermissionUserData(web_contents_, app_id, app_web_url);
 }
 
 void CastWebContentsImpl::AddBeforeLoadJavaScript(uint64_t id,

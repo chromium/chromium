@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "content/public/browser/permission_controller_delegate.h"
+#include "url/gurl.h"
 
 namespace chromecast {
 namespace shell {
