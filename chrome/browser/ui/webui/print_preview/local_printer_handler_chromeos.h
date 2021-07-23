@@ -84,10 +84,8 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
                               const absl::optional<std::string>& username);
 
   content::WebContents* const preview_web_contents_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<crosapi::mojom::LocalPrinter> local_printer_;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   crosapi::mojom::LocalPrinter* local_printer_ = nullptr;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   int local_printer_version_ = 0;
 #endif
   base::WeakPtrFactory<LocalPrinterHandlerChromeos> weak_ptr_factory_{this};

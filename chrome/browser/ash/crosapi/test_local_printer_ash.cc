@@ -11,7 +11,7 @@ TestLocalPrinterAsh::TestLocalPrinterAsh(
     scoped_refptr<chromeos::PpdProvider> ppd_provider)
     : profile_(profile), ppd_provider_(ppd_provider) {}
 
-Profile* TestLocalPrinterAsh::GetActiveUserProfile() {
+Profile* TestLocalPrinterAsh::GetProfile() {
   return profile_;
 }
 

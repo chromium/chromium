@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -30,6 +31,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
@@ -59,7 +62,9 @@ LocalPrinterHandlerChromeos::Create(
   auto handler =
       std::make_unique<LocalPrinterHandlerChromeos>(preview_web_contents);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  handler->local_printer_ = std::make_unique<crosapi::LocalPrinterAsh>();
+  DCHECK(crosapi::CrosapiManager::IsInitialized());
+  handler->local_printer_ =
+      crosapi::CrosapiManager::Get()->crosapi_ash()->local_printer_ash();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::LocalPrinter>()) {

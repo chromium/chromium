@@ -47,6 +47,12 @@ namespace content {
 class NavigationController;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace crosapi {
+class CrosapiManager;
+}
+#endif
+
 class TestingProfileManager;
 
 // Base class for browser based unit tests. BrowserWithTestWindowTest creates a
@@ -222,6 +228,7 @@ class BrowserWithTestWindowTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   ash::ScopedTestUserManager test_user_manager_;
+  std::unique_ptr<crosapi::CrosapiManager> manager_;
 #endif
 
   TestingProfile* profile_;

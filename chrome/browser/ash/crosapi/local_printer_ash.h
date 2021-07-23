@@ -9,9 +9,11 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/chromeos/printing/print_servers_manager.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 class Profile;
 
@@ -27,11 +29,18 @@ namespace crosapi {
 
 // Implements the crosapi interface for LocalPrinter. Lives in Ash-Chrome on the
 // UI thread.
-class LocalPrinterAsh : public mojom::LocalPrinter {
+class LocalPrinterAsh : public mojom::LocalPrinter,
+                        public chromeos::PrintServersManager::Observer {
  public:
   LocalPrinterAsh();
   LocalPrinterAsh(const LocalPrinterAsh&) = delete;
   LocalPrinterAsh& operator=(const LocalPrinterAsh&) = delete;
+
+  // As it observes browser context keyed services, this object must
+  // be destroyed after said services are destroyed (which occurs in
+  // ChromeBrowserMainParts::PostMainMessageLoopRun()). CrosapiAsh
+  // is destroyed in ~ChromeBrowserMainParts() which occurs after
+  // all browser context keyed services have been destroyed.
   ~LocalPrinterAsh() override;
 
   // The mojom PrintServersConfig object contains all information in the
@@ -50,6 +59,12 @@ class LocalPrinterAsh : public mojom::LocalPrinter {
       const chromeos::CupsPrinterStatus& status);
 
   void BindReceiver(mojo::PendingReceiver<mojom::LocalPrinter> receiver);
+
+  // chromeos::PrintServersManager::Observer:
+  void OnPrintServersChanged(
+      const chromeos::PrintServersConfig& config) override;
+  void OnServerPrintersChanged(
+      const std::vector<chromeos::PrinterDetector::DetectedPrinter>&) override;
 
   // crosapi::mojom::LocalPrinter:
   void GetPrinters(GetPrintersCallback callback) override;
@@ -75,15 +90,27 @@ class LocalPrinterAsh : public mojom::LocalPrinter {
 
  private:
   // Exposed so that unit tests can override them.
-  virtual Profile* GetActiveUserProfile();
+  virtual Profile* GetProfile();
   virtual scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(
       Profile* profile);
   virtual std::unique_ptr<chromeos::PrinterConfigurer> CreatePrinterConfigurer(
       Profile* profile);
 
+  // Registers observers via AddObserver(). RemoveObserver() is not called
+  // since this object outlasts the BrowserContextKeyedServices it's
+  // observing - BrowserContextKeyedServices are destroyed in
+  // ChromeBrowserMainParts::PostMainMessageLoopRun() while this object is
+  // destroyed in ~ChromeBrowserMainParts().
+  // Does nothing if observers have already been registered.
+  void RegisterObservers();
+
+  bool observers_registered_ = false;
+
   // This class supports any number of connections. This allows the client to
   // have multiple, potentially thread-affine, remotes.
   mojo::ReceiverSet<mojom::LocalPrinter> receivers_;
+
+  mojo::RemoteSet<mojom::PrintServerObserver> print_server_remotes_;
 };
 
 }  // namespace crosapi

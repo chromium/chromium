@@ -23,7 +23,7 @@ class TestLocalPrinterAsh : public crosapi::LocalPrinterAsh {
 
  private:
   // crosapi::LocalPrinterAsh:
-  Profile* GetActiveUserProfile() override;
+  Profile* GetProfile() override;
   scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(
       Profile* profile) override;
 

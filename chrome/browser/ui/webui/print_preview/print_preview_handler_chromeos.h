@@ -120,16 +120,12 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
 
   mojo::Receiver<crosapi::mojom::PrintServerObserver> receiver_{this};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<crosapi::mojom::LocalPrinter> local_printer_;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // Used to transmit mojo interface method calls to ash chrome.
   // Null if the interface is unavailable.
   // Note that this is not propagated to LocalPrinterHandlerLacros.
   // The pointer is constant - if ash crashes and the mojo connection is lost,
   // lacros will automatically be restarted.
   crosapi::mojom::LocalPrinter* local_printer_ = nullptr;
-#endif
 
   base::WeakPtrFactory<PrintPreviewHandlerChromeOS> weak_factory_{this};
 };

@@ -15,6 +15,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/i18n/number_formatting.h"
@@ -85,6 +86,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -363,7 +366,9 @@ base::Value GetPolicies(const PrefService& prefs) {
 
 PrintPreviewHandler::PrintPreviewHandler() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  local_printer_ = std::make_unique<crosapi::LocalPrinterAsh>();
+  DCHECK(crosapi::CrosapiManager::IsInitialized());
+  local_printer_ =
+      crosapi::CrosapiManager::Get()->crosapi_ash()->local_printer_ash();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (service->IsAvailable<crosapi::mojom::LocalPrinter>()) {
