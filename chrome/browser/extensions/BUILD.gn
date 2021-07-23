@@ -497,8 +497,6 @@ static_library("extensions") {
     "context_menu_matcher.h",
     "convert_user_script.cc",
     "convert_user_script.h",
-    "convert_web_app.cc",
-    "convert_web_app.h",
     "crx_installer.cc",
     "crx_installer.h",
     "data_deleter.cc",

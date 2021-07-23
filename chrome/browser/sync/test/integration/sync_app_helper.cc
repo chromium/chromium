@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "chrome/browser/extensions/convert_web_app.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -49,13 +48,11 @@ struct AppState {
   absl::optional<SkColor> theme_color;
   std::string description;
   std::string name;
-  bool from_bookmark;
 };
 
 using AppStateMap = std::map<std::string, AppState>;
 
-AppState::AppState()
-    : launch_type(extensions::LAUNCH_TYPE_INVALID), from_bookmark(false) {}
+AppState::AppState() : launch_type(extensions::LAUNCH_TYPE_INVALID) {}
 
 AppState::~AppState() {}
 
@@ -70,8 +67,7 @@ bool AppState::Equals(const AppState& other) const {
          bookmark_app_scope == other.bookmark_app_scope &&
          icon_color == other.icon_color && theme_color == other.theme_color &&
          launch_web_url == other.launch_web_url &&
-         description == other.description && name == other.name &&
-         from_bookmark == other.from_bookmark;
+         description == other.description && name == other.name;
 }
 
 // Load all the app specific values for |id| into |app_state|.
@@ -90,10 +86,6 @@ void LoadApp(content::BrowserContext* context,
   // In case of running tests against real backend servers, pending apps won't
   // be installed.
   if (extension) {
-    if (extension->from_bookmark()) {
-      app_state->bookmark_app_scope =
-          extensions::GetScopeURLFromBookmarkApp(extension);
-    }
     app_state->launch_web_url =
         extensions::AppLaunchInfo::GetLaunchWebURL(extension);
     app_state->icon_color =
@@ -102,7 +94,6 @@ void LoadApp(content::BrowserContext* context,
         extensions::AppThemeColorInfo::GetThemeColor(extension);
     app_state->description = extension->description();
     app_state->name = extension->name();
-    app_state->from_bookmark = extension->from_bookmark();
   }
 }
 

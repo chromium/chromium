@@ -25,7 +25,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist_check.h"
 #include "chrome/browser/extensions/convert_user_script.h"
-#include "chrome/browser/extensions/convert_web_app.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
@@ -35,7 +34,6 @@
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/extensions/webstore_installer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -255,16 +253,6 @@ void CrxInstaller::ConvertUserScriptOnSharedFileThread() {
                                     {} /* ruleset_install_prefs */);
 }
 
-void CrxInstaller::InstallWebApp(const WebApplicationInfo& web_app) {
-  NotifyCrxInstallBegin();
-
-  if (!shared_file_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&CrxInstaller::ConvertWebAppOnSharedFileThread, this,
-                         web_app)))
-    NOTREACHED();
-}
-
 void CrxInstaller::UpdateExtensionFromUnpackedCrx(
     const std::string& extension_id,
     const std::string& public_key,
@@ -306,24 +294,6 @@ void CrxInstaller::UpdateExtensionFromUnpackedCrx(
   set_do_not_sync(extension_prefs->DoNotSync(extension_id));
 
   InstallUnpackedCrx(extension_id, public_key, unpacked_dir);
-}
-
-void CrxInstaller::ConvertWebAppOnSharedFileThread(
-    const WebApplicationInfo& web_app) {
-  scoped_refptr<Extension> extension(
-      ConvertWebAppToExtension(web_app, base::Time::Now(), install_directory_,
-                               creation_flags_, install_source_));
-  if (!extension.get()) {
-    // Validation should have stopped any potential errors before getting here.
-    NOTREACHED() << "Could not convert web app to extension.";
-    return;
-  }
-
-  // TODO(aa): conversion data gets lost here :(
-
-  OnUnpackSuccessOnSharedFileThread(extension->path(), extension->path(),
-                                    nullptr, extension, SkBitmap(),
-                                    {} /* ruleset_install_prefs */);
 }
 
 absl::optional<CrxInstallError> CrxInstaller::CheckExpectations(

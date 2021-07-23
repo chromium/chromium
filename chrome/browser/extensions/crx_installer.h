@@ -32,7 +32,6 @@
 
 class ExtensionServiceTest;
 class SkBitmap;
-struct WebApplicationInfo;
 
 namespace base {
 class SequencedTaskRunner;
@@ -127,10 +126,6 @@ class CrxInstaller : public SandboxedUnpackerClient {
   // Convert the specified user script into an extension and install it.
   void InstallUserScript(const base::FilePath& source_file,
                          const GURL& download_url);
-
-  // Convert the specified web app into an extension and install it.
-  // Virtual for testing.
-  virtual void InstallWebApp(const WebApplicationInfo& web_app);
 
   // Update the extension |extension_id| with the unpacked crx in
   // |unpacked_dir|.
@@ -270,9 +265,6 @@ class CrxInstaller : public SandboxedUnpackerClient {
 
   // Converts the source user script to an extension.
   void ConvertUserScriptOnSharedFileThread();
-
-  // Converts the source web app to an extension.
-  void ConvertWebAppOnSharedFileThread(const WebApplicationInfo& web_app);
 
   // Called after OnUnpackSuccess check to see whether the install expectations
   // are met and the install process should continue.
