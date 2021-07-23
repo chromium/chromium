@@ -282,16 +282,15 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         registerIsTabSaveEnabledSupplier(mIsTabSaveEnabledSupplier);
         mUrlUpdatedObserver = new EmptyTabObserver() {
             @Override
-            public void onUrlUpdated(Tab tab) {
+            public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
+                if (!navigationHandle.isInPrimaryMainFrame() || navigationHandle.isSameDocument()) {
+                    return;
+                }
                 // When the URL is updated, the pricing data is stale, no longer
                 // relevant and should be cleaned up.
                 delete();
                 mPriceDropData = new PriceDropData();
                 mPriceDropMetricsLogger = null;
-            }
-
-            @Override
-            public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
                 if (isPriceTrackingWithOptimizationGuideEnabled()) {
                     prefetchOnNewNavigation(tab, navigationHandle);
                 }

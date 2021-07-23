@@ -473,17 +473,40 @@ public class ShoppingPersistedTabDataTest {
     @UiThreadTest
     @SmallTest
     @Test
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"})
     public void testNewUrlResetSPTD() {
         Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
                 ShoppingPersistedTabDataTestUtils.TAB_ID,
                 ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
-        ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
-        shoppingPersistedTabData.setPriceMicros(42_000_000L);
-        shoppingPersistedTabData.setPreviousPriceMicros(60_000_000L);
-        shoppingPersistedTabData.setCurrencyCode("USD");
-        Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
-        shoppingPersistedTabData.getUrlUpdatedObserverForTesting().onUrlUpdated(tab);
-        Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
+        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse.NONE);
+        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR.getNumber(),
+                OptimizationGuideDecision.TRUE, null);
+        NavigationHandle navigationHandle = mock(NavigationHandle.class);
+        for (boolean isInPrimaryMainFrame : new boolean[] {false, true}) {
+            for (boolean isSameDocument : new boolean[] {false, true}) {
+                ShoppingPersistedTabData shoppingPersistedTabData =
+                        new ShoppingPersistedTabData(tab);
+                shoppingPersistedTabData.setPriceMicros(42_000_000L);
+                shoppingPersistedTabData.setPreviousPriceMicros(60_000_000L);
+                shoppingPersistedTabData.setCurrencyCode("USD");
+                Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
+                doReturn(isInPrimaryMainFrame).when(navigationHandle).isInPrimaryMainFrame();
+                doReturn(isSameDocument).when(navigationHandle).isSameDocument();
+                shoppingPersistedTabData.getUrlUpdatedObserverForTesting().onDidFinishNavigation(
+                        tab, navigationHandle);
+                if (isInPrimaryMainFrame && !isSameDocument) {
+                    Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
+                } else {
+                    Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
+                }
+            }
+        }
     }
 
     @UiThreadTest
