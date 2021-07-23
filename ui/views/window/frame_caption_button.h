@@ -95,17 +95,17 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   // Returns the size of the inkdrop ripple.
   virtual gfx::Size GetInkDropSize() const;
 
+  // Returns the amount by which the inkdrop ripple and mask should be insetted
+  // from the button size in order to draw the inkdrop with a size returned by
+  // GetInkDropSize().
+  gfx::Insets GetInkdropInsets(const gfx::Size& button_size) const;
+
  private:
   class HighlightPathGenerator;
 
   // Determines what alpha to use for the icon based on animation and
   // active state.
   int GetAlphaForIcon(int base_alpha) const;
-
-  // Returns the amount by which the inkdrop ripple and mask should be insetted
-  // from the button size in order to draw the inkdrop with a size returned by
-  // GetInkDropSize().
-  gfx::Insets GetInkdropInsets(const gfx::Size& button_size) const;
 
   void UpdateInkDropBaseColor();
 

@@ -36,5 +36,11 @@ bool TabSearchFrameCaptionButton::IsTabSearchCaptionButtonEnabled(
              features::kChromeOSTabSearchCaptionButton);
 }
 
+gfx::Rect TabSearchFrameCaptionButton::GetAnchorBoundsInScreen() const {
+  gfx::Rect bounds = FrameCaptionButton::GetAnchorBoundsInScreen();
+  bounds.Inset(GetInkdropInsets(size()));
+  return bounds;
+}
+
 BEGIN_METADATA(TabSearchFrameCaptionButton, views::FrameCaptionButton)
 END_METADATA

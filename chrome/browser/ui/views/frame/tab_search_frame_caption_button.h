@@ -23,6 +23,9 @@ class TabSearchFrameCaptionButton : public views::FrameCaptionButton {
 
   static bool IsTabSearchCaptionButtonEnabled(Browser* browser);
 
+  // views::FrameCaptionButton:
+  gfx::Rect GetAnchorBoundsInScreen() const override;
+
   TabSearchBubbleHost* tab_search_bubble_host() {
     return tab_search_bubble_host_.get();
   }
