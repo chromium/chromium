@@ -10,6 +10,7 @@
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -24,7 +25,6 @@
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
-#import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator_delegate.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_view_controller.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -38,7 +38,6 @@
 
 @interface SigninScreenCoordinator () <IdentityChooserCoordinatorDelegate,
                                        PolicyWatcherBrowserAgentObserving,
-                                       SigninScreenMediatorDelegate,
                                        SigninScreenViewControllerDelegate,
                                        UserPolicySignoutCoordinatorDelegate> {
   // Observer for the sign-out policy changes.
@@ -106,18 +105,18 @@
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
 
   self.mediator = [[SigninScreenMediator alloc]
       initWithAccountManagerService:accountManagerService
-              unifiedConsentService:UnifiedConsentServiceFactory::
-                                        GetForBrowserState(
-                                            self.browser->GetBrowserState())];
+              authenticationService:authenticationService];
 
   self.mediator.selectedIdentity = accountManagerService->GetDefaultIdentity();
   self.hadIdentitiesAtStartup = accountManagerService->HasIdentities();
 
   self.mediator.consumer = self.viewController;
-  self.mediator.delegate = self;
   BOOL animated = self.baseNavigationController.topViewController != nil;
   [self.baseNavigationController setViewControllers:@[ self.viewController ]
                                            animated:animated];
@@ -196,20 +195,10 @@
   self.mediator.selectedIdentity = identity;
 }
 
-#pragma mark - SigninScreenMediatorDelegate
-
-- (void)signinScreenMediator:(SigninScreenMediator*)mediator
-    didFinishSigninWithResult:(SigninCoordinatorResult)result {
-  [self finishPresentingAndSkipRemainingScreens:NO];
-  base::UmaHistogramEnumeration("FirstRun.Stage",
-                                first_run::kSignInScreenCompletionWithSignIn);
-}
-
 #pragma mark - PolicyWatcherBrowserAgentObserving
 
 - (void)policyWatcherBrowserAgentNotifySignInDisabled:
     (PolicyWatcherBrowserAgent*)policyWatcher {
-  [self.viewController setUIEnabled:NO];
   if (self.addAccountSigninCoordinator) {
     __weak __typeof(self) weakSelf = self;
     [self.addAccountSigninCoordinator
@@ -317,17 +306,11 @@
 
   self.attemptStatus = first_run::SignInAttemptStatus::ATTEMPTED;
 
-  AuthenticationFlow* authenticationFlow =
-      [[AuthenticationFlow alloc] initWithBrowser:self.browser
-                                         identity:self.mediator.selectedIdentity
-                                  shouldClearData:SHOULD_CLEAR_DATA_MERGE_DATA
-                                 postSignInAction:POST_SIGNIN_ACTION_NONE
-                         presentingViewController:self.viewController];
-  authenticationFlow.dispatcher = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowsingDataCommands);
-  authenticationFlow.delegate = self.viewController;
+  [self.mediator startSignIn];
 
-  [self.mediator startSignInWithAuthenticationFlow:authenticationFlow];
+  [self finishPresentingAndSkipRemainingScreens:NO];
+  base::UmaHistogramEnumeration("FirstRun.Stage",
+                                first_run::kSignInScreenCompletionWithSignIn);
 }
 
 @end

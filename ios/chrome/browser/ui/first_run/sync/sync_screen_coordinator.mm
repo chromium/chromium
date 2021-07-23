@@ -15,8 +15,12 @@
 #import "ios/chrome/browser/sync/consent_auditor_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_policy_signout_coordinator.h"
+#import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_mediator.h"
+#import "ios/chrome/browser/ui/first_run/sync/sync_screen_mediator_delegate.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_view_controller.h"
+#import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "ios/chrome/grit/ios_strings.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -24,6 +28,7 @@
 #endif
 
 @interface SyncScreenCoordinator () <PolicyWatcherBrowserAgentObserving,
+                                     SyncScreenMediatorDelegate,
                                      SyncScreenViewControllerDelegate,
                                      UserPolicySignoutCoordinatorDelegate> {
   // Observer for the sign-out policy changes.
@@ -45,6 +50,9 @@
 
 // The consent string ids of texts on the sync screen.
 @property(nonatomic, assign, readonly) NSMutableArray* consentStringIDs;
+
+// Whether the user requested the advanced settings when starting the sync.
+@property(nonatomic, assign) BOOL advancedSettingsRequested;
 
 @end
 
@@ -90,7 +98,12 @@
                      consentAuditor:ConsentAuditorFactory::GetForBrowserState(
                                         browserState)
                    syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
-                                        browserState)];
+                                        browserState)
+              unifiedConsentService:UnifiedConsentServiceFactory::
+                                        GetForBrowserState(browserState)];
+
+  self.mediator.delegate = self;
+  self.mediator.consumer = self.viewController;
 
   base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kSyncScreenStart);
 
@@ -116,13 +129,7 @@
 #pragma mark - SyncScreenViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  base::UmaHistogramEnumeration("FirstRun.Stage",
-                                first_run::kSyncScreenCompletionWithSync);
-  [self.mediator startSyncWithConfirmationID:
-                     IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION
-                                  consentIDs:self.consentStringIDs
-           advancedSyncSettingsLinkWasTapped:NO];
-  [self.delegate willFinishPresenting];
+  [self startSyncWithAdvancedSettings:NO];
 }
 
 - (void)didTapSecondaryActionButton {
@@ -132,17 +139,29 @@
 }
 
 - (void)showSyncSettings {
-  base::UmaHistogramEnumeration(
-      "FirstRun.Stage", first_run::kSyncScreenCompletionWithSyncSettings);
-  [self.mediator startSyncWithConfirmationID:
-                     IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS
-                                  consentIDs:self.consentStringIDs
-           advancedSyncSettingsLinkWasTapped:YES];
-  [self.delegate skipAllAndShowSyncSettings];
+  [self startSyncWithAdvancedSettings:YES];
 }
 
 - (void)addConsentStringID:(const int)stringID {
   [self.consentStringIDs addObject:[NSNumber numberWithInt:stringID]];
+}
+
+#pragma mark - SyncScreenMediatorDelegate
+
+- (void)syncScreenMediator:(SyncScreenMediator*)mediator
+    didFinishSigninWithResult:(SigninCoordinatorResult)result {
+  if (result != SigninCoordinatorResultSuccess)
+    return;
+
+  if (self.advancedSettingsRequested) {
+    base::UmaHistogramEnumeration(
+        "FirstRun.Stage", first_run::kSyncScreenCompletionWithSyncSettings);
+    [self.delegate skipAllAndShowSyncSettings];
+  } else {
+    base::UmaHistogramEnumeration("FirstRun.Stage",
+                                  first_run::kSyncScreenCompletionWithSync);
+    [self.delegate willFinishPresenting];
+  }
 }
 
 #pragma mark - PolicyWatcherBrowserAgentObserving
@@ -173,6 +192,34 @@
   [self.policySignoutPromptCoordinator stop];
   self.policySignoutPromptCoordinator = nil;
   [self.delegate skipAll];
+}
+
+// Starts syncing from |advancedSettings|.
+- (void)startSyncWithAdvancedSettings:(BOOL)advancedSettings {
+  self.advancedSettingsRequested = advancedSettings;
+  int confirmationID = advancedSettings
+                           ? IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS
+                           : IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION;
+
+  ChromeIdentity* identity =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState())
+          ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+
+  AuthenticationFlow* authenticationFlow =
+      [[AuthenticationFlow alloc] initWithBrowser:self.browser
+                                         identity:identity
+                                  shouldClearData:SHOULD_CLEAR_DATA_MERGE_DATA
+                                 postSignInAction:POST_SIGNIN_ACTION_NONE
+                         presentingViewController:self.viewController];
+  authenticationFlow.dispatcher = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowsingDataCommands);
+  authenticationFlow.delegate = self.viewController;
+
+  [self.mediator startSyncWithConfirmationID:confirmationID
+                                  consentIDs:self.consentStringIDs
+                          authenticationFlow:authenticationFlow
+           advancedSyncSettingsLinkWasTapped:advancedSettings];
 }
 
 @end

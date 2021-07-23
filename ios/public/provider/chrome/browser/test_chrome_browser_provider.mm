@@ -59,7 +59,8 @@ TestChromeBrowserProvider::GetSigninResourcesProvider() {
 
 void TestChromeBrowserProvider::SetChromeIdentityServiceForTesting(
     std::unique_ptr<ChromeIdentityService> service) {
-  chrome_identity_service_.swap(service);
+  chrome_identity_service_ = std::move(service);
+  FireChromeIdentityServiceDidChange(chrome_identity_service_.get());
 }
 
 SigninErrorProvider* TestChromeBrowserProvider::GetSigninErrorProvider() {

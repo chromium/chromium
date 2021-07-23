@@ -7,7 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller.h"
+#import "ios/chrome/browser/ui/first_run/sync/sync_screen_consumer.h"
 
 // Delegate of sync screen view controller.
 @protocol
@@ -21,7 +23,9 @@
 @end
 
 // View controller of sync screen.
-@interface SyncScreenViewController : FirstRunScreenViewController
+@interface SyncScreenViewController
+    : FirstRunScreenViewController <AuthenticationFlowDelegate,
+                                    SyncScreenConsumer>
 
 @property(nonatomic, weak) id<SyncScreenViewControllerDelegate> delegate;
 

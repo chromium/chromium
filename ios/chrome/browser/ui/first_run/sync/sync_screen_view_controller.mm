@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_view_controller.h"
 
+#import "ios/chrome/browser/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -16,6 +18,13 @@
 namespace {
 constexpr CGFloat kMarginBetweenContents = 12;
 }  // namespace
+
+@interface SyncScreenViewController ()
+
+// Scrim displayed above the view when the UI is disabled.
+@property(nonatomic, strong) ActivityOverlayView* overlay;
+
+@end
 
 @implementation SyncScreenViewController
 
@@ -66,6 +75,38 @@ constexpr CGFloat kMarginBetweenContents = 12;
   ]];
 
   [super viewDidLoad];
+}
+
+#pragma mark - Properties
+
+- (ActivityOverlayView*)overlay {
+  if (!_overlay) {
+    _overlay = [[ActivityOverlayView alloc] init];
+    _overlay.translatesAutoresizingMaskIntoConstraints = NO;
+  }
+  return _overlay;
+}
+
+#pragma mark - SyncInScreenConsumer
+
+- (void)setUIEnabled:(BOOL)UIEnabled {
+  if (UIEnabled) {
+    [self.overlay removeFromSuperview];
+  } else {
+    [self.view addSubview:self.overlay];
+    AddSameConstraints(self.view, self.overlay);
+    [self.overlay.indicator startAnimating];
+  }
+}
+
+#pragma mark - AuthenticationFlowDelegate
+
+- (void)didPresentDialog {
+  [self.overlay.indicator stopAnimating];
+}
+
+- (void)didDismissDialog {
+  [self.overlay.indicator startAnimating];
 }
 
 #pragma mark - Private

@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
 
@@ -22,8 +21,7 @@
 
 // View controller of sign-in screen.
 @interface SigninScreenViewController
-    : FirstRunScreenViewController <AuthenticationFlowDelegate,
-                                    SigninScreenConsumer>
+    : FirstRunScreenViewController <SigninScreenConsumer>
 
 @property(nonatomic, weak) id<SigninScreenViewControllerDelegate> delegate;
 
