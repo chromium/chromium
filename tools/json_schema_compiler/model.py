@@ -885,8 +885,12 @@ def _GetPlatforms(json):
     raise ValueError('"platforms" cannot be an empty list')
   platforms = []
   for platform_name in json['platforms']:
-    for platform_enum in _Enum.GetAll(Platforms):
-      if platform_name == platform_enum.name:
-        platforms.append(platform_enum)
+    platform_enum = None
+    for platform in _Enum.GetAll(Platforms):
+      if platform_name == platform.name:
+        platform_enum = platform
         break
+    if not platform_enum:
+      raise ValueError('Invalid platform specified: ' + platform_name)
+    platforms.append(platform_enum)
   return platforms

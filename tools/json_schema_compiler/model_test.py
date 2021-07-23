@@ -196,6 +196,20 @@ class ModelTest(unittest.TestCase):
     self.assertEqual(None,
         self.idl_namespace_non_specific_platforms.platforms)
 
+  def testInvalidNamespacePlatform(self):
+    invalid_namespace_platform = Load('test/invalid_platform_namespace.idl')
+    with self.assertRaises(ValueError) as context:
+      self.model.AddNamespace(invalid_namespace_platform[0],
+                              'path/to/something.json')
+    self.assertIn('Invalid platform specified: invalid', str(context.exception))
+
+  def testInvalidFunctionPlatform(self):
+    invalid_function_platform = Load('test/invalid_function_platform.idl')
+    with self.assertRaises(ValueError) as context:
+      self.model.AddNamespace(invalid_function_platform[0],
+                              'path/to/something.json')
+    self.assertIn('Invalid platform specified: windows', str(context.exception))
+
   def testPlatformsOnFunctionsIDL(self):
     function_win_linux = self.function_platforms.functions['function_win_linux']
     self.assertEqual([Platforms.WIN, Platforms.LINUX],
