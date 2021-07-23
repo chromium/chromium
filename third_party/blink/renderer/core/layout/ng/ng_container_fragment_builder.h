@@ -128,8 +128,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
       NGLogicalStaticPosition::InlineEdge =
           NGLogicalStaticPosition::kInlineStart,
       NGLogicalStaticPosition::BlockEdge = NGLogicalStaticPosition::kBlockStart,
-      bool needs_block_offset_adjustment = true,
-      const absl::optional<LogicalRect> containing_block_rect = absl::nullopt);
+      bool needs_block_offset_adjustment = true);
 
   void AddOutOfFlowChildCandidate(
       const NGLogicalOutOfFlowPositionedNode& candidate);

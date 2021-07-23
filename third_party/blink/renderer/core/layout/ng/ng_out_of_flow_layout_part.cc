@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_box_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
@@ -306,8 +307,18 @@ bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
 const NGOutOfFlowLayoutPart::ContainingBlockInfo
 NGOutOfFlowLayoutPart::GetContainingBlockInfo(
     const NGLogicalOutOfFlowPositionedNode& candidate) {
-  if (candidate.containing_block_rect)
-    return {default_writing_direction_, *candidate.containing_block_rect};
+  if (container_builder_->GetLayoutObject()->IsLayoutNGGrid()) {
+    absl::optional<LogicalRect> containing_block_rect =
+        NGGridLayoutAlgorithm::ComputeContainingBlockRect(
+            candidate.Node(), container_builder_->GetNGGridData(),
+            container_builder_->Style(),
+            default_writing_direction_.GetWritingMode(),
+            container_builder_->Borders(),
+            container_builder_->InitialBorderBoxSize(),
+            container_builder_->FragmentsTotalBlockSize());
+    if (containing_block_rect.has_value())
+      return {default_writing_direction_, *containing_block_rect};
+  }
   if (candidate.inline_container.container) {
     const auto it =
         containing_blocks_map_.find(candidate.inline_container.container);

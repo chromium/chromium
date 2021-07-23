@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_simplified_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
@@ -267,24 +266,9 @@ scoped_refptr<const NGLayoutResult> NGSimplifiedLayoutAlgorithm::Layout() {
     // calculated it.
     const auto* layer = child.GetLayoutBox()->Layer();
     NGLogicalStaticPosition position = layer->GetStaticPosition();
-    absl::optional<LogicalRect> containing_block_rect;
-    if (previous_fragment.IsGridNG()) {
-      // TODO(ansollan): We could move this into
-      // |NGOutOfFlowLayoutPart::GetContainingBlockInfo| and unify both
-      // codepaths. Positioned items with a defined grid area are rare, but grid
-      // tracks would need to be recomputed in those cases.
-      containing_block_rect =
-          NGGridLayoutAlgorithm::PlaceOutOfFlowItemFromSimplifiedLayout(
-              To<NGBlockNode>(child), container_builder_.GetNGGridData(),
-              Style(), writing_direction_.GetWritingMode(),
-              container_builder_.Borders(),
-              container_builder_.InitialBorderBoxSize(),
-              container_builder_.FragmentsTotalBlockSize());
-    }
     container_builder_.AddOutOfFlowChildCandidate(
         To<NGBlockNode>(child), position.offset, position.inline_edge,
-        position.block_edge, /* needs_block_offset_adjustment */ false,
-        containing_block_rect);
+        position.block_edge, /* needs_block_offset_adjustment */ false);
   }
 
   // We add both items and line-box fragments for existing mechanisms to work.

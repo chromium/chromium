@@ -145,8 +145,7 @@ void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
     const LogicalOffset& child_offset,
     NGLogicalStaticPosition::InlineEdge inline_edge,
     NGLogicalStaticPosition::BlockEdge block_edge,
-    bool needs_block_offset_adjustment,
-    const absl::optional<LogicalRect> containing_block_rect) {
+    bool needs_block_offset_adjustment) {
   DCHECK(child);
 
   // If an OOF-positioned candidate has a static-position which uses a
@@ -161,8 +160,7 @@ void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
       child, NGLogicalStaticPosition{child_offset, inline_edge, block_edge},
       NGInlineContainer<LogicalOffset>(), needs_block_offset_adjustment,
       /* containing_block */ NGContainingBlock<LogicalOffset>(),
-      /* fixedpos_containing_block */ NGContainingBlock<LogicalOffset>(),
-      containing_block_rect);
+      /* fixedpos_containing_block */ NGContainingBlock<LogicalOffset>());
 }
 
 void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
