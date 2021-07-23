@@ -190,6 +190,10 @@ void SelectFileDialogImplPortal::SelectFileImpl(
 
   PortalFilterSet filter_set = BuildFilterSet();
 
+  // Keep a copy of the filters so the index of the chosen one can be identified
+  // and returned to listeners later.
+  filters_ = filter_set.filters;
+
   auto parent_handle_callback = base::BindOnce(
       &SelectFileDialogImplPortal::SelectFileImplWithParentHandle,
       base::Unretained(this),
@@ -371,7 +375,9 @@ SelectFileDialogImplPortal::BuildFilterSet() {
       filter.name = base::JoinString(patterns_vector, ",");
     }
 
-    if (i == file_type_index_)
+    // The -1 is required to match against the right filter because
+    // |file_type_index_| is 1-indexed.
+    if (i == file_type_index_ - 1)
       filter_set.default_filter = filter;
 
     filter_set.filters.push_back(std::move(filter));
@@ -600,14 +606,15 @@ void SelectFileDialogImplPortal::ConnectToHandle(
                      base::Unretained(this), info));
 }
 
-void SelectFileDialogImplPortal::CompleteOpen(
-    scoped_refptr<DialogInfo> info,
-    std::vector<base::FilePath> paths) {
+void SelectFileDialogImplPortal::CompleteOpen(scoped_refptr<DialogInfo> info,
+                                              std::vector<base::FilePath> paths,
+                                              std::string current_filter) {
   info->response_handle->Detach();
   info->main_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&SelectFileDialogImplPortal::CompleteOpenOnMainThread,
-                     base::Unretained(this), info, std::move(paths)));
+                     base::Unretained(this), info, std::move(paths),
+                     std::move(current_filter)));
 }
 
 void SelectFileDialogImplPortal::CancelOpen(scoped_refptr<DialogInfo> info) {
@@ -620,7 +627,8 @@ void SelectFileDialogImplPortal::CancelOpen(scoped_refptr<DialogInfo> info) {
 
 void SelectFileDialogImplPortal::CompleteOpenOnMainThread(
     scoped_refptr<DialogInfo> info,
-    std::vector<base::FilePath> paths) {
+    std::vector<base::FilePath> paths,
+    std::string current_filter) {
   UnparentOnMainThread(info.get());
 
   if (listener_) {
@@ -629,9 +637,14 @@ void SelectFileDialogImplPortal::CompleteOpenOnMainThread(
     } else if (paths.size() > 1) {
       LOG(ERROR) << "Got >1 file URI from a single-file chooser";
     } else {
-      // The meaning of the index isn't clear, and we can't determine what
-      // filter was selected regardless, see select_file_dialog_impl_kde.cc.
-      listener_->FileSelected(paths.front(), 1, info->listener_params);
+      int index = 1;
+      for (size_t i = 0; i < filters_.size(); ++i) {
+        if (filters_[i].name == current_filter) {
+          index = 1 + i;
+          break;
+        }
+      }
+      listener_->FileSelected(paths.front(), index, info->listener_params);
     }
   }
 }
@@ -708,14 +721,16 @@ void SelectFileDialogImplPortal::OnResponseSignalEmitted(
   dbus::MessageReader reader(signal);
 
   std::vector<std::string> uris;
-  if (!CheckResponseCode(&reader) || !ReadResponseResults(&reader, &uris)) {
+  std::string current_filter;
+  if (!CheckResponseCode(&reader) ||
+      !ReadResponseResults(&reader, &uris, &current_filter)) {
     CancelOpen(std::move(info));
     return;
   }
 
   std::vector<base::FilePath> paths = ConvertUrisToPaths(uris);
   if (!paths.empty())
-    CompleteOpen(std::move(info), std::move(paths));
+    CompleteOpen(std::move(info), std::move(paths), std::move(current_filter));
   else
     CancelOpen(std::move(info));
 }
@@ -735,7 +750,8 @@ bool SelectFileDialogImplPortal::CheckResponseCode(
 
 bool SelectFileDialogImplPortal::ReadResponseResults(
     dbus::MessageReader* reader,
-    std::vector<std::string>* uris) {
+    std::vector<std::string>* uris,
+    std::string* current_filter) {
   dbus::MessageReader results_reader(nullptr);
   if (!reader->PopArray(&results_reader)) {
     LOG(ERROR) << "Failed to read file chooser variant";
@@ -755,11 +771,18 @@ bool SelectFileDialogImplPortal::ReadResponseResults(
       dbus::MessageReader uris_reader(nullptr);
       if (!entry_reader.PopVariant(&uris_reader) ||
           !uris_reader.PopArrayOfStrings(uris)) {
-        LOG(ERROR) << "Failed to read response entry value";
+        LOG(ERROR) << "Failed to read <uris> response entry value";
         return false;
       }
-
-      break;
+    }
+    if (key == "current_filter") {
+      dbus::MessageReader current_filter_reader(nullptr);
+      dbus::MessageReader current_filter_struct_reader(nullptr);
+      if (!entry_reader.PopVariant(&current_filter_reader) ||
+          !current_filter_reader.PopStruct(&current_filter_struct_reader) ||
+          !current_filter_struct_reader.PopString(current_filter)) {
+        LOG(ERROR) << "Failed to read <current_filter> response entry value";
+      }
     }
   }
 

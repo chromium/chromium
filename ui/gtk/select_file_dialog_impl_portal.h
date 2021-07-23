@@ -157,13 +157,15 @@ class SelectFileDialogImplPortal : public SelectFileDialogImpl {
   // Completes an open call, notifying the listener with the given paths, and
   // marks the dialog as closed.
   void CompleteOpen(scoped_refptr<DialogInfo> info,
-                    std::vector<base::FilePath> paths);
+                    std::vector<base::FilePath> paths,
+                    std::string current_filter);
   // Completes an open call, notifying the listener with a cancellation, and
   // marks the dialog as closed.
   void CancelOpen(scoped_refptr<DialogInfo> info);
 
   void CompleteOpenOnMainThread(scoped_refptr<DialogInfo> info,
-                                std::vector<base::FilePath> paths);
+                                std::vector<base::FilePath> paths,
+                                std::string current_filter);
   void CancelOpenOnMainThread(scoped_refptr<DialogInfo> info);
 
   // Removes the DialogInfo parent. Must be called on the UI task runner.
@@ -184,7 +186,8 @@ class SelectFileDialogImplPortal : public SelectFileDialogImpl {
 
   bool CheckResponseCode(dbus::MessageReader* reader);
   bool ReadResponseResults(dbus::MessageReader* reader,
-                           std::vector<std::string>* uris);
+                           std::vector<std::string>* uris,
+                           std::string* current_filter);
   std::vector<base::FilePath> ConvertUrisToPaths(
       const std::vector<std::string>& uris);
 
@@ -195,6 +198,8 @@ class SelectFileDialogImplPortal : public SelectFileDialogImpl {
 
   // Used by the D-Bus thread to generate unique handle tokens.
   static int handle_token_counter_;
+
+  std::vector<PortalFilter> filters_;
 };
 
 }  // namespace gtk
