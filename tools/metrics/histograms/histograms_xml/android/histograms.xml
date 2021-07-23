@@ -3948,12 +3948,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.TargetSdkVersion" enum="AndroidApiLevel"
-    expires_after="2021-07-24">
-  <owner>changwan@chromium.org</owner>
+    expires_after="2022-07-21">
+  <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     The version of the target SDK of the app WebView is running in. This is
-    recorded at WebView creation.
+    recorded once during startup.
   </summary>
 </histogram>
 
