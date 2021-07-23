@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crash/core/common/crash_key.h"
 #include "gpu/config/gpu_switches.h"
@@ -27,9 +28,11 @@ class CrashKeysTest : public testing::Test {
   }
 
   void TearDown() override {
-    // We can't call crash_reporter::ResetCrashKeysForTesting() here; since
-    // we don't destroy the CrashKeyString objects, it just confuses the system
-    // to have the annotation list reset.
+    // Breakpad doesn't properly support ResetCrashKeysForTesting() and usually
+    // CHECK fails after it is called.
+#if BUILDFLAG(USE_CRASHPAD_ANNOTATION)
+    crash_reporter::ResetCrashKeysForTesting();
+#endif
   }
 };
 
