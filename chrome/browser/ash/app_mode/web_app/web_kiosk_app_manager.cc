@@ -42,6 +42,14 @@ WebKioskAppManager* WebKioskAppManager::Get() {
   return g_web_kiosk_app_manager;
 }
 
+// static
+KioskAppManagerBase::App WebKioskAppManager::CreateAppByData(
+    const WebKioskAppData& data) {
+  auto app = KioskAppManagerBase::App(data);
+  app.url = data.install_url();
+  return app;
+}
+
 WebKioskAppManager::WebKioskAppManager()
     : auto_launch_account_id_(EmptyAccountId()) {
   CHECK(!g_web_kiosk_app_manager);  // Only one instance is allowed.

@@ -35,6 +35,9 @@ class WebKioskAppManager : public KioskAppManagerBase {
   // Registers kiosk app entries in local state.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  // Create app instance by app data.
+  static KioskAppManagerBase::App CreateAppByData(const WebKioskAppData& data);
+
   // KioskAppManagerBase:
   void GetApps(std::vector<App>* apps) const override;
 
