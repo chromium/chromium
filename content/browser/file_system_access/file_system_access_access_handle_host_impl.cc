@@ -8,10 +8,11 @@ namespace content {
 
 FileSystemAccessAccessHandleHostImpl::FileSystemAccessAccessHandleHostImpl(
     FileSystemAccessManagerImpl* manager,
+    const storage::FileSystemURL& url,
     base::PassKey<FileSystemAccessManagerImpl> /*pass_key*/,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessAccessHandleHost>
         receiver)
-    : receiver_(this, std::move(receiver)), manager_(manager) {
+    : manager_(manager), url_(url), receiver_(this, std::move(receiver)) {
   DCHECK(manager_);
 
   receiver_.set_disconnect_handler(
@@ -26,16 +27,15 @@ void FileSystemAccessAccessHandleHostImpl::Close(CloseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::move(callback).Run();
-
   receiver_.reset();
-  manager_->RemoveAccessHandleHost(this);
+  manager_->RemoveAccessHandleHost(url_);
 }
 
 void FileSystemAccessAccessHandleHostImpl::OnDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   receiver_.reset();
-  manager_->RemoveAccessHandleHost(this);
+  manager_->RemoveAccessHandleHost(url_);
 }
 
 }  // namespace content

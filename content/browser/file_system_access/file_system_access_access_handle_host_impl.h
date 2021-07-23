@@ -23,6 +23,7 @@ class CONTENT_EXPORT FileSystemAccessAccessHandleHostImpl
   // FileSystemAccessManagerImpl.
   FileSystemAccessAccessHandleHostImpl(
       FileSystemAccessManagerImpl* manager,
+      const storage::FileSystemURL& url,
       base::PassKey<FileSystemAccessManagerImpl> pass_key,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessAccessHandleHost>
           receiver);
@@ -32,6 +33,8 @@ class CONTENT_EXPORT FileSystemAccessAccessHandleHostImpl
       const FileSystemAccessAccessHandleHostImpl&) = delete;
   ~FileSystemAccessAccessHandleHostImpl() override;
 
+  const storage::FileSystemURL& url() const { return url_; }
+
   // blink::mojom::FileSystemAccessFileHandleHost:
   void Close(CloseCallback callback) override;
 
@@ -40,10 +43,14 @@ class CONTENT_EXPORT FileSystemAccessAccessHandleHostImpl
   // released from the OnDisconnect method.
   void OnDisconnect();
 
-  mojo::Receiver<blink::mojom::FileSystemAccessAccessHandleHost> receiver_;
-
   // The FileSystemAccessManagerImpl that owns this instance.
   FileSystemAccessManagerImpl* const manager_;
+
+  // URL of the file associated with this handle. It is used to unlock the
+  // exclusive write lock on closure/destruction.
+  const storage::FileSystemURL url_;
+
+  mojo::Receiver<blink::mojom::FileSystemAccessAccessHandleHost> receiver_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

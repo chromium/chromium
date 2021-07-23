@@ -178,7 +178,9 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       bool auto_close,
       download::QuarantineConnectionCallback quarantine_connection_callback);
 
-  // Creates a new FileSystemAccessHandleHost for a given URL.
+  // Creates a new FileSystemAccessHandleHost for a given URL. If there is
+  // already an access handle assigned to `url`, returns an invalid pending
+  // remote.
   mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
   CreateAccessHandleHost(const storage::FileSystemURL& url);
 
@@ -240,10 +242,10 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // a writer that doesn't exist.
   void RemoveFileWriter(FileSystemAccessFileWriterImpl* writer);
 
-  // Remove `access_handle` from `access_handle_host_receivers_`. It is an error
-  // to try to remove an access handle that doesn't exist.
-  void RemoveAccessHandleHost(
-      FileSystemAccessAccessHandleHostImpl* access_handle);
+  // Removes the access handle associated with `url` from
+  // `access_handle_host_receivers_`. It is an error to try to remove an access
+  // handle that doesn't exist.
+  void RemoveAccessHandleHost(const storage::FileSystemURL& url);
 
   // Remove `token` from `transfer_tokens_`. It is an error to try to remove
   // a token that doesn't exist.
@@ -395,8 +397,9 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   base::flat_set<std::unique_ptr<FileSystemAccessFileWriterImpl>,
                  base::UniquePtrComparator>
       writer_receivers_;
-  base::flat_set<std::unique_ptr<FileSystemAccessAccessHandleHostImpl>,
-                 base::UniquePtrComparator>
+  std::map<storage::FileSystemURL,
+           std::unique_ptr<FileSystemAccessAccessHandleHostImpl>,
+           storage::FileSystemURL::Comparator>
       access_handle_host_receivers_;
 
   bool off_the_record_;

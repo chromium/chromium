@@ -173,12 +173,32 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
     return;
   }
 
+  //  Attempt to grab an exclusive lock on the file and create the access
+  //  handle host. This leads to slightly more complicated error handling,
+  //  since we have to make sure that the lock is released if we cannot
+  //  callback with a valid file, but preserves the invariant of only having
+  //  one open file descriptor per URL as well as avoiding an unnecessary IO
+  //  operation if there is a lock in place.
+  mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
+      access_handle_host_remote = manager()->CreateAccessHandleHost(url());
+  if (!access_handle_host_remote.is_valid()) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+                                FileSystemAccessStatus::kInvalidState,
+                                "There may only be one open Access Handle per "
+                                "file at any given time"),
+                            blink::mojom::FileSystemAccessAccessHandleFilePtr(),
+                            mojo::NullRemote());
+    return;
+  }
+
   auto open_file_callback =
       file_system_context()->is_incognito()
           ? base::BindOnce(&FileSystemAccessFileHandleImpl::DoOpenIncognitoFile,
-                           weak_factory_.GetWeakPtr())
+                           weak_factory_.GetWeakPtr(),
+                           std::move(access_handle_host_remote))
           : base::BindOnce(&FileSystemAccessFileHandleImpl::DoOpenFile,
-                           weak_factory_.GetWeakPtr());
+                           weak_factory_.GetWeakPtr(),
+                           std::move(access_handle_host_remote));
   RunWithWritePermission(
       std::move(open_file_callback),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
@@ -192,6 +212,8 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
 }
 
 void FileSystemAccessFileHandleImpl::DoOpenIncognitoFile(
+    mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
+        access_handle_host_remote,
     OpenAccessHandleCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(GetWritePermissionStatus(),
@@ -203,9 +225,6 @@ void FileSystemAccessFileHandleImpl::DoOpenIncognitoFile(
       file_delegate_host_receiver =
           file_delegate_host_remote.InitWithNewPipeAndPassReceiver();
 
-  mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
-      access_handle_host_remote = manager()->CreateAccessHandleHost(url());
-
   std::move(callback).Run(
       file_system_access_error::Ok(),
       blink::mojom::FileSystemAccessAccessHandleFile::NewIncognitoFileDelegate(
@@ -214,6 +233,8 @@ void FileSystemAccessFileHandleImpl::DoOpenIncognitoFile(
 }
 
 void FileSystemAccessFileHandleImpl::DoOpenFile(
+    mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
+        access_handle_host_remote,
     OpenAccessHandleCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(GetWritePermissionStatus(),
@@ -222,22 +243,27 @@ void FileSystemAccessFileHandleImpl::DoOpenFile(
   DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::OpenFile,
       base::BindOnce(&FileSystemAccessFileHandleImpl::DidOpenFile,
-                     weak_factory_.GetWeakPtr(), std::move(callback)),
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(access_handle_host_remote)),
       url(),
       base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
 }
 
 void FileSystemAccessFileHandleImpl::DidOpenFile(
     OpenAccessHandleCallback callback,
+    mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
+        access_handle_host_remote,
     base::File file,
     base::OnceClosure /*on_close_callback*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
-      access_handle_host_remote = manager()->CreateAccessHandleHost(url());
-
   blink::mojom::FileSystemAccessErrorPtr result =
       file_system_access_error::FromFileError(file.error_details());
+  if (result->status != FileSystemAccessStatus::kOk) {
+    // Opening the file failed, release the access handle and associated lock.
+    manager()->RemoveAccessHandleHost(url());
+  }
+
   std::move(callback).Run(
       std::move(result),
       blink::mojom::FileSystemAccessAccessHandleFile::NewRegularFile(

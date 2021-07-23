@@ -7137,6 +7137,8 @@ crbug.com/1218431 external/wpt/file-system-access/sandboxed_FileSystemFileHandle
 crbug.com/1218431 virtual/file-system-access-access-handle/external/wpt/file-system-access/sandboxed_FileSystemFileHandle-create-sync-access-handle-dedicated-worker.https.tentative.window.html [ Pass ]
 crbug.com/1218431 external/wpt/file-system-access/local_FileSystemFileHandle-create-sync-access-handle-dedicated-worker-manual.https.tentative.html [ Skip ]
 crbug.com/1218431 virtual/file-system-access-access-handle/external/wpt/file-system-access/local_FileSystemFileHandle-create-sync-access-handle-dedicated-worker-manual.https.tentative.html [ Pass ]
+crbug.com/1218431 external/wpt/file-system-access/sandboxed_FileSystemFileHandle-sync-access-handle-lock.https.tentative.worker.html [ Skip ]
+crbug.com/1218431 virtual/file-system-access-access-handle/external/wpt/file-system-access/sandboxed_FileSystemFileHandle-sync-access-handle-lock.https.tentative.worker.html [ Pass ]
 crbug.com/1218431 external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-read-write.https.tentative.worker.html [ Skip ]
 crbug.com/1218431 virtual/file-system-access-access-handle/external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-read-write.https.tentative.worker.html [ Pass ]
 crbug.com/1218431 external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-flush.https.tentative.worker.html [ Skip ]

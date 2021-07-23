@@ -86,12 +86,21 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
       bool auto_close,
       CreateFileWriterCallback callback,
       base::File::Error result);
-  void DoOpenIncognitoFile(OpenAccessHandleCallback callback);
-  void DoOpenFile(OpenAccessHandleCallback callback);
+  void DoOpenIncognitoFile(
+      mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
+          access_handle_host_remote,
+      OpenAccessHandleCallback callback);
+  void DoOpenFile(
+      mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
+          access_handle_host_remote,
+      OpenAccessHandleCallback callback);
 
-  void DidOpenFile(OpenAccessHandleCallback callback,
-                   base::File file,
-                   base::OnceClosure on_close_callback);
+  void DidOpenFile(
+      OpenAccessHandleCallback callback,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
+          access_handle_host_remote,
+      base::File file,
+      base::OnceClosure on_close_callback);
 
   void IsSameEntryImpl(IsSameEntryCallback callback,
                        FileSystemAccessTransferTokenImpl* other);

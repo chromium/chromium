@@ -930,18 +930,21 @@ FileSystemAccessManagerImpl::CreateFileWriter(
 
 mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
 FileSystemAccessManagerImpl::CreateAccessHandleHost(
-    const storage::FileSystemURL& /*url*/) {
+    const storage::FileSystemURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost> result;
   auto receiver = result.InitWithNewPipeAndPassReceiver();
+  auto access_handle_host =
+      std::make_unique<FileSystemAccessAccessHandleHostImpl>(
+          this, url, PassKey(), std::move(receiver));
+  auto insert_result =
+      access_handle_host_receivers_.emplace(url, std::move(access_handle_host));
+  bool insert_success = insert_result.second;
+  if (!insert_success) {
+    return mojo::NullRemote();
+  }
 
-  auto handle = std::make_unique<FileSystemAccessAccessHandleHostImpl>(
-      this, PassKey(), std::move(receiver));
-  access_handle_host_receivers_.insert(std::move(handle));
-
-  // TODO(fivedots): Register an access handle (exclusive) lock on the provided
-  // URL.
   return result;
 }
 
@@ -1283,10 +1286,10 @@ void FileSystemAccessManagerImpl::RemoveFileWriter(
 }
 
 void FileSystemAccessManagerImpl::RemoveAccessHandleHost(
-    FileSystemAccessAccessHandleHostImpl* access_handle) {
+    const storage::FileSystemURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  size_t count_removed = access_handle_host_receivers_.erase(access_handle);
+  size_t count_removed = access_handle_host_receivers_.erase(url);
   DCHECK_EQ(1u, count_removed);
 }
 
