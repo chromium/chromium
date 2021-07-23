@@ -4,8 +4,6 @@
 
 package org.chromium.components.webauthn;
 
-import android.os.Build;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -92,22 +90,10 @@ public class InternalAuthenticator {
     /**
      * Called by InternalAuthenticatorAndroid, which facilitates WebAuthn for processes that
      * originate from the browser process. The response will be passed through
-     * |invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse()|.  This is exclusively called
-     * by Payments Autofill, and because Payments servers only accept security keys for Android P
-     * and above, this returns false if the build version is O or below. Otherwise, the return value
-     * is determined by the AuthenticatorImpl implementation.
+     * |invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse()|.
      */
     @CalledByNative
     public void isUserVerifyingPlatformAuthenticatorAvailable() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            if (mNativeInternalAuthenticatorAndroid != 0) {
-                InternalAuthenticatorJni.get()
-                        .invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
-                                mNativeInternalAuthenticatorAndroid, false);
-            }
-            return;
-        }
-
         mAuthenticator.isUserVerifyingPlatformAuthenticatorAvailable((isUVPAA) -> {
             if (mNativeInternalAuthenticatorAndroid != 0) {
                 InternalAuthenticatorJni.get()

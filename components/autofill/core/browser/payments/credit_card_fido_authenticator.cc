@@ -9,6 +9,9 @@
 #include <utility>
 #include <vector>
 
+#if defined(OS_ANDROID)
+#include "base/android/build_info.h"
+#endif
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/string_util.h"
@@ -145,7 +148,15 @@ void CreditCardFIDOAuthenticator::IsUserVerifiable(
     std::move(callback).Run(false);
     return;
   }
-
+#if defined(OS_ANDROID)
+  // Because Payments servers only accept WebAuthn credentials for Android P
+  // and above, this returns false if the build version is O or below.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_P) {
+    std::move(callback).Run(false);
+    return;
+  }
+#endif  // defined(OS_ANDROID)
   authenticator()->IsUserVerifyingPlatformAuthenticatorAvailable(
       std::move(callback));
 }
