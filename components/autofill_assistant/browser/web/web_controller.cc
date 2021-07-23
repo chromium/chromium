@@ -178,7 +178,6 @@ const char* const kHighlightElementScript =
     R"(function() {
       this.style.boxShadow = '0px 0px 0px 3px white, ' +
           '0px 0px 0px 6px rgb(66, 133, 244)';
-      return true;
     })";
 
 // Javascript code to retrieve the 'value' attribute of a node.
@@ -493,6 +492,26 @@ void WebController::OnJavaScriptResultForStringArray(
   std::move(callback).Run(status, v);
 }
 
+void WebController::ExecuteVoidJsWithoutArguments(
+    const ElementFinder::Result& element,
+    const std::string& js_snippet,
+    WebControllerErrorInfoProto::WebAction web_action,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  auto wrapped_callback = GetAssistantActionRunningStateRetainingCallback(
+      element, std::move(callback));
+
+  devtools_client_->GetRuntime()->CallFunctionOn(
+      runtime::CallFunctionOnParams::Builder()
+          .SetObjectId(element.object_id())
+          .SetFunctionDeclaration(js_snippet)
+          .Build(),
+      element.node_frame_id(),
+      base::BindOnce(&WebController::OnJavaScriptResult,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(&DecorateWebControllerStatus, web_action,
+                                    std::move(wrapped_callback))));
+}
+
 void WebController::ScrollIntoView(
     const std::string& animation,
     const std::string& vertical_alignment,
@@ -660,20 +679,9 @@ void WebController::OnWaitUntilElementIsStable(
 void WebController::JsClickElement(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  auto wrapped_callback = GetAssistantActionRunningStateRetainingCallback(
-      element, std::move(callback));
-
-  devtools_client_->GetRuntime()->CallFunctionOn(
-      runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id())
-          .SetFunctionDeclaration(kClickElementScript)
-          .Build(),
-      element.node_frame_id(),
-      base::BindOnce(
-          &WebController::OnJavaScriptResult, weak_ptr_factory_.GetWeakPtr(),
-          base::BindOnce(&DecorateWebControllerStatus,
-                         WebControllerErrorInfoProto::JS_CLICK_ELEMENT,
-                         std::move(wrapped_callback))));
+  ExecuteVoidJsWithoutArguments(element, std::string(kClickElementScript),
+                                WebControllerErrorInfoProto::JS_CLICK_ELEMENT,
+                                std::move(callback));
 }
 
 void WebController::ClickOrTapElement(
@@ -1170,18 +1178,9 @@ void WebController::OnSelectOptionJavascriptResult(
 void WebController::HighlightElement(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  devtools_client_->GetRuntime()->CallFunctionOn(
-      runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id())
-          .SetFunctionDeclaration(std::string(kHighlightElementScript))
-          .SetReturnByValue(true)
-          .Build(),
-      element.node_frame_id(),
-      base::BindOnce(
-          &WebController::OnJavaScriptResult, weak_ptr_factory_.GetWeakPtr(),
-          base::BindOnce(&DecorateWebControllerStatus,
-                         WebControllerErrorInfoProto::HIGHLIGHT_ELEMENT,
-                         std::move(callback))));
+  ExecuteVoidJsWithoutArguments(element, std::string(kHighlightElementScript),
+                                WebControllerErrorInfoProto::HIGHLIGHT_ELEMENT,
+                                std::move(callback));
 }
 
 void WebController::ScrollToElementPosition(
@@ -1273,17 +1272,9 @@ void WebController::GetStringAttribute(
 void WebController::SelectFieldValue(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  devtools_client_->GetRuntime()->CallFunctionOn(
-      runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id())
-          .SetFunctionDeclaration(std::string(kSelectFieldValueScript))
-          .Build(),
-      element.node_frame_id(),
-      base::BindOnce(
-          &WebController::OnJavaScriptResult, weak_ptr_factory_.GetWeakPtr(),
-          base::BindOnce(&DecorateWebControllerStatus,
-                         WebControllerErrorInfoProto::SELECT_FIELD_VALUE,
-                         std::move(callback))));
+  ExecuteVoidJsWithoutArguments(element, std::string(kSelectFieldValueScript),
+                                WebControllerErrorInfoProto::SELECT_FIELD_VALUE,
+                                std::move(callback));
 }
 
 void WebController::SetValueAttribute(
@@ -1405,36 +1396,17 @@ void WebController::OnSendKeyboardInputDone(
 void WebController::FocusField(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  auto wrapped_callback = GetAssistantActionRunningStateRetainingCallback(
-      element, std::move(callback));
-
-  devtools_client_->GetRuntime()->CallFunctionOn(
-      runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id())
-          .SetFunctionDeclaration(std::string(kFocusFieldScript))
-          .Build(),
-      element.node_frame_id(),
-      base::BindOnce(&WebController::OnJavaScriptResult,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::BindOnce(&DecorateWebControllerStatus,
-                                    WebControllerErrorInfoProto::FOCUS_FIELD,
-                                    std::move(wrapped_callback))));
+  ExecuteVoidJsWithoutArguments(element, std::string(kFocusFieldScript),
+                                WebControllerErrorInfoProto::FOCUS_FIELD,
+                                std::move(callback));
 }
 
 void WebController::BlurField(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  devtools_client_->GetRuntime()->CallFunctionOn(
-      runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id())
-          .SetFunctionDeclaration(std::string(kBlurFieldScript))
-          .Build(),
-      element.node_frame_id(),
-      base::BindOnce(&WebController::OnJavaScriptResult,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::BindOnce(&DecorateWebControllerStatus,
-                                    WebControllerErrorInfoProto::BLUR_FIELD,
-                                    std::move(callback))));
+  ExecuteVoidJsWithoutArguments(element, std::string(kBlurFieldScript),
+                                WebControllerErrorInfoProto::BLUR_FIELD,
+                                std::move(callback));
 }
 
 void WebController::GetElementRect(
@@ -1523,18 +1495,9 @@ void WebController::GetElementTag(
 void WebController::SendChangeEvent(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  devtools_client_->GetRuntime()->CallFunctionOn(
-      runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id())
-          .SetFunctionDeclaration(std::string(kSendChangeEventScript))
-          .SetReturnByValue(true)
-          .Build(),
-      element.node_frame_id(),
-      base::BindOnce(
-          &WebController::OnJavaScriptResult, weak_ptr_factory_.GetWeakPtr(),
-          base::BindOnce(&DecorateWebControllerStatus,
-                         WebControllerErrorInfoProto::SEND_CHANGE_EVENT,
-                         std::move(callback))));
+  ExecuteVoidJsWithoutArguments(element, std::string(kSendChangeEventScript),
+                                WebControllerErrorInfoProto::SEND_CHANGE_EVENT,
+                                std::move(callback));
 }
 
 void WebController::DispatchJsEvent(

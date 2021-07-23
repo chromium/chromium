@@ -396,6 +396,11 @@ class WebController {
                               const std::vector<std::string>&)> callback,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
+  void ExecuteVoidJsWithoutArguments(
+      const ElementFinder::Result& element,
+      const std::string& js_snippet,
+      WebControllerErrorInfoProto::WebAction web_action,
+      base::OnceCallback<void(const ClientStatus&)> callback);
   void OnScrollWindow(base::OnceCallback<void(const ClientStatus&)> callback,
                       const DevtoolsClient::ReplyStatus& reply_status,
                       std::unique_ptr<runtime::EvaluateResult> result);
