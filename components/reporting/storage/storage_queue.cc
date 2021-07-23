@@ -217,6 +217,12 @@ Status StorageQueue::Init() {
     upload_timer_.Start(FROM_HERE, options_.upload_period(), this,
                         &StorageQueue::Flush);
   }
+  // In case some events are found in the queue, initiate an upload.
+  // This is especially imporant for non-periodic queues, but won't harm
+  // others either.
+  if (first_sequencing_id_ < next_sequencing_id_) {
+    Flush();
+  }
   return Status::StatusOK();
 }
 

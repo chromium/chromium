@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
@@ -635,9 +636,10 @@ class StorageTest
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
     auto uploader = std::make_unique<MockUploadClient>(
         &last_record_digest_map_, sequenced_task_runner_,
-        base::BindOnce(&Storage::UpdateEncryptionKey,
-                       base::Unretained(storage_.get()),
-                       signed_encryption_key_),
+        need_encryption_key ? base::BindOnce(&Storage::UpdateEncryptionKey,
+                                             base::Unretained(storage_.get()),
+                                             signed_encryption_key_)
+                            : base::DoNothing(),
         decryptor_);
     const auto status = set_mock_uploader_expectations_.Call(
         need_encryption_key, uploader.get());
