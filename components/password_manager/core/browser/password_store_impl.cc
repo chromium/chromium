@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "components/password_manager/core/browser/field_info_table.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
@@ -220,22 +221,6 @@ PasswordStoreImpl::GetMatchingInsecureCredentialsImpl(
   for (InsecureCredential& cred : insecure_credentials)
     cred.in_store = store;
   return insecure_credentials;
-}
-
-void PasswordStoreImpl::AddFieldInfoImpl(const FieldInfo& field_info) {
-  if (login_db_)
-    login_db_->field_info_table().AddRow(field_info);
-}
-
-std::vector<FieldInfo> PasswordStoreImpl::GetAllFieldInfoImpl() {
-  return login_db_ ? login_db_->field_info_table().GetAllRows()
-                   : std::vector<FieldInfo>();
-}
-
-void PasswordStoreImpl::RemoveFieldInfoByTimeImpl(base::Time remove_begin,
-                                                  base::Time remove_end) {
-  if (login_db_)
-    login_db_->field_info_table().RemoveRowsByTime(remove_begin, remove_end);
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
@@ -456,6 +441,10 @@ SmartBubbleStatsStore* PasswordStoreImpl::GetSmartBubbleStatsStore() {
   return this;
 }
 
+FieldInfoStore* PasswordStoreImpl::GetFieldInfoStore() {
+  return this;
+}
+
 void PasswordStoreImpl::AddSiteStats(const InteractionsStats& stats) {
   DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
   background_task_runner()->PostTask(
@@ -492,6 +481,33 @@ void PasswordStoreImpl::RemoveStatisticsByOriginAndTime(
       base::BindOnce(
           &PasswordStoreImpl::RemoveStatisticsByOriginAndTimeInternal, this,
           origin_filter, delete_begin, delete_end),
+      std::move(completion));
+}
+
+void PasswordStoreImpl::AddFieldInfo(const FieldInfo& field_info) {
+  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
+  background_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&PasswordStoreImpl::AddFieldInfoInternal, this,
+                                field_info));
+}
+
+void PasswordStoreImpl::GetAllFieldInfo(PasswordStoreConsumer* consumer) {
+  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
+  consumer->cancelable_task_tracker()->PostTaskAndReplyWithResult(
+      background_task_runner().get(), FROM_HERE,
+      base::BindOnce(&PasswordStoreImpl::GetAllFieldInfoInternal, this),
+      base::BindOnce(&PasswordStoreConsumer::OnGetAllFieldInfo,
+                     consumer->GetWeakPtr()));
+}
+
+void PasswordStoreImpl::RemoveFieldInfoByTime(base::Time remove_begin,
+                                              base::Time remove_end,
+                                              base::OnceClosure completion) {
+  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
+  background_task_runner()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&PasswordStoreImpl::RemoveFieldInfoByTimeInternal, this,
+                     remove_begin, remove_end),
       std::move(completion));
 }
 
@@ -679,6 +695,22 @@ PasswordStoreChangeList PasswordStoreImpl::RemoveLoginsByURLAndTimeInternal(
       NotifyDeletionsHaveSynced(/*success=*/true);
   }
   return changes;
+}
+
+void PasswordStoreImpl::AddFieldInfoInternal(const FieldInfo& field_info) {
+  if (login_db_)
+    login_db_->field_info_table().AddRow(field_info);
+}
+
+std::vector<FieldInfo> PasswordStoreImpl::GetAllFieldInfoInternal() {
+  return login_db_ ? login_db_->field_info_table().GetAllRows()
+                   : std::vector<FieldInfo>();
+}
+
+void PasswordStoreImpl::RemoveFieldInfoByTimeInternal(base::Time remove_begin,
+                                                      base::Time remove_end) {
+  if (login_db_)
+    login_db_->field_info_table().RemoveRowsByTime(remove_begin, remove_end);
 }
 
 }  // namespace password_manager

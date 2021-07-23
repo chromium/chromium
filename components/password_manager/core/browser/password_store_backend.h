@@ -16,6 +16,7 @@ namespace password_manager {
 
 struct PasswordForm;
 
+class FieldInfoStore;
 class SmartBubbleStatsStore;
 
 using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
@@ -98,6 +99,7 @@ class PasswordStoreBackend {
   virtual void FillBlocklistLoginsAsync(LoginsReply callback) {}
 
   virtual SmartBubbleStatsStore* GetSmartBubbleStatsStore() = 0;
+  virtual FieldInfoStore* GetFieldInfoStore() = 0;
 };
 
 }  // namespace password_manager

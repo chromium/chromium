@@ -18,12 +18,15 @@ namespace password_manager {
 
 class PasswordSyncBridge;
 
+struct FieldInfo;
+
 // Simple password store implementation that delegates everything to
 // the LoginDatabase.
 class PasswordStoreImpl : protected PasswordStoreSync,
                           public PasswordStore,
                           public PasswordStoreBackend,
-                          public SmartBubbleStatsStore {
+                          public SmartBubbleStatsStore,
+                          protected FieldInfoStore {
  public:
   // The |login_db| must not have been Init()-ed yet. It will be initialized in
   // a deferred manner on the background sequence.
@@ -59,10 +62,6 @@ class PasswordStoreImpl : protected PasswordStoreSync,
   std::vector<InsecureCredential> GetMatchingInsecureCredentialsImpl(
       const std::string& signon_realm) override;
 
-  void AddFieldInfoImpl(const FieldInfo& field_info) override;
-  std::vector<FieldInfo> GetAllFieldInfoImpl() override;
-  void RemoveFieldInfoByTimeImpl(base::Time remove_begin,
-                                 base::Time remove_end) override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSyncControllerDelegateOnBackgroundSequence() override;
 
@@ -118,6 +117,7 @@ class PasswordStoreImpl : protected PasswordStoreSync,
       base::OnceCallback<void(bool)> sync_completion,
       PasswordStoreChangeListReply callback) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
+  FieldInfoStore* GetFieldInfoStore() override;
 
   // SmartBubbleStatsStore:
   void AddSiteStats(const InteractionsStats& stats) override;
@@ -129,6 +129,13 @@ class PasswordStoreImpl : protected PasswordStoreSync,
       base::Time delete_begin,
       base::Time delete_end,
       base::OnceClosure completion) override;
+
+  // FieldInfoStore:
+  void AddFieldInfo(const FieldInfo& field_info) override;
+  void GetAllFieldInfo(PasswordStoreConsumer* consumer) override;
+  void RemoveFieldInfoByTime(base::Time remove_begin,
+                             base::Time remove_end,
+                             base::OnceClosure completion) override;
 
   // Opens |login_db_| and creates |sync_bridge_| on the background sequence.
   bool InitOnBackgroundSequence(
@@ -169,6 +176,12 @@ class PasswordStoreImpl : protected PasswordStoreSync,
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::Time delete_begin,
       base::Time delete_end);
+
+  // Synchronous implementation for manipulating with field info.
+  void AddFieldInfoInternal(const FieldInfo& field_info);
+  std::vector<FieldInfo> GetAllFieldInfoInternal();
+  void RemoveFieldInfoByTimeInternal(base::Time remove_begin,
+                                     base::Time remove_end);
 
   // The login SQL database. The LoginDatabase instance is received via the
   // in an uninitialized state, so as to allow injecting mocks, then Init() is

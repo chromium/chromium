@@ -86,12 +86,6 @@ class MockPasswordStore : public PasswordStore {
               GetMatchingInsecureCredentialsImpl,
               (const std::string&),
               (override));
-  MOCK_METHOD(void, AddFieldInfoImpl, (const FieldInfo&), (override));
-  MOCK_METHOD(std::vector<FieldInfo>, GetAllFieldInfoImpl, (), (override));
-  MOCK_METHOD(void,
-              RemoveFieldInfoByTimeImpl,
-              (base::Time, base::Time),
-              (override));
   MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
               GetSyncControllerDelegateOnBackgroundSequence,
               (),
@@ -109,6 +103,7 @@ class MockPasswordStore : public PasswordStore {
   MOCK_METHOD(bool, IsAbleToSavePasswords, (), (override, const));
 
   MOCK_METHOD(SmartBubbleStatsStore*, GetSmartBubbleStatsStore, (), (override));
+  MOCK_METHOD(FieldInfoStore*, GetFieldInfoStore, (), (override));
 
  protected:
   ~MockPasswordStore() override;

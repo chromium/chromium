@@ -219,6 +219,7 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
                PasswordStoreChangeListReply callback),
               (override));
   MOCK_METHOD(SmartBubbleStatsStore*, GetSmartBubbleStatsStore, (), (override));
+  MOCK_METHOD(FieldInfoStore*, GetFieldInfoStore, (), (override));
 };
 
 PasswordForm MakePasswordForm(const std::string& signon_realm) {
@@ -1272,7 +1273,7 @@ TEST_F(PasswordStoreTest, GetAllFieldInfo) {
   FieldInfo field_info2{autofill::FormSignature(1002),
                         autofill::FieldSignature(10), autofill::PASSWORD,
                         base::Time::FromTimeT(2)};
-  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
+  scoped_refptr<PasswordStore> store = CreatePasswordStore();
   store->Init(nullptr);
 
   FieldInfoStore* field_info_store = store->GetFieldInfoStore();
@@ -1300,7 +1301,7 @@ TEST_F(PasswordStoreTest, RemoveFieldInfo) {
                         autofill::FieldSignature(11), autofill::PASSWORD,
                         base::Time::FromTimeT(300)};
 
-  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
+  scoped_refptr<PasswordStore> store = CreatePasswordStore();
   store->Init(nullptr);
 
   FieldInfoStore* field_info_store = store->GetFieldInfoStore();
@@ -1318,7 +1319,7 @@ TEST_F(PasswordStoreTest, RemoveFieldInfo) {
 
   field_info_store->RemoveFieldInfoByTime(base::Time::FromTimeT(150),
                                           base::Time::FromTimeT(250),
-                                          base::NullCallback());
+                                          base::DoNothing());
 
   EXPECT_CALL(consumer, OnGetAllFieldInfo(
                             UnorderedElementsAre(field_info1, field_info3)));

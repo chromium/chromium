@@ -97,6 +97,7 @@
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/os_crypt/os_crypt_mocker.h"
+#include "components/password_manager/core/browser/mock_field_info_store.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/mock_password_sync_metadata_store.h"
 #include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
@@ -584,12 +585,18 @@ class RemovePasswordsTester {
     return &mock_smart_bubble_stats_store_;
   }
 
+  password_manager::MockFieldInfoStore* mock_field_info_store() {
+    return &mock_field_info_store_;
+  }
+
  private:
   password_manager::MockPasswordStore* profile_store_;
   password_manager::MockPasswordStore* account_store_;
   password_manager::MockPasswordSyncMetadataStore account_metadata_store_;
   testing::NiceMock<password_manager::MockSmartBubbleStatsStore>
       mock_smart_bubble_stats_store_;
+  testing::NiceMock<password_manager::MockFieldInfoStore>
+      mock_field_info_store_;
 };
 
 class RemovePermissionPromptCountsTest {
@@ -1994,11 +2001,19 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePasswordStatistics) {
 
   ON_CALL(*tester.profile_store(), GetSmartBubbleStatsStore)
       .WillByDefault(Return(tester.mock_smart_bubble_stats_store()));
+  ON_CALL(*tester.profile_store(), GetFieldInfoStore)
+      .WillByDefault(Return(tester.mock_field_info_store()));
   EXPECT_CALL(
       *tester.mock_smart_bubble_stats_store(),
       RemoveStatisticsByOriginAndTime(ProbablySameFilter(empty_filter),
                                       base::Time(), base::Time::Max(), _))
       .WillOnce(testing::WithArg<3>([](base::OnceClosure completion) {
+        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                      std::move(completion));
+      }));
+  EXPECT_CALL(*tester.mock_field_info_store(),
+              RemoveFieldInfoByTime(base::Time(), base::Time::Max(), _))
+      .WillOnce(testing::WithArg<2>([](base::OnceClosure completion) {
         base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                       std::move(completion));
       }));

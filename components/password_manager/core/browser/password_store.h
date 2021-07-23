@@ -51,14 +51,13 @@ class AffiliatedMatchHelper;
 class PasswordStoreConsumer;
 class InsecureCredentialsConsumer;
 class PasswordStoreConsumer;
-struct FieldInfo;
 
 // Partial, cross-platform implementation for storing form passwords.
 // The login request/manipulation API is not threadsafe and must be used
 // from the UI thread.
 // PasswordStoreSync is a hidden base class because only PasswordSyncBridge
 // needs to access these methods.
-class PasswordStore : public PasswordStoreInterface, public FieldInfoStore {
+class PasswordStore : public PasswordStoreInterface {
  public:
   // Used to notify that unsynced credentials are about to be deleted.
   class UnsyncedCredentialsDeletionNotifier {
@@ -225,13 +224,6 @@ class PasswordStore : public PasswordStoreInterface, public FieldInfoStore {
   virtual std::vector<InsecureCredential> GetMatchingInsecureCredentialsImpl(
       const std::string& signon_realm);
 
-  // Synchronous implementation for manipulating with information about field
-  // info.
-  virtual void AddFieldInfoImpl(const FieldInfo& field_info);
-  virtual std::vector<FieldInfo> GetAllFieldInfoImpl();
-  virtual void RemoveFieldInfoByTimeImpl(base::Time remove_begin,
-                                         base::Time remove_end);
-
   // Returns the sync controller delegate for syncing passwords. It must be
   // called on the background sequence.
   // TODO(crbug.bom/1226042): Remove this after fully switching to the
@@ -264,12 +256,6 @@ class PasswordStore : public PasswordStoreInterface, public FieldInfoStore {
 
   using InsecureCredentialsTask =
       base::OnceCallback<std::vector<InsecureCredential>()>;
-
-  void AddFieldInfo(const FieldInfo& field_info) override;
-  void GetAllFieldInfo(PasswordStoreConsumer* consumer) override;
-  void RemoveFieldInfoByTime(base::Time remove_begin,
-                             base::Time remove_end,
-                             base::OnceClosure completion) override;
 
   // Called on the main thread after initialization is completed.
   // |success| is true if initialization was successful. Sets the
@@ -321,10 +307,6 @@ class PasswordStore : public PasswordStoreInterface, public FieldInfoStore {
       base::Time remove_begin,
       base::Time remove_end,
       base::OnceClosure completion);
-
-  void RemoveFieldInfoByTimeInternal(base::Time remove_begin,
-                                     base::Time remove_end,
-                                     base::OnceClosure completion);
 
   // Finds all PasswordForms with a signon_realm that is equal to, or is a
   // PSL-match to that of |form|, and takes care of notifying the consumer with

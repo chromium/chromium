@@ -89,4 +89,8 @@ SmartBubbleStatsStore* PasswordStoreAndroidBackend::GetSmartBubbleStatsStore() {
   return nullptr;
 }
 
+FieldInfoStore* PasswordStoreAndroidBackend::GetFieldInfoStore() {
+  return nullptr;
+}
+
 }  // namespace password_manager

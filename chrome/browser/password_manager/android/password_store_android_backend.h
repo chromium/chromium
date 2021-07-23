@@ -59,6 +59,7 @@ class PasswordStoreAndroidBackend
                             std::vector<PasswordForm> passwords) override;
 
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
+  FieldInfoStore* GetFieldInfoStore() override;
 
   // Observer to propagate remote form changes to.
   RemoteChangesReceived remote_form_changes_received_;
