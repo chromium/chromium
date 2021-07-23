@@ -58,6 +58,11 @@ source_set("mf_cdm_proxy") {
   deps = [ "//base" ]
 }
 
+source_set("dcomp_texture_wrapper") {
+  sources = [ "dcomp_texture_wrapper.h" ]
+  deps = [ "//base" ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [

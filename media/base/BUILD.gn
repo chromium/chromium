@@ -444,7 +444,10 @@ source_set("base") {
   }
 
   if (is_win) {
-    public_deps += [ "//media/base/win:mf_cdm_proxy" ]
+    public_deps += [
+      "//media/base/win:dcomp_texture_wrapper",
+      "//media/base/win:mf_cdm_proxy",
+    ]
   }
 
   # TODO(ziyangch): Check |is_chromecast| first when using cast media pipeline
