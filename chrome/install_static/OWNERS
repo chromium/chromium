@@ -1,5 +1,3 @@
-gab@chromium.org
-grt@chromium.org
-robertshield@chromium.org
+file://chrome/installer/OWNERS
 
 per-file policy_path_parser.*=file://chrome/browser/policy/OWNERS
