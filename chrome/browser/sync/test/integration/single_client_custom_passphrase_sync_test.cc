@@ -33,17 +33,18 @@ using fake_server::SetNigoriInFakeServer;
 using sync_pb::EncryptedData;
 using sync_pb::NigoriSpecifics;
 using sync_pb::SyncEntity;
-using syncer::CreateCustomPassphraseNigori;
+using syncer::BuildCustomPassphraseNigoriSpecifics;
 using syncer::Cryptographer;
 using syncer::GetEncryptedBookmarkEntitySpecifics;
 using syncer::InitCustomPassphraseCryptographerFromNigori;
-using syncer::KeyDerivationParams;
 using syncer::KeyParamsForTesting;
 using syncer::LoopbackServerEntity;
 using syncer::ModelType;
 using syncer::ModelTypeSet;
 using syncer::PassphraseType;
+using syncer::Pbkdf2PassphraseKeyParamsForTesting;
 using syncer::ProtoPassphraseInt32ToEnum;
+using syncer::ScryptPassphraseKeyParamsForTesting;
 using syncer::SyncService;
 using testing::ElementsAre;
 using testing::SizeIs;
@@ -222,12 +223,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
                        CanDecryptPbkdf2KeyEncryptedData) {
-  KeyParamsForTesting key_params = {KeyDerivationParams::CreateForPbkdf2(),
-                                    "hunter2"};
+  KeyParamsForTesting key_params =
+      Pbkdf2PassphraseKeyParamsForTesting("hunter2");
   InjectEncryptedServerBookmark("PBKDF2-encrypted bookmark",
                                 GURL("http://example.com/doesnt-matter"),
                                 key_params);
-  SetNigoriInFakeServer(CreateCustomPassphraseNigori(key_params),
+  SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(key_params),
                         GetFakeServer());
   SetDecryptionPassphraseForClient(/*index=*/0, "hunter2");
   ASSERT_TRUE(SetupSync());
@@ -241,9 +242,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
 // Populates custom passphrase Nigori without keystore keys to the client.
 IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
                        PRE_CanDecryptWithKeystoreKeys) {
-  const KeyParamsForTesting key_params = {
-      KeyDerivationParams::CreateForPbkdf2(), "hunter2"};
-  SetNigoriInFakeServer(CreateCustomPassphraseNigori(key_params),
+  const KeyParamsForTesting key_params =
+      Pbkdf2PassphraseKeyParamsForTesting("hunter2");
+  SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(key_params),
                         GetFakeServer());
   SetDecryptionPassphraseForClient(/*index=*/0, key_params.password);
   ASSERT_TRUE(SetupSync());
@@ -305,12 +306,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseUseScryptSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseDoNotUseScryptSyncTest,
                        CanDecryptScryptKeyEncryptedDataWhenScryptNotDisabled) {
-  KeyParamsForTesting key_params = {
-      KeyDerivationParams::CreateForScrypt("someConstantSalt"), "hunter2"};
+  KeyParamsForTesting key_params =
+      ScryptPassphraseKeyParamsForTesting("hunter2");
   InjectEncryptedServerBookmark("scypt-encrypted bookmark",
                                 GURL("http://example.com/doesnt-matter"),
                                 key_params);
-  SetNigoriInFakeServer(CreateCustomPassphraseNigori(key_params),
+  SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(key_params),
                         GetFakeServer());
   SetDecryptionPassphraseForClient(/*index=*/0, "hunter2");
 
@@ -342,8 +343,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseDoNotUseScryptSyncTest,
   // once, we are certain that no bookmarks other than those we've verified to
   // be encrypted have been committed.
   EXPECT_TRUE(WaitForEncryptedServerBookmarks(
-      {{title, page_url}},
-      {KeyDerivationParams::CreateForPbkdf2(), "hunter2"}));
+      {{title, page_url}}, Pbkdf2PassphraseKeyParamsForTesting("hunter2")));
   EXPECT_THAT(observer.GetCommittedEntityNames(), ElementsAre("encrypted"));
 }
 
@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseDoNotUseScryptSyncTest,
   // e.g. the previous keystore key which was stored in the Nigori keybag),
   // because that cryptographer has never seen the server-side Nigori.
   EXPECT_TRUE(WaitForEncryptedServerBookmarks(
-      expected, {KeyDerivationParams::CreateForPbkdf2(), "hunter2"}));
+      expected, Pbkdf2PassphraseKeyParamsForTesting("hunter2")));
 }
 
 }  // namespace

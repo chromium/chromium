@@ -22,7 +22,6 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
-#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/nigori/nigori_test_utils.h"
 #include "components/sync/test/fake_server/entity_builder_factory.h"
 #include "components/sync/test/fake_server/fake_server.h"
@@ -415,16 +414,17 @@ void DeleteTypedUrlFromFakeSyncServer(std::string url) {
 }
 
 void AddBookmarkWithSyncPassphrase(const std::string& sync_passphrase) {
-  syncer::KeyParamsForTesting key_params = {
-      syncer::KeyDerivationParams::CreateForPbkdf2(), sync_passphrase};
+  syncer::KeyParamsForTesting key_params =
+      syncer::Pbkdf2PassphraseKeyParamsForTesting(sync_passphrase);
   std::unique_ptr<syncer::LoopbackServerEntity> server_entity =
       CreateBookmarkServerEntity("PBKDF2-encrypted bookmark",
                                  GURL("http://example.com/doesnt-matter"));
   server_entity->SetSpecifics(GetEncryptedBookmarkEntitySpecifics(
       server_entity->GetSpecifics().bookmark(), key_params));
   gSyncFakeServer->InjectEntity(std::move(server_entity));
-  fake_server::SetNigoriInFakeServer(CreateCustomPassphraseNigori(key_params),
-                                     gSyncFakeServer);
+  fake_server::SetNigoriInFakeServer(
+      syncer::BuildCustomPassphraseNigoriSpecifics(key_params),
+      gSyncFakeServer);
 }
 
 }  // namespace chrome_test_util

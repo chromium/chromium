@@ -45,7 +45,7 @@ void SetKeystoreNigoriInFakeServer(FakeServer* fake_server) {
       fake_server->GetKeystoreKeys();
   ASSERT_EQ(keystore_keys.size(), 1u);
   const syncer::KeyParamsForTesting keystore_key_params =
-      syncer::Pbkdf2KeyParamsForTesting(keystore_keys.back());
+      syncer::KeystoreKeyParamsForTesting(keystore_keys.back());
   SetNigoriInFakeServer(syncer::BuildKeystoreNigoriSpecifics(
                             /*keybag_keys_params=*/{keystore_key_params},
                             /*keystore_decryptor_params=*/keystore_key_params,

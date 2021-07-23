@@ -15,9 +15,24 @@
 
 namespace syncer {
 
-KeyParamsForTesting Pbkdf2KeyParamsForTesting(
+KeyParamsForTesting KeystoreKeyParamsForTesting(
     const std::vector<uint8_t>& raw_key) {
-  return {KeyDerivationParams::CreateForPbkdf2(), base::Base64Encode(raw_key)};
+  return Pbkdf2PassphraseKeyParamsForTesting(base::Base64Encode(raw_key));
+}
+
+KeyParamsForTesting TrustedVaultKeyParamsForTesting(
+    const std::vector<uint8_t>& raw_key) {
+  return Pbkdf2PassphraseKeyParamsForTesting(base::Base64Encode(raw_key));
+}
+
+KeyParamsForTesting Pbkdf2PassphraseKeyParamsForTesting(
+    const std::string& passphrase) {
+  return {KeyDerivationParams::CreateForPbkdf2(), passphrase};
+}
+
+KeyParamsForTesting ScryptPassphraseKeyParamsForTesting(
+    const std::string& passphrase) {
+  return {KeyDerivationParams::CreateForScrypt(passphrase), passphrase};
 }
 
 sync_pb::NigoriSpecifics BuildKeystoreNigoriSpecifics(
@@ -81,7 +96,7 @@ sync_pb::NigoriSpecifics BuildTrustedVaultNigoriSpecifics(
   return specifics;
 }
 
-sync_pb::NigoriSpecifics CreateCustomPassphraseNigori(
+sync_pb::NigoriSpecifics BuildCustomPassphraseNigoriSpecifics(
     const KeyParamsForTesting& passphrase_key_params,
     const absl::optional<KeyParamsForTesting>& old_key_params) {
   KeyDerivationMethod method = passphrase_key_params.derivation_params.method();
@@ -89,6 +104,7 @@ sync_pb::NigoriSpecifics CreateCustomPassphraseNigori(
   sync_pb::NigoriSpecifics nigori;
   nigori.set_keybag_is_frozen(true);
   nigori.set_keystore_migration_time(1U);
+  nigori.set_custom_passphrase_time(2U);
   nigori.set_encrypt_everything(true);
   nigori.set_passphrase_type(sync_pb::NigoriSpecifics::CUSTOM_PASSPHRASE);
   nigori.set_custom_passphrase_key_derivation_method(
