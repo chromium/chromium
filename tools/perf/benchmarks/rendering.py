@@ -51,10 +51,18 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
     parser.add_option('--allow-software-compositing', action='store_true',
                       help='If set, allows the benchmark to run with software '
                            'compositing.')
+    parser.add_option('--extra-uma-metrics',
+                      action='store',
+                      help='Comma separated list of additional UMA metrics to '
+                      'include in result output. Note that histogram buckets '
+                      'in telemetry report may not match buckets from UMA.')
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):
     cls.allow_software_compositing = args.allow_software_compositing
+    cls.uma_metrics = RENDERING_BENCHMARK_UMA
+    if args.extra_uma_metrics:
+      cls.uma_metrics += args.extra_uma_metrics.split(',')
 
   def CreateStorySet(self, options):
     return page_sets.RenderingStorySet(platform=self.PLATFORM_NAME)
@@ -73,8 +81,7 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
     category_filter.AddDisabledByDefault(
         'disabled-by-default-histogram_samples')
     options = timeline_based_measurement.Options(category_filter)
-    options.config.chrome_trace_config.EnableUMAHistograms(
-        *RENDERING_BENCHMARK_UMA)
+    options.config.chrome_trace_config.EnableUMAHistograms(*self.uma_metrics)
     options.SetTimelineBasedMetrics([
         'renderingMetric',
         'umaMetric',
