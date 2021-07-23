@@ -9618,6 +9618,21 @@
             ]
         }
     ],
+    "WipeDataOnChildAccountSigninAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WipeDataOnChildAccountSignin"
+                    ]
+                }
+            ]
+        }
+    ],
     "XsurfaceMetricsReporting": [
         {
             "platforms": [
