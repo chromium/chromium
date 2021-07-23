@@ -288,14 +288,7 @@ bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
   }
 
   const std::string source_language = language_state_.source_language();
-  if (source_language.empty()) {
-    if (!menuLogging)
-      return false;
-    TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
-        TranslateBrowserMetrics::MenuTranslationUnavailableReason::
-            kSourceLangUnknown);
-    can_translate = false;
-  }
+
   // Translation of unknown source language pages is supported on Desktop
   // platforms, experimentally supported on Android and not supported on iOS.
   bool unknown_source_supported = true;
@@ -306,7 +299,8 @@ bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
   unknown_source_supported = false;
 #endif
   if (!unknown_source_supported &&
-      source_language == translate::kUnknownLanguageCode) {
+      (source_language == translate::kUnknownLanguageCode ||
+       source_language.empty())) {
     if (!menuLogging)
       return false;
     TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(

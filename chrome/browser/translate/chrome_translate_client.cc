@@ -300,6 +300,7 @@ ChromeTranslateClient::GetTranslateAcceptLanguages() {
 int ChromeTranslateClient::GetInfobarIconID() const {
   return IDR_ANDROID_INFOBAR_TRANSLATE;
 }
+#endif
 
 void ChromeTranslateClient::ManualTranslateWhenReady() {
   if (GetLanguageState().source_language().empty()) {
@@ -310,7 +311,6 @@ void ChromeTranslateClient::ManualTranslateWhenReady() {
                              /*triggered_from_menu=*/true);
   }
 }
-#endif
 
 void ChromeTranslateClient::SetPredefinedTargetLanguage(
     const std::string& translate_language_code) {
@@ -378,13 +378,11 @@ void ChromeTranslateClient::OnLanguageDetermined(
     GetTranslateManager()->NotifyLanguageDetected(details);
   }
 
-#if defined(OS_ANDROID)
-  // See ChromeTranslateClient::ManualTranslateOnReady
   if (manual_translate_on_ready_) {
-    GetTranslateManager()->ShowTranslateUI(/*auto_translate=*/true);
+    GetTranslateManager()->ShowTranslateUI(/*auto_translate=*/true,
+                                           /*triggered_from_menu=*/true);
     manual_translate_on_ready_ = false;
   }
-#endif
 }
 
 // The bubble is implemented only on the desktop platforms.
