@@ -18,6 +18,8 @@ constexpr mojom::RoutineVerdict kInitialVerdict =
     mojom::RoutineVerdict::kNotRun;
 constexpr mojom::RoutineVerdict kVerdict = mojom::RoutineVerdict::kNoProblem;
 
+constexpr mojom::RoutineType kType = mojom::RoutineType::kHttpFirewall;
+
 }  // namespace
 
 class NetworkDiagnosticsRoutineTest : public ::testing::Test {
@@ -33,6 +35,7 @@ class NetworkDiagnosticsRoutineTest : public ::testing::Test {
     ~TestNetworkDiagnosticsRoutine() override {}
 
     // NetworkDiagnosticRoutine:
+    mojom::RoutineType Type() override { return kType; }
     void Run() override { ExecuteCallback(); }
     void AnalyzeResultsAndExecuteCallback() override {}
   };

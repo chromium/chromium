@@ -44,6 +44,10 @@ SignalStrengthRoutine::SignalStrengthRoutine() {
 
 SignalStrengthRoutine::~SignalStrengthRoutine() = default;
 
+mojom::RoutineType SignalStrengthRoutine::Type() {
+  return mojom::RoutineType::kSignalStrength;
+}
+
 bool SignalStrengthRoutine::CanRun() {
   DCHECK(remote_cros_network_config_);
   return true;

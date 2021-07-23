@@ -164,6 +164,10 @@ HttpsLatencyRoutine::HttpsLatencyRoutine()
 
 HttpsLatencyRoutine::~HttpsLatencyRoutine() = default;
 
+mojom::RoutineType HttpsLatencyRoutine::Type() {
+  return mojom::RoutineType::kHttpsLatency;
+}
+
 void HttpsLatencyRoutine::Run() {
   // Before making HTTPS requests to the hosts, add the IP addresses are added
   // to the DNS cache. This ensures the HTTPS latency does not include DNS

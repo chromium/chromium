@@ -54,6 +54,10 @@ VideoConferencingRoutine::VideoConferencingRoutine(
 
 VideoConferencingRoutine::~VideoConferencingRoutine() = default;
 
+mojom::RoutineType VideoConferencingRoutine::Type() {
+  return mojom::RoutineType::kVideoConferencing;
+}
+
 void VideoConferencingRoutine::Run() {
   ProbeStunServerOverUdp();
 }

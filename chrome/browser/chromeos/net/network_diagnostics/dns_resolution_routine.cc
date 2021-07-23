@@ -51,6 +51,10 @@ DnsResolutionRoutine::DnsResolutionRoutine() {
 
 DnsResolutionRoutine::~DnsResolutionRoutine() = default;
 
+mojom::RoutineType DnsResolutionRoutine::Type() {
+  return mojom::RoutineType::kDnsResolution;
+}
+
 void DnsResolutionRoutine::Run() {
   CreateHostResolver();
   AttemptResolution();

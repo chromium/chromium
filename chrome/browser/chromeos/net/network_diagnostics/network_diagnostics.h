@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/network_diagnostics_routine.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
@@ -59,6 +60,9 @@ class NetworkDiagnostics : public mojom::NetworkDiagnosticsRoutines {
   void RunHttpsLatency(RunHttpsLatencyCallback callback) override;
   void RunVideoConferencing(const absl::optional<std::string>& stun_server_name,
                             RunVideoConferencingCallback callback) override;
+  void GetResult(const mojom::RoutineType type,
+                 GetResultCallback callback) override;
+  void GetAllResults(GetAllResultsCallback callback) override;
 
  private:
   void RunRoutine(std::unique_ptr<NetworkDiagnosticsRoutine> routine,
@@ -70,6 +74,8 @@ class NetworkDiagnostics : public mojom::NetworkDiagnosticsRoutines {
   chromeos::DebugDaemonClient* debug_daemon_client_;
   // Receivers for external requests (WebUI, Feedback, CrosHealthdClient).
   mojo::ReceiverSet<mojom::NetworkDiagnosticsRoutines> receivers_;
+  // Holds the results of the routines.
+  base::flat_map<mojom::RoutineType, mojom::RoutineResultPtr> results_;
 
   base::WeakPtrFactory<NetworkDiagnostics> weak_ptr_factory_{this};
 };

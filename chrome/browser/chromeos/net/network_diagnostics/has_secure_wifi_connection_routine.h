@@ -30,6 +30,7 @@ class HasSecureWiFiConnectionRoutine : public NetworkDiagnosticsRoutine {
 
   // NetworkDiagnosticsRoutine:
   bool CanRun() override;
+  mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 

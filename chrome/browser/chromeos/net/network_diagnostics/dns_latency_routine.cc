@@ -92,6 +92,10 @@ DnsLatencyRoutine::DnsLatencyRoutine()
 
 DnsLatencyRoutine::~DnsLatencyRoutine() = default;
 
+mojom::RoutineType DnsLatencyRoutine::Type() {
+  return mojom::RoutineType::kDnsLatency;
+}
+
 void DnsLatencyRoutine::Run() {
   CreateHostResolver();
   hostnames_to_query_ = GetRandomHostnamesToQuery();

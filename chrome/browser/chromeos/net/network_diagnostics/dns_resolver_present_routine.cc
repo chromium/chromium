@@ -52,6 +52,10 @@ bool DnsResolverPresentRoutine::CanRun() {
   return true;
 }
 
+mojom::RoutineType DnsResolverPresentRoutine::Type() {
+  return mojom::RoutineType::kDnsResolverPresent;
+}
+
 void DnsResolverPresentRoutine::Run() {
   FetchActiveNetworks();
 }

@@ -39,6 +39,7 @@ class DnsResolutionRoutine : public NetworkDiagnosticsRoutine,
   ~DnsResolutionRoutine() override;
 
   // NetworkDiagnosticsRoutine:
+  mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 

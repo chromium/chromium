@@ -52,6 +52,7 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
   ~HttpsLatencyRoutine() override;
 
   // NetworkDiagnosticsRoutine:
+  mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 

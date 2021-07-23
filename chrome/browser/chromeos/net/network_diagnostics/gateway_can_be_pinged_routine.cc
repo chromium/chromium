@@ -54,6 +54,10 @@ bool GatewayCanBePingedRoutine::CanRun() {
   return true;
 }
 
+mojom::RoutineType GatewayCanBePingedRoutine::Type() {
+  return mojom::RoutineType::kGatewayCanBePinged;
+}
+
 void GatewayCanBePingedRoutine::Run() {
   FetchActiveNetworks();
 }

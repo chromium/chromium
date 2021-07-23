@@ -9,6 +9,24 @@ module chromeos.network_diagnostics.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 
+// Enumeration of the possible network diagnostic routines. See
+// NetworkDiagnosticsRoutines interface for more details.
+[Extensible]
+enum RoutineType {
+  kLanConnectivity,
+  kSignalStrength,
+  kGatewayCanBePinged,
+  kHasSecureWiFiConnection,
+  kDnsResolverPresent,
+  kDnsLatency,
+  kDnsResolution,
+  kCaptivePortal,
+  kHttpFirewall,
+  kHttpsFirewall,
+  kHttpsLatency,
+  kVideoConferencing,
+};
+
 // Each routine can result in one of the possible verdicts.
 [Extensible]
 enum RoutineVerdict {
@@ -173,6 +191,11 @@ struct RoutineResult {
   mojo_base.mojom.Time timestamp;
 };
 
+// A map of routine results by routine type.
+struct RoutineResults {
+  map<RoutineType, RoutineResult> results;
+};
+
 // This interface is to be used by any clients that need to run specific
 // network-related diagnostics. Expected clients of this interface are
 // NetworkHealth, cros_healthd, and a connectivity diagnostics Web UI (to name
@@ -269,4 +292,12 @@ interface NetworkDiagnosticsRoutines {
   // (2) Contact either a default or specified STUN server via TCP.
   // (3) Reach common media endpoints.
   RunVideoConferencing(string? stun_server_hostname) => (RoutineResult result);
+
+  // Returns the most recent result for the specified routine type, if it has
+  // been run.
+  GetResult(RoutineType routine) => (RoutineResult? result);
+
+  // Returns a map of all previously run routine types and their most recent
+  // result.
+  GetAllResults() => (map<RoutineType, RoutineResult> results);
 };

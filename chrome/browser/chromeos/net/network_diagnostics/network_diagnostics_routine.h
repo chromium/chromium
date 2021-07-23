@@ -24,6 +24,9 @@ class NetworkDiagnosticsRoutine {
       delete;
   virtual ~NetworkDiagnosticsRoutine();
 
+  // Returns the type of network diagnostic routine.
+  virtual mojom::RoutineType Type() = 0;
+
   // Determines whether this test is capable of being run.
   virtual bool CanRun();
 

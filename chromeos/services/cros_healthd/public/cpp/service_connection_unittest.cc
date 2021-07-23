@@ -325,6 +325,15 @@ class MockNetworkDiagnosticsRoutines : public NetworkDiagnosticsRoutines {
               (const absl::optional<std::string>&,
                NetworkDiagnosticsRoutines::RunVideoConferencingCallback),
               (override));
+  MOCK_METHOD(void,
+              GetResult,
+              (const network_diagnostics::mojom::RoutineType type,
+               NetworkDiagnosticsRoutines::GetResultCallback),
+              (override));
+  MOCK_METHOD(void,
+              GetAllResults,
+              (NetworkDiagnosticsRoutines::GetAllResultsCallback),
+              (override));
 
   mojo::PendingRemote<NetworkDiagnosticsRoutines> pending_remote() {
     if (receiver_.is_bound()) {

@@ -45,6 +45,10 @@ CaptivePortalRoutine::CaptivePortalRoutine() {
 
 CaptivePortalRoutine::~CaptivePortalRoutine() = default;
 
+mojom::RoutineType CaptivePortalRoutine::Type() {
+  return mojom::RoutineType::kCaptivePortal;
+}
+
 void CaptivePortalRoutine::Run() {
   FetchActiveNetworks();
 }

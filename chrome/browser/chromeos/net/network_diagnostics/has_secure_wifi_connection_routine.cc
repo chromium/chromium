@@ -58,6 +58,10 @@ HasSecureWiFiConnectionRoutine::HasSecureWiFiConnectionRoutine() {
 
 HasSecureWiFiConnectionRoutine::~HasSecureWiFiConnectionRoutine() = default;
 
+mojom::RoutineType HasSecureWiFiConnectionRoutine::Type() {
+  return mojom::RoutineType::kHasSecureWiFiConnection;
+}
+
 bool HasSecureWiFiConnectionRoutine::CanRun() {
   DCHECK(remote_cros_network_config_);
   return true;

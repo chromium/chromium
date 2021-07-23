@@ -44,6 +44,7 @@ class HttpsFirewallRoutine : public NetworkDiagnosticsRoutine {
   ~HttpsFirewallRoutine() override;
 
   // NetworkDiagnosticsRoutine:
+  mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 

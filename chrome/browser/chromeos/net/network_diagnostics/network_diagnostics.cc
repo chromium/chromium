@@ -263,10 +263,28 @@ void NetworkDiagnostics::RunRoutine(
       std::move(routine), std::move(callback)));
 }
 
+void NetworkDiagnostics::GetResult(mojom::RoutineType type,
+                                   GetResultCallback callback) {
+  mojom::RoutineResultPtr result;
+  if (results_.count(type)) {
+    result = results_[type].Clone();
+  }
+  std::move(callback).Run(std::move(result));
+}
+
+void NetworkDiagnostics::GetAllResults(GetAllResultsCallback callback) {
+  base::flat_map<mojom::RoutineType, mojom::RoutineResultPtr> response;
+  for (auto& r : results_) {
+    response[r.first] = r.second.Clone();
+  }
+  std::move(callback).Run(std::move(response));
+}
+
 void NetworkDiagnostics::HandleResult(
     std::unique_ptr<NetworkDiagnosticsRoutine> routine,
     RoutineResultCallback callback,
     mojom::RoutineResultPtr result) {
+  results_[routine->Type()] = result->Clone();
   std::move(callback).Run(std::move(result));
 }
 

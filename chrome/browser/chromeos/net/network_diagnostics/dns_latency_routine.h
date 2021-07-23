@@ -38,6 +38,7 @@ class DnsLatencyRoutine : public NetworkDiagnosticsRoutine,
   ~DnsLatencyRoutine() override;
 
   // NetworkDiagnosticsRoutine:
+  mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 

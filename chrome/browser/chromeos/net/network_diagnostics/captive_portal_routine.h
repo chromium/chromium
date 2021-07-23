@@ -27,6 +27,7 @@ class CaptivePortalRoutine : public NetworkDiagnosticsRoutine {
   ~CaptivePortalRoutine() override;
 
   // NetworkDiagnosticsRoutine:
+  mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 

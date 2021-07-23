@@ -63,6 +63,10 @@ HttpsFirewallRoutine::HttpsFirewallRoutine()
 
 HttpsFirewallRoutine::~HttpsFirewallRoutine() = default;
 
+mojom::RoutineType HttpsFirewallRoutine::Type() {
+  return mojom::RoutineType::kHttpsFirewall;
+}
+
 void HttpsFirewallRoutine::Run() {
   ProbeNextUrl();
 }

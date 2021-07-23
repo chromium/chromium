@@ -39,6 +39,10 @@ LanConnectivityRoutine::LanConnectivityRoutine() {
 
 LanConnectivityRoutine::~LanConnectivityRoutine() = default;
 
+mojom::RoutineType LanConnectivityRoutine::Type() {
+  return mojom::RoutineType::kLanConnectivity;
+}
+
 bool LanConnectivityRoutine::CanRun() {
   DCHECK(remote_cros_network_config_);
   return true;

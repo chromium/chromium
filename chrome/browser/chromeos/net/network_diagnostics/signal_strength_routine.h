@@ -28,6 +28,7 @@ class SignalStrengthRoutine : public NetworkDiagnosticsRoutine {
 
   // NetworkDiagnosticRoutine:
   bool CanRun() override;
+  mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
