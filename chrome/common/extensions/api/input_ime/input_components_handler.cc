@@ -87,9 +87,7 @@ bool InputComponentsHandler::Parse(Extension* extension,
     const base::Value* language_value = NULL;
     if (module_value->Get(keys::kLanguage, &language_value)) {
       if (language_value->is_string()) {
-        std::string language_str;
-        language_value->GetAsString(&language_str);
-        languages.insert(language_str);
+        languages.insert(language_value->GetString());
       } else if (language_value->is_list()) {
         const base::ListValue* language_list = NULL;
         language_value->GetAsList(&language_list);

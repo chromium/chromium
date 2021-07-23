@@ -58,11 +58,12 @@ bool AppIconColorHandler::Parse(Extension* extension, std::u16string* error) {
 
   const base::Value* temp = NULL;
   if (extension->manifest()->Get(keys::kAppIconColor, &temp)) {
-    if (!temp->GetAsString(&app_icon_color_info->icon_color_string_)) {
+    if (!temp->is_string()) {
       *error =
           base::UTF8ToUTF16(extensions::manifest_errors::kInvalidAppIconColor);
       return false;
     }
+    app_icon_color_info->icon_color_string_ = temp->GetString();
 
     if (!image_util::ParseHexColorString(
             app_icon_color_info->icon_color_string_,

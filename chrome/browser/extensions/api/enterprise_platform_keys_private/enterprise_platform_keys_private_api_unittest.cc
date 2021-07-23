@@ -110,9 +110,9 @@ TEST_F(EPKPChallengeMachineKeyTest, Success) {
   std::unique_ptr<base::Value> value(utils::RunFunctionAndReturnSingleResult(
       func_.get(), kFuncArgs, browser(), extensions::api_test_utils::NONE));
 
-  std::string response;
-  value->GetAsString(&response);
-  EXPECT_EQ("cmVzcG9uc2U=" /* Base64 encoding of 'response' */, response);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ("cmVzcG9uc2U=" /* Base64 encoding of 'response' */,
+            value->GetString());
 }
 
 class EPKPChallengeUserKeyTest : public EPKPChallengeKeyTestBase {
@@ -149,9 +149,9 @@ TEST_F(EPKPChallengeUserKeyTest, Success) {
   std::unique_ptr<base::Value> value(utils::RunFunctionAndReturnSingleResult(
       func_.get(), kFuncArgs, browser(), extensions::api_test_utils::NONE));
 
-  std::string response;
-  value->GetAsString(&response);
-  EXPECT_EQ("cmVzcG9uc2U=" /* Base64 encoding of 'response' */, response);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ("cmVzcG9uc2U=" /* Base64 encoding of 'response' */,
+            value->GetString());
 }
 
 }  // namespace

@@ -149,13 +149,13 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
       return false;
     }
 
-    std::string launch_path;
-    if (!temp->GetAsString(&launch_path)) {
+    if (!temp->is_string()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidLaunchValue,
           keys::kLaunchLocalPath);
       return false;
     }
+    const std::string launch_path = temp->GetString();
 
     // Ensure the launch path is a valid relative URL.
     GURL resolved = extension->url().Resolve(launch_path);
@@ -168,8 +168,7 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
 
     launch_local_path_ = launch_path;
   } else if (extension->manifest()->Get(keys::kLaunchWebURL, &temp)) {
-    std::string launch_url;
-    if (!temp->GetAsString(&launch_url)) {
+    if (!temp->is_string()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidLaunchValue,
           keys::kLaunchWebURL);
@@ -181,7 +180,7 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
                                                    keys::kLaunchWebURL);
     };
     // Ensure the launch web URL is a valid absolute URL and web extent scheme.
-    GURL url(launch_url);
+    GURL url(temp->GetString());
     if (!url.is_valid()) {
       set_launch_web_url_error();
       return false;
@@ -272,11 +271,12 @@ bool AppLaunchInfo::LoadLaunchContainer(Extension* extension,
                                   &tmp_launcher_container))
     return true;
 
-  std::string launch_container_string;
-  if (!tmp_launcher_container->GetAsString(&launch_container_string)) {
+  if (!tmp_launcher_container->is_string()) {
     *error = base::ASCIIToUTF16(errors::kInvalidLaunchContainer);
     return false;
   }
+  const std::string launch_container_string =
+      tmp_launcher_container->GetString();
 
   if (launch_container_string == values::kLaunchContainerPanelDeprecated) {
     launch_container_ = LaunchContainer::kLaunchContainerPanelDeprecated;
