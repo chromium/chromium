@@ -1484,13 +1484,6 @@ std::unique_ptr<RegistryEntry> GetProtocolUserChoiceEntry(
   return std::make_unique<RegistryEntry>(user_choice_path.c_str(), kRegProgId);
 }
 
-// Checks if the current user has selected a default handler for |protocol|.
-bool DoesProtocolHaveUserChoiceHandler(const std::wstring& protocol) {
-  std::vector<std::unique_ptr<RegistryEntry>> entries;
-  entries.push_back(GetProtocolUserChoiceEntry(protocol));
-  return AreEntriesAsDesired(entries, RegistryEntry::LOOK_IN_HKCU);
-}
-
 // Gets a ProtocolAssociations instance containing a single association where
 // |protocol| is handled by the default HTML browser handler.
 ShellUtil::ProtocolAssociations GetBrowserProtocolAssociation(
@@ -1601,6 +1594,61 @@ bool RegisterChromeBrowserImpl(const base::FilePath& chrome_exe,
   GetChromeAppRegistrationEntries(chrome_exe, std::wstring(), &entries);
   return ShellUtil::AddRegistryEntries(HKEY_CURRENT_USER, entries,
                                        best_effort_no_rollback);
+}
+
+// Registers a set of protocols for a particular application in the Windows
+// registry.
+//
+// This method is not supported and should not be called in Windows versions
+// prior to Win8, where write access to HKLM is required.
+//
+// |protocols| is the set of protocols to register. Must not be empty.
+// |prog_id| is the ProgId used by Windows for protocol associations with this
+// application. Must not be empty or start with a '.'.
+// |chrome_exe|: the full path to chrome.exe.
+bool RegisterApplicationForProtocols(const std::vector<std::wstring>& protocols,
+                                     const std::wstring& prog_id,
+                                     const base::FilePath& chrome_exe) {
+  DCHECK_GT(base::win::GetVersion(), base::win::Version::WIN7);
+
+  std::vector<std::unique_ptr<RegistryEntry>> entries;
+  ShellUtil::ApplicationInfo app_info =
+      ShellUtil::GetApplicationInfoForProgId(prog_id);
+
+  // Build the Windows Default Programs capabilities key for the app.
+  // "HKEY_CURRENT_USER\Software\[CompanyPathName\]ProductPathName[install_suffix]\AppProtocolHandlers\|prog_id|\Capabilities".
+  std::wstring capabilities_path = base::StrCat(
+      {install_static::GetRegistryPath(), ShellUtil::kRegAppProtocolHandlers,
+       kFilePathSeparator, prog_id, L"\\Capabilities"});
+
+  entries.push_back(std::make_unique<RegistryEntry>(
+      capabilities_path, ShellUtil::kRegApplicationName,
+      app_info.application_name));
+
+  // Use name as app description if description from |prog_id| registration is
+  // empty.
+  std::wstring app_description = app_info.application_description.empty()
+                                     ? app_info.application_name
+                                     : app_info.application_description;
+  entries.push_back(std::make_unique<RegistryEntry>(
+      capabilities_path, ShellUtil::kRegApplicationDescription,
+      app_description));
+
+  // Create URLAssociations
+  const std::wstring url_associations =
+      base::StrCat({std::wstring(capabilities_path), L"\\URLAssociations"});
+
+  for (const auto& protocol : protocols) {
+    entries.push_back(
+        std::make_unique<RegistryEntry>(url_associations, protocol, prog_id));
+  }
+
+  // Add the |prog_id| value to HKEY_CURRENT_USER\RegisteredApplications.
+  entries.push_back(std::make_unique<RegistryEntry>(
+      ShellUtil::kRegRegisteredApplications, prog_id, capabilities_path));
+
+  return AreEntriesAsDesired(entries, RegistryEntry::LOOK_IN_HKCU) ||
+         ShellUtil::AddRegistryEntries(HKEY_CURRENT_USER, entries);
 }
 
 }  // namespace
@@ -2646,12 +2694,14 @@ bool ShellUtil::AddAppProtocolAssociations(
     const std::vector<std::wstring>& protocols,
     const std::wstring& prog_id) {
   base::FilePath chrome_exe;
+  DCHECK_GT(base::win::GetVersion(), base::win::Version::WIN7);
+
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
     NOTREACHED();
     return false;
   }
 
-  if (!RegisterApplicationForProtocols(protocols, prog_id, chrome_exe, true)) {
+  if (!RegisterApplicationForProtocols(protocols, prog_id, chrome_exe)) {
     return false;
   }
 
@@ -2668,27 +2718,6 @@ bool ShellUtil::AddAppProtocolAssociations(
 
     if (!AddRegistryEntries(HKEY_CURRENT_USER, entries))
       success = false;
-
-    // On Windows 7, set this protocol as default for uncontested protocols.
-    // This is necessary to cause Windows to recognize this protocol
-    // in "Default Apps" Windows UI. This is not required for contested
-    // protocols as Windows has already recognized those protocols in
-    // Windows UI, and we don't wish to override existing defaults.
-    if (base::win::GetVersion() == base::win::Version::WIN7 &&
-        !DoesProtocolHaveUserChoiceHandler(protocol)) {
-      Microsoft::WRL::ComPtr<IApplicationAssociationRegistration> registration;
-      HRESULT hr =
-          ::CoCreateInstance(CLSID_ApplicationAssociationRegistration, nullptr,
-                             CLSCTX_INPROC, IID_PPV_ARGS(&registration));
-
-      if (FAILED(hr) || !registration)
-        success = false;
-
-      hr = registration->SetAppAsDefault(prog_id.c_str(), protocol.c_str(),
-                                         AT_URLPROTOCOL);
-      if (FAILED(hr))
-        success = false;
-    }
 
     // On Windows 10, removing the existing user choice for a given protocol
     // forces Windows to present a disambiguation dialog the next time this
@@ -2708,115 +2737,23 @@ bool ShellUtil::AddAppProtocolAssociations(
 }
 
 // static
-bool ShellUtil::RegisterApplicationForProtocols(
-    const std::vector<std::wstring>& protocols,
-    const std::wstring& prog_id,
-    const base::FilePath& chrome_exe,
-    bool elevate_if_not_admin) {
-  HKEY root = base::win::GetVersion() == base::win::Version::WIN7
-                  ? HKEY_LOCAL_MACHINE
-                  : HKEY_CURRENT_USER;
+bool ShellUtil::RemoveAppProtocolAssociations(const std::wstring& prog_id) {
+  DCHECK_GT(base::win::GetVersion(), base::win::Version::WIN7);
 
-  // Register directly if we can, otherwise elevate and use the installer.
-  if (root == HKEY_CURRENT_USER || IsUserAnAdmin()) {
-    std::vector<std::unique_ptr<RegistryEntry>> entries;
+  // Delete the |prog_id| value from HKEY_CURRENT_USER\RegisteredApplications.
+  InstallUtil::DeleteRegistryValue(HKEY_CURRENT_USER,
+                                   ShellUtil::kRegRegisteredApplications,
+                                   WorkItem::kWow64Default, prog_id);
 
-    ShellUtil::ApplicationInfo app_info = GetApplicationInfoForProgId(prog_id);
+  // Delete the key
+  // HKEY_CURRENT_USER\Software\[CompanyPathName\]ProductPathName[install_suffix]\AppProtocolHandlers\|prog_id|.
+  std::wstring app_key_path(install_static::GetRegistryPath());
+  app_key_path.append(ShellUtil::kRegAppProtocolHandlers);
+  app_key_path.push_back(base::FilePath::kSeparators[0]);
+  app_key_path.append(prog_id);
 
-    // Build the Windows Default Programs capabilities key for the app.
-    // "<root_hkey>\Software\[CompanyPathName\]ProductPathName[install_suffix]\AppProtocolHandlers\|prog_id|\Capabilities".
-    std::wstring capabilities_path = base::StrCat(
-        {install_static::GetRegistryPath(), ShellUtil::kRegAppProtocolHandlers,
-         kFilePathSeparator, prog_id, L"\\Capabilities"});
-
-    entries.push_back(std::make_unique<RegistryEntry>(
-        capabilities_path, ShellUtil::kRegApplicationName,
-        app_info.application_name));
-
-    // Use name as app description if description from |prog_id| registration is
-    // empty. The description is required for the app to show in various places
-    // of Windows 7.
-    std::wstring app_description = app_info.application_description.empty()
-                                       ? app_info.application_name
-                                       : app_info.application_description;
-    entries.push_back(std::make_unique<RegistryEntry>(
-        capabilities_path, ShellUtil::kRegApplicationDescription,
-        app_description));
-
-    // Create URLAssociations
-    const std::wstring url_associations =
-        base::StrCat({std::wstring(capabilities_path), L"\\URLAssociations"});
-
-    for (const auto& protocol : protocols) {
-      entries.push_back(
-          std::make_unique<RegistryEntry>(url_associations, protocol, prog_id));
-    }
-
-    // Add the |prog_id| value to <root hkey>\RegisteredApplications.
-    entries.push_back(std::make_unique<RegistryEntry>(
-        ShellUtil::kRegRegisteredApplications, prog_id, capabilities_path));
-
-    uint32_t look_for_in = root == HKEY_CURRENT_USER
-                               ? RegistryEntry::LOOK_IN_HKCU
-                               : RegistryEntry::LOOK_IN_HKLM;
-
-    return AreEntriesAsDesired(entries, look_for_in) ||
-           ShellUtil::AddRegistryEntries(root, entries);
-  }
-
-  // Admin rights are required to modify system-level protocol associations.
-  if (!elevate_if_not_admin)
-    return false;
-
-  // Elevate to do the whole job
-  std::wstring protocols_switch_value = base::JoinString(protocols, L",");
-  base::CommandLine::SwitchMap switches{
-      {installer::switches::kRegisterWebAppURLProtocols,
-       prog_id + L":" + protocols_switch_value}};
-  std::wstring suffix;
-
-  return GetInstallationSpecificSuffix(chrome_exe, &suffix) &&
-         ElevateAndRegisterChrome(chrome_exe, suffix, &switches);
-}
-
-bool ShellUtil::RemoveAppProtocolAssociations(const std::wstring& prog_id,
-                                              bool elevate_if_not_admin) {
-  HKEY root = base::win::GetVersion() == base::win::Version::WIN7
-                  ? HKEY_LOCAL_MACHINE
-                  : HKEY_CURRENT_USER;
-
-  if (root == HKEY_CURRENT_USER || IsUserAnAdmin()) {
-    // Delete the |prog_id| value from <root hkey>\RegisteredApplications.
-    InstallUtil::DeleteRegistryValue(root,
-                                     ShellUtil::kRegRegisteredApplications,
-                                     WorkItem::kWow64Default, prog_id);
-
-    // Delete the key
-    // <root_hkey>\Software\[CompanyPathName\]ProductPathName[install_suffix]\AppProtocolHandlers\|prog_id|.
-    std::wstring app_key_path = base::StrCat(
-        {install_static::GetRegistryPath(), ShellUtil::kRegAppProtocolHandlers,
-         kFilePathSeparator, prog_id});
-
-    return InstallUtil::DeleteRegistryKey(root, app_key_path,
-                                          WorkItem::kWow64Default);
-  }
-
-  // Admin rights are required to modify system-level protocol associations.
-  if (!elevate_if_not_admin)
-    return false;
-
-  base::FilePath chrome_exe;
-  if (!base::PathService::Get(base::FILE_EXE, &chrome_exe))
-    return false;
-
-  std::wstring suffix;
-  if (!GetInstallationSpecificSuffix(chrome_exe, &suffix))
-    return false;
-
-  // Elevate to do the whole job.
-  base::CommandLine::SwitchMap switches{
-      {installer::switches::kUnregisterWebAppProgId, prog_id}};
-  return ElevateAndRegisterChrome(chrome_exe, suffix, &switches);
+  return InstallUtil::DeleteRegistryKey(HKEY_CURRENT_USER, app_key_path,
+                                        WorkItem::kWow64Default);
 }
 
 // static

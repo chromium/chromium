@@ -1314,6 +1314,10 @@ TEST_F(ShellUtilRegistryTest, GetApplicationInfoForProgId) {
 }
 
 TEST_F(ShellUtilRegistryTest, AddAppProtocolAssociations) {
+  // App protocol handlers are not supported on Windows 7.
+  if (base::win::GetVersion() <= base::win::Version::WIN7)
+    return;
+
   // Create test protocol associations.
   const std::wstring app_progid = L"app_progid1";
   const std::vector<std::wstring> app_protocols = {L"web+test", L"mailto"};
@@ -1332,7 +1336,7 @@ TEST_F(ShellUtilRegistryTest, AddAppProtocolAssociations) {
   EXPECT_TRUE(key.HasValue(L"URL Protocol"));
 
   // Ensure that URLAssociations entries were created for each protocol.
-  // "<root_hkey>\Software\[CompanyPathName\]ProductPathName[install_suffix]\AppProtocolHandlers\|prog_id|\Capabilities\URLAssociations\<protocol>".
+  // "HKEY_CURRENT_USER\Software\[CompanyPathName\]ProductPathName[install_suffix]\AppProtocolHandlers\|prog_id|\Capabilities\URLAssociations\<protocol>".
   std::wstring capabilities_path(install_static::GetRegistryPath());
   capabilities_path.append(ShellUtil::kRegAppProtocolHandlers);
   capabilities_path.push_back(base::FilePath::kSeparators[0]);
@@ -1342,11 +1346,9 @@ TEST_F(ShellUtilRegistryTest, AddAppProtocolAssociations) {
   const std::wstring url_associations_key_name =
       capabilities_path + L"\\URLAssociations";
 
-  HKEY root = base::win::GetVersion() == base::win::Version::WIN7
-                  ? HKEY_LOCAL_MACHINE
-                  : HKEY_CURRENT_USER;
-  ASSERT_EQ(ERROR_SUCCESS,
-            key.Open(root, url_associations_key_name.c_str(), KEY_READ));
+  ASSERT_EQ(
+      ERROR_SUCCESS,
+      key.Open(HKEY_CURRENT_USER, url_associations_key_name.c_str(), KEY_READ));
 
   ASSERT_EQ(ERROR_SUCCESS, key.ReadValue(L"web+test", &value));
   EXPECT_EQ(app_progid, std::wstring(value));
@@ -1355,10 +1357,10 @@ TEST_F(ShellUtilRegistryTest, AddAppProtocolAssociations) {
   EXPECT_EQ(app_progid, std::wstring(value));
 
   // Ensure that app was registered correctly under RegisteredApplications.
-  // <root hkey>\RegisteredApplications\<prog_id>
+  // "HKEY_CURRENT_USER\RegisteredApplications\<prog_id>".
   ASSERT_EQ(
       ERROR_SUCCESS,
-      key.Open(root,
+      key.Open(HKEY_CURRENT_USER,
                std::wstring(ShellUtil::kRegRegisteredApplications).c_str(),
                KEY_READ));
 
@@ -1391,6 +1393,10 @@ TEST_F(ShellUtilRegistryTest, ToAndFromCommandLineArgument) {
 }
 
 TEST_F(ShellUtilRegistryTest, RemoveAppProtocolAssociations) {
+  // App protocol handlers are not supported on Windows 7.
+  if (base::win::GetVersion() <= base::win::Version::WIN7)
+    return;
+
   // Create test protocol associations.
   const std::wstring app_progid = L"app_progid1";
   const std::vector<std::wstring> app_protocols = {L"web+test"};
@@ -1398,28 +1404,25 @@ TEST_F(ShellUtilRegistryTest, RemoveAppProtocolAssociations) {
   ASSERT_TRUE(ShellUtil::AddAppProtocolAssociations(app_protocols, app_progid));
 
   // Delete associations and ensure that the protocol entry does not exist.
-  EXPECT_TRUE(ShellUtil::RemoveAppProtocolAssociations(app_progid, false));
+  EXPECT_TRUE(ShellUtil::RemoveAppProtocolAssociations(app_progid));
 
   // Ensure that the software registration key was removed.
-  // "<root_hkey>\Software\[CompanyPathName\]ProductPathName[install_suffix]\AppProtocolHandlers\|prog_id|".
+  // "HKEY_CURRENT_USER\Software\[CompanyPathName\]ProductPathName[install_suffix]\AppProtocolHandlers\|prog_id|".
   std::wstring capabilities_path(install_static::GetRegistryPath());
   capabilities_path.append(ShellUtil::kRegAppProtocolHandlers);
   capabilities_path.push_back(base::FilePath::kSeparators[0]);
   capabilities_path.append(app_progid);
 
-  HKEY root = base::win::GetVersion() == base::win::Version::WIN7
-                  ? HKEY_LOCAL_MACHINE
-                  : HKEY_CURRENT_USER;
   base::win::RegKey key;
 
   ASSERT_EQ(ERROR_FILE_NOT_FOUND,
-            key.Open(root, capabilities_path.c_str(), KEY_READ));
+            key.Open(HKEY_CURRENT_USER, capabilities_path.c_str(), KEY_READ));
 
   // Ensure that the RegisteredApplications entry was removed.
-  // <root hkey>\RegisteredApplications\<prog_id>
+  // "HKEY_CURRENT_USER\RegisteredApplications\<prog_id>".
   ASSERT_EQ(
       ERROR_SUCCESS,
-      key.Open(root,
+      key.Open(HKEY_CURRENT_USER,
                std::wstring(ShellUtil::kRegRegisteredApplications).c_str(),
                KEY_READ));
   EXPECT_FALSE(key.HasValue(app_progid.c_str()));

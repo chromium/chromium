@@ -67,7 +67,7 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
   }
 
   // Ensures that URLAssociations entries are created for a given protocol.
-  // "<root hkey>\Software\<prog_id>\Capabilities\URLAssociations\<protocol>".
+  // "HKEY_CURRENT_USER\Software\<prog_id>\Capabilities\URLAssociations\<protocol>".
   bool ProgIdRegisteredForProtocol(const std::string& protocol,
                                    const AppId& app_id,
                                    Profile* profile) {
@@ -80,14 +80,11 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
     url_associations_key_name.append(L"\\Capabilities");
     url_associations_key_name.append(L"\\URLAssociations");
 
-    HKEY root = base::win::GetVersion() == base::win::Version::WIN7
-                    ? HKEY_LOCAL_MACHINE
-                    : HKEY_CURRENT_USER;
-
     base::win::RegKey key;
     std::wstring value;
-    bool association_exists = key.Open(root, url_associations_key_name.c_str(),
-                                       KEY_READ) == ERROR_SUCCESS;
+    bool association_exists =
+        key.Open(HKEY_CURRENT_USER, url_associations_key_name.c_str(),
+                 KEY_READ) == ERROR_SUCCESS;
 
     bool entry_matches = (key.ReadValue(base::UTF8ToWide(protocol).c_str(),
                                         &value) == ERROR_SUCCESS) &&
@@ -136,16 +133,13 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
         ProgIdRegisteredForProtocol(handler2_info.protocol, app_id, profile));
   }
 
-  // Gets the launcher file path for |sanitized_app_name|. If not
-  // on Win7, the name will have the ".exe" extension.
+  // Gets the launcher file path for |sanitized_app_name|.
   base::FilePath GetAppSpecificLauncherFilePath(
       const std::string& sanitized_app_name) {
     base::FilePath app_specific_launcher_filepath(
         base::ASCIIToWide(sanitized_app_name));
-    if (base::win::GetVersion() > base::win::Version::WIN7) {
-      app_specific_launcher_filepath =
-          app_specific_launcher_filepath.AddExtension(L"exe");
-    }
+    app_specific_launcher_filepath =
+        app_specific_launcher_filepath.AddExtension(L"exe");
     return app_specific_launcher_filepath;
   }
 
@@ -177,6 +171,10 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest,
 
 TEST_F(WebAppProtocolHandlerRegistrationWinTest,
        RegisterMultipleHandlersWithSameScheme) {
+  // App protocol handlers are not supported on Windows 7.
+  if (base::win::GetVersion() <= base::win::Version::WIN7)
+    return;
+
   AddAndVerifyProtocolAssociations(kApp1Id, kApp1Name, kApp1Url, GetProfile(),
                                    "");
   AddAndVerifyProtocolAssociations(kApp2Id, kApp2Name, kApp2Url, GetProfile(),
@@ -188,6 +186,10 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest,
 // the profile name, e.g., "app name (Default)" and "app name (Profile 2)".
 TEST_F(WebAppProtocolHandlerRegistrationWinTest,
        RegisterProtocolHandlersForWebAppIn2Profiles) {
+  // App protocol handlers are not supported on Windows 7.
+  if (base::win::GetVersion() <= base::win::Version::WIN7)
+    return;
+
   AddAndVerifyProtocolAssociations(kApp1Id, kApp1Name, kApp1Url, GetProfile(),
                                    "");
 
@@ -228,6 +230,10 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest,
 // registered app name.
 TEST_F(WebAppProtocolHandlerRegistrationWinTest,
        UnRegisterProtocolHandlersForWebAppIn2Profiles) {
+  // App protocol handlers are not supported on Windows 7.
+  if (base::win::GetVersion() <= base::win::Version::WIN7)
+    return;
+
   AddAndVerifyProtocolAssociations(kApp1Id, kApp1Name, kApp1Url, GetProfile(),
                                    "");
   base::FilePath app_specific_launcher_path =
@@ -280,6 +286,10 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest,
 // registry settings and the app-specific launcher.
 TEST_F(WebAppProtocolHandlerRegistrationWinTest,
        UnregisterProtocolHandlersForWebApp) {
+  // App protocol handlers are not supported on Windows 7.
+  if (base::win::GetVersion() <= base::win::Version::WIN7)
+    return;
+
   AddAndVerifyProtocolAssociations(kApp1Id, kApp1Name, kApp1Url, GetProfile(),
                                    "");
   base::FilePath app_specific_launcher_path =

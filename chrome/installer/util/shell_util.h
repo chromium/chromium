@@ -795,39 +795,19 @@ class ShellUtil {
   // designated as the non-default handler for the corresponding protocol. For
   // protocols uncontested by other handlers on the OS, the app will be
   // promoted to default handler.
+  //
+  // This method is not supported and should not be called in Windows versions
+  // prior to Win8, where write access to HKLM is required.
   static bool AddAppProtocolAssociations(
       const std::vector<std::wstring>& protocols,
       const std::wstring& prog_id);
 
-  // Registers a set of protocols for a particular application in the Windows
-  // registry.
-  //
-  // This method requires write access to HKLM (prior to Win8).
-  // If write to HKLM is required, but fails, and:
-  // - |elevate_if_not_admin| is true:
-  //   tries to launch setup.exe with admin privileges (by prompting the user
-  //   with a UAC) to do these tasks.
-  // - |elevate_if_not_admin| is false:
-  //   adds the ProgId entries to HKCU. These entries will not make the app show
-  //   in Default Programs but they are still useful because the app can be
-  //   registered to run when the user clicks on a protocol link.
-  //
-  // |protocols| is the set of protocols to register. Must not be empty.
-  // |prog_id| is the ProgId used by Windows for protocol associations with this
-  // application. Must not be empty or start with a '.'.
-  // |chrome_exe|: the full path to chrome.exe.
-  // |elevate_if_not_admin| if true will make this method try alternate methods
-  // as described above.
-  static bool RegisterApplicationForProtocols(
-      const std::vector<std::wstring>& protocols,
-      const std::wstring& prog_id,
-      const base::FilePath& chrome_exe,
-      bool elevate_if_not_admin);
-
   // Removes all protocol associations for a particular web app from the Windows
   // registry.
-  static bool RemoveAppProtocolAssociations(const std::wstring& prog_id,
-                                            bool elevate_if_not_admin);
+  //
+  // This method is not supported and should not be called in Windows versions
+  // prior to Win8, where write access to HKLM is required.
+  static bool RemoveAppProtocolAssociations(const std::wstring& prog_id);
 
   // Returns the browser's ProgId for the current install.
   static std::wstring GetProgIdForBrowser(const base::FilePath& chrome_exe);
