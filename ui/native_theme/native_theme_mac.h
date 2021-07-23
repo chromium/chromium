@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/native_theme/native_theme_aura.h"
 #include "ui/native_theme/native_theme_base.h"
 #include "ui/native_theme/native_theme_export.h"
 
@@ -165,6 +166,22 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
       color_scheme_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeThemeMac);
+};
+
+// Mac implementation of native theme support for web controls.
+// For consistency with older versions of Chrome for Mac, we do multiply
+// the border width and radius by the zoom, unlike the generic impl.
+class NativeThemeMacWeb : public NativeThemeAura {
+ public:
+  NativeThemeMacWeb();
+
+  float AdjustBorderWidthByZoom(float border_width,
+                                float zoom_level) const override;
+  float AdjustBorderRadiusByZoom(Part part,
+                                 float border_width,
+                                 float zoom_level) const override;
+
+  static NativeThemeMacWeb* instance();
 };
 
 }  // namespace ui

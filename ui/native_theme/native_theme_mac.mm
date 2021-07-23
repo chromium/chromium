@@ -26,6 +26,7 @@
 #include "ui/gfx/skia_util.h"
 #include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme_aura.h"
+#include "ui/native_theme/native_theme_features.h"
 
 namespace {
 
@@ -109,7 +110,7 @@ namespace ui {
 
 // static
 NativeTheme* NativeTheme::GetInstanceForWeb() {
-  return NativeThemeAura::web_instance();
+  return NativeThemeMacWeb::instance();
 }
 
 // static
@@ -654,6 +655,32 @@ void NativeThemeMac::ConfigureWebInstance() {
       CaptionSettingsChangedNotificationCallback,
       kMACaptionAppearanceSettingsChangedNotification, 0,
       CFNotificationSuspensionBehaviorDeliverImmediately);
+}
+
+NativeThemeMacWeb::NativeThemeMacWeb()
+    : NativeThemeAura(IsOverlayScrollbarEnabled(), false) {}
+
+// static
+NativeThemeMacWeb* NativeThemeMacWeb::instance() {
+  static base::NoDestructor<NativeThemeMacWeb> s_native_theme;
+  return s_native_theme.get();
+}
+
+float NativeThemeMacWeb::AdjustBorderWidthByZoom(float border_width,
+                                                 float zoom_level) const {
+  float zoomed = floorf(border_width * zoom_level);
+  return std::max(1.0f, zoomed);
+}
+
+float NativeThemeMacWeb::AdjustBorderRadiusByZoom(Part part,
+                                                  float border_radius,
+                                                  float zoom_level) const {
+  if (part != kTextField && part != kPushButton) {
+    return NativeThemeAura::AdjustBorderRadiusByZoom(part, border_radius,
+                                                     zoom_level);
+  }
+  float zoomed = floorf(border_radius * zoom_level);
+  return std::max(1.0f, zoomed);
 }
 
 }  // namespace ui

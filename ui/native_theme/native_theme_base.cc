@@ -774,6 +774,8 @@ void NativeThemeBase::PaintButton(cc::PaintCanvas* canvas,
 
   float border_radius =
       GetBorderRadiusForPart(kPushButton, rect.width(), rect.height());
+  border_radius =
+      AdjustBorderRadiusByZoom(kPushButton, border_radius, button.zoom);
   // Paint the background (is not visible behind the rounded corners).
   skrect.inset(border_width / 2, border_width / 2);
   PaintLightenLayer(canvas, skrect, state, border_radius, color_scheme);
@@ -795,8 +797,10 @@ void NativeThemeBase::PaintTextField(cc::PaintCanvas* canvas,
                                      const TextFieldExtraParams& text,
                                      ColorScheme color_scheme) const {
   SkRect bounds = gfx::RectToSkRect(rect);
-  const SkScalar border_radius =
+  float border_radius =
       GetBorderRadiusForPart(kTextField, rect.width(), rect.height());
+  border_radius =
+      AdjustBorderRadiusByZoom(kTextField, border_radius, text.zoom);
   float border_width = AdjustBorderWidthByZoom(kBorderWidth, text.zoom);
 
   // Paint the background (is not visible behind the rounded corners).
