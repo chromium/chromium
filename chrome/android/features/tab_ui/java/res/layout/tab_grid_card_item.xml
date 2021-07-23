@@ -42,14 +42,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/tab_favicon"
-                android:layout_marginEnd="32dp"
                 android:gravity="center_vertical"
-                android:minHeight="?attr/tabGridHeaderHeight"
-                android:requiresFadingEdge="horizontal"
-                android:fadingEdgeLength="24dp"
                 android:ellipsize="none"
                 android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"/>
+                android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+                style="?attr/tabGridTitleStyle"/>
             <org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView
                 android:id="@+id/tab_thumbnail"
                 android:layout_width="match_parent"

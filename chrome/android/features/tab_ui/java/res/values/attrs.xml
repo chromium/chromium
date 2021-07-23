@@ -15,10 +15,10 @@
     <attr name="tabGridBackground" format="reference" />
     <attr name="tabGridMargin" format="dimension" />
     <attr name="tabGridHeaderHeight" format="dimension" />
-    <attr name="tabGridTitleFadingLength" format="dimension" />
     <attr name="tabGridFaviconStyle" format="reference" />
     <attr name="tabGridThumbnailStyle" format="reference" />
     <attr name="tabGridActionButtonStyle" format="reference" />
+    <attr name="tabGridTitleStyle" format="reference" />
 
     <!-- Tab grid dialog attributes -->
     <attr name="tabGridDialogCornerRadius" format="dimension" />
