@@ -397,5 +397,13 @@ public class NavigationController {
                 callback.onPageDestroyed((Page) page);
             }
         }
+
+        @Override
+        public void onPageLanguageDetermined(IClientPage page, String language) {
+            StrictModeWorkaround.apply();
+            for (NavigationCallback callback : mCallbacks) {
+                callback.onPageLanguageDetermined((Page) page, language);
+            }
+        }
     }
 }

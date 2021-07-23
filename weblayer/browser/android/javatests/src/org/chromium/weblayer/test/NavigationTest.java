@@ -73,6 +73,8 @@ public class NavigationTest {
     private static final String URL2 = "data:text,bar";
     private static final String URL3 = "data:text,baz";
     private static final String URL4 = "data:text,bat";
+    private static final String ENGLISH_PAGE = "english_page.html";
+    private static final String FRENCH_PAGE = "french_page.html";
     private static final String STREAM_URL = "https://doesntreallyexist123.com/bar";
     private static final String STREAM_HTML = "<html>foobar</html>";
     private static final String STREAM_INNER_BODY = "foobar";
@@ -296,6 +298,25 @@ public class NavigationTest {
             }
         }
 
+        public class PageLanguageDeterminedCallbackHelper extends CallbackHelper {
+            private Page mPage;
+            private String mLanguage;
+
+            public void notifyCalled(Page page, String language) {
+                mPage = page;
+                mLanguage = language;
+                notifyCalled();
+            }
+
+            public Page getPage() {
+                return mPage;
+            }
+
+            public String getLanguage() {
+                return mLanguage;
+            }
+        }
+
         public NavigationCallbackHelper onStartedCallback = new NavigationCallbackHelper();
         public NavigationCallbackHelper onRedirectedCallback = new NavigationCallbackHelper();
         public NavigationCallbackHelper onCompletedCallback = new NavigationCallbackHelper();
@@ -311,6 +332,8 @@ public class NavigationTest {
                 new LargestContentfulPaintCallbackHelper();
         public UriCallbackHelper onOldPageNoLongerRenderedCallback = new UriCallbackHelper();
         public PageCallbackHelper onPageDestroyedCallback = new PageCallbackHelper();
+        public PageLanguageDeterminedCallbackHelper onPageLanguageDeterminedCallback =
+                new PageLanguageDeterminedCallbackHelper();
 
         @Override
         public void onNavigationStarted(Navigation navigation) {
@@ -371,6 +394,11 @@ public class NavigationTest {
         @Override
         public void onPageDestroyed(Page page) {
             onPageDestroyedCallback.notifyCalled(page);
+        }
+
+        @Override
+        public void onPageLanguageDetermined(Page page, String language) {
+            onPageLanguageDeterminedCallback.notifyCalled(page, language);
         }
     }
 
@@ -1550,5 +1578,45 @@ public class NavigationTest {
 
         navigateAndWaitForCompletion(URL3, () -> navigationController.goToIndex(2));
         assertEquals(2, mCallback.onCompletedCallback.getNavigationEntryOffset());
+    }
+
+    @MinWebLayerVersion(94)
+    @Test
+    @SmallTest
+    public void testOnPageLanguageDetermined() throws Exception {
+        TestWebServer testServer = TestWebServer.start();
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
+        setNavigationCallback(activity);
+
+        int curLanguageDeterminedCount = mCallback.onPageLanguageDeterminedCallback.getCallCount();
+
+        // Navigate to a page in English.
+        String url = mActivityTestRule.getTestDataURL(ENGLISH_PAGE);
+        mActivityTestRule.navigateAndWait(url);
+
+        Page committedPage = mCallback.onCompletedCallback.getPage();
+        assertNotNull(committedPage);
+
+        // Verify that the language determined callback is fired as expected.
+        mCallback.onPageLanguageDeterminedCallback.waitForCallback(curLanguageDeterminedCount);
+
+        assertEquals(committedPage, mCallback.onPageLanguageDeterminedCallback.getPage());
+        assertEquals("en", mCallback.onPageLanguageDeterminedCallback.getLanguage());
+
+        // Now navigate to a page in French.
+        committedPage = null;
+        curLanguageDeterminedCount = mCallback.onPageLanguageDeterminedCallback.getCallCount();
+
+        url = mActivityTestRule.getTestDataURL(FRENCH_PAGE);
+        mActivityTestRule.navigateAndWait(url);
+
+        committedPage = mCallback.onCompletedCallback.getPage();
+        assertNotNull(committedPage);
+
+        // Verify that the language determined callback is fired as expected.
+        mCallback.onPageLanguageDeterminedCallback.waitForCallback(curLanguageDeterminedCount);
+
+        assertEquals(committedPage, mCallback.onPageLanguageDeterminedCallback.getPage());
+        assertEquals("fr", mCallback.onPageLanguageDeterminedCallback.getLanguage());
     }
 }

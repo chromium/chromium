@@ -19,6 +19,9 @@
 #include "url/gurl.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/feature_list_creator.h"
+#include "weblayer/browser/navigation_controller_impl.h"
+#include "weblayer/browser/page_impl.h"
+#include "weblayer/browser/tab_impl.h"
 #include "weblayer/browser/translate_accept_languages_factory.h"
 #include "weblayer/browser/translate_ranker_factory.h"
 
@@ -145,6 +148,31 @@ void TranslateClientImpl::ShowReportLanguageDetectionErrorUI(
 
 void TranslateClientImpl::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
+  // Inform NavigationControllerImpl that the language has been determined. Note
+  // that this event is implicitly regarded as being for the Page corresponding
+  // to the most recently committed primary main-frame navigation, if one exists
+  // (see the call to SetPageLanguageInNavigation() in
+  // ContentTranslateDriver::RegisterPage()); this corresponds to
+  // WebContents::GetMainFrame()::GetPage(). Note also that in certain corner
+  // cases (e.g., tab startup) there might not be such a committed primary
+  // main-frame navigation; in those cases there won't be a weblayer::Page
+  // corresponding to the primary page, as weblayer::Page objects are created
+  // only at navigation commit.
+  // TODO(crbug.com/1231889): Rearchitect translate's renderer-browser Mojo
+  // connection to be able to explicitly determine the document/content::Page
+  // with which this language determination event is associated.
+  PageImpl* page =
+      PageImpl::GetForPage(web_contents()->GetMainFrame()->GetPage());
+  if (page) {
+    std::string language = details.adopted_language;
+
+    auto* tab = TabImpl::FromWebContents(web_contents());
+    auto* navigation_controller =
+        static_cast<NavigationControllerImpl*>(tab->GetNavigationController());
+    navigation_controller->OnPageLanguageDetermined(page, language);
+  }
+
+  // Show translate UI if desired.
   if (show_translate_ui_on_ready_) {
     GetTranslateManager()->ShowTranslateUI();
     show_translate_ui_on_ready_ = false;

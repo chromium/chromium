@@ -197,6 +197,19 @@ void NavigationControllerImpl::OnPageDestroyed(Page* page) {
     observer.OnPageDestroyed(page);
 }
 
+void NavigationControllerImpl::OnPageLanguageDetermined(Page* page,
+                                                        std::string language) {
+#if defined(OS_ANDROID)
+  JNIEnv* env = AttachCurrentThread();
+  Java_NavigationControllerImpl_onPageLanguageDetermined(
+      env, java_controller_, static_cast<PageImpl*>(page)->java_page(),
+      base::android::ConvertUTF8ToJavaString(env, language));
+#endif
+
+  for (auto& observer : observers_)
+    observer.OnPageLanguageDetermined(page, language);
+}
+
 #if defined(OS_ANDROID)
 void NavigationControllerImpl::SetNavigationControllerImpl(
     JNIEnv* env,
