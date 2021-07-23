@@ -1771,31 +1771,34 @@ TEST_F(PeripheralBatteryListenerTest, StylusBatteryEligibility) {
 
   EXPECT_CALL(listener_observer_mock,
               OnAddingBattery(AFIELD(&BI::key, Eq(kTestStylusBatteryPath))));
-  EXPECT_CALL(listener_observer_mock,
-              OnUpdatedBatteryLevel(AllOf(
-                  AFIELD(&BI::key, Eq(kTestStylusBatteryPath)),
-                  AFIELD(&BI::battery_report_eligible, Eq(true)),
-                  AFIELD(&BI::level, Eq(50)),
-                  AFIELD(&BI::charge_status,
-                         Eq(kTestStylusBatteryStatusDischargingOut)),
-                  AFIELD(&BI::type, Eq(BI::PeripheralType::kStylusViaScreen)),
-                  AFIELD(&BI::bluetooth_address, Eq("")))));
 
-  battery_listener_->PeripheralBatteryStatusReceived(
-      kTestStylusBatteryPath, kTestStylusName, 50,
-      kTestStylusBatteryStatusDischargingIn, kStylusEligibleSerialNumber,
-      kBatteryPolledUpdate);
+  for (std::string SN : kStylusEligibleSerialNumbers) {
+    EXPECT_CALL(listener_observer_mock,
+                OnUpdatedBatteryLevel(AllOf(
+                    AFIELD(&BI::key, Eq(kTestStylusBatteryPath)),
+                    AFIELD(&BI::battery_report_eligible, Eq(true)),
+                    AFIELD(&BI::level, Eq(50)),
+                    AFIELD(&BI::charge_status,
+                           Eq(kTestStylusBatteryStatusDischargingOut)),
+                    AFIELD(&BI::type, Eq(BI::PeripheralType::kStylusViaScreen)),
+                    AFIELD(&BI::bluetooth_address, Eq("")))));
 
-  EXPECT_CALL(listener_observer_mock,
-              OnUpdatedBatteryLevel(
-                  AllOf(AFIELD(&BI::key, Eq(kTestStylusBatteryPath)),
-                        AFIELD(&BI::level, Eq(5)),
-                        AFIELD(&BI::battery_report_eligible, Eq(false)))));
+    battery_listener_->PeripheralBatteryStatusReceived(
+        kTestStylusBatteryPath, kTestStylusName, 50,
+        kTestStylusBatteryStatusDischargingIn, SN, kBatteryPolledUpdate);
+  }
 
-  battery_listener_->PeripheralBatteryStatusReceived(
-      kTestStylusBatteryPath, kTestStylusName, 5,
-      kTestStylusBatteryStatusDischargingIn, kStylusIneligibleSerialNumber,
-      kBatteryEventUpdate);
+  for (std::string SN : kStylusIneligibleSerialNumbers) {
+    EXPECT_CALL(listener_observer_mock,
+                OnUpdatedBatteryLevel(
+                    AllOf(AFIELD(&BI::key, Eq(kTestStylusBatteryPath)),
+                          AFIELD(&BI::level, Eq(5)),
+                          AFIELD(&BI::battery_report_eligible, Eq(false)))));
+
+    battery_listener_->PeripheralBatteryStatusReceived(
+        kTestStylusBatteryPath, kTestStylusName, 5,
+        kTestStylusBatteryStatusDischargingIn, SN, kBatteryEventUpdate);
+  }
 }
 
 }  // namespace ash

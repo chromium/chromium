@@ -60,10 +60,12 @@ constexpr char kStylusGarageKey[] = "garaged-stylus-charger";
 constexpr char16_t kStylusGarageName[] = u"Stylus Charger";
 
 // Serial numbers for styluses which may report inconsistent battery levels.
-const RE2 kBlockedStylusDevicesPattern("(?i)^019[0-9A-F]{5}(11|4[F0])FE368C$");
+const RE2 kBlockedStylusDevicesPattern(
+    "(?i)^(019|015|020|201|211|213)[0-9A-F]{5}(11|4[F0])FE368C$");
 // Serial numbers for styluses which may report inconsistent battery levels,
 // but might not actually exist in wild.
-const RE2 kUnusualStylusDevicesPattern("(?i)^019[0-9A-F]{7}FE368C$");
+const RE2 kUnusualStylusDevicesPattern(
+    "(?i)^[0-9A-F]{3}[0-9A-F]{5}[0-9A-F]{2}FE368C$");
 
 // Checks if the device is an external stylus.
 bool IsStylusDevice(const std::string& path,
