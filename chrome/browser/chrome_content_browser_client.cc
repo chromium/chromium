@@ -578,6 +578,13 @@
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
 #endif
 
+#if defined(_WINDOWS_)
+// This source file doesn't need windows.h and its associated namespace
+// pollution. Try to avoid windows.h in header files used by source files such
+// as this one. See brucedawson@chromium.org for assistance.
+#error Avoid new windows.h dependencies here. See accompanying source comment.
+#endif
+
 using base::FileDescriptor;
 using blink::mojom::EffectiveConnectionType;
 using blink::web_pref::WebPreferences;
