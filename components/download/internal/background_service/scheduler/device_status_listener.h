@@ -48,6 +48,7 @@ class DeviceStatusListener : public NetworkStatusListener::Observer,
 
  protected:
   // NetworkStatusListener::Observer implementation. Visible for testing.
+  void OnNetworkStatusReady(network::mojom::ConnectionType type) override;
   void OnNetworkChanged(network::mojom::ConnectionType type) override;
 
   // Used to listen to network connectivity changes.

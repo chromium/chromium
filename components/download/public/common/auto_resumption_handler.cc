@@ -131,6 +131,13 @@ bool AutoResumptionHandler::IsActiveNetworkMetered() const {
       network_listener_->GetConnectionType());
 }
 
+void AutoResumptionHandler::OnNetworkStatusReady(
+    network::mojom::ConnectionType type) {
+  // TODO(xingliu): The API to check network type on all platforms is async now,
+  // that early call to IsActiveNetworkMetered() which queries network type
+  // might just return a unknown network type.
+}
+
 void AutoResumptionHandler::OnNetworkChanged(
     network::mojom::ConnectionType type) {
   if (!IsConnected(type))

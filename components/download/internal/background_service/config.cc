@@ -60,13 +60,8 @@ const base::TimeDelta kDefaultWindowStartTime = base::TimeDelta::FromMinutes(5);
 const base::TimeDelta kDefaultWindowEndTime = base::TimeDelta::FromHours(8);
 
 // Default value for start up delay to wait for network stack ready.
-#if defined(OS_ANDROID)
-const base::TimeDelta kDefaultNetworkStartupDelay =
-    base::TimeDelta::FromSeconds(25);
-#else
 const base::TimeDelta kDefaultNetworkStartupDelay =
     base::TimeDelta::FromSeconds(2);
-#endif  // defined(OS_ANDROID)
 
 // Default value for start up delay to wait for network stack ready when
 // triggered from a background task.

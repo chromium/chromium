@@ -19,7 +19,15 @@ class NetworkStatusListener {
   // Observer to receive network connection type change notifications.
   class Observer {
    public:
+    // Called after the NetworkStatusListener is initialized and ready to use.
+    virtual void OnNetworkStatusReady(network::mojom::ConnectionType type) = 0;
+
+    // Called when the network type is changed.
     virtual void OnNetworkChanged(network::mojom::ConnectionType type) = 0;
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+    Observer() = default;
 
    protected:
     virtual ~Observer() {}

@@ -30,6 +30,8 @@ class NetworkStatusListenerImpl
   // network::NetworkConnectionTracker::NetworkConnectionObserver.
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
+  void OnNetworkStatusReady(network::mojom::ConnectionType type);
+
   network::NetworkConnectionTracker* network_connection_tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkStatusListenerImpl);

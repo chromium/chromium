@@ -4,94 +4,160 @@
 
 package org.chromium.components.download;
 
+import android.os.Handler;
+import android.os.HandlerThread;
+
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ObserverList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.net.NetworkChangeNotifierAutoDetect;
-import org.chromium.net.NetworkChangeNotifierAutoDetect.Observer;
-import org.chromium.net.RegistrationPolicyAlwaysRegister;
+import org.chromium.components.download.BackgroundNetworkStatusListener.Observer;
+import org.chromium.net.ConnectionType;
 
 /**
- * Network listener that can notify network connectivity changes to native side
- * download::NetworkStatusListenerAndroid even when the Android application is in the background.
- *
- * The class is created and owned by native side, and lives and propagate network change events
- * on the UI thread.
+ * JNI bridge between the native network status listener and Android implementation that uses
+ * network API to monitor network status.
+ * This object lives on main thread, so does the native object associated with it.
  */
 @JNINamespace("download")
-public final class NetworkStatusListenerAndroid implements Observer {
+public class NetworkStatusListenerAndroid implements BackgroundNetworkStatusListener.Observer {
+    private static final String THREAD_NAME = "NetworkStatusListener";
     private long mNativePtr;
-    private final NetworkChangeNotifierAutoDetect mNotifier;
-    private static AutoDetectFactory sAutoDetectFactory = new AutoDetectFactory();
+    private static Helper sSingletonHelper;
 
+    /**
+     * Helper class to query network state on one background thread. Notice that multiple
+     * NetworkStatusListenerAndroid instances may access the same singleton helper.
+     */
     @VisibleForTesting
-    public static void setAutoDetectFactory(AutoDetectFactory factory) {
-        sAutoDetectFactory = factory;
+    static class Helper implements BackgroundNetworkStatusListener.Observer {
+        // A thread handler that |mBackgroundNetworkStatusListener| lives on, which performs actual
+        // network queries. Use a background thread to avoid jank on main thread.
+        private Handler mNetworkThreadHandler;
+
+        // The object that performs actual network queries on a background thread.
+        private BackgroundNetworkStatusListener mBackgroundNetworkStatusListener;
+
+        private boolean mReady;
+        private @ConnectionType int mConnectionType = ConnectionType.CONNECTION_UNKNOWN;
+        private ObserverList<BackgroundNetworkStatusListener.Observer> mObservers =
+                new ObserverList<>();
+
+        Helper() {
+            ThreadUtils.assertOnUiThread();
+            // Creates the background thread object to listen to network change.
+            HandlerThread handlerThread = new HandlerThread(THREAD_NAME);
+            handlerThread.start();
+            mNetworkThreadHandler = new Handler(handlerThread.getLooper());
+            mNetworkThreadHandler.post(() -> {
+                ThreadUtils.assertOnBackgroundThread();
+                mBackgroundNetworkStatusListener = new BackgroundNetworkStatusListener(this);
+            });
+        }
+
+        void start(BackgroundNetworkStatusListener.Observer observer) {
+            mObservers.addObserver(observer);
+
+            // Make sure onNetworkStatusReady() is always called for each observer.
+            if (mReady) observer.onNetworkStatusReady(mConnectionType);
+        }
+
+        void stop(BackgroundNetworkStatusListener.Observer observer) {
+            mNetworkThreadHandler.post(() -> { mBackgroundNetworkStatusListener.unRegister(); });
+            mObservers.removeObserver(observer);
+        }
+
+        int getCurrentConnectionType() {
+            ThreadUtils.assertOnUiThread();
+            return mConnectionType;
+        }
+
+        @Override
+        public void onNetworkStatusReady(int connectionType) {
+            ThreadUtils.assertOnUiThread();
+            assert !mReady : "onNetworkStatusReady should be called only once.";
+            if (mReady) return;
+
+            mConnectionType = connectionType;
+            mReady = true;
+            for (Observer observer : mObservers) {
+                observer.onNetworkStatusReady(connectionType);
+            }
+        }
+
+        @Override
+        public void onConnectionTypeChanged(int newConnectionType) {
+            ThreadUtils.assertOnUiThread();
+            mConnectionType = newConnectionType;
+            for (Observer observer : mObservers) {
+                observer.onConnectionTypeChanged(newConnectionType);
+            }
+        }
     }
 
-    @CalledByNative
-    private int getCurrentConnectionType() {
-        assert mNotifier != null;
-        return mNotifier.getCurrentNetworkState().getConnectionType();
+    @VisibleForTesting
+    static Helper getHelperForTesting() {
+        return sSingletonHelper;
     }
 
     private NetworkStatusListenerAndroid(long nativePtr) {
+        ThreadUtils.assertOnUiThread();
         mNativePtr = nativePtr;
-        // Register policy that can fire network change events when the application is in the
-        // background.
-        mNotifier = sAutoDetectFactory.create(this, new RegistrationPolicyAlwaysRegister());
+        getSingletonHelper().start(this);
+    }
+
+    private Helper getSingletonHelper() {
+        if (sSingletonHelper != null) return sSingletonHelper;
+        sSingletonHelper = new Helper();
+        return sSingletonHelper;
+    }
+
+    @VisibleForTesting
+    @CalledByNative
+    int getCurrentConnectionType() {
+        ThreadUtils.assertOnUiThread();
+        return getSingletonHelper().getCurrentConnectionType();
     }
 
     @CalledByNative
     private void clearNativePtr() {
-        mNotifier.unregister();
+        ThreadUtils.assertOnUiThread();
+        getSingletonHelper().stop(this);
         mNativePtr = 0;
     }
 
+    @VisibleForTesting
     @CalledByNative
-    private static NetworkStatusListenerAndroid create(long nativePtr) {
+    static NetworkStatusListenerAndroid create(long nativePtr) {
+        ThreadUtils.assertOnUiThread();
         return new NetworkStatusListenerAndroid(nativePtr);
     }
 
-    /**
-     * {@link NetworkChangeNotifierAutoDetect.Observer} implementation.
-     */
+    @Override
+    public void onNetworkStatusReady(int connectionType) {
+        ThreadUtils.assertOnUiThread();
+        if (mNativePtr != 0) {
+            NetworkStatusListenerAndroidJni.get().onNetworkStatusReady(
+                    mNativePtr, NetworkStatusListenerAndroid.this, connectionType);
+        }
+    }
+
     @Override
     public void onConnectionTypeChanged(int newConnectionType) {
+        ThreadUtils.assertOnUiThread();
         if (mNativePtr != 0) {
             NetworkStatusListenerAndroidJni.get().notifyNetworkChange(
                     mNativePtr, NetworkStatusListenerAndroid.this, newConnectionType);
         }
     }
 
-    /**
-     * Creates the NetworkChangeNotifierAutoDetect used in this class. Included so that tests
-     * can override it.
-     */
-    @VisibleForTesting
-    public static class AutoDetectFactory {
-        public NetworkChangeNotifierAutoDetect create(
-                NetworkChangeNotifierAutoDetect.Observer observer,
-                NetworkChangeNotifierAutoDetect.RegistrationPolicy policy) {
-            return new NetworkChangeNotifierAutoDetect(observer, policy);
-        }
-    }
-
-    @Override
-    public void onConnectionSubtypeChanged(int newConnectionSubtype) {}
-    @Override
-    public void onNetworkConnect(long netId, int connectionType) {}
-    @Override
-    public void onNetworkSoonToDisconnect(long netId) {}
-    @Override
-    public void onNetworkDisconnect(long netId) {}
-    @Override
-    public void purgeActiveNetworkList(long[] activeNetIds) {}
-
     @NativeMethods
     interface Natives {
+        void onNetworkStatusReady(long nativeNetworkStatusListenerAndroid,
+                NetworkStatusListenerAndroid caller, int connectionType);
         void notifyNetworkChange(long nativeNetworkStatusListenerAndroid,
                 NetworkStatusListenerAndroid caller, int connectionType);
     }

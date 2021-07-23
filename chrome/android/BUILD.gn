@@ -1351,6 +1351,7 @@ android_library("chrome_test_java") {
     "//components/dom_distiller/core/mojom:mojom_java",
     "//components/download/internal/background_service:internal_java",
     "//components/download/internal/common:internal_java",
+    "//components/download/network:javatests",
     "//components/download/network:network_java",
     "//components/download/public/common:public_java",
     "//components/embedder_support/android:browser_context_java",

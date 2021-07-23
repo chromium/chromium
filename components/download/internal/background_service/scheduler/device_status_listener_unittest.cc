@@ -88,8 +88,10 @@ class DeviceStatusListenerTest : public testing::Test {
     auto battery_listener = std::make_unique<TestBatteryStatusListener>();
     test_battery_listener_ = battery_listener.get();
 
+    test_network_connection_tracker_ =
+        network::TestNetworkConnectionTracker::GetInstance();
     auto network_listener = std::make_unique<NetworkStatusListenerImpl>(
-        network::TestNetworkConnectionTracker::GetInstance());
+        test_network_connection_tracker_);
 
     listener_ = std::make_unique<TestDeviceStatusListener>(
         std::move(battery_listener), std::move(network_listener));
@@ -145,6 +147,7 @@ class DeviceStatusListenerTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::test::ScopedPowerMonitorTestSource power_source_;
   TestBatteryStatusListener* test_battery_listener_;
+  network::TestNetworkConnectionTracker* test_network_connection_tracker_;
 };
 
 // Verifies the initial state that the observer should be notified.
@@ -216,6 +219,20 @@ TEST_F(DeviceStatusListenerTest, TestValidStateChecks) {
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(listener_->is_valid_state());
   }
+}
+
+// Ensures OnNetworkStatusReady() will update internal data correctly when
+// network connection is updated asynchronously.
+TEST_F(DeviceStatusListenerTest, OnNetworkStatusReadyAsync) {
+  // Network connection tracker reports status asynchronously.
+  test_network_connection_tracker_->SetRespondSynchronously(false);
+  ChangeNetworkType(ConnectionType::CONNECTION_5G);
+
+  listener_->Start(base::TimeDelta());
+  base::RunLoop().RunUntilIdle();
+  const DeviceStatus& device_status = listener_->CurrentDeviceStatus();
+  EXPECT_EQ(NetworkStatus::METERED, device_status.network_status);
+  EXPECT_TRUE(listener_->is_valid_state());
 }
 
 // Ensures the observer is notified when network condition changes.
