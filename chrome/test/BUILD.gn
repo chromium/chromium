@@ -942,6 +942,18 @@ if (is_android) {
   }
 }
 
+source_set("pdf_extension_test_utils") {
+  testonly = true
+  sources = [
+    "../browser/pdf/pdf_extension_test_util.cc",
+    "../browser/pdf/pdf_extension_test_util.h",
+  ]
+  deps = [
+    ":test_support",
+    "//base",
+  ]
+}
+
 static_library("browser_tests_runner") {
   testonly = true
   sources = []
@@ -976,6 +988,7 @@ if (!is_android) {
 
     deps = [
       ":browser_tests_runner",
+      ":pdf_extension_test_utils",
       ":policy_testserver_pyproto",
       ":sync_integration_test_support",
       ":test_support",
@@ -1635,8 +1648,6 @@ if (!is_android) {
       "../browser/password_manager/credential_manager_browsertest.cc",
       "../browser/password_manager/password_manager_browsertest.cc",
       "../browser/pdf/pdf_extension_test.cc",
-      "../browser/pdf/pdf_extension_test_util.cc",
-      "../browser/pdf/pdf_extension_test_util.h",
       "../browser/performance_manager/background_tab_loading_policy_browsertest.cc",
       "../browser/performance_manager/frame_node_impl_browsertest.cc",
       "../browser/performance_manager/mechanisms/page_discarder_browsertest.cc",
@@ -8032,6 +8043,7 @@ if (!is_android) {
 
     if (toolkit_views) {
       sources += [
+        "../browser/pdf/pdf_extension_interactive_uitest.cc",
         "../browser/ui/read_later/read_later_test_utils.cc",
         "../browser/ui/read_later/read_later_test_utils.h",
         "../browser/ui/views/autofill/payments/offer_notification_bubble_views_interactive_uitest.cc",
@@ -8077,6 +8089,7 @@ if (!is_android) {
         "../browser/ui/views/user_education/feature_promo_snooze_interactive_uitest.cc",
       ]
       deps += [
+        ":pdf_extension_test_utils",
         "//ui/base/dragdrop:types",
         "//ui/base/dragdrop/mojom",
         "//ui/views",

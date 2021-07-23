@@ -10,7 +10,12 @@
 
 namespace content {
 class ToRenderFrameHost;
+class WebContents;
 }  // namespace content
+
+namespace gfx {
+class Point;
+}  // namespace gfx
 
 namespace pdf_extension_test_util {
 
@@ -20,6 +25,9 @@ namespace pdf_extension_test_util {
 // the test will hang.
 testing::AssertionResult EnsurePDFHasLoaded(
     const content::ToRenderFrameHost& frame) WARN_UNUSED_RESULT;
+
+gfx::Point ConvertPageCoordToScreenCoord(content::WebContents* contents,
+                                         const gfx::Point& point);
 
 }  // namespace pdf_extension_test_util
 
