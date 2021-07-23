@@ -871,6 +871,9 @@ extern const char kUpdateHistoryEntryPointsInIncognitoDescription[];
 extern const char kIncognitoNtpRealBoxName[];
 extern const char kIncognitoNtpRealBoxDescription[];
 
+extern const char kIncognitoNtpRevampName[];
+extern const char kIncognitoNtpRevampDescription[];
+
 extern const char kIncognitoScreenshotName[];
 extern const char kIncognitoScreenshotDescription[];
 

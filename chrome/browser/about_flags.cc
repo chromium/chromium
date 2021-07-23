@@ -7038,6 +7038,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIncognitoNtpRealBoxDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kIncognitoNtpRealBox)},
 
+    {"incognito-ntp-revamp", flag_descriptions::kIncognitoNtpRevampName,
+     flag_descriptions::kIncognitoNtpRevampDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kIncognitoNtpRevamp)},
+
     {"incognito-screenshot", flag_descriptions::kIncognitoScreenshotName,
      flag_descriptions::kIncognitoScreenshotDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kIncognitoScreenshot)},

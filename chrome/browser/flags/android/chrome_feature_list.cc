@@ -216,6 +216,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kHomepagePromoCard,
     &kImmersiveUiMode,
     &kIncognitoNtpRealBox,
+    &kIncognitoNtpRevamp,
     &kIncognitoScreenshot,
     &kInlineUpdateFlow,
     &kInstanceSwitcher,
@@ -595,6 +596,9 @@ const base::Feature kImmersiveUiMode{"ImmersiveUiMode",
 
 const base::Feature kIncognitoNtpRealBox{"IncognitoNtpRealBox",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kIncognitoNtpRevamp{"IncognitoNtpRevamp",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kIncognitoScreenshot{"IncognitoScreenshot",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

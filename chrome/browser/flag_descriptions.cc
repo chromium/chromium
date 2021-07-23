@@ -1503,6 +1503,10 @@ const char kIncognitoNtpRealBoxName[] =
 const char kIncognitoNtpRealBoxDescription[] =
     "When enabled, Incognito New Tap Page will display a Real Search Box.";
 
+const char kIncognitoNtpRevampName[] = "Revamped Incognito New Tab Page";
+const char kIncognitoNtpRevampDescription[] =
+    "When enabled, Incognito new tab page will have an updated UI";
+
 const char kIncognitoScreenshotName[] = "Incognito Screenshot";
 const char kIncognitoScreenshotDescription[] =
     "Enables Incognito screenshots on Android. It will also make Incognito "
