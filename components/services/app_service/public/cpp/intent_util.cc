@@ -564,7 +564,7 @@ apps::mojom::IntentPtr ConvertValueToIntent(base::Value&& value) {
   auto intent = apps::mojom::Intent::New();
 
   base::DictionaryValue* dict = nullptr;
-  if (!value.is_dict() || !value.GetAsDictionary(&dict) || !dict)
+  if (!value.is_dict() || !value.GetAsDictionary(&dict))
     return intent;
 
   intent->action = GetStringValueFromDict(*dict, kActionKey);
