@@ -23,7 +23,16 @@ import * as browserProtocol from 'devtools-protocol/json/browser_protocol.json';
 import * as jsProtocol from 'devtools-protocol/json/js_protocol.json';
 import ProtocolProxyApi from 'devtools-protocol/types/protocol-proxy-api';
 
-export type CdpClient = EventEmitter & ProtocolProxyApi.ProtocolApi;
+// Publicly visible type. Has all of the methods of CdpClientImpl, and a property
+// getter for each CDP Domain (provided by ProtocolApiExt).
+export type CdpClient = CdpClientImpl & ProtocolApiExt;
+
+// A type with the same set of properties as ProtocolProxyApi, but each domain
+// property also extends DomainImpl.
+type ProtocolApiExt = {
+  [Domain in keyof ProtocolProxyApi.ProtocolApi]: DomainImpl &
+    ProtocolProxyApi.ProtocolApi[Domain];
+};
 
 export interface CdpError {
   code: number;
@@ -48,11 +57,11 @@ const mergedProtocol = [...browserProtocol.domains, ...jsProtocol.domains];
 // Generate classes for each Domain and store constructors here.
 const domainConstructorMap = new Map<
   string,
-  { new (client: CdpClientImpl): DomainBase }
+  { new (client: CdpClientImpl): DomainImpl }
 >();
 
 // Base class for all domains.
-class DomainBase extends EventEmitter {
+class DomainImpl extends EventEmitter {
   constructor(private _client: CdpClientImpl) {
     super();
   }
@@ -61,7 +70,7 @@ class DomainBase extends EventEmitter {
 for (let domainInfo of mergedProtocol) {
   // Dynamically create a subclass for this domain. Note: This class definition is scoped
   // to this for-loop, so there will be a unique ThisDomain definition for each domain.
-  class ThisDomain extends DomainBase {
+  class ThisDomain extends DomainImpl {
     constructor(_client: CdpClientImpl) {
       super(_client);
     }
@@ -84,7 +93,7 @@ for (let domainInfo of mergedProtocol) {
 
 class CdpClientImpl extends EventEmitter {
   private _commandCallbacks: Map<number, CdpCallbacks>;
-  private _domains: Map<string, DomainBase>;
+  private _domains: Map<string, DomainImpl>;
   private _nextId: number;
 
   constructor(private _transport: IServer) {
