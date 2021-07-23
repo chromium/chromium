@@ -63,7 +63,11 @@ class CORE_EXPORT StyleColor {
   }
   bool IsSystemColor() const { return IsSystemColor(color_keyword_); }
   Color GetColor() const {
-    DCHECK(IsNumeric());
+    // TODO(1081945): System colors will fail the IsNumeric check, as they store
+    // a keyword, but they also have a stored color that may need to be accessed
+    // directly. For example in FilterEffectBuilder::BuildFilterEffect for
+    // shadow colors.
+    DCHECK(IsNumeric() || IsSystemColor());
     return color_;
   }
   CSSValueID GetColorKeyword() const {
