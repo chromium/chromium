@@ -12,14 +12,14 @@
 namespace blink {
 
 class Image;
-class ClipPathPaintWorklet;
+class ClipPathPaintDefinition;
 
 class MODULES_EXPORT ClipPathPaintImageGeneratorImpl final
     : public ClipPathPaintImageGenerator {
  public:
   static ClipPathPaintImageGenerator* Create(LocalFrame&);
 
-  explicit ClipPathPaintImageGeneratorImpl(ClipPathPaintWorklet*);
+  explicit ClipPathPaintImageGeneratorImpl(ClipPathPaintDefinition*);
   ~ClipPathPaintImageGeneratorImpl() override = default;
 
   scoped_refptr<Image> Paint(float zoom,
@@ -31,7 +31,7 @@ class MODULES_EXPORT ClipPathPaintImageGeneratorImpl final
   void Trace(Visitor*) const override;
 
  private:
-  Member<ClipPathPaintWorklet> clip_path_paint_worklet_;
+  Member<ClipPathPaintDefinition> clip_path_paint_definition_;
 };
 
 }  // namespace blink

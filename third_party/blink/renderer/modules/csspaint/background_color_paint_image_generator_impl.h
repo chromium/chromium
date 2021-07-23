@@ -13,14 +13,15 @@
 namespace blink {
 
 class Image;
-class BackgroundColorPaintWorklet;
+class BackgroundColorPaintDefinition;
 
 class MODULES_EXPORT BackgroundColorPaintImageGeneratorImpl final
     : public BackgroundColorPaintImageGenerator {
  public:
   static BackgroundColorPaintImageGenerator* Create(LocalFrame&);
 
-  explicit BackgroundColorPaintImageGeneratorImpl(BackgroundColorPaintWorklet*);
+  explicit BackgroundColorPaintImageGeneratorImpl(
+      BackgroundColorPaintDefinition*);
   ~BackgroundColorPaintImageGeneratorImpl() override = default;
 
   // The |container_size| is without subpixel snapping.
@@ -42,7 +43,7 @@ class MODULES_EXPORT BackgroundColorPaintImageGeneratorImpl final
   void Trace(Visitor*) const override;
 
  private:
-  Member<BackgroundColorPaintWorklet> background_color_paint_worklet_;
+  Member<BackgroundColorPaintDefinition> background_color_paint_definition_;
 };
 
 }  // namespace blink

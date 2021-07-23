@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/csspaint/background_color_paint_worklet.h"
+#include "third_party/blink/renderer/modules/csspaint/background_color_paint_definition.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
@@ -23,11 +23,11 @@
 
 namespace blink {
 
-using BackgroundColorPaintWorkletTest = PageTestBase;
+using BackgroundColorPaintDefinitionTest = PageTestBase;
 
 // Test the case where there is a background-color animation with two simple
 // keyframes that will not fall back to main.
-TEST_F(BackgroundColorPaintWorkletTest, SimpleBGColorAnimationNotFallback) {
+TEST_F(BackgroundColorPaintDefinitionTest, SimpleBGColorAnimationNotFallback) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
@@ -69,12 +69,12 @@ TEST_F(BackgroundColorPaintWorkletTest, SimpleBGColorAnimationNotFallback) {
   Vector<Color> animated_colors;
   Vector<double> offsets;
   absl::optional<double> progress;
-  EXPECT_TRUE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
+  EXPECT_TRUE(BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets, &progress));
 }
 
 // Test the case when there is no animation attached to the element.
-TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainNoAnimation) {
+TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainNoAnimation) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
@@ -85,14 +85,14 @@ TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainNoAnimation) {
   Vector<Color> animated_colors;
   Vector<double> offsets;
   absl::optional<double> progress;
-  EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
+  EXPECT_FALSE(BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets, &progress));
 }
 
 // Test that when an element has other animations but no background color
 // animation, then we fall back to the main thread. Also testing that calling
-// BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams do not crash.
-TEST_F(BackgroundColorPaintWorkletTest, NoBGColorAnimationFallback) {
+// BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams do not crash.
+TEST_F(BackgroundColorPaintDefinitionTest, NoBGColorAnimationFallback) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
@@ -134,14 +134,14 @@ TEST_F(BackgroundColorPaintWorkletTest, NoBGColorAnimationFallback) {
   Vector<Color> animated_colors;
   Vector<double> offsets;
   absl::optional<double> progress;
-  EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
+  EXPECT_FALSE(BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets, &progress));
   EXPECT_TRUE(animated_colors.IsEmpty());
   EXPECT_TRUE(offsets.IsEmpty());
 }
 
 // Test the case where the composite mode is not replace.
-TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainCompositeAccumulate) {
+TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainCompositeAccumulate) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
@@ -183,11 +183,11 @@ TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainCompositeAccumulate) {
   Vector<Color> animated_colors;
   Vector<double> offsets;
   absl::optional<double> progress;
-  EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
+  EXPECT_FALSE(BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets, &progress));
 }
 
-TEST_F(BackgroundColorPaintWorkletTest, MultipleAnimationsFallback) {
+TEST_F(BackgroundColorPaintDefinitionTest, MultipleAnimationsFallback) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
@@ -241,14 +241,14 @@ TEST_F(BackgroundColorPaintWorkletTest, MultipleAnimationsFallback) {
   Vector<Color> animated_colors;
   Vector<double> offsets;
   absl::optional<double> progress;
-  EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
+  EXPECT_FALSE(BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets, &progress));
 }
 
 // Test that style->CompositablePaintAnimationChanged() should be true in the
 // case where we initially have one background-color animation, and then changed
 // to have two background-color animation on the element.
-TEST_F(BackgroundColorPaintWorkletTest,
+TEST_F(BackgroundColorPaintDefinitionTest,
        TriggerRepaintCompositedToNonComposited) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
@@ -322,7 +322,7 @@ TEST_F(BackgroundColorPaintWorkletTest,
 // Test that style->CompositablePaintAnimationChanged() should be true in the
 // case where we initially have one background-color animation, and then we
 // changed one of the animation's keyframes.
-TEST_F(BackgroundColorPaintWorkletTest, TriggerRepaintChangedKeyframe) {
+TEST_F(BackgroundColorPaintDefinitionTest, TriggerRepaintChangedKeyframe) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
@@ -389,18 +389,20 @@ TEST_F(BackgroundColorPaintWorkletTest, TriggerRepaintChangedKeyframe) {
 
 // Test that calling BackgroundColorPaintWorkletProxyClient::Paint won't crash
 // when the animated property value is empty.
-TEST_F(BackgroundColorPaintWorkletTest, ProxyClientPaintWithNoPropertyValue) {
+TEST_F(BackgroundColorPaintDefinitionTest,
+       ProxyClientPaintWithNoPropertyValue) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   Vector<Color> animated_colors = {Color(0, 255, 0), Color(255, 0, 0)};
   Vector<double> offsets = {0, 1};
   CompositorPaintWorkletJob::AnimatedPropertyValues property_values;
-  BackgroundColorPaintWorklet::ProxyClientPaintForTest(animated_colors, offsets,
-                                                       property_values);
+  BackgroundColorPaintDefinition::ProxyClientPaintForTest(
+      animated_colors, offsets, property_values);
 }
 
 // Test that BackgroundColorPaintWorkletProxyClient::Paint won't crash if the
 // progress of the animation is a negative number.
-TEST_F(BackgroundColorPaintWorkletTest, ProxyClientPaintWithNegativeProgress) {
+TEST_F(BackgroundColorPaintDefinitionTest,
+       ProxyClientPaintWithNegativeProgress) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   Vector<Color> animated_colors = {Color(0, 255, 0), Color(255, 0, 0)};
   Vector<double> offsets = {0, 1};
@@ -410,13 +412,13 @@ TEST_F(BackgroundColorPaintWorkletTest, ProxyClientPaintWithNegativeProgress) {
       CompositorElementId(1u));
   CompositorPaintWorkletInput::PropertyValue property_value(-0.0f);
   property_values.insert(std::make_pair(property_key, property_value));
-  BackgroundColorPaintWorklet::ProxyClientPaintForTest(animated_colors, offsets,
-                                                       property_values);
+  BackgroundColorPaintDefinition::ProxyClientPaintForTest(
+      animated_colors, offsets, property_values);
 }
 
 // Test that BackgroundColorPaintWorkletProxyClient::Paint won't crash if the
 // progress of the animation is > 1.
-TEST_F(BackgroundColorPaintWorkletTest,
+TEST_F(BackgroundColorPaintDefinitionTest,
        ProxyClientPaintWithLargerThanOneProgress) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   Vector<Color> animated_colors = {Color(0, 255, 0), Color(255, 0, 0)};
@@ -428,13 +430,14 @@ TEST_F(BackgroundColorPaintWorkletTest,
   float progress = 1 + std::numeric_limits<float>::epsilon();
   CompositorPaintWorkletInput::PropertyValue property_value(progress);
   property_values.insert(std::make_pair(property_key, property_value));
-  BackgroundColorPaintWorklet::ProxyClientPaintForTest(animated_colors, offsets,
-                                                       property_values);
+  BackgroundColorPaintDefinition::ProxyClientPaintForTest(
+      animated_colors, offsets, property_values);
 }
 
 // Test that BackgroundColorPaintWorkletProxyClient::Paint won't crash when the
 // largest offset is not exactly one.
-TEST_F(BackgroundColorPaintWorkletTest, ProxyClientPaintWithCloseToOneOffset) {
+TEST_F(BackgroundColorPaintDefinitionTest,
+       ProxyClientPaintWithCloseToOneOffset) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   Vector<Color> animated_colors = {Color(0, 255, 0), Color(0, 255, 255),
                                    Color(255, 0, 0)};
@@ -446,8 +449,8 @@ TEST_F(BackgroundColorPaintWorkletTest, ProxyClientPaintWithCloseToOneOffset) {
   float progress = 1 - std::numeric_limits<float>::epsilon();
   CompositorPaintWorkletInput::PropertyValue property_value(progress);
   property_values.insert(std::make_pair(property_key, property_value));
-  BackgroundColorPaintWorklet::ProxyClientPaintForTest(animated_colors, offsets,
-                                                       property_values);
+  BackgroundColorPaintDefinition::ProxyClientPaintForTest(
+      animated_colors, offsets, property_values);
 }
 
 }  // namespace blink

@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/csspaint/background_color_paint_worklet.h"
+#include "third_party/blink/renderer/modules/csspaint/background_color_paint_definition.h"
 
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
@@ -13,13 +13,20 @@
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_deferred_image.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
 #include "third_party/blink/renderer/modules/csspaint/native_paint_worklet_proxy_client.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
+#include "third_party/blink/renderer/modules/csspaint/paint_worklet_id_generator.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -63,8 +70,6 @@ class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
 
 class BackgroundColorPaintWorkletProxyClient
     : public NativePaintWorkletProxyClient {
-  DISALLOW_COPY_AND_ASSIGN(BackgroundColorPaintWorkletProxyClient);
-
  public:
   static BackgroundColorPaintWorkletProxyClient* Create(int worklet_id) {
     return MakeGarbageCollected<BackgroundColorPaintWorkletProxyClient>(
@@ -74,6 +79,10 @@ class BackgroundColorPaintWorkletProxyClient
   explicit BackgroundColorPaintWorkletProxyClient(int worklet_id)
       : NativePaintWorkletProxyClient(worklet_id) {}
   ~BackgroundColorPaintWorkletProxyClient() override = default;
+  BackgroundColorPaintWorkletProxyClient(
+      const BackgroundColorPaintWorkletProxyClient&) = delete;
+  BackgroundColorPaintWorkletProxyClient& operator=(
+      const BackgroundColorPaintWorkletProxyClient&) = delete;
 
   // PaintWorkletPainter implementation.
   sk_sp<PaintRecord> Paint(
@@ -235,7 +244,7 @@ struct DowncastTraits<BackgroundColorPaintWorkletInput> {
   }
 };
 
-Animation* BackgroundColorPaintWorklet::GetAnimationIfCompositable(
+Animation* BackgroundColorPaintDefinition::GetAnimationIfCompositable(
     const Element* element) {
   if (!element->GetElementAnimations())
     return nullptr;
@@ -274,24 +283,80 @@ Animation* BackgroundColorPaintWorklet::GetAnimationIfCompositable(
 }
 
 // static
-BackgroundColorPaintWorklet* BackgroundColorPaintWorklet::Create(
+BackgroundColorPaintDefinition* BackgroundColorPaintDefinition::Create(
     LocalFrame& local_root) {
   if (!WebLocalFrameImpl::FromFrame(local_root))
     return nullptr;
-  return MakeGarbageCollected<BackgroundColorPaintWorklet>(local_root);
+  return MakeGarbageCollected<BackgroundColorPaintDefinition>(local_root);
 }
 
-BackgroundColorPaintWorklet::BackgroundColorPaintWorklet(LocalFrame& local_root)
-    : NativePaintWorklet(local_root) {
+BackgroundColorPaintDefinition::BackgroundColorPaintDefinition(
+    LocalFrame& local_root)
+    : worklet_id_(PaintWorkletIdGenerator::NextId()) {
+  DCHECK(local_root.IsLocalRoot());
+  paint_dispatcher_ =
+      WebLocalFrameImpl::FromFrame(local_root)
+          ->FrameWidgetImpl()
+          ->EnsureCompositorPaintDispatcher(&compositor_host_queue_);
+  DCHECK(IsMainThread());
+  ExecutionContext* context = local_root.DomWindow();
+  FrameOrWorkerScheduler* scheduler =
+      context ? context->GetScheduler() : nullptr;
+  // TODO(crbug.com/1143407): We don't need this thread if we can make the
+  // compositor thread support GC.
+  ThreadCreationParams params(ThreadType::kAnimationAndPaintWorkletThread);
+  worker_backing_thread_ = std::make_unique<WorkerBackingThread>(
+      params.SetFrameOrWorkerScheduler(scheduler));
+  auto startup_data = WorkerBackingThreadStartupData::CreateDefault();
+  PostCrossThreadTask(
+      *worker_backing_thread_->BackingThread().GetTaskRunner(), FROM_HERE,
+      CrossThreadBindOnce(&WorkerBackingThread::InitializeOnBackingThread,
+                          CrossThreadUnretained(worker_backing_thread_.get()),
+                          startup_data));
   // This is called only once per document.
   BackgroundColorPaintWorkletProxyClient* client =
       BackgroundColorPaintWorkletProxyClient::Create(worklet_id_);
   RegisterProxyClient(client);
 }
 
-BackgroundColorPaintWorklet::~BackgroundColorPaintWorklet() = default;
+void BackgroundColorPaintDefinition::RegisterProxyClient(
+    NativePaintWorkletProxyClient* client) {
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      worker_backing_thread_->BackingThread().GetTaskRunner();
+  // At this moment, we are in the paint phase which is before commit, we queue
+  // a task to the compositor thread to register the |paint_dispatcher_|. When
+  // compositor schedules the actual paint job (PaintWorkletPainter::Paint),
+  // which is after commit, the |paint_dispatcher_| should have been registerted
+  // and ready to use.
+  PostCrossThreadTask(
+      *compositor_host_queue_, FROM_HERE,
+      CrossThreadBindOnce(
+          &PaintWorkletPaintDispatcher::RegisterPaintWorkletPainter,
+          paint_dispatcher_, WrapCrossThreadPersistent(client), task_runner));
+}
 
-scoped_refptr<Image> BackgroundColorPaintWorklet::Paint(
+void BackgroundColorPaintDefinition::UnregisterProxyClient() {
+  PostCrossThreadTask(
+      *compositor_host_queue_, FROM_HERE,
+      CrossThreadBindOnce(
+          &PaintWorkletPaintDispatcher::UnregisterPaintWorkletPainter,
+          paint_dispatcher_, worklet_id_));
+  base::WaitableEvent waitable_event;
+  PostCrossThreadTask(*worker_backing_thread_->BackingThread().GetTaskRunner(),
+                      FROM_HERE,
+                      CrossThreadBindOnce(
+                          [](WorkerBackingThread* worker_backing_thread,
+                             base::WaitableEvent* waitable_event) {
+                            worker_backing_thread->ShutdownOnBackingThread();
+                            waitable_event->Signal();
+                          },
+                          CrossThreadUnretained(worker_backing_thread_.get()),
+                          CrossThreadUnretained(&waitable_event)));
+  waitable_event.Wait();
+  worker_backing_thread_.reset();
+}
+
+scoped_refptr<Image> BackgroundColorPaintDefinition::Paint(
     const FloatSize& container_size,
     const Node* node,
     const Vector<Color>& animated_colors,
@@ -312,7 +377,7 @@ scoped_refptr<Image> BackgroundColorPaintWorklet::Paint(
   return PaintWorkletDeferredImage::Create(std::move(input), container_size);
 }
 
-bool BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
+bool BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
     Node* node,
     Vector<Color>* animated_colors,
     Vector<double>* offsets,
@@ -326,7 +391,7 @@ bool BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
                                               progress, compositable_animation);
 }
 
-sk_sp<PaintRecord> BackgroundColorPaintWorklet::ProxyClientPaintForTest(
+sk_sp<PaintRecord> BackgroundColorPaintDefinition::ProxyClientPaintForTest(
     const Vector<Color>& animated_colors,
     const Vector<double>& offsets,
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
@@ -341,6 +406,10 @@ sk_sp<PaintRecord> BackgroundColorPaintWorklet::ProxyClientPaintForTest(
   BackgroundColorPaintWorkletProxyClient* client =
       BackgroundColorPaintWorkletProxyClient::Create(1u);
   return client->Paint(input.get(), animated_property_values);
+}
+
+void BackgroundColorPaintDefinition::Trace(Visitor* visitor) const {
+  NativePaintDefinition::Trace(visitor);
 }
 
 }  // namespace blink

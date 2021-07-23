@@ -4,41 +4,41 @@
 
 #include "third_party/blink/renderer/modules/csspaint/clip_path_paint_image_generator_impl.h"
 
-#include "third_party/blink/renderer/modules/csspaint/clip_path_paint_worklet.h"
+#include "third_party/blink/renderer/modules/csspaint/clip_path_paint_definition.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 
 namespace blink {
 
 ClipPathPaintImageGenerator* ClipPathPaintImageGeneratorImpl::Create(
     LocalFrame& local_root) {
-  ClipPathPaintWorklet* clip_path_paint_worklet =
-      ClipPathPaintWorklet::Create(local_root);
+  ClipPathPaintDefinition* clip_path_paint_definition =
+      ClipPathPaintDefinition::Create(local_root);
 
-  DCHECK(clip_path_paint_worklet);
+  DCHECK(clip_path_paint_definition);
   ClipPathPaintImageGeneratorImpl* generator =
       MakeGarbageCollected<ClipPathPaintImageGeneratorImpl>(
-          clip_path_paint_worklet);
+          clip_path_paint_definition);
 
   return generator;
 }
 
 ClipPathPaintImageGeneratorImpl::ClipPathPaintImageGeneratorImpl(
-    ClipPathPaintWorklet* clip_path_paint_worklet)
-    : clip_path_paint_worklet_(clip_path_paint_worklet) {}
+    ClipPathPaintDefinition* clip_path_paint_definition)
+    : clip_path_paint_definition_(clip_path_paint_definition) {}
 
 scoped_refptr<Image> ClipPathPaintImageGeneratorImpl::Paint(
     float zoom,
     const FloatRect& reference_box,
     const Node& node) {
-  return clip_path_paint_worklet_->Paint(zoom, reference_box, node);
+  return clip_path_paint_definition_->Paint(zoom, reference_box, node);
 }
 
 void ClipPathPaintImageGeneratorImpl::Shutdown() {
-  clip_path_paint_worklet_->UnregisterProxyClient();
+  clip_path_paint_definition_->UnregisterProxyClient();
 }
 
 void ClipPathPaintImageGeneratorImpl::Trace(Visitor* visitor) const {
-  visitor->Trace(clip_path_paint_worklet_);
+  visitor->Trace(clip_path_paint_definition_);
   ClipPathPaintImageGenerator::Trace(visitor);
 }
 
