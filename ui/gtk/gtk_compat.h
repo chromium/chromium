@@ -16,6 +16,7 @@
 
 #include "base/files/file_path.h"
 #include "base/version.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gtk/gtk_types.h"
@@ -63,8 +64,8 @@ SkColor GtkStyleContextGetColor(GtkStyleContext* context);
 SkColor GtkStyleContextGetBackgroundColor(GtkStyleContext* context);
 
 // Only available in Gtk3.
-SkColor GtkStyleContextLookupColor(GtkStyleContext* context,
-                                   const gchar* color_name);
+absl::optional<SkColor> GtkStyleContextLookupColor(GtkStyleContext* context,
+                                                   const gchar* color_name);
 
 bool GtkImContextFilterKeypress(GtkIMContext* context, GdkEventKey* event);
 

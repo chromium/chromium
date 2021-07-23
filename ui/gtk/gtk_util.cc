@@ -970,8 +970,11 @@ absl::optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
     case ui::kColorTextfieldForegroundPlaceholder:
       if (!GtkCheckVersion(4)) {
         auto context = GetStyleContextFromCss("GtkEntry#entry");
-        // This is copied from gtkentry.c.
-        return GtkStyleContextLookupColor(context, "placeholder_text_color");
+        // This is copied from gtkentry.c.  GTK uses a fallback of 50% gray
+        // when the theme doesn't provide a placeholder color, so we choose a
+        // fallback color where each component is 127.
+        return GtkStyleContextLookupColor(context, "placeholder_text_color")
+            .value_or(SkColorSetRGB(127, 127, 127));
       }
       return GetFgColor("GtkEntry#entry #text #placeholder");
     case ui::kColorTextfieldForegroundDisabled:
