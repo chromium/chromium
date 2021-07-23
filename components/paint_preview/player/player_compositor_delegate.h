@@ -141,6 +141,10 @@ class PlayerCompositorDelegate {
       mojom::PaintPreviewCompositor::BeginCompositeStatus status,
       mojom::PaintPreviewBeginCompositeResponsePtr composite_response);
 
+  void OnHitTestersBuilt(
+      std::unique_ptr<base::flat_map<base::UnguessableToken,
+                                     std::unique_ptr<HitTester>>> hit_testers);
+
   void OnCompositorServiceDisconnected();
 
   void OnCompositorClientCreated(const GURL& expected_url,
@@ -178,7 +182,8 @@ class PlayerCompositorDelegate {
   int max_requests_{1};
   bool main_frame_mode_{false};
 
-  base::flat_map<base::UnguessableToken, std::unique_ptr<HitTester>>
+  std::unique_ptr<
+      base::flat_map<base::UnguessableToken, std::unique_ptr<HitTester>>>
       hit_testers_;
   std::unique_ptr<PaintPreviewProto> proto_;
   std::unique_ptr<ui::AXTreeUpdate> ax_tree_update_;

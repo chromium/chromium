@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -42,10 +43,12 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
             Callback<Integer> compositorErrorCallback) {
         mCompositorListener = compositorListener;
         if (service != null && service.getNativeBaseService() != 0) {
+            TraceEvent.begin("PlayerCompositorDelegateImplJni.initialize()");
             mNativePlayerCompositorDelegate = PlayerCompositorDelegateImplJni.get().initialize(this,
                     service.getNativeBaseService(), (proto != null) ? proto.toByteArray() : null,
                     url.getSpec(), directoryKey, mainFrameMode, compositorErrorCallback,
                     SysUtils.amountOfPhysicalMemoryKB() < LOW_MEMORY_THRESHOLD_KB);
+            TraceEvent.end("PlayerCompositorDelegateImplJni.initialize()");
         }
         // TODO(crbug.com/1021590): Handle initialization errors when
         // mNativePlayerCompositorDelegate == 0.

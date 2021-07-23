@@ -49,21 +49,25 @@ std::pair<base::UnguessableToken, std::unique_ptr<HitTester>> BuildHitTester(
   return out;
 }
 
-base::flat_map<base::UnguessableToken, std::unique_ptr<HitTester>>
-BuildHitTesters(const PaintPreviewProto& proto) {
+std::unique_ptr<
+    base::flat_map<base::UnguessableToken, std::unique_ptr<HitTester>>>
+BuildHitTesters(std::unique_ptr<PaintPreviewProto> proto) {
+  TRACE_EVENT0("paint_preview", "PaintPreview BuildHitTesters");
   std::vector<std::pair<base::UnguessableToken, std::unique_ptr<HitTester>>>
       hit_testers;
-  hit_testers.reserve(proto.subframes_size() + 1);
-  hit_testers.push_back(BuildHitTester(proto.root_frame()));
-  for (const auto& frame_proto : proto.subframes())
+  hit_testers.reserve(proto->subframes_size() + 1);
+  hit_testers.push_back(BuildHitTester(proto->root_frame()));
+  for (const auto& frame_proto : proto->subframes())
     hit_testers.push_back(BuildHitTester(frame_proto));
 
-  return base::flat_map<base::UnguessableToken, std::unique_ptr<HitTester>>(
+  return std::make_unique<
+      base::flat_map<base::UnguessableToken, std::unique_ptr<HitTester>>>(
       std::move(hit_testers));
 }
 
 absl::optional<base::ReadOnlySharedMemoryRegion> ToReadOnlySharedMemory(
     const paint_preview::PaintPreviewProto& proto) {
+  TRACE_EVENT0("paint_preview", "PaintPreviewProto ToReadOnlySharedMemory");
   auto region = base::WritableSharedMemoryRegion::Create(proto.ByteSizeLong());
   if (!region.IsValid())
     return absl::nullopt;
@@ -78,6 +82,7 @@ absl::optional<base::ReadOnlySharedMemoryRegion> ToReadOnlySharedMemory(
 
 paint_preview::mojom::PaintPreviewBeginCompositeRequestPtr
 PrepareCompositeRequest(const paint_preview::PaintPreviewProto& proto) {
+  TRACE_EVENT0("paint_preview", "PaintPreview PrepareCompositeRequest");
   paint_preview::mojom::PaintPreviewBeginCompositeRequestPtr
       begin_composite_request =
           paint_preview::mojom::PaintPreviewBeginCompositeRequest::New();
@@ -121,6 +126,7 @@ void PlayerCompositorDelegate::Initialize(
     base::OnceCallback<void(int)> compositor_error,
     base::TimeDelta timeout_duration,
     size_t max_requests) {
+  TRACE_EVENT0("paint_preview", "PlayerCompositorDelegate::Initialize");
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("paint_preview",
                                     "PlayerCompositorDelegate CreateCompositor",
                                     TRACE_ID_LOCAL(this));
@@ -208,6 +214,7 @@ int32_t PlayerCompositorDelegate::RequestBitmap(
     float scale_factor,
     base::OnceCallback<void(mojom::PaintPreviewCompositor::BitmapStatus,
                             const SkBitmap&)> callback) {
+  TRACE_EVENT0("paint_preview", "PlayerCompositorDelegate::RequestBitmap");
   DCHECK(IsInitialized());
   DCHECK((main_frame_mode_ && !frame_guid.has_value()) ||
          (!main_frame_mode_ && frame_guid.has_value()));
@@ -251,8 +258,12 @@ std::vector<const GURL*> PlayerCompositorDelegate::OnClick(
     const gfx::Rect& rect) {
   DCHECK(IsInitialized());
   std::vector<const GURL*> urls;
-  auto it = hit_testers_.find(frame_guid);
-  if (it != hit_testers_.end())
+  if (!hit_testers_) {
+    return urls;
+  }
+
+  auto it = hit_testers_->find(frame_guid);
+  if (it != hit_testers_->end())
     it->second->HitTest(rect, &urls);
 
   return urls;
@@ -260,6 +271,9 @@ std::vector<const GURL*> PlayerCompositorDelegate::OnClick(
 
 void PlayerCompositorDelegate::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  TRACE_EVENT1("paint_preview", "PlayerCompositorDelegate::OnMemoryPressure",
+               "memory_pressure_level",
+               static_cast<int>(memory_pressure_level));
   if (memory_pressure_level ==
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     if (paint_preview_compositor_client_)
@@ -332,6 +346,9 @@ void PlayerCompositorDelegate::OnCompositorClientCreated(
   }
 }
 
+// Chrometto data suggests this function might be slow as the callback passed to
+// GetCapturedPaintPreviewProto appears to block the UI thread. Nothing here
+// looks to be particularly slow or blocking though...
 void PlayerCompositorDelegate::OnProtoAvailable(
     const GURL& expected_url,
     PaintPreviewFileMixin::ProtoReadStatus proto_status,
@@ -405,6 +422,8 @@ void PlayerCompositorDelegate::OnProtoAvailable(
 
 void PlayerCompositorDelegate::OnAXTreeUpdateAvailable(
     std::unique_ptr<ui::AXTreeUpdate> update) {
+  TRACE_EVENT0("paint_preview",
+               "PlayerCompositorDelegate::OnAXTreeUpdateAvailable");
   ax_tree_update_ = std::move(update);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
@@ -447,8 +466,17 @@ void PlayerCompositorDelegate::SendCompositeRequest(
 
   // Defer building hit testers so it happens in parallel with preparing the
   // compositor.
-  hit_testers_ = BuildHitTesters(*proto_);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&BuildHitTesters, std::move(proto_)),
+      base::BindOnce(&PlayerCompositorDelegate::OnHitTestersBuilt,
+                     weak_factory_.GetWeakPtr()));
   proto_.reset();
+}
+
+void PlayerCompositorDelegate::OnHitTestersBuilt(
+    std::unique_ptr<base::flat_map<base::UnguessableToken,
+                                   std::unique_ptr<HitTester>>> hit_testers) {
+  hit_testers_ = std::move(hit_testers);
 }
 
 void PlayerCompositorDelegate::OnCompositorClientDisconnected() {

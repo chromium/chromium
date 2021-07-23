@@ -10,6 +10,7 @@ import android.view.ViewGroup.LayoutParams;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 
 /**
@@ -34,6 +35,7 @@ public class PlayerSwipeRefreshHandler implements OverscrollHandler {
      * @param refreshCallback The handler that refresh events are delegated to.
      */
     public PlayerSwipeRefreshHandler(Context context, @NonNull Runnable refreshCallback) {
+        TraceEvent.begin("PlayerSwipeRefreshHandler");
         mRefreshCallback = refreshCallback;
         mSwipeRefreshLayout = new SwipeRefreshLayout(context);
         mSwipeRefreshLayout.setLayoutParams(
@@ -51,6 +53,7 @@ public class PlayerSwipeRefreshHandler implements OverscrollHandler {
             }, STOP_REFRESH_ANIMATION_DELAY_MS);
             mRefreshCallback.run();
         });
+        TraceEvent.end("PlayerSwipeRefreshHandler");
     }
 
     /*
