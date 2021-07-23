@@ -11,6 +11,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/holding_space/holding_space_progress_ring_indeterminate_animation.h"
 #include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -110,7 +111,7 @@ class HoldingSpaceControllerProgressRing
 
  private:
   // HoldingSpaceProgressRing:
-  absl::optional<float> GetProgress() const override {
+  absl::optional<float> CalculateProgress() const override {
     // If there is no `model` attached, then there are no in-progress holding
     // space items. Return `1.f` to prevent the progress ring from painting.
     const HoldingSpaceModel* model = controller_->model();
@@ -200,7 +201,7 @@ class HoldingSpaceItemProgressRing : public HoldingSpaceProgressRing,
 
  private:
   // HoldingSpaceProgressRing:
-  absl::optional<float> GetProgress() const override {
+  absl::optional<float> CalculateProgress() const override {
     // If `item_` is `nullptr` it is being destroyed. Return `1.f` in that case
     // so that no progress ring will be painted.
     return item_ ? item_->progress().GetValue() : 1.f;
@@ -264,14 +265,24 @@ void HoldingSpaceProgressRing::OnDeviceScaleFactorChanged(float old_scale,
   InvalidateLayer();
 }
 
-// TODO(crbug.com/1184438): Handle indeterminate progress.
 void HoldingSpaceProgressRing::OnPaintLayer(const ui::PaintContext& context) {
-  const absl::optional<float> progress(GetProgress());
-  if (!progress.has_value() || progress.value() == 1.f)
+  // Unless `this` is animating, nothing will paint if `progress_` is complete.
+  if (progress_.has_value() && progress_.value() == 1.f && !animation_)
     return;
 
-  DCHECK_GE(progress.value(), 0.f);
-  DCHECK_LT(progress.value(), 1.f);
+  float start, end;
+  if (animation_) {
+    start = animation_->start_position();
+    end = animation_->end_position();
+  } else {
+    start = 0.f;
+    end = progress_.value();
+  }
+
+  DCHECK_GE(start, 0.f);
+  DCHECK_LE(start, 1.f);
+  DCHECK_GE(end, 0.f);
+  DCHECK_LE(end, 1.f);
 
   ui::PaintRecorder recorder(context, layer()->size());
   gfx::Canvas* canvas = recorder.canvas();
@@ -301,7 +312,39 @@ void HoldingSpaceProgressRing::OnPaintLayer(const ui::PaintContext& context) {
 
   // Ring.
   flags.setColor(color);
-  canvas->DrawPath(CreatePathSegment(path, 0.f, progress.value()), flags);
+  if (start <= end) {
+    // If `start` <= `end`, only a single path segment is necessary.
+    canvas->DrawPath(CreatePathSegment(path, start, end), flags);
+  } else {
+    // If `start` > `end`, two path segments are used to give the illusion of a
+    // single progress ring. This works around limitations of `SkPathMeasure`
+    // which require that `start` be <= `end`.
+    canvas->DrawPath(CreatePathSegment(path, start, 1.f), flags);
+    canvas->DrawPath(CreatePathSegment(path, 0.f, end), flags);
+  }
+}
+
+// TODO(crbug.com/1184438): Implement pulse animation on completion.
+void HoldingSpaceProgressRing::UpdateVisualState() {
+  // Cache `progress_`.
+  progress_ = CalculateProgress();
+
+  // If `progress_` is determinate, validate values and clear any animations.
+  if (progress_.has_value()) {
+    DCHECK_GE(progress_.value(), 0.f);
+    DCHECK_LE(progress_.value(), 1.f);
+    animation_.reset();
+    return;
+  }
+
+  if (animation_)
+    return;
+
+  // Since `progress_` is indeterminate, an indeterminate `animation_` should be
+  // created and started.
+  animation_ =
+      std::make_unique<HoldingSpaceProgressRingIndeterminateAnimation>(this);
+  animation_->Start();
 }
 
 }  // namespace ash

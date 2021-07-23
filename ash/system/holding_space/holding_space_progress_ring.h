@@ -16,6 +16,7 @@ namespace ash {
 
 class HoldingSpaceController;
 class HoldingSpaceItem;
+class HoldingSpaceProgressRingAnimation;
 
 // A class owning a `ui::Layer` which paints a ring to indicate progress.
 // NOTE: The owned `layer()` is not painted if progress == `1.f`.
@@ -42,16 +43,27 @@ class HoldingSpaceProgressRing : public ui::LayerOwner,
  protected:
   HoldingSpaceProgressRing();
 
-  // Returns the progress to paint to the owned `layer()`.
+  // Returns the calculated progress to paint to the owned `layer()`. This is
+  // invoked during `UpdateVisualState()` just prior to painting.
   // NOTE: If absent, progress is indeterminate.
   // NOTE: If present, progress must be >= `0.f` and <= `1.f`.
   // NOTE: If progress == `1.f`, progress is complete and will not be painted.
-  virtual absl::optional<float> GetProgress() const = 0;
+  virtual absl::optional<float> CalculateProgress() const = 0;
 
  private:
   // ui::LayerDelegate:
   void OnDeviceScaleFactorChanged(float old_scale, float new_scale) override;
   void OnPaintLayer(const ui::PaintContext& context) override;
+  void UpdateVisualState() override;
+
+  // Cached progress returned from `CalculateProgress()` just prior to painting.
+  // NOTE: If absent, progress is indeterminate.
+  // NOTE: If present, progress must be >= `0.f` and <= `1.f`.
+  absl::optional<float> progress_;
+
+  // Optional animation to paint in lieu of the determinate progress ring that
+  // would otherwise be painted for the cached `progress_`.
+  std::unique_ptr<HoldingSpaceProgressRingAnimation> animation_;
 };
 
 }  // namespace ash
