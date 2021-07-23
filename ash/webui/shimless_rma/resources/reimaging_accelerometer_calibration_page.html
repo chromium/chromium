@@ -1,4 +1,8 @@
 <style include="cr-shared-style shimless-rma-shared">
+  iron-icon {
+    width: 300px;
+    height: 500px;
+  }
 </style>
 
 <base-page>
@@ -14,6 +18,7 @@
     <span hidden$="[[!calibrationComplete_]]">Completed</span>
   </div>
   <div slot="body">
-    <!-- TODO(joonbug): add accelerometer calibration image -->
+    <!-- TODO(joonbug): Replace with accelerometer calibration image -->
+    <iron-icon icon="shimless:shimless-placeholder"></iron-icon>
   </div>
 </base-page>

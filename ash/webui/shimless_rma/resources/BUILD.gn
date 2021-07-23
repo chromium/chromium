@@ -14,6 +14,7 @@ preprocessed_mojo_manifest = "preprocessed_mojo_manifest.json"
 
 polymer_element_files = [
   "base_page.js",
+  "icons.js",
   "onboarding_choose_destination_page.js",
   "onboarding_choose_wp_disable_method_page.js",
   "onboarding_enter_rsu_wp_disable_code_page.js",
@@ -252,6 +253,12 @@ js_library("shimless_rma_types") {
   deps = [
     "//ash/webui/shimless_rma/mojom:mojom_js_library_for_compile",
     "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
+  ]
+}
+
+js_library("icons") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 

@@ -7,6 +7,13 @@
     width: 460px;
   }
 
+  iron-icon {
+    width: 20px;
+    height: 20px;
+    /* TODO(joonbug): Update with chrome color */
+    color: blue;
+  }
+
   .error {
     /* TODO(joonbug): Update with chrome color */
     color: red;
@@ -30,6 +37,7 @@
 
 <base-page orientation="column">
   <div slot="header">
+    <iron-icon icon="shimless-icon:wifi"></iron-icon>
     <!-- TODO(joonbug): Update for i18n -->
     <h1>Get connected</h1>
     <p>Connecting to Wi-Fi is recommended to make the repair process easier. Your network will be saved.</p>
