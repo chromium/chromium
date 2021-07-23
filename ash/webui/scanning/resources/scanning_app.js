@@ -742,7 +742,9 @@ Polymer({
         this.$$('#scannerSelect').$$('#scannerSelect').focus();
       } else if (this.appState_ === AppState.SCANNING) {
         this.$$('#cancelButton').focus();
-      } else if (this.appState_ === AppState.DONE) {
+      } else if (
+          this.appState_ === AppState.DONE ||
+          this.appState_ === AppState.MULTI_PAGE_NEXT_ACTION) {
         this.$$('#scanPreview').$$('#previewDiv').focus();
       }
     });
