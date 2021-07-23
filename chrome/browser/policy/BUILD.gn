@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 source_set("path_parser") {
@@ -31,5 +32,107 @@ source_set("path_parser") {
 
   if (is_win) {
     libs = [ "wtsapi32.lib" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "cloud/cloud_policy_test_utils.cc",
+    "cloud/cloud_policy_test_utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "cloud/cloud_policy_browsertest.cc",
+    "cloud/cloud_policy_manager_browsertest.cc",
+  ]
+
+  deps = [
+    ":test_support",
+    "//base",
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+    "//chrome/browser",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/enterprise",
+    "//components/enterprise:test_support",
+    "//components/invalidation/impl:test_support",
+    "//components/invalidation/public:public",
+    "//components/keyed_service/core",
+    "//components/policy:chrome_settings_proto_generated_compile",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/proto",
+    "//components/policy/test_support",
+    "//components/prefs",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//google_apis",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/chromeos",
+      "//chromeos/cryptohome",
+      "//chromeos/dbus/constants",
+      "//chromeos/dbus/userdataauth",
+      "//components/account_id",
+    ]
+  }
+
+  if (!is_chromeos_ash) {
+    sources += [
+      "cloud/chrome_browser_cloud_management_browsertest.cc",
+      "cloud/chrome_browser_cloud_management_browsertest_delegate.h",
+    ]
+
+    deps += [ "//components/signin/public/identity_manager" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "cloud/chrome_browser_cloud_management_browsertest_mac_util.h",
+      "cloud/chrome_browser_cloud_management_browsertest_mac_util.mm",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "cloud/chrome_browser_cloud_management_browsertest_delegate_android.cc",
+    ]
+  } else if (!is_chromeos_ash) {
+    sources += [
+      "cloud/chrome_browser_cloud_management_browsertest_delegate_desktop.cc",
+    ]
+  }
+
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui:ui",
+      "//chrome/test:test_support_ui",
+    ]
   }
 }

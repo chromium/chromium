@@ -27,7 +27,6 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_switches.h"
@@ -64,6 +63,7 @@
 #if !defined(OS_ANDROID)
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
 #endif  // !defined(OS_ANDROID)
 
 #if defined(OS_MAC)

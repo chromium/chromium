@@ -689,6 +689,7 @@ if (is_android) {
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/metrics:test_support",
       "//chrome/browser/payments:browser_tests",
+      "//chrome/browser/policy:browser_tests",
       "//chrome/browser/prerender:browser_tests",
       "//chrome/browser/privacy_budget:browser_tests",
       "//chrome/browser/profiling_host:profiling_browsertests",
@@ -734,13 +735,6 @@ if (is_android) {
       "../browser/metrics/ukm_browsertest.cc",
       "../browser/net/cert_verify_proc_browsertest.cc",
       "../browser/page_load_metrics/observers/ad_metrics/ad_density_intervention_android_browsertest.cc",
-      "../browser/policy/cloud/chrome_browser_cloud_management_browsertest.cc",
-      "../browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate.h",
-      "../browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate_android.cc",
-      "../browser/policy/cloud/cloud_policy_browsertest.cc",
-      "../browser/policy/cloud/cloud_policy_manager_browsertest.cc",
-      "../browser/policy/cloud/cloud_policy_test_utils.cc",
-      "../browser/policy/cloud/cloud_policy_test_utils.h",
       "../browser/policy/policy_prefs_browsertest.cc",
       "../browser/profiles/profile_browsertest_android.cc",
       "../browser/safe_browsing/test_safe_browsing_database_helper.cc",
@@ -762,12 +756,10 @@ if (is_android) {
 
     deps += [
       "//components/autofill/content/renderer:test_support",
-      "//components/enterprise:enterprise",
       "//components/enterprise:test_support",
       "//components/invalidation/impl:test_support",
       "//components/policy:chrome_settings_proto_generated_compile",
       "//components/policy/core/browser:test_support",
-      "//components/policy/test_support:test_support",
       "//components/safe_browsing/content/renderer/phishing_classifier:phishing_classifier",
       "//components/safe_browsing/core/common/fbs:client_model",
       "//components/safe_browsing/core/common/proto:client_model_proto",
@@ -1033,6 +1025,7 @@ if (!is_android) {
       "//chrome/browser/notifications/scheduler/test:test_support",
       "//chrome/browser/payments:browser_tests",
       "//chrome/browser/persisted_state_db",
+      "//chrome/browser/policy:browser_tests",
       "//chrome/browser/prerender:browser_tests",
       "//chrome/browser/privacy_budget:browser_tests",
       "//chrome/browser/profiling_host:profiling_browsertests",
@@ -1672,13 +1665,6 @@ if (!is_android) {
       "../browser/picture_in_picture/picture_in_picture_window_controller_browsertest.cc",
       "../browser/plugins/pdf_iframe_navigation_throttle_browsertest.cc",
       "../browser/plugins/plugin_response_interceptor_url_loader_throttle_browsertest.cc",
-      "../browser/policy/cloud/chrome_browser_cloud_management_browsertest.cc",
-      "../browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate.h",
-      "../browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate_desktop.cc",
-      "../browser/policy/cloud/cloud_policy_browsertest.cc",
-      "../browser/policy/cloud/cloud_policy_manager_browsertest.cc",
-      "../browser/policy/cloud/cloud_policy_test_utils.cc",
-      "../browser/policy/cloud/cloud_policy_test_utils.h",
       "../browser/policy/cloud/component_cloud_policy_browsertest.cc",
       "../browser/policy/cloud/device_management_service_browsertest.cc",
       "../browser/policy/policy_initialization_browsertest.cc",
@@ -3580,7 +3566,6 @@ if (!is_android) {
 
         # chromeos does not support machine level user cloud policies
         "../browser/enterprise/reporting/report_scheduler_browsertest.cc",
-        "../browser/policy/cloud/chrome_browser_cloud_management_browsertest.cc",
       ]
 
       deps += [
@@ -3640,8 +3625,6 @@ if (!is_android) {
         "//chrome:chrome_framework",
       ]
       sources += [
-        "../browser/policy/cloud/chrome_browser_cloud_management_browsertest_mac_util.h",
-        "../browser/policy/cloud/chrome_browser_cloud_management_browsertest_mac_util.mm",
         "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_browsertest.mm",
         "../browser/spellchecker/spell_check_host_chrome_impl_mac_browsertest.cc",
         "../browser/ui/cocoa/accelerators_cocoa_browsertest.mm",
@@ -4469,8 +4452,6 @@ test("unit_tests") {
     "../browser/policy/boolean_disabling_policy_handler_unittest.cc",
     "../browser/policy/chrome_browser_policy_connector_unittest.cc",
     "../browser/policy/cloud/cloud_policy_invalidator_unittest.cc",
-    "../browser/policy/cloud/cloud_policy_test_utils.cc",
-    "../browser/policy/cloud/cloud_policy_test_utils.h",
     "../browser/policy/cloud/remote_commands_invalidator_unittest.cc",
     "../browser/policy/cloud/user_policy_signin_service_unittest.cc",
     "../browser/policy/developer_tools_policy_handler_unittest.cc",
@@ -5014,6 +4995,7 @@ test("unit_tests") {
     "//chrome/browser/payments:unittests",
     "//chrome/browser/persisted_state_db:persisted_state_db",
     "//chrome/browser/persisted_state_db:persisted_state_db_content_proto",
+    "//chrome/browser/policy:test_support",
     "//chrome/browser/privacy_budget:unit_tests",
     "//chrome/browser/profile_resetter:profile_reset_report_proto",
     "//chrome/browser/profiling_host",
