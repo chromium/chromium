@@ -7,7 +7,7 @@ import 'chrome://diagnostics/ip_config_info_drawer.js';
 import {Network} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeEthernetNetwork, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks, isVisible} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
@@ -50,16 +50,17 @@ export function ipConfigInfoDrawerTestSuite() {
    * @return {!HTMLElement}
    */
   function getDrawerToggle() {
-    const toggleButton = ipConfigInfoDrawerElement.$$('cr-expand-button');
+    const toggleButton = ipConfigInfoDrawerElement.$$('#drawerToggle');
     assertTrue(!!toggleButton);
     return /** @type {!HTMLElement} */ (toggleButton);
   }
 
   test('IpConfigInfoDrawerInitialized', () => {
     return initializeIpConfigInfoDrawerElement().then(() => {
+      assertTrue(isVisible(getDrawerToggle()));
       dx_utils.assertElementContainsText(
           /** @type {HTMLElement} */ (
-              ipConfigInfoDrawerElement.$$('cr-expand-button > span')),
+              ipConfigInfoDrawerElement.$$('#drawerTitle')),
           ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerTitle'));
     });
   });
