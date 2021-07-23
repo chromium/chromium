@@ -840,6 +840,31 @@ SkBitmap ClipboardWin::ReadImageInternal(ClipboardBuffer buffer) const {
     return SkBitmap();
   int color_table_length = 0;
 
+  // Image is too large, and may cause an allocation failure.
+  // See https://crbug.com/1164680.
+  constexpr size_t kMaxImageSizeBytes = 1 << 27;  // 128 MiB
+  size_t image_size_bytes;
+  // Estimate the number of bytes per pixel. For images with fewer than one byte
+  // pixel we will over-estimate the size. For compressed images we will
+  // over-estimate the size, but some overestimating of the storage size is okay
+  // and the calculation will be a good estimate of the decompressed size. The
+  // reported bug was for uncompressed 32-bit images where this code will give
+  // correct results.
+  size_t bytes_per_pixel = bitmap->bmiHeader.biBitCount / 8;
+  if (bytes_per_pixel == 0)
+    bytes_per_pixel = 1;
+  // Calculate the size of the bitmap. This is not an exact calculation but that
+  // doesn't matter for this purpose. If the calculation overflows then the
+  // image is too big. Return an empty image.
+  if (!base::CheckMul(
+           bitmap->bmiHeader.biWidth,
+           base::CheckMul(bitmap->bmiHeader.biHeight, bytes_per_pixel))
+           .AssignIfValid(&image_size_bytes))
+    return SkBitmap();
+  // If the image size is too big then return an empty image.
+  if (image_size_bytes > kMaxImageSizeBytes)
+    return SkBitmap();
+
   // For more information on BITMAPINFOHEADER and biBitCount definition,
   // see https://docs.microsoft.com/en-us/windows/win32/wmdm/-bitmapinfoheader
   switch (bitmap->bmiHeader.biBitCount) {
