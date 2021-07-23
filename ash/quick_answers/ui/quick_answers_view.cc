@@ -67,7 +67,7 @@ constexpr gfx::Insets kGoogleIconInsets(10, 10, 0, 8);
 
 // Info icon.
 constexpr int kFeedbackIconSizeDip = 16;
-constexpr gfx::Insets kFeedbackIconInsets(8, 10, 8, 8);
+constexpr gfx::Insets kFeedbackIconInsets(9, 10, 7, 8);
 
 // Spacing between lines in the main view.
 constexpr int kLineSpacingDip = 4;
