@@ -1,3 +1,35 @@
+<style include="cr-shared-style settings-shared iron-flex">
+  #dndTitle {
+    font-weight: 500;
+    padding-inline-end: 8px;
+  }
+  :host([is-dnd-enabled_]) #enableDoNotDisturb {
+    color: var(--cr-toggle-color);
+  }
+</style>
+<div id="enableDoNotDisturb" class="cr-row first" on-click="onEnableTap_"
+    actionable>
+  <div id="dndTitle" aria-hidden="true">
+    $i18n{doNotDisturbToggleTitle}
+  </div>
+  <div id="dndDescription" hidden="true">
+    $i18n{doNotDisturbToggleDesc}
+  </div>
+  <div class="flex cr-padded-text">
+    <cr-tooltip-icon id="doNotDisturbToggleDesc"
+        icon-class="cr:help-outline"
+        aria-labelledby = "dndDescription"
+        icon-aria-label="$i18n{doNotDisturbToggleDesc}"
+        tooltip-text="$i18n{doNotDisturbToggleDesc}"
+        tooltip-position="bottom">
+    </cr-tooltip-icon>
+  </div>
+  <cr-toggle id="enableDndToggle"
+      checked="{{isDndEnabled_}}"
+      on-change = "setQuietMode_"
+      aria-label$="$i18n{doNotDisturbToggleTitle}">
+  </cr-toggle>
+</div>
 <div id="appNotificationsList">
   <template is="dom-repeat" items="[[appList_]]" as="app">
     <app-notification-row app="[[app]]"></app-notification-row>

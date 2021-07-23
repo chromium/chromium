@@ -3,7 +3,12 @@
 // found in the LICENSE file.
 
 import './app_notification_row.js';
+import '/os_apps_page/app_notification_handler.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getAppNotificationProvider} from './mojo_interface_provider.js';
 
 /**
  * @fileoverview
@@ -23,6 +28,17 @@ export class AppNotificationsSubpage extends PolymerElement {
   static get properties() {
     return {
       /**
+       * Reflects the Do Not Disturb property.
+       * @private
+       */
+      isDndEnabled_: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        reflectToAttribute: true,
+      },
+
+      /**
        * @type {!Array<!Object>}
        * @private
        */
@@ -37,6 +53,69 @@ export class AppNotificationsSubpage extends PolymerElement {
       },
     };
   }
+
+  constructor() {
+    super();
+
+    /** @private */
+    this.mojoInterfaceProvider_ = getAppNotificationProvider();
+
+    /**
+     * Receiver responsible for observing app notification events.
+     * @private {
+     *    ?chromeos.settings.appNotification.mojom.
+     *    AppNotificationsObserverReceiver
+     * }
+     */
+    this.appNotificationsObserverReceiver_ = null;
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+    this.startObservingAppNotifications_();
+  }
+
+  /** @override */
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.appNotificationsObserverReceiver_.$.close();
+  }
+
+  /** @private */
+  startObservingAppNotifications_() {
+    this.appNotificationsObserverReceiver_ =
+        new chromeos.settings.appNotification.mojom
+            .AppNotificationsObserverReceiver(
+                /**
+                 * @type {!chromeos.settings.appNotification.mojom.
+                 * AppNotificationsObserverInterface}
+                 */
+                (this));
+    this.mojoInterfaceProvider_.addObserver(
+        this.appNotificationsObserverReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
+  /** Override chromeos.settings.appNotification.onQuietModeChanged */
+  onQuietModeChanged(enabled) {
+    this.isDndEnabled_ = enabled;
+  }
+
+  /** @private */
+  setQuietMode_() {
+    this.mojoInterfaceProvider_.setQuietMode(this.isDndEnabled_);
+  }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onEnableTap_(event) {
+    this.isDndEnabled_ = !this.isDndEnabled_;
+    this.mojoInterfaceProvider_.setQuietMode(this.isDndEnabled_);
+    event.stopPropagation();
+  }
 }
+
 
 customElements.define(AppNotificationsSubpage.is, AppNotificationsSubpage);

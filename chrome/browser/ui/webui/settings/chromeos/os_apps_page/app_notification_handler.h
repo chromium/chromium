@@ -16,7 +16,7 @@ namespace chromeos {
 namespace settings {
 
 class AppNotificationHandler
-    : public apps_notification::mojom::AppNotificationsHandler,
+    : public app_notification::mojom::AppNotificationsHandler,
       public ::settings::SettingsPageUIHandler,
       public ash::MessageCenterAsh::Observer {
  public:
@@ -27,6 +27,15 @@ class AppNotificationHandler
   void RegisterMessages() override {}
   void OnJavascriptAllowed() override {}
   void OnJavascriptDisallowed() override {}
+
+  // app_notification::mojom::AppNotificationHandler:
+  void AddObserver(
+      mojo::PendingRemote<app_notification::mojom::AppNotificationsObserver>
+          observer) override;
+
+  void BindInterface(
+      mojo::PendingReceiver<app_notification::mojom::AppNotificationsHandler>
+          receiver);
 
  private:
   friend class AppNotificationHandlerTest;
@@ -39,7 +48,10 @@ class AppNotificationHandler
 
   bool in_quiet_mode_;
 
-  mojo::Receiver<apps_notification::mojom::AppNotificationsHandler> receiver_{
+  mojo::RemoteSet<app_notification::mojom::AppNotificationsObserver>
+      observer_list_;
+
+  mojo::Receiver<app_notification::mojom::AppNotificationsHandler> receiver_{
       this};
 };
 

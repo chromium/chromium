@@ -60,6 +60,7 @@ class OsSettingsSections;
 class SearchHandler;
 class SearchTagRegistry;
 class SettingsUserActionTracker;
+class AppNotificationHandler;
 
 // Manager for the Chrome OS settings page. This class is implemented as a
 // KeyedService, so one instance of the class is intended to be active for the
@@ -115,6 +116,10 @@ class OsSettingsManager : public KeyedService {
   // Adds SettingsPageUIHandlers to an OS settings instance.
   void AddHandlers(content::WebUI* web_ui);
 
+  AppNotificationHandler* app_notification_handler() {
+    return app_notification_handler_.get();
+  }
+
   SearchHandler* search_handler() { return search_handler_.get(); }
 
   SettingsUserActionTracker* settings_user_action_tracker() {
@@ -134,6 +139,7 @@ class OsSettingsManager : public KeyedService {
   std::unique_ptr<Hierarchy> hierarchy_;
   std::unique_ptr<SettingsUserActionTracker> settings_user_action_tracker_;
   std::unique_ptr<SearchHandler> search_handler_;
+  std::unique_ptr<AppNotificationHandler> app_notification_handler_;
 };
 
 }  // namespace settings

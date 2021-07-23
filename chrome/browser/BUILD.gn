@@ -6883,6 +6883,7 @@ grit("resources") {
       "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings_js",
       "//chrome/browser/ui/webui/chromeos/vm:mojo_bindings_webui_js",
       "//chrome/browser/ui/webui/settings/chromeos:mojom_js",
+      "//chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom:mojom_js",
     ]
   }
 

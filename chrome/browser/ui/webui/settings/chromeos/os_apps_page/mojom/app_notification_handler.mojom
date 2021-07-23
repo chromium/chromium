@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.settings.apps_notification.mojom;
+module chromeos.settings.app_notification.mojom;
 
 // Browser interface.
 // Interface for for fetching and setting App notification
@@ -10,4 +10,15 @@ module chromeos.settings.apps_notification.mojom;
 interface AppNotificationsHandler {
   // Updates QuietMode to enabled or disabled based on toggle state.
   SetQuietMode(bool enabled);
+
+  // Binds remote and notifies receiver in OsSettings app notifications page UI.
+  AddObserver(pending_remote<AppNotificationsObserver> observer);
+};
+
+// Frontend interface.
+// Observer interface that sends remote updates to the App notifications
+// subpage in OSSettings.
+interface AppNotificationsObserver {
+  // Notifies client when the DoNotDisturb (QuietMode) state changes.
+  OnQuietModeChanged(bool enabled);
 };

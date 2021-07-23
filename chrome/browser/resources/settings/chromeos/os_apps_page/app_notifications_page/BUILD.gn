@@ -16,12 +16,17 @@ polymer_element_files = [
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args
-  deps = [ ":app_notifications_subpage" ]
+  deps = [
+    ":app_notifications_subpage",
+    ":mojo_interface_provider",
+  ]
 }
 
 js_library("app_notifications_subpage") {
   deps = [
     ":app_notification_row",
+    ":mojo_interface_provider",
+    "//chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -29,6 +34,13 @@ js_library("app_notifications_subpage") {
 js_library("app_notification_row") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("mojo_interface_provider") {
+  deps = [
+    "//chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
   ]
 }
 
