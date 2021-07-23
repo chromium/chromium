@@ -751,9 +751,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   EXPECT_FALSE(system_tray->IsBubbleActive());
 
   // Send tab key event.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->PressKey(ui::VKEY_TAB, ui::EF_NONE);
-  event_generator->ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  PressAndReleaseKey(ui::VKEY_TAB);
 
   // Confirm that system tray is activated.
   EXPECT_FALSE(shell_surface->GetWidget()->IsActive());

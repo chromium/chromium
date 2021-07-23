@@ -242,17 +242,14 @@ TEST_F(AppListBubbleViewTest, TypingTextShowsSearchPage) {
   AppListBubbleSearchPage* search_page = GetSearchPage();
 
   // Type some text.
-  auto* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_A, ui::EF_NONE);
-  generator->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  PressAndReleaseKey(ui::VKEY_A);
 
   // Search page is shown.
   EXPECT_FALSE(apps_page->GetVisible());
   EXPECT_TRUE(search_page->GetVisible());
 
   // Backspace to remove the text.
-  generator->PressKey(ui::VKEY_BACK, ui::EF_NONE);
-  generator->ReleaseKey(ui::VKEY_BACK, ui::EF_NONE);
+  PressAndReleaseKey(ui::VKEY_BACK);
 
   // Apps page is shown.
   EXPECT_TRUE(apps_page->GetVisible());

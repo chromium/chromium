@@ -135,9 +135,7 @@ TEST_F(CreateNoteTest, ToolIsEnabledWhenStylusButtonIsPressed) {
   std::unique_ptr<views::View> view = base::WrapUnique(tool_->CreateView());
 
   // Send a stylus button event.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_F19, ui::EF_IS_STYLUS_BUTTON);
-  generator->ReleaseKey(ui::VKEY_F19, ui::EF_IS_STYLUS_BUTTON);
+  PressAndReleaseKey(ui::VKEY_F19, ui::EF_IS_STYLUS_BUTTON);
 
   EXPECT_EQ(1, note_taking_client->GetCreateNoteCount());
 }

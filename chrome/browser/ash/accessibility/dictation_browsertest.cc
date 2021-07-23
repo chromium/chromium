@@ -220,8 +220,7 @@ class DictationTest : public InProcessBrowserTest,
   void ToggleDictation() {
     // We are trying to toggle on if Dictation is currently off.
     bool will_toggle_on = IsDictationOff();
-    generator_->PressKey(ui::VKEY_D, ui::EF_COMMAND_DOWN);
-    generator_->ReleaseKey(ui::VKEY_D, ui::EF_COMMAND_DOWN);
+    generator_->PressAndReleaseKey(ui::VKEY_D, ui::EF_COMMAND_DOWN);
     if (will_toggle_on) {
       // SpeechRecognition may be turned on asynchronously. Wait for it to
       // complete before moving on to ensures that we are ready to receive

@@ -2654,8 +2654,7 @@ TEST_F(ShelfLayoutManagerTest, ShelfItemRespondToGestureEvent) {
 
   // Show the system tray with the shortcut. Expect that the shelf is shown
   // after triggering the accelerator.
-  generator->PressKey(ui::VKEY_S, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
-  generator->ReleaseKey(ui::VKEY_S, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+  PressAndReleaseKey(ui::VKEY_S, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
   GetAppListTestHelper()->WaitUntilIdle();
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 

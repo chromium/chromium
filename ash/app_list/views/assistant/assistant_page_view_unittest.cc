@@ -182,14 +182,8 @@ class AssistantPageViewTest : public AssistantAshTestBase {
     EXPECT_TRUE(IsVisible());
   }
 
-  void PressKey(ui::KeyboardCode key_code) {
-    // Any key press consists of 2 events, namely |press| and |release|.
-    GetEventGenerator()->PressKey(key_code, /*flags=*/ui::EF_NONE);
-    GetEventGenerator()->ReleaseKey(key_code, /*flags=*/ui::EF_NONE);
-  }
-
   void PressKeyAndWait(ui::KeyboardCode key_code) {
-    PressKey(key_code);
+    PressAndReleaseKey(key_code);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -856,19 +850,19 @@ TEST_P(AssistantPageClamshellTest, RememberAndShowHistory) {
 
   EXPECT_TRUE(input_text_field()->GetText().empty());
 
-  PressKey(ui::VKEY_UP);
+  PressAndReleaseKey(ui::VKEY_UP);
   EXPECT_EQ(input_text_field()->GetText(), u"query 2");
 
-  PressKey(ui::VKEY_UP);
+  PressAndReleaseKey(ui::VKEY_UP);
   EXPECT_EQ(input_text_field()->GetText(), u"query 1");
 
-  PressKey(ui::VKEY_UP);
+  PressAndReleaseKey(ui::VKEY_UP);
   EXPECT_EQ(input_text_field()->GetText(), u"query 1");
 
-  PressKey(ui::VKEY_DOWN);
+  PressAndReleaseKey(ui::VKEY_DOWN);
   EXPECT_EQ(input_text_field()->GetText(), u"query 2");
 
-  PressKey(ui::VKEY_DOWN);
+  PressAndReleaseKey(ui::VKEY_DOWN);
   EXPECT_TRUE(input_text_field()->GetText().empty());
 }
 

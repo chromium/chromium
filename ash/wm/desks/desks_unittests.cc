@@ -358,10 +358,8 @@ class DesksTest : public AshTestBase,
     SetVirtualKeyboardEnabled(true);
   }
 
-  void SendKey(ui::KeyboardCode key_code, int flags = 0) {
-    auto* generator = GetEventGenerator();
-    generator->PressKey(key_code, flags);
-    generator->ReleaseKey(key_code, flags);
+  void SendKey(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
+    PressAndReleaseKey(key_code, flags);
   }
 
  private:

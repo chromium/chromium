@@ -1495,25 +1495,22 @@ TEST_F(ShellSurfaceTest, Overlay) {
                                      ->GetWindowBoundsInScreen()
                                      .size());
 
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_X, 0);
-  generator->ReleaseKey(ui::VKEY_X, 0);
+  PressAndReleaseKey(ui::VKEY_X);
   EXPECT_EQ(textfield_ptr->GetText(), u"");
 
+  ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseToCenterOf(shell_surface->GetWidget()->GetNativeWindow());
   generator->ClickLeftButton();
 
   // Test normal key input, which should go through IME.
   EXPECT_EQ(shell_surface->GetWidget()->GetFocusManager()->GetFocusedView(),
             textfield_ptr);
-  generator->PressKey(ui::VKEY_X, 0);
-  generator->ReleaseKey(ui::VKEY_X, 0);
+  PressAndReleaseKey(ui::VKEY_X);
   EXPECT_EQ(textfield_ptr->GetText(), u"x");
   EXPECT_TRUE(textfield_ptr->GetSelectedText().empty());
 
   // Controls (Select all) should work.
-  generator->PressKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
-  generator->ReleaseKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
+  PressAndReleaseKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
 
   EXPECT_EQ(textfield_ptr->GetText(), u"x");
   EXPECT_EQ(textfield_ptr->GetSelectedText(), u"x");
@@ -1523,8 +1520,7 @@ TEST_F(ShellSurfaceTest, Overlay) {
                      .BuildOwnedByNativeWidget();
   ASSERT_TRUE(widget->IsActive());
 
-  generator->PressKey(ui::VKEY_Y, 0);
-  generator->ReleaseKey(ui::VKEY_Y, 0);
+  PressAndReleaseKey(ui::VKEY_Y);
 
   EXPECT_EQ(textfield_ptr->GetText(), u"x");
   EXPECT_EQ(textfield_ptr->GetSelectedText(), u"x");
@@ -1534,8 +1530,7 @@ TEST_F(ShellSurfaceTest, Overlay) {
   shell_surface->GetWidget()->Activate();
   // The current text will be replaced with new character because
   // the text is selected.
-  generator->PressKey(ui::VKEY_Y, 0);
-  generator->ReleaseKey(ui::VKEY_Y, 0);
+  PressAndReleaseKey(ui::VKEY_Y);
   EXPECT_EQ(textfield_ptr->GetText(), u"y");
   EXPECT_TRUE(textfield_ptr->GetSelectedText().empty());
 }
