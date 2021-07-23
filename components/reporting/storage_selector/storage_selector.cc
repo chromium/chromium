@@ -68,6 +68,15 @@ bool StorageSelector::is_uploader_required() {
 }
 
 // static
+bool StorageSelector::is_use_missive() {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  return base::FeatureList::IsEnabled(kUseMissiveDaemonFeature);
+#else   // Not ChromeOS
+  return false;  // Use Local storage.
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+}
+
+// static
 void StorageSelector::CreateStorageModule(
     const base::FilePath& local_reporting_path,
     base::StringPiece verification_key,

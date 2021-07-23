@@ -32,6 +32,7 @@ class StorageSelector {
   static const char kProvideUploader[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
+  static bool is_use_missive();
   static bool is_uploader_required();
   static void CreateStorageModule(
       const base::FilePath& local_reporting_path,

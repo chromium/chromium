@@ -223,8 +223,11 @@ ReportingClient::ClientInitializingContext::~ClientInitializingContext() =
     default;
 
 void ReportingClient::ClientInitializingContext::OnStart() {
-  if (!StorageSelector::is_uploader_required()) {
-    // Uploading is disabled, proceed with no CloudPolicyClient.
+  if (!StorageSelector::is_uploader_required() ||
+      StorageSelector::is_use_missive()) {
+    // If uploading is disabled or missived is used, proceed with no
+    // CloudPolicyClient. In the latter case, uploader will be provided by
+    // EncryptedReportingServiceProvider so it does not need to be enabled here.
     ConfigureStorageModule();
     return;
   }
@@ -237,6 +240,13 @@ void ReportingClient::ClientInitializingContext::OnStart() {
           [](GetCloudPolicyClientCallback get_client_cb,
              base::OnceCallback<void(StatusOr<policy::CloudPolicyClient*>)>
                  on_client_configured) {
+            if (!StorageSelector::is_uploader_required()) {
+              // Uploading is disabled, proceed with no CloudPolicyClient.
+              std::move(on_client_configured)
+                  .Run(Status(error::FAILED_PRECONDITION,
+                              "Uploading is disabled"));
+              return;
+            }
             std::move(get_client_cb).Run(std::move(on_client_configured));
           },
           std::move(get_client_cb_),
