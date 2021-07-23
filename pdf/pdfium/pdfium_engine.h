@@ -197,6 +197,10 @@ class PDFiumEngine : public PDFEngine,
   FPDF_DOCUMENT doc() const;
   FPDF_FORMHANDLE form() const;
 
+  // Returns the PDFiumPage pointer of a given index. Returns nullptr if `index`
+  // is out of range.
+  PDFiumPage* GetPage(size_t index);
+
   bool IsValidLink(const std::string& url);
 
  private:

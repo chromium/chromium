@@ -871,7 +871,7 @@ PDFiumPage::Area PDFiumPage::GetDestinationTarget(FPDF_DEST destination,
   if (!target)
     return NONSELECTABLE_AREA;
 
-  int page_index = FPDFDest_GetDestPageIndex(engine_->doc(), destination);
+  const int page_index = FPDFDest_GetDestPageIndex(engine_->doc(), destination);
   if (page_index < 0)
     return NONSELECTABLE_AREA;
 
@@ -881,11 +881,20 @@ PDFiumPage::Area PDFiumPage::GetDestinationTarget(FPDF_DEST destination,
   absl::optional<float> y;
   GetPageDestinationTarget(destination, &x, &y, &target->zoom);
 
+  // The page where a destination exists can be different from the page that it
+  // targets. Calculating the in-page coordinates should be based on the target
+  // page's size.
+  PDFiumPage* target_page = engine_->GetPage(target->page);
+  if (!target_page)
+    return NONSELECTABLE_AREA;
+
   if (x) {
-    target->x_in_pixels = PreProcessAndTransformInPageCoordX(x.value());
+    target->x_in_pixels =
+        target_page->PreProcessAndTransformInPageCoordX(x.value());
   }
   if (y) {
-    target->y_in_pixels = PreProcessAndTransformInPageCoordY(y.value());
+    target->y_in_pixels =
+        target_page->PreProcessAndTransformInPageCoordY(y.value());
   }
 
   return DOCLINK_AREA;

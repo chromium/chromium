@@ -27,6 +27,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/test/gfx_util.h"
 
@@ -77,6 +78,13 @@ void PopulateTextObjects(const std::vector<gfx::Range>& ranges,
     (*text_objects)[i].start_char_index = ranges[i].start();
     (*text_objects)[i].char_count = ranges[i].end() - ranges[i].start();
   }
+}
+
+// Returns the page size for a `PDFiumPage`. The caller must make sure that
+// `pdfium_page` is available.
+gfx::SizeF GetPageSizeHelper(PDFiumPage& pdfium_page) {
+  FPDF_PAGE page = pdfium_page.GetPage();
+  return gfx::SizeF(FPDF_GetPageWidthF(page), FPDF_GetPageHeightF(page));
 }
 
 base::FilePath GetThumbnailTestData(const std::string& expectation_file_prefix,
@@ -210,6 +218,41 @@ TEST_F(PDFiumPageLinkTest, TestAnnotLinkGeneration) {
                       actual_current_link.target.y_in_pixels.value());
     }
   }
+}
+
+TEST_F(PDFiumPageLinkTest, TestGetLinkTarget) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("in_doc_link_with_various_page_sizes.pdf"));
+  ASSERT_EQ(3, engine->GetNumberOfPages());
+
+  const std::vector<PDFiumPage::Link>& links = GetLinks(*engine, 0);
+  ASSERT_EQ(1u, links.size());
+
+  // Get the destination link that exists in the first page.
+  PDFiumPage& first_page = GetPDFiumPageForTest(*engine, 0);
+  FPDF_LINK link = FPDFLink_GetLinkAtPoint(first_page.GetPage(), 70, 740);
+  ASSERT_TRUE(link);
+  FPDF_DEST dest_link = FPDFLink_GetDest(engine->doc(), link);
+  ASSERT_TRUE(dest_link);
+
+  PDFiumPage::LinkTarget target;
+  PDFiumPage::Area area = first_page.GetLinkTarget(link, &target);
+
+  EXPECT_EQ(PDFiumPage::Area::DOCLINK_AREA, area);
+  EXPECT_EQ(1, target.page);
+
+  // Make sure the target page's size is different from the first page's. This
+  // guarantees that the in-screen coordinates are calculated based on the
+  // target page's dimension.
+  PDFiumPage& target_page = GetPDFiumPageForTest(*engine, target.page);
+  ASSERT_TRUE(target_page.available());
+  ASSERT_TRUE(first_page.available());
+  EXPECT_NE(GetPageSizeHelper(first_page), GetPageSizeHelper(target_page));
+
+  EXPECT_FLOAT_EQ(74.666664f, target.x_in_pixels.value());
+  EXPECT_FLOAT_EQ(120.f, target.y_in_pixels.value());
+  EXPECT_FALSE(target.zoom);
 }
 
 using PDFiumPageImageTest = PDFiumTestBase;

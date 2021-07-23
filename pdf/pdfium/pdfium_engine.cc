@@ -908,6 +908,10 @@ FPDF_FORMHANDLE PDFiumEngine::form() const {
   return document_ ? document_->form() : nullptr;
 }
 
+PDFiumPage* PDFiumEngine::GetPage(size_t index) {
+  return index < pages_.size() ? pages_[index].get() : nullptr;
+}
+
 bool PDFiumEngine::IsValidLink(const std::string& url) {
   return client_->IsValidLink(url);
 }
