@@ -34,11 +34,6 @@ NativeInitializationHook* g_native_initialization_hook = nullptr;
 NonMainDexJniRegistrationHook* g_jni_registration_hook = nullptr;
 LibraryProcessType g_library_process_type = PROCESS_UNINITIALIZED;
 
-// The amount of time, in milliseconds, that it took to load the shared
-// libraries in the renderer. Set in
-// JNI_LibraryLoader_RecordRendererLibraryLoadTime().
-long g_renderer_library_load_time_ms = 0;
-
 }  // namespace
 
 LibraryProcessType GetLibraryProcessType() {
@@ -53,12 +48,6 @@ bool IsUsingOrderfileOptimization() {
 #endif
 }
 
-static void JNI_LibraryLoader_RecordRendererLibraryLoadTime(
-    JNIEnv* env,
-    jlong library_load_time_ms) {
-  g_renderer_library_load_time_ms = library_load_time_ms;
-}
-
 void SetNativeInitializationHook(
     NativeInitializationHook native_initialization_hook) {
   g_native_initialization_hook = native_initialization_hook;
@@ -68,13 +57,6 @@ void SetNonMainDexJniRegistrationHook(
     NonMainDexJniRegistrationHook jni_registration_hook) {
   DCHECK(!g_jni_registration_hook);
   g_jni_registration_hook = jni_registration_hook;
-}
-
-void RecordLibraryLoaderRendererHistograms() {
-  // Record how long it took to load the shared libraries.
-  UMA_HISTOGRAM_TIMES(
-      "ChromiumAndroidLinker.RendererLoadTime",
-      base::TimeDelta::FromMilliseconds(g_renderer_library_load_time_ms));
 }
 
 void SetLibraryLoadedHook(LibraryLoadedHook* func) {

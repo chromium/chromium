@@ -42,7 +42,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * This class provides functionality to load and register the native libraries.
@@ -146,10 +145,15 @@ public class LibraryLoader {
     @GuardedBy("mLock")
     private boolean mCommandLineSwitched;
 
-    // The number of milliseconds it took to load all the native libraries, which will be reported
-    // via UMA. Set once when the libraries are done loading.
-    @GuardedBy("mLock")
-    private long mLibraryLoadTimeMs;
+    // Enumeration telling which init* methods were used, and therefore
+    // which process the library is loaded in.
+    @IntDef({CreatedIn.MAIN, CreatedIn.ZYGOTE, CreatedIn.CHILD_WITHOUT_ZYGOTE})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface CreatedIn {
+        int MAIN = 0;
+        int ZYGOTE = 1;
+        int CHILD_WITHOUT_ZYGOTE = 2;
+    }
 
     /**
      * Inner class encapsulating points of communication between instances of LibraryLoader in
@@ -157,43 +161,55 @@ public class LibraryLoader {
      *
      * Usage:
      *
-     * - For a {@link LibraryLoader} requiring the knowledge of the load address before
-     *   initialization, {@link #takeLoadAddressFromBundle(Bundle)} should be called first. It is
-     *   done very early after establishing a Binder connection.
+     * 0. In the main (Browser) process this mediator can be bypassed by
+     *    {@link LibraryLoader#ensureInitialized()}. It is convenient for targets that do not pay
+     *    attention to RELRO sharing and load time statistics, but it is also more error prone. The
+     *    {@link #ensureInitializedInMainProcess()} is recommended.
      *
-     * - To initialize the object, one of {@link #ensureInitializedInMainProcess()} and
-     *   {@link #initInChildProcess()} must be called. Subsequent calls to initialization are
-     *   ignored.
+     * 1. For a {@link LibraryLoader} requiring the knowledge of the load address before
+     *    initialization, {@link #takeLoadAddressFromBundle(Bundle)} should be called first. It is
+     *    done very early after establishing a Binder connection.
      *
-     * - Later  {@link #putLoadAddressToBundle(Bundle)} and
-     *   {@link #takeLoadAddressFromBundle(Bundle)} should be called for passing the RELRO
-     *   information between library loaders.
+     * 2. After the load address is received, the object needs to be initialized using one of
+     *    {@link #ensureInitializedInMainProcess()}, {@link #initInChildProcess()} and
+     *    {@link #initInAppZygote()}. For the main process the subsequent calls to initialization
+     *    are ignored, primarily to simplify tests.
      *
-     * Internally the {@LibraryLoader} may ignore these messages because it can fall back to not
-     * sharing RELRO.
+     * 3. Later {@link #putLoadAddressToBundle(Bundle)} and
+     *    {@link #takeLoadAddressFromBundle(Bundle)} should be called for passing the RELRO
+     *    information between library loaders.
+     *
+     * Internally the {@link LibraryLoader} may ignore these messages because it can fall back to
+     * not sharing RELRO.
+     *
+     * In general the class is *not* thread safe. The client must guarantee that the steps 1-3 above
+     * happen sequentially in the memory model sense. After that the class is safe to use from
+     * multiple threads concurrently.
      */
-    @ThreadSafe
     public class MultiProcessMediator {
         // Currently clients initialize |mLoadAddress| strictly before any other method can get
-        // executed on a different thread. Hence, synchronization is not required, but verification
-        // of correctness is still non-trivial, and over-synchronization is cheap compared to
-        // library loading.
-        private volatile long mLoadAddress;
+        // executed on a different thread. Hence, synchronization is not required.
+        private long mLoadAddress;
 
-        // Used only for asserts, and only ever switched from false to true.
+        // Only ever switched from false to true.
         private volatile boolean mInitDone;
+
+        // How the mediator was created. The LibraryLoader.ensureInitialized() uses this default
+        // value.
+        private volatile @CreatedIn int mCreatedIn = CreatedIn.MAIN;
 
         /**
          * Extracts the load address as provided by another process.
          * @param bundle The Bundle to extract from.
          */
         public void takeLoadAddressFromBundle(Bundle bundle) {
+            assert !mInitDone;
             mLoadAddress = Linker.extractLoadAddressFromBundle(bundle);
         }
 
         /**
-         * Initializes the Browser process side of communication, the one that coordinates creation
-         * of other processes. Can be called more than once, subsequent calls are ignored.
+         * Initializes the Main (Browser) process side of communication. This process coordinates
+         * creation of other processes. Can be called more than once, subsequent calls are ignored.
          */
         public void ensureInitializedInMainProcess() {
             if (mInitDone) return;
@@ -202,6 +218,7 @@ public class LibraryLoader {
                 getLinker().ensureInitialized(/* asRelroProducer= */ true,
                         Linker.PreferAddress.RESERVE_RANDOM, /* addressHint= */ 0);
             }
+            mCreatedIn = CreatedIn.MAIN;
             mInitDone = true;
         }
 
@@ -218,13 +235,26 @@ public class LibraryLoader {
         }
 
         /**
-         * Initializes in processes other than "Main".
+         * Initializes in the App Zygote process. Will be followed by initInChildProcess() in all
+         * processes inheriting from the app zygote.
+         */
+        public void initInAppZygote() {
+            assert !mInitDone;
+            mCreatedIn = CreatedIn.ZYGOTE;
+            // The initInChildProcess() will set |mInitDone| to |true| after fork(2).
+        }
+
+        /**
+         * Initializes in processes other than Main and App Zygote. Can be called only once in each
+         * non-main process.
          */
         public void initInChildProcess() {
+            assert !mInitDone;
             if (useChromiumLinker()) {
                 getLinker().ensureInitialized(/* asRelroProducer= */ false,
                         Linker.PreferAddress.RESERVE_HINT, mLoadAddress);
             }
+            if (mCreatedIn != CreatedIn.ZYGOTE) mCreatedIn = CreatedIn.CHILD_WITHOUT_ZYGOTE;
             mInitDone = true;
         }
 
@@ -250,6 +280,24 @@ public class LibraryLoader {
                 getLinker().putSharedRelrosToBundle(bundle);
             }
         }
+
+        private String getLoadHistogramName() {
+            switch (mCreatedIn) {
+                case CreatedIn.MAIN:
+                    return "ChromiumAndroidLinker.BrowserLoadTime2";
+                case CreatedIn.ZYGOTE:
+                    return "ChromiumAndroidLinker.ZygoteLoadTime2";
+                case CreatedIn.CHILD_WITHOUT_ZYGOTE:
+                    return "ChromiumAndroidLinker.ChildLoadTime2";
+                default:
+                    assert false : "Must initialize as one of {Browser,Zygote,Child}";
+                    return "";
+            }
+        }
+
+        private void recordLoadTimeHistogram(long loadTimeMs) {
+            RecordHistogram.recordTimesHistogram(getLoadHistogramName(), loadTimeMs);
+        }
     }
 
     public final MultiProcessMediator getMediator() {
@@ -274,7 +322,7 @@ public class LibraryLoader {
     protected LibraryLoader() {}
 
     /**
-     * Set the {@Link LibraryProcessType} for this process.
+     * Set the {@link LibraryProcessType} for this process.
      *
      * Since this function is called extremely early on in startup, locking is not required.
      *
@@ -355,6 +403,10 @@ public class LibraryLoader {
         return mUseChromiumLinker && !mUseModernLinker && Build.VERSION.SDK_INT >= VERSION_CODES.Q;
     }
 
+    // Whether a Linker subclass is used for loading. Even if returns |true|, the Linker can
+    // fall back to using the system dynamic linker on failure. Also it is common for App Zygote to
+    // choose loading with the system linker when sharing RELRO with the browser process is not
+    // supported.
     private boolean useChromiumLinker() {
         return mUseChromiumLinker && !forceSystemLinker();
     }
@@ -435,7 +487,9 @@ public class LibraryLoader {
     }
 
     /**
-     *  This method blocks until the library is fully loaded and initialized.
+     *  Blocks until the library is fully loaded and initialized. When this method is used (without
+     *  the {@link MultiProcessMediator}) the current process is treated as the Main process
+     *  (w.r.t. how it shares RELRO and reports metrics) unless it was initialized before.
      */
     public void ensureInitialized() {
         if (isInitialized()) return;
@@ -669,7 +723,7 @@ public class LibraryLoader {
         }
     }
 
-    // Invoke either Linker.loadLibrary(...), System.loadLibrary(...) or System.load(...),
+    // Invokes either Linker.loadLibrary(...), System.loadLibrary(...) or System.load(...),
     // triggering JNI_OnLoad in native code.
     @GuardedBy("mLock")
     @VisibleForTesting
@@ -694,9 +748,9 @@ public class LibraryLoader {
                 loadWithSystemLinkerAlreadyLocked(appInfo, inZygote);
             }
 
-            long stopTime = SystemClock.uptimeMillis();
-            mLibraryLoadTimeMs = stopTime - startTime;
-            if (DEBUG) Log.i(TAG, "Time to load native libraries: %d ms", mLibraryLoadTimeMs);
+            long loadTimeMs = SystemClock.uptimeMillis() - startTime;
+            getMediator().recordLoadTimeHistogram(loadTimeMs);
+            if (DEBUG) Log.i(TAG, "Time to load native libraries: %d ms", loadTimeMs);
             mLoadState = LoadState.MAIN_DEX_LOADED;
         } catch (UnsatisfiedLinkError e) {
             throw new ProcessInitException(LoaderErrors.NATIVE_LIBRARY_LOAD_FAILED, e);
@@ -835,27 +889,6 @@ public class LibraryLoader {
         mInitialized = true;
     }
 
-    // Called after all native initializations are complete.
-    public void onBrowserNativeInitializationComplete() {
-        synchronized (mLock) {
-            if (useChromiumLinker()) {
-                RecordHistogram.recordTimesHistogram(
-                        "ChromiumAndroidLinker.BrowserLoadTime", mLibraryLoadTimeMs);
-            }
-        }
-    }
-
-    // Records pending Chromium linker histogram state for renderer process. This cannot be
-    // recorded as a histogram immediately because histograms and IPCs are not ready at the
-    // time they are captured. This function stores a pending value, so that a later call to
-    // RecordChromiumAndroidLinkerRendererHistogram() will record it correctly.
-    public void registerRendererProcessHistogram() {
-        if (!useChromiumLinker()) return;
-        synchronized (mLock) {
-            LibraryLoaderJni.get().recordRendererLibraryLoadTime(mLibraryLoadTimeMs);
-        }
-    }
-
     /**
      * Overrides the library loader (normally with a mock) for testing.
      *
@@ -907,8 +940,5 @@ public class LibraryLoader {
         // Registers JNI for non-main processes. For details see android_native_libraries.md,
         // android_dynamic_feature_modules.md and jni_generator/README.md
         void registerNonMainDexJni();
-
-        // Records the number of milliseconds it took to load the libraries in the renderer.
-        void recordRendererLibraryLoadTime(long libraryLoadTime);
     }
 }

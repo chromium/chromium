@@ -170,11 +170,6 @@ int RendererMain(const MainFunctionParams& parameters) {
   // better means of determining which is the main thread, remove.
   RenderThread::IsMainThread();
 
-#if defined(OS_ANDROID)
-  // If we have any pending LibraryLoader histograms, record them.
-  base::android::RecordLibraryLoaderRendererHistograms();
-#endif
-
   blink::Platform::InitializeBlink();
   std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler =
       blink::scheduler::WebThreadScheduler::CreateMainThreadScheduler(

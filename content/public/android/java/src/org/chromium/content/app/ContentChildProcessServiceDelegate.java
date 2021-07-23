@@ -97,7 +97,6 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
         LibraryLoader libraryLoader = LibraryLoader.getInstance();
         libraryLoader.getMediator().initInChildProcess();
         libraryLoader.loadNowOverrideApplicationContext(hostContext);
-        libraryLoader.registerRendererProcessHistogram();
         initializeLibrary();
     }
 

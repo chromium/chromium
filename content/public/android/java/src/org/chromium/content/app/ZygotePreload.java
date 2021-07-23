@@ -46,6 +46,7 @@ public class ZygotePreload implements android.app.ZygotePreload {
             ChildProcessService.setZygoteInfo(
                     Process.myPid(), SystemClock.currentThreadTimeMillis());
             JNIUtils.enableSelectiveJniRegistration();
+            LibraryLoader.getInstance().getMediator().initInAppZygote();
             LibraryLoader.getInstance().loadNowInZygote(appInfo);
         } catch (Throwable e) {
             // Ignore any exception. Child service can continue loading.

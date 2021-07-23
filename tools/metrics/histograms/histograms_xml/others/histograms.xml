@@ -2651,6 +2651,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromiumAndroidLinker.BrowserLoadTime" units="ms"
     expires_after="M99">
+  <obsolete>
+    Replaced by ChromiumAndroidLinker.BrowserLoadTime2 in 2021-07.
+  </obsolete>
   <owner>rsesek@chromium.org</owner>
   <summary>
     The amount of time it took to load the native libraries in the browser
@@ -2698,11 +2701,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromiumAndroidLinker.RendererLoadTime" units="ms"
     expires_after="M99">
+  <obsolete>
+    Replaced by ChromiumAndroidLinker.ChildLoadTime2 in 2021-07.
+  </obsolete>
   <owner>rsesek@chromium.org</owner>
   <summary>
     The amount of time it took to load the native libraries in the renderer
     process.
   </summary>
+</histogram>
+
+<histogram name="ChromiumAndroidLinker.{ProcessType}LoadTime2" units="ms"
+    expires_after="2022-07-20">
+  <owner>pasko@chromium.org</owner>
+  <owner>rsesek@chromium.org</owner>
+  <summary>
+    The amount of time it took to load the native libraries in {ProcessType}.
+  </summary>
+  <token key="ProcessType">
+    <variant name="Browser" summary="the browser process"/>
+    <variant name="Child"
+        summary="a child process (isolated, privileged) if the library was
+                 not loaded by the App Zygote prior to spawning the process"/>
+    <variant name="Zygote" summary="the App Zygote"/>
+  </token>
 </histogram>
 
 <histogram name="Chromoting.Connections" enum="State"
