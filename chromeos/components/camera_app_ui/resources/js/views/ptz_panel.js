@@ -168,7 +168,7 @@ export class PTZPanel extends View {
     this.zoomOut_ = dom.get('#zoom-out', HTMLButtonElement);
 
     /**
-     * @type {?function(boolean): undefined}
+     * @type {?function(boolean): void}
      * @private
      */
     this.mirrorObserver_ = null;
@@ -274,7 +274,7 @@ export class PTZPanel extends View {
   }
 
   /**
-   * @param {function(boolean): undefined} observer
+   * @param {function(boolean): void} observer
    * @private
    */
   setMirrorObserver_(observer) {
@@ -303,7 +303,7 @@ export class PTZPanel extends View {
      * @param {number} deltaInPercent Change rate in percent with respect to
      *     min/max range.
      * @param {number} direction Change in +1 or -1 direction.
-     * @return {function(): undefined}
+     * @return {function(): void}
      */
     const onTrigger = (deltaInPercent, direction) => {
       const delta =
