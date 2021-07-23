@@ -47,20 +47,6 @@ constexpr char kLoggingModuleSwitchValue[] =
     "*/updater/*=2,*/update_client/*=2";
 
 #pragma mark Helpers
-const base::FilePath GetUpdaterAppName() {
-  return base::FilePath(PRODUCT_FULLNAME_STRING ".app");
-}
-
-const base::FilePath GetUpdaterAppExecutablePath() {
-  return base::FilePath("Contents/MacOS").AppendASCII(PRODUCT_FULLNAME_STRING);
-}
-
-const base::FilePath GetUpdaterExecutablePath(
-    const base::FilePath& updater_folder_path) {
-  return updater_folder_path.Append(GetUpdaterAppName())
-      .Append(GetUpdaterAppExecutablePath());
-}
-
 Launchd::Domain LaunchdDomain(UpdaterScope scope) {
   switch (scope) {
     case UpdaterScope::kSystem:
@@ -357,8 +343,7 @@ int DoSetup(UpdaterScope scope) {
     return setup_exit_codes::kFailedToCopyBundle;
 
   const base::FilePath updater_executable_path =
-      dest_path->Append(GetUpdaterAppName())
-          .Append(GetUpdaterAppExecutablePath());
+      dest_path->Append(GetExecutableRelativePath());
 
   // Quarantine attribute needs to be removed here as the copied bundle might be
   // given com.apple.quarantine attribute, and the server is attempted to be
@@ -400,8 +385,7 @@ int PromoteCandidate(UpdaterScope scope) {
   if (!dest_path)
     return setup_exit_codes::kFailedToGetVersionedUpdaterFolderPath;
   const base::FilePath updater_executable_path =
-      dest_path->Append(GetUpdaterAppName())
-          .Append(GetUpdaterAppExecutablePath());
+      dest_path->Append(GetExecutableRelativePath());
 
   if (!CreateUpdateServiceLaunchdJobPlist(scope, updater_executable_path))
     return setup_exit_codes::kFailedToCreateUpdateServiceLaunchdJobPlist;
@@ -447,7 +431,7 @@ void UninstallOtherVersions(UpdaterScope scope) {
        version_folder_path != GetVersionedUpdaterFolderPath(scope);
        version_folder_path = file_enumerator.Next()) {
     const base::FilePath version_executable_path =
-        GetUpdaterExecutablePath(version_folder_path);
+        version_folder_path.Append(GetExecutableRelativePath());
 
     if (base::PathExists(version_executable_path)) {
       base::CommandLine command_line(version_executable_path);

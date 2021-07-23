@@ -17,6 +17,10 @@ class Version;
 
 namespace updater {
 
+// Returns a relative path to the executable, such as
+// "GoogleUpdater.app/Contents/MacOS/GoogleUpdater".
+base::FilePath GetExecutableRelativePath();
+
 // For user installations returns: the "~/Library" for the logged in user.
 // For system installations returns: "/Library".
 absl::optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope);

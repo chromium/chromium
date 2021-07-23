@@ -14,6 +14,7 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
@@ -62,11 +63,7 @@ base::FilePath GetExecutablePath() {
   base::FilePath test_executable;
   if (!base::PathService::Get(base::FILE_EXE, &test_executable))
     return base::FilePath();
-  return test_executable.DirName()
-      .Append(FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING ".app"))
-      .Append(FILE_PATH_LITERAL("Contents"))
-      .Append(FILE_PATH_LITERAL("MacOS"))
-      .Append(FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING));
+  return test_executable.DirName().Append(GetExecutableRelativePath());
 }
 
 base::FilePath GetTestAppExecutablePath() {

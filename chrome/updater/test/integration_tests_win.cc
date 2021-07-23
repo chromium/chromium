@@ -47,7 +47,7 @@ base::FilePath GetInstallerPath() {
   base::FilePath test_executable;
   if (!base::PathService::Get(base::FILE_EXE, &test_executable))
     return base::FilePath();
-  return test_executable.DirName().AppendASCII("UpdaterSetup.exe");
+  return test_executable.DirName().AppendASCII("UpdaterSetup_test.exe");
 }
 
 base::FilePath GetTestAppExecutablePath() {
@@ -305,11 +305,12 @@ void Install(UpdaterScope scope) {
 }
 
 void Uninstall(UpdaterScope scope) {
-  // Note: updater.exe --uninstall is run from the build dir, not the install
-  // dir, because it is useful for tests to be able to run it to clean the
-  // system even if installation has failed or the installed binaries have
+  // Note: updater_test.exe --uninstall is run from the build dir, not the
+  // install dir, because it is useful for tests to be able to run it to clean
+  // the system even if installation has failed or the installed binaries have
   // already been removed.
-  base::FilePath path = GetInstallerPath().DirName().AppendASCII("updater.exe");
+  base::FilePath path =
+      GetInstallerPath().DirName().AppendASCII("updater_test.exe");
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
   command_line.AppendSwitch("uninstall");

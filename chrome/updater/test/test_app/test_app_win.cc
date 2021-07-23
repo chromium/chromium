@@ -22,7 +22,7 @@ int InstallUpdater() {
   CHECK(base::PathService::Get(base::FILE_EXE, &test_executable));
 
   base::CommandLine command_line(
-      test_executable.DirName().AppendASCII("UpdaterSetup.exe"));
+      test_executable.DirName().AppendASCII("UpdaterSetup_test.exe"));
   command_line.AppendSwitch(kInstallSwitch);
   if (GetUpdaterScope() == UpdaterScope::kSystem)
     command_line.AppendSwitch(kSystemSwitch);

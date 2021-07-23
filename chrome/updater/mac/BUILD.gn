@@ -28,7 +28,23 @@ mac_app_bundle("updater_bundle") {
       [ "MAC_BUNDLE_IDENTIFIER=$mac_updater_bundle_identifier" ]
 
   sources = [ "main.cc" ]
-  deps = [ "//chrome/updater:base" ]
+  deps = [
+    "//chrome/updater:base",
+    "//chrome/updater:constants_prod",
+  ]
+}
+
+mac_app_bundle("updater_bundle_test") {
+  info_plist_target = ":updater_plist"
+  output_name = updater_product_full_name + "_test"
+  extra_substitutions =
+      [ "MAC_BUNDLE_IDENTIFIER=$mac_updater_bundle_identifier" ]
+
+  sources = [ "main.cc" ]
+  deps = [
+    "//chrome/updater:base",
+    "//chrome/updater:constants_test",
+  ]
 }
 
 action("updater_install_script") {

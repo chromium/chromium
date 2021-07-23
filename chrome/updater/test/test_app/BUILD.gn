@@ -62,6 +62,7 @@ source_set("app_sources") {
     ":version_header",
     "//base",
     "//chrome/updater:base",
+    "//chrome/updater:constants_test",
     "//chrome/updater:version_header",
     "//components/update_client:update_client",
   ]
@@ -82,10 +83,7 @@ source_set("app_sources") {
       "update_client_win.cc",
       "update_client_win.h",
     ]
-    deps += [
-      "//chrome/updater:base",
-      "//chrome/updater/app/server/win:updater_idl_idl",
-    ]
+    deps += [ "//chrome/updater/app/server/win:updater_idl_idl" ]
   }
 }
 
@@ -124,10 +122,10 @@ if (is_mac) {
   }
 
   bundle_data("bundle_updater") {
-    sources = [ "$root_out_dir/$updater_product_full_name.app" ]
+    sources = [ "$root_out_dir/${updater_product_full_name}_test.app" ]
     outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
 
-    public_deps = [ "//chrome/updater/mac:updater_bundle" ]
+    public_deps = [ "//chrome/updater/mac:updater_bundle_test" ]
   }
 
   mac_framework_bundle("app_framework") {

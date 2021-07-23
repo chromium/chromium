@@ -70,13 +70,16 @@ def CopySectionFilesToStagingDir(config, section, staging_dir, src_dir,
     dst_dir = os.path.join(staging_dir, config.get(section, option))
     dst_dir = dst_dir.replace('\\', os.sep)
     src_paths = glob.glob(os.path.join(src_dir, src_subdir))
-    if src_paths and not os.path.exists(dst_dir):
-      os.makedirs(dst_dir)
     for src_path in src_paths:
-      dst_path = os.path.join(dst_dir, os.path.basename(src_path))
+      if dst_dir.endswith(os.sep):
+        dst_path = os.path.join(dst_dir, os.path.basename(src_path))
+      else:
+        dst_path = dst_dir
       if not os.path.exists(dst_path):
+        if not os.path.exists(os.path.dirname(dst_path)):
+          os.makedirs(os.path.dirname(dst_dir))
         g_archive_inputs.append(src_path)
-        shutil.copy(src_path, dst_dir)
+        shutil.copy(src_path, dst_path)
         os.utime(dst_path, (os.stat(dst_path).st_atime, timestamp))
     os.utime(dst_dir, (os.stat(dst_dir).st_atime, timestamp))
 

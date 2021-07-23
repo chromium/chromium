@@ -16,6 +16,9 @@ extern const char kUpdaterAppId[];
 // The app ID used to qualify the updater.
 extern const char kQualificationAppId[];
 
+// A suffix appended to the updater executable name before any file extension.
+extern const char kExecutableSuffix[];
+
 // "0.0.0.0". Historically, a null version has been used to indicate a
 // new install.
 extern const char kNullVersion[];

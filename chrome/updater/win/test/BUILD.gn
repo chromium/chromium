@@ -26,6 +26,7 @@ source_set("test_common") {
   deps = [
     "//base",
     "//chrome/updater:base",
+    "//chrome/updater:constants_test",
   ]
 }
 

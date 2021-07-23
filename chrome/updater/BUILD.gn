@@ -91,8 +91,6 @@ if (is_win || is_mac) {
       "external_constants_builder.h",
       "external_constants_default.cc",
       "external_constants_default.h",
-      "external_constants_override.cc",
-      "external_constants_override.h",
       "installer.cc",
       "installer.h",
       "lib_util.h",
@@ -136,6 +134,7 @@ if (is_win || is_mac) {
 
     deps = [
       ":branding_header",
+      ":constants_header",
       ":version_header",
       "//base",
       "//base:i18n",
@@ -302,6 +301,41 @@ if (is_win || is_mac) {
     }
   }
 
+  source_set("constants_header") {
+    sources = [ "constants.h" ]
+
+    deps = [ "//components/update_client" ]
+  }
+
+  source_set("constants_prod") {
+    sources = [
+      "constants_prod.cc",
+      "external_constants_prod.cc",
+    ]
+
+    deps = [
+      ":base",
+      ":constants_header",
+    ]
+  }
+
+  source_set("constants_test") {
+    sources = [
+      "constants_test.cc",
+      "external_constants_override.cc",
+      "external_constants_override.h",
+    ]
+
+    deps = [
+      ":base",
+      ":branding_header",
+      ":constants_header",
+      ":version_header",
+      "//base",
+      "//url",
+    ]
+  }
+
   process_version("version_header") {
     sources = [ "//chrome/VERSION" ]
     template_file = "updater_version.h.in"
@@ -425,7 +459,7 @@ if (is_win || is_mac) {
     deps = [
       ":base",
       ":branding_header",
-      ":updater",
+      ":constants_test",
       ":updater_tests_support",
       ":version_header",
       "//base",
@@ -469,8 +503,8 @@ if (is_win || is_mac) {
       ]
 
       data_deps = [
-        "//chrome/updater/win:updater",
-        "//chrome/updater/win/installer",
+        "//chrome/updater/win:updater_test",
+        "//chrome/updater/win/installer:installer_test",
         "//chrome/updater/win/installer:installer_unittest",
       ]
 
@@ -512,7 +546,7 @@ if (is_win || is_mac) {
       ]
 
       data_deps = [
-        "//chrome/updater/mac:updater_bundle",
+        "//chrome/updater/mac:updater_bundle_test",
         "//chrome/updater/test/test_app",
       ]
     }
@@ -536,7 +570,7 @@ if (is_win || is_mac) {
 
     data_deps = [ "//chrome/updater/test/test_app" ]
     if (is_mac) {
-      data_deps += [ "//chrome/updater/mac:updater_bundle" ]
+      data_deps += [ "//chrome/updater/mac:updater_bundle_test" ]
     }
   }
 
@@ -558,7 +592,7 @@ if (is_win || is_mac) {
     data_deps = [ ":updater_integration_tests_helper" ]
     if (is_mac) {
       data_deps += [
-        "//chrome/updater/mac:updater_bundle",
+        "//chrome/updater/mac:updater_bundle_test",
         "//chrome/updater/test/test_app",
       ]
     }

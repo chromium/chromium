@@ -14,10 +14,12 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/process/launch.h"
+#include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/version.h"
 #include "chrome/common/mac/launchd.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
@@ -35,12 +37,18 @@ base::FilePath GetUpdateFolderName() {
 }
 
 base::FilePath ExecutableFolderPath() {
-  return base::FilePath(FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING ".app"))
+  return base::FilePath(
+             base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"}))
       .Append(FILE_PATH_LITERAL("Contents"))
       .Append(FILE_PATH_LITERAL("MacOS"));
 }
 
 }  // namespace
+
+base::FilePath GetExecutableRelativePath() {
+  return ExecutableFolderPath().Append(
+      base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix}));
+}
 
 absl::optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope) {
   switch (scope) {
@@ -115,7 +123,7 @@ absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
   if (!path)
     return absl::nullopt;
   return path->Append(ExecutableFolderPath())
-      .Append(FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING));
+      .AppendASCII(base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix}));
 }
 
 bool PathOwnedByUser(const base::FilePath& path) {

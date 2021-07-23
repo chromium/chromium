@@ -37,6 +37,27 @@ executable("updater") {
     ":version_resources",
     "//build/win:default_exe_manifest",
     "//chrome/updater:base",
+    "//chrome/updater:constants_prod",
+    "//chrome/updater/win/ui:ui_resources",
+  ]
+
+  data_deps = [ ":uninstall.cmd" ]
+}
+
+executable("updater_test") {
+  sources = [
+    "main.cc",
+    "updater.rc",
+  ]
+
+  configs -= [ "//build/config/compiler:cet_shadow_stack" ]
+  configs += [ "//build/config/win:windowed" ]
+
+  deps = [
+    ":version_resources",
+    "//build/win:default_exe_manifest",
+    "//chrome/updater:base",
+    "//chrome/updater:constants_test",
     "//chrome/updater/win/ui:ui_resources",
   ]
 
