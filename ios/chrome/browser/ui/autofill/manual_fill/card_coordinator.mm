@@ -65,7 +65,6 @@
                           injectionHandler:injectionHandler];
   if (self) {
     _cardViewController = [[CardViewController alloc] init];
-    _cardViewController.contentInsetsAlwaysEqualToSafeArea = YES;
 
     // Service must use regular browser state, even if the Browser has an
     // OTR browser state.

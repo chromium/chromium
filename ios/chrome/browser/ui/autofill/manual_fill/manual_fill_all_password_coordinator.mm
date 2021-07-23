@@ -45,7 +45,6 @@
       [[UISearchController alloc] initWithSearchResultsController:nil];
   self.passwordViewController = [[PasswordViewController alloc]
       initWithSearchController:searchController];
-  self.passwordViewController.contentInsetsAlwaysEqualToSafeArea = YES;
   self.passwordViewController.delegate = self;
 
   auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(

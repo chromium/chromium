@@ -60,7 +60,6 @@
                           injectionHandler:injectionHandler];
   if (self) {
     _addressViewController = [[AddressViewController alloc] init];
-    _addressViewController.contentInsetsAlwaysEqualToSafeArea = YES;
 
     // Service must use regular browser state, even if the Browser has an
     // OTR browser state.

@@ -65,16 +65,6 @@ constexpr CGFloat kSectionFooterHeight = 8;
 - (instancetype)init {
   self = [super initWithStyle:UITableViewStylePlain];
   if (self) {
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(handleKeyboardWillShow:)
-               name:UIKeyboardWillShowNotification
-             object:nil];
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(handleKeyboardDidHide:)
-               name:UIKeyboardDidHideNotification
-             object:nil];
     _loadingIndicatorStartingDate = [NSDate distantPast];
   }
   return self;
@@ -146,15 +136,6 @@ constexpr CGFloat kSectionFooterHeight = 8;
   [self presentQueuedActionItems];
 }
 
-#pragma mark - Getters
-
-- (BOOL)contentInsetsAlwaysEqualToSafeArea {
-  if (@available(iOS 13, *)) {
-    return NO;
-  }
-  return _contentInsetsAlwaysEqualToSafeArea;
-}
-
 #pragma mark - Private
 
 // Presents the data items currently in queue.
@@ -208,31 +189,6 @@ constexpr CGFloat kSectionFooterHeight = 8;
   if (!self.tableViewModel) {
     [self loadModel];
     [self stopLoadingIndicatorWithCompletion:nil];
-  }
-}
-
-- (void)handleKeyboardDidHide:(NSNotification*)notification {
-  if (self.contentInsetsAlwaysEqualToSafeArea &&
-      (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET)) {
-    // Resets the table view content inssets to be equal to the safe area
-    // insets.
-    self.tableView.contentInset = UIEdgeInsetsZero;
-  }
-}
-
-- (void)handleKeyboardWillShow:(NSNotification*)notification {
-  if (self.contentInsetsAlwaysEqualToSafeArea &&
-      (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET)) {
-    // Sets the bottom inset to be equal to the height of the keyboard to
-    // override the behaviour in UITableViewController. Which adjust the scroll
-    // view insets to accommodate for the keyboard.
-    CGRect keyboardFrame =
-        [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGFloat keyboardHeight = keyboardFrame.size.height;
-    UIEdgeInsets safeInsets = self.view.safeAreaInsets;
-    // |contentInset| already contemplates the safe area.
-    self.tableView.contentInset =
-        UIEdgeInsetsMake(0, 0, safeInsets.bottom - keyboardHeight, 0);
   }
 }
 

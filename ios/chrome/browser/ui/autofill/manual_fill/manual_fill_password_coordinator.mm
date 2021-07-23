@@ -57,7 +57,6 @@
   if (self) {
     _passwordViewController =
         [[PasswordViewController alloc] initWithSearchController:nil];
-    _passwordViewController.contentInsetsAlwaysEqualToSafeArea = YES;
 
     auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
         browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);

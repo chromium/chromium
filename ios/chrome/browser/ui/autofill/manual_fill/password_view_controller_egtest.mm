@@ -100,11 +100,6 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
     config.features_enabled.push_back(
         password_manager::features::kEnableManualPasswordGeneration);
   }
-  //   TODO(crbug.com/1226894): Uncomment this once the test is fixed.
-  if ([self isRunningTest:@selector(testPasswordControllerKeepsRightSize)]) {
-    config.features_disabled.push_back(
-        password_manager::features::kEnableManualPasswordGeneration);
-  }
   return config;
 }
 
@@ -507,34 +502,6 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
       assertWithMatcher:grey_notVisible()];
   [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
       assertWithMatcher:grey_notVisible()];
-}
-
-// Tests that after switching fields the content size of the table view didn't
-// grow.
-- (void)testPasswordControllerKeepsRightSize {
-  // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementUsername)];
-
-  // Tap on the passwords icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
-      performAction:grey_tap()];
-
-  // Verify the "Manage Passwords..." is on screen.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Tap the second element.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementPassword)];
-
-  // Try to scroll.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
-  // Verify the "Manage Passwords..." is on screen.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that the Password View Controller stays on rotation.
