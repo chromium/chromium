@@ -170,7 +170,8 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
       std::vector<std::string> client_domain_list);
   void UpdateHostUdpPortRangePolicy(const std::string& port_range_string);
 
-  void DisconnectOnNetworkThread();
+  void DisconnectOnNetworkThread(
+      protocol::ErrorCode error_code = protocol::ErrorCode::OK);
 
   // Uses details of the connection and current policies to determine if the
   // connection should be accepted or rejected.

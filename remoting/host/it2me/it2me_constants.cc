@@ -35,6 +35,7 @@ const char kHostStateConnected[] = "CONNECTED";
 const char kAccessCode[] = "accessCode";
 const char kAccessCodeLifetime[] = "accessCodeLifetime";
 const char kClient[] = "client";
+const char kDisconnectReason[] = "disconnectReason";
 
 const char kDisconnectMessage[] = "disconnect";
 const char kDisconnectResponse[] = "disconnectResponse";

@@ -61,11 +61,13 @@ extern const char kHostStateReceivedAccessCode[];
 extern const char kHostStateDisconnected[];
 extern const char kHostStateConnecting[];
 extern const char kHostStateConnected[];
-// Included in the message sent for ReceivedAccessCode state.
+// Included in the message sent for the ReceivedAccessCode state.
 extern const char kAccessCode[];
 extern const char kAccessCodeLifetime[];
-// Included in the message sent for Connected state.
+// Included in the message sent for the Connected state.
 extern const char kClient[];
+// Included in the message sent for the Disconnected state.
+extern const char kDisconnectReason[];
 
 // Sent from the client to the host to disconnect the current connection.
 extern const char kDisconnectMessage[];

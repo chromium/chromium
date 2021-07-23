@@ -470,6 +470,7 @@ void It2MeNativeMessagingHost::OnStateChanged(It2MeHostState state,
       break;
 
     case It2MeHostState::kDisconnected:
+      message->SetString(kDisconnectReason, ErrorCodeToString(error_code));
       client_username_.clear();
       break;
 

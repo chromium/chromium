@@ -485,8 +485,8 @@ void It2MeNativeMessagingHostTest::VerifyDisconnectResponses(int request_id) {
   bool disconnect_response_received = false;
   bool disconnected_received = false;
 
-  // We expect a total of 3 messages: 1 connectResponse and 1 hostStateChanged.
-  for (int i = 0; i < 2; ++i) {
+  // We expect a total of 2 messages: disconnectResponse and hostStateChanged.
+  for (int i = 0; i < 2; i++) {
     std::unique_ptr<base::DictionaryValue> response =
         ReadMessageFromOutputPipe();
     ASSERT_TRUE(response);
@@ -504,6 +504,9 @@ void It2MeNativeMessagingHostTest::VerifyDisconnectResponses(int request_id) {
       if (state == It2MeHostStateToString(It2MeHostState::kDisconnected)) {
         EXPECT_FALSE(disconnected_received);
         disconnected_received = true;
+        std::string error_code;
+        EXPECT_TRUE(response->GetString(kDisconnectReason, &error_code));
+        EXPECT_EQ(ErrorCodeToString(protocol::ErrorCode::OK), error_code);
       } else {
         ADD_FAILURE() << "Unexpected host state: " << state;
       }

@@ -135,7 +135,8 @@ void It2MeHost::Connect(
 void It2MeHost::Disconnect() {
   DCHECK(host_context_->ui_task_runner()->BelongsToCurrentThread());
   host_context_->network_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&It2MeHost::DisconnectOnNetworkThread, this));
+      FROM_HERE, base::BindOnce(&It2MeHost::DisconnectOnNetworkThread, this,
+                                protocol::ErrorCode::OK));
 }
 
 void It2MeHost::ConnectOnNetworkThread(
@@ -538,7 +539,7 @@ void It2MeHost::OnReceivedSupportID(const std::string& support_id,
   SetState(It2MeHostState::kReceivedAccessCode, ErrorCode::OK);
 }
 
-void It2MeHost::DisconnectOnNetworkThread() {
+void It2MeHost::DisconnectOnNetworkThread(protocol::ErrorCode error_code) {
   DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
 
   // Disconnect() may be called even after the host has already been stopped.
@@ -577,7 +578,7 @@ void It2MeHost::DisconnectOnNetworkThread() {
   host_context_->ui_task_runner()->DeleteSoon(
       FROM_HERE, desktop_environment_factory_.release());
 
-  SetState(It2MeHostState::kDisconnected, ErrorCode::OK);
+  SetState(It2MeHostState::kDisconnected, error_code);
 }
 
 void It2MeHost::ValidateConnectionDetails(
@@ -669,7 +670,7 @@ void It2MeHost::OnConfirmationResult(ValidationResultCallback result_callback,
 
     case It2MeConfirmationDialog::Result::CANCEL:
       std::move(result_callback).Run(ValidationResult::ERROR_REJECTED_BY_USER);
-      DisconnectOnNetworkThread();
+      DisconnectOnNetworkThread(ErrorCode::SESSION_REJECTED);
       break;
   }
 }
