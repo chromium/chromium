@@ -16,26 +16,43 @@ import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtil
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.createDialog;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.showDialog;
 
+import android.app.Activity;
+
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.ui.test.util.DummyUiActivity;
 
 /**
  * Tests for {@link AppModalPresenter}.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class AppModalPresenterTest extends DummyUiActivityTestCase {
+@Batch(Batch.PER_CLASS)
+public class AppModalPresenterTest {
+    @ClassRule
+    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
+    @ClassRule
+    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
+
     private class TestObserver implements ModalDialogTestUtils.TestDialogDismissedObserver {
         public final CallbackHelper onDialogDismissedCallback = new CallbackHelper();
 
@@ -46,59 +63,72 @@ public class AppModalPresenterTest extends DummyUiActivityTestCase {
         }
     }
 
-    private ModalDialogManager mManager;
+    private static Activity sActivity;
+    private static ModalDialogManager sManager;
     private TestObserver mTestObserver;
     private Integer mExpectedDismissalCause;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-        mManager = new ModalDialogManager(
-                new AppModalPresenter(getActivity()), ModalDialogManager.ModalDialogType.APP);
+    @BeforeClass
+    public static void setupSuite() {
+        activityTestRule.launchActivity(null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            sActivity = activityTestRule.getActivity();
+            sManager = new ModalDialogManager(
+                    new AppModalPresenter(sActivity), ModalDialogManager.ModalDialogType.APP);
+        });
+    }
+
+    @Before
+    public void setupTest() {
         mTestObserver = new TestObserver();
+    }
+
+    @After
+    public void tearDown() {
+        sManager.destroy();
     }
 
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
     public void testDismiss_BackPressed() throws Exception {
-        PropertyModel dialog1 = createDialog(getActivity(), mManager, "1", null);
-        PropertyModel dialog2 = createDialog(getActivity(), mManager, "2", null);
+        PropertyModel dialog1 = createDialog(sActivity, sManager, "1", null);
+        PropertyModel dialog2 = createDialog(sActivity, sManager, "2", null);
 
         // Initially there are no dialogs in the pending list. Browser controls are not restricted.
-        checkPendingSize(mManager, ModalDialogType.APP, 0);
-        checkCurrentPresenter(mManager, null);
+        checkPendingSize(sManager, ModalDialogType.APP, 0);
+        checkCurrentPresenter(sManager, null);
 
         // Add three dialogs available for showing. The app modal dialog should be shown first.
-        showDialog(mManager, dialog1, ModalDialogType.APP);
-        showDialog(mManager, dialog2, ModalDialogType.APP);
-        checkPendingSize(mManager, ModalDialogType.APP, 1);
+        showDialog(sManager, dialog1, ModalDialogType.APP);
+        showDialog(sManager, dialog2, ModalDialogType.APP);
+        checkPendingSize(sManager, ModalDialogType.APP, 1);
         onView(withText("1")).check(matches(isDisplayed()));
-        checkCurrentPresenter(mManager, ModalDialogType.APP);
+        checkCurrentPresenter(sManager, ModalDialogType.APP);
 
         // Perform back press. The first app modal dialog should be dismissed, and the second one
         // should be shown.
         Espresso.pressBack();
-        checkPendingSize(mManager, ModalDialogType.APP, 0);
+        checkPendingSize(sManager, ModalDialogType.APP, 0);
         onView(withText("1")).check(doesNotExist());
         onView(withText("2")).check(matches(isDisplayed()));
-        checkCurrentPresenter(mManager, ModalDialogType.APP);
+        checkCurrentPresenter(sManager, ModalDialogType.APP);
 
         // Perform a second back press. The second app modal dialog should be dismissed.
         Espresso.pressBack();
-        checkPendingSize(mManager, ModalDialogType.APP, 0);
+        checkPendingSize(sManager, ModalDialogType.APP, 0);
         onView(withText("2")).check(doesNotExist());
-        checkCurrentPresenter(mManager, null);
+        checkCurrentPresenter(sManager, null);
     }
 
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
     public void testDismiss_DismissalCause_BackPressed() throws Exception {
-        PropertyModel dialog1 = createDialog(getActivity(), mManager, "1", mTestObserver);
+        PropertyModel dialog1 = createDialog(sActivity, sManager, "1", mTestObserver);
         mExpectedDismissalCause = DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE;
 
-        showDialog(mManager, dialog1, ModalDialogType.APP);
+        showDialog(sManager, dialog1, ModalDialogType.APP);
 
         // Dismiss the tab modal dialog and verify dismissal cause.
         int callCount = mTestObserver.onDialogDismissedCallback.getCallCount();
