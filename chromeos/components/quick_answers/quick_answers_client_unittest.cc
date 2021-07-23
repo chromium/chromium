@@ -196,7 +196,7 @@ TEST_F(QuickAnswersClientTest, SendRequestForPreprocessing) {
 TEST_F(QuickAnswersClientTest, FetchQuickAnswers) {
   std::unique_ptr<QuickAnswersRequest> quick_answers_request =
       std::make_unique<QuickAnswersRequest>();
-  quick_answers_request->preprocessed_output.query = "Define:sel";
+  quick_answers_request->preprocessed_output.query = "Define sel";
 
   mock_result_loader_ =
       std::make_unique<MockResultLoader>(&test_url_loader_factory_, nullptr);
@@ -220,7 +220,7 @@ TEST_F(QuickAnswersClientTest, PreprocessDefinitionIntent) {
   processed_request->selected_text = "unfathomable";
   PreprocessedOutput expected_processed_output;
   expected_processed_output.intent_info.intent_text = "unfathomable";
-  expected_processed_output.query = "Define:unfathomable";
+  expected_processed_output.query = "Define unfathomable";
   expected_processed_output.intent_info.intent_type = IntentType::kDictionary;
   processed_request->preprocessed_output = expected_processed_output;
   EXPECT_CALL(*mock_delegate_,
