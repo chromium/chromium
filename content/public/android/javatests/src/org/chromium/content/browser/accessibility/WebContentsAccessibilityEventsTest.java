@@ -17,10 +17,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,7 +30,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Tests for WebContentsAccessibilityImpl integration with AT.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(ContentJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 @SuppressLint("VisibleForTests")

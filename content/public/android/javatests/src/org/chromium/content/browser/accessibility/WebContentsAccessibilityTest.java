@@ -377,7 +377,7 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.N)
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testMaxContentChangedEventsFired_default() throws Throwable {
         // Build a simple web page with complex visibility change.
@@ -402,7 +402,7 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.N)
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testMaxContentChangedEventsFired_largeLimit() throws Throwable {
         // Build a simple web page with complex visibility change.
