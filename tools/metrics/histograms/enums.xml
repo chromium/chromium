@@ -47074,6 +47074,7 @@ from previous Chrome versions.
   <int value="-1550541457" label="DisplayIdentification:disabled"/>
   <int value="-1549871007" label="OneGoogleBarOnLocalNtp:disabled"/>
   <int value="-1549356351" label="SyncPseudoUSSExtensionSettings:enabled"/>
+  <int value="-1548904154" label="MediaAppMultiWindow:enabled"/>
   <int value="-1547953198" label="FullRestore:enabled"/>
   <int value="-1547247328" label="OverrideTranslateTriggerInIndia:disabled"/>
   <int value="-1546903171" label="enable-touch-drag-drop"/>
@@ -47552,6 +47553,7 @@ from previous Chrome versions.
   <int value="-1203742042" label="enable-gesture-selection"/>
   <int value="-1201741587" label="DataReductionProxyDecidesTransform:disabled"/>
   <int value="-1201183153" label="enable-centered-app-list"/>
+  <int value="-1199738132" label="MediaAppMultiWindow:disabled"/>
   <int value="-1199159971"
       label="ContextualSuggestionsIPHReverseScroll:enabled"/>
   <int value="-1198304634"

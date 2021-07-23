@@ -715,6 +715,10 @@ const base::Feature kMediaAppHandlesPdf{"MediaAppHandlesPdf",
 const base::Feature kMediaAppVideoControls{"MediaAppVideoControls",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Whether to allow the ChromeOS media app to open with multiple windows.
+const base::Feature kMediaAppMultiWindow{"MediaAppMultiWindow",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables notification of when a microphone-using app is launched while the
 // microphone is muted.
 const base::Feature kMicMuteNotifications{"MicMuteNotifications",

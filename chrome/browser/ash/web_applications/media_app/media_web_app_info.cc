@@ -132,6 +132,15 @@ bool MediaSystemAppDelegate::ShouldIncludeLaunchDirectory() const {
 bool MediaSystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
+
 bool MediaSystemAppDelegate::ShouldShowInSearch() const {
   return false;
+}
+
+bool MediaSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
+  return base::FeatureList::IsEnabled(chromeos::features::kMediaAppMultiWindow);
+}
+
+bool MediaSystemAppDelegate::ShouldBeSingleWindow() const {
+  return !ShouldShowNewWindowMenuOption();
 }

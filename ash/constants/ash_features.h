@@ -265,6 +265,7 @@ extern const base::Feature kManagedDeviceUIRedesign;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kMediaAppAnnotation;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kMediaAppDisplayExif;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kMediaAppHandlesPdf;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kMediaAppMultiWindow;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kManagedTermsOfService;
 COMPONENT_EXPORT(ASH_CONSTANTS)

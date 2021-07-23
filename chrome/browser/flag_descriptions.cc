@@ -4998,6 +4998,10 @@ const char kMediaAppHandlesPdfName[] = "Media App Handles PDF";
 const char kMediaAppHandlesPdfDescription[] =
     "Enables opening PDF files by default in chrome://media-app";
 
+const char kMediaAppMultiWindowName[] = "Media App Multi Window";
+const char kMediaAppMultiWindowDescription[] =
+    "Enables opening multiple instances of chrome://media-app";
+
 const char kMediaAppVideoName[] = "Media App Handles Video";
 const char kMediaAppVideoDescription[] =
     "Use chrome://media-app as the default handler for video. Hides the "

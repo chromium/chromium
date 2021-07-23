@@ -2886,6 +2886,9 @@ extern const char kMediaAppDisplayExifDescription[];
 extern const char kMediaAppHandlesPdfName[];
 extern const char kMediaAppHandlesPdfDescription[];
 
+extern const char kMediaAppMultiWindowName[];
+extern const char kMediaAppMultiWindowDescription[];
+
 extern const char kMediaAppVideoName[];
 extern const char kMediaAppVideoDescription[];
 
