@@ -44,6 +44,7 @@
 #include "components/translate/core/common/translate_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -142,6 +143,11 @@ TranslateBubbleView::~TranslateBubbleView() {
   // removing the child views is needed.
   RemoveAllChildViews(true);
 }
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kIdentifier);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kSourceLanguageTab);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kTargetLanguageTab);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kCloseButton);
 
 // static
 views::Widget* TranslateBubbleView::ShowBubble(
@@ -512,6 +518,7 @@ TranslateBubbleView::TranslateBubbleView(
         std::make_unique<WebContentMouseHandler>(this, web_contents);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetFootnoteView(CreateWordmarkView());
+  View::SetProperty(views::kElementIdentifierKey, kIdentifier);
   chrome::RecordDialogCreation(chrome::DialogIdentifier::TRANSLATE);
 }
 
@@ -659,6 +666,10 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateView() {
   // parent.
   tabbed_pane_->AddTab(source_language_name, CreateEmptyPane());
   tabbed_pane_->AddTab(target_language_name, CreateEmptyPane());
+  tabbed_pane_->GetTabAt(0)->SetProperty(views::kElementIdentifierKey,
+                                         kSourceLanguageTab);
+  tabbed_pane_->GetTabAt(1)->SetProperty(views::kElementIdentifierKey,
+                                         kTargetLanguageTab);
   tabbed_pane_->GetTabAt(0)->SetBorder(
       views::CreateEmptyBorder(gfx::Insets(2, 20)));
   tabbed_pane_->GetTabAt(1)->SetBorder(
@@ -1064,6 +1075,7 @@ std::unique_ptr<views::Button> TranslateBubbleView::CreateCloseButton() {
                 views::Widget::ClosedReason::kCloseButtonClicked);
           },
           base::Unretained(this)));
+  close_button->SetProperty(views::kElementIdentifierKey, kCloseButton);
   close_button->SetVisible(true);
   close_button->SetID(BUTTON_ID_CLOSE);
   return close_button;

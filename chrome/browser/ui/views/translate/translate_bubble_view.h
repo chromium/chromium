@@ -22,6 +22,7 @@
 #include "components/language/core/common/language_experiments.h"
 #include "components/translate/core/common/translate_errors.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -51,6 +52,14 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
     CHANGE_TARGET_LANGUAGE,
     CHANGE_SOURCE_LANGUAGE
   };
+
+  // Element IDs for ui::ElementTracker
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kIdentifier);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                         kSourceLanguageTab);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                         kTargetLanguageTab);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kCloseButton);
 
   ~TranslateBubbleView() override;
 
