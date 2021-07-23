@@ -243,7 +243,8 @@ void AddAmdGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
 void AddIntelGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   static const char* const kReadOnlyList[] = {
       "/usr/share/vulkan/icd.d",
-      "/usr/share/vulkan/icd.d/intel_icd.x86_64.json"};
+      "/usr/share/vulkan/icd.d/intel_icd.x86_64.json",
+      "/usr/lib64/libvulkan_intel.so"};
   for (const char* item : kReadOnlyList)
     permissions->push_back(BrokerFilePermission::ReadOnly(item));
 
