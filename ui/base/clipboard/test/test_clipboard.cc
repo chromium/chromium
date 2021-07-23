@@ -17,6 +17,7 @@
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "skia/ext/skia_utils_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -32,7 +33,7 @@ bool IsReadAllowed(const DataTransferEndpoint* src,
   auto* policy_controller = DataTransferPolicyController::Get();
   if (!policy_controller)
     return true;
-  return policy_controller->IsClipboardReadAllowed(src, dst);
+  return policy_controller->IsClipboardReadAllowed(src, dst, absl::nullopt);
 }
 }  // namespace
 

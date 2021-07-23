@@ -42,6 +42,8 @@ class MockDlpRulesManager : public DlpRulesManager {
                      std::string(const GURL& source_url,
                                  Restriction restriction,
                                  Level level));
+
+  MOCK_CONST_METHOD0(GetClipboardCheckSizeLimitInBytes, int());
 };
 
 }  // namespace policy

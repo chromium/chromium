@@ -57,7 +57,13 @@ void ReportEvent(const DlpRulesManager& dlp_rules_manager,
 DlpRulesManager::Level IsDataTransferAllowed(
     const DlpRulesManager& dlp_rules_manager,
     const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst) {
+    const ui::DataTransferEndpoint* const data_dst,
+    const absl::optional<size_t> size) {
+  if (size.has_value() &&
+      *size < dlp_rules_manager.GetClipboardCheckSizeLimitInBytes()) {
+    return DlpRulesManager::Level::kAllow;
+  }
+
   if (!data_src || !data_src->IsUrlType()) {  // Currently we only handle URLs.
     return DlpRulesManager::Level::kAllow;
   }
@@ -164,9 +170,10 @@ void DataTransferDlpController::Init(const DlpRulesManager& dlp_rules_manager) {
 
 bool DataTransferDlpController::IsClipboardReadAllowed(
     const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst) {
+    const ui::DataTransferEndpoint* const data_dst,
+    const absl::optional<size_t> size) {
   DlpRulesManager::Level level =
-      IsDataTransferAllowed(dlp_rules_manager_, data_src, data_dst);
+      IsDataTransferAllowed(dlp_rules_manager_, data_src, data_dst, size);
 
   bool notify_on_paste = ShouldNotifyOnPaste(data_dst);
 
@@ -211,6 +218,7 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
 void DataTransferDlpController::PasteIfAllowed(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst,
+    const absl::optional<size_t> size,
     content::WebContents* web_contents,
     base::OnceCallback<void(bool)> callback) {
   DCHECK(data_dst);
@@ -222,7 +230,7 @@ void DataTransferDlpController::PasteIfAllowed(
   }
 
   DlpRulesManager::Level level =
-      IsDataTransferAllowed(dlp_rules_manager_, data_src, data_dst);
+      IsDataTransferAllowed(dlp_rules_manager_, data_src, data_dst, size);
 
   // If it's blocked, the data should be empty & PasteIfAllowed should not be
   // called.
@@ -252,8 +260,8 @@ bool DataTransferDlpController::IsDragDropAllowed(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst,
     const bool is_drop) {
-  DlpRulesManager::Level level =
-      IsDataTransferAllowed(dlp_rules_manager_, data_src, data_dst);
+  DlpRulesManager::Level level = IsDataTransferAllowed(
+      dlp_rules_manager_, data_src, data_dst, absl::nullopt);
 
   if (level == DlpRulesManager::Level::kBlock && is_drop) {
     SYSLOG(INFO) << "DLP blocked drop of dragged data";

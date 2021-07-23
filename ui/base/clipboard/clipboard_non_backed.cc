@@ -261,7 +261,8 @@ class ClipboardInternal {
     auto* data = GetData();
     if (!policy_controller || !data)
       return true;
-    return policy_controller->IsClipboardReadAllowed(data->source(), data_dst);
+    return policy_controller->IsClipboardReadAllowed(data->source(), data_dst,
+                                                     data->size());
   }
 
  private:

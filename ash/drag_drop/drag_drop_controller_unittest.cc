@@ -1508,12 +1508,14 @@ namespace {
 class MockDataTransferPolicyController
     : public ui::DataTransferPolicyController {
  public:
-  MOCK_METHOD2(IsClipboardReadAllowed,
+  MOCK_METHOD3(IsClipboardReadAllowed,
                bool(const ui::DataTransferEndpoint* const data_src,
-                    const ui::DataTransferEndpoint* const data_dst));
-  MOCK_METHOD4(PasteIfAllowed,
+                    const ui::DataTransferEndpoint* const data_dst,
+                    const absl::optional<size_t> size));
+  MOCK_METHOD5(PasteIfAllowed,
                void((const ui::DataTransferEndpoint* const data_src,
                      const ui::DataTransferEndpoint* const data_dst,
+                     const absl::optional<size_t> size,
                      content::WebContents* web_contents,
                      base::OnceCallback<void(bool)> callback)));
   MOCK_METHOD3(IsDragDropAllowed,

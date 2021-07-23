@@ -1428,6 +1428,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDataLeakPreventionReportingEnabled,
     policy_prefs::kDlpReportingEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kDataLeakPreventionClipboardCheckSizeLimit,
+    policy_prefs::kDlpClipboardCheckSizeLimit,
+    base::Value::Type::INTEGER },
 #endif
 };
 // clang-format on

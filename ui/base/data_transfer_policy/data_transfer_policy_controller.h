@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
 namespace content {
@@ -34,9 +35,9 @@ class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY)
 
   // nullptr can be passed instead of `data_src` or `data_dst`. If clipboard
   // read is not allowed, this function will show a notification to the user.
-  virtual bool IsClipboardReadAllowed(
-      const DataTransferEndpoint* const data_src,
-      const DataTransferEndpoint* const data_dst) = 0;
+  virtual bool IsClipboardReadAllowed(const DataTransferEndpoint* data_src,
+                                      const DataTransferEndpoint* data_dst,
+                                      absl::optional<size_t> size) = 0;
 
   // nullptr can be passed instead of `data_src` or `data_dst`. If clipboard
   // data is set to be in warning mode, this function will show a notification
@@ -44,16 +45,17 @@ class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY)
   // true. Otherwise `callback` will be invoked with false.
   // If `web_contents` got destroyed before `callback` is invoked, the
   // notification will get closed.
-  virtual void PasteIfAllowed(const DataTransferEndpoint* const data_src,
-                              const DataTransferEndpoint* const data_dst,
+  virtual void PasteIfAllowed(const DataTransferEndpoint* data_src,
+                              const DataTransferEndpoint* data_dst,
+                              absl::optional<size_t> size,
                               content::WebContents* web_contents,
                               base::OnceCallback<void(bool)> callback) = 0;
 
   // nullptr can be passed instead of `data_src` or `data_dst`. If dropping the
   // data is not allowed, this function will show a notification to the user.
-  virtual bool IsDragDropAllowed(const DataTransferEndpoint* const data_src,
-                                 const DataTransferEndpoint* const data_dst,
-                                 const bool is_drop) = 0;
+  virtual bool IsDragDropAllowed(const DataTransferEndpoint* data_src,
+                                 const DataTransferEndpoint* data_dst,
+                                 bool is_drop) = 0;
 
  protected:
   DataTransferPolicyController();

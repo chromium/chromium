@@ -43,6 +43,11 @@ const char kCloudManagementEnrollmentMandatory[] =
 // machine policy.
 const char kCloudPolicyOverridesPlatformPolicy[] = "policy.cloud_override";
 
+// Integer that sets the minimal limit on the data size in the clipboard to be
+// checked against Data Leak Prevention rules.
+const char kDlpClipboardCheckSizeLimit[] =
+    "policy.dlp_clipboard_check_size_limit";
+
 // Boolean policy preference to enable reporting of data leak prevention events.
 const char kDlpReportingEnabled[] = "policy.dlp_reporting_enabled";
 

@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "chrome/browser/ash/policy/dlp/dlp_clipboard_notifier.h"
 #include "chrome/browser/ash/policy/dlp/dlp_drag_drop_notifier.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 
 namespace ui {
@@ -34,11 +35,12 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   void operator=(const DataTransferDlpController&) = delete;
 
   // ui::DataTransferPolicyController:
-  bool IsClipboardReadAllowed(
-      const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst) override;
+  bool IsClipboardReadAllowed(const ui::DataTransferEndpoint* const data_src,
+                              const ui::DataTransferEndpoint* const data_dst,
+                              const absl::optional<size_t> size) override;
   void PasteIfAllowed(const ui::DataTransferEndpoint* const data_src,
                       const ui::DataTransferEndpoint* const data_dst,
+                      const absl::optional<size_t> size,
                       content::WebContents* web_contents,
                       base::OnceCallback<void(bool)> callback) override;
   bool IsDragDropAllowed(const ui::DataTransferEndpoint* const data_src,
