@@ -16,9 +16,6 @@ struct EnumTraits<ash::shimless_rma::mojom::RmaState,
                   rmad::RmadState::StateCase> {
   static ash::shimless_rma::mojom::RmaState ToMojom(
       rmad::RmadState::StateCase key_status);
-
-  static bool FromMojom(ash::shimless_rma::mojom::RmaState input,
-                        rmad::RmadState::StateCase* out);
 };
 
 template <>

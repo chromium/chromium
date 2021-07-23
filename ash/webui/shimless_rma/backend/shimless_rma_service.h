@@ -10,6 +10,8 @@
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "chromeos/dbus/rmad/rmad.pb.h"
 #include "chromeos/dbus/rmad/rmad_client.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -115,6 +117,10 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
                           absl::optional<rmad::GetStateReply> response);
   void OnAbortRmaResponse(AbortRmaCallback callback,
                           absl::optional<rmad::AbortRmaReply> response);
+  void OnNetworkListResponse(
+      BeginFinalizationCallback callback,
+      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+          response);
 
   rmad::RmadState state_proto_;
 
@@ -125,6 +131,9 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       hwwp_state_observer_;
   mojo::Remote<mojom::PowerCableStateObserver> power_cable_observer_;
   mojo::Receiver<mojom::ShimlessRmaService> receiver_{this};
+
+  mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
+      remote_cros_network_config_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

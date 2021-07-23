@@ -63,33 +63,33 @@ class ShimlessRmaMojoToProtoTest : public testing::Test {
 };
 
 TEST_F(ShimlessRmaMojoToProtoTest, StatesMatch) {
-  constexpr auto enums = base::MakeFixedFlatMap<mojom::RmaState,
-                                                rmad::RmadState::StateCase>(
-      {{mojom::RmaState::kWelcomeScreen, rmad::RmadState::kWelcome},
-       {mojom::RmaState::kConfigureNetwork, rmad::RmadState::kSelectNetwork},
-       {mojom::RmaState::kUpdateOs, rmad::RmadState::kUpdateChrome},
-       {mojom::RmaState::kSelectComponents, rmad::RmadState::kComponentsRepair},
-       {mojom::RmaState::kChooseDestination,
-        rmad::RmadState::kDeviceDestination},
-       {mojom::RmaState::kChooseWriteProtectDisableMethod,
-        rmad::RmadState::kWpDisableMethod},
-       {mojom::RmaState::kEnterRSUWPDisableCode,
-        rmad::RmadState::kWpDisableRsu},
-       {mojom::RmaState::kWaitForManualWPDisable,
-        rmad::RmadState::kWpDisablePhysical},
-       {mojom::RmaState::kWPDisableComplete,
-        rmad::RmadState::kWpDisableComplete},
-       {mojom::RmaState::kChooseFirmwareReimageMethod,
-        rmad::RmadState::kUpdateRoFirmware},
-       {mojom::RmaState::kRestock, rmad::RmadState::kRestock},
-       {mojom::RmaState::kUpdateDeviceInformation,
-        rmad::RmadState::kUpdateDeviceInfo},
-       {mojom::RmaState::kCalibrateComponents,
-        rmad::RmadState::kCalibrateComponents},
-       {mojom::RmaState::kProvisionDevice, rmad::RmadState::kProvisionDevice},
-       {mojom::RmaState::kWaitForManualWPEnable,
-        rmad::RmadState::kWpEnablePhysical},
-       {mojom::RmaState::kRepairComplete, rmad::RmadState::kFinalize}});
+  constexpr auto enums =
+      base::MakeFixedFlatMap<mojom::RmaState, rmad::RmadState::StateCase>(
+          {{mojom::RmaState::kWelcomeScreen, rmad::RmadState::kWelcome},
+           {mojom::RmaState::kSelectComponents,
+            rmad::RmadState::kComponentsRepair},
+           {mojom::RmaState::kChooseDestination,
+            rmad::RmadState::kDeviceDestination},
+           {mojom::RmaState::kChooseWriteProtectDisableMethod,
+            rmad::RmadState::kWpDisableMethod},
+           {mojom::RmaState::kEnterRSUWPDisableCode,
+            rmad::RmadState::kWpDisableRsu},
+           {mojom::RmaState::kWaitForManualWPDisable,
+            rmad::RmadState::kWpDisablePhysical},
+           {mojom::RmaState::kWPDisableComplete,
+            rmad::RmadState::kWpDisableComplete},
+           {mojom::RmaState::kChooseFirmwareReimageMethod,
+            rmad::RmadState::kUpdateRoFirmware},
+           {mojom::RmaState::kRestock, rmad::RmadState::kRestock},
+           {mojom::RmaState::kUpdateDeviceInformation,
+            rmad::RmadState::kUpdateDeviceInfo},
+           {mojom::RmaState::kCalibrateComponents,
+            rmad::RmadState::kCalibrateComponents},
+           {mojom::RmaState::kProvisionDevice,
+            rmad::RmadState::kProvisionDevice},
+           {mojom::RmaState::kWaitForManualWPEnable,
+            rmad::RmadState::kWpEnablePhysical},
+           {mojom::RmaState::kRepairComplete, rmad::RmadState::kFinalize}});
 
   // rmad::RmadState::STATE_NOT_SET is used when RMA is not active so the
   // toMojo conversion is reachable, unlike other enums.
@@ -100,8 +100,13 @@ TEST_F(ShimlessRmaMojoToProtoTest, StatesMatch) {
       mojom::RmaState::kUnknown,
       (mojo::EnumTraits<mojom::RmaState, rmad::RmadState::StateCase>::ToMojom(
           rmad::RmadState::STATE_NOT_SET)));
-  TestProtoToMojo(enums);
-  TestMojoToProto(enums);
+  for (auto enum_pair : enums) {
+    EXPECT_EQ(
+        enum_pair.first,
+        (mojo::EnumTraits<mojom::RmaState, rmad::RmadState::StateCase>::ToMojom(
+            enum_pair.second)))
+        << "enum " << enum_pair.first << " != " << enum_pair.second;
+  }
 }
 
 TEST_F(ShimlessRmaMojoToProtoTest, ErrorsMatch) {

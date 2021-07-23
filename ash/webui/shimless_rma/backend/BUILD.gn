@@ -11,9 +11,11 @@ static_library("backend") {
   ]
 
   deps = [
+    "//ash/public/cpp:cpp",
     "//ash/webui/shimless_rma/mojom",
     "//chromeos/dbus/rmad",
     "//chromeos/dbus/rmad:rmad_proto",
+    "//chromeos/services/network_config/public/mojom:mojom",
   ]
 }
 
@@ -24,11 +26,22 @@ source_set("unit_tests") {
 
   deps = [
     ":backend",
+    "//ash/public/cpp:cpp",
     "//ash/webui/shimless_rma/mojom",
     "//base",
     "//base/test:test_support",
+    "//chromeos/dbus:test_support",
     "//chromeos/dbus/rmad",
     "//chromeos/dbus/rmad:rmad_proto",
+    "//chromeos/network:network",
+    "//chromeos/network:test_support",
+    "//chromeos/services/network_config/public/cpp:test_support",
+    "//chromeos/services/network_config/public/mojom:mojom",
+    "//chromeos/services/network_config/public/mojom:network_types_shared_cpp_sources",
+    "//components/onc:onc",
+    "//components/prefs:test_support",
+    "//components/proxy_config:proxy_config",
+    "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/cpp:test_support",

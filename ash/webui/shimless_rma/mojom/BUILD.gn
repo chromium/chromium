@@ -33,10 +33,6 @@ mojom("mojom") {
           cpp = "::rmad::ProvisionDeviceState_ProvisioningStep"
         },
         {
-          mojom = "ash.shimless_rma.mojom.RmaState"
-          cpp = "::rmad::RmadState::StateCase"
-        },
-        {
           mojom = "ash.shimless_rma.mojom.RmadErrorCode"
           cpp = "::rmad::RmadErrorCode"
         },

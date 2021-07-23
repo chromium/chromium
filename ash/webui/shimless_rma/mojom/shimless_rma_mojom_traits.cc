@@ -39,10 +39,6 @@ MojomRmaState EnumTraits<MojomRmaState, ProtoRmadState>::ToMojom(
   switch (state) {
     case ProtoRmadState::kWelcome:
       return MojomRmaState::kWelcomeScreen;
-    case ProtoRmadState::kSelectNetwork:
-      return MojomRmaState::kConfigureNetwork;
-    case ProtoRmadState::kUpdateChrome:
-      return MojomRmaState::kUpdateOs;
     case ProtoRmadState::kComponentsRepair:
       return MojomRmaState::kSelectComponents;
     case ProtoRmadState::kDeviceDestination:
@@ -74,67 +70,6 @@ MojomRmaState EnumTraits<MojomRmaState, ProtoRmadState>::ToMojom(
     default:
       return MojomRmaState::kUnknown;
   }
-}
-
-// static
-bool EnumTraits<MojomRmaState, ProtoRmadState>::FromMojom(MojomRmaState state,
-                                                          ProtoRmadState* out) {
-  switch (state) {
-    case MojomRmaState::kWelcomeScreen:
-      *out = ProtoRmadState::kWelcome;
-      return true;
-    case MojomRmaState::kConfigureNetwork:
-      *out = ProtoRmadState::kSelectNetwork;
-      return true;
-    case MojomRmaState::kUpdateOs:
-      *out = ProtoRmadState::kUpdateChrome;
-      return true;
-    case MojomRmaState::kSelectComponents:
-      *out = ProtoRmadState::kComponentsRepair;
-      return true;
-    case MojomRmaState::kChooseDestination:
-      *out = ProtoRmadState::kDeviceDestination;
-      return true;
-    case MojomRmaState::kChooseWriteProtectDisableMethod:
-      *out = ProtoRmadState::kWpDisableMethod;
-      return true;
-    case MojomRmaState::kEnterRSUWPDisableCode:
-      *out = ProtoRmadState::kWpDisableRsu;
-      return true;
-    case MojomRmaState::kWaitForManualWPDisable:
-      *out = ProtoRmadState::kWpDisablePhysical;
-      return true;
-    case MojomRmaState::kWPDisableComplete:
-      *out = ProtoRmadState::kWpDisableComplete;
-      return true;
-    case MojomRmaState::kChooseFirmwareReimageMethod:
-      *out = ProtoRmadState::kUpdateRoFirmware;
-      return true;
-    case MojomRmaState::kRestock:
-      *out = ProtoRmadState::kRestock;
-      return true;
-    case MojomRmaState::kUpdateDeviceInformation:
-      *out = ProtoRmadState::kUpdateDeviceInfo;
-      return true;
-    case MojomRmaState::kCalibrateComponents:
-      *out = ProtoRmadState::kCalibrateComponents;
-      return true;
-    case MojomRmaState::kProvisionDevice:
-      *out = ProtoRmadState::kProvisionDevice;
-      return true;
-    case MojomRmaState::kWaitForManualWPEnable:
-      *out = ProtoRmadState::kWpEnablePhysical;
-      return true;
-    case MojomRmaState::kRepairComplete:
-      *out = ProtoRmadState::kFinalize;
-      return true;
-
-    case MojomRmaState::kUnknown:
-      *out = ProtoRmadState::STATE_NOT_SET;
-      return true;
-  }
-  NOTREACHED();
-  return false;
 }
 
 // static

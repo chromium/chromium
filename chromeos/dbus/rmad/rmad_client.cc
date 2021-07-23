@@ -24,12 +24,6 @@ rmad::RmadState* CreateState(rmad::RmadState::StateCase state_case) {
     case rmad::RmadState::kWelcome:
       state->set_allocated_welcome(new rmad::WelcomeState());
       break;
-    case rmad::RmadState::kSelectNetwork:
-      state->set_allocated_select_network(new rmad::SelectNetworkState());
-      break;
-    case rmad::RmadState::kUpdateChrome:
-      state->set_allocated_update_chrome(new rmad::UpdateChromeState());
-      break;
     case rmad::RmadState::kComponentsRepair:
       state->set_allocated_components_repair(new rmad::ComponentsRepairState());
       break;
@@ -419,9 +413,6 @@ void RmadClient::InitializeFake() {
 
   std::vector<rmad::GetStateReply> fake_states = {
       CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kSelectNetwork, rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kUpdateChrome, rmad::RMAD_ERROR_OK),
-      components_repair_state,
       CreateStateReply(rmad::RmadState::kDeviceDestination,
                        rmad::RMAD_ERROR_OK),
       CreateStateReply(rmad::RmadState::kWpDisableMethod, rmad::RMAD_ERROR_OK),
