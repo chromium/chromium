@@ -89,16 +89,18 @@ class BubbleWidget : public Widget {
 
   // Widget:
   const ui::ThemeProvider* GetThemeProvider() const override {
-    BubbleDialogDelegateView* const bubble_delegate =
-        static_cast<BubbleDialogDelegateView*>(widget_delegate());
+    // TODO(pbos): Could this use Widget::parent() instead of anchor_widget()?
+    BubbleDialogDelegate* const bubble_delegate =
+        static_cast<BubbleDialogDelegate*>(widget_delegate());
     if (!bubble_delegate || !bubble_delegate->anchor_widget())
       return Widget::GetThemeProvider();
     return bubble_delegate->anchor_widget()->GetThemeProvider();
   }
 
   Widget* GetPrimaryWindowWidget() override {
-    BubbleDialogDelegateView* const bubble_delegate =
-        static_cast<BubbleDialogDelegateView*>(widget_delegate());
+    // TODO(pbos): Could this use Widget::parent() instead of anchor_widget()?
+    BubbleDialogDelegate* const bubble_delegate =
+        static_cast<BubbleDialogDelegate*>(widget_delegate());
     if (!bubble_delegate || !bubble_delegate->anchor_widget())
       return Widget::GetPrimaryWindowWidget();
     return bubble_delegate->anchor_widget()->GetPrimaryWindowWidget();
