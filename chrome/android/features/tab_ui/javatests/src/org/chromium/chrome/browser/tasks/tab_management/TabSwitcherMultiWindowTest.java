@@ -75,6 +75,7 @@ public class TabSwitcherMultiWindowTest {
     @Test
     @MediumTest
     @TargetApi(Build.VERSION_CODES.N)
+    @DisabledTest(message = "https://crbug.com/1231616")
     public void testMoveTabsAcrossWindow_GTS_WithoutGroup() {
         final ChromeTabbedActivity cta1 = mActivityTestRule.getActivity();
         // Initially, we have 4 normal tabs and 3 incognito tabs in cta1.
