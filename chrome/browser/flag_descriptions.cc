@@ -5002,11 +5002,6 @@ const char kMediaAppMultiWindowName[] = "Media App Multi Window";
 const char kMediaAppMultiWindowDescription[] =
     "Enables opening multiple instances of chrome://media-app";
 
-const char kMediaAppVideoName[] = "Media App Handles Video";
-const char kMediaAppVideoDescription[] =
-    "Use chrome://media-app as the default handler for video. Hides the "
-    "deprecated VideoPlayer chrome app as a file handler.";
-
 const char kMeteredShowToggleName[] = "Show Metered Toggle";
 const char kMeteredShowToggleDescription[] =
     "Shows a Metered toggle in the Network settings UI for WiFI and Cellular. "
