@@ -287,22 +287,14 @@ class CORE_EXPORT NGConstraintSpace final {
     return TargetStretchInlineSize() != kIndefiniteSize;
   }
 
-  LayoutUnit TargetStretchAscentSize() const {
-    return HasRareData() ? rare_data_->TargetStretchAscentSize()
-                         : kIndefiniteSize;
-  }
+  struct MathTargetStretchBlockSizes {
+    LayoutUnit ascent;
+    LayoutUnit descent;
+  };
 
-  bool HasTargetStretchAscentSize() const {
-    return TargetStretchAscentSize() != kIndefiniteSize;
-  }
-
-  LayoutUnit TargetStretchDescentSize() const {
-    return HasRareData() ? rare_data_->TargetStretchDescentSize()
-                         : kIndefiniteSize;
-  }
-
-  bool HasTargetStretchDescentSize() const {
-    return TargetStretchDescentSize() != kIndefiniteSize;
+  absl::optional<MathTargetStretchBlockSizes> TargetStretchBlockSizes() const {
+    return HasRareData() ? rare_data_->TargetStretchBlockSizes()
+                         : absl::nullopt;
   }
 
   // Return the borders which should be used for a table-cell.
@@ -1099,26 +1091,17 @@ class CORE_EXPORT NGConstraintSpace final {
           target_stretch_inline_size;
     }
 
-    LayoutUnit TargetStretchAscentSize() const {
+    absl::optional<MathTargetStretchBlockSizes> TargetStretchBlockSizes()
+        const {
       return data_union_type == kStretchData
-                 ? stretch_data_.target_stretch_ascent_size
-                 : kIndefiniteSize;
+                 ? stretch_data_.target_stretch_block_sizes
+                 : absl::nullopt;
     }
 
-    void SetTargetStretchAscentSize(LayoutUnit target_stretch_ascent_size) {
-      EnsureStretchData()->target_stretch_ascent_size =
-          target_stretch_ascent_size;
-    }
-
-    LayoutUnit TargetStretchDescentSize() const {
-      return data_union_type == kStretchData
-                 ? stretch_data_.target_stretch_descent_size
-                 : kIndefiniteSize;
-    }
-
-    void SetTargetStretchDescentSize(LayoutUnit target_stretch_descent_size) {
-      EnsureStretchData()->target_stretch_descent_size =
-          target_stretch_descent_size;
+    void SetTargetStretchBlockSizes(
+        MathTargetStretchBlockSizes target_stretch_block_sizes) {
+      EnsureStretchData()->target_stretch_block_sizes =
+          target_stretch_block_sizes;
     }
 
     LogicalSize percentage_resolution_size;
@@ -1229,19 +1212,22 @@ class CORE_EXPORT NGConstraintSpace final {
     struct StretchData {
       bool MaySkipLayout(const StretchData& other) const {
         return target_stretch_inline_size == other.target_stretch_inline_size &&
-               target_stretch_ascent_size == other.target_stretch_ascent_size &&
-               target_stretch_descent_size == other.target_stretch_descent_size;
+               target_stretch_block_sizes.has_value() ==
+                   other.target_stretch_block_sizes.has_value() &&
+               (!target_stretch_block_sizes ||
+                (target_stretch_block_sizes->ascent ==
+                     other.target_stretch_block_sizes->ascent &&
+                 target_stretch_block_sizes->descent ==
+                     other.target_stretch_block_sizes->descent));
       }
 
       bool IsInitialForMaySkipLayout() const {
         return target_stretch_inline_size == kIndefiniteSize &&
-               target_stretch_ascent_size == kIndefiniteSize &&
-               target_stretch_descent_size == kIndefiniteSize;
+               !target_stretch_block_sizes;
       }
 
       LayoutUnit target_stretch_inline_size = kIndefiniteSize;
-      LayoutUnit target_stretch_ascent_size = kIndefiniteSize;
-      LayoutUnit target_stretch_descent_size = kIndefiniteSize;
+      absl::optional<MathTargetStretchBlockSizes> target_stretch_block_sizes;
     };
 
     BlockData* EnsureBlockData() {
