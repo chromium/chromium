@@ -8,13 +8,14 @@
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/infobar_modal_interaction_handler.h"
 
 class IOSAddToReadingListInfobarDelegate;
+class Browser;
 
 // Helper object that updates the model layer for interaction events with the
 // Reading List infobar modal UI.
 class ReadingListInfobarModalInteractionHandler
     : public InfobarModalInteractionHandler {
  public:
-  ReadingListInfobarModalInteractionHandler();
+  ReadingListInfobarModalInteractionHandler(Browser* browser);
   ~ReadingListInfobarModalInteractionHandler() override;
 
   // Instructs the handler that the user has used |infobar|'s modal UI to
@@ -33,6 +34,8 @@ class ReadingListInfobarModalInteractionHandler
   CreateModalInstaller() override;
 
   IOSAddToReadingListInfobarDelegate* GetDelegate(InfoBarIOS* infobar);
+
+  Browser* browser_;
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_READING_LIST_ADD_TO_READING_LIST_MODAL_INFOBAR_INTERACTION_HANDLER_H_

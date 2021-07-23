@@ -28,6 +28,7 @@ source_set("reading_list") {
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/overlays/public/infobar_modal",
     "//ios/chrome/browser/reading_list",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/reading_list:infobar",
     "//ios/chrome/browser/web_state_list",
   ]

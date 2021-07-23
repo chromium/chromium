@@ -44,6 +44,10 @@ class GURL;
 // Adds a page to the reading list using data in |command|.
 - (void)addToReadingList:(ReadingListAddCommand*)command;
 
+// Shows an IPH pointing to where the Reading List entry point is, if
+// applicable.
+- (void)showReadingListIPH;
+
 // Preloads voice search on the current BVC.
 - (void)preloadVoiceSearch;
 
