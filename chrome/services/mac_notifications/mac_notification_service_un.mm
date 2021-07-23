@@ -14,10 +14,9 @@
 #include "base/files/file_path.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/services/mac_notifications/mac_notification_service_utils.h"
+#import "chrome/services/mac_notifications/mac_notification_service_utils.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_utils_mac.h"
 #include "chrome/services/mac_notifications/unnotification_metrics.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "ui/gfx/image/image.h"
@@ -49,19 +48,19 @@ API_AVAILABLE(macosx(10.14))
 NotificationOperation GetNotificationOperationFromAction(
     NSString* actionIdentifier) {
   if ([actionIdentifier isEqual:UNNotificationDismissActionIdentifier] ||
-      [actionIdentifier isEqualToString:notification_constants::
-                                            kNotificationCloseButtonTag]) {
+      [actionIdentifier
+          isEqualToString:mac_notifications::kNotificationCloseButtonTag]) {
     return NotificationOperation::NOTIFICATION_CLOSE;
   }
   if ([actionIdentifier isEqual:UNNotificationDefaultActionIdentifier] ||
       [actionIdentifier
-          isEqualToString:notification_constants::kNotificationButtonOne] ||
+          isEqualToString:mac_notifications::kNotificationButtonOne] ||
       [actionIdentifier
-          isEqualToString:notification_constants::kNotificationButtonTwo]) {
+          isEqualToString:mac_notifications::kNotificationButtonTwo]) {
     return NotificationOperation::NOTIFICATION_CLICK;
   }
-  if ([actionIdentifier isEqualToString:notification_constants::
-                                            kNotificationSettingsButtonTag]) {
+  if ([actionIdentifier
+          isEqualToString:mac_notifications::kNotificationSettingsButtonTag]) {
     return NotificationOperation::NOTIFICATION_SETTINGS;
   }
   NOTREACHED();
@@ -70,11 +69,11 @@ NotificationOperation GetNotificationOperationFromAction(
 
 int GetActionButtonIndexFromAction(NSString* actionIdentifier) {
   if ([actionIdentifier
-          isEqualToString:notification_constants::kNotificationButtonOne]) {
+          isEqualToString:mac_notifications::kNotificationButtonOne]) {
     return 0;
   }
   if ([actionIdentifier
-          isEqualToString:notification_constants::kNotificationButtonTwo]) {
+          isEqualToString:mac_notifications::kNotificationButtonTwo]) {
     return 1;
   }
   return notification_constants::kNotificationInvalidButtonIndex;
@@ -212,13 +211,11 @@ void MacNotificationServiceUN::GetDisplayedNotifications(
 
     for (UNNotification* toast in toasts) {
       NSDictionary* user_info = [[[toast request] content] userInfo];
-      NSString* toast_id =
-          [user_info objectForKey:notification_constants::kNotificationId];
-      NSString* toast_profile_id = [user_info
-          objectForKey:notification_constants::kNotificationProfileId];
-      bool toast_incognito = [[user_info
-          objectForKey:notification_constants::kNotificationIncognito]
-          boolValue];
+      NSString* toast_id = [user_info objectForKey:kNotificationId];
+      NSString* toast_profile_id =
+          [user_info objectForKey:kNotificationProfileId];
+      bool toast_incognito =
+          [[user_info objectForKey:kNotificationIncognito] boolValue];
 
       if (!profile_id || ([profile_id isEqualToString:toast_profile_id] &&
                           incognito == toast_incognito)) {
@@ -254,11 +251,10 @@ void MacNotificationServiceUN::CloseNotificationsForProfile(
 
     for (UNNotification* toast in toasts) {
       NSDictionary* user_info = [[[toast request] content] userInfo];
-      NSString* toast_profile_id = [user_info
-          objectForKey:notification_constants::kNotificationProfileId];
-      bool toast_incognito = [[user_info
-          objectForKey:notification_constants::kNotificationIncognito]
-          boolValue];
+      NSString* toast_profile_id =
+          [user_info objectForKey:kNotificationProfileId];
+      bool toast_incognito =
+          [[user_info objectForKey:kNotificationIncognito] boolValue];
 
       if ([profile_id isEqualToString:toast_profile_id] &&
           incognito == toast_incognito) {

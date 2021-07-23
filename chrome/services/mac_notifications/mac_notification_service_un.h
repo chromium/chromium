@@ -7,7 +7,7 @@
 
 #include "base/mac/scoped_nsobject.h"
 #include "chrome/common/notifications/notification_image_retainer.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_category_manager.h"
+#import "chrome/services/mac_notifications/notification_category_manager.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

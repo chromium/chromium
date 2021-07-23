@@ -15,6 +15,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #import "chrome/services/mac_notifications/mac_notification_service_ns.h"
+#import "chrome/services/mac_notifications/mac_notification_service_utils.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
@@ -111,11 +112,8 @@ class MacNotificationServiceNSTest : public testing::Test {
     base::scoped_nsobject<NSUserNotification> toast(
         [[NSUserNotification alloc] init]);
     toast.get().userInfo = @{
-      notification_constants::
       kNotificationId : base::SysUTF8ToNSString(notification_id),
-      notification_constants::
       kNotificationProfileId : base::SysUTF8ToNSString(profile_id),
-      notification_constants::
       kNotificationIncognito : [NSNumber numberWithBool:incognito],
     };
     return toast;
@@ -175,16 +173,12 @@ TEST_F(MacNotificationServiceNSTest, DisplayNotification) {
                                       NSUserNotification* notification) {
         EXPECT_NSEQ(@"i|profileId|notificationId", [notification identifier]);
         NSDictionary* user_info = [notification userInfo];
-        EXPECT_NSEQ(
-            @"notificationId",
-            [user_info objectForKey:notification_constants::kNotificationId]);
-        EXPECT_NSEQ(
-            @"profileId",
-            [user_info
-                objectForKey:notification_constants::kNotificationProfileId]);
-        EXPECT_TRUE([[user_info
-            objectForKey:notification_constants::kNotificationIncognito]
-            boolValue]);
+        EXPECT_NSEQ(@"notificationId",
+                    [user_info objectForKey:kNotificationId]);
+        EXPECT_NSEQ(@"profileId",
+                    [user_info objectForKey:kNotificationProfileId]);
+        EXPECT_TRUE(
+            [[user_info objectForKey:kNotificationIncognito] boolValue]);
 
         EXPECT_NSEQ(@"title", [notification title]);
         EXPECT_NSEQ(@"subtitle", [notification subtitle]);
@@ -347,7 +341,6 @@ TEST_P(MacNotificationServiceNSTestNotificationAction, OnNotificationAction) {
   // Simulate a notification action and wait until we acknowledge it.
   id notification = [OCMockObject mockForClass:[NSUserNotification class]];
   [[[notification stub] andReturn:@{
-    notification_constants::
     kNotificationHasSettingsButton : params.has_settings_button,
   }] userInfo];
   [[[notification stub] andReturnValue:OCMOCK_VALUE(params.activation_type)]

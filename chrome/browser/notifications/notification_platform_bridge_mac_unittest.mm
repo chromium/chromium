@@ -20,7 +20,6 @@
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/browser/notifications/stub_alert_dispatcher_mac.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"

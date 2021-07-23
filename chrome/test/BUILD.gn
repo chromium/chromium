@@ -5288,7 +5288,6 @@ test("unit_tests") {
       "//chrome/common/safe_browsing:archive_analyzer_results",
       "//chrome/common/safe_browsing:disk_image_type_sniffer_mac",
       "//chrome/services/mac_notifications:unit_tests",
-      "//chrome/services/mac_notifications/public/cpp",
       "//chrome/services/mac_notifications/public/mojom",
       "//chrome/utility/safe_browsing/mac",
       "//chrome/utility/safe_browsing/mac:dmg_common",
@@ -7128,10 +7127,7 @@ test("unit_tests") {
 
     # The test fetches resources which means Mac need the app bundle to exist
     # on disk so it can pull from it.
-    deps += [
-      "//chrome/services/mac_notifications/public/cpp:test_support",
-      "//third_party/ocmock",
-    ]
+    deps += [ "//third_party/ocmock" ]
 
     sources += [
       "../browser/ui/cocoa/applescript/apple_event_util_unittest.mm",

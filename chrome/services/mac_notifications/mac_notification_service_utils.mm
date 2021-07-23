@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/mac_notifications/mac_notification_service_utils.h"
+#import "chrome/services/mac_notifications/mac_notification_service_utils.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 
 namespace mac_notifications {
 
@@ -23,40 +23,55 @@ NSDictionary* GetMacNotificationUserInfo(
       [NSNumber numberWithBool:notification->show_settings_button];
 
   return @{
-    notification_constants::kNotificationId : notification_id,
-    notification_constants::kNotificationProfileId : profile_id,
-    notification_constants::kNotificationIncognito : incognito,
-    notification_constants::kNotificationOrigin : origin_url,
-    notification_constants::kNotificationType : type,
-    notification_constants::kNotificationCreatorPid : creator_pid,
-    notification_constants::kNotificationHasSettingsButton : settings_button,
+    kNotificationId : notification_id,
+    kNotificationProfileId : profile_id,
+    kNotificationIncognito : incognito,
+    kNotificationOrigin : origin_url,
+    kNotificationType : type,
+    kNotificationCreatorPid : creator_pid,
+    kNotificationHasSettingsButton : settings_button,
   };
 }
 
 mojom::NotificationMetadataPtr GetMacNotificationMetadata(
     NSDictionary* user_info) {
-  NSString* notification_id_ns =
-      [user_info objectForKey:notification_constants::kNotificationId];
-  NSString* profile_id_ns =
-      [user_info objectForKey:notification_constants::kNotificationProfileId];
-  BOOL incognito = [[user_info
-      objectForKey:notification_constants::kNotificationIncognito] boolValue];
+  NSString* notification_id_ns = [user_info objectForKey:kNotificationId];
+  NSString* profile_id_ns = [user_info objectForKey:kNotificationProfileId];
+  BOOL incognito = [[user_info objectForKey:kNotificationIncognito] boolValue];
 
   auto profile_id = mojom::ProfileIdentifier::New(
       base::SysNSStringToUTF8(profile_id_ns), incognito);
   auto notification_id = mojom::NotificationIdentifier::New(
       base::SysNSStringToUTF8(notification_id_ns), std::move(profile_id));
 
-  int type = [[user_info objectForKey:notification_constants::kNotificationType]
-      intValue];
-  NSString* origin_url_ns =
-      [user_info objectForKey:notification_constants::kNotificationOrigin];
-  int creator_pid = [[user_info
-      objectForKey:notification_constants::kNotificationCreatorPid] intValue];
+  int type = [[user_info objectForKey:kNotificationType] intValue];
+  NSString* origin_url_ns = [user_info objectForKey:kNotificationOrigin];
+  int creator_pid = [[user_info objectForKey:kNotificationCreatorPid] intValue];
 
   return mojom::NotificationMetadata::New(
       std::move(notification_id), type,
       GURL(base::SysNSStringToUTF8(origin_url_ns)), creator_pid);
 }
+
+std::string DeriveMacNotificationId(bool incognito,
+                                    const std::string& profile_id,
+                                    const std::string& notification_id) {
+  // i: incognito, r: regular profile
+  return base::StrCat(
+      {incognito ? "i" : "r", "|", profile_id, "|", notification_id});
+}
+
+NSString* const kNotificationButtonOne = @"buttonOne";
+NSString* const kNotificationButtonTwo = @"buttonTwo";
+NSString* const kNotificationCloseButtonTag = @"closeButton";
+NSString* const kNotificationCreatorPid = @"notificationCreatorPid";
+NSString* const kNotificationHasSettingsButton =
+    @"notificationHasSettingsButton";
+NSString* const kNotificationId = @"notificationId";
+NSString* const kNotificationIncognito = @"notificationIncognito";
+NSString* const kNotificationOrigin = @"notificationOrigin";
+NSString* const kNotificationProfileId = @"notificationProfileId";
+NSString* const kNotificationSettingsButtonTag = @"settingsButton";
+NSString* const kNotificationType = @"notificationType";
 
 }  // namespace mac_notifications

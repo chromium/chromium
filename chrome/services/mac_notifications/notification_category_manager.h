@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_MAC_NOTIFICATIONS_PUBLIC_CPP_NOTIFICATION_CATEGORY_MANAGER_H_
-#define CHROME_SERVICES_MAC_NOTIFICATIONS_PUBLIC_CPP_NOTIFICATION_CATEGORY_MANAGER_H_
+#ifndef CHROME_SERVICES_MAC_NOTIFICATIONS_NOTIFICATION_CATEGORY_MANAGER_H_
+#define CHROME_SERVICES_MAC_NOTIFICATIONS_NOTIFICATION_CATEGORY_MANAGER_H_
 
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
@@ -15,6 +15,8 @@
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "base/mac/scoped_nsobject.h"
+
+namespace mac_notifications {
 
 // This class manages notification categories for a given NotificationCenter.
 // Notification categories on macOS describe all action buttons that should be
@@ -66,4 +68,6 @@ class API_AVAILABLE(macos(10.14)) NotificationCategoryManager {
   base::scoped_nsobject<UNUserNotificationCenter> notification_center_;
 };
 
-#endif  // CHROME_SERVICES_MAC_NOTIFICATIONS_PUBLIC_CPP_NOTIFICATION_CATEGORY_MANAGER_H_
+}  // namespace mac_notifications
+
+#endif  // CHROME_SERVICES_MAC_NOTIFICATIONS_NOTIFICATION_CATEGORY_MANAGER_H_

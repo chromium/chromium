@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/notifications/mac_notification_provider_factory.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 

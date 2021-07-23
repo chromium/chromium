@@ -13,10 +13,10 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #import "chrome/services/mac_notifications/mac_notification_service_un.h"
+#import "chrome/services/mac_notifications/mac_notification_service_utils.h"
+#import "chrome/services/mac_notifications/notification_test_utils_mac.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_test_utils_mac.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_utils_mac.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -98,11 +98,11 @@ class MacNotificationServiceUNTest : public testing::Test {
     UNMutableNotificationContent* content =
         [[UNMutableNotificationContent alloc] init];
     content.userInfo = @{
-      notification_constants::
+
       kNotificationId : base::SysUTF8ToNSString(notification_id),
-      notification_constants::
+
       kNotificationProfileId : base::SysUTF8ToNSString(profile_id),
-      notification_constants::
+
       kNotificationIncognito : [NSNumber numberWithBool:incognito],
     };
 
@@ -182,16 +182,12 @@ TEST_F(MacNotificationServiceUNTest, DisplayNotification) {
                                            UNNotificationRequest* request) {
           EXPECT_NSEQ(@"i|profileId|notificationId", [request identifier]);
           NSDictionary* user_info = [[request content] userInfo];
-          EXPECT_NSEQ(
-              @"notificationId",
-              [user_info objectForKey:notification_constants::kNotificationId]);
-          EXPECT_NSEQ(
-              @"profileId",
-              [user_info
-                  objectForKey:notification_constants::kNotificationProfileId]);
-          EXPECT_TRUE([[user_info
-              objectForKey:notification_constants::kNotificationIncognito]
-              boolValue]);
+          EXPECT_NSEQ(@"notificationId",
+                      [user_info objectForKey:kNotificationId]);
+          EXPECT_NSEQ(@"profileId",
+                      [user_info objectForKey:kNotificationProfileId]);
+          EXPECT_TRUE(
+              [[user_info objectForKey:kNotificationIncognito] boolValue]);
 
           EXPECT_NSEQ(@"title", [[request content] title]);
           EXPECT_NSEQ(@"subtitle", [[request content] subtitle]);
@@ -330,13 +326,11 @@ TEST_F(MacNotificationServiceUNTest, OnNotificationAction) {
         {UNNotificationDefaultActionIdentifier,
          NotificationOperation::NOTIFICATION_CLICK,
          notification_constants::kNotificationInvalidButtonIndex},
-        {notification_constants::kNotificationButtonOne,
-         NotificationOperation::NOTIFICATION_CLICK,
+        {kNotificationButtonOne, NotificationOperation::NOTIFICATION_CLICK,
          /*button_index=*/0},
-        {notification_constants::kNotificationButtonTwo,
-         NotificationOperation::NOTIFICATION_CLICK,
+        {kNotificationButtonTwo, NotificationOperation::NOTIFICATION_CLICK,
          /*button_index=*/1},
-        {notification_constants::kNotificationSettingsButtonTag,
+        {kNotificationSettingsButtonTag,
          NotificationOperation::NOTIFICATION_SETTINGS,
          notification_constants::kNotificationInvalidButtonIndex},
     };

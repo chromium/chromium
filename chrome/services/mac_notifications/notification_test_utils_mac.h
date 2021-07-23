@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_MAC_NOTIFICATIONS_PUBLIC_CPP_NOTIFICATION_TEST_UTILS_MAC_H_
-#define CHROME_SERVICES_MAC_NOTIFICATIONS_PUBLIC_CPP_NOTIFICATION_TEST_UTILS_MAC_H_
+#ifndef CHROME_SERVICES_MAC_NOTIFICATIONS_NOTIFICATION_TEST_UTILS_MAC_H_
+#define CHROME_SERVICES_MAC_NOTIFICATIONS_NOTIFICATION_TEST_UTILS_MAC_H_
 
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
@@ -73,4 +73,4 @@ API_AVAILABLE(macosx(10.14))
 base::scoped_nsobject<FakeUNNotificationResponse>
 CreateFakeUNNotificationResponse(NSDictionary* _Nonnull userInfo);
 
-#endif  // CHROME_SERVICES_MAC_NOTIFICATIONS_PUBLIC_CPP_NOTIFICATION_TEST_UTILS_MAC_H_
+#endif  // CHROME_SERVICES_MAC_NOTIFICATIONS_NOTIFICATION_TEST_UTILS_MAC_H_

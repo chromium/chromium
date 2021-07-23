@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/mac_notifications/public/cpp/notification_category_manager.h"
+#include "chrome/services/mac_notifications/notification_category_manager.h"
 
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
+#import "chrome/services/mac_notifications/mac_notification_service_utils.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+
+namespace mac_notifications {
 
 NotificationCategoryManager::NotificationCategoryManager(
     UNUserNotificationCenter* notification_center)
@@ -82,7 +84,7 @@ UNNotificationCategory* NotificationCategoryManager::CreateCategory(
   NSMutableArray* buttons_array = [NSMutableArray arrayWithCapacity:4];
 
   UNNotificationAction* close_button = [UNNotificationAction
-      actionWithIdentifier:notification_constants::kNotificationCloseButtonTag
+      actionWithIdentifier:kNotificationCloseButtonTag
                      title:l10n_util::GetNSString(IDS_NOTIFICATION_BUTTON_CLOSE)
                    options:UNNotificationActionOptionNone];
 
@@ -94,14 +96,14 @@ UNNotificationCategory* NotificationCategoryManager::CreateCategory(
   DCHECK_LE(buttons.size(), 2u);
   if (buttons.size() >= 1u) {
     UNNotificationAction* button = [UNNotificationAction
-        actionWithIdentifier:notification_constants::kNotificationButtonOne
+        actionWithIdentifier:kNotificationButtonOne
                        title:base::SysUTF16ToNSString(buttons[0])
                      options:UNNotificationActionOptionNone];
     [buttons_array addObject:button];
   }
   if (buttons.size() >= 2u) {
     UNNotificationAction* button = [UNNotificationAction
-        actionWithIdentifier:notification_constants::kNotificationButtonTwo
+        actionWithIdentifier:kNotificationButtonTwo
                        title:base::SysUTF16ToNSString(buttons[1])
                      options:UNNotificationActionOptionNone];
     [buttons_array addObject:button];
@@ -109,8 +111,7 @@ UNNotificationCategory* NotificationCategoryManager::CreateCategory(
 
   if (settings_button) {
     UNNotificationAction* button = [UNNotificationAction
-        actionWithIdentifier:notification_constants::
-                                 kNotificationSettingsButtonTag
+        actionWithIdentifier:kNotificationSettingsButtonTag
                        title:l10n_util::GetNSString(
                                  IDS_NOTIFICATION_BUTTON_SETTINGS)
                      options:UNNotificationActionOptionNone];
@@ -156,3 +157,5 @@ UNNotificationCategory* NotificationCategoryManager::CreateCategory(
 
   return category;
 }
+
+}  // namespace mac_notifications

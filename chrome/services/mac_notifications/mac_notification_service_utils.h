@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include <string>
+
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 
 namespace mac_notifications {
@@ -16,6 +18,24 @@ NSDictionary* GetMacNotificationUserInfo(
 
 mojom::NotificationMetadataPtr GetMacNotificationMetadata(
     NSDictionary* user_info);
+
+// Derives a unique notification identifier to be used by the macOS system
+// notification center to uniquely identify a notification.
+std::string DeriveMacNotificationId(bool incognito,
+                                    const std::string& profile_id,
+                                    const std::string& notification_id);
+
+extern NSString* const kNotificationButtonOne;
+extern NSString* const kNotificationButtonTwo;
+extern NSString* const kNotificationCloseButtonTag;
+extern NSString* const kNotificationCreatorPid;
+extern NSString* const kNotificationHasSettingsButton;
+extern NSString* const kNotificationId;
+extern NSString* const kNotificationIncognito;
+extern NSString* const kNotificationOrigin;
+extern NSString* const kNotificationProfileId;
+extern NSString* const kNotificationSettingsButtonTag;
+extern NSString* const kNotificationType;
 
 }  // namespace mac_notifications
 

@@ -8,12 +8,14 @@
 
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_category_manager.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_test_utils_mac.h"
+#import "chrome/services/mac_notifications/mac_notification_service_utils.h"
+#import "chrome/services/mac_notifications/notification_category_manager.h"
+#import "chrome/services/mac_notifications/notification_test_utils_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+
+namespace mac_notifications {
 
 class NotificationCategoryManagerTest : public testing::Test {
  public:
@@ -60,8 +62,7 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationNoButtons) {
     if (base::mac::IsAtLeastOS11()) {
       EXPECT_EQ("Settings", base::SysNSStringToUTF8(
                                 [[[category actions] lastObject] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationSettingsButtonTag),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationSettingsButtonTag),
                 base::SysNSStringToUTF8(
                     [[[category actions] lastObject] identifier]));
 
@@ -69,15 +70,13 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationNoButtons) {
     } else if ([category respondsToSelector:@selector(alternateAction)]) {
       EXPECT_EQ("Close", base::SysNSStringToUTF8([[category
                              valueForKey:@"_alternateAction"] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationCloseButtonTag),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationCloseButtonTag),
                 base::SysNSStringToUTF8(
                     [[category valueForKey:@"_alternateAction"] identifier]));
 
       EXPECT_EQ("Settings", base::SysNSStringToUTF8(
                                 [[[category actions] lastObject] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationSettingsButtonTag),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationSettingsButtonTag),
                 base::SysNSStringToUTF8(
                     [[[category actions] lastObject] identifier]));
 
@@ -85,15 +84,13 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationNoButtons) {
     } else {
       EXPECT_EQ("Settings", base::SysNSStringToUTF8(
                                 [[[category actions] firstObject] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationSettingsButtonTag),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationSettingsButtonTag),
                 base::SysNSStringToUTF8(
                     [[[category actions] firstObject] identifier]));
 
       EXPECT_EQ("Close", base::SysNSStringToUTF8(
                              [[[category actions] lastObject] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationCloseButtonTag),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationCloseButtonTag),
                 base::SysNSStringToUTF8(
                     [[[category actions] lastObject] identifier]));
 
@@ -116,38 +113,33 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationOneButton) {
     if (base::mac::IsAtLeastOS11()) {
       EXPECT_EQ("Button1",
                 base::SysNSStringToUTF8([[category actions][0] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationButtonOne),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonOne),
                 base::SysNSStringToUTF8([[category actions][0] identifier]));
 
       EXPECT_EQ(2ul, [[category actions] count]);
     } else if ([category respondsToSelector:@selector(alternateAction)]) {
       EXPECT_EQ("Close", base::SysNSStringToUTF8([[category
                              valueForKey:@"_alternateAction"] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationCloseButtonTag),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationCloseButtonTag),
                 base::SysNSStringToUTF8(
                     [[category valueForKey:@"_alternateAction"] identifier]));
 
       EXPECT_EQ("Button1",
                 base::SysNSStringToUTF8([[category actions][0] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationButtonOne),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonOne),
                 base::SysNSStringToUTF8([[category actions][0] identifier]));
 
       EXPECT_EQ(2ul, [[category actions] count]);
     } else {
       EXPECT_EQ("Close", base::SysNSStringToUTF8(
                              [[[category actions] firstObject] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationCloseButtonTag),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationCloseButtonTag),
                 base::SysNSStringToUTF8(
                     [[[category actions] firstObject] identifier]));
 
       EXPECT_EQ("Button1",
                 base::SysNSStringToUTF8([[category actions][1] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationButtonOne),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonOne),
                 base::SysNSStringToUTF8([[category actions][1] identifier]));
 
       EXPECT_EQ(3ul, [[category actions] count]);
@@ -156,8 +148,7 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationOneButton) {
     EXPECT_EQ("Settings",
               base::SysNSStringToUTF8([[[category actions] lastObject] title]));
     EXPECT_EQ(
-        base::SysNSStringToUTF8(
-            notification_constants::kNotificationSettingsButtonTag),
+        base::SysNSStringToUTF8(kNotificationSettingsButtonTag),
         base::SysNSStringToUTF8([[[category actions] lastObject] identifier]));
 
     if ([category respondsToSelector:@selector(actionsMenuTitle)]) {
@@ -182,56 +173,48 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationTwoButtons) {
     if (base::mac::IsAtLeastOS11()) {
       EXPECT_EQ("Button1",
                 base::SysNSStringToUTF8([[category actions][0] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationButtonOne),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonOne),
                 base::SysNSStringToUTF8([[category actions][0] identifier]));
 
       EXPECT_EQ("Button2",
                 base::SysNSStringToUTF8([[category actions][1] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationButtonTwo),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonTwo),
                 base::SysNSStringToUTF8([[category actions][1] identifier]));
 
       EXPECT_EQ(3ul, [[category actions] count]);
     } else if ([category respondsToSelector:@selector(alternateAction)]) {
       EXPECT_EQ("Close", base::SysNSStringToUTF8([[category
                              valueForKey:@"_alternateAction"] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationCloseButtonTag),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationCloseButtonTag),
                 base::SysNSStringToUTF8(
                     [[category valueForKey:@"_alternateAction"] identifier]));
 
       EXPECT_EQ("Button1",
                 base::SysNSStringToUTF8([[category actions][0] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationButtonOne),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonOne),
                 base::SysNSStringToUTF8([[category actions][0] identifier]));
 
       EXPECT_EQ("Button2",
                 base::SysNSStringToUTF8([[category actions][1] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationButtonTwo),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonTwo),
                 base::SysNSStringToUTF8([[category actions][1] identifier]));
 
       EXPECT_EQ(3ul, [[category actions] count]);
     } else {
       EXPECT_EQ("Close", base::SysNSStringToUTF8(
                              [[[category actions] firstObject] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationCloseButtonTag),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationCloseButtonTag),
                 base::SysNSStringToUTF8(
                     [[[category actions] firstObject] identifier]));
 
       EXPECT_EQ("Button1",
                 base::SysNSStringToUTF8([[category actions][1] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationButtonOne),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonOne),
                 base::SysNSStringToUTF8([[category actions][1] identifier]));
 
       EXPECT_EQ("Button2",
                 base::SysNSStringToUTF8([[category actions][2] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationButtonTwo),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonTwo),
                 base::SysNSStringToUTF8([[category actions][2] identifier]));
 
       EXPECT_EQ(4ul, [[category actions] count]);
@@ -240,8 +223,7 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationTwoButtons) {
     EXPECT_EQ("Settings",
               base::SysNSStringToUTF8([[[category actions] lastObject] title]));
     EXPECT_EQ(
-        base::SysNSStringToUTF8(
-            notification_constants::kNotificationSettingsButtonTag),
+        base::SysNSStringToUTF8(kNotificationSettingsButtonTag),
         base::SysNSStringToUTF8([[[category actions] lastObject] identifier]));
 
     if ([category respondsToSelector:@selector(actionsMenuTitle)]) {
@@ -266,8 +248,7 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationExtensionNoButtons) {
     } else if ([category respondsToSelector:@selector(alternateAction)]) {
       EXPECT_EQ("Close", base::SysNSStringToUTF8([[category
                              valueForKey:@"_alternateAction"] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationCloseButtonTag),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationCloseButtonTag),
                 base::SysNSStringToUTF8(
                     [[category valueForKey:@"_alternateAction"] identifier]));
 
@@ -275,8 +256,7 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationExtensionNoButtons) {
     } else {
       EXPECT_EQ("Close", base::SysNSStringToUTF8(
                              [[[category actions] firstObject] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationCloseButtonTag),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationCloseButtonTag),
                 base::SysNSStringToUTF8(
                     [[[category actions] firstObject] identifier]));
 
@@ -300,38 +280,33 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationExtensionTwoButtons) {
     if (base::mac::IsAtLeastOS11()) {
       EXPECT_EQ("Button1",
                 base::SysNSStringToUTF8([[category actions][0] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationButtonOne),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonOne),
                 base::SysNSStringToUTF8([[category actions][0] identifier]));
 
       EXPECT_EQ(2ul, [[category actions] count]);
     } else if ([category respondsToSelector:@selector(alternateAction)]) {
       EXPECT_EQ("Close", base::SysNSStringToUTF8([[category
                              valueForKey:@"_alternateAction"] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationCloseButtonTag),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationCloseButtonTag),
                 base::SysNSStringToUTF8(
                     [[category valueForKey:@"_alternateAction"] identifier]));
 
       EXPECT_EQ("Button1",
                 base::SysNSStringToUTF8([[category actions][0] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationButtonOne),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonOne),
                 base::SysNSStringToUTF8([[category actions][0] identifier]));
 
       EXPECT_EQ(2ul, [[category actions] count]);
     } else {
       EXPECT_EQ("Close", base::SysNSStringToUTF8(
                              [[[category actions] firstObject] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationCloseButtonTag),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationCloseButtonTag),
                 base::SysNSStringToUTF8(
                     [[[category actions] firstObject] identifier]));
 
       EXPECT_EQ("Button1",
                 base::SysNSStringToUTF8([[category actions][1] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(
-                    notification_constants::kNotificationButtonOne),
+      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonOne),
                 base::SysNSStringToUTF8([[category actions][1] identifier]));
 
       EXPECT_EQ(3ul, [[category actions] count]);
@@ -340,7 +315,7 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationExtensionTwoButtons) {
     EXPECT_EQ("Button2",
               base::SysNSStringToUTF8([[[category actions] lastObject] title]));
     EXPECT_EQ(
-        base::SysNSStringToUTF8(notification_constants::kNotificationButtonTwo),
+        base::SysNSStringToUTF8(kNotificationButtonTwo),
         base::SysNSStringToUTF8([[[category actions] lastObject] identifier]));
 
     if ([category respondsToSelector:@selector(actionsMenuTitle)]) {
@@ -391,3 +366,5 @@ TEST_F(NotificationCategoryManagerTest, ReusesCategory) {
     EXPECT_EQ(0u, [[fake_notification_center_ categories] count]);
   }
 }
+
+}  // namespace mac_notifications

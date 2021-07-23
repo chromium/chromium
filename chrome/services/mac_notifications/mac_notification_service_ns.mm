@@ -13,10 +13,9 @@
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/services/mac_notifications/mac_notification_service_utils.h"
+#import "chrome/services/mac_notifications/mac_notification_service_utils.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
-#include "chrome/services/mac_notifications/public/cpp/notification_utils_mac.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/image/image.h"
@@ -58,7 +57,7 @@ NotificationOperation GetNotificationOperationFromNotification(
   }
 
   bool has_settings_button = [[[notification userInfo]
-      objectForKey:notification_constants::kNotificationHasSettingsButton]
+      objectForKey:mac_notifications::kNotificationHasSettingsButton]
       boolValue];
   bool clicked_last_button = button_index == button_count - 1;
 
@@ -213,12 +212,11 @@ void MacNotificationServiceNS::GetDisplayedNotifications(
 
   for (NSUserNotification* toast in
        [notification_center_ deliveredNotifications]) {
-    NSString* toast_id =
-        [toast.userInfo objectForKey:notification_constants::kNotificationId];
-    NSString* toast_profile_id = [toast.userInfo
-        objectForKey:notification_constants::kNotificationProfileId];
-    BOOL toast_incognito = [[toast.userInfo
-        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+    NSString* toast_id = [toast.userInfo objectForKey:kNotificationId];
+    NSString* toast_profile_id =
+        [toast.userInfo objectForKey:kNotificationProfileId];
+    BOOL toast_incognito =
+        [[toast.userInfo objectForKey:kNotificationIncognito] boolValue];
 
     if (!profile_id || ([profile_id isEqualToString:toast_profile_id] &&
                         incognito == toast_incognito)) {
@@ -240,12 +238,11 @@ void MacNotificationServiceNS::CloseNotification(
 
   for (NSUserNotification* toast in
        [notification_center_ deliveredNotifications]) {
-    NSString* toast_id =
-        [toast.userInfo objectForKey:notification_constants::kNotificationId];
-    NSString* toast_profile_id = [toast.userInfo
-        objectForKey:notification_constants::kNotificationProfileId];
-    BOOL toast_incognito = [[toast.userInfo
-        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+    NSString* toast_id = [toast.userInfo objectForKey:kNotificationId];
+    NSString* toast_profile_id =
+        [toast.userInfo objectForKey:kNotificationProfileId];
+    BOOL toast_incognito =
+        [[toast.userInfo objectForKey:kNotificationIncognito] boolValue];
 
     if ([notification_id isEqualToString:toast_id] &&
         [profile_id isEqualToString:toast_profile_id] &&
@@ -263,10 +260,10 @@ void MacNotificationServiceNS::CloseNotificationsForProfile(
 
   for (NSUserNotification* toast in
        [notification_center_ deliveredNotifications]) {
-    NSString* toast_profile_id = [toast.userInfo
-        objectForKey:notification_constants::kNotificationProfileId];
-    BOOL toast_incognito = [[toast.userInfo
-        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+    NSString* toast_profile_id =
+        [toast.userInfo objectForKey:kNotificationProfileId];
+    BOOL toast_incognito =
+        [[toast.userInfo objectForKey:kNotificationIncognito] boolValue];
 
     if ([profile_id isEqualToString:toast_profile_id] &&
         incognito == toast_incognito) {
