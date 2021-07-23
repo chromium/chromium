@@ -272,7 +272,7 @@ void PolicyWatcher::HandleDeprecatedPolicies(base::DictionaryValue* dict) {
         dict->Set(policy::key::kRemoteAccessHostDomainList, std::move(list));
       }
     }
-    dict->Remove(policy::key::kRemoteAccessHostDomain, nullptr);
+    dict->RemoveKey(policy::key::kRemoteAccessHostDomain);
   }
 
   // RemoteAccessHostClientDomain
@@ -287,7 +287,7 @@ void PolicyWatcher::HandleDeprecatedPolicies(base::DictionaryValue* dict) {
                   std::move(list));
       }
     }
-    dict->Remove(policy::key::kRemoteAccessHostClientDomain, nullptr);
+    dict->RemoveKey(policy::key::kRemoteAccessHostClientDomain);
   }
 }
 

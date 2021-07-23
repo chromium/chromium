@@ -164,7 +164,7 @@ TEST(JsonSchemaCompilerSimpleTest, TestTypePopulate) {
   {
     auto test_type = std::make_unique<simple_api::TestType>();
     std::unique_ptr<base::DictionaryValue> value = CreateTestTypeDictionary();
-    value->Remove("number", NULL);
+    value->RemoveKey("number");
     EXPECT_FALSE(simple_api::TestType::Populate(*value, test_type.get()));
   }
 }

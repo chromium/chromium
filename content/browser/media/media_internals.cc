@@ -668,8 +668,9 @@ void MediaInternals::UpdateAudioLog(AudioLogUpdateType type,
       DCHECK_EQ(type, CREATE);
       audio_streams_cached_data_.SetKey(cache_key, value->Clone());
     } else if (type == UPDATE_AND_DELETE) {
-      std::unique_ptr<base::Value> out_value;
-      CHECK(audio_streams_cached_data_.Remove(cache_key, &out_value));
+      absl::optional<base::Value> out_value =
+          audio_streams_cached_data_.ExtractKey(cache_key);
+      CHECK(out_value.has_value());
     } else {
       base::DictionaryValue* existing_dict = nullptr;
       CHECK(

@@ -20,7 +20,7 @@ void TrackedDictionary::ApplyUntrackedChanges(
 
   for (base::DictionaryValue::Iterator it(new_changes); !it.IsAtEnd();
        it.Advance()) {
-    changed_values_.Remove(it.key(), nullptr);
+    changed_values_.RemoveKey(it.key());
   }
 }
 
