@@ -130,9 +130,11 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
 
   search_box_view_ = AddChildView(std::make_unique<SearchBoxView>(
       /*delegate=*/this, view_delegate, /*app_list_view=*/nullptr));
+  SearchBoxViewBase::InitParams params;
   // Show the assistant button until the user types text.
-  search_box_view_->set_show_close_button_when_active(false);
-  search_box_view_->Init();
+  params.show_close_button_when_active = false;
+  params.create_background = false;
+  search_box_view_->Init(params);
 
   // NOTE: Passing drag and drop host from a specific shelf instance assumes
   // that the `apps_page_` will not get reused for showing the app list in

@@ -30,14 +30,12 @@ class KSVSearchBoxView : public ash::SearchBoxViewBase {
   void SetAccessibleValue(const std::u16string& value);
 
   // SearchBoxViewBase:
-  void OnSearchBoxActiveChanged(bool active) override;
-
- private:
-  // SearchBoxViewBase:
-  void UpdateBackgroundColor(SkColor color) override;
   void UpdateSearchBoxBorder() override;
   void SetupCloseButton() override;
   void SetupBackButton() override;
+  void UpdatePlaceholderTextStyle() override;
+
+ private:
   void SetPlaceholderTextAttributes();
 
   // Accessibility data value. Used to pronounce the number of search results.

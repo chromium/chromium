@@ -39,8 +39,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
                 AppListView* app_list_view = nullptr);
   ~SearchBoxView() override;
 
-  void Init();
-
   // Must be called before the user interacts with the search box. Cannot be
   // part of Init() because the controller isn't available until after Init()
   // is called.
@@ -56,12 +54,14 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   static int GetFocusRingSpacing();
 
   // Overridden from SearchBoxViewBase:
+  void Init(const InitParams& params) override;
   void ClearSearch() override;
   void HandleSearchBoxEvent(ui::LocatedEvent* located_event) override;
   void ModelChanged() override;
   void UpdateKeyboardVisibility() override;
   void UpdateModel(bool initiated_by_user) override;
   void UpdateSearchIcon() override;
+  void UpdatePlaceholderTextStyle() override;
   void UpdateSearchBoxBorder() override;
   void SetupAssistantButton() override;
   void SetupCloseButton() override;
@@ -127,6 +127,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   }
 
  private:
+  // Updates the text field text color.
+  void UpdateTextColor();
+
   // Updates the search box placeholder text and accessible name.
   void UpdatePlaceholderTextAndAccessibleName();
 
@@ -186,6 +189,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Owned by views hierarchy. May be null for bubble launcher.
   ContentsView* contents_view_ = nullptr;
+
+  // Whether the search box is embedded in the bubble launcher.
+  const bool is_app_list_bubble_;
 
   // Whether tablet mode is active.
   bool is_tablet_mode_;

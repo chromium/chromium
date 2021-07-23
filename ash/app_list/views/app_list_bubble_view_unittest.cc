@@ -20,6 +20,7 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -179,6 +180,15 @@ TEST_F(AppListBubbleViewTest, OpeningBubbleFocusesSearchBox) {
   SearchBoxView* search_box_view = GetSearchBoxView();
   EXPECT_TRUE(search_box_view->search_box()->HasFocus());
   EXPECT_TRUE(search_box_view->is_search_box_active());
+}
+
+TEST_F(AppListBubbleViewTest, SearchBoxTextUsesPrimaryTextColor) {
+  ShowAppList();
+
+  views::Textfield* search_box = GetSearchBoxView()->search_box();
+  EXPECT_EQ(search_box->GetTextColor(),
+            AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
 TEST_F(AppListBubbleViewTest, SearchBoxShowsAssistantButton) {

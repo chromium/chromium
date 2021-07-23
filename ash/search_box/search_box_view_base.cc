@@ -60,7 +60,7 @@ class SearchBoxBackground : public views::Background {
       : corner_radius_(corner_radius) {
     SetNativeControlColor(color);
   }
-  ~SearchBoxBackground() override {}
+  ~SearchBoxBackground() override = default;
 
   void SetCornerRadius(int corner_radius) { corner_radius_ = corner_radius; }
 
@@ -237,10 +237,6 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
   SetLayoutManager(std::make_unique<views::FillLayout>());
   AddChildView(content_container_);
 
-  content_container_->SetBackground(std::make_unique<SearchBoxBackground>(
-      kSearchBoxBorderCornerRadius,
-      ash::AppListColorProvider::Get()->GetSearchBoxBackgroundColor()));
-
   box_layout_ =
       content_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
@@ -258,6 +254,8 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
   search_box_->set_controller(this);
   search_box_->SetTextInputType(ui::TEXT_INPUT_TYPE_SEARCH);
   search_box_->SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF);
+  search_box_->SetFontList(search_box_->GetFontList().DeriveWithSizeDelta(2));
+  search_box_->SetCursorEnabled(is_search_box_active_);
 
   back_button_ = new SearchBoxImageButton(base::BindRepeating(
       &SearchBoxViewDelegate::BackButtonPressed, base::Unretained(delegate_)));
@@ -265,12 +263,6 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
 
   search_icon_ = new views::ImageView();
   content_container_->AddChildView(search_icon_);
-  search_box_->set_placeholder_text_color(
-      ash::AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          kDefaultSearchboxPlaceholderTextColor));
-  search_box_->set_placeholder_text_draw_flags(gfx::Canvas::TEXT_ALIGN_CENTER);
-  search_box_->SetFontList(search_box_->GetFontList().DeriveWithSizeDelta(2));
-  search_box_->SetCursorEnabled(is_search_box_active_);
 
   content_container_->AddChildView(search_box_);
   box_layout_->SetFlexForView(search_box_, 1);
@@ -295,11 +287,18 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
 
 SearchBoxViewBase::~SearchBoxViewBase() = default;
 
-void SearchBoxViewBase::Init() {
+void SearchBoxViewBase::Init(const InitParams& params) {
+  show_close_button_when_active_ = params.show_close_button_when_active;
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(true);
+  if (params.create_background) {
+    content_container_->SetBackground(std::make_unique<SearchBoxBackground>(
+        kSearchBoxBorderCornerRadius,
+        AppListColorProvider::Get()->GetSearchBoxBackgroundColor()));
+  }
   UpdateSearchBoxBorder();
+  UpdatePlaceholderTextStyle();
   SetupAssistantButton();
   SetupBackButton();
   SetupCloseButton();
@@ -342,15 +341,7 @@ void SearchBoxViewBase::SetSearchBoxActive(bool active,
 
   is_search_box_active_ = active;
   UpdateSearchIcon();
-  search_box_->set_placeholder_text_draw_flags(
-      active ? (base::i18n::IsRTL() ? gfx::Canvas::TEXT_ALIGN_RIGHT
-                                    : gfx::Canvas::TEXT_ALIGN_LEFT)
-             : gfx::Canvas::TEXT_ALIGN_CENTER);
-  search_box_->set_placeholder_text_color(
-      active ? AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-                   kZeroQuerySearchboxColor)
-             : ash::AppListColorProvider::Get()->GetSearchBoxTextColor(
-                   kDefaultSearchboxPlaceholderTextColor));
+  UpdatePlaceholderTextStyle();
   search_box_->SetCursorEnabled(active);
 
   if (active) {
@@ -497,8 +488,10 @@ bool SearchBoxViewBase::HandleGestureEvent(
 }
 
 void SearchBoxViewBase::SetSearchBoxBackgroundCornerRadius(int corner_radius) {
-  static_cast<SearchBoxBackground*>(GetSearchBoxBackground())
-      ->SetCornerRadius(corner_radius);
+  auto* background =
+      static_cast<SearchBoxBackground*>(GetSearchBoxBackground());
+  if (background)
+    background->SetCornerRadius(corner_radius);
 }
 
 void SearchBoxViewBase::SetSearchIconImage(gfx::ImageSkia image) {
@@ -534,7 +527,9 @@ void SearchBoxViewBase::HandleSearchBoxEvent(ui::LocatedEvent* located_event) {
 
 // TODO(crbug.com/755219): Unify this with SetBackgroundColor.
 void SearchBoxViewBase::UpdateBackgroundColor(SkColor color) {
-  GetSearchBoxBackground()->SetNativeControlColor(color);
+  auto* background = GetSearchBoxBackground();
+  if (background)
+    background->SetNativeControlColor(color);
 }
 
 views::Background* SearchBoxViewBase::GetSearchBoxBackground() {

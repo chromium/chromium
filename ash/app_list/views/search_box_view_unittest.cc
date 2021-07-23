@@ -21,6 +21,7 @@
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
@@ -93,8 +94,10 @@ class SearchBoxViewTest : public views::test::WidgetTest,
 
     auto view =
         std::make_unique<SearchBoxView>(this, &view_delegate_, app_list_view());
-    view->set_show_close_button_when_active(true);
-    view->Init();
+    SearchBoxViewBase::InitParams params;
+    params.show_close_button_when_active = true;
+    params.create_background = true;
+    view->Init(params);
     view_ = widget_->GetContentsView()->AddChildView(std::move(view));
 
     counter_view_ = widget_->GetContentsView()->AddChildView(
@@ -216,6 +219,12 @@ class SearchBoxViewTest : public views::test::WidgetTest,
 
   DISALLOW_COPY_AND_ASSIGN(SearchBoxViewTest);
 };
+
+TEST_F(SearchBoxViewTest, SearchBoxTextUsesAppListSearchBoxTextColor) {
+  EXPECT_EQ(view()->search_box()->GetTextColor(),
+            AppListColorProvider::Get()->GetSearchBoxTextColor(
+                kDeprecatedSearchBoxTextDefaultColor));
+}
 
 // Tests that the close button is invisible by default.
 TEST_F(SearchBoxViewTest, CloseButtonInvisibleByDefault) {

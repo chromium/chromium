@@ -52,7 +52,14 @@ class SearchBoxViewBase : public views::View,
   explicit SearchBoxViewBase(SearchBoxViewDelegate* delegate);
   ~SearchBoxViewBase() override;
 
-  void Init();
+  struct InitParams {
+    // Whether to show close button if the search box is active and empty.
+    bool show_close_button_when_active = false;
+
+    // Whether to create a rounded-rect background.
+    bool create_background = true;
+  };
+  virtual void Init(const InitParams& params);
 
   bool HasSearch() const;
 
@@ -94,10 +101,6 @@ class SearchBoxViewBase : public views::View,
 
   // Whether the search box is active.
   bool is_search_box_active() const { return is_search_box_active_; }
-
-  void set_show_close_button_when_active(bool show_button) {
-    show_close_button_when_active_ = show_button;
-  }
 
   bool show_assistant_button() { return show_assistant_button_; }
 
@@ -143,12 +146,8 @@ class SearchBoxViewBase : public views::View,
   virtual void HandleSearchBoxEvent(ui::LocatedEvent* located_event);
 
   // Updates the search box's background color.
-  virtual void UpdateBackgroundColor(SkColor color);
+  void UpdateBackgroundColor(SkColor color);
 
-  // Gets the search box background.
-  views::Background* GetSearchBoxBackground();
-
- private:
   virtual void ModelChanged() {}
 
   // Shows/hides the virtual keyboard if the search box is active.
@@ -159,6 +158,9 @@ class SearchBoxViewBase : public views::View,
 
   // Updates the search icon.
   virtual void UpdateSearchIcon() {}
+
+  // Updates the color and alignment of the placeholder text.
+  virtual void UpdatePlaceholderTextStyle() {}
 
   // Update search box border based on whether the search box is activated.
   virtual void UpdateSearchBoxBorder() {}
@@ -171,7 +173,11 @@ class SearchBoxViewBase : public views::View,
   // Records in histograms the activation of the searchbox.
   virtual void RecordSearchBoxActivationHistogram(ui::EventType event_type) {}
 
+ private:
   void OnEnabledChanged();
+
+  // Gets the search box background. May return null.
+  views::Background* GetSearchBoxBackground();
 
   SearchBoxViewDelegate* const delegate_;
 

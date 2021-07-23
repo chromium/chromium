@@ -376,7 +376,10 @@ void KeyboardShortcutView::InitViews() {
   TRACE_EVENT0("shortcut_viewer", "InitViews");
   // Init search box view.
   auto search_box_view = std::make_unique<KSVSearchBoxView>(this);
-  search_box_view->Init();
+  ash::SearchBoxViewBase::InitParams params;
+  params.show_close_button_when_active = false;
+  params.create_background = true;
+  search_box_view->Init(params);
   search_box_view_ = AddChildView(std::move(search_box_view));
 
   // Init no search result illustration view.

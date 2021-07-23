@@ -28,6 +28,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/search_box/search_box_view_delegate.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -87,14 +88,15 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
     : SearchBoxViewBase(delegate),
       view_delegate_(view_delegate),
       app_list_view_(app_list_view),
+      is_app_list_bubble_(!app_list_view_),
       is_tablet_mode_(view_delegate_->IsInTabletMode()) {}
 
 SearchBoxView::~SearchBoxView() {
   search_model_->search_box()->RemoveObserver(this);
 }
 
-void SearchBoxView::Init() {
-  SearchBoxViewBase::Init();
+void SearchBoxView::Init(const InitParams& params) {
+  SearchBoxViewBase::Init(params);
   UpdatePlaceholderTextAndAccessibleName();
   current_query_ = search_box()->GetText();
 }
@@ -198,6 +200,33 @@ void SearchBoxView::UpdateSearchIcon() {
       gfx::CreateVectorIcon(icon, kSearchBoxIconSize,
                             AppListColorProvider::Get()->GetSearchBoxIconColor(
                                 SkColorSetARGB(0xDE, 0x00, 0x00, 0x00))));
+}
+
+void SearchBoxView::UpdatePlaceholderTextStyle() {
+  if (is_app_list_bubble_) {
+    // The bubble launcher text is always side-aligned.
+    search_box()->set_placeholder_text_draw_flags(
+        base::i18n::IsRTL() ? gfx::Canvas::TEXT_ALIGN_RIGHT
+                            : gfx::Canvas::TEXT_ALIGN_LEFT);
+    // Bubble launcher uses standard text colors (light-on-dark by default).
+    search_box()->set_placeholder_text_color(
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kTextColorSecondary));
+    return;
+  }
+  // Fullscreen launcher centers the text when inactive.
+  search_box()->set_placeholder_text_draw_flags(
+      is_search_box_active()
+          ? (base::i18n::IsRTL() ? gfx::Canvas::TEXT_ALIGN_RIGHT
+                                 : gfx::Canvas::TEXT_ALIGN_LEFT)
+          : gfx::Canvas::TEXT_ALIGN_CENTER);
+  // Fullscreen launcher uses custom colors (dark-on-light by default).
+  search_box()->set_placeholder_text_color(
+      is_search_box_active()
+          ? AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+                kZeroQuerySearchboxColor)
+          : AppListColorProvider::Get()->GetSearchBoxTextColor(
+                kDefaultSearchboxPlaceholderTextColor));
 }
 
 void SearchBoxView::UpdateSearchBoxBorder() {
@@ -326,8 +355,7 @@ void SearchBoxView::UpdateBackground(double progress,
       progress, GetBackgroundColorForState(current_state),
       GetBackgroundColorForState(target_state));
   UpdateBackgroundColor(color);
-  search_box()->SetTextColor(AppListColorProvider::Get()->GetSearchBoxTextColor(
-      kDeprecatedSearchBoxTextDefaultColor));
+  UpdateTextColor();
 }
 
 void SearchBoxView::UpdateLayout(double progress,
@@ -380,15 +408,12 @@ void SearchBoxView::ShowZeroStateSuggestions() {
 
 void SearchBoxView::OnWallpaperColorsChanged() {
   UpdateSearchIcon();
-  AppListColorProvider* app_list_color_provider = AppListColorProvider::Get();
-  search_box()->set_placeholder_text_color(
-      app_list_color_provider->GetSearchBoxTextColor(
-          kDeprecatedSearchBoxPlaceholderTextColor));
-  search_box()->SetTextColor(app_list_color_provider->GetSearchBoxTextColor(
-      kDeprecatedSearchBoxTextDefaultColor));
+  UpdatePlaceholderTextStyle();
+  UpdateTextColor();
+
   if (features::IsDarkLightModeEnabled()) {
     UpdateBackgroundColor(
-        app_list_color_provider->GetSearchBoxBackgroundColor());
+        AppListColorProvider::Get()->GetSearchBoxBackgroundColor());
   }
   SchedulePaint();
 }
@@ -442,6 +467,19 @@ void SearchBoxView::ProcessAutocomplete(
   // Current text in the search_box does not match the first result's url or
   // search result text.
   ClearAutocompleteText();
+}
+
+void SearchBoxView::UpdateTextColor() {
+  if (is_app_list_bubble_) {
+    // Bubble launcher uses standard text colors (light-on-dark by default).
+    search_box()->SetTextColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+  } else {
+    // Fullscreen launcher uses dark-on-light text by default.
+    search_box()->SetTextColor(
+        AppListColorProvider::Get()->GetSearchBoxTextColor(
+            kDeprecatedSearchBoxTextDefaultColor));
+  }
 }
 
 void SearchBoxView::UpdatePlaceholderTextAndAccessibleName() {
