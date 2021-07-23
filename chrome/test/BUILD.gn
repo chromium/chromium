@@ -1453,9 +1453,7 @@ if (!is_android) {
       "../browser/download/download_started_animation_browsertest.cc",
       "../browser/download/save_page_browsertest.cc",
       "../browser/engagement/site_engagement_helper_browsertest.cc",
-      "../browser/enterprise/connectors/analysis/content_analysis_delegate_browsertest.cc",
       "../browser/enterprise/connectors/analysis/content_analysis_dialog_browsertest.cc",
-      "../browser/enterprise/connectors/connectors_service_browsertest.cc",
       "../browser/enterprise/reporting/report_scheduler_browsertest.cc",
       "../browser/enterprise/util/managed_browser_utils_browsertest.cc",
       "../browser/extensions/protocol_handler_apitest.cc",
@@ -1748,7 +1746,6 @@ if (!is_android) {
       "../browser/safe_browsing/cloud_content_scanning/deep_scanning_browsertest_base.h",
       "../browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.cc",
       "../browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h",
-      "../browser/safe_browsing/download_protection/deep_scanning_browsertest.cc",
       "../browser/safe_browsing/download_protection/download_protection_service_browsertest.cc",
       "../browser/safe_browsing/test_safe_browsing_database_helper.cc",
       "../browser/safe_browsing/test_safe_browsing_database_helper.h",
@@ -2046,6 +2043,15 @@ if (!is_android) {
       "ppapi/ppapi_filechooser_browsertest.cc",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
+
+    # crbug.com/1230268 These tests need to be fixed for Lacros.
+    if (!is_chromeos_lacros) {
+      sources += [
+        "../browser/enterprise/connectors/analysis/content_analysis_delegate_browsertest.cc",
+        "../browser/enterprise/connectors/connectors_service_browsertest.cc",
+        "../browser/safe_browsing/download_protection/deep_scanning_browsertest.cc",
+      ]
+    }
 
     # If this target is used on Android in the future, these browser/speech/*
     # files will probably not be applicable.

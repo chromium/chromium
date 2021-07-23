@@ -244,7 +244,8 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
 };
 
 // crbug.com/1224925 flaky on Win.
-#if defined(OS_WIN)
+// crbug.com/1230268 not working on Lacros.
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_FetchExtensionPolicy DISABLED_FetchExtensionPolicy
 #else
 #define MAYBE_FetchExtensionPolicy FetchExtensionPolicy
@@ -257,7 +258,8 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_FetchExtensionPolicy) {
 }
 
 // crbug.com/1224925 flaky on Win.
-#if defined(OS_WIN)
+// crbug.com/1230268 not working on Lacros.
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_UpdateExtensionPolicy DISABLED_UpdateExtensionPolicy
 #else
 #define MAYBE_UpdateExtensionPolicy UpdateExtensionPolicy
@@ -291,7 +293,8 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_UpdateExtensionPolicy) {
 }
 
 // crbug.com/1224925 flaky on Win.
-#if defined(OS_WIN)
+// crbug.com/1230268 not working on Lacros.
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_InstallNewExtension DISABLED_InstallNewExtension
 #else
 #define MAYBE_InstallNewExtension InstallNewExtension
@@ -370,6 +373,7 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, DISABLED_SignOutAndBackIn) {
 
   // Verify that the policy is fetched again if the user signs back in.
   ExtensionTestMessageListener event_listener2("event", true);
+
   SignInAndRegister();
   EXPECT_TRUE(event_listener2.WaitUntilSatisfied());
 
@@ -406,7 +410,8 @@ class KeyRotationComponentCloudPolicyTest : public ComponentCloudPolicyTest {
 };
 
 // crbug.com/1224925 flaky on Win.
-#if defined(OS_WIN)
+// crbug.com/1230268 not working on Lacros.
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_Basic DISABLED_Basic
 #else
 #define MAYBE_Basic Basic

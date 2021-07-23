@@ -31,6 +31,7 @@
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_proto_decoders.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/common/content_switches.h"
@@ -258,7 +259,8 @@ ChromeBrowserPolicyConnector::CreatePlatformProvider() {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   auto loader = std::make_unique<PolicyLoaderLacros>(
       base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+      PolicyPerProfileFilter::kFalse);
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
 #elif defined(OS_POSIX) && !defined(OS_ANDROID)
