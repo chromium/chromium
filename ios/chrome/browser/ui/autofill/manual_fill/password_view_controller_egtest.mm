@@ -239,8 +239,7 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 }
 
 // Tests that the "Use Other Password..." screen won't open if canceled.
-// TODO(crbug.com/1203415): Disabled due to flakiness.
-- (void)DISABLED_testUseOtherPasswordActionCloses {
+- (void)testUseOtherPasswordActionCloses {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -336,75 +335,6 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
       performAction:grey_tap()];
 }
 
-// Tests that the Password View Controller is resumed after selecting other
-// password.
-// TODO(crbug.com/981922): Re-enable this test due to failing DB call.
-- (void)DISABLED_testPasswordControllerResumes {
-  // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementUsername)];
-
-  // Tap on the passwords icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
-      performAction:grey_tap()];
-
-  // Tap the "Other Passwords..." action.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
-      performAction:grey_tap()];
-
-  // Tap the password search.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordSearchBarMatcher()]
-      performAction:grey_tap()];
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
-
-  // Select a username.
-  [[EarlGrey selectElementWithMatcher:UsernameButtonMatcher()]
-      performAction:grey_tap()];
-
-  // Wait for the password list to disappear. Using the search bar, since the
-  // popover doesn't have it.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordSearchBarMatcher()]
-      assertWithMatcher:grey_notVisible()];
-
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the Password View Controller is resumed after dismissing "Other
-// Passwords".
-// TODO(crbug.com/984977): Support this behavior again.
-- (void)DISABLED_testPasswordControllerResumesWhenOtherPasswordsDismiss {
-  // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementUsername)];
-
-  // Tap on the passwords icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
-      performAction:grey_tap()];
-
-  // Tap the "Other Passwords..." action.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
-      performAction:grey_tap()];
-
-  // Dismiss the Other Passwords view.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
-      performAction:grey_tap()];
-
-  // Wait for the password list to disappear. Using the search bar, since the
-  // popover doesn't have it.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordSearchBarMatcher()]
-      assertWithMatcher:grey_notVisible()];
-
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
 // Tests that the Password View Controller is dismissed when tapping the
 // keyboard icon.
 - (void)testKeyboardIconDismissPasswordController {
@@ -438,8 +368,7 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 
 // Tests that the Password View Controller is dismissed when tapping the outside
 // the popover on iPad.
-// TODO(crbug.com/1162296): Re-enable this test after this issue is fixed.
-- (void)DISABLED_testIPadTappingOutsidePopOverDismissPasswordController {
+- (void)testIPadTappingOutsidePopOverDismissPasswordController {
   if (![ChromeEarlGrey isIPadIdiom]) {
     return;
   }
