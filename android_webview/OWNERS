@@ -9,4 +9,4 @@ nator@chromium.org
 per-file *.md=file://android_webview/docs/OWNERS
 
 # Translation artifacts:
-per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS

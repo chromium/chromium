@@ -6,4 +6,4 @@ lambroslambrou@chromium.org
 yuweih@chromium.org
 
 # Translation artifacts:
-per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS
