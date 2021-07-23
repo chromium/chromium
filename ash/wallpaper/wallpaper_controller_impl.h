@@ -236,13 +236,11 @@ class ASH_EXPORT WallpaperControllerImpl
             const base::FilePath& custom_wallpapers,
             const base::FilePath& device_policy_wallpaper) override;
   void SetCustomWallpaper(const AccountId& account_id,
-                          const std::string& wallpaper_files_id,
                           const base::FilePath& file_path,
                           WallpaperLayout layout,
                           bool preview_mode,
                           SetCustomWallpaperCallback callback) override;
   void SetCustomWallpaper(const AccountId& account_id,
-                          const std::string& wallpaper_files_id,
                           const std::string& file_name,
                           WallpaperLayout layout,
                           const gfx::ImageSkia& image,
@@ -255,18 +253,15 @@ class ASH_EXPORT WallpaperControllerImpl
                                   const std::string& image_data,
                                   SetOnlineWallpaperCallback callback) override;
   void SetDefaultWallpaper(const AccountId& account_id,
-                           const std::string& wallpaper_files_id,
                            bool show_wallpaper) override;
   void SetCustomizedDefaultWallpaperPaths(
       const base::FilePath& customized_default_small_path,
       const base::FilePath& customized_default_large_path) override;
   void SetPolicyWallpaper(const AccountId& account_id,
-                          const std::string& wallpaper_files_id,
                           const std::string& data) override;
   void SetDevicePolicyWallpaperPath(
       const base::FilePath& device_policy_wallpaper_path) override;
   bool SetThirdPartyWallpaper(const AccountId& account_id,
-                              const std::string& wallpaper_files_id,
                               const std::string& file_name,
                               WallpaperLayout layout,
                               const gfx::ImageSkia& image) override;
@@ -279,10 +274,8 @@ class ASH_EXPORT WallpaperControllerImpl
   void ShowOneShotWallpaper(const gfx::ImageSkia& image) override;
   void ShowAlwaysOnTopWallpaper(const base::FilePath& image_path) override;
   void RemoveAlwaysOnTopWallpaper() override;
-  void RemoveUserWallpaper(const AccountId& account_id,
-                           const std::string& wallpaper_files_id) override;
-  void RemovePolicyWallpaper(const AccountId& account_id,
-                             const std::string& wallpaper_files_id) override;
+  void RemoveUserWallpaper(const AccountId& account_id) override;
+  void RemovePolicyWallpaper(const AccountId& account_id) override;
   void GetOfflineWallpaperList(
       GetOfflineWallpaperListCallback callback) override;
   void SetAnimationDuration(base::TimeDelta animation_duration) override;
@@ -397,8 +390,11 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Implementation of |RemoveUserWallpaper|, which deletes |account_id|'s
   // custom wallpapers and directories.
-  void RemoveUserWallpaperImpl(const AccountId& account_id,
-                               const std::string& wallpaper_files_id);
+  void RemoveUserWallpaperImpl(const AccountId& account_id);
+
+  void RemoveUserWallpaperImplWithFilesId(
+      const AccountId& account_id,
+      const std::string& wallpaper_files_id);
 
   // Implementation of |SetDefaultWallpaper|. Sets wallpaper to default if
   // |show_wallpaper| is true. Otherwise just save the defaut wallpaper to
@@ -467,7 +463,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // |show_wallpaper| is true, otherwise only sets the wallpaper info and
   // updates the cache.
   void SaveAndSetWallpaper(const AccountId& account_id,
-                           const std::string& wallpaper_files_id,
                            const std::string& file_name,
                            WallpaperType type,
                            WallpaperLayout layout,
@@ -477,7 +472,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // |image_saved| is only called on success.
   void SaveAndSetWallpaperWithCompletion(
       const AccountId& account_id,
-      const std::string& wallpaper_files_id,
       const std::string& file_name,
       WallpaperType type,
       WallpaperLayout layout,
@@ -485,8 +479,17 @@ class ASH_EXPORT WallpaperControllerImpl
       const gfx::ImageSkia& image,
       base::OnceCallback<void(const base::FilePath&)> image_saved_callback);
 
+  void SaveAndSetWallpaperWithCompletionFilesId(
+      const AccountId& account_id,
+      const std::string& file_name,
+      WallpaperType type,
+      WallpaperLayout layout,
+      bool show_wallpaper,
+      const gfx::ImageSkia& image,
+      base::OnceCallback<void(const base::FilePath&)> image_saved_callback,
+      const std::string& wallpaper_files_id);
+
   void OnCustomWallpaperDecoded(const AccountId& account_id,
-                                const std::string& wallpaper_files_id,
                                 const base::FilePath& path,
                                 WallpaperLayout layout,
                                 bool preview_mode,

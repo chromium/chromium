@@ -156,8 +156,6 @@ ExtensionFunction::ResponseAction WallpaperSetWallpaperFunction::Run() {
   // Gets account id from the caller, ensuring multiprofile compatibility.
   const user_manager::User* user = GetUserFromBrowserContext(browser_context());
   account_id_ = user->GetAccountId();
-  wallpaper_files_id_ =
-      WallpaperControllerClientImpl::Get()->GetFilesId(account_id_);
 
   if (params_->details.data) {
     StartDecode(*params_->details.data);
@@ -188,7 +186,7 @@ void WallpaperSetWallpaperFunction::OnWallpaperDecoded(
   const std::string file_name =
       base::FilePath(params_->details.filename).BaseName().value();
   WallpaperControllerClientImpl::Get()->SetCustomWallpaper(
-      account_id_, wallpaper_files_id_, file_name, layout, image,
+      account_id_, file_name, layout, image,
       /*preview_mode=*/false);
   unsafe_wallpaper_decoder_ = nullptr;
 

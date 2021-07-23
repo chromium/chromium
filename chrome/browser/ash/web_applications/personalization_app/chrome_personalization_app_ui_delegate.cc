@@ -319,12 +319,11 @@ void ChromePersonalizationAppUiDelegate::SelectLocalImage(
   DCHECK(user);
 
   auto* controller = ash::WallpaperController::Get();
-  auto* client = WallpaperControllerClientImpl::Get();
 
   const auto& account_id = user->GetAccountId();
 
   controller->SetCustomWallpaper(
-      account_id, client->GetFilesId(account_id), it->second,
+      account_id, it->second,
       ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
       /*preview_mode=*/false, std::move(callback));
 }

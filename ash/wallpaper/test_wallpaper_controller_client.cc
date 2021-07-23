@@ -19,6 +19,7 @@ void TestWallpaperControllerClient::ResetCounts() {
   fetch_daily_refresh_wallpaper_param_ = std::string();
   fetch_daily_refresh_info_fails_ = false;
   save_wallpaper_to_drive_fs_account_id.clear();
+  fake_files_id_ = std::string();
 }
 
 // WallpaperControllerClient:
@@ -56,6 +57,12 @@ bool TestWallpaperControllerClient::SaveWallpaperToDriveFs(
     const base::FilePath& origin) {
   save_wallpaper_to_drive_fs_account_id = account_id;
   return true;
+}
+
+void TestWallpaperControllerClient::GetFilesId(
+    const AccountId& account_id,
+    base::OnceCallback<void(const std::string&)> files_id_callback) const {
+  std::move(files_id_callback).Run(fake_files_id_);
 }
 
 }  // namespace ash
