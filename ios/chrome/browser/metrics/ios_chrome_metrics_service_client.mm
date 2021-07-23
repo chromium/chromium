@@ -237,10 +237,6 @@ base::TimeDelta IOSChromeMetricsServiceClient::GetStandardUploadInterval() {
   return metrics::GetUploadInterval(metrics::ShouldUseCellularUploadInterval());
 }
 
-void IOSChromeMetricsServiceClient::OnRendererProcessCrash() {
-  stability_metrics_provider_->LogRendererCrash();
-}
-
 void IOSChromeMetricsServiceClient::WebStateDidStartLoading(
     web::WebState* web_state) {
   metrics_service_->OnApplicationNotIdle();

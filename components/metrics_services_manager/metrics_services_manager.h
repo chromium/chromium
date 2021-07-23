@@ -65,10 +65,6 @@ class MetricsServicesManager {
   // Should be called when a plugin loading error occurs.
   void OnPluginLoadingError(const base::FilePath& plugin_path);
 
-  // Some embedders use this method to notify the metrics system when a
-  // renderer process exits unexpectedly.
-  void OnRendererProcessCrash();
-
   // Update the managed services when permissions for uploading metrics change.
   void UpdateUploadPermissions(bool may_upload);
 

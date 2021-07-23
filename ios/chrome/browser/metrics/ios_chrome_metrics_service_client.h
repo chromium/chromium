@@ -73,7 +73,6 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
       const metrics::MetricsLogUploader::UploadCallback& on_upload_complete)
       override;
   base::TimeDelta GetStandardUploadInterval() override;
-  void OnRendererProcessCrash() override;
   bool IsUkmAllowedForAllProfiles() override;
   bool AreNotificationListenersEnabledOnAllProfiles() override;
   std::string GetUploadSigningKey() override;
