@@ -80,3 +80,4 @@ Modifications:
 - Remove unused base::subtle::Acquire_Store/Release_Load (https://github.com/gperftools/gperftools/pull/1249)
 - Fix thread-safety annotations (https://github.com/gperftools/gperftools/pull/1251)
 - Fixed -Wimplicit-int-float-conversion.
+- Fixed %rsp register clobber in linux_syscall_support.h (https://github.com/gperftools/gperftools/issues/1076)
