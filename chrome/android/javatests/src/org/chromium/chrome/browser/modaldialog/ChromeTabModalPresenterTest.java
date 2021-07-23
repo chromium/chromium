@@ -34,6 +34,7 @@ import androidx.test.espresso.Espresso;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -41,9 +42,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
@@ -55,6 +58,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
@@ -72,6 +76,7 @@ import org.chromium.ui.test.util.UiRestriction;
  * Tests for {@link ChromeTabModalPresenter}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ChromeTabModalPresenterTest {
     private class TestObserver extends EmptyTabObserver
@@ -101,8 +106,13 @@ public class ChromeTabModalPresenterTest {
     @ClassRule
     public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
 
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, true);
 
     private ChromeTabbedActivity mActivity;
     private ModalDialogManager mManager;
@@ -112,8 +122,7 @@ public class ChromeTabModalPresenterTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mActivity = mActivityTestRule.getActivity();
+        mActivity = sActivityTestRule.getActivity();
         mManager =
                 TestThreadUtils.runOnUiThreadBlockingNoException(mActivity::getModalDialogManager);
         mTestObserver = new TestObserver();
@@ -124,6 +133,11 @@ public class ChromeTabModalPresenterTest {
                 .addUrlFocusChangeListener(mTestObserver);
         mTabModalPresenter =
                 (ChromeTabModalPresenter) mManager.getPresenterForTest(ModalDialogType.TAB);
+    }
+
+    @After
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mManager.destroy(); });
     }
 
     @Test
@@ -298,7 +312,7 @@ public class ChromeTabModalPresenterTest {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
         PropertyModel dialog2 = createDialog(mActivity, mManager, "2", null);
         PropertyModel dialog3 = createDialog(mActivity, mManager, "3", null);
-        mActivityTestRule.loadUrlInNewTab("about:blank");
+        sActivityTestRule.loadUrlInNewTab("about:blank");
 
         // Initially there are no dialogs in the pending list. Browser controls are not restricted.
         checkPendingSize(mManager, ModalDialogType.APP, 0);
@@ -353,7 +367,7 @@ public class ChromeTabModalPresenterTest {
         PropertyModel dialog2 = createDialog(mActivity, mManager, "2", null);
 
         // Open a new tab and make sure that the current tab is at index 0.
-        mActivityTestRule.loadUrlInNewTab("about:blank");
+        sActivityTestRule.loadUrlInNewTab("about:blank");
         ChromeTabUtils.switchTabInCurrentTabModel(mActivity, 0);
 
         // Initially there are no dialogs in the pending list. Browser controls are not restricted.
@@ -482,7 +496,7 @@ public class ChromeTabModalPresenterTest {
         int callCount = mTestObserver.onDialogDismissedCallback.getCallCount();
 
         // Open a new tab and make sure that the current tab is at index 0.
-        mActivityTestRule.loadUrlInNewTab("about:blank");
+        sActivityTestRule.loadUrlInNewTab("about:blank");
         ChromeTabUtils.switchTabInCurrentTabModel(mActivity, 0);
 
         // Show a tab modal dialog and then switch tab.
@@ -521,7 +535,7 @@ public class ChromeTabModalPresenterTest {
         showDialog(mManager, dialog1, ModalDialogType.TAB);
         EmbeddedTestServer server =
                 EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
-        mActivityTestRule.loadUrl(server.getURL("/chrome/test/data/android/simple.html"));
+        sActivityTestRule.loadUrl(server.getURL("/chrome/test/data/android/simple.html"));
         mTestObserver.onDialogDismissedCallback.waitForCallback(callCount);
 
         mExpectedDismissalCause = null;
@@ -545,6 +559,7 @@ public class ChromeTabModalPresenterTest {
 
     @Test
     @SmallTest
+    @RequiresRestart("Removing views is global and cannot be reversed.")
     @Feature({"ModalDialog"})
     // Ensures an exception isn't thrown when a dialog is dismissed and the View is no longer
     // attached to a Window. See https://crbug.com/1127254 for the specifics.
