@@ -42,9 +42,10 @@ public class TracingNotificationManager {
     private static final String MSG_STOPPING_NOTIFICATION_MESSAGE =
             "Trace data is being collected and compressed.";
     private static final String MSG_COMPLETE_NOTIFICATION_TITLE = "Chrome trace is complete";
-    private static final String MSG_COMPLETE_NOTIFICATION_MESSAGE = "The trace is ready to share.";
+    private static final String MSG_COMPLETE_NOTIFICATION_MESSAGE =
+            "The trace is ready. Open tracing settings to share.";
     private static final String MSG_STOP = "Stop recording";
-    private static final String MSG_SHARE = "Share trace";
+    private static final String MSG_OPEN_SETTINGS = "Open tracing settings";
 
     // TODO(eseckler): Consider recording UMAs, see e.g. IncognitoNotificationManager.
 
@@ -174,8 +175,8 @@ public class TracingNotificationManager {
                         .setContentTitle(title)
                         .setContentText(message)
                         .setOngoing(false)
-                        .addAction(R.drawable.ic_share_white_24dp, MSG_SHARE,
-                                TracingNotificationServiceImpl.getShareTraceIntent(context))
+                        .addAction(R.drawable.ic_share_white_24dp, MSG_OPEN_SETTINGS,
+                                TracingNotificationServiceImpl.getOpenSettingsIntent(context))
                         .setDeleteIntent(
                                 TracingNotificationServiceImpl.getDiscardTraceIntent(context));
         showNotification(builder.build());

@@ -42,6 +42,8 @@ public class TracingSettings
     @VisibleForTesting
     static final String UI_PREF_START_RECORDING = "start_recording";
     @VisibleForTesting
+    static final String UI_PREF_SHARE_TRACE = "share_trace";
+    @VisibleForTesting
     static final String UI_PREF_TRACING_STATUS = "tracing_status";
 
     // Non-translated strings:
@@ -60,6 +62,7 @@ public class TracingSettings
     private static final String MSG_MODE_RECORD_AS_MUCH_AS_POSSIBLE =
             "Record until full (large buffer)";
     private static final String MSG_MODE_RECORD_CONTINUOUSLY = "Record continuously";
+    private static final String MSG_SHARE_TRACE = "Share trace";
     @VisibleForTesting
     static final String MSG_NOTIFICATIONS_DISABLED =
             "Please enable Chrome browser notifications to record a trace.";
@@ -71,6 +74,7 @@ public class TracingSettings
     private Preference mPrefNondefaultCategories;
     private ListPreference mPrefMode;
     private Preference mPrefStartRecording;
+    private Preference mPrefShareTrace;
     private Preference mPrefTracingStatus;
 
     /**
@@ -182,6 +186,7 @@ public class TracingSettings
         mPrefNondefaultCategories = findPreference(UI_PREF_NON_DEFAULT_CATEGORIES);
         mPrefMode = (ListPreference) findPreference(UI_PREF_MODE);
         mPrefStartRecording = findPreference(UI_PREF_START_RECORDING);
+        mPrefShareTrace = findPreference(UI_PREF_SHARE_TRACE);
         mPrefTracingStatus = findPreference(UI_PREF_TRACING_STATUS);
 
         mPrefDefaultCategories.getExtras().putInt(
@@ -202,6 +207,13 @@ public class TracingSettings
 
         mPrefStartRecording.setOnPreferenceClickListener(preference -> {
             TracingController.getInstance().startRecording();
+            updatePreferences();
+            return true;
+        });
+
+        mPrefShareTrace.setTitle(MSG_SHARE_TRACE);
+        mPrefShareTrace.setOnPreferenceClickListener(preference -> {
+            TracingController.getInstance().shareTrace();
             updatePreferences();
             return true;
         });
@@ -230,12 +242,14 @@ public class TracingSettings
         int state = TracingController.getInstance().getState();
         boolean initialized = state != TracingController.State.INITIALIZING;
         boolean idle = state == TracingController.State.IDLE || !initialized;
+        boolean hasTrace = state == TracingController.State.STOPPED;
         boolean notificationsEnabled = TracingNotificationManager.browserNotificationsEnabled();
 
         mPrefDefaultCategories.setEnabled(initialized);
         mPrefNondefaultCategories.setEnabled(initialized);
         mPrefMode.setEnabled(initialized);
         mPrefStartRecording.setEnabled(idle && initialized && notificationsEnabled);
+        mPrefShareTrace.setEnabled(hasTrace && notificationsEnabled);
 
         if (initialized) {
             int defaultTotal = 0;

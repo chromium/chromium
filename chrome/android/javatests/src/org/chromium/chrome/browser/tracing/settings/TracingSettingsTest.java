@@ -152,6 +152,8 @@ public class TracingSettingsTest {
         final PreferenceFragmentCompat fragment = mSettingsActivityTestRule.getFragment();
         final ButtonPreference startTracingButton =
                 (ButtonPreference) fragment.findPreference(TracingSettings.UI_PREF_START_RECORDING);
+        final ButtonPreference shareTraceButton =
+                (ButtonPreference) fragment.findPreference(TracingSettings.UI_PREF_SHARE_TRACE);
 
         waitForTracingControllerInitialization(fragment);
 
@@ -165,6 +167,7 @@ public class TracingSettingsTest {
                     TracingController.State.IDLE, TracingController.getInstance().getState());
             Assert.assertTrue(startTracingButton.isEnabled());
             Assert.assertEquals(TracingSettings.MSG_START, startTracingButton.getTitle());
+            Assert.assertFalse(shareTraceButton.isEnabled());
 
             // Tap the button to start recording a trace.
             startTracingButton.getOnPreferenceClickListener().onPreferenceClick(startTracingButton);
@@ -223,10 +226,12 @@ public class TracingSettingsTest {
         Assert.assertNotEquals(null, notification.deleteIntent);
         PendingIntent deleteIntent = notification.deleteIntent;
 
-        // The temporary tracing output file should now exist.
+        // The temporary tracing output file should now exist and the "share trace" button
+        // should be active.
         File tempFile = TracingController.getInstance().getTracingTempFile();
         Assert.assertNotEquals(null, tempFile);
         Assert.assertTrue(tempFile.exists());
+        Assert.assertTrue(shareTraceButton.isEnabled());
 
         // Discard the trace and wait for state change back to IDLE.
         deleteIntent.send();
@@ -238,6 +243,9 @@ public class TracingSettingsTest {
         // Notification should be deleted, too.
         waitForNotificationManagerMutation();
         Assert.assertEquals(0, mMockNotificationManager.getNotifications().size());
+
+        // The share trace button should be disabled again.
+        Assert.assertFalse(shareTraceButton.isEnabled());
     }
 
     @Test

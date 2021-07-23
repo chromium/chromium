@@ -20,6 +20,8 @@
         android:persistent="false"/>
     <org.chromium.components.browser_ui.settings.ButtonPreference
         android:key="start_recording"/>
+    <org.chromium.components.browser_ui.settings.ButtonPreference
+        android:key="share_trace"/>
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="tracing_status"
         android:layout_width="match_parent"
