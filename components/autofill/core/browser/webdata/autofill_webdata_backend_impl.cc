@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
@@ -75,10 +76,10 @@ void AutofillWebDataBackendImpl::SetAutofillProfileChangedCallback(
 }
 
 void AutofillWebDataBackendImpl::SetCardArtImagesChangedCallback(
-    base::RepeatingCallback<void(const std::vector<std::string>&)>
-        on_card_art_image_change_callback) {
-  on_card_art_image_change_callback_ =
-      std::move(on_card_art_image_change_callback);
+    base::RepeatingCallback<void(const std::map<std::string, GURL>&)>
+        on_card_art_images_changed_callback) {
+  on_card_art_images_changed_callback_ =
+      std::move(on_card_art_images_changed_callback);
 }
 
 WebDatabase* AutofillWebDataBackendImpl::GetDatabase() {
@@ -154,16 +155,16 @@ void AutofillWebDataBackendImpl::NotifyThatSyncHasStarted(
 }
 
 void AutofillWebDataBackendImpl::NotifyOfCreditCardArtImagesChanged(
-    const std::vector<std::string>& server_ids) {
+    const std::map<std::string, GURL>& server_ids_and_urls) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
 
-  if (on_card_art_image_change_callback_.is_null())
+  if (on_card_art_images_changed_callback_.is_null())
     return;
 
   // UI sequence notification.
-  ui_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(on_card_art_image_change_callback_, server_ids));
+  ui_task_runner_->PostTask(FROM_HERE,
+                            base::BindOnce(on_card_art_images_changed_callback_,
+                                           server_ids_and_urls));
 }
 
 base::SupportsUserData* AutofillWebDataBackendImpl::GetDBUserData() {
@@ -560,6 +561,20 @@ WebDatabase::State AutofillWebDataBackendImpl::AddUpiId(
   return WebDatabase::COMMIT_NEEDED;
 }
 
+WebDatabase::State AutofillWebDataBackendImpl::AddCardArtImages(
+    std::unique_ptr<std::vector<CreditCardArtImage>> card_art_images,
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  WebDatabase::State result = WebDatabase::COMMIT_NOT_NEEDED;
+
+  for (const CreditCardArtImage& image : *card_art_images) {
+    if (AutofillTable::FromWebDatabase(db)->AddCreditCardArtImage(image))
+      result = WebDatabase::COMMIT_NEEDED;
+  }
+
+  return result;
+}
+
 std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAllUpiIds(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
@@ -598,6 +613,16 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillOffers(
   return std::make_unique<
       WDResult<std::vector<std::unique_ptr<AutofillOfferData>>>>(
       AUTOFILL_OFFER_DATA, std::move(offers));
+}
+
+std::unique_ptr<WDTypedResult>
+AutofillWebDataBackendImpl::GetCreditCardArtImages(WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  std::vector<std::unique_ptr<CreditCardArtImage>> images;
+  AutofillTable::FromWebDatabase(db)->GetCreditCardArtImages(&images);
+  return std::make_unique<
+      WDResult<std::vector<std::unique_ptr<CreditCardArtImage>>>>(
+      AUTOFILL_CREDIT_CARD_ART_IMAGE_RESULT, std::move(images));
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::ClearAllServerData(

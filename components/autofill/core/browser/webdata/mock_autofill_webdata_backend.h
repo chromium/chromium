@@ -47,7 +47,7 @@ class MockAutofillWebDataBackend : public AutofillWebDataBackend {
               (override));
   MOCK_METHOD(void,
               NotifyOfCreditCardArtImagesChanged,
-              (const std::vector<std::string>& server_ids),
+              ((const std::map<std::string, GURL>&)server_ids_and_urls),
               (override));
 
  private:

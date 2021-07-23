@@ -27,6 +27,11 @@ class PersonalDataManagerObserver {
   virtual void OnCreditCardSaved(bool should_show_sign_in_promo_if_applicable) {
   }
 
+  // Notifies the observer whenever a card art image's downloading and decoding
+  // are finished. Note this does not guarantee the image is successfully
+  // decoded and is ready to use.
+  virtual void OnCreditCardArtImageProcessed() {}
+
  protected:
   virtual ~PersonalDataManagerObserver() {}
 };

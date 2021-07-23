@@ -16,6 +16,12 @@ CreditCardArtImage::CreditCardArtImage(const std::string& id,
   this->card_art_image = std::move(card_art_image);
 }
 
+CreditCardArtImage::CreditCardArtImage(
+    const CreditCardArtImage& credit_card_art_image) = default;
+
+CreditCardArtImage& CreditCardArtImage::operator=(
+    const CreditCardArtImage& credit_card_art_image) = default;
+
 CreditCardArtImage::~CreditCardArtImage() = default;
 
 }  // namespace autofill

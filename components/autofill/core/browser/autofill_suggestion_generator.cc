@@ -245,8 +245,11 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
         feature_engagement::kIPHKeyboardAccessoryPaymentVirtualCardFeature.name;
 #endif  // OS_ANDROID
 
-    // TODO(crbug.com/1196021): Populate custom_icon with card art if available.
     suggestion.frontend_id = POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY;
+    gfx::Image* image =
+        personal_data_->GetCreditCardArtImageForCard(credit_card.server_id());
+    if (image)
+      suggestion.custom_icon = *image;
   }
 
   return suggestion;

@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -85,6 +84,8 @@ class PersonalDataManager : public KeyedService,
   explicit PersonalDataManager(const std::string& app_locale);
   PersonalDataManager(const std::string& app_locale,
                       const std::string& country_code);
+  PersonalDataManager(const PersonalDataManager&) = delete;
+  PersonalDataManager& operator=(const PersonalDataManager&) = delete;
   ~PersonalDataManager() override;
 
   // Kicks off asynchronous loading of profiles and credit cards.
@@ -286,6 +287,10 @@ class PersonalDataManager : public KeyedService,
   // Returns autofill offer data, including card-linked and promo code offers.
   virtual std::vector<AutofillOfferData*> GetAutofillOffers() const;
 
+  // Returns the customized credit card art image for the card with |server_id|.
+  virtual gfx::Image* GetCreditCardArtImageForCard(
+      const std::string& server_id) const;
+
   // Updates the validity states of |profiles| according to server validity map.
   void UpdateProfilesServerValidityMapsIfNeeded(
       const std::vector<AutofillProfile*>& profiles);
@@ -472,6 +477,8 @@ class PersonalDataManager : public KeyedService,
                            AddCreditCard_CrazyCharacters);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest, AddCreditCard_Invalid);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
+                           AddAndGetCreditCardArtImage);
+  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            DedupeProfiles_ProfilesToDelete);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            DedupeProfiles_GuidsMergeMap);
@@ -592,6 +599,10 @@ class PersonalDataManager : public KeyedService,
   // Loads the autofill offer data from the web database.
   virtual void LoadAutofillOffers();
 
+  // Loads the customized card art images for credit cards from the web
+  // database.
+  virtual void LoadCreditCardArtImages();
+
   // Cancels a pending query to the local web database.  |handle| is a pointer
   // to the query handle.
   void CancelPendingLocalQuery(WebDataServiceBase::Handle* handle);
@@ -659,6 +670,11 @@ class PersonalDataManager : public KeyedService,
   // Offer data for user's credit cards.
   std::vector<std::unique_ptr<AutofillOfferData>> autofill_offer_data_;
 
+  // The customized card art images for credit cards. This map stores the
+  // decoded gfx::Image data for the images, and the key is the server id of the
+  // corresponding card.
+  std::map<std::string, std::unique_ptr<gfx::Image>> credit_card_art_images_;
+
   // When the manager makes a request from WebDataServiceBase, the database
   // is queried on another sequence, we record the query handle until we
   // get called back.  We store handles for both profile and credit card queries
@@ -672,6 +688,7 @@ class PersonalDataManager : public KeyedService,
   WebDataServiceBase::Handle pending_customer_data_query_ = 0;
   WebDataServiceBase::Handle pending_upi_ids_query_ = 0;
   WebDataServiceBase::Handle pending_offer_data_query_ = 0;
+  WebDataServiceBase::Handle pending_credit_card_art_images_query_ = 0;
 
   // The observers.
   base::ObserverList<PersonalDataManagerObserver>::Unchecked observers_;
@@ -747,6 +764,21 @@ class PersonalDataManager : public KeyedService,
   // Triggered when a profile is added/updated/removed on db.
   void OnAutofillProfileChanged(const AutofillProfileDeepChange& change);
 
+  // Triggered when the card art images are changed on the db.
+  // |server_ids_and_urls| includes the server id of the card whose image was
+  // changed and the url to fetch the new card art image.
+  void OnCardArtImagesChanged(
+      const std::map<std::string, GURL>& server_ids_and_urls);
+
+  // Triggered when all the card art image fetches have been completed,
+  // regardless of whether all of them succeeded.
+  void OnCardArtImagesFetched(
+      const std::map<std::string, gfx::Image>& id_image_map);
+
+  // Called when the image data is decoded.
+  void OnCardArtImageDecoded(const std::string& card_server_id,
+                             const SkBitmap& card_art_image);
+
   // Look at the next profile change for profile with guid = |guid|, and handle
   // it.
   void HandleNextProfileChange(const std::string& guid);
@@ -773,6 +805,10 @@ class PersonalDataManager : public KeyedService,
 
   // Returns the database that is used for storing local data.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();
+
+  // Asks AutofillImageFetcher to fetch images.
+  void FetchImagesForUrls(
+      const std::map<std::string, GURL>& server_ids_and_urls) const;
 
   // Stores the |app_locale| supplied on construction.
   const std::string app_locale_;
@@ -860,8 +896,6 @@ class PersonalDataManager : public KeyedService,
       history_service_observation_{this};
 
   base::WeakPtrFactory<PersonalDataManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PersonalDataManager);
 };
 
 }  // namespace autofill
