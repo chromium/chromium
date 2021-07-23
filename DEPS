@@ -213,7 +213,7 @@ vars = {
   'dawn_standalone': False,
 
   # reclient CIPD package version
-  'reclient_version': 're_client_version:0.36.0.4a0a3bd',
+  'reclient_version': 're_client_version:0.37.0.c6161fa',
 
   'android_git': 'https://android.googlesource.com',
   'aomedia_git': 'https://aomedia.googlesource.com',
