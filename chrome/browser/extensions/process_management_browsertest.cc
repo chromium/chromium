@@ -29,6 +29,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_host.h"
@@ -503,6 +504,10 @@ IN_PROC_BROWSER_TEST_P(ProcessManagementExtensionIsolationTest,
   }
 
   // Add a cross-site web process.
+  // Ensure bar.com has its own process by explicitly isolating it.
+  content::IsolateOriginsForTesting(
+      embedded_test_server(),
+      browser()->tab_strip_model()->GetActiveWebContents(), {"bar.com"});
   GURL cross_site_url(
       embedded_test_server()->GetURL("bar.com", "/title1.html"));
   ui_test_utils::NavigateToURLWithDisposition(
