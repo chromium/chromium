@@ -2836,7 +2836,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_WEB_FEED_NO_CARDS_TITLE" desc="Message title for the user-customizable web feed on the New Tab Page. Shown when the user either has not followed any websites or when the user has followed some websites but the sites do not have any new articles. Please translate 'stories' to match its use in TC ID 792300740424433300.">You'll find stories here</message>
       <message name="IDS_WEB_FEED_NO_CARDS_INSTRUCTIONS" desc="Message body for the user-customizable web feed on the New Tab Page. Shown when the user either has not followed any websites or when the user has followed some websites but the sites do not have any new articles. Instructs the user to follow more sites or check back later. Please translate 'Follow' (with capital F) to match its use in TC ID 4108314971463891922.">To follow a site, go to the site, open the Chrome menu, and tap Follow.</message>
       <message name="IDS_FEED_SWIPE_REFRESH_IPH" desc="In-product help that prompts the user to use pull-down gesture to refresh the feed content.">
-        Pull down to refresh
+        For new stories, pull down to refresh
       </message>
       <message name="IDS_ACCESSIBILITY_FEED_SWIPE_REFRESH_IPH" is_accessibility_with_no_ui="true" desc="The in-product-help
       accessibility text that prompts the user to use pull-down gesture to refresh the feed
