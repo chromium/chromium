@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Service workers succsefully receives hints from request assert_equals: expected "PASS" but got "FAIL"
+Harness: the test ran to completion.
+
