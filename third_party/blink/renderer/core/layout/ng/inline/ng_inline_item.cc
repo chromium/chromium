@@ -130,11 +130,6 @@ void NGInlineItem::ComputeBoxProperties() {
     return;
   }
 
-  if (type_ == kListMarker) {
-    is_empty_item_ = false;
-    return;
-  }
-
   if (type_ == kOutOfFlowPositioned || type_ == kFloating)
     is_block_level_ = true;
 
