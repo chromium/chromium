@@ -23,10 +23,8 @@ class NotificationSource;
 // class and use it to register your notifications instead of going through the
 // notification service directly. It will automatically unregister them for
 // you.
-class CONTENT_EXPORT NotificationRegistrar {
+class CONTENT_EXPORT NotificationRegistrar final {
  public:
-  // This class must not be derived from (we don't have a virtual destructor so
-  // it won't work). Instead, use it as a member in your class.
   NotificationRegistrar();
   ~NotificationRegistrar();
 
