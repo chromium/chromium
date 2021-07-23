@@ -49,7 +49,7 @@ def ExtractBreakpadFiles(dump_syms_path, build_dir, breakpad_output_dir):
     if os.path.isfile(input_file_path) and _IsValidBinaryPath(input_file_path):
       # Construct absolute file paths for input and output files.
       output_file_path = os.path.join(breakpad_output_dir, file + '.breakpad')
-      cmd = [dump_syms_path, input_file_path, '-c', '-r']
+      cmd = [dump_syms_path, '-c', '-r', input_file_path]
       if _RunDumpSyms(cmd, output_file_path):
         breakpad_file_count += 1
 

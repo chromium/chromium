@@ -53,7 +53,7 @@ class ExtractBreakpadTestCase(unittest.TestCase):
     breakpad_file_extractor.ExtractBreakpadFiles(dump_syms_path, build_dir,
                                                  breakpad_dir)
 
-    expected_cmd = [dump_syms_path, test_input_file.name, '-c', '-r']
+    expected_cmd = [dump_syms_path, '-c', '-r', test_input_file.name]
     breakpad_file_extractor._RunDumpSyms.assert_called_once_with(
         expected_cmd, test_output_file_path)
 
@@ -103,11 +103,11 @@ class ExtractBreakpadTestCase(unittest.TestCase):
 
     # Check that each call expected call to _RunDumpSyms() has been made.
     expected_calls = [
-        call([self.test_dump_syms_binary, input_files[0].name, '-c', '-r'],
+        call([self.test_dump_syms_binary, '-c', '-r', input_files[0].name],
              output_file_paths[0]),
-        call([self.test_dump_syms_binary, input_files[1].name, '-c', '-r'],
+        call([self.test_dump_syms_binary, '-c', '-r', input_files[1].name],
              output_file_paths[1]),
-        call([self.test_dump_syms_binary, input_files[2].name, '-c', '-r'],
+        call([self.test_dump_syms_binary, '-c', '-r', input_files[2].name],
              output_file_paths[2])
     ]
     breakpad_file_extractor._RunDumpSyms.assert_has_calls(expected_calls,
