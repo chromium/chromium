@@ -127,8 +127,8 @@ class BrowserAppsTracker : public TabStripModelObserver,
   // it was updated.
   void MaybeUpdateAppInstance(BrowserAppInstance& instance, Browser* browser);
 
-  // Removes the app instance and notifies observers.
-  void RemoveAppInstance(content::WebContents* contents);
+  // Removes the app instance, if it exists, and notifies observers.
+  void RemoveAppInstanceIfExists(content::WebContents* contents);
 
   // Creates an app instance for a Chrome browser window.
   void CreateChromeInstance(Browser* browser);
@@ -137,8 +137,8 @@ class BrowserAppsTracker : public TabStripModelObserver,
   // observers, if it was updated.
   void MaybeUpdateChromeInstance(BrowserAppInstance& instance);
 
-  // Removes the browser instance and notifies observers.
-  void RemoveChromeInstance(Browser* browser);
+  // Removes the browser instance, if it exists, and notifies observers.
+  void RemoveChromeInstanceIfExists(Browser* browser);
 
   template <typename KeyT>
   void CreateInstance(
@@ -150,9 +150,10 @@ class BrowserAppsTracker : public TabStripModelObserver,
   // observers, if it was updated.
   void MaybeUpdateInstance(BrowserAppInstance& instance, Browser* browser);
 
-  // Removes the instance given a map (app or browser) and notifies observers.
+  // Removes the instance given a map (app or browser), if it exists, and
+  // notifies observers.
   template <typename KeyT>
-  void RemoveInstance(
+  void RemoveInstanceIfExists(
       std::map<KeyT, std::unique_ptr<BrowserAppInstance>>& instances,
       const KeyT& key);
 
