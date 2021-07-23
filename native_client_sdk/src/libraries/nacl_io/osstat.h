@@ -20,4 +20,4 @@
 #define S_IEXEC _S_IEXEC
 #endif
 
-#endif  /* LIBRARIES_NACL_IO_OSSTAT_H_ */
+#endif  // LIBRARIES_NACL_IO_OSSTAT_H_

@@ -23,4 +23,4 @@ int ioctl(int fd, unsigned long request, ...);
 
 __END_DECLS
 
-#endif  /* LIBRARIES_NACL_IO_INCLUDE_SYS_IOCTL_H_ */
+#endif  // LIBRARIES_NACL_IO_INCLUDE_SYS_IOCTL_H_

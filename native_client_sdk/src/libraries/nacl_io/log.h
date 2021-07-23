@@ -55,4 +55,4 @@ void nacl_io_log(const char* format, ...) PRINTF_LIKE(1, 2);
 
 EXTERN_C_END
 
-#endif  /* LIBRARIES_NACL_IO_LOG_H_ */
+#endif  // LIBRARIES_NACL_IO_LOG_H_

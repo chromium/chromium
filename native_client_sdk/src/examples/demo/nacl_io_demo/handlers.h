@@ -2,8 +2,8 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#ifndef HANDLERS_H_
-#define HANDLERS_H_
+#ifndef EXAMPLES_DEMO_NACL_IO_DEMO_HANDLERS_H_
+#define EXAMPLES_DEMO_NACL_IO_DEMO_HANDLERS_H_
 
 #include "ppapi/c/pp_var.h"
 
@@ -38,4 +38,4 @@ int HandleSend(struct PP_Var params, struct PP_Var* out, const char** error);
 int HandleRecv(struct PP_Var params, struct PP_Var* out, const char** error);
 int HandleClose(struct PP_Var params, struct PP_Var* out, const char** error);
 
-#endif  /* HANDLERS_H_ */
+#endif  // EXAMPLES_DEMO_NACL_IO_DEMO_HANDLERS_H_

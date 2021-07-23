@@ -24,4 +24,4 @@ struct dirent {
 
 #endif
 
-#endif  /* LIBRARIES_NACL_IO_OSDIRENT_H_ */
+#endif  // LIBRARIES_NACL_IO_OSDIRENT_H_

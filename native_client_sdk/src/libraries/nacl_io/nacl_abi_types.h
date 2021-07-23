@@ -129,4 +129,4 @@ struct nacl_abi_dirent {
   char           nacl_abi_d_name[MAXNAMLEN + 1];
 };
 
-#endif  /* LIBRARIES_NACL_IO_NACL_ABI_TYPES_H_ */
+#endif  // LIBRARIES_NACL_IO_NACL_ABI_TYPES_H_

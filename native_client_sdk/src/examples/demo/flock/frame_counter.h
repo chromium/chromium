@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FRAME_COUNTER_H_
-#define FRAME_COUNTER_H_
+#ifndef EXAMPLES_DEMO_FLOCK_FRAME_COUNTER_H_
+#define EXAMPLES_DEMO_FLOCK_FRAME_COUNTER_H_
 
 class FrameCounter {
  public:
@@ -43,4 +43,4 @@ class FrameCounter {
   double frames_per_second_;
 };
 
-#endif  // FRAME_COUNTER_H_
+#endif  // EXAMPLES_DEMO_FLOCK_FRAME_COUNTER_H_

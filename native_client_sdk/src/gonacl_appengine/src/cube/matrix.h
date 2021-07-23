@@ -1,5 +1,5 @@
-#ifndef CUBE_MATRIX_H
-#define CUBE_MATRIX_H
+#ifndef GONACL_APPENGINE_SRC_CUBE_MATRIX_H_
+#define GONACL_APPENGINE_SRC_CUBE_MATRIX_H_
 
 /* Copyright (c) 2012 The Chromium Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be
@@ -40,4 +40,4 @@ void multiply_matrix(const Matrix_t a, const Matrix_t b, Matrix_t mat);
 void rotate_matrix(GLfloat x_deg, GLfloat y_deg, GLfloat z_deg, Matrix_t mat);
 void translate_matrix(GLfloat x, GLfloat y, GLfloat z, Matrix_t mat);
 
-#endif  // CUBE_MATRIX_H
+#endif  // GONACL_APPENGINE_SRC_CUBE_MATRIX_H_

@@ -23,4 +23,4 @@ int uname(struct utsname* buf);
 
 __END_DECLS
 
-#endif  /* LIBRARIES_NACL_IO_INCLUDE_SYS_UTSNAME_H_ */
+#endif  // LIBRARIES_NACL_IO_INCLUDE_SYS_UTSNAME_H_

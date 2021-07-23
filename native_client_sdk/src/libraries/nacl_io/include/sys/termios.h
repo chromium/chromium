@@ -139,4 +139,4 @@ int tcsetattr(int fd, int optional_actions, const struct termios* termios_p);
 
 __END_DECLS
 
-#endif  /* LIBRARIES_NACL_IO_INCLUDE_SYS_TERMIOS_H_ */
+#endif  // LIBRARIES_NACL_IO_INCLUDE_SYS_TERMIOS_H_

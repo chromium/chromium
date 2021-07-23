@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GOOSE_H_
-#define GOOSE_H_
+#ifndef EXAMPLES_DEMO_FLOCK_GOOSE_H_
+#define EXAMPLES_DEMO_FLOCK_GOOSE_H_
 
 #include <vector>
 #include "ppapi/cpp/rect.h"
@@ -126,4 +126,4 @@ class Goose {
   Vector2 velocity_;
 };
 
-#endif  // GOOSE_H_
+#endif  // EXAMPLES_DEMO_FLOCK_GOOSE_H_

@@ -4,8 +4,8 @@
 
 #include_next <sys/time.h>
 
-#ifndef LIBRARIES_NACL_IO_INCLUDE_SYS_TIME_H
-#define LIBRARIES_NACL_IO_INCLUDE_SYS_TIME_H
+#ifndef LIBRARIES_NACL_IO_INCLUDE_SYS_TIME_H_
+#define LIBRARIES_NACL_IO_INCLUDE_SYS_TIME_H_
 
 #include <sys/cdefs.h>
 #include <stdint.h>
@@ -19,4 +19,4 @@ int futimes(int fd, const struct timeval times[2]);
 
 __END_DECLS
 
-#endif  /* LIBRARIES_NACL_IO_INCLUDE_SYS_TIME_H */
+#endif  // LIBRARIES_NACL_IO_INCLUDE_SYS_TIME_H_

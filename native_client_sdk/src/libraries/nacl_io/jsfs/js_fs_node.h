@@ -65,4 +65,4 @@ class JsFsNode : public Node {
 
 }  // namespace nacl_io
 
-#endif  // LIBRARIES_NACL_IO_JSFS_JS_FS_H_
+#endif  // LIBRARIES_NACL_IO_JSFS_JS_FS_NODE_H_

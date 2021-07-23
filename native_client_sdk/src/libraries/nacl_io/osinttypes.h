@@ -2,8 +2,8 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#ifndef NACL_IO_OSINTTYPES_H_
-#define NACL_IO_OSINTTYPES_H_
+#ifndef LIBRARIES_NACL_IO_OSINTTYPES_H_
+#define LIBRARIES_NACL_IO_OSINTTYPES_H_
 
 /* Define printf/scanf format strings for size_t. */
 
@@ -40,4 +40,4 @@
 #define PRIoff "lld"
 #endif
 
-#endif  /* NACL_IO_OSINTTYPES_H_ */
+#endif  // LIBRARIES_NACL_IO_OSINTTYPES_H_

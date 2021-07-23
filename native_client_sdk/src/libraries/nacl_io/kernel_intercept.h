@@ -195,4 +195,4 @@ int ki_socketpair(int domain, int type, int protocl, int* sv);
 
 EXTERN_C_END
 
-#endif  /* LIBRARIES_NACL_IO_KERNEL_INTERCEPT_H_ */
+#endif  // LIBRARIES_NACL_IO_KERNEL_INTERCEPT_H_

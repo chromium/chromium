@@ -17,4 +17,4 @@ int utime(const char* filename, const struct utimbuf* times);
 
 __END_DECLS
 
-#endif  /* LIBRARIES_NACL_IO_INCLUDE_UTIME_H_ */
+#endif  // LIBRARIES_NACL_IO_INCLUDE_UTIME_H_
