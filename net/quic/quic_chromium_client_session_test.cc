@@ -163,6 +163,7 @@ class QuicChromiumClientSessionTest
         migrate_session_early_v2_(false),
         go_away_on_path_degrading_(false) {
     FLAGS_quic_enable_http3_grease_randomness = false;
+    FLAGS_quic_reloadable_flag_quic_ack_cid_frames = true;
     quic::QuicEnableVersion(version_);
     // Advance the time, because timers do not like uninitialized times.
     clock_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
@@ -1928,11 +1929,8 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
   if (VersionUsesHttp3(version_.transport_version)) {
     client_maker_.set_connection_id(cid_on_new_path);
   }
-  quic_data2.AddRead(SYNCHRONOUS,
-                     server_maker_.MakePingPacket(peer_packet_num++,
-                                                  /*include_version=*/false));
   quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-  if (version_.UsesHttp3() || version_.HasIetfInvariantHeader()) {
+  if (version_.UsesHttp3()) {
     quic_data2.AddWrite(SYNCHRONOUS,
                         client_maker_.MakeAckAndPingPacket(
                             packet_num++, /*include_version=*/false,
@@ -2037,9 +2035,11 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
           client_maker_.MakePingPacket(packet_num++, /*include_version=*/true));
     } else {
       client_maker_.set_connection_id(next_cid);
-      quic_data2.AddWrite(
-          SYNCHRONOUS,
-          client_maker_.MakePingPacket(packet_num++, /*include_version=*/true));
+      quic_data2.AddWrite(SYNCHRONOUS,
+                          client_maker_.MakeAckAndPingPacket(
+                              packet_num++, /*include_version=*/true,
+                              /*largest_received=*/peer_packet_num - 1,
+                              /*smallest_received=*/1));
       quic_data2.AddRead(ASYNC, ERR_IO_PENDING);
       quic_data2.AddWrite(
           ASYNC, client_maker_.MakeRetireConnectionIdPacket(
@@ -2170,14 +2170,18 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
   if (VersionUsesHttp3(version_.transport_version)) {
     client_maker_.set_connection_id(cid_on_new_path);
   }
-  quic_data2.AddRead(
-      SYNCHRONOUS,
-      server_maker_.MakePingPacket(peer_packet_num, /*include_version=*/false));
-  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeAckAndPingPacket(
-                                       packet_num++,
-                                       /*include_version=*/false,
-                                       /*largest_received=*/peer_packet_num++,
-                                       /*smallest_received=*/1));
+  if (VersionUsesHttp3(version_.transport_version)) {
+    quic_data2.AddWrite(SYNCHRONOUS,
+                        client_maker_.MakeAckAndPingPacket(
+                            packet_num++,
+                            /*include_version=*/false,
+                            /*largest_received=*/peer_packet_num - 1,
+                            /*smallest_received=*/1));
+  } else {
+    quic_data2.AddWrite(
+        SYNCHRONOUS,
+        client_maker_.MakePingPacket(packet_num++, /*include_version=*/true));
+  }
   quic_data2.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data2.AddRead(
       ASYNC, server_maker_.MakePingPacket(1, /*include_version=*/false));

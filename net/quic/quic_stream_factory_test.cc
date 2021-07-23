@@ -233,6 +233,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
         failed_on_default_network_(false),
         quic_params_(context_.params()) {
     FLAGS_quic_enable_http3_grease_randomness = false;
+    FLAGS_quic_reloadable_flag_quic_ack_cid_frames = true;
     quic_params_->headers_include_h2_stream_dependency =
         client_headers_include_h2_stream_dependency;
     context_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
@@ -276,6 +277,12 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     Initialize();
   }
 
+  // For IETF QUIC, make a NEW_CONNECTION_ID frame available for client such
+  // that connection migration can begin with a new connection ID. A side
+  // effect of calling this function is that ACK_FRAME that should have been
+  // sent for the first packet read might be skipped in the unit test. If the
+  // order of ACKing is important for a test, use
+  // QuicTestPacketMaker::MakeNewConnectionIdPacket instead.
   void MaybeMakeNewConnectionIdAvailableToSession(
       const quic::QuicConnectionId& new_cid,
       quic::QuicSession* session) {
@@ -2776,8 +2783,10 @@ void QuicStreamFactoryTestBase::TestMigrationOnNetworkMadeDefault(
   if (version_.UsesHttp3()) {
     // in-flight SETTINGS and requests will be retransmitted. Since data is
     // already sent on the new address, ping will no longer be sent.
-    quic_data2.AddWrite(ASYNC, client_maker_.MakeAckAndRetransmissionPacket(
-                                   packet_num++, 1, 1, 1, {1, 2}));
+    quic_data2.AddWrite(ASYNC,
+                        client_maker_.MakeCombinedRetransmissionPacket(
+                            /*original_packet_numbers=*/{1, 2}, packet_num++,
+                            /*should_include_version=*/false));
   } else {
     // Ping packet to send after migration is completed.
     quic_data2.AddWrite(
@@ -2954,8 +2963,10 @@ TEST_P(QuicStreamFactoryTest, MigratedToBlockedSocketAfterProbing) {
   quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
 
   if (VersionUsesHttp3(version_.transport_version)) {
-    quic_data2.AddWrite(ASYNC, client_maker_.MakeAckAndRetransmissionPacket(
-                                   packet_num++, 1, 1, 1, {1, 2}));
+    quic_data2.AddWrite(ASYNC,
+                        client_maker_.MakeCombinedRetransmissionPacket(
+                            /*original_packet_numbers=*/{1, 2}, packet_num++,
+                            /*should_include_version=*/false));
     quic_data2.AddWrite(SYNCHRONOUS,
                         client_maker_.MakeAckAndRetireConnectionIdPacket(
                             packet_num++, true, 2, 1, 0u));
@@ -3208,14 +3219,15 @@ void QuicStreamFactoryTestBase::TestOnNetworkMadeDefaultNonMigratableStream(
     quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
     // A RESET will be sent to the peer to cancel the non-migratable stream.
     if (VersionUsesHttp3(version_.transport_version)) {
-        quic_data1.AddWrite(SYNCHRONOUS,
-                            client_maker_.MakeDataRstAndAckPacket(
-                                packet_num++, true, GetQpackDecoderStreamId(),
-                                StreamCancellationQpackDecoderInstruction(0),
-                                GetNthClientInitiatedBidirectionalStreamId(0),
-                                quic::QUIC_STREAM_CANCELLED, 1, 1));
-        quic_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetransmissionPacket(
-                                             1, packet_num++, false));
+      quic_data1.AddWrite(SYNCHRONOUS,
+                          client_maker_.MakeDataAndRstPacket(
+                              packet_num++, /*include_version=*/false,
+                              GetQpackDecoderStreamId(),
+                              StreamCancellationQpackDecoderInstruction(0),
+                              GetNthClientInitiatedBidirectionalStreamId(0),
+                              quic::QUIC_STREAM_CANCELLED));
+      quic_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetransmissionPacket(
+                                           1, packet_num++, false));
     } else {
       quic_data1.AddWrite(SYNCHRONOUS,
                           client_maker_.MakeAckAndRstPacket(
@@ -3654,8 +3666,9 @@ void QuicStreamFactoryTestBase::TestOnNetworkMadeDefaultNoOpenStreams(
     if (version_.UsesHttp3()) {
       // in-flight SETTINGS and requests will be retransmitted. Since data is
       // already sent on the new address, ping will no longer be sent.
-      quic_data1.AddWrite(ASYNC, client_maker_.MakeAckAndRetransmissionPacket(
-                                     packet_num++, 1, 1, 1, {1}));
+      quic_data1.AddWrite(ASYNC, client_maker_.MakeRetransmissionPacket(
+                                     /*original_packet_number=*/1, packet_num++,
+                                     /*should_include_version=*/false));
       quic_data1.AddWrite(
           SYNCHRONOUS,
           client_maker_.MakeRetireConnectionIdPacket(packet_num++, false, 0u));
@@ -3904,9 +3917,10 @@ void QuicStreamFactoryTestBase::TestMigrationOnNetworkDisconnected(
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data1.AddWrite(
         SYNCHRONOUS,
-        client_maker_.MakeAckAndDataPacket(
-            packet_number++, false, GetQpackDecoderStreamId(), 1, 1, false,
-            StreamCancellationQpackDecoderInstruction(0)));
+        client_maker_.MakeDataPacket(
+            packet_number++, GetQpackDecoderStreamId(),
+            /*should_include_version=*/false,
+            /*fin=*/false, StreamCancellationQpackDecoderInstruction(0)));
     socket_data1.AddWrite(SYNCHRONOUS,
                           client_maker_.MakeRstPacket(
                               packet_number++, false,
@@ -4066,9 +4080,10 @@ TEST_P(QuicStreamFactoryTest, NewNetworkConnectedAfterNoNetwork) {
   socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data1.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeAckAndDataPacket(
-                         packet_num++, false, GetQpackDecoderStreamId(), 1, 1,
-                         false, StreamCancellationQpackDecoderInstruction(0)));
+        SYNCHRONOUS,
+        client_maker_.MakeDataPacket(
+            packet_num++, GetQpackDecoderStreamId(), /*should_include_version=*/false,
+            /*fin=*/false, StreamCancellationQpackDecoderInstruction(0)));
     socket_data1.AddWrite(
         SYNCHRONOUS,
         client_maker_.MakeRstPacket(
@@ -4365,8 +4380,10 @@ void QuicStreamFactoryTestBase::TestMigrationOnPathDegrading(
   if (version_.UsesHttp3()) {
     // in-flight SETTINGS and requests will be retransmitted. Since data is
     // already sent on the new address, ping will no longer be sent.
-    quic_data2.AddWrite(ASYNC, client_maker_.MakeAckAndRetransmissionPacket(
-                                   packet_number++, 1, 1, 1, {1, 2}));
+    quic_data2.AddWrite(ASYNC,
+                        client_maker_.MakeCombinedRetransmissionPacket(
+                            /*original_packet_numbers=*/{1, 2}, packet_number++,
+                            /*should_include_version=*/false));
     quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
                                          packet_number++, true, 0u));
   } else {
@@ -4552,9 +4569,8 @@ TEST_P(QuicStreamFactoryTest, MigrateSessionEarlyProbingWriterError) {
   if (VersionUsesHttp3(version_.transport_version)) {
     client_maker_.set_connection_id(cid_on_old_path);
     quic_data1.AddWrite(SYNCHRONOUS,
-                        client_maker_.MakeAckAndRetireConnectionIdPacket(
+                        client_maker_.MakeRetireConnectionIdPacket(
                             packet_number++, /*include_version=*/false,
-                            /*largest_received=*/1, /*smallest_received=*/1,
                             /*sequence_number=*/1u));
   }
 
@@ -4692,9 +4708,8 @@ TEST_P(QuicStreamFactoryTest,
   // Connection ID is retired on the old path.
   client_maker_.set_connection_id(cid_on_path1);
   quic_data1.AddWrite(SYNCHRONOUS,
-                      client_maker_.MakeAckAndRetireConnectionIdPacket(
+                      client_maker_.MakeRetireConnectionIdPacket(
                           packet_number++, /*include_version=*/false,
-                          /*largest_received=*/1, /*smallest_received=*/1,
                           /*sequence_number=*/1u));
 
   // A socket will be created for a new path, but there would be no write
@@ -5227,8 +5242,14 @@ void QuicStreamFactoryTestBase::TestSimplePortMigrationOnPathDegrading() {
   quic_data2.AddRead(ASYNC,
                      server_maker_.MakeConnectivityProbingPacket(1, false));
   // Ping packet to send after migration is completed.
-  quic_data2.AddWrite(
-      ASYNC, client_maker_.MakeAckAndPingPacket(packet_number++, false, 1, 1));
+  if (VersionUsesHttp3(version_.transport_version)) {
+    quic_data2.AddWrite(
+        ASYNC, client_maker_.MakePingPacket(packet_number++,
+                                            /*include_version=*/false));
+  } else {
+    quic_data2.AddWrite(ASYNC, client_maker_.MakeAckAndPingPacket(
+                                   packet_number++, false, 1, 1));
+  }
   quic_data2.AddRead(
       ASYNC,
       ConstructOkResponsePacket(
@@ -6024,8 +6045,10 @@ TEST_P(QuicStreamFactoryTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
   if (version_.UsesHttp3()) {
     // in-flight SETTINGS and requests will be retransmitted. Since data is
     // already sent on the new address, ping will no longer be sent.
-    quic_data2.AddWrite(ASYNC, client_maker_.MakeAckAndRetransmissionPacket(
-                                   packet_num++, 1, 1, 1, {1, 2}));
+    quic_data2.AddWrite(ASYNC,
+                        client_maker_.MakeCombinedRetransmissionPacket(
+                            /*original_packet_numbers=*/{1, 2}, packet_num++,
+                            /*should_include_version=*/false));
     quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
                                          packet_num++, false, 0u));
   } else {
@@ -6437,12 +6460,13 @@ void QuicStreamFactoryTestBase::TestMigrateSessionEarlyNonMigratableStream(
     quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
     // A RESET will be sent to the peer to cancel the non-migratable stream.
     if (VersionUsesHttp3(version_.transport_version)) {
-      quic_data1.AddWrite(SYNCHRONOUS,
-                          client_maker_.MakeDataRstAndAckPacket(
-                              packet_num++, true, GetQpackDecoderStreamId(),
-                              StreamCancellationQpackDecoderInstruction(0),
-                              GetNthClientInitiatedBidirectionalStreamId(0),
-                              quic::QUIC_STREAM_CANCELLED, 1, 1));
+      quic_data1.AddWrite(
+          SYNCHRONOUS,
+          client_maker_.MakeDataAndRstPacket(
+              packet_num++, /*include_version=*/true, GetQpackDecoderStreamId(),
+              StreamCancellationQpackDecoderInstruction(0),
+              GetNthClientInitiatedBidirectionalStreamId(0),
+              quic::QUIC_STREAM_CANCELLED));
       quic_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetransmissionPacket(
                                            1, packet_num++, false));
     } else {
@@ -6718,9 +6742,11 @@ TEST_P(QuicStreamFactoryTest, MigrateSessionOnAsyncWriteError) {
   socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data1.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeAckAndDataPacket(
-                         packet_num++, false, GetQpackDecoderStreamId(), 1, 1,
-                         false, StreamCancellationQpackDecoderInstruction(0)));
+        SYNCHRONOUS,
+        client_maker_.MakeDataPacket(
+            packet_num++, GetQpackDecoderStreamId(),
+            /*should_include_version=*/false,
+            /*fin=*/false, StreamCancellationQpackDecoderInstruction(0)));
     socket_data1.AddWrite(
         SYNCHRONOUS,
         client_maker_.MakeRstPacket(
@@ -7005,7 +7031,8 @@ TEST_P(QuicStreamFactoryTest, MigrateBackToDefaultPostMigrationOnWriteError) {
     // There is no other data to retransmit as they have been acknowledged by
     // the packet containing NEW_CONNECTION_ID frame from the server.
     quic_data3.AddWrite(ASYNC, client_maker_.MakeAckPacket(
-                                   packet_num++, /*first_received=*/1,
+                                   packet_num++,
+                                   /*first_received=*/1,
                                    /*largest_received=*/peer_packet_num - 1,
                                    /*smallest_received=*/1));
   } else {
@@ -7255,10 +7282,8 @@ void QuicStreamFactoryTestBase::
   int probing_packet_num = packet_num++;
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data2.AddWrite(SYNCHRONOUS,
-                          client_maker_.MakeAckAndRetireConnectionIdPacket(
+                          client_maker_.MakeRetireConnectionIdPacket(
                               packet_num++, /*include_version=*/false,
-                              /*largest_received=*/1u,
-                              /*smallest_received=*/1u,
                               /*sequence_number=*/1u));
     socket_data2.AddWrite(SYNCHRONOUS,
                           client_maker_.MakeDataPacket(
@@ -7666,9 +7691,11 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteError(
   socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data1.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeAckAndDataPacket(
-                         packet_num++, false, GetQpackDecoderStreamId(), 1, 1,
-                         false, StreamCancellationQpackDecoderInstruction(0)));
+        SYNCHRONOUS,
+        client_maker_.MakeDataPacket(
+            packet_num++, GetQpackDecoderStreamId(),
+            /*should_include_version=*/false,
+            /*fin=*/false, StreamCancellationQpackDecoderInstruction(0)));
     socket_data1.AddWrite(
         SYNCHRONOUS,
         client_maker_.MakeRstPacket(
@@ -7893,9 +7920,11 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorWithMultipleRequests(
   socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data1.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeAckAndDataPacket(
-                         packet_num++, false, GetQpackDecoderStreamId(), 1, 1,
-                         false, StreamCancellationQpackDecoderInstruction(0)));
+        SYNCHRONOUS,
+        client_maker_.MakeDataPacket(
+            packet_num++, GetQpackDecoderStreamId(),
+            /*should_include_version=*/false,
+            /*fin=*/false, StreamCancellationQpackDecoderInstruction(0)));
     socket_data1.AddWrite(
         SYNCHRONOUS,
         client_maker_.MakeRstPacket(
@@ -8088,10 +8117,11 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorMixedStreams(
   socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data1.AddWrite(
-        SYNCHRONOUS,
-        client_maker_.MakeAckAndDataPacket(
-            packet_number++, false, GetQpackDecoderStreamId(), 1, 1, false,
-            StreamCancellationQpackDecoderInstruction(0, false)));
+        SYNCHRONOUS, client_maker_.MakeDataPacket(
+                         packet_number++, GetQpackDecoderStreamId(),
+                         /*should_include_version=*/false,
+                         /*fin=*/false,
+                         StreamCancellationQpackDecoderInstruction(0, false)));
     socket_data1.AddWrite(SYNCHRONOUS,
                           client_maker_.MakeRstPacket(
                               packet_number++, false,
@@ -8280,10 +8310,11 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorMixedStreams2(
   socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data1.AddWrite(
-        SYNCHRONOUS,
-        client_maker_.MakeAckAndDataPacket(
-            packet_number++, false, GetQpackDecoderStreamId(), 1, 1, false,
-            StreamCancellationQpackDecoderInstruction(0, false)));
+        SYNCHRONOUS, client_maker_.MakeDataPacket(
+                         packet_number++, GetQpackDecoderStreamId(),
+                         /*should_include_version=*/false,
+                         /*fin=*/false,
+                         StreamCancellationQpackDecoderInstruction(0, false)));
     socket_data1.AddWrite(SYNCHRONOUS,
                           client_maker_.MakeRstPacket(
                               packet_number++, false,
@@ -8924,9 +8955,11 @@ void QuicStreamFactoryTestBase::
   socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data1.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeAckAndDataPacket(
-                         packet_num++, false, GetQpackDecoderStreamId(), 1, 1,
-                         false, StreamCancellationQpackDecoderInstruction(0)));
+        SYNCHRONOUS,
+        client_maker_.MakeDataPacket(
+            packet_num++, GetQpackDecoderStreamId(),
+            /*should_include_version=*/false,
+            /*fin=*/false, StreamCancellationQpackDecoderInstruction(0)));
     socket_data1.AddWrite(
         SYNCHRONOUS,
         client_maker_.MakeRstPacket(
@@ -9100,9 +9133,11 @@ void QuicStreamFactoryTestBase::
   socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data1.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeAckAndDataPacket(
-                         packet_num++, false, GetQpackDecoderStreamId(), 1, 1,
-                         false, StreamCancellationQpackDecoderInstruction(0)));
+        SYNCHRONOUS,
+        client_maker_.MakeDataPacket(
+            packet_num++, GetQpackDecoderStreamId(),
+            /*should_include_version=*/false,
+            /*fin=*/false, StreamCancellationQpackDecoderInstruction(0)));
     socket_data1.AddWrite(
         SYNCHRONOUS,
         client_maker_.MakeRstPacket(
@@ -9283,10 +9318,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorPauseBeforeConnected(
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data1.AddWrite(
         SYNCHRONOUS,
-        client_maker_.MakeAckRetransmissionAndRetireConnectionIdPacket(
+        client_maker_.MakeRetransmissionAndRetireConnectionIdPacket(
             packet_num++, /*include_version=*/false,
-            /*largest_received=*/1,
-            /*smallest_received=*/1, /*original_packet_numbers=*/{1, 2},
+            /*original_packet_numbers=*/{1, 2},
             /*sequence_number=*/0u));
     socket_data1.AddWrite(
         SYNCHRONOUS,
@@ -9446,9 +9480,11 @@ TEST_P(QuicStreamFactoryTest, IgnoreWriteErrorFromOldWriterAfterMigration) {
   socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data1.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeAckAndDataPacket(
-                         packet_num++, false, GetQpackDecoderStreamId(), 1, 1,
-                         false, StreamCancellationQpackDecoderInstruction(0)));
+        SYNCHRONOUS,
+        client_maker_.MakeDataPacket(
+            packet_num++, GetQpackDecoderStreamId(),
+            /*should_include_version=*/false,
+            /*fin=*/false, StreamCancellationQpackDecoderInstruction(0)));
     socket_data1.AddWrite(
         SYNCHRONOUS,
         client_maker_.MakeRstPacket(
@@ -9592,9 +9628,11 @@ TEST_P(QuicStreamFactoryTest, IgnoreReadErrorFromOldReaderAfterMigration) {
   socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data1.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeAckAndDataPacket(
-                         packet_num++, false, GetQpackDecoderStreamId(), 1, 1,
-                         false, StreamCancellationQpackDecoderInstruction(0)));
+        SYNCHRONOUS,
+        client_maker_.MakeDataPacket(
+            packet_num++, GetQpackDecoderStreamId(),
+            /*should_include_version=*/false,
+            /*fin=*/false, StreamCancellationQpackDecoderInstruction(0)));
     socket_data1.AddWrite(
         SYNCHRONOUS,
         client_maker_.MakeRstPacket(
@@ -9743,9 +9781,11 @@ TEST_P(QuicStreamFactoryTest, IgnoreReadErrorOnOldReaderDuringMigration) {
   socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data1.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeAckAndDataPacket(
-                         packet_num++, false, GetQpackDecoderStreamId(), 1, 1,
-                         false, StreamCancellationQpackDecoderInstruction(0)));
+        SYNCHRONOUS,
+        client_maker_.MakeDataPacket(
+            packet_num++, GetQpackDecoderStreamId(),
+            /*should_include_version=*/false,
+            /*fin=*/false, StreamCancellationQpackDecoderInstruction(0)));
     socket_data1.AddWrite(
         SYNCHRONOUS,
         client_maker_.MakeRstPacket(
@@ -9822,11 +9862,19 @@ TEST_P(QuicStreamFactoryTest, DefaultRetransmittableOnWireTimeoutForMigration) {
       factory_.get(), std::make_unique<QuicChromiumAlarmFactory>(
                           task_runner.get(), context_.clock()));
 
+  quic::QuicConnectionId cid_on_new_path =
+      quic::test::TestConnectionId(12345678);
   MockQuicData socket_data(version_);
   int packet_num = 1;
+  int peer_packet_num = 1;
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data.AddWrite(SYNCHRONOUS,
                          ConstructInitialSettingsPacket(packet_num++));
+    socket_data.AddRead(ASYNC, server_maker_.MakeNewConnectionIdPacket(
+                                   peer_packet_num++, /*include_version=*/false,
+                                   cid_on_new_path,
+                                   /*sequence_number=*/1u,
+                                   /*retire_prior_to=*/0u));
   }
   socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
   socket_data.AddRead(ASYNC, ERR_ADDRESS_UNREACHABLE);
@@ -9836,12 +9884,13 @@ TEST_P(QuicStreamFactoryTest, DefaultRetransmittableOnWireTimeoutForMigration) {
   // migration. The request is written to this new socket, and the
   // response to the request is read on this new socket.
   MockQuicData socket_data1(version_);
-  quic::QuicConnectionId cid_on_new_path =
-      quic::test::TestConnectionId(12345678);
   if (version_.UsesHttp3()) {
     client_maker_.set_connection_id(cid_on_new_path);
-    socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetransmissionPacket(
-                                           1, packet_num++, true));
+    socket_data1.AddWrite(SYNCHRONOUS,
+                          client_maker_.MakeAckAndRetransmissionPacket(
+                              packet_num++, /*first_received=*/1,
+                              /*largest_received=*/1, /*smallest_received=*/1,
+                              /*original_packet_numbers=*/{1}));
   }
   // The PING packet sent post migration.
   socket_data1.AddWrite(SYNCHRONOUS,
@@ -9860,18 +9909,19 @@ TEST_P(QuicStreamFactoryTest, DefaultRetransmittableOnWireTimeoutForMigration) {
   socket_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
   // Read two packets so that client will send ACK immediately.
   socket_data1.AddRead(
-      ASYNC,
-      ConstructOkResponsePacket(
-          1, GetNthClientInitiatedBidirectionalStreamId(0), false, false));
-  socket_data1.AddRead(
-      ASYNC, server_maker_.MakeDataPacket(
-                 2, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
-                 "Hello World"));
+      ASYNC, ConstructOkResponsePacket(
+                 peer_packet_num++,
+                 GetNthClientInitiatedBidirectionalStreamId(0), false, false));
+  socket_data1.AddRead(ASYNC, server_maker_.MakeDataPacket(
+                                  peer_packet_num++,
+                                  GetNthClientInitiatedBidirectionalStreamId(0),
+                                  false, false, "Hello World"));
 
   // Read an ACK from server which acks all client data.
-  socket_data1.AddRead(SYNCHRONOUS,
-                       server_maker_.MakeAckPacket(3, packet_num, 1));
-  socket_data1.AddWrite(ASYNC, client_maker_.MakeAckPacket(packet_num++, 2, 1));
+  socket_data1.AddRead(SYNCHRONOUS, server_maker_.MakeAckPacket(
+                                        peer_packet_num++, packet_num, 1));
+  socket_data1.AddWrite(
+      ASYNC, client_maker_.MakeAckPacket(packet_num++, peer_packet_num - 2, 1));
   // The PING packet sent for retransmittable on wire.
   socket_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakePingPacket(packet_num++, false));
@@ -9920,7 +9970,6 @@ TEST_P(QuicStreamFactoryTest, DefaultRetransmittableOnWireTimeoutForMigration) {
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
   EXPECT_TRUE(HasActiveSession(scheme_host_port_));
-  MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session);
 
   // Now notify network is disconnected, cause the migration to complete
   // immediately.
@@ -9989,11 +10038,19 @@ TEST_P(QuicStreamFactoryTest, CustomRetransmittableOnWireTimeoutForMigration) {
       factory_.get(), std::make_unique<QuicChromiumAlarmFactory>(
                           task_runner.get(), context_.clock()));
 
+  quic::QuicConnectionId cid_on_new_path =
+      quic::test::TestConnectionId(12345678);
   MockQuicData socket_data(version_);
   int packet_num = 1;
+  int peer_packet_num = 1;
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data.AddWrite(SYNCHRONOUS,
                          ConstructInitialSettingsPacket(packet_num++));
+    socket_data.AddRead(ASYNC, server_maker_.MakeNewConnectionIdPacket(
+                                   peer_packet_num++, /*include_version=*/false,
+                                   cid_on_new_path,
+                                   /*sequence_number=*/1u,
+                                   /*retire_prior_to=*/0u));
   }
   socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
   socket_data.AddRead(ASYNC, ERR_ADDRESS_UNREACHABLE);
@@ -10003,12 +10060,13 @@ TEST_P(QuicStreamFactoryTest, CustomRetransmittableOnWireTimeoutForMigration) {
   // migration. The request is written to this new socket, and the
   // response to the request is read on this new socket.
   MockQuicData socket_data1(version_);
-  quic::QuicConnectionId cid_on_new_path =
-      quic::test::TestConnectionId(12345678);
   if (version_.UsesHttp3()) {
     client_maker_.set_connection_id(cid_on_new_path);
-    socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetransmissionPacket(
-                                           1, packet_num++, true));
+    socket_data1.AddWrite(SYNCHRONOUS,
+                          client_maker_.MakeAckAndRetransmissionPacket(
+                              packet_num++, /*first_received=*/1,
+                              /*largest_received=*/1, /*smallest_received=*/1,
+                              /*original_packet_numbers=*/{1}));
   }
   // The PING packet sent post migration.
   socket_data1.AddWrite(SYNCHRONOUS,
@@ -10027,17 +10085,18 @@ TEST_P(QuicStreamFactoryTest, CustomRetransmittableOnWireTimeoutForMigration) {
   socket_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
   // Read two packets so that client will send ACK immedaitely.
   socket_data1.AddRead(
-      ASYNC,
-      ConstructOkResponsePacket(
-          1, GetNthClientInitiatedBidirectionalStreamId(0), false, false));
-  socket_data1.AddRead(
-      ASYNC, server_maker_.MakeDataPacket(
-                 2, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
-                 "Hello World"));
+      ASYNC, ConstructOkResponsePacket(
+                 peer_packet_num++,
+                 GetNthClientInitiatedBidirectionalStreamId(0), false, false));
+  socket_data1.AddRead(ASYNC, server_maker_.MakeDataPacket(
+                                  peer_packet_num++,
+                                  GetNthClientInitiatedBidirectionalStreamId(0),
+                                  /*should_include_version=*/false, /*fin=*/false, "Hello World"));
   // Read an ACK from server which acks all client data.
-  socket_data1.AddRead(SYNCHRONOUS,
-                       server_maker_.MakeAckPacket(3, packet_num, 1));
-  socket_data1.AddWrite(ASYNC, client_maker_.MakeAckPacket(packet_num++, 2, 1));
+  socket_data1.AddRead(SYNCHRONOUS, server_maker_.MakeAckPacket(
+                                        peer_packet_num++, packet_num, 1));
+  socket_data1.AddWrite(
+      ASYNC, client_maker_.MakeAckPacket(packet_num++, peer_packet_num - 2, 1));
   // The PING packet sent for retransmittable on wire.
   socket_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakePingPacket(packet_num++, false));
@@ -10086,7 +10145,6 @@ TEST_P(QuicStreamFactoryTest, CustomRetransmittableOnWireTimeoutForMigration) {
   // Ensure that session is alive and active.
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
   EXPECT_TRUE(HasActiveSession(scheme_host_port_));
-  MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session);
 
   // Now notify network is disconnected, cause the migration to complete
   // immediately.
@@ -10930,11 +10988,10 @@ void QuicStreamFactoryTestBase::
           1, GetNthClientInitiatedBidirectionalStreamId(0), false, false));
   socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   if (VersionUsesHttp3(version_.transport_version)) {
-    socket_data1.AddWrite(ASYNC, client_maker_.MakeAckAndRetransmissionPacket(
-                                     packet_num++, /*first_received=*/1,
-                                     /*largest_received=*/1,
-                                     /*smallest_received=*/1,
-                                     /*original_packet_numbers=*/{1, 2}));
+    socket_data1.AddWrite(ASYNC,
+                          client_maker_.MakeCombinedRetransmissionPacket(
+                              /*original_packet_numbers=*/{1, 2}, packet_num++,
+                              /*should_include_version=*/false));
     socket_data1.AddWrite(
         SYNCHRONOUS,
         client_maker_.MakeRetireConnectionIdPacket(
@@ -11063,10 +11120,13 @@ TEST_P(QuicStreamFactoryTest, DefaultIdleMigrationPeriod) {
   MockQuicData alternate_socket_data(version_);
   if (version_.UsesHttp3()) {
     client_maker_.set_connection_id(cid1);
-    alternate_socket_data.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeRetransmissionPacket(
-                         /*original_packet_number=*/1, packet_num++,
-                         /*should_include_version=*/false));
+    alternate_socket_data.AddWrite(SYNCHRONOUS,
+                                   client_maker_.MakeAckAndRetransmissionPacket(
+                                       packet_num++,
+                                       /*first_received=*/1,
+                                       /*largest_received=*/peer_packet_num - 1,
+                                       /*smallest_received=*/1,
+                                       /*original_packet_numbers=*/{1}));
     alternate_socket_data.AddWrite(
         SYNCHRONOUS,
         client_maker_.MakePingPacket(packet_num++, /*include_version=*/false));
@@ -11081,9 +11141,11 @@ TEST_P(QuicStreamFactoryTest, DefaultIdleMigrationPeriod) {
                    /*retire_prior_to=*/1u));
     ++packet_num;  // Probing packet on default network encounters write error.
     alternate_socket_data.AddWrite(
-        ASYNC,
-        client_maker_.MakeRetireConnectionIdPacket(
-            packet_num++, /*include_version=*/false, /*sequence_number=*/2u));
+        ASYNC, client_maker_.MakeAckAndRetireConnectionIdPacket(
+                   packet_num++, /*include_version=*/false,
+                   /*largest_received=*/peer_packet_num - 1,
+                   /*smallest_received=*/1,
+                   /*sequence_number=*/2u));
     alternate_socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
     alternate_socket_data.AddRead(
         ASYNC, server_maker_.MakeNewConnectionIdPacket(
@@ -11092,9 +11154,11 @@ TEST_P(QuicStreamFactoryTest, DefaultIdleMigrationPeriod) {
                    /*retire_prior_to=*/1u));
     ++packet_num;  // Probing packet on default network encounters write error.
     alternate_socket_data.AddWrite(
-        ASYNC,
-        client_maker_.MakeRetireConnectionIdPacket(
-            packet_num++, /*include_version=*/false, /*sequence_number=*/3u));
+        ASYNC, client_maker_.MakeAckAndRetireConnectionIdPacket(
+                   packet_num++, /*include_version=*/false,
+                   /*largest_received=*/peer_packet_num - 1,
+                   /*smallest_received=*/1,
+                   /*sequence_number=*/3u));
     alternate_socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
     alternate_socket_data.AddRead(
         ASYNC, server_maker_.MakeNewConnectionIdPacket(
@@ -11103,9 +11167,11 @@ TEST_P(QuicStreamFactoryTest, DefaultIdleMigrationPeriod) {
                    /*retire_prior_to=*/1u));
     ++packet_num;  // Probing packet on default network encounters write error.
     alternate_socket_data.AddWrite(
-        ASYNC,
-        client_maker_.MakeRetireConnectionIdPacket(
-            packet_num++, /*include_version=*/false, /*sequence_number=*/4u));
+        ASYNC, client_maker_.MakeAckAndRetireConnectionIdPacket(
+                   packet_num++, /*include_version=*/false,
+                   /*largest_received=*/peer_packet_num - 1,
+                   /*smallest_received=*/1,
+                   /*sequence_number=*/4u));
     alternate_socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
     alternate_socket_data.AddRead(
         ASYNC, server_maker_.MakeNewConnectionIdPacket(
@@ -11114,9 +11180,11 @@ TEST_P(QuicStreamFactoryTest, DefaultIdleMigrationPeriod) {
                    /*retire_prior_to=*/1u));
     ++packet_num;  // Probing packet on default network encounters write error.
     alternate_socket_data.AddWrite(
-        ASYNC,
-        client_maker_.MakeRetireConnectionIdPacket(
-            packet_num++, /*include_version=*/false, /*sequence_number=*/5u));
+        ASYNC, client_maker_.MakeAckAndRetireConnectionIdPacket(
+                   packet_num++, /*include_version=*/false,
+                   /*largest_received=*/peer_packet_num - 1,
+                   /*smallest_received=*/1,
+                   /*sequence_number=*/5u));
     alternate_socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
     alternate_socket_data.AddRead(
         ASYNC, server_maker_.MakeNewConnectionIdPacket(
@@ -11125,8 +11193,11 @@ TEST_P(QuicStreamFactoryTest, DefaultIdleMigrationPeriod) {
                    /*retire_prior_to=*/1u));
     ++packet_num;  // Probing packet on default network encounters write error.
     alternate_socket_data.AddWrite(
-        ASYNC, client_maker_.MakeRetireConnectionIdPacket(
-                   packet_num++, /*include_version=*/false, 6u));
+        ASYNC, client_maker_.MakeAckAndRetireConnectionIdPacket(
+                   packet_num++, /*include_version=*/false,
+                   /*largest_received=*/peer_packet_num - 1,
+                   /*smallest_received=*/1,
+                   /*sequence_number=*/6u));
     alternate_socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
     alternate_socket_data.AddRead(
         ASYNC, server_maker_.MakeNewConnectionIdPacket(
@@ -11287,10 +11358,13 @@ TEST_P(QuicStreamFactoryTest, CustomIdleMigrationPeriod) {
   MockQuicData alternate_socket_data(version_);
   if (version_.UsesHttp3()) {
     client_maker_.set_connection_id(cid1);
-    alternate_socket_data.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeRetransmissionPacket(
-                         /*original_packet_number=*/1u, packet_num++,
-                         /*should_include_version=*/false));
+    alternate_socket_data.AddWrite(SYNCHRONOUS,
+                                   client_maker_.MakeAckAndRetransmissionPacket(
+                                       packet_num++,
+                                       /*first_received=*/1,
+                                       /*largest_received=*/peer_packet_num - 1,
+                                       /*smallest_received=*/1,
+                                       /*original_packet_numbers=*/{1}));
     alternate_socket_data.AddWrite(
         SYNCHRONOUS,
         client_maker_.MakePingPacket(packet_num++, /*include_version=*/false));
@@ -11306,9 +11380,11 @@ TEST_P(QuicStreamFactoryTest, CustomIdleMigrationPeriod) {
                    /*retire_prior_to=*/1u));
     ++packet_num;  // Probing packet on default network encounters write error.
     alternate_socket_data.AddWrite(
-        ASYNC,
-        client_maker_.MakeRetireConnectionIdPacket(
-            packet_num++, /*include_version=*/false, /*sequence_number=*/2u));
+        ASYNC, client_maker_.MakeAckAndRetireConnectionIdPacket(
+                   packet_num++, /*include_version=*/false,
+                   /*largest_received=*/peer_packet_num - 1,
+                   /*smallest_received=*/1,
+                   /*sequence_number=*/2u));
     alternate_socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
     alternate_socket_data.AddRead(
         ASYNC, server_maker_.MakeNewConnectionIdPacket(
@@ -11317,9 +11393,11 @@ TEST_P(QuicStreamFactoryTest, CustomIdleMigrationPeriod) {
                    /*retire_prior_to=*/1u));
     ++packet_num;  // Probing packet on default network encounters write error.
     alternate_socket_data.AddWrite(
-        ASYNC,
-        client_maker_.MakeRetireConnectionIdPacket(
-            packet_num++, /*include_version=*/false, /*sequence_number=*/3u));
+        ASYNC, client_maker_.MakeAckAndRetireConnectionIdPacket(
+                   packet_num++, /*include_version=*/false,
+                   /*largest_received=*/peer_packet_num - 1,
+                   /*smallest_received=*/1,
+                   /*sequence_number=*/3u));
     alternate_socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
     alternate_socket_data.AddRead(
         ASYNC, server_maker_.MakeNewConnectionIdPacket(
@@ -11328,9 +11406,11 @@ TEST_P(QuicStreamFactoryTest, CustomIdleMigrationPeriod) {
                    /*retire_prior_to=*/1u));
     ++packet_num;  // Probing packet on default network encounters write error.
     alternate_socket_data.AddWrite(
-        ASYNC,
-        client_maker_.MakeRetireConnectionIdPacket(
-            packet_num++, /*include_version=*/false, /*sequence_number=*/4u));
+        ASYNC, client_maker_.MakeAckAndRetireConnectionIdPacket(
+                   packet_num++, /*include_version=*/false,
+                   /*largest_received=*/peer_packet_num - 1,
+                   /*smallest_received=*/1,
+                   /*sequence_number=*/4u));
     alternate_socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause.
     alternate_socket_data.AddRead(
         ASYNC, server_maker_.MakeNewConnectionIdPacket(
@@ -11531,9 +11611,11 @@ TEST_P(QuicStreamFactoryTest, ServerMigration) {
   socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   if (VersionUsesHttp3(version_.transport_version)) {
     socket_data2.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeAckAndDataPacket(
-                         packet_num++, false, GetQpackDecoderStreamId(), 1, 1,
-                         false, StreamCancellationQpackDecoderInstruction(0)));
+        SYNCHRONOUS,
+        client_maker_.MakeDataPacket(
+            packet_num++, GetQpackDecoderStreamId(),
+            /*should_include_version=*/false,
+            /*fin=*/false, StreamCancellationQpackDecoderInstruction(0)));
     socket_data2.AddWrite(
         SYNCHRONOUS,
         client_maker_.MakeRstPacket(

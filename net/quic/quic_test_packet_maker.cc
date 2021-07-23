@@ -260,15 +260,12 @@ QuicTestPacketMaker::MakeAckAndRetireConnectionIdPacket(
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeAckRetransmissionAndRetireConnectionIdPacket(
+QuicTestPacketMaker::MakeRetransmissionAndRetireConnectionIdPacket(
     uint64_t num,
     bool include_version,
-    uint64_t largest_received,
-    uint64_t smallest_received,
     const std::vector<uint64_t>& original_packet_numbers,
     uint64_t sequence_number) {
   InitializeHeader(num, include_version);
-  AddQuicAckFrame(largest_received, smallest_received);
   for (auto it : original_packet_numbers) {
     for (auto frame : saved_frames_[quic::QuicPacketNumber(it)]) {
       frames_.push_back(frame);
@@ -633,7 +630,7 @@ QuicTestPacketMaker::MakeDataRstAckAndConnectionClosePacket(
     const std::string& quic_error_details) {
   InitializeHeader(num, include_version);
 
-    AddQuicAckFrame(largest_received, smallest_received);
+  AddQuicAckFrame(largest_received, smallest_received);
 
   AddQuicStreamFrame(data_stream_id, /* fin = */ false, data);
   if (version_.HasIetfQuicFrames()) {
@@ -641,7 +638,6 @@ QuicTestPacketMaker::MakeDataRstAckAndConnectionClosePacket(
   }
   AddQuicRstStreamFrame(rst_stream_id, error_code);
 
-  AddQuicAckFrame(largest_received, smallest_received);
   AddQuicConnectionCloseFrame(quic_error, quic_error_details);
 
   return BuildPacket();
@@ -661,8 +657,6 @@ QuicTestPacketMaker::MakeDataRstAckAndConnectionClosePacket(
     const std::string& quic_error_details,
     uint64_t frame_type) {
   InitializeHeader(num, include_version);
-
-  AddQuicAckFrame(largest_received, smallest_received);
 
   AddQuicStreamFrame(data_stream_id, /* fin = */ false, data);
   if (version_.HasIetfQuicFrames()) {

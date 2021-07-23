@@ -106,11 +106,9 @@ class QuicTestPacketMaker {
       uint64_t sequence_number);
 
   std::unique_ptr<quic::QuicReceivedPacket>
-  MakeAckRetransmissionAndRetireConnectionIdPacket(
+  MakeRetransmissionAndRetireConnectionIdPacket(
       uint64_t num,
       bool include_version,
-      uint64_t largest_received,
-      uint64_t smallest_received,
       const std::vector<uint64_t>& original_packet_numbers,
       uint64_t sequence_number);
 
