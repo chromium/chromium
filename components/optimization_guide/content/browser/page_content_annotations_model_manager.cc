@@ -10,6 +10,10 @@
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+#include "components/optimization_guide/internal/page_entities_annotator.h"
+#endif
+
 namespace optimization_guide {
 
 namespace {
@@ -42,6 +46,11 @@ PageContentAnnotationsModelManager::PageContentAnnotationsModelManager(
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
           proto::OPTIMIZATION_TARGET_PAGE_TOPICS, model_metadata);
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  page_entities_annotator_ = std::make_unique<PageEntitiesAnnotator>(
+      optimization_guide_model_provider);
+#endif
 }
 
 PageContentAnnotationsModelManager::~PageContentAnnotationsModelManager() =

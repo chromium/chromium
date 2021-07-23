@@ -5,3 +5,8 @@ buildflag_header("machine_learning_tflite_buildflags") {
   header = "machine_learning_tflite_buildflags.h"
   flags = [ "BUILD_WITH_TFLITE_LIB=$build_with_tflite_lib" ]
 }
+
+buildflag_header("optimization_guide_buildflags") {
+  header = "optimization_guide_buildflags.h"
+  flags = [ "BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE=$build_with_internal_optimization_guide" ]
+}

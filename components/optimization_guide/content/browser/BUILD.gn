@@ -31,6 +31,7 @@ static_library("browser") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
+    "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/content/mojom:mojo_interfaces",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -44,6 +45,10 @@ static_library("browser") {
       "//third_party/tflite-support",
       "//third_party/tflite-support:tflite-support-proto",
     ]
+
+    if (build_with_internal_optimization_guide) {
+      deps = [ "//components/optimization_guide/internal" ]
+    }
   }
 }
 

@@ -7,12 +7,14 @@
 
 #include "components/history/core/browser/url_row.h"
 #include "components/optimization_guide/core/bert_model_executor.h"
+#include "components/optimization_guide/optimization_guide_buildflags.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
 class OptimizationGuideModelProvider;
+class PageEntitiesAnnotator;
 
 // Callback to inform the caller that the page content has been annotated.
 using PageContentAnnotatedCallback = base::OnceCallback<void(
@@ -54,6 +56,10 @@ class PageContentAnnotationsModelManager {
 
   // The model executor responsible for executing the page topics model.
   std::unique_ptr<BertModelExecutorHandle> page_topics_model_executor_handle_;
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  std::unique_ptr<PageEntitiesAnnotator> page_entities_annotator_;
+#endif
 
   base::WeakPtrFactory<PageContentAnnotationsModelManager> weak_ptr_factory_{
       this};
