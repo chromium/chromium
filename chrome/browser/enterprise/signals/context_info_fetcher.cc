@@ -87,7 +87,7 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
   info.chrome_cleanup_enabled = GetChromeCleanupEnabled();
   info.chrome_remote_desktop_app_blocked = GetChromeRemoteDesktopAppBlocked();
   info.third_party_blocking_enabled = GetThirdPartyBLockingEnabled();
-
+  info.os_firewall = GetOSFirewall();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(info)));
 }
@@ -178,6 +178,10 @@ bool ContextInfoFetcher::GetChromeRemoteDesktopAppBlocked() {
                       browser_context_) ||
          IsURLBlocked(GURL("https://remotedesktop.corp.google.com"),
                       browser_context_);
+}
+
+SettingValue ContextInfoFetcher::GetOSFirewall() {
+  return SettingValue::UNKNOWN;
 }
 
 }  // namespace enterprise_signals

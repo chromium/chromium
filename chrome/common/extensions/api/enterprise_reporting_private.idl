@@ -75,6 +75,7 @@ namespace enterprise.reportingPrivate {
     boolean? chromeCleanupEnabled;
     boolean chromeRemoteDesktopAppBlocked;
     boolean? thirdPartyBlockingEnabled;
+    SettingValue osFirewall;
   };
 
   // Invoked by <code>getContextInfo</code> to return context information.

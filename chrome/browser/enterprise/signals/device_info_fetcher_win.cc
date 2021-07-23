@@ -11,6 +11,7 @@
 #include "base/system/sys_info.h"
 #include "base/win/windows_types.h"
 #include "base/win/wmi.h"
+#include "chrome/browser/enterprise/signals/signals_common.h"
 #include "net/base/network_interfaces.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -19,8 +20,6 @@
 #include <powersetting.h>  // NOLINT(build/include_order)
 #include <propsys.h>       // NOLINT(build/include_order)
 #include <shobjidl.h>      // NOLINT(build/include_order)
-
-using SettingValue = enterprise_signals::DeviceInfo::SettingValue;
 
 namespace enterprise_signals {
 

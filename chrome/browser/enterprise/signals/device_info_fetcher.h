@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/enterprise/signals/signals_common.h"
+
 namespace enterprise_signals {
 
 struct DeviceInfo {
@@ -16,13 +18,6 @@ struct DeviceInfo {
   ~DeviceInfo();
   DeviceInfo(const DeviceInfo&);
   DeviceInfo(DeviceInfo&&);
-
-  enum class SettingValue {
-    NONE,
-    UNKNOWN,
-    DISABLED,
-    ENABLED,
-  };
 
   std::string os_name;
   std::string os_version;

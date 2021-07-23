@@ -22,9 +22,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/enterprise/signals/signals_common.h"
 #include "net/base/network_interfaces.h"
-
-using SettingValue = enterprise_signals::DeviceInfo::SettingValue;
 
 namespace enterprise_signals {
 

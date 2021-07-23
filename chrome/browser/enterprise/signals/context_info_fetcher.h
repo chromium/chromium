@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "chrome/browser/enterprise/signals/signals_common.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace content {
@@ -45,6 +46,7 @@ struct ContextInfo {
   absl::optional<bool> chrome_cleanup_enabled;
   bool chrome_remote_desktop_app_blocked;
   absl::optional<bool> third_party_blocking_enabled;
+  SettingValue os_firewall;
 };
 
 // Interface used by the chrome.enterprise.reportingPrivate.getContextInfo()
@@ -100,6 +102,8 @@ class ContextInfoFetcher {
   absl::optional<bool> GetChromeCleanupEnabled();
 
   bool GetChromeRemoteDesktopAppBlocked();
+
+  SettingValue GetOSFirewall();
 
   content::BrowserContext* browser_context_;
 

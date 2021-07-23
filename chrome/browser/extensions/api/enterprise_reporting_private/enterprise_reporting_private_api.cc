@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
+#include "chrome/browser/enterprise/signals/signals_common.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
@@ -28,22 +29,21 @@ const char kEndpointVerificationRetrievalFailed[] =
     "Failed to retrieve the endpoint verification data.";
 const char kEndpointVerificationStoreFailed[] =
     "Failed to store the endpoint verification data.";
+#endif  // !defined(OS_CHROMEOS)
 
 api::enterprise_reporting_private::SettingValue ToInfoSettingValue(
-    enterprise_signals::DeviceInfo::SettingValue value) {
-  using SettingValue = enterprise_signals::DeviceInfo::SettingValue;
+    enterprise_signals::SettingValue value) {
   switch (value) {
-    case SettingValue::NONE:
+    case enterprise_signals::SettingValue::NONE:
       return api::enterprise_reporting_private::SETTING_VALUE_NONE;
-    case SettingValue::UNKNOWN:
+    case enterprise_signals::SettingValue::UNKNOWN:
       return api::enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
-    case SettingValue::DISABLED:
+    case enterprise_signals::SettingValue::DISABLED:
       return api::enterprise_reporting_private::SETTING_VALUE_DISABLED;
-    case SettingValue::ENABLED:
+    case enterprise_signals::SettingValue::ENABLED:
       return api::enterprise_reporting_private::SETTING_VALUE_ENABLED;
   }
 }
-#endif  // !defined(OS_CHROMEOS)
 
 api::enterprise_reporting_private::ContextInfo ToContextInfo(
     enterprise_signals::ContextInfo&& signals) {
@@ -70,6 +70,7 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
       signals.third_party_blocking_enabled.has_value()
           ? std::make_unique<bool>(signals.third_party_blocking_enabled.value())
           : nullptr;
+  info.os_firewall = ToInfoSettingValue(signals.os_firewall);
   switch (signals.realtime_url_check_mode) {
     case safe_browsing::REAL_TIME_CHECK_DISABLED:
       info.realtime_url_check_mode = extensions::api::
