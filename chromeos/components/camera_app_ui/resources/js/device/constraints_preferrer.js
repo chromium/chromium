@@ -73,7 +73,7 @@ export class ConstraintsPreferrer {
      * Listener for changes of preferred resolution used on particular video
      * device.
      * @type {function(string, !Resolution): void}
-     * @private
+     * @protected
      */
     this.preferredResolutionChangeListener_ = () => {};
   }
