@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/feed/v2/rss_links_fetcher.h"
 
+#include "base/callback.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/feed/mojom/rss_link_reader.mojom.h"
 #include "content/public/browser/render_frame_host.h"
@@ -36,10 +37,9 @@ class RssLinksFetcher {
  public:
   void Start(const GURL& page_url,
              mojo::Remote<feed::mojom::RssLinkReader> link_reader,
-             base::OnceCallback<void(WebFeedPageInformation)> callback) {
+             base::OnceCallback<void(std::vector<GURL>)> callback) {
     page_url_ = page_url;
     callback_ = std::move(callback);
-    result_.SetUrl(page_url);
     link_reader_ = std::move(link_reader);
     if (link_reader_) {
       // Unretained is OK here. The `mojo::Remote` will not invoke callbacks
@@ -57,7 +57,7 @@ class RssLinksFetcher {
   void GetRssLinksComplete(feed::mojom::RssLinksPtr rss_links) {
     if (rss_links) {
       if (rss_links->page_url == page_url_)
-        result_.SetRssUrls(rss_links->links);
+        result_ = rss_links->links;
     }
 
     SendResultAndDeleteSelf();
@@ -69,15 +69,15 @@ class RssLinksFetcher {
 
   GURL page_url_;
   mojo::Remote<feed::mojom::RssLinkReader> link_reader_;
-  WebFeedPageInformation result_;
-  base::OnceCallback<void(WebFeedPageInformation)> callback_;
+  std::vector<GURL> result_;
+  base::OnceCallback<void(std::vector<GURL>)> callback_;
 };
 
 }  // namespace
 
 void FetchRssLinks(const GURL& url,
                    mojo::Remote<feed::mojom::RssLinkReader> link_reader,
-                   base::OnceCallback<void(WebFeedPageInformation)> callback) {
+                   base::OnceCallback<void(std::vector<GURL>)> callback) {
   // RssLinksFetcher is self-deleting.
   auto* fetcher = new RssLinksFetcher();
   fetcher->Start(url, std::move(link_reader), std::move(callback));
@@ -85,7 +85,7 @@ void FetchRssLinks(const GURL& url,
 
 void FetchRssLinks(const GURL& url,
                    TabAndroid* page_tab,
-                   base::OnceCallback<void(WebFeedPageInformation)> callback) {
+                   base::OnceCallback<void(std::vector<GURL>)> callback) {
   FetchRssLinks(url, GetRssLinkReaderRemote(page_tab), std::move(callback));
 }
 

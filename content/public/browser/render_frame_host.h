@@ -933,6 +933,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // value from the corresponding main frame.
   virtual const std::vector<blink::mojom::FaviconURLPtr>& FaviconURLs() = 0;
 
+  // Fetch the link-rel canonical URL from the renderer process. This is used
+  // for sharing to external applications. Note that this URL is validated only
+  // to contain HTTP(s) URLs, but may be cross-origin. Should not be considered
+  // trustworthy.
+  virtual void GetCanonicalUrl(
+      base::OnceCallback<void(const absl::optional<GURL>&)> callback) = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class RenderFrameHostImpl;

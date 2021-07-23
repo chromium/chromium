@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ANDROID_FEED_V2_RSS_LINKS_FETCHER_H_
 #define CHROME_BROWSER_ANDROID_FEED_V2_RSS_LINKS_FETCHER_H_
 
+#include <vector>
+
 #include "chrome/browser/android/feed/v2/feed_service_factory.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/mojom/rss_link_reader.mojom-forward.h"
@@ -23,11 +25,11 @@ service_manager::InterfaceProvider* GetRenderFrameRemoteInterfaces(
 
 void FetchRssLinks(const GURL& url,
                    TabAndroid* page_tab,
-                   base::OnceCallback<void(WebFeedPageInformation)> callback);
+                   base::OnceCallback<void(std::vector<GURL>)> callback);
 
 void FetchRssLinks(const GURL& url,
                    mojo::Remote<feed::mojom::RssLinkReader> link_reader,
-                   base::OnceCallback<void(WebFeedPageInformation)> callback);
+                   base::OnceCallback<void(std::vector<GURL>)> callback);
 
 }  // namespace feed
 

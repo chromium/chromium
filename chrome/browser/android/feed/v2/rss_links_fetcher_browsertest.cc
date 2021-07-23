@@ -42,16 +42,15 @@ IN_PROC_BROWSER_TEST_F(RssLinksFetcherTest, FetchSuccessful) {
       embedded_test_server()->GetURL("localhost", "/page_with_rss.html");
   ASSERT_TRUE(content::NavigateToURL(tab->web_contents(), url));
 
-  CallbackReceiver<WebFeedPageInformation> page_info;
-  FetchRssLinks(url, tab, page_info.Bind());
-  WebFeedPageInformation result = page_info.RunAndGetResult();
+  CallbackReceiver<std::vector<GURL>> rss_links;
+  FetchRssLinks(url, tab, rss_links.Bind());
+  std::vector<GURL> result = rss_links.RunAndGetResult();
   // Just check path on URLs relative to the local server, since it's port
   // changes.
-  EXPECT_EQ("/page_with_rss.html", result.url().path());
-  ASSERT_EQ(3u, result.GetRssUrls().size());
-  EXPECT_EQ("/rss.xml", result.GetRssUrls()[0].path());
-  EXPECT_EQ("/atom.xml", result.GetRssUrls()[1].path());
-  EXPECT_EQ(GURL("https://some/path.xml"), result.GetRssUrls()[2]);
+  ASSERT_EQ(3u, result.size());
+  EXPECT_EQ("/rss.xml", result[0].path());
+  EXPECT_EQ("/atom.xml", result[1].path());
+  EXPECT_EQ(GURL("https://some/path.xml"), result[2]);
 }
 
 }  // namespace

@@ -135,7 +135,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
 #endif
   void HandleRendererDebugURL(const GURL& url) override;
   void GetCanonicalUrlForSharing(
-      GetCanonicalUrlForSharingCallback callback) override;
+      base::OnceCallback<void(const absl::optional<GURL>&)> callback) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

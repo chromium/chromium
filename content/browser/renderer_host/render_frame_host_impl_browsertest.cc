@@ -2581,7 +2581,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   renderer_process->Shutdown(0);
   crash_observer.Wait();
 
-  main_frame->GetCanonicalUrlForSharing(base::DoNothing());
+  main_frame->GetCanonicalUrl(base::DoNothing());
 }
 
 // This test makes sure that when a blocked frame commits with a different URL,

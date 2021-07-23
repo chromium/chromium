@@ -3035,4 +3035,67 @@ TEST_F(WebContentsImplTest,
   EXPECT_EQ(contents()->GetCaptureHandleConfig(), *config);
 }
 
+class TestCanonicalUrlLocalFrame : public content::FakeLocalFrame,
+                                   public WebContentsObserver {
+ public:
+  explicit TestCanonicalUrlLocalFrame(WebContents* web_contents,
+                                      absl::optional<GURL> canonical_url)
+      : WebContentsObserver(web_contents), canonical_url_(canonical_url) {}
+
+  void RenderFrameCreated(RenderFrameHost* render_frame_host) override {
+    if (!initialized_) {
+      initialized_ = true;
+      Init(render_frame_host->GetRemoteAssociatedInterfaces());
+    }
+  }
+
+  void GetCanonicalUrlForSharing(
+      base::OnceCallback<void(const absl::optional<GURL>&)> callback) override {
+    std::move(callback).Run(canonical_url_);
+  }
+
+ private:
+  bool initialized_ = false;
+  absl::optional<GURL> canonical_url_;
+};
+
+TEST_F(WebContentsImplTest, CanonicalUrlSchemeHttpsIsAllowed) {
+  TestCanonicalUrlLocalFrame local_frame(contents(), GURL("https://someurl/"));
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(),
+                                                    GURL("https://site/"));
+
+  base::RunLoop run_loop;
+  absl::optional<GURL> canonical_url;
+  base::RepeatingClosure quit = run_loop.QuitClosure();
+  auto on_done = [&](const absl::optional<GURL>& result) {
+    canonical_url = result;
+    quit.Run();
+  };
+  contents()->GetMainFrame()->GetCanonicalUrl(
+      base::BindLambdaForTesting(on_done));
+  run_loop.Run();
+
+  ASSERT_TRUE(canonical_url);
+  EXPECT_EQ(GURL("https://someurl/"), *canonical_url);
+}
+
+TEST_F(WebContentsImplTest, CanonicalUrlSchemeChromeIsNotAllowed) {
+  TestCanonicalUrlLocalFrame local_frame(contents(), GURL("chrome://someurl/"));
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(),
+                                                    GURL("https://site/"));
+
+  base::RunLoop run_loop;
+  absl::optional<GURL> canonical_url;
+  base::RepeatingClosure quit = run_loop.QuitClosure();
+  auto on_done = [&](const absl::optional<GURL>& result) {
+    canonical_url = result;
+    quit.Run();
+  };
+  contents()->GetMainFrame()->GetCanonicalUrl(
+      base::BindLambdaForTesting(on_done));
+  run_loop.Run();
+
+  ASSERT_FALSE(canonical_url) << "canonical_url=" << *canonical_url;
+}
+
 }  // namespace content

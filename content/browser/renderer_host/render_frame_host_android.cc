@@ -118,7 +118,7 @@ void RenderFrameHostAndroid::GetCanonicalUrlForSharing(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>&,
     const base::android::JavaParamRef<jobject>& jcallback) const {
-  render_frame_host_->GetCanonicalUrlForSharing(base::BindOnce(
+  render_frame_host_->GetCanonicalUrl(base::BindOnce(
       &OnGetCanonicalUrlForSharing,
       base::android::ScopedJavaGlobalRef<jobject>(env, jcallback)));
 }

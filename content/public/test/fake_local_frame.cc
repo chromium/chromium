@@ -183,7 +183,7 @@ void FakeLocalFrame::ExtractSmartClipData(
 void FakeLocalFrame::HandleRendererDebugURL(const GURL& url) {}
 
 void FakeLocalFrame::GetCanonicalUrlForSharing(
-    GetCanonicalUrlForSharingCallback callback) {}
+    base::OnceCallback<void(const absl::optional<GURL>&)> callback) {}
 
 void FakeLocalFrame::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {

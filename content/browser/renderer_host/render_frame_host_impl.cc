@@ -2131,10 +2131,22 @@ RenderFrameHostImpl::GetPendingIsolationInfoForSubresources() {
   return config.isolation_info();
 }
 
-void RenderFrameHostImpl::GetCanonicalUrlForSharing(
-    blink::mojom::LocalFrame::GetCanonicalUrlForSharingCallback callback) {
+void RenderFrameHostImpl::GetCanonicalUrl(
+    base::OnceCallback<void(const absl::optional<GURL>&)> callback) {
   if (IsRenderFrameCreated()) {
-    GetAssociatedLocalFrame()->GetCanonicalUrlForSharing(std::move(callback));
+    // Validate that the URL returned by the renderer is HTTP(S) only. It is allowed to be
+    // cross-origin.
+    auto validate_and_forward =
+        [](base::OnceCallback<void(const absl::optional<GURL>&)> callback,
+           const absl::optional<GURL>& url) {
+          if (url && url->is_valid() && url->SchemeIsHTTPOrHTTPS()) {
+            std::move(callback).Run(url);
+          } else {
+            std::move(callback).Run(absl::nullopt);
+          }
+        };
+    GetAssociatedLocalFrame()->GetCanonicalUrlForSharing(
+        base::BindOnce(validate_and_forward, std::move(callback)));
   } else {
     std::move(callback).Run(absl::nullopt);
   }

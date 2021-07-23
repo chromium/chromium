@@ -408,6 +408,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   BrowserContext* GetBrowserContext() override;
   void ReportInspectorIssue(blink::mojom::InspectorIssueInfoPtr info) override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
+  void GetCanonicalUrl(
+      base::OnceCallback<void(const absl::optional<GURL>&)> callback) override;
 
   // Determines if a clipboard paste using |data| of type |data_type| is allowed
   // in this renderer frame.  The implementation delegates to
@@ -729,11 +731,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Allows overriding the last committed origin in tests.
   void SetLastCommittedOriginForTesting(const url::Origin& origin);
-
-  // Fetch the link-rel canonical URL to be used for sharing to external
-  // applications.
-  void GetCanonicalUrlForSharing(
-      blink::mojom::LocalFrame::GetCanonicalUrlForSharingCallback callback);
 
   // Get HTML data for this RenderFrame by serializing contents on the renderer
   // side and replacing all links to both same-site and cross-site resources
