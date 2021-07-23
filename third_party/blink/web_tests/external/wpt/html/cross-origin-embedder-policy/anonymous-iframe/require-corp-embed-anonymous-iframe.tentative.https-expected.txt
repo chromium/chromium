@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Loading an anonymous iframe with COEP: require-corp is allowed. assert_true: The anonymous iframe should be allowed. expected true got false
-Harness: the test ran to completion.
-

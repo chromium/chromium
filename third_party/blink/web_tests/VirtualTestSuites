@@ -1135,13 +1135,6 @@
              "--enable-gpu-rasterization"]
   },
   {
-    "prefix": "anonymous-iframe",
-    "bases": ["webexposed/element-instance-property-listing.html",
-              "webexposed/global-interface-listing.html",
-              "external/wpt/html/cross-origin-embedder-policy/anonymous-iframe/"],
-    "args": ["--enable-blink-features=AnonymousIframe"]
-  },
-  {
     "prefix": "popup-disabled",
     "bases": [],
     "args": ["--stable-release-mode"]

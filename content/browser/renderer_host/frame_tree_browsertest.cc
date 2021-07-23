@@ -1430,8 +1430,7 @@ class FrameTreeAnonymousIframeBrowserTest : public FrameTreeBrowserTest {
   FrameTreeAnonymousIframeBrowserTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "AnonymousIframe");
+    command_line->AppendSwitch(switches::kEnableBlinkTestFeatures);
   }
 };
 

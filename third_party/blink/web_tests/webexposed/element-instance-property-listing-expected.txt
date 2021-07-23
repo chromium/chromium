@@ -656,6 +656,7 @@ html element iframe
     property allow
     property allowFullscreen
     property allowPaymentRequest
+    property anonymous
     property contentDocument
     property contentWindow
     property csp

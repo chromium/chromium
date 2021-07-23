@@ -177,6 +177,7 @@
     },
     {
       name: "AnonymousIframe",
+      status: "test",
     },
     {
       name: "AOMAriaProperties",

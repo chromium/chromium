@@ -5730,8 +5730,7 @@ class NavigationBrowserTestAnonymousIframe : public NavigationBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     NavigationBrowserTest::SetUpCommandLine(command_line);
 
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "AnonymousIframe");
+    command_line->AppendSwitch(switches::kEnableBlinkTestFeatures);
   }
 };
 
