@@ -41,17 +41,24 @@ constexpr char kValidationServicePath[] =
 constexpr char kValidationServiceQuery[] = "?checkOnly=true&access_token=";
 constexpr size_t kResponseMaxBodySize = 4 * 1024 * 1024;  // 4 MiB
 
-constexpr char kTrafficAnnotationMessage[] = R"(
+const GURL GetValidationEndpoint() {
+  return GURL(base::StrCat(
+      {kValidationEndpoint, kValidationServicePath, kValidationServiceQuery}));
+}
+
+const net::NetworkTrafficAnnotationTag GetTrafficAnnotation() {
+  return net::DefineNetworkTrafficAnnotation("chrome_plugin_vm_api",
+                                             R"(
       semantics {
         sender: "Chrome Plugin VM License Checker"
         description:
-          "Communication with the Plugin VM License Checker API to confirm"
+          "Communication with the Plugin VM License Checker API to confirm "
           "that the current managed user has a valid Plugin VM license."
         trigger:
-          "The request is triggered when the system recieves a PluginVmUserId"
+          "The request is triggered when the system receives a PluginVmUserId."
         data:
-          "The only transmitted information is an OAuth token. This information"
-          "is used to verify the Plugin VM license."
+          "The only transmitted information is an OAuth token. This "
+          "information is used to verify the Plugin VM license."
         destination: GOOGLE_OWNED_SERVICE
       }
       policy {
@@ -61,16 +68,7 @@ constexpr char kTrafficAnnotationMessage[] = R"(
         policy_exception_justification:
           "Managed users are not presented with the option to opt-in"
       }
-      })";
-
-const GURL GetValidationEndpoint() {
-  return GURL(base::StrCat(
-      {kValidationEndpoint, kValidationServicePath, kValidationServiceQuery}));
-}
-
-const net::NetworkTrafficAnnotationTag GetTrafficAnnotation() {
-  return net::DefineNetworkTrafficAnnotation("chrome_plugin_vm_api",
-                                             kTrafficAnnotationMessage);
+  )");
 }
 
 // Response Codes that indicate we don't need to evaluate the response body.

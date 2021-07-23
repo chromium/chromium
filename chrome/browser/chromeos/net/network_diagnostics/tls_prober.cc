@@ -28,28 +28,26 @@ namespace network_diagnostics {
 
 namespace {
 
-const char kTrafficAnnotation[] = R"(
-          semantics {
-            sender: "NetworkDiagnosticsRoutines"
-            description:
-                "Routines send network traffic to hosts in order to "
-                "validate the internet connection on a device."
-            trigger:
-                "A routine attempts a socket connection or makes an http/s "
-                "request."
-            data:
-                "No data other than the origin (scheme-host-port) is sent. "
-                "No user identifier is sent along with the data."
-            destination: GOOGLE_OWNED_SERVICE
-          }
-          policy {
-            cookies_allowed: NO
-          }
-      )";
-
 net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() {
   return net::DefineNetworkTrafficAnnotation("network_diagnostics_routines",
-                                             kTrafficAnnotation);
+                                             R"(
+      semantics {
+        sender: "NetworkDiagnosticsRoutines"
+        description:
+            "Routines send network traffic to hosts in order to "
+            "validate the internet connection on a device."
+        trigger:
+            "A routine attempts a socket connection or makes an http/s "
+            "request."
+        data:
+            "No data other than the origin (scheme-host-port) is sent. "
+            "No user identifier is sent along with the data."
+        destination: GOOGLE_OWNED_SERVICE
+      }
+      policy {
+        cookies_allowed: NO
+      }
+  )");
 }
 
 }  // namespace
