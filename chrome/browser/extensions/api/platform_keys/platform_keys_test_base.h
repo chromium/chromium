@@ -55,9 +55,9 @@ class PlatformKeysTestBase : public extensions::MixinBasedExtensionApiTest {
   virtual void PrepareTestSystemSlotOnIO(
       crypto::ScopedTestSystemNSSKeySlot* system_slot);
 
-  SystemTokenStatus system_token_status() { return system_token_status_; }
-  EnrollmentStatus enrollment_status() { return enrollment_status_; }
-  UserStatus user_status() { return user_status_; }
+  SystemTokenStatus system_token_status() const { return system_token_status_; }
+  EnrollmentStatus enrollment_status() const { return enrollment_status_; }
+  UserStatus user_status() const { return user_status_; }
 
   policy::MockConfigurationPolicyProvider* mock_policy_provider() {
     return &mock_policy_provider_;

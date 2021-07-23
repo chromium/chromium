@@ -6,27 +6,19 @@
 
 'use strict';
 
-// This message sent from a browsertest to the background script to test the API
-// behavior for an extension running in a user session with system token
-// enabled.
-const USER_SESSION_WITH_SYSTEM_TOKEN_ENABLED_MODE =
-    'User session with system token enabled mode.';
-// This message sent from a browsertest to the background script to test the API
-// behavior for an extension running in a user session with system token
-// disabled.
-const USER_SESSION_WITH_SYSTEM_TOKEN_DISABLED_MODE =
-    'User session with system token disabled mode.';
-// This message sent from a browsertest to the background script to test the API
-// behavior for an extension running on the login screen.
-const LOGIN_SCREEN_MODE = 'Login screen mode.';
-
 var assertEq = chrome.test.assertEq;
 var assertTrue = chrome.test.assertTrue;
 var assertThrows = chrome.test.assertThrows;
 var fail = chrome.test.fail;
 var succeed = chrome.test.succeed;
 var callbackPass = chrome.test.callbackPass;
-var callbackFail= chrome.test.callbackFail;
+var callbackFail = chrome.test.callbackFail;
+
+// True if the C++ side of the test has configured the test to run in a user
+// session.
+var isUserSessionTest;
+// True if the C++ side of the test has enabled a system token for testing.
+var systemTokenEnabled;
 
 // openssl req -new -x509 -key privkey.pem \
 //   -outform der -out cert.der -days 36500
@@ -1017,25 +1009,18 @@ function runLoginScreenTests(systemToken) {
       systemToken));
 }
 
-// This function is executed when the C++ side of the test sends the
-// test mode. The browser test logic can be found at:
-// c/b/e/api/enterprise_platform_keys/enterprise_platform_keys_apitest_nss.cc
-function testModeListener(message) {
-  switch (message.data) {
-    case USER_SESSION_WITH_SYSTEM_TOKEN_ENABLED_MODE:
-      beforeInUserSessionTests(
-          /*systemTokenEnabled=*/ true, runInUserSessionTests);
-      break;
-    case USER_SESSION_WITH_SYSTEM_TOKEN_DISABLED_MODE:
-      beforeInUserSessionTests(
-          /*systemTokenEnabled=*/ false, runInUserSessionTests);
-      break;
-    case LOGIN_SCREEN_MODE:
-      beforeLoginScreenTests(runLoginScreenTests);
-      break;
-    default:
-      fail('Unknown test mode ${message.data}');
-  }
-}
+chrome.test.getConfig(function(config) {
+  const args = JSON.parse(config.customArg);
+  // Keys of the args map are set by the C++ side to the JS side of the test.
+  // NOTE: the keys must stay in sync with the C++ side of the test.
+  isUserSessionTest = args.isUserSessionTest;
+  systemTokenEnabled = args.systemTokenEnabled;
 
-chrome.test.onMessage.addListener(testModeListener);
+  if (isUserSessionTest) {
+    beforeInUserSessionTests(
+        /*systemTokenEnabled=*/ systemTokenEnabled, runInUserSessionTests);
+    return;
+  }
+
+  beforeLoginScreenTests(runLoginScreenTests);
+});
