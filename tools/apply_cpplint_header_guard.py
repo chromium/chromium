@@ -24,6 +24,8 @@ NO_GUARD_MSG = '  No #ifndef header guard found, suggested CPP variable is'
 
 
 def process_cpplint_recommendations(cpplint_data):
+  root = sys.argv[1] if len(sys.argv) > 1 else ''
+  root = "_".join(root.upper().strip(r'[/]+').split('/'))+"_"
   for entry in cpplint_data:
     entry = entry.split(':')
     header = entry[0]
@@ -40,6 +42,7 @@ def process_cpplint_recommendations(cpplint_data):
         raise Exception('Missing #define: %s:%d' % (header, index + 2))
 
       guard = entry[3].split(' ')[1]
+      guard = guard.replace(root, '') if len(root) > 1 else guard
       content[index] = ('#ifndef %s\n' % guard).encode('utf-8')
       # Since cpplint does not print messages for the #define line, just
       # blindly overwrite the #define that was here.
@@ -51,6 +54,7 @@ def process_cpplint_recommendations(cpplint_data):
       with open(header, 'rb') as f:
         content = f.readlines()
       endif = msg[len(ENDIF_MSG_START):-len(ENDIF_MSG_END)]
+      endif = endif.replace(root, '') if len(root) > 1 else endif
       content[index] = ('%s\n' % endif).encode('utf-8')
     elif msg == NO_GUARD_MSG:
       assert index == -1
