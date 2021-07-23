@@ -210,7 +210,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//components/heap_profiling/multi_process:heap_profiling_java_test_support",
     "//components/metrics:metrics_java",
     "//components/minidump_uploader:minidump_uploader_java",
-    "//components/minidump_uploader:minidump_uploader_javatests",
+    "//components/minidump_uploader:minidump_uploader_java_test_support",
     "//components/policy/android:policy_java",
     "//components/policy/android:policy_java_test_support",
     "//components/safe_browsing/android:safe_browsing_java",

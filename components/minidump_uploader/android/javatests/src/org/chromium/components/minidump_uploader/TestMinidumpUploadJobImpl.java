@@ -4,7 +4,6 @@
 
 package org.chromium.components.minidump_uploader;
 
-import org.chromium.components.minidump_uploader.MinidumpUploaderTest.TestHttpURLConnectionFactory;
 import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
 
 import java.io.File;

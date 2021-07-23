@@ -42,7 +42,8 @@ public class MinidumpUploadCallableTest {
         private Result mMockResult;
 
         public static MinidumpUploader returnsSuccess() {
-            return new MockMinidumpUploader(Result.success(MinidumpUploaderTest.UPLOAD_CRASH_ID));
+            return new MockMinidumpUploader(
+                    Result.success(MinidumpUploaderTestConstants.UPLOAD_CRASH_ID));
         }
 
         public static MinidumpUploader returnsFailure(String message) {
@@ -66,7 +67,7 @@ public class MinidumpUploadCallableTest {
 
     private void createMinidumpFile() throws Exception {
         mTestUpload = new File(mTestRule.getCrashDir(), LOG_FILE_NAME);
-        CrashTestRule.setUpMinidumpFile(mTestUpload, MinidumpUploaderTest.BOUNDARY);
+        CrashTestRule.setUpMinidumpFile(mTestUpload, MinidumpUploaderTestConstants.BOUNDARY);
     }
 
     private void setForcedUpload() {
@@ -370,7 +371,7 @@ public class MinidumpUploadCallableTest {
         Assert.assertTrue(time <= now);
         Assert.assertTrue(time > now - 60 * 60);
 
-        Assert.assertEquals(uploadId, MinidumpUploaderTest.UPLOAD_CRASH_ID);
+        Assert.assertEquals(uploadId, MinidumpUploaderTestConstants.UPLOAD_CRASH_ID);
         Assert.assertEquals(localId, LOCAL_CRASH_ID);
     }
 }

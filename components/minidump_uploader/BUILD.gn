@@ -47,10 +47,31 @@ android_library("minidump_uploader_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
+android_library("minidump_uploader_java_test_support") {
+  testonly = true
+  sources = [
+    "android/javatests/src/org/chromium/components/minidump_uploader/CrashTestRule.java",
+    "android/javatests/src/org/chromium/components/minidump_uploader/MinidumpUploadTestUtility.java",
+    "android/javatests/src/org/chromium/components/minidump_uploader/MinidumpUploaderTestConstants.java",
+    "android/javatests/src/org/chromium/components/minidump_uploader/TestHttpURLConnection.java",
+    "android/javatests/src/org/chromium/components/minidump_uploader/TestHttpURLConnectionFactory.java",
+    "android/javatests/src/org/chromium/components/minidump_uploader/TestMinidumpUploadJobImpl.java",
+    "android/javatests/src/org/chromium/components/minidump_uploader/TestMinidumpUploaderDelegate.java",
+  ]
+  deps = [
+    ":minidump_uploader_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/junit",
+  ]
+}
+
 android_library("minidump_uploader_javatests") {
   testonly = true
   deps = [
     ":minidump_uploader_java",
+    ":minidump_uploader_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
     "//third_party/android_support_test_runner:runner_java",
@@ -59,12 +80,8 @@ android_library("minidump_uploader_javatests") {
   ]
   sources = [
     "android/javatests/src/org/chromium/components/minidump_uploader/CrashFileManagerTest.java",
-    "android/javatests/src/org/chromium/components/minidump_uploader/CrashTestRule.java",
     "android/javatests/src/org/chromium/components/minidump_uploader/MinidumpUploadCallableTest.java",
     "android/javatests/src/org/chromium/components/minidump_uploader/MinidumpUploadJobImplTest.java",
-    "android/javatests/src/org/chromium/components/minidump_uploader/MinidumpUploadTestUtility.java",
     "android/javatests/src/org/chromium/components/minidump_uploader/MinidumpUploaderTest.java",
-    "android/javatests/src/org/chromium/components/minidump_uploader/TestMinidumpUploadJobImpl.java",
-    "android/javatests/src/org/chromium/components/minidump_uploader/TestMinidumpUploaderDelegate.java",
   ]
 }
