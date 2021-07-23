@@ -20,11 +20,13 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_config.h"
@@ -83,6 +85,7 @@ constexpr SkColor kDogfoodButtonColor = gfx::kGoogleGrey500;
 constexpr int kSettingsButtonMarginDip = 8;
 constexpr int kSettingsButtonSizeDip = 14;
 constexpr SkColor kSettingsButtonColor = gfx::kGoogleGrey500;
+constexpr SkColor kSettingsButtonInkDropColor = gfx::kGoogleGrey500;
 
 // ReportQueryView.
 constexpr char kGoogleSansFont[] = "Google Sans";
@@ -446,7 +449,12 @@ void QuickAnswersView::AddSettingsButton() {
                             kSettingsButtonColor));
   settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
-  SetButtonNotifyActionToOnPress(settings_button_);
+
+  views::InkDropHost* const ink_drop = views::InkDrop::Get(settings_button_);
+  ink_drop->SetBaseColor(kSettingsButtonInkDropColor);
+  ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
+  settings_button_->SetHasInkDropActionOnClick(true);
+  views::InstallCircleHighlightPathGenerator(settings_button_);
 }
 
 void QuickAnswersView::AddAssistantIcon() {
