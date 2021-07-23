@@ -107,7 +107,7 @@ public final class TabbedActivityLaunchCauseMetricsTest {
             Criteria.checkThat(
                     histogramCountForValue(LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON),
                     Matchers.is(count + 1));
-        });
+        }, CHROME_LAUNCH_TIMEOUT, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         ChromeApplicationTestUtils.fireHomeScreenIntent(mActivityTestRule.getActivity());
         mActivityTestRule.resumeMainActivityFromLauncher();
         CriteriaHelper.pollInstrumentationThread(() -> {
@@ -147,7 +147,7 @@ public final class TabbedActivityLaunchCauseMetricsTest {
         CriteriaHelper.pollInstrumentationThread(() -> {
             Criteria.checkThat(histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS),
                     Matchers.is(recentsCount + 1));
-        });
+        }, CHROME_LAUNCH_TIMEOUT, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         Assert.assertEquals(mainCount,
                 histogramCountForValue(LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON));
         TestThreadUtils.runOnUiThreadBlocking(
@@ -167,7 +167,7 @@ public final class TabbedActivityLaunchCauseMetricsTest {
             Criteria.checkThat(histogramCountForValue(
                                        LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT),
                     Matchers.is(count));
-        });
+        }, CHROME_LAUNCH_TIMEOUT, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     @Test
