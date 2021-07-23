@@ -1550,21 +1550,6 @@ class BBJSONGenerator(object):
         'win32-dbg',
         'win-archive-dbg',
         'win32-archive-dbg',
-        # New LTC isn't created when LTC becomes LTS, so these builders can go
-        # away
-        "chromeos-arm-generic-ltc",
-        "chromeos-betty-pi-arc-chrome-ltc",
-        "chromeos-eve-chrome-ltc",
-        "chromeos-kevin-chrome-ltc",
-        "linux-chromeos-ltc",
-        "linux64-ltc",
-        # TODO(https://crbug.com/1127088): remove once LTS version has been set
-        "chromeos-arm-generic-lts",
-        "chromeos-betty-pi-arc-chrome-lts",
-        "chromeos-eve-chrome-lts",
-        "chromeos-kevin-chrome-lts",
-        "linux-chromeos-lts",
-        "linux64-lts",
         # TODO crbug.com/1143924: Remove once experimentation is complete
         'Linux Builder Robocrop',
         'Linux Tests Robocrop',
