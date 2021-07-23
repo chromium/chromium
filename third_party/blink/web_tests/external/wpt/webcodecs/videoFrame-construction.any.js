@@ -1,5 +1,6 @@
 // META: global=window,dedicatedworker
 // META: script=/webcodecs/utils.js
+// META: script=/webcodecs/videoFrame-utils.js
 
 test(t => {
   let image = makeImageBitmap(32, 16);
@@ -152,41 +153,12 @@ test(t => {
 }, 'Test invalid buffer constructed VideoFrames');
 
 test(t => {
-  let fmt = 'I420';
-  let vfInit = {format: fmt, timestamp: 1234, codedWidth: 4, codedHeight: 2};
-  let data = new Uint8Array([
-    1, 2, 3, 4, 5, 6, 7, 8,  // y
-    1, 2,                    // u
-    1, 2,                    // v
-  ]);
-  let frame = new VideoFrame(data, vfInit);
-  assert_equals(frame.format, fmt, 'plane format');
-  assert_equals(frame.colorSpace.primaries, 'bt709', 'color primaries');
-  assert_equals(frame.colorSpace.transfer, 'bt709', 'color transfer');
-  assert_equals(frame.colorSpace.matrix, 'bt709', 'color matrix');
-  assert_false(frame.colorSpace.fullRange, 'color range');
-  frame.close();
+  testBufferConstructedI420Frame('Uint8Array(ArrayBuffer)');
+}, 'Test Uint8Array(ArrayBuffer) constructed I420 VideoFrame');
 
-  let y = {offset: 0, stride: 4};
-  let u = {offset: 8, stride: 2};
-  let v = {offset: 10, stride: 2};
-
-  assert_throws_js(TypeError, () => {
-    let y = {offset: 0, stride: 1};
-    let frame = new VideoFrame(data, {...vfInit, layout: [y, u, v]});
-  }, 'y stride too small');
-  assert_throws_js(TypeError, () => {
-    let u = {offset: 8, stride: 1};
-    let frame = new VideoFrame(data, {...vfInit, layout: [y, u, v]});
-  }, 'u stride too small');
-  assert_throws_js(TypeError, () => {
-    let v = {offset: 10, stride: 1};
-    let frame = new VideoFrame(data, {...vfInit, layout: [y, u, v]});
-  }, 'v stride too small');
-  assert_throws_js(TypeError, () => {
-    let frame = new VideoFrame(data.slice(0, 8), vfInit);
-  }, 'data too small');
-}, 'Test buffer constructed I420 VideoFrame');
+test(t => {
+  testBufferConstructedI420Frame('ArrayBuffer');
+}, 'Test ArrayBuffer constructed I420 VideoFrame');
 
 test(t => {
   let fmt = 'I420';

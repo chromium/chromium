@@ -12,8 +12,13 @@
   [CallWith=ScriptState, RaisesException]
   constructor(CanvasImageSource source, optional VideoFrameInit init = {});
 
+  // TODO(https://crbug.com/1231806): Combine w/ ArrayBuffer ctor below when
+  // [AllowShared] BufferSource is supported.
   [CallWith=ScriptState, RaisesException]
-  constructor([AllowShared] BufferSource data, VideoFrameBufferInit init);
+  constructor([AllowShared] ArrayBufferView data, VideoFrameBufferInit init);
+
+  [CallWith=ScriptState, RaisesException]
+  constructor(ArrayBuffer data, VideoFrameBufferInit init);
 
   readonly attribute VideoPixelFormat? format;
 
@@ -47,9 +52,15 @@
 
   // Copy the planes of this frame into |destination| according to |options|.
   // The format of the data is the same as this frame's |format|.
+  // TODO(https://crbug.com/1231806): Combine w/ ArrayBuffer copyTo() below when
+  // [AllowShared] BufferSource is supported.
   [CallWith=ScriptState, RaisesException]
   Promise<sequence<PlaneLayout>> copyTo(
-      [AllowShared] BufferSource destination,
+      [AllowShared] ArrayBufferView destination,
+      optional VideoFrameCopyToOptions options = {});
+  [CallWith=ScriptState, RaisesException]
+  Promise<sequence<PlaneLayout>> copyTo(
+      ArrayBuffer destination,
       optional VideoFrameCopyToOptions options = {});
 
   // Creates a copy of this VideoFrame, which needs to be independently closed.

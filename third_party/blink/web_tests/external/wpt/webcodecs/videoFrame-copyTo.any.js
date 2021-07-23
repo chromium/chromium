@@ -1,20 +1,5 @@
 // META: global=window,dedicatedworker
-
-function makeI420_4x2() {
-  const data = new Uint8Array([
-      1, 2, 3, 4,  // y
-      5, 6, 7, 8,
-      9, 10,       // u
-      11, 12,      // v
-  ]);
-  const init = {
-      format: 'I420',
-      timestamp: 0,
-      codedWidth: 4,
-      codedHeight: 2,
-  };
-  return new VideoFrame(data, init);
-}
+// META: script=/webcodecs/videoFrame-utils.js
 
 function makeRGBA_2x2() {
   const data = new Uint8Array([
@@ -30,24 +15,6 @@ function makeRGBA_2x2() {
   return new VideoFrame(data, init);
 }
 
-function assert_buffer_equals(actual, expected) {
-  assert_true(actual instanceof Uint8Array, 'actual instanceof Uint8Array');
-  assert_true(expected instanceof Uint8Array, 'buffer instanceof Uint8Array');
-  assert_equals(actual.length, expected.length, 'buffer length');
-  for (let i = 0; i < actual.length; i++) {
-    if (actual[i] != expected[i]) {
-      assert_equals(actual[i], expected[i], 'buffer contents at index ' + i);
-    }
-  }
-}
-
-function assert_layout_equals(actual, expected) {
-  assert_equals(actual.length, expected.length, 'layout planes');
-  for (let i = 0; i < actual.length; i++) {
-    assert_object_equals(actual[i], expected[i], 'plane ' + i + ' layout');
-  }
-}
-
 promise_test(async t => {
   const frame = makeI420_4x2();
   frame.close();
@@ -59,24 +26,14 @@ promise_test(async t => {
 }, 'Test closed frame.');
 
 promise_test(async t => {
-  const frame = makeI420_4x2();
-  const expectedLayout = [
-      {offset: 0, stride: 4},
-      {offset: 8, stride: 2},
-      {offset: 10, stride: 2},
-  ];
-  const expectedData = new Uint8Array([
-      1, 2, 3, 4,  // y
-      5, 6, 7, 8,
-      9, 10,       // u
-      11, 12       // v
-  ]);
-  assert_equals(frame.allocationSize(), expectedData.length, 'allocationSize()');
-  const data = new Uint8Array(expectedData.length);
-  const layout = await frame.copyTo(data);
-  assert_layout_equals(layout, expectedLayout);
-  assert_buffer_equals(data, expectedData);
-}, 'Test I420 frame.');
+  const destination = new ArrayBuffer(I420_DATA.length);
+  await testI420_4x2_copyTo(destination);
+}, 'Test copying I420 frame to a non-shared ArrayBuffer');
+
+promise_test(async t => {
+  const destination = new Uint8Array(I420_DATA.length);
+  await testI420_4x2_copyTo(destination);
+}, 'Test copying I420 frame to a non-shared ArrayBufferView');
 
 promise_test(async t => {
   const frame = makeRGBA_2x2();
