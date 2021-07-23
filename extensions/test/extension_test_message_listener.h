@@ -134,6 +134,8 @@ class ExtensionTestMessageListener : public content::NotificationObserver {
     return extension_id_for_message_;
   }
 
+  bool had_user_gesture() const { return had_user_gesture_; }
+
  private:
   // Implements the content::NotificationObserver interface.
   void Observe(int type,
@@ -170,6 +172,10 @@ class ExtensionTestMessageListener : public content::NotificationObserver {
 
   // The extension id from which |message_| was received.
   extensions::ExtensionId extension_id_for_message_;
+
+  // Whether the ExtensionFunction handling the message had an active user
+  // gesture.
+  bool had_user_gesture_ = false;
 
   // The function we need to reply to.
   scoped_refptr<extensions::TestSendMessageFunction> function_;
