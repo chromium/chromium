@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_request_adapter_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_limits.h"
@@ -48,6 +49,7 @@ WGPUDeviceProperties AsDawnType(const GPUDeviceDescriptor* descriptor) {
 }  // anonymous namespace
 
 GPUAdapter::GPUAdapter(
+    GPU* gpu,
     const String& name,
     uint32_t adapter_service_id,
     const WGPUDeviceProperties& properties,
@@ -56,6 +58,7 @@ GPUAdapter::GPUAdapter(
       name_(name),
       adapter_service_id_(adapter_service_id),
       adapter_properties_(properties),
+      gpu_(gpu),
       limits_(MakeGarbageCollected<GPUSupportedLimits>()) {
   InitializeFeatureNameList();
 }
@@ -183,6 +186,7 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
 }
 
 void GPUAdapter::Trace(Visitor* visitor) const {
+  visitor->Trace(gpu_);
   visitor->Trace(features_);
   visitor->Trace(limits_);
   ScriptWrappable::Trace(visitor);

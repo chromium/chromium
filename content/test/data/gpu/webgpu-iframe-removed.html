@@ -151,6 +151,45 @@
           return;
         }
         const device = await adapter.requestDevice();
+        device.queue.onSubmittedWorkDone();
+        /* Wait till the next microtask so we're sure the command flushed */
+        setTimeout(() => {
+          parent.removeIframe();
+        }, 0);
+      });
+
+      // Test creating a mappable buffer and then removing the iframe.
+      // Mappable buffers are tracked because mappings need to be detached
+      // when the context is destroyed.
+      await runTestCase(async () => {
+        const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
+        if (!adapter) {
+          console.warn('WebGPU not supported');
+          parent.removeIframe();
+          return;
+        }
+        const device = await adapter.requestDevice();
+
+        const buffer = device.createBuffer({
+          size: 4,
+          usage: GPUBufferUsage.MAP_READ,
+        });
+
+        parent.removeIframe();
+      });
+
+      // Test creating a mappable buffer and then removing the iframe while
+      // the mapping is in flight.
+      // Mappable buffers are tracked because mappings need to be detached
+      // when the context is destroyed.
+      await runTestCase(async () => {
+        const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
+        if (!adapter) {
+          console.warn('WebGPU not supported');
+          parent.removeIframe();
+          return;
+        }
+        const device = await adapter.requestDevice();
 
         const buffer = device.createBuffer({
           size: 4,
@@ -162,6 +201,58 @@
         setTimeout(() => {
           parent.removeIframe();
         }, 0);
+      });
+
+      // Test removing the iframe while the buffer is mapped.
+      // Mappable buffers are tracked because mappings need to be detached
+      // when the context is destroyed.
+      await runTestCase(async () => {
+        const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
+        if (!adapter) {
+          console.warn('WebGPU not supported');
+          parent.removeIframe();
+          return;
+        }
+        const device = await adapter.requestDevice();
+
+        const buffer = device.createBuffer({
+          size: 4,
+          usage: GPUBufferUsage.MAP_WRITE,
+        });
+
+        const mapping = await buffer.mapAsync(GPUMapMode.WRITE);
+        parent.removeIframe();
+
+        if (mapping !== undefined && mapping.byteLength != 0) {
+          fail('GPUBuffer mapping should be detached')
+        }
+      });
+
+      // Test creating and mapping a buffer after the iframe is removed.
+      await runTestCase(async () => {
+        const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
+        if (!adapter) {
+          console.warn('WebGPU not supported');
+          parent.removeIframe();
+          return;
+        }
+        const device = await adapter.requestDevice();
+
+        /* Get these constants now. The receiver interface may become
+        undefined after the iframe is removed */
+        const USAGE_MAP_WRITE = GPUBufferUsage.MAP_WRITE;
+        const MODE_WRITE = GPUMapMode.WRITE;
+        parent.removeIframe();
+
+        const buffer = device.createBuffer({
+          size: 4,
+          usage: USAGE_MAP_WRITE,
+        });
+
+        const mapping = await buffer.mapAsync(MODE_WRITE);
+        if (mapping !== undefined && mapping.byteLength != 0) {
+          fail('GPUBuffer mapping should be detached')
+        }
       });
 
       window.domAutomationController.send('FINISHED');

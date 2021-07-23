@@ -17,6 +17,7 @@ struct WGPUDeviceProperties;
 namespace blink {
 
 class GPUAdapter;
+class GPUBuffer;
 class GPURequestAdapterOptions;
 class NavigatorBase;
 class ScriptPromiseResolver;
@@ -47,6 +48,13 @@ class GPU final : public ScriptWrappable,
   ScriptPromise requestAdapter(ScriptState* script_state,
                                const GPURequestAdapterOptions* options);
 
+  // Store the buffer in a weak hash set so we can destroy it when the
+  // context is destroyed. Note: there is no need to "untrack" buffers
+  // because Oilpan automatically removes them from the weak hash set
+  // when the GPUBuffer is garbage-collected.
+  // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/third_party/blink/renderer/platform/heap/BlinkGCAPIReference.md#weak-collections
+  void TrackMappableBuffer(GPUBuffer* buffer);
+
  private:
   void OnRequestAdapterCallback(ScriptState* script_state,
                                 const GPURequestAdapterOptions* options,
@@ -60,6 +68,7 @@ class GPU final : public ScriptWrappable,
                                        GPUAdapter* adapter) const;
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
+  HeapHashSet<WeakMember<GPUBuffer>> mappable_buffers_;
 
   DISALLOW_COPY_AND_ASSIGN(GPU);
 };

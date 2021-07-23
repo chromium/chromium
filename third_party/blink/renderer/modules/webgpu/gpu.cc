@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -106,9 +107,19 @@ void GPU::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
+  visitor->Trace(mappable_buffers_);
 }
 
 void GPU::ContextDestroyed() {
+  if (!mappable_buffers_.IsEmpty()) {
+    // Destroy all mappable buffers. This ensures all mappings backed by
+    // shared memory are detached before the WebGPU command buffer and
+    // transfer buffers are destroyed.
+    v8::Isolate* isolate = ThreadState::Current()->GetIsolate();
+    for (GPUBuffer* buffer : mappable_buffers_) {
+      buffer->Destroy(isolate);
+    }
+  }
   if (!dawn_control_client_) {
     return;
   }
@@ -124,7 +135,7 @@ void GPU::OnRequestAdapterCallback(ScriptState* script_state,
   GPUAdapter* adapter = nullptr;
   if (adapter_server_id >= 0) {
     adapter = MakeGarbageCollected<GPUAdapter>(
-        "Default", adapter_server_id, properties, dawn_control_client_);
+        this, "Default", adapter_server_id, properties, dawn_control_client_);
   }
   if (error_message) {
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -222,6 +233,10 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
   UseCounter::Count(ExecutionContext::From(script_state), WebFeature::kWebGPU);
 
   return promise;
+}
+
+void GPU::TrackMappableBuffer(GPUBuffer* buffer) {
+  mappable_buffers_.insert(buffer);
 }
 
 }  // namespace blink

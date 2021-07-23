@@ -51,6 +51,8 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
   void unmap(ScriptState* script_state);
   void destroy(ScriptState* script_state);
 
+  void Destroy(v8::Isolate* isolate);
+
  private:
   ScriptPromise MapAsyncImpl(ScriptState* script_state,
                              uint32_t mode,
@@ -69,7 +71,7 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
       void* data,
       size_t data_length,
       ExecutionContext* execution_context);
-  void ResetMappingState(ScriptState* script_state);
+  void ResetMappingState(v8::Isolate* isolate);
 
   uint64_t size_;
 

@@ -17,6 +17,8 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_callback.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_queue.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -75,6 +77,11 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
       device->GetProcs().deviceCreateBuffer(device->GetHandle(), &dawn_desc));
   if (webgpu_desc->hasLabel())
     buffer->setLabel(webgpu_desc->label());
+
+  if (is_mappable) {
+    device->adapter()->gpu()->TrackMappableBuffer(buffer);
+  }
+
   return buffer;
 }
 
@@ -120,12 +127,16 @@ DOMArrayBuffer* GPUBuffer::getMappedRange(ExecutionContext* execution_context,
 }
 
 void GPUBuffer::unmap(ScriptState* script_state) {
-  ResetMappingState(script_state);
+  ResetMappingState(script_state->GetIsolate());
   GetProcs().bufferUnmap(GetHandle());
 }
 
 void GPUBuffer::destroy(ScriptState* script_state) {
-  ResetMappingState(script_state);
+  Destroy(script_state->GetIsolate());
+}
+
+void GPUBuffer::Destroy(v8::Isolate* isolate) {
+  ResetMappingState(isolate);
   GetProcs().bufferDestroy(GetHandle());
 }
 
@@ -350,11 +361,10 @@ DOMArrayBuffer* GPUBuffer::CreateArrayBufferForMappedData(
   return array_buffer;
 }
 
-void GPUBuffer::ResetMappingState(ScriptState* script_state) {
+void GPUBuffer::ResetMappingState(v8::Isolate* isolate) {
   mapped_ranges_.clear();
 
   for (Member<DOMArrayBuffer>& mapped_array_buffer : mapped_array_buffers_) {
-    v8::Isolate* isolate = script_state->GetIsolate();
     DOMArrayBuffer* array_buffer = mapped_array_buffer.Release();
     DCHECK(array_buffer->IsDetachable(isolate));
 
