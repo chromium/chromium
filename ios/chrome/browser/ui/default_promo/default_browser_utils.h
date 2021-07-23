@@ -33,12 +33,6 @@ enum IOSDefaultBrowserFullscreenPromoAction {
 // by the app.
 extern NSString* const kLastHTTPURLOpenTime;
 
-// The feature parameter to indicate the open links arm.
-extern const char kDefaultBrowserFullscreenPromoCTAExperimentOpenLinksParam[];
-
-// The feature parameter to indicate the switch arm.
-extern const char kDefaultBrowserFullscreenPromoCTAExperimentSwitchParam[];
-
 // The feature parameter to activate the remind me later button.
 extern const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[];
 

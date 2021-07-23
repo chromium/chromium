@@ -58,9 +58,6 @@ extern const base::Feature kLocationPermissionsPrompt;
 // Feature flag that experiments with the default browser fullscreen promo UI.
 extern const base::Feature kDefaultBrowserFullscreenPromoExperiment;
 
-// Feature flag that experiments with the default browser fullscreen promo UI.
-extern const base::Feature kDefaultBrowserFullscreenPromoCTAExperiment;
-
 // Feature flag that enables non-modal default browser promos.
 extern const base::Feature kDefaultPromoNonModal;
 

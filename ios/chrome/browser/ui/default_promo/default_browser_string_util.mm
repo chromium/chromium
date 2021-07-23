@@ -19,22 +19,13 @@
 using l10n_util::GetNSString;
 
 NSString* GetDefaultBrowserPromoTitle() {
-  if (IsInCTAOpenLinksGroup()) {
-    return GetNSString(IDS_IOS_DEFAULT_BROWSER_TITLE_CTA_EXPERIMENT_OPEN_LINKS);
-  }
-  if (IsInCTASwitchGroup()) {
     return GetNSString(IDS_IOS_DEFAULT_BROWSER_TITLE_CTA_EXPERIMENT_SWITCH);
-  }
-  return GetNSString(IDS_IOS_DEFAULT_BROWSER_TITLE);
 }
 
 NSString* GetDefaultBrowserLearnMoreText() {
   if (IsInModifiedStringsGroup()) {
     return GetNSString(IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE);
   }
-  if (IsInCTAOpenLinksGroup() || IsInCTASwitchGroup()) {
     return GetNSString(
         IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE_CTA_EXPERIMENT);
-  }
-  return GetNSString(IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_MESSAGE);
 }

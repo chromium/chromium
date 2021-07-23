@@ -192,22 +192,6 @@ const FeatureEntry::FeatureVariation
          base::size(kAutofillUseMobileLabelDisambiguationShowOne), nullptr}};
 
 const FeatureEntry::FeatureParam
-    kDefaultBrowserFullscreenPromoCTAExperimentSwitch[] = {
-        {kDefaultBrowserFullscreenPromoCTAExperimentSwitchParam, "true"}};
-const FeatureEntry::FeatureParam
-    kDefaultBrowserFullscreenPromoCTAExperimentOpenLinks[] = {
-        {kDefaultBrowserFullscreenPromoCTAExperimentOpenLinksParam, "true"}};
-const FeatureEntry::FeatureVariation
-    kDefaultBrowserFullscreenPromoCTAExperimentVariations[] = {
-        {"Switch to Chrome", kDefaultBrowserFullscreenPromoCTAExperimentSwitch,
-         base::size(kDefaultBrowserFullscreenPromoCTAExperimentSwitch),
-         nullptr},
-        {"Open Links in Chrome",
-         kDefaultBrowserFullscreenPromoCTAExperimentOpenLinks,
-         base::size(kDefaultBrowserFullscreenPromoCTAExperimentOpenLinks),
-         nullptr}};
-
-const FeatureEntry::FeatureParam
     kDefaultBrowserFullscreenPromoExperimentRemindMeLater[] = {
         {kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam, "true"}};
 const FeatureEntry::FeatureVariation
@@ -666,14 +650,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kDetectFormSubmissionOnFormClear)},
-    {"default-browser-fullscreen-promo-cta-experiment",
-     flag_descriptions::kDefaultBrowserFullscreenPromoCTAExperimentName,
-     flag_descriptions::kDefaultBrowserFullscreenPromoCTAExperimentDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         kDefaultBrowserFullscreenPromoCTAExperiment,
-         kDefaultBrowserFullscreenPromoCTAExperimentVariations,
-         "DefaultBrowserFullscreenPromoCTAExperiment")},
     {"password-reuse-detection", flag_descriptions::kPasswordReuseDetectionName,
      flag_descriptions::kPasswordReuseDetectionDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(

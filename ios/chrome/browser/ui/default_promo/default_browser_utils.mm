@@ -133,12 +133,6 @@ NSDate* MostRecentDateForType(DefaultPromoType type) {
 
 NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";
 
-const char kDefaultBrowserFullscreenPromoCTAExperimentOpenLinksParam[] =
-    "show_open_links_title";
-
-const char kDefaultBrowserFullscreenPromoCTAExperimentSwitchParam[] =
-    "show_switch_title";
-
 const char kDefaultPromoNonModalTimeoutParam[] = "timeout";
 
 const char kDefaultPromoNonModalInstructionsParam[] = "instructions_enabled";
@@ -200,20 +194,6 @@ bool IsInModifiedStringsGroup() {
       kDefaultBrowserFullscreenPromoExperiment,
       kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupParam);
   return !paramValue.empty();
-}
-
-bool IsInCTAOpenLinksGroup() {
-  std::string field_trial_param = base::GetFieldTrialParamValueByFeature(
-      kDefaultBrowserFullscreenPromoCTAExperiment,
-      kDefaultBrowserFullscreenPromoCTAExperimentOpenLinksParam);
-  return field_trial_param == "true";
-}
-
-bool IsInCTASwitchGroup() {
-  std::string field_trial_param = base::GetFieldTrialParamValueByFeature(
-      kDefaultBrowserFullscreenPromoCTAExperiment,
-      kDefaultBrowserFullscreenPromoCTAExperimentSwitchParam);
-  return field_trial_param == "true";
 }
 
 bool NonModalPromosEnabled() {
