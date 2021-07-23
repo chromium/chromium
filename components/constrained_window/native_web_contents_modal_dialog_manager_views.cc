@@ -106,9 +106,12 @@ void NativeWebContentsModalDialogManagerViews::Show() {
   base::AutoReset<bool> within_show(&within_show_, true);
 
   constrained_window::UpdateWebContentsModalDialogPosition(widget, host_);
-  widget->Show();
-  if (host_->ShouldActivateDialog())
+  if (host_->ShouldActivateDialog()) {
+    widget->Show();
     Focus();
+  } else {
+    widget->ShowInactive();
+  }
 
 #if defined(USE_AURA)
   // TODO(pkotwicz): Control the z-order of the constrained dialog via

@@ -667,11 +667,11 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ModalPopUnder) {
   ASSERT_EQ(popup_browser, chrome::FindLastActive());
 }
 
-#if defined(OS_MAC)
-// Tests that the print preview dialog can't be used to create popunders. This
-// is due to a bug in MacViews that causes dialogs to activate their parents
-// (https://crbug.com/1073587). For now, test the PopunderBlocker that was
-// installed to prevent this.
+#if defined(OS_MAC) || defined(OS_WIN)
+// Tests that the print preview dialog can't be used to create popunders. The
+// test was added due to a bug in MacViews that causes dialogs to activate
+// their parents (https://crbug.com/1073587).
+// TODO(weili): investigate why this failed on Linux and ChromeOS bots.
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PrintPreviewPopUnder) {
   WebContents* original_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -686,25 +686,25 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PrintPreviewPopUnder) {
   Browser* popup_browser = chrome::FindLastActive();
   ASSERT_NE(popup_browser, browser());
 
-  // Force a print preview dialog to be shown. This will cause activation of the
+  // Show a print preview dialog and confirm it doesn't activate the
   // browser window containing the original WebContents.
-
-  ui_test_utils::BrowserDeactivationWaiter waiter(popup_browser);
+  content::TestNavigationObserver observer(nullptr);
+  observer.StartWatchingNewWebContents();
   printing::PrintPreviewDialogController* dialog_controller =
       printing::PrintPreviewDialogController::GetInstance();
   WebContents* print_preview_dialog =
       dialog_controller->GetOrCreatePreviewDialog(original_tab);
-  waiter.WaitForDeactivation();
+  observer.Wait();
+  observer.StopWatchingNewWebContents();
+  EXPECT_EQ(popup_browser, chrome::FindLastActive());
 
   // Navigate away; this will close the print preview dialog.
-
   content::WebContentsDestroyedWatcher watcher(print_preview_dialog);
   ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
   watcher.Wait();
 
-  // Verify that after the dialog is closed, the popup is in front again.
-
-  ASSERT_EQ(popup_browser, chrome::FindLastActive());
+  // The popup is still in front and being activated.
+  EXPECT_EQ(popup_browser, chrome::FindLastActive());
 }
 #endif
 
