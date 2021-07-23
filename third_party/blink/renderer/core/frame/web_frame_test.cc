@@ -13975,7 +13975,8 @@ TEST_F(WebFrameTest, RemoteFrameCompositingScaleFactor) {
   // The compositing scale factor tells the OOPIF compositor to raster at a
   // lower scale since the frame is scaled down in the parent webview.
   EXPECT_EQ(remote_frame->GetCompositingRect(), gfx::Rect(0, 0, 1600, 1200));
-  EXPECT_EQ(remote_frame->GetCompositingScaleFactor(), 0.5f);
+  EXPECT_EQ(remote_frame->GetFrame()->View()->GetCompositingScaleFactor(),
+            0.5f);
 }
 
 TEST_F(WebFrameTest, RotatedRemoteFrameCompositingScaleFactor) {
@@ -14013,7 +14014,8 @@ TEST_F(WebFrameTest, RotatedRemoteFrameCompositingScaleFactor) {
   // The compositing scale factor tells the OOPIF compositor to raster at a
   // lower scale since the frame is scaled down in the parent webview.
   EXPECT_EQ(remote_frame->GetCompositingRect(), gfx::Rect(0, 0, 1600, 1200));
-  EXPECT_EQ(remote_frame->GetCompositingScaleFactor(), 0.5f);
+  EXPECT_EQ(remote_frame->GetFrame()->View()->GetCompositingScaleFactor(),
+            0.5f);
 }
 
 TEST_F(WebFrameTest, ZeroScaleRemoteFrameCompositingScaleFactor) {
@@ -14050,7 +14052,8 @@ TEST_F(WebFrameTest, ZeroScaleRemoteFrameCompositingScaleFactor) {
 
   // The compositing scale factor tells the OOPIF compositor to raster at a
   // reasonable minimum scale even though the iframe's transform scale is zero.
-  EXPECT_EQ(remote_frame->GetCompositingScaleFactor(), 0.25f);
+  EXPECT_EQ(remote_frame->GetFrame()->View()->GetCompositingScaleFactor(),
+            0.25f);
 }
 
 TEST_F(WebFrameTest, LargeScaleRemoteFrameCompositingScaleFactor) {
@@ -14086,7 +14089,8 @@ TEST_F(WebFrameTest, LargeScaleRemoteFrameCompositingScaleFactor) {
   RunPendingTasks();
 
   // The compositing scale factor is at most 5.0 irrespective of iframe scale.
-  EXPECT_EQ(remote_frame->GetCompositingScaleFactor(), 5.0f);
+  EXPECT_EQ(remote_frame->GetFrame()->View()->GetCompositingScaleFactor(),
+            5.0f);
 }
 
 }  // namespace blink

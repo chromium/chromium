@@ -120,9 +120,6 @@ class WebRemoteFrame : public WebFrame {
 
   virtual void DidStartLoading() = 0;
 
-  // Returns true if this frame should be ignored during hittesting.
-  virtual bool IsIgnoredForHitTest() const = 0;
-
   // Update the user activation state in appropriate part of this frame's
   // "local" frame tree (ancestors-only vs all-nodes).
   //
@@ -133,13 +130,6 @@ class WebRemoteFrame : public WebFrame {
       mojom::UserActivationNotificationType notification_type) = 0;
 
   virtual void SetHadStickyUserActivationBeforeNavigation(bool value) = 0;
-
-  virtual void SynchronizeVisualProperties() = 0;
-  virtual void ResendVisualProperties() = 0;
-
-  // Returns the ideal raster scale factor for the OOPIF's compositor so that it
-  // doesn't raster at a higher scale than it needs to.
-  virtual float GetCompositingScaleFactor() = 0;
 
   // Unique name is an opaque identifier for maintaining association with
   // session restore state for this frame.

@@ -380,10 +380,6 @@ void WebRemoteFrameImpl::DidStartLoading() {
   GetFrame()->DidStartLoading();
 }
 
-bool WebRemoteFrameImpl::IsIgnoredForHitTest() const {
-  return GetFrame()->IsIgnoredForHitTest();
-}
-
 void WebRemoteFrameImpl::UpdateUserActivationState(
     mojom::blink::UserActivationUpdateType update_type,
     mojom::blink::UserActivationNotificationType notification_type) {
@@ -403,18 +399,6 @@ v8::Local<v8::Object> WebRemoteFrameImpl::GlobalProxy() const {
 
 gfx::Rect WebRemoteFrameImpl::GetCompositingRect() {
   return GetFrame()->View()->GetCompositingRect();
-}
-
-void WebRemoteFrameImpl::SynchronizeVisualProperties() {
-  GetFrame()->SynchronizeVisualProperties();
-}
-
-void WebRemoteFrameImpl::ResendVisualProperties() {
-  GetFrame()->ResendVisualProperties();
-}
-
-float WebRemoteFrameImpl::GetCompositingScaleFactor() {
-  return GetFrame()->View()->GetCompositingScaleFactor();
 }
 
 WebString WebRemoteFrameImpl::UniqueName() const {

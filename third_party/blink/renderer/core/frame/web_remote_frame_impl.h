@@ -95,15 +95,11 @@ class CORE_EXPORT WebRemoteFrameImpl final
   void SetReplicatedInsecureNavigationsSet(const WebVector<unsigned>&) override;
   void SetReplicatedIsAdSubframe(bool is_ad_subframe) override;
   void DidStartLoading() override;
-  bool IsIgnoredForHitTest() const override;
   void UpdateUserActivationState(
       mojom::blink::UserActivationUpdateType update_type,
       mojom::blink::UserActivationNotificationType notification_type) override;
   void SetHadStickyUserActivationBeforeNavigation(bool value) override;
   v8::Local<v8::Object> GlobalProxy() const override;
-  void SynchronizeVisualProperties() override;
-  void ResendVisualProperties() override;
-  float GetCompositingScaleFactor() override;
   WebString UniqueName() const override;
   const FrameVisualProperties& GetPendingVisualPropertiesForTesting()
       const override;
