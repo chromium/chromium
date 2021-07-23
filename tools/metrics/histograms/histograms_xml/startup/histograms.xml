@@ -615,7 +615,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>chrome-incognito@google.com</owner>
   <summary>
     Records whether Incognito switch was present in commmand line switches and
-    if Incognito mode was enforced or denied.
+    if Incognito mode was enforced or denied. This is recorded during browser
+    startup when commandline is processed.
   </summary>
 </histogram>
 
