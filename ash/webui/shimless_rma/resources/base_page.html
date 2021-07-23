@@ -1,12 +1,39 @@
 <style include="cr-shared-style shimless-rma-shared">
-  .header-row {
+  .page-wrapper {
+    padding: 50px 0 50px 0;
+    width:  100%;
   }
-  .body-row {
+
+  :host([orientation=row]) .page-wrapper {
+    display: flex;
+    flex-direction: column;
   }
-  .header-column {
+
+  :host([orientation=column]) .page-wrapper {
+    display: flex;
+    flex-direction: row;
   }
-  .header-row {
+
+  :host([orientation=row]) .header {
   }
+  :host([orientation=row]) .body {
+  }
+
+  :host([orientation=column]) .header {
+    width: 900px;
+    padding-right: 50px;
+  }
+
+  :host([orientation=column]) .body {
+    width: 100%;
+  }
+
 </style>
-<slot name="header" class$="[[headerClass_(orientation)]]"></slot>
-<slot name="body" class$="[[bodyClass_(orientation)]]"></slot>
+<div class="page-wrapper">
+  <div class="header">
+    <slot name="header"></slot>
+  </div>
+  <div class="body">
+    <slot name="body"></slot>
+  </div>
+</div>

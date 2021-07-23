@@ -27,7 +27,8 @@ export class BasePageElement extends PolymerElement {
        */
       orientation: {
         type: String,
-        value: "row",
+        value: 'row',
+        reflectToAttribute: true,
       },
     };
   }
@@ -35,16 +36,6 @@ export class BasePageElement extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
-  }
-
-  /** @protected */
-  headerClass_() {
-    return `header-${this.orientation}`;
-  }
-
-  /** @protected */
-  bodyClass_() {
-    return `body-${this.orientation}`;
   }
 };
 
