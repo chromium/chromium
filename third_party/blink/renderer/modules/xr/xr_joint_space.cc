@@ -39,6 +39,13 @@ device::mojom::blink::XRNativeOriginInformationPtr XRJointSpace::NativeOrigin()
       std::move(joint_space_info));
 }
 
+void XRJointSpace::UpdateTracking(
+    std::unique_ptr<TransformationMatrix> mojo_from_joint,
+    float radius) {
+  mojo_from_joint_space_ = std::move(mojo_from_joint);
+  radius_ = radius;
+}
+
 bool XRJointSpace::IsStationary() const {
   return false;
 }

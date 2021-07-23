@@ -33,6 +33,9 @@ class XRJointSpace : public XRSpace {
 
   device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin() const final;
 
+  void UpdateTracking(std::unique_ptr<TransformationMatrix> mojo_from_joint,
+                      float radius);
+
   bool IsStationary() const override;
 
   std::string ToString() const override;
@@ -40,9 +43,9 @@ class XRJointSpace : public XRSpace {
   void Trace(Visitor*) const override;
 
  private:
-  const std::unique_ptr<TransformationMatrix> mojo_from_joint_space_;
+  std::unique_ptr<TransformationMatrix> mojo_from_joint_space_;
   const device::mojom::blink::XRHandJoint joint_;
-  const float radius_;
+  float radius_;
   const device::mojom::XRHandedness handedness_;
 };
 

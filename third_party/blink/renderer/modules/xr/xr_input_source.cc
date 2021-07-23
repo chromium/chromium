@@ -108,10 +108,7 @@ XRInputSource* XRInputSource::CreateOrUpdateFrom(
   }
 
   if (updated_source->state_.is_visible) {
-    if (state->hand_tracking_data.get()) {
-      updated_source->hand_ = MakeGarbageCollected<XRHand>(
-          state->hand_tracking_data.get(), updated_source);
-    }
+    updated_source->UpdateHand(state->hand_tracking_data.get());
   }
 
   updated_source->state_.emulated_position = state->emulated_position;
@@ -211,6 +208,11 @@ bool XRInputSource::InvalidatesSameObject(
     }
   }
 
+  if ((state->hand_tracking_data.get() && !hand_) ||
+      (!state->hand_tracking_data.get() && hand_)) {
+    return true;
+  }
+
   return false;
 }
 
@@ -240,6 +242,19 @@ void XRInputSource::UpdateGamepad(
     gamepad_->UpdateFromDeviceState(*gamepad, cross_origin_isolated_capability);
   } else {
     gamepad_ = nullptr;
+  }
+}
+
+void XRInputSource::UpdateHand(
+    const device::mojom::blink::XRHandTrackingData* hand_tracking_data) {
+  if (hand_tracking_data) {
+    if (!hand_) {
+      hand_ = MakeGarbageCollected<XRHand>(hand_tracking_data, this);
+    } else {
+      hand_->updateFromHandTrackingData(hand_tracking_data, this);
+    }
+  } else {
+    hand_ = nullptr;
   }
 }
 
