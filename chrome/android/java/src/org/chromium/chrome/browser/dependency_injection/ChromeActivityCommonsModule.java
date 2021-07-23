@@ -21,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -58,7 +57,7 @@ import dagger.Provides;
  */
 @Module
 public class ChromeActivityCommonsModule {
-    private final ChromeActivity mActivity;
+    private final AppCompatActivity mActivity;
     private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final BrowserControlsManager mBrowserControlsManager;
@@ -93,7 +92,7 @@ public class ChromeActivityCommonsModule {
 
     /** See {@link ModuleFactoryOverrides} */
     public interface Factory {
-        ChromeActivityCommonsModule create(ChromeActivity activity,
+        ChromeActivityCommonsModule create(AppCompatActivity activity,
                 Supplier<BottomSheetController> bottomSheetControllerSupplier,
                 Supplier<TabModelSelector> tabModelSelectorSupplier,
                 BrowserControlsManager browserControlsManager,
@@ -122,7 +121,7 @@ public class ChromeActivityCommonsModule {
                 TabModelInitializer tabModelInitializer, @ActivityType int activityType);
     }
 
-    public ChromeActivityCommonsModule(ChromeActivity activity,
+    public ChromeActivityCommonsModule(AppCompatActivity activity,
             Supplier<BottomSheetController> bottomSheetControllerSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             BrowserControlsManager browserControlsManager,
@@ -223,18 +222,6 @@ public class ChromeActivityCommonsModule {
     }
 
     @Provides
-    public ChromeActivity<?> provideChromeActivity() {
-        // Ideally providing Context or Activity should be enough, but currently a lot of code is
-        // coupled specifically to ChromeActivity.
-        return mActivity;
-    }
-
-    @Provides
-    public WindowAndroid provideWindowAndroid() {
-        return mActivity.getWindowAndroid();
-    }
-
-    @Provides
     @Named(ACTIVITY_CONTEXT)
     public Context provideContext() {
         return mActivity;
@@ -279,6 +266,11 @@ public class ChromeActivityCommonsModule {
     @Provides
     public TabContentManager provideTabContentManager() {
         return mTabContentManager;
+    }
+
+    @Provides
+    public WindowAndroid provideWindowAndroid() {
+        return mActivityWindowAndroid;
     }
 
     @Provides

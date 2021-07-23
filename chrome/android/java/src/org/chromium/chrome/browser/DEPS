@@ -32,9 +32,6 @@ specific_include_rules = {
   "BaseCustomTabRootUiCoordinator\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "ChromeActivityCommonsModule\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
   "DisplayCutoutTabHelper\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
