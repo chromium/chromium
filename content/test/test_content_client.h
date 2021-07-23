@@ -17,8 +17,9 @@ class TestContentClient : public ContentClient {
   ~TestContentClient() override;
 
   // ContentClient:
-  base::StringPiece GetDataResource(int resource_id,
-                                    ui::ScaleFactor scale_factor) override;
+  base::StringPiece GetDataResource(
+      int resource_id,
+      ui::ResourceScaleFactor scale_factor) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestContentClient);

@@ -79,8 +79,9 @@ std::u16string ContentClient::GetLocalizedString(
   return std::u16string();
 }
 
-base::StringPiece ContentClient::GetDataResource(int resource_id,
-                                                 ui::ScaleFactor scale_factor) {
+base::StringPiece ContentClient::GetDataResource(
+    int resource_id,
+    ui::ResourceScaleFactor scale_factor) {
   return base::StringPiece();
 }
 

@@ -157,8 +157,9 @@ class CONTENT_EXPORT ContentClient {
                                             const std::u16string& replacement);
 
   // Return the contents of a resource in a StringPiece given the resource id.
-  virtual base::StringPiece GetDataResource(int resource_id,
-                                            ui::ScaleFactor scale_factor);
+  virtual base::StringPiece GetDataResource(
+      int resource_id,
+      ui::ResourceScaleFactor scale_factor);
 
   // Returns the raw bytes of a scale independent data resource.
   virtual base::RefCountedMemory* GetDataResourceBytes(int resource_id);

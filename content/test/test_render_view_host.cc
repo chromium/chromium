@@ -373,10 +373,11 @@ void TestRenderViewHost::TestOnUpdateStateWithFile(
 RenderViewHostImplTestHarness::RenderViewHostImplTestHarness()
     : RenderViewHostTestHarness(
           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-  std::vector<ui::ScaleFactor> scale_factors;
+  std::vector<ui::ResourceScaleFactor> scale_factors;
   scale_factors.push_back(ui::SCALE_FACTOR_100P);
   scoped_set_supported_scale_factors_ =
-      std::make_unique<ui::test::ScopedSetSupportedScaleFactors>(scale_factors);
+      std::make_unique<ui::test::ScopedSetSupportedResourceScaleFactors>(
+          scale_factors);
 }
 
 RenderViewHostImplTestHarness::~RenderViewHostImplTestHarness() {

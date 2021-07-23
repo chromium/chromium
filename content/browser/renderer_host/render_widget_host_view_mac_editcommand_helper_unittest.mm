@@ -142,9 +142,10 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
   auto agent_scheduling_group_host =
       std::make_unique<AgentSchedulingGroupHost>(*process_host);
   // Populates |g_supported_scale_factors|.
-  std::vector<ui::ScaleFactor> supported_factors;
+  std::vector<ui::ResourceScaleFactor> supported_factors;
   supported_factors.push_back(ui::SCALE_FACTOR_100P);
-  ui::test::ScopedSetSupportedScaleFactors scoped_supported(supported_factors);
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped_supported(
+      supported_factors);
 
   @autoreleasepool {
     int32_t routing_id = process_host->GetNextRoutingID();
