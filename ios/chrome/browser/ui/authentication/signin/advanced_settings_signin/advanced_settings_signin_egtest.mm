@@ -197,7 +197,8 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
 // Tests that a user account with a sync password displays a sync error
 // message after sign-in.
-- (void)testSigninOpenSyncSettingsWithPasswordError {
+// TODO(crbug.com/1232566) Re-enable test.
+- (void)DISABLED_testSigninOpenSyncSettingsWithPasswordError {
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:@"hello"];
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
