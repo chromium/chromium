@@ -24,22 +24,29 @@ Highlight::~Highlight() = default;
 
 void Highlight::Trace(blink::Visitor* visitor) const {
   visitor->Trace(highlight_ranges_);
-  visitor->Trace(highlight_registry_);
+  visitor->Trace(containing_highlight_registries_);
   ScriptWrappable::Trace(visitor);
+}
+
+void Highlight::ScheduleRepaintsInContainingHighlightRegistries() const {
+  for (const auto& entry : containing_highlight_registries_) {
+    DCHECK_GT(entry.value, 0u);
+    Member<HighlightRegistry> highlight_registry = entry.key;
+    highlight_registry->ScheduleRepaint();
+  }
 }
 
 Highlight* Highlight::addForBinding(ScriptState*,
                                     AbstractRange* range,
                                     ExceptionState&) {
-  if (highlight_ranges_.insert(range).is_new_entry && times_registered_)
-    highlight_registry_->ScheduleRepaint();
+  if (highlight_ranges_.insert(range).is_new_entry)
+    ScheduleRepaintsInContainingHighlightRegistries();
   return this;
 }
 
 void Highlight::clearForBinding(ScriptState*, ExceptionState&) {
   highlight_ranges_.clear();
-  if (times_registered_)
-    highlight_registry_->ScheduleRepaint();
+  ScheduleRepaintsInContainingHighlightRegistries();
 }
 
 bool Highlight::deleteForBinding(ScriptState*,
@@ -48,8 +55,7 @@ bool Highlight::deleteForBinding(ScriptState*,
   auto iterator = highlight_ranges_.find(range);
   if (iterator != highlight_ranges_.end()) {
     highlight_ranges_.erase(iterator);
-    if (times_registered_)
-      highlight_registry_->ScheduleRepaint();
+    ScheduleRepaintsInContainingHighlightRegistries();
     return true;
   }
   return false;
@@ -67,8 +73,7 @@ wtf_size_t Highlight::size() const {
 
 void Highlight::setPriority(const int32_t& priority) {
   priority_ = priority;
-  if (times_registered_)
-    highlight_registry_->ScheduleRepaint();
+  ScheduleRepaintsInContainingHighlightRegistries();
 }
 
 bool Highlight::Contains(AbstractRange* range) const {
@@ -76,17 +81,21 @@ bool Highlight::Contains(AbstractRange* range) const {
 }
 
 void Highlight::RegisterIn(HighlightRegistry* highlight_registry) {
-  // TODO(crbug.com/1225034): This check will fail if the Highlight is added to
-  // HighlightRegistries of multiple same-domain iframes.
-  DCHECK(!times_registered_ || highlight_registry_ == highlight_registry);
-  highlight_registry_ = highlight_registry;
-  ++times_registered_;
+  auto map_iterator = containing_highlight_registries_.find(highlight_registry);
+  if (map_iterator == containing_highlight_registries_.end()) {
+    containing_highlight_registries_.insert(highlight_registry, 1);
+  } else {
+    DCHECK_GT(map_iterator->value, 0u);
+    map_iterator->value++;
+  }
 }
 
-void Highlight::Deregister() {
-  DCHECK(times_registered_);
-  if (!--times_registered_)
-    highlight_registry_ = nullptr;
+void Highlight::DeregisterFrom(HighlightRegistry* highlight_registry) {
+  auto map_iterator = containing_highlight_registries_.find(highlight_registry);
+  DCHECK_NE(map_iterator, containing_highlight_registries_.end());
+  DCHECK_GT(map_iterator->value, 0u);
+  if (--map_iterator->value == 0)
+    containing_highlight_registries_.erase(map_iterator);
 }
 
 Highlight::IterationSource::IterationSource(const Highlight& highlight)

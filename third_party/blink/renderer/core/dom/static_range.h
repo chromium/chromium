@@ -65,6 +65,7 @@ class CORE_EXPORT StaticRange final : public AbstractRange {
   bool IsValid() const;
   bool CrossesContainBoundary() const;
   bool IsStaticRange() const override { return true; }
+  Document& OwnerDocument() const override { return *owner_document_.Get(); }
 
   void Trace(Visitor*) const override;
 

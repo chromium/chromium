@@ -50,7 +50,8 @@ void HighlightRegistry::ValidateHighlightMarkers() {
     const auto& highlight_name = highlight_registry_map_entry->highlight_name;
     const auto& highlight = highlight_registry_map_entry->highlight;
     for (const auto& abstract_range : highlight->GetRanges()) {
-      if (!abstract_range->collapsed()) {
+      if (abstract_range->OwnerDocument() == document &&
+          !abstract_range->collapsed()) {
         auto* static_range = DynamicTo<StaticRange>(*abstract_range);
         if (static_range && (!static_range->IsValid() ||
                              static_range->CrossesContainBoundary()))
@@ -77,7 +78,7 @@ HighlightRegistry* HighlightRegistry::setForBinding(
     ExceptionState& exception_state) {
   auto highlights_iterator = GetMapIterator(highlight_name);
   if (highlights_iterator != highlights_.end()) {
-    highlights_iterator->Get()->highlight->Deregister();
+    highlights_iterator->Get()->highlight->DeregisterFrom(this);
     // It's necessary to delete it and insert a new entry to the registry
     // instead of just modifying the existing one so the insertion order is
     // preserved.
@@ -92,7 +93,7 @@ HighlightRegistry* HighlightRegistry::setForBinding(
 
 void HighlightRegistry::clearForBinding(ScriptState*, ExceptionState&) {
   for (const auto& highlight_registry_map_entry : highlights_) {
-    highlight_registry_map_entry->highlight->Deregister();
+    highlight_registry_map_entry->highlight->DeregisterFrom(this);
   }
   highlights_.clear();
   ScheduleRepaint();
@@ -103,7 +104,7 @@ bool HighlightRegistry::deleteForBinding(ScriptState*,
                                          ExceptionState&) {
   auto highlights_iterator = GetMapIterator(highlight_name);
   if (highlights_iterator != highlights_.end()) {
-    highlights_iterator->Get()->highlight->Deregister();
+    highlights_iterator->Get()->highlight->DeregisterFrom(this);
     highlights_.erase(highlights_iterator);
     ScheduleRepaint();
     return true;

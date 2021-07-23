@@ -65,21 +65,18 @@ class CORE_EXPORT Highlight : public ScriptWrappable,
   }
 
   void RegisterIn(HighlightRegistry* highlight_registry);
-  void Deregister();
+  void DeregisterFrom(HighlightRegistry* highlight_registry);
 
  private:
   HeapLinkedHashSet<Member<AbstractRange>> highlight_ranges_;
   int32_t priority_ = 0;
-  // Since a Highlight can be registered many times in the HighlightRegistry
-  // under different names, we need to keep track of the number of times it's
-  // present in the registry (|times_registered_|) to know when it's not
-  // registered anymore (can't be done only with |highlight_registry_|). If the
-  // Highlight is not registered anywhere then we avoid scheduling repaints in
-  // case of modifications to it.
-  // TODO(crbug.com/1225034): This is not taking into account when a Highlight
-  // is added to HighlightRegistries of multiple same-domain iframes.
-  unsigned times_registered_ = 0;
-  Member<HighlightRegistry> highlight_registry_ = nullptr;
+  // Since a Highlight can be registered many times under different names in
+  // many HighlightRegistries, we need to keep track of the number of times
+  // it's present in each registry. If the Highlight is not registered anywhere,
+  // then we avoid scheduling repaints in case of modifications to it.
+  HeapHashMap<Member<HighlightRegistry>, unsigned>
+      containing_highlight_registries_;
+  void ScheduleRepaintsInContainingHighlightRegistries() const;
 };
 
 }  // namespace blink

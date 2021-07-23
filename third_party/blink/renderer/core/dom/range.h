@@ -66,7 +66,7 @@ class CORE_EXPORT Range final : public AbstractRange {
 
   void Dispose();
 
-  Document& OwnerDocument() const {
+  Document& OwnerDocument() const override {
     DCHECK(owner_document_);
     return *owner_document_.Get();
   }
