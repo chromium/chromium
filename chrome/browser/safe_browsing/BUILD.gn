@@ -120,8 +120,6 @@ static_library("safe_browsing") {
       "network_context_service_factory.h",
       "safe_browsing_navigation_observer_manager_factory.cc",
       "safe_browsing_navigation_observer_manager_factory.h",
-      "safe_browsing_navigation_throttle.cc",
-      "safe_browsing_navigation_throttle.h",
       "safe_browsing_service.cc",
       "safe_browsing_service.h",
       "services_delegate.cc",
