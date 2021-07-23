@@ -846,6 +846,31 @@ public class AwContentsTest {
     }
 
     /**
+     * Regression test for https://crbug.com/1226748. Call stopLoading() before any page has been
+     * loaded, load a page, and then load a JavaScript URL. The JavaScript URL should execute.
+     */
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    public void testJavaScriptUrlAfterStopLoading() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+
+        // It should always be safe to call stopLoading() even if we haven't loaded anything yet.
+        mActivityTestRule.stopLoading(awContents);
+        mActivityTestRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(),
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+        mActivityTestRule.loadUrlAsync(awContents, "javascript:location.reload()");
+
+        // Wait for the page to reload and trigger another onPageFinished()
+        mContentsClient.getOnPageFinishedHelper().waitForCallback(
+                0, 2, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+    }
+
+    /**
      * Regression test for https://crbug.com/1145717. Load a URL that requires fixing and verify
      * that the legacy behavior is preserved (i.e. that the URL is fixed + that no crashes happen in
      * the product).
