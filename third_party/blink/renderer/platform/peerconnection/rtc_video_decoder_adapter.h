@@ -173,7 +173,6 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
 
   // Thread management.
   SEQUENCE_CHECKER(media_sequence_checker_);
-  SEQUENCE_CHECKER(worker_sequence_checker_);
   SEQUENCE_CHECKER(decoding_sequence_checker_);
 
   base::WeakPtr<RTCVideoDecoderAdapter> weak_this_;
