@@ -7031,6 +7031,10 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::
              kAutofillEnablePasswordInfoBarAccountIndicationFooter)},
 
+    {"incognito-ntp-realbox", flag_descriptions::kIncognitoNtpRealBoxName,
+     flag_descriptions::kIncognitoNtpRealBoxDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kIncognitoNtpRealBox)},
+
     {"incognito-screenshot", flag_descriptions::kIncognitoScreenshotName,
      flag_descriptions::kIncognitoScreenshotDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kIncognitoScreenshot)},

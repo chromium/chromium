@@ -92,6 +92,7 @@ extern const base::Feature kGoogleLensSdkIntent;
 extern const base::Feature kHandleMediaIntents;
 extern const base::Feature kHomepagePromoCard;
 extern const base::Feature kImmersiveUiMode;
+extern const base::Feature kIncognitoNtpRealBox;
 extern const base::Feature kIncognitoScreenshot;
 extern const base::Feature kImprovedA2HS;
 extern const base::Feature kInlineUpdateFlow;

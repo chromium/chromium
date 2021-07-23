@@ -1498,6 +1498,11 @@ const char kUpdateHistoryEntryPointsInIncognitoDescription[] =
     "removed for iOS and Desktop. An educative placeholder will be shown for "
     "Android history page.";
 
+const char kIncognitoNtpRealBoxName[] =
+    "Incognito New Tab Page Real Search Box";
+const char kIncognitoNtpRealBoxDescription[] =
+    "When enabled, Incognito New Tap Page will display a Real Search Box.";
+
 const char kIncognitoScreenshotName[] = "Incognito Screenshot";
 const char kIncognitoScreenshotDescription[] =
     "Enables Incognito screenshots on Android. It will also make Incognito "
