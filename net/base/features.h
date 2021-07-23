@@ -375,11 +375,6 @@ NET_EXPORT extern const base::FeatureParam<bool> kFirstPartySetsIsDogfooder;
 // compatibility risk.
 NET_EXPORT extern const base::Feature kSameSiteCookiesBugfix1166211;
 
-// When this feature is enabled, no CookieChangeDispatcher notifications will be
-// sent when loading cookies from the persistent store. All other change
-// notifications are still dispatched as usual.
-NET_EXPORT extern const base::Feature kNoCookieChangeNotificationOnLoad;
-
 #if BUILDFLAG(ENABLE_REPORTING)
 // When enabled this feature will allow a new Reporting-Endpoints header to
 // configure reporting endpoints for report delivery. This is used to support

@@ -795,16 +795,13 @@ void CookieMonster::StoreLoadedCookies(
   // removed, and sync'd.
   CookieItVector cookies_with_control_chars;
 
-  bool dispatch_change = !base::FeatureList::IsEnabled(
-      features::kNoCookieChangeNotificationOnLoad);
-
   for (auto& cookie : cookies) {
     CanonicalCookie* cookie_ptr = cookie.get();
     CookieAccessResult access_result;
     access_result.access_semantics = CookieAccessSemantics::UNKNOWN;
     auto inserted = InternalInsertCookie(
         GetKey(cookie_ptr->Domain()), std::move(cookie),
-        false /* sync_to_store */, access_result, dispatch_change);
+        false /* sync_to_store */, access_result, false /* dispatch_change */);
     const Time cookie_access_time(cookie_ptr->LastAccessDate());
     if (earliest_access_time_.is_null() ||
         cookie_access_time < earliest_access_time_) {
