@@ -132,12 +132,12 @@
 #include "chrome/browser/ash/policy/handlers/configuration_policy_handler_chromeos.h"
 #include "chrome/browser/ash/policy/handlers/lacros_availability_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
-#include "chrome/browser/ash/policy/login/secondary_google_account_signin_policy_handler.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_policy_handler.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/policy/default_geolocation_policy_handler.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
+#include "components/account_manager_core/pref_names.h"
 #include "components/arc/arc_prefs.h"
 #include "components/drive/drive_pref_names.h"  // nogncheck crbug.com/1125897
 #include "components/user_manager/user.h"
@@ -1896,8 +1896,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
       key::kNoteTakingAppsLockScreenAllowlist,
       prefs::kNoteTakingAppsLockScreenAllowlist, false /*allow_wildcards*/));
-  handlers->AddHandler(
-      std::make_unique<SecondaryGoogleAccountSigninPolicyHandler>());
+  handlers->AddHandler(std::make_unique<BooleanDisablingPolicyHandler>(
+      key::kSecondaryGoogleAccountSigninAllowed,
+      ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed));
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kUsageTimeLimit, prefs::kUsageTimeLimit, chrome_schema,
       SCHEMA_ALLOW_UNKNOWN,
