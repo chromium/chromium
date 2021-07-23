@@ -16,7 +16,7 @@
 import { log } from '../utils/log';
 const logCdp = log('cdp');
 
-import { EventEmitter } from '../utils/events';
+import { EventEmitter } from 'events';
 import { IServer } from '../utils/iServer';
 
 import * as browserProtocol from 'devtools-protocol/json/browser_protocol.json';

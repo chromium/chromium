@@ -1,4 +1,5 @@
 import typescript from '@rollup/plugin-typescript';
+import nodePolyfills from 'rollup-plugin-node-polyfills';
 import json from '@rollup/plugin-json';
 
 export default {
@@ -10,6 +11,7 @@ export default {
   },
   plugins: [
     json(),
+    nodePolyfills(),
     typescript({
       tsconfig: 'src/tsconfig.json',
     }),
