@@ -19,8 +19,8 @@ declare_args() {
   # TODO(crbug.com/1225701): Once this sticks, try to expand this to all
   # platforms (incl. Fuchsia + any OS added here during rollout) and reduce it
   # down to !is_official_builds || dcheck_is_configurable.
-  dcheck_always_on = (!is_official_build && !is_fuchsia && !is_chromeos) ||
-                     dcheck_is_configurable
+  dcheck_always_on = (!is_official_build && !is_fuchsia && !is_chromeos &&
+                      !is_linux) || dcheck_is_configurable
 }
 
 declare_args() {
