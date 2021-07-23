@@ -56,7 +56,19 @@ void ClearBlockingObserverForCurrentThread() {
 
 IOJankMonitoringWindow::ScopedMonitoredCall::ScopedMonitoredCall()
     : call_start_(TimeTicks::Now()),
-      assigned_jank_window_(MonitorNextJankWindowIfNecessary(call_start_)) {}
+      assigned_jank_window_(MonitorNextJankWindowIfNecessary(call_start_)) {
+  if (assigned_jank_window_) {
+    // TimeTicks using a monotonic clock and MonitorNextJankWindowIfNecessary
+    // synchronizing via a lock to return |assigned_jank_window_| guarantees
+    // that |call_start_| is either equal or beyond
+    // |assigned_jank_window_->start_time_|. Breaking the assumption of a
+    // monotonic clock could result in negative indexing and OOB-writes in
+    // AddJank(). Some fuzzers have been able to break this under non-production
+    // conditions : crbug.com/1209622. Make sure this is not possible in
+    // production.
+    CHECK_GE(call_start_, assigned_jank_window_->start_time_);
+  }
+}
 
 IOJankMonitoringWindow::ScopedMonitoredCall::~ScopedMonitoredCall() {
   if (assigned_jank_window_) {
@@ -210,6 +222,9 @@ void IOJankMonitoringWindow::OnBlockingCallCompleted(TimeTicks call_start,
 
 void IOJankMonitoringWindow::AddJank(int local_jank_start_index,
                                      int num_janky_intervals) {
+  DCHECK_GE(local_jank_start_index, 0);
+  DCHECK_LT(local_jank_start_index, kNumIntervals);
+
   // Increment jank counts for intervals in this window. If
   // |num_janky_intervals| lands beyond kNumIntervals, the additional intervals
   // will be reported to |next_|.
