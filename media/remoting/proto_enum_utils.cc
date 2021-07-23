@@ -103,6 +103,10 @@ ToProtoAudioDecoderConfigSampleFormat(SampleFormat value) {
     CASE_RETURN_OTHER(kSampleFormatAc3);
     CASE_RETURN_OTHER(kSampleFormatEac3);
     CASE_RETURN_OTHER(kSampleFormatMpegHAudio);
+    case kSampleFormatPlanarU8:
+      // TODO(crbug.com/1231734): Update this to return the right format when
+      // it is added to Open Screen.
+      return absl::nullopt;
   }
   return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }

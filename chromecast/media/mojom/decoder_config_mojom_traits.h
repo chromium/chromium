@@ -154,6 +154,8 @@ struct mojo::EnumTraits<chromecast::media::mojom::SampleFormat,
         return chromecast::media::mojom::SampleFormat::kSampleFormatS32;
       case (chromecast::media::SampleFormat::kSampleFormatF32):
         return chromecast::media::mojom::SampleFormat::kSampleFormatF32;
+      case (chromecast::media::SampleFormat::kSampleFormatPlanarU8):
+        return chromecast::media::mojom::SampleFormat::kSampleFormatPlanarU8;
       case (chromecast::media::SampleFormat::kSampleFormatPlanarS16):
         return chromecast::media::mojom::SampleFormat::kSampleFormatPlanarS16;
       case (chromecast::media::SampleFormat::kSampleFormatPlanarF32):
@@ -184,6 +186,9 @@ struct mojo::EnumTraits<chromecast::media::mojom::SampleFormat,
         return true;
       case (chromecast::media::mojom::SampleFormat::kSampleFormatF32):
         *output = chromecast::media::SampleFormat::kSampleFormatF32;
+        return true;
+      case (chromecast::media::mojom::SampleFormat::kSampleFormatPlanarU8):
+        *output = chromecast::media::SampleFormat::kSampleFormatPlanarU8;
         return true;
       case (chromecast::media::mojom::SampleFormat::kSampleFormatPlanarS16):
         *output = chromecast::media::SampleFormat::kSampleFormatPlanarS16;

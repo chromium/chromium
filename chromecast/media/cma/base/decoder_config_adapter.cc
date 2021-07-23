@@ -64,6 +64,8 @@ SampleFormat ToSampleFormat(const ::media::SampleFormat sample_format) {
       return kSampleFormatS32;
     case ::media::kSampleFormatF32:
       return kSampleFormatF32;
+    case ::media::kSampleFormatPlanarU8:
+      return kSampleFormatPlanarU8;
     case ::media::kSampleFormatPlanarS16:
       return kSampleFormatPlanarS16;
     case ::media::kSampleFormatPlanarF32:
@@ -89,6 +91,8 @@ SampleFormat ToSampleFormat(const ::media::SampleFormat sample_format) {
       return ::media::kSampleFormatS32;
     case kSampleFormatF32:
       return ::media::kSampleFormatF32;
+    case kSampleFormatPlanarU8:
+      return ::media::kSampleFormatPlanarU8;
     case kSampleFormatPlanarS16:
       return ::media::kSampleFormatPlanarS16;
     case kSampleFormatPlanarF32:

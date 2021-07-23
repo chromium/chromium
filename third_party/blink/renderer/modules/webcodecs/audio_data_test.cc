@@ -62,7 +62,7 @@ class AudioDataTest : public testing::Test {
     audio_data_init->setNumberOfChannels(kChannels);
     audio_data_init->setNumberOfFrames(kFrames);
     audio_data_init->setSampleRate(kSampleRate);
-    audio_data_init->setFormat("FLTP");
+    audio_data_init->setFormat("f32-planar");
     return audio_data_init;
   }
 
@@ -123,7 +123,7 @@ TEST_F(AudioDataTest, ConstructFromMediaBuffer) {
 
   auto* frame = MakeGarbageCollected<AudioData>(media_buffer);
 
-  EXPECT_EQ(frame->format(), "S16");
+  EXPECT_EQ(frame->format(), "s16");
   EXPECT_EQ(frame->sampleRate(), static_cast<uint32_t>(kSampleRate));
   EXPECT_EQ(frame->numberOfFrames(), static_cast<uint32_t>(kFrames));
   EXPECT_EQ(frame->numberOfChannels(), static_cast<uint32_t>(kChannels));
@@ -154,7 +154,7 @@ TEST_F(AudioDataTest, ConstructFromAudioDataInit) {
   auto* frame = MakeGarbageCollected<AudioData>(audio_data_init,
                                                 scope.GetExceptionState());
 
-  EXPECT_EQ(frame->format(), "FLTP");
+  EXPECT_EQ(frame->format(), "f32-planar");
   EXPECT_EQ(frame->sampleRate(), static_cast<uint32_t>(kSampleRate));
   EXPECT_EQ(frame->numberOfFrames(), static_cast<uint32_t>(kFrames));
   EXPECT_EQ(frame->numberOfChannels(), static_cast<uint32_t>(kChannels));
@@ -327,7 +327,7 @@ TEST_F(AudioDataTest, Interleaved) {
 
   auto* frame = MakeGarbageCollected<AudioData>(media_buffer);
 
-  EXPECT_EQ("S16", frame->format());
+  EXPECT_EQ("s16", frame->format());
 
   // Verify we get the expected allocation size.
   auto* options = CreateCopyToOptions(/*index=*/0, kOffset, kPartialFrameCount);

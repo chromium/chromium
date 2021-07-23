@@ -15,6 +15,7 @@ int SampleFormatToBytesPerChannel(SampleFormat sample_format) {
     case kUnknownSampleFormat:
       return 0;
     case kSampleFormatU8:
+    case kSampleFormatPlanarU8:
     case kSampleFormatAc3:
     case kSampleFormatEac3:
     case kSampleFormatMpegHAudio:
@@ -52,6 +53,8 @@ const char* SampleFormatToString(SampleFormat sample_format) {
       return "Signed 32-bit";
     case kSampleFormatF32:
       return "Float 32-bit";
+    case kSampleFormatPlanarU8:
+      return "Unsigned 8-bit with bias of 128 planar";
     case kSampleFormatPlanarS16:
       return "Signed 16-bit planar";
     case kSampleFormatPlanarF32:
@@ -71,6 +74,7 @@ const char* SampleFormatToString(SampleFormat sample_format) {
 
 bool IsPlanar(SampleFormat sample_format) {
   switch (sample_format) {
+    case kSampleFormatPlanarU8:
     case kSampleFormatPlanarS16:
     case kSampleFormatPlanarF32:
     case kSampleFormatPlanarS32:
@@ -103,6 +107,7 @@ bool IsInterleaved(SampleFormat sample_format) {
     case kSampleFormatMpegHAudio:
       return true;
     case kUnknownSampleFormat:
+    case kSampleFormatPlanarU8:
     case kSampleFormatPlanarS16:
     case kSampleFormatPlanarF32:
     case kSampleFormatPlanarS32:
@@ -125,6 +130,7 @@ bool IsBitstream(SampleFormat sample_format) {
     case kSampleFormatS24:
     case kSampleFormatS32:
     case kSampleFormatF32:
+    case kSampleFormatPlanarU8:
     case kSampleFormatPlanarS16:
     case kSampleFormatPlanarF32:
     case kSampleFormatPlanarS32:

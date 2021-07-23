@@ -127,25 +127,21 @@ String ToChunkType(wc_fuzzer::EncodedChunkType type) {
 String ToAudioSampleFormat(wc_fuzzer::AudioSampleFormat format) {
   switch (format) {
     case wc_fuzzer::AudioSampleFormat::U8:
-      return "U8";
+      return "u8";
     case wc_fuzzer::AudioSampleFormat::S16:
-      return "S16";
-    case wc_fuzzer::AudioSampleFormat::S24:
-      return "S24";
+      return "s16";
     case wc_fuzzer::AudioSampleFormat::S32:
-      return "S32";
-    case wc_fuzzer::AudioSampleFormat::FLT:
-      return "FLT";
-    case wc_fuzzer::AudioSampleFormat::U8P:
-      return "U8P";
-    case wc_fuzzer::AudioSampleFormat::S16P:
-      return "S16P";
-    case wc_fuzzer::AudioSampleFormat::S24P:
-      return "S24P";
-    case wc_fuzzer::AudioSampleFormat::S32P:
-      return "S32P";
-    case wc_fuzzer::AudioSampleFormat::FLTP:
-      return "FLTP";
+      return "s32";
+    case wc_fuzzer::AudioSampleFormat::F32:
+      return "f32";
+    case wc_fuzzer::AudioSampleFormat::U8_PLANAR:
+      return "u8-planar";
+    case wc_fuzzer::AudioSampleFormat::S16_PLANAR:
+      return "s16-planar";
+    case wc_fuzzer::AudioSampleFormat::S32_PLANAR:
+      return "s32-planar";
+    case wc_fuzzer::AudioSampleFormat::F32_PLANAR:
+      return "f32-planar";
   }
 }
 
@@ -154,19 +150,17 @@ int SampleFormatToSampleSize(V8AudioSampleFormat format) {
 
   switch (format.AsEnum()) {
     case FormatEnum::kU8:
-    case FormatEnum::kU8P:
+    case FormatEnum::kU8Planar:
       return 1;
 
     case FormatEnum::kS16:
-    case FormatEnum::kS16P:
+    case FormatEnum::kS16Planar:
       return 2;
 
-    case FormatEnum::kS24:
-    case FormatEnum::kS24P:
     case FormatEnum::kS32:
-    case FormatEnum::kS32P:
-    case FormatEnum::kFLT:
-    case FormatEnum::kFLTP:
+    case FormatEnum::kS32Planar:
+    case FormatEnum::kF32:
+    case FormatEnum::kF32Planar:
       return 4;
   }
 }

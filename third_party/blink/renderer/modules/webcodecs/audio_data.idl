@@ -19,7 +19,7 @@
                                 AudioDataCopyToOptions options);
 
   readonly attribute AudioSampleFormat format;
-  readonly attribute unsigned long sampleRate;
+  readonly attribute float sampleRate;
   readonly attribute unsigned long numberOfFrames;
   readonly attribute unsigned long numberOfChannels;
   readonly attribute unsigned long long duration;

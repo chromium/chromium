@@ -385,6 +385,36 @@ TEST(AudioBufferTest, ReadF32) {
   VerifyBus(bus.get(), 10, 11, 1, ValueType::kFloat);
 }
 
+TEST(AudioBufferTest, ReadU8Planar) {
+  const ChannelLayout channel_layout = CHANNEL_LAYOUT_4_0;
+  const int channels = ChannelLayoutToChannelCount(channel_layout);
+  const int frames = 20;
+  constexpr float kIncrement = 1.0f / 127.0f;
+  constexpr float kStart = 0;
+  const base::TimeDelta start_time;
+  scoped_refptr<AudioBuffer> buffer =
+      MakeAudioBuffer<uint8_t>(kSampleFormatPlanarU8, channel_layout, channels,
+                               kSampleRate, 128, 1, frames, start_time);
+  std::unique_ptr<AudioBus> bus = AudioBus::Create(channels, frames);
+  buffer->ReadFrames(10, 0, 0, bus.get());
+  VerifyBus(bus.get(), 10, kStart, kIncrement);
+
+  // Read all the frames backwards, one by one. ch[0] should be 20, 19, ...
+  bus->Zero();
+  for (int i = frames - 1; i >= 0; --i)
+    buffer->ReadFrames(1, i, i, bus.get());
+  VerifyBus(bus.get(), frames, kStart, kIncrement);
+
+  // Read 0 frames with different offsets. Existing data in AudioBus should be
+  // unchanged.
+  buffer->ReadFrames(0, 0, 0, bus.get());
+  VerifyBus(bus.get(), frames, kStart, kIncrement);
+  buffer->ReadFrames(0, 0, 10, bus.get());
+  VerifyBus(bus.get(), frames, kStart, kIncrement);
+  buffer->ReadFrames(0, 10, 0, bus.get());
+  VerifyBus(bus.get(), frames, kStart, kIncrement);
+}
+
 TEST(AudioBufferTest, ReadS16Planar) {
   const ChannelLayout channel_layout = CHANNEL_LAYOUT_STEREO;
   const int channels = ChannelLayoutToChannelCount(channel_layout);

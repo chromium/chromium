@@ -93,14 +93,12 @@ message VideoFrameBitmapInit {
 enum AudioSampleFormat {
   U8 = 0;
   S16 = 1;
-  S24 = 2;
-  S32 = 3;
-  FLT = 4;
-  U8P = 5;
-  S16P = 6;
-  S24P = 7;
-  S32P = 8;
-  FLTP = 9;
+  S32 = 2;
+  F32 = 3;
+  U8_PLANAR = 4;
+  S16_PLANAR = 5;
+  S32_PLANAR = 6;
+  F32_PLANAR = 7;
 }
 
 message AudioDataInit {

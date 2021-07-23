@@ -87,9 +87,10 @@ enum SampleFormat : int {
   kSampleFormatPlanarF32,  // Float 32-bit planar.
   kSampleFormatPlanarS32,  // Signed 32-bit planar.
   kSampleFormatS24,        // Signed 24-bit.
+  kSampleFormatPlanarU8,   // Unsigned 8-bit w/ bias of 128 planar.
 
   kSampleFormatMin = kUnknownSampleFormat,
-  kSampleFormatMax = kSampleFormatS24,
+  kSampleFormatMax = kSampleFormatPlanarU8,
 };
 
 enum VideoCodec : int {
