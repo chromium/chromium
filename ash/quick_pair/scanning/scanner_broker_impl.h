@@ -20,6 +20,7 @@ class BluetoothAdapter;
 namespace ash {
 namespace quick_pair {
 
+class FastPairDiscoverableScanner;
 struct Device;
 
 class ScannerBrokerImpl : public ScannerBroker {
@@ -46,6 +47,7 @@ class ScannerBrokerImpl : public ScannerBroker {
   SEQUENCE_CHECKER(sequence_checker_);
   std::vector<base::OnceClosure> start_scanning_on_adapter_callbacks_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
+  std::unique_ptr<FastPairDiscoverableScanner> fast_pair_discoverable_scanner_;
   base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<ScannerBrokerImpl> weak_pointer_factory_{this};
 };

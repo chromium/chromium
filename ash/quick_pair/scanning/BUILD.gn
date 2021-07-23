@@ -9,6 +9,8 @@ assert(is_chromeos_ash,
 
 source_set("scanning") {
   sources = [
+    "fast_pair/fast_pair_discoverable_scanner.cc",
+    "fast_pair/fast_pair_discoverable_scanner.h",
     "fast_pair/fast_pair_scanner.h",
     "fast_pair/fast_pair_scanner_impl.cc",
     "fast_pair/fast_pair_scanner_impl.h",
@@ -53,6 +55,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "fast_pair/fast_pair_discoverable_scanner_unittest.cc",
     "fast_pair/fast_pair_scanner_unittest.cc",
     "range_calculations_unittest.cc",
     "range_tracker_unittest.cc",
@@ -60,6 +63,7 @@ source_set("unit_tests") {
 
   deps = [
     ":scanning",
+    ":test_support",
     "//ash/quick_pair/common",
     "//base/test:test_support",
     "//device/bluetooth",
