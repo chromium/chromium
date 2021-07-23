@@ -273,17 +273,12 @@ bool FindFormAndFieldForFormControlElement(
     FormData* form,
     FormFieldData* field);
 
-// Fills the form represented by |form|.  |element| is the input element that
-// initiated the auto-fill process. Returns the filled fields.
-std::vector<blink::WebFormControlElement> FillForm(
+// Fills or previews the form represented by |form|.  |element| is the input
+// element that initiated the auto-fill process. Returns the filled fields.
+std::vector<blink::WebFormControlElement> FillOrPreviewForm(
     const FormData& form,
-    const blink::WebFormControlElement& element);
-
-// Previews the form represented by |form|. |element| is the input element that
-// initiated the preview process. Returns the previewed fields.
-std::vector<blink::WebFormControlElement> PreviewForm(
-    const FormData& form,
-    const blink::WebFormControlElement& element);
+    const blink::WebFormControlElement& element,
+    mojom::RendererFormDataAction action);
 
 // Clears the suggested values in |control_elements|. The state of
 // |initiating_element| is set to |old_autofill_state|; all other fields are set

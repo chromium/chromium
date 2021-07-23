@@ -60,15 +60,15 @@ void AndroidAutofillManager::OnTextFieldDidScrollImpl(
     provider->OnTextFieldDidScroll(this, form, field, bounding_box);
 }
 
-void AndroidAutofillManager::OnQueryFormFieldAutofillImpl(
+void AndroidAutofillManager::OnAskForValuesToFillImpl(
     int query_id,
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
     bool autoselect_first_suggestion) {
   if (auto* provider = GetAutofillProvider()) {
-    provider->OnQueryFormFieldAutofill(
-        this, query_id, form, field, bounding_box, autoselect_first_suggestion);
+    provider->OnAskForValuesToFill(this, query_id, form, field, bounding_box,
+                                   autoselect_first_suggestion);
   }
 }
 
@@ -154,12 +154,12 @@ AutofillProvider* AndroidAutofillManager::GetAutofillProvider() {
   return nullptr;
 }
 
-void AndroidAutofillManager::SendFormDataToRenderer(
+void AndroidAutofillManager::FillOrPreviewForm(
     int query_id,
-    AutofillDriver::RendererFormDataAction action,
+    mojom::RendererFormDataAction action,
     const FormData& form) {
-  driver()->SendFormDataToRenderer(query_id, action, form,
-                                   form.main_frame_origin, {});
+  driver()->FillOrPreviewForm(query_id, action, form, form.main_frame_origin,
+                              {});
 }
 
 }  // namespace autofill

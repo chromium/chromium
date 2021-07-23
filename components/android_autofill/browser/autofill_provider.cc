@@ -31,11 +31,11 @@ AutofillProvider::AutofillProvider(content::WebContents* web_contents)
 
 AutofillProvider::~AutofillProvider() = default;
 
-void AutofillProvider::SendFormDataToRenderer(AndroidAutofillManager* manager,
-                                              int requestId,
-                                              const FormData& formData) {
-  manager->SendFormDataToRenderer(
-      requestId, AutofillDriver::FORM_DATA_ACTION_FILL, formData);
+void AutofillProvider::FillOrPreviewForm(AndroidAutofillManager* manager,
+                                         int requestId,
+                                         const FormData& formData) {
+  manager->FillOrPreviewForm(requestId, mojom::RendererFormDataAction::kFill,
+                             formData);
 }
 
 void AutofillProvider::RendererShouldAcceptDataListSuggestion(

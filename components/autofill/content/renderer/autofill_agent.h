@@ -78,8 +78,9 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // mojom::AutofillAgent:
   void TriggerReparse() override;
-  void FillForm(int32_t id, const FormData& form) override;
-  void PreviewForm(int32_t id, const FormData& form) override;
+  void FillOrPreviewForm(int32_t id,
+                         const FormData& form,
+                         mojom::RendererFormDataAction action) override;
   void FieldTypePredictionsAvailable(
       const std::vector<FormDataPredictions>& forms) override;
   void ClearSection() override;

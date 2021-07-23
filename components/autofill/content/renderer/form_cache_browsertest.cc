@@ -299,7 +299,8 @@ TEST_F(FormCacheBrowserTest, FillAndClear) {
   auto checkbox = doc.GetElementById("checkbox").To<WebInputElement>();
   auto select_element = doc.GetElementById("select").To<WebSelectElement>();
 
-  form_util::FillForm(values_to_fill, text);
+  form_util::FillOrPreviewForm(values_to_fill, text,
+                               mojom::RendererFormDataAction::kFill);
 
   EXPECT_EQ("test", text.Value().Ascii());
   EXPECT_FALSE(checkbox.IsChecked());
@@ -344,7 +345,8 @@ TEST_F(FormCacheBrowserTest,
                    .To<WebInputElement>();
 
   // Simulate filling the form using Autofill.
-  form_util::FillForm(values_to_fill, fname);
+  form_util::FillOrPreviewForm(values_to_fill, fname,
+                               mojom::RendererFormDataAction::kFill);
 
   // Simulate clearing the form.
   form_cache.ClearSectionWithElement(fname);
@@ -432,7 +434,8 @@ TEST_F(FormCacheBrowserTest, ClearFormSelectElementEditedStateReset) {
   auto select_date = doc.GetElementById("date").To<WebSelectElement>();
   auto select_month = doc.GetElementById("month").To<WebSelectElement>();
 
-  form_util::FillForm(values_to_fill, text);
+  form_util::FillOrPreviewForm(values_to_fill, text,
+                               mojom::RendererFormDataAction::kFill);
 
   EXPECT_EQ("test", text.Value().Ascii());
   EXPECT_EQ("first", select_date.Value().Ascii());
@@ -455,7 +458,8 @@ TEST_F(FormCacheBrowserTest, ClearFormSelectElementEditedStateReset) {
   values_to_fill.fields[1].is_autofilled = true;
   values_to_fill.fields[2].value = u"february";
   values_to_fill.fields[2].is_autofilled = true;
-  form_util::FillForm(values_to_fill, text);
+  form_util::FillOrPreviewForm(values_to_fill, text,
+                               mojom::RendererFormDataAction::kFill);
 
   // Ensure the form is filled correctly, including the select elements.
   EXPECT_EQ("test", text.Value().Ascii());

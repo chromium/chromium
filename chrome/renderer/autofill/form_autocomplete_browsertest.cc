@@ -95,11 +95,11 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
     select_control_changed_ = std::make_unique<FormFieldData>(field);
   }
 
-  void QueryFormFieldAutofill(int32_t id,
-                              const FormData& form,
-                              const FormFieldData& field,
-                              const gfx::RectF& bounding_box,
-                              bool autoselect_first_field) override {}
+  void AskForValuesToFill(int32_t id,
+                          const FormData& form,
+                          const FormFieldData& field,
+                          const gfx::RectF& bounding_box,
+                          bool autoselect_first_field) override {}
 
   void HidePopup() override {}
 
@@ -236,7 +236,8 @@ void SimulateFillForm(const FormData& form_data,
   autofill_agent->FormControlElementClicked(
       fname_element.To<WebInputElement>());
 
-  autofill_agent->FillForm(0, form_data);
+  autofill_agent->FillOrPreviewForm(0, form_data,
+                                    mojom::RendererFormDataAction::kFill);
 }
 
 // Simulates receiving a message from the browser to fill a form.
@@ -299,7 +300,8 @@ void SimulateFillFormWithNonFillableFields(
   autofill_agent->FormControlElementClicked(
       fname_element.To<WebInputElement>());
 
-  autofill_agent->FillForm(0, data);
+  autofill_agent->FillOrPreviewForm(0, data,
+                                    mojom::RendererFormDataAction::kFill);
 }
 
 }  // end namespace

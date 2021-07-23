@@ -261,7 +261,7 @@ AutofillSuggestionState::AutofillSuggestionState(
   // the current active element. If not, reset |_suggestionState|.
   if (!_suggestionState) {
     // The suggestion state was reset in between the call to Autofill API (e.g.
-    // OnQueryFormFieldAutofill) and this method being called back. Results are
+    // OnAskForValuesToFill) and this method being called back. Results are
     // therefore no longer relevant.
     return;
   }

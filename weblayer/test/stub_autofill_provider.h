@@ -24,7 +24,7 @@ class StubAutofillProvider : public autofill::TestAutofillProvider {
   ~StubAutofillProvider() override;
 
   // AutofillProvider:
-  void OnQueryFormFieldAutofill(
+  void OnAskForValuesToFill(
       autofill::AndroidAutofillManager* manager,
       int32_t id,
       const autofill::FormData& form,

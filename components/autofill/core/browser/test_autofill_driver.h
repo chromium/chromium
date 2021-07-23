@@ -44,13 +44,12 @@ class TestAutofillDriver : public ContentAutofillDriver {
 #if !defined(OS_IOS)
   InternalAuthenticator* GetOrCreateCreditCardInternalAuthenticator() override;
 #endif
-  void SendFormDataToRenderer(
-      int query_id,
-      RendererFormDataAction action,
-      const FormData& data,
-      const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
-      override;
+  void FillOrPreviewForm(int query_id,
+                         mojom::RendererFormDataAction action,
+                         const FormData& data,
+                         const url::Origin& triggered_origin,
+                         const base::flat_map<FieldGlobalId, ServerFieldType>&
+                             field_type_map) override;
   void PropagateAutofillPredictions(
       const std::vector<autofill::FormStructure*>& forms) override;
   void HandleParsedForms(const std::vector<const FormData*>& forms) override;

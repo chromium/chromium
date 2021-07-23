@@ -269,3 +269,9 @@ enum AutofillState {
   // only fills in a single input.
   kAutocompleteAvailable,
 };
+
+// The possible actions that the renderer can take on receiving form data.
+enum RendererFormDataAction {
+  kFill,     // The renderer should fill the form data.
+  kPreview,  // The renderer should preview the form data.
+};

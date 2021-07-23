@@ -51,8 +51,9 @@ interface AutofillDriver {
   SelectFieldOptionsDidChange(FormData form);
 
   // Queries the browser for Autofill suggestions for a form input field.
+  // For autofill this means asking the user which values to fill.
   // |id| is the request ID which is used to map responses correctly.
-  QueryFormFieldAutofill(int32 id,
+  AskForValuesToFill(int32 id,
                          FormData form,
                          FormFieldData field,
                          gfx.mojom.RectF bounding_box,

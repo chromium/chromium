@@ -128,7 +128,7 @@ class BrowserAutofillManager
   // Called from our external delegate so they cannot be private.
   // FillCreditCardForm() is also called by Autofill Assistant through
   // ContentAutofillDriver::FillFormForAssistant().
-  virtual void FillOrPreviewForm(AutofillDriver::RendererFormDataAction action,
+  virtual void FillOrPreviewForm(mojom::RendererFormDataAction action,
                                  int query_id,
                                  const FormData& form,
                                  const FormFieldData& field,
@@ -360,11 +360,11 @@ class BrowserAutofillManager
   void OnTextFieldDidScrollImpl(const FormData& form,
                                 const FormFieldData& field,
                                 const gfx::RectF& bounding_box) override {}
-  void OnQueryFormFieldAutofillImpl(int query_id,
-                                    const FormData& form,
-                                    const FormFieldData& field,
-                                    const gfx::RectF& transformed_box,
-                                    bool autoselect_first_suggestion) override;
+  void OnAskForValuesToFillImpl(int query_id,
+                                const FormData& form,
+                                const FormFieldData& field,
+                                const gfx::RectF& transformed_box,
+                                bool autoselect_first_suggestion) override;
   void OnSelectControlDidChangeImpl(const FormData& form,
                                     const FormFieldData& field,
                                     const gfx::RectF& bounding_box) override;
@@ -494,16 +494,15 @@ class BrowserAutofillManager
 
   // Fills or previews the credit card form.
   // Assumes the form and field are valid.
-  void FillOrPreviewCreditCardForm(
-      AutofillDriver::RendererFormDataAction action,
-      int query_id,
-      const FormData& form,
-      const FormFieldData& field,
-      const CreditCard* credit_card);
+  void FillOrPreviewCreditCardForm(mojom::RendererFormDataAction action,
+                                   int query_id,
+                                   const FormData& form,
+                                   const FormFieldData& field,
+                                   const CreditCard* credit_card);
 
   // Fills or previews the profile form.
   // Assumes the form and field are valid.
-  void FillOrPreviewProfileForm(AutofillDriver::RendererFormDataAction action,
+  void FillOrPreviewProfileForm(mojom::RendererFormDataAction action,
                                 int query_id,
                                 const FormData& form,
                                 const FormFieldData& field,
@@ -511,7 +510,7 @@ class BrowserAutofillManager
 
   // Fills or previews |data_model| in the |form|.
   void FillOrPreviewDataModelForm(
-      AutofillDriver::RendererFormDataAction action,
+      mojom::RendererFormDataAction action,
       int query_id,
       const FormData& form,
       const FormFieldData& field,
@@ -721,7 +720,7 @@ class BrowserAutofillManager
 
   // Collected information about the autofill form where a credit card will be
   // filled.
-  AutofillDriver::RendererFormDataAction credit_card_action_;
+  mojom::RendererFormDataAction credit_card_action_;
   int credit_card_query_id_ = -1;
   FormData credit_card_form_;
   FormFieldData credit_card_field_;

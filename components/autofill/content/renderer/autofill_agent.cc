@@ -402,7 +402,9 @@ void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
 }
 
 // mojom::AutofillAgent:
-void AutofillAgent::FillForm(int32_t id, const FormData& form) {
+void AutofillAgent::FillOrPreviewForm(int32_t id,
+                                      const FormData& form,
+                                      mojom::RendererFormDataAction action) {
   // If |element_| is null or not focused, a Autofill was triggered from another
   // frame. In this case, set |element_| to some form field as if Autofill had
   // been triggered from that field. This is necessary because currently
@@ -417,54 +419,40 @@ void AutofillAgent::FillForm(int32_t id, const FormData& form) {
   if (element_.IsNull())
     return;
 
-  if (id != autofill_query_id_ && id != kNoQueryId && id != kCrossFrameFill)
+  if (id != autofill_query_id_ && id != kCrossFrameFill &&
+      (action == mojom::RendererFormDataAction::kPreview || id != kNoQueryId)) {
     return;
-
-  was_last_action_fill_ = true;
-
-  // If this is a re-fill, replace the triggering element if it's invalid.
-  if (id == kNoQueryId)
-    ReplaceElementIfNowInvalid(form);
-
-  query_node_autofill_state_ = element_.GetAutofillState();
-  form_util::FillForm(form, element_);
-  if (!element_.Form().IsNull())
-    UpdateLastInteractedForm(element_.Form());
-
-  // TODO(crbug.com/1198811): Inform the BrowserAutofillManager about the fields
-  // that were actually filled. It's possible that the form has changed since
-  // the time filling was triggered.
-  GetAutofillDriver()->DidFillAutofillFormData(form,
-                                               AutofillTickClock::NowTicks());
-
-  TriggerRefillIfNeeded(form);
-  SendPotentiallySubmittedFormToBrowser();
-}
-
-void AutofillAgent::PreviewForm(int32_t id, const FormData& form) {
-  // If |element_| is null or not focused, a Autofill was triggered from another
-  // frame. In this case, set |element_| to some form field as if Autofill had
-  // been triggered from that field. This is necessary because currently
-  // AutofillAgent's relies on |elemet_| in many places.
-  if (id == kCrossFrameFill && !form.fields.empty() &&
-      (element_.IsNull() || !element_.Focused())) {
-    WebDocument document = render_frame()->GetWebFrame()->GetDocument();
-    element_ = form_util::FindFormControlElementByUniqueRendererId(
-        document, form.fields.front().unique_renderer_id);
   }
 
-  if (element_.IsNull())
-    return;
+  if (action == mojom::RendererFormDataAction::kPreview) {
+    ClearPreviewedForm();
 
-  if (id != autofill_query_id_ && id != kCrossFrameFill)
-    return;
+    query_node_autofill_state_ = element_.GetAutofillState();
+    previewed_elements_ = form_util::FillOrPreviewForm(form, element_, action);
 
-  ClearPreviewedForm();
+    GetAutofillDriver()->DidPreviewAutofillFormData();
+  } else {
+    was_last_action_fill_ = true;
 
-  query_node_autofill_state_ = element_.GetAutofillState();
-  previewed_elements_ = form_util::PreviewForm(form, element_);
+    // If this is a re-fill, replace the triggering element if it's invalid.
+    if (id == kNoQueryId)
+      ReplaceElementIfNowInvalid(form);
 
-  GetAutofillDriver()->DidPreviewAutofillFormData();
+    query_node_autofill_state_ = element_.GetAutofillState();
+    form_util::FillOrPreviewForm(form, element_, action);
+
+    if (!element_.Form().IsNull())
+      UpdateLastInteractedForm(element_.Form());
+
+    // TODO(crbug.com/1198811): Inform the BrowserAutofillManager about the
+    // fields that were actually filled. It's possible that the form has changed
+    // since the time filling was triggered.
+    GetAutofillDriver()->DidFillAutofillFormData(form,
+                                                 AutofillTickClock::NowTicks());
+
+    TriggerRefillIfNeeded(form);
+    SendPotentiallySubmittedFormToBrowser();
+  }
 }
 
 void AutofillAgent::FieldTypePredictionsAvailable(
@@ -833,9 +821,9 @@ void AutofillAgent::QueryAutofillSuggestions(
   }
 
   is_popup_possibly_visible_ = true;
-  GetAutofillDriver()->QueryFormFieldAutofill(autofill_query_id_, form, field,
-                                              field.bounds,
-                                              autoselect_first_suggestion);
+  GetAutofillDriver()->AskForValuesToFill(autofill_query_id_, form, field,
+                                          field.bounds,
+                                          autoselect_first_suggestion);
 }
 
 void AutofillAgent::DoFillFieldWithValue(const std::u16string& value,

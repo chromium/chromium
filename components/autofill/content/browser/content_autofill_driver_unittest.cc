@@ -76,7 +76,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   }
 
   // Returns the id and formdata received via
-  // mojo interface method mojom::AutofillAgent::FillForm().
+  // mojo interface method mojom::AutofillAgent::FillOrPreviewForm().
   bool GetAutofillFillFormMessage(int* page_id, FormData* results) {
     if (fill_form_id_ == -1)
       return false;
@@ -169,15 +169,16 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   // mojom::AutofillAgent:
   void TriggerReparse() override {}
 
-  void FillForm(int32_t id, const FormData& form) override {
-    fill_form_id_ = id;
-    fill_form_form_ = form;
-    CallDone();
-  }
-
-  void PreviewForm(int32_t id, const FormData& form) override {
-    preview_form_id_ = id;
-    preview_form_form_ = form;
+  void FillOrPreviewForm(int32_t id,
+                         const FormData& form,
+                         mojom::RendererFormDataAction action) override {
+    if (action == mojom::RendererFormDataAction::kPreview) {
+      preview_form_id_ = id;
+      preview_form_form_ = form;
+    } else {
+      fill_form_id_ = id;
+      fill_form_form_ = form;
+    }
     CallDone();
   }
 
@@ -256,10 +257,9 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
   base::OnceClosure quit_closure_;
 
-  // Records data received from FillForm() call.
+  // Records data received from FillOrPreviewForm() call.
   int32_t fill_form_id_;
   absl::optional<FormData> fill_form_form_;
-  // Records data received from PreviewForm() call.
   int32_t preview_form_id_;
   absl::optional<FormData> preview_form_form_;
   // Records data received from FieldTypePredictionsAvailable() call.
@@ -484,9 +484,9 @@ TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
   FormData input_form_data = SeeAddressFormData();
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver_->SendFormDataToRenderer(input_page_id,
-                                  AutofillDriver::FORM_DATA_ACTION_FILL,
-                                  input_form_data, url::Origin(), {});
+  driver_->FillOrPreviewForm(input_page_id,
+                             mojom::RendererFormDataAction::kFill,
+                             input_form_data, url::Origin(), {});
 
   run_loop.RunUntilIdle();
 
@@ -506,9 +506,9 @@ TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
   FormData input_form_data = SeeAddressFormData();
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver_->SendFormDataToRenderer(input_page_id,
-                                  AutofillDriver::FORM_DATA_ACTION_PREVIEW,
-                                  input_form_data, url::Origin(), {});
+  driver_->FillOrPreviewForm(input_page_id,
+                             mojom::RendererFormDataAction::kPreview,
+                             input_form_data, url::Origin(), {});
 
   run_loop.RunUntilIdle();
 

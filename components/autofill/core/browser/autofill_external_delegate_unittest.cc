@@ -144,7 +144,7 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
 
   MOCK_METHOD(void,
               FillOrPreviewForm,
-              (AutofillDriver::RendererFormDataAction action,
+              (mojom::RendererFormDataAction action,
                int query_id,
                const FormData& form,
                const FormFieldData& field,
@@ -253,7 +253,7 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
 
   EXPECT_CALL(
       *browser_autofill_manager_,
-      FillOrPreviewForm(AutofillDriver::FORM_DATA_ACTION_FILL, _, _, _, _));
+      FillOrPreviewForm(mojom::RendererFormDataAction::kFill, _, _, _, _));
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
 
@@ -296,7 +296,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   EXPECT_CALL(
       *browser_autofill_manager_,
-      FillOrPreviewForm(AutofillDriver::FORM_DATA_ACTION_FILL, _, _, _, _));
+      FillOrPreviewForm(mojom::RendererFormDataAction::kFill, _, _, _, _));
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
 
@@ -622,7 +622,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   EXPECT_CALL(
       *browser_autofill_manager_,
-      FillOrPreviewForm(AutofillDriver::FORM_DATA_ACTION_PREVIEW, _, _, _, _));
+      FillOrPreviewForm(mojom::RendererFormDataAction::kPreview, _, _, _, _));
   external_delegate_->DidSelectSuggestion(u"baz foo", 1);
 
   // Ensure selecting an autocomplete entry will cause any previews to
@@ -666,7 +666,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   std::u16string dummy_string(u"John Legend");
   EXPECT_CALL(*browser_autofill_manager_,
-              FillOrPreviewForm(AutofillDriver::FORM_DATA_ACTION_FILL, _, _, _,
+              FillOrPreviewForm(mojom::RendererFormDataAction::kFill, _, _, _,
                                 kAutofillProfileId));
   external_delegate_->DidAcceptSuggestion(dummy_string, kAutofillProfileId,
                                           std::string(),

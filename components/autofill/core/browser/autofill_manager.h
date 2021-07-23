@@ -104,11 +104,11 @@ class AutofillManager
   // Invoked when the |form| needs to be autofilled, the |bounding_box| is
   // a window relative value of |field|.
   // |bounding_box| are viewport coordinates.
-  void OnQueryFormFieldAutofill(int query_id,
-                                const FormData& form,
-                                const FormFieldData& field,
-                                const gfx::RectF& bounding_box,
-                                bool autoselect_first_suggestion);
+  void OnAskForValuesToFill(int query_id,
+                            const FormData& form,
+                            const FormFieldData& field,
+                            const gfx::RectF& bounding_box,
+                            bool autoselect_first_suggestion);
 
   // Invoked when |form|'s |field| has focus.
   // |bounding_box| are viewport coordinates.
@@ -131,7 +131,7 @@ class AutofillManager
   virtual void OnFocusNoLongerOnForm(bool had_interacted_form) = 0;
 
   // Invoked when |form| has been filled with the value given by
-  // SendFormDataToRenderer.
+  // FillOrPreviewForm.
   virtual void OnDidFillAutofillFormData(const FormData& form,
                                          const base::TimeTicks timestamp) = 0;
 
@@ -259,12 +259,11 @@ class AutofillManager
                                         const FormFieldData& field,
                                         const gfx::RectF& bounding_box) = 0;
 
-  virtual void OnQueryFormFieldAutofillImpl(
-      int query_id,
-      const FormData& form,
-      const FormFieldData& field,
-      const gfx::RectF& bounding_box,
-      bool autoselect_first_suggestion) = 0;
+  virtual void OnAskForValuesToFillImpl(int query_id,
+                                        const FormData& form,
+                                        const FormFieldData& field,
+                                        const gfx::RectF& bounding_box,
+                                        bool autoselect_first_suggestion) = 0;
 
   virtual void OnFocusOnFormFieldImpl(const FormData& form,
                                       const FormFieldData& field,

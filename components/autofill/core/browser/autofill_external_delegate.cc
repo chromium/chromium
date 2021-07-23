@@ -379,9 +379,9 @@ void AutofillExternalDelegate::FillAutofillFormData(int unique_id,
   if (IsAutofillWarningEntry(unique_id))
     return;
 
-  AutofillDriver::RendererFormDataAction renderer_action =
-      is_preview ? AutofillDriver::FORM_DATA_ACTION_PREVIEW
-                 : AutofillDriver::FORM_DATA_ACTION_FILL;
+  mojom::RendererFormDataAction renderer_action =
+      is_preview ? mojom::RendererFormDataAction::kPreview
+                 : mojom::RendererFormDataAction::kFill;
 
   DCHECK(driver_->RendererIsAvailable());
   // Fill the values for the whole form.

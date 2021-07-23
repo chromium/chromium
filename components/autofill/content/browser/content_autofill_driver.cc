@@ -194,31 +194,24 @@ net::IsolationInfo ContentAutofillDriver::IsolationInfo() {
   return render_frame_host_->GetIsolationInfoForSubresources();
 }
 
-void ContentAutofillDriver::SendFormDataToRenderer(
+void ContentAutofillDriver::FillOrPreviewForm(
     int query_id,
-    RendererFormDataAction action,
+    mojom::RendererFormDataAction action,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
-  autofill_router_->SendFormDataToRenderer(this, query_id, action, data,
-                                           triggered_origin, field_type_map);
+  autofill_router_->FillOrPreviewForm(this, query_id, action, data,
+                                      triggered_origin, field_type_map);
 }
 
-void ContentAutofillDriver::SendFormDataToRendererImpl(
+void ContentAutofillDriver::FillOrPreviewFormImpl(
     int query_id,
-    RendererFormDataAction action,
+    mojom::RendererFormDataAction action,
     const FormData& data) {
   if (!RendererIsAvailable())
     return;
 
-  switch (action) {
-    case FORM_DATA_ACTION_FILL:
-      GetAutofillAgent()->FillForm(query_id, data);
-      break;
-    case FORM_DATA_ACTION_PREVIEW:
-      GetAutofillAgent()->PreviewForm(query_id, data);
-      break;
-  }
+  GetAutofillAgent()->FillOrPreviewForm(query_id, data, action);
 }
 
 void ContentAutofillDriver::PropagateAutofillPredictions(
@@ -388,14 +381,14 @@ void ContentAutofillDriver::SelectControlDidChangeImpl(
   autofill_manager_->OnSelectControlDidChange(form, field, bounding_box);
 }
 
-void ContentAutofillDriver::QueryFormFieldAutofillImpl(
+void ContentAutofillDriver::AskForValuesToFillImpl(
     int32_t id,
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
     bool autoselect_first_suggestion) {
-  autofill_manager_->OnQueryFormFieldAutofill(id, form, field, bounding_box,
-                                              autoselect_first_suggestion);
+  autofill_manager_->OnAskForValuesToFill(id, form, field, bounding_box,
+                                          autoselect_first_suggestion);
 }
 
 void ContentAutofillDriver::HidePopupImpl() {
@@ -514,7 +507,7 @@ void ContentAutofillDriver::SelectControlDidChange(
       TransformBoundingBoxToViewportCoordinates(bounding_box));
 }
 
-void ContentAutofillDriver::QueryFormFieldAutofill(
+void ContentAutofillDriver::AskForValuesToFill(
     int32_t id,
     const FormData& raw_form,
     const FormFieldData& raw_field,
@@ -523,7 +516,7 @@ void ContentAutofillDriver::QueryFormFieldAutofill(
   FormData form = raw_form;
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, &field);
-  autofill_router_->QueryFormFieldAutofill(
+  autofill_router_->AskForValuesToFill(
       this, id, form, field,
       TransformBoundingBoxToViewportCoordinates(bounding_box),
       autoselect_first_suggestion);

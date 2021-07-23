@@ -106,7 +106,7 @@ void AutofillProviderAndroid::DetachFromJavaAutofillProvider(JNIEnv* env) {
   java_ref_.reset();
 }
 
-void AutofillProviderAndroid::OnQueryFormFieldAutofill(
+void AutofillProviderAndroid::OnAskForValuesToFill(
     AndroidAutofillManager* manager,
     int32_t id,
     const FormData& form,
@@ -194,7 +194,7 @@ void AutofillProviderAndroid::OnAutofillAvailable(JNIEnv* env,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (manager_ && form_) {
     const FormData& form = form_->GetAutofillValues();
-    SendFormDataToRenderer(manager_.get(), id_, form);
+    FillOrPreviewForm(manager_.get(), id_, form);
   }
 }
 

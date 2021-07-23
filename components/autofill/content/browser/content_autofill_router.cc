@@ -301,7 +301,7 @@ void ContentAutofillRouter::SelectControlDidChange(
   target->SelectControlDidChangeImpl(browser_form, field, bounding_box);
 }
 
-void ContentAutofillRouter::QueryFormFieldAutofill(
+void ContentAutofillRouter::AskForValuesToFill(
     ContentAutofillDriver* source,
     int32_t id,
     const FormData& form,
@@ -309,8 +309,8 @@ void ContentAutofillRouter::QueryFormFieldAutofill(
     const gfx::RectF& bounding_box,
     bool autoselect_first_suggestion) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-    source->QueryFormFieldAutofillImpl(id, form, field, bounding_box,
-                                       autoselect_first_suggestion);
+    source->AskForValuesToFillImpl(id, form, field, bounding_box,
+                                   autoselect_first_suggestion);
     return;
   }
 
@@ -324,8 +324,8 @@ void ContentAutofillRouter::QueryFormFieldAutofill(
   AFCHECK(target, return );
   SetLastQueriedSource(source);
   SetLastQueriedTarget(target);
-  target->QueryFormFieldAutofillImpl(id, browser_form, field, bounding_box,
-                                     autoselect_first_suggestion);
+  target->AskForValuesToFillImpl(id, browser_form, field, bounding_box,
+                                 autoselect_first_suggestion);
 }
 
 void ContentAutofillRouter::HidePopup(ContentAutofillDriver* source) {
@@ -497,15 +497,15 @@ void ContentAutofillRouter::FillFormForAssistant(
 // The reason is that browser forms may be outdated and hence refer to frames
 // that do not exist anymore.
 
-void ContentAutofillRouter::SendFormDataToRenderer(
+void ContentAutofillRouter::FillOrPreviewForm(
     ContentAutofillDriver* source,
     int query_id,
-    AutofillDriver::RendererFormDataAction action,
+    mojom::RendererFormDataAction action,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-    source->SendFormDataToRendererImpl(query_id, action, data);
+    source->FillOrPreviewFormImpl(query_id, action, data);
     return;
   }
 
@@ -514,8 +514,7 @@ void ContentAutofillRouter::SendFormDataToRenderer(
                                                  field_type_map);
   for (const FormData& renderer_form : renderer_forms) {
     if (auto* target = DriverOfFrame(renderer_form.host_frame)) {
-      target->SendFormDataToRendererImpl(kCrossFrameFill, action,
-                                         renderer_form);
+      target->FillOrPreviewFormImpl(kCrossFrameFill, action, renderer_form);
     }
   }
 }

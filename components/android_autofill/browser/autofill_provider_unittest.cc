@@ -21,9 +21,9 @@ class AndroidAutofillManagerTestHelper : public AndroidAutofillManager {
     PropagateAutofillPredictions(nullptr, std::vector<FormStructure*>());
   }
 
-  void SimulateOnQueryFormFieldAutofillImpl() {
-    OnQueryFormFieldAutofillImpl(0, FormData(), FormFieldData(), gfx::RectF(),
-                                 /*autoselect_first_suggestion=*/false);
+  void SimulateOnAskForValuesToFillImpl() {
+    OnAskForValuesToFillImpl(0, FormData(), FormFieldData(), gfx::RectF(),
+                             /*autoselect_first_suggestion=*/false);
   }
 };
 
@@ -33,12 +33,12 @@ class AutofillProviderTestHelper : public TestAutofillProvider {
 
  private:
   // AutofillProvider
-  void OnQueryFormFieldAutofill(AndroidAutofillManager* manager,
-                                int32_t id,
-                                const FormData& form,
-                                const FormFieldData& field,
-                                const gfx::RectF& bounding_box,
-                                bool autoselect_first_suggestion) override {
+  void OnAskForValuesToFill(AndroidAutofillManager* manager,
+                            int32_t id,
+                            const FormData& form,
+                            const FormFieldData& field,
+                            const gfx::RectF& bounding_box,
+                            bool autoselect_first_suggestion) override {
     manager_ = manager;
   }
   void OnServerQueryRequestError(AndroidAutofillManager* manager,
@@ -73,8 +73,7 @@ class AutofillProviderTest : public testing::Test {
 
 TEST_F(AutofillProviderTest, HasServerPredictionAfterQuery) {
   // Simulate the result arrives after starting autofill.
-  android_autofill_manager_test_helper()
-      ->SimulateOnQueryFormFieldAutofillImpl();
+  android_autofill_manager_test_helper()->SimulateOnAskForValuesToFillImpl();
   EXPECT_FALSE(autofill_provider_test_helper()->HasServerPrediction());
   android_autofill_manager_test_helper()
       ->SimulatePropagateAutofillPredictions();
@@ -87,8 +86,7 @@ TEST_F(AutofillProviderTest, HasServerPredictionBeforeQuery) {
   // Simulate the result arrives before starting autofill.
   android_autofill_manager_test_helper()
       ->SimulatePropagateAutofillPredictions();
-  android_autofill_manager_test_helper()
-      ->SimulateOnQueryFormFieldAutofillImpl();
+  android_autofill_manager_test_helper()->SimulateOnAskForValuesToFillImpl();
   EXPECT_TRUE(autofill_provider_test_helper()->HasServerPrediction());
   android_autofill_manager_test_helper()->Reset();
   EXPECT_FALSE(autofill_provider_test_helper()->HasServerPrediction());

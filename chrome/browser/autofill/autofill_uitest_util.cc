@@ -134,7 +134,7 @@ void GenerateTestAutofillPopup(
 
   ContentAutofillDriver* driver = static_cast<ContentAutofillDriver*>(
       absl::get<AutofillDriver*>(autofill_external_delegate->GetDriver()));
-  driver->QueryFormFieldAutofill(query_id, form, field, bounds, false);
+  driver->AskForValuesToFill(query_id, form, field, bounds, false);
 
   std::vector<Suggestion> suggestions = {Suggestion(u"Test suggestion")};
   autofill_external_delegate->OnSuggestionsReturned(

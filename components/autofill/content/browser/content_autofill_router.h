@@ -149,14 +149,17 @@ class ContentAutofillRouter {
   // Resets the object to the initial state.
   void Reset();
 
-  // Returns the ContentAutofillDriver* for which QueryFormFieldAutofill() was
+  // Returns the ContentAutofillDriver* for which AskForValuesToFill() was
   // called last.
+  // TODO(crbug.com/1224846) QueryFormFieldAutofill() was renamed to
+  // AskForValuesToFill(), so we should rename last_queried_source() and
+  // last_queried_source_ as well.
   ContentAutofillDriver* last_queried_source() const {
     return last_queried_source_;
   }
 
   // Registers the key-press handler with the driver that last called
-  // QueryFormFieldAutofill(), that is, |last_queried_source_|.
+  // AskForValuesToFill(), that is, |last_queried_source_|.
   void SetKeyPressHandler(
       ContentAutofillDriver* source_driver,
       const content::RenderWidgetHost::KeyPressEventCallback& handler);
@@ -184,12 +187,12 @@ class ContentAutofillRouter {
                               const FormData& form,
                               const FormFieldData& field,
                               const gfx::RectF& bounding_box);
-  void QueryFormFieldAutofill(ContentAutofillDriver* source_driver,
-                              int32_t id,
-                              const FormData& form,
-                              const FormFieldData& field,
-                              const gfx::RectF& bounding_box,
-                              bool autoselect_first_suggestion);
+  void AskForValuesToFill(ContentAutofillDriver* source_driver,
+                          int32_t id,
+                          const FormData& form,
+                          const FormFieldData& field,
+                          const gfx::RectF& bounding_box,
+                          bool autoselect_first_suggestion);
   void HidePopup(ContentAutofillDriver* source_driver);
   void FocusNoLongerOnForm(ContentAutofillDriver* source_driver,
                            bool had_interacted_form);
@@ -212,10 +215,10 @@ class ContentAutofillRouter {
                             const FormFieldData& field);
 
   // Routing of events called by the browser:
-  void SendFormDataToRenderer(
+  void FillOrPreviewForm(
       ContentAutofillDriver* source_driver,
       int query_id,
-      AutofillDriver::RendererFormDataAction action,
+      mojom::RendererFormDataAction action,
       const FormData& data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map);
@@ -259,10 +262,10 @@ class ContentAutofillRouter {
   // The forest of forms. See its documentation for the usage protocol.
   internal::FormForest form_forest_;
 
-  // The driver that triggered the last QueryFormFieldAutofill() call.
+  // The driver that triggered the last AskForValuesToFill() call.
   // Update with SetLastQueriedSource().
   ContentAutofillDriver* last_queried_source_ = nullptr;
-  // The driver to which the last QueryFormFieldAutofill() call was routed.
+  // The driver to which the last AskForValuesToFill() call was routed.
   // Update with SetLastQueriedTarget().
   ContentAutofillDriver* last_queried_target_ = nullptr;
 

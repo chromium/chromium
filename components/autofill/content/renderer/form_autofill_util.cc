@@ -1060,7 +1060,7 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     const FormData& data,
     FieldFilterMask filters,
     bool force_override,
-    bool is_preview,
+    mojom::RendererFormDataAction action,
     const Callback& callback) {
   const bool num_elements_matches_num_fields =
       control_elements.size() == data.fields.size();
@@ -1116,7 +1116,7 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     // Autofill the initiating element.
     bool is_initiating_element = (element == initiating_element);
     if (is_initiating_element) {
-      if (!is_preview && element.Focused())
+      if (action == mojom::RendererFormDataAction::kFill && element.Focused())
         initially_focused_element = &element;
 
       matching_fields.push_back(element);
@@ -1194,13 +1194,13 @@ std::vector<WebFormControlElement> ForEachMatchingFormField(
     const FormData& data,
     FieldFilterMask filters,
     bool force_override,
-    bool is_preview,
+    mojom::RendererFormDataAction action,
     const Callback& callback) {
   std::vector<WebFormControlElement> control_elements =
       ExtractAutofillableElementsInForm(form_element);
   return ForEachMatchingFormFieldCommon(control_elements, initiating_element,
-                                        data, filters, force_override,
-                                        is_preview, callback);
+                                        data, filters, force_override, action,
+                                        callback);
 }
 
 // For each autofillable field in |data| that matches a field in the set of
@@ -1211,7 +1211,7 @@ std::vector<WebFormControlElement> ForEachMatchingUnownedFormField(
     const FormData& data,
     FieldFilterMask filters,
     bool force_override,
-    bool is_preview,
+    mojom::RendererFormDataAction action,
     const Callback& callback) {
   if (initiating_element.IsNull())
     return {};
@@ -1223,8 +1223,8 @@ std::vector<WebFormControlElement> ForEachMatchingUnownedFormField(
     return {};
 
   return ForEachMatchingFormFieldCommon(control_elements, initiating_element,
-                                        data, filters, force_override,
-                                        is_preview, callback);
+                                        data, filters, force_override, action,
+                                        callback);
 }
 
 // Sets the |field|'s value to the value in |data|, and specifies the section
@@ -2268,48 +2268,28 @@ bool FindFormAndFieldForFormControlElement(
       element, field_data_manager, form_util::EXTRACT_NONE, form, field);
 }
 
-std::vector<WebFormControlElement> FillForm(
+std::vector<WebFormControlElement> FillOrPreviewForm(
     const FormData& form,
-    const WebFormControlElement& element) {
+    const WebFormControlElement& element,
+    mojom::RendererFormDataAction action) {
   WebFormElement form_element = element.Form();
   if (form_element.IsNull())
     FindFormElementUpShadowRoots(element, &form_element);
 
   if (form_element.IsNull()) {
-    return ForEachMatchingUnownedFormField(element, form,
-                                           FILTER_ALL_NON_EDITABLE_ELEMENTS,
-                                           false, /* dont force override */
-                                           false, /* not a preview filling */
-                                           &FillFormField);
-  } else {
-    return ForEachMatchingFormField(form_element, element, form,
-                                    FILTER_ALL_NON_EDITABLE_ELEMENTS,
-                                    false, /* dont force override */
-                                    false, /* not a preview filling */
-                                    &FillFormField);
+    return ForEachMatchingUnownedFormField(
+        element, form, FILTER_ALL_NON_EDITABLE_ELEMENTS,
+        false, /* dont force override */
+        action,
+        action == mojom::RendererFormDataAction::kPreview ? &PreviewFormField
+                                                          : &FillFormField);
   }
-}
-
-std::vector<WebFormControlElement> PreviewForm(
-    const FormData& form,
-    const WebFormControlElement& element) {
-  WebFormElement form_element = element.Form();
-  if (form_element.IsNull())
-    FindFormElementUpShadowRoots(element, &form_element);
-
-  if (form_element.IsNull()) {
-    return ForEachMatchingUnownedFormField(element, form,
-                                           FILTER_ALL_NON_EDITABLE_ELEMENTS,
-                                           false, /* dont force override */
-                                           true,  /* preview filling */
-                                           &PreviewFormField);
-  } else {
-    return ForEachMatchingFormField(form_element, element, form,
-                                    FILTER_ALL_NON_EDITABLE_ELEMENTS,
-                                    false, /* dont force override */
-                                    true,  /* preview filling */
-                                    &PreviewFormField);
-  }
+  return ForEachMatchingFormField(
+      form_element, element, form, FILTER_ALL_NON_EDITABLE_ELEMENTS,
+      false, /* dont force override */
+      action,
+      action == mojom::RendererFormDataAction::kPreview ? &PreviewFormField
+                                                        : &FillFormField);
 }
 
 void ClearPreviewedElements(

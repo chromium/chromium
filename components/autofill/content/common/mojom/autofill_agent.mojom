@@ -14,13 +14,10 @@ interface AutofillAgent {
   // a subframe and it is not known which form is its parent.
   TriggerReparse();
 
-  // Instructs the renderer to fill the active form with the given form data.
-  // Please refer AutofillDriver.QueryFormFieldAutofill comments about the |id|.
-  FillForm(int32 id, FormData form);
-
-  // Instructs the renderer to preview the active form with the given form data.
-  // Please refer AutofillDriver.QueryFormFieldAutofill comments about the |id|.
-  PreviewForm(int32 id, FormData form);
+  // Instructs the renderer to fill or preview the active form with the given
+  // form data. Refer to AutofillDriver.AskForValuesToFill for comments
+  // about the |id|.
+  FillOrPreviewForm(int32 id, FormData form, RendererFormDataAction action);
 
   // Sends the heuristic and server field type predictions to the renderer.
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);

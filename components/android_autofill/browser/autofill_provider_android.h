@@ -47,7 +47,7 @@ class AutofillProviderAndroid : public AutofillProvider {
   void DetachFromJavaAutofillProvider(JNIEnv* env);
 
   // AutofillProvider:
-  void OnQueryFormFieldAutofill(
+  void OnAskForValuesToFill(
       AndroidAutofillManager* manager,
       int32_t id,
       const FormData& form,

@@ -15,7 +15,7 @@ StubAutofillProvider::StubAutofillProvider(
 
 StubAutofillProvider::~StubAutofillProvider() = default;
 
-void StubAutofillProvider::OnQueryFormFieldAutofill(
+void StubAutofillProvider::OnAskForValuesToFill(
     autofill::AndroidAutofillManager* manager,
     int32_t id,
     const autofill::FormData& form,
