@@ -63,12 +63,29 @@ class CORE_EXPORT CSSPaintWorkletInput : public PaintWorkletInput {
     return PaintWorkletStylePropertyMap::CopyCrossThreadData(style_map_data_);
   }
 
+  PaintWorkletInputType GetType() const override {
+    return PaintWorkletInputType::kCSS;
+  }
+
  private:
   const String name_;
   const float effective_zoom_;
   const float device_scale_factor_;
   PaintWorkletStylePropertyMap::CrossThreadData style_map_data_;
   Vector<std::unique_ptr<CrossThreadStyleValue>> parsed_input_arguments_;
+};
+
+template <>
+struct DowncastTraits<CSSPaintWorkletInput> {
+  static bool AllowFrom(const cc::PaintWorkletInput& worklet_input) {
+    auto* input = DynamicTo<PaintWorkletInput>(worklet_input);
+    return input && AllowFrom(*input);
+  }
+
+  static bool AllowFrom(const PaintWorkletInput& worklet_input) {
+    return worklet_input.GetType() ==
+           PaintWorkletInput::PaintWorkletInputType::kCSS;
+  }
 };
 
 }  // namespace blink

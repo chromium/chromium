@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -45,6 +46,10 @@ class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
   const Vector<Color>& AnimatedColors() const { return animated_colors_; }
   const Vector<double>& Offsets() const { return offsets_; }
   const absl::optional<double>& MainThreadProgress() const { return progress_; }
+
+  PaintWorkletInputType GetType() const override {
+    return PaintWorkletInputType::kBackgroundColor;
+  }
 
  private:
   // TODO(xidachen): wrap these 3 into a structure.
@@ -76,7 +81,7 @@ class BackgroundColorPaintWorkletProxyClient
       const CompositorPaintWorkletJob::AnimatedPropertyValues&
           animated_property_values) override {
     const BackgroundColorPaintWorkletInput* input =
-        static_cast<const BackgroundColorPaintWorkletInput*>(compositor_input);
+        To<BackgroundColorPaintWorkletInput>(compositor_input);
     FloatSize container_size = input->ContainerSize();
     Vector<Color> animated_colors = input->AnimatedColors();
     Vector<double> offsets = input->Offsets();
@@ -216,6 +221,19 @@ bool GetBGColorPaintWorkletParamsInternal(
 }
 
 }  // namespace
+
+template <>
+struct DowncastTraits<BackgroundColorPaintWorkletInput> {
+  static bool AllowFrom(const cc::PaintWorkletInput& worklet_input) {
+    auto* input = DynamicTo<PaintWorkletInput>(worklet_input);
+    return input && AllowFrom(*input);
+  }
+
+  static bool AllowFrom(const PaintWorkletInput& worklet_input) {
+    return worklet_input.GetType() ==
+           PaintWorkletInput::PaintWorkletInputType::kBackgroundColor;
+  }
+};
 
 Animation* BackgroundColorPaintWorklet::GetAnimationIfCompositable(
     const Element* element) {

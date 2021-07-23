@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -186,9 +187,8 @@ sk_sp<PaintRecord> PaintWorkletProxyClient::Paint(
   PaintWorkletGlobalScope* global_scope = global_scopes_[base::RandInt(
       0, (PaintWorklet::kNumGlobalScopesPerThread)-1)];
 
-  // TODO(crbug.com/1227698): Use To<> with checks instead of static_cast.
   const CSSPaintWorkletInput* input =
-      static_cast<const CSSPaintWorkletInput*>(compositor_input);
+      To<CSSPaintWorkletInput>(compositor_input);
   CSSPaintDefinition* definition =
       global_scope->FindDefinition(input->NameCopy());
   device_pixel_ratio_ = input->DeviceScaleFactor() * input->EffectiveZoom();

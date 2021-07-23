@@ -88,6 +88,8 @@ class CC_PAINT_EXPORT PaintWorkletInput
   using PropertyKeys = std::vector<PropertyKey>;
   virtual const PropertyKeys& GetPropertyKeys() const = 0;
 
+  virtual bool IsCSSPaintWorkletInput() const = 0;
+
  protected:
   friend class base::RefCountedThreadSafe<PaintWorkletInput>;
   virtual ~PaintWorkletInput() = default;

@@ -469,6 +469,7 @@ class TestPaintWorkletInput : public cc::PaintWorkletInput {
       const override {
     return property_keys_;
   }
+  bool IsCSSPaintWorkletInput() const override { return false; }
 
  protected:
   ~TestPaintWorkletInput() override = default;

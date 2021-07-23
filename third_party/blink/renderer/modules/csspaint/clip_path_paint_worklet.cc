@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -31,6 +32,10 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
 
   ~ClipPathPaintWorkletInput() override = default;
   Path ClipPath() const { return path_; }
+
+  PaintWorkletInputType GetType() const override {
+    return PaintWorkletInputType::kClipPath;
+  }
 
  private:
   Path path_;
@@ -56,7 +61,7 @@ class ClipPathPaintWorkletProxyClient : public NativePaintWorkletProxyClient {
       const CompositorPaintWorkletJob::AnimatedPropertyValues&
           animated_property_values) override {
     const ClipPathPaintWorkletInput* input =
-        static_cast<const ClipPathPaintWorkletInput*>(compositor_input);
+        To<ClipPathPaintWorkletInput>(compositor_input);
     FloatSize container_size = input->ContainerSize();
     PaintRenderingContext2DSettings* context_settings =
         PaintRenderingContext2DSettings::Create();
@@ -71,6 +76,19 @@ class ClipPathPaintWorkletProxyClient : public NativePaintWorkletProxyClient {
   }
 };
 }  // namespace
+
+template <>
+struct DowncastTraits<ClipPathPaintWorkletInput> {
+  static bool AllowFrom(const cc::PaintWorkletInput& worklet_input) {
+    auto* input = DynamicTo<PaintWorkletInput>(worklet_input);
+    return input && AllowFrom(*input);
+  }
+
+  static bool AllowFrom(const PaintWorkletInput& worklet_input) {
+    return worklet_input.GetType() ==
+           PaintWorkletInput::PaintWorkletInputType::kClipPath;
+  }
+};
 
 // static
 ClipPathPaintWorklet* ClipPathPaintWorklet::Create(LocalFrame& local_root) {
