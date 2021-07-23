@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 import android.graphics.Rect;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
@@ -35,6 +36,12 @@ public interface ContextualSearchPanelInterface {
             int quickActionCategory, @CardTag int cardTagEnum,
             @Nullable List<String> inBarRelatedSearches, boolean showDefaultSearchInBar,
             @Nullable List<String> inContentRelatedSearches, boolean showDefaultSearchInContent);
+    void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
+            int quickActionCategory, @CardTag int cardTagEnum,
+            @Nullable List<String> inBarRelatedSearches, boolean showDefaultSearchInBar,
+            @Px int defaultQueryInBarTextMaxWidthPx,
+            @Nullable List<String> inContentRelatedSearches, boolean showDefaultSearchInContent,
+            @Px int defaultQueryInContentTextMaxWidthPx);
     void setCaption(String caption);
     void ensureCaption();
     void onContextualSearchPrefChanged(boolean isEnabled);

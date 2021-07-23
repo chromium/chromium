@@ -37,6 +37,8 @@ public class ContextualSearchFieldTrial {
     private static final String RELATED_SEARCHES_CONFIG_STAMP_PARAM_NAME = "stamp";
 
     static final String RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME = "default_query_chip";
+    static final String RELATED_SEARCHES_DEFAULT_QUERY_CHIP_MAX_WIDTH_SP_PARAM_NAME =
+            "default_query_max_width_sp";
 
     // Deprecated.
     private static final int MANDATORY_PROMO_DEFAULT_LIMIT = 10;
@@ -318,6 +320,20 @@ public class ContextualSearchFieldTrial {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.RELATED_SEARCHES_ALTERNATE_UX,
                 RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME, false);
+    }
+
+    /* Return the max width of the bar's default chip in Sp. */
+    static int getDefaultChipWidthSpInBar() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
+                RELATED_SEARCHES_DEFAULT_QUERY_CHIP_MAX_WIDTH_SP_PARAM_NAME, 0);
+    }
+
+    /* Return the max width of the panel's default chip in Sp. */
+    static int getDefaultChipWidthSpInPanel() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.RELATED_SEARCHES_ALTERNATE_UX,
+                RELATED_SEARCHES_DEFAULT_QUERY_CHIP_MAX_WIDTH_SP_PARAM_NAME, 0);
     }
 
     // --------------------------------------------------------------------------------------------

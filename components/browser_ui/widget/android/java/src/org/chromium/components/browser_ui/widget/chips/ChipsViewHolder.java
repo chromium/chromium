@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.widget.chips;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -58,6 +59,15 @@ public class ChipsViewHolder extends ViewHolder {
         } else {
             primaryTextView.setText("");
         }
+
+        if (chip.textMaxWidthPx == Chip.SHOW_WHOLE_TEXT) {
+            primaryTextView.setEllipsize(null);
+            primaryTextView.setMaxWidth(Integer.MAX_VALUE);
+        } else {
+            primaryTextView.setEllipsize(TextUtils.TruncateAt.END);
+            primaryTextView.setMaxWidth(chip.textMaxWidthPx);
+        }
+
         // Set the icon if it's been provided - if selected we use the "check" icon.
         if (chip.icon != Chip.INVALID_ICON_ID) {
             getChipView().setIcon(

@@ -1745,10 +1745,34 @@ const FeatureEntry::FeatureParam kRelatedSearchesInBarNoShowDefaultChip = {
     "default_query_chip", "false"};
 const FeatureEntry::FeatureParam kRelatedSearchesInBarShowDefaultChip = {
     "default_query_chip", "true"};
+const FeatureEntry::FeatureParam
+    kRelatedSearchesInBarShowDefaultChipWith110SpEllipsis[] = {
+        {"default_query_chip", "true"},
+        {"default_query_max_width_sp", "110"}};
+const FeatureEntry::FeatureParam
+    kRelatedSearchesInBarShowDefaultChipWith115SpEllipsis[] = {
+        {"default_query_chip", "true"},
+        {"default_query_max_width_sp", "115"}};
+const FeatureEntry::FeatureParam
+    kRelatedSearchesInBarShowDefaultChipWith120SpEllipsis[] = {
+        {"default_query_chip", "true"},
+        {"default_query_max_width_sp", "120"}};
 const FeatureEntry::FeatureVariation kRelatedSearchesInBarVariations[] = {
     {"without default query chip", &kRelatedSearchesInBarNoShowDefaultChip, 1,
      nullptr},
     {"with default query chip", &kRelatedSearchesInBarShowDefaultChip, 1,
+     nullptr},
+    {"with 110sp ellipsized default query chip",
+     kRelatedSearchesInBarShowDefaultChipWith110SpEllipsis,
+     base::size(kRelatedSearchesInBarShowDefaultChipWith110SpEllipsis),
+     nullptr},
+    {"with 115sp ellipsized default query chip",
+     kRelatedSearchesInBarShowDefaultChipWith115SpEllipsis,
+     base::size(kRelatedSearchesInBarShowDefaultChipWith115SpEllipsis),
+     nullptr},
+    {"with 120sp ellipsized default query chip",
+     kRelatedSearchesInBarShowDefaultChipWith120SpEllipsis,
+     base::size(kRelatedSearchesInBarShowDefaultChipWith120SpEllipsis),
      nullptr},
 };
 
@@ -1756,10 +1780,34 @@ const FeatureEntry::FeatureParam kRelatedSearchesAlternateUxNoShowDefaultChip =
     {"default_query_chip", "false"};
 const FeatureEntry::FeatureParam kRelatedSearchesAlternateUxShowDefaultChip = {
     "default_query_chip", "true"};
+const FeatureEntry::FeatureParam
+    kRelatedSearchesAlternateUxShowDefaultChipWith110SpEllipsis[] = {
+        {"default_query_chip", "true"},
+        {"default_query_max_width_sp", "110"}};
+const FeatureEntry::FeatureParam
+    kRelatedSearchesAlternateUxShowDefaultChipWith115SpEllipsis[] = {
+        {"default_query_chip", "true"},
+        {"default_query_max_width_sp", "115"}};
+const FeatureEntry::FeatureParam
+    kRelatedSearchesAlternateUxShowDefaultChipWith120SpEllipsis[] = {
+        {"default_query_chip", "true"},
+        {"default_query_max_width_sp", "120"}};
 const FeatureEntry::FeatureVariation kRelatedSearchesAlternateUxVariations[] = {
     {"without default query chip",
      &kRelatedSearchesAlternateUxNoShowDefaultChip, 1, nullptr},
     {"with default query chip", &kRelatedSearchesAlternateUxShowDefaultChip, 1,
+     nullptr},
+    {"with 110sp ellipsized default query chip",
+     kRelatedSearchesAlternateUxShowDefaultChipWith110SpEllipsis,
+     base::size(kRelatedSearchesAlternateUxShowDefaultChipWith110SpEllipsis),
+     nullptr},
+    {"with 115sp ellipsized default query chip",
+     kRelatedSearchesAlternateUxShowDefaultChipWith115SpEllipsis,
+     base::size(kRelatedSearchesAlternateUxShowDefaultChipWith115SpEllipsis),
+     nullptr},
+    {"with 120sp ellipsized default query chip",
+     kRelatedSearchesAlternateUxShowDefaultChipWith120SpEllipsis,
+     base::size(kRelatedSearchesAlternateUxShowDefaultChipWith120SpEllipsis),
      nullptr},
 };
 
