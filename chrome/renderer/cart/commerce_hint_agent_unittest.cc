@@ -915,7 +915,7 @@ float BenchmarkShouldSkipAddToCart(const GURL& url) {
   const base::TimeTicks end = base::TimeTicks::Now();
   float elapsed_us =
       static_cast<float>((end - now).InMicroseconds()) / kTestIterations;
-  LOG(INFO) << "ShouldSkip(" << url.spec().size()
+  LOG(INFO) << "ShouldSkipAddToCart(" << url.spec().size()
             << " chars) took: " << elapsed_us << " µs";
   return elapsed_us;
 }
@@ -927,8 +927,7 @@ float BenchmarkShouldSkipAddToCart(const GURL& url) {
     BUILDFLAG(CFI_ENFORCEMENT_TRAP)
 #define MAYBE_RegexBenchmark DISABLED_RegexBenchmark
 #else
-// TODO(https://crbug.com/1223680): Test is flaky everywhere
-#define MAYBE_RegexBenchmark DISABLED_RegexBenchmark
+#define MAYBE_RegexBenchmark RegexBenchmark
 #endif
 
 TEST(CommerceHintAgentTest, MAYBE_RegexBenchmark) {
@@ -966,7 +965,7 @@ TEST(CommerceHintAgentTest, MAYBE_RegexBenchmark) {
     elapsed_us = BenchmarkIsVisitCheckout(url);
     // Typical value is ~10us.
     // Without capping the length, it would take at least 2000us.
-    EXPECT_LT(elapsed_us, 50.0 * slow_factor);
+    EXPECT_LT(elapsed_us, 100.0 * slow_factor);
 
     elapsed_us = BenchmarkIsPurchase(basic_url, str);
     // Typical value is ~0.1us.
