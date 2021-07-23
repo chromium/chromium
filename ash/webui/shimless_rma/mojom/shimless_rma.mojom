@@ -73,70 +73,90 @@ enum RmadErrorCode {
   // No error.
   kOk = 1,
   // No error, and wait for a signal.
-  KWait = 2,
+  kWait = 2,
+
   // Need a reboot to continue.
-  KNeedReboot = 3,
+  kNeedReboot = 3,
+  // Expect a reboot soon.
+  kExpectReboot = 4,
+  // Expect a reboot soon.
+  kExpectShutdown = 5,
+
   // The device is not in RMA mode.
-  kRmaNotRequired = 4,
+  kRmaNotRequired = 6,
+
   // No corresponding state handler for a state.
-  kStateHandlerMissing = 5,
+  kStateHandlerMissing = 7,
   // State handler initialization failed.
-  kStateHandlerInitializationFailed = 6,
+  kStateHandlerInitializationFailed = 8,
   // The request could not be processed (e.g. bad proto).
-  kRequestInvalid = 7,
+  kRequestInvalid = 9,
   // The request is missing mandatory arguments.
-  kRequestArgsMissing = 8,
-  // The request arguments are violating some rules of the state.
-  kRequestArgsViolation = 9,
+  kRequestArgsMissing = 10,
+    // The request arguments are violating some rules of the state.
+  kRequestArgsViolation = 11,
   // It is not possible to go back to the previous state at this point.
-  kTransitionFailed = 10,
+  kTransitionFailed = 12,
+
   // Failed to abort the RMA process.
-  kAbortFailed = 11,
+  kAbortFailed = 13,
+
   // An expected component was not found.
-  kMissingComponent = 12,
+  kMissingComponent = 14,
+
   // Cannot get the RSU challenge code.
-  kWriteProtectDisableRsuNoChallenge = 13,
+  kWriteProtectDisableRsuNoChallenge = 15,
   // The RSU code was incorrect.
-  kWriteProtectDisableRsuCodeInvalid = 14,
+  kWriteProtectDisableRsuCodeInvalid = 16,
   // The battery was not disconnected when WP disable was required.
-  kWriteProtectDisableBatteryNotDisconnected = 15,
+  kWriteProtectDisableBatteryNotDisconnected = 17,
   // WP was not disabled when required.
-  kWriteProtectSignalNotDetected = 16,
+  kWriteProtectSignalNotDetected = 18,
+
   // Firmware image could not be downloaded because a network connection was
   // unavailable.
-  kReimagingDownloadNoNetwork = 17,
+  kReimagingDownloadNoNetwork = 19,
   // Firmware image download did not complete because of a network error.
-  kReimagingDownloadNetworkError = 18,
+  kReimagingDownloadNetworkError = 20,
   // The user cancelled the firmware image download.
-  kReimagingDownloadCancelled = 19,
+  kReimagingDownloadCancelled = 21,
   // No valid USB device with a firmware image was found.
-  kReimagingUsbNotFound = 20,
+  kReimagingUsbNotFound = 22,
   // More than one USB device with a firmware image was found.
-  kReimagingUsbTooManyFound = 21,
+  kReimagingUsbTooManyFound = 23,
   // The firmware image found was corrupt.
-  kReimagingUsbInvalidImage = 22,
+  kReimagingUsbInvalidImage = 24,
   // The firmware image could not be written.
-  kReimagingImagingFailed = 23,
+  kReimagingImagingFailed = 25,
   // An unexpected failure prevented imaging from completing.
-  kReimagingUnknownFailure = 24,
+  kReimagingUnknownFailure = 26,
+
   // The device info is incorrect.
-  kDeviceInfoInvalid = 25,
+  kDeviceInfoInvalid = 27,
+
+  // Calibration component is missing.
+  kCalibrationMissingComponent = 28,
   // Calibration failed for a component.
-  kCalibrationFailed = 26,
+  kCalibrationFailed = 29,
+
   // Provisioning failed for the device.
-  kProvisioningFailed = 27,
+  kProvisioningFailed = 30,
+
   // Device could not be powerwashed.
-  kPowerwashFailed = 28,
+  kPowerwashFailed = 31,
+
   // Device finalization failed.
-  kFinalizationFailed = 29,
+  kFinalizationFailed = 32,
+
   // Logs failed to upload because the server could not be reached.
-  kLogUploadFtpServerCannotConnect = 30,
+  kLogUploadFtpServerCannotConnect = 33,
   // Logs failed to upload because the server refused the connection.
-  kLogUploadFtpServerConnectionRejected = 31,
+  kLogUploadFtpServerConnectionRejected = 34,
   // Logs failed to upload because the connection was interrupted.
-  kLogUploadFtpServerTransferFailed = 32,
+  kLogUploadFtpServerTransferFailed = 35,
+
   // It is not possible to cancel RMA finalization process at this point.
-  kCannotCancelRma = 33,
+  kCannotCancelRma = 36,
 };
 
 // Device components

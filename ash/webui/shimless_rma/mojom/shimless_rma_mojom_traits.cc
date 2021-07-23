@@ -79,9 +79,13 @@ MojomRmadErrorCode EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::ToMojom(
     case ProtoRmadErrorCode::RMAD_ERROR_OK:
       return MojomRmadErrorCode::kOk;
     case ProtoRmadErrorCode::RMAD_ERROR_WAIT:
-      return MojomRmadErrorCode::KWait;
+      return MojomRmadErrorCode::kWait;
     case ProtoRmadErrorCode::RMAD_ERROR_NEED_REBOOT:
-      return MojomRmadErrorCode::KNeedReboot;
+      return MojomRmadErrorCode::kNeedReboot;
+    case ProtoRmadErrorCode::RMAD_ERROR_EXPECT_REBOOT:
+      return MojomRmadErrorCode::kExpectReboot;
+    case ProtoRmadErrorCode::RMAD_ERROR_EXPECT_SHUTDOWN:
+      return MojomRmadErrorCode::kExpectShutdown;
     case ProtoRmadErrorCode::RMAD_ERROR_RMA_NOT_REQUIRED:
       return MojomRmadErrorCode::kRmaNotRequired;
     case ProtoRmadErrorCode::RMAD_ERROR_STATE_HANDLER_MISSING:
@@ -130,6 +134,8 @@ MojomRmadErrorCode EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::ToMojom(
       return MojomRmadErrorCode::kDeviceInfoInvalid;
     case ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_FAILED:
       return MojomRmadErrorCode::kCalibrationFailed;
+    case ProtoRmadErrorCode::RMAD_ERROR_MISSING_CALIBRATION_COMPONENT:
+      return MojomRmadErrorCode::kCalibrationMissingComponent;
     case ProtoRmadErrorCode::RMAD_ERROR_PROVISIONING_FAILED:
       return MojomRmadErrorCode::kProvisioningFailed;
     case ProtoRmadErrorCode::RMAD_ERROR_POWERWASH_FAILED:
@@ -163,11 +169,17 @@ bool EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::FromMojom(
     case MojomRmadErrorCode::kOk:
       *out = ProtoRmadErrorCode::RMAD_ERROR_OK;
       return true;
-    case MojomRmadErrorCode::KWait:
+    case MojomRmadErrorCode::kWait:
       *out = ProtoRmadErrorCode::RMAD_ERROR_WAIT;
       return true;
-    case MojomRmadErrorCode::KNeedReboot:
+    case MojomRmadErrorCode::kNeedReboot:
       *out = ProtoRmadErrorCode::RMAD_ERROR_NEED_REBOOT;
+      return true;
+    case MojomRmadErrorCode::kExpectReboot:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_EXPECT_REBOOT;
+      return true;
+    case MojomRmadErrorCode::kExpectShutdown:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_EXPECT_SHUTDOWN;
       return true;
     case MojomRmadErrorCode::kRmaNotRequired:
       *out = ProtoRmadErrorCode::RMAD_ERROR_RMA_NOT_REQUIRED;
@@ -238,6 +250,9 @@ bool EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::FromMojom(
       return true;
     case MojomRmadErrorCode::kDeviceInfoInvalid:
       *out = ProtoRmadErrorCode::RMAD_ERROR_DEVICE_INFO_INVALID;
+      return true;
+    case MojomRmadErrorCode::kCalibrationMissingComponent:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_MISSING_CALIBRATION_COMPONENT;
       return true;
     case MojomRmadErrorCode::kCalibrationFailed:
       *out = ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_FAILED;
