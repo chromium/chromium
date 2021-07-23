@@ -211,7 +211,7 @@ void SessionCrashedBubbleView::Show(
   ShowBubble(browser, uma_opted_in_already, offer_uma_optin);
 }
 
-views::BubbleDialogDelegateView* SessionCrashedBubbleView::ShowBubble(
+views::BubbleDialogDelegate* SessionCrashedBubbleView::ShowBubble(
     Browser* browser,
     bool uma_opted_in_already,
     bool offer_uma_optin) {
@@ -266,8 +266,8 @@ views::BubbleDialogDelegateView* SessionCrashedBubbleView::ShowBubble(
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       dialog_builder.Build(), anchor_view, views::BubbleBorder::TOP_RIGHT);
 
-  views::BubbleDialogDelegateView* bubble_ptr = bubble.get();
-  views::BubbleDialogDelegateView::CreateBubble(bubble.release())->Show();
+  views::BubbleDialogDelegate* bubble_ptr = bubble.get();
+  views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
 
   RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_SHOWN);
   if (uma_opted_in_already)

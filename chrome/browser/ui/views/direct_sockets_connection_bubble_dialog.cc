@@ -97,7 +97,7 @@ void ShowDirectSocketsConnectionDialog(Browser* browser,
           .SetInitiallyFocusedField(kRemoteAddressId)
           .Build();
 
-  views::BubbleDialogDelegateView::CreateBubble(
+  views::BubbleDialogDelegate::CreateBubble(
       std::make_unique<views::BubbleDialogModelHost>(
           std::move(dialog_model),
           BrowserView::GetBrowserViewForBrowser(browser),

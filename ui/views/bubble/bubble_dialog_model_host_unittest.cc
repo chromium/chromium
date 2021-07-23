@@ -49,8 +49,7 @@ TEST_F(BubbleDialogModelHostTest, CloseIsSynchronousAndCallsWindowClosing) {
       anchor_widget->GetContentsView(), BubbleBorder::Arrow::TOP_RIGHT);
   auto* host_ptr = host.get();
 
-  Widget* bubble_widget =
-      BubbleDialogDelegateView::CreateBubble(host.release());
+  Widget* bubble_widget = BubbleDialogDelegate::CreateBubble(std::move(host));
   test::WidgetDestroyedWaiter waiter(bubble_widget);
 
   EXPECT_EQ(0, window_closing_count);

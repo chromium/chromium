@@ -19,21 +19,20 @@ class Label;
 class StyledLabel;
 
 // BubbleDialogModelHost is a views implementation of ui::DialogModelHost which
-// hosts a ui::DialogModel as a BubbleDialogDelegateView. This exposes such as
+// hosts a ui::DialogModel as a BubbleDialogDelegate. This exposes such as
 // SetAnchorView(), SetArrow() and SetHighlightedButton(). For methods that are
 // reflected in ui::DialogModelHost (such as ::Close()), prefer using the
 // ui::DialogModelHost to avoid platform-specific code (GetWidget()->Close())
 // where unnecessary. For those methods, note that this can be retrieved as a
 // ui::DialogModelHost through DialogModel::host(). This helps minimize
 // platform-specific code from platform-agnostic model-delegate code.
-class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
+class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
                                            public ui::DialogModelHost {
  public:
-  METADATA_HEADER(BubbleDialogModelHost);
   // Constructs a BubbleDialogModelHost, which for most purposes is to used as a
-  // BubbleDialogDelegateView. The BubbleDialogDelegateView is nominally handed
-  // to BubbleDialogDelegateView::CreateBubble() which returns a Widget that has
-  // taken ownership of the bubble. Widget::Show() finally shows the bubble.
+  // BubbleDialogDelegate. The BubbleDialogDelegate is nominally handed to
+  // BubbleDialogDelegate::CreateBubble() which returns a Widget that has taken
+  // ownership of the bubble. Widget::Show() finally shows the bubble.
   BubbleDialogModelHost(std::unique_ptr<ui::DialogModel> model,
                         View* anchor_view,
                         BubbleBorder::Arrow arrow);
@@ -43,7 +42,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
       std::unique_ptr<ui::DialogModel> model,
       ui::ModalType modal_type);
 
-  // BubbleDialogDelegateView:
+  // BubbleDialogDelegate:
   // TODO(pbos): Populate initparams with initial view instead of overriding
   // GetInitiallyFocusedView().
   View* GetInitiallyFocusedView() override;
@@ -54,6 +53,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
   void OnFieldAdded(ui::DialogModelField* field) override;
 
  private:
+  class ContentsView;
   // TODO(pbos): Consider externalizing this functionality into a different
   // format that could feasibly be adopted by LayoutManagers. This is used for
   // BoxLayouts (but could be others) to agree on columns' preferred width as a
@@ -130,6 +130,8 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
   bool IsModalDialog() const;
 
   std::unique_ptr<ui::DialogModel> model_;
+  ContentsView* const contents_view_;
+
   std::vector<DialogModelHostField> fields_;
   std::vector<base::CallbackListSubscription> property_changed_subscriptions_;
 

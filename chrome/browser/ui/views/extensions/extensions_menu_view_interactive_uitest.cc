@@ -92,9 +92,8 @@ class ExtensionsMenuViewInteractiveUITest
           container->GetViewForId(extensions()[0]->id())->GetVisible());
 
       // Trigger uninstall dialog.
-      views::NamedWidgetShownWaiter waiter(
-          views::test::AnyWidgetTestPasskey{},
-          views::BubbleDialogModelHost::kViewClassName);
+      views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                           "ExtensionUninstallDialog");
       extensions::ExtensionContextMenuModel menu_model(
           extensions()[0].get(), browser(),
           extensions::ExtensionContextMenuModel::PINNED, nullptr,

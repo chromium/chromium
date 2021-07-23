@@ -131,7 +131,7 @@ void OutdatedUpgradeBubbleView::ShowBubble(views::View* anchor_view,
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
-  views::BubbleDialogDelegateView::CreateBubble(std::move(bubble))->Show();
+  views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
 
   chrome::RecordDialogCreation(chrome::DialogIdentifier::OUTDATED_UPGRADE);
 

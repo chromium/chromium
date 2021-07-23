@@ -17,9 +17,8 @@ using WindowNamePromptTest = BrowserWithTestWindowTest;
 namespace {
 
 views::Widget* ShowPrompt(Browser* browser, gfx::NativeWindow context) {
-  views::NamedWidgetShownWaiter waiter(
-      views::test::AnyWidgetTestPasskey{},
-      views::BubbleDialogModelHost::kViewClassName);
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WindowNamePrompt");
   chrome::ShowWindowNamePromptForTesting(browser, context);
   return waiter.WaitIfNeededAndGet();
 }

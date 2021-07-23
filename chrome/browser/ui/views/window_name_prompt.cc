@@ -35,7 +35,7 @@ std::unique_ptr<views::DialogDelegate> CreateWindowNamePrompt(
     Browser* browser) {
   ui::DialogModel::Builder dialog_builder;
   auto dialog_model =
-      dialog_builder
+      dialog_builder.SetInternalName("WindowNamePrompt")
           .SetTitle(l10n_util::GetStringUTF16(IDS_NAME_WINDOW_PROMPT_TITLE))
           .AddOkButton(base::BindOnce(&SetBrowserTitleFromTextfield, browser,
                                       dialog_builder.model()))

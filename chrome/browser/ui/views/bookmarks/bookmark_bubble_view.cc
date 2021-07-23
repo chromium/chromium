@@ -245,7 +245,7 @@ void BookmarkBubbleView::ShowBubble(
 #endif
 
   views::Widget* const widget =
-      views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
   widget->Show();
 
   chrome::RecordDialogCreation(chrome::DialogIdentifier::BOOKMARK);

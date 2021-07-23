@@ -31,7 +31,7 @@ class SessionCrashedBubbleViewTest : public DialogBrowserTest {
   }
 
  protected:
-  views::BubbleDialogDelegateView* crash_bubble_;
+  views::BubbleDialogDelegate* crash_bubble_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SessionCrashedBubbleViewTest);
@@ -53,7 +53,8 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
                        CanFocusBubbleWithFocusDialogHotkey) {
   ShowUi("SessionCrashedBubble");
 
-  views::FocusManager* focus_manager = crash_bubble_->GetFocusManager();
+  views::FocusManager* focus_manager =
+      crash_bubble_->GetWidget()->GetFocusManager();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   views::View* bubble_focused_view = crash_bubble_->GetInitiallyFocusedView();
 
@@ -69,7 +70,8 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
 IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
                        CanFocusBubbleWithRotatePaneFocusHotkey) {
   ShowUi("SessionCrashedBubble");
-  views::FocusManager* focus_manager = crash_bubble_->GetFocusManager();
+  views::FocusManager* focus_manager =
+      crash_bubble_->GetWidget()->GetFocusManager();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   views::View* bubble_focused_view = crash_bubble_->GetInitiallyFocusedView();
 

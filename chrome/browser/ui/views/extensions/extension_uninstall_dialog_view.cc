@@ -88,7 +88,7 @@ ExtensionUninstallDialogViews::~ExtensionUninstallDialogViews() {
 void ExtensionUninstallDialogViews::Show() {
   // TODO(pbos): Consider separating dialog model from views code.
   ui::DialogModel::Builder dialog_builder;
-  dialog_builder
+  dialog_builder.SetInternalName("ExtensionUninstallDialog")
       .SetTitle(
           l10n_util::GetStringFUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_TITLE,
                                      base::UTF8ToUTF16(extension()->name())))
@@ -142,9 +142,9 @@ void ExtensionUninstallDialogViews::Show() {
     auto bubble = std::make_unique<views::BubbleDialogModelHost>(
         std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
 
-      container->ShowWidgetForExtension(
-          views::BubbleDialogDelegateView::CreateBubble(std::move(bubble)),
-          extension()->id());
+    container->ShowWidgetForExtension(
+        views::BubbleDialogDelegate::CreateBubble(std::move(bubble)),
+        extension()->id());
   } else {
     // TODO(pbos): Add unique_ptr version of CreateBrowserModalDialogViews and
     // remove .release().
