@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 
 #include "base/check.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -14,7 +15,7 @@
 
 @property(nonatomic, assign) NSInteger index;
 
-@property(nonatomic, strong) NSArray* screens;
+@property(nonatomic, strong) NSMutableArray* screens;
 
 @end
 
@@ -47,10 +48,16 @@
 
 // Sets the screens up.
 - (void)setupScreens {
-  // TODO(crbug.com/1195198): Add logic to generate a custimizeed screen
-  // order.
-  _screens =
-      @[ @(kWelcomeAndConsent), @(kSignIn), @(kSync), @(kFirstRunCompleted) ];
+  self.screens = [NSMutableArray array];
+  [self.screens addObject:@(kWelcomeAndConsent)];
+  [self.screens addObject:@(kSignIn)];
+  [self.screens addObject:@(kSync)];
+
+  if (base::FeatureList::IsEnabled(kEnableFREDefaultBrowserScreen)) {
+    [self.screens addObject:@(kDefaultBrowserPromo)];
+  }
+
+  [self.screens addObject:@(kFirstRunCompleted)];
 }
 
 @end

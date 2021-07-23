@@ -12,6 +12,7 @@
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_type.h"
@@ -158,8 +159,10 @@
                                    browser:self.mainBrowser
                                   delegate:self];
     case kDefaultBrowserPromo:
-      // TODO (crbug.com/1189807): Create the default browser screen.
-      return nil;
+      return [[DefaultBrowserScreenCoordinator alloc]
+          initWithBaseNavigationController:self.navigationController
+                                   browser:self.mainBrowser
+                                  delegate:self];
     case kFirstRunCompleted:
       NOTREACHED() << "Reaches kFirstRunCompleted unexpectedly.";
       break;

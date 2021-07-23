@@ -1,0 +1,28 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("default_browser") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "default_browser_screen_coordinator.h",
+    "default_browser_screen_coordinator.mm",
+  ]
+  deps = [
+    ":default_browser_ui",
+    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/first_run:screen_delegate",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("default_browser_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "default_browser_screen_view_controller.h",
+    "default_browser_screen_view_controller.mm",
+  ]
+  deps = [ "//ios/chrome/browser/ui/first_run:first_run_ui" ]
+  frameworks = [ "UIKit.framework" ]
+}
