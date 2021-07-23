@@ -136,9 +136,11 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1407135791313364759">Åbn alle</translation>
 <translation id="1408787208417187241">Trehæftning øverst</translation>
 <translation id="1413809658975081374">Fejl i forbindelse med beskyttelse af personlige oplysninger</translation>
+<translation id="1422930527989633628">Websitet kan anmode om tilladelse til at søge efter Bluetooth-enheder i nærheden</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1428146450423315676">Stabler 7</translation>
 <translation id="1430915738399379752">Udskriv</translation>
+<translation id="1436185428532214179">Websitet kan anmode om tilladelse til at redigere filer og mapper på din enhed</translation>
 <translation id="1442386063175183758">Portfals i højre side</translation>
 <translation id="1442987760062738829">Hul</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
@@ -258,6 +260,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, flere handlinger er tilgængelige, tryk på Tab-tasten for at gennemse dem</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Kortindehaverens navn</translation>
+<translation id="1803351196216024260">Websitet kan anmode om tilladelse til at bruge din mikrofon</translation>
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1807528111851433570">Startark</translation>
 <translation id="1812527064848182527">landskab</translation>
@@ -287,6 +290,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1919367280705858090">Få hjælp til en specifik fejlmeddelelse</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ingen}=1{1 website}one{# website}other{# websites}}</translation>
 <translation id="1924727005275031552">Ny</translation>
+<translation id="1939175642807587452">Websitet kan anmode om tilladelse til at sende notifikationer</translation>
 <translation id="1945968466830820669">Du kan miste adgangen til din organisations konto eller udsættes for identitetstyveri. Chromium anbefaler, at du skifter din adgangskode nu.</translation>
 <translation id="1947454675006758438">Hæftning øverst til højre</translation>
 <translation id="1958218078413065209">Din rekord er <ph name="SCORE" />.</translation>
@@ -417,6 +421,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2392959068659972793">Vis politikker uden nogen værdier</translation>
 <translation id="239429038616798445">Denne forsendelsesmetode er ikke tilgængelig. Prøv en anden metode.</translation>
 <translation id="2396249848217231973">&amp;Fortryd sletning</translation>
+<translation id="2400600116338235695">Websitet kan anmode om tilladelse til at oprette forbindelse til serieporte</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413155254802890957">Gammel</translation>
 <translation id="2413528052993050574">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da sikkerhedscertifikatet muligvis er blevet tilbagekaldt. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
@@ -471,6 +476,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2609632851001447353">Varianter</translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2625385379895617796">Dit ur er foran</translation>
+<translation id="262745152991669301">Websitet kan anmode om tilladelse til at oprette forbindelse til USB-enheder</translation>
 <translation id="2629325967560697240"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Aktivér forbedret beskyttelse<ph name="END_ENHANCED_PROTECTION_LINK" /> for at få Chromes højeste sikkerhedsniveau</translation>
 <translation id="2634124572758952069">IP-adressen på serveren for <ph name="HOST_NAME" /> blev ikke fundet.</translation>
 <translation id="2639739919103226564">Status:</translation>
@@ -614,6 +620,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3188393374551744535">Kontosaldo</translation>
 <translation id="3194737229810486521"><ph name="URL" /> anmoder om at gemme data permanent på din enhed</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> på <ph name="SERVER_NAME" /></translation>
+<translation id="3197136577151645743">Websitet kan anmode om tilladelse til at blive underrettet, når du aktivt bruger din enhed</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at administrere, hvilke oplysninger der skal synkroniseres, i Chrome-indstillingerne</translation>
 <translation id="320323717674993345">Annuller betaling</translation>
 <translation id="3207960819495026254">Gemt som bogmærke</translation>
@@ -830,6 +837,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3939773374150895049">Vil du bruge WebAuthn i stedet for kontrolkoden?</translation>
 <translation id="3946209740501886391">Spørg altid på dette website</translation>
+<translation id="3947595700203588284">Websitet kan anmode om tilladelse til at oprette forbindelse til MIDI-enheder</translation>
 <translation id="3949571496842715403">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da sikkerhedscertifikatet ikke angiver alternative navne på emner. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
 <translation id="3949601375789751990">Din browserhistorik vises her</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -930,6 +938,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
     &lt;p&gt;Hvis fejlen stadig vises, bør du kontakte ejeren af websitet.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Prøv at køre Netværksdiagnosticering<ph name="END_LINK" />.</translation>
 <translation id="4229544452621580519">Kør et sikkerhedstjek i indstillingerne for Chrome</translation>
+<translation id="4230204356098880324">Websitet kan anmode om tilladelse til at bruge og bevæge dit kamera</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Fortsæt til <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Gyldig</translation>
 <translation id="4250431568374086873">Din forbindelse til dette website er ikke helt sikker</translation>
@@ -992,6 +1001,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4434045419905280838">Pop op-vinduer og omdirigeringer</translation>
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Brug af en proxy er deaktiveret, men en eksplicit proxykonfiguration er angivet.</translation>
+<translation id="4451135742916150903">Websitet kan anmode om tilladelse til at oprette forbindelse til HID-enheder</translation>
 <translation id="4460315069258617173">Tilladt, indtil du har lukket faner for dette website</translation>
 <translation id="4464826014807964867">Websites med oplysninger fra din organisation</translation>
 <translation id="4476953670630786061">Denne formular er ikke sikker. Autofyld er blevet deaktiveret.</translation>
@@ -1055,6 +1065,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4708268264240856090">Din forbindelse blev afbrudt</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Køre Windows Netværksdiagnosticering<ph name="END_LINK" /></translation>
+<translation id="4724144314178270921">Websitet kan anmode om tilladelse til at se tekst og billeder i din udklipsholder</translation>
 <translation id="4726672564094551039">Opdater politikker</translation>
 <translation id="4728558894243024398">Platform</translation>
 <translation id="4731638775147756694">Denne app er blokeret af din administrator</translation>
@@ -1352,6 +1363,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5728056243719941842">C5 (Envelope)</translation>
 <translation id="5730040223043577876">Chrome anbefaler, at du nulstiller din adgangskode, hvis du har brugt den på andre websites.</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Gem kortet på din Google-konto}one{Gem kortet på din Google-konto}other{Gem kortene på din Google-konto}}</translation>
+<translation id="5745733273847572235">Websitet kan anmode om adgang til din placering</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{Brug et virtuelt nummer for dette kort}one{Vælg et kort}other{Vælg kort}}</translation>
 <translation id="5759751709240058861">Brug eller flyt dit kamera</translation>
 <translation id="5763042198335101085">Angiv en gyldig mailadresse</translation>
@@ -1470,6 +1482,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6169916984152623906">Nu kan du gå på nettet privat, og andre brugere på denne enhed kan ikke se din aktivitet. Downloads og bogmærker gemmes dog stadig.</translation>
 <translation id="6177128806592000436">Din forbindelse til dette website er ikke sikker.</translation>
 <translation id="6180316780098470077">Interval for gentagelse af forsøg</translation>
+<translation id="619448280891863779">Websitet kan anmode om tilladelse til at åbne og placere vinduer på dine skærme</translation>
 <translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>
 <translation id="6203231073485539293">Kontrollér din internetforbindelse</translation>
 <translation id="6211666000885129820">Ark til tilmelding af loginoplysninger til sikker betaling</translation>
@@ -1555,6 +1568,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6502991525169604759">Uden dine ændringer</translation>
 <translation id="6505563257409036437">Luk inkognitovinduer</translation>
 <translation id="6508722015517270189">Genstart Chrome</translation>
+<translation id="6513005815064132016">Websitet kan anmode om tilladelse til at registrere din kameraposition</translation>
 <translation id="6517596291481585650">Advarsel! Denne politik blev ikke flettet som angivet i politikken, da den ikke er en liste.</translation>
 <translation id="6518133107902771759">Bekræft</translation>
 <translation id="6521745193039995384">Ikke aktiv</translation>
@@ -1655,7 +1669,9 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6949872517221025916">Nulstil adgangskode</translation>
 <translation id="6950684638814147129">Der opstod en fejl under parsing af JSON-værdien: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Nulstil alle</translation>
+<translation id="6954341342296443517">Websitet kan anmode om tilladelse til at åbne visse typer filer</translation>
 <translation id="6957887021205513506">Serverens certifikat ser ud til at være en forfalskning.</translation>
+<translation id="6961844873822989059">Websitet kan anmode om tilladelse til at bruge de skrifttyper, der er installeret på din enhed</translation>
 <translation id="6963520811470373926">Tilsidesættelse</translation>
 <translation id="6964255747740675745">Netværkskonfigurationen kunne ikke parses (ugyldig JSON).</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1757,6 +1773,7 @@ Yderligere oplysninger:
 <translation id="733354035281974745">Tilsidesættelse af enhedslokal konto</translation>
 <translation id="7333654844024768166">Du har lige angivet din adgangskode på et vildledende website. Chromium anbefaler, at du straks går til <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> og eventuelle andre websites, hvor du bruger denne adgangskode, og ændrer adgangskoden.</translation>
 <translation id="7334320624316649418">&amp;Annuller fortryd omarrangering</translation>
+<translation id="7335157162773372339">Websitet kan anmode om tilladelse til at bruge dit kamera</translation>
 <translation id="7337248890521463931">Vis flere linjer</translation>
 <translation id="7337706099755338005">Ikke tilgængelig på din platform.</translation>
 <translation id="733923710415886693">Servercertifikatet blev ikke fremvist via Certifikatsgennemsigtighed.</translation>
@@ -1944,6 +1961,7 @@ Yderligere oplysninger:
 <translation id="7937554595067888181">Udløber <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Serverens certifikatet er endnu ikke gyldigt.</translation>
 <translation id="7942349550061667556">Rød</translation>
+<translation id="7943893128817522649">Websitet kan anmode om tilladelse til automatisk at downloade flere filer</translation>
 <translation id="7947285636476623132">Kontrollér, om udløbsåret er korrekt, og prøv igen.</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at få flere oplysninger om Chrome-funktioner</translation>
 <translation id="7950027195171824198">Administrer dine cookiepræferencer i Chrome-indstillingerne</translation>
@@ -1956,6 +1974,7 @@ Yderligere oplysninger:
 <translation id="7976214039405368314">For mange anmodninger</translation>
 <translation id="7977538094055660992">Outputenhed</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="798134797138789862">Websitet kan anmode om tilladelse til at bruge virtual reality-enheder og -data</translation>
 <translation id="79859296434321399">Installer ARCore for at se augmented reality-indhold</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Bind</translation>
@@ -2146,6 +2165,7 @@ Yderligere oplysninger:
 <translation id="8699041776323235191">HID-enhed</translation>
 <translation id="8703575177326907206">Din forbindelse til <ph name="DOMAIN" /> er ikke krypteret.</translation>
 <translation id="8705331520020532516">Serienummer</translation>
+<translation id="8708134712139312373">Websitet kan anmode om tilladelse til at oprette forbindelse til Bluetooth-enheder</translation>
 <translation id="8710842507289500830">Skriftstil</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="8718314106902482036">Betalingen blev ikke fuldført</translation>

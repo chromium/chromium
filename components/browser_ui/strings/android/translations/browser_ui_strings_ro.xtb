@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">Întreabă înainte de a permite site-urilor să folosească dispozitivul de realitate virtuală și datele conexe (recomandat)</translation>
 <translation id="4962975101802056554">Revocă toate permisiunile pentru dispozitiv</translation>
 <translation id="497421865427891073">Înainte</translation>
+<translation id="4976702386844183910">Accesat ultima dată pe <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nu s-a găsit nicio persoană de contact</translation>
 <translation id="4996978546172906250">Trimite prin</translation>
 <translation id="5039804452771397117">Permite</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">Filă incognito</translation>
 <translation id="5186036860380548585">Opțiunea este disponibilă în partea de sus a ecranului</translation>
 <translation id="5197729504361054390">Persoanele de contact pe care le selectezi vor fi trimise site-ului <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">Accesat ultima dată azi</translation>
 <translation id="528192093759286357">Trage din partea de sus și atinge butonul Înapoi pentru a ieși din ecranul complet.</translation>
 <translation id="5300589172476337783">Afișează</translation>
 <translation id="5301954838959518834">OK, am înțeles</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">Permisiuni</translation>
 <translation id="5860033963881614850">Dezactivat</translation>
 <translation id="5876056640971328065">Întrerupe videoclipul</translation>
+<translation id="5887687176710214216">Accesat ultima dată ieri</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5922853908706496913">Se permite accesul la ecran</translation>
 <translation id="5939518447894949180">Resetează</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">Trimite</translation>
 <translation id="6545864417968258051">Căutare Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt blocate}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt blocate}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt blocate}}</translation>
+<translation id="6554732001434021288">Accesat ultima dată acum <ph name="NUM_DAYS" /> zile</translation>
 <translation id="6561560012278703671">Folosește mesaje discrete (notificările nu te vor întrerupe)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Conținut protejat</translation>

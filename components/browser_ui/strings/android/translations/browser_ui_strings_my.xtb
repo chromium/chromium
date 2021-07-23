@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">သင်၏ပကတိအသွင်စက်နှင့် ဒေတာများကို ဝဘ်ဆိုက်များအား အသုံးပြုခွင့်မပေးမီ မေးမြန်းရန် (အကြံပြုထားသည်)</translation>
 <translation id="4962975101802056554">စက်ပစ္စည်းအတွက် ခွင့်ပြုချက်အားလုံး ရုပ်သိမ်းသည်</translation>
 <translation id="497421865427891073">ရှေ့သို့သွား</translation>
+<translation id="4976702386844183910"><ph name="DATE" /> က နောက်ဆုံး ဝင်ကြည့်ထားသည်</translation>
 <translation id="4994033804516042629">အဆက်အသွယ်များ မတွေ့ပါ</translation>
 <translation id="4996978546172906250">မှတစ်ဆင့် မျှဝေရန်</translation>
 <translation id="5039804452771397117">ခွင့်ပြုရန်</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">ရုပ်ဖျက်တဘ်</translation>
 <translation id="5186036860380548585">ဖန်သားပြင်၏ထိပ်နားတွင် ရွေးချယ်နိုင်သည်</translation>
 <translation id="5197729504361054390">သင်ရွေးချယ်သော အဆက်အသွယ်များကို <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> နှင့် မျှဝေပါမည်။</translation>
+<translation id="5216942107514965959">ယနေ့ နောက်ဆုံး ဝင်ကြည့်ထားသည်</translation>
 <translation id="528192093759286357">မျက်နှာပြင်အပြည့်ဖွင့်ခြင်းမှ ထွက်ရန် ထိပ်ဆုံးမှဆွဲချကာ နောက်ဆုတ်ရန်ခလုတ်ကို နှိပ်ပါ။</translation>
 <translation id="5300589172476337783">ပြရန်</translation>
 <translation id="5301954838959518834">OK</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">ခွင့်ပြုချက်များ</translation>
 <translation id="5860033963881614850">ပိတ်ထား</translation>
 <translation id="5876056640971328065">ဗီဒီယို ခဏရပ်ရန်</translation>
+<translation id="5887687176710214216">မနေ့က နောက်ဆုံး ဝင်ကြည့်ထားသည်</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
 <translation id="5922853908706496913">သင့်ဖန်သားပြင်ကို မျှဝေနေသည်</translation>
 <translation id="5939518447894949180">ပြန်ညှိ</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">မျှဝေရန်</translation>
 <translation id="6545864417968258051">ဘလူးတုသ် ရှာဖွေခြင်း</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခုကို ပိတ်ထားသည်}other{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခုကို ပိတ်ထားသည်}}</translation>
+<translation id="6554732001434021288">ပြီးခဲ့သော <ph name="NUM_DAYS" /> ရက်က နောက်ဆုံး ဝင်ကြည့်ထားသည်</translation>
 <translation id="6561560012278703671">ပိုမိုတိတ်ဆိတ်သော မက်ဆေ့ဂျ်ပို့ခြင်းကို အသုံးပြုပါ (သင့်အားမနှောင့်ယှက်စေရန် အကြောင်းကြားချက် အတည်ပြုစနစ်များကို ပိတ်ပေးသည်)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">ကာကွယ်ထားသည့် အကြောင်းအရာ</translation>

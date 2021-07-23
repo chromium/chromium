@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">ጣቢያዎች የእርስዎን የምናባዊ እውነታ መሣሪያ እና ውሂብ እንዲጠቀሙ ፈቃድ ከማግኘታቸው በፊት ይጠይቁ (የሚመከር)</translation>
 <translation id="4962975101802056554">ሁሉንም የመሣሪያ ፈቃዶች ይሻሩ</translation>
 <translation id="497421865427891073">ወደ ፊት ሂድ</translation>
+<translation id="4976702386844183910">ለመጨረሻ ጊዜ የተጎበኘው በ<ph name="DATE" /></translation>
 <translation id="4994033804516042629">ምንም ዕውቂያዎች አልተገኙም</translation>
 <translation id="4996978546172906250">ያጋሩ በ</translation>
 <translation id="5039804452771397117">ፍቀድ</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">ማንነት የማያሳውቅ ትር</translation>
 <translation id="5186036860380548585">አማራጮች ከማያ ገጹ አናት አጠገብ ይገኛሉ</translation>
 <translation id="5197729504361054390">የመረጧቸው እውቂያዎች ለ<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ይጋራሉ።</translation>
+<translation id="5216942107514965959">መጨረሻ የተጎበኘው ዛሬ</translation>
 <translation id="528192093759286357">ከሙሉ ማያ ገጽ ለመውጣት ከላይ ይጎትቱ እና የተመለስ አዝራሩን ይንኩ።</translation>
 <translation id="5300589172476337783">አሳይ</translation>
 <translation id="5301954838959518834">እሺ፣ ገባኝ</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">ፍቃዶች</translation>
 <translation id="5860033963881614850">አጥፋ</translation>
 <translation id="5876056640971328065">ቪዲዮ ባለበት አቁም</translation>
+<translation id="5887687176710214216">ለመጨረሻ ጊዜ የተጎበኘው ትላንትና</translation>
 <translation id="5916664084637901428">በርቷል</translation>
 <translation id="5922853908706496913">ማያ ገጽዎን በማጋራት ላይ</translation>
 <translation id="5939518447894949180">ዳግም አስጀምር</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">አጋራ</translation>
 <translation id="6545864417968258051">የብሉቱዝ ቅኝት</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ ታግደዋል}one{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ ታግደዋል}other{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" /> እና <ph name="NUM_MORE" /> ተጨማሪ ታግደዋል}}</translation>
+<translation id="6554732001434021288">ለመጨረሻ ጊዜ የተጎበኘው ከ<ph name="NUM_DAYS" /> ቀናት በፊት ነው</translation>
 <translation id="6561560012278703671">ይበልጥ ጸጥ ያለ መልዕክት አላላክ ይጠቀሙ (ማሳወቂያ ጥያቄዎች እርስዎን እንዳያቋርጡ ያግዳል)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ጊባ</translation>
 <translation id="6612358246767739896">ጥበቃ የሚደረግለት ይዘት</translation>

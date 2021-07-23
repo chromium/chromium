@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">Пре него што дозволите сајтовима да користе уређај и податке виртуелне реалности приказује се упит (препоручено)</translation>
 <translation id="4962975101802056554">Опозовите све дозволе за уређај</translation>
 <translation id="497421865427891073">Кретање унапред</translation>
+<translation id="4976702386844183910">Последња посета: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Није пронађен ниједан контакт</translation>
 <translation id="4996978546172906250">Дељење преко</translation>
 <translation id="5039804452771397117">Дозволи</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">Картица без архивирања</translation>
 <translation id="5186036860380548585">Опција је доступна у врху екрана</translation>
 <translation id="5197729504361054390">Контакти које изаберете ће се делити са <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">Последњи посећен данас</translation>
 <translation id="528192093759286357">Превуците од врха екрана и додирните дугме Назад да бисте изашли из режима целог екрана.</translation>
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5301954838959518834">Важи</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">Дозволе</translation>
 <translation id="5860033963881614850">Искључено</translation>
 <translation id="5876056640971328065">Паузирај видео</translation>
+<translation id="5887687176710214216">Последња посета: јуче</translation>
 <translation id="5916664084637901428">Укључено</translation>
 <translation id="5922853908706496913">Дели се екран</translation>
 <translation id="5939518447894949180">Ресетуј</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">Дели</translation>
 <translation id="6545864417968258051">Bluetooth скенирање</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}one{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}few{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}other{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}}</translation>
+<translation id="6554732001434021288">Последња посета: пре <ph name="NUM_DAYS" /> дана</translation>
 <translation id="6561560012278703671">Користите ненаметљиву размену порука (спречава упите са обавештењима да вас ометају)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Заштићени садржај</translation>

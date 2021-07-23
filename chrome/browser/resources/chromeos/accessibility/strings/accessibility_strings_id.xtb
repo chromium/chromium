@@ -182,6 +182,7 @@
 <translation id="2243633977138166243">Tekan panah kiri atau kanan untuk memilih; enter untuk mengaktifkan</translation>
 <translation id="224426591676115802">Tidak ada suara yang tersedia untuk bahasa: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Menghentikan Mode Pembelajaran</translation>
+<translation id="2247870315273396641">Pratinjau suara</translation>
 <translation id="225732394367814946">Meningkatkan laju ucapan</translation>
 <translation id="2267538686624070261">Salah eja diabaikan</translation>
 <translation id="2267945578749931355">Karakter Berikutnya</translation>
@@ -198,6 +199,7 @@
 <translation id="2390264819538553347">Untuk melanjutkan, tekan enter; untuk kembali, tekan backspace.</translation>
 <translation id="2398579267367951220">Ketik untuk menelusuri halaman. Tekan enter untuk langsung menuju ke hasil, panah atas atau bawah untuk menjelajahi hasil, terus mengetik untuk mengubah penelusuran, atau escape untuk membatalkan.</translation>
 <translation id="240709722712693803">Blue Violet</translation>
+<translation id="2410298923485357543">Gunakan suara alami saat perangkat online</translation>
 <translation id="2416512023405990736">Kotak centang yang tidak dicentang</translation>
 <translation id="2417569100218200841">Info konten</translation>
 <translation id="2417948780551741035">Catatan akhir</translation>
@@ -299,6 +301,7 @@
 <translation id="3046838483509668188">Opsi ChromeVox</translation>
 <translation id="3060756054951570867">menu <ph name="TITLE" /> dibuka</translation>
 <translation id="3060880924447482063">Geser ke kiri atau ke kanan untuk berpindah per item</translation>
+<translation id="3061302636956643119">Teks akan dikirim ke Google untuk diproses.</translation>
 <translation id="3070245424257836917">Geser tiga jari ke atas</translation>
 <translation id="307516670110542567">Orientasi cepat</translation>
 <translation id="3078345202707391975">Judul tingkat 2 berikutnya</translation>
@@ -936,6 +939,7 @@
 <translation id="7693840228159394336">Tombol radio sebelumnya</translation>
 <translation id="7701040980221191251">Tidak ada</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7713139339518499741">Suara alami</translation>
 <translation id="7714340021005120797">Tidak ada kotak kombinasi berikutnya</translation>
 <translation id="772146615414628379">Selamat! Anda telah berhasil mempelajari dasar-dasar menggunakan ChromeVox. Ingat bahwa Anda dapat membuka menu perintah ChromeVox kapan saja dengan menekan tombol Penelusuran+Titik. Untuk mempelajari ChromeVox dan Chrome OS lebih lanjut, buka artikel berikut ini.
     Jika telah menyelesaikan tutorial, gunakan ChromeVox untuk mengarahkan ke tombol Tutup, lalu klik tombolnya.</translation>
@@ -966,6 +970,7 @@
 <translation id="7939428177581522200">ditambahkan ke pilihan</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{et}other{# tanda et}}</translation>
 <translation id="7942349550061667556">Merah</translation>
+<translation id="7945703887991230167">Suara pilihan</translation>
 <translation id="7948364528129376623">Tidak ada link yang dikunjungi berikutnya</translation>
 <translation id="7952460583030260752">Referensi perintah</translation>
 <translation id="7965147473449754028">menu ditutup</translation>

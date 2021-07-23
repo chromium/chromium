@@ -132,6 +132,7 @@
 <translation id="387301095347517405">Koliko se puta vaša baterija potpuno napunila</translation>
 <translation id="3941014780699102620">Razrješavanje hosta nije uspjelo</translation>
 <translation id="3942420633017001071">Dijagnostika</translation>
+<translation id="3966286471246132217">Da biste dobili preciznije rezultate, zatvorite sve aplikacije dok test ne završi.</translation>
 <translation id="3967822245660637423">Preuzimanje dovršeno</translation>
 <translation id="397105322502079400">Izračun u tijeku…</translation>
 <translation id="39823212440917567">Uklonit će se zadaci ispisa stariji od <ph name="NUMBER_OF_DAYS" /> dana</translation>
@@ -144,6 +145,7 @@
 <translation id="4176463684765177261">Onemogućeno</translation>
 <translation id="4227825898293920515">Zaporka istječe za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nema zadataka ispisa u tijeku</translation>
+<translation id="4244962993387259361">Da biste testirali memoriju, najmanje 500 MB mora biti slobodno. Da biste oslobodili prostor, otvorite Postavke &gt; Upravljanje pohranom.</translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4297501883039923494">Zaustavljeno – nepoznata pogreška</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> slika/slike</translation>
@@ -385,6 +387,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="8498220429738806196">Brojači prometa</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="8503836310948963452">Još samo nekoliko minuta...</translation>
+<translation id="8521021929829989041">Upotrijebi kao osobni uređaj</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Vaš mobilni operater može zahtijevati tu opciju radi povezivanja s njegovom mrežom. Više informacija zatražite od svojeg operatera.</translation>
 <translation id="8576249514688522074">Pokretanje je zaustavljeno</translation>

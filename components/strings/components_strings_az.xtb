@@ -136,9 +136,11 @@
 <translation id="1407135791313364759">Hamısını açın</translation>
 <translation id="1408787208417187241">Yuxarıdan üçlü ştapel vurun</translation>
 <translation id="1413809658975081374">Məxfilik xətası</translation>
+<translation id="1422930527989633628">Saytlar yaxınlıqdakı Bluetooth cihazlarını aşkarlamaq üçün icazə istəyə bilər</translation>
 <translation id="1426410128494586442">Bəli</translation>
 <translation id="1428146450423315676">Yığıcı 7</translation>
 <translation id="1430915738399379752">Çap edin</translation>
+<translation id="1436185428532214179">Saytlar cihazınızdakı faylları və qovluqları redaktə etmək üçün icazə istəyə bilər</translation>
 <translation id="1442386063175183758">Sağ küncə qatlayın</translation>
 <translation id="1442987760062738829">Deşik açın</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
@@ -258,6 +260,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, bir neçə əməliyyat əlçatandır, onları nəzərdən keçirmək üçün Tab düyməsinə basın</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Kart Sahibinin Adı</translation>
+<translation id="1803351196216024260">Saytlar mikrofonunuzdan istifadə etmək üçün icazə istəyə bilər</translation>
 <translation id="1807246157184219062">Yüngül</translation>
 <translation id="1807528111851433570">Başlama vərəqi</translation>
 <translation id="1812527064848182527">peyzaj</translation>
@@ -287,6 +290,7 @@
 <translation id="1919367280705858090">Spesifik xəta mesajı ilə bağlı yardım əldə edin</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Yoxdur}=1{1 sayt}other{# sayt}}</translation>
 <translation id="1924727005275031552">Yeni</translation>
+<translation id="1939175642807587452">Saytlar bildirişlər göndərmək üçün icazə istəyə bilər</translation>
 <translation id="1945968466830820669">Təşkilat hesabına girişi itirə və ya kimlik oğurluğu ilə üzləşə bilərsiniz. Chromium parollarınızı indi dəyişməyi məsləhət görür.</translation>
 <translation id="1947454675006758438">Yuxarı sağ tərəfdən ştapel vurun</translation>
 <translation id="1958218078413065209">Ən yüksək xalınız: <ph name="SCORE" />.</translation>
@@ -417,6 +421,7 @@
 <translation id="2392959068659972793">Heç bir dəyəri ayarlanmamış qaydaları göstərin</translation>
 <translation id="239429038616798445">Bu göndərmə üsulu əlçatan deyil. Başqa üsul seçin.</translation>
 <translation id="2396249848217231973">&amp;Silinməni ləğv edin</translation>
+<translation id="2400600116338235695">Saytlar ardıcıl portlara qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="2410754574180102685">Hüquqi Hökumət</translation>
 <translation id="2413155254802890957">Köhnə</translation>
 <translation id="2413528052993050574">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmir; təhlükəsizlik sertifikatı ləğv edilə bilər. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.</translation>
@@ -471,6 +476,7 @@
 <translation id="2609632851001447353">Variasiyalar</translation>
 <translation id="2618023639789766142">C10 (Zərf)</translation>
 <translation id="2625385379895617796">Saatınız irəlidədir</translation>
+<translation id="262745152991669301">Saytlar USB cihazlarına qoşulmaq icazəsi istəyə bilər</translation>
 <translation id="2629325967560697240">Chrome'un ən yüksək təhlükəsizlik səviyyəsini əldə etmək üçün<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />genişləndirilmiş qorumanı aktiv edin<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> serverinin IP ünvanı tapılmadı.</translation>
 <translation id="2639739919103226564">Status:</translation>
@@ -612,6 +618,7 @@
 <translation id="3188393374551744535">Hesab balansı</translation>
 <translation id="3194737229810486521"><ph name="URL" /> datanı həmişəlik cihazınızda saxlamaq istəyir</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> <ph name="SERVER_NAME" /> serverində</translation>
+<translation id="3197136577151645743">Saytlar bu cihazdan nə vaxt aktiv istifadə etdiyinizi öyrənmək üçün icazə istəyə bilər</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında sinxronlaşdırdığınız məlumatları idarə etmək üçün Tab, sonra Enter düyməsinə basın</translation>
 <translation id="320323717674993345">Ödənişi ləğv edin</translation>
 <translation id="3207960819495026254">Əlfəcinlənib</translation>
@@ -826,6 +833,7 @@
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3939773374150895049">CVC əvəzinə WebAuthn istifadə edilsin?</translation>
 <translation id="3946209740501886391">Həmişə bu saytda sual verin</translation>
+<translation id="3947595700203588284">Saytlar MIDI cihazlarına qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="3949571496842715403">Server bunun <ph name="DOMAIN" /> olduğunu sübut edə bilmir; onun təhlükəsizlik sertifikatı Subyektiv Alternativ Adı göstərmir. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının blok edilməsi səbəb ola bilər.</translation>
 <translation id="3949601375789751990">Axtarış tarixçəsi burada görünür</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -925,6 +933,7 @@
     &lt;p&gt;Xətanı həll edə bilmirsinizsə, sayt sahibi ilə əlaqə saxlayın.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Şəbəkə Diaqnostikasını İşlətməyə Çalışın<ph name="END_LINK" />.</translation>
 <translation id="4229544452621580519">Chrome ayarlarında Təhlükəsizlik Yoxlanışı icra edin</translation>
+<translation id="4230204356098880324">Saytlar kameranızdan istifadə etmək və onu hərəkət etdirmək üçün icazə istəyə bilər</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> ilə davam edin<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Düzgün</translation>
 <translation id="4250431568374086873">Bu sayta olan bağlantınız tam olaraq güvənli deyil</translation>
@@ -987,6 +996,7 @@
 <translation id="4434045419905280838">Popap və yönləndirmələr</translation>
 <translation id="4435702339979719576">Postkart)</translation>
 <translation id="443673843213245140">Proksi istifadəsi deaktiv edilib, amma ətraflı proksi konfiqurasiyası müəyyən edilib.</translation>
+<translation id="4451135742916150903">Saytlar HID cihazlarına qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="4460315069258617173">Siz bu sayt üzrə tabları bağlayanadək icazə verilir</translation>
 <translation id="4464826014807964867">Təşkilatınızın məlumatları olan veb saytlar</translation>
 <translation id="4476953670630786061">Bu forma güvənli deyil. Avto doldurma deaktiv edilib.</translation>
@@ -1050,6 +1060,7 @@
 <translation id="4708268264240856090">Bağlantınız kəsildi</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows Şəbəkə Diaqnostikası İşləyir<ph name="END_LINK" /></translation>
+<translation id="4724144314178270921">Saytlar mübadilə buferinizdəki mətn və şəkilləri görmək üçün icazə istəyə bilər</translation>
 <translation id="4726672564094551039">Qaydaları yenidən yükləyin</translation>
 <translation id="4728558894243024398">Platforma</translation>
 <translation id="4731638775147756694">Bu tətbiq admin tərəfindən bloklanıb</translation>
@@ -1347,6 +1358,7 @@
 <translation id="5728056243719941842">C5 (Zərf)</translation>
 <translation id="5730040223043577876">Parolunuzdan digər saytlarda təkrar istifadə etmisinizsə, Chrome onu sıfırlamağınızı tövsiyə edir.</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Kartı Google Hesabında yadda saxlayın}other{Kartları Google Hesabında yadda saxlayın}}</translation>
+<translation id="5745733273847572235">Saytlar məkanınıza daxil olmaq üçün icazə istəyə bilər</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{Bu kart üçün virtual nömrə istifadə edin}other{Kart seçin}}</translation>
 <translation id="5759751709240058861">Kameranızın istifadəsi və hərəkət etdirilməsi</translation>
 <translation id="5763042198335101085">Düzgün e-poçt ünvanı daxil edin</translation>
@@ -1465,6 +1477,7 @@
 <translation id="6169916984152623906">İndi şəxsi axtarış edə bilərsiniz və bu cihazı istifadə edən digər şəxslər fəaliyyətinizi görməyəcək. Lakin endirmələr və əlfəcinlər yadda saxlanacaq.</translation>
 <translation id="6177128806592000436">Bu sayta olan bağlantınız güvənli deyil</translation>
 <translation id="6180316780098470077">Təkrar cəhd intervalı</translation>
+<translation id="619448280891863779">Saytlar ekranlarınızda pəncərələr açmaq və yerləşdirmək üçün icazə istəyə bilər</translation>
 <translation id="6196640612572343990">Üçüncü tərəf kukiləri blok edin</translation>
 <translation id="6203231073485539293">İnternet bağlantısını yoxlayın</translation>
 <translation id="6211666000885129820">Güvənli ödəniş məlumatları üzrə qeydiyyat vərəqəsi</translation>
@@ -1550,6 +1563,7 @@
 <translation id="6502991525169604759">Dəyişikliklər olmadan</translation>
 <translation id="6505563257409036437">Anonim pəncərələri bağlayın</translation>
 <translation id="6508722015517270189">Chrome'u yenidən başladın</translation>
+<translation id="6513005815064132016">Saytlar kamera mövqeyinizi izləmək üçün icazə istəyə bilər</translation>
 <translation id="6517596291481585650">Xəbərdarlıq: Siyasət tərəfindən göstərilən bu siyasət siyahı olmadığına görə siyahı şəklində birləşdirilmədi.</translation>
 <translation id="6518133107902771759">Doğrulayın</translation>
 <translation id="6521745193039995384">Aktiv deyil</translation>
@@ -1650,7 +1664,9 @@
 <translation id="6949872517221025916">Parolu Sıfırlayın</translation>
 <translation id="6950684638814147129">JSON dəyəri əldə edilərkən xəta baş verdi: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Hamısını sıfırlayın</translation>
+<translation id="6954341342296443517">Saytlar fayl növlərini açmaq üçün icazə istəyə bilər</translation>
 <translation id="6957887021205513506">Serverin sertifikatı fırıldağa oxşayır.</translation>
+<translation id="6961844873822989059">Saytlar cihazınızda quraşdırılmış şriftləri istifadə etmək üçün icazə istəyə bilər</translation>
 <translation id="6963520811470373926">Əvəz edilir</translation>
 <translation id="6964255747740675745">Şəbəkə konfiqurasiyasını təhlil etmək alınmadı (yanlış JSON).</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1752,6 +1768,7 @@
 <translation id="733354035281974745">Cihazın lokal hesabı əvəz edilib</translation>
 <translation id="7333654844024768166">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chromium indi <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> və bu parolu istifadə etdiyiniz digər saytlara keçərək parolunuzu dəyişmənizi tövsiyə edir.</translation>
 <translation id="7334320624316649418">&amp;Yenidən yerbəyer edin</translation>
+<translation id="7335157162773372339">Saytlar kameranızdan istifadə üçün icazə tələb edə bilər</translation>
 <translation id="7337248890521463931">Daha çox sətir göstərin</translation>
 <translation id="7337706099755338005">Platformanızda əlçatan deyil.</translation>
 <translation id="733923710415886693">Serverin sertifikatı Sertifikat Şəffaflığı vasitəsi ilə aşkarlanmayıb.</translation>
@@ -1939,6 +1956,7 @@
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> tarixində bitir</translation>
 <translation id="7938958445268990899">Server sertifikatı hələ etibarlı deyil.</translation>
 <translation id="7942349550061667556">Qırmızı</translation>
+<translation id="7943893128817522649">Saytlar çoxsaylı faylları avtomatik endirmək üçün icazə istəyə bilər</translation>
 <translation id="7947285636476623132">Bitmə ilini yoxlayın və yenidən cəhd edin</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome funksiyaları haqqında ətraflı məlumat əldə edin</translation>
 <translation id="7950027195171824198">Chrome ayarlarında kuki tərcihlərinizi idarə edin</translation>
@@ -1951,6 +1969,7 @@
 <translation id="7976214039405368314">Həddən çox sorğu var</translation>
 <translation id="7977538094055660992">Çıxış cihazı</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="798134797138789862">Saytlar virtual reallıq cihazları və datadan istifadə üçün icazə istəyə bilər</translation>
 <translation id="79859296434321399">Artırılmış virtual reallıq kontentinə baxmaq üçün ARCore quraşdırın</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Uclarını qovuşdurun</translation>
@@ -2140,6 +2159,7 @@
 <translation id="8699041776323235191">HID cihazı</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> domeninə olan bağlantınız şifrələnib.</translation>
 <translation id="8705331520020532516">Seriya Nömrəsi</translation>
+<translation id="8708134712139312373">Saytlar Bluetooth cihazlarına qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="8710842507289500830">Şrift üslubu</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8718314106902482036">Ödəniş tamamlanmadı</translation>

@@ -136,9 +136,11 @@
 <translation id="1407135791313364759">すべて開く</translation>
 <translation id="1408787208417187241">3 か所のステープル（上）</translation>
 <translation id="1413809658975081374">プライバシー エラー</translation>
+<translation id="1422930527989633628">近くにある Bluetooth デバイスの検出を要求できる</translation>
 <translation id="1426410128494586442">はい</translation>
 <translation id="1428146450423315676">スタッカー 7</translation>
 <translation id="1430915738399379752">印刷</translation>
+<translation id="1436185428532214179">デバイスのファイルやフォルダの編集を要求できる</translation>
 <translation id="1442386063175183758">右観音折り</translation>
 <translation id="1442987760062738829">パンチ</translation>
 <translation id="1447067628680007684">（x86_64）</translation>
@@ -254,6 +256,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。複数の操作が可能で、Tab キーを押すと操作が切り替わります</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">カード名義人</translation>
+<translation id="1803351196216024260">マイクの使用を要求できる</translation>
 <translation id="1807246157184219062">明</translation>
 <translation id="1807528111851433570">開始シート</translation>
 <translation id="1812527064848182527">横向き</translation>
@@ -283,6 +286,7 @@
 <translation id="1919367280705858090">特定のエラー メッセージに関する情報</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{なし}=1{1 件のサイト}other{# 件のサイト}}</translation>
 <translation id="1924727005275031552">新</translation>
+<translation id="1939175642807587452">通知の送信を要求できる</translation>
 <translation id="1945968466830820669">組織のアカウントにアクセスできなくなったり、個人情報が盗まれたりする可能性があります。今すぐパスワードを変更することをおすすめします。</translation>
 <translation id="1947454675006758438">ステープル（右上）</translation>
 <translation id="1958218078413065209">ハイスコアは <ph name="SCORE" /> です。</translation>
@@ -413,6 +417,7 @@
 <translation id="2392959068659972793">値が設定されていないポリシーを表示する</translation>
 <translation id="239429038616798445">この配送方法はご利用いただけません。別の方法を選択してください。</translation>
 <translation id="2396249848217231973">削除の取り消し（&amp;U）</translation>
+<translation id="2400600116338235695">シリアルポートへの接続を要求できる</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413155254802890957">旧</translation>
 <translation id="2413528052993050574">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は取り消されている可能性があります。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
@@ -467,6 +472,7 @@
 <translation id="2609632851001447353">バリエーション</translation>
 <translation id="2618023639789766142">C10（封筒）</translation>
 <translation id="2625385379895617796">時計が進んでいます</translation>
+<translation id="262745152991669301">USB デバイスへの接続を要求できる</translation>
 <translation id="2629325967560697240">Chrome の最高レベルのセキュリティで保護するには、<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />保護強化機能を有効にしてください<ph name="END_ENHANCED_PROTECTION_LINK" />。</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> のサーバーの IP アドレスが見つかりませんでした。</translation>
 <translation id="2639739919103226564">ステータス:</translation>
@@ -610,6 +616,7 @@
 <translation id="3188393374551744535">アカウント残高</translation>
 <translation id="3194737229810486521"><ph name="URL" /> から、デバイスにデータを永続的に保存する許可を求められています</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" />（<ph name="SERVER_NAME" /> 上）</translation>
+<translation id="3197136577151645743">このデバイスのアクティブ状態の検出を要求できる</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の設定で同期する情報を管理します</translation>
 <translation id="320323717674993345">支払いをキャンセル</translation>
 <translation id="3207960819495026254">ブックマークしました</translation>
@@ -826,6 +833,7 @@
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3939773374150895049">CVC の代わりに WebAuthn を使用しますか？</translation>
 <translation id="3946209740501886391">このサイトでは常に確認</translation>
+<translation id="3947595700203588284">MIDI デバイスへの接続を要求できる</translation>
 <translation id="3949571496842715403">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書で SAN（サブジェクトの別名）が指定されていません。設定が不適切であるか、悪意のあるユーザーによって接続が妨害されている可能性があります。</translation>
 <translation id="3949601375789751990">閲覧履歴がここに表示されます</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" />（<ph name="DEVICE_ID" />）</translation>
@@ -921,6 +929,7 @@
     &lt;p&gt;引き続きエラーが表示される場合は、ウェブサイトの所有者にお問い合わせください。&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />ネットワーク診断ツールを実行してみてください<ph name="END_LINK" />。</translation>
 <translation id="4229544452621580519">Chrome の設定で安全確認を実行</translation>
+<translation id="4230204356098880324">カメラの使用と移動を要求できる</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> に移動<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">有効</translation>
 <translation id="4250431568374086873">このサイトへの接続は完全には保護されていません</translation>
@@ -983,6 +992,7 @@
 <translation id="4434045419905280838">ポップアップとリダイレクト</translation>
 <translation id="4435702339979719576">ポストカード</translation>
 <translation id="443673843213245140">プロキシの使用は無効ですが、プロキシの設定が明示的に指定されています。</translation>
+<translation id="4451135742916150903">HID デバイスへの接続を要求できる</translation>
 <translation id="4460315069258617173">このサイトのタブを開いている間のみ許可</translation>
 <translation id="4464826014807964867">組織の情報を使用しているウェブサイト</translation>
 <translation id="4476953670630786061">このフォームは安全ではないため、自動入力をオフにしました。</translation>
@@ -1046,6 +1056,7 @@
 <translation id="4708268264240856090">接続が中断されました</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows ネットワーク診断ツールを実行する<ph name="END_LINK" /></translation>
+<translation id="4724144314178270921">クリップボード内のテキストや画像へのアクセスを要求できる</translation>
 <translation id="4726672564094551039">ポリシーを再読み込み</translation>
 <translation id="4728558894243024398">プラットフォーム</translation>
 <translation id="4731638775147756694">このアプリケーションは管理者によってブロックされています</translation>
@@ -1236,7 +1247,7 @@
 <translation id="5327248766486351172">名前</translation>
 <translation id="5329858041417644019">ご使用のブラウザは管理されていません</translation>
 <translation id="5332219387342487447">配送方法</translation>
-<translation id="5333022057423422993">最近使用したパスワードがデータ侵害で検出されました。アカウントを保護するため、保存したパスワードを確認することをおすすめします。</translation>
+<translation id="5333022057423422993">たった今使用したパスワードがデータ侵害で検出されました。アカウントを保護するため、保存したパスワードを確認することをおすすめします。</translation>
 <translation id="5334013548165032829">詳細なシステムログ</translation>
 <translation id="5334145288572353250">住所を保存しますか？</translation>
 <translation id="5340250774223869109">アプリケーションがブロックされました</translation>
@@ -1343,6 +1354,7 @@
 <translation id="5728056243719941842">C5（封筒）</translation>
 <translation id="5730040223043577876">パスワードを他のサイトで再使用した場合、Chrome ではパスワードの再設定を促すメッセージが表示されます。</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Google アカウントにカードを保存}other{Google アカウントにカードを保存}}</translation>
+<translation id="5745733273847572235">位置情報を要求できる</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{このカードの仮想番号を使用}other{カードを選択してください}}</translation>
 <translation id="5759751709240058861">カメラの使用と移動</translation>
 <translation id="5763042198335101085">有効なメールアドレスを入力してください</translation>
@@ -1355,7 +1367,7 @@
 <translation id="5784606427469807560">カードの確認中に問題が発生しました。インターネット接続を確認してもう一度お試しください。</translation>
 <translation id="5785756445106461925">加えて、このページには安全でない他のリソースが含まれています。このリソースは送信中に他のユーザーから見られる可能性があります。また、悪意のあるユーザーによって改変されページの見た目が変わる可能性もあります。</translation>
 <translation id="5786044859038896871">カード情報を入力しますか？</translation>
-<translation id="578633867165174378">最近使用したパスワードがデータ侵害で検出されました。このパスワードを今すぐ変更することをおすすめします。</translation>
+<translation id="578633867165174378">たった今使用したパスワードがデータ侵害で検出されました。このパスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> を入力しますか？</translation>
 <translation id="5804241973901381774">権限</translation>
 <translation id="5804427196348435412">NFC デバイスの使用</translation>
@@ -1461,6 +1473,7 @@
 <translation id="6169916984152623906">現在、シークレット モードで閲覧しています。あなたのアクティビティは、このデバイスを利用する他のユーザーには表示されません。ただし、ダウンロードしたファイルとブックマークは通常どおり保存されます。</translation>
 <translation id="6177128806592000436">このサイトへの接続は保護されていません</translation>
 <translation id="6180316780098470077">再試行の間隔</translation>
+<translation id="619448280891863779">画面上にウィンドウを開いて配置するよう要求できる</translation>
 <translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
 <translation id="6203231073485539293">インターネット接続を確認してください</translation>
 <translation id="6211666000885129820">保護されたお支払い認証情報の登録シート</translation>
@@ -1546,6 +1559,7 @@
 <translation id="6502991525169604759">変更前のバージョン</translation>
 <translation id="6505563257409036437">シークレット ウィンドウを閉じる</translation>
 <translation id="6508722015517270189">Chrome を再起動する</translation>
+<translation id="6513005815064132016">カメラ位置の追跡を要求できる</translation>
 <translation id="6517596291481585650">警告: このポリシーはリストでないため、ポリシーで指定されているとおりにリストとして統合されませんでした。</translation>
 <translation id="6518133107902771759">確認</translation>
 <translation id="6521745193039995384">無効</translation>
@@ -1559,7 +1573,7 @@
 <translation id="6579630537141957243">MIDI デバイスを使用しますか？</translation>
 <translation id="6579990219486187401">ライトピンク</translation>
 <translation id="6583674473685352014">B6（封筒）</translation>
-<translation id="6587182488465657433">最近使用したパスワードがデータ侵害で検出されました。アカウントを保護するため、このパスワードを今すぐ変更し、保存したパスワードを確認することをおすすめします。</translation>
+<translation id="6587182488465657433">たった今使用したパスワードがデータ侵害で検出されました。アカウントを保護するため、このパスワードを今すぐ変更し、保存したパスワードを確認することをおすすめします。</translation>
 <translation id="6587923378399804057">コピーしたリンク</translation>
 <translation id="6591833882275308647">ご使用の <ph name="DEVICE_TYPE" /> は管理されていません</translation>
 <translation id="6592952801936330159">サイトの設定を管理するボタンです。Enter キーを押して、Chrome の設定ですべてのサイトに保存されている権限とデータを管理します</translation>
@@ -1646,7 +1660,9 @@
 <translation id="6949872517221025916">パスワードを再設定</translation>
 <translation id="6950684638814147129">JSON 値の解析中にエラーが発生しました: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">すべてリセット</translation>
+<translation id="6954341342296443517">該当するファイル形式を開くよう要求できる</translation>
 <translation id="6957887021205513506">サーバーの証明書が偽造されたもののようです。</translation>
+<translation id="6961844873822989059">デバイスにインストールされたフォントの使用を要求できる</translation>
 <translation id="6963520811470373926">優先</translation>
 <translation id="6964255747740675745">ネットワーク設定を解析できませんでした（無効な JSON）。</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1748,6 +1764,7 @@
 <translation id="733354035281974745">デバイスのローカル アカウントのオーバーライド</translation>
 <translation id="7333654844024768166">偽のサイトでパスワードを入力しました。<ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> のほか、このパスワードを使用しているサイトで、パスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="7334320624316649418">順序変更のやり直し（&amp;R）</translation>
+<translation id="7335157162773372339">カメラの使用を要求できる</translation>
 <translation id="7337248890521463931">表示する行数を増やす</translation>
 <translation id="7337706099755338005">現在のプラットフォームではご利用いただけません。</translation>
 <translation id="733923710415886693">サーバーの証明書は、証明書の透明性ポリシーを介して公開されていません。</translation>
@@ -1935,6 +1952,7 @@
 <translation id="7937554595067888181">有効期限は <ph name="EXPIRATION_DATE_ABBR" /> です</translation>
 <translation id="7938958445268990899">サーバーの証明書が有効になっていません。</translation>
 <translation id="7942349550061667556">赤</translation>
+<translation id="7943893128817522649">複数のファイルの自動ダウンロードを要求できる</translation>
 <translation id="7947285636476623132">有効期限の「年」を確認してもう一度お試しください</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の機能を確認します</translation>
 <translation id="7950027195171824198">Chrome の設定で Cookie の設定を管理する</translation>
@@ -1947,6 +1965,7 @@
 <translation id="7976214039405368314">リクエストが多すぎます</translation>
 <translation id="7977538094055660992">出力デバイス</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="798134797138789862">バーチャル リアリティ デバイスとデータの使用を要求できる</translation>
 <translation id="79859296434321399">拡張現実（AR）コンテンツを表示するには ARCore をインストールしてください</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">製本</translation>
@@ -2137,6 +2156,7 @@
 <translation id="8699041776323235191">HID デバイス</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> への接続は暗号化されていません。</translation>
 <translation id="8705331520020532516">シリアル番号</translation>
+<translation id="8708134712139312373">Bluetooth デバイスへの接続を要求できる</translation>
 <translation id="8710842507289500830">フォント スタイル</translation>
 <translation id="8712637175834984815">閉じる</translation>
 <translation id="8718314106902482036">支払い処理を完了できませんでした</translation>

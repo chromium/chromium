@@ -132,6 +132,7 @@
 <translation id="387301095347517405">Батарея толук кубатталган циклдердин саны</translation>
 <translation id="3941014780699102620">Башкы түйүн чечилген жок</translation>
 <translation id="3942420633017001071">Мүчүлүштүктөрдү аныктоо</translation>
+<translation id="3966286471246132217">Тагыраак жыйынтык алуу үчүн тест аягына чыкмайынча бардык колдонмолорду жаап туруңуз.</translation>
 <translation id="3967822245660637423">Жүктөп алуу аяктады</translation>
 <translation id="397105322502079400">Эсептелүүдө…</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
@@ -144,6 +145,7 @@
 <translation id="4176463684765177261">Өчүк</translation>
 <translation id="4227825898293920515">Сырсөздүн мөөнөтү <ph name="TIME" /> кийин бүтөт</translation>
 <translation id="4238516577297848345">Аткарылып жаткан иш жок</translation>
+<translation id="4244962993387259361">Эстутумду сыноо үчүн кеминде 500 Мб бош орун керек. Орун бошотуу үчүн Жөндөөлөр &gt; Сактагычты башкаргычка өтүңүз.</translation>
 <translation id="4289540628985791613">Сереп салуу</translation>
 <translation id="4297501883039923494">Токтоду – Белгисиз ката</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> сүрөт</translation>
@@ -385,6 +387,7 @@
 <translation id="8498220429738806196">Трафикти эсептегичтер</translation>
 <translation id="8503813439785031346">Колдонуучунун ысымы</translation>
 <translation id="8503836310948963452">Дагы бир нече мүнөт калды...</translation>
+<translation id="8521021929829989041">Жеке түзмөктү колдонуу</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Тармакка туташуу үчүн байланыш оператору бул параметрди талап кылышы мүмкүн. Кеңири маалымат үчүн байланыш операторуңузга кайрылыңыз</translation>
 <translation id="8576249514688522074">Аныкталбаган</translation>

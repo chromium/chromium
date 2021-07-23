@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">Hỏi ý bạn trước khi cho phép các trang web sử dụng dữ liệu và thiết bị thực tế ảo của bạn (khuyên dùng)</translation>
 <translation id="4962975101802056554">Thu hồi tất cả các quyền đối với thiết bị</translation>
 <translation id="497421865427891073">Đi về phía trước</translation>
+<translation id="4976702386844183910">Lần truy cập gần đây nhất: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Không tìm thấy người liên hệ nào</translation>
 <translation id="4996978546172906250">Chia sẻ qua</translation>
 <translation id="5039804452771397117">Cho phép</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">Thẻ ẩn danh</translation>
 <translation id="5186036860380548585">Tùy chọn này ở gần đầu màn hình</translation>
 <translation id="5197729504361054390">Những người liên hệ bạn chọn sẽ được chia sẻ với <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">Lần truy cập gần đây nhất: hôm nay</translation>
 <translation id="528192093759286357">Kéo từ trên xuống và chạm vào nút quay lại để thoát khỏi chế độ toàn màn hình.</translation>
 <translation id="5300589172476337783">Hiển thị</translation>
 <translation id="5301954838959518834">Ok</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5860033963881614850">Tắt</translation>
 <translation id="5876056640971328065">Tạm dừng video</translation>
+<translation id="5887687176710214216">Lần truy cập gần đây nhất: hôm qua</translation>
 <translation id="5916664084637901428">Bật</translation>
 <translation id="5922853908706496913">Đang chia sẻ màn hình của bạn</translation>
 <translation id="5939518447894949180">Đặt lại</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">Chia sẻ</translation>
 <translation id="6545864417968258051">Quét tìm Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Đã chặn <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{Đã chặn <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>
+<translation id="6554732001434021288">Lần truy cập gần đây nhất: <ph name="NUM_DAYS" /> ngày trước</translation>
 <translation id="6561560012278703671">Dùng thông báo nhẹ nhàng hơn (chặn thông báo bật lên làm phiền bạn)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Nội dung được bảo vệ</translation>

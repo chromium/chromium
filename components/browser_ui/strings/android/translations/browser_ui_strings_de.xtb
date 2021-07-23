@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">Nachfragen, bevor Websites erlaubt wird, mein Virtual-Reality-Gerät und meine Virtual-Reality-Daten zu verwenden (empfohlen)</translation>
 <translation id="4962975101802056554">Alle Berechtigungen für Gerät entziehen</translation>
 <translation id="497421865427891073">Weiter</translation>
+<translation id="4976702386844183910">Zuletzt besucht am <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Keine Kontakte gefunden</translation>
 <translation id="4996978546172906250">Teilen über</translation>
 <translation id="5039804452771397117">Zulassen</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">Inkognitotab</translation>
 <translation id="5186036860380548585">Option ist oben auf dem Bildschirm verfügbar</translation>
 <translation id="5197729504361054390">Die von Ihnen ausgewählten Kontakte werden mit <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> geteilt.</translation>
+<translation id="5216942107514965959">Heute zuletzt besucht</translation>
 <translation id="528192093759286357">Ziehen Sie zum Beenden des Vollbildmodus von oben und tippen Sie auf die Zurück-Taste.</translation>
 <translation id="5300589172476337783">Anzeigen</translation>
 <translation id="5301954838959518834">Ok</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">Berechtigungen</translation>
 <translation id="5860033963881614850">Aus</translation>
 <translation id="5876056640971328065">Video anhalten</translation>
+<translation id="5887687176710214216">Gestern zuletzt besucht</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="5922853908706496913">Bildschirmfreigabe läuft</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">Teilen</translation>
 <translation id="6545864417968258051">Bluetooth-Suche</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere blockiert}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere blockiert}}</translation>
+<translation id="6554732001434021288">Vor <ph name="NUM_DAYS" /> Tagen zuletzt besucht</translation>
 <translation id="6561560012278703671">Ein Symbol in der Adressleiste einblenden (störende Aufforderungen zum Annehmen von Benachrichtigungen werden blockiert)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Geschützte Inhalte</translation>

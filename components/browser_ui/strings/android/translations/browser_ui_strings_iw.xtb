@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">תוצג שאלה לפני מתן הרשאה לאתרים להשתמש במכשיר המציאות המדומה ובנתוני המציאות המדומה שלך (מומלץ)</translation>
 <translation id="4962975101802056554">ביטול כל ההרשאות בשביל המכשיר</translation>
 <translation id="497421865427891073">ניווט קדימה</translation>
+<translation id="4976702386844183910">הכניסה האחרונה: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">לא נמצאו אנשי קשר</translation>
 <translation id="4996978546172906250">שיתוף באמצעות</translation>
 <translation id="5039804452771397117">זה בסדר</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">כרטיסייה אנונימית</translation>
 <translation id="5186036860380548585">האפשרות זמינה בחלק העליון של המסך</translation>
 <translation id="5197729504361054390">אנשי הקשר שייבחרו ישותפו עם <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">הכניסה האחרונה בוצעה היום</translation>
 <translation id="528192093759286357">כדי לצאת ממסך מלא, יש לגרור מלמעלה ולגעת בלחצן 'הקודם'.</translation>
 <translation id="5300589172476337783">הצגה</translation>
 <translation id="5301954838959518834">בסדר, הבנתי</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">הרשאות</translation>
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="5876056640971328065">השהיית הסרטון</translation>
+<translation id="5887687176710214216">הכניסה האחרונה בוצעה אתמול</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5922853908706496913">מתבצע שיתוף מסך</translation>
 <translation id="5939518447894949180">איפוס</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">שיתוף</translation>
 <translation id="6545864417968258051">‏סריקת Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד אחת (<ph name="NUM_MORE" />)}two{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}many{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
+<translation id="6554732001434021288">הביקור האחרון התבצע לפני <ph name="NUM_DAYS" /> ימים</translation>
 <translation id="6561560012278703671">הצגת חיווי בסרגל הכתובות (מונע הקפצה של חלוניות הודעה מפריעות)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">תוכן מוגן</translation>

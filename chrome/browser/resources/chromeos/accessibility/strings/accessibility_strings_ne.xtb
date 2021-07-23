@@ -182,6 +182,7 @@
 <translation id="2243633977138166243">नेभिगेसन गर्न लेफ्ट वा राइट एरो थिच्नुहोस्; अन गर्न enter थिच्नुहोस्</translation>
 <translation id="224426591676115802">यस भाषामा भ्वाइस उपलब्ध छैन: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">सिकाइ मोड बन्द गरिँदै</translation>
+<translation id="2247870315273396641">आवाजको प्रिभ्यू</translation>
 <translation id="225732394367814946">बोली दर बढाउनुहोस्</translation>
 <translation id="2267538686624070261">गलत हिज्जे छाड्दै</translation>
 <translation id="2267945578749931355">अर्को वर्ण</translation>
@@ -198,6 +199,7 @@
 <translation id="2390264819538553347">अगाडि बढ्न इन्टर थिच्नुहोस्; पछाडि जान ब्याकस्पेस थिच्नुहोस्</translation>
 <translation id="2398579267367951220">यो पृष्ठमा खोज्न टाइप गर्नुहोस्। परिणामहरू भएको पृष्ठमा जान enter थिच्नुहोस्, परिणामहरू हेर्न माथि वा तल जनाउने तीर चिन्हहरू थिच्नुहोस्, अरू नै कुरा खोज्न टाइप गरिराख्नुहोस् वा खोज रद्द गर्न escape थिच्नुहोस्।</translation>
 <translation id="240709722712693803">निलो बैजनी</translation>
+<translation id="2410298923485357543">डिभाइस अनलाइन हुँदा उच्च गुणस्तरको आवाज प्रयोग गरियोस्</translation>
 <translation id="2416512023405990736">एउटा चेक हटाइएको जाँच बाकस</translation>
 <translation id="2417569100218200841">सामग्री जानकारी</translation>
 <translation id="2417948780551741035">अन्त्यका टिपोटहरू</translation>
@@ -299,6 +301,7 @@
 <translation id="3046838483509668188">ChromeVox विकल्पहरू</translation>
 <translation id="3060756054951570867"><ph name="TITLE" /> मेनु खोलिएको छ</translation>
 <translation id="3060880924447482063">एउटाबाट अर्को वस्तुमा सर्न बायाँ वा दायाँतिर स्वाइप गर्नुहोस्</translation>
+<translation id="3061302636956643119">प्रोसेस गर्ने प्रयोजनका लागि यी टेक्स्ट Google मा पठाइने छन्।</translation>
 <translation id="3070245424257836917">तीन औँलाले माथि स्वाइप गर्नुहोस्</translation>
 <translation id="307516670110542567">क्विक ओरियन्टेसन</translation>
 <translation id="3078345202707391975">अर्को तह 2 को हेडिङ</translation>
@@ -937,6 +940,7 @@
 <translation id="7693840228159394336">अघिल्लो रेडियो बटन</translation>
 <translation id="7701040980221191251">कुनै पनि होइन</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7713139339518499741">उच्च गुणस्तरको आवाज</translation>
 <translation id="7714340021005120797">अर्को कुनै पनि कम्बो बक्स छैन</translation>
 <translation id="772146615414628379">बधाई छ! तपाईंले ChromeVox प्रयोग गर्न आवश्यक पर्ने कुरा सफलतापूर्वक सिक्नुभएको छ। तपाईं जुनसुकै बेला Search+Period थिचेर ChromeVox को आदेशको मेनु खोल्न सक्नुहुन्छ भन्ने कुरा याद राख्नुहोस्। ChromeVox र Chrome OS का बारेमा थप जान्न हाम्रा निम्न लेखहरू पढ्नुहोस्।
     तपाईंले ट्यूटोरियल पढिसक्नुभयो भने ChromeVox प्रयोग गरी बन्द गर्ने बटन फेला पार्नुहोस् र त्यसमा क्लिक गर्न प्रयोग गर्नुहोस्।</translation>
@@ -967,6 +971,7 @@
 <translation id="7939428177581522200">छनोटमा थपिएको</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{ मा}other{# लक्षणमा }}</translation>
 <translation id="7942349550061667556">रातो</translation>
+<translation id="7945703887991230167">रोजाइको आवाज</translation>
 <translation id="7948364528129376623">अर्को कुनै पनि भ्रमण गरिएको लिङ्क छैन</translation>
 <translation id="7952460583030260752">कमान्डका सन्दर्भ</translation>
 <translation id="7965147473449754028">मेनु बन्द गरियो</translation>

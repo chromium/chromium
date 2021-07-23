@@ -77,6 +77,9 @@
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
       Als het beleid is ingesteld op True, wordt informatie over de schermverlichting van het apparaat gerapporteerd.</translation>
 <translation id="1076751984131277498">Toelatingslijst met USB-apparaten die mogen worden ontkoppeld</translation>
+<translation id="1079425471279127373">Het beleid zo instellen dat sommige herkomsten van afgedwongen geïnstalleerde web-apps apparaatkenmerken (zoals serienummer, hostnaam) kunnen ophalen met behulp van de Device Attributes API.
+
+      De Device Attributes API is een lijst met web-API's, (zie https://wicg.github.io/WebApiDevice/device_attributes). Deze zijn alleen beschikbaar voor herkomsten die overeenkomen met afgedwongen geïnstalleerde web-apps via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> of met de web-app die is ingesteld in de Kiosk-sessie.</translation>
 <translation id="1079801999187584280">Het gebruik van de hulpprogramma's voor ontwikkelaars niet toestaan</translation>
 <translation id="1082802595100075771">Gebruikers laten kiezen of ze een anonieme Google-service willen gebruiken voor automatische beschrijvingen van niet-gelabelde afbeeldingen</translation>
 <translation id="1087437665304381368">Met dit beleid wordt alleen de ontwikkelaarsmodus van <ph name="PRODUCT_OS_NAME" /> bepaald. Als je de toegang tot de ontwikkelaarsopties van Android wilt blokkeren, moet je het beleid <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> instellen.</translation>
@@ -741,6 +744,7 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
 
       Dit bedrijfsbeleid is standaard niet toegepast.</translation>
 <translation id="1962273523772270623">Verzameling van WebRTC-gebeurtenislogboeken van Google-services toestaan</translation>
+<translation id="1962864958436828230">Minimale groottelimiet instellen voor klembordbeperking ter voorkoming van datalekken</translation>
 <translation id="1964634611280150550">Incognitomodus staat uit</translation>
 <translation id="1964802606569741174">Dit beleid is niet van invloed op de YouTube-app voor Android. Als de veiligheidsmodus voor YouTube moet worden afgedwongen, moet je installatie van de YouTube-app voor Android niet toestaan.</translation>
 <translation id="1969212217917526199">Hiermee worden beleidsregels overgeschreven op Debug-builds van de host voor externe toegang.
@@ -752,22 +756,21 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
 
       Als je het beleid niet toepast of niet instelt, wordt Fast Transition niet gebruikt.</translation>
 <translation id="1977581177449752640">Als je dit beleid instelt, gebruikt de host voor externe toegang een clientcertificaat met het CN van de opgegeven verstrekker voor verificatie voor <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Als je een willekeurig beschikbaar clientcertificaat wilt gebruiken, stel je dit in op <ph name="WILDCARD_VALUE" />. De functie wordt uitgezet als je deze leeg laat of niet instelt.</translation>
-<translation id="1988345404999458987">Biedt configuraties voor beschikbare afdrukservers.
+<translation id="1988345404999458987">Biedt configuraties voor beschikbare printerservers.
 
-      Met dit beleid kun je configuratie van externe afdrukservers als json-bestand leveren aan <ph name="PRODUCT_OS_NAME" />-apparaten.
+      Met dit beleid kun je configuratie van externe printerservers als json-bestand leveren aan <ph name="PRODUCT_OS_NAME" />-apparaten.
 
       Het bestand mag niet groter zijn dan 1 MB en moet een matrix van records (json-objecten) bevatten. Elke record moet de velden 'id', 'url' en 'display_name' bevatten, met tekenreeksen als waarden. De waarden van het veld 'id' moeten uniek zijn.
 
       Het bestand wordt gedownload en opgeslagen in het cachegeheugen. De cryptografische hash wordt gebruikt om de integriteit van de download te verifiëren. Het bestand wordt opnieuw gedownload wanneer de URL of de hash wordt gewijzigd.
 
-      Als dit beleid is ingesteld op de juiste waarde, proberen apparaten opgegeven afdrukservers naar beschikbare printers te vragen die het IPP-protocol gebruiken.
+      Als dit beleid is ingesteld op de juiste waarde, proberen apparaten opgegeven printerservers naar beschikbare printers te vragen die het IPP-protocol gebruiken.
 
       Als dit beleid niet is ingesteld of is ingesteld op een onjuiste waarde, is geen enkele van de opgegeven serverprinters zichtbaar voor gebruikers.
 
-      Het aantal afdrukservers is momenteel beperkt tot zestien. Alleen de eerste zestien afdrukservers in de lijst worden opgevraagd.
+      Het aantal printerservers is momenteel beperkt tot zestien. Alleen de eerste zestien printerservers in de lijst worden opgevraagd.
 
-      Dit beleid is vergelijkbaar met <ph name="EXTERNAL_PRINT_SERVERS_POLICY" />, behalve dat dit beleid wordt toegepast per apparaat.
-      </translation>
+      Dit beleid is vergelijkbaar met <ph name="EXTERNAL_PRINT_SERVERS_POLICY" />, behalve dat dit beleid wordt toegepast per apparaat.</translation>
 <translation id="1988371335297483117">Nettoladingen (payloads) voor automatische updates voor <ph name="PRODUCT_OS_NAME" /> kunnen worden gedownload via HTTP in plaats van HTTPS. Hierdoor kunnen HTTP-downloads transparant in het HTTP-cachegeheugen worden opgeslagen.
 
       Als dit beleid is ingesteld op 'True' probeert <ph name="PRODUCT_OS_NAME" /> nettoladingen voor automatische updates te downloaden via HTTP. Als het beleid is ingesteld op 'False' of niet is geconfigureerd, wordt HTTPS gebruikt voor het downloaden van nettoladingen voor automatische updates.</translation>
@@ -858,6 +861,7 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
 <translation id="2090939118981888335">Als je dit beleid toepast, wordt de proxy voor gegevenscompressie toegestaan. Als je het beleid niet toepast, wordt de proxy niet toegestaan.
 
       Als je het beleid instelt, kunnen gebruikers het niet aanpassen. Als je het beleid niet instelt, kunnen gebruikers ervoor kiezen de functie te gebruiken.</translation>
+<translation id="2093552723795057221">Audiostatus niet rapporteren</translation>
 <translation id="209586405398070749">Stabiel kanaal</translation>
 <translation id="2098658257603918882">Rapportage van gebruiks- en crashgegevens aanzetten</translation>
 <translation id="2104418465060359056">Gegevens over extensies en plug-ins rapporteren</translation>
@@ -901,6 +905,9 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
 <translation id="2151831603578119302">Snelkoppelingen voor toegankelijkheidsfuncties aanzetten</translation>
 <translation id="2156132677421487971">Stel beleid voor <ph name="PRODUCT_NAME" /> in, een functie waarmee gebruikers de content van tabbladen, sites of hun bureaublad vanuit de browser naar externe schermen en geluidssystemen kunnen sturen.</translation>
 <translation id="2156755242840687300">Aangezette externe afdrukservers</translation>
+<translation id="2157842368188031417">Het beleid is alleen van toepassing op beheerde gastsessies. Het moet worden aangezet voor de gedeelde werkstationmodus van Imprivata om tijdens een sessie tussen gebruikers te kunnen wisselen.
+      Als je het beleid instelt op True, worden bepaalde beleidsregels afgedwongen overschreven voor functies die gevoelige gebruikersgegevens bewaren en die niet worden verwerkt door het opschoonmechanisme dat wordt gebruikt om in de gedeelde werkstationmodus van Imprivata tijdens een sessie tussen gebruikers te wisselen.
+      Als je het beleid instelt op False of niet instelt, wordt er geen beleid overschreven.</translation>
 <translation id="2160336427036785721">Hiermee configureer je de hoeveelheid geheugen die één instantie van <ph name="PRODUCT_NAME" /> kan gebruiken voordat tabbladen worden verwijderd om geheugen te besparen (dit houdt in dat het geheugen dat voor het tabblad wordt gebruikt, wordt vrijgemaakt en dat het tabblad opnieuw moet worden geladen als de gebruiker naar dit tabblad schakelt).
 
       Als het beleid is ingesteld, worden tabbladen in de browser verwijderd om geheugen te besparen als de limiet wordt bereikt. Er is geen garantie dat de browser altijd onder de limiet wordt uitgevoerd. Elke waarde lager dan 1024 wordt afgerond naar 1024.
@@ -973,6 +980,10 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
       Als je <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (waarde 1) instelt, mogen alleen varianten die worden beschouwd als essentiële beveiligings- of stabiliteitsoplossingen, worden toegepast op <ph name="PRODUCT_OS_NAME" />.
 
       Als je <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (waarde 2) instelt, mag geen van de varianten op de browser worden toegepast op het inlogscherm. Deze modus kan er potentieel voor zorgen dat <ph name="PRODUCT_OS_NAME" />-ontwikkelaars essentiële beveiligingsoplossingen niet tijdig kunnen leveren en wordt dus niet aanbevolen.</translation>
+<translation id="2221779615493499989">De netwerkstatus van gebruikers op ingeschreven apparaten rapporteren.
+
+      Als je het beleid instelt op False, worden de gegevens niet gerapporteerd.
+      Als je het beleid instelt op True of niet instelt, wordt de netwerkstatus van het apparaat gerapporteerd.</translation>
 <translation id="2221850122314326571">Als je deze instelling aanzet, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de ingebouwde certificaatverificatie.
       Als je deze instelling uitzet, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de verouderde certificaatverificatie die door het platform wordt geleverd.
       Als je deze instelling niet instelt, kan de ingebouwde of de verouderde certificaatverificatie worden gebruikt.
@@ -1481,13 +1492,13 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 <translation id="2869762730352628426">Automatisch klikken op het inlogscherm aanzetten</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="2874209944580848064">Opmerking voor <ph name="PRODUCT_OS_NAME" />-apparaten die Android-apps ondersteunen:</translation>
-<translation id="2875192972412983412">Specificeert de subset van afdrukservers die worden aangeroepen voor serverprinters.
+<translation id="2875192972412983412">Specificeert de subset van printerservers die worden aangeroepen voor serverprinters.
 
       Als dit beleid wordt gebruikt, zijn alleen serverprinters beschikbaar met ID's die overeenkomen met de waarden in dit beleid.
 
       De ID's moeten overeenkomen met het veld 'id' in het bestand dat is gespecificeerd in <ph name="EXTERNAL_PRINT_SERVERS_POLICY" />.
 
-      Als dit beleid niet is ingesteld, wordt er niet gefilterd en wordt er rekening gehouden met alle afdrukservers.</translation>
+      Als dit beleid niet is ingesteld, wordt er niet gefilterd en wordt er rekening gehouden met alle printerservers.</translation>
 <translation id="2877225735001246144">CNAME-lookup bij verwerking van Kerberos-verificatie uitzetten</translation>
 <translation id="288448261660192095">Als je dit beleid toepast, worden de fysieke invoer- en uitvoerapparaten van hosts voor externe toegang uitgezet tijdens een externe verbinding.
 
@@ -1729,6 +1740,7 @@ en 3 optionele leden:
       Als het beleid niet is ingesteld of is ingesteld op False, worden de DHE-coderingssuites in TLS niet aangezet. Anders kan het worden ingesteld op True om DHE-coderingssuites aan te zetten en de compatibiliteit met een verouderde server te behouden. Dit is een tijdelijke oplossing en de server moet opnieuw worden ingesteld.
 
       Servers kunnen het beste worden gemigreerd naar ECDHE-coderingssuites. Als deze niet beschikbaar zijn, moet je ervoor zorgen dat er een coderingssuite is aangezet die gebruikmaakt van RSA-sleuteluitwisseling.</translation>
+<translation id="3118552207903834734">Toestaan dat een gebruiker de hostnaam van het eigen apparaat instelt</translation>
 <translation id="3122082892722698079">Gebruik van niet-beveiligde contentuitzonderingen beheren</translation>
 <translation id="3128072319047570212">Instellingen voor sleutelgenerator</translation>
 <translation id="3142410959002029864">Als je dit beleid instelt, wordt de standaardinstelling voor dubbelzijdig afdrukken overschreven. Als deze instelling niet beschikbaar is, wordt dit beleid genegeerd.</translation>
@@ -1823,6 +1835,7 @@ en 3 optionele leden:
 
       Als je dit beleid niet instelt, wordt standaard de instelling False gebruikt en kan de gebruiker zelf de status (True/False) voor deze instelling selecteren.</translation>
 <translation id="3236046242843493070">URL-patronen om de installatie van extensies, apps en gebruikersscripts toe te staan vanaf</translation>
+<translation id="3239125988620218257">Netwerkstatus rapporteren</translation>
 <translation id="3240609035816615922">Toegangsbeleid voor printerconfiguratie.</translation>
 <translation id="324062325008698789">Hiermee wordt een lijst met printers geconfigureerd</translation>
 <translation id="3240655340884151271">MAC-adres van ingebouwde NIC van dock</translation>
@@ -1899,6 +1912,7 @@ en 3 optionele leden:
       Als dit beleid niet is toegepast of niet is ingesteld, worden deze TLS/DTLS-versies uitgezet.
 
       Dit beleid is tijdelijk en wordt verwijderd in een toekomstige versie van <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3359186795130278362">Beperkte beheerde gastsessie aanzetten.</translation>
 <translation id="3360093276083825336">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Specificeert de tijdsduur zonder gebruikersinvoer waarna een waarschuwingsdialoogvenster wordt getoond als er op de batterij wordt gewerkt.
@@ -2025,6 +2039,7 @@ Er worden geen automatische updatecontroles geblokkeerd door dit beleid, maar de
       Als de waarde voor dit beleid niet is ingesteld, wordt de functionaliteit behandeld alsof er geen toestemming is gegeven.
 
       De beschikbaarheid van deze functionaliteit is ook afhankelijk van het bijbehorende gebruikersbeleid.</translation>
+<translation id="3495602011142234826">Als je dit instelt op True, kan deze extensie alle sleutels voor zakelijk gebruik gebruiken om willekeurige gegevens te ondertekenen. Als je dit instelt op False, heeft de extensie geen toegang tot dergelijke sleutels en kan de gebruiker deze toegang ook niet geven. Als uitzondering kan een extensie precies 1 keer toegang krijgen tot een dergelijke sleutel als dezelfde extensie die sleutel heeft gegenereerd.</translation>
 <translation id="3496296378755072552">Wachtwoordmanager</translation>
 <translation id="3498109920669229084">Als je het beleid instelt, geef je aan welke extensies niet onder de blokkeringslijst vallen.
 
@@ -2167,6 +2182,7 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 
       Als dit beleid niet is ingesteld, wordt het standaardinterval van 3 uur toegepast.</translation>
 <translation id="3756011779061588474">Ontwikkelaarsmodus blokkeren</translation>
+<translation id="3756516139200532906">Toestaan dat een beheerde gebruiker de hostnaam van het apparaat instelt</translation>
 <translation id="3758089716224084329">Hiermee kun je de proxyserver specificeren die door <ph name="PRODUCT_NAME" /> wordt gebruikt en wordt voorkomen dat gebruikers proxyinstellingen kunnen aanpassen.
 
       Als je ervoor kiest nooit een proxyserver te gebruiken en altijd rechtstreeks verbinding te maken, worden alle andere opties genegeerd.
@@ -2857,13 +2873,13 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="4661889655253181651">Met instellingen voor content kun je opgeven hoe content van een bepaald type (zoals cookies, afbeeldingen of JavaScript) wordt verwerkt.</translation>
 <translation id="4663509616441994711">Samenvoegen van cloudbeleidsregels op gebruikersniveau uitzetten.</translation>
 <translation id="4665897631924472251">Instellingen voor extensiebeheer</translation>
-<translation id="4666930704271463612">Specificeert de subset van afdrukservers die worden aangeroepen voor serverprinters.
+<translation id="4666930704271463612">Specificeert de subset van printerservers die worden aangeroepen voor serverprinters.
 
       Als dit beleid wordt gebruikt, zijn alleen serverprinters beschikbaar met ID's die overeenkomen met de waarden in dit beleid.
 
       De ID's moeten overeenkomen met het veld 'id' in het bestand dat is gespecificeerd in <ph name="EXTERNAL_PRINT_SERVERS_POLICY" />.
 
-      Als dit beleid niet is ingesteld, wordt er niet gefilterd en wordt er rekening gehouden met alle afdrukservers.
+      Als dit beleid niet is ingesteld, wordt er niet gefilterd en wordt er rekening gehouden met alle printerservers.
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="EXTERNAL_PRINT_SERVERS_ALLOWLIST" />.</translation>
 <translation id="4668325077104657568">Standaardinstelling voor afbeeldingen</translation>
@@ -2954,6 +2970,8 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       Als je dit beleid niet instelt of instelt op een ongeldige waarde, wordt de stand voor het uitzetten van systeemfuncties geblokkeerd.</translation>
 <translation id="4835470005923546373">Modus voor afdrukken met achtergrondbeelden standaard uitzetten</translation>
 <translation id="4835622243021053389">NTLMv2-verificatie aanzetten.</translation>
+<translation id="4840015507504937941">Met dit beleid stel je de minimale gegevensgrootte (in bytes) in van de gegevens op het klembord die worden gecheckt aan de hand van de klembordbeperkingsregels die zijn gedefinieerd in het beleid DataLeakPreventionRulesList.
+      Als je dit beleid niet instelt, wordt het standaard ingesteld op 0, wat betekent dat alle plakbewerkingen vanaf het klembord worden gecheckt op basis van de ingestelde regels.</translation>
 <translation id="4846678215172543001">Dit beleid voorkomt dat er waarschuwingen worden getoond voor nagebootste URL's op de vermelde sites. Deze waarschuwingen worden meestal getoond op sites waarvan <ph name="PRODUCT_NAME" /> denkt dat deze misschien een andere site proberen te spoofen die bij de gebruiker bekend is.
 
        Als je het beleid toepast en instelt op een of meer domeinen, worden er geen waarschuwingen voor nagebootste URL's getoond als de gebruiker pagina's in dat domein bezoekt.
@@ -3135,6 +3153,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 
       Opmerking: Elementen kunnen ook aan deze lijst worden toegevoegd via het beleid <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="5067143124345820993">Aanmelden bij witte lijst van gebruikers</translation>
+<translation id="5071303485174858500">Beperkte beheerde gastsessie uitzetten.</translation>
 <translation id="5073609397321802133">Als het beleid is ingesteld op 'False', kunnen gebruikers de achtergrond van de pagina 'Nieuw tabblad' niet aanpassen. Eventuele bestaande aangepaste achtergronden worden definitief verwijderd, zelfs als het beleid later weer wordt ingesteld op 'True'.
 
       Als het beleid wordt ingesteld op 'True' of niet wordt ingesteld, kunnen gebruikers de achtergrond van de pagina 'Nieuw tabblad' aanpassen.</translation>
@@ -3142,6 +3161,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 
       Als je het beleid instelt op 'False' of niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de bestaande instellingen voor online intrekkingscontrole.</translation>
 <translation id="5078623750797048009">Pdf-annotaties aanzetten</translation>
+<translation id="5081204761483900654">Beperkte beheerde gastsessies</translation>
 <translation id="5082572440690475059">Alleen leestoegang via de File System API toestaan op deze sites</translation>
 <translation id="5085647276663819155">Afdrukvoorbeeld uitzetten</translation>
 <translation id="5090791951240382356">Toestaan dat woordenboekbeleid van verschillende bronnen wordt samengevoegd</translation>
@@ -3524,13 +3544,13 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
 <translation id="5561811616825571914">Clientcertificaten automatisch selecteren voor deze sites op het inlogscherm</translation>
 <translation id="5565178130821694365">Het wachtwoord moet elke twee dagen (48 uur) worden opgegeven</translation>
 <translation id="5566210228171064229">Afdrukken zowel met als zonder pincode toestaan</translation>
-<translation id="5572971233886879856">Specificeert de subset van afdrukservers die worden aangeroepen voor serverprinters. Dit is alleen van toepassing op het beleid <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" />.
+<translation id="5572971233886879856">Specificeert de subset van printerservers die worden aangeroepen voor serverprinters. Dit is alleen van toepassing op het beleid <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" />.
 
       Als dit beleid wordt gebruikt, zijn alleen serverprinters met ID's die overeenkomen met de waarden in dit beleid beschikbaar voor de gebruiker via het apparaatbeleid.
 
       De ID's moeten overeenkomen met het veld 'id' in het bestand dat is gespecificeerd in <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" />.
 
-      Als je dit beleid niet instelt, wordt filteren overgeslagen en houdt <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" /> rekening met alle afdrukservers.</translation>
+      Als je dit beleid niet instelt, wordt filteren overgeslagen en houdt <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" /> rekening met alle printerservers.</translation>
 <translation id="557360560705413259">Als deze instelling aanstaat, gebruikt <ph name="PRODUCT_NAME" /> de commonName van een servercertificaat, zodat deze overeenkomt met een hostnaam als er een subjectAlternativeName-extensie ontbreekt voor het certificaat, zolang het certificaat kan worden gevalideerd en is gekoppeld aan lokaal geïnstalleerde CA-certificaten.
 
       Houd er rekening mee dat dit niet wordt aanbevolen, aangezien zodoende de extensie nameConstraints, waarmee kan worden beperkt voor welke hostnamen een bepaald certificaat kan worden geautoriseerd, kan worden omzeild.
@@ -3792,10 +3812,12 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
           Als deze instelling uitstaat of niet is ingesteld, wordt de standaarddomeinnaam voor het TalkGadget ('chromoting-host.talkgadget.google.com') gebruikt voor alle hosts.
 
           Deze beleidsinstelling is niet van toepassing op clients voor externe toegang. Deze clients gebruiken altijd 'chromoting-client.talkgadget.google.com' om toegang tot het TalkGadget te krijgen.</translation>
+<translation id="5888645257599699215">Audiostatus van apparaat rapporteren</translation>
 <translation id="5890063326284543943">Gebruik van de Serial API beheren</translation>
 <translation id="5897913798715600338">Batterij snel opladen.</translation>
 <translation id="5898486742390981550">Wanneer meerdere gebruikers zijn ingelogd, kunnen Android-apps alleen worden gebruikt door de primaire gebruiker.</translation>
 <translation id="5899751601113377553">Voorkomen dat gebruikers <ph name="LACROS_NAME" /> gebruiken</translation>
+<translation id="5900919753933009463">Netwerkconfiguratie rapporteren</translation>
 <translation id="5901427587865226597">Alleen dubbelzijdig afdrukken</translation>
 <translation id="5905473632148429217">Online OCSP/CRL-controles aanzetten</translation>
 <translation id="5907283448020542268">Tenzij het beleid <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> is ingesteld op <ph name="BLOCK_GEOLOCATION_SETTING" />, zorgt het instellen van <ph name="GLS_ENABLED" /> bij de eerste configuratie ervoor dat Google-locatieservices wordt aangezet. Locatieservices blijft uit tijdens de configuratie als het beleid wordt ingesteld op <ph name="GLS_DISABLED" /> of niet wordt ingesteld.
@@ -4113,6 +4135,10 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, kunnen gebruikers aangeven of de app-snelkoppeling moet worden weergegeven of verborgen in het contextmenu van de bookmarkbalk.</translation>
 <translation id="6394350458541421998">Dit beleid wordt niet meer gebruikt sinds <ph name="PRODUCT_OS_NAME" /> versie 29. Gebruik het beleid PresentationScreenDimDelayScale.</translation>
+<translation id="6397588391180665797">De netwerkconfiguratie van gebruikers op ingeschreven apparaten rapporteren.
+
+      Als je het beleid instelt op False, worden de gegevens niet gerapporteerd.
+      Als je het beleid instelt op True of niet instelt, wordt de netwerkconfiguratie van het apparaat gerapporteerd.</translation>
 <translation id="6401669939808766804">De gebruiker uitloggen</translation>
 <translation id="640244877779556713">Suggestie voor emoji's aanzetten</translation>
 <translation id="6407093060083181305">Blokkeringslijst voor installatie van extensies configureren</translation>
@@ -4202,6 +4228,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" />-afbeelding</translation>
 <translation id="6518102411616460786">Wachten tot het doelkanaal de kanaaldowngrade heeft verwerkt</translation>
 <translation id="6520802717075138474">Zoekmachines importeren uit standaardbrowser bij eerste uitvoering</translation>
+<translation id="6521971538031711337">Voorkomen dat een beheerde gebruiker de hostnaam van het apparaat instelt</translation>
 <translation id="6532026122543921610">Tenzij het beleid <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> de automatische tijdzonedetectie uitzet, wordt de methode voor automatische tijdzonedetectie uiteengezet als het beleid wordt ingesteld. Gebruikers kunnen deze methode niet wijzigen.
 
       Je kunt het beleid instellen op:
@@ -4415,8 +4442,10 @@ Als je ervoor kiest het volgende te gebruiken:
 Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncties verwijderd van de werkbalk.
 
       chrome://flags en andere manieren om browserfuncties aan- en uit te zetten werken nog steeds hetzelfde, ongeacht of je het beleid wel of niet hebt toegepast.</translation>
+<translation id="6794083666143216172">Toestaan dat de herkomst query's voor apparaatkenmerken kan uitvoeren</translation>
 <translation id="6795485990775913659">Alleen afdrukken toestaan zonder pincode</translation>
 <translation id="6800181452282128474">Geen query's sturen naar Quirks Servers</translation>
+<translation id="68031099365512050">Audiostatus rapporteren</translation>
 <translation id="6810445994095397827">JavaScript blokkeren op deze sites</translation>
 <translation id="6813263547126514821">Energiebeheer en uitzetten</translation>
 <translation id="681446116407619279">Ondersteunde authenticatieschema's</translation>
@@ -4508,20 +4537,19 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="6894178810167845842">URL van pagina 'Nieuw tabblad'</translation>
 <translation id="6897730193187922386">Berichten over beëindiging van <ph name="CLOUD_PRINT_NAME" /> onderdrukken</translation>
 <translation id="6899705656741990703">Proxyinstellingen automatisch detecteren</translation>
-<translation id="6902561336084511004">Biedt configuraties voor beschikbare afdrukservers.
+<translation id="6902561336084511004">Biedt configuraties voor beschikbare printerservers.
 
-      Met dit beleid kun je configuratie van externe afdrukservers als json-bestand leveren aan <ph name="PRODUCT_OS_NAME" />-apparaten.
+      Met dit beleid kun je configuratie van externe printerservers als json-bestand leveren aan <ph name="PRODUCT_OS_NAME" />-apparaten.
 
       Het bestand mag niet groter zijn dan 1 MB en moet een matrix van records (json-objecten) bevatten. Elke record moet de velden 'id', 'url' en 'display_name' bevatten, met tekenreeksen als waarden. De waarden van het veld 'id' moeten uniek zijn.
 
       Het bestand wordt gedownload en opgeslagen in het cachegeheugen. De cryptografische hash wordt gebruikt om de integriteit van de download te verifiëren. Het bestand wordt opnieuw gedownload wanneer de URL of de hash wordt gewijzigd.
 
-      Als dit beleid is ingesteld op de juiste waarde, proberen apparaten opgegeven afdrukservers naar beschikbare printers te vragen die het IPP-protocol gebruiken.
+      Als dit beleid is ingesteld op de juiste waarde, proberen apparaten opgegeven printerservers naar beschikbare printers te vragen die het IPP-protocol gebruiken.
 
       Als dit beleid niet is ingesteld of is ingesteld op een onjuiste waarde, is geen enkele van de opgegeven serverprinters zichtbaar voor gebruikers.
 
-      Het aantal afdrukservers is momenteel beperkt tot zestien. Alleen de eerste zestien afdrukservers in de lijst worden opgevraagd.
-      </translation>
+      Het aantal printerservers is momenteel beperkt tot zestien. Alleen de eerste zestien printerservers in de lijst worden opgevraagd.</translation>
 <translation id="6903814433019432303">Dit beleid wordt alleen toegepast in de winkelmodus.
 
       Bepaalt welke reeks URL's moet worden geladen als de demosessie wordt gestart. Dit beleid overschrijft alle andere procedures voor het instellen van de eerste URL en kan daarom alleen worden toegepast in een sessie die niet is toegewezen aan een specifieke gebruiker.</translation>
@@ -4575,6 +4603,9 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
 
       De volgende talen worden momenteel ondersteund: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Dubbelzijdig afdrukken over lange zijde aanzetten</translation>
+<translation id="6928305045865155732">Als je het beleid aanzet of niet instelt, rapporteren ingeschreven apparaten het audiovolume van het apparaat.
+
+      Als je het beleid uitzet, betekent dit dat ingeschreven apparaten geen audiostatus opnemen of rapporteren.</translation>
 <translation id="6931242315485576290">Synchronisatie van gegevens met Google uitzetten</translation>
 <translation id="6943577887654905793">Voorkeursnaam voor Mac/Linux:</translation>
 <translation id="6946652757373377924">Dit beleid is verwijderd in M77.
@@ -4679,6 +4710,7 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
 <translation id="7027923238554618852">Als je dit beleid instelt, krijgt <ph name="PRODUCT_OS_NAME" /> de instructie de taakplannerconfiguratie met de opgegeven naam te gebruiken. Dit beleid kan worden ingesteld op <ph name="CONSERVATIVE_VALUE" /> of <ph name="PERFORMANCE_VALUE" />. Hiermee wordt de taakplanner respectievelijk afgesteld op stabiliteit of maximale prestaties.
 
       Als je het beleid niet instelt, kunnen gebruikers een eigen keuze maken.</translation>
+<translation id="7028640460148648082">Netwerkstatus niet rapporteren</translation>
 <translation id="7030205756530739128">Als <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> is ingesteld op <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, stel je met <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> in wanneer de batterij begint met opladen, op basis van het percentage van de batterijlading. De waarde moet ten minste 5 procentpunten lager zijn dan <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Als je het beleid niet instelt, is de standaard batterijoplaadmodus van toepassing.</translation>
@@ -5771,6 +5803,11 @@ Dit beleid wordt verwijderd in M75.</translation>
       Met dit beleid kunnen bedrijven bestaande servers laten overstappen vanaf HTTP/0.9. Het beleid wordt in de toekomst verwijderd.
 
       Als dit beleid niet wordt ingesteld, wordt HTTP/0.9 bij niet-standaardpoorten uitgezet.</translation>
+<translation id="8503018573167958506">Bepaal of een gebruiker de hostnaam van het apparaat mag instellen.
+
+      Als je <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> instelt, stelt de beheerder de hostnaam in en kan de gebruiker geen hostnaam kiezen, ongeacht de instelling van dit beleid.
+      Als je dit beleid instelt op True en <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> niet is ingesteld, stelt de beheerder geen hostnaam in en kan de gebruiker een hostnaam kiezen.
+      Als je dit beleid instelt op False en <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> niet is ingesteld, stelt de beheerder geen hostnaam in en kan de gebruiker geen hostnaam kiezen. Daarom wordt de standaardnaam gebruikt.</translation>
 <translation id="8504243661032323176">Als je dit beleid instelt, wordt de gekozen minimumlengte van pincodes afgedwongen. (Waarden lager dan 1 worden afgerond naar het minimum van 1.)
 
       Als je het beleid niet instelt, wordt een minimale pincodelengte van 6 tekens (het aanbevolen minimum) afgedwongen.</translation>
@@ -5919,6 +5956,19 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
       Als je het beleid instelt, kunnen gebruikers deze functie niet wijzigen. Als je het niet instelt, kunnen ze de instelling wel wijzigen.</translation>
 <translation id="8715885991031124968">JavaScript-dialoogvensters toestaan als deze worden geactiveerd vanaf een subframe met een andere oorsprong.</translation>
 <translation id="8720547069538712402">Toestaan dat gebruikers de spellingcontrole aan- of uitzetten</translation>
+<translation id="8726080977639508431">Met dit beleid bepaal je hoe <ph name="PRODUCT_NAME" /> beleid voor sitelijsten/grijze lijsten interpreteert voor de ondersteuningsfunctie voor oudere browsers. Het is alleen van invloed op het volgende beleid: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> en <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
+
+      Als je dit op Default (0) zet of niet instelt, wordt de URL-overeenkomst minder strikt toegepast. Regels die geen '/' bevatten, zoeken naar een subtekenreeks in de URL-hostnaam. De overeenkomst van de padcomponent van een URL is hoofdlettergevoelig.
+
+      Als dit op IESiteListMode (1) is gezet, wordt de URL-overeenkomst strikter toegepast. Regels die geen '/' bevatten komen alleen overeen aan het einde van de hostnaam. Deze moeten zich ook bij de domeinnaamgrens bevinden. De overeenkomst van de padcomponent van een URL is niet hoofdlettergevoelig. Dit werkt beter met <ph name="MS_IE_PRODUCT_NAME" /> en <ph name="MS_EDGE_PRODUCT_NAME" />.
+
+      Een voorbeeld met de regels 'example.com' en 'acme.com/abc':
+
+'http://example.com/', 'http://subdomain.example.com/' en 'http://acme.com/abc' komen overeen, ongeacht de parseermodus.
+
+      'http://notexample.com/', 'http://example.com.invalid.com/' en 'http://example.comabc/' komen alleen overeen in de modus Default.
+
+      'http://acme.com/ABC' komt alleen overeen in IESiteListMode.</translation>
 <translation id="8736538322216687231">Minimale 'Beperkte modus' op YouTube afdwingen</translation>
 <translation id="8745669971728319820">Met dit beleid wordt bepaald of informatie over extensies en plug-ins moet worden gerapporteerd.
 
@@ -6232,6 +6282,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 
       Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor beheerde zakelijke gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
 <translation id="9096086085182305205">Witte lijst voor verificatieserver</translation>
+<translation id="9096772739225230999">Netwerkconfiguratie niet rapporteren</translation>
 <translation id="9098409326885953506">Afgedekt venster detecteren en de weergave ervan opschorten</translation>
 <translation id="9105265795073104888">Er is slechts een subset van de configuratieopties voor de proxy beschikbaar voor Android-apps. Android-apps kunnen op vrijwillige basis gebruikmaken van de proxy. Je kunt Android-apps niet dwingen een proxy te gebruiken.</translation>
 <translation id="9106865192244721694">WebUSB toestaan op deze sites</translation>

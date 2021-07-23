@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">تم وضع الاختبار في قائمة الانتظار.</translation>
 <translation id="2161394479394250669">إلغاء مهمة الطباعة</translation>
+<translation id="2209788852729124853">إعادة ضبط عدّادات حركة بيانات الشبكة</translation>
 <translation id="2217935453350629363">السرعة الحالية</translation>
 <translation id="2224337661447660594">الاتصال بالإنترنت مقطوع</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">البطارية ممتلئة</translation>
 <translation id="360565022852130722">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP 802.1x ضعيف.</translation>
 <translation id="3689839747745352263">اختبار <ph name="TEST_NAME" /></translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{إعادة مسح الصفحة ضوئيًا}=1{إعادة مسح صفحة واحدة ({PAGE_NUMBER}) ضوئيًا}two{إعادة مسح صفحتين ({PAGE_NUMBER}) ضوئيًا}few{إعادة مسح {PAGE_NUMBER} صفحات ضوئيًا}many{إعادة مسح {PAGE_NUMBER} صفحة ضوئيًا}other{إعادة مسح {PAGE_NUMBER} صفحة ضوئيًا}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> مراجعة)</translation>
 <translation id="3748026146096797577">غير متصل</translation>
 <translation id="3749289110408117711">اسم الملف</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">ملفاتي</translation>
 <translation id="4429881212383817840">‏ستنتهي صلاحية تذكرة Kerberos قريبًا</translation>
 <translation id="4431821876790500265">عرض التقرير</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{إزالة الصفحة}=1{إزالة صفحة واحدة ({PAGE_NUMBER})}two{إزالة صفحتين ({PAGE_NUMBER})}few{إزالة {PAGE_NUMBER} صفحات}many{إزالة {PAGE_NUMBER} صفحة}other{إزالة {PAGE_NUMBER} صفحة}}</translation>
 <translation id="445059817448385655">كلمة المرور القديمة</translation>
 <translation id="4453205916657964690">قناع الشبكة الفرعية</translation>
 <translation id="4454245904991689773">حفظ الملفات التي تم مسحها ضوئيًا في</translation>
@@ -248,6 +251,7 @@
 <translation id="5916084858004523819">محظورة</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{تم بنجاح مسح الملف ضوئيًا وحفظه في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{تم بنجاح مسح الملفين ضوئيًا وحفظهما في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">لم يتم العثور على الملف.</translation>
+<translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">وحدة تغذية المستندات في الماسح الضوئي فارغة. يُرجى إضافة مستندات وإعادة المحاولة.</translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6040852767465482106">هوية مجهولة</translation>
@@ -285,6 +289,7 @@
 <translation id="6527081081771465939">‏بروتوكول حماية شبكة Wi-Fi غير معروف.</translation>
 <translation id="65587193855025101">المسطَّح</translation>
 <translation id="6564646048574748301">تعذَّرت الطباعة - لا يمكن الوصول إلى الطابعة</translation>
+<translation id="6574762126505704998">تعبئة</translation>
 <translation id="6603230386432466813">هل تواجه مشكلة أثناء الاتصال؟</translation>
 <translation id="6618744767048954150">قيد التشغيل</translation>
 <translation id="6620487321149975369">ستظهر طلبات الطباعة في السجلّ إلّا إذا تمت إزالتها يدويًا.</translation>
@@ -333,6 +338,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">الوقت المتبقّي: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">مزيد من المعلومات في "مركز المساعدة"</translation>
+<translation id="763165478673169849">وقت آخر عملية إعادة ضبط</translation>
 <translation id="7648838807254605802">‏وقت استجابة بروتوكول HTTPS طويل.</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7690294790491645610">تأكيد كلمة المرور الجديدة</translation>
@@ -354,6 +360,7 @@
 <translation id="8075838845814659848">شحن البطارية المتبقي</translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° مئوية</translation>
+<translation id="8132480444149501833">طلب عدّادات حركة بيانات الشبكة</translation>
 <translation id="8206859287963243715">خلوي</translation>
 <translation id="8208861521865154048">المزايا</translation>
 <translation id="8214184102975786227">‏مسح صفحات متعدّدة ضوئيًا وتحويلها إلى ملف PDF واحد</translation>
@@ -375,8 +382,10 @@
 <translation id="8475690821716466388">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP PSK ضعيف.</translation>
 <translation id="8477551185774834963">وقت استجابة "نظام أسماء النطاقات" أعلى بقليل من الحدّ الأقصى المسموح به.</translation>
 <translation id="8483248364096924578">‏عنوان IP</translation>
+<translation id="8498220429738806196">عدّادات حركة بيانات الشبكة</translation>
 <translation id="8503813439785031346">اسم المستخدم</translation>
 <translation id="8503836310948963452">يُرجى الانتظار بضع دقائق فقط…</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">قد يتطلّب مشغّل شبكة الجوّال تفعيل هذا الخيار للاتصال بالشبكة التابعة له. يُرجى التواصل مع مشغّل شبكة الجوّال للاطّلاع على التفاصيل.</translation>
 <translation id="8576249514688522074">غير مهيأة</translation>
 <translation id="8620617069779373398">حالة التجوال</translation>
@@ -393,6 +402,7 @@
 <translation id="8814190375133053267">‏لاسلكي، Wi-Fi</translation>
 <translation id="8818152010000655963">الخلفية</translation>
 <translation id="8845001906332463065">الحصول على مساعدة</translation>
+<translation id="8868741746785112895">‏المعرّف الفريد العمومي (GUID)</translation>
 <translation id="8881098542468797602">نجح الاختبار.</translation>
 <translation id="8898840733695078011">قوة الإشارة</translation>
 <translation id="8910721771319628100">وقت استجابة الشبكة التلقائية أعلى من الحدّ الأقصى.</translation>
@@ -408,6 +418,7 @@
 <translation id="9073281213608662541">‏بروتوكول مصادقة كلمات المرور (PAP)</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9088306295921699330">الاستخدام الحالي</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">تحديث تذكرة من أجل <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">جارٍ المسح ضوئيًا للصفحة رقم <ph name="PAGE_NUMBER" />.</translation>
 <translation id="9111102763498581341">فتح القفل</translation>

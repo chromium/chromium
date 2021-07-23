@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">Ask before allowing sites to use your virtual reality device and data (recommended)</translation>
 <translation id="4962975101802056554">Revoke all permissions for device</translation>
 <translation id="497421865427891073">go forward</translation>
+<translation id="4976702386844183910">Last visited <ph name="DATE" /></translation>
 <translation id="4994033804516042629">No contacts found</translation>
 <translation id="4996978546172906250">Share via</translation>
 <translation id="5039804452771397117">Allow</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">Incognito tab</translation>
 <translation id="5186036860380548585">Option available near top of the screen</translation>
 <translation id="5197729504361054390">The contacts that you select will be shared with <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">Last visited today</translation>
 <translation id="528192093759286357">Drag from top and touch the back button to exit full screen.</translation>
 <translation id="5300589172476337783">Show</translation>
 <translation id="5301954838959518834">OK, got it</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">Permissions</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5876056640971328065">Pause video</translation>
+<translation id="5887687176710214216">Last visited yesterday</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5922853908706496913">Sharing your screen</translation>
 <translation id="5939518447894949180">Reset</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">Share</translation>
 <translation id="6545864417968258051">Bluetooth scanning</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more blocked}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more blocked}}</translation>
+<translation id="6554732001434021288">Last visited <ph name="NUM_DAYS" /> days ago</translation>
 <translation id="6561560012278703671">Use quieter messaging (blocks notification prompts from interrupting you)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Protected content</translation>

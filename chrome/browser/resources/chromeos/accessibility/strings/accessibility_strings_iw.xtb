@@ -182,6 +182,7 @@
 <translation id="2243633977138166243">‏כדי לנווט, יש ללחוץ על החץ שמאלה או על החץ ימינה. כדי להפעיל, יש ללחוץ על Enter</translation>
 <translation id="224426591676115802">אין קול ב<ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">יציאה ממצב למידה</translation>
+<translation id="2247870315273396641">תצוגה מקדימה של הקול</translation>
 <translation id="225732394367814946">הגברת קצב הדיבור</translation>
 <translation id="2267538686624070261">יציאה משגיאת איות</translation>
 <translation id="2267945578749931355">התו הבא</translation>
@@ -198,6 +199,7 @@
 <translation id="2390264819538553347">‏כדי להתקדם יש להקיש על Enter וכדי לחזור יש להקיש על backspace.</translation>
 <translation id="2398579267367951220">‏יש להקליד כדי לחפש בדף. יש להקיש על Enter כדי לעבור אל התוצאה ועל מקשי החיצים למעלה ולמטה כדי לדפדף בתוצאות. אפשר להמשיך להקליד כדי לשנות את החיפוש או להקיש על Esc כדי לבטל.</translation>
 <translation id="240709722712693803">סיגל</translation>
+<translation id="2410298923485357543">שימוש בקול טבעי כשהמכשיר מחובר לאינטרנט</translation>
 <translation id="2416512023405990736">תיבת סימון שלא סומנה</translation>
 <translation id="2417569100218200841">פרטי תוכן</translation>
 <translation id="2417948780551741035">הערות סיום</translation>
@@ -299,6 +301,7 @@
 <translation id="3046838483509668188">‏אפשרויות של ChromeVox</translation>
 <translation id="3060756054951570867">תפריט <ph name="TITLE" /> נפתח</translation>
 <translation id="3060880924447482063">מחליקים שמאלה או ימינה כדי לעבור פריט אחר פריט</translation>
+<translation id="3061302636956643119">‏הטקסט יישלח אל Google לעיבוד.</translation>
 <translation id="3070245424257836917">החלקה מעלה עם שלוש אצבעות</translation>
 <translation id="307516670110542567">ההדרכה המהירה</translation>
 <translation id="3078345202707391975">הכותרת הבאה של רמה 2</translation>
@@ -937,6 +940,7 @@
 <translation id="7693840228159394336">לחצן הבחירה הקודם</translation>
 <translation id="7701040980221191251">אין</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7713139339518499741">קול טבעי</translation>
 <translation id="7714340021005120797">אין עוד תיבות משולבות</translation>
 <translation id="772146615414628379">‏מזל טוב! למדת את כל המידע הבסיסי שיאפשר לך להשתמש ב-ChromeVox. חשוב לזכור שאפשר לפתוח את תפריט הפקודות של ChromeVox בכל שלב על ידי הקשה על Search+מקש הנקודה. כדי לקבל מידע נוסף על ChromeVox ו-Chrome OS, אפשר לעיין במאמרים הבאים.
     אם סיימת עם המדריך, אפשר להשתמש ב-ChromeVox כדי לנווט ללחצן 'סגירה' וללחוץ עליו.</translation>
@@ -967,6 +971,7 @@
 <translation id="7939428177581522200">נוסף לבחירה</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{סימן @}two{# סימני @}many{# סימני @}other{# סימני @}}</translation>
 <translation id="7942349550061667556">אדום</translation>
+<translation id="7945703887991230167">הקול המועדף</translation>
 <translation id="7948364528129376623">אין עוד קישורים שהפעלת</translation>
 <translation id="7952460583030260752">הפניות לפקודות</translation>
 <translation id="7965147473449754028">התפריט נסגר</translation>

@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">Web-lokacije moraju tražiti dopuštenje za upotrebu uređaja i podataka virtualne stvarnosti (preporučeno)</translation>
 <translation id="4962975101802056554">Opoziv svih dopuštenja za uređaj</translation>
 <translation id="497421865427891073">Idi naprijed</translation>
+<translation id="4976702386844183910">Posljednji posjet bio je <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nije pronađen nijedan kontakt</translation>
 <translation id="4996978546172906250">Dijeli putem</translation>
 <translation id="5039804452771397117">Dopusti</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">Anonimna kartica</translation>
 <translation id="5186036860380548585">Opcija je dostupna pri vrhu zaslona</translation>
 <translation id="5197729504361054390">Kontakti koje odaberete podijelit će se s web-lokacijom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">Posljednji posjet bio je danas</translation>
 <translation id="528192093759286357">Povucite od vrha zaslona i dodirnite gumb Natrag da biste zatvorili prikaz na cijelom zaslonu.</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5301954838959518834">U redu, shvaćam</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">Dozvoljeno</translation>
 <translation id="5860033963881614850">Isključeno</translation>
 <translation id="5876056640971328065">Pauziraj videozapis</translation>
+<translation id="5887687176710214216">Posljednji posjet bio je jučer</translation>
 <translation id="5916664084637901428">Uključi</translation>
 <translation id="5922853908706496913">Dijeljenje zaslona</translation>
 <translation id="5939518447894949180">Ponovno postavi</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">Podijeli</translation>
 <translation id="6545864417968258051">Traženje Bluetootha</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Blokirana su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{Blokirana su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{Blokirana su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{Blokirana su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
+<translation id="6554732001434021288">Posljednji posjet bio je prije <ph name="NUM_DAYS" /> dana</translation>
 <translation id="6561560012278703671">Koristi tiše poruke (onemogućuje upitima za obavijesti da vas ometaju)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Zaštićeni sadržaj</translation>

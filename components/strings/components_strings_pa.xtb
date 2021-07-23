@@ -136,9 +136,11 @@
 <translation id="1407135791313364759">ਸਾਰੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="1408787208417187241">ਉੱਪਰ ਤਿੰਨ ਪਿੰਨਾਂ</translation>
 <translation id="1413809658975081374">ਪਰਦੇਦਾਰੀ ਗੜਬੜ</translation>
+<translation id="1422930527989633628">ਸਾਈਟ ਨਜ਼ਦੀਕੀ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਦਾ ਪਤਾ ਲਗਾਉਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="1426410128494586442">ਹਾਂ</translation>
 <translation id="1428146450423315676">ਸਟੈਕਰ 7</translation>
 <translation id="1430915738399379752">ਪ੍ਰਿੰਟ ਕਰੋ</translation>
+<translation id="1436185428532214179">ਸਾਈਟ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਫੋਲਡਰਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="1442386063175183758">ਸੱਜੇ ਪੱਲੇ ਵਾਲੀ ਤਹਿ</translation>
 <translation id="1442987760062738829">ਮੋਰੀ</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
@@ -254,6 +256,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ਇੱਕ ਤੋਂ ਵੱਧ ਕਾਰਵਾਈਆਂ ਉਪਲਬਧ ਹਨ, ਉਹਨਾਂ ਵਿੱਚ ਚੱਕਰ ਲਗਾਉਣ ਲਈ Tab ਦਬਾਓ</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">ਕਾਰਡਧਾਰਕ ਦਾ ਨਾਮ</translation>
+<translation id="1803351196216024260">ਸਾਈਟ ਤੁਹਾਡਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="1807246157184219062">ਹਲਕਾ</translation>
 <translation id="1807528111851433570">ਸ਼ੁਰੂਆਤੀ ਸ਼ੀਟ</translation>
 <translation id="1812527064848182527">ਲੈਂਡਸਕੇਪ</translation>
@@ -283,6 +286,7 @@
 <translation id="1919367280705858090">ਇੱਕ ਖਾਸ ਗੜਬੜ-ਸੁਨੇਹਾ ਸੰਬੰਧੀ ਮਦਦ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਸਾਈਟ}other{# ਸਾਈਟਾਂ}}</translation>
 <translation id="1924727005275031552">ਨਵਾਂ</translation>
+<translation id="1939175642807587452">ਸਾਈਟ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="1945968466830820669">ਤੁਸੀਂ ਆਪਣੀ ਸੰਸਥਾ ਦੇ ਖਾਤੇ 'ਤੇ ਪਹੁੰਚ ਗੁਆ ਸਕਦੇ ਹੋ ਜਾਂ ਤੁਹਾਡੀ ਪਛਾਣ ਚੋਰੀ ਹੋ ਸਕਦੀ ਹੈ। Chromium ਵੱਲੋਂ ਹੁਣੇ ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਬਦਲਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="1947454675006758438">ਉੱਪਰ ਸੱਜੇ ਪਾਸੇ ਪਿੰਨ</translation>
 <translation id="1958218078413065209">ਤੁਹਾਡਾ ਸਭ ਤੋਂ ਵੱਧ ਸਕੋਰ <ph name="SCORE" /> ਹੈ।</translation>
@@ -413,6 +417,7 @@
 <translation id="2392959068659972793">ਕੋਈ ਵੈਲਯੂ ਸੈਟ ਨਾ ਹੋਣ ਵਾਲੀਆਂ ਨੀਤੀਆਂ ਦਿਖਾਓ</translation>
 <translation id="239429038616798445">ਇਹ ਸ਼ਿਪਿੰਗ ਵਿਧੀ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਕੋਈ ਵੱਖਰੀ ਵਿਧੀ ਅਜ਼ਮਾਓ।</translation>
 <translation id="2396249848217231973">&amp;ਮਿਟਾਏ ਗਏ ਨੂੰ ਅਣਕੀਤਾ ਕਰੋ</translation>
+<translation id="2400600116338235695">ਸਾਈਟ ਸੀਰੀਅਲ ਪੋਰਟਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="2410754574180102685">ਸਰਕਾਰੀ-ਕਨੂੰਨੀ</translation>
 <translation id="2413155254802890957">ਪੁਰਾਣਾ</translation>
 <translation id="2413528052993050574">ਇਹ ਸਰਵਰ ਇਹ ਸਿੱਧ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਸਰਟੀਫਿਕੇਟ ਰੱਦ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਇਸ ਦਾ ਕਾਰਨ ਗਲਤ ਸੰਰੂਪਣ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਦੇ ਰਾਹ ਨੂੰ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
@@ -467,6 +472,7 @@
 <translation id="2609632851001447353">ਵੈਰੀਏਸ਼ੰਸ</translation>
 <translation id="2618023639789766142">C10 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
 <translation id="2625385379895617796">ਤੁਹਾਡੀ ਘੜੀ ਅੱਗੇ ਹੈ</translation>
+<translation id="262745152991669301">ਸਾਈਟ USB ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="2629325967560697240">Chrome ਦੀ ਉੱਚਤਮ ਪੱਧਰ ਦੀ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਨੂੰ ਚਾਲੂ ਕਰੋ<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> ਦਾ ਸਰਵਰ IP ਪਤਾ ਨਹੀਂ ਲੱਭਿਆ।</translation>
 <translation id="2639739919103226564">ਸਥਿਤੀ:</translation>
@@ -608,6 +614,7 @@
 <translation id="3188393374551744535">ਖਾਤਾ ਬਕਾਇਆ</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ਦੀ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਸਥਾਈ ਤੌਰ 'ਤੇ ਡਾਟਾ ਸਟੋਰ ਕਰਨ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> 'ਤੇ <ph name="PRINTER_NAME" /></translation>
+<translation id="3197136577151645743">ਸਾਈਟ ਤੁਹਾਡੇ ਵੱਲੋਂ ਇਸ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਨਾਲ ਕੀਤੀ ਜਾ ਰਹੀ ਵਰਤੋਂ ਬਾਰੇ ਜਾਣਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾਓ, ਫਿਰ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਤੁਸੀਂ ਜਿਹੜੀ ਜਾਣਕਾਰੀ ਦਾ ਸਮਕਾਲੀਕਰਨ ਕਰਦੇ ਹੋ, ਇਸਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="320323717674993345">ਭੁਗਤਾਨ ਰੱਦ ਕਰੋ</translation>
 <translation id="3207960819495026254">ਬੁੱਕਮਾਰਕ ਕੀਤੇ</translation>
@@ -823,6 +830,7 @@
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3939773374150895049">ਕੀ CVC ਦੀ ਬਜਾਏ WebAuthn ਨੂੰ ਵਰਤਣਾ ਹੈ?</translation>
 <translation id="3946209740501886391">ਹਮੇਸ਼ਾ ਇਸ ਸਾਈਟ 'ਤੇ ਪੁੱਛੋ</translation>
+<translation id="3947595700203588284">ਸਾਈਟ MIDI ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="3949571496842715403">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦੇ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਅਧੀਨ ਫੇਰਵਾਂ ਨਾਮ ਸਪਸ਼ਟ ਨਹੀਂ ਕੀਤੇ ਗਏ ਹਨ। ਇਹ ਇੱਕ ਗਲਤ ਸੰਰੂਪਣ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
 <translation id="3949601375789751990">ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਇੱਥੇ ਦਿਖਾਈ ਦਿੰਦਾ ਹੈ</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -918,6 +926,7 @@
     &lt;p&gt;ਜੇਕਰ ਤੁਹਾਨੂੰ ਹਾਲੇ ਵੀ ਗੜਬੜ ਦਿਖਾਈ ਦਿੰਦੀ ਹੈ, ਤਾਂ ਵੈੱਬਸਾਈਟ ਮਾਲਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />ਨੈੱਟਵਰਕ ਤਸ਼ਖੀਸਾਂ ਨੂੰ ਚਲਾ ਕੇ ਦੇਖੋ<ph name="END_LINK" />।</translation>
 <translation id="4229544452621580519">Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸੁਰੱਖਿਆ ਜਾਂਚ ਚਲਾਓ</translation>
+<translation id="4230204356098880324">ਸਾਈਟ ਤੁਹਾਡਾ ਕੈਮਰਾ ਵਰਤਣ ਅਤੇ ਉਸਨੂੰ ਹਿਲਾਉਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> 'ਤੇ ਜਾਰੀ ਰੱਖੋ<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">ਵੈਧ</translation>
 <translation id="4250431568374086873">ਇਸ ਸਾਈਟ ਨਾਲ ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਪੂਰੀ ਤਰ੍ਹਾਂ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ</translation>
@@ -980,6 +989,7 @@
 <translation id="4434045419905280838">ਪੌਪ-ਅੱਪ ਅਤੇ ਰੀਡਾਇਰੈਕਟ</translation>
 <translation id="4435702339979719576">ਪੋਸਟਕਾਰਡ)</translation>
 <translation id="443673843213245140">ਇੱਕ ਪ੍ਰੌਕਸੀ ਦੀ ਵਰਤੋਂ ਅਸਮਰਥਿਤ ਹੈ ਪਰੰਤੂ ਇੱਕ ਸਪਸ਼ਟ ਪ੍ਰੌਕਸੀ ਕੌਂਫਿਗਰੇਸ਼ਨ ਨਿਸ਼ਚਿਤ ਹੈ।</translation>
+<translation id="4451135742916150903">ਸਾਈਟ HID ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="4460315069258617173">ਉਦੋਂ ਤੱਕ ਇਜਾਜ਼ਤ ਹੈ ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਲਈ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਨਹੀਂ ਕਰਦੇ</translation>
 <translation id="4464826014807964867">ਵੈੱਬਸਾਈਟਾਂ ਜਿਨ੍ਹਾਂ ਵਿੱਚ ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਜਾਣਕਾਰੀ ਮੁਹੱਈਆ ਕਰਵਾਈ ਗਈ ਹੈ</translation>
 <translation id="4476953670630786061">ਇਹ ਫ਼ਾਰਮ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ। ਆਟੋਫਿਲ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
@@ -1043,6 +1053,7 @@
 <translation id="4708268264240856090">ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਵਿੱਚ ਰੁਕਾਵਟ ਆਈ ਸੀ</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows ਨੈੱਟਵਰਕ ਤਸ਼ਖੀਸ ਚਲਾਇਆ ਜਾ ਰਿਹਾ ਹੈ<ph name="END_LINK" /></translation>
+<translation id="4724144314178270921">ਸਾਈਟ ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਲਿਖਤ ਅਤੇ ਚਿੱਤਰਾਂ ਨੂੰ ਦੇਖਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="4726672564094551039">ਨੀਤੀਆਂ ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="4728558894243024398">ਪਲੇਟਫਾਰਮ</translation>
 <translation id="4731638775147756694">ਇਸ ਐਪਲੀਕੇਸ਼ਨ ਨੂੰ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
@@ -1340,6 +1351,7 @@
 <translation id="5728056243719941842">C5 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
 <translation id="5730040223043577876">ਜੇਕਰ ਤੁਸੀਂ ਆਪਣੇ ਪਾਸਵਰਡ ਨੂੰ ਹੋਰ ਸਾਈਟਾਂ 'ਤੇ ਮੁੜ ਵਰਤਿਆ ਹੈ, ਤਾਂ Chrome ਵੱਲੋਂ ਇਸਨੂੰ ਰੀਸੈੱਟ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਕਾਰਡ ਰੱਖਿਅਤ ਕਰੋ}one{ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਕਾਰਡ ਰੱਖਿਅਤ ਕਰੋ}other{ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਕਾਰਡਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ}}</translation>
+<translation id="5745733273847572235">ਸਾਈਟ ਤੁਹਾਡਾ ਟਿਕਾਣਾ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{ਇਸ ਕਾਰਡ ਲਈ ਕੋਈ ਆਭਾਸੀ ਨੰਬਰ ਵਰਤੋ}one{ਕਾਰਡ ਚੁਣੋ}other{ਕਾਰਡ ਚੁਣੋ}}</translation>
 <translation id="5759751709240058861">ਆਪਣੇ ਕੈਮਰੇ ਨੂੰ ਵਰਤੋ ਅਤੇ ਹਿਲਾਓ</translation>
 <translation id="5763042198335101085">ਕੋਈ ਵੈਧ ਈਮੇਲ ਪਤਾ ਦਾਖਲ ਕਰੋ</translation>
@@ -1457,6 +1469,7 @@
 <translation id="6169916984152623906">ਹੁਣ ਤੁਸੀਂ ਨਿੱਜੀ ਤੌਰ 'ਤੇ ਬ੍ਰਾਊਜ਼ ਕਰ ਸਕਦੇ ਹੋ, ਅਤੇ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਵਰਤਣ ਵਾਲੇ ਹੋਰ ਲੋਕਾਂ ਨੂੰ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨਹੀਂ ਦਿਖਾਈ ਦੇਵੇਗੀ। ਹਾਲਾਂਕਿ, ਡਾਊਨਲੋਡ ਅਤੇ ਬੁੱਕਮਾਰਕ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਣਗੇ।</translation>
 <translation id="6177128806592000436">ਇਸ ਸਾਈਟ ਨਾਲ ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="6180316780098470077">ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਅੰਤਰਾਲ</translation>
+<translation id="619448280891863779">ਸਾਈਟ ਤੁਹਾਡੀਆਂ ਸਕ੍ਰੀਨਾਂ 'ਤੇ ਵਿੰਡੋ ਨੂੰ ਖੋਲ੍ਹਣ ਅਤੇ ਉਸਨੂੰ ਰੱਖਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="6196640612572343990">ਤੀਜੀ-ਧਿਰ ਵਾਲੀਆਂ ਕੁੱਕੀਜ਼ ਨੂੰ ਬਲੌਕ ਕਰੋ</translation>
 <translation id="6203231073485539293">ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="6211666000885129820">ਸੁਰੱਖਿਅਤ ਭੁਗਤਾਨ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਦਾਖਲਾ ਸ਼ੀਟ</translation>
@@ -1542,6 +1555,7 @@
 <translation id="6502991525169604759">ਤੁਹਾਡੀਆਂ ਤਬਦੀਲੀਆਂ ਤੋਂ ਬਿਨਾਂ</translation>
 <translation id="6505563257409036437">ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="6508722015517270189">Chrome ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
+<translation id="6513005815064132016">ਸਾਈਟ ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="6517596291481585650">ਚਿਤਾਵਨੀ: ਇਹ ਨੀਤੀ, ਨੀਤੀ ਵੱਲੋਂ ਨਿਰਧਾਰਤ ਕੀਤੇ ਮੁਤਾਬਕ ਸੂਚੀ ਵਜੋਂ ਵਿਲੀਨ ਨਹੀਂ ਕੀਤੀ ਗਈ ਕਿਉਂਕਿ ਇਹ ਸੂਚੀ ਨਹੀਂ ਹੈ।</translation>
 <translation id="6518133107902771759">ਪ੍ਰਮਾਣਿਤ ਕਰੋ</translation>
 <translation id="6521745193039995384">ਕਿਰਿਆਸ਼ੀਲ ਨਹੀਂ</translation>
@@ -1642,7 +1656,9 @@
 <translation id="6949872517221025916">ਪਾਸਵਰਡ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="6950684638814147129">JSON ਮੁੱਲ ਪਾਰਸ ਕਰਨ ਵੇਲੇ ਗੜਬੜ ਹੋਈ: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">ਸਭ ਰੀਸੈੱਟ ਕਰੋ</translation>
+<translation id="6954341342296443517">ਸਾਈਟ ਵੱਖ-ਵੱਖ ਕਿਸਮਾਂ ਦੀਆਂ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="6957887021205513506">ਸਰਵਰ ਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਇੱਕ ਧੋਖਾ ਜਾਪਦਾ ਹੈ।</translation>
+<translation id="6961844873822989059">ਸਾਈਟ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਸਥਾਪਤ ਫ਼ੌਂਟਾਂ ਨੂੰ ਵਰਤਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="6963520811470373926">ਪ੍ਰਤਿਸਥਾਪਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="6964255747740675745">ਨੈੱਟਵਰਕ ਸੰਰੂਪਣ ਪਾਰਸ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ (ਅਵੈਧ JSON)।</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
@@ -1744,6 +1760,7 @@
 <translation id="733354035281974745">ਡੀਵਾਈਸ ਦੇ ਸਥਾਨਕ ਖਾਤੇ ਨੂੰ ਓਵਰਰਾਈਡ</translation>
 <translation id="7333654844024768166">ਤੁਸੀਂ ਹੁਣੇ-ਹੁਣੇ ਕਿਸੇ ਭਰਮਪੂਰਨ ਸਾਈਟ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕੀਤਾ ਹੈ। Chromium ਵੱਲੋਂ <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ਅਤੇ ਉਹਨਾਂ ਹੋਰ ਸਾਈਟਾਂ 'ਤੇ ਜਾ ਕੇ ਹੁਣੇ ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ, ਜਿੱਥੇ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਵਰਡ ਵਰਤਿਆ ਹੈ।</translation>
 <translation id="7334320624316649418">&amp;ਦੁਬਾਰਾ ਕ੍ਰਮ ਦੇਣ ਨੂੰ ਰੀਡੂ ਕਰੋ</translation>
+<translation id="7335157162773372339">ਸਾਈਟ ਤੁਹਾਡਾ ਕੈਮਰਾ ਵਰਤਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="7337248890521463931">ਹੋਰ ਲਾਈਨਾਂ ਦਿਖਾਓ</translation>
 <translation id="7337706099755338005">ਤੁਹਾਡੇ ਪਲੇਟਫਾਰਮ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="733923710415886693">ਸਰਵਰ ਦੇ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦਾ ਖੁਲਾਸਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਪਾਰਦਰਸ਼ਤਾ ਰਾਹੀਂ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਸੀ।</translation>
@@ -1931,6 +1948,7 @@
 <translation id="7937554595067888181">ਮਿਆਦ <ph name="EXPIRATION_DATE_ABBR" /> ਨੂੰ ਸਮਾਪਤ ਹੋਵੇਗੀ</translation>
 <translation id="7938958445268990899">ਸਰਵਰ ਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਅਜੇ ਪ੍ਰਮਾਣਿਕ ਨਹੀਂ ਹੈ।</translation>
 <translation id="7942349550061667556">ਲਾਲ</translation>
+<translation id="7943893128817522649">ਸਾਈਟ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕਈ ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="7947285636476623132">ਆਪਣੀ ਮਿਆਦ ਸਮਾਪਤੀ ਦੇ ਸਾਲ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਜਾਣਨ ਲਈ Tab ਦਬਾ ਕੇ ਫਿਰ Enter ਦਬਾਓ</translation>
 <translation id="7950027195171824198">Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੀ ਕੁਕੀ ਦੀਆਂ ਤਰਜੀਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -1943,6 +1961,7 @@
 <translation id="7976214039405368314">ਬਹੁਤ ਸਾਰੀਆਂ ਬੇਨਤੀਆਂ</translation>
 <translation id="7977538094055660992">ਆਊਟਪੁੱਟ ਡੀਵਾਈਸ</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="798134797138789862">ਸਾਈਟ ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ ਵਾਲੇ ਡੀਵਾਈਸਾਂ ਅਤੇ ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="79859296434321399">ਸੰਵਰਧਿਤ ਵਾਸਤਵਿਕਤਾ ਵਾਲੀ ਸਮੱਗਰੀ ਦੇਖਣ ਲਈ, ARCore ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">ਜਿਲਦਬੰਦ</translation>
@@ -2132,6 +2151,7 @@
 <translation id="8699041776323235191">HID ਡੀਵਾਈਸ</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> ਨਾਲ ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਐਨਕ੍ਰਿਪਟ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="8705331520020532516">ਸੀਰੀਅਲ ਨੰਬਰ</translation>
+<translation id="8708134712139312373">ਸਾਈਟ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="8710842507289500830">ਫ਼ੌਂਟ ਸ਼ੈਲੀ</translation>
 <translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
 <translation id="8718314106902482036">ਭੁਗਤਾਨ ਪੂਰਾ ਨਹੀਂ ਹੋਇਆ</translation>

@@ -132,6 +132,7 @@
 <translation id="387301095347517405">Batareya toʻliq quvvat olgan davrlar soni</translation>
 <translation id="3941014780699102620">Host aniqlanmadi</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="3966286471246132217">Yanada aniq natijalar olish uchun test tugamaguncha barcha ilovalarni yopib turing.</translation>
 <translation id="3967822245660637423">Yuklab olindi</translation>
 <translation id="397105322502079400">Hisoblanmoqda...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
@@ -144,6 +145,7 @@
 <translation id="4176463684765177261">O‘chirib qo‘yilgan</translation>
 <translation id="4227825898293920515">Parol muddati tugashiga <ph name="TIME" /> qoldi</translation>
 <translation id="4238516577297848345">Hozir hech nima chop etilmayapti</translation>
+<translation id="4244962993387259361">Xotira testini bajarish uchun kamida 500 MB boʻsh joy kerak. Joy ochish uchun Sozlamalar &gt; Xotira boshqaruvi sahifasini oching.</translation>
 <translation id="4289540628985791613">Umumiy</translation>
 <translation id="4297501883039923494">Toʻxtatildi – Notanish xato</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ta rasm</translation>
@@ -385,6 +387,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8498220429738806196">Traffik hisoblagichlari</translation>
 <translation id="8503813439785031346">Foydalanuvchi nomi</translation>
 <translation id="8503836310948963452">Yana bir necha daqiqa kuting…</translation>
+<translation id="8521021929829989041">Shaxsiy qurilma sifatida foydalanish</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Aloqa operatoringiz oʻz tarmogʻiga ulanishi uchun bu parametrni talab qilishi mumkin. Tafsilotlar uchun aloqa operatoringizga murojaat qiling.</translation>
 <translation id="8576249514688522074">Faolsizlantirildi</translation>

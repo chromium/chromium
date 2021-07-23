@@ -132,6 +132,7 @@
 <translation id="387301095347517405">Броят пълни цикли на зареждане на батерията ви</translation>
 <translation id="3941014780699102620">Името на хоста не бе преобразувано</translation>
 <translation id="3942420633017001071">Диагностика</translation>
+<translation id="3966286471246132217">За по-точни резултати затворете всички приложения, докато тестът завърши.</translation>
 <translation id="3967822245660637423">Изтеглянето завърши</translation>
 <translation id="397105322502079400">Изчислява се...</translation>
 <translation id="39823212440917567">Заданията за отпечатване, по-стари от <ph name="NUMBER_OF_DAYS" /> дни, ще бъдат премахнати</translation>
@@ -144,6 +145,7 @@
 <translation id="4176463684765177261">Деактивирано</translation>
 <translation id="4227825898293920515">Паролата изтича след <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Няма активни задания за отпечатване</translation>
+<translation id="4244962993387259361">За да извършите тест на паметта, трябва да имате поне 500 МБ свободно място. За да освободите място, отворете „Настройки &gt; Мениджър на хранилището”.</translation>
 <translation id="4289540628985791613">Общ преглед</translation>
 <translation id="4297501883039923494">Спряло – неизвестна грешка</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> изображения</translation>
@@ -385,6 +387,7 @@
 <translation id="8498220429738806196">Броячи за трафика</translation>
 <translation id="8503813439785031346">Потребителско име</translation>
 <translation id="8503836310948963452">Само още няколко минути…</translation>
+<translation id="8521021929829989041">Използване като лично устройство</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Тази опция може да е необходима за свързване с мрежата на оператора ви. За подробности се обърнете към него.</translation>
 <translation id="8576249514688522074">Неинициализирана</translation>

@@ -132,6 +132,7 @@
 <translation id="387301095347517405">Број пута када се батерија напунила до краја</translation>
 <translation id="3941014780699102620">Разрешење хоста није успело</translation>
 <translation id="3942420633017001071">Дијагностика</translation>
+<translation id="3966286471246132217">Да бисте добили тачније резултате, затворите све апликације док се тест не доврши.</translation>
 <translation id="3967822245660637423">Преузимање је довршено</translation>
 <translation id="397105322502079400">Израчунавање...</translation>
 <translation id="39823212440917567">Задаци штампања старији од <ph name="NUMBER_OF_DAYS" /> дана се уклањају</translation>
@@ -144,6 +145,7 @@
 <translation id="4176463684765177261">Онемогућено</translation>
 <translation id="4227825898293920515">Лозинка истиче за <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ниједан задатак штампања није у току</translation>
+<translation id="4244962993387259361">Треба да имате слободно барем 500 MB да бисте покренули тест меморије. Да бисте ослободили простор, идите у Подешавања &gt; Управљање меморијским простором.</translation>
 <translation id="4289540628985791613">Преглед</translation>
 <translation id="4297501883039923494">Заустављено – непозната грешка</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> слика</translation>
@@ -385,6 +387,7 @@
 <translation id="8498220429738806196">Бројачи саобраћаја</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="8503836310948963452">Још само пар минута…</translation>
+<translation id="8521021929829989041">Користи као лични уређај</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Мобилни оператер може да затражи ову опцију ради повезивања на мрежу. Обратите се мобилном оператеру за детаље.</translation>
 <translation id="8576249514688522074">Није покренуто</translation>

@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">Pýtať sa, či chcete povoliť webu používať zariadenie a dáta pre virtuálnu realitu (odporúčané)</translation>
 <translation id="4962975101802056554">Odvolať všetky povolenia pre zariadenie</translation>
 <translation id="497421865427891073">Ďalej</translation>
+<translation id="4976702386844183910">Naposledy navštívené <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nenašli sa žiadne kontakty</translation>
 <translation id="4996978546172906250">Zdieľať</translation>
 <translation id="5039804452771397117">Povoliť</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">Karta inkognito</translation>
 <translation id="5186036860380548585">Možnosť je k dispozícii v hornej časti obrazovky</translation>
 <translation id="5197729504361054390">Vybrané kontakty budú zdieľané s webom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">Naposledy navštívený dnes</translation>
 <translation id="528192093759286357">Režim celej obrazovky ukončíte potiahnutím z hornej časti a klepnutím na tlačidlo Späť.</translation>
 <translation id="5300589172476337783">Zobraziť</translation>
 <translation id="5301954838959518834">Dobre</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">Povolenia</translation>
 <translation id="5860033963881614850">Vypnuté</translation>
 <translation id="5876056640971328065">Pozastaviť video</translation>
+<translation id="5887687176710214216">Naposledy navštívený včera</translation>
 <translation id="5916664084637901428">Zapnuté</translation>
 <translation id="5922853908706496913">Zdieľate obrazovku</translation>
 <translation id="5939518447894949180">Resetovať</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">Zdieľať</translation>
 <translation id="6545864417968258051">Vyhľadávanie zariadení Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Sú blokované povolenia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalšie}few{Sú blokované povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalšie}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more blocked}other{Sú blokované povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalších}}</translation>
+<translation id="6554732001434021288">Naposledy navštívené pred <ph name="NUM_DAYS" /> dňami</translation>
 <translation id="6561560012278703671">Používať tichší režim (blokovať rušivé výzvy na odber upozornení)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Chránený obsah</translation>

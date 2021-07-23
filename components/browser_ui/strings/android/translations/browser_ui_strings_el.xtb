@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">Να γίνεται ερώτηση προτού επιτραπεί στους ιστοτόπους να χρησιμοποιήσουν τη συσκευή και τα δεδομένα εικονικής πραγματικότητας (συνιστάται).</translation>
 <translation id="4962975101802056554">Ανάκληση όλων των αδειών για τη συσκευή</translation>
 <translation id="497421865427891073">Μετάβαση προς τα εμπρός</translation>
+<translation id="4976702386844183910">Τελευταία επίσκεψη <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Δεν βρέθηκαν επαφές</translation>
 <translation id="4996978546172906250">Μοιραστείτε μέσω</translation>
 <translation id="5039804452771397117">Επιτρέπεται</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">Καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="5186036860380548585">Η επιλογή είναι διαθέσιμη κοντά στην κορυφή της οθόνης</translation>
 <translation id="5197729504361054390">Οι επαφές που επιλέγετε θα κοινοποιηθούν στον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">Τελευταία επίσκεψη σήμερα</translation>
 <translation id="528192093759286357">Σύρετε από το επάνω τμήμα και αγγίξτε το κουμπί επιστροφής για έξοδο από την πλήρη οθόνη.</translation>
 <translation id="5300589172476337783">Εμφάνιση</translation>
 <translation id="5301954838959518834">OK, το κατάλαβα</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">Άδειες</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
 <translation id="5876056640971328065">Παύση βίντεο</translation>
+<translation id="5887687176710214216">Τελευταία επίσκεψη χθες</translation>
 <translation id="5916664084637901428">Ενεργό</translation>
 <translation id="5922853908706496913">Κοινή χρήση της οθόνης σας</translation>
 <translation id="5939518447894949180">Επαναφορά</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">Κοινοποίηση</translation>
 <translation id="6545864417968258051">Σάρωση Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη αποκλείστηκαν.}other{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη αποκλείστηκαν.}}</translation>
+<translation id="6554732001434021288">Τελευταία επίσκεψη πριν από <ph name="NUM_DAYS" /> ημέρες</translation>
 <translation id="6561560012278703671">Χρήση πιο διακριτικών μηνυμάτων (αποκλεισμός διακοπών από τα μηνύματα ειδοποιήσεων)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Προστατ. περιεχ.</translation>

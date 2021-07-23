@@ -182,6 +182,7 @@
 <translation id="2243633977138166243">按向左键或向右键可浏览；按 Enter 键可激活</translation>
 <translation id="224426591676115802">以下语言没有可用的语音服务：<ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">正在停止学习模式</translation>
+<translation id="2247870315273396641">语音试听</translation>
 <translation id="225732394367814946">加快语速</translation>
 <translation id="2267538686624070261">退出的区域含有拼写错误</translation>
 <translation id="2267945578749931355">下一个字符</translation>
@@ -198,6 +199,7 @@
 <translation id="2390264819538553347">要前进，请按 Enter 键；要后退，请按退格键。</translation>
 <translation id="2398579267367951220">输入文字即可在页面中搜索。按 Enter 键可跳至搜索结果，按向上箭头或向下箭头可浏览搜索结果，继续输入文字可更改搜索内容，按 Esc 键可取消搜索。</translation>
 <translation id="240709722712693803">蓝紫色</translation>
+<translation id="2410298923485357543">在设备已联网时使用自然语音</translation>
 <translation id="2416512023405990736">未选中的复选框</translation>
 <translation id="2417569100218200841">内容信息</translation>
 <translation id="2417948780551741035">尾注</translation>
@@ -299,6 +301,7 @@
 <translation id="3046838483509668188">ChromeVox选项</translation>
 <translation id="3060756054951570867">已打开“<ph name="TITLE" />”菜单</translation>
 <translation id="3060880924447482063">用 1 根手指向左或向右滑动即可逐项移动</translation>
+<translation id="3061302636956643119">系统会将所选文字发送给 Google 以供处理。</translation>
 <translation id="3070245424257836917">向上滑动三根手指</translation>
 <translation id="307516670110542567">快速入门</translation>
 <translation id="3078345202707391975">下一个 2 级标题</translation>
@@ -937,6 +940,7 @@
 <translation id="7693840228159394336">上一个单选按钮</translation>
 <translation id="7701040980221191251">无</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7713139339518499741">自然语音</translation>
 <translation id="7714340021005120797">没有下一个组合框</translation>
 <translation id="772146615414628379">恭喜！您已完成对 ChromeVox 基本使用方法的学习。提示：您可以随时通过按下“搜索键+句点键”打开 ChromeVox 命令菜单。如需详细了解 ChromeVox 和 Chrome 操作系统，请阅读以下文章。
     若要退出此教程，请使用 ChromeVox 找到“关闭”按钮，然后点击该按钮。</translation>
@@ -967,6 +971,7 @@
 <translation id="7939428177581522200">已添加到所选文字</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{1个@符号}other{#个@符号}}</translation>
 <translation id="7942349550061667556">红色</translation>
+<translation id="7945703887991230167">首选语音</translation>
 <translation id="7948364528129376623">没有下一个访问过的链接</translation>
 <translation id="7952460583030260752">命令参考</translation>
 <translation id="7965147473449754028">菜单已关闭</translation>

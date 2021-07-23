@@ -136,9 +136,11 @@
 <translation id="1407135791313364759">ସବୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="1408787208417187241">ଉପର ପଟରେ ତିନୋଟି ଷ୍ଟାପଲ୍</translation>
 <translation id="1413809658975081374">ଗୋପନୀୟତା ତ୍ରୁଟି</translation>
+<translation id="1422930527989633628">ଆଖପାଖର ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକୁ ଖୋଜି ପାଇବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="1426410128494586442">ହଁ</translation>
 <translation id="1428146450423315676">ଷ୍ଟାକର୍ 7</translation>
 <translation id="1430915738399379752">ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
+<translation id="1436185428532214179">ଆପଣଙ୍କ ଡିଭାଇସରେ ଫାଇଲ୍ ଓ ଫୋଲ୍ଡରଗୁଡ଼ିକ ଏଡିଟ୍ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="1442386063175183758">ଡାହାଣ ପଟରେ ଗେଟ୍ ଫୋଲ୍ଡ</translation>
 <translation id="1442987760062738829">ପଞ୍ଚ୍</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
@@ -254,6 +256,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଏକାଧିକ କାର୍ଯ୍ୟ ଉପଲବ୍ଧ ଅଛି, ସେଗୁଡ଼ିକୁ ଗୋଟିଏ ଗୋଟିଏ କରି ଦେଖିବା ପାଇଁ Tab ଦବାନ୍ତୁ</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">କାର୍ଡଧାରକଙ୍କ ନାମ</translation>
+<translation id="1803351196216024260">ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାର କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="1807246157184219062">ଫିକା</translation>
 <translation id="1807528111851433570">ଆରମ୍ଭର ସିଟ୍</translation>
 <translation id="1812527064848182527">ଲ୍ୟାଣ୍ଡସ୍କେପ୍</translation>
@@ -283,6 +286,7 @@
 <translation id="1919367280705858090">କୌଣସି ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ତ୍ରୁଟି ମେସେଜ୍ ବିଷୟରେ ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{କୌଣସିଟି ନୁହେଁ}=1{1ଟି ସାଇଟ୍}other{#ଟି ସାଇଟ୍}}</translation>
 <translation id="1924727005275031552">ନୂଆ</translation>
+<translation id="1939175642807587452">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପଠାଇବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="1945968466830820669">ଆପଣ ଆପଣଙ୍କ ସଂସ୍ଥାର ଆକାଉଣ୍ଟକୁ ଆକ୍ସେସ୍ ହରାଇବେ କିମ୍ବା ଆପଣଙ୍କର ବ୍ୟକ୍ତିଗତ ସୂଚନା ଚୋରି ହେବାର ଅନୁଭବ କରିପାରନ୍ତି। Chromium ବର୍ତ୍ତମାନ ଆପଣଙ୍କର ପାସ୍‍ୱାର୍ଡ କୁ ବଦଳାଇବା ପାଇଁ ସୁପାରିଶ୍ କରୁଛି।</translation>
 <translation id="1947454675006758438">ଉପର ପଟରେ ଷ୍ଟାପଲ୍</translation>
 <translation id="1958218078413065209">ଆପଣଙ୍କର ସର୍ବାଧିକ ସ୍କୋର୍ ହେଉଛି <ph name="SCORE" />।</translation>
@@ -413,6 +417,7 @@
 <translation id="2392959068659972793">କୌଣସି ମୂଲ୍ୟ ସେଟ୍‍ କରାଯାଇନଥିବା ନୀତିଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="239429038616798445">ପଠାଇବାର ଏହି ପଦ୍ଧତି ଉପଲବ୍ଧ ନାହିଁ। ଅନ୍ୟ ଏକ ପଦ୍ଧତି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2396249848217231973">&amp;ଡିଲିଟ୍‌କୁ ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
+<translation id="2400600116338235695">ସିରିଅଲ୍ ପୋର୍ଟଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="2410754574180102685">ସରକାରୀ-ଆଇନ</translation>
 <translation id="2413155254802890957">ପୁରୁଣା</translation>
 <translation id="2413528052993050574">ଏହି ସର୍ଭର୍ ଏହା ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ ଯେ, ଏହା ଏକ <ph name="DOMAIN" /> ଅଟେ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍ ପ୍ରତ୍ୟାହାର କରାଯାଇଥାଇପାରେ। ଏହା ଏକ ଭୁଲ୍ କନଫିଗ୍‍ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।</translation>
@@ -467,6 +472,7 @@
 <translation id="2609632851001447353">ବିବିଧତା</translation>
 <translation id="2618023639789766142">C10 (ଏନଭଲପ୍)</translation>
 <translation id="2625385379895617796">ଆପଣଙ୍କର ଘଣ୍ଟା ଆଗୁଆ ଅଛି</translation>
+<translation id="262745152991669301">USB ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="2629325967560697240">Chromeର ସର୍ବୋଚ୍ଚ ସ୍ତରର ସୁରକ୍ଷା ପାଇବାକୁ, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ଉନ୍ନତ ସୁରକ୍ଷା ଚାଲୁ କରନ୍ତୁ<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />ର ସର୍ଭର୍ IP ଠିକଣା ମିଳିଲା ନାହିଁ।</translation>
 <translation id="2639739919103226564">ସ୍ଥିତି:</translation>
@@ -608,6 +614,7 @@
 <translation id="3188393374551744535">ଆକାଉଣ୍ଟ ବାଲାନ୍ସ</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ସ୍ଥାୟୀରୂପେ ଡାଟା ଷ୍ଟୋର୍ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" />ରେ <ph name="PRINTER_NAME" /></translation>
+<translation id="3197136577151645743">ଆପଣ କେତେବେଳେ ଏହି ଡିଭାଇସକୁ ସକ୍ରିୟ ଭାବେ ବ୍ୟବହାର କରୁଛନ୍ତି ତାହା ଜାଣିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ସେଟିଂସରେ ଆପଣ କେଉଁ ସୂଚନା ସିଙ୍କ୍ କରନ୍ତି ତାହା ପରିଚାଳନା କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="320323717674993345">ପେମେଣ୍ଟ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="3207960819495026254">ବୁକ୍‍ମାର୍କ କରାଯାଇଛି</translation>
@@ -823,6 +830,7 @@
 <translation id="3909695131102177774"><ph name="LABEL" /><ph name="ERROR" /></translation>
 <translation id="3939773374150895049">CVC ପରିବର୍ତ୍ତେ WebAuthn ବ୍ୟବହାର କରିବେ?</translation>
 <translation id="3946209740501886391">ସର୍ବଦା ଏହି ସାଇଟ୍‌ରେ ପଚାରନ୍ତୁ</translation>
+<translation id="3947595700203588284">MIDI ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="3949571496842715403">ଏହା ଏକ <ph name="DOMAIN" /> ବୋଲି ଏହି ସର୍ଭର୍ ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍ ବିଷୟର ବିକଳ୍ପ ନାମକୁ ନିର୍ଦ୍ଧିଷ୍ଟ କରେନାହିଁ। ଏହା ଏକ ଭୁଲ୍‍ କନଫିଗ୍‌ରେସନ୍‌ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀଙ୍କ ଦ୍ୱାରା ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।</translation>
 <translation id="3949601375789751990">ଆପଣଙ୍କର ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି ଏଠାରେ ଦେଖାଦିଏ</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -918,6 +926,7 @@
     &lt;p&gt;ଯଦି ଆପଣ ତଥାପି ଏହି ତ୍ରୁଟି ଦେଖନ୍ତି, ତେବେ ୱେବ୍‌ସାଇଟ୍ ମାଲିକଙ୍କୁ ଯୋଗାଯୋଗ କରନ୍ତୁ।&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />ନେଟ୍‌ୱର୍କ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ ଚଳାଇବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="4229544452621580519">Chrome ସେଟିଂସରେ ଏକ ସୁରକ୍ଷା ଯାଞ୍ଚ ଚଲାନ୍ତୁ</translation>
+<translation id="4230204356098880324">ଆପଣଙ୍କ କ୍ୟାମେରାକୁ ବ୍ୟବହାର କରି ମୁଭ୍ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" />କୁ ଯାଆନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">ବୈଧ ଅଟେ</translation>
 <translation id="4250431568374086873">ଏହି ସାଇଟ୍‌କୁ ଆପଣଙ୍କର ସଂଯୋଗ ପୂର୍ଣ୍ଣରୂପେ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
@@ -980,6 +989,7 @@
 <translation id="4434045419905280838">ପପ୍-ଅପ୍ ଏବଂ ରିଡାଇରେକ୍‌ଟ</translation>
 <translation id="4435702339979719576">ପୋଷ୍ଟକାର୍ଡ)</translation>
 <translation id="443673843213245140">ଏକ ପ୍ରୋକ୍ସିର ବ୍ୟବହାର ଅକ୍ଷମ କରାଯାଇଛି କିନ୍ତୁ ଏକ ସୁନିର୍ଦ୍ଦିଷ୍ଟ ପ୍ରକ୍ସି କନ୍‌ଫିଗ୍‌ରେସନ୍ ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଛି।</translation>
+<translation id="4451135742916150903">HID ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="4460315069258617173">ଆପଣ ଏହି ସାଇଟ୍ ପାଇଁ ଟାବଗୁଡ଼ିକୁ ବନ୍ଦ ନ କରିବା ପର୍ଯ୍ୟନ୍ତ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="4464826014807964867">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଥିବା ସୂଚନା ଥିବା ୱେବସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="4476953670630786061">ଏହି ଫର୍ମ ସୁରକ୍ଷିତ ନୁହେଁ। ସ୍ୱତଃପୂରଣକୁ ବନ୍ଦ କରାଯାଇଛି।</translation>
@@ -1043,6 +1053,7 @@
 <translation id="4708268264240856090">ଆପଣଙ୍କର ସଂଯୋଗରେ ବ୍ୟାଘାତ ହୋ‍ଇଥିଲା</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />ଚାଲୁଥିବା ୱିଣ୍ଡୋ ନେଟ୍‌ୱର୍କ ଡାଇଗ୍ନୋଷ୍ଟିକ୍ସ<ph name="END_LINK" /></translation>
+<translation id="4724144314178270921">ଆପଣଙ୍କ କ୍ଲିପବୋର୍ଡରେ ଥିବା ଟେକ୍ସଟ୍ ଏବଂ ଛବିଗୁଡ଼ିକ ଦେଖିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="4726672564094551039">ନୀତିଗୁଡ଼ିକୁ ପୁନଃ ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="4728558894243024398">ପ୍ଲାଟ୍‌ଫର୍ମ</translation>
 <translation id="4731638775147756694">ଏହି ଆପ୍ଲିକେସନ୍ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ଦ୍ୱାରା ବ୍ଲକ୍ କରାଯାଇଛି</translation>
@@ -1340,6 +1351,7 @@
 <translation id="5728056243719941842">C5 (ଏନଭଲପ୍)</translation>
 <translation id="5730040223043577876">ଯଦି ଆପଣ ଆପଣଙ୍କର ପାସ୍‍ୱର୍ଡ ଅନ୍ୟ ସାଇଟ୍‍‍ରେ ପୁନଃବ୍ୟବହାର କରିଛନ୍ତି, ତେବେ Chrome ଏହାକୁ ରିସେଟ୍ କରିବା ପାଇଁ ସୁପାରିଶ୍ କରୁଛି।</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ କାର୍ଡ ସେଭ୍ କରନ୍ତୁ}other{ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ କାର୍ଡ ସେଭ୍ କରନ୍ତୁ}}</translation>
+<translation id="5745733273847572235">ଆପଣଙ୍କ ଲୋକେସନ୍ ବ୍ୟବହାର କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{ଏହି କାର୍ଡ ପାଇଁ ଏକ ଭର୍ଚୁଆଲ୍ ନମ୍ବର ବ୍ୟବହାର କରନ୍ତୁ}other{ଏକ କାର୍ଡ ଚୟନ କରନ୍ତୁ}}</translation>
 <translation id="5759751709240058861">ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର ଓ ମୁଭ୍ କରିବାକୁ</translation>
 <translation id="5763042198335101085">ଏକ ବୈଧ ଇମେଲ୍ ଠିକଣା ଲେଖନ୍ତୁ</translation>
@@ -1457,6 +1469,7 @@
 <translation id="6169916984152623906">ଏବେ ଆପଣ ବ୍ୟକ୍ତିଗତ ଭାବେ ବ୍ରାଉଜ୍ କରିପାରିବେ ଏବଂ ଏହି ଡିଭାଇସ୍‍କୁ ବ୍ୟବହାର କରୁଥିବା ଅନ୍ୟ ଲୋକମାନେ ଆପଣଙ୍କର ଗତିବିଧି ଦେଖିପାରିବେ ନାହିଁ। ତେବେ, ଡାଉନ୍‍‍ଲୋଡ୍ ଓ ବୁକ୍‍ମାର୍କଗୁଡ଼ିକ ସେଭ୍ କରାଯିବ।</translation>
 <translation id="6177128806592000436">ଏହି ସାଇଟ୍‌ରେ ଆପଣଙ୍କର ସଂଯୋଗ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
 <translation id="6180316780098470077">ପୁଣି ଚେଷ୍ଟା କରିବା ଇଣ୍ଟରଭାଲ୍</translation>
+<translation id="619448280891863779">ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ଖୋଲି ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ସେଗୁଡ଼ିକ ରଖିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="6196640612572343990">ତୃତୀୟ ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="6203231073485539293">ଆପଣଙ୍କର ଇଣ୍ଟର୍‌ନେଟ୍ ସଂଯୋଗକୁ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6211666000885129820">ସୁରକ୍ଷିତ ଭାବରେ ପେମେଣ୍ଟ କରିବା ପାଇଁ କ୍ରେଡେନସିଆଲ୍ ପଞ୍ଜିକରଣ ସିଟ୍</translation>
@@ -1542,6 +1555,7 @@
 <translation id="6502991525169604759">ଆପଣଙ୍କ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ବିନା</translation>
 <translation id="6505563257409036437">ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋଗୁଡ଼ିକ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6508722015517270189">Chrome ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
+<translation id="6513005815064132016">ଆପଣଙ୍କ କ୍ୟାମେରାର ସ୍ଥିତି ଟ୍ରାକ୍ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="6517596291481585650">ଚେତାବନୀ: ଏହା ଏକ ତାଲିକା ହୋଇନଥିବା ଯୋଗୁଁ ନୀତି ଦ୍ୱାରା ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଥିବା ଏକ ତାଲିକା ରୂପରେ ଏହି ନୀତି ମିଶାଯାଇ ନାହିଁ।</translation>
 <translation id="6518133107902771759">ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6521745193039995384">ସକ୍ରିୟ ନୁହେଁ</translation>
@@ -1642,7 +1656,9 @@
 <translation id="6949872517221025916">ପାସ୍‍ୱର୍ଡ ରିସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="6950684638814147129">JSON ମୂଲ୍ୟ ପାର୍ସ କରିବାରେ ତ୍ରୁଟି: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">ସବୁ ରିସେଟ୍ କରନ୍ତୁ</translation>
+<translation id="6954341342296443517">ବିଭିନ୍ନ ପ୍ରକାରର ଫାଇଲ୍ ଖୋଲିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="6957887021205513506">ସର୍ଭର୍‌ର ସାର୍ଟିଫିକେଟ୍‌ ଏକ ଜାଲ୍‌ ପରି ଲାଗୁଛି।</translation>
+<translation id="6961844873822989059">ଆପଣଙ୍କ ଡିଭାଇସରେ ଇନଷ୍ଟଲ୍ କରାଯାଇଥିବା ଫଣ୍ଟଗୁଡ଼ିକ ବ୍ୟବହାର କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="6963520811470373926">ସ୍ଥାନ ଅଧିକାର କରାଯାଇଛି</translation>
 <translation id="6964255747740675745">ନେଟ୍‌ୱର୍କ କନ୍‌ଫିଗରେସନ୍‌ ବିଶ୍ଳେଷଣ ହେବାରେ ବିଫଳ ହେଲା (ଅବୈଧ JSON)।</translation>
 <translation id="6965382102122355670">ଓକେ ବଟନ୍</translation>
@@ -1744,6 +1760,7 @@
 <translation id="733354035281974745">ସ୍ଥାନୀୟ ଡିଭାଇସ୍ ଆକାଉଣ୍ଟ ଓଭର୍‌ରାଇଡ୍</translation>
 <translation id="7333654844024768166">ଆପଣ ଏବେ ଏକ ପ୍ରତାରଣାମୂଳକ ସାଇଟରେ ଆପଣଙ୍କର ପାସୱାର୍ଡ ଲେଖିଛନ୍ତି। <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ଏବଂ ଏହି ପାସୱାର୍ଡକୁ ଆପଣ ବ୍ୟବହାର କରୁଥିବା ଅନ୍ୟ ସାଇଟଗୁଡ଼ିକୁ ଯାଇ ଏହାକୁ ବର୍ତ୍ତମାନ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ Chromium ସୁପାରିଶ କରେ।</translation>
 <translation id="7334320624316649418">&amp;ରି-ଡୁକୁ ପୁନଃକ୍ରମରେ ରଖନ୍ତୁ</translation>
+<translation id="7335157162773372339">ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="7337248890521463931">ଅଧିକ ଲାଇନ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="7337706099755338005">ଆପଣଙ୍କର ପ୍ଲାଟ୍‌ଫର୍ମରେ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="733923710415886693">ସର୍ଭର୍‍ର ସାର୍ଟିଫିକେଟ୍, ସାର୍ଟିଫିକେଟ୍ ସ୍ଵଚ୍ଛତା ମାଧ୍ୟମରେ ପ୍ରକାଶ କରାଯାଇନାହିଁ।</translation>
@@ -1931,6 +1948,7 @@
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" />ରେ ସମୟ ସୀମା ସମାପ୍ତ ହେବ</translation>
 <translation id="7938958445268990899">ଏବେ ସୁଦ୍ଧା ସର୍ଭର୍‍‍ର ସାର୍ଟିଫିକେଟ୍‍‍ଟି ବୈଧ ନୁହେଁ।</translation>
 <translation id="7942349550061667556">ନାଲି</translation>
+<translation id="7943893128817522649">ଏକାଧିକ ଫାଇଲକୁ ସ୍ୱଚାଳିତ ଭାବେ ଡାଉନଲୋଡ୍ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="7947285636476623132">ଆପଣଙ୍କ କ୍ରେଡିଟ୍‍ କାର୍ଡ ଅବଧି ସମାପ୍ତିର ବର୍ଷ ଦେଖନ୍ତୁ ଏବଂ ପୁଣି ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeର ଫିଚରଗୁଡ଼ିକ ବିଷୟରେ ଜାଣିବା ପାଇଁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="7950027195171824198">Chrome ସେଟିଂସରେ ଆପଣଙ୍କ କୁକୀ ପସନ୍ଦଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -1943,6 +1961,7 @@
 <translation id="7976214039405368314">ଅନେକଗୁଡ଼ିଏ ଅନୁରୋଧ</translation>
 <translation id="7977538094055660992">ଆଉଟପୁଟ୍ ଡିଭାଇସ୍</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="798134797138789862">ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ ଡିଭାଇସ୍ ଏବଂ ଡାଟା ବ୍ୟବହାର କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="79859296434321399">ବୃଦ୍ଧି ହେଉଥିବା ବାସ୍ତବତା ବିଷୟବସ୍ତୁ ଦେଖିବାକୁ ARCore ଇନ୍‌ଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">ବାଇଣ୍ଡ</translation>
@@ -2132,6 +2151,7 @@
 <translation id="8699041776323235191">HID ଡିଭାଇସ୍</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> ସହ ଆପଣଙ୍କର ସଂଯୋଜନା ଏନକ୍ରିପ୍ଟ ହୋଇ ନାହିଁ ।</translation>
 <translation id="8705331520020532516">କ୍ରମିକ ସଂଖ୍ୟା</translation>
+<translation id="8708134712139312373">ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="8710842507289500830">ଫଣ୍ଟ ଷ୍ଟାଇଲ୍</translation>
 <translation id="8712637175834984815">ବୁଝିଗଲି</translation>
 <translation id="8718314106902482036">ପେମେଣ୍ଟ ସମ୍ପୂର୍ଣ ହେଲାନାହିଁ</translation>

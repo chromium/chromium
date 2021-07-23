@@ -132,6 +132,7 @@
 <translation id="387301095347517405">ባትሪዎ ሙሉ የኃይል መሙያ ዑደት ውስጥ ያለፈበት ጊዜ ብዛት</translation>
 <translation id="3941014780699102620">ለአስተናጋጅ መፍትሔ መስጠት አልተሳካም</translation>
 <translation id="3942420633017001071">ምርመራ</translation>
+<translation id="3966286471246132217">ይበልጥ ትክክለኛ ውጤቶችን ለማግኘት ሙከራው እስኪጠናቀቅ ድረስ ሁሉንም መተግበሪያዎች ይዝጉ።</translation>
 <translation id="3967822245660637423">ማውረድ ተጠናቅቋል</translation>
 <translation id="397105322502079400">በማስላት ላይ...</translation>
 <translation id="39823212440917567">ከ<ph name="NUMBER_OF_DAYS" /> ቀኖች በላይ ዕድሜ ያላቸው የህትመት ሥራዎች ይወገዳሉ</translation>
@@ -144,6 +145,7 @@
 <translation id="4176463684765177261">ተሰናክሏል</translation>
 <translation id="4227825898293920515">የይለፍ ቃል በ <ph name="TIME" /> ውስጥ አገልግሎት ጊዜው ያበቃል</translation>
 <translation id="4238516577297848345">በሂደት ላይ ያሉ ምንም የህትመት ስራዎች የሉም</translation>
+<translation id="4244962993387259361">የማህደረ ትውስታ ሙከራን ለማካሄድ ቢያንስ 500 ሜባ ነፃ ያስፈልገዎታል። ቦታን ለማስለቀቅ ወደ ቅንብሮች &gt; የማከማቻ አቀናባሪ ይሂዱ።</translation>
 <translation id="4289540628985791613">ማጠቃለያ</translation>
 <translation id="4297501883039923494">ቆሟል - ያልታወቀ ስህተት</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ምስሎች</translation>
@@ -385,6 +387,7 @@
 <translation id="8498220429738806196">የትራፊክ ቆጣሪዎች</translation>
 <translation id="8503813439785031346">የተጣቃሚ ስም</translation>
 <translation id="8503836310948963452">ጥቂት ተጨማሪ ደቂቃዎች ብቻ...</translation>
+<translation id="8521021929829989041">እንደ የግል መሣሪያ ይጠቀሙ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">አገልግሎት አቅራቢዎ ከአውታረ መረቡ ጋር ለመገናኘት ይህን አማራጭ ሊፈልግ ይችላል። ለዝርዝሮች አገልግሎት አቅራቢዎን ያነጋግሩ።</translation>
 <translation id="8576249514688522074">ያልተጀመረ</translation>

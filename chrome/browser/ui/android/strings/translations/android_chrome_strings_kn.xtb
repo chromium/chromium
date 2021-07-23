@@ -224,7 +224,6 @@
 
 ಹುಡುಕಲು ಯಾವುದೇ ಪದವನ್ನು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಹೋಲ್ಡ್‌ ಮಾಡಿ. ನಿಮ್ಮ ಹುಡುಕಾಟವನ್ನು ಮತ್ತಷ್ಟು ನಿಖರಗೊಳಿಸಲು, ಹೆಚ್ಚಿನ ಅಥವಾ ಕಡಿಮೆ ಪದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ. ನಿಮ್ಮ ಹುಡುಕಾಟವನ್ನು ಎಡಿಟ್ ಮಾಡಲು, ಫಲಕವನ್ನು ತೆರೆಯಿರಿ, ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಲು ಐಕಾನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ಮತ್ತು ಹುಡುಕಾಟದ ಬಾಕ್ಸ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡಿ.</translation>
 <translation id="2459390580524506445">ವರ್ಧಿತ ಧ್ವನಿ ಹುಡುಕಾಟ</translation>
-<translation id="246532703174860178">ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="247737702124049222">ಚಿತ್ರ ವಿವರಣೆಗಳು ಆನ್ ಆಗಿವೆ</translation>
 <translation id="2482878487686419369">ಸೂಚನೆಗಳು</translation>
 <translation id="2485422356828889247">ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್</translation>
@@ -296,7 +295,6 @@
 <translation id="2900528713135656174">ಈವೆಂಟ್ ರಚಿಸು</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> ಗಾಗಿ ಸಲಹೆಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2904414404539560095">ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕಾದ ಸಾಧನಗಳ ಪಟ್ಟಿಯನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
-<translation id="2905036901251765993">ಸಮೀಪದ ಜನರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲು, ಅವರು ಈ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಿ</translation>
 <translation id="2908243544703713905">ಓದದಿರುವ ಸ್ಟೋರಿಗಳು ಸಿದ್ಧವಾಗಿವೆ</translation>
 <translation id="2909615210195135082">Google ಅಧಿಸೂಚನೆಗಳು ಪ್ಲ್ಯಾಟ್‌ಫಾರ್ಮ್</translation>
 <translation id="2912296070571964914">ನೀವು ಆಸಕ್ತಿ ಹೊಂದಿರುವ ವಿಷಯಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -306,6 +304,7 @@
 <translation id="2942036813789421260">ಪೂರ್ವವೀಕ್ಷಣೆ ಟ್ಯಾಬ್ ಮುಚ್ಚಿದೆ</translation>
 <translation id="2956410042958133412">ಈ ಖಾತೆಯನ್ನು <ph name="PARENT_NAME_1" /> ಮತ್ತು <ph name="PARENT_NAME_2" /> ಅವರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ಓದದಿರುವ ಪುಟ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ಓದದಿರುವ ಪುಟಗಳು}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ಓದದಿರುವ ಪುಟಗಳು}}</translation>
+<translation id="2961210776189273067">ಶೀರ್ಷಿಕೆ</translation>
 <translation id="2979025552038692506">ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2979448359891869301">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ವಿಸ್ತರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ಫೋನ್ ಬಳಸದೇ ಇರುವಾಗ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2979639724566107830">ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
@@ -616,6 +615,7 @@
 <translation id="497421865427891073">ಮುಂದಕ್ಕೆ ಹೋಗು</translation>
 <translation id="4988210275050210843">ಫೈಲ್ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">ಪುಟಗಳು</translation>
+<translation id="5001388021414335527">ಇಲ್ಲಿ ಈ ಸೈಟ್ ಅನ್ನು ಫಾಲೋ ಮಾಡಿ</translation>
 <translation id="5004416275253351869">Google ಚಟುವಟಿಕೆ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="5005498671520578047">ಪಾಸ್‌ವರ್ಡ್ ನಕಲಿಸಿ</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ಸಂಪರ್ಕಿಸಲು ಬಯಸುತ್ತದೆ</translation>
@@ -721,7 +721,6 @@
 <translation id="572328651809341494">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="5723735397759933332">HTTPS ಪುಟಗಳಲ್ಲಿ ಚಿತ್ರಗಳನ್ನು ಆಪ್ಟಿಮೈಸ್ ಮಾಡುವ ಮೂಲಕ, ಲೈಟ್ ಮೋಡ್ ಈಗ ನಿಮಗಾಗಿ ಹೆಚ್ಚು ಡೇಟಾವನ್ನು ಉಳಿಸುತ್ತದೆ.</translation>
 <translation id="5726692708398506830">ಪುಟದಲ್ಲಿರುವ ಪ್ರತಿಯೊಂದನ್ನೂ ದೊಡ್ಡದಾಗಿಸಿ</translation>
-<translation id="5733983706093266635">QR ಕೋಡ್‌ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. URL, <ph name="CHARACTER_LIMIT" /> ಕ್ಕಿಂತ ಹೆಚ್ಚು ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="5748802427693696783">ಪ್ರಮಾಣಿತ ಟ್ಯಾಬ್‌ಗಳಿಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ</translation>
 <translation id="5749068826913805084">ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು Chrome ಗೆ ಸಂಗ್ರಹಣೆ ಪ್ರವೇಶ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="5749237766298580851">ಆಫ್ <ph name="SEPARATOR" /> ಶಿಫಾರಸು ಮಾಡಲಾಗಿಲ್ಲ</translation>
@@ -877,7 +876,6 @@
 <translation id="6590680911007613645">ನೀವು ಈಗ ಉಳಿಸುತ್ತಿರುವ ಪಾಸ್‌ವರ್ಡ್, ಈ ಮೊದಲು <ph name="SITE" /> ಗೆ ಹೊಂದಿಸಿದ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗೆ ಹೋಲುತ್ತಿದೆಯೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="6593061639179217415">ಡೆಸ್ಕ್‌ಟಾಪ್‌ ಸೈಟ್‌</translation>
 <translation id="6595046016124923392">ನಿಮಗಾಗಿ ವಿವರಣೆಗಳನ್ನು ಸುಧಾರಿಸಲು, ಚಿತ್ರಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ.</translation>
-<translation id="6597891566292541626">ಈ ಫ್ರೇಮ್‌ನಲ್ಲಿ QR/ಬಾರ್‌ಕೋಡ್‌ ಅನ್ನು ಸರಿಯಾಗಿ ಇರಿಸಿ.</translation>
 <translation id="6600954340915313787">Chrome ಗೆ ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="661266467055912436">ನಿಮಗಾಗಿ ಹಾಗೂ ವೆಬ್‌ನಲ್ಲಿರುವ ಎಲ್ಲರಿಗಾಗಿ ಸುರಕ್ಷತೆಯನ್ನು ಸುಧಾರಿಸುತ್ತದೆ.</translation>
 <translation id="6618554661997243500">ನಿಮಗಾಗಿ ಪ್ರಮುಖ ಸೈಟ್‌ಗಳು ಮತ್ತು ಸ್ಟೋರಿಗಳನ್ನು ವೀಕ್ಷಿಸಲು, ಹೋಮ್ ಬಟನ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
@@ -986,6 +984,7 @@
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{ಆಯ್ಕೆಮಾಡಲಾದ 1 ಐಟಂ ಹಂಚಿಕೊಳ್ಳಿ}one{ಆಯ್ಕೆಮಾಡಲಾದ # ಐಟಂಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ}other{ಆಯ್ಕೆಮಾಡಲಾದ # ಐಟಂಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ}}</translation>
 <translation id="7359002509206457351">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="7375125077091615385">ಪ್ರಕಾರ:</translation>
+<translation id="7386842512861524348">Chrome ನಿಮಗೆ ಸೂಚಿಸಿದ ಹೊರತು, ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಸುರಕ್ಷಿತವಾಗಿರುತ್ತದೆ.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome ಮೊದಲ ರನ್ ಅನುಭವ</translation>
@@ -1086,7 +1085,6 @@
 <translation id="7961015016161918242">ಎಂದಿಗೂ ಇಲ್ಲ</translation>
 <translation id="7961926449547174351">ನೀವು ಸಂಗ್ರಹಣೆಯ ಪ್ರವೇಶವನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದೀರಿ, ಅದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ.</translation>
 <translation id="7963646190083259054">ಮಾರಾಟಗಾರ:</translation>
-<translation id="7967911570373677897">QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು, ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ, ಇದರಿಂದ Chrome ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಬಹುದು</translation>
 <translation id="7968014550143838305">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="7971136598759319605">1 ದಿನದ ಹಿಂದೆ ಸಕ್ರಿಯ</translation>
 <translation id="7975379999046275268">ಪುಟ ಪೂರ್ವವೀಕ್ಷಿಸಿ <ph name="BEGIN_NEW" />ಹೊಸದು<ph name="END_NEW" /></translation>
@@ -1118,7 +1116,6 @@
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">ನಿಮ್ಮ ಎಲ್ಲ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು, ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="8110087112193408731">ಡಿಜಿಟಲ್ ಯೋಗಕ್ಷೇಮದಲ್ಲಿ ನಿಮ್ಮ Chrome ಚಟುವಟಿಕೆಯನ್ನು ತೋರಿಸಲು ಬಯಸುವಿರಾ?</translation>
-<translation id="8115259494083109761">QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಲು, Chrome ಗೆ ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಬಳಸಲು ಅನುಮತಿಸಿ</translation>
 <translation id="8127542551745560481">ಮುಖಪುಟವನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="813082847718468539">ಸೈಟ್ ಮಾಹಿತಿಯನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="8137558756159375272">ಹುಡುಕಾಟಕ್ಕೆ ಸ್ಪರ್ಶಿಸಿದರೆ ಆಯ್ಕೆಮಾಡಿದ ಪದವನ್ನು ಮತ್ತು ಪ್ರಸ್ತುತ ಪುಟವನ್ನು ಸಂದರ್ಭದಂತೆ Google ಹುಡುಕಾಟಕ್ಕೆ ಕಳುಹಿಸುತ್ತದೆ. ನೀವು ಇದನ್ನು <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಆಫ್ ಮಾಡಬಹುದು.</translation>
@@ -1135,7 +1132,6 @@
 <translation id="8218622182176210845">ನಿಮ್ಮ ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="8223642481677794647">ಫೀಡ್ ಕಾರ್ಡ್ ಮೆನು</translation>
 <translation id="8224471946457685718">ವೈ-ಫೈಯಲ್ಲಿ ನಿಮಗಾಗಿ ಲೇಖನಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
-<translation id="8233540874193135768">QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು, ಕ್ಯಾಮರಾದ ಜೊತೆಗೆ ಸಾಧನವನ್ನು ಬಳಸಿ.</translation>
 <translation id="8250920743982581267">ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳು</translation>
 <translation id="825412236959742607">ಈ ಪುಟವು ತೀರಾ ಹೆಚ್ಚು ಮೆಮೊರಿಯನ್ನು ಬಳಸುತ್ತದೆ, ಆದ್ದರಿಂದ Chrome ಕೆಲವು ವಿಷಯಗಳನ್ನು ತೆಗೆದುಹಾಕಿದೆ.</translation>
 <translation id="8260126382462817229">ಮತ್ತೊಮ್ಮೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ</translation>
@@ -1146,6 +1142,7 @@
 <translation id="8284326494547611709">ಶೀರ್ಷಿಕೆಗಳು</translation>
 <translation id="829672787777123339">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="8310344678080805313">ಪ್ರಮಾಣಿತ ಟ್ಯಾಬ್‌ಗಳು</translation>
+<translation id="831192587911042850">ನೀವು ಫಾಲೋ ಮಾಡುತ್ತಿರುವ ವೆಬ್ ಸೈಟ್‌ಗಳ ಪಟ್ಟಿಗೆ ಪ್ರಸ್ತುತ ವೆಬ್‌ ಸೈಟ್ ಅನ್ನು ಸೇರಿಸುತ್ತದೆ.</translation>
 <translation id="8327155640814342956">ಉತ್ತಮ ಬ್ರೌಸಿಂಗ್ ಅನುಭವಕ್ಕಾಗಿ, Chrome ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ತೆರೆಯಿರಿ</translation>
 <translation id="834313815369870491">ಸೈಟ್‌ಗಳನ್ನು ಎಂದಿಗೂ ಅನುವಾದಿಸಬೇಡಿ</translation>
 <translation id="8349013245300336738">ಬಳಸಿದ ಡೇಟಾ ಪ್ರಮಾಣದ ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
@@ -1251,7 +1248,6 @@
 <translation id="8970887620466824814">ಏನೋ ತಪ್ಪಾಗಿದೆ.</translation>
 <translation id="8972098258593396643">ಡೀಫಾಲ್ಟ್ ಫೋಲ್ಡರ್‌ಗೆ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡುವುದೇ?</translation>
 <translation id="8988028529677883095">ಫೋನ್ ಅನ್ನು ಸುರಕ್ಷತಾ ಕೀಯನ್ನಾಗಿ ಬಳಸಿ</translation>
-<translation id="8990209962746788689">QR ಕೋಡ್‌ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="8993760627012879038">ಅದೃಶ್ಯ ಮೋಡ್‌ನಲ್ಲಿ ಹೊಸ ವಿಂಡೋ ತೆರೆಯಿರಿ</translation>
 <translation id="8996847606757455498">ಬೇರೆ ಪೂರೈಕೆದಾರರನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> ನಿರ್ವಹಿಸಿದ ಖಾತೆಯ ಮೂಲಕ ನೀವು ಸೈನ್‍‍ ಇನ್ ಮಾಡುತ್ತಿರುವಿರಿ ಮತ್ತು ಅದರ ನಿರ್ವಾಹಕ ನಿಯಂತ್ರಣವನ್ನು ನಿಮ್ಮ Chrome ಡೇಟಾದ ಮೂಲಕ ನೀಡುತ್ತಿರುವಿರಿ. ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಶಾಶ್ವತವಾಗಿ ಈ ಖಾತೆಯೊಂದಿಗೆ ಜೋಡಿಸಲಾಗುತ್ತದೆ. Chrome ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡುವುದರಿಂದ ಈ ಸಾಧನದಿಂದ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಅಳಿಸುತ್ತದೆ, ಆದರೆ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿಯೇ ಇರುತ್ತದೆ.</translation>

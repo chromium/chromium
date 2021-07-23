@@ -224,7 +224,6 @@ Toca qualsevol paraula per cercar. Per definir millor la cerca, mantén premut e
 
 Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, selecciona més paraules o menys. Per editar la cerca, obre el tauler, toca la icona per obrir-la en una pestanya nova i fes els canvis al quadre de cerca.</translation>
 <translation id="2459390580524506445">Cerca per veu millorada</translation>
-<translation id="246532703174860178">Comparteix</translation>
 <translation id="247737702124049222">Les descripcions de les imatges estan activades</translation>
 <translation id="2482878487686419369">Notificacions</translation>
 <translation id="2485422356828889247">Desinstal·la</translation>
@@ -296,7 +295,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2900528713135656174">Crea un esdeveniment</translation>
 <translation id="2901411048554510387">S'estan mostrant suggeriments per a <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">La llista de dispositius amb què es compartirà una pestanya s'ha obert a alçada completa.</translation>
-<translation id="2905036901251765993">Per compartir contingut amb persones del teu entorn, permet-los que escanegin aquest codi QR</translation>
 <translation id="2908243544703713905">Les notícies sense llegir estan preparades</translation>
 <translation id="2909615210195135082">Plataforma de notificacions de Google</translation>
 <translation id="2912296070571964914">Gestiona els temes que t'interessen</translation>
@@ -339,6 +337,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3207960819495026254">S'ha afegit a les adreces d'interès.</translation>
 <translation id="3208584281581115441">Comprova ara</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> s'ha suprimit</translation>
+<translation id="3214996641768123781">És possible que l'<ph name="BEGIN_LINK1" />historial de cerques<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />altres tipus d'activitats<ph name="END_LINK2" /> es desin al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.</translation>
 <translation id="321773570071367578">Si oblideu la frase de contrasenya o voleu canviar aquesta configuració, <ph name="BEGIN_LINK" />restabliu la sincronització<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Per sincronitzar les contrasenyes, verifica la teva identitat</translation>
 <translation id="3227557059438308877">Google Chrome com a clau de seguretat</translation>
@@ -623,7 +622,9 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5005498671520578047">Copia la contrasenya</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> es vol connectar</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5032430150487044192">No es pot crear el codi QR</translation>
 <translation id="5039804452771397117">Permet</translation>
+<translation id="5054455334322721892">És possible que es desin <ph name="BEGIN_LINK1" />altres tipus d'activitats<ph name="END_LINK1" /> al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.</translation>
 <translation id="5061533557687621530">Per consultar el temps, toca el micròfon i digues "Quin temps farà avui?"</translation>
 <translation id="5087580092889165836">Afegeix una targeta</translation>
 <translation id="5091249083535528968">Dades d'ús ampliades</translation>
@@ -724,7 +725,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="572328651809341494">Pestanyes recents</translation>
 <translation id="5723735397759933332">Ara el mode bàsic et permet estalviar més dades optimitzant imatges de pàgines HTTPS.</translation>
 <translation id="5726692708398506830">Augmenta la mida de tots els elements de la pàgina</translation>
-<translation id="5733983706093266635">No es pot crear el codi QR. L'URL conté més de <ph name="CHARACTER_LIMIT" /> caràcters.</translation>
 <translation id="5748802427693696783">S'ha canviat a les pestanyes estàndard</translation>
 <translation id="5749068826913805084">Chrome necessita accedir a l'emmagatzematge per poder baixar fitxers.</translation>
 <translation id="5749237766298580851">Desactivada <ph name="SEPARATOR" /> Opció no recomanada</translation>
@@ -743,6 +743,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5814131985548525293">Escriu aquí o toca la icona de veu per començar</translation>
 <translation id="583281660410589416">Desconegut</translation>
 <translation id="5833984609253377421">Comparteix l'enllaç</translation>
+<translation id="5834764604050996579">Per escanejar un codi QR, permet que Chrome utilitzi la càmera</translation>
 <translation id="5836192821815272682">S'està baixant l'actualització de Chrome…</translation>
 <translation id="5853623416121554550">en pausa</translation>
 <translation id="5854512288214985237">No s'envien informes d'error ni estadístiques a Google</translation>
@@ -880,7 +881,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6590680911007613645">Assegura't que la contrasenya que estàs desant coincideixi amb la contrasenya per a <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Lloc web per a ordinador</translation>
 <translation id="6595046016124923392">Les imatges s'envien a Google per millorar-ne les descripcions per a tu.</translation>
-<translation id="6597891566292541626">Situa el codi QR o de barres dins d'aquest marc.</translation>
 <translation id="6600954340915313787">Copiada de Chrome</translation>
 <translation id="661266467055912436">Millora la seguretat per a tu i per a tots els usuaris del web.</translation>
 <translation id="6618554661997243500">Per consultar els llocs web i les històries que més visites, toca el botó d'inici</translation>
@@ -924,6 +924,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6867400383614725881">Pestanya d'incògnit nova</translation>
 <translation id="6869056123412990582">ordinador</translation>
 <translation id="6882836635272038266">Protecció estàndard contra llocs web, baixades i extensions que se sap que són perillosos.</translation>
+<translation id="6883204995689174413">Comparteix</translation>
 <translation id="688738109438487280">Afegeix les dades existents a <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Desbloqueja la pantalla per copiar la contrasenya</translation>
 <translation id="6896758677409633944">Copia</translation>
@@ -944,6 +945,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7022756207310403729">Obre al navegador</translation>
 <translation id="702463548815491781">Es recomana quan TalkBack o l'accés amb interruptors estan activats</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> s'ha restaurat</translation>
+<translation id="7029390216614421513">Situa el codi QR o el codi de barres dins d'aquest marc.</translation>
 <translation id="7029809446516969842">Contrasenyes</translation>
 <translation id="7054588988317389591">Vols obtenir descripcions de les imatges?</translation>
 <translation id="7055152154916055070">S'ha bloquejat la redirecció:</translation>
@@ -958,8 +960,10 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7138678301420049075">Altres</translation>
 <translation id="7146622961999026732">Aquests llocs web i aquestes aplicacions semblen importants per a tu:</translation>
 <translation id="7149893636342594995">24 darreres hores</translation>
+<translation id="7155317020660659215">Per escanejar un codi QR, canvia la configuració perquè Chrome pugui utilitzar la càmera</translation>
 <translation id="7173114856073700355">Obre Configuració</translation>
 <translation id="7177466738963138057">Pots canviar aquesta opció més endavant a Configuració</translation>
+<translation id="7177873915659574692">No es pot crear el codi QR. L'URL conté més de <ph name="CHARACTER_LIMIT" /> caràcters.</translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7187993566681480880">Et protegeix a Chrome i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada.</translation>
 <translation id="718926126787620637">La llista de carpetes d'adreces d'interès s'ha obert a alçada completa</translation>
@@ -1004,6 +1008,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7454641608352164238">No hi ha prou espai</translation>
 <translation id="7475192538862203634">Si això passa sovint, prova aquests <ph name="BEGIN_LINK" />suggeriments<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">La targeta SD no s'ha trobat. Pot ser que faltin alguns fitxers.</translation>
+<translation id="7476384249953022816">Per esborrar l'historial de navegació d'incògnit del dispositiu, tanca totes les pestanyes</translation>
 <translation id="7479104141328977413">Gestió de pestanyes</translation>
 <translation id="7481312909269577407">Endavant</translation>
 <translation id="7481864133709957613">Per fer cerques des d'aquesta pàgina, mantén premudes les paraules en comptes de tocar-les</translation>
@@ -1086,11 +1091,11 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7929962904089429003">Obre el menú</translation>
 <translation id="7930998711684428189">T'avisa si les contrasenyes queden exposades a causa d'una violació de les dades.</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> no està actualitzat.</translation>
+<translation id="7944772052836377867">La sincronització ha de verificar la teva identitat</translation>
 <translation id="7947953824732555851">Acc. i inicia sessió</translation>
 <translation id="7961015016161918242">Mai</translation>
 <translation id="7961926449547174351">Has desactivat l'accés a l'emmagatzematge. Ves a Configuració per activar-lo.</translation>
 <translation id="7963646190083259054">Proveïdor:</translation>
-<translation id="7967911570373677897">Per escanejar un codi QR, canvia la configuració perquè Chrome pugui utilitzar la càmera</translation>
 <translation id="7968014550143838305">S'ha afegit a la llista de lectura</translation>
 <translation id="7971136598759319605">Actiu fa 1 dia</translation>
 <translation id="7975379999046275268">Previsualitza la pàgina <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
@@ -1118,11 +1123,11 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8084114998886531721">Contrasenya desada</translation>
 <translation id="8084285576995584326">Controla les dades del teu Compte de Google</translation>
 <translation id="808747664143081553">Connectat al dispositiu</translation>
+<translation id="8088176524274673045">Per compartir contingut amb persones del teu entorn, permet-los que escanegin aquest codi QR</translation>
 <translation id="8103578431304235997">Pestanya d'incògnit</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Per accedir a les adreces d'interès des de tots els dispositius, activa la sincronització</translation>
 <translation id="8110087112193408731">Vols veure l'activitat de Chrome a Benestar digital?</translation>
-<translation id="8115259494083109761">Per escanejar un codi QR, permet que Chrome utilitzi la càmera</translation>
 <translation id="8127542551745560481">Edita la pàgina d'inici</translation>
 <translation id="813082847718468539">Mostra la informació del lloc web</translation>
 <translation id="8137558756159375272">La funció Toca per cercar envia la paraula seleccionada i la pàgina actual com a context a la Cerca de Google. La podeu desactivar a <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" />.</translation>
@@ -1139,7 +1144,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8218622182176210845">Gestiona el compte</translation>
 <translation id="8223642481677794647">Menú de la targeta del tauler</translation>
 <translation id="8224471946457685718">Baixa articles que et poden interessar quan tinguis connexió a la Wi-Fi</translation>
-<translation id="8233540874193135768">Per escanejar un codi QR, utilitza un dispositiu amb càmera.</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="825412236959742607">Com que aquesta pàgina fa servir massa memòria, Chrome n'ha suprimit contingut.</translation>
 <translation id="8260126382462817229">Prova d'iniciar la sessió de nou</translation>
@@ -1228,6 +1232,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8788265440806329501">L'historial de navegació està tancat</translation>
 <translation id="8788968922598763114">Torna a obrir l'última pestanya tancada</translation>
 <translation id="8798449543960971550">Llegits</translation>
+<translation id="8805097383171548551">Per escanejar un codi QR, utilitza un dispositiu amb càmera.</translation>
 <translation id="8812260976093120287">En alguns llocs web, pots fer servir el teu dispositiu per pagar amb les aplicacions de pagament anteriors admeses.</translation>
 <translation id="881688628773363275">El contingut de la pestanya de previsualització no es pot veure.</translation>
 <translation id="8820817407110198400">Adreces d'interès</translation>
@@ -1256,7 +1261,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8970887620466824814">S'ha produït un error.</translation>
 <translation id="8972098258593396643">Vols baixar el fitxer a la carpeta predeterminada?</translation>
 <translation id="8988028529677883095">Fes servir el telèfon com a clau de seguretat</translation>
-<translation id="8990209962746788689">No es pot crear el codi QR</translation>
 <translation id="8993760627012879038">Obre una pestanya nova en mode d'incògnit</translation>
 <translation id="8996847606757455498">Tria un altre proveïdor</translation>
 <translation id="8998729206196772491">Estàs iniciant la sessió amb un compte gestionat per <ph name="MANAGED_DOMAIN" /> i estàs donant a l'administrador el control de les teves dades de Chrome. Les dades passaran a estar vinculades a aquest compte permanentment. Si tanques la sessió de Chrome, se suprimiran les teves dades d'aquest dispositiu, però continuaran emmagatzemades al teu compte de Google.</translation>
@@ -1274,6 +1278,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="9070377983101773829">Inicia la cerca per veu</translation>
 <translation id="9074336505530349563">Perquè Google et suggereixi contingut personalitzat, inicia la sessió i activa la sincronització</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9081543426177426948">Els llocs web que visites no es desen en mode d'incògnit</translation>
 <translation id="9086302186042011942">Sincronització</translation>
 <translation id="9086455579313502267">No es pot accedir a la xarxa</translation>
 <translation id="9100505651305367705">Proposa mostrar articles en visualització simplificada, quan s'admeti</translation>

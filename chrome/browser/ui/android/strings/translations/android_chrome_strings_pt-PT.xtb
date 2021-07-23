@@ -224,7 +224,6 @@ Toque em qualquer palavra para pesquisar. Para refinar a sua pesquisa, tocar sem
 
 Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa, selecione mais ou menos palavras. Para editar a sua pesquisa, abra o painel, toque no ícone para abrir num novo separador e efetue as suas alterações na caixa de pesquisa.</translation>
 <translation id="2459390580524506445">Pesquisa por voz otimizada</translation>
-<translation id="246532703174860178">Partilhar</translation>
 <translation id="247737702124049222">As descrições de imagens estão ativadas.</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -296,7 +295,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="2900528713135656174">Criar evento</translation>
 <translation id="2901411048554510387">A mostrar sugestões para <ph name="WEBSITE_TITLE" />…</translation>
 <translation id="2904414404539560095">Lista de dispositivos com os quais pretende partilhar um separador aberta à altura total.</translation>
-<translation id="2905036901251765993">Para partilhar com pessoas nas proximidades, deixe-as ler este código QR.</translation>
 <translation id="2908243544703713905">Notícias não lidas disponíveis</translation>
 <translation id="2909615210195135082">Plataforma de notificações da Google</translation>
 <translation id="2912296070571964914">Faça a gestão dos tópicos que lhe interessam</translation>
@@ -339,6 +337,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="3207960819495026254">Adicionado aos marcadores</translation>
 <translation id="3208584281581115441">Verificar agora</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> eliminado</translation>
+<translation id="3214996641768123781">O <ph name="BEGIN_LINK1" />histórico de pesquisas<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />outras formas de atividade<ph name="END_LINK2" /> podem ser guardados na sua Conta Google quando tem sessão iniciada. Pode eliminá-los em qualquer altura.</translation>
 <translation id="321773570071367578">Se se esquecer da frase de acesso ou pretender alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Para sincronizar as palavras-passe, valide a sua identidade</translation>
 <translation id="3227557059438308877">Google Chrome como uma chave de segurança</translation>
@@ -623,7 +622,9 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5005498671520578047">Copiar palavra-passe</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> pretende estabelecer ligação</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5032430150487044192">Não é possível criar o código QR</translation>
 <translation id="5039804452771397117">Permitir</translation>
+<translation id="5054455334322721892">Podem ser guardadas <ph name="BEGIN_LINK1" />outras formas de atividade<ph name="END_LINK1" /> na sua Conta Google quando tem sessão iniciada. Pode eliminá-las em qualquer altura.</translation>
 <translation id="5061533557687621530">Para consultar o estado do tempo, toque no microfone e diga "Como está o tempo hoje?"</translation>
 <translation id="5087580092889165836">Adicionar cartão</translation>
 <translation id="5091249083535528968">Dados de utilização alargados</translation>
@@ -724,7 +725,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="572328651809341494">Separadores recentes</translation>
 <translation id="5723735397759933332">Agora, o Modo Lite guarda mais dados ao otimizar imagens em páginas HTTPS.</translation>
 <translation id="5726692708398506830">Aumentar o tamanho de todos os itens na página</translation>
-<translation id="5733983706093266635">Não é possível criar o código QR. O URL contém mais de <ph name="CHARACTER_LIMIT" /> carateres.</translation>
 <translation id="5748802427693696783">Mudado para separadores padrão</translation>
 <translation id="5749068826913805084">O Chrome necessita de acesso ao armazenamento para transferir ficheiros.</translation>
 <translation id="5749237766298580851">Desativada <ph name="SEPARATOR" /> Não recomendado</translation>
@@ -743,6 +743,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5814131985548525293">Escreva aqui ou toque no ícone de voz para começar.</translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5833984609253377421">Partilhar link</translation>
+<translation id="5834764604050996579">Para ler um código QR, permita que o Chrome utilize a sua câmara</translation>
 <translation id="5836192821815272682">A transferir a atualização do Chrome…</translation>
 <translation id="5853623416121554550">em pausa</translation>
 <translation id="5854512288214985237">Não são enviados relatórios de falhas ou estatísticas para a Google.</translation>
@@ -880,7 +881,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6590680911007613645">Certifique-se de que a palavra-passe que está a guardar corresponde à sua palavra-passe para <ph name="SITE" />.</translation>
 <translation id="6593061639179217415">Site para computador</translation>
 <translation id="6595046016124923392">As imagens são enviadas para a Google para melhorar as descrições.</translation>
-<translation id="6597891566292541626">Posicione o código QR/de barras nesta moldura.</translation>
 <translation id="6600954340915313787">Copiado para o Chrome</translation>
 <translation id="661266467055912436">Melhora a segurança para si e todas as pessoas na Web.</translation>
 <translation id="6618554661997243500">Para ver os sites e as notícias principais para si, toque no botão página inicial.</translation>
@@ -924,6 +924,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6867400383614725881">Novo separador de navegação anónima</translation>
 <translation id="6869056123412990582">computador</translation>
 <translation id="6882836635272038266">Proteção padrão contra Websites, transferências e extensões identificados como perigosos.</translation>
+<translation id="6883204995689174413">Partilhar</translation>
 <translation id="688738109438487280">Adicionar dados existentes a <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Desbloqueie para copiar a palavra-passe.</translation>
 <translation id="6896758677409633944">Copiar</translation>
@@ -944,6 +945,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7022756207310403729">Abrir no navegador</translation>
 <translation id="702463548815491781">Recomendado quando o TalkBack ou o Acesso por comutador estão ativados.</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> restaurado</translation>
+<translation id="7029390216614421513">Posicione o código QR ou o código de barras nesta moldura.</translation>
 <translation id="7029809446516969842">Palavras-passe</translation>
 <translation id="7054588988317389591">Pretende obter descrições de imagens?</translation>
 <translation id="7055152154916055070">Redirecionamento bloqueado:</translation>
@@ -958,8 +960,10 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7138678301420049075">Outros</translation>
 <translation id="7146622961999026732">Estes sites e apps parecem ser importantes para si:</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
+<translation id="7155317020660659215">Para ler um código QR, altere as definições para que o Chrome consiga utilizar a sua câmara</translation>
 <translation id="7173114856073700355">Abrir Definições</translation>
 <translation id="7177466738963138057">Pode alterar esta opção mais tarde nas Definições</translation>
+<translation id="7177873915659574692">Não é possível criar o código QR. O URL contém mais de <ph name="CHARACTER_LIMIT" /> carateres.</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7187993566681480880">Mantém a sua segurança no Chrome e pode ser utilizada para melhorar a sua segurança noutras apps Google quando tem sessão iniciada.</translation>
 <translation id="718926126787620637">Lista de pastas de marcadores aberta à altura total</translation>
@@ -1004,6 +1008,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7454641608352164238">Espaço insuficiente</translation>
 <translation id="7475192538862203634">Se vê isto com frequência, experimente estas <ph name="BEGIN_LINK" />sugestões<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Cartão SD não encontrado. Alguns dos seus ficheiros poderão estar em falta.</translation>
+<translation id="7476384249953022816">Para limpar o histórico de navegação da Navegação anónima no seu dispositivo, feche todos os separadores</translation>
 <translation id="7479104141328977413">Gestão de separadores</translation>
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7481864133709957613">Para pesquisar a partir desta página, toque sem soltar nas palavras em vez de tocar nas mesmas.</translation>
@@ -1086,11 +1091,11 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7929962904089429003">Abrir o menu</translation>
 <translation id="7930998711684428189">Envia-lhe um aviso se as palavras-passe forem expostas numa violação de dados.</translation>
 <translation id="7942131818088350342">O <ph name="PRODUCT_NAME" /> está desatualizado.</translation>
+<translation id="7944772052836377867">A sincronização precisa de validar a sua identidade</translation>
 <translation id="7947953824732555851">Aceitar e in. sessão</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7961926449547174351">Desativou o acesso ao armazenamento. Aceda às Definições para o ativar.</translation>
 <translation id="7963646190083259054">Fornecedor:</translation>
-<translation id="7967911570373677897">Para ler um código QR, altere as suas definições para que o Chrome consiga utilizar a sua câmara.</translation>
 <translation id="7968014550143838305">Adicionado à lista de leitura</translation>
 <translation id="7971136598759319605">Ativo há 1 dia</translation>
 <translation id="7975379999046275268">Pré-visualizar página <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -1118,11 +1123,11 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8084114998886531721">Palavra-passe guardada</translation>
 <translation id="8084285576995584326">Controle os dados da sua Conta Google</translation>
 <translation id="808747664143081553">Ligado ao dispositivo</translation>
+<translation id="8088176524274673045">Para partilhar com pessoas nas proximidades, deixe-as ler este código QR</translation>
 <translation id="8103578431304235997">Separador de navegação anónima</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Para obter os seus marcadores em todos os dispositivos, ative a sincronização.</translation>
 <translation id="8110087112193408731">Pretende apresentar a sua atividade do Chrome no Bem-estar digital?</translation>
-<translation id="8115259494083109761">Para ler um código QR, permita que o Chrome utilize a sua câmara.</translation>
 <translation id="8127542551745560481">Editar página inicial</translation>
 <translation id="813082847718468539">Ver informações do Website</translation>
 <translation id="8137558756159375272">Tocar para pesquisar envia a palavra selecionada e a página atual como contexto para a Pesquisa Google. Pode desativá-la em <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" />.</translation>
@@ -1139,7 +1144,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8218622182176210845">Efetue a gestão da sua conta</translation>
 <translation id="8223642481677794647">Menu do cartão do feed</translation>
 <translation id="8224471946457685718">Transferir artigos para si com Wi-Fi</translation>
-<translation id="8233540874193135768">Para ler um código QR, utilize um dispositivo com câmara.</translation>
 <translation id="8250920743982581267">Docs</translation>
 <translation id="825412236959742607">Esta página utiliza demasiada memória, pelo que o Chrome removeu algum conteúdo.</translation>
 <translation id="8260126382462817229">Experimente iniciar sessão novamente</translation>
@@ -1228,6 +1232,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8788265440806329501">O histórico de navegação está fechado.</translation>
 <translation id="8788968922598763114">Reabrir o último separador fechado</translation>
 <translation id="8798449543960971550">Lidas</translation>
+<translation id="8805097383171548551">Para ler um código QR, utilize um dispositivo com câmara.</translation>
 <translation id="8812260976093120287">Nalguns Sites, é possível pagar com as aplicações de pagamento compatíveis acima no dispositivo.</translation>
 <translation id="881688628773363275">O conteúdo do separador de pré-visualização não está visível.</translation>
 <translation id="8820817407110198400">Marcadores</translation>
@@ -1256,7 +1261,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8970887620466824814">Ocorreu um erro.</translation>
 <translation id="8972098258593396643">Pretende transferir para a pasta predefinida?</translation>
 <translation id="8988028529677883095">Utilizar o telemóvel como chave de segurança</translation>
-<translation id="8990209962746788689">Não é possível criar o código QR.</translation>
 <translation id="8993760627012879038">Abrir novo separador no modo de navegação anónima</translation>
 <translation id="8996847606757455498">Escolher outro fornecedor</translation>
 <translation id="8998729206196772491">Está a iniciar sessão com uma conta gerida por <ph name="MANAGED_DOMAIN" /> e a conceder ao respetivo gestor o controlo dos seus dados do Chrome. Os dados ficarão permanentemente associados a esta conta. Terminar sessão no Chrome elimina os seus dados deste dispositivo, embora permaneçam armazenados na Conta Google.</translation>
@@ -1274,6 +1278,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="9070377983101773829">Iniciar pesquisa por voz</translation>
 <translation id="9074336505530349563">Para obter conteúdo personalizado sugerido pelo Google, inicie sessão e ative a sincronização.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9081543426177426948">Os sites que visita não são guardados na Navegação anónima</translation>
 <translation id="9086302186042011942">A sincronizar</translation>
 <translation id="9086455579313502267">Não é possível aceder à rede</translation>
 <translation id="9100505651305367705">Sugerir a apresentação de artigos na vista simplificada, quando suportada</translation>

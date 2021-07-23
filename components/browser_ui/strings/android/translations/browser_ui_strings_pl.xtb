@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">Pytaj, zanim zezwolisz stronom na korzystanie z urządzenia i danych rzeczywistości wirtualnej (zalecane)</translation>
 <translation id="4962975101802056554">Anuluj wszystkie uprawnienia urządzenia</translation>
 <translation id="497421865427891073">Dalej</translation>
+<translation id="4976702386844183910">Ostatnia wizyta <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nie znaleziono kontaktów</translation>
 <translation id="4996978546172906250">Udostępnij przez</translation>
 <translation id="5039804452771397117">Zezwalaj</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">Karta incognito</translation>
 <translation id="5186036860380548585">Opcja dostępna u góry ekranu</translation>
 <translation id="5197729504361054390">Wybrane kontakty zostaną udostępnione witrynie <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">Ostatnio używana dzisiaj</translation>
 <translation id="528192093759286357">Przeciągnij od góry i kliknij przycisk Wstecz, by wyjść z trybu pełnoekranowego.</translation>
 <translation id="5300589172476337783">Pokaż</translation>
 <translation id="5301954838959518834">Rozumiem</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">Uprawnienia</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5876056640971328065">Wstrzymaj film</translation>
+<translation id="5887687176710214216">Ostatnio używana wczoraj</translation>
 <translation id="5916664084637901428">Włączone</translation>
 <translation id="5922853908706496913">Udostępnianie ekranu</translation>
 <translation id="5939518447894949180">Resetuj</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">Udostępnij</translation>
 <translation id="6545864417968258051">Skanowanie Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Zablokowane: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}few{Zablokowane: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}many{Zablokowane: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}other{Zablokowane: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}}</translation>
+<translation id="6554732001434021288">Ostatnio używano <ph name="NUM_DAYS" /> dni temu</translation>
 <translation id="6561560012278703671">Pokazuj wiadomości dyskretnie (blokuje powiadomienia, by Ci nie przeszkadzały)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Treść chroniona</translation>

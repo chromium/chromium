@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ ਡੀਵਾਈਸ ਅਤੇ ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਦੇਣ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="4962975101802056554">ਡੀਵਾਈਸ ਲਈ ਸਾਰੀਆਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੱਦ ਕਰੋ</translation>
 <translation id="497421865427891073">ਅੱਗੇ ਵੱਲ ਜਾਓ</translation>
+<translation id="4976702386844183910">ਪਿਛਲੀ ਵਾਰ <ph name="DATE" /> ਨੂੰ ਦੇਖੀ ਗਈ</translation>
 <translation id="4994033804516042629">ਕੋਈ ਸੰਪਰਕ ਨਹੀਂ ਮਿਲੇ</translation>
 <translation id="4996978546172906250">ਰਾਹੀਂ ਸ਼ੇਅਰ ਕਰੋ</translation>
 <translation id="5039804452771397117">ਆਗਿਆ ਦਿਓ</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="5186036860380548585">ਸਕ੍ਰੀਨ ਦੇ ਸਿਖਰ ਨੇੜੇ ਵਿਕਲਪ ਉਪਲਬਧ ਹਨ</translation>
 <translation id="5197729504361054390">ਤੁਹਾਡੇ ਵੱਲੋਂ ਚੁਣੇ ਸੰਪਰਕ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ਨਾਲ ਸਾਂਝੇ ਕੀਤੇ ਜਾਣਗੇ।</translation>
+<translation id="5216942107514965959">ਪਿਛਲੀ ਵਾਰ ਅੱਜ ਦੇਖੀ ਗਈ</translation>
 <translation id="528192093759286357">ਉੱਪਰ ਤੋਂ ਘਸੀਟੋ ਅਤੇ ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਣ ਲਈ ਪਿੱਛੇ ਜਾਓ ਬਟਨ ਨੂੰ ਸਪਰਸ਼ ਕਰੋ।</translation>
 <translation id="5300589172476337783">ਦਿਖਾਓ</translation>
 <translation id="5301954838959518834">ਠੀਕ, ਸਮਝ ਲਿਆ</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">ਅਨੁਮਤੀਆਂ</translation>
 <translation id="5860033963881614850">ਬੰਦ ਕਰੋ</translation>
 <translation id="5876056640971328065">ਵੀਡੀਓ ਰੋਕੋ</translation>
+<translation id="5887687176710214216">ਪਿਛਲੀ ਵਾਰ ਕੱਲ੍ਹ ਦੇਖੀ ਗਈ</translation>
 <translation id="5916664084637901428">ਚਾਲੂ</translation>
 <translation id="5922853908706496913">ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਸਾਂਝੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="5939518447894949180">ਰੀਸੈਟ ਕਰੋ</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">ਸ਼ੇਅਰ ਕਰੋ</translation>
 <translation id="6545864417968258051">ਬਲੂਟੁੱਥ ਸਕੈਨਿੰਗ</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}}</translation>
+<translation id="6554732001434021288">ਪਿਛਲੀ ਵਾਰ <ph name="NUM_DAYS" /> ਦਿਨ ਪਹਿਲਾਂ ਦੇਖੀ ਗਈ</translation>
 <translation id="6561560012278703671">ਵਧੇਰੇ ਸ਼ਾਂਤ ਸੁਨੇਹਾ ਸੇਵਾ ਵਰਤੋ (ਤੁਹਾਡਾ ਧਿਆਨ ਭਟਕਾਉਣ ਵਾਲੇ ਸੂਚਨਾ ਉਤਪ੍ਰੇਰਕਾਂ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਜਾਂਦਾ ਹੈ)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ</translation>

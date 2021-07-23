@@ -121,7 +121,7 @@
 <translation id="3595596368722241419">Batteria carica</translation>
 <translation id="360565022852130722">la rete Wi-Fi è protetta con un protocollo WEP 802.1x inefficace</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Scansiona di nuovo la pagina}=1{Scansiona di nuovo la pagina {PAGE_NUMBER}}other{Scansiona di nuovo la pagina {PAGE_NUMBER}}}</translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Scansiona di nuovo la pagina}=1{Scansiona di nuovo pagina {PAGE_NUMBER}}other{Scansiona di nuovo pagina {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioni)</translation>
 <translation id="3748026146096797577">Non connesso</translation>
 <translation id="3749289110408117711">Nome file</translation>
@@ -132,6 +132,7 @@
 <translation id="387301095347517405">Il numero di cicli di ricarica completi della batteria</translation>
 <translation id="3941014780699102620">impossibile risolvere l'host</translation>
 <translation id="3942420633017001071">Diagnostica</translation>
+<translation id="3966286471246132217">Per risultati più accurati, chiudi tutte le app fino al completamento del test.</translation>
 <translation id="3967822245660637423">Download completato</translation>
 <translation id="397105322502079400">Calcolo in corso...</translation>
 <translation id="39823212440917567">I processi di stampa risalenti a oltre <ph name="NUMBER_OF_DAYS" /> giorni fa verranno rimossi</translation>
@@ -144,6 +145,7 @@
 <translation id="4176463684765177261">Disattivato</translation>
 <translation id="4227825898293920515">La password scade tra <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nessun processo di stampa in corso</translation>
+<translation id="4244962993387259361">Ti servono almeno 500 MB di spazio libero per eseguire un test di memoria Per liberare spazio, vai a Impostazioni &gt; Gestione dello spazio di archiviazione.</translation>
 <translation id="4289540628985791613">Panoramica</translation>
 <translation id="4297501883039923494">Operazione interrotta - Errore sconosciuto</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> immagini</translation>
@@ -385,6 +387,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8498220429738806196">Contatori di traffico</translation>
 <translation id="8503813439785031346">Nome utente</translation>
 <translation id="8503836310948963452">Solo qualche altro minuto…</translation>
+<translation id="8521021929829989041">Usa come dispositivo personale</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Il tuo operatore potrebbe richiedere questa opzione per consentire di collegarsi alla sua rete. Contatta l'operatore per avere informazioni dettagliate.</translation>
 <translation id="8576249514688522074">Non inizializzato</translation>

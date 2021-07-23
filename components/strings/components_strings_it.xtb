@@ -136,9 +136,11 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1407135791313364759">Apri tutte</translation>
 <translation id="1408787208417187241">Tripla pinzatura in alto</translation>
 <translation id="1413809658975081374">Errore di privacy</translation>
+<translation id="1422930527989633628">Può chiedere di rilevare i dispositivi Bluetooth nelle vicinanze</translation>
 <translation id="1426410128494586442">Sì</translation>
 <translation id="1428146450423315676">Fascicolatore 7</translation>
 <translation id="1430915738399379752">Stampa</translation>
+<translation id="1436185428532214179">Può chiedere di modificare file o cartelle sul dispositivo</translation>
 <translation id="1442386063175183758">Piegatura a finestra a destra</translation>
 <translation id="1442987760062738829">Perforatura</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
@@ -258,6 +260,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, sono disponibili diverse azioni; premi Tab per scorrerle</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Nome del titolare della carta</translation>
+<translation id="1803351196216024260">Può richiedere l'autorizzazione per utilizzare il microfono</translation>
 <translation id="1807246157184219062">Chiaro</translation>
 <translation id="1807528111851433570">Primo foglio</translation>
 <translation id="1812527064848182527">orizzontale</translation>
@@ -287,6 +290,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1919367280705858090">Assistenza per un messaggio di errore specifico</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nessuno}=1{1 sito}other{# siti}}</translation>
 <translation id="1924727005275031552">Nuovi</translation>
+<translation id="1939175642807587452">Può chiedere di inviare notifiche</translation>
 <translation id="1945968466830820669">Potresti perdere l'accesso all'account della tua organizzazione oppure subire un furto d'identità. Chromium ti consiglia di cambiare subito la password.</translation>
 <translation id="1947454675006758438">Pinzatura in alto a destra</translation>
 <translation id="1958218078413065209">Il tuo punteggio migliore è <ph name="SCORE" />.</translation>
@@ -417,6 +421,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2392959068659972793">Mostra criteri senza valori</translation>
 <translation id="239429038616798445">Questo metodo di spedizione non è disponibile. Prova un metodo diverso.</translation>
 <translation id="2396249848217231973">&amp;Annulla eliminazione</translation>
+<translation id="2400600116338235695">Può chiedere di connettersi alle porte seriali</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413155254802890957">Precedenti</translation>
 <translation id="2413528052993050574">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza potrebbe essere revocato. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
@@ -471,6 +476,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2609632851001447353">Varianti</translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2625385379895617796">L'orologio è avanti</translation>
+<translation id="262745152991669301">Può chiedere di connettersi ai dispositivi USB</translation>
 <translation id="2629325967560697240">Per il massimo livello di sicurezza di Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />attiva la protezione avanzata<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">Impossibile trovare l'indirizzo IP del server di <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">Stato:</translation>
@@ -611,6 +617,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3188393374551744535">Saldo dell'account</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vuole memorizzare in modo definitivo i dati sul dispositivo</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> su <ph name="SERVER_NAME" /></translation>
+<translation id="3197136577151645743">Può chiedere di sapere quando stai utilizzando attivamente questo dispositivo</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per gestire le informazioni da sincronizzare nelle impostazioni di Chrome</translation>
 <translation id="320323717674993345">Annulla pagamento</translation>
 <translation id="3207960819495026254">Aggiunto ai preferiti</translation>
@@ -827,6 +834,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3939773374150895049">Usare WebAuthn anziché CVC?</translation>
 <translation id="3946209740501886391">Chiedi sempre su questo sito</translation>
+<translation id="3947595700203588284">Può chiedere di connettersi ai dispositivi MIDI</translation>
 <translation id="3949571496842715403">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non contiene nomi alternativi del soggetto. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
 <translation id="3949601375789751990">La cronologia di navigazione viene mostrata qui</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -927,6 +935,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
     &lt;p&gt;Se l'errore persiste, contatta il proprietario del sito web.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Prova a eseguire lo strumento Diagnostica di rete<ph name="END_LINK" />.</translation>
 <translation id="4229544452621580519">Esegui un controllo di sicurezza nelle impostazioni di Chrome</translation>
+<translation id="4230204356098880324">Può chiedere di usare e muovere la videocamera</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Vai a <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Valido</translation>
 <translation id="4250431568374086873">La connessione a questo sito non è completamente protetta</translation>
@@ -989,6 +998,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4434045419905280838">Popup e reindirizzamenti</translation>
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">L'utilizzo di un proxy è stato disattivato ma è stata specificata una configurazione proxy esplicita.</translation>
+<translation id="4451135742916150903">Può chiedere di connettersi ai dispositivi HID</translation>
 <translation id="4460315069258617173">Consentita fino alla chiusura delle schede di questo sito</translation>
 <translation id="4464826014807964867">Siti web con informazioni della tua organizzazione</translation>
 <translation id="4476953670630786061">Questo modulo non è sicuro. La compilazione automatica è stata disattivata.</translation>
@@ -1052,6 +1062,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4708268264240856090">La connessione è stata interrotta</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Eseguire lo strumento Diagnostica di rete Windows<ph name="END_LINK" /></translation>
+<translation id="4724144314178270921">Può chiedere di vedere testo e immagini negli appunti</translation>
 <translation id="4726672564094551039">Ricarica criteri</translation>
 <translation id="4728558894243024398">Piattaforma</translation>
 <translation id="4731638775147756694">Questa applicazione è stata bloccata dal tuo amministratore</translation>
@@ -1349,6 +1360,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5728056243719941842">C5 (Envelope)</translation>
 <translation id="5730040223043577876">Chrome ti consiglia di reimpostare la password, se l'hai utilizzata su altri siti.</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Salva la carta nel tuo Account Google}other{Salva carte nel tuo Account Google}}</translation>
+<translation id="5745733273847572235">Può chiedere la tua posizione</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{Usa un numero virtuale per questa carta}other{Seleziona una carta}}</translation>
 <translation id="5759751709240058861">Usare e spostare la videocamera</translation>
 <translation id="5763042198335101085">Inserisci un indirizzo email valido</translation>
@@ -1466,6 +1478,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6169916984152623906">Ora puoi navigare in privato. Le altre persone che usano questo dispositivo non vedranno le tue attività, ma i download e i preferiti verranno salvati.</translation>
 <translation id="6177128806592000436">La tua connessione a questo sito non è sicura</translation>
 <translation id="6180316780098470077">Intervallo tra tentativi</translation>
+<translation id="619448280891863779">Può chiedere di aprire e posizionare le finestre sugli schermi</translation>
 <translation id="6196640612572343990">Blocca cookie di terze parti</translation>
 <translation id="6203231073485539293">Controlla la connessione a Internet</translation>
 <translation id="6211666000885129820">Foglio per la registrazione delle credenziali di pagamento sicure</translation>
@@ -1551,6 +1564,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6502991525169604759">Senza le tue modifiche</translation>
 <translation id="6505563257409036437">Chiudi finestre di navigazione in incognito</translation>
 <translation id="6508722015517270189">Riavvia Chrome</translation>
+<translation id="6513005815064132016">Può chiedere di monitorare la posizione della videocamera</translation>
 <translation id="6517596291481585650">Avviso: questo criterio non è stato unito come elenco come specificato dal criterio perché non è un elenco.</translation>
 <translation id="6518133107902771759">Verifica</translation>
 <translation id="6521745193039995384">Non attivo</translation>
@@ -1651,7 +1665,9 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6949872517221025916">Reimposta la password</translation>
 <translation id="6950684638814147129">Errore durante l'analisi del valore JSON: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Reimposta tutto</translation>
+<translation id="6954341342296443517">Può chiedere di aprire determinati tipi di file</translation>
 <translation id="6957887021205513506">Il certificato del server risulta essere un falso.</translation>
+<translation id="6961844873822989059">Può chiedere di utilizzare i caratteri installati sul tuo dispositivo</translation>
 <translation id="6963520811470373926">In sostituzione</translation>
 <translation id="6964255747740675745">Analisi della configurazione di rete non riuscita (JSON non valido).</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1753,6 +1769,7 @@ Ulteriori dettagli:
 <translation id="733354035281974745">Override account locale del dispositivo</translation>
 <translation id="7333654844024768166">Hai appena inserito la tua password su un sito ingannevole. Chromium ti consiglia di visitare i siti <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> e altri siti in cui utilizzi questa password e di cambiarla subito.</translation>
 <translation id="7334320624316649418">&amp;Ripeti ridisposizione</translation>
+<translation id="7335157162773372339">Può richiedere l'autorizzazione per utilizzare la videocamera</translation>
 <translation id="7337248890521463931">Mostra più righe</translation>
 <translation id="7337706099755338005">Non disponibile sulla piattaforma in uso.</translation>
 <translation id="733923710415886693">Il certificato del server non è stato reso pubblico tramite Certificate Transparency.</translation>
@@ -1940,6 +1957,7 @@ Ulteriori dettagli:
 <translation id="7937554595067888181">Scadenza: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Il certificato del server non è ancora valido.</translation>
 <translation id="7942349550061667556">Rosso</translation>
+<translation id="7943893128817522649">Può chiedere di scaricare automaticamente più file</translation>
 <translation id="7947285636476623132">Controlla l'anno di scadenza e riprova</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per scoprire di più sulle funzionalità di Chrome</translation>
 <translation id="7950027195171824198">Gestisci le preferenze relative ai cookie nelle impostazioni di Chrome</translation>
@@ -1952,6 +1970,7 @@ Ulteriori dettagli:
 <translation id="7976214039405368314">Numero eccessivo di richieste</translation>
 <translation id="7977538094055660992">Dispositivo di uscita</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="798134797138789862">Può chiedere di usare dati e dispositivi per realtà virtuale</translation>
 <translation id="79859296434321399">Per visualizzare i contenuti di realtà aumentata, installa ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Rilegatura</translation>
@@ -2141,6 +2160,7 @@ Ulteriori dettagli:
 <translation id="8699041776323235191">Dispositivo HID</translation>
 <translation id="8703575177326907206">La connessione a <ph name="DOMAIN" /> non è criptata.</translation>
 <translation id="8705331520020532516">Numero di serie</translation>
+<translation id="8708134712139312373">Può chiedere di connettersi ai dispositivi Bluetooth</translation>
 <translation id="8710842507289500830">Stile carattere</translation>
 <translation id="8712637175834984815">Fatto</translation>
 <translation id="8718314106902482036">Pagamento non completato</translation>

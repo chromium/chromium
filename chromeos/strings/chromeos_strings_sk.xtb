@@ -132,6 +132,7 @@
 <translation id="387301095347517405">Koľkokrát prešla vaša batéria úplným cyklom nabíjania</translation>
 <translation id="3941014780699102620">Hostiteľa sa nepodarilo vybrať</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="3966286471246132217">Ak chcete získať presnejšie výsledky, zavrite všetky aplikácie, dokým sa test nedokončí.</translation>
 <translation id="3967822245660637423">Sťahovanie dokončené</translation>
 <translation id="397105322502079400">Prebieha výpočet...</translation>
 <translation id="39823212440917567">Tlačové úlohy staršie ako <ph name="NUMBER_OF_DAYS" /> d. budú odstránené</translation>
@@ -144,6 +145,7 @@
 <translation id="4176463684765177261">Deaktivované</translation>
 <translation id="4227825898293920515">Platnosť hesla vyprší o <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Neprebiehajú žiadne tlačové úlohy</translation>
+<translation id="4244962993387259361">Na spustenie testu pamäte potrebujete aspoň 500 MB voľného miesta. Miesto uvoľnite v sekcii Nastavenia &gt; Správa priestoru.</translation>
 <translation id="4289540628985791613">Prehľad</translation>
 <translation id="4297501883039923494">Zastavené – neznáma chyba</translation>
 <translation id="4300073214558989">Počet obrázkov: <ph name="IMAGE_COUNT" /></translation>
@@ -385,6 +387,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8498220429738806196">Počítadlá návštevnosti</translation>
 <translation id="8503813439785031346">Meno používateľa</translation>
 <translation id="8503836310948963452">Už iba niekoľko minút…</translation>
+<translation id="8521021929829989041">Použiť osobné zariadenie</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Váš operátor môže túto možnosť vyžadovať na pripojenie k jeho sieti. Podrobnosti vám poskytne operátor.</translation>
 <translation id="8576249514688522074">Nespustené</translation>

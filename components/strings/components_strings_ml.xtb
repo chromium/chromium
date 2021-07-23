@@ -136,9 +136,11 @@
 <translation id="1407135791313364759">എല്ലാം തുറക്കുക</translation>
 <translation id="1408787208417187241">മുകളിൽ മൂന്ന് തവണ സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
 <translation id="1413809658975081374">സ്വകാര്യ പിശക്</translation>
+<translation id="1422930527989633628">സമീപത്തുള്ള Bluetooth ഉപകരണങ്ങൾ കണ്ടെത്താൻ ആവശ്യപ്പെടുക</translation>
 <translation id="1426410128494586442">അതെ</translation>
 <translation id="1428146450423315676">സ്റ്റാക്കർ 7</translation>
 <translation id="1430915738399379752">അച്ചടിക്കുക</translation>
+<translation id="1436185428532214179">നിങ്ങളുടെ ഉപകരണത്തിലെ ഫയലുകളും ഫോൾഡറുകളും എഡിറ്റ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="1442386063175183758">റൈറ്റ് ഗേറ്റ് മടക്ക്</translation>
 <translation id="1442987760062738829">പഞ്ച് ചെയ്യുക</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
@@ -257,6 +259,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ഒന്നിലധികം പ്രവർത്തനങ്ങൾ ലഭ്യമാണ്, ഒന്നിൽ നിന്ന് മറ്റൊന്നിലേക്ക് മാറാൻ 'Tab' അമർത്തുക</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">കാർഡ് ഉടമയുടെ പേര്</translation>
+<translation id="1803351196216024260">നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="1807246157184219062">ലൈറ്റ്</translation>
 <translation id="1807528111851433570">ആദ്യ ഷീറ്റ്</translation>
 <translation id="1812527064848182527">ലാൻഡ്‌സ്‌കേപ്പ്</translation>
@@ -286,6 +289,7 @@
 <translation id="1919367280705858090">നിർദ്ദിഷ്ട പിശക് സന്ദേശവുമായി ബന്ധപ്പെട്ട് സഹായം നേടുക</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു സൈറ്റ്}other{# സൈറ്റുകൾ}}</translation>
 <translation id="1924727005275031552">പുതിയവ</translation>
+<translation id="1939175642807587452">അറിയിപ്പുകൾ അയയ്ക്കാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="1945968466830820669">നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ അക്കൗണ്ടിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകാനോ ഐഡന്‍റിറ്റി മോഷ്ടിക്കപ്പെടാനോ സാധ്യതയുണ്ട്. ഇപ്പോൾ തന്നെ പാസ്‍വേഡ് മാറ്റാൻ Chromium ശുപാർശ ചെയ്യുന്നു.</translation>
 <translation id="1947454675006758438">മുകളിൽ വലതുവശത്ത് സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
 <translation id="1958218078413065209">നിങ്ങളുടെ ഏറ്റവും ഉയർന്ന സ്കോർ <ph name="SCORE" /> ആണ്.</translation>
@@ -416,6 +420,7 @@
 <translation id="2392959068659972793">മൂല്യമൊന്നും സജ്ജമാക്കാത്ത നയങ്ങൾ കാണിക്കുക</translation>
 <translation id="239429038616798445">ഈ ഷിപ്പിംഗ് രീതി ലഭ്യമല്ല. മറ്റൊരു രീതി പരീക്ഷിക്കുക.</translation>
 <translation id="2396249848217231973">&amp;ഇല്ലാതാക്കൽ പഴയപടിയാക്കുക</translation>
+<translation id="2400600116338235695">സീരിയൽ പോർട്ടുകളിലേക്ക് കണക്റ്റ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="2410754574180102685">സർക്കാർ-നിയമപരം</translation>
 <translation id="2413155254802890957">പഴയവ</translation>
 <translation id="2413528052993050574">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; സെർവറിന്റെ സുരക്ഷാ സർട്ടിഫിക്കറ്റ് റദ്ദാക്കിയിരിക്കാം. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
@@ -470,6 +475,7 @@
 <translation id="2609632851001447353">വേരിയേഷനുകൾ</translation>
 <translation id="2618023639789766142">C10 (എൻവലപ്പ്)</translation>
 <translation id="2625385379895617796">നിങ്ങളുടെ ക്ലോക്ക് വളരെ മുമ്പിലാണ്</translation>
+<translation id="262745152991669301">USB ഉപകരണങ്ങൾ കണക്റ്റ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="2629325967560697240">Chrome-ന്റെ ഏറ്റവും ഉയർന്ന സുരക്ഷ നേടാൻ, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />മെച്ചപ്പെടുത്തിയ പരിരക്ഷ ഓണാക്കുക<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />-ന്‍റെ സെർവർ IP വിലാസം കണ്ടെത്താനായില്ല.</translation>
 <translation id="2639739919103226564">നില:</translation>
@@ -612,6 +618,7 @@
 <translation id="3188393374551744535">അക്കൗണ്ട് ബാലൻസ്</translation>
 <translation id="3194737229810486521">നിങ്ങളുടെ ഉപകരണത്തിൽ ശാശ്വതമായി ഡാറ്റ സംഭരിക്കാന്‍ <ph name="URL" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> എന്നതിലെ <ph name="PRINTER_NAME" /></translation>
+<translation id="3197136577151645743">നിങ്ങൾ സജീവമായി ഉപകരണം ഉപയോഗിക്കുന്നത് എപ്പോഴാണെന്ന് അറിയാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങൾ സമന്വയിപ്പിക്കുന്ന വിവരങ്ങൾ മാനേജ് ചെയ്യാൻ 'Tab' അമർത്തിയ ശേഷം 'Enter' അമർത്തുക</translation>
 <translation id="320323717674993345">പേയ്‌മെന്റ് റദ്ദാക്കുക</translation>
 <translation id="3207960819495026254">ബുക്ക്‌മാർക്കുചെയ്‌തു</translation>
@@ -828,6 +835,7 @@
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3939773374150895049">CVC-യ്ക്ക് പകരം WebAuthn ഉപയോഗിക്കണോ?</translation>
 <translation id="3946209740501886391">ഈ സൈറ്റിൽ എല്ലായ്‌പ്പോഴും ചോദിക്കുക</translation>
+<translation id="3947595700203588284">MIDI ഉപകരണങ്ങളിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="3949571496842715403">ഈ സെർവറിന് ഇത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; അതിന്റെ സുരക്ഷാ സർട്ടിഫിക്കറ്റ് വിഷയേതര നാമങ്ങൾ വ്യക്തമാക്കുന്നില്ല. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="3949601375789751990">നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -926,6 +934,7 @@
     &lt;p&gt;നിങ്ങൾ ഇപ്പോഴും പിശക് കാണുന്നുവെങ്കിൽ, വെബ്‌സൈറ്റ് ഉടമയെ ബന്ധപ്പെടുക.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
 <translation id="4229544452621580519">Chrome ക്രമീകരണത്തിൽ സുരക്ഷാ പരിശോധന റൺ ചെയ്യുക</translation>
+<translation id="4230204356098880324">നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാനും നീക്കാനും ആവശ്യപ്പെടാം</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> എന്ന സൈറ്റിലേക്ക് പോവുക<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">സാധുത</translation>
 <translation id="4250431568374086873">ഈ സൈറ്റിലുള്ള നിങ്ങളുടെ കണക്ഷൻ പൂർണ്ണമായും സുരക്ഷിതമല്ല</translation>
@@ -988,6 +997,7 @@
 <translation id="4434045419905280838">പോപ്-അപ്പുകളും റീഡയറക്‌റ്റുകളും</translation>
 <translation id="4435702339979719576">പോസ്‌റ്റ്‌ കാർഡ്)</translation>
 <translation id="443673843213245140">പ്രോക്‌സി ഉപയോഗം അപ്രാപ്‌തമാക്കി പക്ഷെ ഒരു വ്യക്തമായ പ്രോക്‌സി കോൺഫിഗറേഷൻ നിർദ്ദേശിച്ചു.</translation>
+<translation id="4451135742916150903">HID ഉപകരണങ്ങളിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="4460315069258617173">ഈ സൈറ്റിനുള്ള ടാബുകൾ നിങ്ങൾ അടയ്ക്കുന്നത് വരെ അനുവദനീയമാണ്</translation>
 <translation id="4464826014807964867">നിങ്ങളുടെ സ്ഥാപനത്തിൽ നിന്നുള്ള വിവരങ്ങൾ അടങ്ങിയിരിക്കുന്ന വെബ്സൈറ്റുകൾ</translation>
 <translation id="4476953670630786061">ഈ ഫോം സുരക്ഷിതമല്ല. സ്വയമേവ പൂരിപ്പിക്കൽ ഓഫാക്കിയിരിക്കുന്നു.</translation>
@@ -1051,6 +1061,7 @@
 <translation id="4708268264240856090">നിങ്ങളുടെ കണക്ഷൻ തടസ്സപ്പെട്ടു</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്യുന്നു<ph name="END_LINK" /></translation>
+<translation id="4724144314178270921">നിങ്ങളുടെ ക്ലിപ്പ്ബോർഡിലെ ടെക്‌സ്റ്റും ചിത്രങ്ങളും കാണാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="4726672564094551039">നയങ്ങൾ വീണ്ടും ലോഡ് ചെയ്യുക</translation>
 <translation id="4728558894243024398">പ്ലാറ്റ്ഫോം</translation>
 <translation id="4731638775147756694">ഈ ആപ്പ് നിങ്ങളുടെ അഡ്‌മിൻ ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
@@ -1348,6 +1359,7 @@
 <translation id="5728056243719941842">C5 (എൻവലപ്പ്)</translation>
 <translation id="5730040223043577876">മറ്റ് സൈറ്റുകളിൽ നിങ്ങളുടെ പാസ്‌വേഡ് പുനരുപയോഗിച്ചിട്ടുണ്ടെങ്കിൽ, അത് പുനഃസജ്ജീകരിക്കാൻ Chrome ശുപാർശ ചെയ്യുന്നു.</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{നിങ്ങളുടെ Google അക്കൗണ്ടിൽ കാർഡ് സംരക്ഷിക്കുക}other{നിങ്ങളുടെ Google അക്കൗണ്ടിൽ കാർഡുകൾ സംരക്ഷിക്കുക}}</translation>
+<translation id="5745733273847572235">നിങ്ങളുടെ ലൊക്കേഷൻ ആവശ്യപ്പെടാം</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{ഈ കാർഡിന് വെർച്വൽ നമ്പർ ഉപയോഗിക്കുക}other{ഒരു കാർഡ് തിരഞ്ഞെടുക്കുക}}</translation>
 <translation id="5759751709240058861">ക്യാമറ ഉപയോഗിക്കുകയും ചലിപ്പിക്കുകയും ചെയ്യുക</translation>
 <translation id="5763042198335101085">ശരിയായ ഇമെയിൽ വിലാസം നൽകുക</translation>
@@ -1466,6 +1478,7 @@
 <translation id="6169916984152623906">നിങ്ങൾക്കിപ്പോൾ സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാം, ഈ ഉപകരണം ഉപയോഗിക്കുന്ന മറ്റ് ആളുകൾക്ക് നിങ്ങളുടെ ആക്‌റ്റിവിറ്റി കാണാനാവില്ല. എന്നാൽ ഡൗൺലോഡുകളും ബുക്ക്‌മാർക്കുകളും സംരക്ഷിക്കപ്പെടും.</translation>
 <translation id="6177128806592000436">ഈ സൈറ്റിലേക്കുള്ള നിങ്ങളുടെ കണക്ഷൻ സുരക്ഷിതമല്ല</translation>
 <translation id="6180316780098470077">വീണ്ടും ശ്രമിക്കുന്നതിനുള്ള ഇടവേള</translation>
+<translation id="619448280891863779">നിങ്ങളുടെ സ്ക്രീനുകളിൽ വിൻഡോകൾ തുറന്ന് വയ്ക്കാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="6196640612572343990">മൂന്നാം കക്ഷി കുക്കികള്‍ ബ്ലോക്കുചെയ്യുക</translation>
 <translation id="6203231073485539293">നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുക</translation>
 <translation id="6211666000885129820">സുരക്ഷിതമായ പേയ്‌മെന്റ് ക്രെഡൻഷ്യൽ എൻറോൾമെന്റ് ഷീറ്റ്</translation>
@@ -1551,6 +1564,7 @@
 <translation id="6502991525169604759">നിങ്ങൾ വരുത്തിയ മാറ്റങ്ങൾ ഇല്ലാതെ</translation>
 <translation id="6505563257409036437">അദൃശ്യ വിൻഡോകൾ അടയ്ക്കുക</translation>
 <translation id="6508722015517270189">Chrome റീസ്‌റ്റാർട്ടുചെയ്യുക</translation>
+<translation id="6513005815064132016">നിങ്ങളുടെ ക്യാമറയുടെ സ്ഥാനം ട്രാക്ക് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="6517596291481585650">മുന്നറിയിപ്പ്: ഈ നയം ഒരു ലിസ്‌റ്റ് അല്ലാത്തതിനാലാണ് നയത്തിൽ വ്യക്തമാക്കിയിരിക്കുന്നത് പോലെ ഒരു ലിസ്‌റ്റായി ലയിപ്പിക്കാത്തത്.</translation>
 <translation id="6518133107902771759">സ്ഥിരീകരിക്കുക</translation>
 <translation id="6521745193039995384">സജീവമല്ല</translation>
@@ -1651,7 +1665,9 @@
 <translation id="6949872517221025916">പാസ്‌വേഡ് റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="6950684638814147129">JSON മൂല്യം വിശകലനം ചെയ്യുമ്പോൾ പിശക്: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">എല്ലാം റീസെറ്റ് ചെയ്യുക</translation>
+<translation id="6954341342296443517">ഫയൽ തരങ്ങൾ തുറക്കാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="6957887021205513506">സെർവറിന്റെ സർട്ടിഫിക്കറ്റ് വിശ്വസിക്കാൻ കൊള്ളാത്ത ഒന്നായി തോന്നുന്നു.</translation>
+<translation id="6961844873822989059">നിങ്ങളുടെ ഉപകരണത്തിൽ ഇൻസ്റ്റാൾ ചെയ്തിരിക്കുന്ന ഫോണ്ടുകൾ ഉപയോഗിക്കാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="6963520811470373926">പകരം മറ്റൊന്ന് സജീവം</translation>
 <translation id="6964255747740675745">നെറ്റ്‌വർക്ക് കോൺഫിഗറേഷൻ വിശകലനം ചെയ്യാനായില്ല (അസാധുവായ JSON).</translation>
 <translation id="6965382102122355670">ശരി</translation>
@@ -1753,6 +1769,7 @@
 <translation id="733354035281974745">ഉപകരണ ലോക്കൽ അക്കൗണ്ട് അസാധുവാക്കുക</translation>
 <translation id="7333654844024768166">വഞ്ചനാപരമായ സൈറ്റിൽ നിങ്ങൾ ഇപ്പോൾ പാസ്‍വേഡ് നൽകി. നിങ്ങൾ ഈ പാസ്‌വേഡ് ഉപയോഗിക്കുന്ന <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> എന്നിവയിലേക്കും മറ്റ് സൈറ്റുകളിലേക്കും പോയി, ഇപ്പോൾ തന്നെ അത് മാറ്റാൻ Chromium ശുപാർശ ചെയ്യുന്നു.</translation>
 <translation id="7334320624316649418">&amp;പുനഃക്രമീകരിക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
+<translation id="7335157162773372339">നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="7337248890521463931">കൂടുതൽ വരികൾ കാണിക്കുക</translation>
 <translation id="7337706099755338005">നിങ്ങളുടെ പ്ലാറ്റ്‌ഫോമിൽ ലഭ്യമല്ല.</translation>
 <translation id="733923710415886693">സർട്ടിഫിക്കറ്റ് സുതാര്യതയിലൂടെ സെർവറുടെ സർട്ടിഫിക്കറ്റ് വെളിപ്പെടുത്തിയിട്ടില്ല.</translation>
@@ -1938,6 +1955,7 @@
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" />-ന് കാലഹരണപ്പെടുന്നു</translation>
 <translation id="7938958445268990899">സെർവറിന്റെ സർട്ടിഫിക്കറ്റ് ഇതുവരെയും സാധുതയുള്ളതല്ല.</translation>
 <translation id="7942349550061667556">ചുവപ്പ്</translation>
+<translation id="7943893128817522649">ഒന്നിലധികം ഫയലുകൾ സ്വയമേവ ഡൗൺലോഡ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="7947285636476623132">കാലാവധി തീരുന്ന വർഷം പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ഫീച്ചറുകളെ കുറിച്ച് കൂടുതലറിയാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="7950027195171824198">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ കുക്കി മുൻഗണനകൾ മാനേജ് ചെയ്യുക</translation>
@@ -1950,6 +1968,7 @@
 <translation id="7976214039405368314">നിരവധി അഭ്യർത്ഥനകൾ</translation>
 <translation id="7977538094055660992">ഔട്ട്പുട്ട് ഉപകരണം</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="798134797138789862">വെർച്വൽ റിയാലിറ്റി ഉപകരണങ്ങളും ഡാറ്റയും ഉപയോഗിക്കാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="79859296434321399">അനുബന്ധ യാഥാർത്ഥ്യ ഉള്ളടക്കം കാണാൻ, ARCore ഇൻസ്‌റ്റാൾ ചെയ്യൂ</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">ബൈൻഡ് ചെയ്യുക</translation>
@@ -2139,6 +2158,7 @@
 <translation id="8699041776323235191">HID ഉപകരണം</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> ലേക്കുള്ള നിങ്ങളുടെ കണക്ഷന്‍ എന്‍‌ക്രിപ്റ്റ് ചെയ്തിട്ടില്ല.</translation>
 <translation id="8705331520020532516">സീരിയല്‍‌ നമ്പര്‍‌</translation>
+<translation id="8708134712139312373">Bluetooth ഉപകരണങ്ങളിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="8710842507289500830">ഫോണ്ട് സ്‌റ്റൈൽ</translation>
 <translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="8718314106902482036">പേയ്‌മെന്റ് പൂർത്തിയായിട്ടില്ല</translation>

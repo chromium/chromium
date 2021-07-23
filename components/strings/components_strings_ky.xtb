@@ -136,9 +136,11 @@
 <translation id="1407135791313364759">Баарын ачуу</translation>
 <translation id="1408787208417187241">Жогорку жагын үч жолу илмек менен бекитүү</translation>
 <translation id="1413809658975081374">Купуялык катасы</translation>
+<translation id="1422930527989633628">Жакын жердеги Bluetooth түзмөктөрүн табууга уруксат сурай алат</translation>
 <translation id="1426410128494586442">Ооба</translation>
 <translation id="1428146450423315676">7-төшөгүч</translation>
 <translation id="1430915738399379752">Басып чыгаруу</translation>
+<translation id="1436185428532214179">Түзмөгүңүздөгү файлдарды жана папкаларды түзөтүүгө уруксат сурай алат</translation>
 <translation id="1442386063175183758">Оң бүктөлүшүн чаптоо</translation>
 <translation id="1442987760062738829">Тешүү</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
@@ -258,6 +260,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, бир нече аракет жеткиликтүү, Tab баскычын басып, аларды карап чыгыңыз</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Карта ээсинин аты-жөнү</translation>
+<translation id="1803351196216024260">Микрофонуңузду колдонууга уруксат сурай алат</translation>
 <translation id="1807246157184219062">Ачык</translation>
 <translation id="1807528111851433570">Баштоо барагы</translation>
 <translation id="1812527064848182527">туурасынан</translation>
@@ -287,6 +290,7 @@
 <translation id="1919367280705858090">Белгилүү бир каталар боюнча жардам алуу</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Бирөө да жок}=1{1 сайт}other{# сайт}}</translation>
 <translation id="1924727005275031552">Жаңы</translation>
+<translation id="1939175642807587452">Билдирмелерди жөнөтүүгө уруксат сурай алат</translation>
 <translation id="1945968466830820669">Кимдир бирөө сиздин жеке дайындарыңызга же уюмуңуздун аккаунтуна кирип алган окшойт. Chromium сырсөзүңүздү азыр өзгөртүүнү сунуштайт.</translation>
 <translation id="1947454675006758438">Жогорку оң жагын илмек менен бекитүү</translation>
 <translation id="1958218078413065209">Эң көп алган упайыңыз: <ph name="SCORE" />.</translation>
@@ -417,6 +421,7 @@
 <translation id="2392959068659972793">Мааниси коюлбаган саясаттарды көрсөтүү</translation>
 <translation id="239429038616798445">Жөнөтүүнүн мындай ыкмасы мүмкүн эмес. Башка ыкманы байкап көрүңүз.</translation>
 <translation id="2396249848217231973">Жок кылууну &amp;жасабоо</translation>
+<translation id="2400600116338235695">Сериялык портторго туташууга уруксат сурай алат</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413155254802890957">Эски</translation>
 <translation id="2413528052993050574">Бул сервер <ph name="DOMAIN" /> экендигин далилдей алган жок; себеби анын коопсуздук тастыктамасы жокко чыгарылган окшойт. Мындай көйгөй туура эмес конфигурация менен шартталышы мүмкүн же туташууңузга чабуулчу кийлигишип жатат.</translation>
@@ -471,6 +476,7 @@
 <translation id="2609632851001447353">Варианттар</translation>
 <translation id="2618023639789766142">C10 (Конверт)</translation>
 <translation id="2625385379895617796">Саатыңыз алдыда</translation>
+<translation id="262745152991669301">USB түзмөктөргө туташууга уруксат сурай алат</translation>
 <translation id="2629325967560697240">Chrome’ду жогорку деңгээлде коопсуздандыруу үчүн <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />өркүндөтүлгөн коргоону күйгүзүңүз<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> серверинин IP дареги табылбай койду.</translation>
 <translation id="2639739919103226564">Статус:</translation>
@@ -614,6 +620,7 @@
 <translation id="3188393374551744535">Аккаунттун балансы</translation>
 <translation id="3194737229810486521"><ph name="URL" /> түзмөгүңүзгө дайындарды биротоло сактаганы жатат</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> сервериндеги <ph name="PRINTER_NAME" /></translation>
+<translation id="3197136577151645743">Түзмөктү активдүү колдонуп жатканыңыз тууралуу маалыматты сурай алат</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome жөндөөлөрүнөн шайкештирилген маалыматты башкаруу үчүн Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="320323717674993345">Төлөмдү жокко чыгаруу</translation>
 <translation id="3207960819495026254">Кыстармаланды</translation>
@@ -829,6 +836,7 @@
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3939773374150895049">CVC'нин ордуна WebAuthn колдонулсунбу?</translation>
 <translation id="3946209740501886391">Бул сайтта ар дайым суралсын</translation>
+<translation id="3947595700203588284">MIDI түзмөктөрүнө туташууга уруксат сурай алат</translation>
 <translation id="3949571496842715403">Бул сервер <ph name="DOMAIN" /> домени экендигин далилдей алган жок. Анын коопсуздук тастыктамасында альтернативдүү аталыштар көрсөтүлгөн эмес. Сервер туура эмес жөндөлгөн окшойт же кимдир-бирөө маалыматыңызды ортодон кармап калганга аракет кылып жатат.</translation>
 <translation id="3949601375789751990">Серептөө таржымалыңыз бул жерде көрүнөт</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -929,6 +937,7 @@
     &lt;p&gt;Катаны дагы деле көрүп жатсаңыз, вебсайттын ээси менен байланышыңыз.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Тармак мүчүлүштүгүн аныктоону иштетип көрүңүз<ph name="END_LINK" />.</translation>
 <translation id="4229544452621580519">Chrome жөндөөлөрүнөн коопсуздукту текшериңиз</translation>
+<translation id="4230204356098880324">Камераңызды колдонууга жана жылдырууга уруксат сурай алат</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> сайтына улантуу<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Жарактуу</translation>
 <translation id="4250431568374086873">Бул сайтка туташуу толугу менен коопсуз эмес</translation>
@@ -991,6 +1000,7 @@
 <translation id="4434045419905280838">Калкыма терезелер жана багыттоолор</translation>
 <translation id="4435702339979719576">Ачык кат)</translation>
 <translation id="443673843213245140">Прокси пайдалануу мүмкүнчүлүгү өчүрүлгөнү менен, ачык-айкын прокси конфигурациясы белгиленген.</translation>
+<translation id="4451135742916150903">HID түзмөктөрүнө туташууга уруксат сурай алат</translation>
 <translation id="4460315069258617173">Бул сайттын өтмөктөрү жабылмайынча уруксат берилет</translation>
 <translation id="4464826014807964867">Уюмуңуздан маалымат алган вебсайттар</translation>
 <translation id="4476953670630786061">Бул форма кооптуу. Автоматтык түрдө толтуруу функциясы өчүрүлдү.</translation>
@@ -1054,6 +1064,7 @@
 <translation id="4708268264240856090">Туташууңуз үзгүлтүккө учурады</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows Тармак мүчүлүштүгүн аныктоону иштетиңиз<ph name="END_LINK" /></translation>
+<translation id="4724144314178270921">Алмашуу буфериңиздеги текст менен сүрөттөрдү көрүүгө уруксат сурай алат</translation>
 <translation id="4726672564094551039">Саясаттарды кайра жүктөө</translation>
 <translation id="4728558894243024398">Платформа</translation>
 <translation id="4731638775147756694">Бул колдонмо администраторуңуз тарабынан бөгөттөлдү</translation>
@@ -1351,6 +1362,7 @@
 <translation id="5728056243719941842">C5 (Конверт)</translation>
 <translation id="5730040223043577876">Сырсөзүңүздү башка сайттарда колдонгон болсоңуз, Chrome аны өзгөртүүнү сунуштайт.</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Картаны Google аккаунтуңузга сактап коюңуз}other{Карталарды Google аккаунтуңузга сактап коюңуз}}</translation>
+<translation id="5745733273847572235">Кайда жүргөнүңүздү сурай алат</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{Бул картанын виртуалдык номерин колдонуңуз}other{Карта тандоо}}</translation>
 <translation id="5759751709240058861">Камераңызды колдонуп, жылдыруу</translation>
 <translation id="5763042198335101085">Жарактуу электрондук почта дарегин киргизиңиз</translation>
@@ -1469,6 +1481,7 @@
 <translation id="6169916984152623906">Жашыруун режимдеги аракеттериңиз ушул түзмөктүн башка колдонуучуларына көрүнбөйт. Бирок жүктөп алынган файлдар жана кыстармалар сакталып кала берет.</translation>
 <translation id="6177128806592000436">Бул сайтка туташуу коопсуз эмес</translation>
 <translation id="6180316780098470077">Кайталоолордун интервалы</translation>
+<translation id="619448280891863779">Терезени ачып, экрандарыңызга жайгаштырууга уруксат сурай алат</translation>
 <translation id="6196640612572343990">Үчүнчү жактын кукилери бөгөттөлсүн</translation>
 <translation id="6203231073485539293">Интернет туташууңузду текшериңиз</translation>
 <translation id="6211666000885129820">Коопсуз төлөм үчүн эсептик дайындарды каттоо барагы</translation>
@@ -1554,6 +1567,7 @@
 <translation id="6502991525169604759">Өзгөртүүлөрүңүз жок</translation>
 <translation id="6505563257409036437">Жашыруун терезелерди жабуу</translation>
 <translation id="6508722015517270189">Chrome’ду өчүрүп-күйгүзүңүз</translation>
+<translation id="6513005815064132016">Камеранын абалына көз салууга уруксат сурай алат</translation>
 <translation id="6517596291481585650">Эскертүү: Бул саясат белгиленгендей тизме катары бириктирилген жок, себеби ал тизме эмес.</translation>
 <translation id="6518133107902771759">Текшерүү</translation>
 <translation id="6521745193039995384">Жигердүү эмес</translation>
@@ -1654,7 +1668,9 @@
 <translation id="6949872517221025916">Сырсөздү өзгөртүү</translation>
 <translation id="6950684638814147129">JSON маанисин талдоодо ката кетти: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Баарын баштапкы абалга келтирүү</translation>
+<translation id="6954341342296443517">Файлдардын түрлөрүн ачууга уруксат сурай алат</translation>
 <translation id="6957887021205513506">Сервердин тастыктамасы жасалма окшойт.</translation>
+<translation id="6961844873822989059">Түзмөгүңүздөгү ариптерди колдонууга уруксат сурай алат</translation>
 <translation id="6963520811470373926">Алмаштыруу</translation>
 <translation id="6964255747740675745">Тармак конфигурациясы талданбай калды (JSON файлы жараксыз).</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1756,6 +1772,7 @@
 <translation id="733354035281974745">Түзмөктөгү аккаунтту өзгөртүү</translation>
 <translation id="7333654844024768166">Сырсөзүңүздү жаңы эле адаштыруучу сайтта киргиздиңиз. Chromium ушул сырсөздү колдонгон <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> жана башка сайттарга өтүп, аны азыр өзгөртүүнү сунуштайт.</translation>
 <translation id="7334320624316649418">Иреттештирүүнү &amp;кайталоо</translation>
+<translation id="7335157162773372339">Камераңызды колдонууга уруксат сурай алат</translation>
 <translation id="7337248890521463931">Көбүрөөк көрсөтүү</translation>
 <translation id="7337706099755338005">Сиздин платформада жеткиликсиз.</translation>
 <translation id="733923710415886693">Сервердин тастыктамасы "Тастыктаманын тунуктук саясаты" аркылуу ачыкка чыгарылган эмес.</translation>
@@ -1943,6 +1960,7 @@
 <translation id="7937554595067888181">Мөөнөтү <ph name="EXPIRATION_DATE_ABBR" /> бүтөт</translation>
 <translation id="7938958445268990899">Сервердин тастыктамасы али жарактуу эмес.</translation>
 <translation id="7942349550061667556">Кызыл</translation>
+<translation id="7943893128817522649">Бир нече файлды автоматтык түрдө жүктөп алууга уруксат сурай алат</translation>
 <translation id="7947285636476623132">Мөөнөтү аяктоочу жылды текшерип, кайталап көрүңүз</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'догу функциялар жөнүндө толук маалымат алуу үчүн Tab, андан кийин Enter баскычтарын басыңыз</translation>
 <translation id="7950027195171824198">Chrome жөндөөлөрүнөн cookie файлдарынын параметрлерин башкаруу</translation>
@@ -1955,6 +1973,7 @@
 <translation id="7976214039405368314">Өтүнүчтөр өтө көп жөнөтүлдү</translation>
 <translation id="7977538094055660992">Чыгаруу түзмөгү</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="798134797138789862">Виртуалдык чындык түзмөктөрүн жана маалыматтарды колдонууга уруксат сурай алат</translation>
 <translation id="79859296434321399">Кошумчаланган чындыкты көрүү үчүн ARCore кызматын орнотуңуз</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Байлоо</translation>
@@ -2144,6 +2163,7 @@
 <translation id="8699041776323235191">HID түзмөгү</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> менен туташуу аракетиңиз шифрленген эмес.</translation>
 <translation id="8705331520020532516">Сериялык номери:</translation>
+<translation id="8708134712139312373">Bluetooth түзмөктөрүнө туташууга уруксат сурай алат</translation>
 <translation id="8710842507289500830">Ариптин стили</translation>
 <translation id="8712637175834984815">Түшүндүм</translation>
 <translation id="8718314106902482036">Төлөм аягына чыккан жок</translation>

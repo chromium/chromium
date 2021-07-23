@@ -132,6 +132,7 @@
 <translation id="387301095347517405">O número de vezes que a bateria concluiu um ciclo de carregamento completo.</translation>
 <translation id="3941014780699102620">Falha ao resolver anfitrião.</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
+<translation id="3966286471246132217">Para obter resultados mais exatos, feche todas as apps até que o teste esteja concluído.</translation>
 <translation id="3967822245660637423">Transferência concluída</translation>
 <translation id="397105322502079400">A calcular...</translation>
 <translation id="39823212440917567">As tarefas de impressão com mais de <ph name="NUMBER_OF_DAYS" /> dias serão removidas.</translation>
@@ -144,6 +145,7 @@
 <translation id="4176463684765177261">Desativado</translation>
 <translation id="4227825898293920515">A palavra-passe expira daqui a <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nenhuma tarefa de impressão em curso.</translation>
+<translation id="4244962993387259361">Precisa de, pelo menos, 500 MB livres para executar um teste de memória. Para libertar espaço, aceda a Definições &gt; Gestão de armazenamento.</translation>
 <translation id="4289540628985791613">Vista geral</translation>
 <translation id="4297501883039923494">Parada – Erro desconhecido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagens</translation>
@@ -385,6 +387,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8498220429738806196">Contadores de tráfego</translation>
 <translation id="8503813439785031346">Nome de utilizador</translation>
 <translation id="8503836310948963452">Só mais alguns minutos…</translation>
+<translation id="8521021929829989041">Utilizar como dispositivo pessoal</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">O operador pode exigir esta opção para estabelecer ligação à respetiva rede. Contacte o seu operador para obter mais detalhes.</translation>
 <translation id="8576249514688522074">Não iniciada</translation>

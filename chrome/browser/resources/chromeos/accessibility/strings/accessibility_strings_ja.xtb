@@ -182,6 +182,7 @@
 <translation id="2243633977138166243">移動するには左矢印キーまたは右矢印キーを押し、有効にするには Enter キーを押します</translation>
 <translation id="224426591676115802"><ph name="LANGUAGE" />の音声はご利用いただけません</translation>
 <translation id="2247700577781885251">学習モードを停止します</translation>
+<translation id="2247870315273396641">音声プレビュー</translation>
 <translation id="225732394367814946">読み上げの速度を上げる</translation>
 <translation id="2267538686624070261">スペルミスが残っています</translation>
 <translation id="2267945578749931355">次の文字</translation>
@@ -198,6 +199,7 @@
 <translation id="2390264819538553347">次に進むには Enter キー、前に戻るには Backspace キーを押します。</translation>
 <translation id="2398579267367951220">ページ内を検索するには入力してください。見つかった結果に移動するには、Enter キーを押します。結果を 1 つずつ確認するには、上矢印または下矢印キーを押します。違う語句を検索する場合は、その語句を入力します。キャンセルする場合は、Esc キーを押します。</translation>
 <translation id="240709722712693803">ブルー バイオレット</translation>
+<translation id="2410298923485357543">デバイスがオンラインのときは自然な音声を使用する</translation>
 <translation id="2416512023405990736">チェックボックスがオフ</translation>
 <translation id="2417569100218200841">コンテンツ情報</translation>
 <translation id="2417948780551741035">巻末注</translation>
@@ -299,6 +301,7 @@
 <translation id="3046838483509668188">ChromeVox のオプション</translation>
 <translation id="3060756054951570867"><ph name="TITLE" /> メニューを開きました</translation>
 <translation id="3060880924447482063">項目間を移動するには左または右にスワイプします</translation>
+<translation id="3061302636956643119">テキストは Google に送信されて処理されます。</translation>
 <translation id="3070245424257836917">3 本の指で上にスワイプします</translation>
 <translation id="307516670110542567">クイックガイド</translation>
 <translation id="3078345202707391975">次のレベル 2 見出し</translation>
@@ -937,6 +940,7 @@
 <translation id="7693840228159394336">前のラジオボタン</translation>
 <translation id="7701040980221191251">なし</translation>
 <translation id="7701196182766842984">リストのオートコンプリート</translation>
+<translation id="7713139339518499741">自然な音声</translation>
 <translation id="7714340021005120797">次のコンボボックスはありません</translation>
 <translation id="772146615414628379">以上が ChromeVox を使用するための基本事項です。ChromeVox のコマンド メニューは、検索+ピリオド（.）キーを押していつでも開くことができます。ChromeVox と Chrome OS について詳しくは、以下の記事をご覧ください。
     チュートリアルを終了するには、ChromeVox を使って閉じるボタンまで移動し、クリックしてください。</translation>
@@ -967,6 +971,7 @@
 <translation id="7939428177581522200">選択範囲に追加しました</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{アットマーク}other{# 個のアットマーク}}</translation>
 <translation id="7942349550061667556">赤</translation>
+<translation id="7945703887991230167">好きな音声</translation>
 <translation id="7948364528129376623">次にアクセスしたリンクはありません</translation>
 <translation id="7952460583030260752">コマンド リファレンス</translation>
 <translation id="7965147473449754028">メニューを閉じました</translation>

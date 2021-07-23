@@ -136,9 +136,11 @@
 <translation id="1407135791313364759">全部開啟</translation>
 <translation id="1408787208417187241">三釘 (頂端)</translation>
 <translation id="1413809658975081374">隱私權設定發生錯誤</translation>
+<translation id="1422930527989633628">可以要求搜尋附近的藍牙裝置</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1428146450423315676">堆疊出紙器 7</translation>
 <translation id="1430915738399379752">列印</translation>
+<translation id="1436185428532214179">可以要求編輯裝置上的檔案和資料夾</translation>
 <translation id="1442386063175183758">右半邊對折</translation>
 <translation id="1442987760062738829">打孔</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
@@ -254,6 +256,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />，可執行多個動作，按下 Tab 鍵即可切換不同的動作</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">持卡人姓名</translation>
+<translation id="1803351196216024260">可以要求使用你的麥克風</translation>
 <translation id="1807246157184219062">淺色</translation>
 <translation id="1807528111851433570">起始工作表</translation>
 <translation id="1812527064848182527">橫向</translation>
@@ -283,6 +286,7 @@
 <translation id="1919367280705858090">瞭解如何修正特定錯誤訊息指出的錯誤</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{無}=1{1 個網站}other{# 個網站}}</translation>
 <translation id="1924727005275031552">新地址</translation>
+<translation id="1939175642807587452">可以要求傳送通知</translation>
 <translation id="1945968466830820669">你可能會失去貴機構帳戶的存取權，或身分遭到冒用。Chromium 建議你立即變更密碼。</translation>
 <translation id="1947454675006758438">釘裝 (右上方)</translation>
 <translation id="1958218078413065209">最高得分為 <ph name="SCORE" />。</translation>
@@ -413,6 +417,7 @@
 <translation id="2392959068659972793">顯示尚未設定任何值的政策</translation>
 <translation id="239429038616798445">不支援所選的運送方式，請改選其他方式。</translation>
 <translation id="2396249848217231973">復原刪除(&amp;U)</translation>
+<translation id="2400600116338235695">可以要求連線至序列埠</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413155254802890957">舊地址</translation>
 <translation id="2413528052993050574">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證已遭撤銷。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
@@ -467,6 +472,7 @@
 <translation id="2609632851001447353">變化版本</translation>
 <translation id="2618023639789766142">C10 (信封)</translation>
 <translation id="2625385379895617796">你的時鐘時間過快</translation>
+<translation id="262745152991669301">可以要求連線至 USB 裝置</translation>
 <translation id="2629325967560697240">要獲得 Chrome 最高等級的安全防護，請<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />啟用強化防護功能<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">找不到 <ph name="HOST_NAME" /> 的伺服器 IP 位址。</translation>
 <translation id="2639739919103226564">狀態：</translation>
@@ -610,6 +616,7 @@
 <translation id="3188393374551744535">帳戶餘額</translation>
 <translation id="3194737229810486521"><ph name="URL" /> 要求在你的裝置上永久儲存資料</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> 上的 <ph name="PRINTER_NAME" /></translation>
+<translation id="3197136577151645743">可以要求偵測你使用這部裝置的時間</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理要同步處理哪些資訊</translation>
 <translation id="320323717674993345">取消付款</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
@@ -826,6 +833,7 @@
 <translation id="3909695131102177774"><ph name="LABEL" />：<ph name="ERROR" /></translation>
 <translation id="3939773374150895049">要使用 WebAuthn 取代信用卡驗證碼嗎？</translation>
 <translation id="3946209740501886391">一律詢問你是否接受這個網站的要求</translation>
+<translation id="3947595700203588284">可以要求連線至 MIDI 裝置</translation>
 <translation id="3949571496842715403">這個伺服器無法證明所屬網域為 <ph name="DOMAIN" />；其安全性憑證未指定主體別名。這可能是因為設定錯誤，或是有攻擊者攔截你的連線所致。</translation>
 <translation id="3949601375789751990">你的瀏覽記錄會顯示在這裡</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -921,6 +929,7 @@
     &lt;p&gt;如果您仍看見錯誤訊息，請與網站擁有者聯絡。&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />嘗試執行網路診斷<ph name="END_LINK" />。</translation>
 <translation id="4229544452621580519">在 Chrome 設定中執行安全檢查</translation>
+<translation id="4230204356098880324">可以要求使用及移動你的攝影機</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />繼續前往 <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">有效</translation>
 <translation id="4250431568374086873">你與這個網站的連線可能有安全漏洞</translation>
@@ -983,6 +992,7 @@
 <translation id="4434045419905280838">彈出式視窗與重新導向</translation>
 <translation id="4435702339979719576">明信片)</translation>
 <translation id="443673843213245140">雖然已停用 Proxy，不過已指定明確 Proxy 設定。</translation>
+<translation id="4451135742916150903">可以要求連線至 HID 裝置</translation>
 <translation id="4460315069258617173">權限於此網站的分頁關閉時到期</translation>
 <translation id="4464826014807964867">有貴機構資訊的網站</translation>
 <translation id="4476953670630786061">這個表單不安全，因此系統已停用自動填入功能。</translation>
@@ -1046,6 +1056,7 @@
 <translation id="4708268264240856090">您的連線已中斷</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />執行 Windows 網路診斷<ph name="END_LINK" /></translation>
+<translation id="4724144314178270921">可以要求查看剪貼簿上的文字和圖片</translation>
 <translation id="4726672564094551039">重新載入政策</translation>
 <translation id="4728558894243024398">平台</translation>
 <translation id="4731638775147756694">系統管理員已封鎖這個應用程式</translation>
@@ -1343,6 +1354,7 @@
 <translation id="5728056243719941842">C5 (信封)</translation>
 <translation id="5730040223043577876">如果你在其他網站上重複使用過你的密碼，Chrome 會建議你重設密碼。</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{將卡片儲存到你的 Google 帳戶}other{將卡片儲存到你的 Google 帳戶}}</translation>
+<translation id="5745733273847572235">可以要求你提供位置資訊</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{使用這張卡片的虛擬卡號}other{請選取卡片}}</translation>
 <translation id="5759751709240058861">使用及調整攝影機</translation>
 <translation id="5763042198335101085">請輸入有效的電子郵件地址</translation>
@@ -1461,6 +1473,7 @@
 <translation id="6169916984152623906">現在，你可以進行私密瀏覽了。共用這部裝置的其他使用者不會看到你的活動，不過，你下載的內容和新增的書籤仍會保留在裝置上。</translation>
 <translation id="6177128806592000436">你與這個網站的連線不安全</translation>
 <translation id="6180316780098470077">重試間隔</translation>
+<translation id="619448280891863779">可以要求在你的畫面中開啟和放置視窗</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6203231073485539293">檢查網際網路連線</translation>
 <translation id="6211666000885129820">安全付款憑證註冊表</translation>
@@ -1546,6 +1559,7 @@
 <translation id="6502991525169604759">不包含你所做的變更</translation>
 <translation id="6505563257409036437">關閉無痕式視窗</translation>
 <translation id="6508722015517270189">重新啟動 Chrome</translation>
+<translation id="6513005815064132016">可以要求追蹤你的攝影機位置</translation>
 <translation id="6517596291481585650">警告：這項政策並非清單，因此未依照政策中指定的方式合併為清單。</translation>
 <translation id="6518133107902771759">驗證</translation>
 <translation id="6521745193039995384">未啟用</translation>
@@ -1646,7 +1660,9 @@
 <translation id="6949872517221025916">重設密碼</translation>
 <translation id="6950684638814147129">剖析 JSON 值時發生錯誤：<ph name="ERROR" /></translation>
 <translation id="695140971690006676">全部重設</translation>
+<translation id="6954341342296443517">可以要求開啟特定類型的檔案</translation>
 <translation id="6957887021205513506">伺服器憑證疑似偽造。</translation>
+<translation id="6961844873822989059">可以要求使用裝置上安裝的字型</translation>
 <translation id="6963520811470373926">取代中</translation>
 <translation id="6964255747740675745">無法剖析網路設定 (無效的 JSON)。</translation>
 <translation id="6965382102122355670">確定</translation>
@@ -1748,6 +1764,7 @@
 <translation id="733354035281974745">裝置本機帳戶覆寫</translation>
 <translation id="7333654844024768166">你剛才在詐騙網站上輸入了密碼。Chromium 建議你立即前往 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" />，以及也使用這個密碼的其他網站變更密碼。</translation>
 <translation id="7334320624316649418">重做重新排序(&amp;R)</translation>
+<translation id="7335157162773372339">可以要求使用你的攝影機</translation>
 <translation id="7337248890521463931">顯示更多行</translation>
 <translation id="7337706099755338005">你的平台無法使用實驗性功能。</translation>
 <translation id="733923710415886693">伺服器憑證未依憑證透明化政策公開。</translation>
@@ -1935,6 +1952,7 @@
 <translation id="7937554595067888181">到期日：<ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">伺服器憑證尚未生效。</translation>
 <translation id="7942349550061667556">紅色</translation>
+<translation id="7943893128817522649">可以要求自動下載多個檔案</translation>
 <translation id="7947285636476623132">請檢查信用卡到期年份，然後再試一次</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可瞭解 Chrome 功能</translation>
 <translation id="7950027195171824198">在 Chrome 設定中管理 Cookie 偏好設定</translation>
@@ -1947,6 +1965,7 @@
 <translation id="7976214039405368314">要求數量過多</translation>
 <translation id="7977538094055660992">輸出裝置</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="798134797138789862">可以要求使用虛擬實境裝置和資料</translation>
 <translation id="79859296434321399">如要查看擴增實境內容，請安裝 ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">裝訂</translation>
@@ -2136,6 +2155,7 @@
 <translation id="8699041776323235191">HID 裝置</translation>
 <translation id="8703575177326907206">你到 <ph name="DOMAIN" /> 的連線未加密。</translation>
 <translation id="8705331520020532516">序號</translation>
+<translation id="8708134712139312373">可以要求連線至藍牙裝置</translation>
 <translation id="8710842507289500830">字型樣式</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
 <translation id="8718314106902482036">未完成付款程序</translation>

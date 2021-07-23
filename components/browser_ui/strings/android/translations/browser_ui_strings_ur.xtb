@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">سائٹس کو اپنا ورچوئل ریئلٹی آلہ اور ڈیٹا استعمال کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="4962975101802056554">آلہ کے لیے سبھی اجازتوں کو کالعدم کریں</translation>
 <translation id="497421865427891073">آگے جائیں</translation>
+<translation id="4976702386844183910">آخری بار ملاحظہ کردہ <ph name="DATE" /></translation>
 <translation id="4994033804516042629">کوئی رابطہ نہیں ملا</translation>
 <translation id="4996978546172906250">اشتراک کریں بذریعہ</translation>
 <translation id="5039804452771397117">اجازت دیں</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">پوشیدگی ٹیب</translation>
 <translation id="5186036860380548585">اسکرین کے اوپری حصہ کے قریب اختیار دستیاب ہے</translation>
 <translation id="5197729504361054390">آپ کے منتخب کردہ رابطوں کا <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> کے ساتھ اشتراک کیا جائے گا۔</translation>
+<translation id="5216942107514965959">آخری بار آج ملاحظہ کیا گیا</translation>
 <translation id="528192093759286357">پوری اسکرین سے باہر نکلنے کیلئے اوپر سے گھسیٹیں اور پیچھے جائیں بٹن کو ٹچ کریں۔</translation>
 <translation id="5300589172476337783">دکھائیں</translation>
 <translation id="5301954838959518834">ٹھیک ہے، سمجھ آ گئی</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">اجازتیں</translation>
 <translation id="5860033963881614850">آف</translation>
 <translation id="5876056640971328065">ویڈیو موقوف کریں</translation>
+<translation id="5887687176710214216">آخری بار گزشتہ کل چیک کیا گیا</translation>
 <translation id="5916664084637901428">آن</translation>
 <translation id="5922853908706496913">آپ کی اسکرین کا اشتراک کیا جا رہا ہے</translation>
 <translation id="5939518447894949180">دوبارہ ترتیب دیں</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">اشتراک کریں</translation>
 <translation id="6545864417968258051">بلوٹوتھ اسکیننگ</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کو مسدود کیا گیا}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کو مسدود کیا گیا}}</translation>
+<translation id="6554732001434021288">سائٹ آخری بار <ph name="NUM_DAYS" /> دن پہلے ملاحظہ کی گئی</translation>
 <translation id="6561560012278703671">پر سکون پیغام رسانی کا استعمال کریں (اطلاع کی پرامپٹس کو آپ کو خلل ڈالنے سے مسدود کرتا ہے)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">تحفظ یافتہ مواد</translation>

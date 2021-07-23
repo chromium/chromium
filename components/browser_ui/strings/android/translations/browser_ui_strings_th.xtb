@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">ถามก่อนที่จะอนุญาตให้เว็บไซต์ใช้อุปกรณ์และข้อมูล Virtual Reality ของคุณ (แนะนำ)</translation>
 <translation id="4962975101802056554">เพิกถอนสิทธิ์ทั้งหมดสำหรับอุปกรณ์</translation>
 <translation id="497421865427891073">ไปข้างหน้า</translation>
+<translation id="4976702386844183910">เข้าชมล่าสุด <ph name="DATE" /></translation>
 <translation id="4994033804516042629">ไม่พบรายชื่อติดต่อ</translation>
 <translation id="4996978546172906250">แชร์ผ่าน</translation>
 <translation id="5039804452771397117">อนุญาต</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">แท็บที่ไม่ระบุตัวตน</translation>
 <translation id="5186036860380548585">ตัวเลือกอยู่ตรงบริเวณด้านบนของหน้าจอ</translation>
 <translation id="5197729504361054390">ระบบจะแชร์รายชื่อติดต่อที่คุณเลือกกับ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /></translation>
+<translation id="5216942107514965959">เข้าชมล่าสุดวันนี้</translation>
 <translation id="528192093759286357">ลากจากด้านบน แล้วแตะปุ่มกลับเพื่อออกจากโหมดเต็มหน้าจอ</translation>
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5301954838959518834">ตกลง เข้าใจแล้ว</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">การอนุญาต</translation>
 <translation id="5860033963881614850">ปิด</translation>
 <translation id="5876056640971328065">หยุดวิดีโอชั่วคราว</translation>
+<translation id="5887687176710214216">เข้าชมล่าสุดเมื่อวาน</translation>
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="5922853908706496913">กำลังแชร์หน้าจอ</translation>
 <translation id="5939518447894949180">รีเซ็ต</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">แชร์</translation>
 <translation id="6545864417968258051">การสแกนหาบลูทูธ</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{บล็อกการเข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการไว้}other{บล็อกการเข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการไว้}}</translation>
+<translation id="6554732001434021288">เข้าชมล่าสุด <ph name="NUM_DAYS" /> วันที่ผ่านมา</translation>
 <translation id="6561560012278703671">ใช้การส่งข้อความแบบไม่ส่งเสียง (บล็อกข้อความแจ้งเตือนไม่ให้รบกวนคุณ)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">เนื้อหาที่ได้รับความคุ้มครอง</translation>

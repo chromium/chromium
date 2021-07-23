@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">Пытацца, перш чым дазваляць сайтам выкарыстоўваць даныя і прылады віртуальнай рэальнасці (рэкамендуецца)</translation>
 <translation id="4962975101802056554">Адклікаць усе дазволы для прылады</translation>
 <translation id="497421865427891073">Наперад</translation>
+<translation id="4976702386844183910">Апошняе наведванне: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Кантакты не знойдзены</translation>
 <translation id="4996978546172906250">Абагуліць праз</translation>
 <translation id="5039804452771397117">Дазволіць</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">Укладка інкогніта</translation>
 <translation id="5186036860380548585">Гэты выбар можна зрабіць уверсе экрана</translation>
 <translation id="5197729504361054390">Выбраныя вамі кантакты будуць абагулены з сайтам <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">Апошняе наведванне: сёння</translation>
 <translation id="528192093759286357">Каб выйсці з поўнаэкраннага рэжыму, правядзіце зверху ўніз і націсніце кнопку "Назад".</translation>
 <translation id="5300589172476337783">Паказаць</translation>
 <translation id="5301954838959518834">OK</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">Дазволы</translation>
 <translation id="5860033963881614850">Выключана</translation>
 <translation id="5876056640971328065">Прыпыніць відэа</translation>
+<translation id="5887687176710214216">Апошняе наведванне: учора</translation>
 <translation id="5916664084637901428">Уключана</translation>
 <translation id="5922853908706496913">Ваш экран абагульваецца</translation>
 <translation id="5939518447894949180">Скінуць</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">Абагуліць</translation>
 <translation id="6545864417968258051">Пошук прылад Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
+<translation id="6554732001434021288">Апошняе наведванне: <ph name="NUM_DAYS" /> сут таму</translation>
 <translation id="6561560012278703671">Забараніць сайтам адцягваць вашу ўвагу запытамі дазволу на паказ апавяшчэнняў. Паказваць замест іх індыкатар блакіроўкі ў адрасным радку</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Абароненае змесціва</translation>

@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">Kysy, saavatko sivustot käyttää virtuaalitodellisuuslaitteitasi ja ‑dataasi (suositus)</translation>
 <translation id="4962975101802056554">Peru kaikki laitteen käyttöoikeudet</translation>
 <translation id="497421865427891073">Siirry eteenpäin</translation>
+<translation id="4976702386844183910">Viimeksi avattu <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Kontakteja ei löytynyt</translation>
 <translation id="4996978546172906250">Jaa palvelussa:</translation>
 <translation id="5039804452771397117">Salli</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">Incognito-välilehti</translation>
 <translation id="5186036860380548585">Toiminto on käytettävissä näytön yläosassa</translation>
 <translation id="5197729504361054390"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saa valitsemasi yhteystiedot.</translation>
+<translation id="5216942107514965959">Viimeksi avattu tänään</translation>
 <translation id="528192093759286357">Poistu koko näytön tilasta vetämällä näytön yläreunasta ja koskettamalla Takaisin-painiketta.</translation>
 <translation id="5300589172476337783">Näytä</translation>
 <translation id="5301954838959518834">Selvä</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">Luvat</translation>
 <translation id="5860033963881614850">Pois päältä</translation>
 <translation id="5876056640971328065">Keskeytä video</translation>
+<translation id="5887687176710214216">Avattu viimeksi eilen</translation>
 <translation id="5916664084637901428">Päällä</translation>
 <translation id="5922853908706496913">Näyttösi jaetaan</translation>
 <translation id="5939518447894949180">Tyhjennä</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">Jaa</translation>
 <translation id="6545864417968258051">Bluetooth-haku</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta estetty}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta estetty}}</translation>
+<translation id="6554732001434021288">Viimeksi avattu <ph name="NUM_DAYS" /> päivää sitten</translation>
 <translation id="6561560012278703671">Hiljaisemmat viestit (estää ilmoituksia häiritsemästä sinua)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> Gt</translation>
 <translation id="6612358246767739896">Suojattu sisältö</translation>

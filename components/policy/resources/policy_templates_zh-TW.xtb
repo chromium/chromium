@@ -77,6 +77,9 @@
       如果將這項政策設為 False 或未設定，系統將不會回報這項資訊。
       如果設為 True，系統會回報裝置背光的資訊。</translation>
 <translation id="1076751984131277498">卸除式 USB 裝置許可清單</translation>
+<translation id="1079425471279127373">設定這項政策可讓強制安裝的網頁應用程式的某些來源，透過 Device Attributes API 取得各種裝置屬性，例如序號和主機名稱。
+
+      Device Attributes API 是一系列的網路 API，請參閱 https://wicg.github.io/WebApiDevice/device_attributes。這些 API 僅適用於透過 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 強制安裝的網頁應用程式所對應的來源，或是在資訊站工作階段中設定的來源。</translation>
 <translation id="1079801999187584280">禁止使用開發人員工具</translation>
 <translation id="1082802595100075771">讓使用者選擇使用去識別化的 Google 服務，針對無標籤圖片提供自動產生的說明</translation>
 <translation id="1087437665304381368">這項政策只能控管 <ph name="PRODUCT_OS_NAME" />開發人員模式。如要禁止他人存取 Android 開發人員選項，則必須設定 <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> 政策。</translation>
@@ -741,6 +744,7 @@
 
       在預設狀態下，系統會停用這項企業政策。</translation>
 <translation id="1962273523772270623">允許從 Google 服務收集 WebRTC 事件記錄</translation>
+<translation id="1962864958436828230">設定防止資料外洩的剪貼簿資料大小最低限制</translation>
 <translation id="1964634611280150550">無痕模式已停用</translation>
 <translation id="1964802606569741174">這項政策對 Android YouTube 應用程式沒有影響。如要強制採用 YouTube 安全模式，則必須禁止下載 Android YouTube 應用程式。</translation>
 <translation id="1969212217917526199">覆寫遠端存取主機的偵錯版本政策。
@@ -855,6 +859,7 @@
 <translation id="2090939118981888335">如果將這項政策設為啟用，代表允許使用資料壓縮 Proxy。如果將這項政策設為停用，則代表禁止使用該 Proxy。
 
       如果設定這項政策，使用者將無法變更設定。如果不設定，使用者可選擇使用該功能。</translation>
+<translation id="2093552723795057221">不要回報音訊狀態</translation>
 <translation id="209586405398070749">穩定版</translation>
 <translation id="2098658257603918882">啟用使用量和當機相關資料的報告功能</translation>
 <translation id="2104418465060359056">回報擴充功能和外掛程式資訊</translation>
@@ -898,6 +903,9 @@
 <translation id="2151831603578119302">啟用無障礙功能快速鍵</translation>
 <translation id="2156132677421487971">設定「<ph name="PRODUCT_NAME" />」的各項政策。這項功能可讓使用者透過瀏覽器將分頁、網站或桌面內容傳送至遠端的螢幕和音響設備。</translation>
 <translation id="2156755242840687300">已啟用的外部列印伺服器</translation>
+<translation id="2157842368188031417">這項政策僅適用於受管理的訪客工作階段。你必須為 Imprivata 的共用工作站模式啟用此政策，才能讓使用者在工作階段中進行切換。
+      如果將此政策設為 True，系統會強制覆寫某些功能的政策，這些功能會保留機密的使用者資料，且不會由清理機制處理 (該機制用於 Imprivata 共用工作站模式下的工作階段中使用者切換作業)。
+      如果將這項政策設為 False 或不設定，系統便不會覆寫任何政策。</translation>
 <translation id="2160336427036785721">設定單一 <ph name="PRODUCT_NAME" /> 例項可用的記憶體大小。超過此值後，系統會開始捨棄分頁以節省記憶體。這表示系統會釋放分頁所用的記憶體，而當使用者切換至該分頁時，系統必須重新載入該分頁。
 
       設定這項政策後，如果超過記憶體使用限制，瀏覽器會開始捨棄分頁以節省記憶體。不過，我們無法保證瀏覽器運作時，記憶體使用量會一律在限制值以下。1024 以下的值會進位到 1024。
@@ -971,6 +979,10 @@
       如果設為 <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (值為 1)，使用者只能將修正重大安全性或穩定性問題的變化版本套用到 <ph name="PRODUCT_OS_NAME" />。
 
       如果設為 <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (值為 2)，使用者無法在登入畫面上將任何變化版本套用到瀏覽器。請注意，這個模式可能會讓 <ph name="PRODUCT_OS_NAME" />開發人員無法及時提供重大安全性修正項目，因此不建議使用。</translation>
+<translation id="2221779615493499989">回報已註冊裝置上的使用者網路狀態。
+
+      如果將這項政策設為 False，系統不會回報這項資訊。
+      如果設為 True 或未設定，則系統會回報裝置的網路狀態。</translation>
 <translation id="2221850122314326571">如果啟用這項設定，<ph name="PRODUCT_NAME" /> 將使用內建的憑證驗證器執行伺服器憑證驗證作業。
       如果停用這項設定，<ph name="PRODUCT_NAME" /> 將使用平台提供的舊版憑證驗證器執行伺服器憑證驗證作業。
       如果不進行設定，系統可能會使用內建或舊版的憑證驗證器。
@@ -1731,6 +1743,7 @@
       如果未設定這項政策或將其設為 false，系統就不會在 TLS 中啟用 DHE 加密套件。如要啟用 DHE 加密套件並維持與過舊伺服器的相容性，您也可以將這項政策設為 true。這種方法是權宜之計，正確的做法是重新設定伺服器。
 
       建議您讓伺服器改用 ECDHE 加密套件。如果無法使用 ECDHE 加密套件，請確定啟用的加密套件會使用 RSA 金鑰交換機制。</translation>
+<translation id="3118552207903834734">允許使用者設定裝置主機名稱</translation>
 <translation id="3122082892722698079">控管可使用不安全內容的例外網站</translation>
 <translation id="3128072319047570212">Keygen 設定</translation>
 <translation id="3142410959002029864">如果設定這項政策，將覆寫預設的雙面列印模式。如果系統不支援設定的模式，將會忽略這項政策。</translation>
@@ -1823,6 +1836,7 @@
 
       如未設定，這項政策會預設為 False，使用者可任意將此設定設為 True 或 False 狀態。</translation>
 <translation id="3236046242843493070">允許安裝擴充功能、應用程式和使用者指令碼的來源網址模式清單</translation>
+<translation id="3239125988620218257">回報網路狀態</translation>
 <translation id="3240609035816615922">印表機設定存取權政策。</translation>
 <translation id="324062325008698789">設定印表機清單。</translation>
 <translation id="3240655340884151271">座架的內建 NIC MAC 位址</translation>
@@ -1897,6 +1911,7 @@
       如果停用或不設定這項政策，系統會停用這些傳輸層安全標準 (TLS)/DTLS 版本。
 
       這項政策僅是暫時性措施，我們會在日後的 <ph name="PRODUCT_NAME" /> 版本中予以移除。</translation>
+<translation id="3359186795130278362">啟用有限制的受管理訪客工作階段。</translation>
 <translation id="3360093276083825336">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 
           指定電池供電時的閒置時間長度。如果使用者在這段時間內沒有任何動作，系統就會顯示警告對話方塊。
@@ -2021,6 +2036,7 @@
       如果不設定這項政策的值，系統會視為禁止使用這項功能。
 
       這項功能的可用性會根據對應的使用者政策而定。</translation>
+<translation id="3495602011142234826">如果設為 True，這項擴充功能可透過企業專用的所有金鑰簽署任意資料。如果設為 False，此擴充功能就無法存取上述金鑰，使用者也無法授予這類權限。如果該金鑰是由同一個擴充功能產生，則屬例外情況，擴充功能在此情形下可以存取該金鑰一次。</translation>
 <translation id="3496296378755072552">密碼管理員</translation>
 <translation id="3498109920669229084">你可以透過這項政策，指定不受封鎖清單影響的擴充功能。
 
@@ -2163,6 +2179,7 @@
 
       如果未設定，系統會套用 3 小時的預設間隔。</translation>
 <translation id="3756011779061588474">封鎖開發人員模式</translation>
+<translation id="3756516139200532906">允許受管理的使用者設定裝置主機名稱</translation>
 <translation id="3758089716224084329">允許你指定 <ph name="PRODUCT_NAME" /> 使用的 Proxy 伺服器，並禁止使用者變更 Proxy 設定。
 
       如果你決定完全不使用 Proxy 伺服器，一律採用直接連線，系統會忽略其他所有選項。
@@ -2948,6 +2965,8 @@
       如果未設定這項政策或設為無效的值，系統功能的停用模式將設為「已封鎖」。</translation>
 <translation id="4835470005923546373">預設停用背景圖形列印模式</translation>
 <translation id="4835622243021053389">啟用 NTLMv2 驗證。</translation>
+<translation id="4840015507504937941">這項政策設定的是系統會檢查的最低剪貼簿資料大小 (以位元組為單位)，檢查作業將根據 DataLeakPreventionRulesList 政策定義的剪貼簿限制規則進行。
+      如果不設定，這項政策的值就會預設為 0，代表從剪貼簿貼上的所有內容都會依設定規則接受檢查。</translation>
 <translation id="4846678215172543001">這項政策會禁止系統在列出的網站上顯示相似網址的警告訊息。一般而言，<ph name="PRODUCT_NAME" /> 認為網站可能試圖假冒成使用者熟悉的其他網站時，就會在網站上顯示這類警告訊息。
 
        如果啟用這項政策並設為一或多個網域，當使用者造訪該網域的網頁時，系統不會顯示任何相似網址警告訊息的網頁。
@@ -3131,6 +3150,7 @@
 
       注意：系統也可以透過 <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> 政策將元素加入這份清單。</translation>
 <translation id="5067143124345820993">登入使用者許可清單</translation>
+<translation id="5071303485174858500">停用有限制的受管理訪客工作階段。</translation>
 <translation id="5073609397321802133">如果將這項政策設為 False，系統將禁止使用者自訂新分頁的背景。即使日後將這項政策設為 True，系統仍會永久移除任何現有的自訂背景。
 
       如果不設定這項政策或將其設為 True，使用者可以自訂新分頁的背景。</translation>
@@ -3138,6 +3158,7 @@
 
       如果將這項政策設為 False 或不設定，<ph name="PRODUCT_NAME" /> 會使用現有的線上撤銷檢查設定。</translation>
 <translation id="5078623750797048009">啟用 PDF 註解功能</translation>
+<translation id="5081204761483900654">有限制的受管理訪客工作階段</translation>
 <translation id="5082572440690475059">允許這些網站透過 File System API 進行讀取</translation>
 <translation id="5085647276663819155">停用列印預覽</translation>
 <translation id="5090791951240382356">允許合併不同來源的字典政策</translation>
@@ -3772,10 +3793,12 @@
           如果你停用這項設定或並未進行設置，則所有主機都會使用 TalkGadget 預設網域名稱 (「chromoting-host.talkgadget.google.com」)。
 
           遠端存取用戶端不受這項政策設定所影響，而會一律採用「chromoting-client.talkgadget.google.com」來存取 TalkGadget。</translation>
+<translation id="5888645257599699215">回報裝置音訊狀態</translation>
 <translation id="5890063326284543943">控管 Serial API 的使用</translation>
 <translation id="5897913798715600338">使用快速充電技術為電池充電。</translation>
 <translation id="5898486742390981550">如有多位使用者同時登入，只有主要使用者可以使用 Android 應用程式。</translation>
 <translation id="5899751601113377553">禁止使用者使用 <ph name="LACROS_NAME" /></translation>
+<translation id="5900919753933009463">回報網路設定</translation>
 <translation id="5901427587865226597">僅限雙面列印</translation>
 <translation id="5905473632148429217">啟用線上 OCSP/CRL 檢查</translation>
 <translation id="5907283448020542268">除非 <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> 政策設為 <ph name="BLOCK_GEOLOCATION_SETTING" />，否則在初始設定期間設定 <ph name="GLS_ENABLED" /> 將會啟用 Google 定位服務。如果將這項政策設為 <ph name="GLS_DISABLED" /> 或不設定，系統會在設定期間將定位服務保持停用。
@@ -4095,6 +4118,10 @@
 
       如果設定這項政策，使用者將無法變更。如果未設定，使用者可以從書籤列內容選單中設定要顯示或隱藏應用程式捷徑。</translation>
 <translation id="6394350458541421998">我們已於 <ph name="PRODUCT_OS_NAME" />版本 29 中移除這項政策。請改用 PresentationScreenDimDelayScale 政策。</translation>
+<translation id="6397588391180665797">回報已註冊裝置上的使用者網路設定。
+
+      如果將這項政策設為 False，系統不會回報這項資訊。
+      如果設為 True 或未設定，則系統會回報裝置的網路設定。</translation>
 <translation id="6401669939808766804">登出使用者</translation>
 <translation id="640244877779556713">啟用表情符號建議功能</translation>
 <translation id="6407093060083181305">設定擴充功能安裝封鎖清單</translation>
@@ -4183,6 +4210,7 @@
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> 圖片</translation>
 <translation id="6518102411616460786">等待目標版本跟上版本降級</translation>
 <translation id="6520802717075138474">第一次執行時從預設瀏覽器匯入搜尋引擎</translation>
+<translation id="6521971538031711337">禁止受管理的使用者設定裝置主機名稱</translation>
 <translation id="6532026122543921610">除非 <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> 政策停用了自動偵測時區的功能，否則你可以透過這項政策概括設定自動偵測時區的方法，且使用者無法變更這項設定。
 
      這項政策可設定的值：
@@ -4396,8 +4424,10 @@
       如果將這項政策設為停用，則會從工具列中移除瀏覽器實驗功能圖示。
 
       無論這項政策設為啟用或停用，chrome://flags 和其他開啟/關閉瀏覽器功能的方法都能正常運作。</translation>
+<translation id="6794083666143216172">同意讓來源查詢裝置屬性</translation>
 <translation id="6795485990775913659">只在 PIN 碼停用時允許列印</translation>
 <translation id="6800181452282128474">不向 Quirks Server 發送查詢</translation>
+<translation id="68031099365512050">回報音訊狀態</translation>
 <translation id="6810445994095397827">封鎖這些網站的 JavaScript</translation>
 <translation id="6813263547126514821">電源與關機</translation>
 <translation id="681446116407619279">支援的驗證機制</translation>
@@ -4557,6 +4587,9 @@
 
       拼字檢查功能目前支援的語言如下：af、bg、ca、cs、da、de、el、en-AU、en-CA、en-GB、en-US、es、es-419、es-AR、es-ES、es-MX、es-US、et、fa、fo、fr、he、hi、hr、hu、id、it、ko、lt、lv、nb、nl、pl、pt-BR、pt-PT、ro、ru、sh、sk、sl、sq、sr、sv、ta、tg、tr、uk、vi。</translation>
 <translation id="6926703471186170050">啟用長邊雙面列印</translation>
+<translation id="6928305045865155732">如果將這項政策設為啟用或不設定，已註冊的裝置會回報裝置音量。
+
+      如果將這項政策設為停用，那麼已註冊的裝置就不會記錄或回報音訊狀態。</translation>
 <translation id="6931242315485576290">停用 Google 資料同步處理功能</translation>
 <translation id="6943577887654905793">Mac/Linux 偏好設定名稱：</translation>
 <translation id="6946652757373377924">
@@ -4663,6 +4696,7 @@
 <translation id="7027923238554618852">如果設定這項政策，<ph name="PRODUCT_OS_NAME" />將根據指定的名稱，使用相應的工作排程器設定。你可以將這項政策設為 <ph name="CONSERVATIVE_VALUE" /> 或 <ph name="PERFORMANCE_VALUE" />，讓系統分別依穩定性或最佳成效調整工作排程器。
 
       如果不設定這項政策，使用者可自行選取偏好設定。</translation>
+<translation id="7028640460148648082">不要回報網路狀態</translation>
 <translation id="7030205756530739128">如果將 <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> 設為<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />，則你可以透過 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> 自訂開始充電的時機 (根據電量百分比進行設定)。設定值必須至少比 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> 的值低 5 個百分點。
 
       如果不設定這項政策，系統會套用標準充電模式。</translation>
@@ -5743,6 +5777,11 @@
       這項政策的用途是讓企業能自行遷移目前使用 HTTP/0.9 的伺服器，我們將於日後移除這項政策。
 
       如果不設定這項政策，則系統會在非預設連接埠停用 HTTP/0.9。</translation>
+<translation id="8503018573167958506">決定是否要允許使用者設定裝置主機名稱。
+
+      如果設定了 <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />，管理員將會設定主機名稱，且使用者無法自行選擇 (無論這項政策的設定為何)。
+      如果將這項政策設為 True，且並未設定 <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />，管理員將不會設定主機名稱，但使用者可以自行選擇。
+      如果將這項政策設為 False，且並未設定 <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />，管理員將不會設定主機名稱，且使用者無法自行選擇；因此，系統會使用預設名稱。</translation>
 <translation id="8504243661032323176">你可以透過這項設定，強制執行所選的 PIN 碼長度下限 (系統會將小於 1 的值無條件進位到 1)。
 
       如果不設定這項政策，系統會強制執行 6 位數的 PIN 碼長度下限 (此為建議的長度下限)。</translation>
@@ -5890,6 +5929,17 @@
       如果設定這項政策，使用者將無法變更此功能。如果不設定，使用者將可變更這項設定。</translation>
 <translation id="8715885991031124968">允許從不同來源子頁框觸發的 JavaScript 對話方塊。</translation>
 <translation id="8720547069538712402">允許使用者啟用/停用拼字檢查功能</translation>
+<translation id="8726080977639508431">這項政策可控管 <ph name="PRODUCT_NAME" /> 如何解讀舊版瀏覽器支援功能的網站清單/可疑項目清單政策，影響範圍涵蓋以下政策：<ph name="URL_LIST_POLICY_NAME" />、<ph name="URL_GREYLIST_POLICY_NAME" />、<ph name="USE_IE_SITELIST_POLICY_NAME" />、<ph name="EXTERNAL_SITELIST_POLICY_NAME" /> 和 <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />。
+
+      如果將這項政策設為「Default」(0) 或不設定，網址比對方式會較不嚴格，不含「/」的規則會尋找網址主機名稱中任意位置出現的子字串，而網址路徑元件的比對方式會區分大小寫。
+
+      如果將這項政策設為「IESiteListMode」(1)，網址比對方式會比較嚴格，不含「/」的規則只會在主機名稱的結尾進行比對，這類規則比對的內容也不得超出網域名稱的範圍，而網址路徑元件的比對方式將不會區分大小寫。這種比對方式與 <ph name="MS_IE_PRODUCT_NAME" /> 及 <ph name="MS_EDGE_PRODUCT_NAME" /> 的相容性較高。
+
+      以「example.com」和「acme.com/abc」規則為例：
+
+      無論剖析模式為何，「http://example.com/」、「http://subdomain.example.com/」和「http://acme.com/abc」都是相符的結果。
+
+      不過，「http://notexample.com/」、「http://example.com.invalid.com/」、「http://example.comabc/」只有在「Default」模式下才會是相符的結果；「http://acme.com/ABC」則只會在「IESiteListMode」模式下才會是相符的結果。</translation>
 <translation id="8736538322216687231">強制執行低度的 YouTube 嚴格篩選模式</translation>
 <translation id="8745669971728319820">這項政策可控管系統是否要回報擴充功能和外掛程式資訊。
 
@@ -6203,6 +6253,7 @@
 
       如果不設定這項政策，在預設情況下，受企業管理的使用者將無法開啟 Phone Hub 功能，其他一般使用者則可開啟這項功能。</translation>
 <translation id="9096086085182305205">驗證伺服器許可清單</translation>
+<translation id="9096772739225230999">不要回報網路設定</translation>
 <translation id="9098409326885953506">偵測被覆蓋的視窗並暫停相關繪製工作</translation>
 <translation id="9105265795073104888">只有一部分 Proxy 設定可供 Android 應用程式使用，Android 應用程式可以選擇是否使用。你無法強制 Android 應用程式使用 Proxy。</translation>
 <translation id="9106865192244721694">在這些網站上允許 WebUSB</translation>

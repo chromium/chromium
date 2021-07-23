@@ -183,6 +183,7 @@
 <translation id="2243633977138166243">‏للتنقُّل، اضغط على السهم المتّجه لليسار أو السهم المتّجه لليمين، ويمكنك الضغط على مفتاح Enter للتفعيل.</translation>
 <translation id="224426591676115802">لا يتوفّر صوت للغة: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">جارٍ إيقاف "وضع التعلُّم"</translation>
+<translation id="2247870315273396641">معاينة الصوت</translation>
 <translation id="225732394367814946">زيادة تقييم النطق</translation>
 <translation id="2267538686624070261">جارٍ تجاهل الخطأ الإملائي</translation>
 <translation id="2267945578749931355">الحرف التالي</translation>
@@ -199,6 +200,7 @@
 <translation id="2390264819538553347">‏للتقدم، اضغط على Enter، وللرجوع للخلف، اضغط على Backspace.</translation>
 <translation id="2398579267367951220">‏اكتب للبحث في الصفحة. اضغط على enter للحصول على النتيجة سريعًا، أو اضغط على السهم المتّجه للأسفل أو للأعلى لتصفّح النتائج، أو استمر بالكتابة لتغيير البحث، أو اضغط على escape للإلغاء.</translation>
 <translation id="240709722712693803">بنفسجي مزرق</translation>
+<translation id="2410298923485357543">استخدام صوت طبيعي عند اتصال الجهاز بالإنترنت</translation>
 <translation id="2416512023405990736">مربع اختيار غير محدد</translation>
 <translation id="2417569100218200841">معلومات المحتوى</translation>
 <translation id="2417948780551741035">تعليقات ختامية</translation>
@@ -300,6 +302,7 @@
 <translation id="3046838483509668188">‏خيارات ChromeVox</translation>
 <translation id="3060756054951570867">تم فتح القائمة <ph name="TITLE" /></translation>
 <translation id="3060880924447482063">التمرير سريعًا جهة اليمين أو اليسار للانتقال حسب العنصر</translation>
+<translation id="3061302636956643119">‏سيتم إرسال النص إلى Google لإجراء عمليّة المعالجة.</translation>
 <translation id="3070245424257836917">التمرير السريع بثلاثة أصابع إلى الأعلى</translation>
 <translation id="307516670110542567">الإرشادات السريعة</translation>
 <translation id="3078345202707391975">عنوان المستوى الثاني التالي</translation>
@@ -937,6 +940,7 @@
 <translation id="7693840228159394336">زر الاختيار السابق</translation>
 <translation id="7701040980221191251">لا يوجد</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7713139339518499741">صوت طبيعي</translation>
 <translation id="7714340021005120797">ليس هناك مربع تحرير وسرد تالٍ.</translation>
 <translation id="772146615414628379">‏تهانينا! لقد تعلمت أساسيات استخدام ChromeVox بنجاح. تذكّر أنه يمكنك فتح قائمة طلبات ChromeVox في أي وقت من خلال الضغط على مفتاح البحث+نقطة. لمعرفة المزيد حول ChromeVox ونظام التشغيل Chrome، ما عليك سوى الانتقال إلى المقالات التالية.
     إذا انتهيت من البرنامج التعليمي، استخدِم ChromeVox للانتقال إلى زر "إغلاق" والنقر عليه.</translation>
@@ -967,6 +971,7 @@
 <translation id="7939428177581522200">تمت الإضافة إلى التحديد</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{علامة على}zero{# at signs}two{علامتا على (#)}few{# علامات على}many{# علامة على}other{# من علامات على}}</translation>
 <translation id="7942349550061667556">أحمر</translation>
+<translation id="7945703887991230167">الصوت المفضّل</translation>
 <translation id="7948364528129376623">ليس هناك رابط تالٍ تم الانتقال إليه.</translation>
 <translation id="7952460583030260752">مَراجع الطلبات</translation>
 <translation id="7965147473449754028">تم غلق القائمة</translation>

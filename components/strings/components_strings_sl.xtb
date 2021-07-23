@@ -136,9 +136,11 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1407135791313364759">Odpri vse</translation>
 <translation id="1408787208417187241">Trojno spenjanje zgoraj</translation>
 <translation id="1413809658975081374">Napaka zasebnosti</translation>
+<translation id="1422930527989633628">Lahko zahteva odkrivanje naprav Bluetooth v bližini.</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1428146450423315676">Zlagalnik 7</translation>
 <translation id="1430915738399379752">Natisni</translation>
+<translation id="1436185428532214179">Lahko zahteva urejanje datotek in map v napravi.</translation>
 <translation id="1442386063175183758">Prepogibanje v obliki okna z desne</translation>
 <translation id="1442987760062738829">Luknjanje</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
@@ -258,6 +260,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, na voljo je več dejanj, pritisnite tabulatorko, če želite krožiti po njih</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Ime imetnika kartice</translation>
+<translation id="1803351196216024260">Lahko zahteva uporabo mikrofona.</translation>
 <translation id="1807246157184219062">Svetlo</translation>
 <translation id="1807528111851433570">Začetni list</translation>
 <translation id="1812527064848182527">ležeče</translation>
@@ -287,6 +290,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1919367280705858090">Pomoč pri določenem sporočilu o napaki</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Brez}=1{1 spletno mesto}one{# spletno mesto}two{# spletni mesti}few{# spletna mesta}other{# spletnih mest}}</translation>
 <translation id="1924727005275031552">Novo</translation>
+<translation id="1939175642807587452">Lahko zahteva pošiljanje obvestil.</translation>
 <translation id="1945968466830820669">Izgubite lahko dostop do računa za organizacijo ali postanete žrtev kraje identitete. Chromium priporoča, da spremenite geslo.</translation>
 <translation id="1947454675006758438">Spenjanje zgoraj desno</translation>
 <translation id="1958218078413065209">Vaš najboljši rezultat je <ph name="SCORE" />.</translation>
@@ -417,6 +421,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2392959068659972793">Pokaži pravilnike brez nastavljene vrednosti</translation>
 <translation id="239429038616798445">Ta način pošiljanja ni na voljo. Poskusite uporabiti drugega.</translation>
 <translation id="2396249848217231973">&amp;Razveljavi izbris</translation>
+<translation id="2400600116338235695">Lahko zahteva vzpostavitev povezave s serijskimi vrati.</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413155254802890957">Staro</translation>
 <translation id="2413528052993050574">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; njegovo varnostno potrdilo je bilo morda preklicano. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
@@ -471,6 +476,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2609632851001447353">Različice</translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2625385379895617796">Ura prehiteva</translation>
+<translation id="262745152991669301">Lahko zahteva vzpostavitev povezave z napravami USB.</translation>
 <translation id="2629325967560697240">Če želite imeti Chromovo največjo raven varnosti, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />vklopite izboljšano zaščito<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="2634124572758952069">Naslova IP strežnika <ph name="HOST_NAME" /> ni bilo mogoče najti.</translation>
 <translation id="2639739919103226564">Stanje:</translation>
@@ -614,6 +620,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3188393374551744535">Stanje na računu</translation>
 <translation id="3194737229810486521"><ph name="URL" /> želi trajno shraniti podatke v vaši napravi</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> v strežniku <ph name="SERVER_NAME" /></translation>
+<translation id="3197136577151645743">Lahko zahteva, da izve, kdaj aktivno uporabljate napravo.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati, kateri podatki se sinhronizirajo v Chromovih nastavitvah.</translation>
 <translation id="320323717674993345">Prekliči plačilo</translation>
 <translation id="3207960819495026254">Dodano med zaznamke</translation>
@@ -830,6 +837,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3909695131102177774"><ph name="LABEL" /> – <ph name="ERROR" /></translation>
 <translation id="3939773374150895049">Želite namesto kode CVC uporabiti WebAuthn?</translation>
 <translation id="3946209740501886391">Vedno vprašaj na tem spletnem mestu</translation>
+<translation id="3947595700203588284">Lahko zahteva vzpostavitev povezave z napravami MIDI.</translation>
 <translation id="3949571496842715403">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; njegovo varnostno potrdilo ne določa nadomestnih imen SAN (Subject Alternative Name). Razlog za to je morda napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="3949601375789751990">Tu je prikazana zgodovina brskanja</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -930,6 +938,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
     &lt;p&gt;Če je napaka še vedno prikazana, se obrnite na lastnika spletnega mesta.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Poskušajte zagnati orodje za omrežno diagnostiko<ph name="END_LINK" />.</translation>
 <translation id="4229544452621580519">V nastavitvah Chroma zaženite varnostno preverjanje.</translation>
+<translation id="4230204356098880324">Lahko zahteva uporabo in premik kamere.</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Nadaljuj na <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Veljavno</translation>
 <translation id="4250431568374086873">Povezava s tem mestom ni povsem varna.</translation>
@@ -992,6 +1001,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4434045419905280838">Pojavna okna in preusmeritve</translation>
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Uporaba strežnika proxy je onemogočena, vendar je njegova konfiguracija izrecno določena.</translation>
+<translation id="4451135742916150903">Lahko zahteva vzpostavitev povezave z napravami HID.</translation>
 <translation id="4460315069258617173">Dovoljeno, dokler ne zaprete zavihkov za to spletno mesto.</translation>
 <translation id="4464826014807964867">Spletna mesta s podatki vaše organizacije</translation>
 <translation id="4476953670630786061">Ta obrazec ni varen. Samodejno izpolnjevanje je izklopljeno.</translation>
@@ -1055,6 +1065,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4708268264240856090">Povezava je bila prekinjena</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Izvajanje orodja Omrežna diagnostika Windows<ph name="END_LINK" /></translation>
+<translation id="4724144314178270921">Lahko zahteva ogled besedila in slik v odložišču.</translation>
 <translation id="4726672564094551039">Znova naloži pravilnike</translation>
 <translation id="4728558894243024398">Okolje</translation>
 <translation id="4731638775147756694">To aplikacijo je blokiral skrbnik</translation>
@@ -1352,6 +1363,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5728056243719941842">C5 (Envelope)</translation>
 <translation id="5730040223043577876">Chrome priporoča, da ponastavite geslo, če ste ga uporabljali na drugih spletnih mestih.</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Shranjevanje kartice v Google Računu}one{Shranjevanje kartic v Google Računu}two{Shranjevanje kartic v Google Računu}few{Shranjevanje kartic v Google Računu}other{Shranjevanje kartic v Google Računu}}</translation>
+<translation id="5745733273847572235">Lahko zahteva podatke o lokaciji.</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{Za to kartico uporabite navidezno številko}one{Izbira kartice}two{Izbira kartice}few{Izbira kartice}other{Izbira kartice}}</translation>
 <translation id="5759751709240058861">Uporaba in premikanje kamere</translation>
 <translation id="5763042198335101085">Vnesite veljaven e-poštni naslov</translation>
@@ -1470,6 +1482,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6169916984152623906">Zdaj je mogoče brskati zasebno in drugi, ki uporabljajo to napravo, ne bodo videli vaše dejavnosti. Prenosi in zaznamki bodo vseeno shranjeni.</translation>
 <translation id="6177128806592000436">Povezava s tem spletnim mestom ni varna</translation>
 <translation id="6180316780098470077">Interval vnovičnih poskusov</translation>
+<translation id="619448280891863779">Lahko zahteva odpiranje in postavite oken na zaslonih.</translation>
 <translation id="6196640612572343990">Blokiraj piškotke drugih spletnih mest</translation>
 <translation id="6203231073485539293">Preverite internetno povezavo</translation>
 <translation id="6211666000885129820">Preglednica za včlanitev poverilnice za varno plačilo</translation>
@@ -1555,6 +1568,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6502991525169604759">Brez vaših sprememb</translation>
 <translation id="6505563257409036437">Zapri anonimna okna</translation>
 <translation id="6508722015517270189">Znova zaženite Chrome</translation>
+<translation id="6513005815064132016">Lahko zahteva spremljanje položaja kamere.</translation>
 <translation id="6517596291481585650">Opozorilo: ta pravilnik ni bil združen kot seznam, kot je določeno v pravilniku, ker ni seznam.</translation>
 <translation id="6518133107902771759">Preveri</translation>
 <translation id="6521745193039995384">Nedejavno</translation>
@@ -1655,7 +1669,9 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6949872517221025916">Ponastavitev gesla</translation>
 <translation id="6950684638814147129">Napaka pri razčlenjevanju vrednosti JSON: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Ponastavi vse</translation>
+<translation id="6954341342296443517">Lahko zahteva odpiranje vrst datotek.</translation>
 <translation id="6957887021205513506">Potrdilo strežnika je očitno ponaredek.</translation>
+<translation id="6961844873822989059">Lahko zahteva uporabo pisave, nameščene v napravi.</translation>
 <translation id="6963520811470373926">Nadomeščeno</translation>
 <translation id="6964255747740675745">Omrežne konfiguracije ni bilo mogoče razčleniti (neveljaven JSON).</translation>
 <translation id="6965382102122355670">V redu</translation>
@@ -1757,6 +1773,7 @@ Dodatne podrobnosti:
 <translation id="733354035281974745">Preglasitev lokalnega računa v napravi</translation>
 <translation id="7333654844024768166">Pravkar ste vnesli geslo na zavajajočem spletnem mestu. Chromium priporoča, da obiščete <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ter druga spletna mesta, na katerih uporabljate to geslo, in ga takoj spremenite.</translation>
 <translation id="7334320624316649418">&amp;Uveljavi razvrstitev</translation>
+<translation id="7335157162773372339">Lahko zahteva uporabo fotoaparata.</translation>
 <translation id="7337248890521463931">Pokaži več vrstic</translation>
 <translation id="7337706099755338005">Ni na voljo v vašem okolju.</translation>
 <translation id="733923710415886693">Potrdilo strežnika ni bilo razkrito na podlagi pravilnika o preglednosti potrdila.</translation>
@@ -1944,6 +1961,7 @@ Dodatne podrobnosti:
 <translation id="7937554595067888181">Poteče <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Potrdilo strežnika še ni veljavno.</translation>
 <translation id="7942349550061667556">Rdeča</translation>
+<translation id="7943893128817522649">Lahko zahteva samodejno prenašanje več datotek.</translation>
 <translation id="7947285636476623132">Preverite leto poteka veljavnosti in poskusite znova</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite izvedeti več o funkcijah Chroma</translation>
 <translation id="7950027195171824198">Upravljajte nastavitve piškotkov v Chromovih nastavitvah.</translation>
@@ -1956,6 +1974,7 @@ Dodatne podrobnosti:
 <translation id="7976214039405368314">Preveč zahtev.</translation>
 <translation id="7977538094055660992">Izhodna naprava</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="798134797138789862">Lahko zahteva uporabo naprav in podatkov za navidezno resničnost.</translation>
 <translation id="79859296434321399">Če si želite ogledati vsebino v razširjeni resničnosti, namestite ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Vezava</translation>
@@ -2145,6 +2164,7 @@ Dodatne podrobnosti:
 <translation id="8699041776323235191">Naprava HID</translation>
 <translation id="8703575177326907206">Vaša povezava z <ph name="DOMAIN" /> ni kodirana.</translation>
 <translation id="8705331520020532516">Serijska številka</translation>
+<translation id="8708134712139312373">Lahko zahteva vzpostavitev povezave z napravami Bluetooth.</translation>
 <translation id="8710842507289500830">Slog pisave</translation>
 <translation id="8712637175834984815">Razumem</translation>
 <translation id="8718314106902482036">Plačilo ni končano</translation>

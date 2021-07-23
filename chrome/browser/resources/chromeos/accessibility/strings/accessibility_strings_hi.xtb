@@ -182,6 +182,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2243633977138166243">नेविगेट करने के लिए लेफ़्ट या राइट ऐरो को दबाएं; चालू करने के लिए enter दबाएं</translation>
 <translation id="224426591676115802">इस भाषा में बोलकर निर्देश देने की सुविधा नहीं है: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">सीखने वाला मोड बंद किया जा रहा है</translation>
+<translation id="2247870315273396641">चुनी गई आवाज़ की झलक</translation>
 <translation id="225732394367814946">बोली की दर बढ़ाएं</translation>
 <translation id="2267538686624070261">गलत वर्तनी छोड़ रहे हैं</translation>
 <translation id="2267945578749931355">अगला वर्ण</translation>
@@ -198,6 +199,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2390264819538553347">आगे जाने के लिए, enter दबाएं, वापस जाने के लिए, backspace दबाएं.</translation>
 <translation id="2398579267367951220">पेज खाेजने के लिए टाइप करें. नतीजे पर जाने के लिए Enter दबाएं, नतीजाें को ब्राउज़ करने के लिए, अप या डाउन ऐराे (नीचे या ऊपर की ओर तीर के निशान वाले बटन) बटन दबाएं. साथ ही, दूसरी चीज़ें खाेजने के लिए टाइप करते रहें या रद्द करने के लिए Escape दबाएं.</translation>
 <translation id="240709722712693803">नीला बैंगनी</translation>
+<translation id="2410298923485357543">डिवाइस इंटरनेट से कनेक्ट होने पर, अच्छी क्वालिटी वाली आवाज़ का इस्तेमाल करें</translation>
 <translation id="2416512023405990736">अनचेक किया गया चेकबॉक्स</translation>
 <translation id="2417569100218200841">सामग्री की जानकारी</translation>
 <translation id="2417948780551741035">एंडनोट</translation>
@@ -299,6 +301,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3046838483509668188">ChromeVox विकल्प</translation>
 <translation id="3060756054951570867"><ph name="TITLE" />, मेन्यू खुल गया</translation>
 <translation id="3060880924447482063">आइटम एक-एक करके खिसकाने के लिए बाएं या दाएं स्वाइप करें</translation>
+<translation id="3061302636956643119">टेक्स्ट को प्रोसेस के लिए Google के पास भेजा जाएगा.</translation>
 <translation id="3070245424257836917">तीन उंगलियों से ऊपर स्वाइप करें</translation>
 <translation id="307516670110542567">क्विक ओरिएंटेशन</translation>
 <translation id="3078345202707391975">अगले लेवल 2 का शीर्षक</translation>
@@ -936,6 +939,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="7693840228159394336">पिछला रेडियो बटन</translation>
 <translation id="7701040980221191251">कुछ भी नहीं</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7713139339518499741">अच्छी क्वालिटी वाली आवाज़</translation>
 <translation id="7714340021005120797">आगे कोई कॉम्‍बो बॉक्‍स नहीं है</translation>
 <translation id="772146615414628379">बधाई हो! आपने ChromeVox का इस्तेमाल करने की ज़रूरी बातें सीख ली हैं. याद रखें कि आप Search+Period दबाकर, किसी भी समय ChromeVox का निर्देश मेन्यू खोल सकते हैं. ChromeVox और Chrome OS के बारे में और भी ज़्यादा जानने के लिए, नीचे दिए गए लेखों पर जाएं.
     अगर आपने ट्यूटोरियल पूरा कर लिया है, तो ChromeVox का इस्तेमाल करके, 'बंद करें' बटन पर जाएं और उस पर क्लिक करें.</translation>
@@ -966,6 +970,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="7939428177581522200">चुनने में जोड़े गए</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{ऐट}one{# ऐट चिह्न}other{# ऐट चिह्न}}</translation>
 <translation id="7942349550061667556">लाल</translation>
+<translation id="7945703887991230167">पसंदीदा आवाज़</translation>
 <translation id="7948364528129376623">आगे कोई देखा गया लिंक नहीं है</translation>
 <translation id="7952460583030260752">कमांड (निर्देश) रेफ़रंस</translation>
 <translation id="7965147473449754028">मेन्यू बंद किया गया</translation>

@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">Spør før nettsteder får bruke virtuell virkelighet-enheten din eller -dataene dine (anbefales)</translation>
 <translation id="4962975101802056554">Opphev alle tillatelser for enheten</translation>
 <translation id="497421865427891073">Gå til neste</translation>
+<translation id="4976702386844183910">Sist besøkt <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Fant ingen kontakter</translation>
 <translation id="4996978546172906250">Del via</translation>
 <translation id="5039804452771397117">Tillat</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">Inkognitofane</translation>
 <translation id="5186036860380548585">Alternativet finner du nesten øverst på skjermen</translation>
 <translation id="5197729504361054390">Kontaktene du velger, deles med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">Sist besøkt i dag</translation>
 <translation id="528192093759286357">Dra ned fra toppen og trykk på tilbakeknappen for å avslutte fullskjerm.</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5301954838959518834">Greit</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">Tillatelser</translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="5876056640971328065">Sett videoen på pause</translation>
+<translation id="5887687176710214216">Sist besøkt i går</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5922853908706496913">Deler skjermen din</translation>
 <translation id="5939518447894949180">Tilbakestill</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">Del</translation>
 <translation id="6545864417968258051">Bluetooth-skanning</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> til er blokkert}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> til er blokkert}}</translation>
+<translation id="6554732001434021288">Sist besøkt for <ph name="NUM_DAYS" /> dager siden</translation>
 <translation id="6561560012278703671">Bruk stillere meldinger (blokkerer varselmeldinger fra å forstyrre deg)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beskyttet innhold</translation>

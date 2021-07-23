@@ -224,7 +224,6 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 
 Touch and hold any word to search. To refine your search, select more or fewer words. To edit your search, open the panel, tap the icon to open in a new tab, and make your changes in the search box.</translation>
 <translation id="2459390580524506445">Enhanced voice search</translation>
-<translation id="246532703174860178">Share</translation>
 <translation id="247737702124049222">Image descriptions are on</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2485422356828889247">Uninstall</translation>
@@ -296,7 +295,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2900528713135656174">Create event</translation>
 <translation id="2901411048554510387">Showing suggestions for <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">List of devices to share a tab with, opened at full height.</translation>
-<translation id="2905036901251765993">To share with people nearby, let them scan this QR code</translation>
 <translation id="2908243544703713905">Unread stories ready</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Manage the topics that you're interested in</translation>
@@ -339,6 +337,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3208584281581115441">Check now</translation>
 <translation id="3211426585530211793">Deleted <ph name="ITEM_TITLE" /></translation>
+<translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Search history<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />other forms of activity<ph name="END_LINK2" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.</translation>
 <translation id="321773570071367578">If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">To sync your passwords, verify that it's you</translation>
 <translation id="3227557059438308877">Google Chrome as a security key</translation>
@@ -623,7 +622,9 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5005498671520578047">Copy password</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> wants to connect</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5032430150487044192">Can't create QR code</translation>
 <translation id="5039804452771397117">Allow</translation>
+<translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Other forms of activity<ph name="END_LINK1" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.</translation>
 <translation id="5061533557687621530">To check the weather, tap the mic and say 'What’s the weather today?'</translation>
 <translation id="5087580092889165836">Add card</translation>
 <translation id="5091249083535528968">Extended usage data</translation>
@@ -724,7 +725,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="572328651809341494">Recent tabs</translation>
 <translation id="5723735397759933332">Lite mode now saves you more data by optimising images on HTTPS pages.</translation>
 <translation id="5726692708398506830">Make everything on the page bigger</translation>
-<translation id="5733983706093266635">Can't create QR code. URL is more than <ph name="CHARACTER_LIMIT" /> characters.</translation>
 <translation id="5748802427693696783">Switched to standard tabs</translation>
 <translation id="5749068826913805084">Chrome needs storage access to download files.</translation>
 <translation id="5749237766298580851">Off <ph name="SEPARATOR" /> Not recommended</translation>
@@ -743,6 +743,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5814131985548525293">Type here or tap the voice icon to start</translation>
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5833984609253377421">Share link</translation>
+<translation id="5834764604050996579">To scan a QR code, let Chrome use your camera</translation>
 <translation id="5836192821815272682">Downloading Chrome update…</translation>
 <translation id="5853623416121554550">paused</translation>
 <translation id="5854512288214985237">No statistics or crash reports are sent to Google</translation>
@@ -880,7 +881,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6590680911007613645">Make sure that the password you are saving matches your password for <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Desktop site</translation>
 <translation id="6595046016124923392">Images are sent to Google to improve descriptions for you.</translation>
-<translation id="6597891566292541626">Position QR/barcode in this frame.</translation>
 <translation id="6600954340915313787">Copied to Chrome</translation>
 <translation id="661266467055912436">Improves security for you and everyone on the web.</translation>
 <translation id="6618554661997243500">To see top sites and stories for you, tap the Home button</translation>
@@ -924,6 +924,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6867400383614725881">New Incognito tab</translation>
 <translation id="6869056123412990582">computer</translation>
 <translation id="6882836635272038266">Standard protection against websites, downloads and extensions that are known to be dangerous.</translation>
+<translation id="6883204995689174413">Share</translation>
 <translation id="688738109438487280">Add existing data to <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Unlock to copy your password</translation>
 <translation id="6896758677409633944">Copy</translation>
@@ -944,6 +945,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7022756207310403729">Open in browser</translation>
 <translation id="702463548815491781">Recommended when TalkBack or Switch Access are on</translation>
 <translation id="7027549951530753705">Restored <ph name="ITEM_TITLE" /></translation>
+<translation id="7029390216614421513">Position QR code/barcode in this frame.</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7054588988317389591">Get image descriptions?</translation>
 <translation id="7055152154916055070">Redirect blocked:</translation>
@@ -958,8 +960,10 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7138678301420049075">Other</translation>
 <translation id="7146622961999026732">These sites and apps seem important to you:</translation>
 <translation id="7149893636342594995">Last 24 Hours</translation>
+<translation id="7155317020660659215">To scan a QR code, change your settings so that Chrome can use your camera</translation>
 <translation id="7173114856073700355">Open settings</translation>
 <translation id="7177466738963138057">You can change this later in Settings</translation>
+<translation id="7177873915659574692">Can't create QR code. URL is more than <ph name="CHARACTER_LIMIT" /> characters.</translation>
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7187993566681480880">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.</translation>
 <translation id="718926126787620637">List of bookmark folders opened at full height</translation>
@@ -1004,6 +1008,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7454641608352164238">Not enough space</translation>
 <translation id="7475192538862203634">If you’re seeing this frequently, try these <ph name="BEGIN_LINK" />suggestions<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD card not found. Some of your files may be missing.</translation>
+<translation id="7476384249953022816">To clear Incognito browsing history from your device, close all tabs</translation>
 <translation id="7479104141328977413">Tab management</translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7481864133709957613">To search from this page, touch &amp; hold words instead of tapping them</translation>
@@ -1086,11 +1091,11 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7929962904089429003">Opening the menu</translation>
 <translation id="7930998711684428189">Warns you if passwords are exposed in a data breach.</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> is out of date.</translation>
+<translation id="7944772052836377867">Sync needs to verify that it's you</translation>
 <translation id="7947953824732555851">Accept and sign in</translation>
 <translation id="7961015016161918242">Never</translation>
 <translation id="7961926449547174351">You have disabled storage access. Please go to settings to enable it.</translation>
 <translation id="7963646190083259054">Vendor:</translation>
-<translation id="7967911570373677897">To scan a QR code, change your settings so that Chrome can use your camera</translation>
 <translation id="7968014550143838305">Added to reading list</translation>
 <translation id="7971136598759319605">Active 1 day ago</translation>
 <translation id="7975379999046275268">Preview page <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -1118,11 +1123,11 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8084114998886531721">Saved password</translation>
 <translation id="8084285576995584326">Control your Google Account data</translation>
 <translation id="808747664143081553">Connected to device</translation>
+<translation id="8088176524274673045">To share with people nearby, let them scan this QR code</translation>
 <translation id="8103578431304235997">Incognito Tab</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">To get your bookmarks on all your devices, turn on sync</translation>
 <translation id="8110087112193408731">Show your Chrome activity in Digital Wellbeing?</translation>
-<translation id="8115259494083109761">To scan a QR code, let Chrome use your camera</translation>
 <translation id="8127542551745560481">Edit homepage</translation>
 <translation id="813082847718468539">View site information</translation>
 <translation id="8137558756159375272">Touch to Search sends the selected word and the current page as context to Google Search. You can turn it off in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
@@ -1139,7 +1144,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8218622182176210845">Manage your account</translation>
 <translation id="8223642481677794647">Feed card menu</translation>
 <translation id="8224471946457685718">Download articles for you on Wi-Fi</translation>
-<translation id="8233540874193135768">To scan a QR code, use a device with a camera.</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="825412236959742607">This page uses too much memory, so Chrome removed some content.</translation>
 <translation id="8260126382462817229">Try signing in again</translation>
@@ -1228,6 +1232,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8788265440806329501">Navigation history is closed</translation>
 <translation id="8788968922598763114">Reopen the last closed tab</translation>
 <translation id="8798449543960971550">Read</translation>
+<translation id="8805097383171548551">To scan a QR code, use a device with a camera.</translation>
 <translation id="8812260976093120287">On some websites, you can pay with above supported payment apps on your device.</translation>
 <translation id="881688628773363275">Preview tab content is not viewable.</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
@@ -1256,7 +1261,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8970887620466824814">Something went wrong.</translation>
 <translation id="8972098258593396643">Download to default folder?</translation>
 <translation id="8988028529677883095">Use phone as a security key</translation>
-<translation id="8990209962746788689">Can't create QR code</translation>
 <translation id="8993760627012879038">Open a new tab in Incognito mode</translation>
 <translation id="8996847606757455498">Choose another provider</translation>
 <translation id="8998729206196772491">You are signing in with an account managed by <ph name="MANAGED_DOMAIN" /> and giving its administrator control over your Chrome data. Your data will become permanently tied to this account. Signing out of Chrome will delete your data from this device, but it will remain stored in your Google Account.</translation>
@@ -1274,6 +1278,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="9070377983101773829">Start voice search</translation>
 <translation id="9074336505530349563">To get personalised content suggested by Google, sign in and turn on sync</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9081543426177426948">Sites that you visit aren’t saved in Incognito</translation>
 <translation id="9086302186042011942">Syncing</translation>
 <translation id="9086455579313502267">Unable to access the network</translation>
 <translation id="9100505651305367705">Offer to show articles in simplified view, when supported</translation>

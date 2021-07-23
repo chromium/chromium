@@ -183,6 +183,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="2243633977138166243">‏نیویگیٹ کرنے کیلئے بائیں یا دائیں تیر کا نشان، فعال کرنے کیلئے enter دبائیں</translation>
 <translation id="224426591676115802">اس زبان کیلئے کوئی آواز دستیاب نہیں ہے: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">جاننے کی وضع بند کی جا رہی ہے</translation>
+<translation id="2247870315273396641">آواز کا پیش منظر</translation>
 <translation id="225732394367814946">اسپیچ کا ریٹ بڑھائیں</translation>
 <translation id="2267538686624070261">ہجے کی غلطی کو نظر انداز کرنا</translation>
 <translation id="2267945578749931355">اگلا حرف</translation>
@@ -199,6 +200,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="2390264819538553347">آگے جانے کیلئے، انٹر کو دبائیں؛ واپس جانے کیلئے، بیک اسپیس کو دبائیں۔</translation>
 <translation id="2398579267367951220">‏صفحے میں تلاش کرنے کے لئے ٹائپ کریں۔ نتیجے تک جانے کے لیے enter دبائیں، نتائج براؤز کرنے کے لئے اوپر یا نیچے تیر والے بٹن دبائیں، اپنی تلاش کو تبدیل کرنے کے لئے ٹائپنگ جاری رکھیں، یا منسوخ کرنے کے لئے escape دبائیں۔</translation>
 <translation id="240709722712693803">نیلا وائلیٹ</translation>
+<translation id="2410298923485357543">جب آلہ آن لائن ہو تو قدرتی آواز کا استعمال کریں</translation>
 <translation id="2416512023405990736">ایک غیر نشان زد چیک باکس</translation>
 <translation id="2417569100218200841">مواد کی معلومات</translation>
 <translation id="2417948780551741035">اختتامی نوٹس</translation>
@@ -300,6 +302,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="3046838483509668188">‏ChromeVox اختیارات</translation>
 <translation id="3060756054951570867"><ph name="TITLE" /> مینو کھولا گیا</translation>
 <translation id="3060880924447482063">آئٹم کے لحاظ سے حرکت کرنے کے لیے بائیں یا دائیں سوائپ کریں</translation>
+<translation id="3061302636956643119">‏پروسیسنگ کے لیے ٹیکسٹ Google کو بھیجا جائے گا۔</translation>
 <translation id="3070245424257836917">تین انگلیوں سے اوپر کی طرف سوائپ کریں</translation>
 <translation id="307516670110542567">فوری سمت بندی</translation>
 <translation id="3078345202707391975">اگلی سطح 2 کی سرخی</translation>
@@ -938,6 +941,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="7693840228159394336">پچھلا ریڈیو بٹن</translation>
 <translation id="7701040980221191251">کوئی نہیں</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7713139339518499741">قدرتی آواز</translation>
 <translation id="7714340021005120797">کوئی اگلا کومبو باکس نہیں ہے</translation>
 <translation id="772146615414628379">‏مبارک ہو! آپ نے ChromeVox کو کامیابی کے ساتھ استعمال کرنے کے لوازمات سیکھ لیے ہیں۔ یاد رکھیں کہ آپ Search+Period کو دبا کر کسی بھی وقت ChromeVox ہدایت مینو کو کھول سکتے ہیں۔ ChromeVox اور Chrome OS کے بارے میں اور مزید جاننے کے لیے درج ذیل مضامین کا ملاحظہ کریں۔
     اگر آپ نے ٹیوٹوریل کو مکمل کر لیا ہے تو 'بند کریں' بٹن پر نیویگیٹ کرنے اور اس پر کلک کرنے کیلئے ChromeVox استعمال کریں۔</translation>
@@ -968,6 +972,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="7939428177581522200">انتخاب میں شامل کردہ</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{اَیٹ}other{# اَیٹ نشانات}}</translation>
 <translation id="7942349550061667556">سرخ</translation>
+<translation id="7945703887991230167">ترجیحی آوز</translation>
 <translation id="7948364528129376623">کوئی اگلا ملاحظہ کردہ لنک نہیں ہے</translation>
 <translation id="7952460583030260752">کمانڈ ریفرینسز</translation>
 <translation id="7965147473449754028">مینو بند ہو گیا</translation>

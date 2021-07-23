@@ -182,6 +182,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2243633977138166243">Ekranda gezinmek için sol veya sağ oka, etkinleştirmek için enter tuşuna basın</translation>
 <translation id="224426591676115802">Şu dil için ses yok: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Öğrenme Modu durduruluyor</translation>
+<translation id="2247870315273396641">Ses önizlemesi</translation>
 <translation id="225732394367814946">Konuşma hızını artır</translation>
 <translation id="2267538686624070261">Yazım hatasından çıkılıyor</translation>
 <translation id="2267945578749931355">Sonraki Karakter</translation>
@@ -198,6 +199,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2390264819538553347">İlerlemek için enter tuşuna, geri gitmek için geri tuşuna basın.</translation>
 <translation id="2398579267367951220">Sayfada aramak için yazmaya başlayın. Sonuca atlamak için enter tuşuna, sonuçlara göz atmak için yukarı veya aşağı oka basın. Aramanızı değiştirmek için yazmaya devam edin veya iptal etmek için escape tuşuna basın.</translation>
 <translation id="240709722712693803">Menekşe Rengi</translation>
+<translation id="2410298923485357543">Cihaz internete bağlıyken doğal ses kullan</translation>
 <translation id="2416512023405990736">İşaretlenmemiş onay kutusu</translation>
 <translation id="2417569100218200841">İçerik bilgileri</translation>
 <translation id="2417948780551741035">Son notlar</translation>
@@ -299,6 +301,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="3046838483509668188">ChromeVox Seçenekleri</translation>
 <translation id="3060756054951570867"><ph name="TITLE" /> menüsü açıldı</translation>
 <translation id="3060880924447482063">Öğeler arasında geçiş yapmak için sola veya sağa hızlıca kaydırın.</translation>
+<translation id="3061302636956643119">Metin, işlenmek üzere Google'a gönderilecek.</translation>
 <translation id="3070245424257836917">Üç parmağınızı yukarı kaydırın</translation>
 <translation id="307516670110542567">Hızlı oryantasyon</translation>
 <translation id="3078345202707391975">Sonraki 2. düzey başlık</translation>
@@ -936,6 +939,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="7693840228159394336">Önceki radyo düğmesi</translation>
 <translation id="7701040980221191251">Yok</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7713139339518499741">Doğal ses</translation>
 <translation id="7714340021005120797">Sonraki birleşik giriş kutusu yok</translation>
 <translation id="772146615414628379">Tebrikler! ChromeVox kullanımıyla ilgili temel bilgileri başarıyla öğrendiniz. ChromeVox komut menüsünü Arama+Nokta tuşlarına basarak istediğiniz zaman açabileceğinizi unutmayın. ChromeVox ve Chrome OS hakkında daha da fazla bilgi edinmek için aşağıdaki makaleleri inceleyin.
     Eğitimle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidip düğmeyi tıklayın.</translation>
@@ -966,6 +970,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="7939428177581522200">seçime eklendi</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{kuyruklu a işareti}other{# kuyruklu a işareti}}</translation>
 <translation id="7942349550061667556">Kırmızı</translation>
+<translation id="7945703887991230167">Tercih edilen ses</translation>
 <translation id="7948364528129376623">Ziyaret edilmiş başka sonraki bağlantı yok</translation>
 <translation id="7952460583030260752">Komut referansları</translation>
 <translation id="7965147473449754028">menü kapandı</translation>

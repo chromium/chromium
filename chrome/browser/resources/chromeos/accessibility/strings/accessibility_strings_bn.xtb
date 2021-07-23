@@ -182,6 +182,7 @@
 <translation id="2243633977138166243">নেভিগেট করতে বাঁ বা ডানদিকের তীরচিহ্ন ও বেছে নিতে এন্টার টিপুন</translation>
 <translation id="224426591676115802"><ph name="LANGUAGE" /> ভাষার জন্য কোনও ভয়েস উপলভ্য নেই</translation>
 <translation id="2247700577781885251">লার্ন মোড থামানো হচ্ছে</translation>
+<translation id="2247870315273396641">বেছে নেওয়া খুব ভাল কোয়ালিটির ভয়েসের প্রিভিউ</translation>
 <translation id="225732394367814946">কথনের হার বাড়ান</translation>
 <translation id="2267538686624070261">ভুল বানান ছেড়ে দেওয়া হচ্ছে</translation>
 <translation id="2267945578749931355">পরবর্তী অক্ষর</translation>
@@ -198,6 +199,7 @@
 <translation id="2390264819538553347">এগিয়ে যাওয়ার জন্য, enter টিপুন; ফিরে যেতে, backspace টিপুন।</translation>
 <translation id="2398579267367951220">পৃষ্ঠাতে সার্চ করতে টাইপ করুন। সার্চ ফলাফলে সরাসরি যেতে কীবোর্ড থেকে 'Enter' কী এবং ফলাফল ব্রাউজ করার জন্য 'Up' বা 'Down Arrow' কী প্রেস করুন। নতুন কোনও কিছু সার্চ করার জন্য টাইপ করতে থাকুন অথবা বাতিল করতে 'Escape' কী প্রেস করুন।</translation>
 <translation id="240709722712693803">নীলাভ বেগুনী</translation>
+<translation id="2410298923485357543">ডিভাইস অনলাইন থাকার সময় খুব ভাল কোয়ালিটির ভয়েস ব্যবহার করুন</translation>
 <translation id="2416512023405990736">একটি টিকচিহ্ন উঠানো চেকবাক্স</translation>
 <translation id="2417569100218200841">কন্টেন্টর তথ্য</translation>
 <translation id="2417948780551741035">এন্ডনোট</translation>
@@ -299,6 +301,7 @@
 <translation id="3046838483509668188">ChromeVox বিকল্প</translation>
 <translation id="3060756054951570867"><ph name="TITLE" /> মেনু খোলা আছে</translation>
 <translation id="3060880924447482063">একটি আইটেম থেকে অন্য আইটেমে যেতে বাঁ অথবা ডানদিকে সোয়াইপ করুন</translation>
+<translation id="3061302636956643119">প্রসেস করার জন্য টেক্সটি Google-এ পাঠানো হবে।</translation>
 <translation id="3070245424257836917">তিন আঙ্গুল দিয়ে উপরের দিকে সোয়াইপ করুন</translation>
 <translation id="307516670110542567">'দ্রুত জ্ঞান অর্জন'</translation>
 <translation id="3078345202707391975">পরবর্তী স্তর ২ শিরোনাম</translation>
@@ -937,6 +940,7 @@
 <translation id="7693840228159394336">আগের রেডিও বোতাম</translation>
 <translation id="7701040980221191251">কিছু নেই</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7713139339518499741">খুব ভাল কোয়ালিটির ভয়েস</translation>
 <translation id="7714340021005120797">কোনও পরবর্তী কম্বোবক্স নেই</translation>
 <translation id="772146615414628379">অভিনন্দন! ChromeVox-এর প্রয়োজনীয় উপাদানগুলির ব্যাপারে আপনার কাছে এখন যথেষ্ট তথ্য রয়েছে। মনে রাখবেন, আপনি যেকোনও সময় ChromeVox-এর পরিবর্তিত কীবোর্ডে গিয়ে 'সার্চ' কী ও 'পিরিয়ড' কী একসাথে প্রেস করে ChromeVox-এর 'কমান্ড' মেনু খুলতে পারেন। ChromeVox ও Chrome OS-এর ব্যাপারে আরও বিস্তারিত জানতে, নিচে দেওয়া নিবন্ধগুলি পড়ে দেখুন।
     যদি আপনার টিউটোরিয়াল দেখা হয়ে গিয়ে থাকে, ChromeVox ব্যবহার করে 'বন্ধ করুন' বোতামে গিয়ে সেটিতে ক্লিক করুন।</translation>
@@ -967,6 +971,7 @@
 <translation id="7939428177581522200">নির্বাচনে জোড়া হয়েছে</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{অ্যাট}one{#টি অ্যাট চিহ্ন}other{#টি অ্যাট চিহ্ন}}</translation>
 <translation id="7942349550061667556">লাল</translation>
+<translation id="7945703887991230167">পছন্দমতো ভয়েস</translation>
 <translation id="7948364528129376623">কোনও পরবর্তী ঘুরে দেখা লিঙ্ক নেই</translation>
 <translation id="7952460583030260752">কমান্ড রেফারেন্স</translation>
 <translation id="7965147473449754028">মেনু বন্ধ হয়েছে</translation>

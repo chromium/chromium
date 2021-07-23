@@ -136,9 +136,11 @@
 <translation id="1407135791313364759">Բացել բոլորը</translation>
 <translation id="1408787208417187241">Երեք ամրակ վերևում</translation>
 <translation id="1413809658975081374">Գաղտնիության սխալ</translation>
+<translation id="1422930527989633628">Կարող է հայցել մոտակա Bluetooth սարքերը հայտնաբերելու թույլտվություն</translation>
 <translation id="1426410128494586442">Այո</translation>
 <translation id="1428146450423315676">Շեղջիչ 7</translation>
 <translation id="1430915738399379752">Տպում</translation>
+<translation id="1436185428532214179">Կարող է հայցել ձեր սարքի ֆայլերն ու պանակները փոփոխելու թույլտվություն</translation>
 <translation id="1442386063175183758">Աջ քառորդի ծալում</translation>
 <translation id="1442987760062738829">Անցք</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
@@ -258,6 +260,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Հասանելի են բազմաթիվ գործողություններ։ Դրանք ընտրելու համար սեղմեք Tab:</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Քարտատիրոջ անունը</translation>
+<translation id="1803351196216024260">Կարող է հայցել խոսափողն օգտագործելու թույլտվություն</translation>
 <translation id="1807246157184219062">Բաց</translation>
 <translation id="1807528111851433570">Առաջին թերթ</translation>
 <translation id="1812527064848182527">հորիզոնական</translation>
@@ -287,6 +290,7 @@
 <translation id="1919367280705858090">Որոշակի սխալների վերացման օգնություն</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ոչինչ չկա}=1{1 կայք}one{# կայք}other{# կայք}}</translation>
 <translation id="1924727005275031552">Նոր</translation>
+<translation id="1939175642807587452">Կարող է հայցել ծանուցումներ ուղարկելու թույլտվություն</translation>
 <translation id="1945968466830820669">Հնարավոր է՝ չկարողանաք օգտագործել ձեր կազմակերպության հաշիվը, կամ ինչ-որ մեկը կարող է հափշտակել ձեր անձնական տվյալները։ Խորհուրդ ենք տալիս փոխել գաղտնաբառը։</translation>
 <translation id="1947454675006758438">Ամրակ վերևի աջ կողմում</translation>
 <translation id="1958218078413065209">Ձեր լավագույն արդյունքը՝ <ph name="SCORE" />։</translation>
@@ -417,6 +421,7 @@
 <translation id="2392959068659972793">Ցույց տալ կանոնները, որոնց արժեքները տրված չեն:</translation>
 <translation id="239429038616798445">Ուղարկման այս եղանակը հասանելի չէ: Փորձեք այլ եղանակ:</translation>
 <translation id="2396249848217231973">&amp;Հետարկել ջնջումը</translation>
+<translation id="2400600116338235695">Կարող է հայցել հաջորդական միացքներին միանալու թույլտվություն</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413155254802890957">Հին</translation>
 <translation id="2413528052993050574">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Դրա անվտանգության վկայականը, հավանաբար, հետ է կանչվել: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
@@ -471,6 +476,7 @@
 <translation id="2609632851001447353">Տարբերակներ</translation>
 <translation id="2618023639789766142">C10 (ծրար)</translation>
 <translation id="2625385379895617796">Ձեր ժամացույցը առաջ է ընկել</translation>
+<translation id="262745152991669301">Կարող է հայցել USB սարքերին միանալու թույլտվություն</translation>
 <translation id="2629325967560697240">Chrome-ի լավագույն պաշտպանության համակարգերն օգտագործելու համար <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />միացրեք լրացուցիչ պաշտպանությունը<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">Չհաջողվեց գտնել <ph name="HOST_NAME" /> տիրույթի սերվերի IP հասցեն։</translation>
 <translation id="2639739919103226564">Կարգավիճակ`</translation>
@@ -614,6 +620,7 @@
 <translation id="3188393374551744535">Հաշվի մնացորդը</translation>
 <translation id="3194737229810486521"><ph name="URL" /> կայքն ուզում է ձեր սարքում մեծ ծավալով տվյալներ մշտապես պահել</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> տպիչ <ph name="SERVER_NAME" />֊ում</translation>
+<translation id="3197136577151645743">Կարող է հայցել թույլտվություն՝ տեղեկանալու, երբ դուք ակտիվորեն օգտագործում եք ձեր սարքը</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Համաժամացվող տեղեկությունները Chrome-ի կարգավորումներում կառավարելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="320323717674993345">Չեղարկել վճարումը</translation>
 <translation id="3207960819495026254">Էջանշված է</translation>
@@ -830,6 +837,7 @@
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3939773374150895049">Օգտագործե՞լ WebAuthn՝ CVC-ի փոխարեն</translation>
 <translation id="3946209740501886391">Միշտ հարցնել այս կայքում</translation>
+<translation id="3947595700203588284">Կարող է հայցել MIDI սարքերին միանալու թույլտվություն</translation>
 <translation id="3949571496842715403">Այս սերվերը չկարողացավ ապացուցել, որ այն իրոք ներկայացնում է <ph name="DOMAIN" /> տիրույթը: Դրա անվտանգության վկայագիրը չի ներառում թեմայի այլընտրանքային անուններ։ Պատճառը կարող է լինել ինչպես սերվերի սխալ կազմաձևումը, այնպես էլ ձեր և սերվերի միջև կապուղու վրա հաքերային հարձակումն և գաղտնալսումը:</translation>
 <translation id="3949601375789751990">Ձեր այցելությունների պատմությունը կցուցադրվի այստեղ</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -930,6 +938,7 @@
     &lt;p&gt;Եթե շարունակում եք տեսնել սխալը, կապվեք կայքի սեփականատիրոջ հետ։&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Գործարկել ցանցի ախտորոշումը<ph name="END_LINK" />:</translation>
 <translation id="4229544452621580519">Անցեք անվտանգության ստուգում Chrome-ի կարգավորումներում</translation>
+<translation id="4230204356098880324">Կարող է հայցել տեսախցիկն օգտագործելու և տեղաշարժելու թույլտվություն</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Անցնել <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Վավեր</translation>
 <translation id="4250431568374086873">Կայքին կապակցումը լիարժեք պաշտպանված չէ</translation>
@@ -992,6 +1001,7 @@
 <translation id="4434045419905280838">Ելնող պատուհաններ և վերահղում</translation>
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Պրոքսի-սերվերի օգտագործումն անջատված է, բայց հատկորոշված է ուղղակի կազմաձևում:</translation>
+<translation id="4451135742916150903">Կարող է հայցել HID սարքերին միանալու թույլտվություն</translation>
 <translation id="4460315069258617173">Թույլատրված է, քանի դեռ չեք փակել այս կայքի ներդիրները</translation>
 <translation id="4464826014807964867">Կայքեր՝ ձեր կազմակերպությունից ստացած տեղեկություններով</translation>
 <translation id="4476953670630786061">Այս ձևն ապահով չէ։ Ինքնալրացումն անջատվել է։</translation>
@@ -1055,6 +1065,7 @@
 <translation id="4708268264240856090">Ձեր կապն ընդհատվել է</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Գործարկել Windows-ի ցանցի ախտորոշումը<ph name="END_LINK" /></translation>
+<translation id="4724144314178270921">Կարող է հայցել սեղմատախտակին պատճենված տեքստն ու պատկերները դիտելու թույլտվություն</translation>
 <translation id="4726672564094551039">Վերաբեռնել կանոնները</translation>
 <translation id="4728558894243024398">Հենք</translation>
 <translation id="4731638775147756694">Ձեր ադմինիստրատորն արգելափակել է այս հավելվածը</translation>
@@ -1352,6 +1363,7 @@
 <translation id="5728056243719941842">C5 (ծրար)</translation>
 <translation id="5730040223043577876">Խորհուրդ ենք տալիս վերակայել ձեր գաղտնաբառը, եթե այն օգտագործել եք այլ կայքերում:</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Պահեք քարտը Google հաշվում}one{Պահեք քարտը Google հաշվում}other{Պահեք քարտերը Google հաշվում}}</translation>
+<translation id="5745733273847572235">Կարող է հայցել տեղադրության տվյալների օգտագործման թույլտվություն</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{Այս քարտի համար օգտագործեք վիրտուալ համար}one{Ընտրեք քարտը}other{Ընտրեք քարտը}}</translation>
 <translation id="5759751709240058861">Օգտագործել և տեղաշարժել ձեր տեսախցիկը</translation>
 <translation id="5763042198335101085">Մուտքագրեք վավեր էլ․ հասցե</translation>
@@ -1470,6 +1482,7 @@
 <translation id="6169916984152623906">Ինկոգնիտո ռեժիմում ձեր գործողությունները տեսանելի չեն լինի այս սարքի մյուս օգտատերերին: Սակայն ներբեռնումներն ու էջանիշները կպահվեն։</translation>
 <translation id="6177128806592000436">Կայքին կապակցումը պաշտպանված չէ</translation>
 <translation id="6180316780098470077">Կրկնության միջակայք</translation>
+<translation id="619448280891863779">Կարող է հայցել էկրաններին պատուհաններ բացելու և տեղադրելու թույլտվություն</translation>
 <translation id="6196640612572343990">Արգելափակել երրորդ կողմի քուքիները</translation>
 <translation id="6203231073485539293">Ստուգեք համացանցի կապակցումը</translation>
 <translation id="6211666000885129820">Պաշտպանված վճարումների մուտքային տվյալների գրանցման էկրան</translation>
@@ -1555,6 +1568,7 @@
 <translation id="6502991525169604759">Առանց ձեր կատարած փոփոխությունների</translation>
 <translation id="6505563257409036437">Փակել ինկոգնիտո պատուհանները</translation>
 <translation id="6508722015517270189">Վերագործարկեք Chrome-ը</translation>
+<translation id="6513005815064132016">Թույլատրվում է հետագծել տեսախցիկի դիրքը</translation>
 <translation id="6517596291481585650">Ուշադրություն: Այս կանոնը չի միավորվել որպես ցուցակ, ինչպես նշված է կանոնում, քանի որ այն ցուցակ չէ:</translation>
 <translation id="6518133107902771759">Ստուգել</translation>
 <translation id="6521745193039995384">Ակտիվ չէ</translation>
@@ -1655,7 +1669,9 @@
 <translation id="6949872517221025916">Գաղտնաբառի վերակայում</translation>
 <translation id="6950684638814147129">Չհաջողվեց վերլուծել JSON արժեքը՝ <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Զրոյացնել բոլորը</translation>
+<translation id="6954341342296443517">Կարող է հայցել որոշ տեսակի ֆայլեր բացելու թույլտվություն</translation>
 <translation id="6957887021205513506">Սերվերի վկայագիրը կեղծ է:</translation>
+<translation id="6961844873822989059">Կարող է հայցել սարքի տառատեսակներն օգտագործելու թույլտվություն</translation>
 <translation id="6963520811470373926">Փոխարինվում է</translation>
 <translation id="6964255747740675745">Չհաջողվեց վերլուծել ցանցի կարգավորումը (անվավեր JSON ձևաչափ):</translation>
 <translation id="6965382102122355670">Եղավ</translation>
@@ -1757,6 +1773,7 @@
 <translation id="733354035281974745">Լոկալ հաշվի փոփոխում սարքում</translation>
 <translation id="7333654844024768166">Դուք հենց նոր մուտքագրեցիք ձեր գաղտնաբառը կասկածելի կայքում։ Խորհուրդ ենք տալիս փոխել ձեր գաղտնաբառը, որն օգտագործում եք <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> և այլ կայքերում։</translation>
 <translation id="7334320624316649418">&amp;Վերարկել վերադասավորումը</translation>
+<translation id="7335157162773372339">Կարող է հայցել տեսախցիկն օգտագործելու թույլտվություն</translation>
 <translation id="7337248890521463931">Ցույց տալ ավելի շատ տողեր</translation>
 <translation id="7337706099755338005">Հասանելի չէ ձեր հարթակում:</translation>
 <translation id="733923710415886693">Սերվերի վկայագիրը չի բացահայտվել «Վկայագրերի թափանցիկություն» կանոնի միջոցով:</translation>
@@ -1944,6 +1961,7 @@
 <translation id="7937554595067888181">Վավեր է մինչև <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Սերվերի վկայագիրը դեռ վավեր չէ:</translation>
 <translation id="7942349550061667556">Կարմիր</translation>
+<translation id="7943893128817522649">Կարող է հայցել մի քանի ֆայլ ավտոմատ ներբեռնելու թույլտվություն</translation>
 <translation id="7947285636476623132">Ստուգեք սպառման տարին և նորից փորձեք</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի գործառույթների մասին տեղեկանալու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="7950027195171824198">Կառավարեք քուքիների պարամետրերը Chrome-ի կարգավորումներում</translation>
@@ -1956,6 +1974,7 @@
 <translation id="7976214039405368314">Չափազանց շատ հարցումներ</translation>
 <translation id="7977538094055660992">Արտածման սարք</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="798134797138789862">Կարող է հայցել վիրտուալ իրականության ձեր սարքերն ու տվյալները օգտագործելու թույլտվություն</translation>
 <translation id="79859296434321399">Լրացված իրականության ռեժիմում բովանդակությունը դիտելու համար տեղադրեք ARCore հավելվածը</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Ամրակար</translation>
@@ -2145,6 +2164,7 @@
 <translation id="8699041776323235191">HID սարք</translation>
 <translation id="8703575177326907206">Ձեր կապակցումը <ph name="DOMAIN" />-ին գաղտնագրված չէ:</translation>
 <translation id="8705331520020532516">Սերիական համարը</translation>
+<translation id="8708134712139312373">Կարող է հայցել Bluetooth սարքերին միանալու թույլտվություն</translation>
 <translation id="8710842507289500830">Տառատեսակի ոճ</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8718314106902482036">Չհաջողվեց մշակել վճարումը</translation>

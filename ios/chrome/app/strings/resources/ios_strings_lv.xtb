@@ -8,6 +8,10 @@
 <translation id="1047726139967079566">Saglabāt šo lapu kā grāmatzīmi...</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="105093091697134113">Tālāk norādītajos kontos tiek izmantotas paroles, kas tika atklātas trešās puses datu pārkāpumā vai ievadītas maldinošā vietnē. Nekavējoties nomainiet šīs paroles, lai aizsargātu savus kontus.</translation>
+<translation id="105214722824962652">Jūs netiksiet izrakstīts no sava Google konta. Kad esat pierakstījies, jūsu Google kontā var saglabāt <ph name="BEGIN_LINK" />arī cita veida darbības<ph name="END_LINK" />. Jebkurā laikā varat tās izdzēst.
+
+        
+Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus par meklēšanas vēstures dzēšanu, ja šāda iespēja ir pieejama.</translation>
 <translation id="1063454504051558093">Izmantot citu paroli</translation>
 <translation id="1066060668811609597">Sinhronizācijas pārvaldība</translation>
 <translation id="1076421457278169141">Kods ir skenēts</translation>
@@ -204,6 +208,10 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="298306318844797842">Pievienot maksājuma veidu...</translation>
 <translation id="2989805286512600854">Atvērt jaunā cilnē</translation>
 <translation id="3037605927509011580">Cilnes avārija.</translation>
+<translation id="3076846064362030967">Jūs netiksiet izrakstīts no sava Google konta. Kad esat pierakstījies, jūsu Google kontā var saglabāt <ph name="BEGIN_LINK" />arī cita veida darbības<ph name="END_LINK" />. Jebkurā laikā varat tās izdzēst.
+
+
+Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzēšanu, ja šāda iespēja ir pieejama.</translation>
 <translation id="3080525922482950719">Varat saglabāt lapas lasīšanai vēlāk vai bezsaistē.</translation>
 <translation id="3081338492074632642">Parolei, kuru vēlaties saglabāt, ir jāatbilst vietnē <ph name="WEBSITE" /> izmantotajai parolei</translation>
 <translation id="3112556859945124369">Atzīmēt…</translation>
@@ -404,6 +412,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5140288047769711648">Chrome iegaumēs šo paroli. Jums tā nav jāatceras.</translation>
 <translation id="5150492518600715772">Nosūtīt uz jūsu ierīci</translation>
 <translation id="5168414296986405587">Izstrādāts operētājsistēmai iPadOS</translation>
+<translation id="5173088371991956744">Sinhronizēšanai nepieciešams apstiprināt jūsu identitāti</translation>
 <translation id="5181140330217080051">Notiek lejupielāde</translation>
 <translation id="5186185447130319458">Privāti</translation>
 <translation id="5188482106078495165">Izvēlētais sīkfailu iestatījums attiecas uz visām cilnēm. Lai atvērtā cilnē lietotu jaunu iestatījumu, atkārtoti ielādējiet cilni.</translation>
@@ -714,6 +723,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
 <translation id="8023878949384262191">Izvērš sadaļu.</translation>
 <translation id="8027581147000338959">Atvērt jaunā logā</translation>
+<translation id="804225253087497565">Kad esat pierakstījies, jūsu Google kontā var saglabāt <ph name="BEGIN_LINK" />meklēšanas vēsturi<ph name="END_LINK" /> un <ph name="BEGIN_LINK" />citu veidu darbības<ph name="END_LINK" />. Jebkurā laikā varat tās izdzēst.</translation>
 <translation id="804427445359061970">Šeit varēsiet skatīt cilnes no citām ierīcēm</translation>
 <translation id="8059533439631660104">Sakļauj sadaļu.</translation>
 <translation id="8065292699993359127">Vietrāžu URL atvēršana inkognito režīmā pārlūkā Chrome</translation>

@@ -224,7 +224,6 @@
 
 כדי לחפש מילה, לוחצים עליה לחיצה ארוכה. כדי להתאים את החיפוש, אפשר לבחור יותר מילים או פחות מילים. כדי לערוך את החיפוש, פותחים את החלונית, מקישים על הסמל כדי לפתוח את האפליקציה בכרטיסייה חדשה ומבצעים את השינויים בתיבת החיפוש.</translation>
 <translation id="2459390580524506445">חיפוש קולי משופר</translation>
-<translation id="246532703174860178">שיתוף</translation>
 <translation id="247737702124049222">התכונה 'תיאורי תמונות' מופעלת</translation>
 <translation id="2482878487686419369">התראות</translation>
 <translation id="2485422356828889247">הסרת התקנה</translation>
@@ -296,7 +295,6 @@
 <translation id="2900528713135656174">יצירת אירוע</translation>
 <translation id="2901411048554510387">מוצגות הצעות הקשורות לדף <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">רשימת המכשירים שאפשר לשתף איתם כרטיסייה נפתחה בגובה המלא של המסך.</translation>
-<translation id="2905036901251765993">‏כדי לשתף עם אנשים בקרבת מקום, יש לתת להם לסרוק את קוד ה-QR הזה</translation>
 <translation id="2908243544703713905">הסיפורים שלא נקראו מוכנים</translation>
 <translation id="2909615210195135082">‏פלטפורמת ההתראות של Google</translation>
 <translation id="2912296070571964914">ניהול הנושאים שמעניינים אותך</translation>
@@ -306,6 +304,7 @@
 <translation id="2942036813789421260">כרטיסיית התצוגה המקדימה סגורה</translation>
 <translation id="2956410042958133412">החשבון הזה מנוהל על ידי <ph name="PARENT_NAME_1" /> ו-<ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{דף אחד (<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />) שלא נקרא}two{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}}</translation>
+<translation id="2961210776189273067">תואר</translation>
 <translation id="2979025552038692506">כרטיסיית המצב האנונימי שנבחרה</translation>
 <translation id="2979448359891869301">לא ניתן להרחיב את צילום המסך. יש לנסות שוב כשיהיה יותר מקום בזיכרון הטלפון.</translation>
 <translation id="2979639724566107830">פתיחה בחלון חדש</translation>
@@ -338,6 +337,7 @@
 <translation id="3207960819495026254">מסומן בסימנייה</translation>
 <translation id="3208584281581115441">בדיקה עכשיו</translation>
 <translation id="3211426585530211793">מועד המחיקה: <ph name="ITEM_TITLE" /></translation>
+<translation id="3214996641768123781">‏<ph name="BEGIN_LINK1" />היסטוריית החיפושים<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />סוגי פעילות אחרים<ph name="END_LINK2" /> יכולים להישמר בחשבון Google אחרי שנכנסים. אפשר למחוק אותם בכל שלב.</translation>
 <translation id="321773570071367578">אם שכחת את ביטוי הסיסמה או אם ברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />יש לאפס את הסנכרון<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">כדי לסנכרן את הסיסמאות עליך לאמת את זהותך</translation>
 <translation id="3227557059438308877">‏Google Chrome כמפתח אבטחה</translation>
@@ -617,11 +617,14 @@
 <translation id="497421865427891073">ניווט קדימה</translation>
 <translation id="4988210275050210843">מתבצעת הורדה של קובץ (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">דפים</translation>
+<translation id="5001388021414335527">כאן ניתן לעקוב אחר האתר הזה</translation>
 <translation id="5004416275253351869">‏בקרת הפעילות בחשבון Google</translation>
 <translation id="5005498671520578047">העתקת הסיסמה</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> מבקש להתחבר אל</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5032430150487044192">‏לא ניתן ליצור קוד QR</translation>
 <translation id="5039804452771397117">זה בסדר</translation>
+<translation id="5054455334322721892">‏<ph name="BEGIN_LINK1" />סוגי פעילות אחרים<ph name="END_LINK1" /> יכולים להישמר בחשבון Google אחרי שנכנסים. אפשר למחוק אותם בכל שלב.</translation>
 <translation id="5061533557687621530">‏כדי לבדוק את תנאי מזג האוויר, יש להקיש על המיקרופון ולשאול “What’s the weather today?‎”</translation>
 <translation id="5087580092889165836">הוספת כרטיס</translation>
 <translation id="5091249083535528968">נתונים נוספים על השימוש במכשיר</translation>
@@ -722,7 +725,6 @@
 <translation id="572328651809341494">כרטיסיות אחרונות</translation>
 <translation id="5723735397759933332">‏מצב הטעינה המהירה מאפשר לך לשפר את החיסכון בנתונים על ידי אופטימיזציה של התמונות בדפי HTTPS.</translation>
 <translation id="5726692708398506830">הגדלת כל מה שמופיע בדף</translation>
-<translation id="5733983706093266635">‏לא ניתן ליצור קוד אימות. כתובת ה-URL מכילה יותר מ-<ph name="CHARACTER_LIMIT" /> תווים.</translation>
 <translation id="5748802427693696783">הוחלף לכרטיסיות רגילות</translation>
 <translation id="5749068826913805084">‏לצורך הורדת קבצים, Chrome זקוק לגישה לאחסון.</translation>
 <translation id="5749237766298580851">כבויה <ph name="SEPARATOR" /> לא מומלץ</translation>
@@ -741,6 +743,7 @@
 <translation id="5814131985548525293">כדי להתחיל, יש להקליד כאן או להקיש על סמל המיקרופון</translation>
 <translation id="583281660410589416">לא ידוע</translation>
 <translation id="5833984609253377421">שיתוף קישור</translation>
+<translation id="5834764604050996579">‏כדי לסרוק קוד QR, מאשרים ל-Chrome להשתמש במצלמה</translation>
 <translation id="5836192821815272682">‏המערכת מורידה עדכון של Chrome…</translation>
 <translation id="5853623416121554550">ההורדה בהשהיה</translation>
 <translation id="5854512288214985237">‏לא נשלחים אל Google נתונים סטטיסטיים או דוחות קריסה כלשהם</translation>
@@ -878,7 +881,6 @@
 <translation id="6590680911007613645">יש לוודא שהסיסמה שנשמרת זהה לסיסמה שלך עבור <ph name="SITE" /></translation>
 <translation id="6593061639179217415">לגרסה במחשב</translation>
 <translation id="6595046016124923392">‏התמונות נשלחות אל Google כדי לשפר את התיאורים לנוחיותך.</translation>
-<translation id="6597891566292541626">‏עליך למקם את קוד ה-QR או הברקוד בתוך המסגרת זו.</translation>
 <translation id="6600954340915313787">‏הועתק אל Chrome</translation>
 <translation id="661266467055912436">רמת אבטחה משופרת עבורך ועבור כל מי שמתחבר לאינטרנט.</translation>
 <translation id="6618554661997243500">להצגת הכתבות והאתרים המובילים שלך, יש להקיש על הלחצן הראשי</translation>
@@ -922,6 +924,7 @@
 <translation id="6867400383614725881">כרטיסיית מצב אנונימי חדשה</translation>
 <translation id="6869056123412990582">מחשב</translation>
 <translation id="6882836635272038266">הגנה רגילה מפני אתרים, הורדות ותוספים שידועים כמסוכנים.</translation>
+<translation id="6883204995689174413">שיתוף</translation>
 <translation id="688738109438487280">הוספת נתונים קיימים אל <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">ביטול הנעילה יאפשר להעתיק את הסיסמה</translation>
 <translation id="6896758677409633944">העתקה</translation>
@@ -942,6 +945,7 @@
 <translation id="7022756207310403729">פתיחה בדפדפן</translation>
 <translation id="702463548815491781">‏מומלץ אם הפעלת TalkBack או גישה באמצעות מתג</translation>
 <translation id="7027549951530753705">בוצע שחזור של <ph name="ITEM_TITLE" /></translation>
+<translation id="7029390216614421513">‏ממקמים את קוד ה-QR או הברקוד במסגרת הזו.</translation>
 <translation id="7029809446516969842">סיסמאות</translation>
 <translation id="7054588988317389591">רוצה לקבל תיאורי תמונות?</translation>
 <translation id="7055152154916055070">הפניה אוטומטית נחסמה:</translation>
@@ -956,8 +960,10 @@
 <translation id="7138678301420049075">אחר</translation>
 <translation id="7146622961999026732">נראה שהאתרים והאפליקציות האלה חשובים לך:</translation>
 <translation id="7149893636342594995">מהיום האחרון</translation>
+<translation id="7155317020660659215">‏כדי לסרוק קוד QR, משנים את ההגדרות כדי שדפדפן Chrome יוכל להשתמש במצלמה</translation>
 <translation id="7173114856073700355">פתיחת ההגדרות</translation>
 <translation id="7177466738963138057">אפשר לשנות את ההגדרה הזו מאוחר יותר ב'הגדרות'</translation>
+<translation id="7177873915659574692">‏לא ניתן ליצור קוד QR. כתובת ה-URL מכילה יותר מ-<ph name="CHARACTER_LIMIT" /> תווים.</translation>
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7187993566681480880">‏מגינה עליך ב-Chrome ועשויה לשפר את האבטחה שלך באפליקציות אחרות של Google. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
 <translation id="718926126787620637">רשימת תיקיות הסימניות שפתוחות בגובה מלא</translation>
@@ -987,6 +993,7 @@
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{שיתוף פריט אחד שנבחר}two{שיתוף # פריטים שנבחרו}many{שיתוף # פריטים שנבחרו}other{שיתוף # פריטים שנבחרו}}</translation>
 <translation id="7359002509206457351">גישה לאמצעי תשלום</translation>
 <translation id="7375125077091615385">סוג:</translation>
+<translation id="7386842512861524348">‏חיבור האתר מאובטח אלא אם תתקבל הודעה שונה מ-Chrome</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">כתובת אתר</translation>
 <translation id="7403691278183511381">‏חוויית ההפעלה הראשונה של Chrome</translation>
@@ -1001,6 +1008,7 @@
 <translation id="7454641608352164238">אין מספיק מקום</translation>
 <translation id="7475192538862203634">אם נתקלת בזה לעתים קרובות, כדאי לנסות את <ph name="BEGIN_LINK" />ההצעות<ph name="END_LINK" /> האלה.</translation>
 <translation id="7475688122056506577">‏לא נמצא כרטיס SD. ייתכן שחלק מהקבצים שלך חסרים.</translation>
+<translation id="7476384249953022816">כדי למחוק את היסטוריית הגלישה באופן אנונימי מהמכשיר, סוגרים את כל הכרטיסיות</translation>
 <translation id="7479104141328977413">ניהול כרטיסיות</translation>
 <translation id="7481312909269577407">קדימה</translation>
 <translation id="7481864133709957613">כדי לבצע חיפוש בדף זה, יש ללחוץ לחיצה ארוכה על מילים במקום להקיש עליהן.</translation>
@@ -1083,11 +1091,11 @@
 <translation id="7929962904089429003">פתיחת התפריט</translation>
 <translation id="7930998711684428189">הצגת אזהרה אם סיסמאות נחשפות עקב פרצה באבטחת מידע.</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> אינו מעודכן.</translation>
+<translation id="7944772052836377867">כדי לסנכרן צריך לאמת את הזהות שלך</translation>
 <translation id="7947953824732555851">קבלה וכניסה</translation>
 <translation id="7961015016161918242">אף פעם</translation>
 <translation id="7961926449547174351">השבתת את הגישה לאחסון. כדי להפעיל אותה, יש לעבור להגדרות.</translation>
 <translation id="7963646190083259054">ספק:</translation>
-<translation id="7967911570373677897">‏כדי לסרוק קוד QR, צריך לשנות את ההגדרות כך שמערכת Chrome תוכל להשתמש במצלמה</translation>
 <translation id="7968014550143838305">נוסף לרשימת הקריאה</translation>
 <translation id="7971136598759319605">פעילות אחרונה: לפני יום אחד</translation>
 <translation id="7975379999046275268">הצגת הדף בתצוגה מקדימה<ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
@@ -1115,11 +1123,11 @@
 <translation id="8084114998886531721">סיסמה שמורה</translation>
 <translation id="8084285576995584326">‏שליטה בנתונים שלך בחשבון Google</translation>
 <translation id="808747664143081553">הטלפון מחובר למחשב</translation>
+<translation id="8088176524274673045">‏כדי לשתף עם אנשים בקרבת מקום, הם צריכים לסרוק את קוד ה-QR הזה</translation>
 <translation id="8103578431304235997">כרטיסיית מצב אנונימי</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">כדי שהסימניות יופיעו בכל המכשירים שלך, יש להפעיל את הסנכרון</translation>
 <translation id="8110087112193408731">‏להציג את הפעילות שלך ב-Chrome ב'שימוש חכם בדיגיטל'?</translation>
-<translation id="8115259494083109761">‏כדי לסרוק קוד QR יש להתיר ל-Chrome להשתמש במצלמה</translation>
 <translation id="8127542551745560481">עריכת דף הבית</translation>
 <translation id="813082847718468539">הצגת נתוני אתר</translation>
 <translation id="8137558756159375272">‏התכונה 'נגיעה לחיפוש' שולחת אל חיפוש Google את המילה הנבחרת, יחד עם הדף הנוכחי בתור הקשר. אפשר לכבות זאת ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
@@ -1136,7 +1144,6 @@
 <translation id="8218622182176210845">ניהול החשבון</translation>
 <translation id="8223642481677794647">תפריט כרטיס הפיד</translation>
 <translation id="8224471946457685718">‏הורדת מאמרים עבורך ב-Wi-Fi</translation>
-<translation id="8233540874193135768">‏כדי לסרוק קוד QR, יש להשתמש במכשיר עם מצלמה.</translation>
 <translation id="8250920743982581267">מסמכים</translation>
 <translation id="825412236959742607">‏הדף הזה משתמש בנפח זיכרון גדול מדי, לכן מערכת Chrome הסירה חלק מהתוכן.</translation>
 <translation id="8260126382462817229">יש להיכנס שוב</translation>
@@ -1147,6 +1154,7 @@
 <translation id="8284326494547611709">כתוביות</translation>
 <translation id="829672787777123339">מתבצע חיבור למכשיר…</translation>
 <translation id="8310344678080805313">כרטיסיות רגילות</translation>
+<translation id="831192587911042850">הוספת אתר האינטרנט שפתוח כרגע לרשימת אתרי האינטרנט שבמעקב.</translation>
 <translation id="8327155640814342956">‏כדי ליהנות מחוויית הגלישה הטובה ביותר, יש לפתוח את Chrome כדי לעדכן אותו</translation>
 <translation id="834313815369870491">אין לתרגם את האתרים אף פעם</translation>
 <translation id="8349013245300336738">מיון לפי כמות הנתונים שבהם נעשה שימוש</translation>
@@ -1224,6 +1232,7 @@
 <translation id="8788265440806329501">היסטוריית הניווט סגורה</translation>
 <translation id="8788968922598763114">פתיחה מחדש של הכרטיסייה האחרונה שנסגרה</translation>
 <translation id="8798449543960971550">נקראו</translation>
+<translation id="8805097383171548551">‏כדי לסרוק קוד QR, משתמשים במכשיר עם מצלמה.</translation>
 <translation id="8812260976093120287">באתרים מסוימים ניתן לשלם דרך המכשיר באמצעות אפליקציות התשלום הנתמכות שמופיעות למעלה.</translation>
 <translation id="881688628773363275">לא ניתן לצפות בתוכן של כרטיסיית 'התצוגה המקדימה'.</translation>
 <translation id="8820817407110198400">סימניות</translation>
@@ -1252,7 +1261,6 @@
 <translation id="8970887620466824814">משהו השתבש.</translation>
 <translation id="8972098258593396643">האם להוריד לתיקיית ברירת המחדל?</translation>
 <translation id="8988028529677883095">שימוש בטלפון כמפתח אבטחה</translation>
-<translation id="8990209962746788689">‏לא ניתן ליצור קוד QR</translation>
 <translation id="8993760627012879038">פתיחת חלון חדש במצב אנונימי</translation>
 <translation id="8996847606757455498">בחירת ספק אחר</translation>
 <translation id="8998729206196772491">‏בחרת להיכנס עם חשבון המנוהל על-ידי <ph name="MANAGED_DOMAIN" /> ולהעניק למנהל שלו שליטה על הנתונים שלך ב-Chrome. הנתונים שלך ישויכו לצמיתות אל החשבון הזה. יציאה מ-Chrome תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו בחשבון Google.</translation>
@@ -1270,6 +1278,7 @@
 <translation id="9070377983101773829">ביצוע חיפוש קולי</translation>
 <translation id="9074336505530349563">‏כדי לקבל מ-Google הצעות לתוכן מותאם אישית, יש להיכנס ולהפעיל את הסנכרון</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9081543426177426948">אתרים שנכנסים אליהם לא נשמרים במצב אנונימי</translation>
 <translation id="9086302186042011942">הסנכרון מתבצע</translation>
 <translation id="9086455579313502267">אין אפשרות לגשת לרשת</translation>
 <translation id="9100505651305367705">יש להציע הצגת מאמרים בתצוגה פשוטה, כשהאפשרות נתמכת</translation>

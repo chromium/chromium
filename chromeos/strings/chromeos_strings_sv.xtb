@@ -132,6 +132,7 @@
 <translation id="387301095347517405">Antalet gånger som batteriet har laddats hela sin kapacitet</translation>
 <translation id="3941014780699102620">DNS-matchningen misslyckades för värden</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
+<translation id="3966286471246132217">Du får mer exakta resultat om du stänger alla appar tills testet är slutfört.</translation>
 <translation id="3967822245660637423">Nedladdning slutförd</translation>
 <translation id="397105322502079400">Beräknar ...</translation>
 <translation id="39823212440917567">Utskriftsjobb som är äldre än <ph name="NUMBER_OF_DAYS" /> dagar tas bort</translation>
@@ -144,6 +145,7 @@
 <translation id="4176463684765177261">Inaktiverad</translation>
 <translation id="4227825898293920515">Lösenordet upphör att gälla om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Inga utskriftsjobb pågår</translation>
+<translation id="4244962993387259361">Du behöver minst 500 MB ledigt utrymme för att köra ett minnestest. Öppna Inställningar &gt; Lagringshantering om du vill frigöra utrymme.</translation>
 <translation id="4289540628985791613">Översikt</translation>
 <translation id="4297501883039923494">Har stoppats – okänt fel</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> bilder</translation>
@@ -385,6 +387,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8498220429738806196">Trafikräknare</translation>
 <translation id="8503813439785031346">Användarnamn</translation>
 <translation id="8503836310948963452">Bara några minuter kvar …</translation>
+<translation id="8521021929829989041">Använd en personlig enhet</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Det här alternativet kan krävas för att du ska kunna ansluta till operatörens nätverk. Kontakta operatören för mer information.</translation>
 <translation id="8576249514688522074">Inte initierat</translation>

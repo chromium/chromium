@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">ସାଇଟଗୁଡ଼ିକୁ ଆପଣଙ୍କର ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ ଡିଭାଇସ୍ ଏବଂ ଡାଟା ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦେବା ଆଗରୁ ପଚାରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="4962975101802056554">ଡିଭାଇସ୍‌ପାଇଁ ଥିବା ସମସ୍ତ ଅନୁମତିଗୁଡ଼ିକ ପ୍ରତ୍ୟାହାର କରନ୍ତୁ</translation>
 <translation id="497421865427891073">ଆଗକୁ ଯାଆନ୍ତୁ</translation>
+<translation id="4976702386844183910">ଗତ ଥର <ph name="DATE" />ରେ ଭିଜିଟ୍ କରାଯାଇଛି</translation>
 <translation id="4994033804516042629">କୌଣସି ଯୋଗାଯୋଗ ମିଳିଲା ନାହିଁ</translation>
 <translation id="4996978546172906250">ଏହା ମାଧ୍ୟମରେ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="5039804452771397117">ଅନୁମତି</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">ଇନ୍‌କଗ୍ନିଟୋ ଟାବ୍</translation>
 <translation id="5186036860380548585">ସ୍କ୍ରିନର ଶୀର୍ଷଭାଗର ନିକଟରେ ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="5197729504361054390">ଆପଣ ଚୟନ କରିଥିବା ଯୋଗାଯୋଗଗୁଡ଼ିକ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ସହିତ ସେୟାର୍ କରାଯିବ।</translation>
+<translation id="5216942107514965959">ଆଜି ଶେଷ ଥର ଭିଜିଟ୍ କରାଯାଇଛି</translation>
 <translation id="528192093759286357">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ରୁ ପ୍ରସ୍ଥାନ କରିବାକୁ ଶୀର୍ଷରୁ ଟାଣନ୍ତୁ ଏବଂ ପଛପଟ ବଟନ୍‌କୁ ସ୍ପର୍ଶ କରନ୍ତୁ</translation>
 <translation id="5300589172476337783">ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
 <translation id="5301954838959518834">ଠିକ୍ ଅଛି, ବୁଝିଗଲି</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">ଅନୁମତିଗୁଡ଼ିକ</translation>
 <translation id="5860033963881614850">ବନ୍ଦ ଅଛି</translation>
 <translation id="5876056640971328065">ଭିଡିଓ ବିରତ କରନ୍ତୁ</translation>
+<translation id="5887687176710214216">ଗତକାଲି ଶେଷଥର ଭିଜିଟ୍ କରାଯାଇଛି</translation>
 <translation id="5916664084637901428">ଚାଲୁ</translation>
 <translation id="5922853908706496913">ଆପଣଙ୍କ ସ୍କ୍ରିନ୍ ସେୟାର୍ କରାଯାଉଛି</translation>
 <translation id="5939518447894949180">ପୁନଃସେଟ୍</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="6545864417968258051">ବ୍ଲୁଟୁଥ୍ ସ୍କାନିଂ</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ଏବଂ ଅଧିକ <ph name="NUM_MORE" />ଟିକୁ ବ୍ଲକ୍ କରାଯାଇଛି}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ଏବଂ ଅଧିକ <ph name="NUM_MORE" />ଟିକୁ ବ୍ଲକ୍ କରାଯାଇଛି}}</translation>
+<translation id="6554732001434021288">ଗତ ଥର <ph name="NUM_DAYS" /> ଦିନ ପୂର୍ବେ ଭିଜିଟ୍ କରାଯାଇଛି</translation>
 <translation id="6561560012278703671">’କ୍ୱାଇଟର୍ ମେସେଜିଂ’ ବ୍ୟବହାର କରନ୍ତୁ (ଆପଣଙ୍କୁ ବାଧା ଦେବାରୁ ବିଜ୍ଞପ୍ତି ପ୍ରମ୍ପ୍ଟଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରେ)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ</translation>

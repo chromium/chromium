@@ -72,7 +72,7 @@
 <translation id="107278043869924952">Usa il PIN oltre alla password</translation>
 <translation id="1076176485976385390">Spostati da una pagina all'altra con un cursore di testo</translation>
 <translation id="1076698951459398590">Attiva tema</translation>
-<translation id="1076766328672150609">Tuo figlio può usare un PIN per sbloccare il dispositivo.</translation>
+<translation id="1076766328672150609">Tuo figlio può usare il PIN per sbloccare il dispositivo.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Impossibile scaricare il dizionario per il controllo ortografico per la lingua <ph name="LANGUAGE" />. Riprova.</translation>
 <translation id="1079766198702302550">Impedisci sempre l'accesso alla webcam</translation>
@@ -118,7 +118,6 @@
 <translation id="1124772482545689468">Utente</translation>
 <translation id="1125550662859510761">Risoluzione di <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1126809382673880764">Non ti protegge da estensioni, download e siti web pericolosi. La protezione di Navigazione sicura, se disponibile, sarà ancora attiva in altri servizi Google, come Gmail e Ricerca.</translation>
-<translation id="112752777279960360">Per configurare per la prima volta un telefono Android per poterlo utilizzare come token di sicurezza con questo computer, sul tuo telefono apri Chrome e vai a "Impostazioni" &gt; Password &gt; Utilizza il telefono come token di sicurezza". Quindi tocca "Connetti nuovo dispositivo" e scansiona questo codice QR.</translation>
 <translation id="1128109161498068552">Non consentire ai siti di utilizzare messaggi esclusivi di sistema per accedere a dispositivi MIDI</translation>
 <translation id="1128591060186966949">Modifica motore di ricerca</translation>
 <translation id="1129850422003387628">Gestire app</translation>
@@ -219,6 +218,7 @@
 <translation id="1232569758102978740">Senza titolo</translation>
 <translation id="1233497634904001272">Tocca di nuovo il token di sicurezza per completare la richiesta.</translation>
 <translation id="1233721473400465416">Lingua</translation>
+<translation id="1234736487471201993">Crea codice QR per questa immagine</translation>
 <translation id="1234808891666923653">Service worker</translation>
 <translation id="1235458158152011030">Reti note</translation>
 <translation id="123578888592755962">Disco pieno</translation>
@@ -258,9 +258,10 @@
 <translation id="1275718070701477396">Selezionato</translation>
 <translation id="1276994519141842946">Impossibile installare <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Crea un nuovo PIN che sia diverso da quello attuale</translation>
-<translation id="1278859221870828664">Esamina le app e i servizi di Google Play</translation>
+<translation id="1278859221870828664">Esamina le app e i servizi offerti da Google Play</translation>
 <translation id="127946606521051357">Dispositivo nelle vicinanze con condivisione attiva</translation>
 <translation id="1280965841156951489">Modifica file</translation>
+<translation id="1282465000333679776">Condividi audio di sistema</translation>
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
 <translation id="1285484354230578868">Memorizza dati nel tuo account Google Drive</translation>
 <translation id="1285625592773741684">Impostazione di utilizzo dei dati corrente: Dati mobili</translation>
@@ -503,6 +504,7 @@
 <translation id="1542514202066550870">Questa scheda mostra contenuti VR a un auricolare.</translation>
 <translation id="1543284117603151572">Importati da Edge</translation>
 <translation id="1545177026077493356">Modalità kiosk automatica</translation>
+<translation id="1545749641540134597">Scansiona codice QR</translation>
 <translation id="1545775234664667895">Tema "<ph name="THEME_NAME" />" installato</translation>
 <translation id="1546280085599573572">Questa estensione ha cambiato la pagina mostrata quando fai clic sul pulsante Pagina iniziale.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> vuole installare un'estensione <ph name="EXTENSION_TYPE" /> che può:</translation>
@@ -624,6 +626,7 @@
 <translation id="1660763353352708040">Problema con l'alimentatore</translation>
 <translation id="1661156625580498328">Applica la crittografia AES (consigliato).</translation>
 <translation id="16620462294541761">Spiacenti, impossibile verificare la password. Riprova.</translation>
+<translation id="1662777896967868795">On / Verrà disattivata automaticamente all'alba</translation>
 <translation id="166278006618318542">Algoritmo chiave pubblica del soggetto</translation>
 <translation id="1666232093776384142">Disattiva la protezione dell'accesso ai dati per le periferiche</translation>
 <translation id="1668435968811469751">Registrazione manuale</translation>
@@ -743,6 +746,7 @@
 <translation id="1781398670452016618"><ph name="DOMAIN" /> richiede l'immediata connessione a una rete Wi-Fi per scaricare un aggiornamento.</translation>
 <translation id="1781502536226964113">Apri la pagina Nuova scheda</translation>
 <translation id="1781771911845953849">Account e sincronizzazioni</translation>
+<translation id="1781979858217752599">Condividi audio finestra</translation>
 <translation id="1782101999402987960">Gli aggiornamenti sono stati bloccati dall'amministratore</translation>
 <translation id="1782196717298160133">Ricerca del tuo telefono</translation>
 <translation id="1784707308176068866">Esegui in background quando richiesto da un'applicazione nativa interoperativa</translation>
@@ -945,7 +949,6 @@
 <translation id="1992924914582925289">Rimuovi dal dispositivo</translation>
 <translation id="1994173015038366702">URL sito</translation>
 <translation id="1995916364271252349">Consente di stabilire quali informazioni possono essere usate e mostrate dai siti (posizione, videocamera, popup e non solo)</translation>
-<translation id="1997437640397887843">Videocamera del dispositivo accesa. Posiziona il codice QR della eSIM di fronte alla videocamera.</translation>
 <translation id="1997616988432401742">I tuoi certificati</translation>
 <translation id="1999115740519098545">All'avvio</translation>
 <translation id="2000419248597011803">Invia al tuo motore di ricerca predefinito alcune ricerche dalla barra degli indirizzi e dalla casella di ricerca, nonché alcuni cookie</translation>
@@ -965,7 +968,6 @@
 <translation id="2019718679933488176">&amp;Apri audio in un'altra scheda</translation>
 <translation id="2020183425253392403">Mostra impostazioni indirizzi di rete</translation>
 <translation id="2020225359413970060">Esegui la scansione del file</translation>
-<translation id="2022953316617983419">Codice QR</translation>
 <translation id="2023167225947895179">Il PIN potrebbe essere facile da scoprire</translation>
 <translation id="202352106777823113">Il download stava richiedendo troppo tempo ed è stato interrotto dalla rete.</translation>
 <translation id="2025115093177348061">Realtà aumentata</translation>
@@ -1122,6 +1124,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2174948148799307353">Account gestito da <ph name="PARENT_EMAIL" />. Per uscire dall'account principale su questo dispositivo, fai clic sull'ora sullo schermo. Fai clic su "Esci" nel menu visualizzato.</translation>
 <translation id="2175607476662778685">Barra Avvio veloce</translation>
 <translation id="217576141146192373">Impossibile aggiungere la stampante. Controlla la configurazione della stampante e riprova.</translation>
+<translation id="2175927920773552910">Codice QR</translation>
 <translation id="2177950615300672361">Scheda di navigazione in incognito: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">Compromesso CA</translation>
 <translation id="2179416702468739594">Ricerca di profili disponibili in corso… Questa operazione potrebbe causare la disconnessione della rete mobile per alcuni minuti.</translation>
@@ -1132,6 +1135,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2187895286714876935">Errore di importazione del certificato del server</translation>
 <translation id="2187906491731510095">Estensioni aggiornate</translation>
 <translation id="2188881192257509750">Apri <ph name="APPLICATION" /></translation>
+<translation id="2189787291884708275">Condividi scheda audio</translation>
 <translation id="2190069059097339078">WiFi Credentials Getter</translation>
 <translation id="219008588003277019">Modulo Native Client: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(vuoto)</translation>
@@ -1591,6 +1595,9 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2691385045260836588">Modello</translation>
 <translation id="2691440343905273290">Modifica impostazioni di immissione</translation>
 <translation id="2693176596243495071">Spiacenti. Si è verificato un errore sconosciuto. Riprova più tardi o contatta il tuo amministratore se il problema persiste.</translation>
+<translation id="2693640212062142966">Voice Match consente all'Assistente Google di identificare la tua voce sul tuo <ph name="DEVICE_TYPE" /> e di distinguerla dalle altre. Per consumare meno batteria, il comando "Hey Google" è attivo soltanto quando il dispositivo è collegato a una fonte di alimentazione. Per apportare modifiche, vai alle Impostazioni.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Ricorda:<ph name="END_BOLD" /> anche qualcuno con una voce simile alla tua o in possesso di una registrazione della tua voce potrebbe essere in grado di accedere ai tuoi risultati personali. Puoi rimuovere l'autorizzazione di utilizzo di Voice Match in un secondo momento disattivando la funzionalità nelle Impostazioni dell'assistente.</translation>
 <translation id="2699911226086014512">Operazione con PIN non riuscita. Codice <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Condivisione da <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Accedi, <ph name="EMAIL" /></translation>
@@ -1735,7 +1742,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="2828375943530438449">Indietro dalla pagina di accesso</translation>
 <translation id="2828650939514476812">Collegati alla rete Wi-Fi</translation>
 <translation id="2831430281393059038">Il dispositivo è supportato</translation>
-<translation id="2832124733806557606">Tuo figlio può usare un PIN per accedere al dispositivo o per sbloccarlo.</translation>
+<translation id="2832124733806557606">Tuo figlio può usare il PIN per accedere al dispositivo o per sbloccarlo.</translation>
 <translation id="2835547721736623118">Servizio di riconoscimento vocale</translation>
 <translation id="2836269494620652131">Interruzione anomala</translation>
 <translation id="2836635946302913370">L'accesso con questo nome utente è stato disattivato dall'amministratore.</translation>
@@ -2100,6 +2107,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3246107497225150582">{0,plural, =1{Aggiorna il dispositivo entro un giorno}other{Aggiorna il dispositivo entro # giorni}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Errore di rete</translation>
 <translation id="3248902735035392926">La sicurezza è importante. Prenditi un attimo per <ph name="BEGIN_LINK" />controllare ora le tue estensioni<ph name="END_LINK" /></translation>
+<translation id="3251714896659475029">Consenti a <ph name="SUPERVISED_USER_NAME" /> di accedere all'Assistente Google con "Hey Google"</translation>
 <translation id="3251759466064201842">&lt;Non parte del certificato&gt;</translation>
 <translation id="325238099842880997">Stabilisci regole di base relative all'utilizzo dei dispositivi digitali per aiutare i bambini a giocare, navigare sul Web e fare i compiti a casa</translation>
 <translation id="3253448572569133955">Account sconosciuto</translation>
@@ -2517,6 +2525,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3694027410380121301">Seleziona scheda precedente</translation>
 <translation id="369489984217678710">Password e altri dati di accesso</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Controlli di sicurezza effettuati. I tuoi dati verranno caricati.}=1{Controlli di sicurezza effettuati. Il tuo file verrà caricato.}other{Controlli di sicurezza effettuati. I tuoi file verranno caricati.}}</translation>
+<translation id="3696576298374669274">Mostra log di servizio</translation>
 <translation id="3699624789011381381">Indirizzo email</translation>
 <translation id="3699920817649120894">Disattivare la sincronizzazione e la personalizzazione?</translation>
 <translation id="3700888195348409686">Presentazione di (<ph name="PAGE_ORIGIN" />)</translation>
@@ -2576,6 +2585,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3755411799582650620">Ora con il tuo <ph name="PHONE_NAME" /> puoi sbloccare anche questo dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Il sito sta usando il microfono</translation>
 <translation id="3756578970075173856">Imposta il PIN</translation>
+<translation id="3756795331760037744">Consenti all'Assistente Google di utilizzare le informazioni visualizzate sullo schermo di <ph name="SUPERVISED_USER_NAME" /> per fornire aiuto</translation>
 <translation id="3757733214359997190">Nessun sito trovato</translation>
 <translation id="375841316537350618">Download script proxy...</translation>
 <translation id="3758842566811519622">Cookie impostati</translation>
@@ -2952,6 +2962,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4136203100490971508">La funzione Luminosità notturna verrà disattivata automaticamente all'alba</translation>
 <translation id="41365691917097717">Se continui, verrà attivato il debug ADB per creare e testare app Android. Tieni presente che questa azione consente l'installazione di app Android che non sono state verificate da Google. Per disattivare la funzionalità è necessario ripristinare le impostazioni di fabbrica.</translation>
 <translation id="4138267921960073861">Visualizza nomi e foto dell'utente sulla schermata di accesso</translation>
+<translation id="4138598238327913711">Controllo grammaticale attualmente disponibile soltanto per l'inglese</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - Dispositivo HID connesso</translation>
 <translation id="4142052906269098341">Sblocca <ph name="DEVICE_TYPE" /> con il telefono. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="4142518881503042940">Salva le stampanti rilevate nel tuo profilo o aggiungi una nuova stampante. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
@@ -2966,6 +2977,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4154664944169082762">Impronte digitali</translation>
 <translation id="4157869833395312646">Server Gated Cryptography Microsoft</translation>
 <translation id="4158364720893025815">Controllo superato</translation>
+<translation id="4159163871835771155">Per ricevere risposte personalizzate quando <ph name="SUPERVISED_USER_NAME" /> fa domande, permetti all'assistente di usare le informazioni visualizzate sullo schermo di <ph name="SUPERVISED_USER_NAME" />, che potrebbero includere informazioni relative ai brani o ai video in riproduzione.</translation>
 <translation id="4159681666905192102">Si tratta di un account di minori gestito da <ph name="CUSTODIAN_EMAIL" /> e <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Tastiera sconosciuta</translation>
 <translation id="4167686856635546851">In genere, i siti usano JavaScript per mostrare funzionalità interattive come videogiochi o moduli web</translation>
@@ -3450,6 +3462,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4699172675775169585">Immagini e file memorizzati nella cache</translation>
 <translation id="4699357559218762027">(avviata automaticamente)</translation>
 <translation id="4701025263201366865">Accesso per i genitori</translation>
+<translation id="4707582759326616943">Trascina per cercare le immagini con Google Lens</translation>
 <translation id="4708794300267213770">Mostra la schermata di blocco quando il dispositivo viene riattivato dopo la sospensione</translation>
 <translation id="4708849949179781599">Esci da <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Ripristina impostazioni</translation>
@@ -3476,6 +3489,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4742970037960872810">Rimuovi evidenziazione</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Scopri come aggiornare le applicazioni<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Riattiva l'audio del sito}other{Riattiva l'audio dei siti}}</translation>
+<translation id="474609389162964566">Accedi al tuo assistente con "Hey Google"</translation>
 <translation id="4746351372139058112">Messaggi</translation>
 <translation id="4748783296226936791">Solitamente i siti si connettono ai dispositivi HID per funzionalità che usano tastiere insolite, controller di gioco e altri dispositivi</translation>
 <translation id="4750394297954878236">Suggerimenti</translation>
@@ -3536,6 +3550,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4824958205181053313">Vuoi annullare la sincronizzazione?</translation>
 <translation id="4827675678516992122">Impossibile collegarsi</translation>
 <translation id="4827784381479890589">Controllo ortografico avanzato nel browser Chrome (testo inviato a Google per suggerimenti ortografici)</translation>
+<translation id="4827904420700932487">Crea codice QR per questa immagine</translation>
 <translation id="482952334869563894">Dispositivi USB del fornitore <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Imposta il codice PIN</translation>
 <translation id="4830121310592638841">Chiedi conferma quando un sito vuole aprire e posizionare finestre sugli schermi</translation>
@@ -3573,6 +3588,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4864369630010738180">Accesso in corso...</translation>
 <translation id="4864805589453749318">Seleziona il genitore che sta concedendo l'autorizzazione per aggiungere un account della scuola.</translation>
 <translation id="486635084936119914">Apri automaticamente determinati tipi di file dopo il download</translation>
+<translation id="4868281708609571334">Insegna all'Assistente Google a riconoscere la voce di <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="48704129375571883">Aggiungi altre funzioni</translation>
 <translation id="4870758487381879312">Inserisci la password fornita dall'amministratore per ricevere informazioni sulla configurazione</translation>
 <translation id="4870903493621965035">Nessun dispositivo accoppiato</translation>
@@ -3725,6 +3741,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5029568752722684782">Cancella copia</translation>
 <translation id="5029873138381728058">Impossibile controllare le VM</translation>
 <translation id="503155457707535043">Download delle app in corso</translation>
+<translation id="5032430150487044192">Impossibile creare codice QR</translation>
 <translation id="5033137252639132982">Non possono utilizzare i sensori di movimento</translation>
 <translation id="5033266061063942743">Forme geometriche</translation>
 <translation id="5036662165765606524">Non consentire ai siti di scaricare automaticamente più file</translation>
@@ -4144,6 +4161,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5499313591153584299">Questo file potrebbe essere dannoso per il computer.</translation>
 <translation id="5499453227627332024">È disponibile un upgrade per il tuo contenitore Linux. Puoi anche eseguire l'upgrade in un secondo momento dall'app Impostazioni.</translation>
 <translation id="549957179819296104">Nuova icona</translation>
+<translation id="5500168250243071806">La <ph name="BEGIN_LINK_SEARCH" />cronologia delle ricerche<ph name="END_LINK_SEARCH" /> e <ph name="BEGIN_LINK_GOOGLE" />altri tipi di attività<ph name="END_LINK_GOOGLE" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminarli in qualsiasi momento.</translation>
 <translation id="5500709606820808700">Il controllo di sicurezza è stato eseguito oggi</translation>
 <translation id="5501322521654567960">Riquadro laterale allineato a sinistra</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Impossibile ricevere <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" />}other{Impossibile ricevere <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" />}}</translation>
@@ -4230,6 +4248,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5585912436068747822">Formattazione non riuscita</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Caricamento app...</translation>
+<translation id="5590265327628802792">Sembra che <ph name="SUPERVISED_USER_NAME" /> abbia già impostato l'Assistente Google su un altro dispositivo. <ph name="SUPERVISED_USER_NAME" /> può ricevere maggiori informazioni dall'assistente attivando Contesto dello schermo.</translation>
 <translation id="5592595402373377407">Dati disponibili insufficienti.</translation>
 <translation id="5595485650161345191">Modifica indirizzo</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
@@ -4310,6 +4329,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5684661240348539843">Identificatore asset</translation>
 <translation id="5687326903064479980">Fuso orario</translation>
 <translation id="5689516760719285838">Posizione</translation>
+<translation id="5689531695336322499">Sembra che <ph name="SUPERVISED_USER_NAME" /> abbia già configurato Voice Match con l'assistente su un altro dispositivo. Le registrazioni precedenti sono state usate per creare un modello vocale su questo dispositivo.</translation>
 <translation id="56907980372820799">Collega dati</translation>
 <translation id="5691581861107245578">Ricevi suggerimenti di emoji basati su quello che scrivi</translation>
 <translation id="5691772641933328258">Impronta digitale non riconosciuta</translation>
@@ -4332,11 +4352,11 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5707185214361380026">Impossibile caricare l'estensione da:</translation>
 <translation id="5708171344853220004">Nome entità Microsoft</translation>
 <translation id="5709557627224531708">Imposta Chrome come browser predefinito</translation>
+<translation id="5711010025974903573">Log di servizio</translation>
 <translation id="5711983031544731014">Impossibile sbloccare. Inserisci la password.</translation>
 <translation id="5712153969432126546">A volte i siti pubblicano PDF, come documenti, contratti e moduli</translation>
 <translation id="5715711091495208045">Plug-in Broker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motori di ricerca predefiniti</translation>
-<translation id="5719637365829998022">Il codice QR è stato scansionato.</translation>
 <translation id="5719854774000914513">I siti possono chiedere di connettersi ai dispositivi HID</translation>
 <translation id="572155275267014074">Impostazioni di Android</translation>
 <translation id="5722086096420375088">Verde e bianco</translation>
@@ -4529,7 +4549,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5941711191222866238">Riduci a icona</translation>
 <translation id="5942779427914696408">Visibilità del dispositivo</translation>
 <translation id="5943127421590245687">La verifica è andata a buon fine. Per sbloccare e ripristinare i dati locali, inserisci la vecchia password del dispositivo <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5944869793365969636">Scansiona codice QR</translation>
 <translation id="5945002094477276055">Il file <ph name="FILE_NAME" /> potrebbe essere pericoloso. Inviare a Google Navigazione sicura per la scansione?</translation>
 <translation id="5945363896952315544">Impossibile memorizzare altre impronte sul token di sicurezza. Per aggiungere una nuova impronta, devi prima eliminarne una esistente.</translation>
 <translation id="5946591249682680882">ID rapporto <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4653,7 +4672,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6077131872140550515">Rimuovi dai preferiti</translation>
 <translation id="6077189836672154517">Suggerimenti e aggiornamenti relativi a <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Parlare per digitare</translation>
-<translation id="6078045608615316905">Crea codice QR per questa immagine</translation>
 <translation id="6078121669093215958">{0,plural, =1{Ospite}other{# finestre Ospite aperte}}</translation>
 <translation id="6078323886959318429">Aggiungi scorciatoia</translation>
 <translation id="6078752646384677957">Controlla i livelli audio e del microfono.</translation>
@@ -4754,6 +4772,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6195693561221576702">Impossibile configurare il dispositivo in modalità demo offline.</translation>
 <translation id="6196640612572343990">Blocca cookie di terze parti</translation>
 <translation id="6196854373336333322">L'estensione "<ph name="EXTENSION_NAME" />" ha assunto il controllo delle tue impostazioni proxy, il che significa che può cambiare, interrompere o intercettare tutto ciò che fai online. Se non sei sicuro del motivo per cui si sia verificato questo cambiamento, è probabile che sia indesiderato.</translation>
+<translation id="6197128521826316819">Crea codice QR per questa pagina</translation>
 <translation id="6198102561359457428">Esci e accedi di nuovo...</translation>
 <translation id="6198252989419008588">Modifica PIN</translation>
 <translation id="6200047250927636406">Ignora file</translation>
@@ -4788,6 +4807,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6233455992368963267">Il testo dettato in <ph name="LANGUAGE" /> viene inviato a Google per essere elaborato.</translation>
 <translation id="6234108445915742946">I Termini di servizio di Chrome cambieranno il 31 marzo</translation>
 <translation id="6234474535228214774">Installazione in attesa</translation>
+<translation id="6235208551686043831">Videocamera del dispositivo accesa. Posiziona il codice QR della eSIM di fronte alla videocamera.</translation>
 <translation id="6237474966939441970">App per scrivere note con lo stilo</translation>
 <translation id="6237816943013845465">Consente di regolare la risoluzione dello schermo</translation>
 <translation id="6238624845858322552">Connessione a dispositivo Bluetooth</translation>
@@ -4855,6 +4875,9 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6294759976468837022">Velocità della scansione automatica</translation>
 <translation id="6295158916970320988">Tutti i siti</translation>
 <translation id="6295855836753816081">Salvataggio in corso...</translation>
+<translation id="6298800237463568825">Voice Match consente all'Assistente Google di identificare la tua voce sul tuo <ph name="DEVICE_TYPE" /> e di distinguerla dalle altre.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Ricorda:<ph name="END_BOLD" /> anche qualcuno con una voce simile alla tua o in possesso di una registrazione della tua voce potrebbe essere in grado di accedere ai tuoi risultati personali. Puoi rimuovere l'autorizzazione di utilizzo di Voice Match in un secondo momento disattivando la funzionalità nelle Impostazioni dell'assistente.</translation>
 <translation id="6298962879096096191">Utilizza Google Play per installare le app Android</translation>
 <translation id="6300177430812514606">Non possono terminare di inviare o ricevere dati</translation>
 <translation id="630065524203833229">E&amp;sci</translation>
@@ -5068,6 +5091,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6532663472409656417">Dispositivo aziendale registrato</translation>
 <translation id="6535331821390304775">Consenti sempre a <ph name="ORIGIN" /> di aprire link di questo tipo nell'app associata</translation>
 <translation id="653659894138286600">Scansiona documenti e immagini</translation>
+<translation id="6537016096312202316">Trascina sulle immagini per cercare con Google Lens</translation>
 <translation id="6537613839935722475">Il nome può contenere lettere, numeri e trattini (-)</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Errore durante il rilevamento del codice</translation>
@@ -5195,14 +5219,15 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6680650203439190394">Velocità</translation>
 <translation id="6681668084120808868">Scatta foto</translation>
 <translation id="6683087162435654533">Ripristina tutt&amp;e le schede</translation>
-<translation id="6683948477137300040">Mostra EID dispositivo e popup codice QR</translation>
 <translation id="6684827949542560880">Download dell'ultimo aggiornamento</translation>
 <translation id="668599234725812620">Apri Google Play</translation>
 <translation id="6686490380836145850">Chiudi schede a destra</translation>
 <translation id="6686665106869989887">Scheda spostata a destra</translation>
 <translation id="6686817083349815241">Salva la password</translation>
 <translation id="6687079240787935001">Nascondi <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">Crea codice QR per questa immagine</translation>
+<translation id="6689714331348768690">Fai venire al computer <ph name="SUPERVISED_USER_NAME" />. Tuo figlio leggerà alcune frasi sullo schermo per creare il suo modello vocale.
+    <ph name="BR" />
+    Se <ph name="SUPERVISED_USER_NAME" /> ha bisogno di aiuto nella lettura, chiedi di ripetere quello che leggi tu. Rimani a una certa distanza dal microfono, in modo che l'assistente possa identificare la voce di tuo figlio e non la tua.</translation>
 <translation id="6690659332373509948">Impossibile analizzare il file: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Gestisci dati sincronizzati sulla Dashboard di Google</translation>
 <translation id="6691541770654083180">Terra</translation>
@@ -5251,6 +5276,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6745592621698551453">Aggiorna ora</translation>
 <translation id="6746124502594467657">Sposta giù</translation>
 <translation id="674632704103926902">Attiva trascinamento al tocco</translation>
+<translation id="6748054820659621153">Cerca sullo schermo con Google Lens</translation>
 <translation id="6748465660675848252">Puoi continuare, tuttavia verranno ripristinati soltanto le impostazioni e i dati sincronizzati. Tutti i dati locali andranno persi.</translation>
 <translation id="6749006854028927059">I siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti web, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="6750757184909117990">Disabilita rete mobile</translation>
@@ -5406,7 +5432,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6914783257214138813">Le tue password saranno visibili a chiunque abbia accesso al file esportato.</translation>
 <translation id="6916590542764765824">Gestisci estensioni</translation>
 <translation id="6919868320029503575">Password inefficaci</translation>
-<translation id="6920262510368602827">Crea codice QR per questa pagina</translation>
 <translation id="6920989436227028121">Apri in una scheda normale</translation>
 <translation id="6921104647315081813">Cancella attività</translation>
 <translation id="692114467174262153">Impossibile aprire <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -5616,6 +5641,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> richiede l'immediato aggiornamento del tuo dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7136694880210472378">Imposta come predefinito</translation>
 <translation id="7136993520339022828">Si è verificato un errore. Riprova scegliendo altre immagini.</translation>
+<translation id="7138515695467025690">Off / Verrà attivata automaticamente al tramonto</translation>
 <translation id="7138678301420049075">Altro</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> sta utilizzando il microfono</translation>
 <translation id="7141105143012495934">Accesso non riuscito perché non è stato possibile recuperare i dati dell'account. Contatta l'amministratore o riprova.</translation>
@@ -5666,6 +5692,13 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Esci dalla pagina}other{Esci dalle pagine}}</translation>
 <translation id="7207457272187520234">Invia dati diagnostici e sull'utilizzo. Attualmente, questo dispositivo invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Tali dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Questa impostazione è applicata dal proprietario. Se hai attivato l'impostazione Attività web e app aggiuntiva, queste informazioni potrebbero essere salvate nel tuo Account Google.</translation>
 <translation id="7207631048330366454">Cerca nelle app</translation>
+<translation id="7210488993538120146">Voice Match aiuta l'Assistente Google a identificare la voce di <ph name="SUPERVISED_USER_NAME" /> sul tuo <ph name="DEVICE_TYPE" /> e distinguerla dalle altre.
+    <ph name="BR" />
+    L'assistente acquisisce clip della voce di tuo figlio per creare un modello vocale univoco che viene memorizzato soltanto sui suoi dispositivi. Il modello vocale di tuo figlio potrebbe essere inviato temporaneamente a Google per poter identificare meglio la sua voce.
+    <ph name="BR" />
+    Se in un secondo momento decidi che la funzionalità Voice Match non è adatta alle esigenze di tuo figlio, puoi rimuoverla dalle Impostazioni del suo assistente. Per visualizzare o eliminare i clip audio registrati da tuo figlio durante la configurazione di Voice Match, visita la pagina g.co/assistant/match dal suo account.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> anche qualcuno con una voce simile o in possesso di una registrazione della sua voce potrebbe essere in grado di accedere ai tuoi risultati personali di <ph name="SUPERVISED_USER_NAME" />. Per consumare meno batteria, il comando "Hey Google" è attivo soltanto quando il dispositivo è collegato a una fonte di alimentazione.</translation>
 <translation id="7210499381659830293">Stampanti estensione</translation>
 <translation id="7211783048245131419">Nessun sensore assegnato per il momento</translation>
 <translation id="7212097698621322584">Inserisci il PIN attuale per modificarlo. Se non conosci il PIN, devi reimpostare il token di sicurezza, quindi creare un nuovo PIN.</translation>
@@ -5696,7 +5729,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7243632151880336635">Cancella ed esci</translation>
 <translation id="7243784282103630670">Si è verificato un errore durante l'upgrade di Linux. Ripristineremo il contenitore usando la tua copia di backup.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (opzione migliore)</translation>
-<translation id="7246079707145287765">Visualizza la scheda <ph name="TAB_ORIGIN" /></translation>
 <translation id="7246230585855757313">Inserisci di nuovo il token di sicurezza e riprova</translation>
 <translation id="7249777306773517303">Questo dispositivo è gestito da <ph name="DOMAIN" /> e richiede l'accesso a ogni utilizzo.</translation>
 <translation id="7250616558727237648">Il dispositivo con cui hai tentato di condividere il file non ha risposto. Riprova.</translation>
@@ -5913,6 +5945,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7475671414023905704">URL password persa Netscape</translation>
 <translation id="7476454130948140105">Livello della batteria troppo basso per eseguire l'aggiornamento (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Autorizzazioni bloccate automaticamente: <ph name="PERMISSION" /> e altre <ph name="COUNT" /></translation>
+<translation id="7477748600276493962">Crea codice QR per questa pagina</translation>
 <translation id="7477793887173910789">Gestisci la tua musica, i tuoi video e altro ancora</translation>
 <translation id="7478485216301680444">Impossibile installare l'applicazione kiosk.</translation>
 <translation id="7478623944308207463">Le app e le impostazioni verranno sincronizzate su tutti i dispositivi Chrome OS a cui hai effettuato l'accesso con il tuo Account Google. Per le opzioni di sincronizzazione del browser, vai alle <ph name="LINK_BEGIN" />impostazioni di Chrome<ph name="LINK_END" />.</translation>
@@ -6088,6 +6121,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7652954539215530680">Crea un PIN</translation>
 <translation id="7654941827281939388">Questo account è già in uso su questo computer.</translation>
 <translation id="7655411746932645568">I siti possono chiedere di connettersi alle porte seriali</translation>
+<translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Altri tipi di attività<ph name="END_LINK_GOOGLE" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminarli in qualsiasi momento.</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7659154729610375585">Vuoi uscire comunque dalla modalità di navigazione in incognito?</translation>
 <translation id="7659297516559011665">Password memorizzate soltanto su questo dispositivo</translation>
@@ -6132,7 +6166,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7691698019618282776">Upgrade di Crostini</translation>
 <translation id="7696063401938172191">Sul tuo telefono "<ph name="PHONE_NAME" />":</translation>
 <translation id="7697166915480294040">I dettagli sono nascosti durante la condivisione dello schermo</translation>
-<translation id="7697598343108519171">Utilizza la fotocamera per scansionare il codice QR</translation>
 <translation id="7701040980221191251">Nulla</translation>
 <translation id="7701869757853594372">Handle UTENTE</translation>
 <translation id="7701928712056789451">Questi elementi potrebbero essere pericolosi</translation>
@@ -6171,6 +6204,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7734486794139738745">Uso un solo sensore</translation>
 <translation id="7734541938181328224">Controlla gli aggiornamenti dell'icona</translation>
 <translation id="7737115349420013392">Accoppiamento con "<ph name="DEVICE_NAME" />"…</translation>
+<translation id="7737846262459425222">Puoi modificare questa preferenza in qualsiasi momento in Impostazioni &gt; Assistente Google &gt; Contesto dello schermo.</translation>
 <translation id="7737948071472253612">Non possono utilizzare la videocamera</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7741307896921365578">Attiva un riquadro laterale a livello di browser che offre un modo utile e comodo di accedere ai contenuti in Elenco di lettura e Segnalibri.</translation>
@@ -6232,6 +6266,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7792388396321542707">Interrompi condivisione</translation>
 <translation id="779308894558717334">Verde chiaro</translation>
 <translation id="7793098747275782155">Blu scuro</translation>
+<translation id="7797246427375693110">On / Verrà disattivata automaticamente alle ore <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Off</translation>
 <translation id="7798844538707273832">Autorizzazione <ph name="PERMISSION" /> bloccata automaticamente</translation>
 <translation id="7799299114731150374">Sfondo impostato correttamente</translation>
@@ -6239,7 +6274,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7800518121066352902">Ruota in senso anti&amp;orario</translation>
 <translation id="780301667611848630">No grazie</translation>
 <translation id="7804072833593604762">Scheda chiusa</translation>
-<translation id="7805759469263222011">Scansiona un codice QR usando la fotocamera del dispositivo oppure inserisci il codice di attivazione fornito dall'operatore</translation>
 <translation id="7805768142964895445">Stato</translation>
 <translation id="7807067443225230855">Ricerca e assistente</translation>
 <translation id="7807711621188256451">Consenti sempre a <ph name="HOST" /> di accedere alla webcam</translation>
@@ -6385,6 +6419,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7942349550061667556">Rosso</translation>
 <translation id="7943368935008348579">Scarica PDF</translation>
 <translation id="7943837619101191061">Aggiungi posizione...</translation>
+<translation id="7944772052836377867">La sincronizzazione deve verificare la tua identità</translation>
 <translation id="7945031593909029181">L'estensione "<ph name="CHROME_EXTENSION_NAME" />" desidera collegarsi</translation>
 <translation id="7946586320617670168">L'origine deve essere sicura</translation>
 <translation id="794676567536738329">Conferma autorizzazioni</translation>
@@ -6425,12 +6460,14 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7980084013673500153">ID asset: <ph name="ASSET_ID" /></translation>
 <translation id="7981313251711023384">Le pagine vengono precaricate per velocizzare la navigazione e la ricerca</translation>
 <translation id="798145602633458219">Aggiungi il suggerimento <ph name="SUGGESTION_NAME" /> alla casella di ricerca</translation>
+<translation id="7981662863948574132">Mostra EID dispositivo e popup codice QR</translation>
 <translation id="7982083145464587921">Riavvia il dispositivo per correggere questo errore.</translation>
 <translation id="7982789257301363584">Rete</translation>
 <translation id="7984068253310542383">Esegui il mirroring di <ph name="DISPLAY_NAME" /></translation>
 <translation id="7986295104073916105">Lettura e modifica delle impostazioni relative alle password salvate</translation>
 <translation id="7987814697832569482">Connettiti sempre tramite questa VPN</translation>
 <translation id="7988355189918024273">Attiva funzioni di accessibilità</translation>
+<translation id="7990394755527173834">Per configurare per la prima volta un telefono Android per poterlo utilizzare come token di sicurezza con questo computer, sul tuo telefono apri Chrome e vai a "Impostazioni" &gt; Password &gt; Utilizza il telefono come token di sicurezza". Quindi tocca "Connetti nuovo dispositivo" e scansiona questo codice QR.</translation>
 <translation id="7991296728590311172">Impostazioni Switch Access</translation>
 <translation id="7997826902155442747">Priorità processo</translation>
 <translation id="7999229196265990314">Sono stati creati i file seguenti:
@@ -6796,7 +6833,6 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
 <translation id="8386091599636877289">Norme non trovate.</translation>
 <translation id="8387361103813440603">Non possono accedere alla tua posizione</translation>
 <translation id="8388770971141403598">I profili secondari non sono supportati</translation>
-<translation id="8389416080014625855">Crea codice QR per questa pagina</translation>
 <translation id="8389492867173948260">Permetti a questa estensione di leggere e modificare tutti i dati relativi ai siti web che hai visitato:</translation>
 <translation id="8390449457866780408">Server non disponibile.</translation>
 <translation id="8391218455464584335">Vinile</translation>
@@ -6962,6 +6998,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
 <translation id="8597845839771543242">Formato proprietà:</translation>
 <translation id="8599681327221583254">Uno o più criteri non sono configurati correttamente. Contatta l'amministratore.</translation>
 <translation id="8601206103050338563">Autenticazione TLS client WWW</translation>
+<translation id="8601611099293226919">Cerca sullo schermo con Google Lens</translation>
 <translation id="8602851771975208551">Un altro programma sul computer ha aggiunto un'applicazione che potrebbe modificare il funzionamento di Chrome.</translation>
 <translation id="8605428685123651449">Memoria SQLite</translation>
 <translation id="8608618451198398104">Aggiungi una richiesta di Kerberos</translation>
@@ -7067,6 +7104,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
 <translation id="8705331520020532516">Numero di serie</translation>
 <translation id="8705580154597116082">Wi-Fi disponibile tramite telefono</translation>
 <translation id="8705629851992224300">Impossibile leggere il token di sicurezza</translation>
+<translation id="8706111173576263877">Il codice QR è stato scansionato.</translation>
 <translation id="8708000541097332489">Cancella all'uscita</translation>
 <translation id="870805141700401153">Firma codice singolo Microsoft</translation>
 <translation id="8708671767545720562">Ulteriori infor&amp;mazioni</translation>
@@ -7091,6 +7129,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
 <translation id="8725178340343806893">Preferiti/Segnalibri</translation>
 <translation id="8726206820263995930">Errore durante il recupero delle impostazioni criterio dal server. <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727154974495727220">Dopo aver configurato il dispositivo <ph name="DEVICE_TYPE" />, premi il pulsante dell'assistente o dì "Ok Google" per ricevere aiuto in qualsiasi momento. Vai alle impostazioni dell'assistente per apportare modifiche.</translation>
+<translation id="8729133765463465108">Utilizza la fotocamera per scansionare il codice QR</translation>
 <translation id="8730621377337864115">Fine</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> richiede l'autorizzazione: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Numero porta</translation>
@@ -7151,7 +7190,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
 <translation id="8783834180813871000">Digita il codice di accoppiamento Bluetooth e premi Invio</translation>
 <translation id="8784626084144195648">Media raccolta</translation>
 <translation id="8785622406424941542">Stilo</translation>
-<translation id="8786824282808281903">Quando tuo figlio vede questa icona è possibile usare un'impronta per l'identificazione o per approvare gli acquisti.</translation>
+<translation id="8786824282808281903">Quando tuo figlio vede questa icona può usare l'impronta per l'identificazione o per approvare gli acquisti.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{Gruppo senza nome - 1 scheda}other{Gruppo senza nome - # schede}}</translation>
 <translation id="8791534160414513928">Invia una richiesta "Non tenere traccia" con il tuo traffico di navigazione</translation>
 <translation id="8792626944327216835">microfono</translation>
@@ -7280,6 +7319,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
 <translation id="8907787635362884532">Publisher: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome può controllare l'eventuale presenza di software dannoso sul tuo computer</translation>
 <translation id="8909298138148012791">L'app <ph name="APP_NAME" /> è stata disinstallata</translation>
+<translation id="8909782404367982052">Trascina per cercare le immagini con Google Lens</translation>
 <translation id="8909833622202089127">Il sito sta monitorando la tua posizione</translation>
 <translation id="8910222113987937043">Le modifiche ai preferiti, alla cronologia, alle password e ad altre impostazioni non verranno più sincronizzate con il tuo Account Google. I dati esistenti rimarranno invece memorizzati nel tuo Account Google e potranno essere gestiti su <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Google Account</translation>
@@ -7326,6 +7366,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
 <translation id="8962083179518285172">Nascondi dettagli</translation>
 <translation id="8962918469425892674">Questo sito usa sensori di movimento o della luce.</translation>
 <translation id="8965037249707889821">Inserisci vecchia password</translation>
+<translation id="89667524227025535">Scansiona un codice QR usando la fotocamera del dispositivo oppure inserisci il codice di attivazione fornito dall'operatore</translation>
 <translation id="8966809848145604011">Altri profili</translation>
 <translation id="8966870118594285808">Riapri una scheda chiusa accidentalmente</translation>
 <translation id="8967427617812342790">Aggiungi all'elenco di lettura</translation>
@@ -7353,7 +7394,6 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
 <translation id="8986494364107987395">Invia automaticamente a Google statistiche sull'utilizzo e rapporti sugli arresti anomali</translation>
 <translation id="8987927404178983737">Mese</translation>
 <translation id="8988879467270412492">Vuoi attivare ChromeVox, lo screen reader integrato per Chrome OS? In questo caso, tieni premuti entrambi i tasti del volume per 5 secondi.</translation>
-<translation id="8990209962746788689">Impossibile creare codice QR</translation>
 <translation id="8991520179165052608">Il sito può usare il microfono</translation>
 <translation id="899384117894244799">Rimuovere utente con limitazioni</translation>
 <translation id="899403249577094719">URL di base certificato Netscape</translation>
@@ -7419,6 +7459,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
 <translation id="9055636786322918818">Applica la crittografia RC4. Se scegli di utilizzare quest'opzione vai incontro a un rischio maggiore, in quanto le crittografie RC4 non sono sicure.</translation>
 <translation id="9056810968620647706">Nessuna corrispondenza trovata.</translation>
 <translation id="9057354806206861646">Aggiornamenti programmati</translation>
+<translation id="9057599413476594385">Trascina sulle immagini per cercare con Google Lens</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Errore dalla riga <ph name="ERROR_LINE_START" /> alla riga <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Impossibile acquisire contenuti riservati</translation>
@@ -7429,7 +7470,7 @@ Puoi assegnare più sensori a questa azione</translation>
 <translation id="9066394310994446814">Questo elemento è stato visualizzato in base alla tua precedente attività di utilizzo dei servizi Google. Puoi visualizzare i tuoi dati, eliminarli e cambiare le impostazioni all'indirizzo <ph name="BEGIN_LINK1" />myactivity.google.com<ph name="END_LINK1" />.
         <ph name="BREAK" />
         <ph name="BREAK" />
-        Scopri di più sui dati raccolti da Google e sulle finalità della raccolta all'indirizzo <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" />.</translation>
+        Scopri di più sui dati che Google raccoglie e per quali finalità all'indirizzo <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" />.</translation>
 <translation id="9066782832737749352">Sintesi vocale</translation>
 <translation id="9068878141610261315">Tipo di file non supportato</translation>
 <translation id="9070342919388027491">Scheda spostata a sinistra</translation>
@@ -7586,6 +7627,7 @@ Puoi assegnare più sensori a questa azione</translation>
 <translation id="936646668635477464">Videocamera e microfono</translation>
 <translation id="936801553271523408">Dati diagnostica di sistema</translation>
 <translation id="93766956588638423">Ripara estensione</translation>
+<translation id="938568644810664664">Prova "Hey Google, qual è il titolo di questa canzone?" oppure "Hey Google, cosa c'è sul mio schermo?"</translation>
 <translation id="939252827960237676">Salvataggio dello screenshot non riuscito</translation>
 <translation id="939598580284253335">Inserisci passphrase</translation>
 <translation id="939736085109172342">Nuova cartella</translation>
@@ -7628,6 +7670,7 @@ Puoi assegnare più sensori a questa azione</translation>
 <translation id="98515147261107953">Orizzontale</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Generali</translation>
+<translation id="987363316774788151">Off / Verrà attivata automaticamente alle ore <ph name="TIME" /></translation>
 <translation id="987897973846887088">Nessuna immagine disponibile</translation>
 <translation id="988320949174893488">Interruzioni occasionali</translation>
 <translation id="988978206646512040">Non è consentita una passphrase vuota</translation>

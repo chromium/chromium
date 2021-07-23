@@ -132,6 +132,7 @@
 <translation id="387301095347517405">Batareyanızın tam şarj edilmə sayı</translation>
 <translation id="3941014780699102620">Hostu həll etmək alınmadı</translation>
 <translation id="3942420633017001071">Diaqnostika</translation>
+<translation id="3966286471246132217">Daha dəqiq nəticələr üçün test tamamlanana kimi bütün tətbiqləri bağlayın.</translation>
 <translation id="3967822245660637423">Endirmə tamamdır</translation>
 <translation id="397105322502079400">Hesablanır...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> gündən köhnə çap işləri silinəcək</translation>
@@ -144,6 +145,7 @@
 <translation id="4176463684765177261">Deaktiv edildi</translation>
 <translation id="4227825898293920515">Parolun vaxtı <ph name="TIME" /> ərzində başa çatır</translation>
 <translation id="4238516577297848345">Hazırda davam edən çap işləri yoxdur</translation>
+<translation id="4244962993387259361">Yaddaş testi etmək üçün minimum 500 MB boş yaddaşınız olmalıdır. Yaddaşda yer boşaltmaq üçün Ayarlar &gt; Yaddaş menecerinə daxil olun.</translation>
 <translation id="4289540628985791613">Baxış</translation>
 <translation id="4297501883039923494">Dayanıb - Naməlum xəta</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> şəkil</translation>
@@ -384,6 +386,7 @@
 <translation id="8498220429738806196">Nəqliyyat Sayğacları</translation>
 <translation id="8503813439785031346">İstifadəçi adı</translation>
 <translation id="8503836310948963452">Bir neçə dəqiqə daha...</translation>
+<translation id="8521021929829989041">Şəxsi cihaz kimi istifadə edin</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operatorunuz şəbəkəsinə qoşulmaq üçün bu seçimi tələb edə bilər. Ətraflı məlumat üçün operatorunuzla əlaqə saxlayın.</translation>
 <translation id="8576249514688522074">Başladılmayıb</translation>

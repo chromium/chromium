@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">Vragen voordat sites je virtualreality-apparaat en -gegevens mogen gebruiken (aanbevolen)</translation>
 <translation id="4962975101802056554">Alle rechten voor apparaat intrekken</translation>
 <translation id="497421865427891073">Naar voren gaan</translation>
+<translation id="4976702386844183910">Laatst bezocht: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Geen contacten gevonden</translation>
 <translation id="4996978546172906250">Delen via</translation>
 <translation id="5039804452771397117">Toestaan</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">Incognitotabblad</translation>
 <translation id="5186036860380548585">Optie beschikbaar boven aan het scherm</translation>
 <translation id="5197729504361054390">De contacten die je selecteert, worden gedeeld met <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">Laatst bezocht: vandaag</translation>
 <translation id="528192093759286357">Sleep vanaf de bovenkant en tik op de knop Terug om het volledige scherm te sluiten.</translation>
 <translation id="5300589172476337783">Tonen</translation>
 <translation id="5301954838959518834">OK, begrepen</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">Rechten</translation>
 <translation id="5860033963881614850">Uit</translation>
 <translation id="5876056640971328065">Video pauzeren</translation>
+<translation id="5887687176710214216">Laatst bezocht: gisteren</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5922853908706496913">Je scherm delen</translation>
 <translation id="5939518447894949180">Resetten</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">Delen</translation>
 <translation id="6545864417968258051">Bluetooth-scannen</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> geblokkeerd}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> geblokkeerd}}</translation>
+<translation id="6554732001434021288">Laatst bezocht: <ph name="NUM_DAYS" /> dagen geleden</translation>
 <translation id="6561560012278703671">Stillere meldingen gebruiken (zorgt ervoor dat je niet wordt gestoord door meldingprompts)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beschermde content</translation>

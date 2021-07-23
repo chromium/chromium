@@ -224,7 +224,6 @@
 
 ਖੋਜ ਕਰਨ ਲਈ ਕਿਸੇ ਵੀ ਸ਼ਬਦ ਨੂੰ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ। ਆਪਣੀ ਖੋਜ ਵਿੱਚ ਸੋਧ ਕਰਨ ਲਈ, ਜ਼ਿਆਦਾ ਜਾਂ ਘੱਟ ਸ਼ਬਦ ਚੁਣੋ। ਆਪਣੀ ਖੋਜ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, ਪੈਨਲ ਨੂੰ ਖੋਲ੍ਹੋ, ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹਣ ਲਈ ਪ੍ਰਤੀਕ 'ਤੇ ਟੈਪ ਕਰੋ, ਅਤੇ ਖੋਜ ਬਾਕਸ ਵਿੱਚ ਆਪਣੀਆਂ ਤਬਦੀਲੀਆਂ ਕਰੋ।</translation>
 <translation id="2459390580524506445">ਵਿਸਤ੍ਰਿਤ ਅਵਾਜ਼ੀ ਖੋਜ</translation>
-<translation id="246532703174860178">ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="247737702124049222">ਚਿੱਤਰ ਦੇ ਵਰਣਨ ਚਾਲੂ ਹਨ</translation>
 <translation id="2482878487686419369">ਸੂਚਨਾਵਾਂ</translation>
 <translation id="2485422356828889247">ਅਣਸਥਾਪਤ ਕਰੋ</translation>
@@ -296,7 +295,6 @@
 <translation id="2900528713135656174">ਵਰਤਾਰਾ ਬਣਾਓ</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> ਲਈ ਸੁਝਾਅ ਦਿਖਾਏ ਜਾ ਰਹੇ ਹਨ</translation>
 <translation id="2904414404539560095">ਕਿਸੇ ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਵਾਲੇ ਡੀਵਾਈਸਾਂ ਦੀ ਸੂਚੀ ਪੂਰੀ ਉਚਾਈ 'ਤੇ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ।</translation>
-<translation id="2905036901251765993">ਨਜ਼ਦੀਕੀ ਲੋਕਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰਨ ਲਈ, ਉਹਨਾਂ ਨੂੰ ਇਹ QR ਕੋਡ ਸਕੈਨ ਕਰਨ ਦਿਓ</translation>
 <translation id="2908243544703713905">ਨਾ-ਪੜ੍ਹੀਆਂ ਕਹਾਣੀਆਂ ਤਿਆਰ ਹਨ</translation>
 <translation id="2909615210195135082">Google ਸੂਚਨਾਵਾਂ ਪਲੇਟਫਾਰਮ</translation>
 <translation id="2912296070571964914">ਆਪਣੀ ਦਿਲਚਸਪੀ ਵਾਲੇ ਵਿਸ਼ਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -306,6 +304,7 @@
 <translation id="2942036813789421260">ਪੂਰਵ-ਝਲਕ ਟੈਬ ਬੰਦ ਹੈ</translation>
 <translation id="2956410042958133412">ਇਹ ਖਾਤਾ <ph name="PARENT_NAME_1" /> ਅਤੇ <ph name="PARENT_NAME_2" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ਨਾ-ਪੜ੍ਹਿਆ ਪੰਨਾ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ਨਾ-ਪੜ੍ਹਿਆ ਪੰਨਾ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ਨਾ-ਪੜ੍ਹੇ ਪੰਨੇ}}</translation>
+<translation id="2961210776189273067">ਸਿਰਲੇਖ</translation>
 <translation id="2979025552038692506">ਚੁਣੀ ਗਈ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="2979448359891869301">ਸਕ੍ਰੀਨਸ਼ਾਟ ਦਾ ਹੋਰ ਵਿਸਤਾਰ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਜਦੋਂ ਤੁਹਾਡਾ ਫ਼ੋਨ ਵਿਅਸਤ ਨਾ ਹੋਵੇ, ਉਦੋਂ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="2979639724566107830">ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
@@ -338,6 +337,7 @@
 <translation id="3207960819495026254">ਬੁੱਕਮਾਰਕ ਕੀਤੇ</translation>
 <translation id="3208584281581115441">ਹੁਣ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> ਨੂੰ ਮਿਟਾਇਆ ਗਿਆ</translation>
+<translation id="3214996641768123781">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK1" />ਖੋਜ ਇਤਿਹਾਸ<ph name="END_LINK1" /> ਅਤੇ <ph name="BEGIN_LINK2" />ਸਰਗਰਮੀ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ<ph name="END_LINK2" /> ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨੂੰ ਕਿਸੇ ਵੀ ਸਮੇਂ ਮਿਟਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="321773570071367578">ਜੇਕਰ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਭੁੱਲ ਗਏ ਹੋ ਜਾਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ <ph name="BEGIN_LINK" />ਸਮਕਾਲੀਕਰਨ ਰੀਸੈੱਟ ਕਰੋ<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਦਾ ਸਮਕਾਲੀਕਰਨ ਕਰਨ ਲਈ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="3227557059438308877">Google Chrome ਨੂੰ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਜੋਂ ਵਰਤਣਾ</translation>
@@ -617,11 +617,14 @@
 <translation id="497421865427891073">ਅੱਗੇ ਵੱਲ ਜਾਓ</translation>
 <translation id="4988210275050210843">ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ (<ph name="MEGABYTES" />)।</translation>
 <translation id="4988526792673242964">ਸਫ਼ੇ</translation>
+<translation id="5001388021414335527">ਇਸ ਸਾਈਟ ਦਾ ਇੱਥੇ ਅਨੁਸਰਣ ਕਰੋ</translation>
 <translation id="5004416275253351869">Google ਸਰਗਰਮੀ ਕੰਟਰੋਲ</translation>
 <translation id="5005498671520578047">ਪਾਸਵਰਡ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ਕਨੈਕਟ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5032430150487044192">QR ਕੋਡ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="5039804452771397117">ਆਗਿਆ ਦਿਓ</translation>
+<translation id="5054455334322721892">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK1" />ਸਰਗਰਮੀ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ<ph name="END_LINK1" /> ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨੂੰ ਕਿਸੇ ਵੀ ਸਮੇਂ ਮਿਟਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5061533557687621530">ਮੌਸਮ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ, ਮਾਈਕ 'ਤੇ ਟੈਪ ਕਰੋ ਅਤੇ ਕਹੋ ਕਿ "ਅੱਜ ਮੌਸਮ ਕਿਹੋ ਜਿਹਾ ਹੈ?"</translation>
 <translation id="5087580092889165836">ਕਾਰਡ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5091249083535528968">ਵਿਸਤ੍ਰਿਤ ਵਰਤੋਂ ਡਾਟਾ</translation>
@@ -722,7 +725,6 @@
 <translation id="572328651809341494">ਹਾਲੀਆ ਟੈਬਸ</translation>
 <translation id="5723735397759933332">ਲਾਈਟ ਮੋਡ ਹੁਣ HTTPS ਪੰਨਿਆਂ 'ਤੇ ਚਿੱਤਰਾਂ ਨੂੰ ਸੁਯੋਗ ਬਣਾ ਕੇ ਤੁਹਾਡੇ ਲਈ ਹੋਰ ਡਾਟਾ ਬਚਾਉਂਦਾ ਹੈ।</translation>
 <translation id="5726692708398506830">ਪੰਨੇ 'ਤੇ ਹਰੇਕ ਚੀਜ਼ ਨੂੰ ਵਧੇਰੇ ਵੱਡਾ ਬਣਾਓ</translation>
-<translation id="5733983706093266635">QR ਕੋਡ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ। URL <ph name="CHARACTER_LIMIT" /> ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਤੋਂ ਵੱਧ ਹੈ।</translation>
 <translation id="5748802427693696783">ਬਦਲਕੇ ਸਧਾਰਨ ਟੈਬਾਂ ਲਿਆਂਦੀਆਂ ਗਈਆਂ</translation>
 <translation id="5749068826913805084">ਫ਼ਾਈਲਾਂ ਡਾਉਨਲੋਡ ਕਰਨ ਲਈ Chrome ਨੂੰ ਸਟੋਰੋਜ ਤੱਕ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।</translation>
 <translation id="5749237766298580851">ਬੰਦ ਹੈ <ph name="SEPARATOR" /> ਇਸਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ</translation>
@@ -741,6 +743,7 @@
 <translation id="5814131985548525293">ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਇੱਥੇ ਟਾਈਪ ਕਰੋ ਜਾਂ ਅਵਾਜ਼ ਪ੍ਰਤੀਕ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="583281660410589416">ਅਗਿਆਤ</translation>
 <translation id="5833984609253377421">ਲਿੰਕ ਸਾਂਝਾ ਕਰੋ</translation>
+<translation id="5834764604050996579">QR ਕੋਡ ਸਕੈਨ ਕਰਨ ਲਈ, Chrome ਨੂੰ ਤੁਹਾਡਾ ਕੈਮਰਾ ਵਰਤਣ ਦਿਓ</translation>
 <translation id="5836192821815272682">Chrome ਅੱਪਡੇਟ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
 <translation id="5853623416121554550">ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="5854512288214985237">ਕੋਈ ਅੰਕੜੇ ਜਾਂ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ Google ਨੂੰ ਨਹੀਂ ਭੇਜੀਆਂ ਗਈਆਂ</translation>
@@ -878,7 +881,6 @@
 <translation id="6590680911007613645">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਵੱਲੋਂ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਪਾਸਵਰਡ <ph name="SITE" /> ਦੇ ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨਾਲ ਮੇਲ ਖਾਂਦਾ ਹੋਵੇ</translation>
 <translation id="6593061639179217415">ਡੈਸਕਟਾਪ ਸਾਈਟ</translation>
 <translation id="6595046016124923392">ਤੁਹਾਡੇ ਲਈ ਵਰਣਨ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਚਿੱਤਰਾਂ ਨੂੰ Google ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ।</translation>
-<translation id="6597891566292541626">QR/ਬਾਰ ਕੋਡ ਨੂੰ ਇਸ ਫਰੇਮ ਵਿੱਚ ਰੱਖੋ।</translation>
 <translation id="6600954340915313787">Chrome 'ਤੇ ਕਾਪੀ ਕੀਤਾ</translation>
 <translation id="661266467055912436">ਵੈੱਬ 'ਤੇ ਤੁਹਾਡੇ ਅਤੇ ਹਰ ਕਿਸੇ ਲਈ ਸੁਰੱਖਿਆ ਨੂੰ ਬਿਹਤਰ ਬਣਾਇਆ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="6618554661997243500">ਤੁਹਾਡੇ ਲਈ ਪ੍ਰਮੁੱਖ ਸਾਈਟਾਂ ਅਤੇ ਕਹਾਣੀਆਂ ਨੂੰ ਦੇਖਣ ਲਈ, ਹੋਮ ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
@@ -922,6 +924,7 @@
 <translation id="6867400383614725881">ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="6869056123412990582">ਕੰਪਿਊਟਰ</translation>
 <translation id="6882836635272038266">ਉਹਨਾਂ ਵੈੱਬਸਾਈਟਾਂ, ਡਾਊਨਲੋਡਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੋਂ ਮਿਆਰੀ ਸੁਰੱਖਿਆ ਜੋ ਖਤਰਨਾਕ ਮੰਨੀਆਂ ਜਾਂਦੀਆਂ ਹਨ।</translation>
+<translation id="6883204995689174413">ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="688738109438487280">ਮੌਜੂਦਾ ਡਾਟੇ ਨੂੰ <ph name="TO_ACCOUNT" /> ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ।</translation>
 <translation id="6891726759199484455">ਆਪਣਾ ਪਾਸਵਰਡ ਕਾਪੀ ਕਰਨ ਲਈ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="6896758677409633944">ਕਾਪੀ ਕਰੋ</translation>
@@ -942,6 +945,7 @@
 <translation id="7022756207310403729">ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="702463548815491781">TalkBack ਜਾਂ 'ਸਵਿੱਚ ਪਹੁੰਚ' ਦੇ ਚਾਲੂ ਹੋਣ 'ਤੇ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="7029390216614421513">QR ਕੋਡ/ਬਾਰ ਕੋਡ ਨੂੰ ਇਸ ਫ੍ਰੇਮ ਵਿੱਚ ਰੱਖੋ।</translation>
 <translation id="7029809446516969842">ਪਾਸਵਰਡ</translation>
 <translation id="7054588988317389591">ਕੀ ਚਿੱਤਰ ਵਰਣਨ ਪ੍ਰਾਪਤ ਕਰਨੇ ਹਨ?</translation>
 <translation id="7055152154916055070">ਇਸ ਰੀਡਾਇਰੈਕਟ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ:</translation>
@@ -956,8 +960,10 @@
 <translation id="7138678301420049075">ਹੋਰ</translation>
 <translation id="7146622961999026732">ਇਹ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਤੁਹਾਡੇ ਲਈ ਮਹੱਤਵਪੂਰਨ ਲੱਗ ਰਹੀਆਂ ਹਨ:</translation>
 <translation id="7149893636342594995">ਪਿਛਲੇ 24 ਘੰਟੇ</translation>
+<translation id="7155317020660659215">QR ਕੋਡ ਸਕੈਨ ਕਰਨ ਲਈ, ਆਪਣੀਆਂ ਸੈਟਿੰਗਾਂ ਬਦਲੋ ਤਾਂ ਜੋ Chrome ਤੁਹਾਡੇ ਕੈਮਰੇ ਨੂੰ ਵਰਤ ਸਕੇ</translation>
 <translation id="7173114856073700355">ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7177466738963138057">ਤੁਸੀਂ ਇਸਨੂੰ ਬਾਅਦ ਵਿੱਚ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਬਦਲ ਸਕਦੇ ਹੋ</translation>
+<translation id="7177873915659574692">QR ਕੋਡ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ। URL <ph name="CHARACTER_LIMIT" /> ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਤੋਂ ਵੱਧ ਦਾ ਹੈ।</translation>
 <translation id="7180611975245234373">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="7187993566681480880">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਤੁਹਾਨੂੰ Chrome ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਰੱਖਿਆ ਜਾਂਦਾ ਹੈ ਅਤੇ ਸ਼ਾਇਦ ਹੋਰ Google ਐਪਾਂ ਵਿੱਚ ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਨੂੰ ਸੁਧਾਰਨ ਲਈ ਵਰਤਿਆ ਜਾ ਸਕੇ।</translation>
 <translation id="718926126787620637">ਬੁੱਕਮਾਰਕ ਫੋਲਡਰਾਂ ਦੀ ਸੂਚੀ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੈ</translation>
@@ -987,6 +993,7 @@
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{1 ਚੁਣੀ ਗਈ ਆਈਟਮ ਸਾਂਝੀ ਕਰੋ}one{# ਚੁਣੀਆਂ ਗਈਆਂ ਆਈਟਮਾਂ ਸਾਂਝੀਆਂ ਕਰੋ}other{# ਚੁਣੀਆਂ ਗਈਆਂ ਆਈਟਮਾਂ ਸਾਂਝੀਆਂ ਕਰੋ}}</translation>
 <translation id="7359002509206457351">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਤੱਕ ਪਹੁੰਚ</translation>
 <translation id="7375125077091615385">ਪ੍ਰਕਾਰ:</translation>
+<translation id="7386842512861524348">ਸਾਈਟ ਦਾ ਕਨੈਕਸ਼ਨ ਉਦੋਂ ਤੱਕ ਸੁਰੱਖਿਅਤ ਹੈ ਜਦੋਂ ਤੱਕ Chrome ਤੁਹਾਨੂੰ ਅਸੁਰੱਖਿਅਤ ਹੋਣ ਦੀ ਸੂਚਨਾ ਨਹੀਂ ਦਿੰਦਾ।</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />।</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome ਪਹਿਲੀ ਵਾਰ ਚਲਾਉਣ ਦਾ ਅਨੁਭਵ</translation>
@@ -1001,6 +1008,7 @@
 <translation id="7454641608352164238">ਲੋੜੀਂਦੀ ਜਗ੍ਹਾ ਨਹੀਂ ਹੈ</translation>
 <translation id="7475192538862203634">ਜੇਕਰ ਤੁਸੀਂ ਇਸ ਨੂੰ ਵਾਰ-ਵਾਰ  ਦੇਖ  ਰਹੇ ਹੋ, ਇਹ<ph name="BEGIN_LINK" />ਸੁਝਾਅ<ph name="END_LINK" /> ਅਜ਼ਮਾਓ।</translation>
 <translation id="7475688122056506577">SD ਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ। ਤੁਹਾਡੀਆਂ ਕੁਝ ਫ਼ਾਈਲਾਂ ਗੁੰਮ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
+<translation id="7476384249953022816">ਆਪਣੇ ਡੀਵਾਈਸ ਤੋਂ ਇਨਕੋਗਨਿਟੋ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਕਲੀਅਰ ਕਰਨ ਲਈ, ਸਾਰੀਆਂ ਟੈਬਾਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="7479104141328977413">ਟੈਬ ਪ੍ਰਬੰਧਨ</translation>
 <translation id="7481312909269577407">ਅੱਗੇ ਭੇਜੋ</translation>
 <translation id="7481864133709957613">ਇਸ ਪੰਨੇ ਤੋਂ ਖੋਜਣ ਲਈ, ਸ਼ਬਦਾਂ 'ਤੇ ਟੈਪ ਕਰਨ ਦੀ ਬਜਾਏ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ</translation>
@@ -1083,11 +1091,11 @@
 <translation id="7929962904089429003">ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7930998711684428189">ਡਾਟਾ ਉਲੰਘਣਾ ਵਜੋਂ ਪਾਸਵਰਡਾਂ ਦਾ ਖੁਲਾਸਾ ਹੋਣ 'ਤੇ ਤੁਹਾਨੂੰ ਚਿਤਾਵਨੀ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ਪੁਰਾਣਾ ਹੈ।</translation>
+<translation id="7944772052836377867">ਸਿੰਕ ਕਰਨ ਲਈ ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="7947953824732555851">ਸਵੀਕਾਰ ਕਰਕੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="7961015016161918242">ਕਦੇ ਨਹੀਂ</translation>
 <translation id="7961926449547174351">ਤੁਸੀਂ ਸਟੋਰੇਜ ਤੱਕ ਪਹੁੰਚ ਬੰਦ ਕਰ ਦਿੱਤੀ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਇਸਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="7963646190083259054">ਵੈਂਡਰ:</translation>
-<translation id="7967911570373677897">ਕਿਸੇ QR ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰਨ ਲਈ, ਆਪਣੀਆਂ ਸੈਟਿੰਗਾਂ ਬਦਲੋ ਤਾਂ ਜੋ Chrome ਤੁਹਾਡੇ ਕੈਮਰੇ ਨੂੰ ਵਰਤ ਸਕੇ</translation>
 <translation id="7968014550143838305">ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7971136598759319605">1 ਦਿਨ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ</translation>
 <translation id="7975379999046275268">ਪੰਨੇ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
@@ -1115,11 +1123,11 @@
 <translation id="8084114998886531721">ਰੱਖਿਅਤ ਕੀਤਾ ਪਾਸਵਰਡ</translation>
 <translation id="8084285576995584326">ਆਪਣੇ Google ਖਾਤੇ ਦੇ ਡਾਟੇ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ</translation>
 <translation id="808747664143081553">ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="8088176524274673045">ਨਜ਼ਦੀਕੀ ਲੋਕਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰਨ ਲਈ, ਉਨ੍ਹਾਂ ਨੂੰ ਇਹ QR ਕੋਡ ਸਕੈਨ ਕਰਨ ਦਿਓ</translation>
 <translation id="8103578431304235997">ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਸਮਕਾਲੀਕਰਨ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="8110087112193408731">ਕੀ ਤੁਸੀਂ ਡਿਜੀਟਲ ਜੀਵਨਸ਼ੈਲੀ ਵਿੱਚ ਆਪਣੀ Chrome ਸਰਗਰਮੀ ਦਿਖਾਉਣੀ ਹੈ?</translation>
-<translation id="8115259494083109761">ਕਿਸੇ QR ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰਨ ਲਈ, Chrome ਨੂੰ ਤੁਹਾਡਾ ਕੈਮਰਾ ਵਰਤਣ ਦਿਓ</translation>
 <translation id="8127542551745560481">ਹੋਮਪੇਜ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="813082847718468539">ਸਾਈਟ ਜਾਣਕਾਰੀ ਦੇਖੋ</translation>
 <translation id="8137558756159375272">'ਖੋਜਣ ਲਈ ਸਪਰਸ਼ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ ਚੁਣੇ ਹੋਏ ਸ਼ਬਦ ਅਤੇ ਵਰਤਮਾਨ ਪੰਨੇ ਨੂੰ ਸੰਦਰਭ ਵਜੋਂ 'Google ਖੋਜ' 'ਤੇ ਭੇਜਦੀ ਹੈ। ਤੁਸੀਂ ਇਸਨੂੰ <ph name="BEGIN_LINK" />ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
@@ -1136,7 +1144,6 @@
 <translation id="8218622182176210845">ਆਪਣੇ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8223642481677794647">ਫ਼ੀਡ ਕਾਰਡ ਮੀਨੂ</translation>
 <translation id="8224471946457685718">ਵਾਈ-ਫਾਈ ਵਰਤਣ ਵੇਲੇ ਆਪਣੇ ਲਈ ਲੇਖ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
-<translation id="8233540874193135768">ਕਿਸੇ QR ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰਨ ਲਈ, ਕਿਸੇ ਕੈਮਰੇ ਵਾਲੇ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="8250920743982581267">ਦਸਤਾਵੇਜ਼</translation>
 <translation id="825412236959742607">ਇਹ ਪੰਨਾ ਬਹੁਤ ਜ਼ਿਆਦਾ ਮੈਮੋਰੀ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ, ਇਸ ਲਈ Chrome ਨੇ ਕੁਝ ਸਮੱਗਰੀ ਹਟਾ ਦਿੱਤੀ ਹੈ।</translation>
 <translation id="8260126382462817229">ਦੁਬਾਰਾ ਸਾਈਨ ਇਨ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
@@ -1147,6 +1154,7 @@
 <translation id="8284326494547611709">ਸੁਰਖੀਆਂ</translation>
 <translation id="829672787777123339">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
 <translation id="8310344678080805313">ਸਟੈਂਡਰਡ ਟੈਬਸ</translation>
+<translation id="831192587911042850">ਮੌਜੂਦਾ ਵੈੱਬਸਾਈਟ ਨੂੰ ਵੈੱਬਸਾਈਟਾਂ ਦੀ ਉਸ ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰਦਾ ਹੈ ਜਿਨ੍ਹਾਂ ਦਾ ਤੁਸੀਂ ਅਨੁਸਰਣ ਕਰ ਰਹੇ ਹੋ।</translation>
 <translation id="8327155640814342956">ਬਿਹਤਰੀਨ ਬ੍ਰਾਊਜ਼ਿੰਗ ਅਨੁਭਵ ਲਈ, Chrome ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਾਸਤੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="834313815369870491">ਕਦੇ ਵੀ ਇਹਨਾਂ ਸਾਈਟਾਂ ਦਾ ਅਨੁਵਾਦ ਨਾ ਕਰੋ</translation>
 <translation id="8349013245300336738">ਵਰਤੇ ਗਏ ਡਾਟੇ ਦੀ ਮਾਤਰਾ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>
@@ -1224,6 +1232,7 @@
 <translation id="8788265440806329501">ਨੈਵੀਗੇਸ਼ਨ ਇਤਿਹਾਸ ਬੰਦ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="8788968922598763114">ਆਖਰੀ ਬੰਦ ਕੀਤੀ ਟੈਬ ਦੁਬਾਰਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="8798449543960971550">ਪੜ੍ਹ ਲਿਆ</translation>
+<translation id="8805097383171548551">QR ਕੋਡ ਸਕੈਨ ਕਰਨ ਲਈ, ਕਿਸੇ ਕੈਮਰੇ ਵਾਲੇ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="8812260976093120287">ਕੁਝ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ, ਤੁਸੀਂ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਉਪਰੋਕਤ ਸਮਰਥਿਤ ਭੁਗਤਾਨ ਐਪਾਂ ਨਾਲ ਭੁਗਤਾਨ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="881688628773363275">ਪੂਰਵ-ਝਲਕ ਟੈਬ ਦੀ ਸਮੱਗਰੀ ਦੇਖਣਯੋਗ ਨਹੀਂ ਹੈ।</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
@@ -1252,7 +1261,6 @@
 <translation id="8970887620466824814">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="8972098258593396643">ਕੀ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਫੋਲਡਰ ਵਿੱਚ ਡਾਊਨਲੋਡ ਕਰਨਾ ਹੈ?</translation>
 <translation id="8988028529677883095">ਫ਼ੋਨ ਨੂੰ ਇੱਕ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਜੋਂ ਵਰਤੋ</translation>
-<translation id="8990209962746788689">QR ਕੋਡ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="8993760627012879038">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਇੱਕ ਨਵੀਂ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
 <translation id="8996847606757455498">ਕੋਈ ਹੋਰ ਪ੍ਰਦਾਨਕ ਚੁਣੋ</translation>
 <translation id="8998729206196772491">ਤੁਸੀਂ <ph name="MANAGED_DOMAIN" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰ ਰਹੇ ਹੋ ਅਤੇ ਉਸਦੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਆਪਣੇ Chrome ਡਾਟੇ ਦਾ ਕੰਟਰੋਲ ਦੇ ਰਹੇ ਹੋ। ਤੁਹਾਡਾ ਡਾਟਾ ਸਥਾਈ ਤੌਰ 'ਤੇ ਇਸ ਖਾਤੇ ਨਾਲ ਜੋੜ ਦਿੱਤਾ ਜਾਵੇਗਾ। Chrome ਤੋਂ ਸਾਈਨ-ਆਊਟ ਹੋਣ ਨਾਲ ਤੁਹਾਡਾ ਡਾਟਾ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ, ਪਰ ਇਹ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਸਟੋਰ ਰਹੇਗਾ।</translation>
@@ -1270,6 +1278,7 @@
 <translation id="9070377983101773829">ਅਵਾਜ਼ੀ ਖੋਜ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="9074336505530349563">Google ਵੱਲੋਂ ਸੁਝਾਈ ਵਿਅਕਤੀਗਤ ਬਣਾਈ ਗਈ ਸਮੱਗਰੀ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਸਾਈਨ-ਇਨ ਕਰਕੇ ਸਮਕਾਲੀਕਰਨ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="9074739597929991885">ਬਲੂਟੁੱਥ</translation>
+<translation id="9081543426177426948">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਰੱਖਿਅਤ ਨਹੀਂ ਹੁੰਦੀਆਂ ਹਨ</translation>
 <translation id="9086302186042011942">ਸਿੰਕ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="9086455579313502267">ਨੈ$ਟਵਰਕ 'ਤੇ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ</translation>
 <translation id="9100505651305367705">ਜੇਕਰ ਸਮਰਥਿਤ ਹੋਵੇ, ਤਾਂ ਲੇਖਾਂ ਨੂੰ ਸਰਲੀਕਿਰਤ ਦ੍ਰਿਸ਼ ਵਿੱਚ ਦਿਖਾਉਣ ਲਈ ਪੇਸ਼ਕਸ਼ ਕਰੋ</translation>

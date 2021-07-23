@@ -182,6 +182,7 @@
 <translation id="2243633977138166243">Nhấn mũi tên trái hoặc phải để di chuyển; nhấn phím Enter để kích hoạt</translation>
 <translation id="224426591676115802">Không có giọng nói cho ngôn ngữ: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Đang dừng Chế độ học</translation>
+<translation id="2247870315273396641">Nghe trước giọng nói</translation>
 <translation id="225732394367814946">Tăng tốc độ nói</translation>
 <translation id="2267538686624070261">Rời khỏi từ sai chính tả</translation>
 <translation id="2267945578749931355">Ký tự tiếp theo</translation>
@@ -198,6 +199,7 @@
 <translation id="2390264819538553347">Để chuyển tới trang tiếp theo, nhấn enter; để quay lại trang trước, nhấn phím xóa lùi.</translation>
 <translation id="2398579267367951220">Nhập để tìm kiếm trang. Nhấn phím Enter để xem kết quả, phím mũi tên lên hoặc xuống để duyệt qua kết quả, tiếp tục nhập để thay đổi nội dung tìm kiếm hoặc nhấn phím Escape để hủy.</translation>
 <translation id="240709722712693803">Màu lam tím</translation>
+<translation id="2410298923485357543">Sử dụng giọng nói tự nhiên khi thiết bị có kết nối mạng</translation>
 <translation id="2416512023405990736">Hộp kiểm được bỏ chọn</translation>
 <translation id="2417569100218200841">Thông tin nội dung</translation>
 <translation id="2417948780551741035">Chú thích</translation>
@@ -299,6 +301,7 @@
 <translation id="3046838483509668188">Tùy chọn của ChromeVox</translation>
 <translation id="3060756054951570867">Menu <ph name="TITLE" /> đã được mở</translation>
 <translation id="3060880924447482063">Vuốt sang trái hoặc phải để di chuyển theo mục</translation>
+<translation id="3061302636956643119">Dữ liệu văn bản sẽ được gửi đến Google để xử lý.</translation>
 <translation id="3070245424257836917">Vuốt lên trên bằng ba ngón tay</translation>
 <translation id="307516670110542567">Khám phá nhanh</translation>
 <translation id="3078345202707391975">Tiêu đề cấp 2 tiếp theo</translation>
@@ -937,6 +940,7 @@
 <translation id="7693840228159394336">Nút radio trước</translation>
 <translation id="7701040980221191251">Không có</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7713139339518499741">Giọng nói tự nhiên</translation>
 <translation id="7714340021005120797">Không có hộp kết hợp nào tiếp theo</translation>
 <translation id="772146615414628379">Xin chúc mừng! Bạn đã tìm hiểu xong thông tin cơ bản để sử dụng hiệu quả ChromeVox. Hãy nhớ rằng bạn có thể mở trình đơn lệnh của ChromeVox bất cứ lúc nào bằng cách nhấn tổ hợp phím Tìm kiếm+Dấu chấm. Để tìm hiểu thêm về ChromeVox và Chrome OS, hãy truy cập vào các bài viết sau đây.
     Nếu bạn đã đọc xong phần hướng dẫn, hãy dùng ChromeVox để chuyển đến nút Đóng rồi nhấp vào nút đó.</translation>
@@ -967,6 +971,7 @@
 <translation id="7939428177581522200">đã thêm vào lựa chọn</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{dấu @}other{# dấu @}}</translation>
 <translation id="7942349550061667556">Đỏ</translation>
+<translation id="7945703887991230167">Giọng nói ưu tiên</translation>
 <translation id="7948364528129376623">Không có đường liên kết đã truy cập nào tiếp theo</translation>
 <translation id="7952460583030260752">Tham chiếu lệnh</translation>
 <translation id="7965147473449754028">đã đóng menu</translation>

@@ -141,6 +141,7 @@
 <translation id="4887024562049524730">在允許網站使用您的虛擬實境裝置和資料前先詢問您 (建議)</translation>
 <translation id="4962975101802056554">撤銷裝置所有的權限</translation>
 <translation id="497421865427891073">往前</translation>
+<translation id="4976702386844183910">上次瀏覽日期：<ph name="DATE" /></translation>
 <translation id="4994033804516042629">找不到任何聯絡人</translation>
 <translation id="4996978546172906250">共用方式</translation>
 <translation id="5039804452771397117">允許</translation>
@@ -151,6 +152,7 @@
 <translation id="5123685120097942451">無痕式分頁</translation>
 <translation id="5186036860380548585">選項喺螢幕頂部附近</translation>
 <translation id="5197729504361054390">系統會將您選取的聯絡人向 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 提供。</translation>
+<translation id="5216942107514965959">上次瀏覽時間：今天</translation>
 <translation id="528192093759286357">由上而下拖曳，然後輕觸返回按鈕即可退出全螢幕。</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5301954838959518834">好，我知道了</translation>
@@ -181,6 +183,7 @@
 <translation id="5804241973901381774">權限</translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5876056640971328065">暫停影片</translation>
+<translation id="5887687176710214216">上次瀏覽日期：昨天</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5922853908706496913">正在分享螢幕畫面</translation>
 <translation id="5939518447894949180">重設</translation>
@@ -210,6 +213,7 @@
 <translation id="6527303717912515753">分享</translation>
 <translation id="6545864417968258051">藍牙掃瞄</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{已封鎖「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{已封鎖「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
+<translation id="6554732001434021288">上次瀏覽日期：<ph name="NUM_DAYS" /> 天前</translation>
 <translation id="6561560012278703671">使用靜態訊息功能 (免受通知提示干擾)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">受保護內容</translation>

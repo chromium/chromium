@@ -136,9 +136,11 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1407135791313364759">Abrir todo</translation>
 <translation id="1408787208417187241">Tres grampas na parte superior</translation>
 <translation id="1413809658975081374">Erro de privacidade</translation>
+<translation id="1422930527989633628">Pode pedirche permiso para detectar dispositivos Bluetooth próximos</translation>
 <translation id="1426410128494586442">Si</translation>
 <translation id="1428146450423315676">Amontoador 7</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1436185428532214179">Pode pedirche permiso para editar ficheiros e cartafoles do teu dispositivo</translation>
 <translation id="1442386063175183758">Dobrez en ventá na parte dereita</translation>
 <translation id="1442987760062738829">Perforación</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
@@ -257,6 +259,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Hai varias accións dispoñibles; para desprazarte por elas, preme Tab</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Nome do titular da tarxeta</translation>
+<translation id="1803351196216024260">Pode pedirche permiso para utilizar o micrófono</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Folla de inicio</translation>
 <translation id="1812527064848182527">horizontal</translation>
@@ -286,6 +289,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1919367280705858090">Obter axuda cando aparece unha mensaxe de erro concreta</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ningún}=1{1 sitio}other{# sitios}}</translation>
 <translation id="1924727005275031552">Novo</translation>
+<translation id="1939175642807587452">Pode pedirche permiso para enviar notificacións</translation>
 <translation id="1945968466830820669">Poderías perder o acceso á conta da túa organización ou alguén podería roubarche a identidade. Chromium recoméndache que cambies de contrasinal agora.</translation>
 <translation id="1947454675006758438">Grampa na parte superior dereita</translation>
 <translation id="1958218078413065209">A túa máxima puntuación é <ph name="SCORE" />.</translation>
@@ -416,6 +420,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2392959068659972793">Mostrar políticas sen ningún valor establecido</translation>
 <translation id="239429038616798445">Este método de envío non está dispoñible. Proba cun diferente.</translation>
 <translation id="2396249848217231973">&amp;Desfacer eliminación</translation>
+<translation id="2400600116338235695">Pode pedirche permiso para conectarse a portos en serie</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque quizais se revogase o certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
@@ -470,6 +475,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2609632851001447353">Variacións</translation>
 <translation id="2618023639789766142">C10 (sobre)</translation>
 <translation id="2625385379895617796">O teu reloxo está adiantado</translation>
+<translation id="262745152991669301">Pode pedirche permiso para conectarse aos dispositivos USB</translation>
 <translation id="2629325967560697240">Para gozar do máximo nivel de seguranza de Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />activa a protección mellorada<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">Non se puido atopar o enderezo IP do servidor de <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">Estado:</translation>
@@ -613,6 +619,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3188393374551744535">Saldo da conta</translation>
 <translation id="3194737229810486521">O URL <ph name="URL" /> quere almacenar datos de forma permanente no teu dispositivo</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> en <ph name="SERVER_NAME" /></translation>
+<translation id="3197136577151645743">Pode pedirche permiso para saber cando estás utilizando o dispositivo de maneira activa</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xestionar na configuración de Chrome a información que se sincroniza, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="320323717674993345">Cancelar pago</translation>
 <translation id="3207960819495026254">Engadida a marcadores</translation>
@@ -829,6 +836,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3909695131102177774"><ph name="LABEL" />: <ph name="ERROR" /></translation>
 <translation id="3939773374150895049">Queres usar a autenticación web en lugar do CVC?</translation>
 <translation id="3946209740501886391">Preguntar sempre sobre este sitio</translation>
+<translation id="3947595700203588284">Pode pedirche permiso para conectarse aos dispositivos MIDI</translation>
 <translation id="3949571496842715403">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza non especifica nomes de asunto alternativos. É posible que isto se deba a un erro de configuración ou a que un pirata informático interceptase a túa conexión.</translation>
 <translation id="3949601375789751990">O teu historial de navegación aparece aquí</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -929,6 +937,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
     &lt;p&gt;Se aínda ves este erro, contacta co propietario do sitio web.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Proba a executar o diagnóstico de rede<ph name="END_LINK" />.</translation>
 <translation id="4229544452621580519">Executa unha comprobación de seguranza na configuración de Chrome</translation>
+<translation id="4230204356098880324">Pode pedirche permiso para usar e mover a cámara</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Ir a <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Válido</translation>
 <translation id="4250431568374086873">A túa conexión a este sitio non é completamente segura</translation>
@@ -991,6 +1000,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4434045419905280838">Ventás emerxentes e redireccións</translation>
 <translation id="4435702339979719576">Postal)</translation>
 <translation id="443673843213245140">O uso dun proxy está desactivado, pero especifícase unha configuración de proxy explícita.</translation>
+<translation id="4451135742916150903">Pode pedirche permiso para conectarse a dispositivos de interface humana</translation>
 <translation id="4460315069258617173">Permiso concedido ata que peches as pestanas deste sitio</translation>
 <translation id="4464826014807964867">Sitios web con información da túa organización</translation>
 <translation id="4476953670630786061">Este formulario non é seguro, polo que se desactivou a función de autocompletar.</translation>
@@ -1054,6 +1064,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4708268264240856090">Interrompeuse a túa conexión</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Executar diagnóstico de rede de Windows<ph name="END_LINK" /></translation>
+<translation id="4724144314178270921">Pode pedirche permiso para acceder ao texto e ás imaxes do portapapeis</translation>
 <translation id="4726672564094551039">Volver cargar políticas</translation>
 <translation id="4728558894243024398">Plataforma</translation>
 <translation id="4731638775147756694">O teu administrador bloqueou esta aplicación</translation>
@@ -1351,6 +1362,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5728056243719941842">C5 (sobre)</translation>
 <translation id="5730040223043577876">Chrome recoméndache que restablezas o contrasinal se o reutilizaches noutros sitios.</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Garda a tarxeta na túa Conta de Google}other{Garda tarxetas na túa Conta de Google}}</translation>
+<translation id="5745733273847572235">Pode pedirche permiso para usar a túa localización</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{Utilizar un número virtual para esta tarxeta}other{Seleccionar unha tarxeta}}</translation>
 <translation id="5759751709240058861">Utilizar e mover a túa cámara</translation>
 <translation id="5763042198335101085">Introduce un enderezo de correo electrónico válido</translation>
@@ -1469,6 +1481,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6169916984152623906">Agora podes navegar de forma privada, sen que os demais usuarios deste dispositivo vexan a túa actividade. Non obstante, gardaranse as descargas e os marcadores.</translation>
 <translation id="6177128806592000436">A túa conexión a este sitio non é segura</translation>
 <translation id="6180316780098470077">Intervalo de reintentos</translation>
+<translation id="619448280891863779">Pode pedirche permiso para abrir e colocar ventás nas túas pantallas</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6203231073485539293">Comproba a túa conexión a Internet</translation>
 <translation id="6211666000885129820">Folla de inscrición da credencial de pagos seguros</translation>
@@ -1554,6 +1567,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6502991525169604759">Sen os teus cambios</translation>
 <translation id="6505563257409036437">Pechar ventás do modo de incógnito</translation>
 <translation id="6508722015517270189">Reinicia Chrome</translation>
+<translation id="6513005815064132016">Pode pedirche permiso para facer un seguimento da posición da cámara</translation>
 <translation id="6517596291481585650">Advertencia: Esta política non se combinou como unha lista do xeito especificado na política porque non é unha lista.</translation>
 <translation id="6518133107902771759">Verificar</translation>
 <translation id="6521745193039995384">Non activa</translation>
@@ -1654,7 +1668,9 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6949872517221025916">Restablecer contrasinal</translation>
 <translation id="6950684638814147129">Produciuse un erro ao analizar o valor JSON: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Restablecer todo</translation>
+<translation id="6954341342296443517">Pode pedirche permiso para abrir tipos de ficheiros</translation>
 <translation id="6957887021205513506">O certificado do servidor parece ser falso.</translation>
+<translation id="6961844873822989059">Pode pedirche permiso para utilizar os tipos de letra instalados no dispositivo</translation>
 <translation id="6963520811470373926">En substitución doutro valor</translation>
 <translation id="6964255747740675745">Non se puido analizar a configuración da rede (ficheiro JSON non válido).</translation>
 <translation id="6965382102122355670">Aceptar</translation>
@@ -1756,6 +1772,7 @@ Detalles adicionais:
 <translation id="733354035281974745">Anulación da conta local do dispositivo</translation>
 <translation id="7333654844024768166">Acabas de escribir o teu contrasinal nun sitio enganoso. Chromium recoméndache que vaias a <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> e outros sitios nos que utilices este contrasinal para cambialo agora.</translation>
 <translation id="7334320624316649418">&amp;Refacer de cambio de orde</translation>
+<translation id="7335157162773372339">Pode pedirche permiso para utilizar a cámara</translation>
 <translation id="7337248890521463931">Mostrar máis liñas</translation>
 <translation id="7337706099755338005">Non está dispoñible na túa plataforma.</translation>
 <translation id="733923710415886693">O certificado do servidor non se indicou mediante Certificate Transparency.</translation>
@@ -1943,6 +1960,7 @@ Detalles adicionais:
 <translation id="7937554595067888181">Caduca o <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">O certificado do servidor aínda non é válido.</translation>
 <translation id="7942349550061667556">Vermello</translation>
+<translation id="7943893128817522649">Pode pedirche permiso para descargar automaticamente varios ficheiros</translation>
 <translation id="7947285636476623132">Comproba o ano de caducidade e téntao de novo</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para obter máis información sobre as funcións de Chrome</translation>
 <translation id="7950027195171824198">Xestiona as túas preferencias relativas ás cookies na configuración de Chrome</translation>
@@ -1955,6 +1973,7 @@ Detalles adicionais:
 <translation id="7976214039405368314">Hai demasiadas solicitudes</translation>
 <translation id="7977538094055660992">Dispositivo de saída</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="798134797138789862">Pode pedirche permiso para usar datos e dispositivos de realidade virtual</translation>
 <translation id="79859296434321399">Para ver contido de realidade aumentada, instala ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Encadernación</translation>
@@ -2144,6 +2163,7 @@ Detalles adicionais:
 <translation id="8699041776323235191">Dispositivo HID</translation>
 <translation id="8703575177326907206">A túa conexión con <ph name="DOMAIN" /> non está cifrada.</translation>
 <translation id="8705331520020532516">Número de serie</translation>
+<translation id="8708134712139312373">Pode pedirche permiso para conectarse a dispositivos Bluetooth</translation>
 <translation id="8710842507289500830">Estilo do tipo de letra</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8718314106902482036">Non se completou o pago</translation>
