@@ -60,7 +60,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
 
   void GetComponentList(GetComponentListCallback callback) override;
   void SetComponentList(
-      const std::vector<::rmad::ComponentRepairState>& component_list,
+      const std::vector<::rmad::ComponentsRepairState_ComponentRepairStatus>&
+          component_list,
       SetComponentListCallback callback) override;
   void ReworkMainboard(ReworkMainboardCallback callback) override;
 

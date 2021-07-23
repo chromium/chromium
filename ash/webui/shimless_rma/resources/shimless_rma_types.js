@@ -39,9 +39,9 @@ export let ComponentType = ash.shimlessRma.mojom.ComponentType;
 
 
 /**
- * @typedef {ash.shimlessRma.mojom.ComponentRepairState}
+ * @typedef {ash.shimlessRma.mojom.ComponentRepairStatus}
  */
-export let ComponentRepairState = ash.shimlessRma.mojom.ComponentRepairState;
+export let ComponentRepairStatus = ash.shimlessRma.mojom.ComponentRepairStatus;
 
 
 /**

@@ -4,7 +4,7 @@
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 
-import {Component, ComponentRepairState, ComponentType, Network, RmadErrorCode, RmaState, StateResult} from './shimless_rma_types.js';
+import {Component, ComponentRepairStatus, ComponentType, Network, RmadErrorCode, RmaState, StateResult} from './shimless_rma_types.js';
 
 /** @type {!Array<!StateResult>} */
 export const fakeStates = [
@@ -31,18 +31,18 @@ export const fakeChromeVersion = [
 
 /** @type {!Array<!Component>} */
 export const fakeComponents = [
-  {component: ComponentType.kKeyboard, state: ComponentRepairState.kOriginal},
-  {component: ComponentType.kThumbReader, state: ComponentRepairState.kMissing},
-  {component: ComponentType.kTrackpad, state: ComponentRepairState.kOriginal},
+  {component: ComponentType.kCamera, state: ComponentRepairStatus.kOriginal},
+  {component: ComponentType.kBattery, state: ComponentRepairStatus.kMissing},
+  {component: ComponentType.kTouchpad, state: ComponentRepairStatus.kOriginal},
 ];
 
 // onboarding_select_components_page_test needs a components list covering all
 // possible repair states.
 /** @type {!Array<!Component>} */
 export const fakeComponentsForRepairStateTest = [
-  {component: ComponentType.kKeyboard, state: ComponentRepairState.kOriginal},
-  {component: ComponentType.kThumbReader, state: ComponentRepairState.kMissing},
-  {component: ComponentType.kTrackpad, state: ComponentRepairState.kReplaced},
+  {component: ComponentType.kCamera, state: ComponentRepairStatus.kOriginal},
+  {component: ComponentType.kBattery, state: ComponentRepairStatus.kMissing},
+  {component: ComponentType.kTouchpad, state: ComponentRepairStatus.kReplaced},
 ];
 
 /** @type {!Array<!Network>} */

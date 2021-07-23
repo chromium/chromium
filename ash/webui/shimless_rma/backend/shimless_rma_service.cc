@@ -222,13 +222,16 @@ void ShimlessRmaService::SetRsuDisableWriteProtectCode(
 }
 
 void ShimlessRmaService::GetComponentList(GetComponentListCallback callback) {
-  std::vector<::rmad::ComponentRepairState> components;
+  std::vector<::rmad::ComponentsRepairState_ComponentRepairStatus> components;
   if (state_proto_.state_case() != rmad::RmadState::kComponentsRepair) {
     LOG(ERROR) << "GetComponentList called from incorrect state "
                << state_proto_.state_case();
   } else {
-    components.reserve(state_proto_.components_repair().components_size());
-    for (auto component : state_proto_.components_repair().components()) {
+    components.reserve(
+        state_proto_.components_repair().component_repair_size());
+    for (auto component : state_proto_.components_repair().component_repair()) {
+      int component_id = component.component();
+      LOG(ERROR) << "Component: " << component_id;
       components.push_back(component);
     }
   }
@@ -236,7 +239,8 @@ void ShimlessRmaService::GetComponentList(GetComponentListCallback callback) {
 }
 
 void ShimlessRmaService::SetComponentList(
-    const std::vector<::rmad::ComponentRepairState>& component_list,
+    const std::vector<::rmad::ComponentsRepairState_ComponentRepairStatus>&
+        component_list,
     SetComponentListCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kComponentsRepair) {
     LOG(ERROR) << "SetComponentList called from incorrect state "
@@ -245,14 +249,14 @@ void ShimlessRmaService::SetComponentList(
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
-  state_proto_.mutable_components_repair()->clear_components();
-  state_proto_.mutable_components_repair()->mutable_components()->Reserve(
+  state_proto_.mutable_components_repair()->clear_component_repair();
+  state_proto_.mutable_components_repair()->mutable_component_repair()->Reserve(
       component_list.size());
   for (auto& component : component_list) {
-    rmad::ComponentRepairState* proto_component =
-        state_proto_.mutable_components_repair()->add_components();
-    proto_component->set_name(component.name());
-    proto_component->set_repair_state(component.repair_state());
+    rmad::ComponentsRepairState_ComponentRepairStatus* proto_component =
+        state_proto_.mutable_components_repair()->add_component_repair();
+    proto_component->set_component(component.component());
+    proto_component->set_repair_status(component.repair_status());
   }
   TransitionNextStateGeneric(std::move(callback));
 }
@@ -271,11 +275,13 @@ void ShimlessRmaService::ReworkMainboard(ReworkMainboardCallback callback) {
   // 'mainboard' it reduces the chance of error.
   rmad::RmadState state;
   state.set_allocated_components_repair(new rmad::ComponentsRepairState());
-  rmad::ComponentRepairState* component =
-      state.mutable_components_repair()->add_components();
-  component->set_name(
-      rmad::ComponentRepairState::RMAD_COMPONENT_MAINBOARD_REWORK);
-  component->set_repair_state(rmad::ComponentRepairState::RMAD_REPAIR_REPLACED);
+  rmad::ComponentsRepairState::ComponentRepairStatus* component =
+      state.mutable_components_repair()->add_component_repair();
+  component->set_component(
+      rmad::RmadComponent::RMAD_COMPONENT_MAINBOARD_REWORK);
+  component->set_repair_status(
+      rmad::ComponentsRepairState::ComponentRepairStatus::
+          RMAD_REPAIR_STATUS_REPLACED);
 
   chromeos::RmadClient::Get()->TransitionNextState(
       state,

@@ -758,18 +758,22 @@ TEST_F(ShimlessRmaServiceTest, GetComponentList) {
   rmad::GetStateReply components_repair_state =
       CreateStateReply(rmad::RmadState::kComponentsRepair, rmad::RMAD_ERROR_OK);
   // first component
-  rmad::ComponentRepairState* component =
+  rmad::ComponentsRepairState::ComponentRepairStatus* component =
       components_repair_state.mutable_state()
           ->mutable_components_repair()
-          ->add_components();
-  component->set_name(rmad::ComponentRepairState::RMAD_COMPONENT_KEYBOARD);
-  component->set_repair_state(rmad::ComponentRepairState::RMAD_REPAIR_ORIGINAL);
+          ->add_component_repair();
+  component->set_component(rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
+  component->set_repair_status(
+      rmad::ComponentsRepairState::ComponentRepairStatus::
+          RMAD_REPAIR_STATUS_ORIGINAL);
   // second component
   component = components_repair_state.mutable_state()
                   ->mutable_components_repair()
-                  ->add_components();
-  component->set_name(rmad::ComponentRepairState::RMAD_COMPONENT_TRACKPAD);
-  component->set_repair_state(rmad::ComponentRepairState::RMAD_REPAIR_REPLACED);
+                  ->add_component_repair();
+  component->set_component(rmad::RmadComponent::RMAD_COMPONENT_TOUCHPAD);
+  component->set_repair_status(
+      rmad::ComponentsRepairState::ComponentRepairStatus::
+          RMAD_REPAIR_STATUS_REPLACED);
   std::vector<rmad::GetStateReply> fake_states = {
       components_repair_state,
       CreateStateReply(rmad::RmadState::kDeviceDestination,
@@ -784,17 +788,19 @@ TEST_F(ShimlessRmaServiceTest, GetComponentList) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->GetComponentList(base::BindLambdaForTesting(
-      [&](const std::vector<rmad::ComponentRepairState>& components) {
+      [&](const std::vector<rmad::ComponentsRepairState::ComponentRepairStatus>&
+              components) {
         EXPECT_EQ(2UL, components.size());
-        EXPECT_EQ(components[0].name(),
-
-                  rmad::ComponentRepairState::RMAD_COMPONENT_KEYBOARD);
-        EXPECT_EQ(components[0].repair_state(),
-                  rmad::ComponentRepairState::RMAD_REPAIR_ORIGINAL);
-        EXPECT_EQ(components[1].name(),
-                  rmad::ComponentRepairState::RMAD_COMPONENT_TRACKPAD);
-        EXPECT_EQ(components[1].repair_state(),
-                  rmad::ComponentRepairState::RMAD_REPAIR_REPLACED);
+        EXPECT_EQ(components[0].component(),
+                  rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
+        EXPECT_EQ(components[0].repair_status(),
+                  rmad::ComponentsRepairState::ComponentRepairStatus::
+                      RMAD_REPAIR_STATUS_ORIGINAL);
+        EXPECT_EQ(components[1].component(),
+                  rmad::RmadComponent::RMAD_COMPONENT_TOUCHPAD);
+        EXPECT_EQ(components[1].repair_status(),
+                  rmad::ComponentsRepairState::ComponentRepairStatus::
+                      RMAD_REPAIR_STATUS_REPLACED);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -813,7 +819,8 @@ TEST_F(ShimlessRmaServiceTest, GetComponentListFromWrongStateEmpty) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->GetComponentList(base::BindLambdaForTesting(
-      [&](const std::vector<rmad::ComponentRepairState>& components) {
+      [&](const std::vector<rmad::ComponentsRepairState::ComponentRepairStatus>&
+              components) {
         EXPECT_EQ(0UL, components.size());
         run_loop.Quit();
       }));
@@ -824,18 +831,21 @@ TEST_F(ShimlessRmaServiceTest, SetComponentList) {
   rmad::GetStateReply components_repair_state =
       CreateStateReply(rmad::RmadState::kComponentsRepair, rmad::RMAD_ERROR_OK);
   // first component
-  rmad::ComponentRepairState* component =
+  rmad::ComponentsRepairState::ComponentRepairStatus* component =
       components_repair_state.mutable_state()
           ->mutable_components_repair()
-          ->add_components();
-  component->set_name(rmad::ComponentRepairState::RMAD_COMPONENT_TRACKPAD);
-  component->set_repair_state(rmad::ComponentRepairState::RMAD_REPAIR_ORIGINAL);
+          ->add_component_repair();
+  component->set_component(rmad::RmadComponent::RMAD_COMPONENT_TOUCHPAD);
+  component->set_repair_status(
+      rmad::ComponentsRepairState::ComponentRepairStatus::
+          RMAD_REPAIR_STATUS_ORIGINAL);
   // second component
   component = components_repair_state.mutable_state()
                   ->mutable_components_repair()
-                  ->add_components();
-  component->set_name(rmad::ComponentRepairState::RMAD_COMPONENT_KEYBOARD);
-  component->set_repair_state(rmad::ComponentRepairState::RMAD_REPAIR_ORIGINAL);
+                  ->add_component_repair();
+  component->set_component(rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
+  component->set_repair_state(
+      rmad::ComponentsRepairState::ComponentRepairStatus::RMAD_REPAIR_ORIGINAL);
   std::vector<rmad::GetStateReply> fake_states = {
       components_repair_state,
       CreateStateReply(rmad::RmadState::kDeviceDestination,
@@ -844,15 +854,17 @@ TEST_F(ShimlessRmaServiceTest, SetComponentList) {
   fake_rmad_client_()->check_state_callback =
       base::BindRepeating([](const rmad::RmadState& state) {
         EXPECT_EQ(state.state_case(), rmad::RmadState::kComponentsRepair);
-        EXPECT_EQ(2, state.components_repair().components_size());
-        EXPECT_EQ(state.components_repair().components(0).name(),
-                  rmad::ComponentRepairState::RMAD_COMPONENT_KEYBOARD);
-        EXPECT_EQ(state.components_repair().components(0).repair_state(),
-                  rmad::ComponentRepairState::RMAD_REPAIR_REPLACED);
-        EXPECT_EQ(state.components_repair().components(1).name(),
-                  rmad::ComponentRepairState::RMAD_COMPONENT_TRACKPAD);
-        EXPECT_EQ(state.components_repair().components(1).repair_state(),
-                  rmad::ComponentRepairState::RMAD_REPAIR_ORIGINAL);
+        EXPECT_EQ(2, state.components_repair().component_repair_size());
+        EXPECT_EQ(state.components_repair().component_repair(0).component(),
+                  rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
+        EXPECT_EQ(state.components_repair().component_repair(0).repair_status(),
+                  rmad::ComponentsRepairState::ComponentRepairStatus::
+                      RMAD_REPAIR_STATUS_REPLACED);
+        EXPECT_EQ(state.components_repair().component_repair(1).component(),
+                  rmad::RmadComponent::RMAD_COMPONENT_TOUCHPAD);
+        EXPECT_EQ(state.components_repair().component_repair(1).repair_status(),
+                  rmad::ComponentsRepairState::ComponentRepairStatus::
+                      RMAD_REPAIR_STATUS_ORIGINAL);
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
@@ -862,14 +874,15 @@ TEST_F(ShimlessRmaServiceTest, SetComponentList) {
       }));
   run_loop.RunUntilIdle();
 
-  std::vector<rmad::ComponentRepairState> components(2);
-  components[0].set_name(rmad::ComponentRepairState::RMAD_COMPONENT_KEYBOARD);
-  components[0].set_repair_state(
-
-      rmad::ComponentRepairState::RMAD_REPAIR_REPLACED);
-  components[1].set_name(rmad::ComponentRepairState::RMAD_COMPONENT_TRACKPAD);
-  components[1].set_repair_state(
-      rmad::ComponentRepairState::RMAD_REPAIR_ORIGINAL);
+  std::vector<rmad::ComponentsRepairState::ComponentRepairStatus> components(2);
+  components[0].set_component(rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
+  components[0].set_repair_status(
+      rmad::ComponentsRepairState::ComponentRepairStatus::
+          RMAD_REPAIR_STATUS_REPLACED);
+  components[1].set_component(rmad::RmadComponent::RMAD_COMPONENT_TOUCHPAD);
+  components[1].set_repair_status(
+      rmad::ComponentsRepairState::ComponentRepairStatus::
+          RMAD_REPAIR_STATUS_ORIGINAL);
 
   shimless_rma_provider_->SetComponentList(
       std::move(components),
@@ -894,10 +907,11 @@ TEST_F(ShimlessRmaServiceTest, SetComponentListFromWrongStateFails) {
       }));
   run_loop.RunUntilIdle();
 
-  std::vector<rmad::ComponentRepairState> components(1);
-  components[0].set_name(rmad::ComponentRepairState::RMAD_COMPONENT_KEYBOARD);
-  components[0].set_repair_state(
-      rmad::ComponentRepairState::RMAD_REPAIR_REPLACED);
+  std::vector<rmad::ComponentsRepairState::ComponentRepairStatus> components(1);
+  components[0].set_component(rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
+  components[0].set_repair_status(
+      rmad::ComponentsRepairState::ComponentRepairStatus::
+          RMAD_REPAIR_STATUS_REPLACED);
 
   shimless_rma_provider_->SetComponentList(
       std::move(components),
@@ -914,18 +928,22 @@ TEST_F(ShimlessRmaServiceTest, ReworkMainboard) {
   rmad::GetStateReply components_repair_state =
       CreateStateReply(rmad::RmadState::kComponentsRepair, rmad::RMAD_ERROR_OK);
   // first component
-  rmad::ComponentRepairState* component =
+  rmad::ComponentsRepairState::ComponentRepairStatus* component =
       components_repair_state.mutable_state()
           ->mutable_components_repair()
-          ->add_components();
-  component->set_name(rmad::ComponentRepairState::RMAD_COMPONENT_TRACKPAD);
-  component->set_repair_state(rmad::ComponentRepairState::RMAD_REPAIR_ORIGINAL);
+          ->add_component_repair();
+  component->set_component(rmad::RmadComponent::RMAD_COMPONENT_TOUCHPAD);
+  component->set_repair_status(
+      rmad::ComponentsRepairState::ComponentRepairStatus::
+          RMAD_REPAIR_STATUS_ORIGINAL);
   // second component
   component = components_repair_state.mutable_state()
                   ->mutable_components_repair()
-                  ->add_components();
-  component->set_name(rmad::ComponentRepairState::RMAD_COMPONENT_KEYBOARD);
-  component->set_repair_state(rmad::ComponentRepairState::RMAD_REPAIR_ORIGINAL);
+                  ->add_component_repair();
+  component->set_component(rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
+  component->set_repair_status(
+      rmad::ComponentsRepairState::ComponentRepairStatus::
+          RMAD_REPAIR_STATUS_ORIGINAL);
   std::vector<rmad::GetStateReply> fake_states = {
       components_repair_state,
       CreateStateReply(rmad::RmadState::kDeviceDestination,
@@ -934,11 +952,12 @@ TEST_F(ShimlessRmaServiceTest, ReworkMainboard) {
   fake_rmad_client_()->check_state_callback =
       base::BindRepeating([](const rmad::RmadState& state) {
         EXPECT_EQ(state.state_case(), rmad::RmadState::kComponentsRepair);
-        EXPECT_EQ(1, state.components_repair().components_size());
-        EXPECT_EQ(state.components_repair().components(0).name(),
-                  rmad::ComponentRepairState::RMAD_COMPONENT_MAINBOARD_REWORK);
-        EXPECT_EQ(state.components_repair().components(0).repair_state(),
-                  rmad::ComponentRepairState::RMAD_REPAIR_REPLACED);
+        EXPECT_EQ(1, state.components_repair().component_repair_size());
+        EXPECT_EQ(state.components_repair().component_repair(0).component(),
+                  rmad::RmadComponent::RMAD_COMPONENT_MAINBOARD_REWORK);
+        EXPECT_EQ(state.components_repair().component_repair(0).repair_status(),
+                  rmad::ComponentsRepairState::ComponentRepairStatus::
+                      RMAD_REPAIR_STATUS_REPLACED);
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(

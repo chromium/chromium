@@ -192,35 +192,69 @@ TEST_F(ShimlessRmaMojoToProtoTest, ErrorsMatch) {
 
 TEST_F(ShimlessRmaMojoToProtoTest, RepairComponentsMatch) {
   constexpr auto enums =
-      base::MakeFixedFlatMap<mojom::ComponentType,
-                             rmad::ComponentRepairState::Component>(
+      base::MakeFixedFlatMap<mojom::ComponentType, rmad::RmadComponent>(
           {{mojom::ComponentType::kMainboardRework,
-            rmad::ComponentRepairState::RMAD_COMPONENT_MAINBOARD_REWORK},
-           {mojom::ComponentType::kKeyboard,
-            rmad::ComponentRepairState::RMAD_COMPONENT_KEYBOARD},
-           {mojom::ComponentType::kScreen,
-            rmad::ComponentRepairState::RMAD_COMPONENT_SCREEN},
-           {mojom::ComponentType::kTrackpad,
-            rmad::ComponentRepairState::RMAD_COMPONENT_TRACKPAD},
-           {mojom::ComponentType::kPowerButton,
-            rmad::ComponentRepairState::RMAD_COMPONENT_POWER_BUTTON},
-           {mojom::ComponentType::kThumbReader,
-            rmad::ComponentRepairState::RMAD_COMPONENT_THUMB_READER}});
+            rmad::RmadComponent::RMAD_COMPONENT_MAINBOARD_REWORK},
 
+           {mojom::ComponentType::kAudioCodec,
+            rmad::RmadComponent::RMAD_COMPONENT_AUDIO_CODEC},
+           {mojom::ComponentType::kBattery,
+            rmad::RmadComponent::RMAD_COMPONENT_BATTERY},
+           {mojom::ComponentType::kStorage,
+            rmad::RmadComponent::RMAD_COMPONENT_STORAGE},
+           {mojom::ComponentType::kVpdCached,
+            rmad::RmadComponent::RMAD_COMPONENT_VPD_CACHED},
+           {mojom::ComponentType::kNetwork,
+            rmad::RmadComponent::RMAD_COMPONENT_NETWORK},  // Obsolete in M91.
+           {mojom::ComponentType::kCamera,
+            rmad::RmadComponent::RMAD_COMPONENT_CAMERA},
+           {mojom::ComponentType::kStylus,
+            rmad::RmadComponent::RMAD_COMPONENT_STYLUS},
+           {mojom::ComponentType::kTouchpad,
+            rmad::RmadComponent::RMAD_COMPONENT_TOUCHPAD},
+           {mojom::ComponentType::kTouchsreen,
+            rmad::RmadComponent::RMAD_COMPONENT_TOUCHSCREEN},
+           {mojom::ComponentType::kDram,
+            rmad::RmadComponent::RMAD_COMPONENT_DRAM},
+           {mojom::ComponentType::kDisplayPanel,
+            rmad::RmadComponent::RMAD_COMPONENT_DISPLAY_PANEL},
+           {mojom::ComponentType::kCellular,
+            rmad::RmadComponent::RMAD_COMPONENT_CELLULAR},
+           {mojom::ComponentType::kEthernet,
+            rmad::RmadComponent::RMAD_COMPONENT_ETHERNET},
+           {mojom::ComponentType::kWireless,
+            rmad::RmadComponent::RMAD_COMPONENT_WIRELESS},
+           // Additional rmad components.
+           {mojom::ComponentType::kGyroscope,
+            rmad::RmadComponent::RMAD_COMPONENT_GYROSCOPE},
+           {mojom::ComponentType::kAccelerometer,
+            rmad::RmadComponent::RMAD_COMPONENT_ACCELEROMETER},
+           {mojom::ComponentType::kScreen,
+            rmad::RmadComponent::RMAD_COMPONENT_SCREEN},
+
+           // Irrelevant components.
+           // TODO(chenghan): Do we really need these?
+           {mojom::ComponentType::kKeyboard,
+            rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD},
+           {mojom::ComponentType::kPowerButton,
+            rmad::RmadComponent::RMAD_COMPONENT_POWER_BUTTON}});
   TestProtoToMojo(enums);
   TestMojoToProto(enums);
 }
 
 TEST_F(ShimlessRmaMojoToProtoTest, RepairStatesMatch) {
-  constexpr auto enums =
-      base::MakeFixedFlatMap<mojom::ComponentRepairState,
-                             rmad::ComponentRepairState::RepairState>(
-          {{mojom::ComponentRepairState::kOriginal,
-            rmad::ComponentRepairState::RMAD_REPAIR_ORIGINAL},
-           {mojom::ComponentRepairState::kReplaced,
-            rmad::ComponentRepairState::RMAD_REPAIR_REPLACED},
-           {mojom::ComponentRepairState::kMissing,
-            rmad::ComponentRepairState::RMAD_REPAIR_MISSING}});
+  constexpr auto enums = base::MakeFixedFlatMap<
+      mojom::ComponentRepairStatus,
+      rmad::ComponentsRepairState::ComponentRepairStatus::RepairStatus>(
+      {{mojom::ComponentRepairStatus::kOriginal,
+        rmad::ComponentsRepairState::ComponentRepairStatus::
+            RMAD_REPAIR_STATUS_ORIGINAL},
+       {mojom::ComponentRepairStatus::kReplaced,
+        rmad::ComponentsRepairState::ComponentRepairStatus::
+            RMAD_REPAIR_STATUS_REPLACED},
+       {mojom::ComponentRepairStatus::kMissing,
+        rmad::ComponentsRepairState::ComponentRepairStatus::
+            RMAD_REPAIR_STATUS_MISSING}});
 
   TestProtoToMojo(enums);
   TestMojoToProto(enums);

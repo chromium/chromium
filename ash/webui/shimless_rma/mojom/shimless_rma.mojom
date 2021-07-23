@@ -6,6 +6,7 @@
 // //third_party/cros_system_api/dbus/rmad/rmad.proto.
 // Each synchronised enum is marked with a comment referencing the proto enum
 // and the source file.
+// See shimless_rma_mojom_traits.cc\h for the mapping functions.
 
 // Overview of Shimless RMA and the mojo interface.
 //
@@ -40,6 +41,7 @@ import "mojo/public/mojom/base/string16.mojom";
 // RMA states.
 // This must remain in sync with RmadState.StateCase (generated from the member
 // `oneof state`) in //third_party/cros_system_api/dbus/rmad/rmad.proto.
+// See shimless_rma_mojom_traits.cc\h.
 // TODO(crbug.com/1218175): Remove Rma prefix from name.
 enum RmaState {
   // Used as a safety fallback default, and therefore should always trigger safe
@@ -66,6 +68,7 @@ enum RmaState {
 // Defined error codes.
 // This must remain in sync with RmadErrorCode in
 // //third_party/cros_system_api/dbus/rmad/rmad.proto.
+// See shimless_rma_mojom_traits.cc\h.
 // TODO(crbug.com/1218175): Remove Rmad prefix from name.
 enum RmadErrorCode {
   // 0 is the default value. It should never be used.
@@ -160,8 +163,9 @@ enum RmadErrorCode {
 };
 
 // Device components
-// This must remain in sync with ComponentRepairState::Component in
+// This maps to RmadComponent in
 // //third_party/cros_system_api/dbus/rmad/rmad.proto.
+// See shimless_rma_mojom_traits.cc\h.
 enum ComponentType {
   // Used as a safety fallback default, and therefore should always trigger safe
   // fallback behavior when present.
@@ -169,17 +173,40 @@ enum ComponentType {
   // NOTE: This is a special case for mainboards that will be restocked after
   // repair. The board will stay in RMA until it is used in another device.
   kMainboardRework = 1,
-  kKeyboard = 2,
-  kScreen = 3,
-  kTrackpad = 4,
-  kPowerButton = 5,
-  kThumbReader = 6,
+
+  // Standard components.
+  kAudioCodec = 2,
+  kBattery = 3,
+  kStorage = 4,
+  kVpdCached = 5,
+  kNetwork = 6,  // Obsolete in M91.
+  kCamera = 7,
+  kStylus = 8,
+  kTouchpad = 9,
+  kTouchsreen = 10,
+  kDram = 11,
+  kDisplayPanel = 12,
+  kCellular = 13,
+  kEthernet = 14,
+  kWireless = 15,
+
+  // Additional rmad components.
+  kGyroscope = 16,
+  kAccelerometer = 17,
+  kScreen = 18,
+
+  // Irrelevant components.
+  // TODO(chenghan): Do we really need these?
+  kKeyboard = 19,
+  kPowerButton = 20,
 };
 
 // Component repair state
-// This must remain in sync with ComponentRepairState::RepairState in
+// This must remain in sync with
+// ComponentsRepairState::ComponentRepairStatus::RepairStatus in
 // //third_party/cros_system_api/dbus/rmad/rmad.proto.
-enum ComponentRepairState {
+// See shimless_rma_mojom_traits.cc\h.
+enum ComponentRepairStatus {
   // Used as a safety fallback default, and therefore should always trigger safe
   // fallback behavior when present.
   kRepairUnknown = 0,
@@ -191,12 +218,13 @@ enum ComponentRepairState {
 // A replaceable component and its repair state.
 struct Component {
   ComponentType component;
-  ComponentRepairState state;
+  ComponentRepairStatus state;
 };
 
 // This must remain in sync with
 // CalibrateComponentsState::CalibrateComponentsState in
 // //third_party/cros_system_api/dbus/rmad/rmad.proto.
+// See shimless_rma_mojom_traits.cc\h.
 enum CalibrationComponent {
   kCalibrateUnknown = 0,
   kAccelerometer = 1,
@@ -204,6 +232,7 @@ enum CalibrationComponent {
 
 // This must remain in sync with ProvisionDeviceState::ProvisioningStep in
 // //third_party/cros_system_api/dbus/rmad/rmad.proto.
+// See shimless_rma_mojom_traits.cc\h.
 enum ProvisioningStep {
   kProvisioningUnknown = 0,
   kInProgress = 1,

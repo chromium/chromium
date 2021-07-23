@@ -10,7 +10,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {Component, ComponentRepairState, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {Component, ComponentRepairStatus, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /**
  * @typedef {{
@@ -27,22 +27,50 @@ let ComponentCheckbox;
  * @type {!Object<!ComponentType, string>}
  */
 const ComponentTypeToName = {
-  [ComponentType.kKeyboard]: 'Keyboard',
+  [ComponentType.kAudioCodec]: 'Audio',
+  [ComponentType.kBattery]: 'Battery',
+  [ComponentType.kStorage]: 'Storage',
+  [ComponentType.kVpdCached]: 'Vpd Cached',
+  [ComponentType.kNetwork]: 'Network',
+  [ComponentType.kCamera]: 'Camera',
+  [ComponentType.kStylus]: 'Stylus',
+  [ComponentType.kTouchpad]: 'Touchpad',
+  [ComponentType.kTouchsreen]: 'Touchscreen',
+  [ComponentType.kDram]: 'Memory',
+  [ComponentType.kDisplayPanel]: 'Display',
+  [ComponentType.kCellular]: 'Cellular',
+  [ComponentType.kEthernet]: 'Ethernet',
+  [ComponentType.kWireless]: 'Wireless',
+  [ComponentType.kGyroscope]: 'Gyroscope',
+  [ComponentType.kAccelerometer]: 'Accelerometer',
   [ComponentType.kScreen]: 'Screen',
-  [ComponentType.kTrackpad]: 'Trackpad',
-  [ComponentType.kPowerButton]: 'Power Button',
-  [ComponentType.kThumbReader]: 'Thumb Reader'
+  [ComponentType.kKeyboard]: 'Keyboard',
+  [ComponentType.kPowerButton]: 'Power Button'
 };
 
 /**
  * @type {!Object<!ComponentType, string>}
  */
 const ComponentTypeToId = {
-  [ComponentType.kKeyboard]: 'componentKeyboard',
+  [ComponentType.kAudioCodec]: 'componentAudio',
+  [ComponentType.kBattery]: 'componentBattery',
+  [ComponentType.kStorage]: 'componentStorage',
+  [ComponentType.kVpdCached]: 'componentVpd Cached',
+  [ComponentType.kNetwork]: 'componentNetwork',
+  [ComponentType.kCamera]: 'componentCamera',
+  [ComponentType.kStylus]: 'componentStylus',
+  [ComponentType.kTouchpad]: 'componentTouchpad',
+  [ComponentType.kTouchsreen]: 'componentTouchscreen',
+  [ComponentType.kDram]: 'componentDram',
+  [ComponentType.kDisplayPanel]: 'componentDisplayPanel',
+  [ComponentType.kCellular]: 'componentCellular',
+  [ComponentType.kEthernet]: 'componentEthernet',
+  [ComponentType.kWireless]: 'componentWireless',
+  [ComponentType.kGyroscope]: 'componentGyroscope',
+  [ComponentType.kAccelerometer]: 'componentAccelerometer',
   [ComponentType.kScreen]: 'componentScreen',
-  [ComponentType.kTrackpad]: 'componentTrackpad',
-  [ComponentType.kPowerButton]: 'componentPowerButton',
-  [ComponentType.kThumbReader]: 'componentThumbReader'
+  [ComponentType.kKeyboard]: 'componentKeyboard',
+  [ComponentType.kPowerButton]: 'componentPowerButton'
 };
 
 /**
@@ -99,8 +127,8 @@ export class OnboardingSelectComponentsPageElement extends PolymerElement {
           component: item.component,
           id: ComponentTypeToId[item.component],
           name: ComponentTypeToName[item.component],
-          checked: item.state === ComponentRepairState.kReplaced,
-          disabled: item.state === ComponentRepairState.kMissing
+          checked: item.state === ComponentRepairStatus.kReplaced,
+          disabled: item.state === ComponentRepairStatus.kMissing
         });
       });
       this.componentCheckboxes_ = componentList;
@@ -113,12 +141,12 @@ export class OnboardingSelectComponentsPageElement extends PolymerElement {
    */
   getComponentRepairStateList_() {
     return this.componentCheckboxes_.map(item => {
-      /** @type {!ComponentRepairState} */
-      let state = ComponentRepairState.kOriginal;
+      /** @type {!ComponentRepairStatus} */
+      let state = ComponentRepairStatus.kOriginal;
       if (item.disabled) {
-        state = ComponentRepairState.kMissing;
+        state = ComponentRepairStatus.kMissing;
       } else if (item.checked) {
-        state = ComponentRepairState.kReplaced;
+        state = ComponentRepairStatus.kReplaced;
       }
       return {component: item.component, state: state};
     });

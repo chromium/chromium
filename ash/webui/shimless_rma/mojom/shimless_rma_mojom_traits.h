@@ -30,22 +30,25 @@ struct EnumTraits<ash::shimless_rma::mojom::RmadErrorCode,
 
 template <>
 struct EnumTraits<ash::shimless_rma::mojom::ComponentType,
-                  rmad::ComponentRepairState_Component> {
+                  rmad::RmadComponent> {
   static ash::shimless_rma::mojom::ComponentType ToMojom(
-      rmad::ComponentRepairState_Component key_status);
+      rmad::RmadComponent key_status);
 
   static bool FromMojom(ash::shimless_rma::mojom::ComponentType input,
-                        rmad::ComponentRepairState_Component* out);
+                        rmad::RmadComponent* out);
 };
 
 template <>
-struct EnumTraits<ash::shimless_rma::mojom::ComponentRepairState,
-                  rmad::ComponentRepairState_RepairState> {
-  static ash::shimless_rma::mojom::ComponentRepairState ToMojom(
-      rmad::ComponentRepairState_RepairState key_status);
+struct EnumTraits<
+    ash::shimless_rma::mojom::ComponentRepairStatus,
+    rmad::ComponentsRepairState_ComponentRepairStatus_RepairStatus> {
+  static ash::shimless_rma::mojom::ComponentRepairStatus ToMojom(
+      rmad::ComponentsRepairState_ComponentRepairStatus_RepairStatus
+          key_status);
 
-  static bool FromMojom(ash::shimless_rma::mojom::ComponentRepairState input,
-                        rmad::ComponentRepairState_RepairState* out);
+  static bool FromMojom(
+      ash::shimless_rma::mojom::ComponentRepairStatus input,
+      rmad::ComponentsRepairState_ComponentRepairStatus_RepairStatus* out);
 };
 
 template <>
@@ -71,20 +74,20 @@ struct EnumTraits<ash::shimless_rma::mojom::ProvisioningStep,
 
 template <>
 class StructTraits<ash::shimless_rma::mojom::ComponentDataView,
-                   rmad::ComponentRepairState> {
+                   rmad::ComponentsRepairState_ComponentRepairStatus> {
  public:
-  static rmad::ComponentRepairState_Component component(
-      const rmad::ComponentRepairState& component) {
-    return component.name();
+  static rmad::RmadComponent component(
+      const rmad::ComponentsRepairState_ComponentRepairStatus& component) {
+    return component.component();
   }
 
-  static rmad::ComponentRepairState_RepairState state(
-      const rmad::ComponentRepairState& component) {
-    return component.repair_state();
+  static rmad::ComponentsRepairState_ComponentRepairStatus_RepairStatus state(
+      const rmad::ComponentsRepairState_ComponentRepairStatus& component) {
+    return component.repair_status();
   }
 
   static bool Read(ash::shimless_rma::mojom::ComponentDataView data,
-                   rmad::ComponentRepairState* out);
+                   rmad::ComponentsRepairState_ComponentRepairStatus* out);
 };
 
 }  // namespace mojo

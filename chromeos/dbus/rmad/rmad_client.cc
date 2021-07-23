@@ -404,12 +404,14 @@ void RmadClient::InitializeFake() {
   // Set up fake state.
   rmad::GetStateReply components_repair_state =
       CreateStateReply(rmad::RmadState::kComponentsRepair, rmad::RMAD_ERROR_OK);
-  rmad::ComponentRepairState* component =
+  rmad::ComponentsRepairState::ComponentRepairStatus* component =
       components_repair_state.mutable_state()
           ->mutable_components_repair()
-          ->add_components();
-  component->set_name(rmad::ComponentRepairState::RMAD_COMPONENT_KEYBOARD);
-  component->set_repair_state(rmad::ComponentRepairState::RMAD_REPAIR_UNKNOWN);
+          ->add_component_repair();
+  component->set_component(rmad::RmadComponent::RMAD_COMPONENT_CAMERA);
+  component->set_repair_status(
+      rmad::ComponentsRepairState::ComponentRepairStatus::
+          RMAD_REPAIR_STATUS_UNKNOWN);
 
   std::vector<rmad::GetStateReply> fake_states = {
       CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK),

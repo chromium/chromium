@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
-import {CalibrationComponent, CalibrationObserverRemote, ComponentRepairState, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState, ShimlessRmaServiceInterface} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {CalibrationComponent, CalibrationObserverRemote, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState, ShimlessRmaServiceInterface} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertGE, assertLE} from '../../chai_assert.js';
 
@@ -364,11 +364,11 @@ export function fakeShimlessRmaServiceTestSuite() {
     let expected_components = [
       {
         component: ComponentType.kKeyboard,
-        state: ComponentRepairState.kOriginal
+        state: ComponentRepairStatus.kOriginal
       },
       {
-        component: ComponentType.kTrackpad,
-        state: ComponentRepairState.kMissing
+        component: ComponentType.kTouchpad,
+        state: ComponentRepairStatus.kMissing
       },
     ];
     service.setGetComponentListResult(expected_components);
@@ -381,7 +381,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     let components = [
       {
         component: ComponentType.kKeyboard,
-        state: ComponentRepairState.kOriginal
+        state: ComponentRepairStatus.kOriginal
       },
     ];
     let states = [
@@ -400,7 +400,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     let components = [
       {
         component: ComponentType.kKeyboard,
-        state: ComponentRepairState.kOriginal
+        state: ComponentRepairStatus.kOriginal
       },
     ];
     let states = [

@@ -7,7 +7,7 @@ import {fakeComponentsForRepairStateTest} from 'chrome://shimless-rma/fake_data.
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingSelectComponentsPageElement} from 'chrome://shimless-rma/onboarding_select_components_page.js';
-import {Component, ComponentRepairState} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {Component, ComponentRepairStatus} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
@@ -55,11 +55,11 @@ export function onboardingSelectComponentsPageTest() {
   /**
    * @return {!Promise}
    */
-  function clickComponentKeyboardToggle() {
-    const keyboardComponent =
-        component.shadowRoot.querySelector('#componentKeyboard');
-    assertFalse(keyboardComponent.disabled);
-    keyboardComponent.click();
+  function clickComponentCameraToggle() {
+    const cameraComponent =
+        component.shadowRoot.querySelector('#componentCamera');
+    assertFalse(cameraComponent.disabled);
+    cameraComponent.click();
     return flushTasks();
   }
 
@@ -76,31 +76,31 @@ export function onboardingSelectComponentsPageTest() {
     await initializeComponentSelectPage(fakeComponentsForRepairStateTest);
 
     const reworkFlowLink = component.shadowRoot.querySelector('#reworkFlow');
-    const keyboardComponent =
-        component.shadowRoot.querySelector('#componentKeyboard');
-    const thumbReaderComponent =
-        component.shadowRoot.querySelector('#componentThumbReader');
-    const trackpadComponent =
-        component.shadowRoot.querySelector('#componentTrackpad');
+    const cameraComponent =
+        component.shadowRoot.querySelector('#componentCamera');
+    const batteryComponent =
+        component.shadowRoot.querySelector('#componentBattery');
+    const touchpadComponent =
+        component.shadowRoot.querySelector('#componentTouchpad');
     assertFalse(reworkFlowLink.hidden);
-    assertEquals(keyboardComponent.componentName, 'Keyboard');
-    assertFalse(keyboardComponent.disabled);
-    assertFalse(keyboardComponent.checked);
-    assertEquals(thumbReaderComponent.componentName, 'Thumb Reader');
-    assertTrue(thumbReaderComponent.disabled);
-    assertFalse(thumbReaderComponent.checked);
-    assertEquals(trackpadComponent.componentName, 'Trackpad');
-    assertFalse(trackpadComponent.disabled);
-    assertTrue(trackpadComponent.checked);
+    assertEquals(cameraComponent.componentName, 'Camera');
+    assertFalse(cameraComponent.disabled);
+    assertFalse(cameraComponent.checked);
+    assertEquals(batteryComponent.componentName, 'Battery');
+    assertTrue(batteryComponent.disabled);
+    assertFalse(batteryComponent.checked);
+    assertEquals(touchpadComponent.componentName, 'Touchpad');
+    assertFalse(touchpadComponent.disabled);
+    assertTrue(touchpadComponent.checked);
   });
 
   test('SelectComponentsPageToggleComponent', async () => {
     await initializeComponentSelectPage(fakeComponentsForRepairStateTest);
-    await clickComponentKeyboardToggle();
+    await clickComponentCameraToggle();
 
     let components = getComponentRepairStateList();
     assertNotEquals(components, fakeComponentsForRepairStateTest);
-    fakeComponentsForRepairStateTest[0].state = ComponentRepairState.kReplaced;
+    fakeComponentsForRepairStateTest[0].state = ComponentRepairStatus.kReplaced;
     assertDeepEquals(components, fakeComponentsForRepairStateTest);
   });
 
