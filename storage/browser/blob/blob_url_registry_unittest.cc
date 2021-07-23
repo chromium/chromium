@@ -65,8 +65,7 @@ TEST(BlobUrlRegistry, URLRegistration) {
   EXPECT_EQ(2u, registry.url_count());
   EXPECT_TRUE(registry.RemoveUrlMapping(kURL2));
   EXPECT_FALSE(registry.IsUrlMapped(kURL2));
-  EXPECT_EQ(base::UnguessableToken::Null(),
-            registry.GetUnsafeAgentClusterID(kURL2));
+  EXPECT_EQ(absl::nullopt, registry.GetUnsafeAgentClusterID(kURL2));
 
   // Both urls point to the same blob.
   EXPECT_TRUE(registry.AddUrlMapping(kURL2, blob1.Clone(), kTokenId2));

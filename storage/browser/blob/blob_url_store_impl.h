@@ -36,11 +36,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
   void Resolve(const GURL& url, ResolveCallback callback) override;
   void ResolveAsURLLoaderFactory(
       const GURL& url,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
-      override;
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
+      ResolveAsURLLoaderFactoryCallback callback) override;
   void ResolveForNavigation(
       const GURL& url,
-      mojo::PendingReceiver<blink::mojom::BlobURLToken> token) override;
+      mojo::PendingReceiver<blink::mojom::BlobURLToken> token,
+      ResolveForNavigationCallback callback) override;
 
  private:
   base::WeakPtr<BlobUrlRegistry> registry_;

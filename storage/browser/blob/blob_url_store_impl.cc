@@ -121,30 +121,39 @@ void BlobURLStoreImpl::Revoke(const GURL& url) {
 
 void BlobURLStoreImpl::Resolve(const GURL& url, ResolveCallback callback) {
   if (!registry_) {
-    std::move(callback).Run(mojo::NullRemote());
+    std::move(callback).Run(mojo::NullRemote(), absl::nullopt);
     return;
   }
   mojo::PendingRemote<blink::mojom::Blob> blob = registry_->GetBlobFromUrl(url);
-  std::move(callback).Run(std::move(blob));
+  std::move(callback).Run(std::move(blob),
+                          registry_->GetUnsafeAgentClusterID(url));
 }
 
 void BlobURLStoreImpl::ResolveAsURLLoaderFactory(
     const GURL& url,
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
+    ResolveAsURLLoaderFactoryCallback callback) {
   BlobURLLoaderFactory::Create(
       registry_ ? registry_->GetBlobFromUrl(url) : mojo::NullRemote(), url,
       std::move(receiver));
+  std::move(callback).Run(registry_->GetUnsafeAgentClusterID(url));
 }
 
 void BlobURLStoreImpl::ResolveForNavigation(
     const GURL& url,
-    mojo::PendingReceiver<blink::mojom::BlobURLToken> token) {
-  if (!registry_)
+    mojo::PendingReceiver<blink::mojom::BlobURLToken> token,
+    ResolveForNavigationCallback callback) {
+  if (!registry_) {
+    std::move(callback).Run(absl::nullopt);
     return;
+  }
   mojo::PendingRemote<blink::mojom::Blob> blob = registry_->GetBlobFromUrl(url);
-  if (!blob)
+  if (!blob) {
+    std::move(callback).Run(absl::nullopt);
     return;
+  }
   new BlobURLTokenImpl(registry_, url, std::move(blob), std::move(token));
+  std::move(callback).Run(registry_->GetUnsafeAgentClusterID(url));
 }
 
 }  // namespace storage

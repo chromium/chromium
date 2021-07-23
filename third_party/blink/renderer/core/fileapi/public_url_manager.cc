@@ -124,7 +124,12 @@ void PublicURLManager::Resolve(
     return;
 
   DCHECK(url.ProtocolIs("blob"));
-  url_store_->ResolveAsURLLoaderFactory(url, std::move(factory_receiver));
+  url_store_->ResolveAsURLLoaderFactory(
+      url, std::move(factory_receiver),
+      WTF::Bind([](const absl::optional<base::UnguessableToken>&
+                       unsafe_agent_cluster_id) {
+        // TODO(https://crbug.com/1224926): Add the use counter.
+      }));
 }
 
 void PublicURLManager::Resolve(
@@ -134,7 +139,12 @@ void PublicURLManager::Resolve(
     return;
 
   DCHECK(url.ProtocolIs("blob"));
-  url_store_->ResolveForNavigation(url, std::move(token_receiver));
+  url_store_->ResolveForNavigation(
+      url, std::move(token_receiver),
+      WTF::Bind([](const absl::optional<base::UnguessableToken>&
+                       unsafe_agent_cluster_id) {
+        // TODO(https://crbug.com/1224926): Add the use counter.
+      }));
 }
 
 void PublicURLManager::ContextDestroyed() {

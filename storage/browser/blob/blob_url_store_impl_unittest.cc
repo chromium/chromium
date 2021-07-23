@@ -30,6 +30,7 @@ class BlobURLStoreImplTest : public testing::Test {
  public:
   void SetUp() override {
     context_ = std::make_unique<BlobStorageContext>();
+    agent_cluster_id_ = base::UnguessableToken::Create();
 
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
         &BlobURLStoreImplTest::OnBadMessage, base::Unretained(this)));
@@ -81,7 +82,7 @@ class BlobURLStoreImplTest : public testing::Test {
                    mojo::PendingRemote<blink::mojom::Blob> blob,
                    const GURL& url) {
     base::RunLoop loop;
-    store->Register(std::move(blob), url, base::UnguessableToken::Create(),
+    store->Register(std::move(blob), url, agent_cluster_id_,
                     loop.QuitClosure());
     loop.Run();
   }
@@ -94,11 +95,16 @@ class BlobURLStoreImplTest : public testing::Test {
                    base::BindOnce(
                        [](base::OnceClosure done,
                           mojo::PendingRemote<blink::mojom::Blob>* blob_out,
-                          mojo::PendingRemote<blink::mojom::Blob> blob) {
+                          const base::UnguessableToken& agent_registered,
+                          mojo::PendingRemote<blink::mojom::Blob> blob,
+                          const absl::optional<base::UnguessableToken>&
+                              unsafe_agent_cluster_id) {
+                         if (blob)
+                           EXPECT_EQ(agent_registered, unsafe_agent_cluster_id);
                          *blob_out = std::move(blob);
                          std::move(done).Run();
                        },
-                       loop.QuitClosure(), &result));
+                       loop.QuitClosure(), &result, agent_cluster_id_));
     loop.Run();
     return result;
   }
@@ -114,6 +120,7 @@ class BlobURLStoreImplTest : public testing::Test {
   BlobUrlRegistry url_registry_;
   MockBlobRegistryDelegate delegate_;
   std::vector<std::string> bad_messages_;
+  base::UnguessableToken agent_cluster_id_;
 };
 
 TEST_F(BlobURLStoreImplTest, BasicRegisterRevoke) {
@@ -272,22 +279,33 @@ TEST_F(BlobURLStoreImplTest, ResolveAsURLLoaderFactory) {
   RegisterURL(&url_store, std::move(blob), kValidUrl);
 
   mojo::Remote<network::mojom::URLLoaderFactory> factory;
-  url_store.ResolveAsURLLoaderFactory(kValidUrl,
-                                      factory.BindNewPipeAndPassReceiver());
+  base::RunLoop resolve_loop;
+  url_store.ResolveAsURLLoaderFactory(
+      kValidUrl, factory.BindNewPipeAndPassReceiver(),
+      base::BindOnce(
+          [](base::OnceClosure done,
+             const base::UnguessableToken& agent_registered,
+             const absl::optional<base::UnguessableToken>&
+                 unsafe_agent_cluster_id) {
+            EXPECT_EQ(agent_registered, unsafe_agent_cluster_id);
+            std::move(done).Run();
+          },
+          resolve_loop.QuitClosure(), agent_cluster_id_));
+  resolve_loop.Run();
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = kValidUrl;
   auto loader = network::SimpleURLLoader::Create(std::move(request),
                                                  TRAFFIC_ANNOTATION_FOR_TESTS);
-  base::RunLoop loop;
+  base::RunLoop download_loop;
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       factory.get(), base::BindLambdaForTesting(
                          [&](std::unique_ptr<std::string> response_body) {
-                           loop.Quit();
+                           download_loop.Quit();
                            ASSERT_TRUE(response_body);
                            EXPECT_EQ("hello world", *response_body);
                          }));
-  loop.Run();
+  download_loop.Run();
 }
 
 TEST_F(BlobURLStoreImplTest, ResolveForNavigation) {
@@ -297,9 +315,20 @@ TEST_F(BlobURLStoreImplTest, ResolveForNavigation) {
   BlobURLStoreImpl url_store(url_registry_.AsWeakPtr(), &delegate_);
   RegisterURL(&url_store, std::move(blob), kValidUrl);
 
+  base::RunLoop loop0;
   mojo::Remote<blink::mojom::BlobURLToken> token_remote;
-  url_store.ResolveForNavigation(kValidUrl,
-                                 token_remote.BindNewPipeAndPassReceiver());
+  url_store.ResolveForNavigation(
+      kValidUrl, token_remote.BindNewPipeAndPassReceiver(),
+      base::BindOnce(
+          [](base::OnceClosure done,
+             const base::UnguessableToken& agent_registered,
+             const absl::optional<base::UnguessableToken>&
+                 unsafe_agent_cluster_id) {
+            EXPECT_EQ(agent_registered, unsafe_agent_cluster_id);
+            std::move(done).Run();
+          },
+          loop0.QuitClosure(), agent_cluster_id_));
+  loop0.Run();
 
   base::UnguessableToken token;
   base::RunLoop loop;

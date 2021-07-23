@@ -55,7 +55,7 @@ bool BlobUrlRegistry::IsUrlMapped(const GURL& blob_url) const {
 }
 
 // TODO(https://crbug.com/1224926): Remove this once experiment is over.
-const base::UnguessableToken& BlobUrlRegistry::GetUnsafeAgentClusterID(
+absl::optional<base::UnguessableToken> BlobUrlRegistry::GetUnsafeAgentClusterID(
     const GURL& blob_url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = url_to_unsafe_agent_cluster_id_.find(blob_url);
@@ -63,7 +63,7 @@ const base::UnguessableToken& BlobUrlRegistry::GetUnsafeAgentClusterID(
     return it->second;
   if (fallback_)
     return fallback_->GetUnsafeAgentClusterID(blob_url);
-  return base::UnguessableToken::Null();
+  return absl::nullopt;
 }
 
 mojo::PendingRemote<blink::mojom::Blob> BlobUrlRegistry::GetBlobFromUrl(

@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
   bool IsUrlMapped(const GURL& blob_url) const;
 
   // TODO(https://crbug.com/1224926): Remove this once experiment is over.
-  const base::UnguessableToken& GetUnsafeAgentClusterID(
+  absl::optional<base::UnguessableToken> GetUnsafeAgentClusterID(
       const GURL& blob_url) const;
 
   // Returns the blob from the given url. Returns a null remote if the mapping

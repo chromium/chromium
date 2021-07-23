@@ -200,14 +200,26 @@ class BlobURLTest : public testing::Test {
         std::make_unique<storage::BlobDataHandle>(*GetHandleFromBuilder()),
         blob_remote.InitWithNewPipeAndPassReceiver());
 
-    base::RunLoop loop;
-    url_store.Register(std::move(blob_remote), url,
-                       base::UnguessableToken::Create(), loop.QuitClosure());
-    loop.Run();
+    base::RunLoop register_loop;
+    base::UnguessableToken agent = base::UnguessableToken::Create();
+    url_store.Register(std::move(blob_remote), url, agent,
+                       register_loop.QuitClosure());
+    register_loop.Run();
 
+    base::RunLoop resolve_loop;
     mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
     url_store.ResolveAsURLLoaderFactory(
-        url, url_loader_factory.BindNewPipeAndPassReceiver());
+        url, url_loader_factory.BindNewPipeAndPassReceiver(),
+        base::BindOnce(
+            [](base::OnceClosure done,
+               const base::UnguessableToken& agent_registered,
+               const absl::optional<base::UnguessableToken>&
+                   unsafe_agent_cluster_id) {
+              EXPECT_EQ(agent_registered, unsafe_agent_cluster_id);
+              std::move(done).Run();
+            },
+            resolve_loop.QuitClosure(), agent));
+    resolve_loop.Run();
 
     mojo::PendingRemote<network::mojom::URLLoader> url_loader;
     network::TestURLLoaderClient url_loader_client;
