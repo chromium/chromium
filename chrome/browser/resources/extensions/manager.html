@@ -38,7 +38,7 @@
 <template is="dom-if" if="[[showDrawer_]]" restamp>
   <cr-drawer id="drawer" heading="$i18n{toolbarTitle}"
       align="$i18n{textdirection}" on-close="onDrawerClose_">
-    <div class="drawer-content">
+    <div slot="body">
       <extensions-sidebar id="sidebar"
           on-close-drawer="onCloseDrawer_">
       </extensions-sidebar>

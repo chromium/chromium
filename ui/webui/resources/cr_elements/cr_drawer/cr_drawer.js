@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../shared_vars_css.m.js';
 
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -36,18 +35,6 @@ export class CrDrawerElement extends PolymerElement {
         value: 'ltr',
         reflectToAttribute: true,
       },
-
-      /**
-       * An iron-icon resource name, e.g. "cr20:menu". If null, no icon will
-       * be shown.
-       */
-      iconName: {
-        type: String,
-        value: null,
-      },
-
-      /** Title attribute for the icon, if shown. */
-      iconTitle: String,
     };
   }
 
@@ -119,15 +106,6 @@ export class CrDrawerElement extends PolymerElement {
   /** @return {boolean} */
   wasCanceled() {
     return !this.open && this.$.dialog.returnValue === 'canceled';
-  }
-
-  /**
-   * Handles a tap on the (optional) icon.
-   * @param {!Event} event
-   * @private
-   */
-  onIconTap_(event) {
-    this.cancel();
   }
 
   /**

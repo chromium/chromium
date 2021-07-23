@@ -23,8 +23,7 @@ suite('cr-drawer', function() {
   function createDrawer(align) {
     document.body.innerHTML = `
       <cr-drawer id="drawer" align="${align}">
-        <div class="drawer-header">Test</div>
-        <div class="drawer-content">Test content</div>
+        <div slot="body">Test content</div>
       </cr-drawer>
     `;
     flush();
@@ -42,7 +41,7 @@ suite('cr-drawer', function() {
           assertTrue(drawer.open);
 
           // Clicking the content does not close the drawer.
-          document.querySelector('.drawer-content').click();
+          document.querySelector('div[slot="body"]').click();
 
           const whenClosed = eventToPromise('close', drawer);
           drawer.shadowRoot.querySelector('#dialog').dispatchEvent(
@@ -64,24 +63,6 @@ suite('cr-drawer', function() {
           drawer.close();
           return eventToPromise('close', drawer);
         });
-  });
-
-  test('clicking icon closes drawer', async () => {
-    // Create a drawer with an icon and open it.
-    document.body.innerHTML = `
-      <cr-drawer id="drawer" align="ltr" icon-name="menu" icon-title="close">
-      </cr-drawer>
-    `;
-    flush();
-    const drawer = document.getElementById('drawer');
-    drawer.openDrawer();
-    await eventToPromise('cr-drawer-opened', drawer);
-
-    // Clicking the icon closes the drawer.
-    drawer.shadowRoot.querySelector('#iconButton').click();
-    await eventToPromise('close', drawer);
-    assertFalse(drawer.open);
-    assertTrue(drawer.wasCanceled());
   });
 
   test('align=ltr', function() {

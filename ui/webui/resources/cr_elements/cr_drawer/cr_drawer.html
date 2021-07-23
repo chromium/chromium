@@ -80,30 +80,41 @@
         outline: none;
       }
 
-      #iconButton {
-        cursor: pointer;
-        margin-inline-end: 14px;
-        margin-inline-start: 0;
-        outline: none;
-      }
-
-      :host ::slotted(.drawer-content) {
+      :host ::slotted([slot='body']) {
         height: calc(100% - 56px);
         overflow: auto;
+      }
+
+      picture {
+        display: none;
+      }
+
+      :host-context([enable-branding-update]) picture {
+        display: initial;
+        margin-inline-end: 16px;
+      }
+
+      :host-context([enable-branding-update]) :is(picture, #product-logo) {
+        height: 24px;
+        width: 24px;
       }
     </style>
     <dialog id="dialog" on-cancel="onDialogCancel_" on-click="onDialogTap_"
         on-close="onDialogClose_">
       <div id="container" on-click="onContainerTap_">
         <div class="drawer-header">
-          <!-- Hidden from a11y because this icon is decorative. Clicking closes
-              the dialog, but screen reader users can do this by pressing ESC,
-              so aria-hidden is OK here. -->
-          <iron-icon id="iconButton" icon="[[iconName]]" on-click="onIconTap_"
-              title="[[iconTitle]]" hidden="[[!iconName]]" aria-hidden="true">
-          </iron-icon>
+          <slot name="header-icon">
+            <picture>
+              <source media="(prefers-color-scheme: dark)"
+                  srcset="//resources/images/chrome_logo_dark.svg">
+              <img id="product-logo"
+                  srcset="chrome://theme/current-channel-logo@1x 1x,
+                          chrome://theme/current-channel-logo@2x 2x"
+                  role="presentation">
+            </picture>
+          </slot>
           <div id="heading" tabindex="-1">[[heading]]</div>
         </div>
-        <slot></slot>
+        <slot name="body"></slot>
       </div>
     </dialog>

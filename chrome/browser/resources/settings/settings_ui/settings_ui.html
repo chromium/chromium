@@ -93,7 +93,7 @@
     </cr-toolbar>
     <cr-drawer id="drawer" on-close="onMenuClose_" heading="$i18n{settings}"
         align="$i18n{textdirection}">
-      <div class="drawer-content">
+      <div slot="body">
         <template is="dom-if" id="drawerTemplate">
           <settings-menu id="drawerMenu"
               page-visibility="[[pageVisibility_]]"

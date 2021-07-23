@@ -9,7 +9,7 @@
 // #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {flushTasks} from 'chrome://test/test_util.m.js';
+// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for the OS Settings ui and main page. */
@@ -169,5 +169,18 @@ suite('OSSettingsUi', function() {
     Polymer.dom.flush();
     assertFalse(settingsPage.showUpdateRequiredEolBanner_);
     assertEquals('none', banner.style.display);
+  });
+
+  test('clicking icon closes drawer', async () => {
+    flush();
+    const drawer = ui.shadowRoot.querySelector('#drawer');
+    drawer.openDrawer();
+    await eventToPromise('cr-drawer-opened', drawer);
+
+    // Clicking the drawer icon closes the drawer.
+    ui.shadowRoot.querySelector('#iconButton').click();
+    await eventToPromise('close', drawer);
+    assertFalse(drawer.open);
+    assertTrue(drawer.wasCanceled());
   });
 });

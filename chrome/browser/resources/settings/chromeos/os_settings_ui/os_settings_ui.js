@@ -430,6 +430,14 @@ cr.define('settings', function() {
         this.$$('#drawer').close();
       }
     },
+
+    /**
+     * Handles a tap on the drawer's icon.
+     * @private
+     */
+    onDrawerIconClick_() {
+      this.$$('#drawer').cancel();
+    },
   });
 
   // #cr_define_end
