@@ -6,6 +6,7 @@
 
 #include "base/rand_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace blink {
 
@@ -58,18 +59,17 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
     base::TimeDelta total_event_duration) {
   if (!window)
     return;
-  if (!ukm_recorder_)
-    ukm_recorder_ = window->UkmRecorder();
-  ukm::SourceId source_id = window->UkmSourceID();
 
-  if (ukm_recorder_ &&
+  ukm::UkmRecorder* ukm_recorder = window->UkmRecorder();
+  ukm::SourceId source_id = window->UkmSourceID();
+  if (source_id != ukm::kInvalidSourceId &&
       (!sampling_ || base::RandInt(kMinValueForSampling,
                                    kMaxValueForSampling) <= kUkmSamplingRate)) {
     ukm::builders::Responsiveness_UserInteraction(source_id)
         .SetInteractionType(static_cast<int>(interaction_type))
         .SetMaxEventDuration(max_event_duration.InMilliseconds())
         .SetTotalEventDuration(total_event_duration.InMilliseconds())
-        .Record(ukm_recorder_);
+        .Record(ukm_recorder);
   }
 }
 

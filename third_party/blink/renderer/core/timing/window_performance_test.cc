@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 
 #include "base/test/test_mock_time_task_runner.h"
-#include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -19,10 +18,14 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
+#include "third_party/blink/renderer/core/testing/scoped_fake_ukm_recorder.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
+
+using test::RunPendingTasks;
 
 namespace {
 
@@ -102,10 +105,15 @@ class WindowPerformanceTest : public testing::Test {
     return ToScriptStateForMainWorld(page_holder_->GetDocument().GetFrame());
   }
 
+  ukm::TestUkmRecorder* GetUkmRecorder() {
+    return scoped_fake_ukm_recorder_.recorder();
+  }
+
   uint64_t frame_counter = 1;
   Persistent<WindowPerformance> performance_;
   std::unique_ptr<DummyPageHolder> page_holder_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
+  ScopedFakeUkmRecorder scoped_fake_ukm_recorder_;
 };
 
 TEST_F(WindowPerformanceTest, LongTaskObserverInstrumentation) {
@@ -422,8 +430,6 @@ TEST_F(WindowPerformanceTest, OneKeyboardInteraction) {
   base::TimeTicks swap_time_keydown = GetTimeStamp(5);
   absl::optional<PointerId> pointer_id = absl::nullopt;
   absl::optional<int> key_code = 2;
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  performance_->GetResponsivenessMetrics().SetUkmRecorder(&test_ukm_recorder);
   performance_->RegisterEventTiming(
       "keydown", keydown_timestamp, processing_start_keydown,
       processing_end_keydown, false, nullptr, key_code, pointer_id);
@@ -438,34 +444,33 @@ TEST_F(WindowPerformanceTest, OneKeyboardInteraction) {
       false, nullptr, key_code, pointer_id);
   SimulateSwapPromise(swap_time_keyup);
 
+  // Flush UKM logging mojo request.
+  RunPendingTasks();
+
   // Check UKM recording.
-  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      test_ukm_recorder.GetMergedEntriesByName(
-          ukm::builders::Responsiveness_UserInteraction::kEntryName);
+  auto merged_entries = GetUkmRecorder()->GetMergedEntriesByName(
+      ukm::builders::Responsiveness_UserInteraction::kEntryName);
   EXPECT_EQ(1u, merged_entries.size());
   for (const auto& kv : merged_entries) {
     const ukm::mojom::UkmEntry* ukm_entry = kv.second.get();
-    test_ukm_recorder.ExpectEntryMetric(
+    GetUkmRecorder()->ExpectEntryMetric(
         ukm_entry,
         ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName,
         7);
-    test_ukm_recorder.ExpectEntryMetric(
+    GetUkmRecorder()->ExpectEntryMetric(
         ukm_entry,
         ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
         10);
-    test_ukm_recorder.ExpectEntryMetric(
+    GetUkmRecorder()->ExpectEntryMetric(
         ukm_entry,
         ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 0);
   }
 }
 
 TEST_F(WindowPerformanceTest, HoldingDownAKey) {
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  auto entries = test_ukm_recorder.GetEntriesByName(
+  auto entries = GetUkmRecorder()->GetEntriesByName(
       ukm::builders::Responsiveness_UserInteraction::kEntryName);
   EXPECT_EQ(0u, entries.size());
-  performance_->GetResponsivenessMetrics().SetUkmRecorder(&test_ukm_recorder);
-  // First Keydown
   base::TimeTicks keydown_timestamp = GetTimeOrigin();
   base::TimeTicks processing_start_keydown = GetTimeStamp(1);
   base::TimeTicks processing_end_keydown = GetTimeStamp(2);
@@ -507,8 +512,11 @@ TEST_F(WindowPerformanceTest, HoldingDownAKey) {
       false, nullptr, key_code, pointer_id);
   SimulateSwapPromise(swap_time_keyup);
 
+  // Flush UKM logging mojo request.
+  RunPendingTasks();
+
   // Check UKM recording.
-  entries = test_ukm_recorder.GetEntriesByName(
+  entries = GetUkmRecorder()->GetEntriesByName(
       ukm::builders::Responsiveness_UserInteraction::kEntryName);
   EXPECT_EQ(3u, entries.size());
   std::vector<std::pair<int, int>> expected_durations;
@@ -517,26 +525,24 @@ TEST_F(WindowPerformanceTest, HoldingDownAKey) {
   expected_durations.emplace_back(std::make_pair(10, 11));
   for (std::size_t i = 0; i < entries.size(); ++i) {
     auto* entry = entries[i];
-    test_ukm_recorder.ExpectEntryMetric(
+    GetUkmRecorder()->ExpectEntryMetric(
         entry,
         ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName,
         expected_durations[i].first);
-    test_ukm_recorder.ExpectEntryMetric(
+    GetUkmRecorder()->ExpectEntryMetric(
         entry,
         ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
         expected_durations[i].second);
-    test_ukm_recorder.ExpectEntryMetric(
+    GetUkmRecorder()->ExpectEntryMetric(
         entry,
         ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 0);
   }
 }
 
 TEST_F(WindowPerformanceTest, PressMultipleKeys) {
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  auto entries = test_ukm_recorder.GetEntriesByName(
+  auto entries = GetUkmRecorder()->GetEntriesByName(
       ukm::builders::Responsiveness_UserInteraction::kEntryName);
   EXPECT_EQ(0u, entries.size());
-  performance_->GetResponsivenessMetrics().SetUkmRecorder(&test_ukm_recorder);
   // Press the first key.
   base::TimeTicks keydown_timestamp = GetTimeOrigin();
   base::TimeTicks processing_start_keydown = GetTimeStamp(1);
@@ -579,8 +585,11 @@ TEST_F(WindowPerformanceTest, PressMultipleKeys) {
       false, nullptr, second_key_code, pointer_id);
   SimulateSwapPromise(swap_time_keyup);
 
+  // Flush UKM logging mojo request.
+  RunPendingTasks();
+
   // Check UKM recording.
-  entries = test_ukm_recorder.GetEntriesByName(
+  entries = GetUkmRecorder()->GetEntriesByName(
       ukm::builders::Responsiveness_UserInteraction::kEntryName);
   EXPECT_EQ(2u, entries.size());
   std::vector<std::pair<int, int>> expected_durations;
@@ -588,15 +597,15 @@ TEST_F(WindowPerformanceTest, PressMultipleKeys) {
   expected_durations.emplace_back(std::make_pair(15, 20));
   for (std::size_t i = 0; i < entries.size(); ++i) {
     auto* entry = entries[i];
-    test_ukm_recorder.ExpectEntryMetric(
+    GetUkmRecorder()->ExpectEntryMetric(
         entry,
         ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName,
         expected_durations[i].first);
-    test_ukm_recorder.ExpectEntryMetric(
+    GetUkmRecorder()->ExpectEntryMetric(
         entry,
         ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
         expected_durations[i].second);
-    test_ukm_recorder.ExpectEntryMetric(
+    GetUkmRecorder()->ExpectEntryMetric(
         entry,
         ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 0);
   }
@@ -610,8 +619,6 @@ TEST_F(WindowPerformanceTest, TapOrClick) {
   base::TimeTicks swap_time_pointerdown = GetTimeStamp(5);
   absl::optional<PointerId> pointer_id = 4;
   absl::optional<int> key_code = absl::nullopt;
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  performance_->GetResponsivenessMetrics().SetUkmRecorder(&test_ukm_recorder);
   performance_->RegisterEventTiming(
       "pointerdown", pointerdwon_timestamp, processing_start_pointerdown,
       processing_end_pointerdown, false, nullptr, key_code, pointer_id);
@@ -635,22 +642,25 @@ TEST_F(WindowPerformanceTest, TapOrClick) {
       false, nullptr, key_code, pointer_id);
   SimulateSwapPromise(swap_time_click);
 
+  // Flush UKM logging mojo request.
+  RunPendingTasks();
+
   // Check UKM recording.
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      test_ukm_recorder.GetMergedEntriesByName(
+      GetUkmRecorder()->GetMergedEntriesByName(
           ukm::builders::Responsiveness_UserInteraction::kEntryName);
   EXPECT_EQ(1u, merged_entries.size());
   for (const auto& kv : merged_entries) {
     const ukm::mojom::UkmEntry* ukm_entry = kv.second.get();
-    test_ukm_recorder.ExpectEntryMetric(
+    GetUkmRecorder()->ExpectEntryMetric(
         ukm_entry,
         ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName,
         7);
-    test_ukm_recorder.ExpectEntryMetric(
+    GetUkmRecorder()->ExpectEntryMetric(
         ukm_entry,
         ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
         17);
-    test_ukm_recorder.ExpectEntryMetric(
+    GetUkmRecorder()->ExpectEntryMetric(
         ukm_entry,
         ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 1);
   }
@@ -664,8 +674,6 @@ TEST_F(WindowPerformanceTest, Drag) {
   base::TimeTicks swap_time_pointerdown = GetTimeStamp(5);
   absl::optional<PointerId> pointer_id = 4;
   absl::optional<int> key_code = absl::nullopt;
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  performance_->GetResponsivenessMetrics().SetUkmRecorder(&test_ukm_recorder);
   performance_->RegisterEventTiming(
       "pointerdown", pointerdwon_timestamp, processing_start_pointerdown,
       processing_end_pointerdown, false, nullptr, key_code, pointer_id);
@@ -691,22 +699,25 @@ TEST_F(WindowPerformanceTest, Drag) {
       false, nullptr, key_code, pointer_id);
   SimulateSwapPromise(swap_time_click);
 
+  // Flush UKM logging mojo request.
+  RunPendingTasks();
+
   // Check UKM recording.
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      test_ukm_recorder.GetMergedEntriesByName(
+      GetUkmRecorder()->GetMergedEntriesByName(
           ukm::builders::Responsiveness_UserInteraction::kEntryName);
   EXPECT_EQ(1u, merged_entries.size());
   for (const auto& kv : merged_entries) {
     const ukm::mojom::UkmEntry* ukm_entry = kv.second.get();
-    test_ukm_recorder.ExpectEntryMetric(
+    GetUkmRecorder()->ExpectEntryMetric(
         ukm_entry,
         ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName,
         7);
-    test_ukm_recorder.ExpectEntryMetric(
+    GetUkmRecorder()->ExpectEntryMetric(
         ukm_entry,
         ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
         17);
-    test_ukm_recorder.ExpectEntryMetric(
+    GetUkmRecorder()->ExpectEntryMetric(
         ukm_entry,
         ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 2);
   }
@@ -720,8 +731,6 @@ TEST_F(WindowPerformanceTest, Scroll) {
   base::TimeTicks swap_time_keydown = GetTimeStamp(5);
   absl::optional<PointerId> pointer_id = 5;
   absl::optional<int> key_code = absl::nullopt;
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  performance_->GetResponsivenessMetrics().SetUkmRecorder(&test_ukm_recorder);
   performance_->RegisterEventTiming(
       "pointerdown", pointerdown_timestamp, processing_start_keydown,
       processing_end_keydown, false, nullptr, key_code, pointer_id);
@@ -736,9 +745,12 @@ TEST_F(WindowPerformanceTest, Scroll) {
       processing_end_keyup, false, nullptr, key_code, pointer_id);
   SimulateSwapPromise(swap_time_keyup);
 
+  // Flush UKM logging mojo request.
+  RunPendingTasks();
+
   // Check UKM recording.
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      test_ukm_recorder.GetMergedEntriesByName(
+      GetUkmRecorder()->GetMergedEntriesByName(
           ukm::builders::Responsiveness_UserInteraction::kEntryName);
   EXPECT_EQ(0u, merged_entries.size());
 }
@@ -751,8 +763,6 @@ TEST_F(WindowPerformanceTest, TouchesWithoutClick) {
   base::TimeTicks swap_time_pointerdown = GetTimeStamp(5);
   absl::optional<PointerId> pointer_id = 4;
   absl::optional<int> key_code = absl::nullopt;
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  performance_->GetResponsivenessMetrics().SetUkmRecorder(&test_ukm_recorder);
   performance_->RegisterEventTiming(
       "pointerdown", pointerdown_timestamp, processing_start_pointerdown,
       processing_end_pointerdown, false, nullptr, key_code, pointer_id);
@@ -763,15 +773,17 @@ TEST_F(WindowPerformanceTest, TouchesWithoutClick) {
   processing_start_pointerdown = GetTimeStamp(7);
   processing_end_pointerdown = GetTimeStamp(8);
   swap_time_pointerdown = GetTimeStamp(15);
-  performance_->GetResponsivenessMetrics().SetUkmRecorder(&test_ukm_recorder);
   performance_->RegisterEventTiming(
       "pointerdown", pointerdown_timestamp, processing_start_pointerdown,
       processing_end_pointerdown, false, nullptr, key_code, pointer_id);
   SimulateSwapPromise(swap_time_pointerdown);
 
+  // Flush UKM logging mojo request.
+  RunPendingTasks();
+
   // Check UKM recording.
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      test_ukm_recorder.GetMergedEntriesByName(
+      GetUkmRecorder()->GetMergedEntriesByName(
           ukm::builders::Responsiveness_UserInteraction::kEntryName);
   EXPECT_EQ(0u, merged_entries.size());
 }
@@ -787,8 +799,6 @@ TEST_F(WindowPerformanceTest, MultiTouch) {
   base::TimeTicks swap_time_pointerdown = GetTimeStamp(5);
   absl::optional<PointerId> pointer_id_1 = 4;
   absl::optional<int> key_code = absl::nullopt;
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  performance_->GetResponsivenessMetrics().SetUkmRecorder(&test_ukm_recorder);
   performance_->RegisterEventTiming(
       "pointerdown", pointerdown_timestamp, processing_start_pointerdown,
       processing_end_pointerdown, false, nullptr, key_code, pointer_id_1);
@@ -799,7 +809,6 @@ TEST_F(WindowPerformanceTest, MultiTouch) {
   processing_end_pointerdown = GetTimeStamp(2);
   swap_time_pointerdown = GetTimeStamp(6);
   absl::optional<PointerId> pointer_id_2 = 6;
-  performance_->GetResponsivenessMetrics().SetUkmRecorder(&test_ukm_recorder);
   performance_->RegisterEventTiming(
       "pointerdown", pointerdown_timestamp, processing_start_pointerdown,
       processing_end_pointerdown, false, nullptr, key_code, pointer_id_2);
@@ -835,19 +844,22 @@ TEST_F(WindowPerformanceTest, MultiTouch) {
       false, nullptr, key_code, pointer_id_2);
   SimulateSwapPromise(swap_time_click);
 
+  // Flush UKM logging mojo request.
+  RunPendingTasks();
+
   // Check UKM recording.
-  auto entries = test_ukm_recorder.GetEntriesByName(
+  auto entries = GetUkmRecorder()->GetEntriesByName(
       ukm::builders::Responsiveness_UserInteraction::kEntryName);
   EXPECT_EQ(1u, entries.size());
   auto* entry = entries[0];
-  test_ukm_recorder.ExpectEntryMetric(
+  GetUkmRecorder()->ExpectEntryMetric(
       entry,
       ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName, 7);
-  test_ukm_recorder.ExpectEntryMetric(
+  GetUkmRecorder()->ExpectEntryMetric(
       entry,
       ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
       16);
-  test_ukm_recorder.ExpectEntryMetric(
+  GetUkmRecorder()->ExpectEntryMetric(
       entry,
       ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 1);
 }
