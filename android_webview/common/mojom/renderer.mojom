@@ -20,5 +20,5 @@ interface Renderer {
 
   // Enable idle throttling in the renderer. Temporarily added for an
   // experiment; to be deleted after its conclusion (https://crbug.com/1166695).
-  EnableIdleThrottling();
+  EnableIdleThrottling(int32 policy, int32 min_time_ms, float min_cputime_ratio);
 };

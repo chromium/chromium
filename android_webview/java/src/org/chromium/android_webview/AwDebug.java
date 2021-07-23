@@ -47,7 +47,8 @@ public class AwDebug {
     @interface AwDebugCall {
         int SET_CPU_AFFINITY_TO_LITTLE_CORES = 0;
         int ENABLE_IDLE_THROTTLING = 1;
-        int COUNT = 2;
+        int ENABLE_POWER_SCHEDULER = 2;
+        int COUNT = 3;
     }
 
     @UsedByReflection("")
@@ -61,13 +62,20 @@ public class AwDebug {
     public static void enableIdleThrottling() {
         RecordHistogram.recordEnumeratedHistogram("Android.WebView.AwDebugCall",
                 AwDebugCall.ENABLE_IDLE_THROTTLING, AwDebugCall.COUNT);
-        AwDebugJni.get().enableIdleThrottling();
+        AwDebugJni.get().enableIdleThrottling(3, 500, 0.5f);
+    }
+
+    @UsedByReflection("")
+    public static void enablePowerScheduler(int policy, int minTimeMs, float minCputimeRatio) {
+        RecordHistogram.recordEnumeratedHistogram("Android.WebView.AwDebugCall",
+                AwDebugCall.ENABLE_POWER_SCHEDULER, AwDebugCall.COUNT);
+        AwDebugJni.get().enableIdleThrottling(policy, minTimeMs, minCputimeRatio);
     }
 
     @NativeMethods
     interface Natives {
         void setSupportLibraryWebkitVersionCrashKey(String version);
         void setCpuAffinityToLittleCores();
-        void enableIdleThrottling();
+        void enableIdleThrottling(int policy, int minTimeMs, float minCputimeRatio);
     }
 }

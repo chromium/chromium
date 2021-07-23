@@ -18,8 +18,14 @@ namespace android_webview {
 
 class AwDebugCpuAffinity : public content::RenderProcessHostCreationObserver {
  public:
-  AwDebugCpuAffinity(bool enable_idle_throttling = false)
-      : enable_idle_throttling_(enable_idle_throttling) {
+  AwDebugCpuAffinity(bool enable_idle_throttling,
+                     int32_t policy,
+                     int32_t min_time_ms,
+                     float min_cputime_ratio)
+      : enable_idle_throttling_(enable_idle_throttling),
+        policy_(policy),
+        min_time_ms_(min_time_ms),
+        min_cputime_ratio_(min_cputime_ratio) {
     for (RenderProcessHost::iterator i(RenderProcessHost::AllHostsIterator());
          !i.IsAtEnd(); i.Advance()) {
       RenderProcessHost* process_host = i.GetCurrentValue();
@@ -52,18 +58,27 @@ class AwDebugCpuAffinity : public content::RenderProcessHostCreationObserver {
     process_host->PostTaskWhenProcessIsReady(base::BindOnce(
         &AwRenderProcess::EnableIdleThrottling,
         base::Unretained(
-            AwRenderProcess::GetInstanceForRenderProcessHost(process_host))));
+            AwRenderProcess::GetInstanceForRenderProcessHost(process_host)),
+        policy_, min_time_ms_, min_cputime_ratio_));
   }
 
   bool enable_idle_throttling_{false};
+  int32_t policy_;
+  int32_t min_time_ms_;
+  float min_cputime_ratio_;
 };
 
 static void JNI_AwDebug_SetCpuAffinityToLittleCores(JNIEnv* env) {
-  static base::NoDestructor<AwDebugCpuAffinity> aw_debug_cpu_affinity;
+  static base::NoDestructor<AwDebugCpuAffinity> aw_debug_cpu_affinity(false, 1,
+                                                                      0, 0);
 }
 
-static void JNI_AwDebug_EnableIdleThrottling(JNIEnv* env) {
-  static base::NoDestructor<AwDebugCpuAffinity> aw_debug_cpu_affinity(true);
+static void JNI_AwDebug_EnableIdleThrottling(JNIEnv* env,
+                                             int policy,
+                                             int min_time_ms,
+                                             float min_cputime_ratio) {
+  static base::NoDestructor<AwDebugCpuAffinity> aw_debug_cpu_affinity(
+      true, policy, min_time_ms, min_cputime_ratio);
 }
 
 static void JNI_AwDebug_SetSupportLibraryWebkitVersionCrashKey(

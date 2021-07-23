@@ -6868,6 +6868,7 @@ others/histograms.xml -->
 <enum name="AwDebugCall">
   <int value="0" label="setCpuAffinityToLittleCores"/>
   <int value="1" label="enableIdleThrottling"/>
+  <int value="2" label="enablePowerScheduler"/>
 </enum>
 
 <enum name="BackForwardCacheActionAfterPagehide">

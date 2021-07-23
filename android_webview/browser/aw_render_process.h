@@ -35,7 +35,9 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
   void ClearCache();
   void SetJsOnlineProperty(bool network_up);
   void SetCpuAffinityToLittleCores();
-  void EnableIdleThrottling();
+  void EnableIdleThrottling(int32_t policy,
+                            int32_t min_time_ms,
+                            float min_cputime_ratio);
 
  private:
   void Ready();
