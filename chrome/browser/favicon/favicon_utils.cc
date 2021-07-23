@@ -140,6 +140,12 @@ gfx::Image TabFaviconFromWebContents(content::WebContents* contents) {
 
   favicon::FaviconDriver* favicon_driver =
       favicon::ContentFaviconDriver::FromWebContents(contents);
+  // TODO(crbug.com/3041580): Investigate why some WebContents do not have
+  // an attached ContentFaviconDriver.
+  if (!favicon_driver) {
+    return gfx::Image();
+  }
+
   gfx::Image favicon = favicon_driver->GetFavicon();
 
   // Desaturate the favicon if the navigation entry contains a network error.
