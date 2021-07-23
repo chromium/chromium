@@ -776,6 +776,7 @@ message ActionProto {
     SetTouchableAreaProto set_touchable_area = 82;
     DeleteSelectedPasswordProto delete_password = 83;
     EditSelectedPasswordProto edit_password = 84;
+    BlurFieldProto blur_field = 85;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -1139,6 +1140,9 @@ message WebControllerErrorInfoProto {
 
     // Scroll the container by a certain amount.
     SCROLL_CONTAINER = 27;
+
+    // Blur an element that might have focus to remove its focus.
+    BLUR_FIELD = 28;
   }
 
   // The web-action that failed. This is usually a step in an execution chain

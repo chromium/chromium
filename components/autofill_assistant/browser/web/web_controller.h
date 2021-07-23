@@ -258,6 +258,11 @@ class WebController {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
+  // Blur the current |element| that might have focus to remove its focus.
+  virtual void BlurField(
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback);
+
   // Inputs the specified codepoints into |element|. Expects the |element| to
   // have focus. Key presses will have a delay of
   // |key_press_delay_in_millisecond| between them. Returns the result through

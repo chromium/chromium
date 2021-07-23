@@ -203,6 +203,9 @@ const char* const kSelectFieldValueScript = "function() { this.select(); }";
 // Javascript code to focus a field.
 const char* const kFocusFieldScript = "function() { this.focus(); }";
 
+// Javascript code to blur a field.
+const char* const kBlurFieldScript = "function() { this.blur(); }";
+
 // Javascript code to set the 'value' attribute of a node and then fire a
 // "change" event to trigger any listeners.
 const char* const kSetValueAttributeScript =
@@ -1416,6 +1419,22 @@ void WebController::FocusField(
                      base::BindOnce(&DecorateWebControllerStatus,
                                     WebControllerErrorInfoProto::FOCUS_FIELD,
                                     std::move(wrapped_callback))));
+}
+
+void WebController::BlurField(
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  devtools_client_->GetRuntime()->CallFunctionOn(
+      runtime::CallFunctionOnParams::Builder()
+          .SetObjectId(element.object_id())
+          .SetFunctionDeclaration(std::string(kBlurFieldScript))
+          .Build(),
+      element.node_frame_id(),
+      base::BindOnce(&WebController::OnJavaScriptResult,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(&DecorateWebControllerStatus,
+                                    WebControllerErrorInfoProto::BLUR_FIELD,
+                                    std::move(callback))));
 }
 
 void WebController::GetElementRect(

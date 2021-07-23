@@ -2887,4 +2887,37 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, KeyMappings) {
             "< 188 188");
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, FocusAndBlur) {
+  ClientStatus element_status;
+  ElementFinder::Result element;
+  FindElement(Selector({"#input1"}), &element_status, &element);
+  EXPECT_EQ(ACTION_APPLIED, element_status.proto_status());
+
+  ClientStatus focus_status;
+  base::RunLoop focus_run_loop;
+  web_controller_->FocusField(
+      element, base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                              base::Unretained(this),
+                              focus_run_loop.QuitClosure(), &focus_status));
+  focus_run_loop.Run();
+  EXPECT_EQ(ACTION_APPLIED, focus_status.proto_status());
+  EXPECT_TRUE(
+      content::EvalJs(
+          shell(),
+          R"(document.activeElement === document.getElementById('input1'))")
+          .ExtractBool());
+
+  ClientStatus blur_status;
+  base::RunLoop blur_run_loop;
+  web_controller_->BlurField(
+      element, base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                              base::Unretained(this),
+                              blur_run_loop.QuitClosure(), &blur_status));
+  blur_run_loop.Run();
+  EXPECT_EQ(ACTION_APPLIED, blur_status.proto_status());
+  EXPECT_TRUE(
+      content::EvalJs(shell(), R"(document.activeElement === document.body)")
+          .ExtractBool());
+}
+
 }  // namespace autofill_assistant

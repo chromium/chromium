@@ -249,6 +249,9 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kEditPassword:
       out << "EditPassword";
       break;
+    case ActionProto::ActionInfoCase::kBlurField:
+      out << "BlurField";
+      break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       out << "ACTION_INFO_NOT_SET";
       break;

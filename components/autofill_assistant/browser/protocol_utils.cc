@@ -398,6 +398,11 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return std::make_unique<DeletePasswordAction>(delegate, action);
     case ActionProto::ActionInfoCase::kEditPassword:
       return std::make_unique<EditPasswordAction>(delegate, action);
+    case ActionProto::ActionInfoCase::kBlurField:
+      return PerformOnSingleElementAction::WithClientId(
+          delegate, action, action.blur_field().client_id(),
+          base::BindOnce(&WebController::BlurField,
+                         delegate->GetWebController()->GetWeakPtr()));
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET: {
       VLOG(1) << "Encountered action with ACTION_INFO_NOT_SET";
       return std::make_unique<UnsupportedAction>(delegate, action);

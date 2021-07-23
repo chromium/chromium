@@ -153,6 +153,11 @@ message FocusFieldProto {
   optional ClientIdProto client_id = 1;
 }
 
+// Blur a field that might have focus to remove its focus.
+message BlurFieldProto {
+  optional ClientIdProto client_id = 1;
+}
+
 // Select the |option| of a |select| element. This only sets the option in JS,
 // it does not fire a "change" event. If a "change" event is required, use in
 // combination with |SendChangeEventProto|. If the element in |option| is
