@@ -100,7 +100,6 @@ void RecommendAppsFetcherImpl::StartDownload() {
         }
         policy {
           cookies_allowed: YES
-          cookie_store: "user"
           setting:
             "NA"
           chrome_policy {
