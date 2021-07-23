@@ -1468,7 +1468,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveExternalProtocolData) {
   url::Origin test_origin = url::Origin::Create(GURL("https://example.test"));
   const std::string serialized_test_origin = test_origin.Serialize();
   // Add external protocol data on profile.
-  base::DictionaryValue prefs;
+  base::Value prefs(base::Value::Type::DICTIONARY);
   prefs.SetKey(serialized_test_origin,
                base::Value(base::Value::Type::DICTIONARY));
   base::Value* allowed_protocols_for_origin =
@@ -1498,14 +1498,14 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
 
   // Add foo.com to the list of stored user-triggered isolated origins and
   // bar.com to the list of stored web-triggered isolated origins.
-  base::ListValue list;
-  list.AppendString("http://foo.com");
+  base::Value list(base::Value::Type::LIST);
+  list.Append("http://foo.com");
   prefs->Set(site_isolation::prefs::kUserTriggeredIsolatedOrigins, list);
   EXPECT_FALSE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
           ->GetList()
           .empty());
-  base::DictionaryValue dict;
+  base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetKey("https://bar.com", util::TimeToValue(base::Time::Now()));
   prefs->Set(site_isolation::prefs::kWebTriggeredIsolatedOrigins, dict);
   EXPECT_FALSE(
@@ -2105,16 +2105,20 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin1, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      std::make_unique<base::DictionaryValue>());
+      base::Value::ToUniquePtrValue(
+          base::Value(base::Value::Type::DICTIONARY)));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin2, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      std::make_unique<base::DictionaryValue>());
+      base::Value::ToUniquePtrValue(
+          base::Value(base::Value::Type::DICTIONARY)));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin3, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      std::make_unique<base::DictionaryValue>());
+      base::Value::ToUniquePtrValue(
+          base::Value(base::Value::Type::DICTIONARY)));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin4, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      std::make_unique<base::DictionaryValue>());
+      base::Value::ToUniquePtrValue(
+          base::Value(base::Value::Type::DICTIONARY)));
 
   // Clear all except for origin1 and origin3.
   std::unique_ptr<BrowsingDataFilterBuilder> filter(
@@ -2279,32 +2283,31 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveSelectedClientHints) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
 
-  std::unique_ptr<base::ListValue> expiration_times_list =
-      std::make_unique<base::ListValue>();
-  expiration_times_list->AppendInteger(0);
-  expiration_times_list->AppendInteger(2);
+  base::Value expiration_times_list(base::Value::Type::LIST);
+  expiration_times_list.Append(0);
+  expiration_times_list.Append(2);
 
   double expiration_time =
       (base::Time::Now() + base::TimeDelta::FromHours(24)).ToDoubleT();
 
-  auto expiration_times_dictionary = std::make_unique<base::DictionaryValue>();
-  expiration_times_dictionary->SetList("client_hints",
-                                       std::move(expiration_times_list));
-  expiration_times_dictionary->SetDoubleKey("expiration_time", expiration_time);
+  base::Value expiration_times_dictionary(base::Value::Type::DICTIONARY);
+  expiration_times_dictionary.SetKey("client_hints",
+                                     std::move(expiration_times_list));
+  expiration_times_dictionary.SetDoubleKey("expiration_time", expiration_time);
 
   const GURL kOrigin1("http://host1.com:1");
   const GURL kOrigin2("http://host2.com:1");
   const GURL kOrigin3("http://host3.com:1");
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin1, GURL(), ContentSettingsType::CLIENT_HINTS,
-      expiration_times_dictionary->CreateDeepCopy());
+      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin2, GURL(), ContentSettingsType::CLIENT_HINTS,
-      expiration_times_dictionary->CreateDeepCopy());
+      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
 
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin3, GURL(), ContentSettingsType::CLIENT_HINTS,
-      expiration_times_dictionary->CreateDeepCopy());
+      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
 
   // Clear all except for origin1 and origin3.
   std::unique_ptr<BrowsingDataFilterBuilder> filter(
@@ -2333,7 +2336,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveSelectedClientHints) {
   for (size_t i = 0; i < host_settings.size(); ++i) {
     EXPECT_EQ(ContentSettingsPattern::Wildcard(),
               host_settings.at(i).secondary_pattern);
-    EXPECT_EQ(*expiration_times_dictionary, host_settings.at(i).setting_value);
+    EXPECT_EQ(expiration_times_dictionary, host_settings.at(i).setting_value);
   }
 }
 
@@ -2342,29 +2345,28 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveAllClientHints) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
 
-  std::unique_ptr<base::ListValue> expiration_times_list =
-      std::make_unique<base::ListValue>();
-  expiration_times_list->AppendInteger(0);
-  expiration_times_list->AppendInteger(2);
+  base::Value expiration_times_list(base::Value::Type::LIST);
+  expiration_times_list.Append(0);
+  expiration_times_list.Append(2);
 
   double expiration_time =
       (base::Time::Now() + base::TimeDelta::FromHours(24)).ToDoubleT();
 
-  auto expiration_times_dictionary = std::make_unique<base::DictionaryValue>();
-  expiration_times_dictionary->SetList("client_hints",
-                                       std::move(expiration_times_list));
-  expiration_times_dictionary->SetDoubleKey("expiration_time", expiration_time);
+  base::Value expiration_times_dictionary(base::Value::Type::DICTIONARY);
+  expiration_times_dictionary.SetKey("client_hints",
+                                     std::move(expiration_times_list));
+  expiration_times_dictionary.SetDoubleKey("expiration_time", expiration_time);
 
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       GURL("http://host1.com:1"), GURL(), ContentSettingsType::CLIENT_HINTS,
-      expiration_times_dictionary->CreateDeepCopy());
+      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       GURL("http://host2.com:1"), GURL(), ContentSettingsType::CLIENT_HINTS,
-      expiration_times_dictionary->CreateDeepCopy());
+      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
 
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       GURL("http://host3.com:1"), GURL(), ContentSettingsType::CLIENT_HINTS,
-      expiration_times_dictionary->CreateDeepCopy());
+      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
 
   // Clear all.
   BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
@@ -2938,7 +2940,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
       map->SetDefaultContentSetting(info->type(), CONTENT_SETTING_BLOCK);
     } else {
       // Other website settings only allow dictionaries.
-      base::DictionaryValue dict;
+      base::Value dict(base::Value::Type::DICTIONARY);
       dict.SetKey("foo", base::Value(42));
       some_value = std::move(dict);
     }
