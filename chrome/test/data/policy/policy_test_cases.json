@@ -8902,6 +8902,7 @@
     "os": [
       "chromeos"
     ],
+    "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -8909,7 +8910,28 @@
         },
         "prefs": {
           "chromeos.scheduler_configuration": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": "performance"
+          }
+        }
+      },
+      {
+        "policies": {
+          "SchedulerConfiguration": "conservative"
+        },
+        "prefs": {
+          "chromeos.scheduler_configuration": {
+            "location": "local_state",
+            "value": "conservative"
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "chromeos.scheduler_configuration": {
+            "location": "local_state",
+            "default_value": ""
           }
         }
       }
