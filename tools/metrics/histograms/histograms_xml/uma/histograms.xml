@@ -88,6 +88,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="UMA.ClientIdCleared" enum="Boolean" expires_after="2022-07-21">
+  <owner>pdyson@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Recorded when the client id is cleared due to the device opting out of UMA
+    metrics.
+  </summary>
+</histogram>
+
 <histogram name="UMA.ClientIdSource" enum="ClientIdSource"
     expires_after="2022-07-21">
   <owner>pdyson@chromium.org</owner>
