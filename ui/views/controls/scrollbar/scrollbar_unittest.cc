@@ -210,23 +210,18 @@ TEST_F(ScrollBarViewsTest, ThumbFullLengthOfTrack) {
   EXPECT_EQ(0, scrollbar_->GetPosition());
 }
 
-// TODO(http://crbug.com/1230866): flaky on Mac.
-#if defined(OS_MAC)
-#define MAYBE_RightClickOpensMenu DISABLED_RightClickOpensMenu
-#else
-#define MAYBE_RightClickOpensMenu RightClickOpensMenu
-#endif
-TEST_F(ScrollBarViewsTest, MAYBE_RightClickOpensMenu) {
+#if !defined(OS_MAC)
+TEST_F(ScrollBarViewsTest, RightClickOpensMenu) {
   EXPECT_EQ(nullptr, scrollbar_->menu_model_);
   EXPECT_EQ(nullptr, scrollbar_->menu_runner_);
   scrollbar_->set_context_menu_controller(scrollbar_);
+  // Disabled on Mac because Mac's native menu is synchronous.
   scrollbar_->ShowContextMenu(scrollbar_->GetBoundsInScreen().CenterPoint(),
                               ui::MENU_SOURCE_MOUSE);
   EXPECT_NE(nullptr, scrollbar_->menu_model_);
   EXPECT_NE(nullptr, scrollbar_->menu_runner_);
 }
 
-#if !defined(OS_MAC)
 TEST_F(ScrollBarViewsTest, TestPageScrollingByPress) {
   ui::test::EventGenerator generator(GetRootWindow(widget_.get()));
   EXPECT_EQ(0, scrollbar_->GetPosition());
