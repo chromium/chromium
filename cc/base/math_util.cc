@@ -71,12 +71,12 @@ const float kStationaryPointEpsilon = 0.00001f;
 
 }  // namespace
 
-static void homogenousLimitAtZero(SkScalar a1,
-                                  SkScalar w1,
-                                  SkScalar a2,
-                                  SkScalar w2,
-                                  float t,
-                                  float* limit) {
+static void homogeneousLimitAtZero(SkScalar a1,
+                                   SkScalar w1,
+                                   SkScalar a2,
+                                   SkScalar w2,
+                                   float t,
+                                   float* limit) {
   if (std::abs(a1 * w2 / w1 / a2 - 1.0f) > kStationaryPointEpsilon) {
     // We are going to explode towards an infinity, but we choose the one that
     // corresponds to the one on the positive side of w.
@@ -118,18 +118,18 @@ static gfx::PointF ComputeClippedCartesianPoint2dForEdge(
   float x;
   float y;
 
-  homogenousLimitAtZero(h1.x(), h1.w(), h2.x(), h2.w(), t, &x);
-  homogenousLimitAtZero(h1.y(), h1.w(), h2.y(), h2.w(), t, &y);
+  homogeneousLimitAtZero(h1.x(), h1.w(), h2.x(), h2.w(), t, &x);
+  homogeneousLimitAtZero(h1.y(), h1.w(), h2.y(), h2.w(), t, &y);
 
   return gfx::PointF(x, y);
 }
 
-static void homogenousLimitNearZero(SkScalar a1,
-                                    SkScalar w1,
-                                    SkScalar a2,
-                                    SkScalar w2,
-                                    float t,
-                                    float* limit) {
+static void homogeneousLimitNearZero(SkScalar a1,
+                                     SkScalar w1,
+                                     SkScalar a2,
+                                     SkScalar w2,
+                                     float t,
+                                     float* limit) {
   if (std::abs(a1 * w2 / w1 / a2 - 1.0f) > kStationaryPointEpsilon) {
     // t has been computed so that w is near but not at zero.
     *limit = ((1.0f - t) * a1 + t * a2) / ((1.0f - t) * w1 + t * w2);
@@ -198,9 +198,9 @@ static gfx::Point3F ComputeClippedCartesianPoint3dForEdge(
   float y;
   float z;
 
-  homogenousLimitNearZero(h1.x(), h1.w(), h2.x(), h2.w(), t, &x);
-  homogenousLimitNearZero(h1.y(), h1.w(), h2.y(), h2.w(), t, &y);
-  homogenousLimitNearZero(h1.z(), h1.w(), h2.z(), h2.w(), t, &z);
+  homogeneousLimitNearZero(h1.x(), h1.w(), h2.x(), h2.w(), t, &x);
+  homogeneousLimitNearZero(h1.y(), h1.w(), h2.y(), h2.w(), t, &y);
+  homogeneousLimitNearZero(h1.z(), h1.w(), h2.z(), h2.w(), t, &z);
 
   return gfx::Point3F(x, y, z);
 }
