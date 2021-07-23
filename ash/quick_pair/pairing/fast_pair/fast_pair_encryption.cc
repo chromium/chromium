@@ -92,6 +92,16 @@ KeyPair GenerateKeysWithEcdhKeyAgreement(
   return KeyPair(private_key, public_key);
 }
 
+const std::array<uint8_t, kBlockByteSize> EncryptBytes(
+    const std::array<uint8_t, kBlockByteSize>& aes_key_bytes,
+    const std::array<uint8_t, kBlockByteSize>& bytes_to_encrypt) {
+  AES_KEY aes_key;
+  AES_set_encrypt_key(aes_key_bytes.data(), aes_key_bytes.size() * 8, &aes_key);
+  std::array<uint8_t, kBlockByteSize> encrypted_bytes;
+  AES_encrypt(bytes_to_encrypt.data(), encrypted_bytes.data(), &aes_key);
+  return encrypted_bytes;
+}
+
 }  // namespace fast_pair_encryption
 }  // namespace quick_pair
 }  // namespace ash
