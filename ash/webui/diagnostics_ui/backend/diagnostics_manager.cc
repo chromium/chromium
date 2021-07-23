@@ -20,7 +20,8 @@ DiagnosticsManager::DiagnosticsManager(SessionLogHandler* session_log_handler)
       system_routine_controller_(std::make_unique<SystemRoutineController>(
           session_log_handler->GetRoutineLog())) {
   if (features::IsNetworkingInDiagnosticsAppEnabled()) {
-    network_health_provider_ = std::make_unique<NetworkHealthProvider>();
+    network_health_provider_ = std::make_unique<NetworkHealthProvider>(
+        session_log_handler->GetNetworkingLog());
   }
 
   if (features::IsInputInDiagnosticsAppEnabled()) {

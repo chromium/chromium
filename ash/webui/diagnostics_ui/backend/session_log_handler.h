@@ -32,6 +32,7 @@ namespace diagnostics {
 
 class TelemetryLog;
 class RoutineLog;
+class NetworkingLog;
 
 class SessionLogHandler : public content::WebUIMessageHandler,
                           public ui::SelectFileDialog::Listener {
@@ -46,6 +47,7 @@ class SessionLogHandler : public content::WebUIMessageHandler,
   SessionLogHandler(const SelectFilePolicyCreator& select_file_policy_creator,
                     std::unique_ptr<TelemetryLog> telemetry_log,
                     std::unique_ptr<RoutineLog> routine_log,
+                    std::unique_ptr<NetworkingLog> networking_log,
                     ash::HoldingSpaceClient* holding_space_client);
 
   ~SessionLogHandler() override;
@@ -67,6 +69,7 @@ class SessionLogHandler : public content::WebUIMessageHandler,
 
   TelemetryLog* GetTelemetryLog() const;
   RoutineLog* GetRoutineLog() const;
+  NetworkingLog* GetNetworkingLog() const;
 
   void SetWebUIForTest(content::WebUI* web_ui);
   void SetLogCreatedClosureForTest(base::OnceClosure closure);
@@ -86,6 +89,7 @@ class SessionLogHandler : public content::WebUIMessageHandler,
   SelectFilePolicyCreator select_file_policy_creator_;
   std::unique_ptr<TelemetryLog> telemetry_log_;
   std::unique_ptr<RoutineLog> routine_log_;
+  std::unique_ptr<NetworkingLog> networking_log_;
   ash::HoldingSpaceClient* const holding_space_client_;
   std::string save_session_log_callback_id_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;

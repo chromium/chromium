@@ -4,7 +4,9 @@
 
 #include "ash/webui/diagnostics_ui/backend/session_log_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
+#include "ash/webui/diagnostics_ui/backend/networking_log.h"
 #include "ash/webui/diagnostics_ui/backend/routine_log.h"
 #include "ash/webui/diagnostics_ui/backend/telemetry_log.h"
 #include "base/files/file_path.h"
@@ -25,6 +27,7 @@ namespace {
 
 const char kRoutineLogSectionHeader[] = "=== Routine Log === \n";
 const char kTelemetryLogSectionHeader[] = "=== Telemetry Log === \n";
+const char kNetworkingLogSectionHeader[] = "=== Networking Log === \n";
 const char kDefaultSessionLogFileName[] = "session_log.txt";
 const char kRoutineLogPath[] = "/tmp/diagnostics/diagnostics_routine_log";
 
@@ -37,16 +40,19 @@ SessionLogHandler::SessionLogHandler(
           select_file_policy_creator,
           std::make_unique<TelemetryLog>(),
           std::make_unique<RoutineLog>(base::FilePath(kRoutineLogPath)),
+          std::make_unique<NetworkingLog>(),
           holding_space_client) {}
 
 SessionLogHandler::SessionLogHandler(
     const SelectFilePolicyCreator& select_file_policy_creator,
     std::unique_ptr<TelemetryLog> telemetry_log,
     std::unique_ptr<RoutineLog> routine_log,
+    std::unique_ptr<NetworkingLog> networking_log,
     ash::HoldingSpaceClient* holding_space_client)
     : select_file_policy_creator_(select_file_policy_creator),
       telemetry_log_(std::move(telemetry_log)),
       routine_log_(std::move(routine_log)),
+      networking_log_(std::move(networking_log)),
       holding_space_client_(holding_space_client) {
   DCHECK(holding_space_client_);
 }
@@ -102,6 +108,10 @@ RoutineLog* SessionLogHandler::GetRoutineLog() const {
   return routine_log_.get();
 }
 
+NetworkingLog* SessionLogHandler::GetNetworkingLog() const {
+  return networking_log_.get();
+}
+
 void SessionLogHandler::SetWebUIForTest(content::WebUI* web_ui) {
   set_web_ui(web_ui);
 }
@@ -117,9 +127,15 @@ bool SessionLogHandler::CreateSessionLog(const base::FilePath& file_path) {
   // Fetch TelemetryLog
   const std::string telemetry_log_contents = telemetry_log_->GetContents();
 
-  const std::vector<std::string> pieces = {
+  std::vector<std::string> pieces = {
       kTelemetryLogSectionHeader, telemetry_log_contents,
       kRoutineLogSectionHeader, routine_log_contents};
+
+  if (features::IsNetworkingInDiagnosticsAppEnabled()) {
+    // Fetch NetworkingLog
+    pieces.push_back(kNetworkingLogSectionHeader);
+    pieces.push_back(networking_log_->GetContents());
+  }
 
   return base::WriteFile(file_path, base::JoinString(pieces, "\n"));
 }

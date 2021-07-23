@@ -163,7 +163,11 @@ NetworkProperties::NetworkProperties(
 
 NetworkProperties::~NetworkProperties() = default;
 
-NetworkHealthProvider::NetworkHealthProvider() {
+NetworkHealthProvider::NetworkHealthProvider()
+    : NetworkHealthProvider(/*networking_log_ptr_=*/nullptr) {}
+
+NetworkHealthProvider::NetworkHealthProvider(NetworkingLog* networking_log_ptr)
+    : networking_log_ptr_(networking_log_ptr) {
   network_config::BindToInProcessInstance(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
   remote_cros_network_config_->AddObserver(
@@ -334,6 +338,10 @@ void NetworkHealthProvider::NotifyNetworkStateObserver(
   mojom::NetworkPtr network = CreateNetwork(
       network_props, GetMatchingDevice(network_props.network_state->type));
   network_props.observer->OnNetworkStateChanged(std::move(network));
+}
+
+bool NetworkHealthProvider::IsLoggingEnabled() const {
+  return networking_log_ptr_ != nullptr;
 }
 
 }  // namespace diagnostics

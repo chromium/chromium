@@ -18,6 +18,9 @@
 
 namespace ash {
 namespace diagnostics {
+
+class NetworkingLog;
+
 // Stores network state, managed properties, and an observer for a network.
 struct NetworkProperties {
   explicit NetworkProperties(
@@ -39,6 +42,7 @@ class NetworkHealthProvider
       public mojom::NetworkHealthProvider {
  public:
   NetworkHealthProvider();
+  explicit NetworkHealthProvider(NetworkingLog* networking_log_ptr);
 
   NetworkHealthProvider(const NetworkHealthProvider&) = delete;
   NetworkHealthProvider& operator=(const NetworkHealthProvider&) = delete;
@@ -112,6 +116,10 @@ class NetworkHealthProvider
   // Finds a matching device for a given network type.
   chromeos::network_config::mojom::DeviceStateProperties* GetMatchingDevice(
       chromeos::network_config::mojom::NetworkType type);
+
+  bool IsLoggingEnabled() const;
+
+  NetworkingLog* networking_log_ptr_ = nullptr;  // Not owned.
 
   // Map of networks that are active and of a supported
   // type (Ethernet, WiFi, Cellular).

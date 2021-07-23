@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
 #include "ash/webui/diagnostics_ui/backend/log_test_helpers.h"
+#include "ash/webui/diagnostics_ui/backend/networking_log.h"
 #include "ash/webui/diagnostics_ui/backend/routine_log.h"
 #include "ash/webui/diagnostics_ui/backend/telemetry_log.h"
 #include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom.h"
@@ -154,12 +155,14 @@ class SessionLogHandlerTest : public testing::Test {
         temp_dir_.GetPath().AppendASCII(kRoutineLogFileName);
     auto telemetry_log = std::make_unique<TelemetryLog>();
     auto routine_log = std::make_unique<RoutineLog>(routine_log_path);
+    auto networking_log = std::make_unique<NetworkingLog>();
     telemetry_log_ = telemetry_log.get();
     routine_log_ = routine_log.get();
+    networking_log_ = networking_log.get();
     session_log_handler_ = std::make_unique<diagnostics::SessionLogHandler>(
         base::BindRepeating(&CreateTestSelectFilePolicy),
         std::move(telemetry_log), std::move(routine_log),
-        &holding_space_client_);
+        std::move(networking_log), &holding_space_client_);
     session_log_handler_->SetWebUIForTest(&web_ui_);
     session_log_handler_->RegisterMessages();
 
@@ -185,6 +188,7 @@ class SessionLogHandlerTest : public testing::Test {
   std::unique_ptr<diagnostics::SessionLogHandler> session_log_handler_;
   TelemetryLog* telemetry_log_;
   RoutineLog* routine_log_;
+  NetworkingLog* networking_log_;
   testing::NiceMock<ash::MockHoldingSpaceClient> holding_space_client_;
   base::ScopedTempDir temp_dir_;
 };
