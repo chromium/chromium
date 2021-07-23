@@ -210,8 +210,7 @@ bool VariationsSeedStore::StoreSeedData(
 
 LoadSeedResult VariationsSeedStore::LoadSafeSeed(
     VariationsSeed* seed,
-    ClientFilterableState* client_state,
-    base::Time* seed_fetch_time) {
+    ClientFilterableState* client_state) {
   std::string unused_seed_data;
   std::string unused_base64_seed_signature;
   LoadSeedResult result = LoadSeedImpl(SeedType::SAFE, seed, &unused_seed_data,
@@ -228,7 +227,6 @@ LoadSeedResult VariationsSeedStore::LoadSafeSeed(
       prefs::kVariationsSafeSeedPermanentConsistencyCountry);
   client_state->session_consistency_country = local_state_->GetString(
       prefs::kVariationsSafeSeedSessionConsistencyCountry);
-  *seed_fetch_time = local_state_->GetTime(prefs::kVariationsSafeSeedFetchTime);
   return result;
 }
 
@@ -310,6 +308,10 @@ bool VariationsSeedStore::StoreSafeSeed(
 
 base::Time VariationsSeedStore::GetLastFetchTime() const {
   return local_state_->GetTime(prefs::kVariationsLastFetchTime);
+}
+
+base::Time VariationsSeedStore::GetSafeSeedFetchTime() const {
+  return local_state_->GetTime(prefs::kVariationsSafeSeedFetchTime);
 }
 
 void VariationsSeedStore::RecordLastFetchTime(base::Time fetch_time) {

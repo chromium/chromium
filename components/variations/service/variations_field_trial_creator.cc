@@ -50,13 +50,6 @@ namespace {
 // Maximum age permitted for a variations seed, in days.
 const int kMaxVariationsSeedAgeDays = 30;
 
-enum VariationsSeedExpiry {
-  VARIATIONS_SEED_EXPIRY_NOT_EXPIRED,
-  VARIATIONS_SEED_EXPIRY_FETCH_TIME_MISSING,
-  VARIATIONS_SEED_EXPIRY_EXPIRED,
-  VARIATIONS_SEED_EXPIRY_ENUM_SIZE,
-};
-
 // Returns the date that should be used by the VariationsSeedProcessor to do
 // expiry and start date checks.
 base::Time GetReferenceDateForExpiryChecks(PrefService* local_state) {
@@ -89,14 +82,15 @@ Study::Channel ConvertProductChannelToStudyChannel(
   return Study::UNKNOWN;
 }
 
-// Records UMA histogram with the result of the variations seed expiry check.
-void RecordCreateTrialsSeedExpiry(VariationsSeedExpiry expiry_check_result) {
-  UMA_HISTOGRAM_ENUMERATION("Variations.CreateTrials.SeedExpiry",
-                            expiry_check_result,
-                            VARIATIONS_SEED_EXPIRY_ENUM_SIZE);
+// Records the loaded seed's expiry status.
+void RecordSeedExpiry(bool is_safe_seed, VariationsSeedExpiry seed_expiry) {
+  const std::string histogram_name =
+      is_safe_seed ? "Variations.SafeMode.CreateTrials.SeedExpiry"
+                   : "Variations.CreateTrials.SeedExpiry";
+  base::UmaHistogramEnumeration(histogram_name, seed_expiry);
 }
 
-// Records the loaded seed's age to an UMA histogram.
+// Records the loaded seed's age.
 void RecordSeedFreshness(base::TimeDelta seed_age) {
   UMA_HISTOGRAM_CUSTOM_COUNTS("Variations.SeedFreshness", seed_age.InMinutes(),
                               1, base::TimeDelta::FromDays(30).InMinutes(), 50);
@@ -451,49 +445,34 @@ bool VariationsFieldTrialCreator::IsOverrideResourceMapEmpty() {
   return overridden_strings_map_.empty();
 }
 
-bool VariationsFieldTrialCreator::LoadSeed(VariationsSeed* seed,
-                                           std::string* seed_data,
-                                           std::string* base64_signature) {
-  if (!GetSeedStore()->LoadSeed(seed, seed_data, base64_signature))
-    return false;
+bool VariationsFieldTrialCreator::HasSeedExpired(bool is_safe_seed) {
+  const base::Time fetch_time = is_safe_seed
+                                    ? GetSeedStore()->GetSafeSeedFetchTime()
+                                    : GetSeedStore()->GetLastFetchTime();
 
-  const base::Time last_fetch_time = seed_store_->GetLastFetchTime();
-  if (last_fetch_time.is_null()) {
-    // If the last fetch time is missing and we have a seed, then this must be
-    // the first run of Chrome. Store the current time as the last fetch time.
-    seed_store_->RecordLastFetchTime(base::Time::Now());
-    RecordCreateTrialsSeedExpiry(VARIATIONS_SEED_EXPIRY_FETCH_TIME_MISSING);
-    return true;
-  }
-
-  // Reject the seed if it is more than 30 days old.
-  const base::TimeDelta seed_age = base::Time::Now() - last_fetch_time;
-  if (seed_age.InDays() > kMaxVariationsSeedAgeDays) {
-    RecordCreateTrialsSeedExpiry(VARIATIONS_SEED_EXPIRY_EXPIRED);
+  // If the fetch time is null, skip the expiry check. If the seed is a regular
+  // seed (i.e. not a safe seed) and the fetch time is missing, then this must
+  // be the first run of Chrome. If the seed is a safe seed, the fetch time may
+  // be missing because the pref was added about a milestone later than most of
+  // the other safe seed prefs.
+  if (fetch_time.is_null()) {
+    RecordSeedExpiry(is_safe_seed, VariationsSeedExpiry::kFetchTimeMissing);
+    if (!is_safe_seed) {
+      // Store the current time as the last fetch time for Chrome's first run.
+      GetSeedStore()->RecordLastFetchTime(base::Time::Now());
+    }
     return false;
   }
 
-  // Record that a suitably fresh seed was loaded.
-  RecordCreateTrialsSeedExpiry(VARIATIONS_SEED_EXPIRY_NOT_EXPIRED);
-  RecordSeedFreshness(seed_age);
-  return true;
-}
-
-LoadSeedResult VariationsFieldTrialCreator::LoadSafeSeed(
-    VariationsSeed* seed,
-    ClientFilterableState* client_state) {
-  base::Time safe_seed_fetch_time;
-  LoadSeedResult result =
-      GetSeedStore()->LoadSafeSeed(seed, client_state, &safe_seed_fetch_time);
-
-  // Record the safe seed's age unless it's null. The safe seed fetch time may
-  // be null because the pref was added about a milestone later than most of the
-  // other safe seed prefs. Alternatively, the fetch time may be null because
-  // loading the safe seed failed.
-  if (!safe_seed_fetch_time.is_null())
-    RecordSeedFreshness(base::Time::Now() - safe_seed_fetch_time);
-
-  return result;
+  const base::TimeDelta seed_age = base::Time::Now() - fetch_time;
+  bool has_seed_expired = seed_age.InDays() > kMaxVariationsSeedAgeDays &&
+                          GetBuildTime() > fetch_time;
+  if (!has_seed_expired)
+    RecordSeedFreshness(seed_age);
+  RecordSeedExpiry(is_safe_seed, has_seed_expired
+                                     ? VariationsSeedExpiry::kExpired
+                                     : VariationsSeedExpiry::kNotExpired);
+  return has_seed_expired;
 }
 
 bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
@@ -521,11 +500,16 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
   VariationsSeed seed;
   bool run_in_safe_mode = safe_seed_manager->ShouldRunInSafeMode();
   if (run_in_safe_mode) {
-    LoadSeedResult result = LoadSafeSeed(&seed, client_filterable_state.get());
+    LoadSeedResult result =
+        GetSeedStore()->LoadSafeSeed(&seed, client_filterable_state.get());
+    if (result == LoadSeedResult::kSuccess &&
+        HasSeedExpired(/*is_safe_seed=*/true)) {
+      return false;
+    }
     if (result != LoadSeedResult::kSuccess &&
         result != LoadSeedResult::kEmpty) {
-      // If Chrome should run in safe mode, but the safe seed is corrupted or
-      // has an invalid signature, fall back to the client-side defaults.
+      // If Chrome should run in safe mode but the safe seed is corrupted or has
+      // an invalid signature, then fall back to the client-side defaults.
       return false;
     }
     if (result == LoadSeedResult::kEmpty) {
@@ -537,8 +521,11 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
 
   std::string seed_data;
   std::string base64_seed_signature;
-  if (!run_in_safe_mode && !LoadSeed(&seed, &seed_data, &base64_seed_signature))
+  if (!run_in_safe_mode &&
+      (!GetSeedStore()->LoadSeed(&seed, &seed_data, &base64_seed_signature) ||
+       HasSeedExpired(/*is_safe_seed=*/false))) {
     return false;
+  }
 
   UMA_HISTOGRAM_BOOLEAN("Variations.SafeMode.FellBackToSafeMode2",
                         run_in_safe_mode);
@@ -588,6 +575,10 @@ void VariationsFieldTrialCreator::OverrideUIString(uint32_t resource_hash,
 
 VariationsSeedStore* VariationsFieldTrialCreator::GetSeedStore() {
   return seed_store_.get();
+}
+
+base::Time VariationsFieldTrialCreator::GetBuildTime() const {
+  return base::GetBuildTime();
 }
 
 Study::Platform VariationsFieldTrialCreator::GetPlatform() {

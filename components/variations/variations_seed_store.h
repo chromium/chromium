@@ -74,20 +74,18 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
                      bool is_gzip_compressed,
                      VariationsSeed* parsed_seed) WARN_UNUSED_RESULT;
 
-  // Loads the safe variations seed data from local state into |seed|, updates
-  // any relevant fields in |client_state| and sets the |seed_fetch_time|.
-  // Returns LoadSeedResult::kSuccess iff the safe seed was read successfully
-  // from prefs. If the safe seed could not be loaded, it is guaranteed that no
-  // fields in |client_state| are modified and that |seed_fetch_time| is not
-  // set.
+  // Loads the safe variations seed data from local state into |seed| and
+  // updates any relevant fields in |client_state|. Returns
+  // LoadSeedResult::kSuccess iff the safe seed was read successfully from
+  // prefs. If the safe seed could not be loaded, it is guaranteed that no
+  // fields in |client_state| are modified.
   //
   // Side effect: Upon failing to read or validate the safe seed, clears all
   // of the safe seed pref values.
   //
   // Virtual for testing.
   virtual LoadSeedResult LoadSafeSeed(VariationsSeed* seed,
-                                      ClientFilterableState* client_state,
-                                      base::Time* seed_fetch_time)
+                                      ClientFilterableState* client_state)
       WARN_UNUSED_RESULT;
 
   // Stores the given |seed_data| (a serialized protobuf) to local state as a
@@ -103,6 +101,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // Loads the last fetch time (for the latest seed) that was persisted to the
   // store.
   base::Time GetLastFetchTime() const;
+
+  // Returns the time at which the safe seed was fetched.
+  base::Time GetSafeSeedFetchTime() const;
 
   // Records |fetch_time| as the last time at which a seed was fetched
   // successfully. Also updates the safe seed's fetch time if the latest and

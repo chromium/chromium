@@ -51,17 +51,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Variations.CreateTrials.SeedExpiry"
-    enum="VariationsSeedExpiry" expires_after="2022-04-22">
-  <owner>asvitkine@chromium.org</owner>
-  <owner>rkaplow@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    The result of verifying if the variations seed is expired, recorded before
-    trials are created from the seed. Expired seeds are treated as not existing.
-  </summary>
-</histogram>
-
 <histogram name="Variations.ExtendedSafeMode.WritePrefsTime"
     units="microseconds" expires_after="2021-11-22">
   <owner>caitlinfischer@google.com</owner>
@@ -446,8 +435,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The time interval between when the variations seed was downloaded and when
-    it was loaded for use. Not recorded for expired seeds, nor when the download
-    time is unknown (typically, for seeds imported via first run).
+    it was loaded for use.
+
+    Recorded after the seed is loaded for both regular seeds and safe seeds. Not
+    recorded for expired seeds or for seeds with an unknown download time, which
+    is typically a seed imported via first run. A seed that (a) was fetched over
+    30 days ago and (b) is older than the binary build time is considered
+    expired.
+
+    Prior to M93, this metric was recorded under slightly different conditions.
+    First, the metric was recorded for safe seeds--expired or not--as long as
+    they had download times. As of M93, it's no longer recorded for expired safe
+    seeds. Second, the metric was not previously recorded for regular seeds that
+    were older than 30 days, but as of M93, the freshness is recorded for seeds
+    that are older than 30 days and newer than the binary build time.
   </summary>
 </histogram>
 
@@ -655,6 +656,33 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The delay between when a WebView seed download was scheduled by the service
     with the JobScheduler and when it was executed.
   </summary>
+</histogram>
+
+<histogram name="Variations.{Mode}CreateTrials.SeedExpiry"
+    enum="VariationsSeedExpiry" expires_after="2022-04-22">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>rkaplow@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Stores the state of the loaded variations seed, e.g. not expired. Recorded
+    after the seed is loaded and before trials are created from the seed. Note
+    that seeds for which this metric is recorded may not be applied, e.g. when
+    the seed has expired.
+
+    {Mode}
+  </summary>
+  <token key="Mode">
+    <variant name=""
+        summary="Recorded for all successfully loaded seeds. Not recorded in
+                 variations safe mode. Note that the concept of an expired
+                 seed changed in M93. Prior to M93, expired seeds were those
+                 that were more than 30 days old. As of M93, seeds that are
+                 older than 30 days and older than the binary's build time
+                 are considered expired."/>
+    <variant name="SafeMode."
+        summary="Recorded for safe seeds when Chrome attempts to run in
+                 variations safe mode. This metric was added in M93."/>
+  </token>
 </histogram>
 
 </histograms>
