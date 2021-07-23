@@ -143,4 +143,11 @@ bool ChromeEnterpriseRealTimeUrlLookupService::ShouldIncludeCredentials()
   return !base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookies);
 }
 
+double ChromeEnterpriseRealTimeUrlLookupService::
+    GetMinAllowedTimestampForReferrerChains() const {
+  NOTREACHED()
+      << "Referrer chain is currently not supported for enterprise users.";
+  return 0;
+}
+
 }  // namespace safe_browsing

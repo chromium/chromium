@@ -20,6 +20,7 @@
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/unified_consent/pref_names.h"
 #include "net/base/ip_address.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
@@ -57,7 +58,17 @@ RealTimeUrlLookupService::RealTimeUrlLookupService(
       token_fetcher_(std::move(token_fetcher)),
       client_token_config_callback_(client_token_config_callback),
       is_off_the_record_(is_off_the_record),
-      variations_(variations_service) {}
+      variations_(variations_service) {
+  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Add(
+      prefs::kSafeBrowsingEnhanced,
+      base::BindRepeating(&RealTimeUrlLookupService::OnPrefChanged,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+      base::BindRepeating(&RealTimeUrlLookupService::OnPrefChanged,
+                          base::Unretained(this)));
+}
 
 void RealTimeUrlLookupService::GetAccessToken(
     const GURL& url,
@@ -68,6 +79,12 @@ void RealTimeUrlLookupService::GetAccessToken(
       &RealTimeUrlLookupService::OnGetAccessToken, weak_factory_.GetWeakPtr(),
       url, std::move(request_callback), std::move(response_callback),
       std::move(callback_task_runner), base::TimeTicks::Now()));
+}
+
+void RealTimeUrlLookupService::OnPrefChanged() {
+  if (CanPerformFullURLLookup()) {
+    url_lookup_enabled_timestamp_ = base::Time::Now().ToDoubleT();
+  }
 }
 
 void RealTimeUrlLookupService::OnGetAccessToken(
@@ -129,6 +146,8 @@ void RealTimeUrlLookupService::Shutdown() {
   token_fetcher_.reset();
   client_token_config_callback_ = ClientConfiguredForTokenFetchesCallback();
 
+  pref_change_registrar_.RemoveAll();
+
   RealTimeUrlLookupServiceBase::Shutdown();
 }
 
@@ -184,6 +203,11 @@ std::string RealTimeUrlLookupService::GetMetricSuffix() const {
 
 bool RealTimeUrlLookupService::ShouldIncludeCredentials() const {
   return true;
+}
+
+double RealTimeUrlLookupService::GetMinAllowedTimestampForReferrerChains()
+    const {
+  return url_lookup_enabled_timestamp_;
 }
 
 }  // namespace safe_browsing

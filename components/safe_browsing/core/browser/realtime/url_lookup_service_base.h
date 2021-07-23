@@ -120,8 +120,11 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   using PendingRTLookupRequests =
       base::flat_map<network::SimpleURLLoader*, RTLookupResponseCallback>;
 
-  // Removes non-mainframe URLs due to user consent restriction.
-  static void SanitizeReferrerChainEntries(ReferrerChain* referrer_chain);
+  // Removes URLs that were recorded before |min_allowed_timestamp|. If
+  // |should_remove_subresource_url| is true, also removes subresource URLs.
+  static void SanitizeReferrerChainEntries(ReferrerChain* referrer_chain,
+                                           double min_allowed_timestamp,
+                                           bool should_remove_subresource_url);
 
   // Returns the endpoint that the URL lookup will be sent to.
   virtual GURL GetRealTimeLookupUrl() const = 0;
@@ -159,6 +162,9 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
 
   // Returns whether real time URL requests should include credentials.
   virtual bool ShouldIncludeCredentials() const = 0;
+
+  // Gets the minimum timestamp allowed for referrer chains.
+  virtual double GetMinAllowedTimestampForReferrerChains() const = 0;
 
   // Returns the duration of the next backoff. Starts at
   // |kMinBackOffResetDurationInSeconds| and increases exponentially until

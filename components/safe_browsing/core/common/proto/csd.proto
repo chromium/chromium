@@ -964,7 +964,8 @@ message ReferrerChainEntry {
 
   // Whether any of the URLs in the |url|, |main_frame_url|, |referrer_url|,
   // |referrer_main_frame_url| fields are removed because the URL matches the
-  // SafeBrowsingAllowlistDomains enterprise policy in Chrome.
+  // SafeBrowsingAllowlistDomains enterprise policy in Chrome, or the URL is
+  // recorded before the user consent.
   optional bool is_url_removed_by_policy = 14;
 
   // next available tag number: 15.

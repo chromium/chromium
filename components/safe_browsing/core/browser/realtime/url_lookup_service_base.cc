@@ -171,8 +171,26 @@ GURL RealTimeUrlLookupServiceBase::SanitizeURL(const GURL& url) {
 
 // static
 void RealTimeUrlLookupServiceBase::SanitizeReferrerChainEntries(
-    ReferrerChain* referrer_chain) {
+    ReferrerChain* referrer_chain,
+    double min_allowed_timestamp,
+    bool should_remove_subresource_url) {
   for (ReferrerChainEntry& entry : *referrer_chain) {
+    // Remove URLs in the entry if the referrer chain is collected
+    // before the min_timestamp.
+    if (entry.navigation_time_msec() < min_allowed_timestamp) {
+      entry.clear_url();
+      entry.clear_main_frame_url();
+      entry.clear_referrer_url();
+      entry.clear_referrer_main_frame_url();
+      for (ReferrerChainEntry::ServerRedirect& server_redirect_entry :
+           *entry.mutable_server_redirect_chain()) {
+        server_redirect_entry.clear_url();
+      }
+      entry.set_is_url_removed_by_policy(true);
+    }
+    if (!should_remove_subresource_url) {
+      continue;
+    }
     // is_subframe_url_removed is added in the proto.
     // If the entry sets main_frame_url, that means the url is triggered in a
     // subframe. Thus replace the url with the main_frame_url and clear
@@ -483,9 +501,10 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
     referrer_chain_provider_->IdentifyReferrerChainByPendingEventURL(
         SanitizeURL(url), GetReferrerUserGestureLimit(),
         request->mutable_referrer_chain());
-    if (!CanCheckSubresourceURL()) {
-      SanitizeReferrerChainEntries(request->mutable_referrer_chain());
-    }
+    SanitizeReferrerChainEntries(
+        request->mutable_referrer_chain(),
+        GetMinAllowedTimestampForReferrerChains(),
+        /*should_remove_subresource_url=*/!CanCheckSubresourceURL());
   }
 
   return request;

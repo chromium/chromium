@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -88,6 +89,10 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   std::string GetMetricSuffix() const override;
   bool ShouldIncludeCredentials() const override;
   void OnResponseUnauthorized(const std::string& invalid_access_token) override;
+  double GetMinAllowedTimestampForReferrerChains() const override;
+
+  // Called when prefs that affect real time URL lookup are changed.
+  void OnPrefChanged();
 
   // Called when the access token is obtained from |token_fetcher_|.
   void OnGetAccessToken(
@@ -101,6 +106,10 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   // Unowned object used for getting preference settings.
   PrefService* pref_service_;
 
+  // Observes changes to kSafeBrowsingEnhanced and
+  // kUrlKeyedAnonymizedDataCollectionEnabled;
+  PrefChangeRegistrar pref_change_registrar_;
+
   // The token fetcher used for getting access token.
   std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
 
@@ -111,6 +120,9 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   // A boolean indicates whether the profile associated with this
   // |url_lookup_service| is an off the record profile.
   bool is_off_the_record_;
+
+  // The timestamp that real time URL lookup is enabled.
+  double url_lookup_enabled_timestamp_;
 
   // Unowned. For checking whether real-time checks can be enabled in a given
   // location.

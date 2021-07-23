@@ -131,6 +131,7 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   void TearDown() override {
     cache_manager_.reset();
     content_setting_map_->ShutdownOnUIThread();
+    rt_service_->Shutdown();
   }
 
   bool CanCheckUrl(const GURL& url) {
@@ -239,7 +240,8 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
       const std::string& url,
       const std::string& main_frame_url,
       const std::string& referrer_url,
-      const std::string& referrer_main_frame_url) {
+      const std::string& referrer_main_frame_url,
+      const double navigation_time_msec) {
     std::unique_ptr<ReferrerChainEntry> referrer_chain_entry =
         std::make_unique<ReferrerChainEntry>();
     referrer_chain_entry->set_url(url);
@@ -251,6 +253,7 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
       referrer_chain_entry->set_referrer_main_frame_url(
           referrer_main_frame_url);
     }
+    referrer_chain_entry->set_navigation_time_msec(navigation_time_msec);
     return referrer_chain_entry;
   }
 
@@ -782,15 +785,16 @@ TEST_F(RealTimeUrlLookupServiceTest, TestReferrerChain_ReferrerChainAttached) {
                         "example.test/",
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
   ReferrerChain returned_referrer_chain;
+  double current_ts = base::Time::Now().ToDoubleT();
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestUrl, /*main_frame_url=*/"",
                                /*referrer_url=*/"",
-                               /*referrer_main_frame_url=*/"")
+                               /*referrer_main_frame_url=*/"", current_ts)
           .get());
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestReferrerUrl, /*main_frame_url=*/"",
                                /*referrer_url=*/"",
-                               /*referrer_main_frame_url=*/"")
+                               /*referrer_main_frame_url=*/"", current_ts)
           .get());
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(
@@ -828,7 +832,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestUrl, /*main_frame_url=*/"",
                                /*referrer_url=*/"",
-                               /*referrer_main_frame_url=*/"")
+                               /*referrer_main_frame_url=*/"",
+                               base::Time::Now().ToDoubleT())
           .get());
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(_, _, _))
@@ -860,14 +865,16 @@ TEST_F(RealTimeUrlLookupServiceTest,
                         "example.test/",
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
   ReferrerChain returned_referrer_chain;
+  double current_ts = base::Time::Now().ToDoubleT();
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestSubframeUrl, kTestUrl,
-                               kTestSubframeReferrerUrl, kTestReferrerUrl)
+                               kTestSubframeReferrerUrl, kTestReferrerUrl,
+                               current_ts)
           .get());
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestReferrerUrl, /*main_frame_url=*/"",
                                /*referrer_url=*/"",
-                               /*referrer_main_frame_url=*/"")
+                               /*referrer_main_frame_url=*/"", current_ts)
           .get());
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(
@@ -922,14 +929,16 @@ TEST_F(RealTimeUrlLookupServiceTest,
                         "example.test/",
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
   ReferrerChain returned_referrer_chain;
+  double current_ts = base::Time::Now().ToDoubleT();
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestSubframeUrl, kTestUrl,
-                               kTestSubframeReferrerUrl, kTestReferrerUrl)
+                               kTestSubframeReferrerUrl, kTestReferrerUrl,
+                               current_ts)
           .get());
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestSubframeReferrerUrl, kTestReferrerUrl,
                                /*referrer_url=*/"",
-                               /*referrer_main_frame_url=*/"")
+                               /*referrer_main_frame_url=*/"", current_ts)
           .get());
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(
@@ -970,6 +979,74 @@ TEST_F(RealTimeUrlLookupServiceTest,
 }
 
 TEST_F(RealTimeUrlLookupServiceTest,
+       TestReferrerChain_SanitizedIfMinAllowedTimestampIsNotMet) {
+  // Set the first referrer chain before real time URL lookup is enabled.
+  // Note that this set up is different from the real referrer chain which
+  // is stored in reverse chronological order, but it doesn't affect this test.
+  ReferrerChain returned_referrer_chain;
+  returned_referrer_chain.Add()->Swap(
+      CreateReferrerChainEntry(kTestSubframeUrl, kTestUrl,
+                               kTestSubframeReferrerUrl, kTestReferrerUrl,
+                               base::Time::Now().ToDoubleT())
+          .get());
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  EnableRealTimeUrlLookup({kRealTimeUrlLookupReferrerChain}, {});
+  GURL url(kTestUrl);
+  SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
+                        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
+                        "example.test/",
+                        RTLookupResponse::ThreatInfo::COVERING_MATCH);
+  returned_referrer_chain.Add()->Swap(
+      CreateReferrerChainEntry(kTestSubframeReferrerUrl, kTestReferrerUrl,
+                               /*referrer_url=*/"",
+                               /*referrer_main_frame_url=*/"",
+                               base::Time::Now().ToDoubleT())
+          .get());
+  EXPECT_CALL(*referrer_chain_provider_,
+              IdentifyReferrerChainByPendingEventURL(
+                  url, /*user_gesture_count_limit=*/2, _))
+      .WillOnce(DoAll(SetArgPointee<2>(returned_referrer_chain),
+                      Return(ReferrerChainProvider::SUCCESS)));
+
+  base::MockCallback<RTLookupResponseCallback> response_callback;
+  rt_service()->StartLookup(
+      url,
+      base::BindOnce([](std::unique_ptr<RTLookupRequest> request,
+                        std::string token) {
+        EXPECT_EQ(2, request->version());
+        EXPECT_EQ(2, request->referrer_chain().size());
+        // Check the first referrer chain is sanitized because it's logged
+        // before real time URL lookup is enabled.
+        EXPECT_EQ("", request->referrer_chain().Get(0).url());
+        EXPECT_EQ("", request->referrer_chain().Get(0).main_frame_url());
+        EXPECT_FALSE(
+            request->referrer_chain().Get(0).is_subframe_url_removed());
+        EXPECT_EQ("", request->referrer_chain().Get(0).referrer_url());
+        EXPECT_EQ("",
+                  request->referrer_chain().Get(0).referrer_main_frame_url());
+        EXPECT_FALSE(request->referrer_chain()
+                         .Get(0)
+                         .is_subframe_referrer_url_removed());
+        EXPECT_TRUE(
+            request->referrer_chain().Get(0).is_url_removed_by_policy());
+
+        // The second referrer chain should be sanitized based on the user
+        // consent.
+        EXPECT_EQ(kTestReferrerUrl, request->referrer_chain().Get(1).url());
+        EXPECT_TRUE(request->referrer_chain().Get(1).is_subframe_url_removed());
+        EXPECT_FALSE(
+            request->referrer_chain().Get(1).is_url_removed_by_policy());
+      }),
+      response_callback.Get(), base::SequencedTaskRunnerHandle::Get());
+
+  EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
+                                     /* is_cached_response */ false, _));
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(RealTimeUrlLookupServiceTest,
        TestReferrerChain_UserGestureLimitIsConfigurable) {
   EnableRealTimeUrlLookupWithParameters(
       {{kRealTimeUrlLookupReferrerChain,
@@ -985,7 +1062,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestUrl, /*main_frame_url=*/"",
                                /*referrer_url=*/"",
-                               /*referrer_main_frame_url=*/"")
+                               /*referrer_main_frame_url=*/"",
+                               base::Time::Now().ToDoubleT())
           .get());
   // The user gesture count limit should be set to 1.
   EXPECT_CALL(*referrer_chain_provider_,

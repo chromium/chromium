@@ -249,6 +249,7 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   }
   std::string GetMetricSuffix() const override { return ""; }
   bool ShouldIncludeCredentials() const override { return false; }
+  double GetMinAllowedTimestampForReferrerChains() const override { return 0; }
 
   base::flat_map<std::string, SBThreatType> urls_threat_type_;
   bool is_cached_response_ = false;
