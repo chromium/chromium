@@ -19,7 +19,7 @@ ul.expandable button {
     float: none;
     margin-top: 0.5em;
     padding: 0;
-    text-align: left;
+    text-align: start;
     text-decoration: underline;
     text-transform: uppercase;
 }
