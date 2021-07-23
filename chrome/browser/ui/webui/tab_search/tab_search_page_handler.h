@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
+#include "url/gurl.h"
 
 class Browser;
 
@@ -75,7 +76,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   // results of GetProfileData. Tab url/group combinations that have been
   // previously added to the ProfileData will not be added more than once by
   // leveraging DedupKey comparisons.
-  typedef std::tuple<std::string, absl::optional<base::Token>> DedupKey;
+  typedef std::tuple<GURL, absl::optional<base::Token>> DedupKey;
 
   // Encapsulates tab details to facilitate performing an action on a tab.
   struct TabDetails {

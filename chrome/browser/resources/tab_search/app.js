@@ -557,13 +557,7 @@ export class TabSearchAppElement extends PolymerElement {
    */
   tabData_(tab, inActiveWindow, type, tabGroupsMap) {
     const tabData = new TabData(tab, type);
-    try {
-      tabData.hostname = new URL(tab.url).hostname;
-    } catch (e) {
-      // TODO(crbug.com/1186409): Remove this after we root cause the issue
-      console.error(`Error parsing URL on Tab Search: url=${tab.url}`);
-      tabData.hostname = '';
-    }
+    tabData.hostname = new URL(tab.url.url).hostname;
 
     if (tab.groupId) {
       tabData.tabGroup = tabGroupsMap.get(tokenToString(tab.groupId));

@@ -80,9 +80,9 @@ export class TabSearchItem extends TabSearchItemBase {
    */
   faviconUrl_(tab) {
     return tab.faviconUrl ?
-        `url("${tab.faviconUrl}")` :
+        `url("${tab.faviconUrl.url}")` :
         getFaviconForPageURL(
-            tab.isDefaultFavicon ? 'chrome://newtab' : tab.url, false);
+            tab.isDefaultFavicon ? 'chrome://newtab' : tab.url.url, false);
   }
 
   /**
@@ -123,13 +123,7 @@ export class TabSearchItem extends TabSearchItemBase {
 
     // Show chrome:// if it's a chrome internal url
     let secondaryLabel = data.hostname;
-    let protocol = '';
-    try {
-      protocol = new URL(data.tab.url).protocol;
-    } catch (e) {
-      // TODO(crbug.com/1186409): Remove this after we root cause the issue
-      console.error(`Error parsing URL on Tab Search: url=${data.tab.url}`);
-    }
+    const protocol = new URL(data.tab.url.url).protocol;
     if (protocol === 'chrome:') {
       /** @type {!HTMLElement} */ (this.$.secondaryText)
           .prepend(document.createTextNode('chrome://'));
