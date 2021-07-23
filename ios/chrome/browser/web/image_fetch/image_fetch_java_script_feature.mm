@@ -52,6 +52,9 @@ void ImageFetchJavaScriptFeature::GetImageData(web::WebState* web_state,
                                                int call_id,
                                                const GURL& url) {
   web::WebFrame* main_frame = GetMainFrame(web_state);
+  if (!main_frame) {
+    return;
+  }
 
   std::vector<base::Value> parameters;
   parameters.push_back(base::Value(call_id));
