@@ -87,6 +87,17 @@ void AnimationTimeline::ClearOutdatedAnimation(Animation* animation) {
   outdated_animation_count_--;
 }
 
+wtf_size_t AnimationTimeline::AnimationsNeedingUpdateCount() const {
+  wtf_size_t count = 0;
+  for (const auto& animation : animations_needing_update_) {
+    // This function is for frame sequence tracking for animations. Exclude
+    // no-effect animations which don't generate frames.
+    if (!animation->AnimationHasNoEffect())
+      count++;
+  }
+  return count;
+}
+
 bool AnimationTimeline::NeedsAnimationTimingUpdate() {
   PhaseAndTime current_phase_and_time = CurrentPhaseAndTime();
   if (current_phase_and_time == last_current_phase_and_time_)

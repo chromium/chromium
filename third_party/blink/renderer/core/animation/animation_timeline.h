@@ -89,9 +89,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   void SetOutdatedAnimation(Animation*);
   void ClearOutdatedAnimation(Animation*);
 
-  virtual wtf_size_t AnimationsNeedingUpdateCount() const {
-    return animations_needing_update_.size();
-  }
+  virtual wtf_size_t AnimationsNeedingUpdateCount() const;
   const HeapHashSet<WeakMember<Animation>>& GetAnimations() const {
     return animations_;
   }
