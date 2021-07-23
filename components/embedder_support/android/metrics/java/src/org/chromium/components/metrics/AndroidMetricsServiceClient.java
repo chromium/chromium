@@ -7,7 +7,10 @@ package org.chromium.components.metrics;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 
@@ -18,8 +21,14 @@ import org.chromium.base.annotations.JNINamespace;
 public class AndroidMetricsServiceClient {
     private static final String PLAY_STORE_PACKAGE_NAME = "com.android.vending";
 
+    private static boolean sCanRecordPackageNameForAppTypeForTesting;
+
     @CalledByNative
     private static boolean canRecordPackageNameForAppType() {
+        ThreadUtils.assertOnUiThread();
+        if (sCanRecordPackageNameForAppTypeForTesting) {
+            return true;
+        }
         // Only record if it's a system app or it was installed from Play Store.
         Context ctx = ContextUtils.getApplicationContext();
         String packageName = ctx.getPackageName();
@@ -34,5 +43,11 @@ public class AndroidMetricsServiceClient {
         // this in the logs.
         Context ctx = ContextUtils.getApplicationContext();
         return ctx.getPackageName();
+    }
+
+    @VisibleForTesting
+    public static void setCanRecordPackageNameForAppTypeForTesting(boolean flag) {
+        ThreadUtils.assertOnUiThread();
+        sCanRecordPackageNameForAppTypeForTesting = flag;
     }
 }

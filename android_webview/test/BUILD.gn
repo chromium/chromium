@@ -207,6 +207,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//components/content_capture/android/test_support:java",
     "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
+    "//components/embedder_support/android/metrics:java",
     "//components/heap_profiling/multi_process:heap_profiling_java_test_support",
     "//components/metrics:metrics_java",
     "//components/minidump_uploader:minidump_uploader_java",

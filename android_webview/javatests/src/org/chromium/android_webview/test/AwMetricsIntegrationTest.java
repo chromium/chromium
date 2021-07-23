@@ -28,12 +28,14 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.components.metrics.AndroidMetricsServiceClient;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.metrics.StabilityEventType;
@@ -405,6 +407,36 @@ public class AwMetricsIntegrationTest {
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Accessibility.Android.ScreenReader.EveryReport"));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=" + AwFeatures.WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST})
+    public void testMetadata_appPackageName() throws Throwable {
+        final String appPackageName = ContextUtils.getApplicationContext().getPackageName();
+
+        mRule.runOnUiThread(() -> {
+            AwBrowserProcess.setWebViewPackageName(appPackageName);
+            AndroidMetricsServiceClient.setCanRecordPackageNameForAppTypeForTesting(true);
+            // A valid version string and non expired date means the app package name should be
+            // recorded.
+            AwMetricsServiceClient.setAppPackageNameLoggingRuleForTesting(
+                    /* allowlistComponentVersion= */ "123.456.78.9",
+                    /* allowlistExpiryDateMs= */ System.currentTimeMillis()
+                            + TimeUnit.DAYS.toMillis(1));
+        });
+
+        // Disregard the first UMA log because it's recorded before loading the allowlist.
+        mPlatformServiceBridge.waitForNextMetricsLog();
+
+        // Load a blank page to indicate to the MetricsService that the app is "in use" and
+        // it's OK to upload the next record.
+        mRule.loadUrlAsync(mAwContents, "about:blank");
+
+        ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
+        SystemProfileProto systemProfile = log.getSystemProfile();
+        Assert.assertEquals(appPackageName, systemProfile.getAppPackageName());
     }
 
     private static TypeSafeMatcher<ChromeComponent> matchesChromeComponent(
