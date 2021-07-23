@@ -2447,7 +2447,7 @@ ci.clang_builder(
     cores = None,
     os = os.MAC_11,
     ssd = True,
-    xcode = xcode.x12d4e,
+    xcode = xcode.x13main,
 )
 
 ci.clang_builder(
@@ -2460,7 +2460,7 @@ ci.clang_builder(
     cores = None,
     os = os.MAC_11,
     ssd = True,
-    xcode = xcode.x12d4e,
+    xcode = xcode.x13main,
 )
 
 ci.clang_mac_builder(
@@ -4305,7 +4305,7 @@ ci.fyi_coverage_builder(
     use_clang_coverage = True,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
-    xcode = xcode.x12d4e,
+    xcode = xcode.x13main,
 )
 
 ci.fyi_coverage_builder(
@@ -6025,7 +6025,7 @@ ci.mac_ios_builder(
     # We don't have necessary capacity to run this configuration in CQ, but it
     # is part of the main waterfall
     main_console_view = "main",
-    xcode = xcode.x13a5192i,
+    xcode = xcode.x13main,
 )
 
 ci.memory_builder(

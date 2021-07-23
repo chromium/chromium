@@ -164,16 +164,16 @@ def xcode_enum(version):
 xcode = struct(
     # (current default for other projects) xc12.0 gm seed
     x12a7209 = xcode_enum("12a7209"),
-    # (current default for iOS) xc12.4 gm seed
+    # xc12.4 gm seed
     x12d4e = xcode_enum("12d4e"),
     # Xcode 12.5. Requires Mac11+ OS.
     x12e262 = xcode_enum("12e262"),
     # in use by ios-webkit-tot
     x12e262wk = xcode_enum("12e262wk"),
-    # Xcode 13.0 beta 3.
-    x13a5192i = xcode_enum("13a5192i"),
+    # Default Xcode 13 for chromium iOS (Xcode 13.0 beta 3).
+    x13main = xcode_enum("13a5192ixc"),
     # Xcode 13.0 latest beta (beta 3).
-    x13latestbeta = xcode_enum("13a5192i"),
+    x13latestbeta = xcode_enum("13a5192ixc"),
 )
 
 ################################################################################

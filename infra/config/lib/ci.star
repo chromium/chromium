@@ -450,7 +450,7 @@ def fyi_ios_builder(
         executable = "recipe:chromium",
         goma_backend = builders.goma.backend.RBE_PROD,
         os = builders.os.MAC_11,
-        xcode = builders.xcode.x12d4e,
+        xcode = builders.xcode.x13main,
         **kwargs):
     return fyi_builder(
         name = name,
@@ -666,7 +666,7 @@ def mac_ios_builder(
         executable = "recipe:chromium",
         goma_backend = builders.goma.backend.RBE_PROD,
         os = builders.os.MAC_11,
-        xcode = builders.xcode.x12d4e,
+        xcode = builders.xcode.x13main,
         **kwargs):
     return mac_builder(
         name = name,

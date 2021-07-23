@@ -492,18 +492,6 @@
       },
     },
   },
-  'ios_runtime_cache_14_0': {
-    '$mixin_append': {
-      'swarming': {
-        'named_caches': [
-          {
-            'name': 'runtime_ios_14_0',
-            'path': 'Runtime-ios-14.0',
-          },
-        ],
-      },
-    },
-  },
   'ios_runtime_cache_14_4': {
     '$mixin_append': {
       'swarming': {
@@ -1302,30 +1290,30 @@
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
-        '13a5192i'
+        '13a5192ixc'
       ],
     },
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_13a5192i',
+          'name': 'xcode_ios_13a5192ixc',
           'path': 'Xcode.app',
         },
       ],
     },
   },
-  # Xcode 13.0 beta 3.
-  'xcode_13a5192i': {
+  # Default Xcode 13 on main (Xcode 13.0 beta 3).
+  'xcode_13_main': {
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
-        '13a5192i'
+        '13a5192ixc'
       ],
     },
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_13a5192i',
+          'name': 'xcode_ios_13a5192ixc',
           'path': 'Xcode.app',
         },
       ],

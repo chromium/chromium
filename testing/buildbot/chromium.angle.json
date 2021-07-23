@@ -263,7 +263,7 @@
           "--platform",
           "iPhone X",
           "--version",
-          "14.0",
+          "14.4",
           "--bot-mode",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -276,7 +276,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "angle_end2end_tests_iPhone X 14.0",
+        "name": "angle_end2end_tests_iPhone X 14.4",
         "resultdb": {
           "enable": true
         },
@@ -304,8 +304,8 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_14_0",
-              "path": "Runtime-ios-14.0"
+              "name": "runtime_ios_14_4",
+              "path": "Runtime-ios-14.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -321,7 +321,7 @@
           "--platform",
           "iPhone X",
           "--version",
-          "14.0",
+          "14.4",
           "--bot-mode",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -334,7 +334,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "angle_white_box_tests_iPhone X 14.0",
+        "name": "angle_white_box_tests_iPhone X 14.4",
         "resultdb": {
           "enable": true
         },
@@ -362,8 +362,8 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_14_0",
-              "path": "Runtime-ios-14.0"
+              "name": "runtime_ios_14_4",
+              "path": "Runtime-ios-14.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"

@@ -12284,62 +12284,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "13.6",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "12d4e",
-          "--xctest"
-        ],
-        "isolate_name": "absl_hardening_tests",
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "absl_hardening_tests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-11|Mac-10.16"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_12d4e",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone 6s",
-          "--version",
           "14.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "absl_hardening_tests",
@@ -12369,7 +12318,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -12384,22 +12333,22 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "base_unittests",
+        "isolate_name": "absl_hardening_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "base_unittests_iPad Air 2 13.6",
+        "name": "absl_hardening_tests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -12420,17 +12369,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://base:base_unittests/"
+        "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/"
       },
       {
         "args": [
@@ -12441,7 +12390,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "base_unittests",
@@ -12471,7 +12420,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -12486,13 +12435,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "base_unittests",
@@ -12501,7 +12450,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "base_unittests_iPhone 6s 13.6",
+        "name": "base_unittests_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -12522,12 +12471,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -12543,7 +12492,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "base_unittests",
@@ -12573,7 +12522,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -12588,13 +12537,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s Plus",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "base_unittests",
@@ -12603,7 +12552,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "base_unittests_iPhone 6s Plus 13.6",
+        "name": "base_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -12624,12 +12573,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -12645,7 +12594,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "base_unittests",
@@ -12675,7 +12624,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -12690,13 +12639,13 @@
       {
         "args": [
           "--platform",
-          "iPhone SE (1st generation)",
+          "iPhone 6s Plus",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "base_unittests",
@@ -12705,7 +12654,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "base_unittests_iPhone SE (1st generation) 13.6",
+        "name": "base_unittests_iPhone 6s Plus 15.0",
         "resultdb": {
           "enable": true
         },
@@ -12726,12 +12675,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -12747,7 +12696,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "base_unittests",
@@ -12777,7 +12726,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -12792,22 +12741,22 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPhone SE (1st generation)",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "boringssl_crypto_tests",
+        "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "boringssl_crypto_tests_iPhone 6s 13.6",
+        "name": "base_unittests_iPhone SE (1st generation) 15.0",
         "resultdb": {
           "enable": true
         },
@@ -12828,17 +12777,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/"
+        "test_id_prefix": "ninja://base:base_unittests/"
       },
       {
         "args": [
@@ -12849,7 +12798,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "boringssl_crypto_tests",
@@ -12879,7 +12828,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -12896,20 +12845,20 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "boringssl_ssl_tests",
+        "isolate_name": "boringssl_crypto_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "boringssl_ssl_tests_iPhone 6s 13.6",
+        "name": "boringssl_crypto_tests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -12930,17 +12879,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
+        "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/"
       },
       {
         "args": [
@@ -12951,7 +12900,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "boringssl_ssl_tests",
@@ -12981,7 +12930,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -12996,22 +12945,22 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "components_unittests",
+        "isolate_name": "boringssl_ssl_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "components_unittests_iPad Air 2 13.6",
+        "name": "boringssl_ssl_tests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -13032,17 +12981,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://components:components_unittests/"
+        "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
         "args": [
@@ -13053,7 +13002,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "components_unittests",
@@ -13083,7 +13032,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -13098,13 +13047,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "components_unittests",
@@ -13113,7 +13062,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "components_unittests_iPhone 6s 13.6",
+        "name": "components_unittests_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -13134,12 +13083,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13155,7 +13104,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "components_unittests",
@@ -13185,7 +13134,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -13200,13 +13149,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s Plus",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "components_unittests",
@@ -13215,7 +13164,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "components_unittests_iPhone 6s Plus 13.6",
+        "name": "components_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -13236,12 +13185,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13257,7 +13206,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "components_unittests",
@@ -13287,7 +13236,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -13302,13 +13251,13 @@
       {
         "args": [
           "--platform",
-          "iPhone SE (1st generation)",
+          "iPhone 6s Plus",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "components_unittests",
@@ -13317,7 +13266,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "components_unittests_iPhone SE (1st generation) 13.6",
+        "name": "components_unittests_iPhone 6s Plus 15.0",
         "resultdb": {
           "enable": true
         },
@@ -13338,12 +13287,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13359,7 +13308,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "components_unittests",
@@ -13389,7 +13338,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -13404,22 +13353,22 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPhone SE (1st generation)",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "crypto_unittests",
+        "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "crypto_unittests_iPhone 6s 13.6",
+        "name": "components_unittests_iPhone SE (1st generation) 15.0",
         "resultdb": {
           "enable": true
         },
@@ -13440,17 +13389,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://crypto:crypto_unittests/"
+        "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
         "args": [
@@ -13461,7 +13410,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "crypto_unittests",
@@ -13491,7 +13440,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -13506,22 +13455,22 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "gfx_unittests",
+        "isolate_name": "crypto_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "gfx_unittests_iPad Air 2 13.6",
+        "name": "crypto_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -13542,17 +13491,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ui/gfx:gfx_unittests/"
+        "test_id_prefix": "ninja://crypto:crypto_unittests/"
       },
       {
         "args": [
@@ -13563,7 +13512,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "gfx_unittests",
@@ -13593,7 +13542,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -13608,13 +13557,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "gfx_unittests",
@@ -13623,7 +13572,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "gfx_unittests_iPhone 6s 13.6",
+        "name": "gfx_unittests_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -13644,12 +13593,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13665,7 +13614,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "gfx_unittests",
@@ -13695,7 +13644,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -13710,13 +13659,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s Plus",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "gfx_unittests",
@@ -13725,7 +13674,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "gfx_unittests_iPhone 6s Plus 13.6",
+        "name": "gfx_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -13746,12 +13695,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13767,7 +13716,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "gfx_unittests",
@@ -13797,7 +13746,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -13812,13 +13761,13 @@
       {
         "args": [
           "--platform",
-          "iPhone SE (1st generation)",
+          "iPhone 6s Plus",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "gfx_unittests",
@@ -13827,7 +13776,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "gfx_unittests_iPhone SE (1st generation) 13.6",
+        "name": "gfx_unittests_iPhone 6s Plus 15.0",
         "resultdb": {
           "enable": true
         },
@@ -13848,12 +13797,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13869,7 +13818,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "gfx_unittests",
@@ -13899,7 +13848,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -13914,22 +13863,22 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPhone SE (1st generation)",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "google_apis_unittests",
+        "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "google_apis_unittests_iPhone 6s 13.6",
+        "name": "gfx_unittests_iPhone SE (1st generation) 15.0",
         "resultdb": {
           "enable": true
         },
@@ -13950,17 +13899,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://google_apis:google_apis_unittests/"
+        "test_id_prefix": "ninja://ui/gfx:gfx_unittests/"
       },
       {
         "args": [
@@ -13971,7 +13920,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "google_apis_unittests",
@@ -14001,7 +13950,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -14018,21 +13967,20 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
-          "--xctest",
-          "--xcode-parallelization"
+          "13a5192ixc",
+          "--xctest"
         ],
-        "isolate_name": "ios_chrome_integration_eg2tests_module",
+        "isolate_name": "google_apis_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_integration_eg2tests_module_iPhone 6s 13.6",
+        "name": "google_apis_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -14053,18 +14001,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/"
+        "test_id_prefix": "ninja://google_apis:google_apis_unittests/"
       },
       {
         "args": [
@@ -14075,7 +14022,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -14106,7 +14053,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -14124,21 +14071,21 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_signin_eg2tests_module",
+        "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_signin_eg2tests_module_iPhone 6s 13.6",
+        "name": "ios_chrome_integration_eg2tests_module_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -14159,17 +14106,18 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/"
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/"
       },
       {
         "args": [
@@ -14180,7 +14128,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -14211,7 +14159,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -14228,21 +14176,21 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_ui_eg2tests_module",
+        "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_ui_eg2tests_module_iPhone 6s 13.6",
+        "name": "ios_chrome_signin_eg2tests_module_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -14263,18 +14211,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 5
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/"
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/"
       },
       {
         "args": [
@@ -14285,7 +14232,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -14316,7 +14263,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -14332,22 +14279,23 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
-          "--xctest"
+          "13a5192ixc",
+          "--xctest",
+          "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_unittests",
+        "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_unittests_iPad Air 2 13.6",
+        "name": "ios_chrome_ui_eg2tests_module_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -14368,17 +14316,18 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
         },
-        "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/"
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/"
       },
       {
         "args": [
@@ -14389,7 +14338,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_chrome_unittests",
@@ -14419,7 +14368,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -14434,13 +14383,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_chrome_unittests",
@@ -14449,7 +14398,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_unittests_iPhone 6s 13.6",
+        "name": "ios_chrome_unittests_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -14470,12 +14419,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14491,7 +14440,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_chrome_unittests",
@@ -14521,7 +14470,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -14536,13 +14485,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s Plus",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_chrome_unittests",
@@ -14551,7 +14500,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_unittests_iPhone 6s Plus 13.6",
+        "name": "ios_chrome_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -14572,12 +14521,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14593,7 +14542,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_chrome_unittests",
@@ -14623,7 +14572,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -14638,13 +14587,13 @@
       {
         "args": [
           "--platform",
-          "iPhone SE (1st generation)",
+          "iPhone 6s Plus",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_chrome_unittests",
@@ -14653,7 +14602,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_unittests_iPhone SE (1st generation) 13.6",
+        "name": "ios_chrome_unittests_iPhone 6s Plus 15.0",
         "resultdb": {
           "enable": true
         },
@@ -14674,12 +14623,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14695,7 +14644,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_chrome_unittests",
@@ -14725,7 +14674,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -14740,22 +14689,22 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPhone SE (1st generation)",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "ios_components_unittests",
+        "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_components_unittests_iPhone 6s 13.6",
+        "name": "ios_chrome_unittests_iPhone SE (1st generation) 15.0",
         "resultdb": {
           "enable": true
         },
@@ -14776,17 +14725,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ios/components:ios_components_unittests/"
+        "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/"
       },
       {
         "args": [
@@ -14797,7 +14746,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_components_unittests",
@@ -14827,7 +14776,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -14844,20 +14793,20 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "ios_net_unittests",
+        "isolate_name": "ios_components_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_net_unittests_iPhone 6s 13.6",
+        "name": "ios_components_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -14878,17 +14827,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ios/net:ios_net_unittests/"
+        "test_id_prefix": "ninja://ios/components:ios_components_unittests/"
       },
       {
         "args": [
@@ -14899,7 +14848,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_net_unittests",
@@ -14929,7 +14878,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -14946,20 +14895,20 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "ios_remoting_unittests",
+        "isolate_name": "ios_net_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_remoting_unittests_iPhone 6s 13.6",
+        "name": "ios_net_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -14980,17 +14929,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/"
+        "test_id_prefix": "ninja://ios/net:ios_net_unittests/"
       },
       {
         "args": [
@@ -15001,7 +14950,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_remoting_unittests",
@@ -15031,7 +14980,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -15048,20 +14997,20 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "ios_testing_unittests",
+        "isolate_name": "ios_remoting_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_testing_unittests_iPhone 6s 13.6",
+        "name": "ios_remoting_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -15082,17 +15031,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ios/testing:ios_testing_unittests/"
+        "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/"
       },
       {
         "args": [
@@ -15103,7 +15052,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_testing_unittests",
@@ -15133,7 +15082,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -15148,22 +15097,22 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "ios_web_inttests",
+        "isolate_name": "ios_testing_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_inttests_iPad Air 2 13.6",
+        "name": "ios_testing_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -15184,17 +15133,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ios/web:ios_web_inttests/"
+        "test_id_prefix": "ninja://ios/testing:ios_testing_unittests/"
       },
       {
         "args": [
@@ -15205,7 +15154,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_inttests",
@@ -15235,7 +15184,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -15250,13 +15199,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_inttests",
@@ -15265,7 +15214,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_inttests_iPhone 6s 13.6",
+        "name": "ios_web_inttests_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -15286,12 +15235,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -15307,7 +15256,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_inttests",
@@ -15337,7 +15286,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -15352,13 +15301,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s Plus",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_inttests",
@@ -15367,7 +15316,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_inttests_iPhone 6s Plus 13.6",
+        "name": "ios_web_inttests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -15388,12 +15337,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -15409,7 +15358,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_inttests",
@@ -15439,7 +15388,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -15454,13 +15403,13 @@
       {
         "args": [
           "--platform",
-          "iPhone SE (1st generation)",
+          "iPhone 6s Plus",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_inttests",
@@ -15469,7 +15418,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_inttests_iPhone SE (1st generation) 13.6",
+        "name": "ios_web_inttests_iPhone 6s Plus 15.0",
         "resultdb": {
           "enable": true
         },
@@ -15490,12 +15439,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -15511,7 +15460,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_inttests",
@@ -15541,7 +15490,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -15556,23 +15505,22 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPhone SE (1st generation)",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
-          "--xctest",
-          "--xcode-parallelization"
+          "13a5192ixc",
+          "--xctest"
         ],
-        "isolate_name": "ios_web_shell_eg2tests_module",
+        "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_shell_eg2tests_module_iPhone 6s 13.6",
+        "name": "ios_web_inttests_iPhone SE (1st generation) 15.0",
         "resultdb": {
           "enable": true
         },
@@ -15593,17 +15541,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/"
+        "test_id_prefix": "ninja://ios/web:ios_web_inttests/"
       },
       {
         "args": [
@@ -15614,7 +15562,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -15645,7 +15593,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -15660,22 +15608,23 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
-          "--xctest"
+          "13a5192ixc",
+          "--xctest",
+          "--xcode-parallelization"
         ],
-        "isolate_name": "ios_web_unittests",
+        "isolate_name": "ios_web_shell_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_unittests_iPad Air 2 13.6",
+        "name": "ios_web_shell_eg2tests_module_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -15696,17 +15645,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ios/web:ios_web_unittests/"
+        "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/"
       },
       {
         "args": [
@@ -15717,7 +15666,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_unittests",
@@ -15747,7 +15696,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -15762,13 +15711,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_unittests",
@@ -15777,7 +15726,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_unittests_iPhone 6s 13.6",
+        "name": "ios_web_unittests_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -15798,12 +15747,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -15819,7 +15768,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_unittests",
@@ -15849,7 +15798,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -15864,13 +15813,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s Plus",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_unittests",
@@ -15879,7 +15828,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_unittests_iPhone 6s Plus 13.6",
+        "name": "ios_web_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -15900,12 +15849,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -15921,7 +15870,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_unittests",
@@ -15951,7 +15900,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -15966,13 +15915,13 @@
       {
         "args": [
           "--platform",
-          "iPhone SE (1st generation)",
+          "iPhone 6s Plus",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_unittests",
@@ -15981,7 +15930,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_unittests_iPhone SE (1st generation) 13.6",
+        "name": "ios_web_unittests_iPhone 6s Plus 15.0",
         "resultdb": {
           "enable": true
         },
@@ -16002,12 +15951,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -16023,7 +15972,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_unittests",
@@ -16053,7 +16002,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -16068,22 +16017,22 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone SE (1st generation)",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_inttests",
+        "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_view_inttests_iPad Air 2 13.6",
+        "name": "ios_web_unittests_iPhone SE (1st generation) 15.0",
         "resultdb": {
           "enable": true
         },
@@ -16104,17 +16053,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/"
+        "test_id_prefix": "ninja://ios/web:ios_web_unittests/"
       },
       {
         "args": [
@@ -16125,7 +16074,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_view_inttests",
@@ -16155,7 +16104,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -16170,13 +16119,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_view_inttests",
@@ -16185,7 +16134,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_view_inttests_iPhone 6s 13.6",
+        "name": "ios_web_view_inttests_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -16206,12 +16155,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -16227,7 +16176,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_view_inttests",
@@ -16257,7 +16206,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -16272,13 +16221,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s Plus",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_view_inttests",
@@ -16287,7 +16236,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_view_inttests_iPhone 6s Plus 13.6",
+        "name": "ios_web_view_inttests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -16308,12 +16257,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -16329,7 +16278,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_view_inttests",
@@ -16359,7 +16308,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -16374,13 +16323,13 @@
       {
         "args": [
           "--platform",
-          "iPhone SE (1st generation)",
+          "iPhone 6s Plus",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_view_inttests",
@@ -16389,7 +16338,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_view_inttests_iPhone SE (1st generation) 13.6",
+        "name": "ios_web_view_inttests_iPhone 6s Plus 15.0",
         "resultdb": {
           "enable": true
         },
@@ -16410,12 +16359,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -16431,7 +16380,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_view_inttests",
@@ -16461,7 +16410,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -16476,22 +16425,22 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone SE (1st generation)",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_unittests",
+        "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_view_unittests_iPad Air 2 13.6",
+        "name": "ios_web_view_inttests_iPhone SE (1st generation) 15.0",
         "resultdb": {
           "enable": true
         },
@@ -16512,17 +16461,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/"
+        "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/"
       },
       {
         "args": [
@@ -16533,7 +16482,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_view_unittests",
@@ -16563,7 +16512,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -16578,13 +16527,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_view_unittests",
@@ -16593,7 +16542,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_view_unittests_iPhone 6s 13.6",
+        "name": "ios_web_view_unittests_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -16614,12 +16563,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -16635,7 +16584,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_view_unittests",
@@ -16665,7 +16614,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -16680,13 +16629,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s Plus",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_view_unittests",
@@ -16695,7 +16644,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_view_unittests_iPhone 6s Plus 13.6",
+        "name": "ios_web_view_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -16716,12 +16665,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -16737,7 +16686,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_view_unittests",
@@ -16767,7 +16716,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -16782,13 +16731,13 @@
       {
         "args": [
           "--platform",
-          "iPhone SE (1st generation)",
+          "iPhone 6s Plus",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_view_unittests",
@@ -16797,7 +16746,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_view_unittests_iPhone SE (1st generation) 13.6",
+        "name": "ios_web_view_unittests_iPhone 6s Plus 15.0",
         "resultdb": {
           "enable": true
         },
@@ -16818,12 +16767,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -16839,7 +16788,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_web_view_unittests",
@@ -16869,7 +16818,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -16884,22 +16833,22 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPhone SE (1st generation)",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "net_unittests",
+        "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "net_unittests_iPhone 6s 13.6",
+        "name": "ios_web_view_unittests_iPhone SE (1st generation) 15.0",
         "resultdb": {
           "enable": true
         },
@@ -16920,17 +16869,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://net:net_unittests/"
+        "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/"
       },
       {
         "args": [
@@ -16941,7 +16890,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "net_unittests",
@@ -16971,7 +16920,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -16988,20 +16937,20 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "services_unittests",
+        "isolate_name": "net_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "services_unittests_iPhone 6s 13.6",
+        "name": "net_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -17022,17 +16971,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://services:services_unittests/"
+        "test_id_prefix": "ninja://net:net_unittests/"
       },
       {
         "args": [
@@ -17043,7 +16992,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "services_unittests",
@@ -17073,7 +17022,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -17088,22 +17037,22 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "skia_unittests",
+        "isolate_name": "services_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "skia_unittests_iPad Air 2 13.6",
+        "name": "services_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -17124,17 +17073,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://skia:skia_unittests/"
+        "test_id_prefix": "ninja://services:services_unittests/"
       },
       {
         "args": [
@@ -17145,7 +17094,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "skia_unittests",
@@ -17175,7 +17124,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -17190,13 +17139,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "skia_unittests",
@@ -17205,7 +17154,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "skia_unittests_iPhone 6s 13.6",
+        "name": "skia_unittests_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -17226,12 +17175,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -17247,7 +17196,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "skia_unittests",
@@ -17277,7 +17226,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -17292,13 +17241,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s Plus",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "skia_unittests",
@@ -17307,7 +17256,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "skia_unittests_iPhone 6s Plus 13.6",
+        "name": "skia_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -17328,12 +17277,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -17349,7 +17298,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "skia_unittests",
@@ -17379,7 +17328,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -17394,13 +17343,13 @@
       {
         "args": [
           "--platform",
-          "iPhone SE (1st generation)",
+          "iPhone 6s Plus",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "skia_unittests",
@@ -17409,7 +17358,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "skia_unittests_iPhone SE (1st generation) 13.6",
+        "name": "skia_unittests_iPhone 6s Plus 15.0",
         "resultdb": {
           "enable": true
         },
@@ -17430,12 +17379,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -17451,7 +17400,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "skia_unittests",
@@ -17481,7 +17430,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -17496,22 +17445,22 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPhone SE (1st generation)",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "sql_unittests",
+        "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "sql_unittests_iPhone 6s 13.6",
+        "name": "skia_unittests_iPhone SE (1st generation) 15.0",
         "resultdb": {
           "enable": true
         },
@@ -17532,17 +17481,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://sql:sql_unittests/"
+        "test_id_prefix": "ninja://skia:skia_unittests/"
       },
       {
         "args": [
@@ -17553,7 +17502,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "sql_unittests",
@@ -17583,7 +17532,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -17598,22 +17547,22 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "ui_base_unittests",
+        "isolate_name": "sql_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ui_base_unittests_iPad Air 2 13.6",
+        "name": "sql_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -17634,17 +17583,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ui/base:ui_base_unittests/"
+        "test_id_prefix": "ninja://sql:sql_unittests/"
       },
       {
         "args": [
@@ -17655,7 +17604,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ui_base_unittests",
@@ -17685,7 +17634,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -17700,13 +17649,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ui_base_unittests",
@@ -17715,7 +17664,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ui_base_unittests_iPhone 6s 13.6",
+        "name": "ui_base_unittests_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -17736,12 +17685,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -17757,7 +17706,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ui_base_unittests",
@@ -17787,7 +17736,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -17802,13 +17751,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s Plus",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ui_base_unittests",
@@ -17817,7 +17766,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ui_base_unittests_iPhone 6s Plus 13.6",
+        "name": "ui_base_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -17838,12 +17787,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -17859,7 +17808,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ui_base_unittests",
@@ -17889,7 +17838,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -17904,13 +17853,13 @@
       {
         "args": [
           "--platform",
-          "iPhone SE (1st generation)",
+          "iPhone 6s Plus",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ui_base_unittests",
@@ -17919,7 +17868,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ui_base_unittests_iPhone SE (1st generation) 13.6",
+        "name": "ui_base_unittests_iPhone 6s Plus 15.0",
         "resultdb": {
           "enable": true
         },
@@ -17940,12 +17889,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -17961,7 +17910,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ui_base_unittests",
@@ -17991,7 +17940,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -18006,22 +17955,22 @@
       {
         "args": [
           "--platform",
-          "iPhone 6s",
+          "iPhone SE (1st generation)",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
-        "isolate_name": "url_unittests",
+        "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "url_unittests_iPhone 6s 13.6",
+        "name": "ui_base_unittests_iPhone SE (1st generation) 15.0",
         "resultdb": {
           "enable": true
         },
@@ -18042,17 +17991,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://url:url_unittests/"
+        "test_id_prefix": "ninja://ui/base:ui_base_unittests/"
       },
       {
         "args": [
@@ -18063,7 +18012,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "url_unittests",
@@ -18093,7 +18042,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -18104,34 +18053,26 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://url:url_unittests/"
-      }
-    ]
-  },
-  "ios-simulator-full-configs": {
-    "additional_compile_targets": [
-      "all"
-    ],
-    "isolated_scripts": [
+      },
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone 6s",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
-          "--xctest",
-          "--xcode-parallelization"
+          "13a5192ixc",
+          "--xctest"
         ],
-        "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
+        "isolate_name": "url_unittests",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_bookmarks_eg2tests_module_iPad Air 2 13.6",
+        "name": "url_unittests_iPhone 6s 15.0",
         "resultdb": {
           "enable": true
         },
@@ -18152,18 +18093,25 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/"
-      },
+        "test_id_prefix": "ninja://url:url_unittests/"
+      }
+    ]
+  },
+  "ios-simulator-full-configs": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "isolated_scripts": [
       {
         "args": [
           "--platform",
@@ -18173,7 +18121,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -18204,7 +18152,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -18219,13 +18167,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 7",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -18235,7 +18183,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_bookmarks_eg2tests_module_iPhone 7 13.6",
+        "name": "ios_chrome_bookmarks_eg2tests_module_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -18256,12 +18204,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -18277,7 +18225,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -18308,7 +18256,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -18323,13 +18271,13 @@
       {
         "args": [
           "--platform",
-          "iPhone X",
+          "iPhone 7",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -18339,7 +18287,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_bookmarks_eg2tests_module_iPhone X 13.6",
+        "name": "ios_chrome_bookmarks_eg2tests_module_iPhone 7 15.0",
         "resultdb": {
           "enable": true
         },
@@ -18360,12 +18308,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -18381,7 +18329,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -18412,7 +18360,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -18427,23 +18375,23 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone X",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_integration_eg2tests_module",
+        "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_integration_eg2tests_module_iPad Air 2 13.6",
+        "name": "ios_chrome_bookmarks_eg2tests_module_iPhone X 15.0",
         "resultdb": {
           "enable": true
         },
@@ -18464,18 +18412,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/"
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/"
       },
       {
         "args": [
@@ -18486,7 +18433,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -18517,7 +18464,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -18533,13 +18480,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 7",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -18549,7 +18496,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_integration_eg2tests_module_iPhone 7 13.6",
+        "name": "ios_chrome_integration_eg2tests_module_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -18570,12 +18517,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -18592,7 +18539,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -18623,7 +18570,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -18639,23 +18586,23 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone 7",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_settings_eg2tests_module",
+        "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_settings_eg2tests_module_iPad Air 2 13.6",
+        "name": "ios_chrome_integration_eg2tests_module_iPhone 7 15.0",
         "resultdb": {
           "enable": true
         },
@@ -18676,18 +18623,18 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/"
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/"
       },
       {
         "args": [
@@ -18698,7 +18645,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -18729,7 +18676,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -18745,13 +18692,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 7",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -18761,7 +18708,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_settings_eg2tests_module_iPhone 7 13.6",
+        "name": "ios_chrome_settings_eg2tests_module_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -18782,12 +18729,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -18804,7 +18751,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -18835,7 +18782,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -18851,13 +18798,13 @@
       {
         "args": [
           "--platform",
-          "iPhone X",
+          "iPhone 7",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -18867,7 +18814,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_settings_eg2tests_module_iPhone X 13.6",
+        "name": "ios_chrome_settings_eg2tests_module_iPhone 7 15.0",
         "resultdb": {
           "enable": true
         },
@@ -18888,12 +18835,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -18910,7 +18857,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -18941,7 +18888,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -18957,23 +18904,23 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone X",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_signin_eg2tests_module",
+        "isolate_name": "ios_chrome_settings_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_signin_eg2tests_module_iPad Air 2 13.6",
+        "name": "ios_chrome_settings_eg2tests_module_iPhone X 15.0",
         "resultdb": {
           "enable": true
         },
@@ -18994,17 +18941,18 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/"
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/"
       },
       {
         "args": [
@@ -19015,7 +18963,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -19046,7 +18994,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -19061,13 +19009,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 7",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -19077,7 +19025,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_signin_eg2tests_module_iPhone 7 13.6",
+        "name": "ios_chrome_signin_eg2tests_module_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -19098,12 +19046,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -19119,7 +19067,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -19150,7 +19098,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -19165,23 +19113,23 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone 7",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_smoke_eg2tests_module",
+        "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_smoke_eg2tests_module_iPad Air 2 13.6",
+        "name": "ios_chrome_signin_eg2tests_module_iPhone 7 15.0",
         "resultdb": {
           "enable": true
         },
@@ -19202,17 +19150,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/"
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/"
       },
       {
         "args": [
@@ -19223,7 +19171,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -19254,7 +19202,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -19269,13 +19217,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 7",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -19285,7 +19233,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_smoke_eg2tests_module_iPhone 7 13.6",
+        "name": "ios_chrome_smoke_eg2tests_module_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -19306,12 +19254,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -19327,7 +19275,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -19358,7 +19306,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -19373,13 +19321,13 @@
       {
         "args": [
           "--platform",
-          "iPhone X",
+          "iPhone 7",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -19389,7 +19337,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_smoke_eg2tests_module_iPhone X 13.6",
+        "name": "ios_chrome_smoke_eg2tests_module_iPhone 7 15.0",
         "resultdb": {
           "enable": true
         },
@@ -19410,12 +19358,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -19431,7 +19379,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -19462,7 +19410,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -19477,23 +19425,23 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone X",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_ui_eg2tests_module",
+        "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_ui_eg2tests_module_iPad Air 2 13.6",
+        "name": "ios_chrome_smoke_eg2tests_module_iPhone X 15.0",
         "resultdb": {
           "enable": true
         },
@@ -19514,18 +19462,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 5
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/"
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/"
       },
       {
         "args": [
@@ -19536,7 +19483,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -19567,7 +19514,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -19583,13 +19530,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 7",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -19599,7 +19546,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_ui_eg2tests_module_iPhone 7 13.6",
+        "name": "ios_chrome_ui_eg2tests_module_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -19620,12 +19567,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -19642,7 +19589,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -19673,7 +19620,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -19689,23 +19636,23 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone 7",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_web_eg2tests_module",
+        "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_web_eg2tests_module_iPad Air 2 13.6",
+        "name": "ios_chrome_ui_eg2tests_module_iPhone 7 15.0",
         "resultdb": {
           "enable": true
         },
@@ -19726,17 +19673,18 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
         },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/"
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/"
       },
       {
         "args": [
@@ -19747,7 +19695,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -19778,7 +19726,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -19793,13 +19741,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 7",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -19809,7 +19757,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_web_eg2tests_module_iPhone 7 13.6",
+        "name": "ios_chrome_web_eg2tests_module_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -19830,12 +19778,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -19851,7 +19799,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -19882,7 +19830,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -19897,13 +19845,13 @@
       {
         "args": [
           "--platform",
-          "iPhone X",
+          "iPhone 7",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -19913,7 +19861,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_web_eg2tests_module_iPhone X 13.6",
+        "name": "ios_chrome_web_eg2tests_module_iPhone 7 15.0",
         "resultdb": {
           "enable": true
         },
@@ -19934,12 +19882,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -19955,7 +19903,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -19986,7 +19934,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -20001,23 +19949,23 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone X",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_showcase_eg2tests_module",
+        "isolate_name": "ios_chrome_web_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_showcase_eg2tests_module_iPad Air 2 13.6",
+        "name": "ios_chrome_web_eg2tests_module_iPhone X 15.0",
         "resultdb": {
           "enable": true
         },
@@ -20038,17 +19986,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ios/showcase:ios_showcase_eg2tests_module/"
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/"
       },
       {
         "args": [
@@ -20059,7 +20007,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -20090,7 +20038,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -20105,13 +20053,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 7",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -20121,7 +20069,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_showcase_eg2tests_module_iPhone 7 13.6",
+        "name": "ios_showcase_eg2tests_module_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -20142,12 +20090,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -20163,7 +20111,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -20194,7 +20142,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -20209,13 +20157,13 @@
       {
         "args": [
           "--platform",
-          "iPhone X",
+          "iPhone 7",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -20225,7 +20173,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_showcase_eg2tests_module_iPhone X 13.6",
+        "name": "ios_showcase_eg2tests_module_iPhone 7 15.0",
         "resultdb": {
           "enable": true
         },
@@ -20246,12 +20194,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -20267,7 +20215,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -20298,7 +20246,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -20313,23 +20261,23 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPhone X",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_web_shell_eg2tests_module",
+        "isolate_name": "ios_showcase_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_shell_eg2tests_module_iPad Air 2 13.6",
+        "name": "ios_showcase_eg2tests_module_iPhone X 15.0",
         "resultdb": {
           "enable": true
         },
@@ -20350,17 +20298,17 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/"
+        "test_id_prefix": "ninja://ios/showcase:ios_showcase_eg2tests_module/"
       },
       {
         "args": [
@@ -20371,7 +20319,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -20402,7 +20350,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
@@ -20417,13 +20365,13 @@
       {
         "args": [
           "--platform",
-          "iPhone 7",
+          "iPad Air 2",
           "--version",
-          "13.6",
+          "15.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -20433,7 +20381,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_shell_eg2tests_module_iPhone 7 13.6",
+        "name": "ios_web_shell_eg2tests_module_iPad Air 2 15.0",
         "resultdb": {
           "enable": true
         },
@@ -20454,12 +20402,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_13_6",
-              "path": "Runtime-ios-13.6"
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -20475,7 +20423,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12d4e",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -20506,12 +20454,64 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12d4e",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
               "name": "runtime_ios_14_4",
               "path": "Runtime-ios-14.4"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone 7",
+          "--version",
+          "15.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "13a5192ixc",
+          "--xctest",
+          "--xcode-parallelization"
+        ],
+        "isolate_name": "ios_web_shell_eg2tests_module",
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_web_shell_eg2tests_module_iPhone 7 15.0",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-11|Mac-10.16"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_13a5192ixc",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_15_0",
+              "path": "Runtime-ios-15.0"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -20530,11 +20530,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "absl_hardening_tests",
@@ -20542,7 +20542,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "absl_hardening_tests_iPhone 6s 15.0",
+        "name": "absl_hardening_tests_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -20563,12 +20563,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -20580,11 +20580,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "boringssl_crypto_tests",
@@ -20592,7 +20592,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "boringssl_crypto_tests_iPhone 6s 15.0",
+        "name": "boringssl_crypto_tests_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -20613,12 +20613,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -20630,11 +20630,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "boringssl_ssl_tests",
@@ -20642,7 +20642,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "boringssl_ssl_tests_iPhone 6s 15.0",
+        "name": "boringssl_ssl_tests_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -20663,12 +20663,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -20680,11 +20680,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "crypto_unittests",
@@ -20692,7 +20692,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "crypto_unittests_iPhone 6s 15.0",
+        "name": "crypto_unittests_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -20713,12 +20713,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -20730,11 +20730,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "google_apis_unittests",
@@ -20742,7 +20742,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "google_apis_unittests_iPhone 6s 15.0",
+        "name": "google_apis_unittests_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -20763,12 +20763,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -20780,11 +20780,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -20793,7 +20793,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_bookmarks_eg2tests_module_iPhone 6s 15.0",
+        "name": "ios_chrome_bookmarks_eg2tests_module_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -20814,12 +20814,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -20831,11 +20831,11 @@
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -20844,7 +20844,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_integration_eg2tests_module_iPad Air 2 15.0",
+        "name": "ios_chrome_integration_eg2tests_module_iPad Air 2 13.6",
         "resultdb": {
           "enable": true
         },
@@ -20865,12 +20865,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -20883,11 +20883,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -20896,7 +20896,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_integration_eg2tests_module_iPhone 6s 15.0",
+        "name": "ios_chrome_integration_eg2tests_module_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -20917,12 +20917,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -20935,11 +20935,11 @@
           "--platform",
           "iPhone 6s Plus",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -20948,7 +20948,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_integration_eg2tests_module_iPhone 6s Plus 15.0",
+        "name": "ios_chrome_integration_eg2tests_module_iPhone 6s Plus 13.6",
         "resultdb": {
           "enable": true
         },
@@ -20969,12 +20969,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -20987,11 +20987,11 @@
           "--platform",
           "iPhone SE (1st generation)",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -21000,7 +21000,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_integration_eg2tests_module_iPhone SE (1st generation) 15.0",
+        "name": "ios_chrome_integration_eg2tests_module_iPhone SE (1st generation) 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21021,12 +21021,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -21039,11 +21039,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -21052,7 +21052,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_settings_eg2tests_module_iPhone 6s 15.0",
+        "name": "ios_chrome_settings_eg2tests_module_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21073,12 +21073,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -21091,11 +21091,11 @@
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -21104,7 +21104,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_signin_eg2tests_module_iPad Air 2 15.0",
+        "name": "ios_chrome_signin_eg2tests_module_iPad Air 2 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21125,12 +21125,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -21142,11 +21142,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -21155,7 +21155,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_signin_eg2tests_module_iPhone 6s 15.0",
+        "name": "ios_chrome_signin_eg2tests_module_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21176,12 +21176,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -21193,11 +21193,11 @@
           "--platform",
           "iPhone 6s Plus",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -21206,7 +21206,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_signin_eg2tests_module_iPhone 6s Plus 15.0",
+        "name": "ios_chrome_signin_eg2tests_module_iPhone 6s Plus 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21227,12 +21227,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -21244,11 +21244,11 @@
           "--platform",
           "iPhone SE (1st generation)",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -21257,7 +21257,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_signin_eg2tests_module_iPhone SE (1st generation) 15.0",
+        "name": "ios_chrome_signin_eg2tests_module_iPhone SE (1st generation) 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21278,12 +21278,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -21295,11 +21295,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -21308,7 +21308,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_smoke_eg2tests_module_iPhone 6s 15.0",
+        "name": "ios_chrome_smoke_eg2tests_module_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21329,12 +21329,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -21346,11 +21346,11 @@
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -21359,7 +21359,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_ui_eg2tests_module_iPad Air 2 15.0",
+        "name": "ios_chrome_ui_eg2tests_module_iPad Air 2 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21380,12 +21380,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -21398,11 +21398,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -21411,7 +21411,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_ui_eg2tests_module_iPhone 6s 15.0",
+        "name": "ios_chrome_ui_eg2tests_module_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21432,12 +21432,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -21450,11 +21450,11 @@
           "--platform",
           "iPhone 6s Plus",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -21463,7 +21463,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_ui_eg2tests_module_iPhone 6s Plus 15.0",
+        "name": "ios_chrome_ui_eg2tests_module_iPhone 6s Plus 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21484,12 +21484,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -21502,11 +21502,11 @@
           "--platform",
           "iPhone SE (1st generation)",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -21515,7 +21515,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_ui_eg2tests_module_iPhone SE (1st generation) 15.0",
+        "name": "ios_chrome_ui_eg2tests_module_iPhone SE (1st generation) 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21536,12 +21536,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -21554,11 +21554,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -21567,7 +21567,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_web_eg2tests_module_iPhone 6s 15.0",
+        "name": "ios_chrome_web_eg2tests_module_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21588,12 +21588,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -21605,11 +21605,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_components_unittests",
@@ -21617,7 +21617,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_components_unittests_iPhone 6s 15.0",
+        "name": "ios_components_unittests_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21638,12 +21638,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -21655,11 +21655,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_net_unittests",
@@ -21667,7 +21667,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_net_unittests_iPhone 6s 15.0",
+        "name": "ios_net_unittests_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21688,12 +21688,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -21705,11 +21705,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_remoting_unittests",
@@ -21717,7 +21717,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_remoting_unittests_iPhone 6s 15.0",
+        "name": "ios_remoting_unittests_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21738,12 +21738,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -21755,11 +21755,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -21768,7 +21768,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_showcase_eg2tests_module_iPhone 6s 15.0",
+        "name": "ios_showcase_eg2tests_module_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21789,12 +21789,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -21806,11 +21806,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "ios_testing_unittests",
@@ -21818,7 +21818,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_testing_unittests_iPhone 6s 15.0",
+        "name": "ios_testing_unittests_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21839,12 +21839,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -21856,11 +21856,11 @@
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -21869,7 +21869,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_shell_eg2tests_module_iPad Air 2 15.0",
+        "name": "ios_web_shell_eg2tests_module_iPad Air 2 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21890,12 +21890,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -21907,11 +21907,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -21920,7 +21920,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_shell_eg2tests_module_iPhone 6s 15.0",
+        "name": "ios_web_shell_eg2tests_module_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21941,12 +21941,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -21958,11 +21958,11 @@
           "--platform",
           "iPhone 6s Plus",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -21971,7 +21971,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_shell_eg2tests_module_iPhone 6s Plus 15.0",
+        "name": "ios_web_shell_eg2tests_module_iPhone 6s Plus 13.6",
         "resultdb": {
           "enable": true
         },
@@ -21992,12 +21992,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22009,11 +22009,11 @@
           "--platform",
           "iPhone SE (1st generation)",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest",
           "--xcode-parallelization"
         ],
@@ -22022,7 +22022,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_shell_eg2tests_module_iPhone SE (1st generation) 15.0",
+        "name": "ios_web_shell_eg2tests_module_iPhone SE (1st generation) 13.6",
         "resultdb": {
           "enable": true
         },
@@ -22043,12 +22043,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22060,11 +22060,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "net_unittests",
@@ -22072,7 +22072,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "net_unittests_iPhone 6s 15.0",
+        "name": "net_unittests_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -22093,12 +22093,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22110,11 +22110,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "services_unittests",
@@ -22122,7 +22122,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "services_unittests_iPhone 6s 15.0",
+        "name": "services_unittests_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -22143,12 +22143,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22160,11 +22160,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "sql_unittests",
@@ -22172,7 +22172,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "sql_unittests_iPhone 6s 15.0",
+        "name": "sql_unittests_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -22193,12 +22193,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22210,11 +22210,11 @@
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.0",
+          "13.6",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a5192i",
+          "13a5192ixc",
           "--xctest"
         ],
         "isolate_name": "url_unittests",
@@ -22222,7 +22222,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "url_unittests_iPhone 6s 15.0",
+        "name": "url_unittests_iPhone 6s 13.6",
         "resultdb": {
           "enable": true
         },
@@ -22243,12 +22243,12 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a5192i",
+              "name": "xcode_ios_13a5192ixc",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_0",
-              "path": "Runtime-ios-15.0"
+              "name": "runtime_ios_13_6",
+              "path": "Runtime-ios-13.6"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"

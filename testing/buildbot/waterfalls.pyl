@@ -1962,10 +1962,10 @@
         ],
         'mixins': [
           'enable_resultdb',
-          'mac_10.15',
+          'mac_11_x64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_12d4e',
+          'xcode_13_main',
           'xctest',
         ],
         'test_suites': {
@@ -2875,7 +2875,7 @@
           'mac_11_x64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_12d4e',
+          'xcode_13_main',
           'xctest',
         ],
         'test_suites': {
@@ -2890,7 +2890,7 @@
           'mac_11_x64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_12d4e',
+          'xcode_13_main',
           'xctest',
         ],
         'test_suites': {
@@ -2903,7 +2903,7 @@
           'mac_11_x64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_12d4e',
+          'xcode_13_main',
           'xctest',
         ],
         'test_suites': {
@@ -2916,7 +2916,7 @@
           'mac_11_x64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_12d4e',
+          'xcode_13_main',
           'xctest',
         ],
         'test_suites': {
@@ -5106,7 +5106,7 @@
           'mac_11_x64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_12d4e',
+          'xcode_13_main',
           'xctest',
         ],
         'test_suites': {
@@ -5123,7 +5123,7 @@
           'mac_11_x64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_12d4e',
+          'xcode_13_main',
           'xctest',
         ],
         'test_suites': {
@@ -5139,7 +5139,7 @@
           'mac_11_x64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_13a5192i',
+          'xcode_13_main',
           'xctest',
         ],
         'test_suites': {
