@@ -37,9 +37,9 @@ class PolicyMap;
 // Implements the common part of tracking a OpenNetworkConfiguration device or
 // user policy. Pushes the network configs to the
 // ManagedNetworkConfigurationHandler, which in turn writes configurations to
-// Shill. Certificates are imported with the chromeos::onc::CertificateImporter.
-// For user policies the subclass UserNetworkConfigurationUpdater must be used.
-// Does not handle proxy settings.
+// Shill. User client certificates are imported with the
+// chromeos::onc::CertificateImporter. For user policies the subclass
+// UserNetworkConfigurationUpdater must be used. Does not handle proxy settings.
 class NetworkConfigurationUpdater : public chromeos::PolicyCertificateProvider,
                                     public PolicyService::Observer {
  public:
@@ -51,6 +51,8 @@ class NetworkConfigurationUpdater : public chromeos::PolicyCertificateProvider,
                        const PolicyMap& current) override;
   void OnPolicyServiceInitialized(PolicyDomain domain) override;
 
+  // The observer interface sends notifications about changes in server and
+  // authority certificates.
   // chromeos::PolicyCertificateProvider:
   void AddPolicyProvidedCertsObserver(
       chromeos::PolicyCertificateProvider::Observer* observer) override;

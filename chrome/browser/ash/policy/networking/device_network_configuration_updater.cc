@@ -105,7 +105,8 @@ void DeviceNetworkConfigurationUpdater::Init() {
 }
 
 void DeviceNetworkConfigurationUpdater::ImportClientCertificates() {
-  // Importing client certificates from device policy is not implemented.
+  LOG(WARNING)
+      << "Importing client certificates from device policy is not implemented.";
 }
 
 void DeviceNetworkConfigurationUpdater::ApplyNetworkPolicy(
