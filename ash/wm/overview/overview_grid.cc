@@ -54,7 +54,7 @@
 #include "base/bind.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/cxx17_backports.h"
-#include "base/numerics/ranges.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
