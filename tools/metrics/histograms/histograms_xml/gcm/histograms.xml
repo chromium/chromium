@@ -32,14 +32,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GCM.CheckinRequestStatus" enum="GCMCheckinRequestStatus"
-    expires_after="M96">
+    expires_after="M98">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>Status code of the outcome of a GCM checkin request.</summary>
 </histogram>
 
 <histogram name="GCM.CheckinRequestStatusNetError" enum="NetErrorCodes"
-    expires_after="M96">
+    expires_after="M98">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -239,7 +239,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="GCM.IncomingSendErrors" units="messages" expires_after="M94">
+<histogram name="GCM.IncomingSendErrors" units="messages" expires_after="M98">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -248,8 +248,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="GCM.LoadStatus" enum="GCMLoadStatus"
-    expires_after="2021-09-05">
+<histogram name="GCM.LoadStatus" enum="GCMLoadStatus" expires_after="M98">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>Status code of loading from the persistent GCM store.</summary>
@@ -264,7 +263,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GCM.PendingConnectionEventsAtShutdown" units="events"
-    expires_after="M96">
+    expires_after="M98">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -381,7 +380,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GCM.SendWebPushMessagePayloadSize" units="units"
-    expires_after="M96">
+    expires_after="M98">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -401,7 +400,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GCM.SendWebPushMessageStatusCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-08-09">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M98">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
