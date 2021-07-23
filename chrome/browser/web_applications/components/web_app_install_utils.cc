@@ -78,8 +78,7 @@ void AddSquareIconsFromBitmaps(
 
 // Populate |web_app_info|'s shortcuts_menu_item_infos vector using the
 // blink::Manifest's shortcuts vector.
-std::vector<WebApplicationShortcutsMenuItemInfo>
-UpdateShortcutsMenuItemInfosFromManifest(
+std::vector<WebApplicationShortcutsMenuItemInfo> ToWebAppShortcutsMenuItemInfos(
     const std::vector<blink::Manifest::ShortcutItem>& shortcuts) {
   std::vector<WebApplicationShortcutsMenuItemInfo> web_app_shortcut_infos;
   web_app_shortcut_infos.reserve(shortcuts.size());
@@ -297,14 +296,9 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
     web_app_info->note_taking_new_note_url = manifest.note_taking->new_note_url;
   }
 
-  // If any shortcuts are specified in the manifest, they take precedence over
-  // any we picked up from the web_app stuff.
-  if (!manifest.shortcuts.empty() &&
-      base::FeatureList::IsEnabled(
-          features::kDesktopPWAsAppIconShortcutsMenu)) {
-    web_app_info->shortcuts_menu_item_infos =
-        UpdateShortcutsMenuItemInfosFromManifest(manifest.shortcuts);
-  }
+  DCHECK(web_app_info->shortcuts_menu_item_infos.empty());
+  web_app_info->shortcuts_menu_item_infos =
+      ToWebAppShortcutsMenuItemInfos(manifest.shortcuts);
 
   web_app_info->capture_links = manifest.capture_links;
 
@@ -317,22 +311,21 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
 std::vector<GURL> GetValidIconUrlsToDownload(
     const WebApplicationInfo& web_app_info) {
   std::vector<GURL> web_app_info_icon_urls;
+  // App icons.
   for (const WebApplicationIconInfo& info : web_app_info.icon_infos) {
     if (!info.url.is_valid())
       continue;
     web_app_info_icon_urls.push_back(info.url);
   }
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsAppIconShortcutsMenu)) {
-    // Also add shortcut icon urls, so they can be downloaded.
-    for (const auto& shortcut : web_app_info.shortcuts_menu_item_infos) {
-      for (IconPurpose purpose : kIconPurposes) {
-        for (const auto& icon :
-             shortcut.GetShortcutIconInfosForPurpose(purpose)) {
-          if (!icon.url.is_valid())
-            continue;
-          web_app_info_icon_urls.push_back(icon.url);
-        }
+
+  // Shortcut icons.
+  for (const auto& shortcut : web_app_info.shortcuts_menu_item_infos) {
+    for (IconPurpose purpose : kIconPurposes) {
+      for (const auto& icon :
+           shortcut.GetShortcutIconInfosForPurpose(purpose)) {
+        if (!icon.url.is_valid())
+          continue;
+        web_app_info_icon_urls.push_back(icon.url);
       }
     }
   }
@@ -371,14 +364,8 @@ void PopulateShortcutItemIcons(WebApplicationInfo* web_app_info,
 
 void FilterAndResizeIconsGenerateMissing(WebApplicationInfo* web_app_info,
                                          const IconsMap* icons_map) {
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsAppIconShortcutsMenu) &&
-      icons_map) {
-    // When icon redownloading on app update is disabled, FilterAndResize* won't
-    // be called in the install task, and instead PopulateShortcutItemIcons will
-    // be called directly from OnIconsRetrievedFinalizeUpdate.
+  if (icons_map)
     PopulateShortcutItemIcons(web_app_info, icons_map);
-  }
 
   std::vector<WebApplicationIconInfo> icon_infos_any;
   std::vector<WebApplicationIconInfo> icon_infos_maskable;

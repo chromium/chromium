@@ -752,12 +752,6 @@ const char kDesktopPWAsPrefixAppNameInWindowTitleDescription[] =
     "Prefix the window title of installed PWAs with the name of the PWA. On "
     "ChromeOS this is visible only in the window/activity switcher.";
 
-const char kDesktopPWAsAppIconShortcutsMenuName[] =
-    "Desktop PWAs app icon shortcuts menu";
-const char kDesktopPWAsAppIconShortcutsMenuDescription[] =
-    "Enable installed PWAs to include a menu of shortcuts associated with the "
-    "app icon in the taskbar on Windows, or the dock on macOS or Linux.";
-
 const char kDesktopPWAsAppIconShortcutsMenuUIName[] =
     "Desktop PWAs app icon shortcuts menu UI";
 const char kDesktopPWAsAppIconShortcutsMenuUIDescription[] =

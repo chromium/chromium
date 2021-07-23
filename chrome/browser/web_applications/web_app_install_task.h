@@ -142,7 +142,7 @@ class WebAppInstallTask : content::WebContentsObserver {
       content::WebContents* web_contents,
       const AppId& app_id,
       std::unique_ptr<WebApplicationInfo> web_application_info,
-      bool redownload_app_icons,
+      bool update_product_icons,
       InstallManager::OnceInstallCallback callback);
 
   // Obtains WebApplicationInfo about web app located at |start_url|, fallbacks
@@ -236,7 +236,7 @@ class WebAppInstallTask : content::WebContentsObserver {
       IconsMap icons_map);
   void OnIconsRetrievedFinalizeUpdate(
       std::unique_ptr<WebApplicationInfo> web_app_info,
-      bool redownload_app_icons,
+      bool update_product_icons,
       IconsMap icons_map);
   void OnDialogCompleted(ForInstallableSite for_installable_site,
                          bool user_accepted,

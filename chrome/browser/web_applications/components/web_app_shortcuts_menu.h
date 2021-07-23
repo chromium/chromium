@@ -17,8 +17,7 @@ class FilePath;
 namespace web_app {
 
 // Returns true if Shortcuts Menu is managed externally by the operating system,
-// and Chrome supports Shortcuts Menu on this operating system.This does not
-// take into account the state of kDesktopPWAsAppIconShortcutsMenu flag.
+// and Chrome supports Shortcuts Menu on this operating system.
 bool ShouldRegisterShortcutsMenuWithOs();
 
 // Does an OS specific registration of a Shortcuts Menu for the web app's icon.

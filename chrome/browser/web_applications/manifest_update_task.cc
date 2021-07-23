@@ -342,10 +342,8 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsAppIconShortcutsMenu) &&
-      web_application_info_->shortcuts_menu_item_infos !=
-          registrar_.GetAppShortcutsMenuItemInfos(app_id_)) {
+  if (web_application_info_->shortcuts_menu_item_infos !=
+      registrar_.GetAppShortcutsMenuItemInfos(app_id_)) {
     return true;
   }
 
@@ -547,8 +545,10 @@ void ManifestUpdateTask::OnPostAppIdentityUpdateCheck(
       UpdateAfterWindowsClose();
       return;
     }
-  } else if (base::FeatureList::IsEnabled(
-                 features::kDesktopPWAsAppIconShortcutsMenu)) {
+  } else if (!base::FeatureList::IsEnabled(
+                 features::kPwaUpdateDialogForNameAndIcon)) {
+    // When kPwaUpdateDialogForNameAndIcon is enabled, the FilterAndResizeIcons
+    // call has already been made.
     // FilterAndResizeIconsGenerateMissing calls PopulateShortcutItemIcons. We
     // need that call to happen still if redownloading app icons is disabled, so
     // manually call that here.
@@ -560,15 +560,9 @@ void ManifestUpdateTask::OnPostAppIdentityUpdateCheck(
                               &downloaded_icons_map);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsAppIconShortcutsMenu)) {
-    icon_manager_.ReadAllShortcutsMenuIcons(
-        app_id_,
-        base::BindOnce(&ManifestUpdateTask::OnAllShortcutsMenuIconsRead,
-                       AsWeakPtr()));
-  } else {
-    NoManifestUpdateRequired();
-  }
+  icon_manager_.ReadAllShortcutsMenuIcons(
+      app_id_, base::BindOnce(&ManifestUpdateTask::OnAllShortcutsMenuIconsRead,
+                              AsWeakPtr()));
 }
 
 IconDiff ManifestUpdateTask::IsUpdateNeededForIconContents(

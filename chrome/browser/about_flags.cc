@@ -3671,11 +3671,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDefaultMeetWebAppDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(web_app::kDefaultMeetWebApp)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(https://crbug.com/1069293): Add macOS and Linux implementations.
-    {"enable-desktop-pwas-app-icon-shortcuts-menu",
-     flag_descriptions::kDesktopPWAsAppIconShortcutsMenuName,
-     flag_descriptions::kDesktopPWAsAppIconShortcutsMenuDescription, kOsWin,
-     FEATURE_VALUE_TYPE(features::kDesktopPWAsAppIconShortcutsMenu)},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-desktop-pwas-attention-badging-cros",
      flag_descriptions::kDesktopPWAsAttentionBadgingCrOSName,
@@ -7391,6 +7386,7 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    // TODO(https://crbug.com/1069293): Add macOS and Linux implementations.
     {"enable-desktop-pwas-app-icon-shortcuts-menu-ui",
      flag_descriptions::kDesktopPWAsAppIconShortcutsMenuUIName,
      flag_descriptions::kDesktopPWAsAppIconShortcutsMenuUIDescription, kOsCrOS,

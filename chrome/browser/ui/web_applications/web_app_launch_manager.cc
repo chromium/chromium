@@ -432,12 +432,8 @@ void WebAppLaunchManager::LaunchApplication(
   }
   params.url_handler_launch_url = url_handler_launch_url;
   params.protocol_handler_launch_url = protocol_handler_launch_url;
-
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsAppIconShortcutsMenu)) {
-    params.override_url = GURL(command_line.GetSwitchValueASCII(
-        switches::kAppLaunchUrlForShortcutsMenuItem));
-  }
+  params.override_url = GURL(command_line.GetSwitchValueASCII(
+      switches::kAppLaunchUrlForShortcutsMenuItem));
 
   // Wait for the web applications database to load.
   // If the profile and WebAppLaunchManager are destroyed,

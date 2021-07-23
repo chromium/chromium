@@ -319,9 +319,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_ShareTarget) {
 // Tests that WebAppInfo is correctly updated when Manifest contains Shortcuts.
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kDesktopPWAsAppIconShortcutsMenu,
-                                 blink::features::kFileHandlingIcons},
-                                {});
+  feature_list.InitWithFeatures({blink::features::kFileHandlingIcons}, {});
 
   WebApplicationInfo web_app_info;
   web_app_info.title = kAlternativeAppTitle;
@@ -330,24 +328,6 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   const GURL kAppIcon1("fav1.png");
   info.url = kAppIcon1;
   web_app_info.icon_infos.push_back(info);
-
-  const GURL kShortcutItemUrl("http://www.chromium.org/shortcuts/action");
-  for (int i = 0; i < 4; ++i) {
-    WebApplicationShortcutsMenuItemInfo shortcuts_menu_item_info;
-    WebApplicationShortcutsMenuItemInfo::Icon icon;
-    shortcuts_menu_item_info.name =
-        kShortcutItemName + base::NumberToString16(i + 1);
-    shortcuts_menu_item_info.url = kShortcutItemUrl;
-
-    icon.url = GURL("http://www.chromium.org/shortcuts/icon1.png");
-    icon.square_size_px = kIconSize;
-
-    IconPurpose purpose = kIconPurposes[i % kIconPurposes.size()];
-    shortcuts_menu_item_info.SetShortcutIconInfosForPurpose(purpose,
-                                                            {std::move(icon)});
-    web_app_info.shortcuts_menu_item_infos.push_back(
-        std::move(shortcuts_menu_item_info));
-  }
 
   blink::Manifest manifest;
   const GURL kAppUrl("http://www.chromium.org/index.html");
@@ -398,9 +378,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   EXPECT_EQ(1u, web_app_info.icon_infos.size());
   EXPECT_EQ(kAppIcon1, web_app_info.icon_infos[0].url);
 
-  // The shortcuts_menu_item_infos from |web_app_info| should be left as is,
-  // since the manifest doesn't have any shortcut information.
-  EXPECT_EQ(4u, web_app_info.shortcuts_menu_item_infos.size());
+  EXPECT_EQ(0u, web_app_info.shortcuts_menu_item_infos.size());
   EXPECT_EQ(web_app_info_original.shortcuts_menu_item_infos,
             web_app_info.shortcuts_menu_item_infos);
 
@@ -426,6 +404,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   manifest.icons.push_back(icon);
 
   // Test that shortcuts in the manifest replace those in |web_app_info|.
+  const GURL kShortcutItemUrl("http://www.chromium.org/shortcuts/action");
   blink::Manifest::ShortcutItem shortcut_item;
   shortcut_item.name = std::u16string(kShortcutItemName) + u"4";
   shortcut_item.url = kShortcutItemUrl;
@@ -453,7 +432,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   EXPECT_EQ(kAppTitle, web_app_info.title);
   EXPECT_EQ(DisplayMode::kMinimalUi, web_app_info.display_mode);
   // Sanity check that original copy was not changed.
-  EXPECT_EQ(4u, web_app_info_original.shortcuts_menu_item_infos.size());
+  EXPECT_EQ(0u, web_app_info_original.shortcuts_menu_item_infos.size());
 
   // We currently duplicate the app icons with multiple Purposes.
   EXPECT_EQ(5u, web_app_info.icon_infos.size());
@@ -532,9 +511,6 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestTooManyIcons) {
 
 // Tests that we limit the number of shortcut icons declared by a site.
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestTooManyShortcutIcons) {
-  base::test::ScopedFeatureList feature_list(
-      features::kDesktopPWAsAppIconShortcutsMenu);
-
   blink::Manifest manifest;
   for (unsigned int i = 0; i < kNumTestIcons; ++i) {
     blink::Manifest::ShortcutItem shortcut_item;
@@ -588,9 +564,6 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestIconsTooLarge) {
 
 // Tests that we limit the size of shortcut icons declared by a site.
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestShortcutIconsTooLarge) {
-  base::test::ScopedFeatureList feature_list(
-      features::kDesktopPWAsAppIconShortcutsMenu);
-
   blink::Manifest manifest;
   for (int i = 1; i <= 20; ++i) {
     blink::Manifest::ShortcutItem shortcut_item;
@@ -692,29 +665,6 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIconsNoShortcutIcons) {
   EXPECT_EQ(0U, web_app_info.shortcuts_menu_item_infos.size());
 }
 
-// Tests that when FilterAndResizeIconsGenerateMissing is called with no
-// app icon or shortcut icon data in web_app_info, web_app_info.icon_bitmaps_any
-// is correctly populated.
-TEST(WebAppInstallUtils,
-     FilterAndResizeIconsGenerateMissingNoWebAppIconData_WithoutShortcuts) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kDesktopPWAsAppIconShortcutsMenu);
-
-  WebApplicationInfo web_app_info;
-  web_app_info.title = u"App Name";
-
-  IconsMap icons_map;
-  std::vector<SkBitmap> bmp1 = {CreateSquareIcon(32, SK_ColorWHITE)};
-  icons_map.emplace(GURL("http://www.chromium.org/shortcuts/icon1.png"), bmp1);
-  FilterAndResizeIconsGenerateMissing(&web_app_info, &icons_map);
-
-  EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps.any.size());
-  for (const auto& icon_bitmap : web_app_info.icon_bitmaps.any) {
-    EXPECT_EQ(SK_ColorWHITE, icon_bitmap.second.getColor(0, 0));
-  }
-}
-
 // Tests that when FilterAndResizeIconsGenerateMissing is called with maskable
 // icons available, web_app_info.icon_bitmaps_{any,maskable} are correctly
 // populated.
@@ -793,9 +743,6 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_InvalidManifestUrl) {
 // feature enabled, web_app_info.icon_bitmaps_any is correctly populated.
 TEST(WebAppInstallUtils,
      FilterAndResizeIconsGenerateMissingNoWebAppIconData_WithShortcuts) {
-  base::test::ScopedFeatureList feature_list(
-      features::kDesktopPWAsAppIconShortcutsMenu);
-
   WebApplicationInfo web_app_info;
   web_app_info.title = u"App Name";
 
@@ -815,9 +762,6 @@ TEST(WebAppInstallUtils,
 // app icon and shortcut icon bitmaps in icons_map,
 // web_app_info.icon_bitmaps_any is correctly populated.
 TEST(WebAppInstallUtils, FilterAndResizeIconsGenerateMissingWithShortcutIcons) {
-  base::test::ScopedFeatureList feature_list(
-      features::kDesktopPWAsAppIconShortcutsMenu);
-
   // Construct |icons_map| to pass to FilterAndResizeIconsGenerateMissing().
   IconsMap icons_map;
   const GURL kIconUrl1("http://www.chromium.org/shortcuts/icon1.png");

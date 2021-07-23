@@ -1404,11 +1404,6 @@ TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
 // unittest file.
 class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
  public:
-  WebAppInstallTaskTestWithShortcutsMenu() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kDesktopPWAsAppIconShortcutsMenu}, {});
-  }
-
   GURL ShortcutIconUrl() {
     return GURL("https://example.com/icons/shortcut_icon.png");
   }
@@ -1572,9 +1567,6 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
   static constexpr SquareSizePx kIconSize = 128;
   static constexpr SkColor kInitialThemeColor = 0xFF000000;
   static constexpr SkColor kFinalThemeColor = 0xFFFFFFFF;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Declare constants needed by tests.

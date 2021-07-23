@@ -2030,13 +2030,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
 #endif  // defined(OS_LINUX)
 }
 
-class ManifestUpdateManagerBrowserTestWithShortcutsMenu
-    : public ManifestUpdateManagerBrowserTest {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kDesktopPWAsAppIconShortcutsMenu};
-};
-
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsShortcutsMenuUpdated) {
   constexpr char kManifestTemplate[] = R"(
     {
@@ -2061,7 +2055,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
       2u);
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsItemNameUpdated) {
   constexpr char kManifestTemplate[] = R"(
     {
@@ -2101,7 +2095,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
       kAnotherShortcutsItemName16);
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckIgnoresShortNameAndDescriptionChange) {
   constexpr char kManifestTemplate[] = R"(
     {
@@ -2139,7 +2133,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
                                       ManifestUpdateResult::kAppUpToDate, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsItemUrlUpdated) {
   constexpr char kManifestTemplate[] = R"(
     {
@@ -2179,7 +2173,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
       http_server_.GetURL(kAnotherShortcutsItemUrl));
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsShortcutIconContentChange) {
   constexpr char kManifest[] = R"(
     {
@@ -2240,7 +2234,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        ShortcutIconContentChangeDoesNotApplyAppIconUpdate) {
   constexpr char kManifest[] = R"(
     {
@@ -2292,7 +2286,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
                                       ManifestUpdateResult::kAppUpdated, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsShortcutIconSrcUpdated) {
   constexpr char kManifestTemplate[] = R"(
     {
@@ -2335,7 +2329,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
             http_server_.GetURL(kAnotherIconSrc));
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsShortcutIconSizesUpdated) {
   constexpr char kManifestTemplate[] = R"(
     {

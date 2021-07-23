@@ -214,11 +214,6 @@ const base::Feature kDefaultPinnedAppsUpdate2021Q2{
 const base::Feature kDesktopCaptureTabSharingInfobar{
     "DesktopCaptureTabSharingInfobar", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables Desktop PWA installs to have a menu of shortcuts associated with
-// the app icon in the taskbar on Windows, or the dock on macOS or Linux.
-const base::Feature kDesktopPWAsAppIconShortcutsMenu{
-    "DesktopPWAsAppIconShortcutsMenu", base::FEATURE_ENABLED_BY_DEFAULT};
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables Desktop PWAs shortcuts menu to be visible and executable in ChromeOS
 // UI surfaces.

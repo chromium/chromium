@@ -135,16 +135,11 @@ void AppShortcutManager::DeleteShortcuts(
 void AppShortcutManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
     const AppId& app_id,
     RegisterShortcutsMenuCallback callback) {
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsAppIconShortcutsMenu)) {
-    icon_manager_->ReadAllShortcutsMenuIcons(
-        app_id,
-        base::BindOnce(
-            &AppShortcutManager::OnShortcutsMenuIconsReadRegisterShortcutsMenu,
-            weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback)));
-  } else {
-    std::move(callback).Run(/*shortcuts_menu_registered=*/true);
-  }
+  icon_manager_->ReadAllShortcutsMenuIcons(
+      app_id,
+      base::BindOnce(
+          &AppShortcutManager::OnShortcutsMenuIconsReadRegisterShortcutsMenu,
+          weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback)));
 }
 
 void AppShortcutManager::RegisterShortcutsMenuWithOs(
@@ -218,14 +213,6 @@ void AppShortcutManager::OnShortcutInfoRetrievedCreateShortcuts(
   ShortcutLocations locations;
   locations.on_desktop = add_to_desktop;
   locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
-
-  // Remove any previously created App Icon Shortcuts Menu.
-  if (!base::FeatureList::IsEnabled(
-          features::kDesktopPWAsAppIconShortcutsMenu) &&
-      web_app::ShouldRegisterShortcutsMenuWithOs()) {
-    web_app::UnregisterShortcutsMenuWithOs(info->extension_id,
-                                           info->profile_path);
-  }
 
   internals::ScheduleCreatePlatformShortcuts(
       std::move(shortcut_data_dir), locations, SHORTCUT_CREATION_BY_USER,

@@ -275,7 +275,7 @@ void WebAppInstallTask::UpdateWebAppFromInfo(
     content::WebContents* web_contents,
     const AppId& app_id,
     std::unique_ptr<WebApplicationInfo> web_application_info,
-    bool redownload_app_icons,
+    bool update_product_icons,
     InstallManager::OnceInstallCallback callback) {
   CheckInstallPreconditions();
   Observe(web_contents);
@@ -293,7 +293,7 @@ void WebAppInstallTask::UpdateWebAppFromInfo(
       /*skip_page_favicons=*/true, WebAppIconDownloader::Histogram::kForUpdate,
       base::BindOnce(&WebAppInstallTask::OnIconsRetrievedFinalizeUpdate,
                      base::Unretained(this), std::move(web_application_info),
-                     redownload_app_icons));
+                     update_product_icons));
 }
 
 void WebAppInstallTask::LoadAndRetrieveWebApplicationInfoWithIcons(
@@ -741,7 +741,7 @@ void WebAppInstallTask::OnIconsRetrievedShowDialog(
 
 void WebAppInstallTask::OnIconsRetrievedFinalizeUpdate(
     std::unique_ptr<WebApplicationInfo> web_app_info,
-    bool redownload_app_icons,
+    bool update_product_icons,
     IconsMap icons_map) {
   if (ShouldStopInstall())
     return;
@@ -749,10 +749,9 @@ void WebAppInstallTask::OnIconsRetrievedFinalizeUpdate(
   DCHECK(web_app_info);
 
   // TODO(crbug.com/926083): Abort update if icons fail to download.
-  if (redownload_app_icons) {
+  if (update_product_icons) {
     FilterAndResizeIconsGenerateMissing(web_app_info.get(), &icons_map);
-  } else if (base::FeatureList::IsEnabled(
-                 features::kDesktopPWAsAppIconShortcutsMenu)) {
+  } else {
     // FilterAndResizeIconsGenerateMissing calls PopulateShortcutItemIcons. We
     // need that call to happen still if redownloading app icons is disabled, so
     // manually call that here.
