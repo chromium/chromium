@@ -148,8 +148,17 @@ SANITIZER_HOOK_ATTRIBUTE const char *__msan_default_options() {
 //     substring will be stripped from source file paths in symbolized reports.
 //   external_symbolizer_path=... - provides the path to llvm-symbolizer
 //     relative to the main executable
+//   use_poisoned=1 - Scan poisoned memory. This is useful for Oilpan (C++
+//     garbage collection) which wants to exclude its managed memory from being
+//     reported as leaks (through root regions) and also temporarily poisons
+//     memory regions before calling destructors of objects to avoid destructors
+//     cross-referencing memory in other objects. Main thread termination in
+//     Blink is not graceful and leak checks may be emitted at any time, which
+//     means that the garbage collector may be in a state with poisoned memory,
+//     leading to false-positive reports.
 const char kLsanDefaultOptions[] =
     "print_suppressions=1 strip_path_prefix=/../../ "
+    "use_poisoned=1 "
 
 #if !defined(OS_APPLE)
     "external_symbolizer_path=%d/../../third_party/llvm-build/Release+Asserts/"
