@@ -785,6 +785,17 @@ ShelfAction AppListControllerImpl::ToggleAppList(
   }
 
   if (features::IsAppListBubbleEnabled()) {
+#if !defined(OFFICIAL_BUILD)
+    // Make shift-click on the shelf button toggle the non-bubble app list. This
+    // allows developers to compare behavior without restarting to flip the
+    // flag. TODO(crbug.com/1232168): Remove before feature launch.
+    if (show_source == AppListShowSource::kShelfButtonFullscreen) {
+      bubble_presenter_->Dismiss();
+      return fullscreen_presenter_->ToggleAppList(display_id, show_source,
+                                                  event_time_stamp);
+    }
+    fullscreen_presenter_->Dismiss(event_time_stamp);
+#endif  // !defined(OFFICIAL_BUILD)
     ShelfAction action = bubble_presenter_->Toggle(display_id);
     if (action == SHELF_ACTION_APP_LIST_SHOWN)
       LogAppListShowSource(show_source, /*app_list_bubble=*/true);
