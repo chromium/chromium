@@ -180,7 +180,7 @@ base::FilePath ProfilePicker::GetSwitchProfilePath() {
 
 // static
 void ProfilePicker::SwitchToSignIn(
-    SkColor profile_color,
+    absl::optional<SkColor> profile_color,
     base::OnceCallback<void(bool)> switch_finished_callback) {
   if (g_profile_picker_view) {
     g_profile_picker_view->SwitchToSignIn(profile_color,
@@ -576,7 +576,7 @@ void ProfilePickerView::Init(Profile* system_profile) {
 }
 
 void ProfilePickerView::SwitchToSignIn(
-    SkColor profile_color,
+    absl::optional<SkColor> profile_color,
     base::OnceCallback<void(bool)> switch_finished_callback) {
   if (sign_in_) {
     // The profile is already created (the user went back and forth again). No
@@ -636,7 +636,7 @@ void ProfilePickerView::CancelSignIn() {
 }
 
 void ProfilePickerView::OnProfileForSigninCreated(
-    SkColor profile_color,
+    absl::optional<SkColor> profile_color,
     base::OnceCallback<void(bool)>& switch_finished_callback,
     Profile* profile,
     Profile::CreateStatus status) {

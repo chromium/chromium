@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -67,12 +68,14 @@ class ProfilePicker {
                    const GURL& on_select_profile_target_url = GURL());
 
   // Starts the sign-in flow. The layout of the window gets updated for the
-  // sign-in flow. At the same time, the new profile is created (with
-  // `profile_color`) and the sign-in page is rendered using the new profile.
+  // sign-in flow. At the same time, the new profile is created and the sign-in
+  // page is rendered using the new profile.
+  // The new profile uses a theme generated from `profile_color` if provided or
+  // the default theme.
   // `switch_finished_callback` gets informed whether the creation of the new
   // profile succeeded and the sign-in page gets displayed.
   static void SwitchToSignIn(
-      SkColor profile_color,
+      absl::optional<SkColor> profile_color,
       base::OnceCallback<void(bool)> switch_finished_callback);
 
   // Cancel the sign-in flow and returns back to the main picker screen (if the

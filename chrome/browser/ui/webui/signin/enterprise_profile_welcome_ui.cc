@@ -53,7 +53,7 @@ void EnterpriseProfileWelcomeUI::Initialize(
     Browser* browser,
     EnterpriseProfileWelcomeUI::ScreenType type,
     const AccountInfo& account_info,
-    SkColor profile_color,
+    absl::optional<SkColor> profile_color,
     base::OnceCallback<void(bool)> proceed_callback) {
   auto handler = std::make_unique<EnterpriseProfileWelcomeHandler>(
       browser, type, account_info, profile_color, std::move(proceed_callback));

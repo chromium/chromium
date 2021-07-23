@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 struct AccountInfo;
@@ -44,7 +45,7 @@ class ProfilePickerSignInFlowController
   ProfilePickerSignInFlowController(
       ProfilePickerWebContentsHost* host,
       Profile* profile,
-      SkColor profile_color,
+      absl::optional<SkColor> profile_color,
       base::TimeDelta extended_account_info_timeout);
   ~ProfilePickerSignInFlowController() override;
   ProfilePickerSignInFlowController(const ProfilePickerSignInFlowController&) =
@@ -66,10 +67,12 @@ class ProfilePickerSignInFlowController
   // DICe flow.
   content::WebContents* contents() const { return contents_.get(); }
 
-  // Updates the profile color provided in the constructor.
-  void SetProfileColor(SkColor color);
+  // Updates the profile color provided in the constructor. absl::optional
+  // denotes the default theme.
+  void SetProfileColor(absl::optional<SkColor> color);
   // Returns the profile color, taking into account current policies.
-  SkColor GetProfileColor() const;
+  // Returns absl::nullopt for the default theme.
+  absl::optional<SkColor> GetProfileColor() const;
 
   bool IsSigningIn() const;
 
@@ -164,7 +167,8 @@ class ProfilePickerSignInFlowController
 
   // Set for the profile at the very end to avoid coloring the simple toolbar
   // for GAIA sign-in (that uses the ThemeProvider of the current profile).
-  SkColor profile_color_;
+  // absl::nullopt if the profile should use the default theme.
+  absl::optional<SkColor> profile_color_;
 
   // For finishing the profile creation flow, the extended account info is
   // needed (for properly naming the new profile). After a timeout, a fallback

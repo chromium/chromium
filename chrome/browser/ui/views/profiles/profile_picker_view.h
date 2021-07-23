@@ -130,15 +130,16 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Creates and shows the dialog.
   void Init(Profile* system_profile);
 
-  // Switches the layout to the sign-in flow (and creates a new profile)
-  void SwitchToSignIn(SkColor profile_color,
+  // Switches the layout to the sign-in flow (and creates a new profile).
+  // absl::nullopt `profile_color` corresponds to the default theme.
+  void SwitchToSignIn(absl::optional<SkColor> profile_color,
                       base::OnceCallback<void(bool)> switch_finished_callback);
   // Cancel the sign-in flow and returns back to the main picker screen (if the
   // original EntryPoint was to open the picker).
   void CancelSignIn();
   // On creation success for the sign-in profile, it rebuilds the view.
   void OnProfileForSigninCreated(
-      SkColor profile_color,
+      absl::optional<SkColor> profile_color,
       base::OnceCallback<void(bool)>& switch_finished_callback,
       Profile* new_profile,
       Profile::CreateStatus status);

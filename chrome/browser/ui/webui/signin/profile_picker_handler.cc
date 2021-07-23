@@ -694,13 +694,10 @@ void ProfilePickerHandler::OnProfileStatisticsReceived(
 void ProfilePickerHandler::HandleLoadSignInProfileCreationFlow(
     const base::ListValue* args) {
   CHECK_EQ(1U, args->GetSize());
-  SkColor profile_color;
-  if (args->GetList()[0].is_int()) {
-    profile_color = args->GetList()[0].GetInt();
-  } else {
-    // The profile color must provided in `args` unless the force signin is
-    // enabled.
-    DCHECK(signin_util::IsForceSigninEnabled());
+  absl::optional<SkColor> profile_color = args->GetList()[0].GetIfInt();
+  if (signin_util::IsForceSigninEnabled()) {
+    // Force sign-in policy uses a separate flow that doesn't initialize the
+    // profile color. Generate a new profile color here.
     profile_color = GenerateNewProfileColor().color;
   }
   ProfilePicker::SwitchToSignIn(

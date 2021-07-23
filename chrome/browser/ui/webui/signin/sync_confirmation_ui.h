@@ -29,6 +29,8 @@ class WebUI;
 // the responsability of the caller to pass the correct message handler.
 class SyncConfirmationUI : public SigninWebDialogUI {
  public:
+  enum class DesignVersion { kMonotone, kColored };
+
   explicit SyncConfirmationUI(content::WebUI* web_ui);
   ~SyncConfirmationUI() override;
 
@@ -37,15 +39,18 @@ class SyncConfirmationUI : public SigninWebDialogUI {
 
   // Initializes the message handler for the profile creation flow (when there's
   // no browser available).
-  void InitializeMessageHandlerForCreationFlow(SkColor profile_color);
+  void InitializeMessageHandlerForCreationFlow(
+      absl::optional<SkColor> profile_color);
 
  private:
   void Initialize(absl::optional<SkColor> profile_creation_flow_color,
+                  DesignVersion design,
                   bool is_modal_dialog);
   void InitializeMessageHandler(Browser* browser);
   void InitializeForSyncConfirmation(
       content::WebUIDataSource* source,
       absl::optional<SkColor> profile_creation_flow_color,
+      DesignVersion design,
       bool is_modal_dialog);
   void InitializeForSyncDisabled(content::WebUIDataSource* source);
 

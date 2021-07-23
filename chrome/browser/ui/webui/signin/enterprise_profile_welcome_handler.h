@@ -17,6 +17,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class Browser;
@@ -38,7 +39,7 @@ class EnterpriseProfileWelcomeHandler
       Browser* browser,
       EnterpriseProfileWelcomeUI::ScreenType type,
       const AccountInfo& account_info,
-      SkColor profile_color,
+      absl::optional<SkColor> profile_color,
       base::OnceCallback<void(bool)> proceed_callback);
   ~EnterpriseProfileWelcomeHandler() override;
 
@@ -104,7 +105,7 @@ class EnterpriseProfileWelcomeHandler
   const EnterpriseProfileWelcomeUI::ScreenType type_;
   const std::string domain_name_;
   const CoreAccountId account_id_;
-  SkColor profile_color_;
+  absl::optional<SkColor> profile_color_;
   base::OnceCallback<void(bool)> proceed_callback_;
 };
 
