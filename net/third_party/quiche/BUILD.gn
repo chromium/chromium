@@ -37,6 +37,7 @@ source_set("quiche") {
     "overrides/quiche_platform_impl/quiche_thread_local_impl.h",
     "overrides/quiche_platform_impl/quiche_time_utils_impl.cc",
     "overrides/quiche_platform_impl/quiche_time_utils_impl.h",
+    "src/common/platform/api/quiche_bug_tracker.h",
     "src/common/platform/api/quiche_export.h",
     "src/common/platform/api/quiche_flag_utils.h",
     "src/common/platform/api/quiche_flags.h",
@@ -466,6 +467,7 @@ source_set("quiche") {
     "src/quic/core/quic_datagram_queue.h",
     "src/quic/core/quic_error_codes.cc",
     "src/quic/core/quic_error_codes.h",
+    "src/quic/core/quic_flags_list.h",
     "src/quic/core/quic_flow_controller.cc",
     "src/quic/core/quic_flow_controller.h",
     "src/quic/core/quic_framer.cc",
@@ -856,6 +858,7 @@ source_set("quiche_test_tools_core") {
   testonly = true
   sources = [
     "src/common/platform/api/quiche_test.h",
+    "src/common/platform/api/quiche_test_helpers.h",
     "src/common/test_tools/quiche_test_utils.cc",
     "src/common/test_tools/quiche_test_utils.h",
   ]
@@ -1325,6 +1328,7 @@ source_set("quiche_tests") {
     "src/quic/core/frames/quic_frames_test.cc",
     "src/quic/core/http/http_decoder_test.cc",
     "src/quic/core/http/http_encoder_test.cc",
+    "src/quic/core/http/http_frames_test.cc",
     "src/quic/core/http/quic_client_promised_info_test.cc",
     "src/quic/core/http/quic_client_push_promise_index_test.cc",
     "src/quic/core/http/quic_header_list_test.cc",
@@ -1414,6 +1418,7 @@ source_set("quiche_tests") {
     "src/quic/core/quic_versions_test.cc",
     "src/quic/core/quic_write_blocked_list_test.cc",
     "src/quic/core/tls_chlo_extractor_test.cc",
+    "src/quic/core/tls_client_handshaker_test.cc",
     "src/quic/core/uber_quic_stream_id_manager_test.cc",
     "src/quic/core/uber_received_packet_manager_test.cc",
     "src/quic/platform/api/quic_hostname_utils_test.cc",
