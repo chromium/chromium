@@ -35,6 +35,8 @@ constexpr char kDeskTemplateUuidKey[] = "uuid";
 constexpr char kDeskTemplateTimeCreatedKey[] = "time_created";
 // Key used in base::Value generation for the restore data field.
 constexpr char kDeskTemplateRestoreDataKey[] = "restore_data";
+// The maximum number of templates the local storage can hold.
+constexpr std::size_t kMaxTemplateCount = 6u;
 
 // Converts ash::DeskTemplates to base::Value for serialization.
 base::Value ConvertDeskTemplateToValue(ash::DeskTemplate* desk_template) {
@@ -240,6 +242,10 @@ void LocalDeskDataManager::DeleteAllEntries(
                      std::move(callback)));
 }
 
+std::size_t LocalDeskDataManager::GetMaxEntryCount() const {
+  return kMaxTemplateCount;
+}
+
 void LocalDeskDataManager::EnsureCacheIsLoaded() {
   if (cache_status_ == CacheStatus::kOk) {
     // Cache is already loaded.
@@ -344,6 +350,11 @@ void LocalDeskDataManager::AddOrUpdateEntryTask(
   EnsureCacheIsLoaded();
   if (cache_status_ == CacheStatus::kInvalidPath) {
     *status_ptr = DeskModel::AddOrUpdateEntryStatus::kFailure;
+    return;
+  }
+
+  if (templates_.size() >= kMaxTemplateCount) {
+    *status_ptr = DeskModel::AddOrUpdateEntryStatus::kHitMaximumLimit;
     return;
   }
 
