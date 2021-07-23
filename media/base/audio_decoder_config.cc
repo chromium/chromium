@@ -74,9 +74,11 @@ bool AudioDecoderConfig::Matches(const AudioDecoderConfig& config) const {
           (sample_format() == config.sample_format()) &&
           (seek_preroll() == config.seek_preroll()) &&
           (codec_delay() == config.codec_delay()) &&
+          (profile() == config.profile()) &&
           (should_discard_decoder_delay() ==
            config.should_discard_decoder_delay()) &&
-          (profile() == config.profile()));
+          (target_output_channel_layout() ==
+           config.target_output_channel_layout()));
 }
 
 std::string AudioDecoderConfig::AsHumanReadableString() const {
@@ -94,7 +96,9 @@ std::string AudioDecoderConfig::AsHumanReadableString() const {
     << ", has extra data: " << (extra_data().empty() ? "false" : "true")
     << ", encryption scheme: " << encryption_scheme()
     << ", discard decoder delay: "
-    << (should_discard_decoder_delay() ? "true" : "false");
+    << (should_discard_decoder_delay() ? "true" : "false")
+    << ", target_output_channel_layout: "
+    << ChannelLayoutToString(target_output_channel_layout());
   return s.str();
 }
 

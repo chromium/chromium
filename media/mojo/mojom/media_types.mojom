@@ -161,16 +161,19 @@ struct VideoColorSpace {
 
 // This defines a mojo transport format for media::AudioDecoderConfig.
 // See media/base/audio_decoder_config.h for descriptions.
+// TODO(crbug.com/1232205): Support `channels_` set by SetChannelsForDiscrete().
 struct AudioDecoderConfig {
   AudioCodec codec;
-  AudioCodecProfile profile;
   SampleFormat sample_format;
   ChannelLayout channel_layout;
   int32 samples_per_second;
   array<uint8> extra_data;
+  EncryptionScheme encryption_scheme;
   mojo_base.mojom.TimeDelta seek_preroll;
   int32 codec_delay;
-  EncryptionScheme encryption_scheme;
+  AudioCodecProfile profile;
+  ChannelLayout target_output_channel_layout;
+  bool should_discard_decoder_delay;
 };
 
 // This defines a mojo transport format for media::VideoDecoderConfig.

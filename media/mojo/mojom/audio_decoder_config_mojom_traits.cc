@@ -41,10 +41,19 @@ bool StructTraits<media::mojom::AudioDecoderConfigDataView,
   if (!input.ReadProfile(&profile))
     return false;
 
+  media::ChannelLayout target_output_channel_layout;
+  if (!input.ReadTargetOutputChannelLayout(&target_output_channel_layout))
+    return false;
+
   output->Initialize(codec, sample_format, channel_layout,
                      input.samples_per_second(), extra_data, encryption_scheme,
                      seek_preroll, input.codec_delay());
   output->set_profile(profile);
+  output->set_target_output_channel_layout(target_output_channel_layout);
+
+  if (!input.should_discard_decoder_delay())
+    output->disable_discard_decoder_delay();
+
   return output->IsValidConfig();
 }
 

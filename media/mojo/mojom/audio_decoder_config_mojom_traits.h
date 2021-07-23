@@ -37,6 +37,11 @@ struct StructTraits<media::mojom::AudioDecoderConfigDataView,
     return input.extra_data();
   }
 
+  static media::EncryptionScheme encryption_scheme(
+      const media::AudioDecoderConfig& input) {
+    return input.encryption_scheme();
+  }
+
   static base::TimeDelta seek_preroll(const media::AudioDecoderConfig& input) {
     return input.seek_preroll();
   }
@@ -45,14 +50,19 @@ struct StructTraits<media::mojom::AudioDecoderConfigDataView,
     return input.codec_delay();
   }
 
-  static media::EncryptionScheme encryption_scheme(
-      const media::AudioDecoderConfig& input) {
-    return input.encryption_scheme();
-  }
-
   static media::AudioCodecProfile profile(
       const media::AudioDecoderConfig& input) {
     return input.profile();
+  }
+
+  static media::ChannelLayout target_output_channel_layout(
+      const media::AudioDecoderConfig& input) {
+    return input.target_output_channel_layout();
+  }
+
+  static bool should_discard_decoder_delay(
+      const media::AudioDecoderConfig& input) {
+    return input.should_discard_decoder_delay();
   }
 
   static bool Read(media::mojom::AudioDecoderConfigDataView input,

@@ -77,7 +77,7 @@ class MEDIA_EXPORT AudioDecoderConfig {
   int codec_delay() const { return codec_delay_; }
 
   // Optional byte data required to initialize audio decoders such as Vorbis
-  // codebooks.
+  // codebooks or AAC AudioSpecificConfig.
   const std::vector<uint8_t>& extra_data() const { return extra_data_; }
 
   // Whether the audio stream is potentially encrypted.
@@ -94,10 +94,14 @@ class MEDIA_EXPORT AudioDecoderConfig {
   // useful for decryptors that decrypts an encrypted stream to a clear stream.
   void SetIsEncrypted(bool is_encrypted);
 
+  // Optionally set if the AudioCodec has a profile which may preclude certain
+  // decoders from having support.
+  void set_profile(AudioCodecProfile profile) { profile_ = profile; }
+  AudioCodecProfile profile() const { return profile_; }
+
   bool should_discard_decoder_delay() const {
     return should_discard_decoder_delay_;
   }
-
   void disable_discard_decoder_delay() {
     should_discard_decoder_delay_ = false;
   }
@@ -112,40 +116,50 @@ class MEDIA_EXPORT AudioDecoderConfig {
     return target_output_channel_layout_;
   }
 
-  // Optionally set if the AudioCodec has a profile which may preclude certain
-  // decoders from having support.
-  void set_profile(AudioCodecProfile profile) { profile_ = profile; }
-  AudioCodecProfile profile() const { return profile_; }
-
  private:
+  // WARNING: When modifying or adding any parameters, update the following:
+  // - AudioDecoderConfig::AsHumanReadableString()
+  // - AudioDecoderConfig::Matches()
+  // - media::mojom::AudioDecoderConfig
+  // - audio_decoder_config_mojom_traits.{h|cc}
+  // - audio_decoder_config_mojom_traits_unittest.cc
+
+  // Mandatory parameters passed in constructor:
+
   AudioCodec codec_ = kUnknownAudioCodec;
-  AudioCodecProfile profile_ = AudioCodecProfile::kUnknown;
   SampleFormat sample_format_ = kUnknownSampleFormat;
-  int bytes_per_channel_ = 0;
+  ChannelLayout channel_layout_ = CHANNEL_LAYOUT_UNSUPPORTED;
   int samples_per_second_ = 0;
-  int bytes_per_frame_ = 0;
   std::vector<uint8_t> extra_data_;
   EncryptionScheme encryption_scheme_ = EncryptionScheme::kUnencrypted;
 
-  // Layout and count of the *stream* being decoded.
-  ChannelLayout channel_layout_ = CHANNEL_LAYOUT_UNSUPPORTED;
-  int channels_ = 0;
+  // The duration of data that the decoder must decode before the decoded data
+  // is valid.
+  base::TimeDelta seek_preroll_;
+
+  // The number of frames the decoder should discard before returning decoded
+  // data. Can include both decoder delay and padding added during encoding.
+  int codec_delay_ = 0;
+
+  // Optional parameters that can be set later:
+
+  AudioCodecProfile profile_ = AudioCodecProfile::kUnknown;
 
   // Layout of the output hardware. Optionally set. See setter comments.
   ChannelLayout target_output_channel_layout_ = CHANNEL_LAYOUT_NONE;
 
-  // |seek_preroll_| is the duration of the data that the decoder must decode
-  // before the decoded data is valid.
-  base::TimeDelta seek_preroll_;
-
-  // |codec_delay_| is the number of frames the decoder should discard before
-  // returning decoded data.  This value can include both decoder delay as well
-  // as padding added during encoding.
-  int codec_delay_ = 0;
-
   // Indicates if a decoder should implicitly discard decoder delay without it
   // being explicitly marked in discard padding.
   bool should_discard_decoder_delay_ = true;
+
+  // Derived values from mandatory and optional parameters above:
+
+  int bytes_per_channel_ = 0;
+  int bytes_per_frame_ = 0;
+
+  // Count of channels. By default derived from `channel_layout_`, but can also
+  // be manually set in `SetChannelsForDiscrete()`;
+  int channels_ = 0;
 
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator. Since the extra data is
