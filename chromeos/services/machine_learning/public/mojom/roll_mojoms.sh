@@ -50,8 +50,12 @@ cp $1/platform2/ml/mojom/*.mojom . || exit 1
 echo "Removing time.mojom ..."
 rm time.mojom || exit 1
 
+echo "Removing shared_memory.mojom ..."
+rm shared_memory.mojom || exit 1
+
 echo "Changing import paths ..."
 sed --in-place --regexp-extended \
+  -e 's~^import "ml/mojom/shared_memory.mojom~import "mojo/public/mojom/base/shared_memory.mojom~g' \
   -e 's~^import "ml/mojom/time.mojom~import "mojo/public/mojom/base/time.mojom~g' \
   -e 's~^import "ml~import "chromeos/services/machine_learning/public~g' \
   *.mojom
