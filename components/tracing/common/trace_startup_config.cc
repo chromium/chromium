@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_log.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -196,6 +197,15 @@ bool TraceStartupConfig::EnableFromCommandLine() {
   trace_config_ = base::trace_event::TraceConfig(
       categories,
       command_line->GetSwitchValueASCII(switches::kTraceStartupRecordMode));
+
+  if (trace_config_.IsCategoryGroupEnabled(
+          base::trace_event::MemoryDumpManager::kTraceCategory)) {
+    base::trace_event::TraceConfig::MemoryDumpConfig memory_config;
+    memory_config.triggers.push_back(
+        {10000, base::trace_event::MemoryDumpLevelOfDetail::DETAILED,
+         base::trace_event::MemoryDumpType::PERIODIC_INTERVAL});
+    trace_config_.ResetMemoryDumpConfig(memory_config);
+  }
 
   result_file_ = command_line->GetSwitchValuePath(switches::kTraceStartupFile);
 
