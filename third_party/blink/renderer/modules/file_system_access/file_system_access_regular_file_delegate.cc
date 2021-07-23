@@ -54,7 +54,9 @@ FileErrorOr<int64_t> FileSystemAccessRegularFileDelegate::GetLength() {
 }
 
 bool FileSystemAccessRegularFileDelegate::SetLength(int64_t length) {
-  return backing_file_.SetLength(length);
+  // TODO(crbug.com/1218431): Implement this method.
+  NOTIMPLEMENTED();
+  return false;
 }
 
 bool FileSystemAccessRegularFileDelegate::Flush() {

@@ -3,18 +3,12 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_sync_access_handle.h"
-
-#include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-
-#if defined(OS_MAC)
-#include "base/mac/mac_util.h"
-#endif
 
 namespace blink {
 
@@ -227,73 +221,6 @@ void FileSystemSyncAccessHandle::DidGetSize(
     return;
   }
   resolver->Resolve(result.value());
-}
-
-ScriptPromise FileSystemSyncAccessHandle::truncate(
-    ScriptState* script_state,
-    uint64_t size,
-    ExceptionState& exception_state) {
-#if defined(OS_MAC)
-  // On macOS < 10.15, a sandboxing limitation causes failures in ftruncate()
-  // syscalls issued from renderers. For this reason, base::File::SetLength()
-  // fails in the renderer.
-  // TODO: Work around this problem by calling ftruncate() in the browser
-  // process. See crbug.com/1084565.
-  if (!base::mac::IsAtLeastOS10_15()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "FileSystemSyncAccessHandle.truncate is not yet supported on MacOS");
-    return ScriptPromise();
-  }
-#endif  // defined(OS_MAC)
-
-  if (is_closed_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The file was already closed");
-    return ScriptPromise();
-  }
-
-  if (!EnterOperation()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Another I/O operation is in progress on the same file");
-    return ScriptPromise();
-  }
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  worker_pool::PostTask(
-      FROM_HERE, {base::MayBlock()},
-      CrossThreadBindOnce(&DoTruncate, WrapCrossThreadPersistent(this),
-                          WrapCrossThreadPersistent(resolver),
-                          resolver_task_runner_, size));
-  return resolver->Promise();
-}
-
-// static
-void FileSystemSyncAccessHandle::DoTruncate(
-    CrossThreadPersistent<FileSystemSyncAccessHandle> access_handle,
-    CrossThreadPersistent<ScriptPromiseResolver> resolver,
-    scoped_refptr<base::SequencedTaskRunner> resolver_task_runner,
-    uint64_t size) {
-  DCHECK(access_handle->file_delegate()->IsValid())
-      << "file I/O operation queued after file closed";
-  access_handle->file_delegate()->SetLength(size);
-
-  PostCrossThreadTask(
-      *resolver_task_runner, FROM_HERE,
-      CrossThreadBindOnce(&FileSystemSyncAccessHandle::DidTruncate,
-                          std::move(access_handle), std::move(resolver)));
-}
-
-void FileSystemSyncAccessHandle::DidTruncate(
-    CrossThreadPersistent<ScriptPromiseResolver> resolver) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-  ScriptState::Scope scope(script_state);
-
-  ExitOperation();
-  resolver->Resolve();
 }
 
 uint64_t FileSystemSyncAccessHandle::read(
