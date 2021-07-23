@@ -69,7 +69,7 @@ void ExpectNewTab(const tab_search::mojom::Tab* tab,
   EXPECT_FALSE(tab->group_id.has_value());
   EXPECT_FALSE(tab->pinned);
   EXPECT_EQ(title, tab->title);
-  EXPECT_EQ(url, tab->url.spec());
+  EXPECT_EQ(url, tab->url);
   EXPECT_TRUE(tab->favicon_url.has_value());
   EXPECT_TRUE(tab->is_default_favicon);
   EXPECT_TRUE(tab->show_icon);

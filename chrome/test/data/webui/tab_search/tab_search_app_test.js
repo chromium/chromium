@@ -42,6 +42,8 @@ suite('TabSearchAppTest', () => {
    * @param {Object=} loadTimeOverriddenData
    */
   async function setupTest(sampleData, loadTimeOverriddenData) {
+    // TODO(romanarora): Leverage ProfileDataSpec to initialize undefined
+    // array fields in sampleData to empty arrays.
     testProxy = new TestTabSearchApiProxy();
     testProxy.setProfileData(sampleData);
     TabSearchApiProxyImpl.instance_ = testProxy;
@@ -203,7 +205,7 @@ suite('TabSearchAppTest', () => {
       index: 0,
       tabId: 1,
       title: 'Google',
-      url: {url: 'https://www.google.com'},
+      url: 'https://www.google.com',
     };
     await setupTest({
       windows: [{active: true, tabs: [tabData]}],
@@ -233,7 +235,7 @@ suite('TabSearchAppTest', () => {
     const tabData = {
       tabId: 100,
       title: 'PayPal',
-      url: {url: 'https://www.paypal.com'},
+      url: 'https://www.paypal.com',
       lastActiveTimeTicks: {internalValue: BigInt(11)},
       lastActiveElapsedText: '',
     };
@@ -246,7 +248,7 @@ suite('TabSearchAppTest', () => {
           index: 0,
           tabId: 1,
           title: 'Google',
-          url: {url: 'https://www.google.com'},
+          url: 'https://www.google.com',
         }]
       }],
       recentlyClosedTabs: [tabData],
@@ -284,7 +286,7 @@ suite('TabSearchAppTest', () => {
           index: 0,
           tabId: 1,
           title: 'Google',
-          url: {url: 'https://www.google.com'},
+          url: 'https://www.google.com',
         }]
       }],
       recentlyClosedTabs: [],
@@ -437,12 +439,12 @@ suite('TabSearchAppTest', () => {
         (tabSearchApp.shadowRoot.querySelector('#tabsList')
              .querySelector('tab-search-item[id="1"]'));
     assertEquals('Google', tabSearchItem.data.tab.title);
-    assertEquals('https://www.google.com', tabSearchItem.data.tab.url.url);
+    assertEquals('https://www.google.com', tabSearchItem.data.tab.url);
     const updatedTab = /** @type {!Tab} */ ({
       index: 0,
       tabId: 1,
       title: 'Example',
-      url: {url: 'https://example.com'},
+      url: 'https://example.com',
       lastActiveTimeTicks: {internalValue: BigInt(5)},
       lastActiveElapsedText: '',
     });
@@ -458,7 +460,7 @@ suite('TabSearchAppTest', () => {
         (tabSearchApp.shadowRoot.querySelector('#tabsList')
              .querySelector('tab-search-item[id="1"]'));
     assertEquals(updatedTab.title, tabSearchItem.data.tab.title);
-    assertEquals(updatedTab.url.url, tabSearchItem.data.tab.url.url);
+    assertEquals(updatedTab.url, tabSearchItem.data.tab.url);
     assertEquals('example.com', tabSearchItem.data.hostname);
   });
 
@@ -479,7 +481,7 @@ suite('TabSearchAppTest', () => {
       index: 1,
       tabId: 2,
       title: 'Example',
-      url: {url: 'https://example.com'},
+      url: 'https://example.com',
       lastActiveTimeTicks: {internalValue: BigInt(5)},
       lastActiveElapsedText: '',
     });
@@ -640,7 +642,7 @@ suite('TabSearchAppTest', () => {
         index: 0,
         tabId: 1,
         title: 'Google',
-        url: {url: 'https://www.google.com'},
+        url: 'https://www.google.com',
         lastActiveTimeTicks: {internalValue: BigInt(2)},
         lastActiveElapsedText: '',
       },
@@ -648,7 +650,7 @@ suite('TabSearchAppTest', () => {
         index: 1,
         tabId: 2,
         title: 'Bing',
-        url: {url: 'https://www.bing.com'},
+        url: 'https://www.bing.com',
         lastActiveTimeTicks: {internalValue: BigInt(4)},
         lastActiveElapsedText: '',
         active: true,
@@ -657,7 +659,7 @@ suite('TabSearchAppTest', () => {
         index: 2,
         tabId: 3,
         title: 'Yahoo',
-        url: {url: 'https://www.yahoo.com'},
+        url: 'https://www.yahoo.com',
         lastActiveTimeTicks: {internalValue: BigInt(3)},
         lastActiveElapsedText: '',
       }
@@ -691,7 +693,7 @@ suite('TabSearchAppTest', () => {
         tabId: 1,
         groupId: token,
         title: 'Google',
-        url: {url: 'https://www.google.com'},
+        url: 'https://www.google.com',
         lastActiveTimeTicks: {internalValue: BigInt(2)},
         lastActiveElapsedText: '',
       },

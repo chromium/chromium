@@ -369,11 +369,10 @@ bool TabSearchPageHandler::AddRecentlyClosedTab(
       GetRecentlyClosedTab(tab);
 
   DedupKey dedup_id(recently_closed_tab->url, recently_closed_tab->group_id);
-  // Ignore NTP entries, duplicate entries and tabs with invalid URLs such as
-  // empty URLs.
+  // Ignore NTP entries, duplicate entries and and tabs with empty URLs.
   if (base::Contains(tab_dedup_keys, dedup_id) ||
       recently_closed_tab->url == GURL(chrome::kChromeUINewTabPageURL) ||
-      !recently_closed_tab->url.is_valid()) {
+      recently_closed_tab->url.empty()) {
     return false;
   }
   tab_dedup_keys.insert(dedup_id);
@@ -406,14 +405,14 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   tab_data->pinned = tab_renderer_data.pinned;
   tab_data->title = base::UTF16ToUTF8(tab_renderer_data.title);
   tab_data->url = tab_renderer_data.last_committed_url.is_empty()
-                      ? tab_renderer_data.visible_url
-                      : tab_renderer_data.last_committed_url;
+                      ? tab_renderer_data.visible_url.spec()
+                      : tab_renderer_data.last_committed_url.spec();
 
   if (tab_renderer_data.favicon.isNull()) {
     tab_data->is_default_favicon = true;
   } else {
-    tab_data->favicon_url = GURL(webui::EncodePNGAndMakeDataURI(
-        tab_renderer_data.favicon, web_ui_->GetDeviceScaleFactor()));
+    tab_data->favicon_url = webui::EncodePNGAndMakeDataURI(
+        tab_renderer_data.favicon, web_ui_->GetDeviceScaleFactor());
     tab_data->is_default_favicon =
         tab_renderer_data.favicon.BackedBySameObjectAs(
             favicon::GetDefaultFavicon().AsImageSkia());
@@ -437,9 +436,9 @@ TabSearchPageHandler::GetRecentlyClosedTab(
   sessions::SerializedNavigationEntry& entry =
       tab->navigations[tab->current_navigation_index];
   recently_closed_tab->tab_id = tab->id.id();
-  recently_closed_tab->url = entry.virtual_url();
+  recently_closed_tab->url = entry.virtual_url().spec();
   recently_closed_tab->title = entry.title().empty()
-                                   ? recently_closed_tab->url.spec()
+                                   ? recently_closed_tab->url
                                    : base::UTF16ToUTF8(entry.title());
   const base::Time last_active_time = entry.timestamp();
   recently_closed_tab->last_active_time = last_active_time;

@@ -7,7 +7,6 @@ module tab_search.mojom;
 import "components/tab_groups/public/mojom/tab_group_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/token.mojom";
-import "url/mojom/url.mojom";
 
 // Collection of window details associated with a profile.
 struct ProfileData {
@@ -45,11 +44,11 @@ struct Tab {
   string title;
 
   // The URL of the tab.
-  url.mojom.Url url;
+  string url;
 
   // The URL of the favicon in data scheme.
   // Only used in OTR profile where chrome://favicon2 is not available.
-  url.mojom.Url? favicon_url;
+  string? favicon_url;
 
   // Whether the favicon is the default one.
   bool is_default_favicon;
@@ -81,7 +80,8 @@ struct RecentlyClosedTab {
   string title;
 
   // The URL of the tab.
-  url.mojom.Url url;
+  // TODO(crbug.com/1099917): Change this and elsewhere to use url.mojom.Url.
+  string url;
 
   // Elapsed time since the tab was last closed. This value is used to order
   // closed tabs by recency.
