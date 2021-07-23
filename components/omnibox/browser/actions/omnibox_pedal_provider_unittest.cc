@@ -6,13 +6,25 @@
 
 #include "base/environment.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 
 class OmniboxPedalProviderTest : public testing::Test {
  protected:
-  OmniboxPedalProviderTest() {}
+  OmniboxPedalProviderTest() = default;
+
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {omnibox::kOmniboxPedalsBatch2, omnibox::kOmniboxPedalsBatch2NonEnglish,
+         omnibox::kOmniboxPedalsBatch3,
+         omnibox::kOmniboxPedalsTranslationConsole},
+        {});
+  }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(OmniboxPedalProviderTest, QueriesTriggerPedals) {

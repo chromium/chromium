@@ -338,7 +338,14 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     if (!url->empty()) {
       pedal->SetNavigationUrl(GURL(*url));
     }
-    if (!OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled()) {
+
+    std::vector<OmniboxPedal::SynonymGroupSpec> specs =
+        pedal->SpecifySynonymGroups();
+    // `specs` will be empty for any pedals not yet processed by l10n because
+    // the appropriate string names won't be defined. In such cases, we fall
+    // back to loading from JSON to robustly handle partial presence of data.
+    if (specs.empty() ||
+        !OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled()) {
       for (const auto& group_value : pedal_value.FindKey("groups")->GetList()) {
         // Note, group JSON values are preprocessed by the data generation tool.
         pedal->AddSynonymGroup(LoadSynonymGroupValue(group_value));

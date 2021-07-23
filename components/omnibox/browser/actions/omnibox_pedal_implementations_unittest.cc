@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/trace_event/memory_usage_estimator.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
@@ -16376,7 +16377,8 @@ class OmniboxPedalImplementationsTest : public testing::Test {
     OmniboxPedalProvider provider(client, true);
     const auto& pedals = provider.pedals_;
     std::unordered_set<const OmniboxPedal*> found_pedals(pedals.size());
-    LOG(INFO) << "Pedal count: " << pedals.size();
+    LOG(INFO) << "Pedal count: " << pedals.size()
+              << "; memory: " << provider.EstimateMemoryUsage();
     for (const auto& pedal_concept : literal_concept_expressions) {
       const std::u16string first_trigger = base::ASCIIToUTF16(pedal_concept[0]);
       const OmniboxPedal* canonical_pedal =
@@ -16427,8 +16429,7 @@ class OmniboxPedalImplementationsWithoutTranslationConsoleTest
   }
 };
 
-TEST_F(OmniboxPedalImplementationsTest,
-       DISABLED_PedalClearBrowsingDataExecutes) {
+TEST_F(OmniboxPedalImplementationsTest, PedalClearBrowsingDataExecutes) {
   MockAutocompleteProviderClient client;
   OmniboxPedalProvider provider(client, true);
 
@@ -16452,7 +16453,7 @@ TEST_F(OmniboxPedalImplementationsWithoutTranslationConsoleTest,
 }
 
 TEST_F(OmniboxPedalImplementationsTest,
-       DISABLED_PedalIncognitoClearBrowsingDataExecutes) {
+       PedalIncognitoClearBrowsingDataExecutes) {
   MockAutocompleteProviderClient client;
   EXPECT_CALL(client, IsOffTheRecord()).WillOnce(testing::Return(true));
   OmniboxPedalProvider provider(client, true);
@@ -16480,7 +16481,7 @@ TEST_F(OmniboxPedalImplementationsWithoutTranslationConsoleTest,
 }
 
 TEST_F(OmniboxPedalImplementationsTest,
-       DISABLED_UnorderedSynonymExpressionsAreConceptMatches) {
+       UnorderedSynonymExpressionsAreConceptMatches) {
   TestLiteralConceptExpressions();
 }
 
