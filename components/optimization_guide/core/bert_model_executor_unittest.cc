@@ -6,6 +6,7 @@
 
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
+#include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,9 +44,10 @@ class BertModelExecutorTest : public testing::Test {
     model_file_path =
         is_valid ? model_file_path.AppendASCII("bert_page_topics_model.tflite")
                  : model_file_path.AppendASCII("simple_test.tflite");
-    model_executor_handle_->OnModelFileUpdated(
-        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt,
-        model_file_path);
+    std::unique_ptr<ModelInfo> model_info =
+        TestModelInfoBuilder().SetModelFilePath(model_file_path).Build();
+    model_executor_handle_->OnModelUpdated(
+        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, *model_info);
     task_environment_.RunUntilIdle();
   }
 

@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/prediction_model_file.h"
+#include "components/optimization_guide/core/model_info.h"
 
 #include "base/memory/ptr_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 
 namespace optimization_guide {
 
-PredictionModelFile::PredictionModelFile(
-    const base::FilePath& model_file_path,
-    const int64_t version,
-    const absl::optional<proto::Any>& model_metadata)
+ModelInfo::ModelInfo(const base::FilePath& model_file_path,
+                     const int64_t version,
+                     const absl::optional<proto::Any>& model_metadata)
     : model_file_path_(model_file_path),
       version_(version),
       model_metadata_(model_metadata) {}
 
-PredictionModelFile::~PredictionModelFile() = default;
+ModelInfo::~ModelInfo() = default;
+ModelInfo::ModelInfo(const ModelInfo&) = default;
 
 // static
-std::unique_ptr<PredictionModelFile> PredictionModelFile::Create(
+std::unique_ptr<ModelInfo> ModelInfo::Create(
     const proto::PredictionModel& model) {
   absl::optional<base::FilePath> model_file_path =
       StringToFilePath(model.model().download_url());
@@ -34,19 +34,19 @@ std::unique_ptr<PredictionModelFile> PredictionModelFile::Create(
     model_metadata = model.model_info().model_metadata();
 
   // Private ctor, so we can't use std::make_unique.
-  return base::WrapUnique(new PredictionModelFile(
+  return base::WrapUnique(new ModelInfo(
       *model_file_path, model.model_info().version(), model_metadata));
 }
 
-base::FilePath PredictionModelFile::GetModelFilePath() const {
+base::FilePath ModelInfo::GetModelFilePath() const {
   return model_file_path_;
 }
 
-int64_t PredictionModelFile::GetVersion() const {
+int64_t ModelInfo::GetVersion() const {
   return version_;
 }
 
-absl::optional<proto::Any> PredictionModelFile::GetModelMetadata() const {
+absl::optional<proto::Any> ModelInfo::GetModelMetadata() const {
   return model_metadata_;
 }
 

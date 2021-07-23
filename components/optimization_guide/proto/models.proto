@@ -18,7 +18,9 @@ message Model {
   oneof model {
     DecisionTree decision_tree = 1;
     Ensemble ensemble = 2;
-    // The URL that the model can be downloaded from.
+    // When passed from the server, this is the URL that the model can be
+    // downloaded from. When used internally within Chrome, this contains the
+    // absolute file path where the model file is saved on disk.
     string download_url = 5;
   }
   // The tag number is high to allow models to be added and an uncommon number
@@ -198,8 +200,9 @@ message PredictionModel {
 }
 
 message AdditionalModelFile {
-  // This contains the basenames of the additional files that should be kept and
-  // sent to this model's consumers.
+  // When sent by the server, this contains the basenames of the additional
+  // files that should be kept and sent to this model's consumers. When used
+  // only locally within Chrome, the full path is given.
   optional string file_path = 1;
 }
 

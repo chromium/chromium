@@ -15,10 +15,6 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
-namespace base {
-class FilePath;
-}  // namespace base
-
 namespace content {
 class BrowserContext;
 class NavigationHandle;
@@ -33,6 +29,7 @@ class OptimizationGuideStore;
 class PredictionManager;
 class PredictionManagerBrowserTestBase;
 class PredictionModelDownloadClient;
+class ModelInfo;
 class TabUrlProvider;
 class TopHostProvider;
 }  // namespace optimization_guide
@@ -96,12 +93,12 @@ class OptimizationGuideKeyedService
       optimization_guide::proto::OptimizationType optimization_type,
       const absl::optional<optimization_guide::OptimizationMetadata>& metadata);
 
-  // Override the model file sent to observers of |optimization_target|. For
+  // Override the model file sent to observers of |optimization_target|. Use
+  // |TestModelInfoBuilder| to construct the model metadata. For
   // testing purposes only.
-  void OverrideTargetModelFileForTesting(
+  void OverrideTargetModelForTesting(
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const absl::optional<optimization_guide::proto::Any>& model_metadata,
-      const base::FilePath& file_path);
+      std::unique_ptr<optimization_guide::ModelInfo> model_info);
 
   // Returns the OptimizationGuideNavigationData for |navigation_handle|. Will
   // return nullptr if one cannot be created for it for any reason.

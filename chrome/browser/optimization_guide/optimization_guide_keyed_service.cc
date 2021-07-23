@@ -296,14 +296,14 @@ void OptimizationGuideKeyedService::AddObserverForOptimizationTargetModel(
 void OptimizationGuideKeyedService::RemoveObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
     optimization_guide::OptimizationTargetModelObserver* observer) {
-    prediction_manager_->RemoveObserverForOptimizationTargetModel(
-        optimization_target, observer);
+  prediction_manager_->RemoveObserverForOptimizationTargetModel(
+      optimization_target, observer);
 }
 
 void OptimizationGuideKeyedService::RegisterOptimizationTypes(
     const std::vector<optimization_guide::proto::OptimizationType>&
         optimization_types) {
-    hints_manager_->RegisterOptimizationTypes(optimization_types);
+  hints_manager_->RegisterOptimizationTypes(optimization_types);
 }
 
 optimization_guide::OptimizationGuideDecision
@@ -355,10 +355,9 @@ void OptimizationGuideKeyedService::Shutdown() {
   hints_manager_->Shutdown();
 }
 
-void OptimizationGuideKeyedService::OverrideTargetModelFileForTesting(
+void OptimizationGuideKeyedService::OverrideTargetModelForTesting(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const absl::optional<optimization_guide::proto::Any>& model_metadata,
-    const base::FilePath& file_path) {
-  prediction_manager_->OverrideTargetModelFileForTesting(
-      optimization_target, model_metadata, file_path);
+    std::unique_ptr<optimization_guide::ModelInfo> model_info) {
+  prediction_manager_->OverrideTargetModelForTesting(  // IN-TEST
+      optimization_target, std::move(model_info));
 }

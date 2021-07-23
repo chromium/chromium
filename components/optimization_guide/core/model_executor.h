@@ -361,22 +361,22 @@ class ModelHandler : public OptimizationTargetModelObserver {
   }
 
   // OptimizationTargetModelObserver:
-  void OnModelFileUpdated(proto::OptimizationTarget optimization_target,
-                          const absl::optional<proto::Any>& model_metadata,
-                          const base::FilePath& file_path) override {
+  void OnModelUpdated(proto::OptimizationTarget optimization_target,
+                      const ModelInfo& model_info) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (optimization_target_ != optimization_target)
       return;
 
-    supported_features_for_loaded_model_ = model_metadata;
+    supported_features_for_loaded_model_ = model_info.GetModelMetadata();
     model_available_ = true;
 
     background_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &ModelExecutor<OutputType, InputTypes...>::UpdateModelFile,
-            background_executor_->GetBackgroundWeakPtr(), file_path));
+            background_executor_->GetBackgroundWeakPtr(),
+            model_info.GetModelFilePath()));
   }
 
   // Returns whether a model is available to be executed. Virtual for testing.
@@ -439,11 +439,11 @@ class ModelHandler : public OptimizationTargetModelObserver {
   // |background_executor_|.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
-  // Set in |OnModelFileUpdated|.
+  // Set in |OnModelUpdated|.
   absl::optional<proto::Any> supported_features_for_loaded_model_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Set in |OnModelFileUpdated|.
+  // Set in |OnModelUpdated|.
   bool model_available_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   SEQUENCE_CHECKER(sequence_checker_);

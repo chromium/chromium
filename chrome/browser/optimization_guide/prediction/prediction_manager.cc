@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -38,7 +39,6 @@
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "components/optimization_guide/core/prediction_model.h"
 #include "components/optimization_guide/core/prediction_model_fetcher.h"
-#include "components/optimization_guide/core/prediction_model_file.h"
 #include "components/optimization_guide/core/store_update_data.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
@@ -317,12 +317,9 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
       .AddObserver(observer);
 
   // Notify observer of existing model file path.
-  auto model_file_it =
-      optimization_target_prediction_model_file_map_.find(optimization_target);
-  if (model_file_it != optimization_target_prediction_model_file_map_.end()) {
-    observer->OnModelFileUpdated(optimization_target,
-                                 model_file_it->second->GetModelMetadata(),
-                                 model_file_it->second->GetModelFilePath());
+  auto model_it = optimization_target_model_info_map_.find(optimization_target);
+  if (model_it != optimization_target_model_info_map_.end()) {
+    observer->OnModelUpdated(optimization_target, *model_it->second);
   }
 
   RegisterOptimizationTargets({{optimization_target, model_metadata}});
@@ -545,10 +542,10 @@ void PredictionManager::FetchModels() {
     if (it != optimization_target_prediction_model_map_.end())
       model_info.set_version(it->second.get()->GetVersion());
 
-    auto file_it = optimization_target_prediction_model_file_map_.find(
+    auto model_it = optimization_target_model_info_map_.find(
         optimization_target_and_metadata.first);
-    if (file_it != optimization_target_prediction_model_file_map_.end())
-      model_info.set_version(file_it->second.get()->GetVersion());
+    if (model_it != optimization_target_model_info_map_.end())
+      model_info.set_version(model_it->second.get()->GetVersion());
 
     models_info.push_back(model_info);
   }
@@ -692,17 +689,17 @@ void PredictionManager::OnModelReady(const proto::PredictionModel& model) {
   }
 }
 
-void PredictionManager::NotifyObserversOfNewModelPath(
+void PredictionManager::NotifyObserversOfNewModel(
     proto::OptimizationTarget optimization_target,
-    const absl::optional<proto::Any>& model_metadata,
-    const base::FilePath& file_path) const {
+    const ModelInfo& model_info) const {
   auto observers_it =
       registered_observers_for_optimization_targets_.find(optimization_target);
   if (observers_it == registered_observers_for_optimization_targets_.end())
     return;
 
-  for (auto& observer : observers_it->second)
-    observer.OnModelFileUpdated(optimization_target, model_metadata, file_path);
+  for (auto& observer : observers_it->second) {
+    observer.OnModelUpdated(optimization_target, model_info);
+  }
 }
 
 void PredictionManager::OnPredictionModelsStored() {
@@ -878,11 +875,10 @@ bool PredictionManager::ProcessAndStoreLoadedModel(
 
   ScopedPredictionModelConstructionAndValidationRecorder
       prediction_model_recorder(model.model_info().optimization_target());
-  std::unique_ptr<PredictionModelFile> prediction_model_file =
-      PredictionModelFile::Create(model);
+  std::unique_ptr<ModelInfo> model_info = ModelInfo::Create(model);
   std::unique_ptr<PredictionModel> prediction_model =
-      prediction_model_file ? nullptr : CreatePredictionModel(model);
-  if (!prediction_model_file && !prediction_model) {
+      model_info ? nullptr : CreatePredictionModel(model);
+  if (!model_info && !prediction_model) {
     prediction_model_recorder.set_is_valid(false);
     return false;
   }
@@ -897,9 +893,8 @@ bool PredictionManager::ProcessAndStoreLoadedModel(
   }
 
   // Update prediction model file if that is what we have loaded.
-  if (prediction_model_file) {
-    StoreLoadedPredictionModelFile(optimization_target,
-                                   std::move(prediction_model_file));
+  if (model_info) {
+    StoreLoadedModelInfo(optimization_target, std::move(model_info));
   }
 
   // Update prediction model if that is what we have loaded.
@@ -916,10 +911,10 @@ bool PredictionManager::ShouldUpdateStoredModelForTarget(
     int64_t new_version) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto model_file_it =
-      optimization_target_prediction_model_file_map_.find(optimization_target);
-  if (model_file_it != optimization_target_prediction_model_file_map_.end())
-    return model_file_it->second->GetVersion() != new_version;
+  auto model_meta_it =
+      optimization_target_model_info_map_.find(optimization_target);
+  if (model_meta_it != optimization_target_model_info_map_.end())
+    return model_meta_it->second->GetVersion() != new_version;
 
   auto model_it =
       optimization_target_prediction_model_map_.find(optimization_target);
@@ -929,10 +924,11 @@ bool PredictionManager::ShouldUpdateStoredModelForTarget(
   return true;
 }
 
-void PredictionManager::StoreLoadedPredictionModelFile(
+void PredictionManager::StoreLoadedModelInfo(
     proto::OptimizationTarget optimization_target,
-    std::unique_ptr<PredictionModelFile> prediction_model_file) {
+    std::unique_ptr<ModelInfo> model_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(model_info);
 
   bool has_model_for_target =
       optimization_target_prediction_model_map_.contains(optimization_target);
@@ -945,14 +941,12 @@ void PredictionManager::StoreLoadedPredictionModelFile(
 
   // Notify observers of new model file path.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PredictionManager::NotifyObserversOfNewModelPath,
-                     ui_weak_ptr_factory_.GetWeakPtr(), optimization_target,
-                     prediction_model_file->GetModelMetadata(),
-                     prediction_model_file->GetModelFilePath()));
+      FROM_HERE, base::BindOnce(&PredictionManager::NotifyObserversOfNewModel,
+                                ui_weak_ptr_factory_.GetWeakPtr(),
+                                optimization_target, *model_info));
 
-  optimization_target_prediction_model_file_map_.insert_or_assign(
-      optimization_target, std::move(prediction_model_file));
+  optimization_target_model_info_map_.insert_or_assign(optimization_target,
+                                                       std::move(model_info));
 }
 
 void PredictionManager::StoreLoadedPredictionModel(
@@ -961,13 +955,12 @@ void PredictionManager::StoreLoadedPredictionModel(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   bool has_model_file_for_target =
-      optimization_target_prediction_model_file_map_.contains(
-          optimization_target);
+      optimization_target_model_info_map_.contains(optimization_target);
   RecordModelTypeChanged(optimization_target, has_model_file_for_target);
   if (has_model_file_for_target) {
     // Remove prediction model file from map if we received the update as a
     // PredictionModel. In practice, this shouldn't happen.
-    optimization_target_prediction_model_file_map_.erase(optimization_target);
+    optimization_target_model_info_map_.erase(optimization_target);
   }
   optimization_target_prediction_model_map_.insert_or_assign(
       optimization_target, std::move(prediction_model));
@@ -1091,28 +1084,19 @@ PredictionManager::GetHostModelFeaturesForHost(const std::string& host) const {
   return it->second;
 }
 
-void PredictionManager::OverrideTargetModelFileForTesting(
+void PredictionManager::OverrideTargetModelForTesting(
     proto::OptimizationTarget optimization_target,
-    const absl::optional<proto::Any>& model_metadata,
-    const base::FilePath& file_path) {
-  proto::PredictionModel prediction_model;
-  prediction_model.mutable_model_info()->set_version(1);
-  prediction_model.mutable_model_info()->set_optimization_target(
-      optimization_target);
-  prediction_model.mutable_model()->set_download_url(
-      FilePathToString(file_path));
-  if (model_metadata.has_value()) {
-    *prediction_model.mutable_model_info()->mutable_model_metadata() =
-        *model_metadata;
+    std::unique_ptr<ModelInfo> model_info) {
+  if (!model_info) {
+    return;
   }
-  std::unique_ptr<PredictionModelFile> prediction_model_file =
-      PredictionModelFile::Create(prediction_model);
-  DCHECK(prediction_model_file);
 
-  optimization_target_prediction_model_file_map_.insert_or_assign(
-      optimization_target, std::move(prediction_model_file));
+  ModelInfo model_info_copy = *model_info;
 
-  NotifyObserversOfNewModelPath(optimization_target, model_metadata, file_path);
+  optimization_target_model_info_map_.insert_or_assign(optimization_target,
+                                                       std::move(model_info));
+
+  NotifyObserversOfNewModel(optimization_target, model_info_copy);
 }
 
 }  // namespace optimization_guide

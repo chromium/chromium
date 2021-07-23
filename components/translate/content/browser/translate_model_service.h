@@ -39,10 +39,9 @@ class TranslateModelService
   void Shutdown() override;
 
   // optimization_guide::OptimizationTargetModelObserver implementation:
-  void OnModelFileUpdated(
+  void OnModelUpdated(
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const absl::optional<optimization_guide::proto::Any>& model_metadata,
-      const base::FilePath& file_path) override;
+      const optimization_guide::ModelInfo& model_info) override;
 
   // Invokes |callback| with a language detection model file when it is
   // available.

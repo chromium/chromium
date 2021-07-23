@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/base_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -134,8 +135,12 @@ class BaseModelExecutorTest : public testing::Test {
       proto::OptimizationTarget optimization_target,
       const absl::optional<proto::Any>& model_metadata) {
     DCHECK(model_executor_handle_);
-    model_executor_handle_->OnModelFileUpdated(
-        optimization_target, model_metadata, model_file_path_);
+    std::unique_ptr<ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetModelFilePath(model_file_path_)
+            .SetModelMetadata(model_metadata)
+            .Build();
+    model_executor_handle_->OnModelUpdated(optimization_target, *model_info);
     RunUntilIdle();
   }
 

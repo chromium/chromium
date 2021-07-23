@@ -5,6 +5,7 @@
 #include "components/optimization_guide/content/browser/page_content_annotations_model_manager.h"
 
 #include "base/path_service.h"
+#include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
@@ -64,9 +65,13 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
             .AppendASCII("data")
             .AppendASCII("optimization_guide")
             .AppendASCII("bert_page_topics_model.tflite");
-    model_manager()->page_topics_model_executor_handle_->OnModelFileUpdated(
-        proto::OPTIMIZATION_TARGET_PAGE_TOPICS, model_metadata,
-        model_file_path);
+    std::unique_ptr<ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetModelFilePath(model_file_path)
+            .SetModelMetadata(model_metadata)
+            .Build();
+    model_manager()->page_topics_model_executor_handle_->OnModelUpdated(
+        proto::OPTIMIZATION_TARGET_PAGE_TOPICS, *model_info);
     RunUntilIdle();
   }
 

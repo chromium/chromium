@@ -25,6 +25,7 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
+#include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
@@ -228,9 +229,11 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
   ASSERT_TRUE(translate_model_service());
 
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->OverrideTargetModelFileForTesting(
+      ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-          /*model_metadata=*/absl::nullopt, model_file_path());
+          optimization_guide::TestModelInfoBuilder()
+              .SetModelFilePath(model_file_path())
+              .Build());
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
@@ -263,9 +266,11 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
       run_loop.get()));
 
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->OverrideTargetModelFileForTesting(
+      ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-          /*model_metadata=*/absl::nullopt, model_file_path());
+          optimization_guide::TestModelInfoBuilder()
+              .SetModelFilePath(model_file_path())
+              .Build());
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
@@ -281,12 +286,14 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(translate_model_service());
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->OverrideTargetModelFileForTesting(
+      ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-          /*model_metadata=*/absl::nullopt,
-          optimization_guide::StringToFilePath(
-              optimization_guide::kTestAbsoluteFilePath)
-              .value());
+          optimization_guide::TestModelInfoBuilder()
+              .SetModelFilePath(
+                  base::FilePath(optimization_guide::StringToFilePath(
+                                     optimization_guide::kTestAbsoluteFilePath)
+                                     .value()))
+              .Build());
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
@@ -310,9 +317,11 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
                        LanguageDetectionModelAvailableForDetection) {
   base::HistogramTester histogram_tester;
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->OverrideTargetModelFileForTesting(
+      ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-          /*model_metadata=*/absl::nullopt, model_file_path());
+          optimization_guide::TestModelInfoBuilder()
+              .SetModelFilePath(model_file_path())
+              .Build());
   RetryForHistogramUntilCountReached(
       &histogram_tester,
       "TranslateModelService.LanguageDetectionModel.WasLoaded", 1);
@@ -342,9 +351,11 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
                        MAYBE_LanguageDetectionWithBackgroundTab) {
   base::HistogramTester histogram_tester;
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->OverrideTargetModelFileForTesting(
+      ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-          /*model_metadata=*/absl::nullopt, model_file_path());
+          optimization_guide::TestModelInfoBuilder()
+              .SetModelFilePath(model_file_path())
+              .Build());
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
@@ -381,9 +392,11 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
   ASSERT_TRUE(translate_model_service());
 
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->OverrideTargetModelFileForTesting(
+      ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-          /*model_metadata=*/absl::nullopt, model_file_path());
+          optimization_guide::TestModelInfoBuilder()
+              .SetModelFilePath(model_file_path())
+              .Build());
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
@@ -402,9 +415,11 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
   run_loop->Run();
 
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->OverrideTargetModelFileForTesting(
+      ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-          /*model_metadata=*/absl::nullopt, model_file_path());
+          optimization_guide::TestModelInfoBuilder()
+              .SetModelFilePath(model_file_path())
+              .Build());
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,

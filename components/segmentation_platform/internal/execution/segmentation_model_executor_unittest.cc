@@ -16,6 +16,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -100,8 +101,13 @@ class SegmentationModelExecutorTest : public testing::Test {
           "segmentation_platform.proto.SegmentationModelMetadata");
     }
     DCHECK(model_executor_handle_);
-    model_executor_handle_->OnModelFileUpdated(kOptimizationTarget, any,
-                                               model_file_path_);
+
+    auto model_metadata = optimization_guide::TestModelInfoBuilder()
+                              .SetModelMetadata(any)
+                              .SetModelFilePath(model_file_path_)
+                              .Build();
+    model_executor_handle_->OnModelUpdated(kOptimizationTarget,
+                                           *model_metadata);
     RunUntilIdle();
   }
 
@@ -139,7 +145,7 @@ TEST_F(SegmentationModelExecutorTest, ExecuteWithLoadedModel) {
       },
       model_update_runloop.get(), metadata));
 
-  // Provide metadata as part of the OnModelFileUpdated invocation, which will
+  // Provide metadata as part of the OnModelUpdated invocation, which will
   // be passed along as a correctly crafted Any proto.
   PushModelFileToModelExecutor(metadata);
   model_update_runloop->Run();

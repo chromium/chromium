@@ -136,16 +136,13 @@ class TestPredictionModel : public PredictionModel {
 class FakeOptimizationTargetModelObserver
     : public OptimizationTargetModelObserver {
  public:
-  void OnModelFileUpdated(proto::OptimizationTarget optimization_target,
-                          const absl::optional<proto::Any>& model_metadata,
-                          const base::FilePath& file_path) override {
-    last_received_models_[optimization_target] =
-        std::make_pair(model_metadata, file_path);
+  void OnModelUpdated(proto::OptimizationTarget optimization_target,
+                      const ModelInfo& model_info) override {
+    last_received_models_.insert_or_assign(optimization_target, model_info);
   }
 
-  absl::optional<std::pair<absl::optional<proto::Any>, base::FilePath>>
-  last_received_model_for_target(
-      proto::OptimizationTarget optimization_target) {
+  absl::optional<ModelInfo> last_received_model_for_target(
+      proto::OptimizationTarget optimization_target) const {
     auto model_it = last_received_models_.find(optimization_target);
     if (model_it == last_received_models_.end())
       return absl::nullopt;
@@ -156,9 +153,7 @@ class FakeOptimizationTargetModelObserver
   void Reset() { last_received_models_.clear(); }
 
  private:
-  base::flat_map<proto::OptimizationTarget,
-                 std::pair<absl::optional<proto::Any>, base::FilePath>>
-      last_received_models_;
+  base::flat_map<proto::OptimizationTarget, ModelInfo> last_received_models_;
 };
 
 class FakePredictionModelDownloadManager
@@ -751,11 +746,11 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
   prediction_manager()->OnModelReady(model1);
   RunUntilIdle();
 
-  absl::optional<std::pair<absl::optional<proto::Any>, base::FilePath>>
-      received_model = observer.last_received_model_for_target(
+  absl::optional<ModelInfo> received_model =
+      observer.last_received_model_for_target(
           proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  EXPECT_EQ(received_model->first->type_url(), "sometypeurl");
-  EXPECT_EQ(received_model->second.BaseName().value(),
+  EXPECT_EQ(received_model->GetModelMetadata()->type_url(), "sometypeurl");
+  EXPECT_EQ(received_model->GetModelFilePath().BaseName().value(),
             FILE_PATH_LITERAL("whatever"));
 
   // Reset fetcher and make sure version is sent in the new request and not
@@ -829,7 +824,8 @@ TEST_F(PredictionManagerTest,
   EXPECT_EQ(observer1
                 .last_received_model_for_target(
                     proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
-                ->second.BaseName()
+                ->GetModelFilePath()
+                .BaseName()
                 .value(),
             FILE_PATH_LITERAL("whatever"));
 
@@ -886,13 +882,14 @@ TEST_F(PredictionManagerTest,
   EXPECT_EQ(observer
                 .last_received_model_for_target(
                     proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
-                ->first.value()
-                .type_url(),
+                ->GetModelMetadata()
+                ->type_url(),
             "sometypeurl");
   EXPECT_EQ(observer
                 .last_received_model_for_target(
                     proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
-                ->second.value(),
+                ->GetModelFilePath()
+                .value(),
             FILE_PATH_LITERAL(kTestAbsoluteFilePath));
 
   // Now reset observer. New model downloads should not update the observer.

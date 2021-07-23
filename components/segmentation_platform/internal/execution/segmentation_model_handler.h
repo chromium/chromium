@@ -12,9 +12,6 @@
 #include "components/optimization_guide/proto/models.pb.h"
 
 namespace optimization_guide {
-namespace proto {
-class Any;
-}  // namespace proto
 class OptimizationGuideModelProvider;
 }  // namespace optimization_guide
 
@@ -48,10 +45,9 @@ class SegmentationModelHandler
   SegmentationModelHandler& operator=(const SegmentationModelHandler&) = delete;
 
   // optimization_guide::ModelHandler overrides.
-  void OnModelFileUpdated(
+  void OnModelUpdated(
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const absl::optional<optimization_guide::proto::Any>& model_metadata,
-      const base::FilePath& file_path) override;
+      const optimization_guide::ModelInfo& model_info) override;
 
  private:
   // Callback to invoke whenever the model file has been updated. If there is

@@ -30,15 +30,13 @@ SegmentationModelHandler::SegmentationModelHandler(
 
 SegmentationModelHandler::~SegmentationModelHandler() = default;
 
-void SegmentationModelHandler::OnModelFileUpdated(
+void SegmentationModelHandler::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const absl::optional<optimization_guide::proto::Any>& model_metadata,
-    const base::FilePath& file_path) {
+    const optimization_guide::ModelInfo& model_info) {
   // First invoke parent to update internal status.
   optimization_guide::ModelHandler<
-      float, const std::vector<float>&>::OnModelFileUpdated(optimization_target,
-                                                            model_metadata,
-                                                            file_path);
+      float, const std::vector<float>&>::OnModelUpdated(optimization_target,
+                                                        model_info);
   // The parent class should always set the model availability to true after
   // having received an updated model.
   DCHECK(ModelAvailable());

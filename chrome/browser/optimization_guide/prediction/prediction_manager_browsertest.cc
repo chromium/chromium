@@ -646,8 +646,7 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerNoUserPermissionsTest,
 class ModelFileObserver : public OptimizationTargetModelObserver {
  public:
   using ModelFileReceivedCallback =
-      base::OnceCallback<void(proto::OptimizationTarget,
-                              const base::FilePath&)>;
+      base::OnceCallback<void(proto::OptimizationTarget, const ModelInfo&)>;
 
   ModelFileObserver() = default;
   ~ModelFileObserver() override = default;
@@ -656,11 +655,10 @@ class ModelFileObserver : public OptimizationTargetModelObserver {
     file_received_callback_ = std::move(callback);
   }
 
-  void OnModelFileUpdated(proto::OptimizationTarget optimization_target,
-                          const absl::optional<proto::Any>& model_metadata,
-                          const base::FilePath& file_path) override {
+  void OnModelUpdated(proto::OptimizationTarget optimization_target,
+                      const ModelInfo& model_info) override {
     if (file_received_callback_)
-      std::move(file_received_callback_).Run(optimization_target, file_path);
+      std::move(file_received_callback_).Run(optimization_target, model_info);
   }
 
  private:
@@ -760,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   model_file_observer()->set_model_file_received_callback(base::BindOnce(
       [](base::RunLoop* run_loop, proto::OptimizationTarget optimization_target,
-         const base::FilePath& file_path) {
+         const ModelInfo& model_file) {
         EXPECT_EQ(optimization_target,
                   proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
         run_loop->Quit();

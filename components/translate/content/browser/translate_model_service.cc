@@ -74,17 +74,16 @@ void TranslateModelService::Shutdown() {
   // the observer should not be performed.
 }
 
-void TranslateModelService::OnModelFileUpdated(
+void TranslateModelService::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const absl::optional<optimization_guide::proto::Any>& model_metadata,
-    const base::FilePath& file_path) {
+    const optimization_guide::ModelInfo& model_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (optimization_target !=
       optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION) {
     return;
   }
   background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&LoadModelFile, file_path),
+      FROM_HERE, base::BindOnce(&LoadModelFile, model_info.GetModelFilePath()),
       base::BindOnce(&TranslateModelService::OnModelFileLoaded,
                      base::Unretained(this)));
 }
