@@ -25917,7 +25917,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'id': 829,
       'caption': '''Suppress JavaScript Dialogs triggered from different origin subframes''',
       'tags': [],
-      'desc': '''As described in https://www.chromestatus.com/feature/5148698084376576 , JavaScript modal dialogs, triggered by <ph name="JS_ALERT">$6<ex>window.alert</ex></ph>, <ph name="JS_CONFIRM">$6<ex>window.confirm</ex></ph>, and <ph name="JS_PROMPT">$6<ex>window.prompt</ex></ph>, will be blocked in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> if triggered from a subframe whose origin is different from the main frame origin.
+      'desc': '''As described in https://www.chromestatus.com/feature/5148698084376576 , JavaScript modal dialogs, triggered by <ph name="JS_ALERT">window.alert</ph>, <ph name="JS_CONFIRM">window.confirm</ph>, and <ph name="JS_PROMPT">window.prompt</ph>, will be blocked in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> if triggered from a subframe whose origin is different from the main frame origin.
        This policy allows overriding that change.
        If the policy is set to enabled or unset, JavaScript dialogs triggered from a different origin subframe will be blocked.
        If the policy is set to disabled, JavaScript dialogs triggered from a different origin subframe will not be blocked.
