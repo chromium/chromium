@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_HASH_PASSWORD_MANAGER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/callback_list.h"
