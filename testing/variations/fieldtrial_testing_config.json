@@ -6355,6 +6355,48 @@
             ]
         }
     ],
+    "PerProcessReclaimArcVm": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledGroupA_20210722",
+                    "params": {
+                        "ArcVmInactivityTimeMs": "300",
+                        "ArcVmTrimBackoffTimeMs": "450",
+                        "TrimArcVmOnCriticalPressure": "false"
+                    },
+                    "enable_features": [
+                        "TrimArcVmOnMemoryPressure"
+                    ]
+                },
+                {
+                    "name": "EnabledGroupB_20210722",
+                    "params": {
+                        "ArcVmInactivityTimeMs": "600",
+                        "ArcVmTrimBackoffTimeMs": "900",
+                        "TrimArcVmOnCriticalPressure": "false"
+                    },
+                    "enable_features": [
+                        "TrimArcVmOnMemoryPressure"
+                    ]
+                },
+                {
+                    "name": "EnabledGroupC_20210722",
+                    "params": {
+                        "ArcVmInactivityTimeMs": "1200",
+                        "ArcVmTrimBackoffTimeMs": "1800",
+                        "TrimArcVmOnCriticalPressure": "false"
+                    },
+                    "enable_features": [
+                        "TrimArcVmOnMemoryPressure"
+                    ]
+                }
+            ]
+        }
+    ],
     "PermissionChip": [
         {
             "platforms": [
