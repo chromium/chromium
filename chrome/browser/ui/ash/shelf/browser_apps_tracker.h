@@ -49,6 +49,20 @@ class BrowserAppsTracker : public TabStripModelObserver,
   // Causes BrowserAppStatusObserver events to fire for all existing browsers.
   void Initialize();
 
+  // Get all instances by app ID. Returns a set of unowned pointers.
+  std::set<const BrowserAppInstance*> GetAppInstancesByAppId(
+      const std::string& app_id) const;
+
+  // Checks if at least one instance of the app is running.
+  bool IsAppRunning(const std::string& app_id) const;
+
+  // Get app instance running in a |contents|. Returns null if no app is found.
+  const BrowserAppInstance* GetAppInstance(
+      content::WebContents* contents) const;
+
+  // Get Chrome instance running in |browser|. Returns null if not found.
+  const BrowserAppInstance* GetChromeInstance(Browser* browser) const;
+
   void AddObserver(BrowserAppStatusObserver* observer) {
     observers_.AddObserver(observer);
   }
@@ -127,9 +141,10 @@ class BrowserAppsTracker : public TabStripModelObserver,
   void RemoveChromeInstance(Browser* browser);
 
   template <typename KeyT>
-  void CreateInstance(std::map<KeyT, BrowserAppInstance>& instances,
-                      const KeyT& key,
-                      BrowserAppInstance&& instance);
+  void CreateInstance(
+      std::map<KeyT, std::unique_ptr<BrowserAppInstance>>& instances,
+      const KeyT& key,
+      std::unique_ptr<BrowserAppInstance> instance);
 
   // Updates the instance (app or browser) with the new attributes and notifies
   // observers, if it was updated.
@@ -137,8 +152,9 @@ class BrowserAppsTracker : public TabStripModelObserver,
 
   // Removes the instance given a map (app or browser) and notifies observers.
   template <typename KeyT>
-  void RemoveInstance(std::map<KeyT, BrowserAppInstance>& instances,
-                      const KeyT& key);
+  void RemoveInstance(
+      std::map<KeyT, std::unique_ptr<BrowserAppInstance>>& instances,
+      const KeyT& key);
 
   std::map<content::WebContents*, std::unique_ptr<WebContentsObserver>>
       webcontents_to_observer_map_;
@@ -162,10 +178,11 @@ class BrowserAppsTracker : public TabStripModelObserver,
 #endif
 
   // A map of all apps running in either tabs or windows.
-  std::map<content::WebContents*, BrowserAppInstance> app_instances_;
+  std::map<content::WebContents*, std::unique_ptr<BrowserAppInstance>>
+      app_instances_;
 
   // A map of Chrome browser windows.
-  std::map<Browser*, BrowserAppInstance> chrome_instances_;
+  std::map<Browser*, std::unique_ptr<BrowserAppInstance>> chrome_instances_;
 
   base::ObserverList<BrowserAppStatusObserver, true>::Unchecked observers_;
 };

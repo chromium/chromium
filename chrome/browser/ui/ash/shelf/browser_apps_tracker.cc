@@ -103,6 +103,52 @@ void BrowserAppsTracker::Initialize() {
   browser_tab_strip_tracker_.Init();
 }
 
+std::set<const BrowserAppInstance*> BrowserAppsTracker::GetAppInstancesByAppId(
+    const std::string& app_id) const {
+  std::set<const BrowserAppInstance*> result;
+  for (const auto& pair : app_instances_) {
+    const auto& app_instance = pair.second;
+    if (app_instance->app_id == app_id) {
+      result.insert(app_instance.get());
+    }
+  }
+  for (const auto& pair : chrome_instances_) {
+    const auto& app_instance = pair.second;
+    if (app_instance->app_id == app_id) {
+      result.insert(app_instance.get());
+    }
+  }
+  return result;
+}
+
+bool BrowserAppsTracker::IsAppRunning(const std::string& app_id) const {
+  for (const auto& pair : app_instances_) {
+    const auto& app_instance = pair.second;
+    if (app_instance->app_id == app_id) {
+      return true;
+    }
+  }
+  for (const auto& pair : chrome_instances_) {
+    const auto& app_instance = pair.second;
+    if (app_instance->app_id == app_id) {
+      return true;
+    }
+  }
+  return false;
+}
+
+const BrowserAppInstance* BrowserAppsTracker::GetAppInstance(
+    content::WebContents* contents) const {
+  auto it = app_instances_.find(contents);
+  return it == app_instances_.end() ? nullptr : it->second.get();
+}
+
+const BrowserAppInstance* BrowserAppsTracker::GetChromeInstance(
+    Browser* browser) const {
+  auto it = chrome_instances_.find(browser);
+  return it == chrome_instances_.end() ? nullptr : it->second.get();
+}
+
 void BrowserAppsTracker::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
@@ -291,8 +337,8 @@ void BrowserAppsTracker::OnTabAttached(Browser* browser,
     DCHECK(it != app_instances_.end());
     auto& app_instance = it->second;
     // All app ID changes should be handled in OnTabUpdated.
-    DCHECK_EQ(app_instance.app_id, app_id);
-    MaybeUpdateAppInstance(app_instance, browser);
+    DCHECK_EQ(app_instance->app_id, app_id);
+    MaybeUpdateAppInstance(*app_instance, browser);
   }
 }
 
@@ -302,7 +348,7 @@ void BrowserAppsTracker::OnTabUpdated(Browser* browser,
   auto it = app_instances_.find(contents);
   if (it != app_instances_.end()) {
     auto& app_instance = it->second;
-    if (app_instance.app_id != new_app_id) {
+    if (app_instance->app_id != new_app_id) {
       // If app ID changed on navigation, remove the old app.
       RemoveAppInstance(contents);
       // Add the new app instance, if navigated to another app.
@@ -311,7 +357,7 @@ void BrowserAppsTracker::OnTabUpdated(Browser* browser,
       }
     } else {
       // App ID did not change, but other attributes may have.
-      MaybeUpdateAppInstance(app_instance, browser);
+      MaybeUpdateAppInstance(*app_instance, browser);
     }
   } else if (!new_app_id.empty()) {
     // Tab previously had no app ID, but navigated to a URL that does.
@@ -346,7 +392,7 @@ void BrowserAppsTracker::OnBrowserWindowUpdated(aura::Window* window) {
 
   auto it = chrome_instances_.find(browser);
   if (it != chrome_instances_.end()) {
-    MaybeUpdateChromeInstance(it->second);
+    MaybeUpdateChromeInstance(*it->second);
   }
 
   TabStripModel* tab_strip_model = browser->tab_strip_model();
@@ -371,13 +417,13 @@ void BrowserAppsTracker::CreateAppInstance(std::string app_id,
                                            content::WebContents* contents) {
   // TODO(crbug.com/1203992): generate WebContents ID here
   CreateInstance(app_instances_, contents,
-                 BrowserAppInstance{
+                 base::WrapUnique(new BrowserAppInstance{
                      std::move(app_id),
                      browser,
                      contents,
                      IsAppVisible(browser, contents),
                      IsAppActive(browser, contents),
-                 });
+                 }));
 }
 
 void BrowserAppsTracker::MaybeUpdateAppInstance(BrowserAppInstance& instance,
@@ -391,13 +437,13 @@ void BrowserAppsTracker::RemoveAppInstance(content::WebContents* contents) {
 
 void BrowserAppsTracker::CreateChromeInstance(Browser* browser) {
   CreateInstance(chrome_instances_, browser,
-                 BrowserAppInstance{
+                 base::WrapUnique(new BrowserAppInstance{
                      extension_misc::kChromeAppId,
                      browser,
                      nullptr,
                      IsBrowserVisible(browser),
                      IsBrowserActive(browser),
-                 });
+                 }));
 }
 
 void BrowserAppsTracker::MaybeUpdateChromeInstance(
@@ -412,14 +458,14 @@ void BrowserAppsTracker::RemoveChromeInstance(Browser* browser) {
 
 template <typename KeyT>
 void BrowserAppsTracker::CreateInstance(
-    std::map<KeyT, BrowserAppInstance>& instances,
+    std::map<KeyT, std::unique_ptr<BrowserAppInstance>>& instances,
     const KeyT& key,
-    BrowserAppInstance&& instance) {
+    std::unique_ptr<BrowserAppInstance> instance_ptr) {
   DCHECK(!base::Contains(instances, key));
-  auto it = instances.insert(std::make_pair(key, std::move(instance)));
-  auto& app_instance = it.first->second;
+  auto it = instances.insert(std::make_pair(key, std::move(instance_ptr)));
+  auto& inserted_instance_ptr = it.first->second;
   for (auto& observer : observers_) {
-    observer.OnBrowserAppAdded(app_instance);
+    observer.OnBrowserAppAdded(*inserted_instance_ptr);
   }
 }
 
@@ -450,13 +496,13 @@ void BrowserAppsTracker::MaybeUpdateInstance(BrowserAppInstance& instance,
 
 template <typename KeyT>
 void BrowserAppsTracker::RemoveInstance(
-    std::map<KeyT, BrowserAppInstance>& instances,
+    std::map<KeyT, std::unique_ptr<BrowserAppInstance>>& instances,
     const KeyT& key) {
   DCHECK(base::Contains(instances, key));
   auto it = instances.find(key);
   auto app_instance = std::move(it->second);
   instances.erase(it);
   for (auto& observer : observers_) {
-    observer.OnBrowserAppRemoved(app_instance);
+    observer.OnBrowserAppRemoved(*app_instance);
   }
 }

@@ -18,8 +18,6 @@ class WebContents;
 // - actual browser instances (a single browser window). In this case `contents`
 //   will be null and app ID will be set to |extension_misc::kChromeAppId|.
 struct BrowserAppInstance {
-  BrowserAppInstance(BrowserAppInstance&&) = default;
-  BrowserAppInstance& operator=(BrowserAppInstance&&) = default;
   BrowserAppInstance(const BrowserAppInstance&) = delete;
   BrowserAppInstance& operator=(const BrowserAppInstance&) = delete;
 
