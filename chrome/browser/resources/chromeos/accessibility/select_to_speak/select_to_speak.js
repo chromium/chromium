@@ -300,7 +300,8 @@ export class SelectToSpeak {
       }
       this.startSpeechQueue_(nodes, {clearFocusRing: true});
       MetricsUtils.recordStartEvent(
-          MetricsUtils.StartSpeechMethod.MOUSE, this.prefsManager_);
+          MetricsUtils.StartSpeechMethod.MOUSE, this.prefsManager_,
+          this.enhancedVoicesFlag_);
     }.bind(this));
   }
 
@@ -452,7 +453,8 @@ export class SelectToSpeak {
       }
       if (userRequested) {
         MetricsUtils.recordStartEvent(
-            MetricsUtils.StartSpeechMethod.KEYSTROKE, this.prefsManager_);
+            MetricsUtils.StartSpeechMethod.KEYSTROKE, this.prefsManager_,
+            this.enhancedVoicesFlag_);
       }
     } else {
       // Gsuite apps include webapps beyond Docs, see getGSuiteAppRoot and
@@ -478,7 +480,8 @@ export class SelectToSpeak {
         });
         if (userRequested) {
           MetricsUtils.recordStartEvent(
-              MetricsUtils.StartSpeechMethod.KEYSTROKE, this.prefsManager_);
+              MetricsUtils.StartSpeechMethod.KEYSTROKE, this.prefsManager_,
+              this.enhancedVoicesFlag_);
         }
       });
     }

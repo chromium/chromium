@@ -28,8 +28,11 @@ export class MetricsUtils {
    *    that reflects how this event was triggered by the user.
    * @param {PrefsManager} prefsManager A PrefsManager with the users's current
    *    preferences.
+   * @param {boolean} logEnhancedVoices Whether enhanced network TTS related
+   *     metrics should be recorded. For example, if this feature flag is turned
+   *     off, they should not be logged.
    */
-  static recordStartEvent(method, prefsManager) {
+  static recordStartEvent(method, prefsManager, logEnhancedVoices) {
     chrome.metricsPrivate.recordUserAction(MetricsUtils.START_SPEECH_METRIC);
     chrome.metricsPrivate.recordEnumerationValue(
         MetricsUtils.START_SPEECH_METHOD_METRIC.METRIC_NAME, method,
@@ -40,9 +43,11 @@ export class MetricsUtils {
     chrome.metricsPrivate.recordBoolean(
         MetricsUtils.NAVIGATION_CONTROLS_METRIC,
         prefsManager.navigationControlsEnabled());
-    chrome.metricsPrivate.recordBoolean(
-        MetricsUtils.ENHANCED_NETWORK_VOICES_METRIC,
-        prefsManager.enhancedNetworkVoicesEnabled());
+    if (logEnhancedVoices) {
+      chrome.metricsPrivate.recordBoolean(
+          MetricsUtils.ENHANCED_NETWORK_VOICES_METRIC,
+          prefsManager.enhancedNetworkVoicesEnabled());
+    }
   }
 
   /**
