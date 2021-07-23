@@ -23,6 +23,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -57,6 +58,8 @@ const char* kQualityNames[] = {
 class GLHelperTest : public testing::Test {
  protected:
   void SetUp() override {
+    feature_list_.Init();
+
     ContextCreationAttribs attributes;
     attributes.alpha_size = 8;
     attributes.depth_size = 24;
@@ -1264,6 +1267,7 @@ class GLHelperTest : public testing::Test {
                    "8x1 -> 1x1 bilinear4 X\n");
   }
 
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<GLInProcessContext> context_;
   gles2::GLES2Interface* gl_;
   std::unique_ptr<GLHelper> helper_;
