@@ -9,6 +9,10 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace version_info {
+enum class Channel;
+}
+
 namespace installer {
 
 // Provides utility functions for accessing and modifying the "additional
@@ -36,6 +40,17 @@ class AdditionalParameters {
   // registry. When such a modification results in an empty value, the "ap"
   // value will be removed from the Windows registry upon Commit().
   bool SetFullSuffix(bool value);
+
+  // Returns the canonical name of the update channel identified by the value.
+  // The canonical names of the Google Chrome update channels are "extended",
+  // "", "beta", and "dev".
+  std::wstring ParseChannel();
+
+  // Updates the channel identifier in the value so that it identifies
+  // `channel`. `is_extended_stable_channel` is only used if `channel` is
+  // version_info::Channel::STABLE.
+  void SetChannel(version_info::Channel channel,
+                  bool is_extended_stable_channel);
 
   // Commits any changes to the Windows registry. Returns true on success.
   // The Windows last-error code is set on failure.

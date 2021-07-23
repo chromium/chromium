@@ -118,6 +118,13 @@ if (is_win) {
       "//third_party/crashpad/crashpad/util",
       "//ui/base:fullscreen_win",
     ]
+
+    if (is_chrome_branded) {
+      sources += [
+        "channel_override_work_item.cc",
+        "channel_override_work_item.h",
+      ]
+    }
   }
 
   process_version_rc_template("setup_exe_version") {
@@ -171,5 +178,9 @@ if (is_win) {
     ]
 
     libs = [ "netapi32.lib" ]
+
+    if (is_chrome_branded) {
+      sources += [ "channel_override_work_item_unittest.cc" ]
+    }
   }
 }

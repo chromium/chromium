@@ -106,6 +106,14 @@ void AddChannelWorkItems(HKEY root,
                          const std::wstring& clients_key,
                          WorkItemList* list);
 
+// Adds a best-effort item to update the "ap" value if the channel was dictated
+// by --channel on the command line. This is done so that such channel changes
+// are "sticky" -- once an install or update succeeds in this way, all
+// subsequent update checks will be on that same channel until --channel is used
+// to switch once again.
+void AddChannelSelectionWorkItems(const InstallerState& installer_state,
+                                  WorkItemList* list);
+
 // Adds work items to be done when finalizing an update. This happens both
 // after the executables get renamed for an in-use update or as the last steps
 // for a regular update.

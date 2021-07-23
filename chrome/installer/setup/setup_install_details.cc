@@ -16,6 +16,7 @@
 #include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/initial_preferences_constants.h"
 #include "chrome/installer/util/util_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -30,6 +31,17 @@ const install_static::InstallConstants* FindInstallMode(
   }
   // The first mode is always the default if all else fails.
   return &install_static::kInstallModes[0];
+}
+
+// Returns the value of `switch_name` from `command_line` if it is present, or
+// nullopt otherwise.
+absl::optional<std::wstring> GetSwitchValue(
+    const base::CommandLine& command_line,
+    base::StringPiece switch_name) {
+  absl::optional<std::wstring> result;
+  if (command_line.HasSwitch(switch_name))
+    result = command_line.GetSwitchValueNative(switch_name);
+  return result;
 }
 
 }  // namespace
@@ -66,28 +78,27 @@ std::unique_ptr<install_static::PrimaryInstallDetails> MakeInstallDetails(
   // The channel is determined based on the brand and the mode's
   // ChannelStrategy. For brands that do not support Google Update, the channel
   // is an empty string. For modes using the FIXED strategy, the channel is the
-  // default_channel_name in the mode. For modes using the ADDITIONAL_PARAMETERS
-  // strategy, the channel is parsed from the "ap" value in the mode's
-  // ClientState registry key.
+  // default_channel_name in the mode. For modes using the FLOATING strategy,
+  // the channel is dictated by the --channel switch on the command line or the
+  // mode's default if none is provided. An override on the command line will be
+  // written to the "ap" value for the sake of subsequent update checks.
 
   // Cache the ap and cohort name values found in the registry for use in crash
   // keys.
   std::wstring update_ap;
   std::wstring update_cohort_name;
 
-  auto channel_from_cmd_line =
-      command_line.GetSwitchValueNative(installer::switches::kChannel);
+  absl::optional<std::wstring> channel_from_cmd_line =
+      GetSwitchValue(command_line, installer::switches::kChannel);
 
   auto channel = install_static::DetermineChannel(
       *mode, system_level,
-      command_line.HasSwitch(installer::switches::kChannel)
-          ? channel_from_cmd_line.c_str()
-          : nullptr,
+      channel_from_cmd_line ? channel_from_cmd_line->c_str() : nullptr,
       &update_ap, &update_cohort_name);
   details->set_channel(channel.channel_name);
   details->set_channel_origin(channel.origin);
   if (channel.origin == install_static::ChannelOrigin::kPolicy)
-    details->set_channel_override(channel_from_cmd_line);
+    details->set_channel_override(*channel_from_cmd_line);
   details->set_is_extended_stable_channel(channel.is_extended_stable);
   details->set_update_ap(update_ap);
   details->set_update_cohort_name(update_cohort_name);

@@ -54,7 +54,7 @@ const InstallConstants kInstallModes[] = {
           0xc8}},  // IElevator IID and TypeLib
                    // {463ABECF-410D-407F-8AF5-0DF35A005CC8}.
         L"",       // The empty string means "stable".
-        ChannelStrategy::ADDITIONAL_PARAMETERS,
+        ChannelStrategy::FLOATING,
         true,  // Supports system-level installs.
         true,  // Supports in-product set as default browser UX.
         true,  // Supports retention experiments.

@@ -21,7 +21,6 @@ class ScopedInstallDetails;
 // The origin of the active channel.
 enum class ChannelOrigin {
   kInstallMode,           // The channel dictated by the install mode.
-  kAdditionalParameters,  // The legacy "ap" value.
   kPolicy,                // The updater's "TargetChannel" policy.
 };
 
@@ -58,11 +57,10 @@ class InstallDetails {
     // The string length of |channel| (not including the string terminator).
     size_t channel_length;
 
-    // The origin of the |channel| value. Install modes that use the
-    // ADDITIONAL_PARAMETERS channel strategy may determine the channel by
-    // either the "ap" value (kAdditionalParameters) or by an administrative
-    // policy override (kPolicy). For all other install modes, the channel is
-    // dictated by the mode itself (kInstallMode).
+    // The origin of the |channel| value. Install modes that use the FLOATING
+    // channel strategy may determine the channel by an administrative policy
+    // override (kPolicy). For all other install modes, the channel is dictated
+    // by the mode itself (kInstallMode).
     ChannelOrigin channel_origin;
 
     // The value that was used to select |channel| if |channel_origin| is
@@ -166,8 +164,8 @@ class InstallDetails {
     return std::wstring(payload_->channel, payload_->channel_length);
   }
 
-  // The origin of a ChannelStrategy::ADDITIONAL_PARAMETERS install mode's
-  // channel, or kInstallMode.
+  // The origin of a ChannelStrategy::FLOATING install mode's channel, or
+  // kInstallMode.
   ChannelOrigin channel_origin() const { return payload_->channel_origin; }
 
   // Returns the value that was used to select the channel if |channel_origin()|

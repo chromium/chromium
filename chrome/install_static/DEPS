@@ -1,6 +1,9 @@
 include_rules = [
   # Nothing from base.
   "-base",
+  # This header contains macros and such that abstract away non-standard
+  # compiler features. It does not bring a dependency on the base library.
+  "+base/compiler_specific.h",
   # To avoid including windows.h in headers.
   "+base/win/windows_types.h",
   # Nothing from chrome.

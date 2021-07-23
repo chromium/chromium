@@ -19,13 +19,16 @@ namespace install_static {
 // Identifies different strategies for determining an update channel.
 enum class ChannelStrategy {
 #if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
-  // Update channel is determined by parsing the "ap" value in the registry.
-  // This is used by Google Chrome's primary install mode to differentiate the
-  // beta and dev channels from the default stable channel.
-  ADDITIONAL_PARAMETERS,
+  // The default update channel may be overridden by an explicit value. The
+  // installer gets this value on the command line (--channel=name), whereas the
+  // browser gets this value from the Windows registry. This is used by Google
+  // Chrome's primary install mode to differentiate the extended stable, beta,
+  // and dev channels from the default (stable) channel.
+  FLOATING,
 
-  // Update channel is a fixed value. This is used by to pin Google Chrome's SxS
-  // secondary install mode to the canary channel.
+  // Update channel is a fixed value. This is used by to pin Google Chrome's
+  // secondary install modes to their respective channels (e.g., the SxS mode
+  // follows the canary channel).
   FIXED,
 #else   // BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
   // Update channels are not supported. This value is for exclusive use by

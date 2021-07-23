@@ -7,4 +7,5 @@ include_rules = [
 
   "+components/base32",
   "+components/metrics",
+  "+components/version_info/channel.h",
 ]

@@ -307,107 +307,40 @@ TEST_P(MakeProductDetailsTest, DefaultChannel) {
 // Test that the default channel is sniffed properly based on the channel
 // override.
 TEST_P(MakeProductDetailsTest, PolicyOverrideChannel) {
-  static constexpr std::tuple<const wchar_t*, const wchar_t*, const wchar_t*,
-                              bool>
+  static constexpr std::tuple<const wchar_t*, const wchar_t*, bool>
       kChannelOverrides[] = {
-          {L"", L"", L"", false},         {L"", L"1.1-beta", L"", false},
-          {L"stable", L"", L"", false},   {L"stable", L"1.1-beta", L"", false},
-          {L"extended", L"", L"", true},  {L"extended", L"1.1-beta", L"", true},
-          {L"dev", L"", L"dev", false},   {L"dev", L"1.1-beta", L"dev", false},
-          {L"beta", L"", L"beta", false}, {L"beta", L"2.0-dev", L"beta", false},
+          {L"", L"", false},         {L"stable", L"", false},
+          {L"extended", L"", true},  {L"dev", L"dev", false},
+          {L"beta", L"beta", false},
       };
-  for (const auto& override_ap_channel : kChannelOverrides) {
+  for (const auto& the_override : kChannelOverrides) {
     const wchar_t* channel_override;
-    const wchar_t* ap;
     const wchar_t* expected_channel;
     bool extended_stable;
 
-    std::tie(channel_override, ap, expected_channel, extended_stable) =
-        override_ap_channel;
-    if (ap)
-      SetAp(ap);
+    std::tie(channel_override, expected_channel, extended_stable) =
+        the_override;
     if (channel_override)
       SetChannelOverride(channel_override);
 
     std::unique_ptr<PrimaryInstallDetails> details(
         MakeProductDetails(test_data().path));
+    switch (kInstallModes[test_data().index].channel_strategy) {
 #if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
-    if (kInstallModes[test_data().index].channel_strategy ==
-        ChannelStrategy::ADDITIONAL_PARAMETERS) {
-      EXPECT_THAT(details->channel(), StrEq(expected_channel));
-      EXPECT_THAT(details->channel_origin(), Eq(ChannelOrigin::kPolicy));
-      EXPECT_THAT(details->channel_override(), StrEq(channel_override));
-      EXPECT_THAT(details->is_extended_stable_channel(), Eq(extended_stable));
-    } else {
-      // "ap" and override are ignored for this mode.
-      EXPECT_THAT(details->channel(), StrEq(test_data().channel));
+      case ChannelStrategy::FLOATING:
+        EXPECT_THAT(details->channel(), StrEq(expected_channel));
+        EXPECT_THAT(details->channel_origin(), Eq(ChannelOrigin::kPolicy));
+        EXPECT_THAT(details->channel_override(), StrEq(channel_override));
+        EXPECT_THAT(details->is_extended_stable_channel(), Eq(extended_stable));
+        break;
+      case ChannelStrategy::FIXED:
+#else   // BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+      case ChannelStrategy::UNSUPPORTED:
+#endif  // BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+        // The override is ignored for this mode.
+        EXPECT_THAT(details->channel(), StrEq(test_data().channel));
+        break;
     }
-#else
-    // "ap" and override are ignored for this mode.
-    EXPECT_THAT(kInstallModes[test_data().index].channel_strategy,
-                Eq(ChannelStrategy::UNSUPPORTED));
-    EXPECT_THAT(details->channel(), StrEq(test_data().channel));
-#endif
-  }
-}
-
-// Test that the channel name is properly parsed out of additional parameters.
-TEST_P(MakeProductDetailsTest, AdditionalParametersChannels) {
-  const std::pair<const wchar_t*, const wchar_t*> kApChannels[] = {
-      // stable
-      {L"", L""},
-      {L"-full", L""},
-      {L"x64-stable", L""},
-      {L"x64-stable-full", L""},
-      {L"baz-x64-stable", L""},
-      {L"foo-1.1-beta", L""},
-      {L"2.0-beta", L""},
-      {L"bar-2.0-dev", L""},
-      {L"1.0-dev", L""},
-      {L"fuzzy", L""},
-      {L"foo", L""},
-      {L"-multi-chrome", L""},                               // Legacy.
-      {L"x64-stable-multi-chrome", L""},                     // Legacy.
-      {L"-stage:ensemble_patching-multi-chrome-full", L""},  // Legacy.
-      {L"-multi-chrome-full", L""},                          // Legacy.
-      // beta
-      {L"1.1-beta", L"beta"},
-      {L"1.1-beta-full", L"beta"},
-      {L"x64-beta", L"beta"},
-      {L"x64-beta-full", L"beta"},
-      {L"1.1-bar", L"beta"},
-      {L"1n1-foobar", L"beta"},
-      {L"x64-Beta", L"beta"},
-      {L"bar-x64-beta", L"beta"},
-      // dev
-      {L"2.0-dev", L"dev"},
-      {L"2.0-dev-full", L"dev"},
-      {L"x64-dev", L"dev"},
-      {L"x64-dev-full", L"dev"},
-      {L"2.0-DEV", L"dev"},
-      {L"2.0-dev-eloper", L"dev"},
-      {L"2.0-doom", L"dev"},
-      {L"250-doom", L"dev"},
-  };
-
-  for (const auto& ap_and_channel : kApChannels) {
-    SetAp(ap_and_channel.first);
-    std::unique_ptr<PrimaryInstallDetails> details(
-        MakeProductDetails(test_data().path));
-#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
-    if (kInstallModes[test_data().index].channel_strategy ==
-        ChannelStrategy::ADDITIONAL_PARAMETERS) {
-      EXPECT_THAT(details->channel(), StrEq(ap_and_channel.second));
-    } else {
-      // "ap" is ignored for this mode.
-      EXPECT_THAT(details->channel(), StrEq(test_data().channel));
-    }
-#else
-    // "ap" is ignored for this mode.
-    EXPECT_THAT(kInstallModes[test_data().index].channel_strategy,
-                Eq(ChannelStrategy::UNSUPPORTED));
-    EXPECT_THAT(details->channel(), StrEq(test_data().channel));
-#endif
   }
 }
 
