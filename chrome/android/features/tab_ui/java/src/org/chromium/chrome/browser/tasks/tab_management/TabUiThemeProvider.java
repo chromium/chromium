@@ -149,6 +149,54 @@ public class TabUiThemeProvider {
     }
 
     /**
+     * Returns the {@link ColorStateList} to use for the selectable tab grid card toggle button
+     * based on incognito mode.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @param isSelected Whether the tab is currently selected.
+     * @return The {@link ColorStateList} for selectable tab grid card toggle button.
+     */
+    public static ColorStateList getToggleActionButtonBackgroundTintList(
+            Context context, boolean isIncognito, boolean isSelected) {
+        if (!themeRefactorEnabled()) {
+            @ColorRes
+            int colorRes;
+            if (isSelected) {
+                colorRes = isIncognito ? R.color.tab_grid_card_selected_color_incognito
+                                       : R.color.tab_grid_card_selected_color;
+            } else {
+                colorRes =
+                        isIncognito ? R.color.default_icon_color_light : R.color.default_icon_color;
+            }
+            return AppCompatResources.getColorStateList(context, colorRes);
+        }
+        return getActionButtonTintList(context, isIncognito, isSelected);
+    }
+
+    /**
+     * Returns the {@link ColorStateList} to use for the "check" drawable on selectable tab grid
+     * card toggle button based on incognito mode.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @return The {@link ColorStateList} for "check" drawable.
+     */
+    public static ColorStateList getToggleActionButtonCheckedDrawableTintList(
+            Context context, boolean isIncognito) {
+        if (!themeRefactorEnabled()) {
+            return AppCompatResources.getColorStateList(context,
+                    isIncognito ? R.color.default_icon_color_dark
+                                : R.color.default_icon_color_inverse);
+        }
+        if (isIncognito) {
+            return AppCompatResources.getColorStateList(
+                    context, R.color.incognito_tab_bg_selected_color);
+        }
+        return ColorStateList.valueOf(MaterialColors.getColor(context, R.attr.colorPrimary, TAG));
+    }
+
+    /**
      * Returns the {@link ColorStateList} to use for the plus sign in new tab tile based on the
      * incognito mode.
      *
@@ -504,6 +552,18 @@ public class TabUiThemeProvider {
         return context.getResources().getDimension(themeRefactorEnabled()
                         ? R.dimen.tab_grid_card_thumbnail_margin
                         : R.dimen.tab_list_card_padding);
+    }
+
+    /**
+     * Return the insect dimension around the selection button for tab grid card.
+     * @param context {@link Context} to retrieve dimension.
+     *
+     * @return The insect dimension around the selection button for tab grid card.
+     */
+    public static float getTabGridCardSelectButtonInsectDimension(Context context) {
+        return context.getResources().getDimension(themeRefactorEnabled()
+                        ? R.dimen.tab_grid_card_toggle_button_background_inset
+                        : R.dimen.selection_tab_grid_toggle_button_inset);
     }
 
     /**
