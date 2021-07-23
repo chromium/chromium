@@ -25,12 +25,15 @@
   <div id="header" hidden="[[!result_.query]]">
     <div id="title">[[title_]]</div>
   </div>
-  <div id="clusters" on-remove-visits="onRemoveVisits_"
+
+  <iron-list id="clusters" scroll-target="container"
+      items="[[result_.clusters]]"
+      on-remove-visits="onRemoveVisits_"
       on-cluster-changed-or-removed="onClusterChangedOrRemoved_">
-    <template is="dom-repeat" items="[[result_.clusters]]">
+    <template>
       <history-cluster cluster="[[item]]"></history-cluster>
     </template>
-  </div>
+  </iron-list>
 </div>
 <iron-scroll-threshold id="scrollThreshold" scroll-target="container"
     on-lower-threshold="onScrolledToBottom_">
