@@ -377,6 +377,8 @@ shared_library("remoting_core") {
     "//remoting/host/host_main.cc",
     "//remoting/host/it2me/it2me_native_messaging_host_main.cc",
     "//remoting/host/it2me/it2me_native_messaging_host_main.h",
+    "//remoting/host/remote_open_url_main.cc",
+    "//remoting/host/remote_open_url_main.h",
     "//remoting/host/setup/host_starter.cc",
     "//remoting/host/setup/host_starter.h",
     "//remoting/host/setup/host_stopper.cc",
@@ -426,16 +428,20 @@ shared_library("remoting_core") {
     ":win",
     "//base",
     "//base:base_static",
+    "//base:i18n",
     "//base/allocator",
     "//base/third_party/dynamic_annotations",
     "//build/win:default_exe_manifest",
     "//ipc",
+    "//mojo/core/embedder:embedder",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
     "//net",
     "//remoting/base",
     "//remoting/base:breakpad",
     "//remoting/host:host",
+    "//remoting/host:host_settings",
+    "//remoting/host:logging",
     "//remoting/host:remoting_me2me_host_static",
     "//remoting/host/it2me:common",
     "//remoting/host/native_messaging",
@@ -445,6 +451,8 @@ shared_library("remoting_core") {
     "//sandbox/win:sandbox",  # Should always use Windows version
     "//services/network/public/mojom",
     "//third_party/webrtc_overrides:webrtc_component",
+    "//ui/base",
+    "//url",
   ]
 
   ldflags = [

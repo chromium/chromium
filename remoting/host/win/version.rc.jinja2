@@ -80,6 +80,15 @@ BEGIN
       VALUE "FileDescription", "{% trans %}REMOTING_START_HOST_DESCRIPTION{% endtrans %}"
       VALUE "InternalName", "remoting_start_host.exe"
       VALUE "OriginalFilename", "remoting_start_host.exe"
+#elif (REMOTING_HOST_BINARY == BINARY_REMOTE_OPEN_URL){#
+      Some translations have double quotes, which need to be escaped with `""`.
+      #}
+      VALUE "FileDescription", "{{
+          gettext("URL_FORWARDER_DESCRIPTION")|
+            format(gettext("PRODUCT_NAME"))|
+            replace('"', '""') }}"
+      VALUE "InternalName", "remote_open_url.exe"
+      VALUE "OriginalFilename", "remote_open_url.exe"
 #else
 #error REMOTING_HOST_BINARY must be set to one of BINARY_XXX values.
 #endif

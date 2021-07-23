@@ -11,6 +11,7 @@ action("remoting_me2me_host_archive") {
   sources = [ "//build/android/gyp/util/build_utils.py" ]
 
   deps = [
+    "//remoting/host:remote_open_url",
     "//remoting/host:remoting_native_messaging_manifests",
     "//remoting/host:remoting_start_host",
     "//remoting/host/installer:credits",
@@ -52,6 +53,7 @@ action("remoting_me2me_host_archive") {
   inputs = [
     "$root_out_dir/remote_assistance_host.exe",
     "$root_out_dir/remote_assistance_host_uiaccess.exe",
+    "$root_out_dir/remote_open_url.exe",
     "$root_out_dir/remote_security_key.exe",
     "$root_out_dir/remoting_core.dll",
     "$root_out_dir/remoting_desktop.exe",
@@ -81,6 +83,7 @@ action("remoting_me2me_host_archive") {
   _generated_dst_files = [
     "files/remote_assistance_host.exe",
     "files/remote_assistance_host_uiaccess.exe",
+    "files/remote_open_url.exe",
     "files/remote_security_key.exe",
     "files/remoting_core.dll",
     "files/remoting_desktop.exe",

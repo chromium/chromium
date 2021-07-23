@@ -213,6 +213,14 @@
               Vital="yes"/>
       </Component>
 
+      <Component Id="remote_open_url" Guid="*">
+        <File Id="remote_open_url.exe"
+              DiskId="1"
+              KeyPath="yes"
+              Name="remote_open_url.exe"
+              Vital="yes"/>
+      </Component>
+
       <Component Id="native_messaging_host_manifest" Guid="*">
         <File Id="com.google.chrome.remote_desktop.json"
               DiskId="1"
@@ -697,6 +705,7 @@
       <ComponentRef Id="remote_assistance_host_manifest"/>
       <ComponentRef Id="remote_assistance_host_registry"/>
       <ComponentRef Id="remote_assistance_host_uiaccess"/>
+      <ComponentRef Id="remote_open_url"/>
       <ComponentRef Id="remote_security_key"/>
       <ComponentRef Id="remote_security_key_registration"/>
       <ComponentRef Id="remoting_native_messaging_host"/>

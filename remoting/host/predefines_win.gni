@@ -18,4 +18,5 @@ host_predefines = [
   "BINARY_REMOTE_SECURITY_KEY=6",  # For remote_security_key
   "BINARY_REMOTING_START_HOST=7",  # For remoting_start_host
   "BINARY_HOST_IT2ME_UIACCESS=8",  # For remote_assistance_host_uiaccess
+  "BINARY_REMOTE_OPEN_URL=9",  # For remote_open_url
 ]

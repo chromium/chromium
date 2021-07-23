@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "remoting/host/remote_open_url_main.h"
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
@@ -19,9 +21,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-using remoting::RemoteOpenUrlClient;
+namespace remoting {
 
-int main(int argc, char** argv) {
+int RemoteOpenUrlMain(int argc, char** argv) {
   if (argc > 2) {
     printf("Usage: %s [URL]\n", argv[0]);
     return -1;
@@ -31,16 +33,16 @@ int main(int argc, char** argv) {
   base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
 
   base::CommandLine::Init(argc, argv);
-  remoting::InitHostLogging();
+  InitHostLogging();
 
   base::i18n::InitializeICU();
-  remoting::LoadResources("");
+  LoadResources("");
 
   mojo::core::Init();
   mojo::core::ScopedIPCSupport ipc_support(
       base::ThreadTaskRunnerHandle::Get(),
       mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
-  remoting::HostSettings::Initialize();
+  HostSettings::Initialize();
 
   RemoteOpenUrlClient client_;
   if (argc == 1) {
@@ -58,3 +60,5 @@ int main(int argc, char** argv) {
 
   return 0;
 }
+
+}  // namespace remoting
