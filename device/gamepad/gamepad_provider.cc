@@ -91,9 +91,9 @@ std::vector<mojom::AxisChangePtr> CompareAxes(const Gamepad* old_gamepad,
 mojom::GamepadChangesPtr CompareGamepadState(const Gamepad* old_gamepad,
                                              const Gamepad* new_gamepad,
                                              size_t index) {
-  return mojom::GamepadChanges::New(index,
-                                    CompareButtons(old_gamepad, new_gamepad),
-                                    CompareAxes(old_gamepad, new_gamepad));
+  return mojom::GamepadChanges::New(
+      index, CompareButtons(old_gamepad, new_gamepad),
+      CompareAxes(old_gamepad, new_gamepad), new_gamepad->timestamp);
 }
 }  // namespace
 

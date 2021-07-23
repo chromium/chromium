@@ -57,6 +57,8 @@ struct GamepadChanges {
   array<ButtonChange> button_changes;
   // Array of all changes to the axes.
   array<AxisChange> axis_changes;
+  // The timestamp when these changes occurred.
+  int64 timestamp;
 };
 
 enum GamepadMapping {
