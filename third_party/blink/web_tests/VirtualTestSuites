@@ -57,7 +57,8 @@
              "--enable-blink-features=OffMainThreadCSSPaint",
              "--enable-gpu-rasterization",
              "--enable-oop-rasterization",
-             "--enable-accelerated-2d-canvas"]
+             "--enable-accelerated-2d-canvas",
+             "--disable-features=CanvasOopRasterization"]
   },
   {
     "prefix": "prefer_compositing_to_lcd_text",

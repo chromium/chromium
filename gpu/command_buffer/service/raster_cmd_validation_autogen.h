@@ -35,6 +35,12 @@ ValueValidator<GLenum> texture_min_filter_mode;
 ValueValidator<GLenum> texture_parameter;
 ValueValidator<GLenum> texture_wrap_mode;
 ValueValidator<gfx::BufferUsage> gfx_buffer_usage;
+class GpuRasterMsaaModeValidator {
+ public:
+  bool IsValid(const gpu::raster::MsaaMode value) const;
+};
+GpuRasterMsaaModeValidator gpu_raster_msaa_mode;
+
 ValueValidator<viz::ResourceFormat> viz_resource_format;
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_RASTER_CMD_VALIDATION_AUTOGEN_H_

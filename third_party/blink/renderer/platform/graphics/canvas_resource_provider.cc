@@ -1420,9 +1420,9 @@ void CanvasResourceProvider::RasterRecordOOP(
   gfx::Vector2dF post_scale(1.f, 1.f);
 
   ri->BeginRasterCHROMIUM(
-      background_color, needs_clear, /*msaa_sample_count=*/0,
-      ColorParams().CanUseLcdText(), ColorParams().GetStorageGfxColorSpace(),
-      mailbox.name);
+      background_color, needs_clear, /*msaa_sample_count=*/1,
+      gpu::raster::MsaaMode::kDMSAA, ColorParams().CanUseLcdText(),
+      ColorParams().GetStorageGfxColorSpace(), mailbox.name);
 
   ri->RasterCHROMIUM(list.get(), GetOrCreateCanvasImageProvider(), size,
                      full_raster_rect, playback_rect, post_translate,

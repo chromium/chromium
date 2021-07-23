@@ -1308,13 +1308,15 @@ void RasterImplementation::BeginRasterCHROMIUM(
     GLuint sk_color,
     GLboolean needs_clear,
     GLuint msaa_sample_count,
+    MsaaMode msaa_mode,
     GLboolean can_use_lcd_text,
     const gfx::ColorSpace& color_space,
     const GLbyte* mailbox) {
   DCHECK(!raster_properties_);
 
-  helper_->BeginRasterCHROMIUMImmediate(
-      sk_color, needs_clear, msaa_sample_count, can_use_lcd_text, mailbox);
+  helper_->BeginRasterCHROMIUMImmediate(sk_color, needs_clear,
+                                        msaa_sample_count, msaa_mode,
+                                        can_use_lcd_text, mailbox);
 
   raster_properties_.emplace(sk_color, can_use_lcd_text,
                              color_space.ToSkColorSpace());

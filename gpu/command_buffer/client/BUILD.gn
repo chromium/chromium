@@ -204,6 +204,7 @@ source_set("raster_interface") {
     "//base",
     "//components/viz/common:resource_format",
     "//gpu/command_buffer/common",
+    "//gpu/command_buffer/common:raster",
     "//skia:skia",
     "//ui/gfx:buffer_types",
   ]
