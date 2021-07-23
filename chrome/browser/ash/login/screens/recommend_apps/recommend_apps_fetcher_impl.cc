@@ -408,7 +408,6 @@ void RecommendAppsFetcherImpl::StartDownload() {
         }
         policy {
           cookies_allowed: YES
-          cookie_store: "user"
           setting:
             "NA"
           policy_exception_justification:
