@@ -1114,6 +1114,45 @@ and Ctrl+Alt+Brightness down to zoom out.
   <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_SUB_LABEL_NETWORK" desc="Sub-label for a drop-down menu to select the language to use for Dictation. Describes how speech will be sent over the network to Google for processing to create text.">
     <ph name="language">$1<ex>English</ex></ph> speech is sent to Google for processing.
   </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_CHANGE_LANGUAGE_BUTTON" desc="Text on a button to open a dialog to change the Dictation language.">
+    Change
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_CHANGE_LANGUAGE_DIALOG_TITLE" desc="Title of a dialog allowing the user to change their Dictation language.">
+    Change Dictation language
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_SEARCH_HINT" desc="Hint in a language search box in the dialog allowing users to change their Dictation language.">
+    Search languages
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_SEARCH_CLEAR" desc="Hint to clear search in a language search box in the dialog allowing users to change their Dictation language.">
+    Clear search
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_RECOMMENDED" desc="Heading for suggested languages list in the Dictation change language dialog.">
+    Suggested
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_ALL" desc="Heading for the list of all Dictation languages in the Dictation change language dialog.">
+    All languages
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_NO_RESULTS" desc="Message shown when there are no Dictation languages matching the search query the user has typed.">
+    No search results
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_UPDATE_BUTTON" desc="Text on a button to update the Dictation language in the change language dialog.">
+    Update
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_CANCEL_BUTTON" desc="Text on a button to cancel the Dictation language dialog without updating the language.">
+    Cancel
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_OFFLINE_SUBTITLE" desc="Subtitle of a language in the Dictation language settings dialog which indicates that the language is availble offline.">
+    Works offline
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_OFFLINE_DESCRIPTION" desc="Description of a language that works offline in the Dictation language settings dialog." is_accessibility_with_no_ui="true">
+    <ph name="LANGUAGE">$1<ex>English</ex></ph> (works offline)
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_SELECTED_DESCRIPTION" desc="Description of a language that is selected in the Dictation language settings dialog." is_accessibility_with_no_ui="true">
+    <ph name="LANGUAGE">$1<ex>English</ex></ph> (selected)
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LANGUAGE_DIALOG_NOT_SELECTED_DESCRIPTION" desc="Description of a language that is not selected in the Dictation language settings dialog." is_accessibility_with_no_ui="true">
+    <ph name="LANGUAGE">$1<ex>English</ex></ph> (not selected)
+  </message>
   <message name="IDS_SETTINGS_ON_SCREEN_KEYBOARD_LABEL" desc="Label for checkbox which enables an on-screen keyboard.">
     Enable on-screen keyboard
   </message>

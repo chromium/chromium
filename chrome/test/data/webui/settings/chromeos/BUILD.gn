@@ -62,6 +62,7 @@ js_modulizer("modulize") {
     "cellular_networks_list_test.js",
     "cellular_roaming_toggle_button_test.js",
     "cellular_setup_dialog_test.js",
+    "change_dictation_locale_dialog_test.js",
     "crostini_page_test.js",
     "cups_printer_entry_tests.js",
     "cups_printer_landing_page_tests.js",

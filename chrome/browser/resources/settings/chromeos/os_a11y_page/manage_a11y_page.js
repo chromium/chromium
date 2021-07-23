@@ -259,6 +259,12 @@ Polymer({
       }
     },
 
+    /** @private */
+    showDictationLocaleMenu_: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * |hasKeyboard_|, |hasMouse_|, |hasPointingStick_|, and |hasTouchpad_|
      * start undefined so observers don't trigger until they have been
@@ -665,16 +671,6 @@ Polymer({
                 recommended: localeInfo.recommended ||
                     localeInfo.value === currentLocale,
               };
-            })
-            .sort((first, second) => {
-              // All recommended locales go first.
-              // TODO(crbug.com/1195916): Display recommended languages at the
-              // top of the select options with a horizontal divider before all
-              // languages.
-              if (first.recommended !== second.recommended) {
-                return first.recommended ? -1 : 1;
-              }
-              return first.name.localeCompare(second.name);
             });
     this.updateDictationLocaleSubtitle_();
   },
@@ -695,5 +691,18 @@ Polymer({
         locale.offline ? 'dictationLocaleSubLabelOffline' :
                          'dictationLocaleSubLabelNetwork',
         locale.name);
-  }
+  },
+
+  /** @private */
+  onChangeDictationLocaleButtonClicked_() {
+    if (this.areDictationLocalePrefsAllowed_) {
+      this.showDictationLocaleMenu_ = true;
+    }
+  },
+
+  /** @private */
+  onChangeDictationLocalesDialogClosed_() {
+    this.showDictationLocaleMenu_ = false;
+    this.updateDictationLocaleSubtitle_();
+  },
 });

@@ -295,6 +295,10 @@ TEST_F(
  ['CellularNetworksList', 'cellular_networks_list_test.m.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.m.js'],
  ['CellularSetupDialog', 'cellular_setup_dialog_test.m.js'],
+ [
+   'DictationChangeLanguageLocaleDialogTest',
+   'change_dictation_locale_dialog_test.m.js'
+ ],
  ['CrostiniPage', 'crostini_page_test.m.js'],
  ['CupsPrinterEntry', 'cups_printer_entry_tests.m.js'],
  ['CupsPrinterLandingPage', 'cups_printer_landing_page_tests.m.js'],

@@ -4,6 +4,7 @@
 
 import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
@@ -12,6 +13,7 @@ js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
+    ":change_dictation_locale_dialog",
     ":externs.m",
     ":manage_a11y_page.m",
     ":manage_a11y_page_browser_proxy.m",
@@ -32,6 +34,20 @@ js_type_check("closure_compile_module") {
 js_library("externs.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/externs.m.js" ]
   extra_deps = [ ":modulize" ]
+}
+
+js_library("change_dictation_locale_dialog") {
+  deps = [
+    "//chrome/browser/resources/settings/prefs:prefs_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
 }
 
 js_library("manage_a11y_page.m") {
@@ -197,6 +213,10 @@ js_library("tts_subpage_browser_proxy.m") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
   extra_deps = [ ":modulize" ]
+}
+
+html_to_js("web_components") {
+  js_files = [ "change_dictation_locale_dialog.js" ]
 }
 
 group("polymer3_elements") {

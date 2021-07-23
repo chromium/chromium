@@ -231,12 +231,17 @@
                 [[dictationLocaleMenuSubtitle_]]
             </div>
           </div>
-          <settings-dropdown-menu label="$i18n{dictationLocaleMenuLabel}"
+          <cr-button on-click="onChangeDictationLocaleButtonClicked_">
+            $i18n{dictationChangeLanguageButton}
+          </cr-button>
+          <template is="dom-if" if="[[showDictationLocaleMenu_]]" restamp>
+            <os-settings-change-dictation-locale-dialog
+              id="changeDictationLocaleDialog"
               pref="{{prefs.settings.a11y.dictation_locale}}"
-              menu-options="[[dictationLocaleOptions_]]"
-              disabled="[[!prefs.settings.a11y.dictation.value]]"
-              on-settings-control-change="onDictationLocalesChanged_">
-          </settings-dropdown-menu>
+              on-close="onChangeDictationLocalesDialogClosed_"
+              options="[[dictationLocaleOptions_]]">
+            </os-settings-change-dictation-locale-dialog>
+          </template>
         </div>
       </template>
     </template>
