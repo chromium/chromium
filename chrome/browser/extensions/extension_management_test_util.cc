@@ -31,6 +31,21 @@ std::string make_path(const std::string& a, const std::string& b) {
   return a + "." + b;
 }
 
+void RemoveDictionaryPath(base::Value* dict, base::StringPiece path) {
+  CHECK(dict->is_dict());
+  base::StringPiece current_path(path);
+  base::Value* current_dictionary = dict;
+  size_t delimiter_position = current_path.rfind('.');
+  if (delimiter_position != base::StringPiece::npos) {
+    current_dictionary =
+        dict->FindPath(current_path.substr(0, delimiter_position));
+    if (!current_dictionary)
+      return;
+    current_path = current_path.substr(delimiter_position + 1);
+  }
+  current_dictionary->RemoveKey(current_path);
+}
+
 }  // namespace
 
 ExtensionManagementPrefUpdaterBase::ExtensionManagementPrefUpdaterBase() {
@@ -70,8 +85,10 @@ void ExtensionManagementPrefUpdaterBase::
     DCHECK(it.value().is_dict());
     if (it.key() != schema::kWildcard) {
       DCHECK(crx_file::id_util::IdIsValid(it.key()));
-      pref_->Remove(make_path(it.key(), schema::kInstallationMode), nullptr);
-      pref_->Remove(make_path(it.key(), schema::kUpdateUrl), nullptr);
+      RemoveDictionaryPath(pref_.get(),
+                           make_path(it.key(), schema::kInstallationMode));
+      RemoveDictionaryPath(pref_.get(),
+                           make_path(it.key(), schema::kUpdateUrl));
     }
   }
 }
@@ -83,7 +100,7 @@ ExtensionManagementPrefUpdaterBase::SetIndividualExtensionInstallationAllowed(
   DCHECK(crx_file::id_util::IdIsValid(id));
   pref_->SetString(make_path(id, schema::kInstallationMode),
                    allowed ? schema::kAllowed : schema::kBlocked);
-  pref_->Remove(make_path(id, schema::kUpdateUrl), nullptr);
+  RemoveDictionaryPath(pref_.get(), make_path(id, schema::kUpdateUrl));
 }
 
 void ExtensionManagementPrefUpdaterBase::SetIndividualExtensionAutoInstalled(
@@ -99,7 +116,7 @@ void ExtensionManagementPrefUpdaterBase::SetIndividualExtensionAutoInstalled(
 // Helper functions for 'install_sources' manipulation -------------------------
 
 void ExtensionManagementPrefUpdaterBase::UnsetInstallSources() {
-  pref_->Remove(kInstallSourcesPath, nullptr);
+  RemoveDictionaryPath(pref_.get(), kInstallSourcesPath);
 }
 
 void ExtensionManagementPrefUpdaterBase::ClearInstallSources() {
@@ -119,7 +136,7 @@ void ExtensionManagementPrefUpdaterBase::RemoveInstallSource(
 // Helper functions for 'allowed_types' manipulation ---------------------------
 
 void ExtensionManagementPrefUpdaterBase::UnsetAllowedTypes() {
-  pref_->Remove(kAllowedTypesPath, nullptr);
+  RemoveDictionaryPath(pref_.get(), kAllowedTypesPath);
 }
 
 void ExtensionManagementPrefUpdaterBase::ClearAllowedTypes() {
@@ -141,7 +158,8 @@ void ExtensionManagementPrefUpdaterBase::RemoveAllowedType(
 void ExtensionManagementPrefUpdaterBase::UnsetBlockedPermissions(
     const std::string& prefix) {
   DCHECK(prefix == schema::kWildcard || crx_file::id_util::IdIsValid(prefix));
-  pref_->Remove(make_path(prefix, schema::kBlockedPermissions), nullptr);
+  RemoveDictionaryPath(pref_.get(),
+                       make_path(prefix, schema::kBlockedPermissions));
 }
 
 void ExtensionManagementPrefUpdaterBase::ClearBlockedPermissions(
@@ -180,7 +198,8 @@ void ExtensionManagementPrefUpdaterBase::SetBlockedInstallMessage(
 void ExtensionManagementPrefUpdaterBase::UnsetPolicyBlockedHosts(
     const std::string& prefix) {
   DCHECK(prefix == schema::kWildcard || crx_file::id_util::IdIsValid(prefix));
-  pref_->Remove(make_path(prefix, schema::kPolicyBlockedHosts), nullptr);
+  RemoveDictionaryPath(pref_.get(),
+                       make_path(prefix, schema::kPolicyBlockedHosts));
 }
 
 void ExtensionManagementPrefUpdaterBase::ClearPolicyBlockedHosts(
@@ -208,7 +227,8 @@ void ExtensionManagementPrefUpdaterBase::RemovePolicyBlockedHost(
 void ExtensionManagementPrefUpdaterBase::UnsetPolicyAllowedHosts(
     const std::string& prefix) {
   DCHECK(prefix == schema::kWildcard || crx_file::id_util::IdIsValid(prefix));
-  pref_->Remove(make_path(prefix, schema::kPolicyAllowedHosts), nullptr);
+  RemoveDictionaryPath(pref_.get(),
+                       make_path(prefix, schema::kPolicyAllowedHosts));
 }
 
 void ExtensionManagementPrefUpdaterBase::ClearPolicyAllowedHosts(
@@ -236,7 +256,7 @@ void ExtensionManagementPrefUpdaterBase::RemovePolicyAllowedHost(
 void ExtensionManagementPrefUpdaterBase::UnsetAllowedPermissions(
     const std::string& id) {
   DCHECK(crx_file::id_util::IdIsValid(id));
-  pref_->Remove(make_path(id, schema::kAllowedPermissions), nullptr);
+  RemoveDictionaryPath(pref_.get(), make_path(id, schema::kAllowedPermissions));
 }
 
 void ExtensionManagementPrefUpdaterBase::ClearAllowedPermissions(
@@ -271,7 +291,8 @@ void ExtensionManagementPrefUpdaterBase::SetMinimumVersionRequired(
 void ExtensionManagementPrefUpdaterBase::UnsetMinimumVersionRequired(
     const std::string& id) {
   DCHECK(crx_file::id_util::IdIsValid(id));
-  pref_->Remove(make_path(id, schema::kMinimumVersionRequired), nullptr);
+  RemoveDictionaryPath(pref_.get(),
+                       make_path(id, schema::kMinimumVersionRequired));
 }
 
 // Expose a read-only preference to user ---------------------------------------
