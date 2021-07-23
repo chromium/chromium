@@ -285,6 +285,27 @@ TEST_F(BookmarkCodecTest, ChecksumManualEditTest) {
                    /*sync_metadata_str=*/nullptr);
 }
 
+// Verifies no crash if a node does not have an id.
+// This is a regression test for: https://crbug.com/1232410 .
+TEST_F(BookmarkCodecTest, DecodeWithNoId) {
+  std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel1());
+  std::string enc_checksum;
+  base::Value value =
+      EncodeHelper(model_to_encode.get(), /*sync_metadata_str=*/std::string(),
+                   &enc_checksum);
+
+  // Remove an id.
+  base::Value* child1_value = nullptr;
+  GetBookmarksBarChildValue(&value, 0, &child1_value);
+  ASSERT_TRUE(child1_value->RemoveKey(BookmarkCodec::kIdKey));
+
+  std::string dec_checksum;
+  std::unique_ptr<BookmarkModel> decoded_model1 =
+      DecodeHelper(value, enc_checksum, &dec_checksum, true,
+                   /*sync_metadata_str=*/nullptr);
+  // Test succeeds if no crash.
+}
+
 TEST_F(BookmarkCodecTest, ChecksumManualEditIDsTest) {
   std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel3());
 
