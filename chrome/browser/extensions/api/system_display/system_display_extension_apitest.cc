@@ -26,8 +26,11 @@ namespace extensions {
 
 using display::Screen;
 using display::test::ScopedScreenOverride;
+using ContextType = ExtensionBrowserTest::ContextType;
 
-class SystemDisplayExtensionApiTest : public ExtensionApiTest {
+class SystemDisplayExtensionApiTest
+    : public ExtensionApiTest,
+      public testing::WithParamInterface<ContextType> {
  public:
   SystemDisplayExtensionApiTest() = default;
   ~SystemDisplayExtensionApiTest() override = default;
@@ -57,13 +60,29 @@ class SystemDisplayExtensionApiTest : public ExtensionApiTest {
   std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
 };
 
-IN_PROC_BROWSER_TEST_F(SystemDisplayExtensionApiTest, GetDisplayInfo) {
-  ASSERT_TRUE(RunExtensionTest("system_display/info")) << message_;
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         SystemDisplayExtensionApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         SystemDisplayExtensionApiTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(SystemDisplayExtensionApiTest, GetDisplayInfo) {
+  ASSERT_TRUE(RunExtensionTest(
+      "system_display/info", {},
+      {.load_as_service_worker = GetParam() == ContextType::kServiceWorker}))
+      << message_;
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
-IN_PROC_BROWSER_TEST_F(SystemDisplayExtensionApiTest, SetDisplay) {
+using SystemDisplayExtensionApiFunctionTest = SystemDisplayExtensionApiTest;
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         SystemDisplayExtensionApiFunctionTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+IN_PROC_BROWSER_TEST_P(SystemDisplayExtensionApiFunctionTest, SetDisplay) {
   scoped_refptr<SystemDisplaySetDisplayPropertiesFunction> set_info_function(
       new SystemDisplaySetDisplayPropertiesFunction());
 

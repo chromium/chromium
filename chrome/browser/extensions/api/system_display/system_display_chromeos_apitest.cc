@@ -10,7 +10,11 @@
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/test/extension_test_message_listener.h"
 
-class SystemDisplayChromeOSApiTest : public extensions::ExtensionApiTest {
+using ContextType = extensions::ExtensionBrowserTest::ContextType;
+
+class SystemDisplayChromeOSApiTest
+    : public extensions::ExtensionApiTest,
+      public testing::WithParamInterface<ContextType> {
  public:
   SystemDisplayChromeOSApiTest() = default;
   ~SystemDisplayChromeOSApiTest() override = default;
@@ -24,12 +28,20 @@ class SystemDisplayChromeOSApiTest : public extensions::ExtensionApiTest {
   DISALLOW_COPY_AND_ASSIGN(SystemDisplayChromeOSApiTest);
 };
 
-IN_PROC_BROWSER_TEST_F(SystemDisplayChromeOSApiTest,
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         SystemDisplayChromeOSApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         SystemDisplayChromeOSApiTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(SystemDisplayChromeOSApiTest,
                        CheckOnDisplayChangedEvent) {
   ExtensionTestMessageListener listener_for_extension_ready(
       "ready", /*will_reply=*/false);
-  ASSERT_TRUE(
-      LoadExtension(test_data_dir_.AppendASCII("system_display_chromeos")));
+  ASSERT_TRUE(LoadExtension(
+      test_data_dir_.AppendASCII("system_display_chromeos"),
+      {.load_as_service_worker = GetParam() == ContextType::kServiceWorker}));
   ASSERT_TRUE(listener_for_extension_ready.WaitUntilSatisfied());
   // Give the mojo CrosDisplayConfig.AddObserver() call a chance to go through.
   base::RunLoop().RunUntilIdle();
