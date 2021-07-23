@@ -86,8 +86,6 @@ class DEVICE_GAMEPAD_EXPORT WgiDataFetcherWin final
       gamepad_statics_;
 
   GetActivationFactoryFunction get_activation_factory_function_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace device
