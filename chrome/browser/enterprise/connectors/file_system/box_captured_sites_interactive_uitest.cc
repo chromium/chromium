@@ -453,6 +453,11 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
     WaitForSignInDialogToShow();
   }
 
+  void CancelBoxSignInConfirmation() {
+    signin_confirmation_dlg_->Cancel();
+    WaitForSignInDialogToShow();
+  }
+
   // Bypass Single-Factor-Authentication sign in and authorize
   // Chrome to access Box.com resources.
   void AuthorizeWithUserAndPasswordSFA(const std::string& username,
@@ -932,6 +937,60 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
             download_item_observer.upload_observer()->GetFileUrl());
+}
+
+IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
+                       CancelSignInConfirmation) {
+  SetCloudFSCPolicy(GetAllAllowedTestPolicy());
+  StartWprUsingFSCCaptureDir("box.com.cancel.sign.in.confirmation.wpr");
+
+  StartDownloadByNavigatingToEmbeddedServerUrl(
+      "/enterprise/connectors/file_system/downloads/"
+      "small_download.zip");
+  BoxDownloadItemObserver download_item_observer(
+      download_manager_observer()->GetLatestDownloadItem());
+
+  download_item_observer.WaitForSignInConfirmationDialog();
+  download_item_observer.sign_in_observer()->CancelBoxSignInConfirmation();
+  EXPECT_FALSE(
+      download_item_observer.upload_observer()->WaitForUploadCompletion());
+  EXPECT_TRUE(
+      download_item_observer.upload_observer()->WaitForTmpFileDeletion());
+
+  // Check that the download shelf is displaying the expected "upload
+  // cancelled" text.
+  EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
+  DownloadItemView* item_view = GetItemViewForLastDownload();
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED),
+            item_view->GetStatusTextForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, ExitSignInDialog) {
+  SetCloudFSCPolicy(GetAllAllowedTestPolicy());
+  StartWprUsingFSCCaptureDir("box.com.sign.in.fail.wpr");
+
+  StartDownloadByNavigatingToEmbeddedServerUrl(
+      "/enterprise/connectors/file_system/downloads/"
+      "small_download.zip");
+  BoxDownloadItemObserver download_item_observer(
+      download_manager_observer()->GetLatestDownloadItem());
+
+  download_item_observer.WaitForSignInConfirmationDialog();
+  download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation();
+  download_item_observer.sign_in_observer()->SubmitInvalidSignInCredentials(
+      GetBoxAccountUserName(), GetBoxAccountPassword());
+  download_item_observer.sign_in_observer()->CloseSignInWidget();
+  EXPECT_FALSE(
+      download_item_observer.upload_observer()->WaitForUploadCompletion());
+  EXPECT_TRUE(
+      download_item_observer.upload_observer()->WaitForTmpFileDeletion());
+
+  // Check that the download shelf is displaying the expected "upload
+  // cancelled" text.
+  EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
+  DownloadItemView* item_view = GetItemViewForLastDownload();
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED),
+            item_view->GetStatusTextForTesting());
 }
 
 }  // namespace enterprise_connectors
