@@ -998,19 +998,21 @@ void WallpaperControllerImpl::Init(
 
 void WallpaperControllerImpl::SetCustomWallpaper(
     const AccountId& account_id,
+    const std::string& wallpaper_files_id,
     const base::FilePath& file_path,
     WallpaperLayout layout,
     bool preview_mode,
     SetCustomWallpaperCallback callback) {
   ReadAndDecodeWallpaper(
       base::BindOnce(&WallpaperControllerImpl::OnCustomWallpaperDecoded,
-                     weak_factory_.GetWeakPtr(), account_id, file_path, layout,
-                     preview_mode, std::move(callback)),
+                     weak_factory_.GetWeakPtr(), account_id, wallpaper_files_id,
+                     file_path, layout, preview_mode, std::move(callback)),
       sequenced_task_runner_, file_path);
 }
 
 void WallpaperControllerImpl::SetCustomWallpaper(
     const AccountId& account_id,
+    const std::string& wallpaper_files_id,
     const std::string& file_name,
     WallpaperLayout layout,
     const gfx::ImageSkia& image,
@@ -1022,10 +1024,11 @@ void WallpaperControllerImpl::SetCustomWallpaper(
   const bool is_active_user = IsActiveUser(account_id);
   if (preview_mode) {
     DCHECK(is_active_user);
-    confirm_preview_wallpaper_callback_ = base::BindOnce(
-        &WallpaperControllerImpl::SaveAndSetWallpaper,
-        weak_factory_.GetWeakPtr(), account_id, file_name, CUSTOMIZED, layout,
-        /*show_wallpaper=*/false, image);
+    confirm_preview_wallpaper_callback_ =
+        base::BindOnce(&WallpaperControllerImpl::SaveAndSetWallpaper,
+                       weak_factory_.GetWeakPtr(), account_id,
+                       wallpaper_files_id, file_name, CUSTOMIZED, layout,
+                       /*show_wallpaper=*/false, image);
     reload_preview_wallpaper_callback_ = base::BindRepeating(
         &WallpaperControllerImpl::ShowWallpaperImage,
         weak_factory_.GetWeakPtr(), image,
@@ -1038,7 +1041,7 @@ void WallpaperControllerImpl::SetCustomWallpaper(
     reload_preview_wallpaper_callback_.Run();
   } else {
     SaveAndSetWallpaperWithCompletion(
-        account_id, file_name, CUSTOMIZED, layout,
+        account_id, wallpaper_files_id, file_name, CUSTOMIZED, layout,
         /*show_wallpaper=*/is_active_user, image,
         base::BindOnce(&WallpaperControllerImpl::SaveWallpaperToDriveFs,
                        weak_factory_.GetWeakPtr(), account_id));
@@ -1108,12 +1111,14 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromData(
   DecodeImageData(std::move(decoded_callback), image_data);
 }
 
-void WallpaperControllerImpl::SetDefaultWallpaper(const AccountId& account_id,
-                                                  bool show_wallpaper) {
+void WallpaperControllerImpl::SetDefaultWallpaper(
+    const AccountId& account_id,
+    const std::string& wallpaper_files_id,
+    bool show_wallpaper) {
   if (!CanSetUserWallpaper(account_id))
     return;
 
-  RemoveUserWallpaper(account_id);
+  RemoveUserWallpaper(account_id, wallpaper_files_id);
   if (!InitializeUserWallpaperInfo(account_id)) {
     LOG(ERROR) << "Initializing user wallpaper info fails. This should never "
                   "happen except in tests.";
@@ -1140,6 +1145,7 @@ void WallpaperControllerImpl::SetCustomizedDefaultWallpaperPaths(
 
 void WallpaperControllerImpl::SetPolicyWallpaper(
     const AccountId& account_id,
+    const std::string& wallpaper_files_id,
     const std::string& data) {
   // There is no visible wallpaper in kiosk mode.
   if (IsInKioskMode())
@@ -1149,8 +1155,8 @@ void WallpaperControllerImpl::SetPolicyWallpaper(
   const bool show_wallpaper = IsActiveUser(account_id);
   DecodeImageCallback callback = base::BindOnce(
       &WallpaperControllerImpl::SaveAndSetWallpaper, weak_factory_.GetWeakPtr(),
-      account_id, kPolicyWallpaperFile, POLICY, WALLPAPER_LAYOUT_CENTER_CROPPED,
-      show_wallpaper);
+      account_id, wallpaper_files_id, kPolicyWallpaperFile, POLICY,
+      WALLPAPER_LAYOUT_CENTER_CROPPED, show_wallpaper);
 
   if (bypass_decode_for_testing_) {
     std::move(callback).Run(CreateSolidColorWallpaper(kDefaultWallpaperColor));
@@ -1179,6 +1185,7 @@ void WallpaperControllerImpl::SetDevicePolicyWallpaperPath(
 
 bool WallpaperControllerImpl::SetThirdPartyWallpaper(
     const AccountId& account_id,
+    const std::string& wallpaper_files_id,
     const std::string& file_name,
     WallpaperLayout layout,
     const gfx::ImageSkia& image) {
@@ -1186,8 +1193,8 @@ bool WallpaperControllerImpl::SetThirdPartyWallpaper(
   bool allowed_to_show_wallpaper = IsActiveUser(account_id);
 
   if (allowed_to_set_wallpaper) {
-    SaveAndSetWallpaper(account_id, file_name, CUSTOMIZED, layout,
-                        allowed_to_show_wallpaper, image);
+    SaveAndSetWallpaper(account_id, wallpaper_files_id, file_name, CUSTOMIZED,
+                        layout, allowed_to_show_wallpaper, image);
   }
   return allowed_to_set_wallpaper && allowed_to_show_wallpaper;
 }
@@ -1369,13 +1376,16 @@ void WallpaperControllerImpl::RemoveAlwaysOnTopWallpaper() {
   ReloadWallpaper(/*clear_cache=*/false);
 }
 
-void WallpaperControllerImpl::RemoveUserWallpaper(const AccountId& account_id) {
+void WallpaperControllerImpl::RemoveUserWallpaper(
+    const AccountId& account_id,
+    const std::string& wallpaper_files_id) {
   RemoveUserWallpaperInfo(account_id);
-  RemoveUserWallpaperImpl(account_id);
+  RemoveUserWallpaperImpl(account_id, wallpaper_files_id);
 }
 
 void WallpaperControllerImpl::RemovePolicyWallpaper(
-    const AccountId& account_id) {
+    const AccountId& account_id,
+    const std::string& wallpaper_files_id) {
   if (!IsPolicyControlled(account_id))
     return;
 
@@ -1385,7 +1395,7 @@ void WallpaperControllerImpl::RemovePolicyWallpaper(
   // Removes the wallpaper info so that the user is no longer policy controlled,
   // otherwise setting default wallpaper is not allowed.
   RemoveUserWallpaperInfo(account_id);
-  SetDefaultWallpaper(account_id, show_wallpaper);
+  SetDefaultWallpaper(account_id, wallpaper_files_id, show_wallpaper);
 }
 
 void WallpaperControllerImpl::GetOfflineWallpaperList(
@@ -1733,20 +1743,6 @@ void WallpaperControllerImpl::RemoveUserWallpaperInfo(
 }
 
 void WallpaperControllerImpl::RemoveUserWallpaperImpl(
-    const AccountId& account_id) {
-  if (wallpaper_controller_client_) {
-    wallpaper_controller_client_->GetFilesId(
-        account_id,
-        base::BindOnce(
-            &WallpaperControllerImpl::RemoveUserWallpaperImplWithFilesId,
-            weak_factory_.GetWeakPtr(), account_id));
-  } else {
-    LOG(ERROR) << "Failed to remove wallpaper. wallpaper_controller_client_ no "
-                  "longer exists.";
-  }
-}
-
-void WallpaperControllerImpl::RemoveUserWallpaperImplWithFilesId(
     const AccountId& account_id,
     const std::string& wallpaper_files_id) {
   if (wallpaper_files_id.empty())
@@ -2039,42 +2035,26 @@ void WallpaperControllerImpl::OnDefaultWallpaperDecoded(
 
 void WallpaperControllerImpl::SaveAndSetWallpaper(
     const AccountId& account_id,
+    const std::string& wallpaper_files_id,
     const std::string& file_name,
     WallpaperType type,
     WallpaperLayout layout,
     bool show_wallpaper,
     const gfx::ImageSkia& image) {
-  SaveAndSetWallpaperWithCompletion(account_id, file_name, type, layout,
-                                    show_wallpaper, image, base::DoNothing());
+  SaveAndSetWallpaperWithCompletion(account_id, wallpaper_files_id, file_name,
+                                    type, layout, show_wallpaper, image,
+                                    base::DoNothing());
 }
 
 void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletion(
     const AccountId& account_id,
+    const std::string& wallpaper_files_id,
     const std::string& file_name,
     WallpaperType type,
     WallpaperLayout layout,
     bool show_wallpaper,
     const gfx::ImageSkia& image,
     FilePathCallback image_saved_callback) {
-  if (wallpaper_controller_client_) {
-    wallpaper_controller_client_->GetFilesId(
-        account_id,
-        base::BindOnce(
-            &WallpaperControllerImpl::SaveAndSetWallpaperWithCompletionFilesId,
-            weak_factory_.GetWeakPtr(), account_id, file_name, type, layout,
-            show_wallpaper, image, std::move(image_saved_callback)));
-  }
-}
-
-void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletionFilesId(
-    const AccountId& account_id,
-    const std::string& file_name,
-    WallpaperType type,
-    WallpaperLayout layout,
-    bool show_wallpaper,
-    const gfx::ImageSkia& image,
-    FilePathCallback image_saved_callback,
-    const std::string& wallpaper_files_id) {
   // If the image of the new wallpaper is empty, the current wallpaper is still
   // kept instead of reverting to the default.
   if (image.isNull()) {
@@ -2134,6 +2114,7 @@ void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletionFilesId(
 
 void WallpaperControllerImpl::OnCustomWallpaperDecoded(
     const AccountId& account_id,
+    const std::string& wallpaper_files_id,
     const base::FilePath& path,
     WallpaperLayout layout,
     bool preview_mode,
@@ -2141,8 +2122,8 @@ void WallpaperControllerImpl::OnCustomWallpaperDecoded(
     const gfx::ImageSkia& image) {
   bool success = !image.isNull();
   if (success) {
-    SetCustomWallpaper(account_id, path.BaseName().value(), layout, image,
-                       preview_mode);
+    SetCustomWallpaper(account_id, wallpaper_files_id, path.BaseName().value(),
+                       layout, image, preview_mode);
   }
   std::move(callback).Run(success);
 }
@@ -2413,7 +2394,9 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
       NOTIMPLEMENTED();
       break;
     case DEFAULT:
-      SetDefaultWallpaper(account_id, /*show_wallpaper=*/true);
+      if (wallpaper_controller_client_) {
+        wallpaper_controller_client_->SetDefaultWallpaper(account_id, true);
+      }
       break;
     case DAILY:
     case ONLINE:

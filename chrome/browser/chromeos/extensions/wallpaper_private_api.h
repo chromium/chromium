@@ -135,6 +135,9 @@ class WallpaperPrivateSetCustomWallpaperFunction
 
   // User account id of the active user when this api is been called.
   AccountId account_id_ = EmptyAccountId();
+
+  // User id hash of the logged in user.
+  std::string wallpaper_files_id_;
 };
 
 class WallpaperPrivateSetCustomWallpaperLayoutFunction

@@ -425,6 +425,8 @@ WallpaperPrivateSetCustomWallpaperFunction::Run() {
   // Gets account id from the caller, ensuring multiprofile compatibility.
   const user_manager::User* user = GetUserFromBrowserContext(browser_context());
   account_id_ = user->GetAccountId();
+  wallpaper_files_id_ =
+      WallpaperControllerClientImpl::Get()->GetFilesId(account_id_);
 
   StartDecode(params->wallpaper);
 
@@ -440,7 +442,8 @@ void WallpaperPrivateSetCustomWallpaperFunction::OnWallpaperDecoded(
   const std::string file_name =
       base::FilePath(params->file_name).BaseName().value();
   WallpaperControllerClientImpl::Get()->SetCustomWallpaper(
-      account_id_, file_name, layout, image, params->preview_mode);
+      account_id_, wallpaper_files_id_, file_name, layout, image,
+      params->preview_mode);
   unsafe_wallpaper_decoder_ = nullptr;
 
   if (params->generate_thumbnail) {
