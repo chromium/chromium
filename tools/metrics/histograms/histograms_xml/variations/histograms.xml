@@ -58,8 +58,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <component>Internals&gt;Metrics&gt;Variations</component>
   <summary>
     The time it takes to write prefs to disk. The time is capped at 1s. The
-    metric is emitted before field trials are set up. Only clients on canary or
-    dev channels in the ExtendedVariationsSafeMode experiment's WritePrefs and
+    metric is emitted before field trials are set up. Only clients on non-stable
+    channels in the ExtendedVariationsSafeMode experiment's WritePrefs and
     SignalEarlyAndWritePrefs groups emit the metric.
 
     Note that clients without high-resolution clocks will report 0 for very

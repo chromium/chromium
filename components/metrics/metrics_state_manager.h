@@ -66,14 +66,23 @@ class MetricsStateManager final {
     return &clean_exit_beacon_;
   }
 
-  // Signals whether the session has shutdown cleanly. Passing `false` means
-  // that Chrome has launched and has not yet shut down safely. Passing `true`
-  // signals that Chrome has shut down safely.
+  // Signals whether the session has shutdown cleanly if |update_beacon| is
+  // true. Passing `false` for |has_session_shutdown_cleanly| means that Chrome
+  // has launched and has not yet shut down safely. Passing `true` signals that
+  // Chrome has shut down safely.
   //
   // Seeing a call with `false` without a matching call with `true` suggests
   // that Chrome crashed or otherwise did not shut down cleanly, e.g. maybe the
   // OS crashed.
-  void LogHasSessionShutdownCleanly(bool has_session_shutdown_cleanly);
+  //
+  // If |write_synchronously| is true, then |has_session_shutdown_cleanly| is
+  // written to disk synchronously; otherwise, a write is scheduled.
+  //
+  // Note: |write_synchronously| should be true only for the extended variations
+  // safe mode experiment.
+  void LogHasSessionShutdownCleanly(bool has_session_shutdown_cleanly,
+                                    bool write_synchronously = false,
+                                    bool update_beacon = true);
 
   // Forces the client ID to be generated. This is useful in case it's needed
   // before recording.

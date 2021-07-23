@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -53,6 +54,7 @@ void MaybeIncrementCrashStreak(bool did_previous_session_exit_cleanly,
     ++num_crashes;
     local_state->SetInteger(variations::prefs::kVariationsCrashStreak,
                             num_crashes);
+    local_state->CommitPendingWrite();
   }
   base::UmaHistogramSparse("Variations.SafeMode.Streak.Crashes",
                            base::ClampToRange(num_crashes, 0, 100));
@@ -112,19 +114,34 @@ CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
 
 CleanExitBeacon::~CleanExitBeacon() = default;
 
-void CleanExitBeacon::WriteBeaconValue(bool value) {
+void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
+                                       bool write_synchronously,
+                                       bool update_beacon) {
   if (g_skip_clean_shutdown_steps)
     return;
 
   UpdateLastLiveTimestamp();
-  local_state_->SetBoolean(prefs::kStabilityExitedCleanly, value);
+  if (update_beacon)
+    local_state_->SetBoolean(prefs::kStabilityExitedCleanly, exited_cleanly);
+
+  if (write_synchronously) {
+    {
+      // Time the write for two experiment groups: the group which only writes
+      // prefs and the group which updates and writes prefs.
+      SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+          "Variations.ExtendedSafeMode.WritePrefsTime");
+      local_state_->CommitPendingWriteSynchronously();
+    }
+  } else {
+    local_state_->CommitPendingWrite();
+  }
 
 #if defined(OS_WIN)
   base::win::RegKey regkey;
   if (regkey.Create(HKEY_CURRENT_USER, backup_registry_key_.c_str(),
                     KEY_ALL_ACCESS) == ERROR_SUCCESS) {
     regkey.WriteValue(base::ASCIIToWide(prefs::kStabilityExitedCleanly).c_str(),
-                      value ? 1u : 0u);
+                      exited_cleanly ? 1u : 0u);
   }
 #endif  // defined(OS_WIN)
 }

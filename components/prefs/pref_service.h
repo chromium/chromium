@@ -48,6 +48,10 @@ namespace base {
 class FilePath;
 }
 
+namespace metrics {
+class CleanExitBeacon;
+}
+
 namespace prefs {
 class ScopedDictionaryPrefUpdate;
 }
@@ -55,10 +59,6 @@ class ScopedDictionaryPrefUpdate;
 namespace subtle {
 class PrefMemberBase;
 class ScopedUserPrefUpdateBase;
-}
-
-namespace variations {
-class VariationsFieldTrialCreator;
 }
 
 // Base class for PrefServices. You can use the base class to read and
@@ -424,8 +424,8 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   friend class subtle::PrefMemberBase;
 
   // Give access to CommitPendingWriteSynchronously().
-  // TODO(crbug/1218908): Limit VariationsFieldTrialCreator's access.
-  friend class variations::VariationsFieldTrialCreator;
+  // TODO(crbug/1218908): Maybe limit CleanExitBeacon's access.
+  friend class metrics::CleanExitBeacon;
 
   // These are protected so they can only be accessed by the friend
   // classes listed above.

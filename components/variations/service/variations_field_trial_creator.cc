@@ -604,7 +604,7 @@ void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
           base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
 
   const int control_group = trial->AppendGroup("Control", 33);
-  trial->AppendGroup("WritePrefs", 33);
+  const int write_prefs_group = trial->AppendGroup("WritePrefs", 33);
   const int signal_early_and_write_prefs_group =
       trial->AppendGroup("SignalEarlyAndWritePrefs", 33);
   const int assigned_group = trial->group();
@@ -612,14 +612,17 @@ void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
   if (assigned_group == default_group || assigned_group == control_group)
     return;
 
-  if (assigned_group == signal_early_and_write_prefs_group)
-    metrics_state_manager->LogHasSessionShutdownCleanly(false);
+  if (assigned_group == write_prefs_group) {
+    metrics_state_manager->LogHasSessionShutdownCleanly(
+        /*has_session_shutdown_cleanly=*/false,
+        /*write_synchronously=*/true, /*update_beacon=*/false);
+    return;
+  }
 
-  // Time the write for two experiment groups: the group which only writes prefs
-  // and the group which updates and writes prefs.
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-      "Variations.ExtendedSafeMode.WritePrefsTime");
-  seed_store_->local_state()->CommitPendingWriteSynchronously();
+  DCHECK_EQ(assigned_group, signal_early_and_write_prefs_group);
+  metrics_state_manager->LogHasSessionShutdownCleanly(
+      /*has_session_shutdown_cleanly=*/false,
+      /*write_synchronously=*/true, /*update_beacon=*/true);
 }
 #endif  // !defined(OS_ANDROID)
 

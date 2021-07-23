@@ -222,8 +222,11 @@ int MetricsStateManager::GetLowEntropySource() {
 }
 
 void MetricsStateManager::LogHasSessionShutdownCleanly(
-    bool has_session_shutdown_cleanly) {
-  clean_exit_beacon_.WriteBeaconValue(has_session_shutdown_cleanly);
+    bool has_session_shutdown_cleanly,
+    bool write_synchronously,
+    bool update_beacon) {
+  clean_exit_beacon_.WriteBeaconValue(has_session_shutdown_cleanly,
+                                      write_synchronously, update_beacon);
 }
 
 void MetricsStateManager::ForceClientIdCreation() {
