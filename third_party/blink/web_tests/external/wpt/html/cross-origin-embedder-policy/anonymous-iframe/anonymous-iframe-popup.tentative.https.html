@@ -6,48 +6,53 @@
 <body>
 <script>
 const {ORIGIN, REMOTE_ORIGIN} = get_host_info();
-
-// Create an anonymous iframe.
-const normal_iframe = document.createElement('iframe');
+const control_iframe = document.createElement('iframe');
 const anonymous_iframe = document.createElement('iframe');
+
 promise_setup(async t => {
-  await new Promise(async resolve => {
-    normal_iframe.onload = () => resolve();
-    normal_iframe.src = ORIGIN + `/common/blank.html`;
-    document.body.append(normal_iframe);
+  const createControlIframe = new Promise(async resolve => {
+    control_iframe.onload = resolve;
+    control_iframe.src = ORIGIN + `/common/blank.html`;
+    document.body.append(control_iframe);
   });
 
-  await new Promise(async resolve => {
-    anonymous_iframe.onload = () => resolve();
+  const createAnonymousIframe = new Promise(async resolve => {
+    anonymous_iframe.onload = resolve;
     anonymous_iframe.src = ORIGIN + `/common/blank.html`;
     anonymous_iframe.anonymous = true;
     document.body.append(anonymous_iframe);
   });
+
+  await Promise.all([createControlIframe, createAnonymousIframe]);
 });
 
 // Create cross-origin popup from iframes. The opener should be blocked for
 // anonymous iframe and work for normal iframe.
 promise_test(async t => {
   src_popup = REMOTE_ORIGIN + `/common/blank.html`;
-  // Opener from normal iframe should be available.
-  const popup_1 = normal_iframe.contentWindow.open(src_popup);
-  assert_equals(popup_1.opener, normal_iframe.contentWindow);
-  // Opener from normal iframe should be blocked.
+  const popup_1 = control_iframe.contentWindow.open(src_popup);
+  assert_equals(
+    popup_1.opener, control_iframe.contentWindow,
+    "Opener from normal iframe should be available.");
+
   const popup_2 = anonymous_iframe.contentWindow.open(src_popup);
-  assert_equals(popup_2, null);
-}, 'Cross-origin popup from anonymous iframe');
+  assert_equals(
+    popup_2, null, "Opener from anonymous iframe should be blocked.");
+}, 'Cross-origin popup from normal/anonymous iframes.');
 
 // Create a same-origin popup from iframes. The opener should be blocked for
 // anonymous iframe and work for normal iframe.
 promise_test(async t => {
   src_popup = ORIGIN + `/common/blank.html`;
-  // Opener from normal iframe should be available.
-  const popup_1 = normal_iframe.contentWindow.open(src_popup);
-  assert_equals(popup_1.opener, normal_iframe.contentWindow);
-  // Opener from normal iframe should be blocked.
+  const popup_1 = control_iframe.contentWindow.open(src_popup);
+  assert_equals(
+    popup_1.opener, control_iframe.contentWindow,
+    "Opener from normal iframe should be available.");
+
   const popup_2 = anonymous_iframe.contentWindow.open(src_popup);
-  assert_equals(popup_2, null);
-}, 'Same-origin popup from anonymous iframe');
+  assert_equals(
+    popup_2, null, "Opener from anonymous iframe should be blocked.");
+}, 'Same-origin popup from normal/anonymous iframes.');
 
 </script>
 </body>
