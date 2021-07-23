@@ -25,6 +25,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "net/cert/cert_status_flags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/page_transition_types.h"
@@ -280,6 +281,10 @@ void ContentPasswordManagerDriver::PasswordFormCleared(
 
 void ContentPasswordManagerDriver::RecordSavePasswordProgress(
     const std::string& log) {
+  // Skip messages from chrome:// URLs as they are just noise for
+  // chrome://password-manager-internals based debugging.
+  if (GetLastCommittedURL().SchemeIs(content::kChromeUIScheme))
+    return;
   client_->GetLogManager()->LogTextMessage(log);
 }
 

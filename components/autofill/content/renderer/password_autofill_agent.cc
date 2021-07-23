@@ -38,7 +38,6 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/buildflags.h"
-#include "content/public/common/url_constants.h"
 #include "content/public/renderer/document_state.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
@@ -1021,18 +1020,6 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
 }
 
 void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
-  WebLocalFrame* frame = render_frame()->GetWebFrame();
-  blink::WebSecurityOrigin origin = frame->GetDocument().GetSecurityOrigin();
-
-  if (origin.Protocol().Utf8() == content::kChromeUIScheme) {
-    // Return silently without any logging to fix flaky tests. Sometimes they
-    // observed log data of chrome://password-manager-internals. See
-    // crbug.com/1231088.
-    // The function would exit after checking FrameCanAccessPasswordManager()
-    // anyways.
-    return;
-  }
-
   std::unique_ptr<RendererSavePasswordProgressLogger> logger;
   if (logging_state_active_) {
     logger = std::make_unique<RendererSavePasswordProgressLogger>(
@@ -1041,7 +1028,10 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
     logger->LogBoolean(Logger::STRING_ONLY_VISIBLE, only_visible);
   }
 
+  WebLocalFrame* frame = render_frame()->GetWebFrame();
+
   // Make sure that this security origin is allowed to use password manager.
+  blink::WebSecurityOrigin origin = frame->GetDocument().GetSecurityOrigin();
   if (logger) {
     logger->LogURL(Logger::STRING_SECURITY_ORIGIN,
                    GURL(origin.ToString().Utf8()));
