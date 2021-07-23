@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/full_restore/full_restore_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -417,18 +418,9 @@ void SplitViewMetricsController::OnWindowInitialized(aura::Window* window) {
   // `WindowStateObserver` will be added later in `OnWindowParentChanged`.
   window->AddObserver(this);
   no_state_observed_windows_.insert(window);
-  auto reverse_iter = observed_windows_.rbegin();
-  while (reverse_iter != observed_windows_.rend()) {
-    int32_t* curr_window_activation_index =
-        (*reverse_iter)->GetProperty(full_restore::kActivationIndexKey);
-    if (curr_window_activation_index &&
-        *curr_window_activation_index > *activation_index) {
-      break;
-    }
-    reverse_iter = std::next(reverse_iter);
-  }
-
-  observed_windows_.insert(reverse_iter.base(), window);
+  observed_windows_.insert(
+      FullRestoreController::GetWindowToInsertBefore(window, observed_windows_),
+      window);
 }
 
 void SplitViewMetricsController::StartRecordSplitViewMetrics() {

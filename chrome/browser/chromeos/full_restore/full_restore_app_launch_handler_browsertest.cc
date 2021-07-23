@@ -805,6 +805,14 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   CloseAppWindow(app_window);
   WaitForAppLaunchInfoSaved();
 
+  // Create a non-restored window in the restored window's desk container.
+  Browser::CreateParams non_restored_params(profile(), true);
+  non_restored_params.initial_workspace = "2";
+  Browser* non_restored_browser = Browser::Create(non_restored_params);
+  AddBlankTabAndShow(non_restored_browser);
+  aura::Window* non_restored_window =
+      non_restored_browser->window()->GetNativeWindow();
+
   // Read from the restore data.
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
@@ -829,8 +837,12 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   EXPECT_EQ(kActivationIndex, *index);
   EXPECT_EQ(kDeskId, window->GetProperty(aura::client::kWindowWorkspaceKey));
 
-  // Windows created from full restore are not activated. They will become
-  // activatable after a couple seconds.
+  // Non-topmost windows created from full restore are not activated. They will
+  // become activatable after a couple seconds. Verify that the
+  // `non_restored_window` is topmost and check that `window` is not
+  // activatable.
+  std::vector<aura::Window*> expected_stacking{window, non_restored_window};
+  EXPECT_EQ(non_restored_window->parent()->children(), expected_stacking);
   EXPECT_FALSE(views::Widget::GetWidgetForNativeView(window)->IsActive());
   EXPECT_FALSE(wm::CanActivateWindow(window));
 
@@ -1740,110 +1752,6 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   ASSERT_FALSE(GetWindowInfo(kTaskId1));
   ASSERT_FALSE(GetWindowInfo(kTaskId2));
 
-  StopInstance();
-}
-
-// Tests that an ARC app's properties are restored when its surface is created.
-IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
-                       RestoreArcAppWindowProperties) {
-  constexpr int32_t kPreRestoreTaskId = 100;
-  const int32_t kPreRestoreSessionId =
-      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
-  constexpr char kPreRestoreWindowAppId[] = "org.chromium.arc.100";
-
-  constexpr int32_t kRestoreTaskId = 200;
-  constexpr int32_t kRestoreSessionId =
-      ::full_restore::kArcSessionIdOffsetForRestoredLaunching + 1;
-  constexpr char kRestoreWindowAppId[] = "org.chromium.arc.200";
-
-  // Create four desks in total.
-  ash::AutotestDesksApi().CreateNewDesk();
-  ash::AutotestDesksApi().CreateNewDesk();
-  ash::AutotestDesksApi().CreateNewDesk();
-
-  // Setup ARC app.
-  SetProfile();
-  InstallTestApps(kTestAppPackage, false);
-  const std::string kAppId = GetTestApp1Id(kTestAppPackage);
-  ::full_restore::FullRestoreInfo::GetInstance()->AddObserver(
-      test_full_restore_info_observer());
-  SaveAppLaunchInfo(kAppId, kPreRestoreSessionId);
-
-  // Create the arc app.
-  views::Widget* arc_widget = CreateExoWindow(kPreRestoreWindowAppId);
-  aura::Window* arc_window = arc_widget->GetNativeWindow();
-  VerifyObserver(arc_window, /*launch_count=*/0, /*init_count=*/0);
-  VerifyWindowProperty(arc_window, kPreRestoreTaskId, /*restore_window_id=*/0,
-                       /*hidden=*/false);
-
-  // Simulate creating the task.
-  CreateTask(kAppId, kPreRestoreTaskId, kPreRestoreSessionId);
-  VerifyObserver(arc_window, /*launch_count=*/1, /*init_count=*/0);
-
-  // Save the arc app as left snapped.
-  SaveWindowInfo(arc_window, kActivationIndex, kWindowStateType);
-  WaitForAppLaunchInfoSaved();
-
-  // Close the widget, simulating logging off.
-  Restore();
-  arc_widget->CloseNow();
-  app_host()->OnTaskDestroyed(kPreRestoreTaskId);
-
-  ForceLaunchApp(kAppId, kPreRestoreTaskId);
-
-  // Recreate the window, simulating its restoration. Task id needs to match the
-  // `kWindowAppId` arg of `CreateArcApp()`.
-  arc_widget = CreateExoWindow(kRestoreWindowAppId);
-  arc_window = arc_widget->GetNativeWindow();
-
-  // Recreate the task.
-  CreateTask(kAppId, kRestoreTaskId, kRestoreSessionId);
-  VerifyObserver(arc_window, /*launch_count=*/1, /*init_count=*/1);
-  VerifyWindowProperty(arc_window, kRestoreTaskId, kPreRestoreTaskId,
-                       /*hidden=*/false);
-  VerifyWindowInfo(arc_window, kActivationIndex, kWindowStateType);
-
-  // Create a `ClientControlledShellSurface` for this task.
-  exo::test::ExoTestHelper exo_test_helper;
-  std::unique_ptr<exo::WMHelper> wm_helper =
-      std::make_unique<exo::WMHelperChromeOS>();
-  wm_helper->RegisterAppPropertyResolver(
-      std::make_unique<ExoAppTypeResolver>());
-  auto surface = std::make_unique<exo::Surface>();
-  auto shell_surface =
-      exo_test_helper.CreateClientControlledShellSurface(surface.get());
-  shell_surface->SetApplicationId(kRestoreWindowAppId);
-  shell_surface->SetGeometry(gfx::Rect(gfx::Size(256, 256)));
-  auto surface_buffer = std::make_unique<exo::Buffer>(
-      exo_test_helper.CreateGpuMemoryBuffer(gfx::Size(256, 256)));
-  surface->Attach(surface_buffer.get());
-  surface->Commit();
-
-  // Check if the surface properly restores desk state and activation index.
-  arc_window = shell_surface->GetWidget()->GetNativeWindow();
-  ASSERT_TRUE(arc_window);
-  EXPECT_EQ(kDeskId,
-            arc_window->GetProperty(aura::client::kWindowWorkspaceKey));
-  int32_t* index = arc_window->GetProperty(::full_restore::kActivationIndexKey);
-  ASSERT_TRUE(index);
-  EXPECT_EQ(kActivationIndex, *index);
-  EXPECT_TRUE(arc_window->GetProperty(::full_restore::kWindowInfoKey));
-
-  // Check if it's also left-snapped.
-  EXPECT_EQ(kWindowStateType,
-            ash::WindowState::Get(arc_window)->GetStateType());
-
-  // Destroy the task and close the window.
-  app_host()->OnTaskDestroyed(kRestoreTaskId);
-  arc_widget->CloseNow();
-
-  ASSERT_FALSE(GetWindowInfo(kPreRestoreTaskId));
-
-  // Remove the added desks.
-  RemoveInactiveDesks();
-
-  ::full_restore::FullRestoreInfo::GetInstance()->RemoveObserver(
-      test_full_restore_info_observer());
   StopInstance();
 }
 

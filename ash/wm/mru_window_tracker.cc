@@ -323,21 +323,9 @@ void MruWindowTracker::OnWindowInitialized(aura::Window* window) {
   // so we have to manually insert them into the window tracker and restore
   // their MRU order.
   window->AddObserver(this);
-  auto reverse_iter = mru_windows_.rbegin();
-  while (reverse_iter != mru_windows_.rend()) {
-    int32_t* curr_window_activation_index =
-        (*reverse_iter)->GetProperty(full_restore::kActivationIndexKey);
-    if (curr_window_activation_index &&
-        *curr_window_activation_index > *activation_index) {
-      // The lower `full_restore::kActivationIndexKey` is, the more recently it
-      // was used. If the current window has a higher activation index, then we
-      // should insert `window` right after it.
-      break;
-    }
-    reverse_iter = std::next(reverse_iter);
-  }
-
-  mru_windows_.insert(reverse_iter.base(), window);
+  mru_windows_.insert(
+      FullRestoreController::GetWindowToInsertBefore(window, mru_windows_),
+      window);
 }
 
 }  // namespace ash

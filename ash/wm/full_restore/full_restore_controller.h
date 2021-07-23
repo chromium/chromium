@@ -47,6 +47,11 @@ class ASH_EXPORT FullRestoreController
   // Shell.
   static FullRestoreController* Get();
 
+  // Returns whether a Full Restore'd window can be activated. Only ghost
+  // windows, windows without the `full_restore::kLaunchedFromFullRestoreKey`,
+  // and topmost Full Restore'd windows return true.
+  static bool CanActivateFullRestoredWindow(const aura::Window* window);
+
   // When windows are restored, they're restored inactive so during tablet mode
   // a window may be restored above the app list while the app list is still
   // active. To prevent this situation, the app list is deactivated and this
@@ -55,6 +60,14 @@ class ASH_EXPORT FullRestoreController
   // |window| is the window for the app list, and the topmost window of any
   // active desk container is a restored window.
   static bool CanActivateAppList(const aura::Window* window);
+
+  // Given a set of windows, ordered from LRU to MRU, returns where `window`
+  // should be inserted. The insertion point is determined by iterating from LRU
+  // to MRU, returning the an iter to the first window that has no activation
+  // index or a lower activation index.
+  static std::vector<aura::Window*>::const_iterator GetWindowToInsertBefore(
+      aura::Window* window,
+      const std::vector<aura::Window*>& windows);
 
   // Calls SaveWindowImpl for |window_state|. The activation index will be
   // calculated in SaveWindowImpl.
@@ -85,7 +98,6 @@ class ASH_EXPORT FullRestoreController
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
-  void OnWindowStackingChanged(aura::Window* window) override;
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
   void OnWindowDestroying(aura::Window* window) override;
 
@@ -129,9 +141,6 @@ class ASH_EXPORT FullRestoreController
 
   // True whenever we are attempting to restore snap state.
   bool is_restoring_snap_state_ = false;
-
-  // True whenever we are stacking windows to match saved activation order.
-  bool is_stacking_ = false;
 
   // The set of windows that have had their widgets initialized and will be
   // shown later.

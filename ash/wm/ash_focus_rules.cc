@@ -102,7 +102,7 @@ bool AshFocusRules::CanActivateWindow(const aura::Window* window) const {
   if (!window)
     return true;
 
-  if (window->GetProperty(full_restore::kLaunchedFromFullRestoreKey))
+  if (!FullRestoreController::CanActivateFullRestoredWindow(window))
     return false;
 
   // Special case during Full Restore that prevents the app list from being

@@ -6,6 +6,7 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/app_types.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/hotseat_widget.h"
@@ -131,7 +132,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
                        WindowTreeHostManager::GetPrimaryDisplayId(),
                        /*desk_id=*/1);
     return CreateTestFullRestoredWidgetFromRestoreId(
-        restore_window_id,
+        restore_window_id, AppType::BROWSER,
         /*is_taskless_arc_app=*/false);
   }
 
@@ -140,6 +141,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   // matches `restore_window_id`.
   views::Widget* CreateTestFullRestoredWidgetFromRestoreId(
       int32_t restore_window_id,
+      AppType app_type,
       bool is_taskless_arc_app) {
     if (!fake_full_restore_file_.contains(restore_window_id))
       return nullptr;
@@ -173,17 +175,10 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
         .SetWindowProperty(full_restore::kActivationIndexKey,
                            new int32_t(*info->activation_index))
         .SetWindowProperty(full_restore::kLaunchedFromFullRestoreKey, true)
-        .SetWindowProperty(full_restore::kRestoreWindowIdKey,
-                           restore_window_id);
-
-    // Set some additional properties if we are mocking a ARC window that is
-    // created without a task.
-    if (is_taskless_arc_app) {
-      widget_builder
-          .SetWindowProperty(full_restore::kParentToHiddenContainerKey, true)
-          .SetWindowProperty(aura::client::kAppType,
-                             static_cast<int>(AppType::ARC_APP));
-    }
+        .SetWindowProperty(full_restore::kRestoreWindowIdKey, restore_window_id)
+        .SetWindowProperty(aura::client::kAppType, static_cast<int>(app_type))
+        .SetWindowProperty(full_restore::kParentToHiddenContainerKey,
+                           is_taskless_arc_app);
 
     views::Widget* widget = widget_builder.BuildOwnedByNativeWidget();
     SetResizable(widget);
@@ -197,7 +192,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   views::Widget* CreateTestFullRestoredWidgetFromRestoreId(
       int32_t restore_window_id) {
     return CreateTestFullRestoredWidgetFromRestoreId(
-        restore_window_id,
+        restore_window_id, AppType::BROWSER,
         /*is_taskless_arc_app=*/false);
   }
 
@@ -577,10 +572,9 @@ TEST_F(FullRestoreControllerTest, TestFullRestoredWidget) {
   ASSERT_TRUE(activation_index);
   EXPECT_EQ(kActivationIndex, *activation_index);
 
-  // Widget cannot be activated and is not active after it is created from full
-  // restore.
-  EXPECT_FALSE(wm::CanActivateWindow(widget->GetNativeWindow()));
-  EXPECT_FALSE(widget->IsActive());
+  // Since `widget` is the topmost window, it can be activated.
+  EXPECT_TRUE(wm::CanActivateWindow(widget->GetNativeWindow()));
+  EXPECT_TRUE(widget->IsActive());
 
   // Activation permissions are restored in a post task. Spin the run loop and
   // verify.
@@ -1070,9 +1064,10 @@ TEST_F(FullRestoreControllerTest, ArcAppWindowCreatedWithoutTask) {
 
   // Restore the window, it should go to the invisible unparented container for
   // now.
-  auto* restored_window = CreateTestFullRestoredWidgetFromRestoreId(
-                              kRestoreId, /*is_taskless_arc_app=*/true)
-                              ->GetNativeWindow();
+  auto* restored_window =
+      CreateTestFullRestoredWidgetFromRestoreId(kRestoreId, AppType::ARC_APP,
+                                                /*is_taskless_arc_app=*/true)
+          ->GetNativeWindow();
   EXPECT_EQ(
       Shell::GetContainer(root_window, kShellWindowId_UnparentedContainer),
       restored_window->parent());
@@ -1116,9 +1111,10 @@ TEST_F(FullRestoreControllerTest, ArcAppWindowCreatedWithoutTaskMultiDisplay) {
 
   // Restore the first window, it should go to the invisible unparented
   // container for the secondary display until the ARC task is ready.
-  auto* restored_window1 = CreateTestFullRestoredWidgetFromRestoreId(
-                               kRestoreId1, /*is_taskless_arc_app=*/true)
-                               ->GetNativeWindow();
+  auto* restored_window1 =
+      CreateTestFullRestoredWidgetFromRestoreId(kRestoreId1, AppType::ARC_APP,
+                                                /*is_taskless_arc_app=*/true)
+          ->GetNativeWindow();
   EXPECT_EQ(Shell::GetContainer(secondary_root_window,
                                 kShellWindowId_UnparentedContainer),
             restored_window1->parent());
@@ -1130,9 +1126,10 @@ TEST_F(FullRestoreControllerTest, ArcAppWindowCreatedWithoutTaskMultiDisplay) {
 
   // Restore the second window, it should also go to the invisible unparented
   // container for the secondary display.
-  auto* restored_window2 = CreateTestFullRestoredWidgetFromRestoreId(
-                               kRestoreId2, /*is_taskless_arc_app=*/true)
-                               ->GetNativeWindow();
+  auto* restored_window2 =
+      CreateTestFullRestoredWidgetFromRestoreId(kRestoreId2, AppType::ARC_APP,
+                                                /*is_taskless_arc_app=*/true)
+          ->GetNativeWindow();
   EXPECT_EQ(Shell::GetContainer(secondary_root_window,
                                 kShellWindowId_UnparentedContainer),
             restored_window2->parent());
@@ -1196,6 +1193,50 @@ TEST_F(FullRestoreControllerTest, OutOfBoundsWindows) {
           ->GetRestoreBoundsInScreen();
   EXPECT_TRUE(window_bounds_3.Intersects(kScreenBounds));
   EXPECT_LT(0, IntersectRects(kScreenBounds, window_bounds_3).size().GetArea());
+}
+
+// Tests that when the topmost window is a Full Restore'd window, it is
+// activatable. See crbug.com/1229928.
+TEST_F(FullRestoreControllerTest, TopmostWindowIsActivatable) {
+  // Create a window that is not restored and activate it.
+  auto* desk_container = desks_util::GetActiveDeskContainerForRoot(
+      Shell::Get()->GetPrimaryRootWindow());
+  auto window = CreateAppWindow(gfx::Rect(100, 100), AppType::BROWSER);
+  wm::ActivateWindow(window.get());
+  ASSERT_TRUE(wm::IsActiveWindow(window.get()));
+
+  // Create a Full Restore'd Chrome app.
+  AddEntryToFakeFile(
+      /*restore_id=*/2, gfx::Rect(200, 200), chromeos::WindowStateType::kNormal,
+      /*activation_index=*/1, WindowTreeHostManager::GetPrimaryDisplayId());
+  auto* restored_window1 = CreateTestFullRestoredWidgetFromRestoreId(
+                               /*restore_id=*/2, AppType::CHROME_APP,
+                               /*is_taskless_arc_app=*/false)
+                               ->GetNativeWindow();
+  VerifyStackingOrder(desk_container, {restored_window1, window.get()});
+
+  // Create a Full Restore'd window.
+  auto* window_4 = CreateTestFullRestoredWidget(4)->GetNativeWindow();
+  VerifyStackingOrder(desk_container,
+                      {window_4, restored_window1, window.get()});
+
+  // Check the Full Restore'd windows' properties.
+  EXPECT_TRUE(
+      restored_window1->GetProperty(full_restore::kLaunchedFromFullRestoreKey));
+  EXPECT_TRUE(window_4->GetProperty(full_restore::kLaunchedFromFullRestoreKey));
+
+  // Both the Full Restore'd windows shouldn't be activatable.
+  EXPECT_FALSE(wm::CanActivateWindow(restored_window1));
+  EXPECT_FALSE(wm::CanActivateWindow(window_4));
+
+  // Destroy the non-restored window. The new topmost window will be
+  // `restored_window1` so it should be activatable.
+  window.reset();
+  VerifyStackingOrder(desk_container, {window_4, restored_window1});
+  EXPECT_TRUE(
+      restored_window1->GetProperty(full_restore::kLaunchedFromFullRestoreKey));
+  EXPECT_TRUE(wm::CanActivateWindow(restored_window1));
+  EXPECT_FALSE(wm::CanActivateWindow(window_4));
 }
 
 }  // namespace ash
