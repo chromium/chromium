@@ -102,6 +102,8 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   void OnShortcutLocationGathered(const AppId& from_app,
                                   const AppId& app_id,
                                   ShortcutLocations locations);
+  void InstallOsHooksForReplacementApp(const AppId& app_id,
+                                       ShortcutLocations locations);
 
   std::unique_ptr<WebAppDialogManager> dialog_manager_;
 
