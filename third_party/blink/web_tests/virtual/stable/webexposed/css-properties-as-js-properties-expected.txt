@@ -345,6 +345,7 @@ scrollPaddingTop
 scrollSnapAlign
 scrollSnapStop
 scrollSnapType
+scrollbarGutter
 setProperty
 shapeImageThreshold
 shapeMargin

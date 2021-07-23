@@ -1929,7 +1929,7 @@
     },
     {
       name: "ScrollbarGutter",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ScrollbarWidth",

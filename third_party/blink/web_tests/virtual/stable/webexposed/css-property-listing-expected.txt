@@ -308,6 +308,7 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-snap-align
     scroll-snap-stop
     scroll-snap-type
+    scrollbar-gutter
     shape-image-threshold
     shape-margin
     shape-outside
