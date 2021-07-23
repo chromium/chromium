@@ -14,12 +14,15 @@
 namespace content {
 
 DisplayCutoutHostImpl::DisplayCutoutHostImpl(WebContentsImpl* web_contents)
-    : receivers_(web_contents,
-                 this,
-                 content::WebContentsFrameReceiverSetPassKey()),
-      web_contents_impl_(web_contents) {}
+    : receivers_(web_contents, this), web_contents_impl_(web_contents) {}
 
 DisplayCutoutHostImpl::~DisplayCutoutHostImpl() = default;
+
+void DisplayCutoutHostImpl::BindReceiver(
+    mojo::PendingAssociatedReceiver<blink::mojom::DisplayCutoutHost> receiver,
+    RenderFrameHost* rfh) {
+  receivers_.Bind(rfh, std::move(receiver));
+}
 
 void DisplayCutoutHostImpl::NotifyViewportFitChanged(
     blink::mojom::ViewportFit value) {

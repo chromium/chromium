@@ -74,6 +74,7 @@ class Origin;
 
 namespace blink {
 namespace mojom {
+class DisplayCutoutHost;
 class FullscreenOptions;
 }
 class PageState;
@@ -213,6 +214,12 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // same-origin visibility heuristic, see `UserActivationState` for details.
   virtual void DidReceiveUserActivation(
       RenderFrameHostImpl* render_frame_host) {}
+
+  // Binds a DisplayCutoutHost object associated to |render_frame_host|.
+  virtual void BindDisplayCutoutHost(
+      RenderFrameHostImpl* render_frame_host,
+      mojo::PendingAssociatedReceiver<blink::mojom::DisplayCutoutHost>
+          receiver) {}
 
   // The display style of the frame has changed.
   virtual void DidChangeDisplayState(RenderFrameHostImpl* render_frame_host,

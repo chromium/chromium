@@ -209,6 +209,7 @@
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
+#include "third_party/blink/public/mojom/page/display_cutout.mojom.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom.h"
@@ -7993,6 +7994,14 @@ void RenderFrameHostImpl::SetUpMojoIfNeeded() {
              receiver) {
         impl->delegate()->CreateMediaPlayerHostForRenderFrameHost(
             impl, std::move(receiver));
+      },
+      base::Unretained(this)));
+
+  associated_registry_->AddInterface(base::BindRepeating(
+      [](RenderFrameHostImpl* impl,
+         mojo::PendingAssociatedReceiver<blink::mojom::DisplayCutoutHost>
+             receiver) {
+        impl->delegate()->BindDisplayCutoutHost(impl, std::move(receiver));
       },
       base::Unretained(this)));
 

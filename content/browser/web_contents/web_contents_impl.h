@@ -610,6 +610,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                      const std::string& name) override;
   void DidReceiveUserActivation(
       RenderFrameHostImpl* render_frame_host) override;
+  void BindDisplayCutoutHost(
+      RenderFrameHostImpl* render_frame_host,
+      mojo::PendingAssociatedReceiver<blink::mojom::DisplayCutoutHost> receiver)
+      override;
   void DidChangeDisplayState(RenderFrameHostImpl* render_frame_host,
                              bool is_display_none) override;
   void FrameSizeChanged(RenderFrameHostImpl* render_frame_host,

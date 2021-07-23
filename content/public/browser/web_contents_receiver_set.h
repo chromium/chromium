@@ -53,7 +53,6 @@ class SubresourceRedirectObserver;
 namespace content {
 
 class ConversionHost;
-class DisplayCutoutHostImpl;
 class RenderFrameHost;
 class ScreenOrientationProvider;
 class TestFrameInterfaceBinder;
@@ -131,7 +130,6 @@ class WebContentsFrameReceiverSetPassKey {
   friend class ::security_interstitials::SecurityInterstitialTabHelper;
   friend class ::subresource_redirect::SubresourceRedirectObserver;
   friend class ConversionHost;
-  friend class DisplayCutoutHostImpl;
   friend class ScreenOrientationProvider;
   friend class TestFrameInterfaceBinder;
   FRIEND_TEST_ALL_PREFIXES(WebContentsReceiverSetBrowserTest,

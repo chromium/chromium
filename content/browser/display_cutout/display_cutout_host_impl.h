@@ -5,17 +5,24 @@
 #ifndef CONTENT_BROWSER_DISPLAY_CUTOUT_DISPLAY_CUTOUT_HOST_IMPL_H_
 #define CONTENT_BROWSER_DISPLAY_CUTOUT_DISPLAY_CUTOUT_HOST_IMPL_H_
 
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "third_party/blink/public/mojom/page/display_cutout.mojom.h"
 #include "ui/gfx/geometry/insets.h"
 
 namespace content {
 
+class WebContentsImpl;
+
 class DisplayCutoutHostImpl : public blink::mojom::DisplayCutoutHost {
  public:
   explicit DisplayCutoutHostImpl(WebContentsImpl*);
   ~DisplayCutoutHostImpl() override;
+
+  // Binds a new receiver for the specified frame.
+  void BindReceiver(
+      mojo::PendingAssociatedReceiver<blink::mojom::DisplayCutoutHost> receiver,
+      RenderFrameHost* rfh);
 
   // blink::mojom::DisplayCutoutHost
   void NotifyViewportFitChanged(blink::mojom::ViewportFit value) override;
@@ -82,7 +89,7 @@ class DisplayCutoutHostImpl : public blink::mojom::DisplayCutoutHost {
   std::map<RenderFrameHost*, blink::mojom::ViewportFit> values_;
 
   // Holds WebContents associated mojo receivers.
-  WebContentsFrameReceiverSet<blink::mojom::DisplayCutoutHost> receivers_;
+  RenderFrameHostReceiverSet<blink::mojom::DisplayCutoutHost> receivers_;
 
   // Weak pointer to the owning |WebContentsImpl| instance.
   WebContentsImpl* web_contents_impl_;

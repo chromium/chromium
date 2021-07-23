@@ -7299,6 +7299,15 @@ void WebContentsImpl::DidReceiveUserActivation(
                              render_frame_host);
 }
 
+void WebContentsImpl::BindDisplayCutoutHost(
+    RenderFrameHostImpl* render_frame_host,
+    mojo::PendingAssociatedReceiver<blink::mojom::DisplayCutoutHost> receiver) {
+  if (display_cutout_host_impl_) {
+    display_cutout_host_impl_->BindReceiver(std::move(receiver),
+                                            render_frame_host);
+  }
+}
+
 void WebContentsImpl::DidChangeDisplayState(
     RenderFrameHostImpl* render_frame_host,
     bool is_display_none) {
