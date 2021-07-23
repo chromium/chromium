@@ -212,6 +212,9 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kCrossOriginWasmModuleSharing,
           WebFeature::kControlledNonBlobURLWorkerWillBeUncontrolled,
           WebFeature::kSameSiteCookieInclusionChangedByCrossSiteRedirect,
+          WebFeature::
+              kBlobStoreAccessAcrossAgentClustersInResolveAsURLLoaderFactory,
+          WebFeature::kBlobStoreAccessAcrossAgentClustersInResolveForNavigation,
       }));
   return *opt_in_features;
 }

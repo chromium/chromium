@@ -33936,6 +33936,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3960" label="V8URLPattern_Test_Method"/>
   <int value="3961" label="V8URLPattern_Exec_Method"/>
   <int value="3962" label="SameSiteCookieInclusionChangedByCrossSiteRedirect"/>
+  <int value="3963"
+      label="BlobStoreAccessAcrossAgentClustersInResolveAsURLLoaderFactory"/>
+  <int value="3964"
+      label="BlobStoreAccessAcrossAgentClustersInResolveForNavigation"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

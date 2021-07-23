@@ -31,6 +31,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/url_registry.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
@@ -126,10 +127,18 @@ void PublicURLManager::Resolve(
   DCHECK(url.ProtocolIs("blob"));
   url_store_->ResolveAsURLLoaderFactory(
       url, std::move(factory_receiver),
-      WTF::Bind([](const absl::optional<base::UnguessableToken>&
-                       unsafe_agent_cluster_id) {
-        // TODO(https://crbug.com/1224926): Add the use counter.
-      }));
+      WTF::Bind(
+          [](ExecutionContext* execution_context,
+             const absl::optional<base::UnguessableToken>&
+                 unsafe_agent_cluster_id) {
+            if (execution_context->GetAgentClusterID() !=
+                unsafe_agent_cluster_id) {
+              execution_context->CountUse(
+                  WebFeature::
+                      kBlobStoreAccessAcrossAgentClustersInResolveAsURLLoaderFactory);
+            }
+          },
+          WrapPersistent(GetExecutionContext())));
 }
 
 void PublicURLManager::Resolve(
@@ -141,10 +150,18 @@ void PublicURLManager::Resolve(
   DCHECK(url.ProtocolIs("blob"));
   url_store_->ResolveForNavigation(
       url, std::move(token_receiver),
-      WTF::Bind([](const absl::optional<base::UnguessableToken>&
-                       unsafe_agent_cluster_id) {
-        // TODO(https://crbug.com/1224926): Add the use counter.
-      }));
+      WTF::Bind(
+          [](ExecutionContext* execution_context,
+             const absl::optional<base::UnguessableToken>&
+                 unsafe_agent_cluster_id) {
+            if (execution_context->GetAgentClusterID() !=
+                unsafe_agent_cluster_id) {
+              execution_context->CountUse(
+                  WebFeature::
+                      kBlobStoreAccessAcrossAgentClustersInResolveForNavigation);
+            }
+          },
+          WrapPersistent(GetExecutionContext())));
 }
 
 void PublicURLManager::ContextDestroyed() {
