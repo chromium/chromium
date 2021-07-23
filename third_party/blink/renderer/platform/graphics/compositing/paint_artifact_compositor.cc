@@ -1016,26 +1016,16 @@ void PaintArtifactCompositor::UpdateRepaintedLayers(
 
 #if DCHECK_IS_ON()
   // Any property tree state change should have caused a full update.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    for (const auto& pre_composited_layer : pre_composited_layers) {
-      for (const auto& chunk : pre_composited_layer.chunks) {
-        // If this fires, a property tree value has changed but we are missing a
-        // call to |PaintArtifactCompositor::SetNeedsUpdate|.
-        DCHECK(!chunk.properties.GetPropertyTreeState().Unalias().ChangedToRoot(
-            PaintPropertyChangeType::kChangedOnlyNonRerasterValues));
-      }
+  for (const auto& pre_composited_layer : pre_composited_layers) {
+    if (pre_composited_layer.graphics_layer) {
+      DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+      continue;
     }
-  } else {
-    // Not sure why some blink unittests will trigger the DCHECK below if we
-    // check the new paint chunks. Will not bother because we are launching
-    // CompositeAfterPaint.
-    for (const auto& pending_layer : pending_layers_) {
-      for (const auto& chunk : pending_layer.Chunks()) {
-        // If this fires, a property tree value has changed but we are missing a
-        // call to |PaintArtifactCompositor::SetNeedsUpdate|.
-        DCHECK(!chunk.properties.GetPropertyTreeState().Unalias().ChangedToRoot(
-            PaintPropertyChangeType::kChangedOnlyNonRerasterValues));
-      }
+    for (const auto& chunk : pre_composited_layer.chunks) {
+      // If this fires, a property tree value has changed but we are missing a
+      // call to |PaintArtifactCompositor::SetNeedsUpdate|.
+      DCHECK(!chunk.properties.GetPropertyTreeState().Unalias().ChangedToRoot(
+          PaintPropertyChangeType::kChangedOnlyNonRerasterValues));
     }
   }
 #endif

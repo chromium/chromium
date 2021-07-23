@@ -106,12 +106,17 @@ PaintInvalidationReason RasterInvalidator::ChunkPropertiesChanged(
   // different, or the effect node's value changed between the layer state and
   // the chunk state.
   const auto& new_chunk_state = new_chunk.properties;
-  const auto& old_chunk_state = old_chunk.properties;
-  if (&new_chunk_state.Effect() != &old_chunk_state.Effect() ||
-      new_chunk_state.Effect().Changed(
-          PaintPropertyChangeType::kChangedOnlySimpleValues, layer_state,
-          &new_chunk_state.Transform()))
-    return PaintInvalidationReason::kPaintProperty;
+  bool clip_node_is_different = false;
+  if (!new_chunk.is_moved_from_cached_subsequence) {
+    const auto& old_chunk_state = old_chunk.properties;
+    if (&new_chunk_state.Effect() != &old_chunk_state.Effect() ||
+        new_chunk_state.Effect().Changed(
+            PaintPropertyChangeType::kChangedOnlySimpleValues, layer_state,
+            &new_chunk_state.Transform()))
+      return PaintInvalidationReason::kPaintProperty;
+
+    clip_node_is_different = &new_chunk_state.Clip() != &old_chunk_state.Clip();
+  }
 
   // Check for accumulated clip rect change, if the clip rects are tight.
   if (new_chunk_info.chunk_to_layer_clip.IsTight() &&
@@ -142,7 +147,7 @@ PaintInvalidationReason RasterInvalidator::ChunkPropertiesChanged(
   // Otherwise treat the chunk property as changed if the clip node pointer is
   // different, or the clip node's value changed between the layer state and the
   // chunk state.
-  if (&new_chunk_state.Clip() != &old_chunk_state.Clip() ||
+  if (clip_node_is_different ||
       new_chunk_state.Clip().Changed(
           PaintPropertyChangeType::kChangedOnlySimpleValues, layer_state,
           &new_chunk_state.Transform()))
