@@ -2,6 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../shared_vars_css.m.js';
+
+import {dom, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assert} from '../../js/assert.m.js';
+import {isMac, isWindows} from '../../js/cr.m.js';
+import {FocusOutlineManager} from '../../js/cr/ui/focus_outline_manager.m.js';
+import {FocusRow} from '../../js/cr/ui/focus_row.m.js';
+import {focusWithoutInk} from '../../js/cr/ui/focus_without_ink.m.js';
+import {getDeepActiveElement, hasKeyModifiers} from '../../js/util.m.js';
+
 /**
  * @typedef {{
  *   top: (number|undefined),
@@ -33,13 +44,13 @@ let ShowAtConfig;
  *   maxY: (number|undefined),
  * }}
  */
-/* #export */ let ShowAtPositionConfig;
+export let ShowAtPositionConfig;
 
 /**
  * @enum {number}
  * @const
  */
-/* #export */ const AnchorAlignment = {
+export const AnchorAlignment = {
   BEFORE_START: -2,
   AFTER_START: -1,
   CENTER: 0,
@@ -53,8 +64,6 @@ const DROPDOWN_ITEM_CLASS = 'dropdown-item';
 /** @const {string} */
 const SELECTABLE_DROPDOWN_ITEM_QUERY =
     `.${DROPDOWN_ITEM_CLASS}:not([hidden]):not([disabled])`;
-
-(function() {
 
 /** @const {number} */
 const AFTER_END_OFFSET = 10;
@@ -129,6 +138,8 @@ function getDefaultShowConfig() {
 Polymer({
   is: 'cr-action-menu',
 
+  _template: html`{__html_template__}`,
+
   /**
    * The element which the action menu will be anchored to. Also the element
    * where focus will be returned after the menu is closed. Only populated if
@@ -198,7 +209,7 @@ Polymer({
     window.removeEventListener('resize', this.boundClose_);
     window.removeEventListener('popstate', this.boundClose_);
     if (this.contentObserver_) {
-      Polymer.dom(this.$.contentNode).unobserveNodes(this.contentObserver_);
+      dom(this.$.contentNode).unobserveNodes(this.contentObserver_);
       this.contentObserver_ = null;
     }
 
@@ -262,7 +273,7 @@ Polymer({
 
     const focused = getDeepActiveElement();
     const index = options.findIndex(
-        option => cr.ui.FocusRow.getFocusableElement(option) === focused);
+        option => FocusRow.getFocusableElement(option) === focused);
 
     if (e.key === 'Enter') {
       // If a menu item has focus, don't change focus or close menu on 'Enter'.
@@ -270,7 +281,7 @@ Polymer({
         return;
       }
 
-      if (cr.isWindows || cr.isMac) {
+      if (isWindows || isMac) {
         this.close();
         e.preventDefault();
         return;
@@ -324,7 +335,7 @@ Polymer({
     this.$.dialog.close();
     this.open = false;
     if (this.anchorElement_) {
-      cr.ui.focusWithoutInk(assert(this.anchorElement_));
+      focusWithoutInk(assert(this.anchorElement_));
       this.anchorElement_ = null;
     }
     if (this.lastConfig_) {
@@ -426,7 +437,7 @@ Polymer({
     this.addListeners_();
 
     // Focus the first selectable item.
-    const openedByKey = cr.ui.FocusOutlineManager.forDocument(document).visible;
+    const openedByKey = FocusOutlineManager.forDocument(document).visible;
     if (openedByKey) {
       const firstSelectableItem =
           this.querySelector(SELECTABLE_DROPDOWN_ITEM_QUERY);
@@ -498,7 +509,7 @@ Polymer({
     window.addEventListener('popstate', this.boundClose_);
 
     this.contentObserver_ =
-        Polymer.dom(this.$.contentNode).observeNodes((info) => {
+        dom(this.$.contentNode).observeNodes((info) => {
           info.addedNodes.forEach((node) => {
             if (node.classList &&
                 node.classList.contains(DROPDOWN_ITEM_CLASS) &&
@@ -520,5 +531,3 @@ Polymer({
     }
   },
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');
-})();

@@ -117,7 +117,7 @@ js_library("download_controls_test") {
     "../webui:test_util.m",
     "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
+    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/js:util.m",
   ]

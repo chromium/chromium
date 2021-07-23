@@ -64,8 +64,6 @@ preprocess_if_expr("preprocess_polymer2") {
   in_files = [
     "action_link_css.html",
     "cr_actionable_row_style.html",
-    "cr_action_menu/cr_action_menu.html",
-    "cr_action_menu/cr_action_menu.js",
     "cr_button/cr_button.html",
     "cr_button/cr_button.js",
     "cr_checkbox/cr_checkbox.html",
@@ -158,7 +156,7 @@ preprocess_if_expr("preprocess_generated") {
     "action_link_css.m.js",
     "cr_a11y_announcer/cr_a11y_announcer.js",
     "cr_actionable_row_style.m.js",
-    "cr_action_menu/cr_action_menu.m.js",
+    "cr_action_menu/cr_action_menu.js",
     "cr_button/cr_button.m.js",
     "cr_checkbox/cr_checkbox.m.js",
     "cr_container_shadow_behavior.m.js",
@@ -232,7 +230,6 @@ preprocess_if_expr("preprocess_generated") {
 group("closure_compile") {
   deps = [
     ":cr_elements_resources",
-    "cr_action_menu:closure_compile",
     "cr_auto_img:closure_compile",
     "cr_button:closure_compile",
     "cr_checkbox:closure_compile",
@@ -390,7 +387,7 @@ group("polymer3_elements") {
     ":shared_vars_css_module",
     ":web_components",
     "cr_a11y_announcer:web_components",
-    "cr_action_menu:cr_action_menu_module",
+    "cr_action_menu:web_components",
     "cr_button:cr_button_module",
     "cr_checkbox:cr_checkbox_module",
     "cr_dialog:cr_dialog_module",

@@ -162,7 +162,7 @@ js_library("banners") {
 }
 
 js_library("breadcrumb") {
-  deps = [ "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m" ]
+  deps = [ "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu" ]
 }
 
 js_unittest("breadcrumb_unittest.m") {

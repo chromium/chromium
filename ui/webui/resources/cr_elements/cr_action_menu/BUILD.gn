@@ -3,49 +3,18 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [ ":cr_action_menu" ]
-}
-
-js_library("cr_action_menu") {
-  deps = [
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js/cr/ui:focus_outline_manager",
-    "//ui/webui/resources/js/cr/ui:focus_row",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-  externs_list = [ "$externs_path/pending.js" ]
-}
-
-polymer_modulizer("cr_action_menu") {
-  js_file = "cr_action_menu.js"
-  html_file = "cr_action_menu.html"
-  html_type = "dom-module"
-  namespace_rewrites = [
-    "cr.ui.FocusRow|FocusRow",
-    "Polymer.dom|dom",
-  ]
-  auto_imports = [
-    "ui/webui/resources/html/polymer.html|dom,html,Polymer",
-    "ui/webui/resources/html/assert.html|assert",
-    "ui/webui/resources/html/cr.html|isMac, isWindows",
-    "ui/webui/resources/html/cr/ui/focus_outline_manager.html|FocusOutlineManager",
-    "ui/webui/resources/html/cr/ui/focus_row.html|FocusRow",
-    "ui/webui/resources/html/util.html|getDeepActiveElement, hasKeyModifiers",
-  ]
+html_to_js("web_components") {
+  js_files = [ "cr_action_menu.js" ]
 }
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  deps = [ ":cr_action_menu.m" ]
+  deps = [ ":cr_action_menu" ]
 }
 
-js_library("cr_action_menu.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/cr_elements/cr_action_menu/cr_action_menu.m.js" ]
+js_library("cr_action_menu") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
@@ -55,6 +24,5 @@ js_library("cr_action_menu.m") {
     "//ui/webui/resources/js/cr/ui:focus_row.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
-  extra_deps = [ ":cr_action_menu_module" ]
   externs_list = [ "$externs_path/pending.js" ]
 }

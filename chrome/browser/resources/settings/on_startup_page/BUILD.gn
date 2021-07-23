@@ -41,7 +41,7 @@ js_library("startup_url_dialog") {
 js_library("startup_url_entry") {
   deps = [
     ":startup_urls_page_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
+    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
     "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:icon.m",
