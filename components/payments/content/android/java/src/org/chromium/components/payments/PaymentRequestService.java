@@ -692,7 +692,7 @@ public class PaymentRequestService
         }
         if (response.methodName.equals(MethodStrings.SECURE_PAYMENT_CONFIRMATION)) {
             assert mInvokedPaymentApp.getInstrumentMethodNames().contains(response.methodName);
-            mInvokedPaymentApp.setAppSpecificResponseFields(response);
+            response = mInvokedPaymentApp.setAppSpecificResponseFields(response);
         }
         if (mClient != null) {
             mClient.onPaymentResponse(response);
