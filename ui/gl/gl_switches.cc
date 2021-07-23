@@ -223,9 +223,9 @@ const base::Feature kDirectCompositionLowLatencyPresentation{
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Allow overlay swapchain to present on all GPUs even if they only support
-// software overlays.
+// software overlays. GPU deny lists limit it to NVIDIA only at the moment.
 const base::Feature kDirectCompositionSoftwareOverlays{
-    "DirectCompositionSoftwareOverlays", base::FEATURE_DISABLED_BY_DEFAULT};
+    "DirectCompositionSoftwareOverlays", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Default to using ANGLE's OpenGL backend
 const base::Feature kDefaultANGLEOpenGL{"DefaultANGLEOpenGL",

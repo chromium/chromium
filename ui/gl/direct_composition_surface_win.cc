@@ -582,6 +582,7 @@ void DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(
     g_yuy2_overlay_support_flags &= ~DXGI_OVERLAY_SUPPORT_FLAG_SCALING;
     g_rgb10a2_overlay_support_flags &= ~DXGI_OVERLAY_SUPPORT_FLAG_SCALING;
   }
+  g_disable_sw_overlays = !supported;
   SetSupportsHardwareOverlays(supported);
   DCHECK_EQ(supported, AreScaledOverlaysSupported());
 }

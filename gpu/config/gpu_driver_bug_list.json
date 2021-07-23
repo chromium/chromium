@@ -3575,6 +3575,7 @@
         "type": "win"
       },
       "vendor_id": "0x1002",
+      "multi_gpu_category": "any",
       "features": [
         "disable_direct_composition_sw_video_overlays"
       ]
@@ -3636,6 +3637,7 @@
       "os": {
         "type": "win"
       },
+      "multi_gpu_category": "any",
       "vendor_id": "0x8086",
       "features": [
         "disable_direct_composition_sw_video_overlays"

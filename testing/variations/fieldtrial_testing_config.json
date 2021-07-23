@@ -3108,21 +3108,6 @@
             ]
         }
     ],
-    "DirectCompositionSoftwareOverlays": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DirectCompositionSoftwareOverlays"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableGles2ForOopR": [
         {
             "platforms": [
