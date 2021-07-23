@@ -42,16 +42,14 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     kMinor,
   };
 
-  struct OutOfFlowItemPlacement {
-    wtf_size_t start_range_index = kNotFound;
-    wtf_size_t start_offset_in_range = kNotFound;
-    wtf_size_t end_range_index = kNotFound;
-    wtf_size_t end_offset_in_range = kNotFound;
-  };
-
-  struct GridItemSetIndices {
+  struct GridItemIndices {
     wtf_size_t begin = kNotFound;
     wtf_size_t end = kNotFound;
+  };
+
+  struct OutOfFlowItemPlacement {
+    GridItemIndices range_index;
+    GridItemIndices offset_in_range;
   };
 
   struct CORE_EXPORT GridItemData {
@@ -95,8 +93,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     // collection's |sets_| with an index in the range [begin, end).
     void ComputeSetIndices(
         const NGGridLayoutAlgorithmTrackCollection& track_collection);
-    const GridItemSetIndices& SetIndices(
+    const GridItemIndices& SetIndices(
         GridTrackSizingDirection track_direction) const;
+    GridItemIndices& RangeIndices(GridTrackSizingDirection track_direction);
 
     // For this out of flow item and track collection, computes and stores its
     // first and last spanned ranges, as well as the start and end track offset.
@@ -136,8 +135,11 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     TrackSpanProperties column_span_properties;
     TrackSpanProperties row_span_properties;
 
-    GridItemSetIndices column_set_indices;
-    GridItemSetIndices row_set_indices;
+    GridItemIndices column_set_indices;
+    GridItemIndices row_set_indices;
+
+    GridItemIndices column_range_indices;
+    GridItemIndices row_range_indices;
 
     // These fields are only for out of flow items. They are used to store their
     // start/end range indices, and offsets in range in the respective track
@@ -349,7 +351,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // Ensure coverage in block collection after grid items have been placed.
   void EnsureTrackCoverageForGridItems(
-      const GridItems& grid_items,
+      GridItems* grid_items,
       NGGridBlockTrackCollection* track_collection) const;
 
   // For every grid item, caches properties of the track sizing functions it

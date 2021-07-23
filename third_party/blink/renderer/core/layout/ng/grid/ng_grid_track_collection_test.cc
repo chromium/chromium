@@ -250,9 +250,18 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridBlockTrackCollectionImplicit) {
                                       /* start_offset */ 0,
                                       /* auto_repeat_count */ 3,
                                       /* named_grid_area_track_count */ 0);
-  block_collection.EnsureTrackCoverage(3, 40);
-  block_collection.EnsureTrackCoverage(3, 40);
+  wtf_size_t range1_start;
+  wtf_size_t range1_end;
+  wtf_size_t range2_start;
+  wtf_size_t range2_end;
+  block_collection.EnsureTrackCoverage(3, 40, &range1_start, &range1_end);
+  block_collection.EnsureTrackCoverage(3, 40, &range2_start, &range2_end);
   block_collection.FinalizeRanges(/* start_offset */ 0);
+  EXPECT_EQ(1u, range1_start);
+  EXPECT_EQ(4u, range1_end);
+  EXPECT_EQ(1u, range2_start);
+  EXPECT_EQ(4u, range2_end);
+
   NGGridTrackCollectionBase::RangeRepeatIterator iterator(&block_collection,
                                                           0u);
   EXPECT_RANGE(0u, 3u, iterator);
@@ -403,11 +412,28 @@ TEST_F(NGGridTrackCollectionTest,
                                       /* start_offset */ 0,
                                       /* auto_repeat_count */ 5,
                                       /* named_grid_area_track_count */ 0);
-  block_collection.EnsureTrackCoverage(2, 4);
-  block_collection.EnsureTrackCoverage(12, 4);
-  block_collection.EnsureTrackCoverage(17, 3);
-  block_collection.EnsureTrackCoverage(22, 5);
+  wtf_size_t range1_start;
+  wtf_size_t range1_end;
+  wtf_size_t range2_start;
+  wtf_size_t range2_end;
+  wtf_size_t range3_start;
+  wtf_size_t range3_end;
+  wtf_size_t range4_start;
+  wtf_size_t range4_end;
+  block_collection.EnsureTrackCoverage(2, 4, &range1_start, &range1_end);
+  block_collection.EnsureTrackCoverage(12, 4, &range2_start, &range2_end);
+  block_collection.EnsureTrackCoverage(17, 3, &range3_start, &range3_end);
+  block_collection.EnsureTrackCoverage(22, 5, &range4_start, &range4_end);
   block_collection.FinalizeRanges(/* start_offset */ 0);
+
+  EXPECT_EQ(1u, range1_start);
+  EXPECT_EQ(1u, range1_end);
+  EXPECT_EQ(4u, range2_start);
+  EXPECT_EQ(4u, range2_end);
+  EXPECT_EQ(6u, range3_start);
+  EXPECT_EQ(7u, range3_end);
+  EXPECT_EQ(9u, range4_start);
+  EXPECT_EQ(9u, range4_end);
 
   NGGridLayoutAlgorithmTrackCollection algorithm_collection(
       block_collection, /* is_content_box_size_defined */ false);
@@ -521,9 +547,17 @@ TEST_F(NGGridTrackCollectionTest,
                                       /* start_offset */ 0,
                                       /* auto_repeat_count */ 0,
                                       /* named_grid_area_track_count */ 0);
-  block_collection.EnsureTrackCoverage(2, 13);
-  block_collection.EnsureTrackCoverage(23, 2);
+  wtf_size_t range1_start;
+  wtf_size_t range1_end;
+  wtf_size_t range2_start;
+  wtf_size_t range2_end;
+  block_collection.EnsureTrackCoverage(2, 13, &range1_start, &range1_end);
+  block_collection.EnsureTrackCoverage(23, 2, &range2_start, &range2_end);
   block_collection.FinalizeRanges(/* start_offset */ 0);
+  EXPECT_EQ(1u, range1_start);
+  EXPECT_EQ(2u, range1_end);
+  EXPECT_EQ(4u, range2_start);
+  EXPECT_EQ(4u, range2_end);
 
   NGGridLayoutAlgorithmTrackCollection algorithm_collection(
       block_collection, /* is_content_box_size_defined */ false);
@@ -598,9 +632,19 @@ TEST_F(NGGridTrackCollectionTest,
                                       /* start_offset */ 0,
                                       /* auto_repeat_count */ 0,
                                       /* named_grid_area_track_count */ 0);
-  block_collection.EnsureTrackCoverage(1, 2);
-  block_collection.EnsureTrackCoverage(7, 4);
+  wtf_size_t range1_start;
+  wtf_size_t range1_end;
+  wtf_size_t range2_start;
+  wtf_size_t range2_end;
+  block_collection.EnsureTrackCoverage(1, 2, &range1_start, &range1_end);
+  block_collection.EnsureTrackCoverage(7, 4, &range2_start, &range2_end);
+
   block_collection.FinalizeRanges(/* start_offset */ 0);
+
+  EXPECT_EQ(1u, range1_start);
+  EXPECT_EQ(1u, range1_end);
+  EXPECT_EQ(3u, range2_start);
+  EXPECT_EQ(4u, range2_end);
 
   NGGridLayoutAlgorithmTrackCollection algorithm_collection(
       block_collection, /* is_content_box_size_defined */ false);

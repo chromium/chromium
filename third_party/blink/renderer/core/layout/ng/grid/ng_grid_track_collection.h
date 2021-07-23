@@ -94,11 +94,25 @@ class CORE_EXPORT NGGridBlockTrackCollection
     void SetIsImplicit();
     void SetIsCollapsed();
 
-    wtf_size_t starting_track_number;
+    wtf_size_t start_line;
     wtf_size_t track_count;
     wtf_size_t repeater_index;
     wtf_size_t repeater_offset;
     TrackSpanProperties properties;
+  };
+
+  // This structure represents the grid line boundaries of a repeater or item
+  // placed on the implicit grid. For the latter, a pointer to its respective
+  // range start/end index is provided to cache its value during
+  // |FinalizeRanges|.
+  struct TrackBoundaryToRangePair {
+    explicit TrackBoundaryToRangePair(
+        wtf_size_t grid_line,
+        wtf_size_t* grid_item_range_index_to_cache = nullptr)
+        : grid_line(grid_line),
+          grid_item_range_index_to_cache(grid_item_range_index_to_cache) {}
+    wtf_size_t grid_line;
+    wtf_size_t* grid_item_range_index_to_cache;
   };
 
   explicit NGGridBlockTrackCollection(
@@ -111,8 +125,13 @@ class CORE_EXPORT NGGridBlockTrackCollection
                           const wtf_size_t auto_repetitions,
                           const wtf_size_t named_grid_area_track_count);
   // Ensures that after FinalizeRanges is called, a range will start at the
-  // |track_number|, and a range will end at |track_number| + |span_length|
-  void EnsureTrackCoverage(wtf_size_t track_number, wtf_size_t span_length);
+  // |track_number|, a range will end at |track_number| + |span_length|.
+  // |grid_item_start_range_index| and |grid_item_end_range_index| will be
+  // written to during |FinalizeRanges|.
+  void EnsureTrackCoverage(wtf_size_t track_number,
+                           wtf_size_t span_length,
+                           wtf_size_t* grid_item_start_range_index,
+                           wtf_size_t* grid_item_end_range_index);
   // Build the collection of ranges based on information provided by
   // SetSpecifiedTracks and EnsureTrackCoverage.
   void FinalizeRanges(wtf_size_t start_offset);
@@ -149,9 +168,10 @@ class CORE_EXPORT NGGridBlockTrackCollection
   const NGGridTrackList* implicit_tracks_;
 
   // Starting and ending tracks mark where ranges will start and end.
+  // The corresponding range_index will be written to during |FinalizeRanges|.
   // Once the ranges have been built in FinalizeRanges, these are cleared.
-  Vector<wtf_size_t> start_lines_;
-  Vector<wtf_size_t> end_lines_;
+  Vector<TrackBoundaryToRangePair> start_lines_;
+  Vector<TrackBoundaryToRangePair> end_lines_;
   Vector<Range> ranges_;
 };
 
@@ -259,7 +279,7 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
 
     bool IsCollapsed() const;
 
-    wtf_size_t starting_track_number;
+    wtf_size_t start_line;
     wtf_size_t track_count;
     wtf_size_t starting_set_index;
     wtf_size_t set_count;
