@@ -61,6 +61,12 @@ class MockWebsiteLoginManager : public WebsiteLoginManager {
 
   MOCK_METHOD(void, CommitGeneratedPassword, (), (override));
 
+  MOCK_METHOD(void, ResetPendingCredentials, (), (override));
+
+  MOCK_METHOD(bool, ReadyToCommitSubmittedPassword, (), (override));
+
+  MOCK_METHOD(bool, SaveSubmittedPassword, (), (override));
+
   DISALLOW_COPY_AND_ASSIGN(MockWebsiteLoginManager);
 };
 

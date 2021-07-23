@@ -49,6 +49,12 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
 
   void CommitGeneratedPassword() override;
 
+  void ResetPendingCredentials() override;
+
+  bool ReadyToCommitSubmittedPassword() override;
+
+  bool SaveSubmittedPassword() override;
+
  private:
   class PendingRequest;
   class PendingFetchLoginsRequest;

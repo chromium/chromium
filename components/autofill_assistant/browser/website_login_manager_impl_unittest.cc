@@ -10,8 +10,10 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
+#include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -24,6 +26,7 @@
 using autofill::FormData;
 using autofill::FormFieldData;
 using password_manager::PasswordForm;
+using password_manager::PasswordManager;
 using testing::_;
 using testing::Invoke;
 using testing::Mock;
@@ -55,6 +58,11 @@ class MockPasswordManagerClient
                      password_manager::PasswordStore*());
   MOCK_CONST_METHOD0(GetAccountPasswordStore,
                      password_manager::PasswordStore*());
+  MOCK_CONST_METHOD0(GetPasswordManager, PasswordManager*());
+  MOCK_METHOD(bool,
+              IsSavingAndFillingEnabled,
+              (const GURL&),
+              (const, override));
 };
 
 FormData MakeFormDataWithPasswordField() {
@@ -97,6 +105,12 @@ PasswordForm MakeSimplePasswordFormWithoutUsername() {
   return form;
 }
 
+PasswordForm MakeSimplePasswordFormWithFormData() {
+  PasswordForm form = MakeSimplePasswordForm();
+  form.form_data = MakeFormDataWithPasswordField();
+  return form;
+}
+
 }  // namespace
 
 class WebsiteLoginManagerImplTest : public testing::Test {
@@ -132,6 +146,9 @@ class WebsiteLoginManagerImplTest : public testing::Test {
 
     manager_ = std::make_unique<WebsiteLoginManagerImpl>(&client_,
                                                          web_contents_.get());
+    password_manager_ = std::make_unique<PasswordManager>(&client_);
+    ON_CALL(client_, GetPasswordManager())
+        .WillByDefault(Return(password_manager_.get()));
   }
 
   void TearDown() override {
@@ -141,18 +158,19 @@ class WebsiteLoginManagerImplTest : public testing::Test {
     profile_store_->ShutdownOnUIThread();
   }
 
-  WebsiteLoginManagerImpl* manager() { return manager_.get(); }
   password_manager::MockPasswordStore* store() { return profile_store_.get(); }
 
   void WaitForPasswordStore() { task_environment_.RunUntilIdle(); }
 
- private:
+ protected:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   content::TestBrowserContext browser_context_;
   std::unique_ptr<content::WebContents> web_contents_;
   testing::NiceMock<MockPasswordManagerClient> client_;
   std::unique_ptr<WebsiteLoginManagerImpl> manager_;
+  std::unique_ptr<PasswordManager> password_manager_;
+  password_manager::StubPasswordManagerDriver driver_;
   scoped_refptr<password_manager::MockPasswordStore> profile_store_;
   scoped_refptr<password_manager::MockPasswordStore> account_store_;
 };
@@ -173,17 +191,17 @@ TEST_F(WebsiteLoginManagerImplTest, SaveGeneratedPassword) {
   EXPECT_CALL(*store(), GetLogins(form_digest, _));
   EXPECT_CALL(*store(),
               AddLogin(FormMatches(MakeSimplePasswordFormWithoutUsername())));
-  manager()->PresaveGeneratedPassword(
+  manager_->PresaveGeneratedPassword(
       {GURL(kFakeUrl), kFakeUsername}, kFakeNewPassword,
       MakeFormDataWithPasswordField(), base::OnceClosure());
 
   // Commit generated password.
-  EXPECT_TRUE(manager()->ReadyToCommitGeneratedPassword());
+  EXPECT_TRUE(manager_->ReadyToCommitGeneratedPassword());
   PasswordForm new_form = MakeSimplePasswordForm();
   new_form.password_value = kFakeNewPassword16;
   // Check that additional data is populated correctly from matched form.
   EXPECT_CALL(*store(), UpdateLoginWithPrimaryKey(FormMatches(new_form), _));
-  manager()->CommitGeneratedPassword();
+  manager_->CommitGeneratedPassword();
   WaitForPasswordStore();
 }
 
@@ -195,8 +213,8 @@ TEST_F(WebsiteLoginManagerImplTest, DeletePasswordSuccess) {
   EXPECT_CALL(*store(), GetLogins(form_digest, _));
   EXPECT_CALL(*store(), RemoveLogin(FormMatches(MakeSimplePasswordForm())));
   EXPECT_CALL(mock_callback, Run(true)).Times(1);
-  manager()->DeletePasswordForLogin({GURL(kFakeUrl), kFakeUsername},
-                                    mock_callback.Get());
+  manager_->DeletePasswordForLogin({GURL(kFakeUrl), kFakeUsername},
+                                   mock_callback.Get());
   WaitForPasswordStore();
 }
 
@@ -206,8 +224,8 @@ TEST_F(WebsiteLoginManagerImplTest, DeletePasswordFailed) {
   EXPECT_CALL(*store(), GetLogins);
   EXPECT_CALL(*store(), RemoveLogin).Times(0);
   EXPECT_CALL(mock_callback, Run(false)).Times(1);
-  manager()->DeletePasswordForLogin({GURL(kFakeUrl2), kFakeUsername2},
-                                    mock_callback.Get());
+  manager_->DeletePasswordForLogin({GURL(kFakeUrl2), kFakeUsername2},
+                                   mock_callback.Get());
   WaitForPasswordStore();
 }
 
@@ -222,8 +240,8 @@ TEST_F(WebsiteLoginManagerImplTest, EditPasswordSuccess) {
   // Check that additional data is populated correctly from matched form.
   EXPECT_CALL(*store(), UpdateLogin(FormMatches(new_form)));
   EXPECT_CALL(mock_callback, Run(true)).Times(1);
-  manager()->EditPasswordForLogin({GURL(kFakeUrl), kFakeUsername},
-                                  kFakeNewPassword, mock_callback.Get());
+  manager_->EditPasswordForLogin({GURL(kFakeUrl), kFakeUsername},
+                                 kFakeNewPassword, mock_callback.Get());
   WaitForPasswordStore();
 }
 
@@ -233,9 +251,57 @@ TEST_F(WebsiteLoginManagerImplTest, EditPasswordFailed) {
   EXPECT_CALL(*store(), GetLogins);
   EXPECT_CALL(*store(), UpdateLogin).Times(0);
   EXPECT_CALL(mock_callback, Run(false)).Times(1);
-  manager()->EditPasswordForLogin({GURL(kFakeUrl2), kFakeUsername2},
-                                  kFakeNewPassword, mock_callback.Get());
+  manager_->EditPasswordForLogin({GURL(kFakeUrl2), kFakeUsername2},
+                                 kFakeNewPassword, mock_callback.Get());
   WaitForPasswordStore();
+}
+
+TEST_F(WebsiteLoginManagerImplTest, ResetPendingCredentials) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+
+  PasswordForm form = MakeSimplePasswordFormWithFormData();
+  password_manager_->OnPasswordFormsParsed(&driver_, {form.form_data});
+  EXPECT_FALSE(password_manager_->IsFormManagerPendingPasswordUpdate());
+
+  password_manager_->OnInformAboutUserInput(&driver_, form.form_data);
+  password_manager_->OnPasswordFormSubmitted(&driver_, form.form_data);
+  EXPECT_TRUE(password_manager_->IsFormManagerPendingPasswordUpdate());
+  EXPECT_TRUE(password_manager_->GetSubmittedManagerForTest());
+
+  manager_->ResetPendingCredentials();
+  EXPECT_FALSE(password_manager_->IsFormManagerPendingPasswordUpdate());
+  EXPECT_FALSE(password_manager_->GetSubmittedManagerForTest());
+}
+
+TEST_F(WebsiteLoginManagerImplTest, SaveSubmittedPassword) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+
+  PasswordForm form(MakeSimplePasswordFormWithFormData());
+  password_manager_->OnPasswordFormsParsed(&driver_, {form.form_data});
+
+  // The user updates the password.
+  FormData updated_data(form.form_data);
+  updated_data.fields[0].value = u"updated_password";
+  password_manager_->OnInformAboutUserInput(&driver_, updated_data);
+  password_manager_->OnPasswordFormSubmitted(&driver_, updated_data);
+  EXPECT_TRUE(password_manager_->GetSubmittedManagerForTest());
+  EXPECT_TRUE(manager_->ReadyToCommitSubmittedPassword());
+
+  PasswordForm expected_form(form);
+  // The expected form with a new password.
+  expected_form.password_value = updated_data.fields[0].value;
+  EXPECT_CALL(*store(), UpdateLogin(FormMatches(expected_form)));
+  EXPECT_TRUE(manager_->SaveSubmittedPassword());
+}
+
+TEST_F(WebsiteLoginManagerImplTest, SaveSubmittedPasswordFailure) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  password_manager_->OnPasswordFormsParsed(&driver_,
+                                           {MakeFormDataWithPasswordField()});
+  // No user updates to this point.
+  EXPECT_FALSE(password_manager_->GetSubmittedManagerForTest());
+  EXPECT_FALSE(manager_->ReadyToCommitSubmittedPassword());
+  EXPECT_FALSE(manager_->SaveSubmittedPassword());
 }
 
 }  // namespace autofill_assistant

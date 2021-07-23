@@ -434,6 +434,22 @@ void WebsiteLoginManagerImpl::CommitGeneratedPassword() {
   update_password_request_.reset();
 }
 
+void WebsiteLoginManagerImpl::ResetPendingCredentials() {
+  client_->GetPasswordManager()->ResetPendingCredentials();
+}
+
+bool WebsiteLoginManagerImpl::ReadyToCommitSubmittedPassword() {
+  return client_->GetPasswordManager()->IsFormManagerPendingPasswordUpdate();
+}
+
+bool WebsiteLoginManagerImpl::SaveSubmittedPassword() {
+  if (!ReadyToCommitSubmittedPassword()) {
+    return false;
+  }
+  client_->GetPasswordManager()->SaveSubmittedManager();
+  return true;
+}
+
 void WebsiteLoginManagerImpl::OnRequestFinished(const PendingRequest* request) {
   base::EraseIf(pending_requests_, [request](const auto& candidate_request) {
     return candidate_request.get() == request;

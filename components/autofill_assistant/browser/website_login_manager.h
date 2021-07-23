@@ -78,6 +78,21 @@ class WebsiteLoginManager {
   // Commits the presaved passwod to the store.
   virtual void CommitGeneratedPassword() = 0;
 
+  // Clears potentially submitted or pending forms in password manager. Used to
+  // make password manager "forget" about any previously processed form that
+  // is pending or submitted.
+  virtual void ResetPendingCredentials() = 0;
+
+  // Returns true if password manager has processed a password update submission
+  // on a 3rd party website and it is ready to commit the updated credential to
+  // the password store.
+  virtual bool ReadyToCommitSubmittedPassword() = 0;
+
+  // Saves the current submitted password to the disk. Returns true if a
+  // submitted password exist (E.g ReadyToCommitSubmittedPassword) and it is
+  // properly saved, false otherwise.
+  virtual bool SaveSubmittedPassword() = 0;
+
   DISALLOW_COPY_AND_ASSIGN(WebsiteLoginManager);
 };
 
