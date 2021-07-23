@@ -135,6 +135,24 @@ class ScriptingRegisterContentScriptsFunction : public ExtensionFunction {
   void OnContentScriptsRegistered(const absl::optional<std::string>& error);
 };
 
+class ScriptingGetRegisteredContentScriptsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("scripting.getRegisteredContentScripts",
+                             SCRIPTING_GETREGISTEREDCONTENTSCRIPTS)
+
+  ScriptingGetRegisteredContentScriptsFunction();
+  ScriptingGetRegisteredContentScriptsFunction(
+      const ScriptingGetRegisteredContentScriptsFunction&) = delete;
+  ScriptingGetRegisteredContentScriptsFunction& operator=(
+      const ScriptingGetRegisteredContentScriptsFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~ScriptingGetRegisteredContentScriptsFunction() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_SCRIPTING_SCRIPTING_API_H_

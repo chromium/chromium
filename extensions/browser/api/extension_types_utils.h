@@ -15,6 +15,9 @@ namespace extensions {
 // Converts api::extension_types::RunAt to mojom::RunLocation.
 mojom::RunLocation ConvertRunLocation(api::extension_types::RunAt run_at);
 
+// Converts mojom::RunLocation to api::extension_types::RunAt.
+api::extension_types::RunAt ConvertRunLocationForAPI(mojom::RunLocation run_at);
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_EXTENSION_TYPES_UTILS_H_

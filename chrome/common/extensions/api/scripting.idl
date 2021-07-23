@@ -125,11 +125,23 @@ namespace scripting {
     extensionTypes.RunAt? runAt;
   };
 
+  // An object used to filter content scripts for
+  // ${ref:getRegisteredContentScripts}.
+  [nodoc]
+  dictionary ContentScriptFilter {
+    // If specified, $(ref:getRegisteredContentScripts) will only return scripts
+    // with an id specified in this list.
+    DOMString[]? ids;
+  };
+
   callback ScriptInjectionCallback = void(InjectionResult[] results);
 
   callback CSSInjectionCallback = void();
 
   callback RegisterContentScriptsCallback = void();
+
+  callback GetRegisteredContentScriptsCallback = void(
+      RegisteredContentScript[] scripts);
 
   interface Functions {
     // Injects a script into a target context. The script will be run at
@@ -170,5 +182,13 @@ namespace scripting {
     [nodoc, supportsPromises] static void registerContentScripts(
         RegisteredContentScript[] scripts,
         optional RegisterContentScriptsCallback callback);
+
+    // Returns all dynamically registered content scripts for this extension
+    // that match the given filter.
+    // |filter|: An object to filter the extension's dynamically registered
+    // scripts.
+    [nodoc, supportsPromises] static void getRegisteredContentScripts(
+        optional ContentScriptFilter filter,
+        GetRegisteredContentScriptsCallback callback);
   };
 };

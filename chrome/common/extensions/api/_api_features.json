@@ -743,6 +743,10 @@
     "channel": "trunk",
     "min_manifest_version": 3
   },
+  "scripting.getRegisteredContentScripts": {
+    "channel": "trunk",
+    "min_manifest_version": 3
+  },
   "search": {
     "dependencies": ["permission:search"],
     "contexts": ["blessed_extension"]

@@ -23,4 +23,25 @@ mojom::RunLocation ConvertRunLocation(api::extension_types::RunAt run_at) {
   return mojom::RunLocation::kDocumentIdle;
 }
 
+api::extension_types::RunAt ConvertRunLocationForAPI(
+    mojom::RunLocation run_at) {
+  // api::extension_types does not have analogues for kUndefined, kRunDeferred
+  // or kBrowserDriven. We don't expect to encounter them here.
+  switch (run_at) {
+    case mojom::RunLocation::kDocumentEnd:
+      return api::extension_types::RUN_AT_DOCUMENT_END;
+    case mojom::RunLocation::kDocumentStart:
+      return api::extension_types::RUN_AT_DOCUMENT_START;
+    case mojom::RunLocation::kDocumentIdle:
+      return api::extension_types::RUN_AT_DOCUMENT_IDLE;
+    case mojom::RunLocation::kUndefined:
+    case mojom::RunLocation::kRunDeferred:
+    case mojom::RunLocation::kBrowserDriven:
+      break;
+  }
+
+  NOTREACHED();
+  return api::extension_types::RUN_AT_DOCUMENT_IDLE;
+}
+
 }  // namespace extensions
