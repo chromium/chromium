@@ -751,8 +751,9 @@ IN_PROC_BROWSER_TEST_P(QuietChipPermissionPromptBubbleViewBrowserTest,
           : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
 }
 
+// TODO(crbug.com/1232460): Flaky
 IN_PROC_BROWSER_TEST_P(QuietChipPermissionPromptBubbleViewBrowserTest,
-                       QuietChipIsShownForAbusiveRequests) {
+                       DISABLED_QuietChipIsShownForAbusiveRequests) {
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
