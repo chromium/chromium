@@ -92,6 +92,7 @@ class OzonePlatformCast : public OzonePlatform {
     NOTREACHED();
     return nullptr;
   }
+  void InitScreen(PlatformScreen* screen) override { NOTREACHED(); }
   GpuPlatformSupportHost* GetGpuPlatformSupportHost() override {
     return gpu_platform_support_host_.get();
   }

@@ -71,6 +71,7 @@ void WaylandTest::SetUp() {
   ASSERT_TRUE(connection_->Initialize());
   connection_->event_source()->UseSingleThreadedPollingForTesting();
   screen_ = connection_->wayland_output_manager()->CreateWaylandScreen();
+  connection_->wayland_output_manager()->InitWaylandScreen(screen_.get());
   EXPECT_CALL(delegate_, OnAcceleratedWidgetAvailable(_))
       .WillOnce(SaveArg<0>(&widget_));
   PlatformWindowInitProperties properties;

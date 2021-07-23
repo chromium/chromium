@@ -93,6 +93,7 @@ class WaylandScreenTest : public WaylandTest {
 
     EXPECT_TRUE(output_manager_->IsOutputReady());
     platform_screen_ = output_manager_->CreateWaylandScreen();
+    output_manager_->InitWaylandScreen(platform_screen_.get());
   }
 
  protected:

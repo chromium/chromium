@@ -117,9 +117,13 @@ class OzonePlatformX11 : public OzonePlatform,
   }
 
   std::unique_ptr<PlatformScreen> CreateScreen() override {
-    auto screen = std::make_unique<X11ScreenOzone>();
-    screen->Init();
-    return screen;
+    return std::make_unique<X11ScreenOzone>();
+  }
+
+  void InitScreen(PlatformScreen* screen) override {
+    // InitScreen is always called with the same screen that CreateScreen
+    // hands back, so it is safe to cast here.
+    static_cast<X11ScreenOzone*>(screen)->Init();
   }
 
   PlatformClipboard* GetPlatformClipboard() override {

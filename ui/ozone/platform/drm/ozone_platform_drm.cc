@@ -90,6 +90,7 @@ class OzonePlatformDrm : public OzonePlatform {
     NOTREACHED();
     return nullptr;
   }
+  void InitScreen(PlatformScreen* screen) override { NOTREACHED(); }
 
   GpuPlatformSupportHost* GetGpuPlatformSupportHost() override {
     return drm_device_connector_.get();

@@ -119,6 +119,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   CHECK(connection->Initialize());
 
   auto screen = connection->wayland_output_manager()->CreateWaylandScreen();
+  connection->wayland_output_manager()->InitWaylandScreen(screen.get());
 
   MockPlatformWindowDelegate delegate;
   gfx::AcceleratedWidget widget = gfx::kNullAcceleratedWidget;

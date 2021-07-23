@@ -14,8 +14,13 @@
 namespace aura {
 
 ScreenOzone::ScreenOzone() {
-  platform_screen_ = ui::OzonePlatform::GetInstance()->CreateScreen();
-  if (!platform_screen_) {
+  auto* platform = ui::OzonePlatform::GetInstance();
+  platform_screen_ = platform->CreateScreen();
+  if (platform_screen_) {
+    // Separate `CreateScreen` from `InitScreen` so that synchronous observers
+    // that call into `Screen` functions below have a valid `platform_screen_`.
+    platform->InitScreen(platform_screen_.get());
+  } else {
     NOTREACHED()
         << "PlatformScreen is not implemented for this ozone platform.";
   }

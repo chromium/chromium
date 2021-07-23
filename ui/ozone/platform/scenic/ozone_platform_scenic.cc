@@ -128,6 +128,8 @@ class OzonePlatformScenic : public OzonePlatform,
     return window_manager_->CreateScreen();
   }
 
+  void InitScreen(PlatformScreen* screen) override {}
+
   std::unique_ptr<InputMethod> CreateInputMethod(
       internal::InputMethodDelegate* delegate,
       gfx::AcceleratedWidget widget) override {

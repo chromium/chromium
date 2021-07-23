@@ -226,7 +226,12 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
       PlatformWindowInitProperties properties) = 0;
   virtual std::unique_ptr<display::NativeDisplayDelegate>
   CreateNativeDisplayDelegate() = 0;
+  // Creates a new PlatformScreen subclass from the factory subclass.
   virtual std::unique_ptr<PlatformScreen> CreateScreen() = 0;
+  // This function must be called immediately after CreateScreen with the
+  // `screen` that was returned from CreateScreen.  They are separated to avoid
+  // observer recursion into display::Screen from inside CreateScreen.
+  virtual void InitScreen(PlatformScreen* screen) = 0;
   virtual PlatformClipboard* GetPlatformClipboard();
   virtual std::unique_ptr<InputMethod> CreateInputMethod(
       internal::InputMethodDelegate* delegate,

@@ -134,6 +134,14 @@ class OzonePlatformWayland : public OzonePlatform {
     return connection_->wayland_output_manager()->CreateWaylandScreen();
   }
 
+  void InitScreen(PlatformScreen* screen) override {
+    DCHECK(connection_ && connection_->wayland_output_manager());
+    // InitScreen is always called with the same screen that CreateScreen
+    // hands back, so it is safe to cast here.
+    connection_->wayland_output_manager()->InitWaylandScreen(
+        static_cast<WaylandScreen*>(screen));
+  }
+
   PlatformClipboard* GetPlatformClipboard() override {
     DCHECK(connection_);
     return connection_->clipboard();
