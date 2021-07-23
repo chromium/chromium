@@ -281,27 +281,31 @@ KioskAppManagerBase::App KioskLaunchController::GetAppData() {
   switch (kiosk_app_id_.type) {
     case KioskAppType::kChromeApp: {
       KioskAppManagerBase::App app;
-      bool app_found =
-          KioskAppManager::Get()->GetApp(*kiosk_app_id_.app_id, &app);
-      DCHECK(app_found);
-      return app;
+      if (KioskAppManager::Get()->GetApp(*kiosk_app_id_.app_id, &app))
+        return app;
+      break;
     }
     case KioskAppType::kArcApp: {
       const ArcKioskAppData* arc_app =
           ArcKioskAppManager::Get()->GetAppByAccountId(
               *kiosk_app_id_.account_id);
-      DCHECK(arc_app);
-      return KioskAppManagerBase::App(*arc_app);
+      if (arc_app)
+        return KioskAppManagerBase::App(*arc_app);
+      break;
     }
     case KioskAppType::kWebApp: {
-      const WebKioskAppData* app = WebKioskAppManager::Get()->GetAppByAccountId(
-          *kiosk_app_id_.account_id);
-      DCHECK(app);
-      auto data = KioskAppManagerBase::App(*app);
-      data.url = app->install_url();
-      return data;
+      const WebKioskAppData* web_app =
+          WebKioskAppManager::Get()->GetAppByAccountId(
+              *kiosk_app_id_.account_id);
+      if (web_app)
+        return WebKioskAppManager::CreateAppByData(*web_app);
+      break;
     }
   }
+
+  LOG(WARNING) << "Cannot get a valid kiosk app. App type: "
+               << (int)kiosk_app_id_.type;
+  return KioskAppManagerBase::App();
 }
 
 bool KioskLaunchController::IsNetworkRequired() {
