@@ -369,6 +369,8 @@ def _OptimizeWithR8(options,
 
     # https://crbug.com/1231986
     for i in range(4):
+      if i == 3:
+        cmd += ['--thread-count', '1']
       try:
         stderr_filter = dex.CreateStderrFilter(
             options.show_desugar_default_interface_warnings)
@@ -377,6 +379,7 @@ def _OptimizeWithR8(options,
                                 print_stdout=print_stdout,
                                 stderr_filter=stderr_filter,
                                 fail_on_output=options.warnings_as_errors)
+        break
       except build_utils.CalledProcessError as err:
         # https://crbug.com/1231986
         if 'ArrayIndexOutOfBoundsException' not in err.output or i == 3:
@@ -385,6 +388,7 @@ def _OptimizeWithR8(options,
               'R8 failed. Please see '
               'https://chromium.googlesource.com/chromium/src/+/HEAD/build/'
               'android/docs/java_optimization.md#Debugging-common-failures')
+        logging.warning('Retrying R8 due to crbug/1231986')
 
     base_has_imported_lib = False
     if options.desugar_jdk_libs_json:
