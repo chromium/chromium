@@ -98,7 +98,7 @@
               on-input="onPasswordInput_">
           </cr-input>
 
-          <div id="rememberPasswordContainer">
+          <div id="rememberPasswordContainer" hidden="[[isGuestMode_]]">
             <cr-checkbox id="rememberPassword" checked="{{rememberPassword_}}"
                 disabled="[[!rememberPasswordEnabled_]]">
               $i18n{addKerberosAccountRememberPassword}

@@ -99,11 +99,25 @@ Polymer({
       value: false,
     },
 
-    /** @private */
+    /**
+     * Whether the remember password options is allowed by policy.
+     * @private {boolean}
+     */
     rememberPasswordEnabled_: {
       type: Boolean,
       value() {
         return loadTimeData.getBoolean('kerberosRememberPasswordEnabled');
+      },
+    },
+
+    /**
+     * Whether the user is in guest mode.
+     * @private {boolean}
+     */
+    isGuestMode_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isGuest');
       },
     },
   },

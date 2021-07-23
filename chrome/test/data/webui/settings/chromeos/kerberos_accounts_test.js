@@ -126,9 +126,12 @@ cr.define('settings_kerberos_accounts', function() {
     });
 
     test('AddAccount', function() {
+      // The kerberos-add-account-dialog shouldn't be open yet.
       assertTrue(!kerberosAccounts.$$('kerberos-add-account-dialog'));
+
       kerberosAccounts.$$('#add-account-button').click();
       Polymer.dom.flush();
+
       const addDialog = kerberosAccounts.$$('kerberos-add-account-dialog');
       assertTrue(!!addDialog);
       assertEquals('', addDialog.$.username.value);
@@ -508,6 +511,25 @@ cr.define('settings_kerberos_accounts', function() {
 
       // Reset for further tests.
       loadTimeData.overrideValues({kerberosRememberPasswordEnabled: true});
+    });
+
+    test('RememberPasswordVisibleOnUserSessions', function() {
+      assertFalse(loadTimeData.getBoolean('isGuest'));
+      createDialog(null);
+      Polymer.dom.flush();
+
+      assertFalse(dialog.$$('#rememberPasswordContainer').hidden);
+    });
+
+    test('RememberPasswordHiddenOnMgs', function() {
+      loadTimeData.overrideValues({isGuest: true});
+      createDialog(null);
+      Polymer.dom.flush();
+
+      assertTrue(dialog.$$('#rememberPasswordContainer').hidden);
+
+      // Reset for further tests.
+      loadTimeData.overrideValues({isGuest: false});
     });
 
     // By clicking the action button, all field values are passed to the
