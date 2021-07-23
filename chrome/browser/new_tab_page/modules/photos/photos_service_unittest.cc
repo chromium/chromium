@@ -46,14 +46,14 @@ class PhotosServiceTest : public testing::Test {
 };
 
 TEST_F(PhotosServiceTest, PassesDataOnSuccess) {
-  bool empty_response = false;
+  std::vector<photos::mojom::MemoryPtr> actual_memories;
   base::MockCallback<PhotosService::GetMemoriesCallback> callback;
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&empty_response](std::vector<photos::mojom::MemoryPtr> memories) {
-            empty_response = memories.empty();
+      .WillOnce(
+          testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
+            actual_memories = std::move(memories);
           }));
 
   service_->GetMemories(callback.Get());
@@ -72,13 +72,32 @@ TEST_F(PhotosServiceTest, PassesDataOnSuccess) {
       "read_reminiscing_content",
       R"(
         {
-          "response": []
+          "bundle": [
+            {
+              "bundleKey": "key1",
+              "title": {
+                "header": "Title 1",
+                "subheader": "Something something 1"
+              }
+            },
+            {
+              "bundleKey": "key2",
+              "title": {
+                "header": "Title 2",
+                "subheader": "Something something 2"
+              }
+            }
+          ]
         }
       )",
       net::HTTP_OK,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
 
-  EXPECT_TRUE(empty_response);
+  EXPECT_EQ(2u, actual_memories.size());
+  EXPECT_EQ("Title 1", actual_memories.at(0)->title);
+  EXPECT_EQ("key1", actual_memories.at(0)->id);
+  EXPECT_EQ("Title 2", actual_memories.at(1)->title);
+  EXPECT_EQ("key2", actual_memories.at(1)->id);
 }
 
 TEST_F(PhotosServiceTest, PassesNoDataOnAuthError) {
@@ -155,4 +174,34 @@ TEST_F(PhotosServiceTest, PassesNoDataOnEmptyResponse) {
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
 
   EXPECT_TRUE(empty_response);
+}
+
+TEST_F(PhotosServiceTest, PassesNoDataOnMissingItemKey) {
+  std::vector<photos::mojom::MemoryPtr> actual_memories;
+  base::MockCallback<PhotosService::GetMemoriesCallback> callback;
+
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(
+          testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
+            actual_memories = std::move(memories);
+          }));
+
+  service_->GetMemories(callback.Get());
+
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "foo", base::Time());
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://photosfirstparty-pa.googleapis.com/chrome_ntp/"
+      "read_reminiscing_content",
+      R"(
+        {
+          "bundle": [],
+        }
+      )",
+      net::HTTP_OK,
+      network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
+
+  EXPECT_TRUE(actual_memories.empty());
 }

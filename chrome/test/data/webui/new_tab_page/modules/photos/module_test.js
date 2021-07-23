@@ -20,6 +20,27 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     PhotosProxy.setInstance(testProxy);
   });
 
+  test('module appears on render', async () => {
+    const data = {
+      memories: [{title: 'Title 1', id: 'key1'}, {title: 'Title 2', id: 'key2'}]
+    };
+    testProxy.handler.setResultFor('getMemories', Promise.resolve(data));
+
+    const module = await photosDescriptor.initialize();
+    document.body.append(module);
+    await testProxy.handler.whenCalled('getMemories');
+    module.$.memoryRepeat.render();
+
+    const items = Array.from(module.shadowRoot.querySelectorAll('.memory'));
+    assertTrue(!!module);
+    assertTrue(isVisible(module.$.memories));
+    assertEquals(2, items.length);
+    assertEquals(
+        'Title 1', items[0].querySelector('.memory-title').textContent);
+    assertEquals(
+        'Title 2', items[1].querySelector('.memory-title').textContent);
+  });
+
   test('module does not show without data', async () => {
     testProxy.handler.setResultFor(
         'getMemories', Promise.resolve({memories: []}));

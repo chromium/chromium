@@ -150,6 +150,23 @@ void PhotosService::OnJsonParsed(
     return;
   }
 
-  // TODO(crbug.com/1230867): Process response and populate photos.mojom
-  std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
+  auto* memories = result.value->FindListPath("bundle");
+  if (!memories) {
+    std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
+    return;
+  }
+  std::vector<photos::mojom::MemoryPtr> memory_list;
+  for (const auto& memory : memories->GetList()) {
+    auto* title = memory.FindStringPath("title.header");
+    auto* memory_id = memory.FindStringPath("bundleKey");
+    if (!title || !memory_id) {
+      continue;
+    }
+    auto mojo_memory = photos::mojom::Memory::New();
+    mojo_memory->title = *title;
+    mojo_memory->id = *memory_id;
+
+    memory_list.push_back(std::move(mojo_memory));
+  }
+  std::move(callback).Run(std::move(memory_list));
 }
