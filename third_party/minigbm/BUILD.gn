@@ -73,9 +73,10 @@ if (!use_system_minigbm) {
       "src/mediatek.c",
       "src/msm.c",
       "src/rockchip.c",
-      "src/tegra.c",
       "src/vc4.c",
-      "src/virtio_gpu.c",
+      "src/virtgpu.c",
+      "src/virtgpu_cross_domain.c",
+      "src/virtgpu_virgl.c"
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
