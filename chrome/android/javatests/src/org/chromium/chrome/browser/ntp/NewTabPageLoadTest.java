@@ -16,10 +16,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
@@ -27,6 +29,7 @@ import org.chromium.chrome.browser.suggestions.tile.TileVisualType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -40,10 +43,16 @@ import org.chromium.url.GURL;
  * Tests for events around the loading of a New Tab Page.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class NewTabPageLoadTest {
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Rule
     public SuggestionsDependenciesRule mSuggestionDeps = new SuggestionsDependenciesRule();
@@ -62,8 +71,7 @@ public class NewTabPageLoadTest {
 
         mSuggestionDeps.getFactory().largeIconBridge = new AsyncMockLargeIconBridge();
 
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mTab = mActivityTestRule.getActivity().getActivityTab();
+        mTab = sActivityTestRule.getActivity().getActivityTab();
     }
 
     @After
@@ -74,7 +82,7 @@ public class NewTabPageLoadTest {
     @Test
     @SmallTest
     public void testTilesTypeInitialisedWhenPageLoaded() {
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        sActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         NewTabPageTestUtils.waitForNtpLoaded(mTab);
         assertTrue(mMostVisitedSites.pageImpressionRecorded);
     }
