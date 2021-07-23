@@ -208,6 +208,7 @@ PaintLayer::PaintLayer(LayoutBoxModelObject& layout_object)
       self_painting_status_changed_(false),
       filter_on_effect_node_dirty_(false),
       backdrop_filter_on_effect_node_dirty_(false),
+      has_filter_that_moves_pixels_(false),
       is_under_svg_hidden_container_(false),
       descendant_has_direct_or_scrolling_compositing_reason_(false),
       needs_compositing_reasons_update_(
@@ -3447,6 +3448,8 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
                                 const ComputedStyle* old_style) {
   UpdateScrollableArea();
 
+  has_filter_that_moves_pixels_ = ComputeHasFilterThatMovesPixels();
+
   if (AttemptDirectCompositingUpdate(diff, old_style)) {
     if (diff.HasDifference())
       GetLayoutObject().SetNeedsPaintPropertyUpdate();
@@ -3692,7 +3695,7 @@ PhysicalRect PaintLayer::MapRectForFilter(const PhysicalRect& rect) const {
   return PhysicalRect::EnclosingRect(MapRectForFilter(FloatRect(rect)));
 }
 
-bool PaintLayer::HasFilterThatMovesPixels() const {
+bool PaintLayer::ComputeHasFilterThatMovesPixels() const {
   if (!HasFilterInducingProperty())
     return false;
   const ComputedStyle& style = GetLayoutObject().StyleRef();
