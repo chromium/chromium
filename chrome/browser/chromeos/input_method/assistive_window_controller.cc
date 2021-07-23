@@ -111,6 +111,11 @@ void AssistiveWindowController::OnWidgetClosing(views::Widget* widget) {
   }
 }
 
+void AssistiveWindowController::Announce(const std::u16string& message) {
+  if (suggestion_window_view_)
+    suggestion_window_view_->Announce(message);
+}
+
 // TODO(crbug/1119570): Update AcceptSuggestion signature (either use
 // announce_string, or no string)
 void AssistiveWindowController::AcceptSuggestion(

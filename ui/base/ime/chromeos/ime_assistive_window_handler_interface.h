@@ -67,6 +67,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
   // Called when the text field's focus state is changed.
   virtual void FocusStateChanged() {}
 
+  // Announces the given message using the system's text-to-speech features
+  virtual void Announce(const std::u16string& message) = 0;
+
  protected:
   IMEAssistiveWindowHandlerInterface() = default;
 };

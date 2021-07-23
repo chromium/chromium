@@ -91,6 +91,7 @@ class MockSuggestionHandler : public SuggestionHandlerInterface {
                const AssistiveWindowProperties& assistive_window,
                std::string* error),
               (override));
+  MOCK_METHOD(void, Announce, (const std::u16string& message), (override));
 };
 
 class GrammarManagerTest : public testing::Test {

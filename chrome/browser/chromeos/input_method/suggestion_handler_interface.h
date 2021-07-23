@@ -61,6 +61,9 @@ class SuggestionHandlerInterface {
       int context_id,
       const AssistiveWindowProperties& assistive_window,
       std::string* error) = 0;
+
+  // Announces a message to the user by emitting a live region change event.
+  virtual void Announce(const std::u16string& message) = 0;
 };
 
 }  // namespace chromeos

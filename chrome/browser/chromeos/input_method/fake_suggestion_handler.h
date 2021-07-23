@@ -41,6 +41,7 @@ class FakeSuggestionHandler : public SuggestionHandlerInterface {
       int context_id,
       const AssistiveWindowProperties& assistive_window,
       std::string* error) override;
+  void Announce(const std::u16string& message) override;
 
   // Test getters
   int GetContextId() { return context_id_; }

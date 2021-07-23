@@ -127,6 +127,7 @@ class InputMethodEngine : public InputMethodEngineBase,
       int context_id,
       const AssistiveWindowProperties& assistive_window,
       std::string* error) override;
+  void Announce(const std::u16string& message) override;
 
   // This function returns the current property of the candidate window of the
   // corresponding engine_id. If the CandidateWindowProperty is not set for the

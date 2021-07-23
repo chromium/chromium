@@ -418,6 +418,13 @@ bool InputMethodEngine::SetAssistiveWindowProperties(
   return true;
 }
 
+void InputMethodEngine::Announce(const std::u16string& message) {
+  IMEAssistiveWindowHandlerInterface* aw_handler =
+      ui::IMEBridge::Get()->GetAssistiveWindowHandler();
+  if (aw_handler)
+    aw_handler->Announce(message);
+}
+
 bool InputMethodEngine::SetMenuItems(
     const std::vector<input_method::InputMethodManager::MenuItem>& items,
     std::string* error) {

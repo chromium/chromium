@@ -63,4 +63,6 @@ bool FakeSuggestionHandler::SetAssistiveWindowProperties(
   return false;
 }
 
+void FakeSuggestionHandler::Announce(const std::u16string& message) {}
+
 }  // namespace chromeos

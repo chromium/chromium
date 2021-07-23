@@ -57,6 +57,7 @@ class AssistiveWindowController : public views::WidgetObserver,
   size_t GetConfirmedLength() const override;
   void FocusStateChanged() override;
   void OnWidgetClosing(views::Widget* widget) override;
+  void Announce(const std::u16string& message) override;
 
   // ui::ime::AssistiveDelegate implementation.
   void AssistiveWindowButtonClicked(

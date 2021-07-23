@@ -108,6 +108,8 @@ class TestSuggestionHandler : public SuggestionHandlerInterface {
     return false;
   }
 
+  void Announce(const std::u16string& message) override {}
+
  private:
   bool show_indices_ = false;
   bool show_setting_link_ = false;

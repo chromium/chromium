@@ -2875,6 +2875,8 @@ source_set("chromeos") {
     "input_method/ui/input_method_menu_item.h",
     "input_method/ui/input_method_menu_manager.cc",
     "input_method/ui/input_method_menu_manager.h",
+    "input_method/ui/suggestion_accessibility_label.cc",
+    "input_method/ui/suggestion_accessibility_label.h",
     "input_method/ui/suggestion_details.h",
     "input_method/ui/suggestion_view.cc",
     "input_method/ui/suggestion_view.h",

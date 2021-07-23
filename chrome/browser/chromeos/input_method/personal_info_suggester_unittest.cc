@@ -114,6 +114,8 @@ class TestSuggestionHandler : public SuggestionHandlerInterface {
 
   bool IsSuggestionAccepted() { return suggestion_accepted_; }
 
+  void Announce(const std::u16string& message) override {}
+
  private:
   std::u16string suggestion_text_;
   size_t confirmed_length_ = 0;
