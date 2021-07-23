@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/cookie_manager_mojom_traits.h"
 
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "net/cookies/cookie_options.h"
 #include "net/cookies/same_party_context.h"
 
 namespace mojo {
@@ -244,6 +245,63 @@ bool EnumTraits<network::mojom::ContextType,
   return false;
 }
 
+network::mojom::CookieSameSiteContextMetadataDowngradeType
+EnumTraits<network::mojom::CookieSameSiteContextMetadataDowngradeType,
+           net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+               ContextDowngradeType>::
+    ToMojom(net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                ContextDowngradeType input) {
+  switch (input) {
+    case net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+        ContextDowngradeType::kNoDowngrade:
+      return network::mojom::CookieSameSiteContextMetadataDowngradeType::
+          kNoDowngrade;
+    case net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+        ContextDowngradeType::kStrictToLax:
+      return network::mojom::CookieSameSiteContextMetadataDowngradeType::
+          kStrictToLax;
+    case net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+        ContextDowngradeType::kStrictToCross:
+      return network::mojom::CookieSameSiteContextMetadataDowngradeType::
+          kStrictToCross;
+    case net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+        ContextDowngradeType::kLaxToCross:
+      return network::mojom::CookieSameSiteContextMetadataDowngradeType::
+          kLaxToCross;
+  }
+}
+
+bool EnumTraits<network::mojom::CookieSameSiteContextMetadataDowngradeType,
+                net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                    ContextDowngradeType>::
+    FromMojom(network::mojom::CookieSameSiteContextMetadataDowngradeType input,
+              net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                  ContextDowngradeType* output) {
+  switch (input) {
+    case network::mojom::CookieSameSiteContextMetadataDowngradeType::
+        kNoDowngrade:
+      *output = net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+          ContextDowngradeType::kNoDowngrade;
+      return true;
+    case network::mojom::CookieSameSiteContextMetadataDowngradeType::
+        kStrictToLax:
+      *output = net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+          ContextDowngradeType::kStrictToLax;
+      return true;
+    case network::mojom::CookieSameSiteContextMetadataDowngradeType::
+        kStrictToCross:
+      *output = net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+          ContextDowngradeType::kStrictToCross;
+      return true;
+    case network::mojom::CookieSameSiteContextMetadataDowngradeType::
+        kLaxToCross:
+      *output = net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+          ContextDowngradeType::kLaxToCross;
+      return true;
+  }
+  return false;
+}
+
 network::mojom::CookieChangeCause
 EnumTraits<network::mojom::CookieChangeCause, net::CookieChangeCause>::ToMojom(
     net::CookieChangeCause input) {
@@ -305,6 +363,8 @@ bool StructTraits<network::mojom::CookieSameSiteContextMetadataDataView,
     Read(network::mojom::CookieSameSiteContextMetadataDataView data,
          net::CookieOptions::SameSiteCookieContext::ContextMetadata* out) {
   out->affected_by_bugfix_1166211 = data.affected_by_bugfix_1166211();
+  if (!data.ReadCrossSiteRedirectDowngrade(&out->cross_site_redirect_downgrade))
+    return false;
 
   return true;
 }

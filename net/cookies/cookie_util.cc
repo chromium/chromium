@@ -162,12 +162,26 @@ ComputeSameSiteContextResult ComputeSameSiteContext(
       url_chain.size() == 1u ||
       base::ranges::all_of(url_chain, is_same_site_with_site_for_cookies);
 
-  if (same_site_initiator &&
-      (!base::FeatureList::IsEnabled(
-           features::kCookieSameSiteConsidersRedirectChain) ||
-       same_site_redirect_chain)) {
-    result.context_type = ContextType::SAME_SITE_STRICT;
-    return result;
+  // Whether the context would be SAME_SITE_STRICT if not considering redirect
+  // chains, but is different after considering redirect chains.
+  bool cross_site_redirect_downgraded_from_strict = false;
+  // Allows the kCookieSameSiteConsidersRedirectChain feature to override the
+  // result and use SAME_SITE_STRICT.
+  bool use_strict = false;
+
+  if (same_site_initiator) {
+    if (same_site_redirect_chain) {
+      result.context_type = ContextType::SAME_SITE_STRICT;
+      return result;
+    }
+    cross_site_redirect_downgraded_from_strict = true;
+    // If we are not supposed to consider redirect chains, record that the
+    // context result should ultimately be strictly same-site. We cannot
+    // just return early from here because we don't yet know what the context
+    // gets downgraded to, so we can't return with the correct metadata until we
+    // go through the rest of the logic below to determine that.
+    use_strict = !base::FeatureList::IsEnabled(
+        features::kCookieSameSiteConsidersRedirectChain);
   }
 
   if (is_http) {
@@ -177,18 +191,54 @@ ComputeSameSiteContextResult ComputeSameSiteContext(
 
   // Preserve old behavior if the bugfix is disabled.
   if (!base::FeatureList::IsEnabled(features::kSameSiteCookiesBugfix1166211)) {
-    result.context_type = ContextType::SAME_SITE_LAX;
+    if (cross_site_redirect_downgraded_from_strict) {
+      result.metadata.cross_site_redirect_downgrade =
+          ContextMetadata::ContextDowngradeType::kStrictToLax;
+    }
+    result.context_type =
+        use_strict ? ContextType::SAME_SITE_STRICT : ContextType::SAME_SITE_LAX;
     return result;
   }
 
   if (!is_http || is_main_frame_navigation) {
-    result.context_type = ContextType::SAME_SITE_LAX;
+    if (cross_site_redirect_downgraded_from_strict) {
+      result.metadata.cross_site_redirect_downgrade =
+          ContextMetadata::ContextDowngradeType::kStrictToLax;
+    }
+    result.context_type =
+        use_strict ? ContextType::SAME_SITE_STRICT : ContextType::SAME_SITE_LAX;
     return result;
   }
 
-  // Defaults to a cross-site context type.
-  result.metadata.affected_by_bugfix_1166211 = true;
+  if (cross_site_redirect_downgraded_from_strict) {
+    result.metadata.cross_site_redirect_downgrade =
+        ContextMetadata::ContextDowngradeType::kStrictToCross;
+  }
+  result.context_type =
+      use_strict ? ContextType::SAME_SITE_STRICT : ContextType::CROSS_SITE;
+
+  result.metadata.affected_by_bugfix_1166211 = !use_strict;
   return result;
+}
+
+// Setting any SameSite={Strict,Lax} cookie only requires a LAX context, so
+// normalize any strictly same-site contexts to Lax for cookie writes.
+void NormalizeStrictToLaxForSet(ComputeSameSiteContextResult& result) {
+  if (result.context_type == ContextType::SAME_SITE_STRICT)
+    result.context_type = ContextType::SAME_SITE_LAX;
+
+  switch (result.metadata.cross_site_redirect_downgrade) {
+    case ContextMetadata::ContextDowngradeType::kStrictToLax:
+      result.metadata.cross_site_redirect_downgrade =
+          ContextMetadata::ContextDowngradeType::kNoDowngrade;
+      break;
+    case ContextMetadata::ContextDowngradeType::kStrictToCross:
+      result.metadata.cross_site_redirect_downgrade =
+          ContextMetadata::ContextDowngradeType::kLaxToCross;
+      break;
+    default:
+      break;
+  }
 }
 
 CookieOptions::SameSiteCookieContext ComputeSameSiteContextForSet(
@@ -206,12 +256,8 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForSet(
       url_chain, site_for_cookies, initiator, is_http, is_main_frame_navigation,
       true /* compute_schemefully */);
 
-  // Setting any SameSite={Strict,Lax} cookie only requires a LAX context, so
-  // normalize any strictly same-site contexts to Lax for cookie writes.
-  if (result.context_type == ContextType::SAME_SITE_STRICT)
-    result.context_type = ContextType::SAME_SITE_LAX;
-  if (schemeful_result.context_type == ContextType::SAME_SITE_STRICT)
-    schemeful_result.context_type = ContextType::SAME_SITE_LAX;
+  NormalizeStrictToLaxForSet(result);
+  NormalizeStrictToLaxForSet(schemeful_result);
 
   return MakeSameSiteCookieContext(result, schemeful_result);
 }

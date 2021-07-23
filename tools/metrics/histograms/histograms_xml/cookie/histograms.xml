@@ -169,6 +169,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="Cookie.CrossSiteRedirectDowngradeChangesInclusion.{AccessType}"
+    enum="CookieSameSite" expires_after="2022-07-15">
+  <owner>chlily@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    The SameSite attribute of a cookie whose inclusion is changed by considering
+    redirects as part of the same-site context calculation. I.e., this is logged
+    for cookies which are included if not considering redirects when calculating
+    the same-site context, but are excluded (solely due to the SameSite
+    attribute) if cross-site redirects can cause a request to be considered
+    cross-site. This is only recorded for cookies accessed over HTTP, since
+    redirects are not relevant for JS cookie accesses. This is logged for each
+    cookie (whose inclusion is changed) when it is {AccessType}, regardless of
+    whether the cookie was ultimately included.
+  </summary>
+  <token key="AccessType">
+    <variant name="Read" summary="read for a request"/>
+    <variant name="Write" summary="set by a response"/>
+  </token>
+</histogram>
+
 <histogram name="Cookie.DomainSet" enum="Boolean" expires_after="2021-11-18">
   <owner>bingler@chromium.org</owner>
   <owner>chlily@chromium.org</owner>

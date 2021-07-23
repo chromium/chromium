@@ -211,6 +211,7 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kHidDeviceOpen,
           WebFeature::kCrossOriginWasmModuleSharing,
           WebFeature::kControlledNonBlobURLWorkerWillBeUncontrolled,
+          WebFeature::kSameSiteCookieInclusionChangedByCrossSiteRedirect,
       }));
   return *opt_in_features;
 }

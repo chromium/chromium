@@ -61,6 +61,19 @@ struct EnumTraits<network::mojom::ContextType,
 };
 
 template <>
+struct EnumTraits<network::mojom::CookieSameSiteContextMetadataDowngradeType,
+                  net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                      ContextDowngradeType> {
+  static network::mojom::CookieSameSiteContextMetadataDowngradeType ToMojom(
+      net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+          ContextDowngradeType input);
+  static bool FromMojom(
+      network::mojom::CookieSameSiteContextMetadataDowngradeType input,
+      net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+          ContextDowngradeType* output);
+};
+
+template <>
 struct EnumTraits<network::mojom::CookieSourceScheme, net::CookieSourceScheme> {
   static network::mojom::CookieSourceScheme ToMojom(
       net::CookieSourceScheme input);
@@ -85,6 +98,12 @@ struct StructTraits<
   static bool affected_by_bugfix_1166211(
       const net::CookieOptions::SameSiteCookieContext::ContextMetadata& m) {
     return m.affected_by_bugfix_1166211;
+  }
+  static net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+      ContextDowngradeType
+      cross_site_redirect_downgrade(
+          const net::CookieOptions::SameSiteCookieContext::ContextMetadata& m) {
+    return m.cross_site_redirect_downgrade;
   }
 
   static bool Read(network::mojom::CookieSameSiteContextMetadataDataView,
