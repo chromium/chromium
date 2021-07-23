@@ -42,6 +42,8 @@ component("network") {
     "auto_connect_handler.h",
     "cellular_connection_handler.cc",
     "cellular_connection_handler.h",
+    "cellular_esim_installer.cc",
+    "cellular_esim_installer.h",
     "cellular_esim_profile.cc",
     "cellular_esim_profile.h",
     "cellular_esim_profile_handler.cc",
@@ -281,6 +283,7 @@ source_set("unit_tests") {
   sources = [
     "auto_connect_handler_unittest.cc",
     "cellular_connection_handler_unittest.cc",
+    "cellular_esim_installer_unittest.cc",
     "cellular_esim_profile_handler_impl_unittest.cc",
     "cellular_esim_profile_unittest.cc",
     "cellular_esim_uninstall_handler_unittest.cc",

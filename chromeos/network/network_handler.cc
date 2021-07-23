@@ -8,6 +8,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/network/auto_connect_handler.h"
 #include "chromeos/network/cellular_connection_handler.h"
+#include "chromeos/network/cellular_esim_installer.h"
 #include "chromeos/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/network/cellular_esim_uninstall_handler.h"
 #include "chromeos/network/cellular_inhibitor.h"
@@ -52,6 +53,7 @@ NetworkHandler::NetworkHandler()
       new ManagedNetworkConfigurationHandlerImpl());
   network_connection_handler_.reset(new NetworkConnectionHandlerImpl());
   if (features::IsCellularActivationUiEnabled()) {
+    cellular_esim_installer_.reset(new CellularESimInstaller());
     cellular_esim_uninstall_handler_.reset(new CellularESimUninstallHandler());
   }
   cellular_metrics_logger_.reset(new CellularMetricsLogger());
@@ -97,6 +99,9 @@ void NetworkHandler::Init() {
       managed_network_configuration_handler_.get(),
       cellular_connection_handler_.get());
   if (features::IsCellularActivationUiEnabled()) {
+    cellular_esim_installer_->Init(
+        cellular_connection_handler_.get(), cellular_inhibitor_.get(),
+        network_connection_handler_.get(), network_state_handler_.get());
     cellular_esim_uninstall_handler_->Init(
         cellular_inhibitor_.get(), cellular_esim_profile_handler_.get(),
         network_configuration_handler_.get(), network_connection_handler_.get(),
@@ -196,6 +201,10 @@ AutoConnectHandler* NetworkHandler::auto_connect_handler() {
 
 CellularConnectionHandler* NetworkHandler::cellular_connection_handler() {
   return cellular_connection_handler_.get();
+}
+
+CellularESimInstaller* NetworkHandler::cellular_esim_installer() {
+  return cellular_esim_installer_.get();
 }
 
 CellularESimProfileHandler* NetworkHandler::cellular_esim_profile_handler() {

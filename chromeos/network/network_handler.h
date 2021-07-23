@@ -20,6 +20,7 @@ class AutoConnectHandler;
 class CellularConnectionHandler;
 class CellularESimProfileHandler;
 class CellularInhibitor;
+class CellularESimInstaller;
 class CellularESimUninstallHandler;
 class CellularMetricsLogger;
 class ClientCertResolver;
@@ -82,6 +83,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   // NetworkHandler.
   AutoConnectHandler* auto_connect_handler();
   CellularConnectionHandler* cellular_connection_handler();
+  CellularESimInstaller* cellular_esim_installer();
   CellularESimProfileHandler* cellular_esim_profile_handler();
   CellularESimUninstallHandler* cellular_esim_uninstall_handler();
   CellularInhibitor* cellular_inhibitor();
@@ -122,6 +124,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   std::unique_ptr<ManagedNetworkConfigurationHandlerImpl>
       managed_network_configuration_handler_;
   std::unique_ptr<NetworkConnectionHandler> network_connection_handler_;
+  std::unique_ptr<CellularESimInstaller> cellular_esim_installer_;
   std::unique_ptr<CellularESimUninstallHandler>
       cellular_esim_uninstall_handler_;
   std::unique_ptr<CellularMetricsLogger> cellular_metrics_logger_;
