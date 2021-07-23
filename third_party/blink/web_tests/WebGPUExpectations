@@ -178,6 +178,8 @@ crbug.com/dawn/485 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_p
 crbug.com/1215024 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createComputePipeline:enrty_point_name_must_match:stageEntryPoint="main%5Cu0000";* [ Failure ]
 crbug.com/1215024 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createComputePipeline:enrty_point_name_must_match:stageEntryPoint="main%5Cu0000a";* [ Failure ]
 
+crbug.com/dawn/1010 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_attribute_offset_alignment:* [ Failure ]
+
 # Crash with validation layers (Vulkan/D3D12).
 crbug.com/dawn/808 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,index_format:* [ Skip ]
 
@@ -355,37 +357,3 @@ crbug.com/tint/995 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,v
 crbug.com/dawn/988 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pass,resolve:render_pass_resolve:* [ Failure ]
 
 crbug.com/dawn/548 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:indirect=true;* [ Failure ]
-
-# Fails to compile graphics pipeline
-crbug.com/dawn/1010 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_attribute_offset_alignment:* [ Skip ]
-
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="uint8x2";shaderBaseType="i32";shaderType="i32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="uint8x4";shaderBaseType="i32";shaderType="i32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="sint8x2";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="sint8x4";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="unorm8x2";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="unorm8x4";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="snorm8x2";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="snorm8x4";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="uint16x2";shaderBaseType="i32";shaderType="i32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="uint16x4";shaderBaseType="i32";shaderType="i32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="sint16x2";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="sint16x4";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="unorm16x2";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="unorm16x4";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="snorm16x2";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="snorm16x4";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="float16x2";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="float16x4";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="float32";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="float32x2";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="float32x3";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="float32x4";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="uint32";shaderBaseType="i32";shaderType="i32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="uint32x2";shaderBaseType="i32";shaderType="i32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="uint32x3";shaderBaseType="i32";shaderType="i32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="uint32x4";shaderBaseType="i32";shaderType="i32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="sint32";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="sint32x2";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="sint32x3";shaderBaseType="u32";shaderType="u32";* [ Failure ]
-crbug.com/dawn/1014 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:format="sint32x4";shaderBaseType="u32";shaderType="u32";* [ Failure ]

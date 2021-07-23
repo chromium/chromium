@@ -37,11 +37,8 @@
   'wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:indexed=true;indirect=true;drawCallTestParameter="indexCount"',
   'wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:indexed=true;indirect=true;drawCallTestParameter="indexCount"',
 
-  'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:initializer_type:variableOrConstant="var";lhsContainerType="_undef_";*',
-  'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:initializer_type:variableOrConstant="const";lhsContainerType="_undef_";*',
-  'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:io_shareable_type:storageClass="in";containerType="_undef_";*',
-  'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:io_shareable_type:storageClass="out";containerType="_undef_";*',
-  'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:io_shareable_type:storageClass="private";containerType="_undef_";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:initializer_type:variableOrConstant="var";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:io_shareable_type:storageClass="in";*',
 
   'wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="1d";*',
 
@@ -83,6 +80,8 @@
   'wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="workgroup";access="write";atomic=true;baseType="i32";*',
 
   'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertex_format_to_shader_format_conversion:format="uint8x2";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:max_buffers_and_attribs:format="uint8x2";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:overlapping_attributes:format="uint8x2";*',
 
   'wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="none";orientation="none";dstColorFormat="rgba8unorm";*',
   'wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="none";orientation="flipY";dstColorFormat="rgba8unorm";*',
