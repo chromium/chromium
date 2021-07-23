@@ -77,9 +77,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#if defined(OS_MAC)
-#include "third_party/blink/public/mojom/input/text_input_host.mojom-blink.h"
-#endif
 #include "ui/gfx/transform.h"
 
 namespace base {
@@ -716,6 +713,11 @@ class CORE_EXPORT LocalFrame final : public Frame,
   void BindTextFragmentReceiver(
       mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> receiver);
 
+#if defined(OS_MAC)
+  void ResetTextInputHostForTesting();
+  void RebindTextInputHostForTesting();
+#endif
+
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.
@@ -782,10 +784,6 @@ class CORE_EXPORT LocalFrame final : public Frame,
       const IntPoint& pos_in_viewport);
 
   bool ShouldThrottleDownload();
-
-#if defined(OS_MAC)
-  mojom::blink::TextInputHost& GetTextInputHost();
-#endif
 
   // Returns the `Frame` for which `provisional_frame_ == this`. May only be
   // called on a provisional frame.
@@ -869,11 +867,6 @@ class CORE_EXPORT LocalFrame final : public Frame,
   Member<ContentCaptureManager> content_capture_manager_;
 
   InterfaceRegistry* const interface_registry_;
-
-#if defined(OS_MAC)
-  // LocalFrame can be reused by multiple ExecutionContext.
-  HeapMojoRemote<mojom::blink::TextInputHost> text_input_host_{nullptr};
-#endif
 
   mojom::blink::ViewportIntersectionState intersection_state_;
 

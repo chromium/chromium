@@ -421,9 +421,6 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(system_clipboard_);
   visitor->Trace(virtual_keyboard_overlay_changed_observers_);
   visitor->Trace(pause_handle_receivers_);
-#if defined(OS_MAC)
-  visitor->Trace(text_input_host_);
-#endif
   visitor->Trace(back_forward_cache_controller_host_remote_);
   visitor->Trace(mojo_handler_);
   visitor->Trace(text_fragment_handler_);
@@ -1532,13 +1529,6 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
   Initialize();
 
   probe::FrameAttachedToParent(this);
-#if defined(OS_MAC)
-  // It should be bound before accessing TextInputHost which is the interface to
-  // respond to GetCharacterIndexAtPoint.
-  GetBrowserInterfaceBroker().GetInterface(
-      text_input_host_.BindNewPipeAndPassReceiver(
-          GetTaskRunner(blink::TaskType::kInternalDefault)));
-#endif
 }
 
 FrameScheduler* LocalFrame::GetFrameScheduler() {
@@ -2706,7 +2696,7 @@ void LocalFrame::GetCharacterIndexAtPoint(const gfx::Point& point) {
       location, HitTestRequest::kReadOnly | HitTestRequest::kActive);
   uint32_t index =
       Selection().CharacterIndexForPoint(result.RoundedPointInInnerNodeFrame());
-  GetTextInputHost().GotCharacterIndexAtPoint(index);
+  mojo_handler_->TextInputHost().GotCharacterIndexAtPoint(index);
 }
 #endif
 
@@ -3075,9 +3065,12 @@ bool LocalFrame::ShouldThrottleDownload() {
 }
 
 #if defined(OS_MAC)
-mojom::blink::TextInputHost& LocalFrame::GetTextInputHost() {
-  DCHECK(text_input_host_.is_bound());
-  return *text_input_host_.get();
+void LocalFrame::ResetTextInputHostForTesting() {
+  mojo_handler_->ResetTextInputHostForTesting();
+}
+
+void LocalFrame::RebindTextInputHostForTesting() {
+  mojo_handler_->RebindTextInputHostForTesting();
 }
 #endif
 

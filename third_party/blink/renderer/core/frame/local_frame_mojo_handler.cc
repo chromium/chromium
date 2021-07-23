@@ -317,6 +317,14 @@ void ActiveURLMessageFilter::DidDispatchOrReject(mojo::Message* message,
 
 LocalFrameMojoHandler::LocalFrameMojoHandler(blink::LocalFrame& frame)
     : frame_(frame) {
+#if defined(OS_MAC)
+  // It should be bound before accessing TextInputHost which is the interface to
+  // respond to GetCharacterIndexAtPoint.
+  frame.GetBrowserInterfaceBroker().GetInterface(
+      text_input_host_.BindNewPipeAndPassReceiver(
+          frame.GetTaskRunner(TaskType::kInternalDefault)));
+#endif
+
   frame.GetRemoteNavigationAssociatedInterfaces()->GetInterface(
       local_frame_host_remote_.BindNewEndpointAndPassReceiver(
           frame.GetTaskRunner(TaskType::kInternalDefault)));
@@ -336,6 +344,9 @@ LocalFrameMojoHandler::LocalFrameMojoHandler(blink::LocalFrame& frame)
 
 void LocalFrameMojoHandler::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
+#if defined(OS_MAC)
+  visitor->Trace(text_input_host_);
+#endif
   visitor->Trace(reporting_service_);
   visitor->Trace(local_frame_host_remote_);
   visitor->Trace(local_frame_receiver_);
@@ -362,6 +373,23 @@ void LocalFrameMojoHandler::DidDetachFrame() {
 void LocalFrameMojoHandler::ClosePageForTesting() {
   ClosePage(base::DoNothing());
 }
+
+#if defined(OS_MAC)
+mojom::blink::TextInputHost& LocalFrameMojoHandler::TextInputHost() {
+  DCHECK(text_input_host_.is_bound());
+  return *text_input_host_.get();
+}
+
+void LocalFrameMojoHandler::ResetTextInputHostForTesting() {
+  text_input_host_.reset();
+}
+
+void LocalFrameMojoHandler::RebindTextInputHostForTesting() {
+  frame_->GetBrowserInterfaceBroker().GetInterface(
+      text_input_host_.BindNewPipeAndPassReceiver(
+          frame_->GetTaskRunner(TaskType::kInternalDefault)));
+}
+#endif
 
 mojom::blink::ReportingServiceProxy* LocalFrameMojoHandler::ReportingService() {
   if (!reporting_service_.is_bound()) {
@@ -891,7 +919,7 @@ void LocalFrameMojoHandler::GetFirstRectForRange(const gfx::Range& range) {
         start, range.length(), rect);
   }
 
-  frame_->GetTextInputHost().GotFirstRectForRange(rect);
+  TextInputHost().GotFirstRectForRange(rect);
 }
 
 void LocalFrameMojoHandler::GetStringForRange(

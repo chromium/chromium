@@ -254,14 +254,12 @@ TEST_F(LocalFrameTest, CharacterIndexAtPointWithPinchZoom) {
 
   Page* page = web_view_helper.GetWebView()->GetPage();
   LocalFrame* main_frame = DynamicTo<LocalFrame>(page->MainFrame());
-  main_frame->text_input_host_.reset();
+  main_frame->ResetTextInputHostForTesting();
 
   base::RunLoop run_loop;
   TestTextInputHostWaiter waiter;
   waiter.Init(run_loop.QuitClosure(), main_frame->GetBrowserInterfaceBroker());
-  main_frame->GetBrowserInterfaceBroker().GetInterface(
-      main_frame->text_input_host_.BindNewPipeAndPassReceiver(
-          main_frame->GetTaskRunner(blink::TaskType::kInternalDefault)));
+  main_frame->RebindTextInputHostForTesting();
   // Since we're zoomed in to 2X, each char of Ahem is 20px wide/tall in
   // viewport space. We expect to hit the fifth char on the first line.
   main_frame->GetCharacterIndexAtPoint(gfx::Point(100, 15));

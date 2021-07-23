@@ -15,6 +15,10 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
+#if defined(OS_MAC)
+#include "third_party/blink/public/mojom/input/text_input_host.mojom-blink.h"
+#endif
+
 namespace blink {
 
 class Document;
@@ -22,8 +26,14 @@ class LocalDOMWindow;
 class LocalFrame;
 class Page;
 
-// LocalFrameMojoHandler is responsible for providing Mojo receivers and
-// remotes associated to blink::LocalFrame.
+// LocalFrameMojoHandler is a part of LocalFrame, and is responsible for having
+// Mojo-related stuff in order to avoid including full mojom headers from
+// local_frame.h.
+//
+// This class should have:
+//  - Mojo receivers
+//  - Mojo remotes
+//  - Data members of which types are defined by mojom.
 //
 // A single LocalFrame instance owns a single LocalFrameMojoHandler instance.
 class LocalFrameMojoHandler
@@ -46,6 +56,12 @@ class LocalFrameMojoHandler
   }
 
   mojom::blink::ReportingServiceProxy* ReportingService();
+
+#if defined(OS_MAC)
+  mojom::blink::TextInputHost& TextInputHost();
+  void ResetTextInputHostForTesting();
+  void RebindTextInputHostForTesting();
+#endif
 
  private:
   Page* GetPage() const;
@@ -210,6 +226,10 @@ class LocalFrameMojoHandler
   void RequestFullscreenVideoElement() final;
 
   Member<blink::LocalFrame> frame_;
+
+#if defined(OS_MAC)
+  HeapMojoRemote<mojom::blink::TextInputHost> text_input_host_{nullptr};
+#endif
 
   HeapMojoRemote<mojom::blink::ReportingServiceProxy> reporting_service_{
       nullptr};
