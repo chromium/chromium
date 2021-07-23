@@ -141,11 +141,6 @@ bool TranslateClientImpl::IsAutofillAssistantRunning() const {
   return false;
 }
 
-void TranslateClientImpl::ShowReportLanguageDetectionErrorUI(
-    const GURL& report_url) {
-  NOTREACHED();
-}
-
 void TranslateClientImpl::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
   // Inform NavigationControllerImpl that the language has been determined. Note

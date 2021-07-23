@@ -335,24 +335,6 @@ void ChromeTranslateClient::OnStateChanged(autofill_assistant::UIState state) {
   }
 }
 
-void ChromeTranslateClient::ShowReportLanguageDetectionErrorUI(
-    const GURL& report_url) {
-#if defined(OS_ANDROID)
-  // Android does not support reporting language detection errors.
-  NOTREACHED();
-#else
-  // We'll open the URL in a new tab so that the user can tell us more.
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  if (!browser) {
-    NOTREACHED();
-    return;
-  }
-
-  chrome::AddSelectedTabWithURL(browser, report_url,
-                                ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-#endif  // defined(OS_ANDROID)
-}
-
 void ChromeTranslateClient::WebContentsDestroyed() {
   // Translation process can be interrupted.
   // Destroying the TranslateManager now guarantees that it never has to deal

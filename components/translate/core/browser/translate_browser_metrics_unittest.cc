@@ -309,13 +309,6 @@ TEST(TranslateBrowserMetricsTest, ReportInitiationStatus) {
   recorder.CheckInitiationStatus(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 }
 
-TEST(TranslateBrowserMetricsTest, ReportLanguageDetectionError) {
-  MetricsRecorder recorder("Translate.ReportLanguageDetectionError");
-  EXPECT_EQ(0, recorder.GetTotalCount());
-  TranslateBrowserMetrics::ReportLanguageDetectionError();
-  EXPECT_EQ(1, recorder.GetTotalCount());
-}
-
 TEST(TranslateBrowserMetricsTest, ReportMenuTranslationUnavailableReason) {
   MetricsRecorder recorder("Translate.MenuTranslation.UnavailableReasons");
   recorder.CheckMenuTranslationUnavailableReason(0, 0, 0, 0, 0, 0, 0, 0);
@@ -351,15 +344,6 @@ TEST(TranslateBrowserMetricsTest, ReportMenuTranslationUnavailableReason) {
       TranslateBrowserMetrics::MenuTranslationUnavailableReason::
           kSourceLangUnknown);
   recorder.CheckMenuTranslationUnavailableReason(1, 1, 1, 1, 1, 1, 1, 1);
-}
-
-TEST(TranslateBrowserMetricsTest, ReportedLocalesOnDisabledByPrefs) {
-  const int ENGLISH = 25966;
-
-  MetricsRecorder recorder("Translate.LocalesOnDisabledByPrefs");
-  EXPECT_EQ(0, recorder.GetTotalCount());
-  TranslateBrowserMetrics::ReportLocalesOnDisabledByPrefs("en");
-  EXPECT_EQ(1, recorder.GetCount(ENGLISH));
 }
 
 TEST(TranslateBrowserMetricsTest, ReportedUnsupportedLanguageAtInitiation) {

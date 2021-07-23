@@ -108,9 +108,6 @@ enum class MenuTranslationUnavailableReason {
 // browser action.
 void ReportInitiationStatus(InitiationStatusType type);
 
-// Called when Chrome opens the URL so that the user sends an error feedback.
-void ReportLanguageDetectionError();
-
 // Called when the context (Desktop) menu or app (Mobile) menu is shown and
 // manual translation is unavailable to report a reason it is unavailable.
 void ReportMenuTranslationUnavailableReason(
@@ -118,8 +115,6 @@ void ReportMenuTranslationUnavailableReason(
 
 // Called when language detection details are complete.
 void ReportLanguageDetectionContentLength(size_t length);
-
-void ReportLocalesOnDisabledByPrefs(base::StringPiece locale);
 
 void ReportUnsupportedLanguageAtInitiation(base::StringPiece language);
 

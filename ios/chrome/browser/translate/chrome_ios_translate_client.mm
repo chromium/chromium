@@ -156,11 +156,6 @@ bool ChromeIOSTranslateClient::IsAutofillAssistantRunning() const {
   return false;
 }
 
-void ChromeIOSTranslateClient::ShowReportLanguageDetectionErrorUI(
-    const GURL& report_url) {
-  NOTREACHED();
-}
-
 void ChromeIOSTranslateClient::DidStartLoading(web::WebState* web_state) {
   [language_selection_handler_ dismissLanguageSelector];
   [translate_option_selection_handler_ dismissTranslateOptionSelector];

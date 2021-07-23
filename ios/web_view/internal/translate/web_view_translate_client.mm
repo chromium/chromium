@@ -133,9 +133,4 @@ bool WebViewTranslateClient::IsAutofillAssistantRunning() const {
   return false;
 }
 
-void WebViewTranslateClient::ShowReportLanguageDetectionErrorUI(
-    const GURL& report_url) {
-  NOTREACHED();
-}
-
 }  // namespace ios_web_view

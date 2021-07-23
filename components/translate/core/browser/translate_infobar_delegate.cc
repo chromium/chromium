@@ -194,11 +194,6 @@ void TranslateInfoBarDelegate::RevertWithoutClosingInfobar() {
   step_ = TRANSLATE_STEP_BEFORE_TRANSLATE;
 }
 
-void TranslateInfoBarDelegate::ReportLanguageDetectionError() {
-  if (translate_manager_)
-    translate_manager_->ReportLanguageDetectionError();
-}
-
 void TranslateInfoBarDelegate::TranslationDeclined() {
   ui_delegate_.TranslationDeclined(true);
 }

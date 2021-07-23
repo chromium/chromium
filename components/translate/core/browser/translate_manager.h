@@ -153,11 +153,6 @@ class TranslateManager {
   // Reverts the contents of the page to its original language.
   void RevertTranslation();
 
-  // Reports to the Google translate server that a page language was incorrectly
-  // detected.  This call is initiated by the user selecting the "report" menu
-  // under options in the translate infobar.
-  void ReportLanguageDetectionError();
-
   // Global Callbacks
 
   // The three callbacks below (translate error, translate initialization, and

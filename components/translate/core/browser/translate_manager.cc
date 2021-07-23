@@ -67,16 +67,6 @@ TranslateManager::TranslateInitCallbackList* g_init_callback_list_ = nullptr;
 TranslateManager::LanguageDetectedCallbackList* g_detection_callback_list_ =
     nullptr;
 
-const char kReportLanguageDetectionErrorURL[] =
-    "https://translate.google.com/translate_error?client=cr&action=langidc";
-
-// Used in kReportLanguageDetectionErrorURL to specify the page source
-// language.
-const char kSourceLanguageQueryName[] = "sl";
-
-// Used in kReportLanguageDetectionErrorURL to specify the page URL.
-const char kUrlQueryName[] = "u";
-
 std::set<std::string> GetSkippedLanguagesForExperiments(
     std::string source_lang,
     translate::TranslatePrefs* translate_prefs) {
@@ -482,25 +472,6 @@ void TranslateManager::RevertTranslation() {
   language_state_.SetCurrentLanguage(language_state_.source_language());
 
   GetActiveTranslateMetricsLogger()->LogReversion();
-}
-
-void TranslateManager::ReportLanguageDetectionError() {
-  TranslateBrowserMetrics::ReportLanguageDetectionError();
-
-  GURL report_error_url = GURL(kReportLanguageDetectionErrorURL);
-
-  report_error_url = net::AppendQueryParameter(
-      report_error_url, kUrlQueryName,
-      translate_driver_->GetLastCommittedURL().spec());
-
-  report_error_url =
-      net::AppendQueryParameter(report_error_url, kSourceLanguageQueryName,
-                                language_state_.source_language());
-
-  report_error_url = translate::AddHostLocaleToUrl(report_error_url);
-  report_error_url = translate::AddApiKeyToUrl(report_error_url);
-
-  translate_client_->ShowReportLanguageDetectionErrorUI(report_error_url);
 }
 
 void TranslateManager::DoTranslatePage(const std::string& translate_script,
@@ -1372,13 +1343,6 @@ void TranslateManager::RecordDecisionMetrics(
         TranslateBrowserMetrics::INITIATION_STATUS_LANGUAGE_IS_NOT_SUPPORTED) {
       TranslateBrowserMetrics::ReportUnsupportedLanguageAtInitiation(
           page_language_code);
-    }
-
-    if (status ==
-        TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_PREFS) {
-      const std::string& locale =
-          TranslateDownloadManager::GetInstance()->application_locale();
-      TranslateBrowserMetrics::ReportLocalesOnDisabledByPrefs(locale);
     }
   }
 }

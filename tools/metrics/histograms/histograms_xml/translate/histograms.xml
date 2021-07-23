@@ -474,6 +474,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.LocalesOnDisabledByPrefs" enum="LanguageName"
     expires_after="2021-01-31">
+  <obsolete>
+    Removed M94. No longer used.
+  </obsolete>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -938,6 +941,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.ReportLanguageDetectionError" units="units"
     expires_after="2021-01-31">
+  <obsolete>
+    Removed M94. No longer used.
+  </obsolete>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

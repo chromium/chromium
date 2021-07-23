@@ -143,7 +143,6 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   virtual void Translate();
   virtual void RevertTranslation();
   virtual void RevertWithoutClosingInfobar();
-  void ReportLanguageDetectionError();
 
   // Called when the user declines to translate a page, by either closing the
   // infobar or pressing the "Don't translate" button.
