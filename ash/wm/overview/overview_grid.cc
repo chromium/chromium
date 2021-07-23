@@ -53,8 +53,8 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/bind.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/cxx17_backports.h"
 #include "base/numerics/ranges.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1299,7 +1299,7 @@ void OverviewGrid::UpdateNudge(OverviewItem* item, double value) {
 
     OverviewItem* nudged_item = window_list_[data.index].get();
     double nudge_param = value * value / 30.0;
-    nudge_param = base::ClampToRange(nudge_param, 0.0, 1.0);
+    nudge_param = base::clamp(nudge_param, 0.0, 1.0);
     gfx::RectF bounds =
         gfx::Tween::RectFValueBetween(nudge_param, data.src, data.dst);
     nudged_item->SetBounds(bounds, OVERVIEW_ANIMATION_NONE);
@@ -1427,6 +1427,8 @@ void OverviewGrid::StartScroll() {
   // |scroll_offset_| is added to adjust for that.
   rightmost_window_right -= scroll_offset_;
   scroll_offset_min_ = total_bounds.right() - rightmost_window_right;
+  if (scroll_offset_min_ > 0.f)
+    scroll_offset_min_ = 0.f;
 
   presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
       const_cast<ui::Compositor*>(root_window()->layer()->GetCompositor()),
@@ -1436,8 +1438,7 @@ void OverviewGrid::StartScroll() {
 bool OverviewGrid::UpdateScrollOffset(float delta) {
   float new_scroll_offset = scroll_offset_;
   new_scroll_offset += delta;
-  new_scroll_offset =
-      base::ClampToRange(new_scroll_offset, scroll_offset_min_, 0.f);
+  new_scroll_offset = base::clamp(new_scroll_offset, scroll_offset_min_, 0.f);
 
   // For flings, we want to return false if we hit one of the edges, which is
   // when |new_scroll_offset| is exactly 0.f or |scroll_offset_min_|.
@@ -1745,11 +1746,16 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRectsForTabletModeLayout(
         std::max(rightmost_window_right, item->target_bounds().right());
   }
 
-  // |rightmost_window_right| may have been modified by an earlier scroll.
-  // |scroll_offset_| is added to adjust for that.
+  // `rightmost_window_right` may have been modified by an earlier scroll.
+  // `scroll_offset_` is added to adjust for that. If `rightmost_window_right`
+  // is less than `total_bounds.right()`, the grid cannot be scrolled. Set
+  // `scroll_offset_min_` to 0 so that `base::clamp()` is happy.
   rightmost_window_right -= scroll_offset_;
   scroll_offset_min_ = total_bounds.right() - rightmost_window_right;
-  scroll_offset_ = base::ClampToRange(scroll_offset_, scroll_offset_min_, 0.f);
+  if (scroll_offset_min_ > 0.f)
+    scroll_offset_min_ = 0.f;
+
+  scroll_offset_ = base::clamp(scroll_offset_, scroll_offset_min_, 0.f);
 
   // Map which contains up to |kTabletLayoutRow| entries with information on the
   // last items right bound per row. Used so we can place the next item directly

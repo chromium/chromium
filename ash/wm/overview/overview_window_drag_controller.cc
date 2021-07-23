@@ -28,8 +28,8 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -464,7 +464,7 @@ void OverviewWindowDragController::ContinueDragToClose(
               kDragToCloseDistanceThresholdDp;
   overview_session_->GetGridWithRootWindow(item_->root_window())
       ->UpdateNudge(item_, val);
-  val = base::ClampToRange(val, 0.f, 1.f);
+  val = base::clamp(val, 0.f, 1.f);
   float opacity = original_opacity_;
   if (opacity > kItemMinOpacity)
     opacity = original_opacity_ - val * (original_opacity_ - kItemMinOpacity);
@@ -555,7 +555,7 @@ void OverviewWindowDragController::ContinueNormalDrag(
                                       desks_bar_data.desks_bar_bounds) /
                 desks_bar_data.shrink_region_distance.x();
       }
-      value = base::ClampToRange(value, 0.f, 1.f);
+      value = base::clamp(value, 0.f, 1.f);
       const gfx::SizeF size_value =
           gfx::Tween::SizeFValueBetween(1.f - value, original_scaled_size_,
                                         desks_bar_data.on_desks_bar_item_size);
