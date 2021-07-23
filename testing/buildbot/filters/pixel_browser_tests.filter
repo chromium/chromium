@@ -21,7 +21,7 @@ OneTimePermissionPromptBubbleViewBrowserTest.*
 OutdatedUpgradeBubbleTest.*
 All/PageInfoBubbleViewDialogBrowserTest.*
 PasswordReuseModalWarningTest.*
-PermissionChipBrowserTest.*
+PermissionRequestChipBrowserTest.*
 All/PermissionPromptBubbleViewBrowserTest.*
 ProfileSigninConfirmationDialogTest.*
 RelaunchRecommendedBubbleViewDialogTest.*

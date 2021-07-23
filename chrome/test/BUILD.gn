@@ -3019,6 +3019,9 @@ if (!is_android) {
         "//ui/views",
         "//url",
       ]
+      if (use_aura) {
+        deps += [ "//ui/aura:test_support" ]
+      }
     }
 
     if ((!is_android || enable_vr) && !is_ios) {

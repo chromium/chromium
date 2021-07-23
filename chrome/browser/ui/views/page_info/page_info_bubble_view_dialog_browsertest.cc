@@ -398,11 +398,10 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
   ShowAndVerifyUi();
 }
 
-// Disabled because of flakiness: crbug.com/1208502.
 // Shows the Page Info bubble for an admin-provided cert when the page is
 // secure, but has a form that submits to an insecure url.
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
-                       DISABLED_InvokeUi_MixedContentForm) {
+                       InvokeUi_MixedContentForm) {
   ShowAndVerifyUi();
 }
 
@@ -415,27 +414,15 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
 
 // Shows the Page Info bubble with all the permissions displayed with 'Allow'
 // set. All permissions will show regardless of its factory default value.
-// Flaky: https://crbug.com/1221423
-#if defined(OS_WIN)
-#define MAYBE_InvokeUi_AllowAllPermissions DISABLED_InvokeUi_AllowAllPermissions
-#else
-#define MAYBE_InvokeUi_AllowAllPermissions InvokeUi_AllowAllPermissions
-#endif
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
-                       MAYBE_InvokeUi_AllowAllPermissions) {
+                       InvokeUi_AllowAllPermissions) {
   ShowAndVerifyUi();
 }
 
 // Shows the Page Info bubble with all the permissions displayed with 'Block'
 // set. All permissions will show regardless of its factory default value.
-// Flaky: https://crbug.com/1221423
-#if defined(OS_WIN)
-#define MAYBE_InvokeUi_BlockAllPermissions DISABLED_InvokeUi_BlockAllPermissions
-#else
-#define MAYBE_InvokeUi_BlockAllPermissions InvokeUi_BlockAllPermissions
-#endif
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
-                       MAYBE_InvokeUi_BlockAllPermissions) {
+                       InvokeUi_BlockAllPermissions) {
   ShowAndVerifyUi();
 }
 

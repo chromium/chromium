@@ -9,6 +9,10 @@
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/aura/test/ui_controls_factory_aura.h"
+#include "ui/base/test/ui_controls.h"
+#include "ui/views/test/ui_controls_factory_desktop_aura_ozone.h"
+#include "ui/views/test/ui_controls_factory_desktop_aurax11.h"
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
@@ -31,6 +35,24 @@ std::string NameFromTestCase() {
   return underscore == std::string::npos ? std::string()
                                          : name.substr(underscore + 1);
 }
+
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+void InstallUIControlsAura() {
+#if defined(OS_WIN)
+  ui_controls::InstallUIControlsAura(aura::test::CreateUIControlsAura(nullptr));
+#elif defined(USE_OZONE)
+  ui_controls::InstallUIControlsAura(
+      views::test::CreateUIControlsDesktopAuraOzone());
+#elif defined(USE_X11)
+  ui_controls::InstallUIControlsAura(
+      views::test::CreateUIControlsDesktopAura());
+#else
+  ui_controls::EnableUIControls();
+#endif
+}
+#endif
 
 }  // namespace
 
@@ -64,6 +86,18 @@ bool TestBrowserUi::VerifyPixelUi(views::View* view,
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           "browser-ui-tests-verify-pixels"))
     return true;
+
+  // Move the mouse away from the dialog to prvent any interference with the
+  // screenshots.
+  InstallUIControlsAura();
+  base::RunLoop run_loop;
+  EXPECT_TRUE(
+      ui_controls::SendMouseMoveNotifyWhenDone(0, 0, run_loop.QuitClosure()));
+  run_loop.Run();
+
+  // Clear widget focus to avoid flakiness caused by some widgets having focus
+  // and some not due to tests being run in parallel.
+  view->GetWidget()->GetFocusManager()->ClearFocus();
 
   // Wait for painting complete.
   auto* compositor = view->GetWidget()->GetCompositor();
