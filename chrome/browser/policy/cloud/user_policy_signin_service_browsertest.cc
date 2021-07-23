@@ -386,13 +386,7 @@ void TestDiceTurnSyncOnHelperDelegate::SwitchToProfile(Profile* new_profile) {
   NOTREACHED();
 }
 
-// TODO(https://crbug.com/936663): flaky
-#if defined(OS_WIN)
-#define MAYBE_BasicSignin DISABLED_BasicSignin
-#else
-#define MAYBE_BasicSignin BasicSignin
-#endif
-IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, MAYBE_BasicSignin) {
+IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, BasicSignin) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   // Signin and show sync confirmation dialog.
@@ -412,13 +406,7 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, MAYBE_BasicSignin) {
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 }
 
-// TODO(https://crbug.com/936663): flaky
-#if defined(OS_WIN)
-#define MAYBE_UndoSignin DISABLED_UndoSignin
-#else
-#define MAYBE_UndoSignin UndoSignin
-#endif
-IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, MAYBE_UndoSignin) {
+IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, UndoSignin) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   // Signin and show sync confirmation dialog.
@@ -442,13 +430,7 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, MAYBE_UndoSignin) {
 // Regression test for https://crbug.com/1061459
 // Start a new signing flow while the existing one is hanging on a policy
 // request.
-// TODO(https://crbug.com/936663): flaky
-#if defined(OS_WIN)
-#define MAYBE_ConcurrentSignin DISABLED_ConcurrentSignin
-#else
-#define MAYBE_ConcurrentSignin ConcurrentSignin
-#endif
-IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, MAYBE_ConcurrentSignin) {
+IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, ConcurrentSignin) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   set_policy_hanging(true);
@@ -495,15 +477,14 @@ class UserPolicySigninServiceSyncNotRequiredTest
   base::test::ScopedFeatureList feature_list;
 };
 
-// TODO(https://crbug.com/1226762): flaky
 // crbug.com/1230268 not working on Lacros.
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_AcceptManagementDeclineSync DISABLED_AcceptManagementDeclineSync
 #else
 #define MAYBE_AcceptManagementDeclineSync AcceptManagementDeclineSync
 #endif
 IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceSyncNotRequiredTest,
-                       MAYBE_AcceptManagementDeclineSync) {
+                       AcceptManagementDeclineSync) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   // Signin and show sync confirmation dialog.

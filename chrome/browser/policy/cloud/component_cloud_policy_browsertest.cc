@@ -52,10 +52,10 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #endif
 
+using testing::_;
 using testing::InvokeWithoutArgs;
 using testing::Mock;
 using testing::Return;
-using testing::_;
 
 namespace em = enterprise_management;
 
@@ -243,9 +243,8 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
   CloudPolicyClient* client_ = nullptr;
 };
 
-// crbug.com/1224925 flaky on Win.
 // crbug.com/1230268 not working on Lacros.
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_FetchExtensionPolicy DISABLED_FetchExtensionPolicy
 #else
 #define MAYBE_FetchExtensionPolicy FetchExtensionPolicy
@@ -257,9 +256,8 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_FetchExtensionPolicy) {
   EXPECT_TRUE(policy_listener.WaitUntilSatisfied());
 }
 
-// crbug.com/1224925 flaky on Win.
 // crbug.com/1230268 not working on Lacros.
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_UpdateExtensionPolicy DISABLED_UpdateExtensionPolicy
 #else
 #define MAYBE_UpdateExtensionPolicy UpdateExtensionPolicy
@@ -292,9 +290,8 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_UpdateExtensionPolicy) {
   EXPECT_TRUE(policy_listener2.WaitUntilSatisfied());
 }
 
-// crbug.com/1224925 flaky on Win.
 // crbug.com/1230268 not working on Lacros.
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_InstallNewExtension DISABLED_InstallNewExtension
 #else
 #define MAYBE_InstallNewExtension InstallNewExtension
@@ -331,9 +328,8 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_InstallNewExtension) {
 // This test verifies that when the user signs out then any existing component
 // policy caches are dropped, and that it's still possible to sign back in and
 // get policy for components working again.
-// TODO(https://crbug.com/1224925): Test is flaky on all platforms.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, DISABLED_SignOutAndBackIn) {
+IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, SignOutAndBackIn) {
   // Read the initial policy.
   ExtensionTestMessageListener initial_policy_listener(kTestPolicyJSON, true);
   event_listener_->Reply("get-policy-Name");
@@ -341,19 +337,21 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, DISABLED_SignOutAndBackIn) {
 
   // Verify that the policy cache exists.
   std::string cache_key;
-  base::Base64UrlEncode(
-      "extension-policy", base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-      &cache_key);
+  base::Base64UrlEncode("extension-policy",
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                        &cache_key);
   std::string cache_subkey;
-  base::Base64UrlEncode(
-      kTestExtension, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-      &cache_subkey);
+  base::Base64UrlEncode(kTestExtension,
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                        &cache_subkey);
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath cache_path = browser()->profile()->GetPath()
-      .Append(FILE_PATH_LITERAL("Policy"))
-      .Append(FILE_PATH_LITERAL("Components"))
-      .AppendASCII(cache_key)
-      .AppendASCII(cache_subkey);
+  base::FilePath cache_path = browser()
+                                  ->profile()
+                                  ->GetPath()
+                                  .Append(FILE_PATH_LITERAL("Policy"))
+                                  .Append(FILE_PATH_LITERAL("Components"))
+                                  .AppendASCII(cache_key)
+                                  .AppendASCII(cache_subkey);
   EXPECT_TRUE(base::PathExists(cache_path));
 
   // Now sign-out. The policy cache should be removed, and the extension should
@@ -409,9 +407,8 @@ class KeyRotationComponentCloudPolicyTest : public ComponentCloudPolicyTest {
   }
 };
 
-// crbug.com/1224925 flaky on Win.
 // crbug.com/1230268 not working on Lacros.
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_Basic DISABLED_Basic
 #else
 #define MAYBE_Basic Basic

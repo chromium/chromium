@@ -78,11 +78,11 @@
 #include "chrome/browser/ui/browser.h"
 #endif  // !defined(OS_ANDROID)
 
+using testing::_;
 using testing::AnyNumber;
 using testing::InvokeWithoutArgs;
 using testing::Mock;
 using testing::Return;
-using testing::_;
 
 namespace content {
 class BrowserContext;
@@ -266,8 +266,8 @@ class CloudPolicyTest : public PlatformBrowserTest,
 
     base::RunLoop run_loop;
     MockCloudPolicyClientObserver observer;
-    EXPECT_CALL(observer, OnRegistrationStateChanged(_)).WillOnce(
-        InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    EXPECT_CALL(observer, OnRegistrationStateChanged(_))
+        .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
     policy_manager->core()->client()->AddObserver(&observer);
 
     // Give a bogus OAuth token to the |policy_manager|. This should make its
@@ -303,7 +303,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
             cryptohome::CreateAccountIdentifierFromAccountId(
                 AccountId::FromUserEmail(GetTestUser())));
     user_policy_key_file_ = user_policy_key_dir.AppendASCII(sanitized_username)
-                                               .AppendASCII("policy.pub");
+                                .AppendASCII("policy.pub");
 #endif
   }
 
@@ -371,13 +371,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 };
 
-// crbug.com/1224925 flaky on Win.
-#if defined(OS_WIN)
-#define MAYBE_FetchPolicy DISABLED_FetchPolicy
-#else
-#define MAYBE_FetchPolicy FetchPolicy
-#endif
-IN_PROC_BROWSER_TEST_F(CloudPolicyTest, MAYBE_FetchPolicy) {
+IN_PROC_BROWSER_TEST_F(CloudPolicyTest, FetchPolicy) {
   PolicyService* policy_service = GetPolicyService();
   {
     base::RunLoop run_loop;
@@ -428,9 +422,8 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyTest, EnsureDefaultPoliciesSet) {
 }
 #endif
 
-// crbug.com/1224925 flaky on Win.
 // crbug.com/1230268 not working on Lacros.
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_InvalidatePolicy DISABLED_InvalidatePolicy
 #else
 #define MAYBE_InvalidatePolicy InvalidatePolicy
