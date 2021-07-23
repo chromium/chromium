@@ -71,6 +71,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
     private ObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private ObservableSupplier<Boolean> mHomepageManagedByPolicySupplier;
     private boolean mIsHomeButtonInitialized;
+    private boolean mIsShowing;
 
     public StartSurfaceToolbarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -400,6 +401,15 @@ class StartSurfaceToolbarView extends RelativeLayout {
         boolean shouldShowStartSurfaceToolbar = mInStartSurfaceMode && mShouldShow;
 
         if (!mShowAnimation) {
+            if (shouldShowStartSurfaceToolbar == mIsShowing) return;
+            mIsShowing = shouldShowStartSurfaceToolbar;
+
+            if (mLayoutChangeAnimator != null) {
+                mLayoutChangeAnimator.cancel();
+                finishFadeAnimation(this, shouldShowStartSurfaceToolbar);
+                return;
+            }
+
             addFadeAnimator(this, shouldShowStartSurfaceToolbar);
         }
 
@@ -409,10 +419,12 @@ class StartSurfaceToolbarView extends RelativeLayout {
             @Override
             public void onCancel(Animator animator) {
                 mAnimators.clear();
+                mLayoutChangeAnimator = null;
             }
             @Override
             public void onEnd(Animator animator) {
                 mAnimators.clear();
+                mLayoutChangeAnimator = null;
             }
         });
         mLayoutChangeAnimator.start();
