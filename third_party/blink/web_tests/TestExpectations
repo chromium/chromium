@@ -7268,3 +7268,6 @@ crbug.com/1222097 [ Mac ] external/wpt/html/semantics/embedded-content/media-ele
 crbug.com/1222097 [ Mac ] virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Failure Pass ]
 crbug.com/1231915 [ Mac10.12 ] external/wpt/selection/textcontrols/selectionchange-bubble.html [ Pass Timeout ]
 crbug.com/1231989 [ Linux ] external/wpt/html/cross-origin-embedder-policy/shared-workers.https.html [ Pass Failure ]
+
+# Sheriff 2021-07-23
+crbug.com/1232388 [ Mac10.12 ] external/wpt/html/rendering/non-replaced-elements/hidden-elements.html [ Pass Failure ]
