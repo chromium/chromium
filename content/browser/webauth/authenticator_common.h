@@ -60,30 +60,6 @@ class WebAuthRequestSecurityChecker;
 
 enum class RequestExtension;
 
-// ClientDataRequestType enumerates different request types that
-// CollectedClientData can be built for. See
-// |SerializeWebAuthnCollectedClientDataToJson|.
-enum class ClientDataRequestType {
-  kU2fRegister,
-  kU2fSign,
-  kWebAuthnCreate,
-  kWebAuthnGet,
-  kPaymentCreate,
-  kPaymentGet,
-};
-
-// Builds the CollectedClientData[1] dictionary with the given values,
-// serializes it to JSON, and returns the resulting string.
-// https://w3c.github.io/webauthn/#dictdef-collectedclientdata
-CONTENT_EXPORT std::string SerializeWebAuthnCollectedClientDataToJson(
-    ClientDataRequestType type,
-    const std::string& origin,
-    base::span<const uint8_t> challenge,
-    bool is_cross_origin,
-    blink::mojom::PaymentOptionsPtr payment_options = nullptr,
-    const std::string& payment_rp = "",
-    const std::string& payment_top_origin = "");
-
 // Common code for any WebAuthn Authenticator interfaces.
 class CONTENT_EXPORT AuthenticatorCommon {
  public:

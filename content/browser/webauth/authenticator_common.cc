@@ -25,6 +25,7 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/webauth/authenticator_environment_impl.h"
+#include "content/browser/webauth/client_data_json.h"
 #include "content/browser/webauth/is_uvpaa.h"
 #include "content/browser/webauth/virtual_authenticator_request_delegate.h"
 #include "content/browser/webauth/virtual_fido_discovery_factory.h"
@@ -666,136 +667,7 @@ std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
   return discovery_factory;
 }
 
-// ToJSONString encodes |in| as a JSON string, using the specific escaping rules
-// required by https://github.com/w3c/webauthn/pull/1375.
-std::string ToJSONString(base::StringPiece in) {
-  std::string ret;
-  ret.reserve(in.size() + 2);
-  ret.push_back('"');
-
-  const char* const in_bytes = in.data();
-  // ICU uses |int32_t| for lengths.
-  const int32_t length = base::checked_cast<int32_t>(in.size());
-  int32_t offset = 0;
-
-  while (offset < length) {
-    const int32_t prior_offset = offset;
-    // Input strings must be valid UTF-8.
-    uint32_t codepoint;
-    CHECK(base::ReadUnicodeCharacter(in_bytes, length, &offset, &codepoint));
-    // offset is updated by |ReadUnicodeCharacter| to index the last byte of the
-    // codepoint. Increment it to index the first byte of the next codepoint for
-    // the subsequent iteration.
-    offset++;
-
-    if (codepoint == 0x20 || codepoint == 0x21 ||
-        (codepoint >= 0x23 && codepoint <= 0x5b) || codepoint >= 0x5d) {
-      ret.append(&in_bytes[prior_offset], &in_bytes[offset]);
-    } else if (codepoint == 0x22) {
-      ret.append("\\\"");
-    } else if (codepoint == 0x5c) {
-      ret.append("\\\\");
-    } else {
-      static const char hextable[17] = "0123456789abcdef";
-      ret.append("\\u00");
-      ret.push_back(hextable[codepoint >> 4]);
-      ret.push_back(hextable[codepoint & 15]);
-    }
-  }
-
-  ret.push_back('"');
-  return ret;
-}
-
 }  // namespace
-
-std::string SerializeWebAuthnCollectedClientDataToJson(
-    ClientDataRequestType type,
-    const std::string& origin,
-    base::span<const uint8_t> challenge,
-    bool is_cross_origin,
-    blink::mojom::PaymentOptionsPtr payment_options /* = nullptr */,
-    const std::string& payment_rp /* = "" */,
-    const std::string& payment_top_origin /* = "" */) {
-  std::string ret;
-  ret.reserve(128);
-
-  // U2F uses "typ", while WebAuthn uses "type" for the type key.
-  switch (type) {
-    case ClientDataRequestType::kU2fRegister:
-      ret.append(R"({"typ":"navigator.id.finishEnrollment")");
-      break;
-    case ClientDataRequestType::kU2fSign:
-      ret.append(R"({"typ":"navigator.id.getAssertion")");
-      break;
-    case ClientDataRequestType::kWebAuthnCreate:
-      ret.append(R"({"type":"webauthn.create")");
-      break;
-    case ClientDataRequestType::kWebAuthnGet:
-      ret.append(R"({"type":"webauthn.get")");
-      break;
-    case ClientDataRequestType::kPaymentCreate:
-      ret.append(R"({"type":"payment.create")");
-      break;
-    case ClientDataRequestType::kPaymentGet:
-      ret.append(R"({"type":"payment.get")");
-      break;
-  }
-
-  ret.append(R"(,"challenge":)");
-  ret.append(ToJSONString(Base64UrlEncode(challenge)));
-
-  ret.append(R"(,"origin":)");
-  ret.append(ToJSONString(origin));
-
-  if (is_cross_origin) {
-    ret.append(R"(,"crossOrigin":true)");
-  } else {
-    ret.append(R"(,"crossOrigin":false)");
-  }
-
-  if (payment_options) {
-    ret.append(R"(,"payment":{)");
-
-    ret.append(R"("rp":)");
-    ret.append(ToJSONString(payment_rp));
-
-    ret.append(R"(,"topOrigin":)");
-    ret.append(ToJSONString(payment_top_origin));
-
-    ret.append(R"(,"total":{)");
-
-    ret.append(R"("value":)");
-    ret.append(ToJSONString(payment_options->total->value));
-
-    ret.append(R"(,"currency":)");
-    ret.append(ToJSONString(payment_options->total->currency));
-
-    ret.append(R"(},"instrument":{)");
-
-    ret.append(R"("icon":)");
-    ret.append(ToJSONString(payment_options->instrument->icon.spec()));
-
-    ret.append(R"(,"name":)");
-    ret.append(ToJSONString(payment_options->instrument->display_name));
-
-    ret.append("}}");
-  }
-
-  if (base::RandDouble() < 0.2) {
-    // An extra key is sometimes added to ensure that RPs do not make
-    // unreasonably specific assumptions about the clientData JSON. This is
-    // done in the fashion of
-    // https://tools.ietf.org/html/draft-ietf-tls-grease
-    ret.append(R"(,"other_keys_can_be_added_here":")");
-    ret.append(
-        "do not compare clientDataJSON against a template. See "
-        "https://goo.gl/yabPex\"");
-  }
-
-  ret.append("}");
-  return ret;
-}
 
 AuthenticatorCommon::AuthenticatorCommon(RenderFrameHost* render_frame_host)
     : render_frame_host_id_(render_frame_host->GetGlobalId()),
@@ -1150,7 +1022,7 @@ void AuthenticatorCommon::MakeCredential(
 
   if (options->is_payment_credential_creation &&
       base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)) {
-    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
+    client_data_json_ = BuildClientDataJson(
         ClientDataRequestType::kPaymentCreate, caller_origin_.Serialize(),
         options->challenge, is_cross_origin);
   } else if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
@@ -1158,12 +1030,12 @@ void AuthenticatorCommon::MakeCredential(
     // Cryptotoken passes the real caller origin in |relying_party.name|.
     const url::Origin client_data_origin =
         url::Origin::Create(GURL(*options->relying_party.name));
-    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
+    client_data_json_ = BuildClientDataJson(
         ClientDataRequestType::kU2fRegister, client_data_origin.Serialize(),
         options->challenge, is_cross_origin);
   } else {
     // Regular WebAuthn request
-    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
+    client_data_json_ = BuildClientDataJson(
         WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
             caller_origin)
             ? ClientDataRequestType::kU2fRegister
@@ -1297,7 +1169,7 @@ void AuthenticatorCommon::GetAssertion(
   if (origin_is_crypto_token_extension) {
     // Cryptotoken provides the sender origin for U2F sign requests in the
     // |relying_party_id| attribute.
-    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
+    client_data_json_ = BuildClientDataJson(
         ClientDataRequestType::kU2fSign, options->relying_party_id,
         options->challenge, /*is_cross_origin=*/false);
   } else if (options->payment &&
@@ -1311,12 +1183,12 @@ void AuthenticatorCommon::GetAssertion(
     }
     url::Origin top_origin =
         url::Origin::Create(web_contents->GetLastCommittedURL());
-    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
+    client_data_json_ = BuildClientDataJson(
         ClientDataRequestType::kPaymentGet, caller_origin_.Serialize(),
         options->challenge, is_cross_origin, std::move(options->payment),
         relying_party_id_, top_origin.Serialize());
   } else {
-    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
+    client_data_json_ = BuildClientDataJson(
         ClientDataRequestType::kWebAuthnGet, caller_origin_.Serialize(),
         options->challenge, is_cross_origin);
   }

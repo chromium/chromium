@@ -38,6 +38,7 @@
 #include "components/webauthn/content/browser/internal_authenticator_impl.h"
 #include "content/browser/webauth/authenticator_common.h"
 #include "content/browser/webauth/authenticator_environment_impl.h"
+#include "content/browser/webauth/client_data_json.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
@@ -428,9 +429,9 @@ url::Origin GetTestOrigin() {
 }
 
 std::string GetTestClientDataJSON(ClientDataRequestType type) {
-  return SerializeWebAuthnCollectedClientDataToJson(
-      std::move(type), GetTestOrigin().Serialize(), GetTestChallengeBytes(),
-      /*is_cross_origin=*/false);
+  return BuildClientDataJson(std::move(type), GetTestOrigin().Serialize(),
+                             GetTestChallengeBytes(),
+                             /*is_cross_origin=*/false);
 }
 
 std::vector<uint8_t> StringToVector(const std::string& string) {
@@ -685,9 +686,8 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
   // the returned value.
   std::vector<uint8_t> challenge_bytes = {1, 2, 3};
   EXPECT_EQ(
-      SerializeWebAuthnCollectedClientDataToJson(
-          ClientDataRequestType::kWebAuthnCreate, "ori\"gin", challenge_bytes,
-          false)
+      BuildClientDataJson(ClientDataRequestType::kWebAuthnCreate, "ori\"gin",
+                          challenge_bytes, false)
           .find(
               "{\"type\":\"webauthn.create\",\"challenge\":\"AQID\",\"origin\":"
               "\"ori\\\"gin\",\"crossOrigin\":false"),
@@ -736,7 +736,7 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
   for (const auto& test : kTestCases) {
     SCOPED_TRACE(num++);
 
-    const std::string json = SerializeWebAuthnCollectedClientDataToJson(
+    const std::string json = BuildClientDataJson(
         test.type, test.origin, test.challenge, test.is_cross_origin);
 
     const auto parsed = base::JSONReader::Read(json);
