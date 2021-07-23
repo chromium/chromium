@@ -1,0 +1,157 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * This class contains the main functionalities for Enhanced Network TTS.
+ */
+export class EnhancedNetworkTts {
+  constructor() {}
+
+  /**
+   * Callback for onSpeakWithAudioStream event. This function responds to a TTS
+   * request specified by the parameters |utterance|, |options|, and
+   * |audioStreamOptions|. It uses the mojo API to safely retrieve audio that
+   * fulfill the request and send the audio to |sendTtsAudio|.
+   * @param {string} utterance The text to speak.
+   * @param {!chrome.ttsEngine.SpeakOptions} options Options specified when a
+   *     client calls the chrome.tts.speak.
+   * @param {!chrome.ttsEngine.AudioStreamOptions} audioStreamOptions Contains
+   *     the audio stream format expected to be produced by this engine.
+   * @param {function(!chrome.ttsEngine.AudioBuffer): void} sendTtsAudio A
+   *     function that accepts AudioBuffer for playback.
+   */
+  static async onSpeakWithAudioStreamEvent(
+      utterance, options, audioStreamOptions, sendTtsAudio) {
+    // TODO(crbug.com/1231318): Enable voice selection from |options|.
+    const request = /** @type {!ash.enhancedNetworkTts.mojom.TtsRequest} */ (
+        {utterance, voice: 'gba-wavenet', lang: 'en'});
+
+    let api;
+    try {
+      api = /**
+               @type {!ash.enhancedNetworkTts.mojom.EnhancedNetworkTtsRemote}
+                 */
+          (await chrome.mojoPrivate.requireAsync('ash.enhanced_network_tts'));
+    } catch (e) {
+      console.warn('Could not get mojoPrivate bindings: ' + e.message);
+      // TODO(crbug.com/1231318): Provide more appropriate error handling.
+      return;
+    }
+
+    const response = /** @type {!ash.enhancedNetworkTts.mojom.TtsResponse} */
+        ((await api.getAudioData(request)).response);
+    if (!response.data) {
+      console.warn('Could not get the data from Enhanced Network mojo API.');
+      // TODO(crbug.com/1231318): Provide more appropriate error handling.
+      return;
+    }
+
+    const audioData = new Uint8Array(response.data.audio).buffer;
+    const timeInfo = response.data.timeInfo;
+    const decodedAudioData =
+        await EnhancedNetworkTts.decodeAudioDataAtSampleRate(
+            audioData, audioStreamOptions.sampleRate);
+
+    EnhancedNetworkTts.sendAudioDataInBuffers(
+        decodedAudioData, audioStreamOptions.sampleRate,
+        audioStreamOptions.bufferSize, timeInfo, sendTtsAudio);
+  }
+
+  /**
+   * Decodes |inputAudioData| into a Float32Array at the |targetSampleRate|.
+   * @param {!ArrayBuffer} inputAudioData The original data from audio files
+   *     like mp3, ogg, or wav.
+   * @param {number} targetSampleRate The sampling rate for decoding.
+   * @return {Promise<Float32Array>}
+   */
+  static async decodeAudioDataAtSampleRate(inputAudioData, targetSampleRate) {
+    const context = new AudioContext({sampleRate: targetSampleRate});
+
+    let audioBuffer;
+    try {
+      audioBuffer = await context.decodeAudioData(inputAudioData);
+    } catch (e) {
+      console.warn('Could not decode audio data');
+      return new Promise(resolve => resolve(null));
+    }
+
+    if (!audioBuffer) {
+      return new Promise(resolve => resolve(null));
+    }
+    return audioBuffer.getChannelData(0);
+  }
+
+  /**
+   * Creates a subarray from |startIdx| in the input |array|, with the size of
+   * |subarraySize|.
+   * @param {!Float32Array} array
+   * @param {number} startIdx
+   * @param {number} subarraySize
+   * @return {!Float32Array}
+   */
+  static subarrayFrom(array, startIdx, subarraySize) {
+    const subarray = new Float32Array(subarraySize);
+    subarray.set(
+        array.subarray(
+            startIdx, Math.min(startIdx + subarraySize, array.length)),
+        0 /* offset */);
+    return subarray;
+  }
+
+  /**
+   * Sends |audioData| in AudioBuffers to |sendTtsAudio|. The AudioBuffer should
+   * have length |bufferSize| at |sampleRate|, and is a linear PCM in the
+   * Float32Array type. |sendTtsAudio|, |sampleRate|, and |bufferSize| are
+   * provided by the |chrome.ttsEngine.onSpeakWithAudioStream| event.
+   * |sampleRate| and |bufferSize| can be specified in the extension manifest
+   * file.
+   * @param {Float32Array} audioData Decoded audio data with a |sampleRate|.
+   * @param {number} sampleRate
+   * @param {number} bufferSize The size of each buffer that |sendTtsAudio|
+   *     expects.
+   * @param {!Array<!ash.enhancedNetworkTts.mojom.TimingInfo>} timeInfo An array
+   *     of timestamp information for each word in the |audioData|.
+   * @param {function(!chrome.ttsEngine.AudioBuffer): void} sendTtsAudio The
+   *     function that takes |AudioBuffer| for playback.
+   */
+  static sendAudioDataInBuffers(
+      audioData, sampleRate, bufferSize, timeInfo, sendTtsAudio) {
+    if (!audioData) {
+      // TODO(crbug.com/1231318): Provide more appropriate error handling.
+      return;
+    }
+
+    // The index in |timeInfo| that corresponds to the to-be-processed word.
+    let timeInfoIdx = 0;
+    // The index in |audioData| that corresponds to the start of the
+    // to-be-processed word in |timeInfo|.
+    let wordStartAtAudioData =
+        Math.floor(parseFloat(timeInfo[0].timeOffset) * sampleRate);
+
+    // Go through audioData and split it into AudioBuffers.
+    for (let i = 0; i < audioData.length; i += bufferSize) {
+      const audioBuffer = EnhancedNetworkTts.subarrayFrom(
+          audioData, i /* startIdx */, bufferSize);
+
+      // If the |wordStartAtAudioData| falls into this buffer, the buffer is
+      // associated with a char index (text offset).
+      let charIndex;
+      if (i <= wordStartAtAudioData && i + bufferSize > wordStartAtAudioData) {
+        charIndex = timeInfo[timeInfoIdx].textOffset;
+
+        // Prepare for the next word.
+        if (timeInfoIdx < timeInfo.length - 1) {
+          timeInfoIdx++;
+          wordStartAtAudioData = Math.floor(
+              parseFloat(timeInfo[timeInfoIdx].timeOffset) * sampleRate);
+        }
+      }
+
+      // Determine if the given buffer is the last buffer in the audioData.
+      const isLastBuffer = i + bufferSize >= audioData.length;
+
+      sendTtsAudio({audioBuffer, charIndex, isLastBuffer});
+    }
+  }
+}

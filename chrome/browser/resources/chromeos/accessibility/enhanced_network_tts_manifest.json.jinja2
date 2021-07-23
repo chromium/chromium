@@ -10,14 +10,22 @@
   "incognito": "split",
 {% endif %}
   "background": {
-    "scripts": ["enhanced_network_tts/background.js"],
-    "persistent": false
+    "page": "enhanced_network_tts/background.html"
   },
   "permissions": [
     "ttsEngine"
   ],
   "default_locale": "en",
   "tts_engine": {
-    "voices": []
+    "voices": [
+      {
+          "event_types": [ "start", "end", "error" ],
+          "lang": "en-US",
+          "voice_name": "Wavenet English 1",
+          "remote": true
+      }
+    ],
+    "sample_rate": 44100,
+    "buffer_size": 128
   }
 }

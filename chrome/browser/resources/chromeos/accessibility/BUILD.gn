@@ -143,6 +143,7 @@ group("browser_tests") {
       "accessibility_common:browser_tests",
       "chromevox:browser_tests",
       "common:browser_tests",
+      "enhanced_network_tts:browser_tests",
       "select_to_speak:browser_tests",
       "switch_access:browser_tests",
     ]

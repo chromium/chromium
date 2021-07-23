@@ -2,10 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Background script for the Enhanced Network TTS engine.
- */
+import {EnhancedNetworkTts} from './enhanced_network_tts.js';
 
-// TODO(crbug.com/1215357): Implement TTS engine.
-chrome.ttsEngine.onSpeak.addListener(() => {});
-chrome.ttsEngine.onStop.addListener(() => {});
+/**
+ * Register the listener for onSpeakWithAudioStream event. The event will be
+ * called when the user makes a call to tts.speak() and one of the voices from
+ * this extension's manifest is the first to match the options object.
+ */
+chrome.ttsEngine.onSpeakWithAudioStream.addListener(
+    async (
+        /** string */ utterance,
+        /** !chrome.ttsEngine.SpeakOptions */ options,
+        /** !chrome.ttsEngine.AudioStreamOptions */ audioStreamOptions,
+        /** function(!chrome.ttsEngine.AudioBuffer): void */ sendTtsAudio) =>
+        await EnhancedNetworkTts.onSpeakWithAudioStreamEvent(
+            utterance, options, audioStreamOptions, sendTtsAudio));
