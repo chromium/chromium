@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_DIAGNOSTICS_UI_DIAGNOSTICS_UI_H_
 #define ASH_WEBUI_DIAGNOSTICS_UI_DIAGNOSTICS_UI_H_
 
+#include "ash/webui/common/backend/plural_string_handler.h"
 #include "ash/webui/diagnostics_ui/backend/session_log_handler.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-forward.h"
 #include "ash/webui/diagnostics_ui/mojom/network_health_provider.mojom-forward.h"

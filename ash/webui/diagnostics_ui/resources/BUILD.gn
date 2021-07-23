@@ -177,6 +177,7 @@ js_library("input_list") {
 js_library("ip_config_info_drawer") {
   deps = [
     ":data_point",
+    ":diagnostics_browser_proxy",
     ":diagnostics_types",
     ":diagnostics_utils",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

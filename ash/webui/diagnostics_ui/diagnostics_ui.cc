@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/grit/ash_diagnostics_app_resources.h"
 #include "ash/grit/ash_diagnostics_app_resources_map.h"
+#include "ash/webui/common/backend/plural_string_handler.h"
 #include "ash/webui/diagnostics_ui/backend/diagnostics_manager.h"
 #include "ash/webui/diagnostics_ui/backend/histogram_util.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_provider.h"
@@ -170,6 +171,16 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(*GetDataSourceUpdate());
   html_source->UseStringsJs();
 }
+
+void AddDiagnosticsAppPluralStrings(ash::PluralStringHandler* handler) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"nameServersText", IDS_DIAGNOSTICS_NAME_SERVERS}};
+
+  for (const auto& str : kLocalizedStrings) {
+    handler->AddStringToPluralMap(str.name, str.id);
+  }
+}
+
 // TODO(jimmyxgong): Replace with webui::SetUpWebUIDataSource() once it no
 // longer requires a dependency on //chrome/browser.
 void SetUpWebUIDataSource(content::WebUIDataSource* source,
@@ -186,6 +197,12 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
                      features::IsInputInDiagnosticsAppEnabled());
   source->AddBoolean("isNetworkingEnabled",
                      features::IsNetworkingInDiagnosticsAppEnabled());
+}
+
+void SetUpPluralStringHandler(content::WebUI* web_ui) {
+  auto plural_string_handler = std::make_unique<ash::PluralStringHandler>();
+  AddDiagnosticsAppPluralStrings(plural_string_handler.get());
+  web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 
 }  // namespace
@@ -214,11 +231,13 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
   SetUpWebUIDataSource(html_source.get(), resources,
                        IDR_DIAGNOSTICS_APP_INDEX_HTML);
 
-  auto handler = std::make_unique<diagnostics::SessionLogHandler>(
+  SetUpPluralStringHandler(web_ui);
+
+  auto session_log_handler = std::make_unique<diagnostics::SessionLogHandler>(
       select_file_policy_creator, holding_space_client);
-  diagnostics_manager_ =
-      std::make_unique<diagnostics::DiagnosticsManager>(handler.get());
-  web_ui->AddMessageHandler(std::move(handler));
+  diagnostics_manager_ = std::make_unique<diagnostics::DiagnosticsManager>(
+      session_log_handler.get());
+  web_ui->AddMessageHandler(std::move(session_log_handler));
 
   AddDiagnosticsStrings(html_source.get());
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),

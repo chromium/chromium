@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
 import {Network} from './diagnostics_types.js';
 import {getSubnetMaskFromRoutingPrefix} from './diagnostics_utils.js';
 
@@ -22,6 +23,9 @@ Polymer({
   is: 'ip-config-info-drawer',
 
   _template: html`{__html_template__}`,
+
+  /**  @private {?DiagnosticsBrowserProxy} */
+  browserProxy_: null,
 
   behaviors: [I18nBehavior],
 
@@ -75,6 +79,19 @@ Polymer({
       type: String,
       computed: 'computeSubnetMask_(network.ipConfig.routingPrefix)',
     },
+
+    /** @protected {string} */
+    nameServersHeader_: {
+      type: String,
+      value: '',
+    },
+  },
+
+  observers: ['getNameServersHeader_(network.ipConfig.nameServers)'],
+
+  /** @override */
+  created() {
+    this.browserProxy_ = DiagnosticsBrowserProxyImpl.getInstance();
   },
 
   /**
@@ -118,5 +135,17 @@ Polymer({
           this.network.ipConfig.routingPrefix);
     }
     return '';
+  },
+
+  /**
+   * @protected
+   * @param {?Array<string>} nameServers
+   */
+  getNameServersHeader_(nameServers) {
+    const count = nameServers ? nameServers.length : 0;
+    this.browserProxy_.getPluralString('nameServersText', count)
+        .then(localizedString => {
+          this.nameServersHeader_ = localizedString;
+        });
   },
 });

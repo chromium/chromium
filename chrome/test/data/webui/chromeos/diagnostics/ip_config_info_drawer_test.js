@@ -4,16 +4,26 @@
 
 import 'chrome://diagnostics/ip_config_info_drawer.js';
 
+import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
 import {Network} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeEthernetNetwork, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {fakeEthernetNetwork, fakeWifiNetwork, fakeWifiNetworkMultipleNameServers, fakeWifiNetworkNoNameServers} from 'chrome://diagnostics/fake_data.js';
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
+import {TestDiagnosticsBrowserProxy} from './test_diagnostics_browser_proxy.js';
 
 export function ipConfigInfoDrawerTestSuite() {
   /** @type {?IpConfigInfoDrawerElement} */
   let ipConfigInfoDrawerElement = null;
+
+  /** @type {?TestDiagnosticsBrowserProxy} */
+  let DiagnosticsBrowserProxy = null;
+
+  suiteSetup(() => {
+    DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
+    DiagnosticsBrowserProxyImpl.instance_ = DiagnosticsBrowserProxy;
+  });
 
   setup(() => {
     document.body.innerHTML = '';
@@ -53,6 +63,12 @@ export function ipConfigInfoDrawerTestSuite() {
     const toggleButton = ipConfigInfoDrawerElement.$$('#drawerToggle');
     assertTrue(!!toggleButton);
     return /** @type {!HTMLElement} */ (toggleButton);
+  }
+
+  /** @return {string} */
+  function getNameServersHeaderText() {
+    return dx_utils.getDataPoint(ipConfigInfoDrawerElement, '#nameServers')
+        .header;
   }
 
   test('IpConfigInfoDrawerInitialized', () => {
@@ -122,8 +138,36 @@ export function ipConfigInfoDrawerTestSuite() {
         .then(() => getDrawerToggle().click())
         .then(() => {
           dx_utils.assertDataPointHasExpectedHeaderAndValue(
-              ipConfigInfoDrawerElement, '#nameServers', 'Name servers',
+              ipConfigInfoDrawerElement, '#nameServers', 'Name Server',
               `${fakeEthernetNetwork.ipConfig.nameServers.join(', ')}`);
+        });
+  });
+
+  test('CorrectHeaderShownWithNoNameServers', () => {
+    return initializeIpConfigInfoDrawerElement(fakeWifiNetworkNoNameServers)
+        .then(() => getDrawerToggle().click())
+        .then(() => {
+          dx_utils.assertTextContains(
+              getNameServersHeaderText(), 'Name Servers');
+        });
+  });
+
+  test('CorrectHeaderShownWithOneNameServer', () => {
+    return initializeIpConfigInfoDrawerElement(fakeWifiNetwork)
+        .then(() => getDrawerToggle().click())
+        .then(() => {
+          dx_utils.assertTextContains(
+              getNameServersHeaderText(), 'Name Server');
+        });
+  });
+
+  test('CorrectHeaderShownWithMultipleNameServers', () => {
+    return initializeIpConfigInfoDrawerElement(
+               fakeWifiNetworkMultipleNameServers)
+        .then(() => getDrawerToggle().click())
+        .then(() => {
+          dx_utils.assertTextContains(
+              getNameServersHeaderText(), 'Name Servers');
         });
   });
 }

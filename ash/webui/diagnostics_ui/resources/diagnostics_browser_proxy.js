@@ -20,6 +20,14 @@ export class DiagnosticsBrowserProxy {
    * @return {!Promise<boolean>}
    */
   saveSessionLog() {}
+
+  /**
+   * Returns a localized, pluralized string for |name| based on |count|.
+   * @param {string} name
+   * @param {number} count
+   * @return {!Promise<string>}
+   */
+  getPluralString(name, count) {}
 }
 
 /** @implements {DiagnosticsBrowserProxy} */
@@ -32,6 +40,11 @@ export class DiagnosticsBrowserProxyImpl {
   /** @override */
   saveSessionLog() {
     return sendWithPromise('saveSessionLog');
+  }
+
+  /** @override */
+  getPluralString(name, count) {
+    return sendWithPromise('getPluralString', name, count);
   }
 }
 
