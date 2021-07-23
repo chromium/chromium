@@ -178,7 +178,11 @@ const CGFloat kJavaScriptTimeout = 1;
                           (UIContextMenuInteraction*)interaction
     previewForDismissingMenuWithConfiguration:
         (UIContextMenuConfiguration*)configuration {
-  return [[UITargetedPreview alloc] initWithView:self.dismissView];
+  // If the dismiss view is not attached to the view hierarchy, fallback to nil
+  // to prevent app crashing. See crbug.com/1231888.
+  return self.dismissView.window
+             ? [[UITargetedPreview alloc] initWithView:self.dismissView]
+             : nil;
 }
 
 @end
