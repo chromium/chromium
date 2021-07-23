@@ -624,9 +624,12 @@ public class VoiceRecognitionHandlerTest {
         });
 
         mDataProvider = new TestDataProvider();
-        mDelegate = TestThreadUtils.runOnUiThreadBlocking(() -> new TestDelegate());
-        mHandler = new TestVoiceRecognitionHandler(mDelegate, mProfileSupplier);
-        mHandler.addObserver(mObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDelegate = new TestDelegate();
+            mHandler = new TestVoiceRecognitionHandler(mDelegate, mProfileSupplier);
+            mHandler.addObserver(mObserver);
+        });
+
         mPermissionDelegate = new TestAndroidPermissionDelegate();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -649,9 +652,11 @@ public class VoiceRecognitionHandlerTest {
 
     @After
     public void tearDown() {
-        mHandler.removeObserver(mObserver);
         SysUtils.resetForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mWindowAndroid.destroy(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mHandler.removeObserver(mObserver);
+            mWindowAndroid.destroy();
+        });
     }
 
     /**

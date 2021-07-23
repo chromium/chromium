@@ -11,6 +11,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Checks and waits for certain overview mode events to happen.  Can be used to block test threads
@@ -45,7 +46,8 @@ public class OverviewModeBehaviorWatcher {
             }
         };
 
-        mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver));
 
         mWaitingForShow = waitForShow;
         mWaitingForHide = waitForHide;
@@ -66,7 +68,8 @@ public class OverviewModeBehaviorWatcher {
                         mWaitingForHide, Matchers.is(false));
             });
         } finally {
-            mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver));
         }
     }
 }

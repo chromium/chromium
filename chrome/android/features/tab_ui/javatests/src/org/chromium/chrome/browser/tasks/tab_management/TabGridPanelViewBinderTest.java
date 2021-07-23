@@ -461,7 +461,7 @@ public class TabGridPanelViewBinderTest extends DummyUiChromeActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        mMCP.destroy();
+        TestThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
         super.tearDownTest();
     }
 }

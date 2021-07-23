@@ -133,7 +133,7 @@ public class PasswordCheckViewTest {
     private static final long H_TO_MS = 60 * MIN_TO_MS;
     private static final long DAY_TO_MS = 24 * H_TO_MS;
 
-    private PropertyModel mModel = PasswordCheckProperties.createDefaultModel();
+    private PropertyModel mModel;
     private PasswordCheckFragmentView mPasswordCheckView;
 
     @Mock
@@ -161,6 +161,7 @@ public class PasswordCheckViewTest {
                 });
         setUpUiLaunchedFromSettings();
         runOnUiThreadBlocking(() -> {
+            mModel = PasswordCheckProperties.createDefaultModel();
             PasswordCheckCoordinator.setUpModelChangeProcessors(mModel, mPasswordCheckView);
         });
     }
@@ -636,8 +637,11 @@ public class PasswordCheckViewTest {
                         recordedConfirmation.incrementAndGet();
                     }
                 };
-        mModel.set(DELETION_ORIGIN, ANA.getDisplayOrigin());
-        runOnUiThreadBlocking(() -> mModel.set(DELETION_CONFIRMATION_HANDLER, fakeHandler));
+
+        runOnUiThreadBlocking(() -> {
+            mModel.set(DELETION_ORIGIN, ANA.getDisplayOrigin());
+            mModel.set(DELETION_CONFIRMATION_HANDLER, fakeHandler);
+        });
 
         onView(withText(R.string.password_entry_edit_delete_credential_dialog_confirm))
                 .inRoot(withDecorView(
@@ -660,8 +664,10 @@ public class PasswordCheckViewTest {
         ReauthenticationManager.recordLastReauth(
                 System.currentTimeMillis(), ReauthScope.ONE_AT_A_TIME);
 
-        mModel.set(VIEW_CREDENTIAL, ANA);
-        runOnUiThreadBlocking(() -> mModel.set(VIEW_DIALOG_HANDLER, fakeHandler));
+        runOnUiThreadBlocking(() -> {
+            mModel.set(VIEW_CREDENTIAL, ANA);
+            mModel.set(VIEW_DIALOG_HANDLER, fakeHandler);
+        });
         onView(withId(R.id.view_dialog_copy_button)).perform(click());
 
         ClipboardManager clipboard = (ClipboardManager) mPasswordCheckView.getActivity()
@@ -687,8 +693,10 @@ public class PasswordCheckViewTest {
         ReauthenticationManager.recordLastReauth(
                 System.currentTimeMillis(), ReauthScope.ONE_AT_A_TIME);
 
-        mModel.set(VIEW_CREDENTIAL, ANA);
-        runOnUiThreadBlocking(() -> mModel.set(VIEW_DIALOG_HANDLER, fakeHandler));
+        runOnUiThreadBlocking(() -> {
+            mModel.set(VIEW_CREDENTIAL, ANA);
+            mModel.set(VIEW_DIALOG_HANDLER, fakeHandler);
+        });
 
         onView(withText(R.string.close))
                 .inRoot(withDecorView(
@@ -714,8 +722,10 @@ public class PasswordCheckViewTest {
         ReauthenticationManager.recordLastReauth(
                 System.currentTimeMillis(), ReauthScope.ONE_AT_A_TIME);
 
-        mModel.set(VIEW_CREDENTIAL, ANA);
-        runOnUiThreadBlocking(() -> mModel.set(VIEW_DIALOG_HANDLER, fakeHandler));
+        runOnUiThreadBlocking(() -> {
+            mModel.set(VIEW_CREDENTIAL, ANA);
+            mModel.set(VIEW_DIALOG_HANDLER, fakeHandler);
+        });
 
         ReauthenticationManager.recordLastReauth(
                 System.currentTimeMillis() - VALID_REAUTHENTICATION_TIME_INTERVAL_MILLIS,

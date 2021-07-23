@@ -181,21 +181,23 @@ public class UrlOverridingTest {
                 new InterceptNavigationDelegateImpl[1];
         latestTabHolder[0] = tab;
         latestDelegateHolder[0] = getInterceptNavigationDelegate(tab);
-        tab.addObserver(new TestTabObserver(finishCallback, failCallback, destroyedCallback));
-        if (createsNewTab) {
-            mActivityTestRule.getActivity().getTabModelSelector().addObserver(
-                    new TabModelSelectorObserver() {
-                        @Override
-                        public void onNewTabCreated(
-                                Tab newTab, @TabCreationState int creationState) {
-                            newTabCallback.notifyCalled();
-                            newTab.addObserver(new TestTabObserver(
-                                    finishCallback, failCallback, destroyedCallback));
-                            latestTabHolder[0] = newTab;
-                            latestDelegateHolder[0] = getInterceptNavigationDelegate(newTab);
-                        }
-                    });
-        }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tab.addObserver(new TestTabObserver(finishCallback, failCallback, destroyedCallback));
+
+            if (createsNewTab) {
+                TabModelSelectorObserver selectorObserver = new TabModelSelectorObserver() {
+                    @Override
+                    public void onNewTabCreated(Tab newTab, @TabCreationState int creationState) {
+                        newTabCallback.notifyCalled();
+                        newTab.addObserver(new TestTabObserver(
+                                finishCallback, failCallback, destroyedCallback));
+                        latestTabHolder[0] = newTab;
+                        latestDelegateHolder[0] = getInterceptNavigationDelegate(newTab);
+                    }
+                };
+                mActivityTestRule.getActivity().getTabModelSelector().addObserver(selectorObserver);
+            }
+        });
 
         mActivityTestRule.getActivity().onUserInteraction();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {

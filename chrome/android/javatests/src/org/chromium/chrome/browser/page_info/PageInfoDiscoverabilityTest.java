@@ -193,10 +193,10 @@ public class PageInfoDiscoverabilityTest {
         MockitoAnnotations.initMocks(this);
         mContext = sPermissionTestRule.getActivity();
         mResources = mContext.getResources();
-        mModel = new PropertyModel(StatusProperties.ALL_KEYS);
         mPermissionDialogController = PermissionDialogController.getInstance();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel = new PropertyModel(StatusProperties.ALL_KEYS);
             mTemplateUrlServiceSupplier = new OneshotSupplierImpl<>();
             mMediator = new StatusMediator(mModel, mResources, mContext,
                     mUrlBarEditingTextStateProvider,

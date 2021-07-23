@@ -97,7 +97,8 @@ public final class StatusMediatorUnitTest {
         mContext = ContextUtils.getApplicationContext();
         mResources = mContext.getResources();
 
-        mModel = new PropertyModel(StatusProperties.ALL_KEYS);
+        mModel = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> new PropertyModel(StatusProperties.ALL_KEYS));
 
         doReturn(true).when(mLibraryLoader).isInitialized();
         LibraryLoader.setLibraryLoaderForTesting(mLibraryLoader);

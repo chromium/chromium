@@ -244,29 +244,29 @@ public class TabListViewHolderTest extends DummyUiChromeActivityTestCase {
             view.addView(mTabListView);
         });
 
-        SelectionDelegate<Integer> mSelectionDelegate = new SelectionDelegate<>();
-
         int mSelectedTabBackgroundDrawableId = R.drawable.selected_tab_background;
-        mGridModel = new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                             .with(TabProperties.TAB_ID, TAB1_ID)
-                             .with(TabProperties.TAB_SELECTED_LISTENER, mMockSelectedListener)
-                             .with(TabProperties.TAB_CLOSED_LISTENER, mMockCloseListener)
-                             .with(TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID,
-                                     mSelectedTabBackgroundDrawableId)
-                             .build();
-        mStripModel = new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_STRIP)
-                              .with(TabProperties.TAB_SELECTED_LISTENER, mMockSelectedListener)
-                              .with(TabProperties.TAB_CLOSED_LISTENER, mMockCloseListener)
-                              .build();
-        mSelectableModel =
-                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER, mMockSelectedListener)
-                        .with(TabProperties.TAB_SELECTION_DELEGATE, mSelectionDelegate)
-                        .with(TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID,
-                                mSelectedTabBackgroundDrawableId)
-                        .build();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mGridModel = new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                                 .with(TabProperties.TAB_ID, TAB1_ID)
+                                 .with(TabProperties.TAB_SELECTED_LISTENER, mMockSelectedListener)
+                                 .with(TabProperties.TAB_CLOSED_LISTENER, mMockCloseListener)
+                                 .with(TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID,
+                                         mSelectedTabBackgroundDrawableId)
+                                 .build();
+            mStripModel = new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_STRIP)
+                                  .with(TabProperties.TAB_SELECTED_LISTENER, mMockSelectedListener)
+                                  .with(TabProperties.TAB_CLOSED_LISTENER, mMockCloseListener)
+                                  .build();
+            mSelectableModel =
+                    new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                            .with(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER,
+                                    mMockSelectedListener)
+                            .with(TabProperties.TAB_SELECTION_DELEGATE, new SelectionDelegate<>())
+                            .with(TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID,
+                                    mSelectedTabBackgroundDrawableId)
+                            .build();
+
             mGridMCP = PropertyModelChangeProcessor.create(
                     mGridModel, mTabGridView, TabGridViewBinder::bindClosableTab);
             mStripMCP = PropertyModelChangeProcessor.create(
@@ -934,9 +934,11 @@ public class TabListViewHolderTest extends DummyUiChromeActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        mStripMCP.destroy();
-        mGridMCP.destroy();
-        mSelectableMCP.destroy();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mStripMCP.destroy();
+            mGridMCP.destroy();
+            mSelectableMCP.destroy();
+        });
         super.tearDownTest();
     }
 }

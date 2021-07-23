@@ -96,15 +96,16 @@ class PasswordSettingsTestHelper {
      * @param initialEntries All entries to be added to saved passwords. Can not be null.
      */
     void setPasswordSourceWithMultipleEntries(SavedPasswordEntry[] initialEntries) {
+        PasswordManagerHandlerProvider handlerProvider =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        PasswordManagerHandlerProvider::getInstance);
         if (mHandler == null) {
-            mHandler = new FakePasswordManagerHandler(PasswordManagerHandlerProvider.getInstance());
+            mHandler = new FakePasswordManagerHandler(handlerProvider);
         }
         ArrayList<SavedPasswordEntry> entries = new ArrayList<>(Arrays.asList(initialEntries));
         mHandler.setSavedPasswords(entries);
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> PasswordManagerHandlerProvider.getInstance()
-                                   .setPasswordManagerHandlerForTest(mHandler));
+                () -> handlerProvider.setPasswordManagerHandlerForTest(mHandler));
     }
 
     /**
@@ -112,14 +113,15 @@ class PasswordSettingsTestHelper {
      * @param exceptions All exceptions to be added to saved exceptions. Can not be null.
      */
     void setPasswordExceptions(String[] exceptions) {
+        PasswordManagerHandlerProvider handlerProvider =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        PasswordManagerHandlerProvider::getInstance);
         if (mHandler == null) {
-            mHandler = new FakePasswordManagerHandler(PasswordManagerHandlerProvider.getInstance());
+            mHandler = new FakePasswordManagerHandler(handlerProvider);
         }
         mHandler.setSavedPasswordExceptions(new ArrayList<>(Arrays.asList(exceptions)));
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> PasswordManagerHandlerProvider.getInstance()
-                                   .setPasswordManagerHandlerForTest(mHandler));
+                () -> handlerProvider.setPasswordManagerHandlerForTest(mHandler));
     }
 
     SettingsActivity startPasswordSettingsFromMainSettings(
