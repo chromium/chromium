@@ -9,14 +9,14 @@
 #include "net/base/net_export.h"
 
 #if defined(OS_WIN)
-#include <winsock2.h>
+#include "base/win/windows_types.h"
 #endif  // OS_WIN
 
 namespace net {
 
 #if defined(OS_WIN)
-typedef SOCKET SocketDescriptor;
-const SocketDescriptor kInvalidSocket = INVALID_SOCKET;
+typedef UINT_PTR SocketDescriptor;
+const SocketDescriptor kInvalidSocket = (SocketDescriptor)(~0);
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 typedef int SocketDescriptor;
 const SocketDescriptor kInvalidSocket = -1;
