@@ -177,12 +177,14 @@ void SandboxedUnpackerClient::GetContentVerifierKey(
 
 SandboxedUnpacker::ScopedVerifierFormatOverrideForTest::
     ScopedVerifierFormatOverrideForTest(crx_file::VerifierFormat format) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!g_verifier_format_override_for_test.has_value());
   g_verifier_format_override_for_test = format;
 }
 
 SandboxedUnpacker::ScopedVerifierFormatOverrideForTest::
     ~ScopedVerifierFormatOverrideForTest() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   g_verifier_format_override_for_test.reset();
 }
 
@@ -196,6 +198,7 @@ SandboxedUnpacker::SandboxedUnpacker(
       extensions_dir_(extensions_dir),
       location_(location),
       creation_flags_(creation_flags),
+      format_verifier_override_(g_verifier_format_override_for_test),
       unpacker_io_task_runner_(unpacker_io_task_runner) {
   // Tracking for crbug.com/692069. The location must be valid. If it's invalid,
   // the utility process kills itself for a bad IPC.
@@ -245,10 +248,11 @@ void SandboxedUnpacker::StartWithCrx(const CRXFileInfo& crx_info) {
   extension_root_ = temp_dir_.GetPath().AppendASCII(kTempExtensionName);
 
   // Extract the public key and validate the package.
-  if (!ValidateSignature(crx_info.path, expected_hash,
-                         g_verifier_format_override_for_test.value_or(
-                             crx_info.required_format)))
+  if (!ValidateSignature(
+          crx_info.path, expected_hash,
+          format_verifier_override_.value_or(crx_info.required_format))) {
     return;  // ValidateSignature() already reported the error.
+  }
 
   client_->OnStageChanged(InstallationStage::kCopying);
   // Copy the crx file into our working directory.
