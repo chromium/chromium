@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Verify write and read clipboard given 2 platform-neutral raw inputs
-Harness: the test ran to completion.
-

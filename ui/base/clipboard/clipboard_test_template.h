@@ -856,9 +856,6 @@ TYPED_TEST(ClipboardTest, CustomFormatTypeAndNameTest) {
 }
 #endif
 
-// TODO(https://crbug.com/1032161): Implement multiple raw types for
-// ClipboardInternal. This test currently doesn't run on ClipboardInternal
-// because ClipboardInternal only supports one raw type.
 // crbug.com/1224904: Flaky on Mac.
 #if (!defined(USE_AURA) || defined(OS_WIN) || defined(USE_OZONE) || \
      defined(USE_X11)) &&                                           \

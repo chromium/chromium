@@ -409,7 +409,6 @@ void ClipboardMap::CommitToAndroidClipboard() {
                               jimageuri);
   } else {
     Java_Clipboard_clear(env, clipboard_manager_);
-    // TODO(huangdarwin): Implement raw clipboard support for arbitrary formats.
     NOTIMPLEMENTED();
   }
   map_state_ = MapState::kUpToDate;

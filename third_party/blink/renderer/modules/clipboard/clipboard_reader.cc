@@ -337,7 +337,8 @@ class ClipboardSvgReader final : public ClipboardReader {
 ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
                                          const String& mime_type,
                                          ClipboardPromise* promise) {
-  DCHECK(ClipboardWriter::IsValidType(mime_type, /*is_raw=*/false));
+  DCHECK(
+      ClipboardWriter::IsValidType(mime_type, /*is_custom_format_type=*/false));
   if (mime_type == kMimeTypeImagePng) {
     // TODO(crbug.com/1223849): Use `ClipboardPngReader` once `ReadImage()` path
     // is removed.

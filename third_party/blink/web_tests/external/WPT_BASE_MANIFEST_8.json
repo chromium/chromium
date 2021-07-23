@@ -319949,16 +319949,7 @@
       {}
      ]
     ],
-    "async-platform-specific-write-read.tentative.https.html": [
-     "f8af468bff7885eeb6fca5493e85bc68b42bf615",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "async-raw-write-read.tentative.https.html": [
+    "async-custom-formats-write-read.tentative.https.html": [
      "480593dcd715eacefbdaa8f7f4da305992a80c65",
      [
       null,

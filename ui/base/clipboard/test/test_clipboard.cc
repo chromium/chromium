@@ -149,28 +149,6 @@ TestClipboard::ReadAvailablePlatformSpecificFormatNames(
     types.push_back(base::UTF8ToUTF16(format_type));
   }
 
-  // Some platforms add additional raw types to represent text, or offer them
-  // as available formats by automatically converting between them.
-  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
-                        data_dst)) {
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-    !BUILDFLAG(IS_CHROMECAST) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-    // See comment in ReadAvailableTypes() that also includes this mime type.
-    // TODO(https://crbug.com/1096425): remove this if condition once Ozone is
-    // the only path in Linux builds.
-    if (features::IsUsingOzonePlatform())
-      types.push_back(base::UTF8ToUTF16(kMimeTypeTextUtf8));
-
-    types.push_back(u"TEXT");
-    types.push_back(u"STRING");
-    types.push_back(u"UTF8_STRING");
-#elif defined(OS_WIN)
-    types.push_back(u"CF_OEMTEXT");
-#elif defined(OS_APPLE)
-    types.push_back(u"NSStringPboardType");
-#endif
-  }
-
   return types;
 }
 

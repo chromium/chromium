@@ -12,8 +12,6 @@
 <script>
 'use strict';
 
-// TODO(huangdarwin): Move custom format clipboard tests/expectations into a
-// separate folder (in a follow-up CL, to aid in easier reviewing of diffs).
 promise_test(async t => {
   // TODO(crbug.com/106449): Enable after implementing custom formats read/write.
   await PermissionsHelper.setPermission('clipboard-read-write', 'granted');

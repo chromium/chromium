@@ -223,7 +223,8 @@ class ClipboardSvgWriter final : public ClipboardWriter {
 ClipboardWriter* ClipboardWriter::Create(SystemClipboard* system_clipboard,
                                          const String& mime_type,
                                          ClipboardPromise* promise) {
-  DCHECK(ClipboardWriter::IsValidType(mime_type, /*is_raw=*/false));
+  DCHECK(
+      ClipboardWriter::IsValidType(mime_type, /*is_custom_format_type=*/false));
   if (mime_type == kMimeTypeImagePng) {
     return MakeGarbageCollected<ClipboardImageWriter>(system_clipboard,
                                                       promise);

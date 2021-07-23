@@ -212,7 +212,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void ReadBookmark(const DataTransferEndpoint* data_dst,
                             ReadBookmarkCallback callback) const;
 
-  // Reads raw data from the clipboard with the given format type. Stores result
+  // Reads data from the clipboard with the given format type. Stores result
   // as a byte vector.
   virtual void ReadData(const ClipboardFormatType& format,
                         const DataTransferEndpoint* data_dst,
