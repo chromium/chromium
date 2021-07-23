@@ -36,12 +36,12 @@ promise_test(async t => {
 
   assert_equals(anim.effect.getTiming().delay, 200, 'initial delay 200');
   assert_equals(anim.effect.getComputedTiming().delay, 200,
-                  'getComputedTiming() initially delay 200');
+                'getComputedTiming() initially delay 200');
 
   anim.effect.updateTiming({ delay: 100 });
   assert_equals(anim.effect.getTiming().delay, 100, 'set delay 100');
   assert_equals(anim.effect.getComputedTiming().delay, 100,
-                  'getComputedTiming() after set delay 100');
+                'getComputedTiming() after set delay 100');
 }, 'Allows setting the delay to a positive number');
 
 test(t => {
@@ -51,7 +51,8 @@ test(t => {
   assert_equals(anim.effect.getTiming().delay, -100, 'set delay -100');
   assert_equals(anim.effect.getComputedTiming().delay, -100,
                 'getComputedTiming() after set delay -100');
-  assert_percent_css_unit_value_approx_equals(anim.effect.getComputedTiming().endTime, 0, 0.01, 'getComputedTiming().endTime after set delay -100');
+  assert_percents_equal(anim.effect.getComputedTiming().endTime, 0,
+                        'getComputedTiming().endTime after set delay -100');
 }, 'Allows setting the delay to a negative number');
 
 test(t => {
@@ -184,20 +185,20 @@ test(t => {
                                       duration: 200,
                                       delay: 0 })
   anim.play();
-  assert_percent_css_unit_value_approx_equals(anim.currentTime, 0, 0.01);
-  assert_percent_css_unit_value_approx_equals(anim.effect.getComputedTiming().localTime, 0, 0.01, "localTime");
+  assert_percents_equal(anim.currentTime, 0);
+  assert_percents_equal(anim.effect.getComputedTiming().localTime, 0, "localTime");
   assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.3);
   assert_equals(anim.effect.getComputedTiming().currentIteration, 0);
 
   anim.finish();
-  assert_percent_css_unit_value_approx_equals(anim.currentTime, 100, 0.01);
-  assert_percent_css_unit_value_approx_equals(anim.effect.getComputedTiming().localTime, 100, 0.01, "localTime");
+  assert_percents_equal(anim.currentTime, 100);
+  assert_percents_equal(anim.effect.getComputedTiming().localTime, 100, "localTime");
   assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.3);
   assert_equals(anim.effect.getComputedTiming().currentIteration, 1);
 
   anim.effect.updateTiming({ iterationStart: 2.5 });
-  assert_percent_css_unit_value_approx_equals(anim.currentTime, 100, 0.01);
-  assert_percent_css_unit_value_approx_equals(anim.effect.getComputedTiming().localTime, 100, 0.01, "localTime");
+  assert_percents_equal(anim.currentTime, 100);
+  assert_percents_equal(anim.effect.getComputedTiming().localTime, 100, "localTime");
   assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.5);
   assert_equals(anim.effect.getComputedTiming().currentIteration, 3);
 }, 'Allows setting the iterationStart of an animation in progress:'
@@ -223,7 +224,7 @@ test(t => {
   anim.effect.updateTiming({ iterations: 2 });
   assert_equals(anim.effect.getTiming().iterations, 2, 'set duration 2');
   assert_equals(anim.effect.getComputedTiming().iterations, 2,
-                       'getComputedTiming() after set iterations 2');
+                'getComputedTiming() after set iterations 2');
 }, 'Allows setting iterations to a double value');
 
 test(t => {
@@ -399,13 +400,13 @@ promise_test(t => {
       100,
       'Effect duration should remain at 100% for progress based animations'
     );
-    assert_times_equal(anim.startTime, originalStartTime,
-                       'startTime should be unaffected by changing effect ' +
-                       'duration');
+    assert_percents_equal(anim.startTime, originalStartTime,
+                          'startTime should be unaffected by changing effect ' +
+                          'duration');
 
-    assert_css_numberish_equals(anim.currentTime, originalCurrentTime,
-                       'currentTime should be unaffected by changing effect ' +
-                       'duration');
+    assert_percents_equal(anim.currentTime, originalCurrentTime,
+                          'currentTime should be unaffected by changing ' +
+                          'effect duration');
   });
 }, 'Allows setting the duration of an animation in progress such that the' +
    ' the start and current time do not change');

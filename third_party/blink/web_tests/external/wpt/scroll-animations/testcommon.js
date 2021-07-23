@@ -73,6 +73,24 @@ function assert_css_numberish_equals(actual, expected, name){
   assert_equals(actual.value, expected.value, "values do not match for  \"" + name + "\"");
 }
 
+function assert_percents_equal(actual, expected, description){
+  assert_equals(actual.unit, "percent", `'actual' unit type must be ` +
+      `'percent' for "${description}"`);
+  assert_true(actual instanceof CSSUnitValue, `'actual' must be of type ` +
+      `CSSNumberish for "${description}"`);
+  if (expected instanceof CSSUnitValue){
+    // Verify that when the expected in a CSSUnitValue, it is the correct unit
+    // type
+    assert_equals(expected.unit, "percent", `'expected' unit type must be ` +
+        `'percent' for "${description}"`);
+    assert_approx_equals(actual.value, expected.value, 0.01, `values do not ` +
+        `match for "${description}"`);
+  } else if (typeof expected, "number"){
+    assert_approx_equals(actual.value, expected, 0.01, `values do not match ` +
+        `for "${description}"`);
+  }
+}
+
 // These functions are used for the tests that have not yet been updated to be
 // compatible with progress based scroll animations. Once scroll timeline
 // "timeRange" is removed, these functions should also be removed.

@@ -23,12 +23,6 @@
 <script>
 'use strict';
 
-// TODO(crbug.com/1216655): Remove time range. Once time range is removed, all
-// functions that include ...WithTimeRange() should be replaced with the same
-// function but without that ending. For example:
-//
-// createScrollLinkedAnimationWithTimeRange() => createScrollLinkedAnimation()
-
 promise_test(async t => {
   const animation = createScrollLinkedAnimation(t);
   const scroller = animation.timeline.scrollSource;
@@ -47,7 +41,20 @@ promise_test(async t => {
 }, 'Setting animation current time to null throws TypeError.');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimationWithTimeRange(t);
+  const animation = createScrollLinkedAnimation(t);
+  assert_throws_dom('NotSupportedError', () => {
+    animation.currentTime = CSSNumericValue.parse("300");
+  });
+  assert_throws_dom('NotSupportedError', () => {
+    animation.currentTime = CSSNumericValue.parse("300ms");
+  });
+  assert_throws_dom('NotSupportedError', () => {
+    animation.currentTime = CSSNumericValue.parse("0.3s");
+  });
+}, 'Setting the current time to an absolute time value throws exception');
+
+promise_test(async t => {
+  const animation = createScrollLinkedAnimation(t);
   const scroller = animation.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   scroller.scrollTop = 0.25 * maxScroll;
@@ -55,17 +62,15 @@ promise_test(async t => {
   // current time.
   await waitForNextFrame();
 
-  animation.currentTime = 333;
+  animation.currentTime = CSSNumericValue.parse("33.3%");
 
-  assert_times_equal(
-    animation.currentTime,
-    333,
+  assert_percents_equal(animation.currentTime, 33.3,
     "Animation current time should be equal to the set value."
   );
 }, 'Set animation current time to a valid value without playing.');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimationWithTimeRange(t);
+  const animation = createScrollLinkedAnimation(t);
   const scroller = animation.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   scroller.scrollTop = 0.25 * maxScroll;
@@ -75,20 +80,17 @@ promise_test(async t => {
   animation.play();
 
   await animation.ready;
-  animation.currentTime = 333;
+  animation.currentTime = CSSNumericValue.parse("33.3%");
 
-  assert_times_equal(
-    animation.currentTime,
-    333,
+  assert_percents_equal(animation.currentTime, 33.3,
     "Animation current time should be equal to the set value."
   );
 }, 'Set animation current time to a valid value while playing.');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimationWithTimeRange(t);
+  const animation = createScrollLinkedAnimation(t);
   const scroller = animation.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
-  const range = animation.timeline.timeRange;
   scroller.scrollTop = 0.25 * maxScroll;
   // Wait for new animation frame  which allows the timeline to compute new
   // current time.
@@ -96,24 +98,18 @@ promise_test(async t => {
   animation.play();
 
   await animation.ready;
-  const largerThanDuration = animation.effect.getTiming().duration * 2;
-  animation.currentTime = largerThanDuration;
+  animation.currentTime = CSSNumericValue.parse("200%");
 
-  assert_greater_than_equal(largerThanDuration, range, "Make sure that the" +
-    " test value is after the end of the effect and the timeline");
   assert_equals(animation.playState, "finished");
-  assert_times_equal(
-    animation.currentTime,
-    largerThanDuration,
+  assert_percents_equal(animation.currentTime, 200,
     "Animation current time should be equal to the set value."
   );
 }, 'Set animation current time to a value beyond effect end.');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimationWithTimeRange(t);
+  const animation = createScrollLinkedAnimation(t);
   const scroller = animation.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
-  const range = animation.timeline.timeRange;
   scroller.scrollTop = 0.25 * maxScroll;
   // Wait for new animation frame  which allows the timeline to compute new
   // current time.
@@ -121,18 +117,16 @@ promise_test(async t => {
   animation.play();
 
   await animation.ready;
-  animation.currentTime = -100;
+  animation.currentTime = CSSNumericValue.parse("-10%");
 
   assert_equals(animation.playState, "running");
-  assert_times_equal(
-    animation.currentTime,
-    -100,
+  assert_percents_equal(animation.currentTime, -10,
     "Animation current time should be equal to the set value."
   );
 }, 'Set animation current time to a negative value.');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimationWithTimeRange(t);
+  const animation = createScrollLinkedAnimation(t);
   const scroller = animation.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   scroller.scrollTop = 0.25 * maxScroll;
@@ -141,15 +135,15 @@ promise_test(async t => {
   await waitForNextFrame();
   animation.play();
 
-  animation.currentTime = 300;
+  animation.currentTime = CSSNumericValue.parse("30%");
 
   assert_equals(animation.playState, "running");
   assert_true(animation.pending);
-  assert_time_equals_literal(animation.currentTime, 300);
+  assert_percents_equal(animation.currentTime, 30);
 }, "Setting current time while play pending overrides the current time");
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimationWithTimeRange(t);
+  const animation = createScrollLinkedAnimation(t);
   const scroller = animation.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   scroller.scrollTop = 0.25 * maxScroll;
@@ -159,11 +153,9 @@ promise_test(async t => {
   animation.play();
 
   await animation.ready;
-  animation.currentTime = 333;
+  animation.currentTime = CSSNumericValue.parse("33.3%");
 
-  assert_times_equal(
-    animation.currentTime,
-    333,
+  assert_percents_equal(animation.currentTime, 33.3,
     "Animation current time should be equal to the set value."
   );
 
@@ -173,9 +165,7 @@ promise_test(async t => {
   animation.play();
   await animation.ready;
 
-  assert_times_equal(
-    animation.currentTime,
-    animation.timeline.currentTime,
+  assert_percents_equal(animation.currentTime, animation.timeline.currentTime,
     "Animation current time should return to a value matching its" +
     " timeline current time after animation is cancelled and played again."
   );
@@ -183,7 +173,7 @@ promise_test(async t => {
   ' reset the current time.');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimationWithTimeRange(t);
+  const animation = createScrollLinkedAnimation(t);
   const scroller = animation.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   scroller.scrollTop = 0.25 * maxScroll;
@@ -193,10 +183,10 @@ promise_test(async t => {
   animation.play();
 
   await animation.ready;
-  const originalCurrentTime = animation.currentTime;
+  const originalCurrentTime = animation.currentTime.value;
 
   // Set the current time to something other than where the scroll offset.
-  animation.currentTime = 500;
+  animation.currentTime = CSSNumericValue.parse("50%");
 
   // Setting current time is internally setting the start time to
   // scrollTimeline.currentTime - newAnimationCurrentTime.
@@ -205,10 +195,8 @@ promise_test(async t => {
   // the scroller and the animation effect, this is currently expected
   // behavior.
 
-  const expectedStartTime = originalCurrentTime - animation.currentTime;
-  assert_times_equal(
-    animation.startTime,
-    expectedStartTime,
+  const expectedStartTime = originalCurrentTime - animation.currentTime.value;
+  assert_percents_equal(animation.startTime, expectedStartTime,
     "Animation current time should be updated when setting the current time" +
     " to a time within the range of the animation.");
 
@@ -217,15 +205,12 @@ promise_test(async t => {
   // current time.
   await waitForNextFrame();
 
-  assert_times_equal(
-    animation.startTime,
-    expectedStartTime,
+  assert_percents_equal(animation.startTime, expectedStartTime,
     "Animation start time should remain unchanged when the scroller changes" +
     " position."
   );
-  assert_times_equal(
-    animation.currentTime,
-    animation.timeline.currentTime - animation.startTime,
+  assert_percents_equal(animation.currentTime,
+    animation.timeline.currentTime.value - animation.startTime.value,
     "Animation current time should return to a value equal to" +
     " (timeline.currentTime - animation.startTime) after timeline scroll" +
     " source has been scrolled."
@@ -233,7 +218,7 @@ promise_test(async t => {
 }, 'Set Animation current time then scroll.');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimationWithTimeRange(t);
+  const animation = createScrollLinkedAnimation(t);
   const scroller = animation.timeline.scrollSource;
 
   // Wait for new animation frame which allows the timeline to compute new
@@ -250,8 +235,8 @@ promise_test(async t => {
   assert_equals(animation.currentTime, null,
     'Current time is unresolved when the timeline is inactive.');
 
-  animation.currentTime = 300;
-  assert_equals(animation.currentTime, 300,
+  animation.currentTime = CSSNumericValue.parse("30%");
+  assert_percents_equal(animation.currentTime, 30,
     'Animation current time should be equal to the set value.');
   assert_equals(animation.playState, 'paused',
     'Animation play state is \'paused\' when current time is set and ' +
@@ -260,7 +245,7 @@ promise_test(async t => {
    'set while the timeline is inactive.');
 
 promise_test(async t => {
-    const animation = createScrollLinkedAnimationWithTimeRange(t);
+    const animation = createScrollLinkedAnimation(t);
     const scroller = animation.timeline.scrollSource;
 
     // Wait for new animation frame which allows the timeline to compute new
@@ -277,8 +262,8 @@ promise_test(async t => {
     assert_equals(animation.timeline.currentTime, null,
       'Current time is unresolved when the timeline is inactive.');
 
-    animation.currentTime = 300;
-    assert_equals(animation.currentTime, 300,
+    animation.currentTime = CSSNumericValue.parse("30%");
+    assert_percents_equal(animation.currentTime, 30,
       'Animation current time should be equal to the set value.');
     assert_equals(animation.playState, 'paused',
       'Animation play state is \'paused\' when current time is set and ' +
@@ -289,9 +274,9 @@ promise_test(async t => {
     scroller.scrollTop;
     await waitForNextFrame();
 
-    assert_equals(animation.timeline.currentTime, 0,
+    assert_percents_equal(animation.timeline.currentTime, 0,
       'Current time is resolved when the timeline is active.');
-    assert_equals(animation.currentTime, 300,
+    assert_percents_equal(animation.currentTime, 30,
       'Animation current time holds the set value.');
     assert_equals(animation.playState, 'paused',
       'Animation holds \'paused\' state.');

@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -348,6 +349,88 @@ absl::optional<double> Animation::TimelineTime() const {
   return timeline_ ? timeline_->CurrentTimeMilliseconds() : absl::nullopt;
 }
 
+bool Animation::ConvertCSSNumberishToTime(
+    const V8CSSNumberish* numberish,
+    absl::optional<AnimationTimeDelta>& time,
+    String variable_name,
+    ExceptionState& exception_state) {
+  // This function is used to handle the CSSNumberish input for setting
+  // currentTime and startTime. Spec issue can be found here for this process:
+  // https://github.com/w3c/csswg-drafts/issues/6458
+
+  // Handle converting null
+  if (!numberish) {
+    time = absl::nullopt;
+    return true;
+  }
+
+  if (timeline_ && timeline_->IsProgressBasedTimeline()) {
+    // Progress based timeline
+    if (numberish->IsCSSNumericValue()) {
+      CSSUnitValue* numberish_as_percentage =
+          numberish->GetAsCSSNumericValue()->to(
+              CSSPrimitiveValue::UnitType::kPercentage);
+      if (!numberish_as_percentage) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kNotSupportedError,
+            "Invalid " + variable_name +
+                ". CSSNumericValue must be a percentage for "
+                "progress based animations.");
+        return false;
+      }
+      time = (numberish_as_percentage->value() / 100) *
+             timeline_->GetDuration().value();
+      return true;
+    } else {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          "Invalid " + variable_name + ". Setting " + variable_name +
+              " using absolute time "
+              "values is not supported for progress based animations.");
+      return false;
+    }
+  }
+
+  // Document timeline
+  if (numberish->IsCSSNumericValue()) {
+    CSSUnitValue* numberish_as_number = numberish->GetAsCSSNumericValue()->to(
+        CSSPrimitiveValue::UnitType::kNumber);
+    if (numberish_as_number) {
+      time =
+          AnimationTimeDelta::FromMillisecondsD(numberish_as_number->value());
+      return true;
+    }
+
+    CSSUnitValue* numberish_as_milliseconds =
+        numberish->GetAsCSSNumericValue()->to(
+            CSSPrimitiveValue::UnitType::kMilliseconds);
+    if (numberish_as_milliseconds) {
+      time = AnimationTimeDelta::FromMillisecondsD(
+          numberish_as_milliseconds->value());
+      return true;
+    }
+
+    CSSUnitValue* numberish_as_seconds = numberish->GetAsCSSNumericValue()->to(
+        CSSPrimitiveValue::UnitType::kSeconds);
+    if (numberish_as_seconds) {
+      time = AnimationTimeDelta::FromSecondsD(numberish_as_seconds->value());
+      return true;
+    }
+
+    // TODO (crbug.com/1232181): Look into allowing document timelines to set
+    // currentTime and startTime using CSSNumericValues that are percentages.
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Invalid " + variable_name +
+            ". CSSNumericValue must be either a number or a time value for "
+            "time based animations.");
+    return false;
+  }
+
+  time = AnimationTimeDelta::FromMillisecondsD(numberish->GetAsDouble());
+  return true;
+}
+
 // https://drafts.csswg.org/web-animations/#setting-the-current-time-of-an-animation.
 void Animation::setCurrentTime(const V8CSSNumberish* current_time,
                                ExceptionState& exception_state) {
@@ -360,33 +443,11 @@ void Animation::setCurrentTime(const V8CSSNumberish* current_time,
     return;
   }
 
-  if (current_time->IsCSSNumericValue()) {
-    // Throw exception for CSSNumberish that is a CSSNumericValue
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "Invalid currentTime. CSSNumericValue not yet supported.");
+  absl::optional<AnimationTimeDelta> new_current_time;
+  // Failure to convert results in a thrown exception and returning false.
+  if (!ConvertCSSNumberishToTime(current_time, new_current_time, "currentTime",
+                                 exception_state))
     return;
-  }
-
-  // TODO (crbug.com/1218963):
-  // Once current_time can be set as a CSSNumberish, we need to support
-  // setting it for progress based timelines. This will involve conversions
-  // between the type of input and the type of timeline being used.
-  // (i.e. input is a time relative to effect, but using progress based timeline
-  // would result in converting the input time to be timeline relative since
-  // that would be the expected type of data being used internally)
-  if (timeline_ && timeline_->IsProgressBasedTimeline()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "Setting currentTime is not yet supported for progress based "
-        "animations");
-    return;
-  }
-
-  DCHECK(current_time->IsDouble());
-  // Convert from double to AnimationTimeDelta for internal use.
-  absl::optional<AnimationTimeDelta> new_current_time =
-      AnimationTimeDelta::FromMillisecondsD(current_time->GetAsDouble());
 
   DCHECK(new_current_time);
   SetCurrentTimeInternal(new_current_time.value());
@@ -454,8 +515,7 @@ void Animation::ResetHoldTimeAndPhase() {
 
 V8CSSNumberish* Animation::startTime() const {
   if (start_time_) {
-    return MakeGarbageCollected<V8CSSNumberish>(
-        start_time_.value().InMillisecondsF());
+    return ConvertTimeToCSSNumberish(start_time_.value());
   }
   return nullptr;
 }
@@ -983,33 +1043,12 @@ TimelinePhase Animation::CalculateCurrentPhase() const {
 // https://drafts.csswg.org/web-animations/#setting-the-start-time-of-an-animation
 void Animation::setStartTime(const V8CSSNumberish* start_time,
                              ExceptionState& exception_state) {
-  if (start_time && start_time->IsCSSNumericValue()) {
-    // Throw exception for CSSNumberish that is a CSSNumericValue
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "Invalid startTime. CSSNumericValue not yet supported.");
-    return;
-  }
-
-  // TODO (crbug.com/1218963):
-  // Once startTime can be set as a CSSNumberish, we need to support
-  // setting it for progress based timelines. This will involve conversions
-  // between the type of input and the type of timeline being used.
-  // (i.e. input is a time relative to effect, but using progress based timeline
-  // would result in converting the input time to be timeline relative since
-  // that would be the expected type of data being used internally)
-  if (timeline_ && timeline_->IsProgressBasedTimeline()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "Setting startTime is not yet supported for progress based animations");
-    return;
-  }
 
   absl::optional<AnimationTimeDelta> new_start_time;
-  if (start_time) {
-    new_start_time =
-        AnimationTimeDelta::FromMillisecondsD(start_time->GetAsDouble());
-  }
+  // Failure to convert results in a thrown exception and returning false.
+  if (!ConvertCSSNumberishToTime(start_time, new_start_time, "startTime",
+                                 exception_state))
+    return;
 
   const bool had_start_time = start_time_.has_value();
 
