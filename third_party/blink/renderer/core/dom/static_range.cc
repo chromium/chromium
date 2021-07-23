@@ -15,11 +15,6 @@
 
 namespace blink {
 
-StaticRange::StaticRange(Document& document)
-    : owner_document_(document),
-      start_container_(document),
-      end_container_(document) {}
-
 StaticRange::StaticRange(Document& document,
                          Node* start_container,
                          unsigned start_offset,
@@ -106,16 +101,6 @@ bool StaticRange::IsValid() const {
                                 end_offset_) <= 0;
 
   return is_valid_;
-}
-
-void StaticRange::setStart(Node* container, unsigned offset) {
-  start_container_ = container;
-  start_offset_ = offset;
-}
-
-void StaticRange::setEnd(Node* container, unsigned offset) {
-  end_container_ = container;
-  end_offset_ = offset;
 }
 
 Range* StaticRange::toRange(ExceptionState& exception_state) const {

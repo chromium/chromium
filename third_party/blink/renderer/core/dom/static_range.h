@@ -32,7 +32,6 @@ class CORE_EXPORT StaticRange final : public AbstractRange {
                              const StaticRangeInit*,
                              ExceptionState&);
 
-  explicit StaticRange(Document&);
   StaticRange(Document&,
               Node* start_container,
               unsigned start_offset,
@@ -40,25 +39,14 @@ class CORE_EXPORT StaticRange final : public AbstractRange {
               unsigned end_offset);
 
   Node* startContainer() const override { return start_container_.Get(); }
-  void setStartContainer(Node* start_container) {
-    start_container_ = start_container;
-  }
-
   unsigned startOffset() const override { return start_offset_; }
-  void setStartOffset(unsigned start_offset) { start_offset_ = start_offset; }
 
   Node* endContainer() const override { return end_container_.Get(); }
-  void setEndContainer(Node* end_container) { end_container_ = end_container; }
-
   unsigned endOffset() const override { return end_offset_; }
-  void setEndOffset(unsigned end_offset) { end_offset_ = end_offset; }
 
   bool collapsed() const override {
     return start_container_ == end_container_ && start_offset_ == end_offset_;
   }
-
-  void setStart(Node* container, unsigned offset);
-  void setEnd(Node* container, unsigned offset);
 
   Range* toRange(ExceptionState& = ASSERT_NO_EXCEPTION) const;
 
