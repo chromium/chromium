@@ -780,6 +780,12 @@ TEST_F(AddressTrackerLinuxTest, TunnelInterfaceName) {
 // Note: consumers generally should not need to create two tracking instances of
 // `AddressTrackerLinux` in the same process.
 TEST(AddressTrackerLinuxNetlinkTest, TestInitializeTwoTrackers) {
+#if defined(OS_ANDROID)
+  // Calling Init() on Android P+ isn't supported.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SDK_VERSION_P)
+    return;
+#endif
   base::test::TaskEnvironment task_env(
       base::test::TaskEnvironment::MainThreadType::IO);
   AddressTrackerLinux tracker1(base::DoNothing(), base::DoNothing(),
