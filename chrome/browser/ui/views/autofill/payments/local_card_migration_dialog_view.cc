@@ -34,6 +34,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -57,55 +58,139 @@ namespace autofill {
 
 namespace {
 
-// The title label container for the migration dialogs. The title text depends
-// on the |view_state| of the dialog.
-class MigrationDialogTitleLabel : public views::Label {
- public:
-  METADATA_HEADER(MigrationDialogTitleLabel);
-  MigrationDialogTitleLabel(LocalCardMigrationDialogState view_state,
-                            int card_list_size) {
-    int message_id;
-    switch (view_state) {
-      case LocalCardMigrationDialogState::kOffered:
-        message_id = IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TITLE_OFFER;
-        break;
-      case LocalCardMigrationDialogState::kFinished:
-        message_id = IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TITLE_DONE;
-        break;
-      case LocalCardMigrationDialogState::kActionRequired:
-        message_id = IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TITLE_FIX;
-        break;
-    }
-    SetText(l10n_util::GetPluralStringFUTF16(message_id, card_list_size));
-
-    constexpr int kMigrationDialogTitleFontSize = 8;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    constexpr int kMigrationDialogTitleMarginTop = 0;
-#else
-    constexpr int kMigrationDialogTitleMarginTop = 12;
-#endif
-    SetBorder(views::CreateEmptyBorder(
-        /*top=*/kMigrationDialogTitleMarginTop,
-        /*left=*/kMigrationDialogInsets.left(), /*bottom=*/0,
-        /*right=*/kMigrationDialogInsets.right()));
-    SetFontList(gfx::FontList().Derive(kMigrationDialogTitleFontSize,
-                                       gfx::Font::NORMAL,
-                                       gfx::Font::Weight::NORMAL));
-    SetMultiLine(true);
-    constexpr int kMigrationDialogTitleLineHeight = 20;
-    SetLineHeight(kMigrationDialogTitleLineHeight);
+class AutofillMigrationHeaderView : public views::ImageView {
+ public:
+  METADATA_HEADER(AutofillMigrationHeaderView);
+  AutofillMigrationHeaderView() {
+    constexpr int kImageBorderBottom = 8;
+    SetBorder(views::CreateEmptyBorder(0, 0, kImageBorderBottom, 0));
+    SetAccessibleName(l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME));
   }
 
   // views::Label:
   void OnThemeChanged() override {
-    Label::OnThemeChanged();
-    SetEnabledColor(GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_LabelEnabledColor));
+    ImageView::OnThemeChanged();
+    SetImage(ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+        GetNativeTheme()->ShouldUseDarkColors()
+            ? IDR_AUTOFILL_MIGRATION_DIALOG_HEADER_DARK
+            : IDR_AUTOFILL_MIGRATION_DIALOG_HEADER));
   }
 };
 
-BEGIN_METADATA(MigrationDialogTitleLabel, views::Label)
+BEGIN_METADATA(AutofillMigrationHeaderView, views::ImageView)
 END_METADATA
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+// Create the view containing the |tip_message| shown to the user.
+class TipTextContainer : public views::View {
+ public:
+  METADATA_HEADER(TipTextContainer);
+  explicit TipTextContainer(const std::u16string& tip_message) {
+    ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+    // Set up the tip text container with inset, background and a solid border.
+    const gfx::Insets container_insets =
+        provider->GetInsetsMetric(views::INSETS_DIALOG_SUBSECTION);
+    const int container_child_space =
+        provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+
+    SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal,
+        gfx::Insets(container_insets), container_child_space));
+
+    constexpr int kTipImageSize = 16;
+    auto* lightbulb_outline_image = AddChildView(
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            vector_icons::kLightbulbOutlineIcon,
+            ui::NativeTheme::kColorId_AlertSeverityMedium, kTipImageSize)));
+    lightbulb_outline_image->SetVerticalAlignment(
+        views::ImageView::Alignment::kLeading);
+
+    tip_ = AddChildView(std::make_unique<views::Label>(
+        tip_message, CONTEXT_DIALOG_BODY_TEXT_SMALL,
+        views::style::STYLE_SECONDARY));
+    tip_->SetMultiLine(true);
+    tip_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    tip_->SizeToFit(provider->GetDistanceMetric(
+                        DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH) -
+                    kMigrationDialogInsets.width() - container_insets.width() -
+                    kTipImageSize - container_child_space);
+  }
+
+  // views::Label:
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    const bool should_use_dark_colors = GetNativeTheme()->ShouldUseDarkColors();
+
+    // TODO(tluk): We should not be using hard coded color constants and
+    // switching colors based on the dark mode flag. We should instead
+    // systematize these into color ids simply call GetSystemColor() for these
+    // ids.
+    SetBackground(views::CreateSolidBackground(
+        should_use_dark_colors ? gfx::kGoogleGrey800 : gfx::kGoogleGrey050));
+
+    // Do not add the border if it is not using dark colors.
+    constexpr int kTipValuePromptBorderThickness = 1;
+    SetBorder(should_use_dark_colors
+                  ? views::NullBorder()
+                  : views::CreateSolidBorder(kTipValuePromptBorderThickness,
+                                             gfx::kGoogleGrey100));
+
+    // If it is in dark mode, set the font color to GG200 since it is on a
+    // lighter shade of grey background.
+    tip_->SetEnabledColor(
+        should_use_dark_colors
+            ? gfx::kGoogleGrey200
+            : GetNativeTheme()->GetSystemColor(
+                  ui::NativeTheme::kColorId_LabelSecondaryColor));
+  }
+
+ private:
+  views::Label* tip_ = nullptr;
+};
+
+BEGIN_METADATA(TipTextContainer, views::View)
+END_METADATA
+
+// Create the title label container for the migration dialogs. The title
+// text depends on the |view_state| of the dialog.
+std::unique_ptr<views::Label> CreateTitle(
+    LocalCardMigrationDialogState view_state,
+    int card_list_size) {
+  int message_id;
+  switch (view_state) {
+    case LocalCardMigrationDialogState::kOffered:
+      message_id = IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TITLE_OFFER;
+      break;
+    case LocalCardMigrationDialogState::kFinished:
+      message_id = IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TITLE_DONE;
+      break;
+    case LocalCardMigrationDialogState::kActionRequired:
+      message_id = IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TITLE_FIX;
+      break;
+  }
+
+  auto title = std::make_unique<views::Label>(
+      l10n_util::GetPluralStringFUTF16(message_id, card_list_size));
+  constexpr int kMigrationDialogTitleFontSize = 8;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  constexpr int kMigrationDialogTitleMarginTop = 0;
+#else
+  constexpr int kMigrationDialogTitleMarginTop = 12;
+#endif
+  title->SetBorder(views::CreateEmptyBorder(
+      /*top=*/kMigrationDialogTitleMarginTop,
+      /*left=*/kMigrationDialogInsets.left(), /*bottom=*/0,
+      /*right=*/kMigrationDialogInsets.right()));
+  title->SetFontList(gfx::FontList().Derive(kMigrationDialogTitleFontSize,
+                                            gfx::Font::NORMAL,
+                                            gfx::Font::Weight::NORMAL));
+  constexpr int kMigrationDialogTitleLineHeight = 20;
+  title->SetMultiLine(true);
+  title->SetLineHeight(kMigrationDialogTitleLineHeight);
+  return title;
+}
 
 // Create the explanation text label with |user_email| for the migration
 // dialogs. The text content depends on the |view_state| of the dialog and the
@@ -165,9 +250,9 @@ std::unique_ptr<views::ScrollView> CreateCardList(
                     views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
   card_list_view_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kStart);
-  for (size_t index = 0; index < migratable_credit_cards.size(); ++index) {
-    card_list_view->AddChildView(new MigratableCardView(
-        migratable_credit_cards[index], dialog_view, should_show_checkbox));
+  for (const auto& migratable_credit_card : migratable_credit_cards) {
+    card_list_view->AddChildView(std::make_unique<MigratableCardView>(
+        migratable_credit_card, dialog_view, should_show_checkbox));
   }
 
   auto card_list_scroll_view = std::make_unique<views::ScrollView>();
@@ -178,60 +263,6 @@ std::unique_ptr<views::ScrollView> CreateCardList(
   constexpr int kCardListScrollViewHeight = 140;
   card_list_scroll_view->ClipHeightTo(0, kCardListScrollViewHeight);
   return card_list_scroll_view;
-}
-
-// Create the view containing the |tip_message| shown to the user.
-std::unique_ptr<views::View> CreateTip(
-    const std::u16string& tip_message,
-    LocalCardMigrationDialogView* dialog_view) {
-  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  // Set up the tip text container with inset, background and a solid border.
-  auto tip_text_container = std::make_unique<views::View>();
-  gfx::Insets container_insets =
-      provider->GetInsetsMetric(views::INSETS_DIALOG_SUBSECTION);
-  int container_child_space =
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-
-  tip_text_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(container_insets),
-      container_child_space));
-  tip_text_container->SetBackground(views::CreateSolidBackground(
-      dialog_view->GetNativeTheme()->ShouldUseDarkColors()
-          ? gfx::kGoogleGrey800
-          : gfx::kGoogleGrey050));
-
-  // Do not add the border if it is not using dark colors.
-  if (!dialog_view->GetNativeTheme()->ShouldUseDarkColors()) {
-    constexpr int kTipValuePromptBorderThickness = 1;
-    tip_text_container->SetBorder(views::CreateSolidBorder(
-        kTipValuePromptBorderThickness, gfx::kGoogleGrey100));
-  }
-
-  auto* lightbulb_outline_image = new views::ImageView();
-  constexpr int kTipImageSize = 16;
-  lightbulb_outline_image->SetImage(gfx::CreateVectorIcon(
-      vector_icons::kLightbulbOutlineIcon, kTipImageSize,
-      dialog_view->GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_AlertSeverityMedium)));
-  lightbulb_outline_image->SetVerticalAlignment(
-      views::ImageView::Alignment::kLeading);
-  tip_text_container->AddChildView(lightbulb_outline_image);
-
-  auto* tip = new views::Label(tip_message, CONTEXT_DIALOG_BODY_TEXT_SMALL,
-                               views::style::STYLE_SECONDARY);
-  tip->SetMultiLine(true);
-  // If it is in dark mode, set the font color to GG200 since it is on a lighter
-  // shade of grey background.
-  if (dialog_view->GetNativeTheme()->ShouldUseDarkColors())
-    tip->SetEnabledColor(gfx::kGoogleGrey200);
-  tip->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  tip->SizeToFit(
-      provider->GetDistanceMetric(DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH) -
-      kMigrationDialogInsets.width() - container_insets.width() -
-      kTipImageSize - container_child_space);
-  tip_text_container->AddChildView(tip);
-
-  return tip_text_container;
 }
 
 // Create the feedback main content view composed of
@@ -254,19 +285,17 @@ std::unique_ptr<views::View> CreateFeedbackContentView(
   const int card_list_size = card_list.size();
 
   feedback_view->AddChildView(
-      CreateExplanationText(view_state, card_list_size, std::u16string())
-          .release());
+      CreateExplanationText(view_state, card_list_size, std::u16string()));
 
   if (card_list_size > 0) {
-    feedback_view->AddChildView(
-        CreateCardList(card_list, dialog_view, false).release());
+    feedback_view->AddChildView(CreateCardList(card_list, dialog_view, false));
 
     // If there are no more than two cards in the finished dialog, show the tip.
     constexpr int kShowTipMessageCardNumberLimit = 2;
     if (view_state == LocalCardMigrationDialogState::kFinished &&
         card_list_size <= kShowTipMessageCardNumberLimit) {
       feedback_view->AddChildView(
-          CreateTip(controller->GetTipMessage(), dialog_view).release());
+          std::make_unique<TipTextContainer>(controller->GetTipMessage()));
     }
   }
 
@@ -291,7 +320,7 @@ class LocalCardMigrationOfferView : public views::View {
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
         kMigrationDialogMainContainerChildSpacing));
 
-    auto* contents_container = new views::View();
+    auto* contents_container = AddChildView(std::make_unique<views::View>());
     contents_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
         provider->GetDistanceMetric(
@@ -306,17 +335,13 @@ class LocalCardMigrationOfferView : public views::View {
 
     contents_container->AddChildView(
         CreateExplanationText(controller_->GetViewState(), card_list_size,
-                              base::UTF8ToUTF16(controller_->GetUserEmail()))
-            .release());
+                              base::UTF8ToUTF16(controller_->GetUserEmail())));
 
-    std::unique_ptr<views::ScrollView> scroll_view =
-        CreateCardList(card_list, dialog_view, card_list_size != 1);
+    auto* scroll_view = contents_container->AddChildView(
+        CreateCardList(card_list, dialog_view, card_list_size != 1));
     card_list_view_ = scroll_view->contents();
-    contents_container->AddChildView(scroll_view.release());
 
-    AddChildView(contents_container);
-
-    AddChildView(new views::Separator());
+    AddChildView(std::make_unique<views::Separator>());
 
     legal_message_container_ = AddChildView(std::make_unique<LegalMessageView>(
         controller->GetLegalMessageLines(),
@@ -471,31 +496,20 @@ void LocalCardMigrationDialogView::ConstructView() {
       kMigrationDialogMainContainerChildSpacing));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  auto* image = new views::ImageView();
-  constexpr int kImageBorderBottom = 8;
-  image->SetBorder(views::CreateEmptyBorder(0, 0, kImageBorderBottom, 0));
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  image->SetImage(
-      rb.GetImageSkiaNamed(GetNativeTheme()->ShouldUseDarkColors()
-                               ? IDR_AUTOFILL_MIGRATION_DIALOG_HEADER_DARK
-                               : IDR_AUTOFILL_MIGRATION_DIALOG_HEADER));
-  image->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME));
-  AddChildView(image);
+  AddChildView(std::make_unique<AutofillMigrationHeaderView>());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   LocalCardMigrationDialogState view_state = controller_->GetViewState();
-  AddChildView(std::make_unique<MigrationDialogTitleLabel>(
-      view_state, controller_->GetCardList().size()));
+  AddChildView(CreateTitle(view_state, controller_->GetCardList().size()));
 
   if (view_state == LocalCardMigrationDialogState::kOffered) {
-    offer_view_ = new LocalCardMigrationOfferView(controller_, this);
+    offer_view_ = AddChildView(
+        std::make_unique<LocalCardMigrationOfferView>(controller_, this));
     offer_view_->SetID(DialogViewId::MAIN_CONTENT_VIEW_MIGRATION_OFFER_DIALOG);
     card_list_view_ = offer_view_->card_list_view_;
-    AddChildView(offer_view_);
     SetButtonEnabled(ui::DIALOG_BUTTON_OK, GetEnableOkButton());
   } else {
-    AddChildView(CreateFeedbackContentView(controller_, this).release());
+    AddChildView(CreateFeedbackContentView(controller_, this));
   }
 }
 
