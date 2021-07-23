@@ -3,11 +3,12 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//third_party/grpc/grpc_library.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos_ash,
        "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
 
-grpc_library("fastpair_proto") {
+proto_library("fastpair_proto") {
   sources = [ "fastpair.proto" ]
+  cc_generator_options = "lite"
 }

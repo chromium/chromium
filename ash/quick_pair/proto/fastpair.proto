@@ -384,10 +384,3 @@ message GetObservedDeviceResponse {
 
   reserved 2;
 }
-
-// Service definition for the Nearby Devices backend.
-service NearbyDevicesService {
-  // Gets a device (without authentication).
-  rpc GetObservedDevice(GetObservedDeviceRequest)
-      returns (GetObservedDeviceResponse);
-}

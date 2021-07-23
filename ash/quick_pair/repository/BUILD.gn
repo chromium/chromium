@@ -18,6 +18,6 @@ source_set("repository") {
     "//ash/quick_pair/proto:fastpair_proto",
     "//base",
     "//device/bluetooth",
-    "//third_party/grpc:grpc++",
+    "//third_party/protobuf:protobuf_lite",
   ]
 }
