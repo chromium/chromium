@@ -189,14 +189,16 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   std::u16string suggestion_nickname =
       GetDisplayNicknameForCreditCard(credit_card);
 
+  // The kAutofillKeyboardAccessory feature is only available on Android. So for
+  // other platforms, we'd always use the obfuscation_length of 4.
+  int obfuscation_length = base::FeatureList::IsEnabled(
+                               autofill::features::kAutofillKeyboardAccessory)
+                               ? 2
+                               : 4;
   // If the value is the card number, the label is the expiration date.
   // Otherwise the label is the card number, or if that is empty the
   // cardholder name. The label should never repeat the value.
   if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
-    int obfuscation_length = base::FeatureList::IsEnabled(
-                                 autofill::features::kAutofillKeyboardAccessory)
-                                 ? 2
-                                 : 4;
     suggestion.value = credit_card.CardIdentifierStringForAutofillDisplay(
         suggestion_nickname, obfuscation_length);
 
@@ -219,10 +221,10 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
 #if defined(OS_ANDROID)
     // On Android devices, the label is formatted as
     // "Nickname/Network  ••••1234" when the keyboard accessory experiment
-    // is disabled and as "••••1234" when it's enabled.
+    // is disabled and as "••1234" when it's enabled.
     suggestion.label =
         base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory)
-            ? credit_card.ObfuscatedLastFourDigits()
+            ? credit_card.ObfuscatedLastFourDigits(obfuscation_length)
             : credit_card.CardIdentifierStringForAutofillDisplay(
                   suggestion_nickname);
 #elif defined(OS_IOS)

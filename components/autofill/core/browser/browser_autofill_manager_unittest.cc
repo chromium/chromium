@@ -868,6 +868,14 @@ class CreditCardSuggestionTest : public BrowserAutofillManagerTest,
                                    is_keyboard_accessory_enabled_);
   }
 
+  int ObfuscationLength() {
+#if defined(OS_ANDROID)
+    return is_keyboard_accessory_enabled_ ? 2 : 4;
+#else
+    return 4;
+#endif
+  }
+
  private:
   base::test::ScopedFeatureList features_;
   const bool is_keyboard_accessory_enabled_;
@@ -1681,9 +1689,9 @@ TEST_P(CreditCardSuggestionTest, GetCreditCardSuggestions_NonCCNumber) {
   GetAutofillSuggestions(form, cardholder_name_field);
 
   const std::string obfuscated_last_four_digits1 =
-      test::ObfuscatedCardDigitsAsUTF8("3456");
+      test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength());
   const std::string obfuscated_last_four_digits2 =
-      test::ObfuscatedCardDigitsAsUTF8("8765");
+      test::ObfuscatedCardDigitsAsUTF8("8765", ObfuscationLength());
 
 #if defined(OS_ANDROID)
   // For Android, when keyboard accessary is enabled, always show obfuscated
@@ -7888,16 +7896,18 @@ TEST_P(CreditCardSuggestionTest,
   // ****7777", otherwise, show "Visa  ****7777".
   const std::string visa_label =
       IsKeyboardAccessoryEnabled()
-          ? test::ObfuscatedCardDigitsAsUTF8("7777")
+          ? test::ObfuscatedCardDigitsAsUTF8("7777", ObfuscationLength())
           : kArbitraryNickname + "  " +
-                test::ObfuscatedCardDigitsAsUTF8("7777");
+                test::ObfuscatedCardDigitsAsUTF8("7777", ObfuscationLength());
 
 #elif defined(OS_IOS)
-  const std::string visa_label = test::ObfuscatedCardDigitsAsUTF8("7777");
+  const std::string visa_label =
+      test::ObfuscatedCardDigitsAsUTF8("7777", ObfuscationLength());
 
 #else
   const std::string visa_label = base::JoinString(
-      {kArbitraryNickname + "  ", test::ObfuscatedCardDigitsAsUTF8("7777"),
+      {kArbitraryNickname + "  ",
+       test::ObfuscatedCardDigitsAsUTF8("7777", ObfuscationLength()),
        ", expires on 01/30"},
       "");
 #endif
