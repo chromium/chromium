@@ -122,7 +122,8 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
         return frame_->widget_delegate()->CanResize();
       case views::CAPTION_BUTTON_ICON_CLOSE:
         return frame_->widget_delegate()->ShouldShowCloseButton();
-
+      case views::CAPTION_BUTTON_ICON_CUSTOM:
+        return true;
       // No back or menu button by default.
       case views::CAPTION_BUTTON_ICON_BACK:
       case views::CAPTION_BUTTON_ICON_MENU:
@@ -148,7 +149,8 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
 }  // namespace
 
 FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
-    views::Widget* frame)
+    views::Widget* frame,
+    std::unique_ptr<views::FrameCaptionButton> custom_button)
     : views::AnimationDelegateViews(frame->GetRootView()),
       frame_(frame),
       model_(std::make_unique<DefaultCaptionButtonModel>(frame)) {
@@ -165,6 +167,9 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
   }
 
   // Insert the buttons left to right.
+  if (custom_button)
+    custom_button_ = AddChildView(std::move(custom_button));
+
   menu_button_ = new views::FrameCaptionButton(
       base::BindRepeating(&FrameCaptionButtonContainerView::MenuButtonPressed,
                           base::Unretained(this)),
@@ -221,6 +226,8 @@ void FrameCaptionButtonContainerView::SetButtonImage(
 }
 
 void FrameCaptionButtonContainerView::SetPaintAsActive(bool paint_as_active) {
+  if (custom_button_)
+    custom_button_->SetPaintAsActive(paint_as_active);
   menu_button_->SetPaintAsActive(paint_as_active);
   minimize_button_->SetPaintAsActive(paint_as_active);
   size_button_->SetPaintAsActive(paint_as_active);
@@ -230,6 +237,8 @@ void FrameCaptionButtonContainerView::SetPaintAsActive(bool paint_as_active) {
 
 void FrameCaptionButtonContainerView::SetBackgroundColor(
     SkColor background_color) {
+  if (custom_button_)
+    custom_button_->SetBackgroundColor(background_color);
   menu_button_->SetBackgroundColor(background_color);
   minimize_button_->SetBackgroundColor(background_color);
   size_button_->SetBackgroundColor(background_color);
@@ -258,6 +267,12 @@ void FrameCaptionButtonContainerView::UpdateCaptionButtonState(bool animate) {
       size_button_->SetVisible(false);
     }
   }
+  if (custom_button_) {
+    custom_button_->SetEnabled(
+        model_->IsEnabled(views::CAPTION_BUTTON_ICON_CUSTOM));
+    custom_button_->SetVisible(
+        model_->IsVisible(views::CAPTION_BUTTON_ICON_CUSTOM));
+  }
   size_button_->SetEnabled(
       (model_->IsEnabled(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE) ||
        model_->InZoomMode()));
@@ -279,6 +294,8 @@ void FrameCaptionButtonContainerView::UpdateSizeButtonTooltip(
 }
 
 void FrameCaptionButtonContainerView::SetButtonSize(const gfx::Size& size) {
+  if (custom_button_)
+    custom_button_->SetPreferredSize(size);
   menu_button_->SetPreferredSize(size);
   minimize_button_->SetPreferredSize(size);
   size_button_->SetPreferredSize(size);
@@ -465,6 +482,8 @@ bool FrameCaptionButtonContainerView::IsMinimizeButtonVisible() const {
 void FrameCaptionButtonContainerView::SetButtonsToNormal(Animate animate) {
   SetButtonIcons(views::CAPTION_BUTTON_ICON_MINIMIZE,
                  views::CAPTION_BUTTON_ICON_CLOSE, animate);
+  if (custom_button_)
+    custom_button_->SetState(views::Button::STATE_NORMAL);
   menu_button_->SetState(views::Button::STATE_NORMAL);
   minimize_button_->SetState(views::Button::STATE_NORMAL);
   size_button_->SetState(views::Button::STATE_NORMAL);
@@ -488,13 +507,14 @@ FrameCaptionButtonContainerView::GetButtonClosestTo(
   gfx::Point position(position_in_screen);
   views::View::ConvertPointFromScreen(this, &position);
 
-  views::FrameCaptionButton* buttons[] = {menu_button_, minimize_button_,
-                                          size_button_, close_button_};
+  views::FrameCaptionButton* buttons[] = {custom_button_, menu_button_,
+                                          minimize_button_, size_button_,
+                                          close_button_};
   int min_squared_distance = INT_MAX;
   views::FrameCaptionButton* closest_button = nullptr;
   for (size_t i = 0; i < base::size(buttons); ++i) {
     views::FrameCaptionButton* button = buttons[i];
-    if (!button->GetVisible())
+    if (!button || !button->GetVisible())
       continue;
 
     gfx::Point center_point = button->GetLocalBounds().CenterPoint();
@@ -513,10 +533,13 @@ FrameCaptionButtonContainerView::GetButtonClosestTo(
 void FrameCaptionButtonContainerView::SetHoveredAndPressedButtons(
     const views::FrameCaptionButton* to_hover,
     const views::FrameCaptionButton* to_press) {
-  views::FrameCaptionButton* buttons[] = {menu_button_, minimize_button_,
-                                          size_button_, close_button_};
+  views::FrameCaptionButton* buttons[] = {custom_button_, menu_button_,
+                                          minimize_button_, size_button_,
+                                          close_button_};
   for (size_t i = 0; i < base::size(buttons); ++i) {
     views::FrameCaptionButton* button = buttons[i];
+    if (!button)
+      continue;
     views::Button::ButtonState new_state = views::Button::STATE_NORMAL;
     if (button == to_hover)
       new_state = views::Button::STATE_HOVERED;

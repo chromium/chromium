@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
+#include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
@@ -1576,6 +1577,43 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
   EXPECT_TRUE(frame_view->caption_button_container_->GetVisible());
 }
 
+namespace {
+
+class TabSearchFrameCaptionButtonTest
+    : public TopChromeMdParamTest<InProcessBrowserTest> {
+ public:
+  TabSearchFrameCaptionButtonTest() = default;
+  TabSearchFrameCaptionButtonTest(const TabSearchFrameCaptionButtonTest&) =
+      delete;
+  TabSearchFrameCaptionButtonTest& operator=(
+      const TabSearchFrameCaptionButtonTest&) = delete;
+  ~TabSearchFrameCaptionButtonTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kChromeOSTabSearchCaptionButton);
+    TopChromeMdParamTest<InProcessBrowserTest>::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(TabSearchFrameCaptionButtonTest,
+                       TabSearchBubbleHostTest) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
+  ASSERT_TRUE(browser()->is_type_normal());
+
+  chromeos::FrameCaptionButtonContainerView::TestApi test(
+      frame_view->caption_button_container_);
+  EXPECT_TRUE(test.custom_button());
+  EXPECT_EQ(browser_view->GetTabSearchBubbleHost()->button(),
+            test.custom_button());
+}
+
 #define INSTANTIATE_TEST_SUITE(name) \
   INSTANTIATE_TEST_SUITE_P(All, name, ::testing::Values(false, true))
 
@@ -1586,3 +1624,4 @@ INSTANTIATE_TEST_SUITE(ImmersiveModeBrowserViewTest);
 INSTANTIATE_TEST_SUITE(ImmersiveModeBrowserViewTestNoWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(WebAppNonClientFrameViewAshTest);
 INSTANTIATE_TEST_SUITE(HomeLauncherBrowserNonClientFrameViewChromeOSTest);
+INSTANTIATE_TEST_SUITE(TabSearchFrameCaptionButtonTest);

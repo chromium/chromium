@@ -172,6 +172,10 @@ extern const base::Feature kWebUITabStripNewTabButtonInTabStrip;
 
 extern const base::Feature kWebUIFeedback;
 
+#if defined(OS_CHROMEOS)
+extern const base::Feature kChromeOSTabSearchCaptionButton;
+#endif
+
 // Cocoa to views migration.
 #if defined(OS_MAC)
 extern const base::Feature kLocationPermissionsExperiment;

@@ -60,6 +60,7 @@ class BrowserNonClientFrameViewChromeOS
   void UpdateThrobber(bool running) override;
   bool CanUserExitFullscreen() const override;
   SkColor GetCaptionColor(BrowserFrameActiveState active_state) const override;
+  TabSearchBubbleHost* GetTabSearchBubbleHost() override;
 
   // views::NonClientFrameView:
   gfx::Rect GetBoundsForClientView() const override;
@@ -148,6 +149,8 @@ class BrowserNonClientFrameViewChromeOS
                            TabletModeAppCaptionButtonVisibility);
   FRIEND_TEST_ALL_PREFIXES(NonHomeLauncherBrowserNonClientFrameViewChromeOSTest,
                            HeaderHeightForSnappedBrowserInSplitView);
+  FRIEND_TEST_ALL_PREFIXES(TabSearchFrameCaptionButtonTest,
+                           TabSearchBubbleHostTest);
 
   friend class WebAppNonClientFrameViewAshTest;
 
@@ -211,6 +214,8 @@ class BrowserNonClientFrameViewChromeOS
   // View which contains the window controls.
   chromeos::FrameCaptionButtonContainerView* caption_button_container_ =
       nullptr;
+
+  TabSearchBubbleHost* tab_search_bubble_host_ = nullptr;
 
   // For popups, the window icon.
   TabIconView* window_icon_ = nullptr;

@@ -2933,6 +2933,8 @@ static_library("ui") {
       "views/frame/browser_non_client_frame_view_chromeos.cc",
       "views/frame/browser_non_client_frame_view_chromeos.h",
       "views/frame/browser_non_client_frame_view_factory_chromeos.cc",
+      "views/frame/tab_search_frame_caption_button.cc",
+      "views/frame/tab_search_frame_caption_button.h",
       "views/frame/top_controls_slide_controller_chromeos.cc",
       "views/frame/top_controls_slide_controller_chromeos.h",
       "views/platform_keys_certificate_selector_chromeos.cc",

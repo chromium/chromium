@@ -25,9 +25,14 @@ class TabStripRegionViewBrowserTest : public InProcessBrowserTest {
   ~TabStripRegionViewBrowserTest() override = default;
 
   void SetUp() override {
-#if defined(OS_WIN)
     // Ensure we run our tests with the tab search button placement configured
     // for the tab strip region view.
+#if defined(OS_CHROMEOS)
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kChromeOSTabSearchCaptionButton);
+#endif
+
+#if defined(OS_WIN)
     scoped_feature_list_.InitAndDisableFeature(
         features::kWin10TabSearchCaptionButton);
 #endif

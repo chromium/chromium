@@ -42,8 +42,12 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
  public:
   METADATA_HEADER(FrameCaptionButtonContainerView);
 
-  // |frame| is the views::Widget that the caption buttons act on.
-  explicit FrameCaptionButtonContainerView(views::Widget* frame);
+  // `frame` is the views::Widget that the caption buttons act on.
+  // `custom_button` is an optional caption button. It is placed as the
+  // left-most caption button (in LTR mode).
+  FrameCaptionButtonContainerView(
+      views::Widget* frame,
+      std::unique_ptr<views::FrameCaptionButton> custom_button = nullptr);
   FrameCaptionButtonContainerView(const FrameCaptionButtonContainerView&) =
       delete;
   FrameCaptionButtonContainerView& operator=(
@@ -74,6 +78,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
 
     views::FrameCaptionButton* menu_button() const {
       return container_view_->menu_button_;
+    }
+
+    views::FrameCaptionButton* custom_button() const {
+      return container_view_->custom_button_;
     }
 
    private:
@@ -163,6 +171,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
 
   // The buttons. In the normal button style, at most one of |minimize_button_|
   // and |size_button_| is visible.
+  views::FrameCaptionButton* custom_button_ = nullptr;
   views::FrameCaptionButton* menu_button_ = nullptr;
   views::FrameCaptionButton* minimize_button_ = nullptr;
   views::FrameCaptionButton* size_button_ = nullptr;
