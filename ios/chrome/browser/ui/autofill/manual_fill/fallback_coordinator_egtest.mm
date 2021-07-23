@@ -235,17 +235,6 @@ id<GREYMatcher> ProfileTableViewButtonMatcher() {
   // Add the profile to use for verification.
   [AutofillAppInterface saveExampleProfile];
 
-  // Bring up the keyboard by tapping the city, which is the element before the
-  // picker.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
-
-  // Verify the profiles icon is visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
   // Open a tab in incognito.
   [ChromeEarlGrey openNewIncognitoTab];
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
@@ -254,7 +243,8 @@ id<GREYMatcher> ProfileTableViewButtonMatcher() {
 
   // Bring up the keyboard by tapping the city, which is the element before the
   // picker.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:grey_kindOfClass(
+                                          NSClassFromString(@"WKWebView"))]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
 
   // Verify the profiles icon is visible.
