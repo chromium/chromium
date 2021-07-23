@@ -85,13 +85,9 @@ void CalculateWaitingAngles(const base::TimeDelta& elapsed_time,
 
 // This is a Skia port of the MD spinner SVG. The |start_angle| rotation
 // here corresponds to the 'rotate' animation.
-void PaintThrobberSpinningWithStartAngle(
-    Canvas* canvas,
-    const Rect& bounds,
-    SkColor color,
-    const base::TimeDelta& elapsed_time,
-    int64_t start_angle,
-    absl::optional<SkScalar> stroke_width) {
+ThrobberSpinningState CalculateThrobberSpinningStateWithStartAngle(
+    base::TimeDelta elapsed_time,
+    int64_t start_angle) {
   // The sweep angle ranges from -270 to 270 over 1333ms. CSS
   // animation timing functions apply in between key frames, so we have to
   // break up the 1333ms into two keyframes (-270 to 0, then 0 to 270).
@@ -118,21 +114,51 @@ void PaintThrobberSpinningWithStartAngle(
   // To keep the sweep smooth, we have an additional rotation after each
   // arc period has elapsed. See SVG's 'rot' animation.
   const int64_t rot_keyframe = (sweep_frame / 2) % 4;
-  PaintArc(canvas, bounds, color, start_angle + rot_keyframe * kMaxArcSize,
-           sweep, stroke_width);
+  start_angle = start_angle + rot_keyframe * kMaxArcSize;
+  return ThrobberSpinningState{
+      .start_angle = static_cast<SkScalar>(start_angle),
+      .sweep_angle = static_cast<SkScalar>(sweep)};
+}
+
+void PaintThrobberSpinningWithState(Canvas* canvas,
+                                    const Rect& bounds,
+                                    SkColor color,
+                                    const ThrobberSpinningState& state,
+                                    absl::optional<SkScalar> stroke_width) {
+  PaintArc(canvas, bounds, color, state.start_angle, state.sweep_angle,
+           stroke_width);
+}
+
+void PaintThrobberSpinningWithStartAngle(
+    Canvas* canvas,
+    const Rect& bounds,
+    SkColor color,
+    const base::TimeDelta& elapsed_time,
+    int64_t start_angle,
+    absl::optional<SkScalar> stroke_width) {
+  const ThrobberSpinningState state =
+      CalculateThrobberSpinningStateWithStartAngle(elapsed_time, start_angle);
+  PaintThrobberSpinningWithState(canvas, bounds, color, state, stroke_width);
 }
 
 }  // namespace
+
+ThrobberSpinningState CalculateThrobberSpinningState(
+    base::TimeDelta elapsed_time) {
+  const int64_t start_angle =
+      270 + base::ClampRound<int64_t>(elapsed_time / kRotationTime * 360);
+  return CalculateThrobberSpinningStateWithStartAngle(elapsed_time,
+                                                      start_angle);
+}
 
 void PaintThrobberSpinning(Canvas* canvas,
                            const Rect& bounds,
                            SkColor color,
                            const base::TimeDelta& elapsed_time,
                            absl::optional<SkScalar> stroke_width) {
-  const int64_t start_angle =
-      270 + base::ClampRound<int64_t>(elapsed_time / kRotationTime * 360);
-  PaintThrobberSpinningWithStartAngle(canvas, bounds, color, elapsed_time,
-                                      start_angle, stroke_width);
+  const ThrobberSpinningState state =
+      CalculateThrobberSpinningState(elapsed_time);
+  PaintThrobberSpinningWithState(canvas, bounds, color, state, stroke_width);
 }
 
 void PaintThrobberWaiting(Canvas* canvas,

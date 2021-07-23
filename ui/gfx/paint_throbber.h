@@ -18,6 +18,15 @@ class Canvas;
 class Rect;
 class RectF;
 
+// This struct describes the "spinning" state of a throb animation.
+struct GFX_EXPORT ThrobberSpinningState {
+  // The start angle of the arc in degrees.
+  SkScalar start_angle = 0.f;
+
+  // The sweep angle of the arc in degrees. Positive is clockwise.
+  SkScalar sweep_angle = 0.f;
+};
+
 // This struct describes the "waiting" mode of a throb animation. It's useful
 // for building a "spinning" state animation on top of a previous "waiting"
 // mode animation. See PaintThrobberSpinningAfterWaiting.
@@ -33,7 +42,17 @@ struct GFX_EXPORT ThrobberWaitingState {
   base::TimeDelta arc_time_offset;
 };
 
+// Returns the calculated state for a single frame of the throbber in the
+// "spinning", aka Material, state. Note that animation duration is a hardcoded
+// value in line with Material design specifications but is cyclic, so the
+// specified `elapsed_time` may exceed animation duration.
+GFX_EXPORT ThrobberSpinningState
+CalculateThrobberSpinningState(base::TimeDelta elapsed_time);
+
 // Paints a single frame of the throbber in the "spinning", aka Material, state.
+// Note that animation duration is a hardcoded value in line with Material
+// design specifications but is cyclic, so the specified `elapsed_time` may
+// exceed animation duration.
 GFX_EXPORT void PaintThrobberSpinning(
     Canvas* canvas,
     const Rect& bounds,
