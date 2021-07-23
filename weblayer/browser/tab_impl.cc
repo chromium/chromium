@@ -1124,7 +1124,7 @@ bool TabImpl::CheckMediaAccessPermission(
 void TabImpl::EnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {
-  // TODO: support |options|.
+  // TODO(crbug.com/1232147): support |options|.
   if (is_fullscreen_) {
     // Typically EnterFullscreenModeForTab() should not be called consecutively,
     // but there may be corner cases with oopif that lead to multiple
