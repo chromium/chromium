@@ -1225,6 +1225,8 @@ VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::App& proto) {
   VISIT(z_index);
   VISIT(app);
   VISIT(window_id);
+  VISIT(display_id);
+  VISIT_ENUM(pre_minimized_window_state);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::AppOneOf& proto) {
@@ -1236,6 +1238,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::AppOneOf& proto) {
 VISIT_PROTO_FIELDS(
     const sync_pb::WorkspaceDeskSpecifics::BrowserAppWindow& proto) {
   VISIT_REP(tabs);
+  VISIT(active_tab_index);
 }
 
 VISIT_PROTO_FIELDS(

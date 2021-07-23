@@ -51,6 +51,13 @@ message WorkspaceDeskSpecifics {
     // restore_data object in question can be found at:
     // //components/full_restore/restore_data.h
     optional int32 window_id = 5;
+
+    // Display ID this app is on.
+    optional int64 display_id = 6;
+
+    // State of a window before it was minimized. Empty/unset for non-minimized
+    // windows.
+    optional WindowState pre_minimized_window_state = 7;
   }
 
   message AppOneOf {
@@ -72,6 +79,9 @@ message WorkspaceDeskSpecifics {
 
     // The tabs in this browser window.
     repeated BrowserAppTab tabs = 1;
+
+    // The index of the currently active tab.
+    optional int32 active_tab_index = 2;
   }
 
   // A Chrome App window.
@@ -112,9 +122,12 @@ message WorkspaceDeskSpecifics {
     MAXIMIZED = 3;
     // Fullscreen window state.
     FULLSCREEN = 4;
-    // Snapped to left half of the screen.
-    LEFT_SNAPPED = 5;
-    // Snapped to right half of the display.
-    RIGHT_SNAPPED = 6;
+    // Snapped to primary half of the screen. Primary half is on the left in
+    // landscape screen orientation and top in portrait screen orientation.
+    PRIMARY_SNAPPED = 5;
+    // Snapped to secondary half of the screen. Secondary half is on the right
+    // in landscape screen orientation and bottom in portrait screen
+    // orientation.
+    SECONDARY_SNAPPED = 6;
   }
 }
