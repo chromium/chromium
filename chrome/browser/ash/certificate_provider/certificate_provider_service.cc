@@ -81,7 +81,7 @@ class CertificateProviderService::SSLPrivateKey : public net::SSLPrivateKey {
             SignCallback callback) override;
 
  private:
-  ~SSLPrivateKey() override = default;
+  ~SSLPrivateKey() override;
 
   const std::string extension_id_;
   const CertificateInfo cert_info_;
@@ -97,6 +97,7 @@ class CertificateProviderService::ClientCertIdentity
   ClientCertIdentity(scoped_refptr<net::X509Certificate> cert,
                      base::WeakPtr<CertificateProviderService> service)
       : net::ClientCertIdentity(std::move(cert)), service_(service) {}
+  ~ClientCertIdentity() override;
 
   void AcquirePrivateKey(
       base::OnceCallback<void(scoped_refptr<net::SSLPrivateKey>)>
@@ -109,9 +110,15 @@ class CertificateProviderService::ClientCertIdentity
   DISALLOW_COPY_AND_ASSIGN(ClientCertIdentity);
 };
 
+CertificateProviderService::ClientCertIdentity::~ClientCertIdentity() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
 void CertificateProviderService::ClientCertIdentity::AcquirePrivateKey(
     base::OnceCallback<void(scoped_refptr<net::SSLPrivateKey>)>
         private_key_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!service_) {
     std::move(private_key_callback).Run(nullptr);
     return;
@@ -138,7 +145,9 @@ CertificateProviderService::CertificateProviderImpl::CertificateProviderImpl(
     : service_(service) {}
 
 CertificateProviderService::CertificateProviderImpl::
-    ~CertificateProviderImpl() {}
+    ~CertificateProviderImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void CertificateProviderService::CertificateProviderImpl::GetCertificates(
     base::OnceCallback<void(net::ClientCertIdentityList)> callback) {
@@ -191,6 +200,10 @@ void CertificateProviderService::SSLPrivateKey::Sign(
       /*authenticating_user_account_id=*/{}, std::move(callback));
 }
 
+CertificateProviderService::SSLPrivateKey::~SSLPrivateKey() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
 CertificateProviderService::CertificateProviderService() {}
 
 CertificateProviderService::~CertificateProviderService() {
@@ -207,10 +220,12 @@ void CertificateProviderService::SetDelegate(
 }
 
 void CertificateProviderService::AddObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
 }
 
 void CertificateProviderService::RemoveObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
 }
 
@@ -356,6 +371,8 @@ bool CertificateProviderService::LookUpSpki(
 
 void CertificateProviderService::AbortSignatureRequestsForAuthenticatingUser(
     const AccountId& authenticating_user_account_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   using ExtensionNameRequestIdPair =
       certificate_provider::SignRequests::ExtensionNameRequestIdPair;
 
