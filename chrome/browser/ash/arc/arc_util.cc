@@ -584,28 +584,11 @@ ArcManagementTransition GetManagementTransition(const Profile* profile) {
   const ArcManagementTransition management_transition =
       static_cast<ArcManagementTransition>(
           profile->GetPrefs()->GetInteger(prefs::kArcManagementTransition));
-  const bool is_child_to_regular_enabled =
-      base::FeatureList::IsEnabled(kEnableChildToRegularTransitionFeature);
-  const bool is_regular_to_child_enabled =
-      base::FeatureList::IsEnabled(kEnableRegularToChildTransitionFeature);
   const bool is_unmanaged_to_managed_enabled =
       base::FeatureList::IsEnabled(kEnableUnmanagedToManagedTransitionFeature);
-
-  switch (management_transition) {
-    case ArcManagementTransition::NO_TRANSITION:
-      // Do nothing.
-      break;
-    case ArcManagementTransition::CHILD_TO_REGULAR:
-      if (!is_child_to_regular_enabled)
-        return ArcManagementTransition::NO_TRANSITION;
-      break;
-    case ArcManagementTransition::REGULAR_TO_CHILD:
-      if (!is_regular_to_child_enabled)
-        return ArcManagementTransition::NO_TRANSITION;
-      break;
-    case ArcManagementTransition::UNMANAGED_TO_MANAGED:
-      if (!is_unmanaged_to_managed_enabled)
-        return ArcManagementTransition::NO_TRANSITION;
+  if (management_transition == ArcManagementTransition::UNMANAGED_TO_MANAGED &&
+      !is_unmanaged_to_managed_enabled) {
+    return ArcManagementTransition::NO_TRANSITION;
   }
   return management_transition;
 }

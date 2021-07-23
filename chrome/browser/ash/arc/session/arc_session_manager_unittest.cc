@@ -783,37 +783,13 @@ TEST_F(ArcSessionManagerTest, RemoveDataDir_Restart) {
   arc_session_manager()->Shutdown();
 }
 
-TEST_F(ArcSessionManagerTest, RegularToChildTransition_FlagOn) {
+TEST_F(ArcSessionManagerTest, RegularToChildTransition) {
   // Emulate the situation where a regular user has transitioned to a child
   // account.
   profile()->GetPrefs()->SetInteger(
       prefs::kArcManagementTransition,
       static_cast<int>(ArcManagementTransition::REGULAR_TO_CHILD));
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kCleanArcDataOnRegularToChildTransitionFeature);
-
-  arc_session_manager()->SetProfile(profile());
-  arc_session_manager()->Initialize();
-  EXPECT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kArcDataRemoveRequested));
-  EXPECT_EQ(static_cast<int>(ArcManagementTransition::NO_TRANSITION),
-            profile()->GetPrefs()->GetInteger(prefs::kArcManagementTransition));
-  EXPECT_EQ(ArcSessionManager::State::REMOVING_DATA_DIR,
-            arc_session_manager()->state());
-
-  arc_session_manager()->Shutdown();
-}
-
-TEST_F(ArcSessionManagerTest, RegularToChildTransition_FlagOff) {
-  // Emulate the situation where a regular user has transitioned to a child
-  // account, but the feature flag is disabled.
-  profile()->GetPrefs()->SetInteger(
-      prefs::kArcManagementTransition,
-      static_cast<int>(ArcManagementTransition::REGULAR_TO_CHILD));
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      kCleanArcDataOnRegularToChildTransitionFeature);
 
   arc_session_manager()->SetProfile(profile());
   arc_session_manager()->Initialize();

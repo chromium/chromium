@@ -12,12 +12,6 @@ const base::Feature kBootCompletedBroadcastFeature {
     "ArcBootCompletedBroadcast", base::FEATURE_ENABLED_BY_DEFAULT
 };
 
-// Controls whether we should delete all ARC data before transitioning a user
-// from regular to child account.
-const base::Feature kCleanArcDataOnRegularToChildTransitionFeature{
-    "ArcCleanDataOnRegularToChildTransition",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls experimental Custom Tabs feature for ARC.
 const base::Feature kCustomTabsExperimentFeature{
     "ArcCustomTabsExperiment", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -25,14 +19,6 @@ const base::Feature kCustomTabsExperimentFeature{
 // Controls whether to handle files with unknown size.
 const base::Feature kDocumentsProviderUnknownSizeFeature{
     "ArcDocumentsProviderUnknownSize", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Controls whether ARC handles child->regular account transition.
-const base::Feature kEnableChildToRegularTransitionFeature{
-    "ArcEnableChildToRegularTransition", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Controls whether ARC handles regular->child account transition.
-const base::Feature kEnableRegularToChildTransitionFeature{
-    "ArcEnableRegularToChildTransition", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether we should delegate audio focus requests from ARC to Chrome.
 const base::Feature kEnableUnifiedAudioFocusFeature{
