@@ -96,6 +96,16 @@ bool KeySetFilter(const base::flat_set<std::string>& key_set,
   return key_set.find(key) != key_set.end();
 }
 
+bool CheckAllPathsExist(
+    const std::vector<base::FilePath>& file_paths_to_check) {
+  for (const base::FilePath& file_path : file_paths_to_check) {
+    if (!base::PathExists(file_path)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 OptimizationGuideStore::OptimizationGuideStore(
@@ -1081,17 +1091,30 @@ void OptimizationGuideStore::OnLoadPredictionModel(
 
   std::unique_ptr<proto::PredictionModel> loaded_prediction_model(
       entry->release_prediction_model());
-  if (!loaded_prediction_model->model().has_download_url()) {
+  if (loaded_prediction_model->model().download_url().empty()) {
     std::move(callback).Run(std::move(loaded_prediction_model));
     return;
   }
 
-  // Make sure the path still exists before we send it back to the load
-  // initiator.
-  base::FilePath file_path =
-      StringToFilePath(loaded_prediction_model->model().download_url()).value();
+  // Make sure the model file path and all additional files still exist before
+  // we send it back to the load initiator.
+  std::vector<base::FilePath> file_paths_to_check;
+  absl::optional<base::FilePath> model_file_path =
+      StringToFilePath(loaded_prediction_model->model().download_url());
+  if (model_file_path) {
+    file_paths_to_check.emplace_back(*model_file_path);
+  }
+  for (const proto::AdditionalModelFile& additional_file :
+       loaded_prediction_model->model_info().additional_files()) {
+    absl::optional<base::FilePath> additional_file_path =
+        StringToFilePath(additional_file.file_path());
+    if (additional_file_path) {
+      file_paths_to_check.emplace_back(*additional_file_path);
+    }
+  }
+
   store_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&base::PathExists, file_path),
+      FROM_HERE, base::BindOnce(&CheckAllPathsExist, file_paths_to_check),
       base::BindOnce(&OptimizationGuideStore::OnModelFilePathVerified,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(loaded_prediction_model), std::move(callback)));
@@ -1102,6 +1125,12 @@ void OptimizationGuideStore::OnModelFilePathVerified(
     PredictionModelLoadedCallback callback,
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.ModelFilesVerified." +
+          GetStringNameForOptimizationTarget(
+              loaded_model->model_info().optimization_target()),
+      success);
 
   if (success) {
     std::move(callback).Run(std::move(loaded_model));

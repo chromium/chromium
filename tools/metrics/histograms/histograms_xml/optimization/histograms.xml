@@ -423,6 +423,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
+<histogram name="OptimizationGuide.ModelFilesVerified.{OptimizationTarget}"
+    enum="BooleanValid" expires_after="M94">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether all model files existed on disk when the model was requested
+    to be loaded for {OptimizationTarget}. The model file itself and any
+    additional files must be present on disk for this check to report success.
+    Recorded once per attempted model load, which happens when a feature is
+    registered with the Optimization Guide.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
+</histogram>
+
 <histogram base="true" name="OptimizationGuide.OptimizationFilterStatus"
     enum="OptimizationGuideOptimizationFilterStatus" expires_after="2022-01-02">
   <owner>mcrouse@chromium.org</owner>

@@ -171,7 +171,8 @@ class OptimizationGuideStoreTest : public testing::Test {
   void SeedPredictionModelUpdateData(
       StoreUpdateData* update_data,
       optimization_guide::proto::OptimizationTarget optimization_target,
-      absl::optional<base::FilePath> model_file_path = absl::nullopt) {
+      absl::optional<base::FilePath> model_file_path = absl::nullopt,
+      base::flat_set<base::FilePath> additional_file_paths = {}) {
     std::unique_ptr<optimization_guide::proto::PredictionModel>
         prediction_model = CreatePredictionModel();
     prediction_model->mutable_model_info()->set_optimization_target(
@@ -179,6 +180,11 @@ class OptimizationGuideStoreTest : public testing::Test {
     if (model_file_path) {
       prediction_model->mutable_model()->set_download_url(
           FilePathToString(*model_file_path));
+    }
+    for (const base::FilePath& additional_file : additional_file_paths) {
+      prediction_model->mutable_model_info()
+          ->add_additional_files()
+          ->set_file_path(FilePathToString(additional_file));
     }
     update_data->CopyPredictionModelIntoUpdateData(*prediction_model);
   }
@@ -2147,7 +2153,121 @@ TEST_F(OptimizationGuideStoreTest,
 }
 
 TEST_F(OptimizationGuideStoreTest,
+       LoadPredictionModelWithAdditionalFileDoesntExist) {
+  base::HistogramTester histogram_tester;
+  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
+  SeedInitialData(schema_state, 0);
+  CreateDatabase();
+  InitializeStore(schema_state);
+
+  base::Time update_time = base::Time().Now();
+  std::unique_ptr<StoreUpdateData> update_data =
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time +
+          optimization_guide::features::StoredModelsInactiveDuration());
+  ASSERT_TRUE(update_data);
+
+  base::FilePath model_file_path = temp_dir().AppendASCII("model.tflite");
+  ASSERT_EQ(static_cast<int32_t>(3),
+            base::WriteFile(model_file_path, "boo", 3));
+
+  base::FilePath additional_file_path = temp_dir().AppendASCII("doesntexist");
+
+  SeedPredictionModelUpdateData(
+      update_data.get(), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      temp_dir().AppendASCII("doesntexist"), {additional_file_path});
+  UpdatePredictionModels(std::move(update_data));
+
+  OptimizationGuideStore::EntryKey entry_key;
+  bool success = guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key);
+  EXPECT_TRUE(success);
+
+  guide_store()->LoadPredictionModel(
+      entry_key,
+      base::BindOnce(&OptimizationGuideStoreTest::OnPredictionModelLoaded,
+                     base::Unretained(this)));
+  // OnPredictionModelLoaded callback
+  db()->GetCallback(true);
+  // Wait for file to be verified.
+  RunUntilIdle();
+  // OnLoadModelsToBeUpdated callback
+  db()->LoadCallback(true);
+  // OnUpdateStore callback
+  db()->UpdateCallback(true);
+  // OnLoadEntryKeys callback
+  db()->LoadCallback(true);
+
+  EXPECT_FALSE(last_loaded_prediction_model());
+
+  // Make sure key is deleted.
+  success = guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key);
+  EXPECT_FALSE(success);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelFilesVerified.PainfulPageLoad", false, 1);
+}
+
+TEST_F(OptimizationGuideStoreTest,
+       LoadPredictionModelWithAdditionalFileThatExists) {
+  base::HistogramTester histogram_tester;
+  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
+  SeedInitialData(schema_state, 0);
+  CreateDatabase();
+  InitializeStore(schema_state);
+
+  base::Time update_time = base::Time().Now();
+  std::unique_ptr<StoreUpdateData> update_data =
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time +
+          optimization_guide::features::StoredModelsInactiveDuration());
+  ASSERT_TRUE(update_data);
+
+  base::FilePath model_file_path = temp_dir().AppendASCII("model.tflite");
+  ASSERT_EQ(static_cast<int32_t>(3),
+            base::WriteFile(model_file_path, "boo", 3));
+
+  base::FilePath additional_file_path =
+      temp_dir().AppendASCII("additional_file.txt");
+  ASSERT_EQ(static_cast<int32_t>(3),
+            base::WriteFile(additional_file_path, "ah!", 3));
+
+  SeedPredictionModelUpdateData(update_data.get(),
+                                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+                                model_file_path, {additional_file_path});
+  UpdatePredictionModels(std::move(update_data));
+
+  OptimizationGuideStore::EntryKey entry_key;
+  bool success = guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key);
+  EXPECT_TRUE(success);
+
+  guide_store()->LoadPredictionModel(
+      entry_key,
+      base::BindOnce(&OptimizationGuideStoreTest::OnPredictionModelLoaded,
+                     base::Unretained(this)));
+  // OnPredictionModelLoaded callback
+  db()->GetCallback(true);
+  // Wait for file to be verified.
+  RunUntilIdle();
+
+  proto::PredictionModel* loaded_model = last_loaded_prediction_model();
+  ASSERT_TRUE(loaded_model);
+  EXPECT_EQ(StringToFilePath(loaded_model->model().download_url()).value(),
+            model_file_path);
+  ASSERT_EQ(loaded_model->model_info().additional_files().size(), 1);
+  EXPECT_EQ(StringToFilePath(
+                loaded_model->model_info().additional_files(0).file_path()),
+            additional_file_path);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelFilesVerified.PainfulPageLoad", true, 1);
+}
+
+TEST_F(OptimizationGuideStoreTest,
        LoadPredictionModelWithDownloadUrlThatExists) {
+  base::HistogramTester histogram_tester;
   MetadataSchemaState schema_state = MetadataSchemaState::kValid;
   SeedInitialData(schema_state, 0);
   CreateDatabase();
@@ -2184,6 +2304,9 @@ TEST_F(OptimizationGuideStoreTest,
   EXPECT_TRUE(loaded_model);
   EXPECT_EQ(StringToFilePath(loaded_model->model().download_url()).value(),
             file_path);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelFilesVerified.PainfulPageLoad", true, 1);
 }
 
 TEST_F(OptimizationGuideStoreTest, UpdatePredictionModelsDeletesOldFile) {
