@@ -103,7 +103,7 @@ void AssistantControllerImpl::DownloadImage(
     ImageDownloader::DownloadCallback callback) {
   constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
       net::DefineNetworkTrafficAnnotation("image_downloader", R"(
-            "semantics: {
+            semantics {
               sender: "Google Assistant"
               description:
                 "The Google Assistant requires dynamic loading of images to "
@@ -115,7 +115,7 @@ void AssistantControllerImpl::DownloadImage(
                 "multiple images."
               destination: GOOGLE_OWNED_SERVICE
             }
-            "policy": {
+            policy {
               cookies_allowed: NO
               setting:
                 "The Google Assistant can be enabled/disabled in Chrome "
