@@ -31,6 +31,14 @@ TEST(PowerModeArbiterTest, SingleVote) {
   EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kIdle);
 }
 
+TEST(PowerModeArbiterTest, DisableCharging) {
+  PowerModeArbiter arbiter;
+  EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kCharging);
+
+  arbiter.SetChargingModeEnabled(false);
+  EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kIdle);
+}
+
 TEST(PowerModeArbiterTest, MultipleVotes) {
   PowerModeArbiter arbiter;
   EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kCharging);

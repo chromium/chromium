@@ -70,11 +70,17 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeArbiter
   // pool is available.
   void OnThreadPoolAvailable();
 
+  // Enables or disables the kCharging PowerMode. Defaults to enabled, i.e.
+  // kCharging will preempt all other PowerModes while the device is on a
+  // charger.
+  void SetChargingModeEnabled(bool enabled);
+
   // Provide a custom task runner for unit tests. Replaces a call to
   // OnThreadPoolAvailable().
   void SetTaskRunnerForTesting(scoped_refptr<base::SequencedTaskRunner>);
 
   PowerMode GetActiveModeForTesting();
+  // TODO(eseckler): Replace this with SetChargingModeEnabled() in tests.
   void SetOnBatteryPowerForTesting(bool on_battery_power);
 
  private:
@@ -121,6 +127,7 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeArbiter
   scoped_refptr<base::ObserverListThreadSafe<Observer>> observers_
       GUARDED_BY(lock_);
   bool has_observers_ GUARDED_BY(lock_) = false;
+  bool charging_mode_enabled_ = true;
 
   // Owned by the arbiter but otherwise behaves like a regular voter.
   std::unique_ptr<ChargingPowerModeVoter> charging_voter_;

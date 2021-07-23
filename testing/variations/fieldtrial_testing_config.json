@@ -6399,6 +6399,28 @@
             ]
         }
     ],
+    "PowerScheduler2": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_ThrottleIdleAndNopAnimation",
+                    "params": {
+                        "include_charging": "true",
+                        "min_cputime_ratio": "0.5",
+                        "min_time_in_mode_ms": "500",
+                        "policy": "kThrottleIdleAndNopAnimation",
+                        "process_types": "browser,renderer"
+                    },
+                    "enable_features": [
+                        "PowerScheduler"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreconnectOnDidFinishNavigation": [
         {
             "platforms": [

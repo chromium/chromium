@@ -123,6 +123,16 @@ void PowerModeArbiter::OnThreadPoolAvailable() {
   OnTaskRunnerAvailable(task_runner, sequence_number);
 }
 
+void PowerModeArbiter::SetChargingModeEnabled(bool enabled) {
+  {
+    base::AutoLock lock(lock_);
+    if (charging_mode_enabled_ == enabled)
+      return;
+    charging_mode_enabled_ = enabled;
+  }
+  OnVotesUpdated();
+}
+
 void PowerModeArbiter::SetTaskRunnerForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   int sequence_number = 0;
@@ -338,6 +348,10 @@ PowerMode PowerModeArbiter::ComputeActiveModeLocked() {
 
   for (const auto& voter_and_vote : votes_) {
     PowerMode vote = voter_and_vote.second.mode();
+
+    if (!charging_mode_enabled_ && vote == PowerMode::kCharging)
+      continue;
+
     if (vote > mode)
       mode = vote;
     if (vote == PowerMode::kAudible)
