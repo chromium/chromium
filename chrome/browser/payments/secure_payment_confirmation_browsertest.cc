@@ -67,7 +67,10 @@ class SecurePaymentConfirmationTest
       public WebDataServiceConsumer {
  public:
   SecurePaymentConfirmationTest() {
-    feature_list_.InitAndEnableFeature(features::kSecurePaymentConfirmation);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kSecurePaymentConfirmation,
+                              features::kSecurePaymentConfirmationDebug},
+        /*disabled_features=*/{});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -179,9 +182,22 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
             test_controller()->app_descriptions().front().label);
 }
 
+class SecurePaymentConfirmationDisableDebugTest
+    : public SecurePaymentConfirmationTest {
+ public:
+  SecurePaymentConfirmationDisableDebugTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kSecurePaymentConfirmation},
+        /*disabled_features=*/{features::kSecurePaymentConfirmationDebug});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // canMakePayment() and hasEnrolledInstrument() should return false on
 // platforms without a compatible authenticator.
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDisableDebugTest,
                        CanMakePayment_NoAuthenticator) {
   test_controller()->SetHasAuthenticator(false);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
@@ -586,6 +602,33 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
   ExpectNoFunnelCount();
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
+}
+
+class SecurePaymentConfirmationCreationDisableDebugTest
+    : public SecurePaymentConfirmationCreationTest {
+ public:
+  SecurePaymentConfirmationCreationDisableDebugTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kSecurePaymentConfirmation},
+        /*disabled_features=*/{features::kSecurePaymentConfirmationDebug});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationDisableDebugTest,
+                       RequireUserVerifyingPlatformAuthenticator) {
+  test_controller()->SetHasAuthenticator(false);
+  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+  RespondToFutureEnrollments(/*confirm=*/true);
+  EXPECT_EQ(
+      "NotAllowedError: A user verifying platform authenticator is required "
+      "for payments.",
+      content::EvalJs(GetActiveWebContents(),
+                      content::JsReplace("createPaymentCredential($1)",
+                                         GetDefaultIconURL())));
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
