@@ -133,9 +133,11 @@ static void homogenousLimitNearZero(SkScalar a1,
   if (std::abs(a1 * w2 / w1 / a2 - 1.0f) > kStationaryPointEpsilon) {
     // t has been computed so that w is near but not at zero.
     *limit = ((1.0f - t) * a1 + t * a2) / ((1.0f - t) * w1 + t * w2);
-    DCHECK(t == 0.0f || t == 1.0f ||
-           std::abs(*limit) * 0.998f <
-               HomogeneousCoordinate::kInfiniteCoordinate);
+    // std::abs(*limit) should now be somewhere near
+    // HomogeneousCoordinate::kInfiniteCoordinate, preferably smaller than it,
+    // but there are edge cases where it will be larger (for example, if the
+    // point where a crosses 0 is very close to the point where w crosses 0),
+    // so it's hard to DCHECK() that this is the case.
   } else {
     *limit = a1 / w1;  // (== a2 / w2) && == (1.0f - t) * a1 / w1 + t * a2 / w2
   }
