@@ -45,6 +45,10 @@ ModelTypeSet SyncCycleContext::GetEnabledTypes() const {
   return model_type_registry_->GetEnabledTypes();
 }
 
+bool SyncCycleContext::proxy_tabs_datatype_enabled() const {
+  return model_type_registry_->proxy_tabs_datatype_enabled();
+}
+
 void SyncCycleContext::set_birthday(const std::string& birthday) {
   DCHECK(birthday_.empty());
   birthday_ = birthday;

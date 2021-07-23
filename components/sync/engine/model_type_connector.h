@@ -39,11 +39,9 @@ class ModelTypeConnector {
   // abort any in-progress commit requests.
   virtual void DisconnectDataType(ModelType type) = 0;
 
-  // Marks a proxy type as connected.
-  virtual void ConnectProxyType(ModelType type) = 0;
-
-  // Marks a proxy type as disconnected.
-  virtual void DisconnectProxyType(ModelType type) = 0;
+  // Propagates whether PROXY_TABS is enabled, which influences a bit exposed to
+  // the server during commits.
+  virtual void SetProxyTabsDatatypeEnabled(bool enabled) = 0;
 };
 
 }  // namespace syncer

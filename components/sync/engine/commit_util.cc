@@ -34,18 +34,18 @@ void AddExtensionsActivityToMessage(
 
 void AddClientConfigParamsToMessage(
     ModelTypeSet enabled_types,
+    bool proxy_tabs_datatype_enabled,
     bool cookie_jar_mismatch,
     bool single_client,
     const std::vector<std::string>& fcm_registration_tokens,
     sync_pb::CommitMessage* message) {
   sync_pb::ClientConfigParams* config_params = message->mutable_config_params();
+  DCHECK(Intersection(enabled_types, ProxyTypes()).Empty());
   for (ModelType type : enabled_types) {
-    if (ProxyTypes().Has(type))
-      continue;
     int field_number = GetSpecificsFieldNumberFromModelType(type);
     config_params->mutable_enabled_type_ids()->Add(field_number);
   }
-  config_params->set_tabs_datatype_enabled(enabled_types.Has(PROXY_TABS));
+  config_params->set_tabs_datatype_enabled(proxy_tabs_datatype_enabled);
   config_params->set_cookie_jar_mismatch(cookie_jar_mismatch);
   config_params->set_single_client(single_client);
   for (const std::string& token : fcm_registration_tokens) {

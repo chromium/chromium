@@ -4,6 +4,7 @@
 
 #include "components/sync_sessions/proxy_tabs_data_type_controller.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/values.h"
@@ -39,10 +40,9 @@ ProxyTabsDataTypeController::ActivateDataType(
 
   // Proxy type doesn't need to be registered with ModelTypeRegistry as it
   // doesn't need update handler, client doesn't expect updates of this type
-  // from the server. We still need to register proxy type because
-  // AddClientConfigParamsToMessage decides the value of tabs_datatype_enabled
-  // based on presence of proxy types in the set of enabled types.
-  configurer->ActivateProxyDataType(type());
+  // from the server. We still need to inform the engine such that the protocol
+  // bit |tabs_datatype_enabled_| gets set.
+  configurer->SetProxyTabsDatatypeEnabled(true);
 
   state_ = RUNNING;
   state_changed_cb_.Run(state_);
@@ -69,7 +69,7 @@ bool ProxyTabsDataTypeController::ShouldRunInTransportOnlyMode() const {
 void ProxyTabsDataTypeController::DeactivateDataType(
     syncer::ModelTypeConfigurer* configurer) {
   if (state_ == RUNNING) {
-    configurer->DeactivateProxyDataType(type());
+    configurer->SetProxyTabsDatatypeEnabled(false);
     state_ = MODEL_LOADED;
   }
 }

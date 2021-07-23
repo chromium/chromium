@@ -116,9 +116,7 @@ class TestModelTypeConfigurer : public ModelTypeConfigurer {
     processor_.reset();
   }
 
-  void ActivateProxyDataType(ModelType type) override { NOTREACHED(); }
-
-  void DeactivateProxyDataType(ModelType type) override { NOTREACHED(); }
+  void SetProxyTabsDatatypeEnabled(bool enabled) override { NOTREACHED(); }
 
  private:
   std::unique_ptr<ModelTypeProcessor> processor_;

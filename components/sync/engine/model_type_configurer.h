@@ -56,12 +56,9 @@ class ModelTypeConfigurer {
   // Deactivates change processing for the given data type.
   virtual void DeactivateDataType(ModelType type) = 0;
 
-  // Activates a proxy type, which determines whether protocol fields such as
-  // |tabs_datatype_enabled| should be true.
-  virtual void ActivateProxyDataType(ModelType type) = 0;
-
-  // Deactivates a proxy type.
-  virtual void DeactivateProxyDataType(ModelType type) = 0;
+  // Propagates whether PROXY_TABS is enabled, which influences a bit exposed to
+  // the server during commits.
+  virtual void SetProxyTabsDatatypeEnabled(bool enabled) = 0;
 };
 
 }  // namespace syncer

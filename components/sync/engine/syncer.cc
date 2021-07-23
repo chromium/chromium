@@ -147,6 +147,7 @@ SyncerError Syncer::BuildAndPostCommits(const ModelTypeSet& request_types,
   while (!ExitRequested()) {
     std::unique_ptr<Commit> commit(Commit::Init(
         cycle->context()->GetEnabledTypes(),
+        cycle->context()->proxy_tabs_datatype_enabled(),
         cycle->context()->max_commit_batch_size(),
         cycle->context()->account_name(), cycle->context()->cache_guid(),
         cycle->context()->cookie_jar_mismatch(),

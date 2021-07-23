@@ -30,6 +30,7 @@ void AddExtensionsActivityToMessage(
 // Fills the config_params field of |message|.
 void AddClientConfigParamsToMessage(
     ModelTypeSet enabled_types,
+    bool proxy_tabs_datatype_enabled,
     bool cookie_jar_mismatch,
     bool single_client,
     const std::vector<std::string>& fcm_registration_tokens,

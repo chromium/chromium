@@ -87,9 +87,7 @@ class FakeModelTypeConfigurer : public ModelTypeConfigurer {
     activated_types_.Remove(type);
   }
 
-  void ActivateProxyDataType(ModelType type) override {}
-
-  void DeactivateProxyDataType(ModelType type) override {}
+  void SetProxyTabsDatatypeEnabled(bool enabled) override {}
 
   void FinishDownload(ModelTypeSet types_to_configure,
                       ModelTypeSet failed_download_types) {

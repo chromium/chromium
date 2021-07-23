@@ -334,6 +334,8 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
 }
 
 void SyncEngineImpl::ConfigureDataTypes(ConfigureParams params) {
+  DCHECK(Intersection(params.to_download, ProxyTypes()).Empty());
+
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoPurgeDisabledTypes,
                                 backend_, params.to_purge));
@@ -345,19 +347,17 @@ void SyncEngineImpl::ConfigureDataTypes(ConfigureParams params) {
 void SyncEngineImpl::ActivateDataType(
     ModelType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {
+  DCHECK(!IsProxyType(type));
   model_type_connector_->ConnectDataType(type, std::move(activation_response));
 }
 
 void SyncEngineImpl::DeactivateDataType(ModelType type) {
+  DCHECK(!IsProxyType(type));
   model_type_connector_->DisconnectDataType(type);
 }
 
-void SyncEngineImpl::ActivateProxyDataType(ModelType type) {
-  model_type_connector_->ConnectProxyType(type);
-}
-
-void SyncEngineImpl::DeactivateProxyDataType(ModelType type) {
-  model_type_connector_->DisconnectProxyType(type);
+void SyncEngineImpl::SetProxyTabsDatatypeEnabled(bool enabled) {
+  model_type_connector_->SetProxyTabsDatatypeEnabled(enabled);
 }
 
 const SyncEngineImpl::Status& SyncEngineImpl::GetDetailedStatus() const {

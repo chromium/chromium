@@ -100,7 +100,7 @@ ModelTypeSet SyncManagerImpl::InitialSyncEndedTypes() {
 
 ModelTypeSet SyncManagerImpl::GetEnabledTypes() {
   DCHECK(initialized_);
-  return model_type_registry_->GetEnabledDataTypes();
+  return model_type_registry_->GetEnabledTypes();
 }
 
 void SyncManagerImpl::ConfigureSyncer(ConfigureReason reason,

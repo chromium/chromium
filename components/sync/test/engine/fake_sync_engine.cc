@@ -104,9 +104,7 @@ void FakeSyncEngine::ActivateDataType(
 
 void FakeSyncEngine::DeactivateDataType(ModelType type) {}
 
-void FakeSyncEngine::ActivateProxyDataType(ModelType type) {}
-
-void FakeSyncEngine::DeactivateProxyDataType(ModelType type) {}
+void FakeSyncEngine::SetProxyTabsDatatypeEnabled(bool enabled) {}
 
 const SyncStatus& FakeSyncEngine::GetDetailedStatus() const {
   return default_sync_status_;

@@ -81,18 +81,20 @@ void ModelTypeRegistry::DisconnectDataType(ModelType type) {
   }
 }
 
-void ModelTypeRegistry::ConnectProxyType(ModelType type) {
-  DCHECK(IsProxyType(type));
-  enabled_proxy_types_.Put(type);
-}
-
-void ModelTypeRegistry::DisconnectProxyType(ModelType type) {
-  DCHECK(IsProxyType(type));
-  enabled_proxy_types_.Remove(type);
+void ModelTypeRegistry::SetProxyTabsDatatypeEnabled(bool enabled) {
+  proxy_tabs_datatype_enabled_ = enabled;
 }
 
 ModelTypeSet ModelTypeRegistry::GetEnabledTypes() const {
-  return Union(GetEnabledDataTypes(), enabled_proxy_types_);
+  ModelTypeSet enabled_types;
+  for (const auto& worker : connected_model_type_workers_) {
+    enabled_types.Put(worker->GetModelType());
+  }
+  return enabled_types;
+}
+
+bool ModelTypeRegistry::proxy_tabs_datatype_enabled() const {
+  return proxy_tabs_datatype_enabled_;
 }
 
 ModelTypeSet ModelTypeRegistry::GetInitialSyncEndedTypes() const {
@@ -102,14 +104,6 @@ ModelTypeSet ModelTypeRegistry::GetInitialSyncEndedTypes() const {
       result.Put(kv.first);
   }
   return result;
-}
-
-ModelTypeSet ModelTypeRegistry::GetEnabledDataTypes() const {
-  ModelTypeSet enabled_types;
-  for (const auto& worker : connected_model_type_workers_) {
-    enabled_types.Put(worker->GetModelType());
-  }
-  return enabled_types;
 }
 
 const UpdateHandler* ModelTypeRegistry::GetUpdateHandler(ModelType type) const {

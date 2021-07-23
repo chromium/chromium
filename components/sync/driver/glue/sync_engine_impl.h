@@ -85,8 +85,7 @@ class SyncEngineImpl : public SyncEngine,
   void ActivateDataType(ModelType type,
                         std::unique_ptr<DataTypeActivationResponse>) override;
   void DeactivateDataType(ModelType type) override;
-  void ActivateProxyDataType(ModelType type) override;
-  void DeactivateProxyDataType(ModelType type) override;
+  void SetProxyTabsDatatypeEnabled(bool enabled) override;
   const Status& GetDetailedStatus() const override;
   void HasUnsyncedItemsForTest(
       base::OnceCallback<void(bool)> cb) const override;
