@@ -2133,6 +2133,7 @@ source_set("browser") {
       "android/battery_metrics.h",
       "android/browser_startup_controller.cc",
       "android/browser_startup_controller.h",
+      "android/client_data_json_android.cc",
       "android/content_feature_list.cc",
       "android/content_startup_flags.cc",
       "android/content_startup_flags.h",
@@ -3043,5 +3044,11 @@ group("for_internal_webauthn") {
   visibility = [ "//components/webauthn/content/browser" ]
   if (!is_component_build) {
     public_deps = [ ":browser" ]
+  }
+}
+
+if (is_android) {
+  java_cpp_enum("client_data_json_generated_enum") {
+    sources = [ "webauth/client_data_json.h" ]
   }
 }

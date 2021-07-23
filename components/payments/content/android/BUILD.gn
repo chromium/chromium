@@ -140,7 +140,10 @@ android_library("feature_list_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources =
       [ "java/src/org/chromium/components/payments/PaymentFeatureList.java" ]
-  deps = [ "//base:base_java" ]
+  deps = [
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
 }
 
 android_library("full_java") {

@@ -4,6 +4,8 @@
 
 package org.chromium.components.payments;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.FeatureList;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -23,6 +25,8 @@ public class PaymentFeatureList {
     public static final String PAYMENT_REQUEST_SKIP_TO_GPAY_IF_NO_CARD =
             "PaymentRequestSkipToGPayIfNoCard";
     public static final String SECURE_PAYMENT_CONFIRMATION = "SecurePaymentConfirmationBrowser";
+    public static final String SECURE_PAYMENT_CONFIRMATION_API_V2 =
+            "SecurePaymentConfirmationAPIV2";
     public static final String SERVICE_WORKER_PAYMENT_APPS = "ServiceWorkerPaymentApps";
     public static final String STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT =
             "StrictHasEnrolledAutofillInstrument";
@@ -77,8 +81,9 @@ public class PaymentFeatureList {
      * The interface implemented by the automatically generated JNI bindings class
      * PaymentsFeatureListJni.
      */
+    @VisibleForTesting
     @NativeMethods
-    /* package */ interface Natives {
+    public interface Natives {
         boolean isEnabled(String featureName);
     }
 }

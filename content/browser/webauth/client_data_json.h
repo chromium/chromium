@@ -18,6 +18,8 @@ namespace content {
 // ClientDataRequestType enumerates different request types that
 // CollectedClientData can be built for. See
 // |BuildClientDataJson|.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content_public.browser
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: ClientDataRequestType
 enum class ClientDataRequestType {
   kU2fRegister,
   kU2fSign,

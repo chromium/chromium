@@ -6,6 +6,7 @@ package org.chromium.components.webauthn;
 
 import android.util.Base64;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.fido.common.Transport;
@@ -219,11 +220,15 @@ public final class Fido2Helper {
     }
 
     public static GetAssertionAuthenticatorResponse toGetAssertionResponse(
-            PublicKeyCredential data, boolean appIdExtensionUsed) {
+            PublicKeyCredential data, boolean appIdExtensionUsed, @Nullable String clientDataJson) {
         GetAssertionAuthenticatorResponse response = toGetAssertionResponse(
                 (AuthenticatorAssertionResponse) data.getResponse(), appIdExtensionUsed);
         AuthenticationExtensionsClientOutputs extensionsClientOutputs =
                 data.getClientExtensionResults();
+
+        if (clientDataJson != null) {
+            response.info.clientDataJson = clientDataJson.getBytes();
+        }
 
         if (extensionsClientOutputs != null && extensionsClientOutputs.getUvmEntries() != null) {
             response.echoUserVerificationMethods = true;

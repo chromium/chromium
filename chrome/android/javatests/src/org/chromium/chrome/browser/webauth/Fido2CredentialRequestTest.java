@@ -68,6 +68,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -90,7 +91,7 @@ public class Fido2CredentialRequestTest {
     public final BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
     @Rule
-    public JniMocker mocker = new JniMocker();
+    public JniMocker mMocker = new JniMocker();
 
     private MockActivityWindowAndroid mWindowAndroid;
     private EmbeddedTestServer mTestServer;
@@ -105,6 +106,7 @@ public class Fido2CredentialRequestTest {
     private static final String FILLER_ERROR_MSG = "Error Error";
     private AuthenticatorCallback mCallback;
     private long mStartTimeMs;
+    private MockWebContents mMockWebContents;
 
     /**
      * This class constructs the parameters array that is used for testMakeCredential_with_param and
@@ -406,12 +408,13 @@ public class Fido2CredentialRequestTest {
         mFrameHost.setLastCommittedURL(new GURL(mUrl));
         mOrigin = mFrameHost.getLastCommittedOrigin();
         mRequest = new Fido2CredentialRequest();
-        mRequest.setWebContentsForTesting(new MockWebContents());
+        mMockWebContents = new MockWebContents();
+        mRequest.setWebContentsForTesting(mMockWebContents);
         Fido2ApiHandler.overrideInstanceForTesting(new MockFido2ApiHandler(mRequest));
 
         MockitoAnnotations.initMocks(this);
         mTestAuthenticatorImplJni = new TestAuthenticatorImplJni(mCallback);
-        mocker.mock(InternalAuthenticatorJni.TEST_HOOKS, mTestAuthenticatorImplJni);
+        mMocker.mock(InternalAuthenticatorJni.TEST_HOOKS, mTestAuthenticatorImplJni);
 
         mCreationOptions = Fido2ApiTestHelper.createDefaultMakeCredentialOptions();
         mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
@@ -1220,6 +1223,58 @@ public class Fido2CredentialRequestTest {
                 errorStatus -> mCallback.onError(errorStatus));
         mCallback.blockUntilCalled();
         Assert.assertEquals(mCallback.getStatus(), status);
+        Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_securePaymentConfirmation_canReplaceClientDataJson() {
+        mWindowAndroid.setResponseIntent(
+                Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
+        TestThreadUtils.runOnUiThreadBlocking(() -> mRequest.setWindowForTesting(mWindowAndroid));
+
+        Fido2ApiTestHelper.setSecurePaymentConfirmationV2Enabled(mMocker);
+        String clientDataJson = "520";
+        Fido2ApiTestHelper.mockClientDataJson(mMocker, clientDataJson);
+
+        mMockWebContents.setLastCommittedUrl(new GURL("https://www.chromium.org/pay"));
+
+        mRequestOptions.payment = Fido2ApiTestHelper.createPaymentOptions();
+        mRequestOptions.challenge = new byte[3];
+        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        mCallback.blockUntilCalled();
+        Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
+        Assert.assertEquals(new String(mCallback.getGetAssertionResponse().info.clientDataJson,
+                                    StandardCharsets.UTF_8),
+                clientDataJson);
+        Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_securePaymentConfirmation_clientDataJsonCannotBeEmpty() {
+        mWindowAndroid.setResponseIntent(
+                Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
+        TestThreadUtils.runOnUiThreadBlocking(() -> mRequest.setWindowForTesting(mWindowAndroid));
+
+        Fido2ApiTestHelper.setSecurePaymentConfirmationV2Enabled(mMocker);
+        Fido2ApiTestHelper.mockClientDataJson(mMocker, null);
+
+        mMockWebContents.setLastCommittedUrl(new GURL("https://www.chromium.org/pay"));
+
+        mRequestOptions.payment = Fido2ApiTestHelper.createPaymentOptions();
+        mRequestOptions.challenge = new byte[3];
+        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        mCallback.blockUntilCalled();
+        Assert.assertEquals(
+                Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR), mCallback.getStatus());
+        Assert.assertNull(mCallback.getGetAssertionResponse());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
     }
 }
