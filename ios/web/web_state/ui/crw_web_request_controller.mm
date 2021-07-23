@@ -126,13 +126,7 @@ enum class BackForwardNavigationType {
 
   item->SetNavigationInitiationType(
       web::NavigationInitiationType::BROWSER_INITIATED);
-  if (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage)) {
-    // The error_retry_state_machine may still be in the
-    // |kDisplayingWebErrorForFailedNavigation| from the navigation that is
-    // being replaced. As the navigation is now successful, the error can be
-    // cleared.
-    item->error_retry_state_machine().SetNoNavigationError();
-  }
+
   // The load data call will replace the current navigation and the webView URL
   // of the navigation will be replaced by |URL|. Set the URL of the
   // navigationItem to keep them synced.

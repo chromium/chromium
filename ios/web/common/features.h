@@ -37,9 +37,6 @@ extern const base::Feature kClearOldNavigationRecordsWorkaround;
 // Feature flag enabling persistent downloads.
 extern const base::Feature kEnablePersistentDownloads;
 
-// Feature flag for the new error page workflow, using JavaScript.
-extern const base::Feature kUseJSForErrorPage;
-
 // When enabled, for each navigation, the default user agent is chosen by the
 // WebClient GetDefaultUserAgent() method. If it is disabled, the mobile version
 // is requested by default.

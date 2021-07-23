@@ -1100,12 +1100,6 @@ TEST_F(WebStateObserverTest, FailedNavigation) {
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::FAILURE));
 
-  if (!base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
-    // Load error page HTML by [WKWebView loadHTMLString:baseURL:].
-    EXPECT_CALL(observer_, DidStartLoading(web_state()));
-    EXPECT_CALL(observer_, DidStopLoading(web_state()));
-  }
-
   test::LoadUrl(web_state(), url);
 
   // Ensure that title is not overridden by a placeholder navigation.
@@ -1283,12 +1277,6 @@ TEST_F(WebStateObserverTest, WebViewUnsupportedSchemeNavigation) {
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::FAILURE));
 
-  if (!base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
-    // Load error page HTML by [WKWebView loadHTMLString:baseURL:].
-    EXPECT_CALL(observer_, DidStartLoading(web_state()));
-    EXPECT_CALL(observer_, DidStopLoading(web_state()));
-  }
-
   test::LoadUrl(web_state(), url);
   NSError* error = testing::CreateErrorWithUnderlyingErrorChain(
       {{NSURLErrorDomain, -1002}, {net::kNSErrorDomain, net::ERR_INVALID_URL}});
@@ -1336,12 +1324,6 @@ TEST_F(WebStateObserverTest, WebViewUnsupportedUrlNavigation) {
 
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::FAILURE));
-
-  if (!base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
-    // Load error page HTML by [WKWebView loadHTMLString:baseURL:].
-    EXPECT_CALL(observer_, DidStartLoading(web_state()));
-    EXPECT_CALL(observer_, DidStopLoading(web_state()));
-  }
 
   test::LoadUrl(web_state(), url);
   NSError* error = testing::CreateErrorWithUnderlyingErrorChain(
@@ -2152,12 +2134,6 @@ TEST_F(WebStateObserverTest, FLAKY_FailedLoad) {
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::FAILURE));
 
-  if (!base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
-    // Load error page HTML by [WKWebView loadHTMLString:baseURL:].
-    EXPECT_CALL(observer_, DidStartLoading(web_state()));
-    EXPECT_CALL(observer_, DidStopLoading(web_state()));
-  }
-
   test::LoadUrl(web_state(), url);
 
   // Server will never stop responding. Wait until the navigation is committed.
@@ -2200,12 +2176,6 @@ TEST_F(WebStateObserverTest, FailedSslConnection) {
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::FAILURE));
 
-  if (!base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
-    // Finally, the error page itself is loaded.
-    EXPECT_CALL(observer_, DidStartLoading(web_state()));
-    EXPECT_CALL(observer_, DidStopLoading(web_state()));
-  }
-
   test::LoadUrl(web_state(), url);
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     base::RunLoop().RunUntilIdle();
@@ -2236,9 +2206,6 @@ TEST_F(WebStateObserverTest, DisallowRequest) {
 // Tests rejecting the navigation from ShouldAllowRequest with an error. The
 // load should stop, and an error page should be loaded.
 TEST_F(WebStateObserverTest, DisallowRequestAndShowError) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(web::features::kUseJSForErrorPage);
-
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
 
   WebStatePolicyDecider::RequestInfo expected_request_info(

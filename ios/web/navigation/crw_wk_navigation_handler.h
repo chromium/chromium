@@ -143,16 +143,6 @@ class WKBackForwardListItemHolder;
 - (ui::PageTransition)pageTransitionFromNavigationType:
     (WKNavigationType)navigationType;
 
-// Loads a blank page directly into WKWebView as a placeholder to create a new
-// back forward item (f.e. for error page). This page has the URL
-// about:blank?for=<encoded original URL>. If |originalContext| is provided,
-// reuse it for the placeholder navigation instead of creating a new one.
-- (web::NavigationContextImpl*)
-    loadPlaceholderInWebViewForURL:(const GURL&)originalURL
-                 rendererInitiated:(BOOL)rendererInitiated
-                        forContext:(std::unique_ptr<web::NavigationContextImpl>)
-                                       originalContext;
-
 // Called when the web page has changed document and/or URL, and so the page
 // navigation should be reported to the delegate, and internal state updated to
 // reflect the fact that the navigation has occurred. |context| contains

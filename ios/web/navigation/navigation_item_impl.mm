@@ -81,7 +81,6 @@ NavigationItemImpl::NavigationItemImpl(const NavigationItemImpl& item)
           item.should_skip_repost_form_confirmation_),
       should_skip_serialization_(item.should_skip_serialization_),
       post_data_([item.post_data_ copy]),
-      error_retry_state_machine_(item.error_retry_state_machine_),
       navigation_initiation_type_(item.navigation_initiation_type_),
       is_untrusted_(item.is_untrusted_),
       cached_display_title_(item.cached_display_title_),
@@ -102,7 +101,6 @@ const GURL& NavigationItemImpl::GetOriginalRequestURL() const {
 void NavigationItemImpl::SetURL(const GURL& url) {
   url_ = url;
   cached_display_title_.clear();
-  error_retry_state_machine_.SetURL(url);
 }
 
 const GURL& NavigationItemImpl::GetURL() const {
@@ -325,11 +323,6 @@ void NavigationItemImpl::RestoreStateFromItem(NavigationItem* other) {
     SetPageDisplayState(other->GetPageDisplayState());
     SetVirtualURL(other->GetVirtualURL());
   }
-}
-
-ErrorRetryStateMachine& NavigationItemImpl::error_retry_state_machine() {
-  DCHECK(!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage));
-  return error_retry_state_machine_;
 }
 
 // static

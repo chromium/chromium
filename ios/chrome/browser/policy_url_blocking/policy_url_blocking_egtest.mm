@@ -54,7 +54,7 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
   config.additional_args.push_back(std::string("--") +
                                    switches::kInstallURLBlocklistHandlers);
   config.additional_args.push_back(
-      std::string("--enable-features=URLBlocklistIOS,UseJSForErrorPage"));
+      std::string("--enable-features=URLBlocklistIOS"));
   config.relaunch_policy = NoForceRelaunchAndResetState;
   return config;
 }

@@ -21,8 +21,8 @@
 #import "ios/web/navigation/crw_navigation_item_holder.h"
 #import "ios/web/navigation/crw_pending_navigation_info.h"
 #import "ios/web/navigation/crw_wk_navigation_states.h"
-#include "ios/web/navigation/error_retry_state_machine.h"
 #import "ios/web/navigation/navigation_context_impl.h"
+#import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #include "ios/web/navigation/navigation_manager_util.h"
 #import "ios/web/navigation/web_kit_constants.h"
@@ -742,16 +742,9 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     _certVerificationErrors->Clear();
   }
 
-  web::NavigationContextImpl* context =
-      [self.navigationStates contextForNavigation:navigation];
-
-  // Remove the navigation to immediately get rid of pending item. Navigation
-  // should not be cleared, however, in the case of a committed interstitial
-  // for an SSL error.
+  // Remove the navigation to immediately get rid of pending item.
   if (web::WKNavigationState::NONE !=
-          [self.navigationStates stateForNavigation:navigation] &&
-      !(context && web::IsWKWebViewSSLCertError(context->GetError()) &&
-        !base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage))) {
+      [self.navigationStates stateForNavigation:navigation]) {
     [self.navigationStates removeNavigation:navigation];
   }
 }
@@ -1512,12 +1505,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
         // load of page.
         decisionHandler(WKNavigationActionPolicyCancel);
 
-        // Handling presentation of policy decision error is dependent on
-        // |web::features::kUseJSForErrorPage| feature.
-        if (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage)) {
-          return;
-        }
-
         ui::PageTransition transition =
             [self pageTransitionFromNavigationType:action.navigationType];
 
@@ -1776,49 +1763,27 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
       web::GetItemWithUniqueID(self.navigationManagerImpl, navigationContext);
 
   if (item) {
-    if (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage)) {
-      WKNavigation* errorNavigation =
-          [self displayErrorPageWithError:error
-                                inWebView:webView
-                        isProvisionalLoad:provisionalLoad];
+    WKNavigation* errorNavigation =
+        [self displayErrorPageWithError:error
+                              inWebView:webView
+                      isProvisionalLoad:provisionalLoad];
 
-      std::unique_ptr<web::NavigationContextImpl> originalContext =
-          [self.navigationStates removeNavigation:navigation];
-      originalContext->SetLoadingErrorPage(true);
-      [self.navigationStates setContext:std::move(originalContext)
-                          forNavigation:errorNavigation];
-      // Return as the context was moved.
-      return;
-    } else {
-      GURL errorURL =
-          net::GURLWithNSURL(error.userInfo[NSURLErrorFailingURLErrorKey]);
-      web::ErrorRetryCommand command = web::ErrorRetryCommand::kDoNothing;
-      if (provisionalLoad) {
-        command =
-            item->error_retry_state_machine().DidFailProvisionalNavigation(
-                net::GURLWithNSURL(webView.URL), errorURL);
-      } else {
-        command = item->error_retry_state_machine().DidFailNavigation(
-            net::GURLWithNSURL(webView.URL));
-      }
-      [self handleErrorRetryCommand:command
-                     navigationItem:item
-                  navigationContext:navigationContext
-                 originalNavigation:navigation
-                            webView:webView];
-    }
+    std::unique_ptr<web::NavigationContextImpl> originalContext =
+        [self.navigationStates removeNavigation:navigation];
+    originalContext->SetLoadingErrorPage(true);
+    [self.navigationStates setContext:std::move(originalContext)
+                        forNavigation:errorNavigation];
+    // Return as the context was moved.
+    return;
   }
 }
 
-// Displays an error page with details from |error| in |webView| using JS error
-// pages (associated with the kUseJSForErrorPage flag.) The error page is
-// presented with |transition| and associated with |blockedNSURL|.
+// Displays an error page with details from |error| in |webView|. The error page
+// is presented with |transition| and associated with |blockedNSURL|.
 - (void)displayError:(NSError*)error
     forCancelledNavigationToURL:(NSURL*)blockedNSURL
                       inWebView:(WKWebView*)webView
                  withTransition:(ui::PageTransition)transition {
-  DCHECK(base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage));
-
   const GURL blockedURL = net::GURLWithNSURL(blockedNSURL);
 
   // Error page needs the URL string in the error's userInfo for proper
@@ -1865,14 +1830,11 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
 }
 
 // Creates and returns a new WKNavigation to load an error page displaying
-// details of |error| inside |webView|. (Using JS error pages associated with
-// the kUseJSForErrorPage flag.) |provisionalLoad| should be set according to
-// whether or not the error occurred during a provisionalLoad.
+// details of |error| inside |webView|. |provisionalLoad| should be set
+// according to whether or not the error occurred during a provisionalLoad.
 - (WKNavigation*)displayErrorPageWithError:(NSError*)error
                                  inWebView:(WKWebView*)webView
                          isProvisionalLoad:(BOOL)provisionalLoad {
-  DCHECK(base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage));
-
   CRWErrorPageHelper* errorPage =
       [[CRWErrorPageHelper alloc] initWithError:error];
   WKBackForwardListItem* backForwardItem = webView.backForwardList.currentItem;
@@ -1910,18 +1872,20 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
 - (void)handleCancelledError:(NSError*)error
                forNavigation:(WKNavigation*)navigation
              provisionalLoad:(BOOL)provisionalLoad {
-  if ([self shouldCancelLoadForCancelledError:error
-                              provisionalLoad:provisionalLoad]) {
-    std::unique_ptr<web::NavigationContextImpl> navigationContext =
-        [self.navigationStates removeNavigation:navigation];
-    [self loadCancelled];
-    web::NavigationItemImpl* item =
-        navigationContext ? web::GetItemWithUniqueID(self.navigationManagerImpl,
-                                                     navigationContext.get())
-                          : nullptr;
-    if (self.navigationManagerImpl->GetPendingItem() == item) {
-      self.navigationManagerImpl->DiscardNonCommittedItems();
-    }
+  if (![self shouldCancelLoadForCancelledError:error
+                               provisionalLoad:provisionalLoad])
+    return;
+
+  std::unique_ptr<web::NavigationContextImpl> navigationContext =
+      [self.navigationStates removeNavigation:navigation];
+  [self loadCancelled];
+  web::NavigationItemImpl* item =
+      navigationContext ? web::GetItemWithUniqueID(self.navigationManagerImpl,
+                                                   navigationContext.get())
+                        : nullptr;
+  if (self.navigationManagerImpl->GetPendingItem() == item) {
+    self.navigationManagerImpl->DiscardNonCommittedItems();
+  }
 
     if (provisionalLoad) {
       if (!navigationContext &&
@@ -1934,34 +1898,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
         self.webStateImpl->OnNavigationFinished(navigationContext.get());
       }
     }
-  } else if (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-             !provisionalLoad) {
-    web::NavigationContextImpl* navigationContext =
-        [self.navigationStates contextForNavigation:navigation];
-    web::NavigationItemImpl* item =
-        navigationContext ? web::GetItemWithUniqueID(self.navigationManagerImpl,
-                                                     navigationContext)
-                          : nullptr;
-    if (item) {
-      // Since the navigation has already been committed, it will retain its
-      // back / forward item even though the load has been cancelled. Update the
-      // error state machine so that if future loads of this item fail, the same
-      // item will be reused for the error view rather than loading a
-      // placeholder URL into a new navigation item, since the latter would
-      // destroy the forward list.
-      item->error_retry_state_machine().SetNoNavigationError();
-    }
-  }
-}
-
-// Executes the command specified by the ErrorRetryStateMachine.
-- (void)handleErrorRetryCommand:(web::ErrorRetryCommand)command
-                 navigationItem:(web::NavigationItemImpl*)item
-              navigationContext:(web::NavigationContextImpl*)context
-             originalNavigation:(WKNavigation*)originalNavigation
-                        webView:(WKWebView*)webView {
-  // TODO(crbug.com/1038303): Remove this.
-  NOTREACHED();
 }
 
 // Used to decide whether a load that generates errors with the
@@ -2029,49 +1965,24 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
       error.userInfo[NSURLErrorFailingURLStringErrorKey];
   GURL failingURL(base::SysNSStringToUTF8(failingURLString));
   GURL itemURL = item->GetURL();
-  if (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage)) {
-    if (itemURL != failingURL)
-      item->SetVirtualURL(failingURL);
-  }
-  int itemID = item->GetUniqueID();
+  if (itemURL != failingURL)
+    item->SetVirtualURL(failingURL);
   web::GetWebClient()->PrepareErrorPage(
       self.webStateImpl, failingURL, error, context->IsPost(),
       self.webStateImpl->GetBrowserState()->IsOffTheRecord(), ssl_info,
       context->GetNavigationId(), base::BindOnce(^(NSString* errorHTML) {
         if (errorHTML) {
-          if (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage)) {
-            CRWErrorPageHelper* errorPageHelper =
-                [[CRWErrorPageHelper alloc] initWithError:context->GetError()];
+          CRWErrorPageHelper* errorPageHelper =
+              [[CRWErrorPageHelper alloc] initWithError:context->GetError()];
 
-            [webView evaluateJavaScript:[errorPageHelper
-                                            scriptForInjectingHTML:errorHTML
-                                                addAutomaticReload:YES]
-                      completionHandler:^(id result, NSError* error) {
-                        DCHECK(!error)
-                            << "Error injecting error page HTML: "
-                            << base::SysNSStringToUTF8(error.description);
-                      }];
-          } else {
-            WKNavigation* navigation =
-                [webView loadHTMLString:errorHTML
-                                baseURL:net::NSURLWithGURL(failingURL)];
-            auto loadHTMLContext =
-                web::NavigationContextImpl::CreateNavigationContext(
-                    self.webStateImpl, failingURL,
-                    /*has_user_gesture=*/false, ui::PAGE_TRANSITION_FIRST,
-                    /*is_renderer_initiated=*/false);
-
-            if (!base::FeatureList::IsEnabled(
-                    web::features::kUseJSForErrorPage))
-              loadHTMLContext->SetLoadingErrorPage(true);
-
-            loadHTMLContext->SetNavigationItemUniqueID(itemID);
-
-            [self.navigationStates setContext:std::move(loadHTMLContext)
-                                forNavigation:navigation];
-            [self.navigationStates setState:web::WKNavigationState::REQUESTED
-                              forNavigation:navigation];
-          }
+          [webView evaluateJavaScript:[errorPageHelper
+                                          scriptForInjectingHTML:errorHTML
+                                              addAutomaticReload:YES]
+                    completionHandler:^(id result, NSError* error) {
+                      DCHECK(!error)
+                          << "Error injecting error page HTML: "
+                          << base::SysNSStringToUTF8(error.description);
+                    }];
         }
 
         // TODO(crbug.com/973765): This is a workaround because |item| might
@@ -2294,16 +2205,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
                  ? ui::PAGE_TRANSITION_LINK
                  : ui::PAGE_TRANSITION_CLIENT_REDIRECT;
   }
-}
-
-- (web::NavigationContextImpl*)
-    loadPlaceholderInWebViewForURL:(const GURL&)originalURL
-                 rendererInitiated:(BOOL)rendererInitiated
-                        forContext:(std::unique_ptr<web::NavigationContextImpl>)
-                                       originalContext {
-  // TODO(crbug.com/1038303): Remove this.
-  NOTREACHED();
-  return nullptr;
 }
 
 - (void)webPageChangedWithContext:(web::NavigationContextImpl*)context

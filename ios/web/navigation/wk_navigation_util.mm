@@ -80,7 +80,6 @@ bool URLNeedsUserAgentType(const GURL& url) {
     return true;
 
   if (url.SchemeIs(url::kFileScheme) &&
-      base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
       [CRWErrorPageHelper isErrorPageFileURL:url]) {
     return true;
   }

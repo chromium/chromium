@@ -936,8 +936,7 @@ bool WebStateImpl::SetSessionStateData(NSData* data) {
     return false;
   for (int i = 0; i < navigation_manager_->GetItemCount(); i++) {
     web::NavigationItem* item = navigation_manager_->GetItemAtIndex(i);
-    if (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-        [CRWErrorPageHelper isErrorPageFileURL:item->GetURL()]) {
+    if ([CRWErrorPageHelper isErrorPageFileURL:item->GetURL()]) {
       item->SetVirtualURL([CRWErrorPageHelper
           failedNavigationURLFromErrorPageFileURL:item->GetURL()]);
     }
