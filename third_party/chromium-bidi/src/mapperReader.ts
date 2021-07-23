@@ -16,7 +16,8 @@
 `use strict`;
 
 import fs from 'fs/promises';
+import path from 'path';
 
 export default async function read(): Promise<string> {
-  return await fs.readFile(new URL('./mapper.js', import.meta.url), 'utf8');
+  return await fs.readFile(path.join(__dirname, 'mapper.js'), 'utf8');
 }

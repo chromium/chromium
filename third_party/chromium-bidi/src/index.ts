@@ -19,7 +19,7 @@ import { launchBrowser, BrowserProcess } from './browserLauncher.js';
 import mapperReader from './mapperReader.js';
 import { MapperServer } from './mapperServer.js';
 import { BidiServerRunner } from './bidiServerRunner.js';
-import { IServer } from './iServer.js';
+import { IServer } from './utils/iServer.js';
 import argparse from 'argparse';
 
 function parseArguments() {

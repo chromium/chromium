@@ -15,7 +15,7 @@
  */
 import websocket from 'websocket';
 import http from 'http';
-import { IServer } from './iServer';
+import { IServer } from './utils/iServer';
 
 import debug from 'debug';
 import { BrowserProcess } from './browserLauncher';

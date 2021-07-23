@@ -11,7 +11,7 @@ export default {
   plugins: [
     json(),
     typescript({
-      tsconfig: 'src/bidiMapper/tsconfig.json',
+      tsconfig: 'src/tsconfig.json',
     }),
   ],
 };

@@ -20,7 +20,7 @@ const debugSend = debug('bidiMapper:SEND ►');
 const debugRecv = debug('bidiMapper:RECV ◀');
 const debugLog = debug('bidiMapper:log');
 
-import { IServer } from './iServer';
+import { IServer } from './utils/iServer';
 import WebSocket from 'ws';
 
 export class MapperServer implements IServer {

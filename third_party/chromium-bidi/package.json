@@ -2,10 +2,9 @@
   "name": "bidi",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "main": "index.ts",
   "scripts": {
-    "unit": "cross-env TS_NODE_PROJECT='src/bidiMapper/tsconfig.json' mocha",
+    "unit": "cross-env TS_NODE_PROJECT='src/tsconfig.json' mocha",
     "e2e": "python3 -m pytest --rootdir=tests",
     "bidi-server": "npm run build && npm run server-no-build --",
     "server-no-build": "node ./src/.build/index.js",

@@ -3,6 +3,7 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "target": "ESNext",
+    "module": "commonjs",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "noImplicitAny": true

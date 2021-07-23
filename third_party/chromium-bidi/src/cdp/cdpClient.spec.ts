@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { connectCdp } from './cdpClient';
-import { StubServer } from './tests/stubServer.spec';
+import { StubServer } from '../tests/stubServer.spec';
 import { assert as chai_assert } from 'chai';
 import { assert as sinon_assert } from 'sinon';
 import { Protocol } from 'devtools-protocol';

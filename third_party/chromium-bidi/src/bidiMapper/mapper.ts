@@ -15,11 +15,11 @@
  */
 import { CommandProcessor } from './commandProcessor';
 
-import { CdpClient, connectCdp } from './utils/cdpClient';
+import { CdpClient, connectCdp } from '../cdp';
 import { BidiServer } from './utils/bidiServer';
-import { ServerBinding, IServer } from './utils/iServer';
+import { ServerBinding, IServer } from '../utils/iServer';
 
-import { log } from './utils/log';
+import { log } from '../utils/log';
 const logSystem = log('system');
 
 declare global {

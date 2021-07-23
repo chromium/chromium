@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IServer } from './utils/iServer';
-import { CdpClient } from './utils/cdpClient';
+import { IServer } from '../utils/iServer';
+import { CdpClient } from '../cdp';
 import { BrowsingContextProcessor } from './domains/context/browsingContextProcessor';
 import { Context } from './domains/context/context';
 import { Protocol } from 'devtools-protocol';

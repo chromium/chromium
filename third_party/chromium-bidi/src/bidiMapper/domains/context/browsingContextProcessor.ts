@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { log } from '../../utils/log';
-import { CdpClient } from '../../utils/cdpClient';
+import { log } from '../../../utils/log';
+import { CdpClient } from '../../../cdp';
 import { Context } from './context';
 import Protocol from 'devtools-protocol';
 const logContext = log('context');

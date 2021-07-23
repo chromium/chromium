@@ -9,7 +9,7 @@
         "kind": "build",
         "isDefault": true
       },
-      "label": "npm: build",
+      "label": "npm: build"
     }
   ]
 }

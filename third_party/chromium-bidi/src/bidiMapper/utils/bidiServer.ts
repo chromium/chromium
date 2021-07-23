@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ServerBinding, AbstractServer } from './iServer';
-import { log } from './log';
+import { ServerBinding, AbstractServer } from '../../utils/iServer';
+import { log } from '../../utils/log';
 const logBidi = log('bidi');
 
 export class BidiServer extends AbstractServer {

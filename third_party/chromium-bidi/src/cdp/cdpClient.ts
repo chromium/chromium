@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { log } from './log';
+import { log } from '../utils/log';
 const logCdp = log('cdp');
 
-import { EventEmitter } from './events';
-import { IServer } from './iServer';
+import { EventEmitter } from '../utils/events';
+import { IServer } from '../utils/iServer';
 
 import * as browserProtocol from 'devtools-protocol/json/browser_protocol.json';
 import * as jsProtocol from 'devtools-protocol/json/js_protocol.json';

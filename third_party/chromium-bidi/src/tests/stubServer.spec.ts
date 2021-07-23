@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { assert, spy, SinonSpy } from 'sinon';
-import { IServer } from '../iServer';
+import { IServer } from '../utils/iServer';
 
 export class StubServer implements IServer {
   setOnMessage: ((messageObj: any) => Promise<any>) & SinonSpy<any[], any>;
