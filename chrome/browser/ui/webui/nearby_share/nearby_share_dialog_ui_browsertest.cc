@@ -22,8 +22,8 @@ class TestSharesheetController : public sharesheet::SharesheetController {
  public:
   // sharesheet::SharesheetController
   Profile* GetProfile() override { return nullptr; }
-  void SetSharesheetSize(int width, int height) override {}
-  void CloseSharesheet(::sharesheet::SharesheetResult result) override {
+  void SetBubbleSize(int width, int height) override {}
+  void CloseBubble(::sharesheet::SharesheetResult result) override {
     if (result == ::sharesheet::SharesheetResult::kCancel)
       close_called = true;
   }

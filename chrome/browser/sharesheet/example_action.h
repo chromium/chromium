@@ -7,23 +7,28 @@
 
 #include "chrome/browser/sharesheet/share_action.h"
 
-class ExampleAction : public sharesheet::ShareAction {
+namespace sharesheet {
+
+class ExampleAction : public ShareAction {
  public:
   ExampleAction();
   ~ExampleAction() override;
   ExampleAction(const ExampleAction&) = delete;
   ExampleAction& operator=(const ExampleAction&) = delete;
 
+  // ShareAction:
   const std::u16string GetActionName() override;
   const gfx::VectorIcon& GetActionIcon() override;
-  void LaunchAction(sharesheet::SharesheetController* controller,
+  void LaunchAction(SharesheetController* controller,
                     views::View* root_view,
                     apps::mojom::IntentPtr intent) override;
-  void OnClosing(sharesheet::SharesheetController* controller) override;
+  void OnClosing(SharesheetController* controller) override;
 
  private:
-  sharesheet::SharesheetController* controller_ = nullptr;
+  SharesheetController* controller_ = nullptr;
   std::string name_;
 };
+
+}  // namespace sharesheet
 
 #endif  // CHROME_BROWSER_SHARESHEET_EXAMPLE_ACTION_H_

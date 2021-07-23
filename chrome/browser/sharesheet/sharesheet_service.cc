@@ -84,7 +84,7 @@ void SharesheetService::CloseBubble(gfx::NativeWindow native_window,
   SharesheetServiceDelegate* delegate = GetDelegate(native_window);
   if (delegate == nullptr)
     return;
-  delegate->CloseSharesheet(result);
+  delegate->CloseBubble(result);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -92,8 +92,8 @@ void SharesheetService::ShowNearbyShareBubble(
     gfx::NativeWindow native_window,
     apps::mojom::IntentPtr intent,
     SharesheetMetrics::LaunchSource source,
-    sharesheet::DeliveredCallback delivered_callback,
-    sharesheet::CloseCallback close_callback) {
+    DeliveredCallback delivered_callback,
+    CloseCallback close_callback) {
   DCHECK(intent->action == apps_util::kIntentActionSend ||
          intent->action == apps_util::kIntentActionSendMultiple);
 
@@ -106,7 +106,7 @@ void SharesheetService::ShowNearbyShareBubble(
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
 
   auto* sharesheet_service_delegate = GetOrCreateDelegate(native_window);
-  sharesheet_service_delegate->ShowNearbyShareBubble(
+  sharesheet_service_delegate->ShowNearbyShareBubbleForArc(
       std::move(intent), std::move(delivered_callback),
       std::move(close_callback));
 }
@@ -151,7 +151,7 @@ void SharesheetService::OnTargetSelected(gfx::NativeWindow native_window,
   } else if (type == TargetType::kArcApp || type == TargetType::kWebApp) {
     DCHECK(intent);
     LaunchApp(target_name, std::move(intent));
-    delegate->CloseSharesheet(SharesheetResult::kSuccess);
+    delegate->CloseBubble(SharesheetResult::kSuccess);
   }
 }
 

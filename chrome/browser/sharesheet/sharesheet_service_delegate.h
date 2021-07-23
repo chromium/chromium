@@ -48,7 +48,7 @@ class SharesheetServiceDelegate : public ::sharesheet::SharesheetController {
                           sharesheet::CloseCallback close_callback);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  virtual void ShowNearbyShareBubble(
+  virtual void ShowNearbyShareBubbleForArc(
       apps::mojom::IntentPtr intent,
       sharesheet::DeliveredCallback delivered_callback,
       sharesheet::CloseCallback close_callback) = 0;
@@ -71,9 +71,9 @@ class SharesheetServiceDelegate : public ::sharesheet::SharesheetController {
   // SharesheetController:
   Profile* GetProfile() override;
   // Default implementation does nothing. Override as needed.
-  void SetSharesheetSize(int width, int height) override;
+  void SetBubbleSize(int width, int height) override;
   // Default implementation does nothing. Override as needed.
-  void CloseSharesheet(SharesheetResult result) override;
+  void CloseBubble(SharesheetResult result) override;
 
  private:
   // Only used for ID purposes. NativeWindow will always outlive the

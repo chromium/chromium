@@ -120,11 +120,10 @@ void NearbyShareDialogUI::BindInterface(
 
 void NearbyShareDialogUI::HandleClose(const base::ListValue* args) {
   if (sharesheet_controller_) {
-    sharesheet_controller_->CloseSharesheet(
-        sharesheet::SharesheetResult::kCancel);
+    sharesheet_controller_->CloseBubble(sharesheet::SharesheetResult::kCancel);
 
     // We need to clear out the controller here to protect against calling
-    // CloseSharesheet() more than once, which will cause a crash.
+    // CloseBubble() more than once, which will cause a crash.
     sharesheet_controller_ = nullptr;
   }
 }

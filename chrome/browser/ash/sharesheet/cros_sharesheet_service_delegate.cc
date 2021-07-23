@@ -40,7 +40,7 @@ void CrosSharesheetServiceDelegate::ShowBubble(
                                       std::move(close_callback));
 }
 
-void CrosSharesheetServiceDelegate::ShowNearbyShareBubble(
+void CrosSharesheetServiceDelegate::ShowNearbyShareBubbleForArc(
     apps::mojom::IntentPtr intent,
     ::sharesheet::DeliveredCallback delivered_callback,
     ::sharesheet::CloseCallback close_callback) {
@@ -54,22 +54,22 @@ void CrosSharesheetServiceDelegate::ShowNearbyShareBubble(
     }
     return;
   }
-  sharesheet_bubble_view_->ShowNearbyShareBubble(std::move(intent),
-                                                 std::move(delivered_callback),
-                                                 std::move(close_callback));
+  sharesheet_bubble_view_->ShowNearbyShareBubbleForArc(
+      std::move(intent), std::move(delivered_callback),
+      std::move(close_callback));
 }
 
 void CrosSharesheetServiceDelegate::OnActionLaunched() {
   sharesheet_bubble_view_->ShowActionView();
 }
 
-void CrosSharesheetServiceDelegate::SetSharesheetSize(int width, int height) {
+void CrosSharesheetServiceDelegate::SetBubbleSize(int width, int height) {
   DCHECK_GT(width, 0);
   DCHECK_GT(height, 0);
   sharesheet_bubble_view_->ResizeBubble(width, height);
 }
 
-void CrosSharesheetServiceDelegate::CloseSharesheet(
+void CrosSharesheetServiceDelegate::CloseBubble(
     ::sharesheet::SharesheetResult result) {
   views::Widget::ClosedReason reason =
       views::Widget::ClosedReason::kUnspecified;

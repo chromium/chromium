@@ -46,9 +46,10 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
                   apps::mojom::IntentPtr intent,
                   ::sharesheet::DeliveredCallback delivered_callback,
                   ::sharesheet::CloseCallback close_callback);
-  void ShowNearbyShareBubble(apps::mojom::IntentPtr intent,
-                             ::sharesheet::DeliveredCallback delivered_callback,
-                             ::sharesheet::CloseCallback close_callback);
+  void ShowNearbyShareBubbleForArc(
+      apps::mojom::IntentPtr intent,
+      ::sharesheet::DeliveredCallback delivered_callback,
+      ::sharesheet::CloseCallback close_callback);
   void ShowActionView();
   void ResizeBubble(const int& width, const int& height);
   void CloseBubble(views::Widget::ClosedReason reason);

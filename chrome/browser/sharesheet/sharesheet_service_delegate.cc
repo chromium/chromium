@@ -61,8 +61,8 @@ Profile* SharesheetServiceDelegate::GetProfile() {
   return sharesheet_service_->GetProfile();
 }
 
-void SharesheetServiceDelegate::SetSharesheetSize(int width, int height) {}
+void SharesheetServiceDelegate::SetBubbleSize(int width, int height) {}
 
-void SharesheetServiceDelegate::CloseSharesheet(SharesheetResult result) {}
+void SharesheetServiceDelegate::CloseBubble(SharesheetResult result) {}
 
 }  // namespace sharesheet

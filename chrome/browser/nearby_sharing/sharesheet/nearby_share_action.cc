@@ -134,7 +134,7 @@ void NearbyShareAction::LaunchAction(
     views::View* root_view,
     apps::mojom::IntentPtr intent) {
   gfx::Size size = ComputeSize();
-  controller->SetSharesheetSize(size.width(), size.height());
+  controller->SetBubbleSize(size.width(), size.height());
 
   auto* profile = controller->GetProfile();
   auto view = std::make_unique<views::WebView>(profile);

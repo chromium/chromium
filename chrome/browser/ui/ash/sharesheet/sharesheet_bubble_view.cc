@@ -248,7 +248,7 @@ void SharesheetBubbleView::ShowBubble(
   UpdateAnchorPosition();
 }
 
-void SharesheetBubbleView::ShowNearbyShareBubble(
+void SharesheetBubbleView::ShowNearbyShareBubbleForArc(
     apps::mojom::IntentPtr intent,
     ::sharesheet::DeliveredCallback delivered_callback,
     ::sharesheet::CloseCallback close_callback) {

@@ -8,6 +8,8 @@
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
+namespace sharesheet {
+
 ExampleAction::ExampleAction() {
   name_ = "example";
 }
@@ -22,15 +24,17 @@ const gfx::VectorIcon& ExampleAction::GetActionIcon() {
   return kAddIcon;
 }
 
-void ExampleAction::LaunchAction(sharesheet::SharesheetController* controller,
+void ExampleAction::LaunchAction(SharesheetController* controller,
                                  views::View* root_view,
                                  apps::mojom::IntentPtr intent) {
   LOG(ERROR) << "ExampleAction launches.";
   controller_ = controller;
-  controller_->CloseSharesheet(::sharesheet::SharesheetResult::kSuccess);
+  controller_->CloseBubble(SharesheetResult::kSuccess);
 }
 
-void ExampleAction::OnClosing(sharesheet::SharesheetController* controller) {
+void ExampleAction::OnClosing(SharesheetController* controller) {
   LOG(ERROR) << "ExampleAction knows it needs to spin down now.";
   controller_ = nullptr;
 }
+
+}  // namespace sharesheet

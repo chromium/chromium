@@ -31,20 +31,20 @@ class CrosSharesheetServiceDelegate
   CrosSharesheetServiceDelegate& operator=(
       const CrosSharesheetServiceDelegate&) = delete;
 
-  // ::sharesheet::SharesheetServiceDelegate overrides:
+  // ::sharesheet::SharesheetServiceDelegate:
   void ShowBubble(std::vector<::sharesheet::TargetInfo> targets,
                   apps::mojom::IntentPtr intent,
                   ::sharesheet::DeliveredCallback delivered_callback,
                   ::sharesheet::CloseCallback close_callback) override;
-  void ShowNearbyShareBubble(
+  void ShowNearbyShareBubbleForArc(
       apps::mojom::IntentPtr intent,
       ::sharesheet::DeliveredCallback delivered_callback,
       ::sharesheet::CloseCallback close_callback) override;
   void OnActionLaunched() override;
 
-  // ::sharesheet::SharesheetController overrides:
-  void SetSharesheetSize(int width, int height) override;
-  void CloseSharesheet(::sharesheet::SharesheetResult result) override;
+  // ::sharesheet::SharesheetController:
+  void SetBubbleSize(int width, int height) override;
+  void CloseBubble(::sharesheet::SharesheetResult result) override;
 
  private:
   bool IsBubbleVisible() const;

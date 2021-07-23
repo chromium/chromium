@@ -7,25 +7,29 @@
 
 #include "chrome/browser/sharesheet/share_action.h"
 
-class DriveShareAction : public sharesheet::ShareAction {
+namespace sharesheet {
+
+class DriveShareAction : public ShareAction {
  public:
   DriveShareAction();
   ~DriveShareAction() override;
   DriveShareAction(const DriveShareAction&) = delete;
   DriveShareAction& operator=(const DriveShareAction&) = delete;
 
-  // sharesheet::ShareAction:
+  // ShareAction:
   const std::u16string GetActionName() override;
   const gfx::VectorIcon& GetActionIcon() override;
-  void LaunchAction(sharesheet::SharesheetController* controller,
+  void LaunchAction(SharesheetController* controller,
                     views::View* root_view,
                     apps::mojom::IntentPtr intent) override;
-  void OnClosing(sharesheet::SharesheetController* controller) override;
+  void OnClosing(SharesheetController* controller) override;
   bool ShouldShowAction(const apps::mojom::IntentPtr& intent,
                         bool contains_hosted_document) override;
 
  private:
-  sharesheet::SharesheetController* controller_ = nullptr;
+  SharesheetController* controller_ = nullptr;
 };
+
+}  // namespace sharesheet
 
 #endif  // CHROME_BROWSER_SHARESHEET_DRIVE_SHARE_ACTION_H_
