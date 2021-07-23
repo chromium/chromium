@@ -8,9 +8,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/sync/base/sync_base_switches.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
+#include "components/sync/nigori/nigori.h"
 #include "components/sync/nigori/nigori_state.h"
 
 namespace syncer {
@@ -32,14 +34,28 @@ KeyDerivationMethod GetDefaultKeyDerivationMethodForCustomPassphrase() {
   return KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003;
 }
 
+KeyDerivationParams CreateKeyDerivationParamsForCustomPassphrase() {
+  KeyDerivationMethod method =
+      GetDefaultKeyDerivationMethodForCustomPassphrase();
+  switch (method) {
+    case KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003:
+      return KeyDerivationParams::CreateForPbkdf2();
+    case KeyDerivationMethod::SCRYPT_8192_8_11:
+      return KeyDerivationParams::CreateForScrypt(Nigori::GenerateScryptSalt());
+    case KeyDerivationMethod::UNSUPPORTED:
+      break;
+  }
+
+  NOTREACHED();
+  return KeyDerivationParams::CreateWithUnsupportedMethod();
+}
+
 class CustomPassphraseSetter : public PendingLocalNigoriCommit {
  public:
-  CustomPassphraseSetter(
-      const std::string& passphrase,
-      const base::RepeatingCallback<std::string()>& random_salt_generator)
+  explicit CustomPassphraseSetter(const std::string& passphrase)
       : passphrase_(passphrase),
-        key_derivation_params_(CreateKeyDerivationParamsForCustomPassphrase(
-            random_salt_generator)) {}
+        key_derivation_params_(CreateKeyDerivationParamsForCustomPassphrase()) {
+  }
 
   ~CustomPassphraseSetter() override = default;
 
@@ -177,30 +193,11 @@ class KeystoreReencryptor : public PendingLocalNigoriCommit {
 
 }  // namespace
 
-KeyDerivationParams CreateKeyDerivationParamsForCustomPassphrase(
-    const base::RepeatingCallback<std::string()>& random_salt_generator) {
-  KeyDerivationMethod method =
-      GetDefaultKeyDerivationMethodForCustomPassphrase();
-  switch (method) {
-    case KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003:
-      return KeyDerivationParams::CreateForPbkdf2();
-    case KeyDerivationMethod::SCRYPT_8192_8_11:
-      return KeyDerivationParams::CreateForScrypt(random_salt_generator.Run());
-    case KeyDerivationMethod::UNSUPPORTED:
-      break;
-  }
-
-  NOTREACHED();
-  return KeyDerivationParams::CreateWithUnsupportedMethod();
-}
-
 // static
 std::unique_ptr<PendingLocalNigoriCommit>
 PendingLocalNigoriCommit::ForSetCustomPassphrase(
-    const std::string& passphrase,
-    const base::RepeatingCallback<std::string()>& random_salt_generator) {
-  return std::make_unique<CustomPassphraseSetter>(passphrase,
-                                                  random_salt_generator);
+    const std::string& passphrase) {
+  return std::make_unique<CustomPassphraseSetter>(passphrase);
 }
 
 // static

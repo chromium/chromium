@@ -232,7 +232,6 @@ class NigoriSyncBridgeImplTest : public testing::Test {
     storage_ = storage.get();
     bridge_ = std::make_unique<NigoriSyncBridgeImpl>(
         std::move(processor), std::move(storage),
-        base::BindRepeating(&Nigori::GenerateScryptSalt),
         /*packed_explicit_passphrase_key=*/std::string(),
         /*packed_keystore_keys=*/std::string());
     bridge_->AddObserver(&observer_);
@@ -1073,7 +1072,6 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest,
   auto bridge = std::make_unique<NigoriSyncBridgeImpl>(
       std::move(processor),
       std::make_unique<testing::NiceMock<MockNigoriStorage>>(),
-      base::BindRepeating(&Nigori::GenerateScryptSalt),
       PackKeyAsExplicitPassphrase(kKeyParams),
       /*packed_keystore_keys=*/std::string());
   testing::NiceMock<MockObserver> observer;
@@ -1116,7 +1114,6 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest, ShouldRestoreKeystoreNigori) {
 
   auto bridge1 = std::make_unique<NigoriSyncBridgeImpl>(
       std::move(processor1), std::move(storage1),
-      base::BindRepeating(&Nigori::GenerateScryptSalt),
       /*packed_explicit_passphrase_key=*/std::string(),
       /*packed_keystore_keys=*/std::string());
 
@@ -1154,7 +1151,6 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest, ShouldRestoreKeystoreNigori) {
 
   auto bridge2 = std::make_unique<NigoriSyncBridgeImpl>(
       std::move(processor2), std::move(storage2),
-      base::BindRepeating(&Nigori::GenerateScryptSalt),
       /*packed_explicit_passphrase_key=*/std::string(),
       /*packed_keystore_keys=*/std::string());
 
@@ -1194,7 +1190,6 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest,
   EXPECT_CALL(*not_owned_processor, Put(HasKeystoreNigori()));
   auto bridge = std::make_unique<NigoriSyncBridgeImpl>(
       std::move(processor), std::move(storage),
-      base::BindRepeating(&Nigori::GenerateScryptSalt),
       /*packed_explicit_passphrase_key=*/std::string(),
       /*packed_keystore_keys=*/std::string());
   EXPECT_THAT(bridge->GetData(), HasKeystoreNigori());
@@ -1583,7 +1578,7 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest,
 
   auto bridge1 = std::make_unique<NigoriSyncBridgeImpl>(
       std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>(),
-      std::move(storage1), base::BindRepeating(&Nigori::GenerateScryptSalt),
+      std::move(storage1),
       /*packed_explicit_passphrase_key=*/std::string(),
       /*packed_keystore_keys=*/std::string());
 
@@ -1631,7 +1626,6 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest,
 
   auto bridge2 = std::make_unique<NigoriSyncBridgeImpl>(
       std::move(processor2), std::move(storage2),
-      base::BindRepeating(&Nigori::GenerateScryptSalt),
       /*packed_explicit_passphrase_key=*/std::string(),
       /*packed_keystore_keys=*/std::string());
 
@@ -1684,7 +1678,7 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest, ShouldCompleteKeystoreMigration) {
 
   auto bridge1 = std::make_unique<NigoriSyncBridgeImpl>(
       std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>(),
-      std::move(storage1), base::BindRepeating(&Nigori::GenerateScryptSalt),
+      std::move(storage1),
       /*packed_explicit_passphrase_key=*/std::string(),
       /*packed_keystore_keys=*/std::string());
 
@@ -1715,7 +1709,6 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest, ShouldCompleteKeystoreMigration) {
 
   auto bridge2 = std::make_unique<NigoriSyncBridgeImpl>(
       std::move(processor2), std::move(storage2),
-      base::BindRepeating(&Nigori::GenerateScryptSalt),
       /*packed_explicit_passphrase_key=*/std::string(),
       /*packed_keystore_keys=*/std::string());
 
@@ -1743,7 +1736,7 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest,
 
   auto bridge1 = std::make_unique<NigoriSyncBridgeImpl>(
       std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>(),
-      std::move(storage1), base::BindRepeating(&Nigori::GenerateScryptSalt),
+      std::move(storage1),
       /*packed_explicit_passphrase_key=*/std::string(),
       /*packed_keystore_keys=*/std::string());
 
@@ -1771,7 +1764,6 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest,
 
   auto bridge2 = std::make_unique<NigoriSyncBridgeImpl>(
       std::move(processor2), std::move(storage2),
-      base::BindRepeating(&Nigori::GenerateScryptSalt),
       /*packed_explicit_passphrase_key=*/std::string(),
       /*packed_keystore_keys=*/std::string());
 

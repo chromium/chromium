@@ -412,12 +412,10 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
 NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
     std::unique_ptr<NigoriLocalChangeProcessor> processor,
     std::unique_ptr<NigoriStorage> storage,
-    const base::RepeatingCallback<std::string()>& random_salt_generator,
     const std::string& packed_explicit_passphrase_key,
     const std::string& packed_keystore_keys)
     : processor_(std::move(processor)),
       storage_(std::move(storage)),
-      random_salt_generator_(random_salt_generator),
       explicit_passphrase_key_(
           UnpackExplicitPassphraseKey(packed_explicit_passphrase_key)),
       broadcasting_observer_(std::make_unique<BroadcastingObserver>(
@@ -549,8 +547,8 @@ void NigoriSyncBridgeImpl::SetEncryptionPassphrase(
     const std::string& passphrase) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  QueuePendingLocalCommit(PendingLocalNigoriCommit::ForSetCustomPassphrase(
-      passphrase, random_salt_generator_));
+  QueuePendingLocalCommit(
+      PendingLocalNigoriCommit::ForSetCustomPassphrase(passphrase));
 }
 
 void NigoriSyncBridgeImpl::SetDecryptionPassphrase(

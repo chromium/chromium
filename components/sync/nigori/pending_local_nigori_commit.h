@@ -10,24 +10,18 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 
 namespace syncer {
 
-class KeyDerivationParams;
 struct NigoriState;
-
-KeyDerivationParams CreateKeyDerivationParamsForCustomPassphrase(
-    const base::RepeatingCallback<std::string()>& random_salt_generator);
 
 // Interface representing an intended local change to the Nigori state that
 // is pending a commit to the sync server.
 class PendingLocalNigoriCommit {
  public:
   static std::unique_ptr<PendingLocalNigoriCommit> ForSetCustomPassphrase(
-      const std::string& passphrase,
-      const base::RepeatingCallback<std::string()>& random_salt_generator);
+      const std::string& passphrase);
 
   static std::unique_ptr<PendingLocalNigoriCommit> ForKeystoreInitialization();
 
