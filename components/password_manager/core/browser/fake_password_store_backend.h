@@ -1,0 +1,68 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FAKE_PASSWORD_STORE_BACKEND_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FAKE_PASSWORD_STORE_BACKEND_H_
+
+#include <memory>
+
+#include "components/password_manager/core/browser/password_store_backend.h"
+
+namespace password_manager {
+
+struct PasswordForm;
+
+class SmartBubbleStatsStore;
+
+using PasswordMap = std::
+    map<std::string /* signon_realm */, std::vector<PasswordForm>, std::less<>>;
+
+// Fake password store backend to be used in tests.
+class FakePasswordStoreBackend : public PasswordStoreBackend {
+ public:
+  FakePasswordStoreBackend();
+  ~FakePasswordStoreBackend() override;
+
+  const PasswordMap& stored_passwords() const { return stored_passwords_; }
+
+ private:
+  // Implements PasswordStoreBackend interface.
+  void InitBackend(RemoteChangesReceived remote_form_changes_received,
+                   base::RepeatingClosure sync_enabled_or_disabled_cb,
+                   base::OnceCallback<void(bool)> completion) override;
+  void GetAllLoginsAsync(LoginsReply callback) override;
+  void GetAutofillableLoginsAsync(LoginsReply callback) override;
+  void FillMatchingLoginsAsync(
+      LoginsReply callback,
+      const std::vector<PasswordFormDigest>& forms) override;
+  void AddLoginAsync(const PasswordForm& form,
+                     PasswordStoreChangeListReply callback) override;
+  void UpdateLoginAsync(const PasswordForm& form,
+                        PasswordStoreChangeListReply callback) override;
+  void RemoveLoginAsync(const PasswordForm& form,
+                        PasswordStoreChangeListReply callback) override;
+  void RemoveLoginsByURLAndTimeAsync(
+      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+      base::Time delete_begin,
+      base::Time delete_end,
+      base::OnceCallback<void(bool)> sync_completion,
+      PasswordStoreChangeListReply callback) override;
+  void RemoveLoginsCreatedBetweenAsync(
+      base::Time delete_begin,
+      base::Time delete_end,
+      PasswordStoreChangeListReply callback) override;
+  SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
+
+  LoginsResult FillMatchingLoginsInternal(
+      const std::vector<PasswordFormDigest>& forms);
+  LoginsResult FillMatchingLoginsHelper(const PasswordFormDigest& form);
+  PasswordStoreChangeList AddLoginInternal(const PasswordForm& form);
+  PasswordStoreChangeList UpdateLoginInternal(const PasswordForm& form);
+
+  PasswordMap stored_passwords_;
+};
+
+}  // namespace password_manager
+
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FAKE_PASSWORD_STORE_BACKEND_H_

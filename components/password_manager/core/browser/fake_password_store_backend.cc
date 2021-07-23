@@ -1,0 +1,172 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/password_manager/core/browser/fake_password_store_backend.h"
+
+#include "base/notreached.h"
+#include "base/sequenced_task_runner.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/psl_matching_helper.h"
+
+namespace password_manager {
+
+FakePasswordStoreBackend::FakePasswordStoreBackend() = default;
+FakePasswordStoreBackend::~FakePasswordStoreBackend() = default;
+
+void FakePasswordStoreBackend::InitBackend(
+    RemoteChangesReceived remote_form_changes_received,
+    base::RepeatingClosure sync_enabled_or_disabled_cb,
+    base::OnceCallback<void(bool)> completion) {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(completion), /*success=*/true));
+}
+
+void FakePasswordStoreBackend::GetAllLoginsAsync(LoginsReply callback) {
+  NOTIMPLEMENTED();
+}
+
+void FakePasswordStoreBackend::GetAutofillableLoginsAsync(
+    LoginsReply callback) {
+  NOTIMPLEMENTED();
+}
+
+void FakePasswordStoreBackend::FillMatchingLoginsAsync(
+    LoginsReply callback,
+    const std::vector<PasswordFormDigest>& forms) {
+  base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FakePasswordStoreBackend::FillMatchingLoginsInternal,
+                     base::Unretained(this), forms),
+      std::move(callback));
+}
+
+void FakePasswordStoreBackend::AddLoginAsync(
+    const PasswordForm& form,
+    PasswordStoreChangeListReply callback) {
+  base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FakePasswordStoreBackend::AddLoginInternal,
+                     base::Unretained(this), form),
+      std::move(callback));
+}
+
+void FakePasswordStoreBackend::UpdateLoginAsync(
+    const PasswordForm& form,
+    PasswordStoreChangeListReply callback) {
+  base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FakePasswordStoreBackend::UpdateLoginInternal,
+                     base::Unretained(this), form),
+      std::move(callback));
+}
+
+void FakePasswordStoreBackend::RemoveLoginAsync(
+    const PasswordForm& form,
+    PasswordStoreChangeListReply callback) {
+  NOTIMPLEMENTED();
+}
+
+void FakePasswordStoreBackend::RemoveLoginsByURLAndTimeAsync(
+    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+    base::Time delete_begin,
+    base::Time delete_end,
+    base::OnceCallback<void(bool)> sync_completion,
+    PasswordStoreChangeListReply callback) {
+  NOTIMPLEMENTED();
+}
+
+void FakePasswordStoreBackend::RemoveLoginsCreatedBetweenAsync(
+    base::Time delete_begin,
+    base::Time delete_end,
+    PasswordStoreChangeListReply callback) {
+  NOTIMPLEMENTED();
+}
+
+SmartBubbleStatsStore* FakePasswordStoreBackend::GetSmartBubbleStatsStore() {
+  return nullptr;
+}
+
+LoginsResult FakePasswordStoreBackend::FillMatchingLoginsInternal(
+    const std::vector<PasswordFormDigest>& forms) {
+  std::vector<std::unique_ptr<PasswordForm>> results;
+  for (const auto& form : forms) {
+    std::vector<std::unique_ptr<PasswordForm>> matched_forms =
+        FillMatchingLoginsHelper(form);
+    results.insert(results.end(),
+                   std::make_move_iterator(matched_forms.begin()),
+                   std::make_move_iterator(matched_forms.end()));
+  }
+  return results;
+}
+
+LoginsResult FakePasswordStoreBackend::FillMatchingLoginsHelper(
+    const PasswordFormDigest& form) {
+  std::vector<std::unique_ptr<PasswordForm>> matched_forms;
+  for (const auto& elements : stored_passwords_) {
+    // The code below doesn't support PSL federated credential. It's doable but
+    // no tests need it so far.
+    const bool realm_matches = elements.first == form.signon_realm;
+    const bool realm_psl_matches =
+        IsPublicSuffixDomainMatch(elements.first, form.signon_realm);
+    if (realm_matches || realm_psl_matches ||
+        (form.scheme == PasswordForm::Scheme::kHtml &&
+         password_manager::IsFederatedRealm(elements.first, form.url))) {
+      const bool is_psl = !realm_matches && realm_psl_matches;
+      for (const auto& stored_form : elements.second) {
+        // Repeat the condition above with an additional check for origin.
+        if (realm_matches || realm_psl_matches ||
+            (form.scheme == PasswordForm::Scheme::kHtml &&
+             stored_form.url.GetOrigin() == form.url.GetOrigin() &&
+             password_manager::IsFederatedRealm(stored_form.signon_realm,
+                                                form.url))) {
+          matched_forms.push_back(std::make_unique<PasswordForm>(stored_form));
+          matched_forms.back()->is_public_suffix_match = is_psl;
+        }
+      }
+    }
+  }
+  return matched_forms;
+}
+
+PasswordStoreChangeList FakePasswordStoreBackend::AddLoginInternal(
+    const PasswordForm& form) {
+  PasswordStoreChangeList changes;
+  auto& passwords_for_signon_realm = stored_passwords_[form.signon_realm];
+  auto iter = std::find_if(
+      passwords_for_signon_realm.begin(), passwords_for_signon_realm.end(),
+      [&form](const auto& password) {
+        return ArePasswordFormUniqueKeysEqual(form, password);
+      });
+
+  if (iter != passwords_for_signon_realm.end()) {
+    changes.emplace_back(PasswordStoreChange::REMOVE, *iter);
+    changes.emplace_back(PasswordStoreChange::ADD, form);
+    *iter = form;
+    iter->in_store = PasswordForm::Store::kProfileStore;
+    return changes;
+  }
+
+  changes.emplace_back(PasswordStoreChange::ADD, form);
+  passwords_for_signon_realm.push_back(form);
+  passwords_for_signon_realm.back().in_store =
+      PasswordForm::Store::kProfileStore;
+  return changes;
+}
+
+PasswordStoreChangeList FakePasswordStoreBackend::UpdateLoginInternal(
+    const PasswordForm& form) {
+  PasswordStoreChangeList changes;
+  std::vector<PasswordForm>& forms = stored_passwords_[form.signon_realm];
+  for (auto& stored_form : forms) {
+    if (ArePasswordFormUniqueKeysEqual(form, stored_form)) {
+      stored_form = form;
+      stored_form.in_store = PasswordForm::Store::kProfileStore;
+      changes.push_back(PasswordStoreChange(PasswordStoreChange::UPDATE, form));
+    }
+  }
+  return changes;
+}
+
+}  // namespace password_manager
