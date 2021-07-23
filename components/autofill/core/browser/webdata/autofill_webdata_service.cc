@@ -12,7 +12,6 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
@@ -124,7 +123,7 @@ void AutofillWebDataService::SetAutofillProfileChangedCallback(
 }
 
 void AutofillWebDataService::SetCardArtImagesChangedCallback(
-    base::RepeatingCallback<void(const std::map<std::string, GURL>&)>
+    base::RepeatingCallback<void(const std::vector<std::string>&)>
         on_card_art_image_change_callback) {
   autofill_backend_->SetCardArtImagesChangedCallback(
       std::move(on_card_art_image_change_callback));
@@ -260,13 +259,6 @@ void AutofillWebDataService::AddUpiId(const std::string& upi_id) {
                                        autofill_backend_, upi_id));
 }
 
-void AutofillWebDataService::AddCardArtImages(
-    std::unique_ptr<std::vector<CreditCardArtImage>> card_art_images) {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::AddCardArtImages,
-                                autofill_backend_, std::move(card_art_images)));
-}
-
 WebDataServiceBase::Handle AutofillWebDataService::GetAllUpiIds(
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
@@ -299,15 +291,6 @@ WebDataServiceBase::Handle AutofillWebDataService::GetAutofillOffers(
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetAutofillOffers,
-                     autofill_backend_),
-      consumer);
-}
-
-WebDataServiceBase::Handle AutofillWebDataService::GetCreditCardArtImages(
-    WebDataServiceConsumer* consumer) {
-  return wdbs_->ScheduleDBTaskWithResult(
-      FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::GetCreditCardArtImages,
                      autofill_backend_),
       consumer);
 }

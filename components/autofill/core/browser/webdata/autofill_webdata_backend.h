@@ -7,7 +7,6 @@
 
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/sync/base/model_type.h"
-#include "url/gurl.h"
 
 class WebDatabase;
 
@@ -69,12 +68,12 @@ class AutofillWebDataBackend {
   // sequence notifications are asynchronous.
   virtual void NotifyThatSyncHasStarted(syncer::ModelType model_type) = 0;
 
-  // Notifies listeners on the UI sequence that the credit cards, with
-  // server ids and card art urls in |server_ids_and_urls|, have new card art
-  // images. NOTE: This method is intended to be called from the DB sequence.
-  // The UI sequence notifications are asynchronous.
+  // Notifies listeners on the UI sequence that the credit cards with
+  // |server_ids| have new card art images. NOTE: This method is intended to be
+  // called from the DB sequence. The UI sequence notifications are
+  // asynchronous.
   virtual void NotifyOfCreditCardArtImagesChanged(
-      const std::map<std::string, GURL>& server_ids_and_urls) = 0;
+      const std::vector<std::string>& server_ids) = 0;
 };
 
 } // namespace autofill

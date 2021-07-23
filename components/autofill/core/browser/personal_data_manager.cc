@@ -34,7 +34,6 @@
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_profile_save_strike_database.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
-#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
@@ -63,7 +62,6 @@
 #include "components/sync/driver/sync_service_utils.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_formatter.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
@@ -153,9 +151,6 @@ class PersonalDatabaseHelper
  public:
   explicit PersonalDatabaseHelper(PersonalDataManager* personal_data_manager)
       : personal_data_manager_(personal_data_manager) {}
-
-  PersonalDatabaseHelper(const PersonalDatabaseHelper&) = delete;
-  PersonalDatabaseHelper& operator=(const PersonalDatabaseHelper&) = delete;
 
   void Init(scoped_refptr<AutofillWebDataService> profile_database,
             scoped_refptr<AutofillWebDataService> account_database) {
@@ -257,6 +252,8 @@ class PersonalDatabaseHelper
   scoped_refptr<AutofillWebDataService> server_database_;
 
   PersonalDataManager* personal_data_manager_;
+
+  DISALLOW_COPY_AND_ASSIGN(PersonalDatabaseHelper);
 };
 
 PersonalDataManager::PersonalDataManager(
@@ -336,12 +333,6 @@ void PersonalDataManager::Init(
   database_helper_->GetLocalDatabase()->SetAutofillProfileChangedCallback(
       base::BindRepeating(&PersonalDataManager::OnAutofillProfileChanged,
                           weak_factory_.GetWeakPtr()));
-
-  if (database_helper_->GetServerDatabase()) {
-    database_helper_->GetServerDatabase()->SetCardArtImagesChangedCallback(
-        base::BindRepeating(&PersonalDataManager::OnCardArtImagesChanged,
-                            weak_factory_.GetWeakPtr()));
-  }
 
   Refresh();
 
@@ -443,7 +434,7 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
          pending_creditcards_query_ || pending_server_creditcards_query_ ||
          pending_server_creditcard_cloud_token_data_query_ ||
          pending_customer_data_query_ || pending_upi_ids_query_ ||
-         pending_offer_data_query_ || pending_credit_card_art_images_query_);
+         pending_offer_data_query_);
 
   if (!result) {
     // Error from the web database.
@@ -463,8 +454,6 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
       pending_upi_ids_query_ = 0;
     else if (h == pending_offer_data_query_)
       pending_offer_data_query_ = 0;
-    else if (h == pending_credit_card_art_images_query_)
-      pending_credit_card_art_images_query_ = 0;
   } else {
     switch (result->GetType()) {
       case AUTOFILL_PROFILES_RESULT:
@@ -523,32 +512,6 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
         ReceiveLoadedDbValues(h, result.get(), &pending_offer_data_query_,
                               &autofill_offer_data_);
         break;
-      case AUTOFILL_CREDIT_CARD_ART_IMAGE_RESULT: {
-        DCHECK_EQ(h, pending_credit_card_art_images_query_)
-            << "received credit card art image data from invalid request.";
-        std::vector<std::unique_ptr<CreditCardArtImage>> credit_card_art_images;
-        ReceiveLoadedDbValues(h, result.get(),
-                              &pending_credit_card_art_images_query_,
-                              &credit_card_art_images);
-#if defined(OS_IOS)
-        // TODO(crbug.com/1230872): Implement iOS after the image decoder is
-        // changed.
-#else
-        for (std::unique_ptr<CreditCardArtImage>& image :
-             credit_card_art_images) {
-          // TODO(crbug.com/1230872): Investigate if the image decoder in the
-          // image fetcher can be used here. Should simplify things a little
-          // bit, but require changes to the AutofillTable.
-          data_decoder::DecodeImageIsolated(
-              image->card_art_image, data_decoder::mojom::ImageCodec::kDefault,
-              /*shrink_to_fit=*/false, data_decoder::kDefaultMaxSizeInBytes,
-              /*desired_image_frame_size=*/gfx::Size(),
-              base::BindOnce(&PersonalDataManager::OnCardArtImageDecoded,
-                             weak_factory_.GetWeakPtr(), image->id));
-        }
-#endif
-        break;
-      }
       default:
         NOTREACHED();
     }
@@ -998,7 +961,6 @@ void PersonalDataManager::ClearAllServerData() {
   payments_customer_data_.reset();
   server_credit_card_cloud_token_data_.clear();
   autofill_offer_data_.clear();
-  credit_card_art_images_.clear();
 }
 
 void PersonalDataManager::ClearAllLocalData() {
@@ -1265,34 +1227,6 @@ std::vector<AutofillOfferData*> PersonalDataManager::GetAutofillOffers() const {
   return result;
 }
 
-gfx::Image* PersonalDataManager::GetCreditCardArtImageForCard(
-    const std::string& server_id) const {
-  if (!IsAutofillWalletImportEnabled())
-    return nullptr;
-
-  auto images_iterator = credit_card_art_images_.find(server_id);
-
-  // Found an image and return it.
-  if (images_iterator != credit_card_art_images_.end())
-    return images_iterator->second.get();
-
-  // If didn't find anything, ask AutofillImageFetcher to do the fetching again
-  // and return nullptr for this request as the fetching and decoding of the
-  // image will take some time.
-  const std::vector<CreditCard*> server_cards = GetServerCreditCards();
-  auto cards_iterator =
-      base::ranges::find(server_cards, server_id, &CreditCard::server_id);
-  if (cards_iterator == server_cards.end())
-    return nullptr;
-
-  GURL card_art_url = (*cards_iterator)->card_art_url();
-  if (!card_art_url.is_valid())
-    return nullptr;
-
-  FetchImagesForUrls({{server_id, card_art_url}});
-  return nullptr;
-}
-
 void PersonalDataManager::Refresh() {
   LoadProfiles();
   LoadCreditCards();
@@ -1300,7 +1234,6 @@ void PersonalDataManager::Refresh() {
   LoadPaymentsCustomerData();
   LoadUpiIds();
   LoadAutofillOffers();
-  LoadCreditCardArtImages();
 }
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
@@ -1859,16 +1792,6 @@ void PersonalDataManager::LoadAutofillOffers() {
       database_helper_->GetServerDatabase()->GetAutofillOffers(this);
 }
 
-void PersonalDataManager::LoadCreditCardArtImages() {
-  if (!database_helper_->GetServerDatabase())
-    return;
-
-  CancelPendingServerQuery(&pending_credit_card_art_images_query_);
-
-  pending_credit_card_art_images_query_ =
-      database_helper_->GetServerDatabase()->GetCreditCardArtImages(this);
-}
-
 void PersonalDataManager::CancelPendingLocalQuery(
     WebDataServiceBase::Handle* handle) {
   if (*handle) {
@@ -1899,7 +1822,6 @@ void PersonalDataManager::CancelPendingServerQueries() {
   CancelPendingServerQuery(&pending_customer_data_query_);
   CancelPendingServerQuery(&pending_server_creditcard_cloud_token_data_query_);
   CancelPendingServerQuery(&pending_offer_data_query_);
-  CancelPendingServerQuery(&pending_credit_card_art_images_query_);
 }
 
 bool PersonalDataManager::HasPendingQueriesForTesting() {
@@ -2177,53 +2099,6 @@ void PersonalDataManager::OnAutofillProfileChanged(
   OnProfileChangeDone(guid);
 }
 
-void PersonalDataManager::OnCardArtImagesChanged(
-    const std::map<std::string, GURL>& server_ids_and_urls) {
-  // In some tests the image_fetcher_ can be nullptr.
-  if (image_fetcher_ && !server_ids_and_urls.empty())
-    FetchImagesForUrls(server_ids_and_urls);
-}
-
-void PersonalDataManager::OnCardArtImagesFetched(
-    const std::map<std::string, gfx::Image>& id_image_map) {
-  if (!database_helper_->GetServerDatabase() || id_image_map.empty())
-    return;
-
-  auto card_art_images = std::make_unique<std::vector<CreditCardArtImage>>();
-
-  for (auto& pair : id_image_map) {
-    // If the image is empty, don't add to the AutofillTable.
-    if (pair.second.IsEmpty())
-      continue;
-
-    CreditCardArtImage image;
-    image.id = pair.first;
-    scoped_refptr<base::RefCountedMemory> raw_data = pair.second.As1xPNGBytes();
-    image.card_art_image =
-        std::vector<uint8_t>(raw_data->front_as<uint8_t>(),
-                             raw_data->front_as<uint8_t>() + raw_data->size());
-    card_art_images->emplace_back(image);
-  }
-
-  database_helper_->GetServerDatabase()->AddCardArtImages(
-      std::move(card_art_images));
-
-  // Refresh our local cache and send notifications to observers.
-  Refresh();
-}
-
-void PersonalDataManager::OnCardArtImageDecoded(
-    const std::string& card_server_id,
-    const SkBitmap& card_art_image) {
-  gfx::Image image = gfx::Image::CreateFrom1xBitmap(card_art_image);
-  if (!image.IsEmpty()) {
-    credit_card_art_images_[card_server_id] =
-        std::make_unique<gfx::Image>(image);
-  }
-  for (PersonalDataManagerObserver& observer : observers_)
-    observer.OnCreditCardArtImageProcessed();
-}
-
 void PersonalDataManager::LogServerCardLinkClicked() const {
   AutofillMetrics::LogServerCardLinkClicked(GetSyncSigninState());
 }
@@ -2427,8 +2302,7 @@ bool PersonalDataManager::HasPendingQueries() {
          pending_server_creditcards_query_ != 0 ||
          pending_server_creditcard_cloud_token_data_query_ != 0 ||
          pending_customer_data_query_ != 0 || pending_upi_ids_query_ != 0 ||
-         pending_offer_data_query_ != 0 ||
-         pending_credit_card_art_images_query_ != 0;
+         pending_offer_data_query_ != 0;
 }
 
 void PersonalDataManager::MigrateUserOptedInWalletSyncTransportIfNeeded() {
@@ -2499,14 +2373,6 @@ bool PersonalDataManager::IsSyncEnabledFor(syncer::ModelType model_type) {
 scoped_refptr<AutofillWebDataService> PersonalDataManager::GetLocalDatabase() {
   DCHECK(database_helper_);
   return database_helper_->GetLocalDatabase();
-}
-
-void PersonalDataManager::FetchImagesForUrls(
-    const std::map<std::string, GURL>& server_ids_and_urls) const {
-  image_fetcher_->FetchImagesForUrls(
-      server_ids_and_urls,
-      base::BindOnce(&PersonalDataManager::OnCardArtImagesFetched,
-                     weak_factory_.GetWeakPtr()));
 }
 
 }  // namespace autofill

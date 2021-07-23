@@ -32,7 +32,6 @@ namespace autofill {
 class AutofillProfile;
 class AutofillWebDataServiceObserverOnDBSequence;
 class CreditCard;
-struct CreditCardArtImage;
 
 // Backend implementation for the AutofillWebDataService. This class runs on the
 // DB sequence, as it handles reads and writes to the WebDatabase, and functions
@@ -63,8 +62,8 @@ class AutofillWebDataBackendImpl
       base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
           change_cb);
   void SetCardArtImagesChangedCallback(
-      base::RepeatingCallback<void(const std::map<std::string, GURL>&)>
-          on_card_art_images_changed_callback);
+      base::RepeatingCallback<void(const std::vector<std::string>&)>
+          on_card_art_image_change_callback);
 
   // AutofillWebDataBackend implementation.
   void AddObserver(
@@ -79,7 +78,7 @@ class AutofillWebDataBackendImpl
   void NotifyOfAddressConversionCompleted() override;
   void NotifyThatSyncHasStarted(syncer::ModelType model_type) override;
   void NotifyOfCreditCardArtImagesChanged(
-      const std::map<std::string, GURL>& server_ids_and_urls) override;
+      const std::vector<std::string>& server_ids) override;
   void CommitChanges() override;
 
   // Returns a SupportsUserData object that may be used to store data accessible
@@ -196,10 +195,6 @@ class AutofillWebDataBackendImpl
 
   WebDatabase::State AddUpiId(const std::string& upi_id, WebDatabase* db);
 
-  WebDatabase::State AddCardArtImages(
-      std::unique_ptr<std::vector<CreditCardArtImage>> card_art_images,
-      WebDatabase* db);
-
   std::unique_ptr<WDTypedResult> GetAllUpiIds(WebDatabase* db);
 
   // Returns the PaymentsCustomerData from the database.
@@ -208,11 +203,8 @@ class AutofillWebDataBackendImpl
   // Returns the CreditCardCloudTokenData from the database.
   std::unique_ptr<WDTypedResult> GetCreditCardCloudTokenData(WebDatabase* db);
 
-  // Returns Autofill Offers Data from the database.
+  // Returns Credit Card Offers Data from the database.
   std::unique_ptr<WDTypedResult> GetAutofillOffers(WebDatabase* db);
-
-  // Returns the credit card art images from the database.
-  std::unique_ptr<WDTypedResult> GetCreditCardArtImages(WebDatabase* db);
 
   WebDatabase::State ClearAllServerData(WebDatabase* db);
   WebDatabase::State ClearAllLocalData(WebDatabase* db);
@@ -275,8 +267,8 @@ class AutofillWebDataBackendImpl
   base::RepeatingCallback<void(syncer::ModelType)> on_sync_started_callback_;
   base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
       on_autofill_profile_changed_cb_;
-  base::RepeatingCallback<void(const std::map<std::string, GURL>&)>
-      on_card_art_images_changed_callback_;
+  base::RepeatingCallback<void(const std::vector<std::string>&)>
+      on_card_art_image_change_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(AutofillWebDataBackendImpl);
 };

@@ -82,8 +82,4 @@ specific_include_rules = {
   "autofill_image_fetcher(_unittest)?\.cc": [
     "+components/image_fetcher",
   ],
-  "personal_data_manager(_unittest)?\.cc": [
-    "+services/data_decoder/public/cpp/decode_image.h",
-    "+services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
-  ],
 }

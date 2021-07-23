@@ -17,10 +17,9 @@ struct CreditCardArtImage {
   CreditCardArtImage(const std::string& id,
                      int64_t instrument_id,
                      std::vector<uint8_t> card_art_image);
-  CreditCardArtImage(const CreditCardArtImage& credit_card_art_image);
-  CreditCardArtImage& operator=(
-      const CreditCardArtImage& credit_card_art_image);
   ~CreditCardArtImage();
+  CreditCardArtImage(const CreditCardArtImage&) = delete;
+  CreditCardArtImage& operator=(const CreditCardArtImage&) = delete;
 
   // The server id for the related credit card.
   std::string id;

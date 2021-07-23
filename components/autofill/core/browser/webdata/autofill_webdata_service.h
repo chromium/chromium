@@ -36,7 +36,6 @@ class AutofillWebDataBackendImpl;
 class AutofillWebDataServiceObserverOnDBSequence;
 class AutofillWebDataServiceObserverOnUISequence;
 class CreditCard;
-struct CreditCardArtImage;
 
 // API for Autofill web data.
 class AutofillWebDataService : public WebDataServiceBase {
@@ -113,7 +112,7 @@ class AutofillWebDataService : public WebDataServiceBase {
       base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
           change_cb);
   void SetCardArtImagesChangedCallback(
-      base::RepeatingCallback<void(const std::map<std::string, GURL>&)>
+      base::RepeatingCallback<void(const std::vector<std::string>&)>
           on_card_art_image_change_callback);
 
   // Schedules a task to add credit card to the web database.
@@ -146,10 +145,6 @@ class AutofillWebDataService : public WebDataServiceBase {
   // Store a UPI ID.
   void AddUpiId(const std::string& upi_id);
 
-  // Add credit card art images.
-  void AddCardArtImages(
-      std::unique_ptr<std::vector<CreditCardArtImage>> card_art_images);
-
   // Gets all the UPI IDs stored in the database.
   WebDataServiceBase::Handle GetAllUpiIds(WebDataServiceConsumer* consumer);
 
@@ -172,13 +167,6 @@ class AutofillWebDataService : public WebDataServiceBase {
   // finished, with the offer data included in the argument |result|. The
   // consumer owns the data.
   WebDataServiceBase::Handle GetAutofillOffers(
-      WebDataServiceConsumer* consumer);
-
-  // Initiates the request for credit card art images. The method
-  // OnWebDataServiceRequestDone of |consumer| gets called when the request is
-  // finished, with the card art images included in the argument |result|. The
-  // consumer owns the data.
-  WebDataServiceBase::Handle GetCreditCardArtImages(
       WebDataServiceConsumer* consumer);
 
   void ClearAllServerData();

@@ -67,11 +67,9 @@
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_database_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
 
@@ -102,7 +100,6 @@ class PersonalDataLoadedObserverMock : public PersonalDataManagerObserver {
 
   MOCK_METHOD(void, OnPersonalDataChanged, (), (override));
   MOCK_METHOD(void, OnPersonalDataFinishedProfileTasks, (), (override));
-  MOCK_METHOD(void, OnCreditCardArtImageProcessed, (), (override));
 };
 
 class PersonalDataManagerMock : public PersonalDataManager {
@@ -317,18 +314,6 @@ class PersonalDataManagerTestBase {
     run_loop.Run();
   }
 
-  // Verifies that the credit card art image has been decoded.
-  void WaitForOnCreditCardArtImageProcessed() {
-    base::RunLoop run_loop;
-    EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-        .Times(testing::AnyNumber());
-    EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
-        .Times(testing::AnyNumber());
-    EXPECT_CALL(personal_data_observer_, OnCreditCardArtImageProcessed())
-        .WillRepeatedly(QuitMessageLoop(&run_loop));
-    run_loop.Run();
-  }
-
   AccountInfo SetActiveSecondaryAccount() {
     AccountInfo account_info;
     account_info.email = kSyncTransportAccountEmail;
@@ -338,7 +323,6 @@ class PersonalDataManagerTestBase {
     return account_info;
   }
   base::test::TaskEnvironment task_environment_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<PrefService> prefs_;
   ScopedFeatureListWrapper scoped_features_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -1290,19 +1274,6 @@ TEST_F(PersonalDataManagerTest, AddCreditCard_Invalid) {
   ASSERT_EQ(1u, personal_data_->GetCreditCards().size());
   ASSERT_EQ(card, *personal_data_->GetCreditCards()[0]);
 }
-
-#if !defined(OS_IOS)
-TEST_F(PersonalDataManagerTest, AddAndGetCreditCardArtImage) {
-  gfx::Image expected_image = gfx::test::CreateImage(32, 20);
-  personal_data_->OnCardArtImagesFetched({{"server_id", expected_image}});
-  WaitForOnCreditCardArtImageProcessed();
-
-  gfx::Image* actual_image =
-      personal_data_->GetCreditCardArtImageForCard("server_id");
-  ASSERT_TRUE(actual_image);
-  EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, *actual_image));
-}
-#endif
 
 TEST_F(PersonalDataManagerTest, UpdateUnverifiedProfilesAndCreditCards) {
   // Start with unverified data.
