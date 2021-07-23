@@ -438,8 +438,9 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
                           public content::WebContentsObserver,
                           public views::WidgetObserver {
  public:
-  explicit BoxSignInObserver(FileSystemRenameHandler* rename_handler)
-      : SigninExperienceTestObserver(rename_handler) {}
+  explicit BoxSignInObserver(FileSystemRenameHandler* rename_handler) {
+    InitForTesting(rename_handler);
+  }
 
   ~BoxSignInObserver() override {
     if (sign_in_widget_)

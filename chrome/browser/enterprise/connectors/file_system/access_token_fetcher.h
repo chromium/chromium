@@ -11,14 +11,7 @@
 #include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-class PrefRegistrySimple;
-
 namespace enterprise_connectors {
-
-// The unique key for the Box service provider.  This is used to generate the
-// correct network annotation tag as well as possible parameters in the
-// access token consent URL.
-constexpr char kBoxProviderName[] = "box";
 
 // Helper class to retrieve an access token for a file system service provider.
 class AccessTokenFetcher : public OAuth2AccessTokenFetcherImpl,
@@ -57,35 +50,6 @@ class AccessTokenFetcher : public OAuth2AccessTokenFetcherImpl,
   const std::string consumer_name_;
   TokenCallback callback_;
 };
-
-// Registers all the preferences needed to support the given service provider
-// for use with the file system connector.
-void RegisterFileSystemPrefsForServiceProvider(
-    PrefRegistrySimple* registry,
-    const std::string& service_provider);
-
-// Stores the OAuth2 tokens for the given service provider.  Returns true
-// if both tokens were successfully stored and false if either store fails.
-bool SetFileSystemOAuth2Tokens(PrefService* prefs,
-                               const std::string& service_provider,
-                               const std::string& access_token,
-                               const std::string& refresh_token);
-
-// Clears the OAuth2 tokens for the given service provider.
-bool ClearFileSystemAccessToken(PrefService* prefs,
-                                const std::string& service_provider);
-bool ClearFileSystemRefreshToken(PrefService* prefs,
-                                 const std::string& service_provider);
-bool ClearFileSystemOAuth2Tokens(PrefService* prefs,
-                                 const std::string& service_provider);
-
-// Retrieves the OAuth2 tokens for the given service provider.  If a token
-// argument is null that token is not retrieved.  Returns true if all requested
-// tokens are retrieved and false if any fail.
-bool GetFileSystemOAuth2Tokens(PrefService* prefs,
-                               const std::string& service_provider,
-                               std::string* access_token,
-                               std::string* refresh_token);
 
 }  // namespace enterprise_connectors
 

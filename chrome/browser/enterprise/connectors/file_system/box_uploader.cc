@@ -12,6 +12,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_flow.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_response.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_upload_file_chunks_handler.h"
@@ -402,7 +403,8 @@ const base::FilePath BoxUploader::GetUploadFileName() const {
 
 const std::string BoxUploader::GetFolderId() {
   if (folder_id_.empty() && prefs_) {
-    folder_id_ = prefs_->GetString(kFileSystemUploadFolderIdPref);
+    folder_id_ =
+        GetDefaultFolderId(prefs_, kFileSystemServiceProviderPrefNameBox);
   }
   // TODO(https://crbug.com/1215847) Update to make API call to find folder id
   // if has file id.
@@ -415,7 +417,10 @@ const std::string BoxUploader::GetFolderId() const {
 
 void BoxUploader::SetFolderId(std::string folder_id) {
   folder_id_ = folder_id;
-  prefs_->SetString(kFileSystemUploadFolderIdPref, folder_id);
+  SetDefaultFolder(
+      prefs_, kFileSystemServiceProviderPrefNameBox, folder_id,
+      GetDefaultFolderName(prefs_, kFileSystemServiceProviderPrefNameBox));
+  // TODO(https://crbug.com/1229831): use folder name obtained from api call.
 }
 
 void BoxUploader::SetCurrentApiCall(

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_endpoints.h"
 #include "chrome/browser/enterprise/connectors/file_system/signin_experience.h"
 #include "chrome/grit/generated_resources.h"
@@ -248,7 +249,7 @@ void FileSystemSigninDialogDelegate::OnAuthFlowDone(
 std::string FileSystemSigninDialogDelegate::GetProviderSpecificUrlParameters() {
   // If an email domain is specified, use it as a hint in the box authn URL.
   // Make sure the domain has an @ prefix.
-  if (settings_.service_provider == kBoxProviderName) {
+  if (settings_.service_provider == kFileSystemServiceProviderPrefNameBox) {
     if (!settings_.email_domain.empty()) {
       // If the domain does not already start with an @ sign, prepend the
       // escaped version of it.
@@ -264,7 +265,7 @@ std::string FileSystemSigninDialogDelegate::GetProviderSpecificUrlParameters() {
 }
 
 std::u16string FileSystemSigninDialogDelegate::GetProviderName() const {
-  DCHECK_EQ(settings_.service_provider, kBoxProviderName);
+  DCHECK_EQ(settings_.service_provider, kFileSystemServiceProviderPrefNameBox);
   return l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_CONNECTOR_BOX);
 }
 

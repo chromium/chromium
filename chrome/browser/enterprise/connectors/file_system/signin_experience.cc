@@ -6,7 +6,7 @@
 
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
+#include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "chrome/browser/enterprise/connectors/file_system/rename_handler.h"
 #include "chrome/browser/enterprise/connectors/file_system/service_settings.h"
 #include "chrome/browser/enterprise/connectors/file_system/signin_confirmation_modal.h"
@@ -64,6 +64,25 @@ ec::ConnectorsService* GetConnectorsService(content::BrowserContext* context) {
   return ec::ConnectorsServiceFactory::GetForBrowserContext(context);
 }
 
+// These fields must match up fields used in
+// chrome/browser/resources/settings/downloads_page/downloads_page.html.
+constexpr char kAccountKey[] = "account";
+// These fields must also match how base::DictionaryValue's are filled below:
+constexpr char kFolderLinkKey[] = "folder.link";
+constexpr char kFolderNameKey[] = "folder.name";
+
+void AddFolderInfoToDictionary(PrefService* prefs,
+                               std::string provider,
+                               base::DictionaryValue* dict) {
+  std::string link = ec::GetDefaultFolderLink(prefs, provider);
+  std::string name = ec::GetDefaultFolderName(prefs, provider);
+  DCHECK(name.size());
+  base::DictionaryValue folder;
+  folder.SetStringKey("name", std::move(name));
+  folder.SetStringKey("link", std::move(link));
+  dict->SetKey("folder", std::move(folder));
+}
+
 }  // namespace
 
 namespace enterprise_connectors {
@@ -104,7 +123,7 @@ void OnConfirmationModalClosed(gfx::NativeWindow context,
                                content::BrowserContext* browser_context,
                                const FileSystemSettings& settings,
                                AuthorizationCompletedCallback callback,
-                               SigninExperienceTestObserver* observer,
+                               SigninExperienceTestObserver* test_observer,
                                bool user_confirmed_to_proceed) {
   if (!user_confirmed_to_proceed) {
     return ReturnCancellation(std::move(callback));
@@ -122,27 +141,28 @@ void OnConfirmationModalClosed(gfx::NativeWindow context,
   auto* widget = views::DialogDelegate::CreateDialogWidget(
       std::move(delegate), context, /* parent = */ nullptr);
 
-  if (observer)
-    observer->OnSignInDialogCreated(dialog_web_contents, widget);
+  if (test_observer)
+    test_observer->OnSignInDialogCreated(dialog_web_contents, widget);
 
   widget->Show();
 }
 
+// Start the sign in experience as triggered by a download item.
 void StartFileSystemConnectorSigninExperienceForDownloadItem(
     content::WebContents* web_contents,
     const FileSystemSettings& settings,
     AuthorizationCompletedCallback callback,
-    SigninExperienceTestObserver* observer) {
+    SigninExperienceTestObserver* test_observer) {
   gfx::NativeWindow context = FindMostRelevantContextWindow(web_contents);
   DCHECK(context);
 
-  DCHECK_EQ(settings.service_provider, kBoxProviderName);
+  DCHECK_EQ(settings.service_provider, kFileSystemServiceProviderPrefNameBox);
   std::u16string provider =
       l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_CONNECTOR_BOX);
 
   base::OnceCallback<void(bool)> confirmed_to_sign_in = base::BindOnce(
       &OnConfirmationModalClosed, context, web_contents->GetBrowserContext(),
-      settings, std::move(callback), observer);
+      settings, std::move(callback), test_observer);
   FileSystemConfirmationModal::Show(
       context,
       l10n_util::GetStringFUTF16(
@@ -153,7 +173,7 @@ void StartFileSystemConnectorSigninExperienceForDownloadItem(
           IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_REQUIRED_CANCEL_BUTTON),
       l10n_util::GetStringUTF16(
           IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_REQUIRED_ACCEPT_BUTTON),
-      std::move(confirmed_to_sign_in), observer);
+      std::move(confirmed_to_sign_in), test_observer);
 }
 
 void OnConfirmationModalClosedForSettingsPage(
@@ -161,6 +181,7 @@ void OnConfirmationModalClosedForSettingsPage(
     content::BrowserContext* browser_context,
     const FileSystemSettings& settings,
     base::OnceCallback<void(bool)> settings_page_callback,
+    SigninExperienceTestObserver* test_observer,
     bool user_confirmed_to_proceed) {
   AuthorizationCompletedCallback converted_cb = base::BindOnce(
       [](base::OnceCallback<void(bool)> cb,
@@ -171,13 +192,17 @@ void OnConfirmationModalClosedForSettingsPage(
       },
       std::move(settings_page_callback));
   OnConfirmationModalClosed(context, browser_context, settings,
-                            std::move(converted_cb), nullptr,
+                            std::move(converted_cb), test_observer,
                             user_confirmed_to_proceed);
 }
 
+// Start the sign in experience as triggered by the settings page. Similar to
+// StartFileSystemConnectorSigninExperienceForDownloadItem() but with different
+// displayed texts for FileSystemConfirmationModal::Show().
 void StartFileSystemConnectorSigninExperienceForSettingsPage(
     Profile* profile,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(bool)> callback,
+    SigninExperienceTestObserver* test_observer) {
   gfx::NativeWindow context = FindMostRelevantContextWindow(nullptr);
   DCHECK(context);
 
@@ -185,13 +210,13 @@ void StartFileSystemConnectorSigninExperienceForSettingsPage(
   if (!settings.has_value())
     return std::move(callback).Run(false);
 
-  DCHECK_EQ(settings->service_provider, kBoxProviderName);
+  DCHECK_EQ(settings->service_provider, kFileSystemServiceProviderPrefNameBox);
   std::u16string provider =
       l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_CONNECTOR_BOX);
 
-  base::OnceCallback<void(bool)> confirmed_to_sign_in =
-      base::BindOnce(&OnConfirmationModalClosedForSettingsPage, context,
-                     profile, settings.value(), std::move(callback));
+  base::OnceCallback<void(bool)> confirmed_to_sign_in = base::BindOnce(
+      &OnConfirmationModalClosedForSettingsPage, context, profile,
+      settings.value(), std::move(callback), test_observer);
   FileSystemConfirmationModal::Show(
       context,
       l10n_util::GetStringFUTF16(IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_CONFIRM_TITLE,
@@ -205,10 +230,65 @@ void StartFileSystemConnectorSigninExperienceForSettingsPage(
       std::move(confirmed_to_sign_in));
 }
 
+// Clear authentication tokens and stored account info.
 bool ClearFileSystemConnectorLinkedAccount(const FileSystemSettings& settings,
                                            PrefService* prefs) {
-  CHECK_EQ(settings.service_provider, kBoxProviderName);
-  return ClearFileSystemOAuth2Tokens(prefs, kBoxProviderName);
+  return ClearFileSystemOAuth2Tokens(prefs, settings.service_provider) &&
+         ClearFileSystemAccountInfo(prefs, settings.service_provider);
+}
+
+absl::optional<base::DictionaryValue>
+GetFileSystemConnectorLinkedAccountInfoForSettingsPage(
+    const FileSystemSettings& settings,
+    PrefService* prefs) {
+  std::string refresh_token;
+  base::DictionaryValue info;
+  base::Value* stored_account_info = nullptr;
+  const std::string& provider = settings.service_provider;
+  if (!(stored_account_info = info.SetKey(
+            kAccountKey, GetFileSystemAccountInfo(prefs, provider))) ||
+      stored_account_info->DictEmpty() ||
+      !GetFileSystemOAuth2Tokens(prefs, provider, /* access_token = */ nullptr,
+                                 &refresh_token) ||
+      refresh_token.empty()) {
+    return absl::nullopt;
+  }
+
+  DCHECK(refresh_token.size()) << "No refresh token for linked account";
+
+  AddFolderInfoToDictionary(prefs, provider, &info);
+  return absl::make_optional<base::DictionaryValue>(std::move(info));
+}
+
+void SetFileSystemConnectorAccountLinkForSettingsPage(
+    bool enable_link,
+    Profile* profile,
+    base::OnceCallback<void(bool)> callback,
+    SigninExperienceTestObserver* test_observer) {
+  absl::optional<FileSystemSettings> settings = GetFileSystemSettings(profile);
+  auto has_linked_account =
+      settings.has_value() &&
+      GetFileSystemConnectorLinkedAccountInfoForSettingsPage(
+          settings.value(), profile->GetPrefs());
+
+  // Early return if linked state already match the desired state.
+  if (has_linked_account == enable_link) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  // Early return after a quick clearing function call.
+  if (has_linked_account) {
+    bool success = ClearFileSystemConnectorLinkedAccount(
+        GetFileSystemSettings(profile).value(), profile->GetPrefs());
+    std::move(callback).Run(success);
+    return;
+  }
+
+  // This shows dialogs for the sign-in experience that the user needs to
+  // interact with, so the process is async.
+  StartFileSystemConnectorSigninExperienceForSettingsPage(
+      profile, std::move(callback), test_observer);
 }
 
 void ReturnCancellation(AuthorizationCompletedCallback callback) {
@@ -217,17 +297,38 @@ void ReturnCancellation(AuthorizationCompletedCallback callback) {
       std::string(), std::string());
 }
 
+// Helper method for testing.
+void ExtractAccountInfoFromDictionary(const base::DictionaryValue& dict,
+                                      base::Value* account,
+                                      std::string* folder_name,
+                                      std::string* folder_link) {
+  if (account && dict.FindPath(kAccountKey))
+    *account = dict.FindPath(kAccountKey)->Clone();
+  if (folder_name && dict.FindStringPath(kFolderNameKey))
+    *folder_name = *dict.FindStringPath(kFolderNameKey);
+  if (folder_link && dict.FindStringPath(kFolderLinkKey))
+    *folder_link = *dict.FindStringPath(kFolderLinkKey);
+}
+
 // SigninExperienceTestObserver
-SigninExperienceTestObserver::SigninExperienceTestObserver(
+SigninExperienceTestObserver::SigninExperienceTestObserver() = default;
+
+void SigninExperienceTestObserver::InitForTesting(
     FileSystemRenameHandler* rename_handler) {
-  rename_handler_ = rename_handler->RegisterSigninObserverForTesting(this);
+  if (!rename_handler)
+    return;
+  rename_handler_ =
+      rename_handler->RegisterSigninObserverForTesting(this);  // IN-TEST
 }
 
 SigninExperienceTestObserver::~SigninExperienceTestObserver() {
-  if (rename_handler_) {
-    rename_handler_->UnregisterSigninObserverForTesting(this);
-    rename_handler_.reset();
-  }
+  if (!rename_handler_)
+    return;
+  rename_handler_->UnregisterSigninObserverForTesting(this);  // IN-TEST
+  rename_handler_.reset();
 }
+
+// TODO(https://crbug.com/1159185): add browser_tests for
+// StartFileSystemConnectorSigninExperienceForXxx.
 
 }  // namespace enterprise_connectors

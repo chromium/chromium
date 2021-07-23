@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -15,20 +16,13 @@ namespace enterprise_connectors {
 
 namespace {
 
-// Templates for the profile preferences paths to store the access and
-// refresh tokens, per service provider.
-constexpr char kAccessTokenPrefPathTemplate[] =
-      "enterprise_connectors.file_system.%s.access_token";
-constexpr char kRefreshTokenPrefPathTemplate[] =
-      "enterprise_connectors.file_system.%s.refresh_token";
-
 // Traffic annotation strings must be fully defined at compile time.  They
 // can't be dynamically built at runtime based on the |service_provider|.
 // This function hard codes all known chrome partners and return the
 // appropriate annotation for each.
 net::NetworkTrafficAnnotationTag GetAnnotation(
     const std::string& service_provider) {
-  if (service_provider == kBoxProviderName) {
+  if (service_provider == kFileSystemServiceProviderPrefNameBox) {
     return net::DefineNetworkTrafficAnnotation("box_access_token_fetcher",
                                                R"(
         semantics {
@@ -56,31 +50,6 @@ net::NetworkTrafficAnnotationTag GetAnnotation(
   }
 
   return net::NetworkTrafficAnnotationTag::NotReached();
-}
-
-// Decrypt and return a profile preference that holds an encrypted access
-// or refresh token.
-bool DecryptPref(PrefService* prefs,
-                 const std::string& path,
-                 std::string* value) {
-  std::string b64_enc_token = prefs->GetString(path);
-  std::string enc_token;
-  if (!prefs || !base::Base64Decode(b64_enc_token, &enc_token) ||
-      !OSCrypt::DecryptString(enc_token, value)) {
-    return false;
-  }
-
-  return true;
-}
-
-bool GetToken(PrefService* prefs,
-              const std::string& service_provider,
-              std::string* token,
-              const char* token_pref_path_template) {
-  return !token || DecryptPref(prefs,
-                               base::StringPrintf(token_pref_path_template,
-                                                  service_provider.c_str()),
-                               token);
 }
 
 }  // namespace
@@ -129,78 +98,6 @@ void AccessTokenFetcher::OnGetTokenFailure(
 
 std::string AccessTokenFetcher::GetConsumerName() const {
   return consumer_name_;
-}
-
-void RegisterFileSystemPrefsForServiceProvider(
-    PrefRegistrySimple* registry,
-    const std::string& service_provider) {
-  registry->RegisterStringPref(base::StringPrintf(kAccessTokenPrefPathTemplate,
-                                                  service_provider.c_str()),
-                               std::string());
-  registry->RegisterStringPref(
-      base::StringPrintf(kRefreshTokenPrefPathTemplate,
-                         service_provider.c_str()),
-      std::string());
-  // Currently need this caching only for Box, depending on what other 3P APIs
-  // look like we may want to do this more generally.
-  if (service_provider == kBoxProviderName) {
-    registry->RegisterStringPref(kFileSystemUploadFolderIdPref, std::string());
-  }
-}
-
-bool SetFileSystemToken(PrefService* prefs,
-                        const std::string& service_provider,
-                        const char token_pref_path_template[],
-                        const std::string& token) {
-  std::string enc_token;
-  if (!prefs || !OSCrypt::EncryptString(token, &enc_token)) {
-    return false;
-  }
-
-  std::string b64_enc_token;
-  base::Base64Encode(enc_token, &b64_enc_token);
-  prefs->SetString(
-      base::StringPrintf(token_pref_path_template, service_provider.c_str()),
-      b64_enc_token);
-  return true;
-}
-
-bool SetFileSystemOAuth2Tokens(PrefService* prefs,
-                               const std::string& service_provider,
-                               const std::string& access_token,
-                               const std::string& refresh_token) {
-  return SetFileSystemToken(prefs, service_provider,
-                            kAccessTokenPrefPathTemplate, access_token) &&
-         SetFileSystemToken(prefs, service_provider,
-                            kRefreshTokenPrefPathTemplate, refresh_token);
-}
-
-bool ClearFileSystemAccessToken(PrefService* prefs,
-                                const std::string& service_provider) {
-  return SetFileSystemToken(prefs, service_provider,
-                            kAccessTokenPrefPathTemplate, std::string());
-}
-
-bool ClearFileSystemRefreshToken(PrefService* prefs,
-                                 const std::string& service_provider) {
-  return SetFileSystemToken(prefs, service_provider,
-                            kRefreshTokenPrefPathTemplate, std::string());
-}
-
-bool ClearFileSystemOAuth2Tokens(PrefService* prefs,
-                                 const std::string& service_provider) {
-  return ClearFileSystemAccessToken(prefs, service_provider) &&
-         ClearFileSystemRefreshToken(prefs, service_provider);
-}
-
-bool GetFileSystemOAuth2Tokens(PrefService* prefs,
-                               const std::string& service_provider,
-                               std::string* access_token,
-                               std::string* refresh_token) {
-  return GetToken(prefs, service_provider, access_token,
-                  kAccessTokenPrefPathTemplate) &&
-         GetToken(prefs, service_provider, refresh_token,
-                  kRefreshTokenPrefPathTemplate);
 }
 
 }  // namespace enterprise_connectors

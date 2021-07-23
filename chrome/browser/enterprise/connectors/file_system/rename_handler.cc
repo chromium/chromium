@@ -8,6 +8,7 @@
 
 #include "base/files/file_util.h"
 #include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
+#include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
 #include "chrome/browser/enterprise/connectors/file_system/signin_dialog_delegate.h"
 #include "chrome/browser/enterprise/connectors/file_system/signin_experience.h"
@@ -75,7 +76,7 @@ FileSystemRenameHandler::FileSystemRenameHandler(
     : download::DownloadItemRenameHandler(download_item),
       settings_(std::move(settings)),
       uploader_(BoxUploader::Create(download_item)) {
-  DCHECK_EQ(settings_.service_provider, kBoxProviderName);
+  DCHECK_EQ(settings_.service_provider, kFileSystemServiceProviderPrefNameBox);
 }
 
 FileSystemRenameHandler::FileSystemRenameHandler(
@@ -255,7 +256,7 @@ void FileSystemRenameHandler::OnAccessTokenFetched(
   }
 
   // Case 1c and 3b:
-  if (ClearFileSystemRefreshToken(GetPrefs(), settings_.service_provider)) {
+  if (ClearFileSystemOAuth2Tokens(GetPrefs(), settings_.service_provider)) {
     return OnAuthenticationError(status);
   }
 

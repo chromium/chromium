@@ -13,22 +13,9 @@ class WebContents;
 }
 
 namespace enterprise_connectors {
+
 class FileSystemRenameHandler;
-
-class SigninExperienceTestObserver {
- public:
-  explicit SigninExperienceTestObserver(
-      FileSystemRenameHandler* rename_handler);
-  ~SigninExperienceTestObserver();
-
-  virtual void OnConfirmationDialogCreated(
-      views::DialogDelegate* dialog_delegate) {}
-  virtual void OnSignInDialogCreated(content::WebContents* dialog_web_content,
-                                     views::Widget* dialog_widget) {}
-
- private:
-  base::WeakPtr<FileSystemRenameHandler> rename_handler_;
-};
+class SigninExperienceTestObserver;
 
 // Retrieve FileSystemSettings for |profile|; null if connector is disabled.
 absl::optional<FileSystemSettings> GetFileSystemSettings(Profile* profile);
@@ -46,19 +33,54 @@ void StartFileSystemConnectorSigninExperienceForDownloadItem(
     content::WebContents* web_contents,
     const FileSystemSettings& settings,
     AuthorizationCompletedCallback callback,
-    SigninExperienceTestObserver* observer = nullptr);
+    SigninExperienceTestObserver* test_observer = nullptr);
 
 // Start the sign in experience as triggered by the settings page.
 void StartFileSystemConnectorSigninExperienceForSettingsPage(
     Profile* profile,
-    base::OnceCallback<void(bool)> callback);
+    base::OnceCallback<void(bool)> callback,
+    SigninExperienceTestObserver* test_observer = nullptr);
 
-// Clear authentication tokens.
+// If |enable_link| = true, start the sign in experience as triggered by
+// settings page; else, unlink the existing account.
+void SetFileSystemConnectorAccountLinkForSettingsPage(
+    bool enable_link,
+    Profile* profile,
+    base::OnceCallback<void(bool)> callback,
+    SigninExperienceTestObserver* test_observer = nullptr);
+
+absl::optional<base::DictionaryValue>
+GetFileSystemConnectorLinkedAccountInfoForSettingsPage(
+    const FileSystemSettings& settings,
+    PrefService* prefs);
+
+// Clear authentication tokens and stored account info.
 bool ClearFileSystemConnectorLinkedAccount(const FileSystemSettings& settings,
                                            PrefService* prefs);
 
 // Run |callback| with a GoogleServiceAuthError that indicates cancellation.
 void ReturnCancellation(AuthorizationCompletedCallback callback);
+
+// Helper function/classes for testing.
+void ExtractAccountInfoFromDictionary(const base::DictionaryValue& dict,
+                                      base::Value* account,
+                                      std::string* folder_name,
+                                      std::string* folder_link);
+
+class SigninExperienceTestObserver {
+ public:
+  SigninExperienceTestObserver();
+  virtual ~SigninExperienceTestObserver();
+
+  virtual void InitForTesting(FileSystemRenameHandler* rename_handler);
+  virtual void OnConfirmationDialogCreated(
+      views::DialogDelegate* dialog_delegate) {}
+  virtual void OnSignInDialogCreated(content::WebContents* dialog_web_content,
+                                     views::Widget* dialog_widget) {}
+
+ private:
+  base::WeakPtr<FileSystemRenameHandler> rename_handler_;
+};
 
 }  // namespace enterprise_connectors
 

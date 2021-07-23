@@ -3621,6 +3621,8 @@ static_library("browser") {
       "enterprise/connectors/enterprise_connectors_policy_handler.h",
       "enterprise/connectors/file_system/access_token_fetcher.cc",
       "enterprise/connectors/file_system/access_token_fetcher.h",
+      "enterprise/connectors/file_system/account_info_utils.cc",
+      "enterprise/connectors/file_system/account_info_utils.h",
       "enterprise/connectors/file_system/box_api_call_endpoints.cc",
       "enterprise/connectors/file_system/box_api_call_endpoints.h",
       "enterprise/connectors/file_system/box_api_call_flow.cc",

@@ -11,6 +11,7 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
+#include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
 #include "chrome/browser/enterprise/connectors/file_system/signin_experience.h"
 #include "chrome/browser/enterprise/connectors/file_system/test_helper.h"
@@ -404,8 +405,7 @@ class RenameHandlerOAuth2Test : public testing::Test,
 
   void VerifyBothTokensClear() {
     std::string atoken, rtoken;
-    ASSERT_TRUE(GetFileSystemOAuth2Tokens(prefs(), kBox, &atoken, &rtoken))
-        << "Access Token: " << atoken << "\nRefresh Token: " << rtoken;
+    ASSERT_TRUE(GetFileSystemOAuth2Tokens(prefs(), kBox, &atoken, &rtoken));
     ASSERT_TRUE(atoken.empty());
     ASSERT_TRUE(rtoken.empty());
   }

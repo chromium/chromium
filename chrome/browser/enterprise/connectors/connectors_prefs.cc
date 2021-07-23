@@ -8,7 +8,7 @@
 
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
+#include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 
 #include "components/prefs/pref_registry_simple.h"
@@ -41,10 +41,6 @@ const char kOnBulkDataEntryScopePref[] =
     "enterprise_connectors.scope.on_bulk_data_entry";
 const char kOnSecurityEventScopePref[] =
     "enterprise_connectors.scope.on_security_event";
-
-// Template to store the Box folder_id for caching purposes
-constexpr char kFileSystemUploadFolderIdPref[] =
-    "enterprise_connectors.file_system.box.folder_id";
 
 namespace {
 

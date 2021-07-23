@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader_test_helper.h"
 
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_test_helper.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -74,7 +75,8 @@ void BoxUploaderTestBase::InitUploader(BoxUploader* uploader) {
 
 void BoxUploaderTestBase::InitFolderIdInPrefs(std::string folder_id) {
   ASSERT_TRUE(prefs_);
-  prefs_->SetString(kFileSystemUploadFolderIdPref, folder_id);
+  SetDefaultFolder(prefs_, kFileSystemServiceProviderPrefNameBox, folder_id,
+                   "ChromeDownloads");
 }
 
 void BoxUploaderTestBase::SetInterceptorForURLLoader(

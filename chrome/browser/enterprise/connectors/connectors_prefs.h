@@ -43,9 +43,6 @@ extern const char kDeviceTrustPrivateKeyPref[];
 // stored there; owtherwise, it will be stored in the local state.
 extern const char kDeviceTrustPublicKeyPref[];
 
-// Template to store the service provider's "folder_id" for caching purposes.
-extern const char kFileSystemUploadFolderIdPref[];
-
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 void RegisterLocalPrefs(PrefRegistrySimple* registry);
