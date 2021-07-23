@@ -92,6 +92,9 @@ MinMaxSizes GetMinMaxSizesForVerticalStretchyOperator(const ComputedStyle&,
 
 bool IsUnderOverLaidOutAsSubSup(const NGBlockNode& node);
 bool IsOperatorWithSpecialShaping(const NGBlockNode& node);
+
+LayoutUnit MathTableBaseline(const ComputedStyle&, LayoutUnit block_offset);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_NG_MATH_LAYOUT_UTILS_H_

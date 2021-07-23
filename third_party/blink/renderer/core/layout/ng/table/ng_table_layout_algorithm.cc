@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/layout/ng/mathml/ng_math_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
@@ -27,6 +28,8 @@
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_node.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
+#include "third_party/blink/renderer/core/mathml/mathml_element.h"
+#include "third_party/blink/renderer/core/mathml_names.h"
 
 namespace blink {
 
@@ -895,6 +898,9 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::GenerateFragment(
                                    grid_converter.ToPhysical(table_grid_rect),
                                    border_spacing, column_block_size);
 
+  if (Node().GetDOMNode() &&
+      Node().GetDOMNode()->HasTagName(mathml_names::kMtableTag))
+    table_baseline = MathTableBaseline(Style(), block_offset);
   if (table_baseline)
     container_builder_.SetBaseline(*table_baseline);
 

@@ -92,6 +92,18 @@ mi {
 /* Tables */
 mtable {
   math-style: compact;
+  display: inline-table;
+}
+
+mtr {
+  display: table-row;
+}
+
+mtd {
+  display: table-cell;
+  padding: 0.5ex 0.4em;
+  /* TODO(crbug.com/1125111): Properly center complex <mtd> children like mrow. */
+  text-align: -webkit-center;
 }
 
 /* Fractions */

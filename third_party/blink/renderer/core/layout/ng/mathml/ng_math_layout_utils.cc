@@ -275,4 +275,11 @@ LayoutUnit FractionLineThickness(const ComputedStyle& style) {
       LayoutUnit());
 }
 
+LayoutUnit MathTableBaseline(const ComputedStyle& style,
+                             LayoutUnit block_offset) {
+  // The center of the table is aligned with the math axis.
+  // See: https://w3c.github.io/mathml-core/#table-or-matrix-mtable
+  return LayoutUnit(block_offset / 2 + MathAxisHeight(style));
+}
+
 }  // namespace blink

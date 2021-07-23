@@ -104,6 +104,10 @@
       interfaceName: "MathMLRowElement",
     },
     {
+      name: "mtable",
+      interfaceName: "MathMLElement",
+    },
+    {
       name: "mtext",
       interfaceName: "MathMLElement",
     },

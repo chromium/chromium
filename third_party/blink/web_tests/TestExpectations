@@ -1236,11 +1236,8 @@ crbug.com/1124298 external/wpt/mathml/presentation-markup/spaces/space-like-001.
 crbug.com/1124298 external/wpt/mathml/presentation-markup/spaces/space-like-002.html [ Failure ]
 crbug.com/1124298 external/wpt/mathml/presentation-markup/spaces/space-like-004.html [ Failure ]
 
-# These tests fail because we don't support MathML tables.
-crbug.com/1125111 external/wpt/mathml/presentation-markup/direction/direction-006.html [ Failure ]
-crbug.com/1125111 external/wpt/mathml/presentation-markup/tables/table-001.html [ Failure ]
-crbug.com/1125111 external/wpt/mathml/presentation-markup/tables/table-002.html [ Failure ]
-crbug.com/1125111 external/wpt/mathml/presentation-markup/tables/table-axis-height.html [ Failure ]
+# This test fail because we don't properly center elements in MathML tables.
+crbug.com/1125111 external/wpt/mathml/presentation-markup/tables/table-003.html [ Failure ]
 
 # These tests fail because some CSS properties affect MathML layout.
 crbug.com/1227601 external/wpt/mathml/relations/css-styling/ignored-properties-001.html [ Failure Timeout ]
