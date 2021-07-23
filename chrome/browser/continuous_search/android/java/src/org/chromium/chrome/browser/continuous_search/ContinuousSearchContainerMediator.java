@@ -175,6 +175,11 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
         // TODO(crbug/1217105): updateState() should be calculated relative to the content offset
         // rather than top offset to ensure this works properly regardless of whether this is
         // animated.
+        if (mModel.get(ContinuousSearchContainerProperties.ANDROID_VIEW_VISIBILITY)
+                != View.VISIBLE) {
+            // Avoid triggering on initial height change when making visible.
+            return;
+        }
         updateState();
     }
 

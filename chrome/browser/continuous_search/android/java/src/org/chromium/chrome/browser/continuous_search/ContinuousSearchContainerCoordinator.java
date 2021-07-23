@@ -115,6 +115,8 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
         PropertyModel model = new PropertyModel(ContinuousSearchContainerProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(
                 model, mRootView, ContinuousSearchContainerViewBinder::bindJavaView);
+        model.set(ContinuousSearchContainerProperties.ANDROID_VIEW_VISIBILITY,
+                mRootView.getVisibility());
         mLayoutManager.createCompositorMCP(
                 model, mSceneLayer, ContinuousSearchContainerViewBinder::bindCompositedView);
         mContainerMediator.onLayoutInitialized(model, mRootView::requestLayout);

@@ -207,6 +207,10 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
             case TriggerMode.AFTER_SECOND_SRP:
                 shouldTrigger = mSrpVisits >= 2;
                 break;
+            case TriggerMode.ON_REVERSE_SCROLL:
+                // Keep showing once open as the UI was shown and can be used.
+                shouldTrigger = mVisible;
+                break;
         }
         setVisibility(shouldShow() && shouldTrigger, null);
     }

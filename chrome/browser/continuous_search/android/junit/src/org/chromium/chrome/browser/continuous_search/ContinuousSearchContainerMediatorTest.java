@@ -529,6 +529,7 @@ public class ContinuousSearchContainerMediatorTest {
         mCurrentTopControlsMinHeight = minHeight;
         mCurrentTopOffset = topOffset;
         mCanAnimateNative = canAnimate;
+        mBrowserControlsObserver.onTopControlsHeightChanged(topControlsHeight, minHeight);
         mBrowserControlsObserver.onControlsOffsetChanged(topOffset, 0, 0, 0, true);
         assertModelVerticalOffset(expectedVerticalOffset);
         assertModelViewVisibility(expectedCompositedViewVisibility, expectedAndroidViewVisibility);
