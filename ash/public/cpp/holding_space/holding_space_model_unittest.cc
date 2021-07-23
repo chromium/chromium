@@ -17,8 +17,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
-
 namespace {
+
+using UpdatedField = HoldingSpaceModelObserver::UpdatedField;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -51,6 +52,14 @@ class ScopedModelObservation : public HoldingSpaceModelObserver {
   ScopedModelObservation& operator=(const ScopedModelObservation&) = delete;
   ~ScopedModelObservation() override = default;
 
+  // Returns the last updated fields for which `OnHoldingSpaceItemUpdated()`
+  // was called, clearing the cached value.
+  uint32_t TakeLastUpdatedFields() {
+    const uint32_t updated_fields = last_updated_fields_;
+    last_updated_fields_ = 0u;
+    return updated_fields;
+  }
+
   // Returns the last `HoldingSpaceItem` for which `OnHoldingSpaceItemUpdated()`
   // was called, clearing the cached value.
   const HoldingSpaceItem* TakeLastUpdatedItem() {
@@ -69,8 +78,10 @@ class ScopedModelObservation : public HoldingSpaceModelObserver {
 
  private:
   // HoldingSpaceModel::Observer:
-  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override {
+  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
+                                 uint32_t updated_fields) override {
     last_updated_item_ = item;
+    last_updated_fields_ = updated_fields;
     ++updated_item_count_;
   }
 
@@ -78,6 +89,11 @@ class ScopedModelObservation : public HoldingSpaceModelObserver {
   // called. May be `nullptr` prior to an update event or following a call to
   // `TakeLastUpdatedItem()`.
   const HoldingSpaceItem* last_updated_item_ = nullptr;
+
+  // The last updated fields for which `OnHoldingSpaceItemUpdated()` was called.
+  // May be zero prior to an update event or following a call to
+  // `TakeLastUpdatedFields()`.
+  uint32_t last_updated_fields_ = 0u;
 
   // The count of times for which `OnHoldingSpaceItemUpdated()` was called. May
   // be reset following a call to `TakeUpdatedItemCount()`.
@@ -136,6 +152,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
       .UpdateItem(item_ptr->id())
       ->SetBackingFile(updated_file_path, updated_file_system_url);
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kBackingFile);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
   EXPECT_EQ(item_ptr->file_path(), updated_file_path);
   EXPECT_EQ(item_ptr->file_system_url(), updated_file_system_url);
@@ -143,6 +160,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   // Update paused state.
   model().UpdateItem(item_ptr->id())->SetPaused(true);
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kPaused);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
   EXPECT_TRUE(item_ptr->IsPaused());
 
@@ -152,18 +170,21 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
       ->SetProgress(
           HoldingSpaceProgress(/*current_bytes=*/50, /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kProgress);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
   EXPECT_EQ(item_ptr->progress().GetValue(), 0.5f);
 
   // Update text.
   model().UpdateItem(item_ptr->id())->SetText(u"text");
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kText);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
   EXPECT_EQ(item_ptr->GetText(), u"text");
 
   // Update secondary text.
   model().UpdateItem(item_ptr->id())->SetSecondaryText(u"secondary_text");
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kSecondaryText);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
   EXPECT_EQ(item_ptr->secondary_text(), u"secondary_text");
 
@@ -179,6 +200,10 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
       .SetProgress(
           HoldingSpaceProgress(/*current_bytes=*/75, /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(),
+            UpdatedField::kBackingFile | UpdatedField::kPaused |
+                UpdatedField::kProgress | UpdatedField::kSecondaryText |
+                UpdatedField::kText);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
   EXPECT_EQ(item_ptr->file_path(), updated_file_path);
   EXPECT_EQ(item_ptr->file_system_url(), updated_file_system_url);
@@ -248,16 +273,19 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Pause) {
   // Attempt to update pause to `false`. This should no-op.
   model().UpdateItem(item_ptr->id())->SetPaused(false);
   EXPECT_FALSE(observation.TakeLastUpdatedItem());
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), 0u);
   EXPECT_FALSE(item_ptr->IsPaused());
 
   // Update pause to `true`.
   model().UpdateItem(item_ptr->id())->SetPaused(true);
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kPaused);
   EXPECT_TRUE(item_ptr->IsPaused());
 
   // Update pause to `false`.
   model().UpdateItem(item_ptr->id())->SetPaused(false);
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kPaused);
   EXPECT_FALSE(item_ptr->IsPaused());
 
   // Update pause to `true` and progress to completion. Because the item is no
@@ -268,15 +296,19 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Pause) {
       .SetProgress(
           HoldingSpaceProgress(/*current_bytes=*/100, /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(),
+            UpdatedField::kPaused | UpdatedField::kProgress);
   EXPECT_TRUE(item_ptr->progress().IsComplete());
   EXPECT_FALSE(item_ptr->IsPaused());
 
   // Attempts to update pause should no-op for completed items.
   model().UpdateItem(item_ptr->id())->SetPaused(true);
   EXPECT_FALSE(observation.TakeLastUpdatedItem());
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), 0u);
   EXPECT_FALSE(item_ptr->IsPaused());
   model().UpdateItem(item_ptr->id())->SetPaused(false);
   EXPECT_FALSE(observation.TakeLastUpdatedItem());
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), 0u);
   EXPECT_FALSE(item_ptr->IsPaused());
 }
 
@@ -310,6 +342,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Progress) {
       ->SetProgress(
           HoldingSpaceProgress(/*current_bytes=*/50, /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kProgress);
   EXPECT_EQ(item_ptr->progress().GetValue(), 0.5f);
 
   // Update progress to `0.5f` again. This should no-op.
@@ -318,6 +351,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Progress) {
       ->SetProgress(
           HoldingSpaceProgress(/*current_bytes=*/50, /*total_bytes=*/100));
   EXPECT_FALSE(observation.TakeLastUpdatedItem());
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), 0u);
   EXPECT_EQ(item_ptr->progress().GetValue(), 0.5f);
 
   // Update progress to indeterminate.
@@ -326,6 +360,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Progress) {
       ->SetProgress(HoldingSpaceProgress(/*current_bytes=*/absl::nullopt,
                                          /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kProgress);
   EXPECT_TRUE(item_ptr->progress().IsIndeterminate());
 
   // Update progress to complete.
@@ -334,6 +369,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Progress) {
       ->SetProgress(
           HoldingSpaceProgress(/*current_bytes=*/100, /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kProgress);
   EXPECT_TRUE(item_ptr->progress().IsComplete());
 
   // Update progress to `0.5f`. This should no-op as progress becomes read-only
@@ -343,6 +379,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Progress) {
       ->SetProgress(
           HoldingSpaceProgress(/*current_bytes=*/50, /*total_bytes=*/100));
   EXPECT_FALSE(observation.TakeLastUpdatedItem());
+  EXPECT_EQ(observation.TakeLastUpdatedFields(), 0u);
   EXPECT_TRUE(item_ptr->progress().IsComplete());
 }
 

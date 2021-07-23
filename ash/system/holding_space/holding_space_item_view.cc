@@ -287,7 +287,8 @@ void HoldingSpaceItemView::OnThemeChanged() {
 }
 
 void HoldingSpaceItemView::OnHoldingSpaceItemUpdated(
-    const HoldingSpaceItem* item) {
+    const HoldingSpaceItem* item,
+    uint32_t updated_fields) {
   if (item_ == item) {
     GetViewAccessibility().OverrideName(item->GetText());
     UpdatePrimaryAction();

@@ -318,8 +318,9 @@ views::View* HoldingSpaceItemChipView::GetTooltipHandlerForPoint(
 }
 
 void HoldingSpaceItemChipView::OnHoldingSpaceItemUpdated(
-    const HoldingSpaceItem* item) {
-  HoldingSpaceItemView::OnHoldingSpaceItemUpdated(item);
+    const HoldingSpaceItem* item,
+    uint32_t updated_fields) {
+  HoldingSpaceItemView::OnHoldingSpaceItemUpdated(item, updated_fields);
   if (this->item() == item) {
     UpdateImage();
     UpdateLabels();

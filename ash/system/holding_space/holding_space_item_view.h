@@ -66,7 +66,8 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   void OnThemeChanged() override;
 
   // HoldingSpaceModelObserver:
-  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override;
+  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
+                                 uint32_t updated_fields) override;
 
   // Starts a drag from this view at the location specified by the given `event`
   // and with the specified `source`. Note that this method copies the logic of

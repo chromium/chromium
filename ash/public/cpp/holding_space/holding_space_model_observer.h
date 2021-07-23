@@ -25,12 +25,25 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModelObserver
   virtual void OnHoldingSpaceItemsRemoved(
       const std::vector<const HoldingSpaceItem*>& items) {}
 
-  // Called when an `item` gets updated within the holding space model.
-  virtual void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) {}
-
   // Called when a partially initialized holding space `item` gets fully
   // initialized.
   virtual void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item) {}
+
+  // Indicates which field of a holding space item was updated during a batch
+  // update operation, as notified through `OnHoldingSpaceItemUpdated()`. Note
+  // that these values are used in a bitfield.
+  enum UpdatedField : uint32_t {
+    kBackingFile = 1u << 1u,
+    kPaused = 1u << 2u,
+    kProgress = 1u << 3u,
+    kSecondaryText = 1u << 4u,
+    kText = 1u << 5u,
+  };
+
+  // Called when an `item` gets updated within the holding space model. The
+  // specific fields which were updated are provided in `updated_fields`.
+  virtual void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
+                                         uint32_t updated_fields) {}
 };
 
 }  // namespace ash

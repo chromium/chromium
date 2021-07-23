@@ -37,7 +37,8 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
  private:
   // HoldingSpaceItemView:
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override;
+  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
+                                 uint32_t updated_fields) override;
   void OnPrimaryActionVisibilityChanged(bool visible) override;
   void OnSelectionUiChanged() override;
   void OnMouseEvent(ui::MouseEvent* event) override;

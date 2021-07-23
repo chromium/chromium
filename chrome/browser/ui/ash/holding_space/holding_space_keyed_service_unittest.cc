@@ -176,7 +176,8 @@ class ItemUpdatedWaiter : public HoldingSpaceModelObserver {
 
  private:
   // HoldingSpaceModelObserver:
-  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override {
+  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
+                                 uint32_t updated_fields) override {
     if (item == wait_item_)
       wait_loop_->Quit();
   }

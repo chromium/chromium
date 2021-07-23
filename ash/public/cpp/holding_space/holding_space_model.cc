@@ -17,34 +17,42 @@ namespace ash {
 // HoldingSpaceModel::ScopedItemUpdate -----------------------------------------
 
 HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
-  bool did_update = false;
+  uint32_t updated_fields = 0u;
 
   // Update backing file.
   if (file_path_ && file_system_url_) {
-    did_update |=
-        item_->SetBackingFile(file_path_.value(), file_system_url_.value());
+    if (item_->SetBackingFile(file_path_.value(), file_system_url_.value()))
+      updated_fields |= HoldingSpaceModelObserver::UpdatedField::kBackingFile;
   }
 
   // Update pause.
-  if (paused_)
-    did_update |= item_->SetPaused(paused_.value());
+  if (paused_) {
+    if (item_->SetPaused(paused_.value()))
+      updated_fields |= HoldingSpaceModelObserver::UpdatedField::kPaused;
+  }
 
   // Update progress.
-  if (progress_)
-    did_update |= item_->SetProgress(progress_.value());
+  if (progress_) {
+    if (item_->SetProgress(progress_.value()))
+      updated_fields |= HoldingSpaceModelObserver::UpdatedField::kProgress;
+  }
 
   // Update secondary text.
-  if (secondary_text_)
-    did_update |= item_->SetSecondaryText(secondary_text_.value());
+  if (secondary_text_) {
+    if (item_->SetSecondaryText(secondary_text_.value()))
+      updated_fields |= HoldingSpaceModelObserver::UpdatedField::kSecondaryText;
+  }
 
   // Update text.
-  if (text_)
-    did_update |= item_->SetText(text_.value());
+  if (text_) {
+    if (item_->SetText(text_.value()))
+      updated_fields |= HoldingSpaceModelObserver::UpdatedField::kText;
+  }
 
   // Notify observers if and only if an update occurred.
-  if (did_update) {
+  if (updated_fields != 0u) {
     for (auto& observer : model_->observers_)
-      observer.OnHoldingSpaceItemUpdated(item_);
+      observer.OnHoldingSpaceItemUpdated(item_, updated_fields);
   }
 }
 

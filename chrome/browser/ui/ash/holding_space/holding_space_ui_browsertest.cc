@@ -2040,7 +2040,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   base::RunLoop run_loop;
   const bool was_paused = in_progress_download->IsPaused();
   EXPECT_CALL(mock, OnHoldingSpaceItemUpdated)
-      .WillOnce([&](const HoldingSpaceItem* item) {
+      .WillOnce([&](const HoldingSpaceItem* item, uint32_t updated_fields) {
         EXPECT_EQ(item->id(),
                   test_api().GetHoldingSpaceItemId(in_progress_download_chip));
         EXPECT_EQ(item->IsPaused(), !was_paused);
@@ -2140,7 +2140,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   base::RunLoop run_loop;
   const bool was_paused = in_progress_download->IsPaused();
   EXPECT_CALL(mock, OnHoldingSpaceItemUpdated)
-      .WillOnce([&](const HoldingSpaceItem* item) {
+      .WillOnce([&](const HoldingSpaceItem* item, uint32_t updated_fields) {
         EXPECT_EQ(item->id(),
                   test_api().GetHoldingSpaceItemId(in_progress_download_chip));
         EXPECT_EQ(item->IsPaused(), !was_paused);

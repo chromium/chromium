@@ -58,7 +58,8 @@ class HoldingSpaceFileSystemDelegate
       const std::vector<const HoldingSpaceItem*>& items) override;
   void OnHoldingSpaceItemsRemoved(
       const std::vector<const HoldingSpaceItem*>& items) override;
-  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override;
+  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
+                                 uint32_t updated_fields) override;
   void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item) override;
 
   // file_manager::VolumeManagerObserver:

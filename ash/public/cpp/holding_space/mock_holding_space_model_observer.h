@@ -32,7 +32,7 @@ class MockHoldingSpaceModelObserver : public HoldingSpaceModelObserver {
               (override));
   MOCK_METHOD(void,
               OnHoldingSpaceItemUpdated,
-              (const HoldingSpaceItem* item),
+              (const HoldingSpaceItem* item, uint32_t updated_fields),
               (override));
   MOCK_METHOD(void,
               OnHoldingSpaceItemInitialized,

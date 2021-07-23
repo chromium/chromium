@@ -164,7 +164,8 @@ class HoldingSpaceControllerProgressRing
     }
   }
 
-  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override {
+  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
+                                 uint32_t updated_fields) override {
     if (item->IsInitialized())
       InvalidateLayer();
   }
@@ -208,7 +209,8 @@ class HoldingSpaceItemProgressRing : public HoldingSpaceProgressRing,
   }
 
   // HoldingSpaceModelObserver:
-  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override {
+  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
+                                 uint32_t updated_fields) override {
     if (item_ == item)
       InvalidateLayer();
   }
