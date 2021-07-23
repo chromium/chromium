@@ -265,7 +265,6 @@ component("platform") {
   sources = [
     "animation/animation_translation_util.cc",
     "animation/animation_translation_util.h",
-    "animation/animation_utilities.h",
     "animation/compositor_animation.cc",
     "animation/compositor_animation.h",
     "animation/compositor_animation_client.cc",
