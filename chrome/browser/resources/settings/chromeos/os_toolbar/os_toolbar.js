@@ -39,27 +39,13 @@ Polymer({
       type: Boolean,
       reflectToAttribute: true,
     },
-
-    /** @private */
-    newOsSettingsSearch_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('newOsSettingsSearch');
-      },
-      readOnly: true,
-    },
   },
 
   /** @return {?CrToolbarSearchFieldElement} */
   getSearchField() {
-    if (this.newOsSettingsSearch_) {
-      return /** @type {?CrToolbarSearchFieldElement} */ (
-          this.shadowRoot.querySelector('os-settings-search-box')
-              .$$('cr-toolbar-search-field'));
-    }
-    // TODO(crbug/1080777): Remove when new settings search complete.
     return /** @type {?CrToolbarSearchFieldElement} */ (
-        this.$$('cr-toolbar-search-field'));
+        this.shadowRoot.querySelector('os-settings-search-box')
+            .$$('cr-toolbar-search-field'));
   },
 
   /** @private */

@@ -15,25 +15,12 @@
   <template>
     <style include="cr-icons cr-hidden-style">
       :host {
-        --cr-toolbar-search-field-background:
-            var(--cros-toolbar-search-bg-color);
-        --cr-toolbar-search-field-border-radius: 4px;
-        --cr-toolbar-search-field-input-text-color:
-            var(--cros-text-color-secondary);
-        --cr-toolbar-search-field-input-icon-color: var(--google-grey-600);
-        --cr-toolbar-search-field-input-bg-color:
-            var(--cros-bg-color);
-         --cr-toolbar-search-field-prompt-color: var(--google-grey-600);
         align-items: center;
         background-color: var(--cros-bg-color);
         color: var(--cros-text-color-secondary);
         display: flex;
         height: var(--cr-toolbar-height);
         padding-top: var(--cr-toolbar-padding-top);
-      }
-
-      :host(:not([narrow])) {
-        --cr-toolbar-search-field-border-radius: 4px;
       }
 
       h1 {
@@ -149,18 +136,9 @@
     </div>
 
     <div id="centeredContent" hidden$="[[!showSearch]]">
-      <template is="dom-if" if="[[!newOsSettingsSearch_]]">
-        <cr-toolbar-search-field id="search" narrow="[[narrow]]"
-            label="$i18n{searchPrompt}" clear-label="$i18n{clearSearch}"
-            spinner-active="[[spinnerActive]]"
-            showing-search="{{showingSearch_}}">
-        </cr-toolbar-search-field>
-      </template>
-      <template is="dom-if" if="[[newOsSettingsSearch_]]">
-        <os-settings-search-box id="searchBox" narrow="[[narrow]]"
-            showing-search="{{showingSearch_}}">
-        </os-settings-search-box>
-      </template>
+      <os-settings-search-box id="searchBox" narrow="[[narrow]]"
+          showing-search="{{showingSearch_}}">
+      </os-settings-search-box>
     </div>
 
     <div id="rightContent">

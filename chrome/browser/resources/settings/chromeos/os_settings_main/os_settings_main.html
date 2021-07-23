@@ -6,7 +6,6 @@
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/search_highlight_utils.html">
 <link rel="import" href="chrome://resources/html/promise_resolver.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="../os_about_page/os_about_page.html">
 <link rel="import" href="../os_settings_page/os_settings_page.html">
@@ -15,7 +14,6 @@
 <link rel="import" href="../../prefs/prefs.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
-<link rel="import" href="../../search_settings.html">
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="../../settings_vars_css.html">
 
@@ -55,13 +53,8 @@
         z-index: 1;
       }
     </style>
-    <div id="noSearchResults" hidden$="[[!showNoResultsFound_]]">
-      <div>$i18n{searchNoResults}</div>
-      <div>$i18nRaw{searchNoOsResultsHelp}</div>
-    </div>
     <template is="dom-if"
-        if="[[showManagedHeader_(inSearchMode_, showingSubpage_,
-        showPages_.about)]]">
+        if="[[showManagedHeader_(showingSubpage_, showPages_.about)]]">
       <managed-footnote show-device-info></managed-footnote>
     </template>
     <template is="dom-if" if="[[showPages_.settings]]">
@@ -78,7 +71,6 @@
           on-showing-section="onShowingSection_"
           on-subpage-expand="onShowingSubpage_"
           on-showing-main-page="onShowingMainPage_"
-          in-search-mode="[[inSearchMode_]]"
           advanced-toggle-expanded="{{advancedToggleExpanded}}"
           show-kerberos-section="[[showKerberosSection]]">
       </os-settings-page>
@@ -86,7 +78,6 @@
     <template is="dom-if" if="[[showPages_.about]]">
       <os-settings-about-page role="main"
           class="cr-centered-card-container"
-          in-search-mode="[[inSearchMode_]]"
           on-subpage-expand="onShowingSubpage_"
           on-showing-main-page="onShowingMainPage_"
           prefs="{{prefs}}"

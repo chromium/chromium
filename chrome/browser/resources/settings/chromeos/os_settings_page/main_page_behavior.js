@@ -59,19 +59,6 @@ cr.define('settings', function() {
    * @polymerBehavior
    */
   /* #export */ const MainPageBehavior = {
-    properties: {
-      /**
-       * Whether a search operation is in progress or previous search results
-       * are being displayed.
-       * @private {boolean}
-       */
-      inSearchMode: {
-        type: Boolean,
-        value: false,
-        observer: 'inSearchModeChanged_',
-      },
-    },
-
     /** @type {?HTMLElement} */
     scroller: null,
 
@@ -114,30 +101,6 @@ cr.define('settings', function() {
      */
     containsRoute(route) {
       return false;
-    },
-
-    /**
-     * @param {boolean} current
-     * @param {boolean} previous
-     * @private
-     */
-    inSearchModeChanged_(current, previous) {
-      // Ignore 1st occurrence which happens while the element is being
-      // initialized.
-      if (previous === undefined) {
-        return;
-      }
-
-      if (!this.inSearchMode) {
-        const route = settings.Router.getInstance().getCurrentRoute();
-        if (this.containsRoute(route) &&
-            classifyRoute(route) === RouteState.SECTION) {
-          // Re-fire the showing-section event to trigger settings-main
-          // recalculation of the overscroll, now that sections are not
-          // hidden-by-search.
-          this.fire('showing-section', this.getSection(route.section));
-        }
-      }
     },
 
     /**
@@ -240,9 +203,7 @@ cr.define('settings', function() {
      */
     scrollToSection_(route) {
       this.ensureSectionForRoute_(route).then(section => {
-        if (!this.inSearchMode) {
-          this.fire('showing-section', section);
-        }
+        this.fire('showing-section', section);
         this.fire('show-container');
       });
     },

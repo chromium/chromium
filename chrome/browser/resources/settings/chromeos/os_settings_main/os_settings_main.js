@@ -48,22 +48,6 @@ Polymer({
       },
     },
 
-    /**
-     * Whether a search operation is in progress or previous search results are
-     * being displayed.
-     * @private {boolean}
-     */
-    inSearchMode_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    showNoResultsFound_: {
-      type: Boolean,
-      value: false,
-    },
-
     /** @private */
     showingSubpage_: Boolean,
 
@@ -179,66 +163,10 @@ Polymer({
   },
 
   /**
-   * Returns the root page (if it exists) for a route.
-   * @param {!settings.Route} route
-   * @return {?OsSettingsPageElement}
-   */
-  getPage_(route) {
-    if (settings.routes.BASIC.contains(route) ||
-        (settings.routes.ADVANCED &&
-         settings.routes.ADVANCED.contains(route))) {
-      return /** @type {?OsSettingsPageElement} */ (
-          this.$$('os-settings-page'));
-    }
-    assertNotReached();
-  },
-
-  /**
-   * @param {string} query
-   * @return {!Promise} A promise indicating that searching finished.
-   */
-  searchContents(query) {
-    // Trigger rendering of the basic and advanced pages and search once ready.
-    this.inSearchMode_ = true;
-    this.toolbarSpinnerActive = true;
-
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const whenSearchDone =
-            assert(this.getPage_(settings.routes.BASIC)).searchContents(query);
-        whenSearchDone.then(result => {
-          resolve();
-          if (result.canceled) {
-            // Nothing to do here. A previous search request was canceled
-            // because a new search request was issued with a different query
-            // before the previous completed.
-            return;
-          }
-
-          this.toolbarSpinnerActive = false;
-          this.inSearchMode_ = !result.wasClearSearch;
-          this.showNoResultsFound_ =
-              this.inSearchMode_ && !result.didFindMatches;
-
-          if (this.inSearchMode_) {
-            Polymer.IronA11yAnnouncer.requestAvailability();
-            this.fire('iron-announce', {
-              text: this.showNoResultsFound_ ?
-                  loadTimeData.getString('searchNoResults') :
-                  loadTimeData.getStringF('searchResults', query)
-            });
-          }
-        });
-      }, 0);
-    });
-  },
-
-  /**
    * @return {boolean}
    * @private
    */
   showManagedHeader_() {
-    return !this.inSearchMode_ && !this.showingSubpage_ &&
-        !this.showPages_.about;
+    return !this.showingSubpage_ && !this.showPages_.about;
   },
 });

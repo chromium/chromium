@@ -50,15 +50,6 @@ void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {
       {"clearSearch", IDS_CLEAR_SEARCH},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-
-  html_source->AddString(
-      "searchNoOsResultsHelp",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_SEARCH_NO_RESULTS_HELP,
-          base::ASCIIToUTF16(chrome::kOsSettingsSearchHelpURL)));
-
-  // TODO(crbug/1080777): Remove this flag and JS codepaths effected.
-  html_source->AddBoolean("newOsSettingsSearch", true);
 }
 
 void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {

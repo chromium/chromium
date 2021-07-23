@@ -102,12 +102,6 @@ cr.define('settings', function() {
       /** @private */
       showKerberosSection_: Boolean,
 
-      /** @private */
-      lastSearchQuery_: {
-        type: String,
-        value: '',
-      },
-
       /**
        * The threshold at which the toolbar will change from normal to narrow
        * mode, in px.
@@ -291,54 +285,6 @@ cr.define('settings', function() {
         this.enableShadowBehavior(false);
         this.showDropShadows();
       }
-
-      if (loadTimeData.getBoolean('newOsSettingsSearch')) {
-        // TODO(crbug/1080777): Remove when new os settings search complete.
-        // This block prevents the old settings search code from being executed.
-        return;
-      }
-
-      const urlSearchQuery =
-          settings.Router.getInstance().getQueryParameters().get('search') ||
-          '';
-
-      if (urlSearchQuery === this.lastSearchQuery_) {
-        return;
-      }
-
-      this.lastSearchQuery_ = urlSearchQuery;
-
-      // If toolbar is hidden, do not update anything.
-      if (!this.showToolbar_) {
-        return;
-      }
-
-      const toolbar = /** @type {!OsToolbarElement} */ (this.$$('os-toolbar'));
-      const searchField =
-          /** @type {?CrToolbarSearchFieldElement} */ (
-              toolbar.getSearchField());
-
-      if (!searchField) {
-        // TODO(crbug/1080777): Remove this and surrounding code when new os
-        // settings search complete. If the search field has not been rendered
-        // yet, do not continue. crbug/1056909 changes the toolbar search field
-        // to an optional value, so the element is not attached to the DOM the
-        // first time this runs when the new OS Settings search flag is not
-        // flipped on.
-        return;
-      }
-
-      // If the search was initiated by directly entering a search URL, need to
-      // sync the URL parameter to the textbox.
-      if (urlSearchQuery !== searchField.getValue()) {
-        // Setting the search box value without triggering a 'search-changed'
-        // event, to prevent an unnecessary duplicate entry in |window.history|.
-        searchField.setValue(urlSearchQuery, true /* noEvent */);
-      }
-
-      settings.recordSearch();
-      /** @type {!OsSettingsMainElement} */ (
-          this.$.main.searchContents(urlSearchQuery));
     },
 
     // Override FindShortcutBehavior methods.
@@ -389,25 +335,6 @@ cr.define('settings', function() {
       const value = /** @type {!chromeos.settings.mojom.SettingChangeValue} */ (
           settingMetric.value);
       settings.recordSettingChange(setting, value);
-    },
-
-    /**
-     * Handles the 'search-changed' event fired from the toolbar.
-     * TODO(crbug/1080777): Remove when new settings search complete.
-     * @param {!Event} e
-     * @private
-     */
-    onSearchChanged_(e) {
-      if (loadTimeData.getBoolean('newOsSettingsSearch')) {
-        return;
-      }
-      const query = e.detail;
-      settings.Router.getInstance().navigateTo(
-          settings.routes.BASIC,
-          query.length > 0 ?
-              new URLSearchParams('search=' + encodeURIComponent(query)) :
-              undefined,
-          /* removeSearch */ true);
     },
 
     /**

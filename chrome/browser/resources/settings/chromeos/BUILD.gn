@@ -250,7 +250,6 @@ preprocess_if_expr("preprocess_v3") {
     "privacy_page/privacy_page_browser_proxy.js",
     "router.js",
     "search_engines_page/search_engines_browser_proxy.js",
-    "search_settings.js",
     "setting_id_param_util.js",
   ]
 }

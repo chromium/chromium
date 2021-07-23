@@ -7,7 +7,6 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="../../search_settings.html">
 <link rel="import" href="../os_page_visibility.html">
 <link rel="import" href="main_page_behavior.html">
 <link rel="import" href="settings_idle_load.html">
@@ -117,7 +116,7 @@
       }
     </style>
     <template is="dom-if" if="[[showBasicPage_(
-        currentRoute_, inSearchMode, hasExpandedSection_)]]">
+        currentRoute_, hasExpandedSection_)]]">
       <div id="basicPage">
         <template is="dom-if" if="[[computeShowUpdateRequiredEolBanner_(
             hasExpandedSection_, showUpdateRequiredEolBanner_)]]">
@@ -211,8 +210,7 @@
       </div>
     </template>
 
-    <template is="dom-if" if="[[showAdvancedToggle_(
-        inSearchMode, hasExpandedSection_)]]">
+    <template is="dom-if" if="[[!hasExpandedSection_]]">
       <div id="toggleSpacer"></div>
       <h2 id="toggleContainer">
         <cr-button id="advancedToggle" on-click="advancedToggleClicked_"
@@ -228,7 +226,7 @@
         url="chromeos/lazy_load.html">
       <template>
         <div id="advancedPage" hidden$="[[!showAdvancedPage_(
-            currentRoute_, inSearchMode, hasExpandedSection_,
+            currentRoute_, hasExpandedSection_,
             advancedToggleExpanded)]]">
           <settings-section page-title="$i18n{dateTimePageTitle}"
               section="dateTime">

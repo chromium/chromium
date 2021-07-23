@@ -25,7 +25,6 @@ js_library("os_settings_page.m") {
     "..:os_page_visibility.m",
     "..:os_route.m",
     "../..:router",
-    "../..:search_settings",
     "../../settings_page:settings_section",
     "../bluetooth_page:bluetooth_page",
     "../crostini_page:crostini_page.m",

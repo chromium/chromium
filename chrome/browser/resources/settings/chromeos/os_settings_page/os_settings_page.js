@@ -191,39 +191,6 @@ Polymer({
   },
 
   /**
-   * Queues a task to search the basic sections, then another for the advanced
-   * sections.
-   * @param {string} query The text to search for.
-   * @return {!Promise<!settings.SearchResult>} A signal indicating that
-   *     searching finished.
-   */
-  searchContents(query) {
-    const whenSearchDone = [
-      settings.getSearchManager().search(query, assert(this.$$('#basicPage'))),
-    ];
-
-    whenSearchDone.push(
-        this.$$('#advancedPageTemplate').get().then(function(advancedPage) {
-          return settings.getSearchManager().search(query, advancedPage);
-        }));
-
-    return Promise.all(whenSearchDone).then(function(requests) {
-      // Combine the SearchRequests results to a single SearchResult object.
-      return {
-        canceled: requests.some(function(r) {
-          return r.canceled;
-        }),
-        didFindMatches: requests.some(function(r) {
-          return r.didFindMatches();
-        }),
-        // All requests correspond to the same user query, so only need to check
-        // one of them.
-        wasClearSearch: requests[0].isSame(''),
-      };
-    });
-  },
-
-  /**
    * @return {boolean}
    * @private
    */
@@ -312,42 +279,29 @@ Polymer({
   },
 
   /**
-   * @param {boolean} inSearchMode
-   * @param {boolean} hasExpandedSection
-   * @return {boolean}
-   * @private
-   */
-  showAdvancedToggle_(inSearchMode, hasExpandedSection) {
-    return !inSearchMode && !hasExpandedSection;
-  },
-
-  /**
    * @param {!settings.Route} currentRoute
-   * @param {boolean} inSearchMode
    * @param {boolean} hasExpandedSection
    * @return {boolean} Whether to show the basic page, taking into account
    *     both routing and search state.
    * @private
    */
-  showBasicPage_(currentRoute, inSearchMode, hasExpandedSection) {
+  showBasicPage_(currentRoute, hasExpandedSection) {
     return !hasExpandedSection || settings.routes.BASIC.contains(currentRoute);
   },
 
   /**
    * @param {!settings.Route} currentRoute
-   * @param {boolean} inSearchMode
    * @param {boolean} hasExpandedSection
    * @param {boolean} advancedToggleExpanded
    * @return {boolean} Whether to show the advanced page, taking into account
    *     both routing and search state.
    * @private
    */
-  showAdvancedPage_(
-      currentRoute, inSearchMode, hasExpandedSection, advancedToggleExpanded) {
+  showAdvancedPage_(currentRoute, hasExpandedSection, advancedToggleExpanded) {
     return hasExpandedSection ?
         (settings.routes.ADVANCED &&
          settings.routes.ADVANCED.contains(currentRoute)) :
-        advancedToggleExpanded || inSearchMode;
+        advancedToggleExpanded;
   },
 
   /**
