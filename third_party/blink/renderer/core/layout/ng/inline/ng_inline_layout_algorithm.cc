@@ -376,10 +376,13 @@ void NGInlineLayoutAlgorithm::CreateLine(
 
   container_builder_.SetBfcLineOffset(bfc_line_offset);
 
-  const FontHeight& line_box_metrics =
-      UNLIKELY(Node().HasLineEvenIfEmpty())
-          ? line_info->LineStyle().GetFontHeight()
-          : box_states_->LineBoxState().metrics;
+  // Force an editable empty line to have metrics, so that is has a height.
+  if (UNLIKELY(Node().HasLineEvenIfEmpty())) {
+    box_states_->LineBoxState().EnsureTextMetrics(
+        line_info->LineStyle(), *box_states_->LineBoxState().font);
+  }
+
+  const FontHeight& line_box_metrics = box_states_->LineBoxState().metrics;
 
   // Place out-of-flow positioned objects.
   // This adjusts the NGLogicalLineItem::offset member to contain
