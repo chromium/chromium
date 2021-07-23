@@ -100,7 +100,10 @@ static_library("utility") {
         "importer/safari_importer.h",
         "importer/safari_importer.mm",
       ]
-    } else {
+    }
+    if (!is_mac && !is_fuchsia) {
+      # NSS decryptor depends on system NSS that is not available on MacOS or
+      # Fuchsia.
       sources += [
         "importer/nss_decryptor.cc",
         "importer/nss_decryptor.h",

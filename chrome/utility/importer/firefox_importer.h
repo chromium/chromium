@@ -60,7 +60,7 @@ class FirefoxImporter : public Importer {
 
   FRIEND_TEST_ALL_PREFIXES(FirefoxImporterTest, ImportBookmarksV25);
   void ImportBookmarks();
-#if !defined(OS_MAC)
+#if !defined(OS_MAC) && !defined(OS_FUCHSIA)
   void ImportPasswords();
 #endif
   void ImportHistory();
