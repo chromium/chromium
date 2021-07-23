@@ -198,18 +198,6 @@ void LayoutVideo::UpdatePlayer(bool is_in_layout) {
   VideoElement()->SetNeedsCompositingUpdate();
 }
 
-LayoutUnit LayoutVideo::ComputeReplacedLogicalWidth(
-    ShouldComputePreferred should_compute_preferred) const {
-  NOT_DESTROYED();
-  return LayoutReplaced::ComputeReplacedLogicalWidth(should_compute_preferred);
-}
-
-LayoutUnit LayoutVideo::ComputeReplacedLogicalHeight(
-    LayoutUnit estimated_used_width) const {
-  NOT_DESTROYED();
-  return LayoutReplaced::ComputeReplacedLogicalHeight(estimated_used_width);
-}
-
 LayoutUnit LayoutVideo::MinimumReplacedHeight() const {
   NOT_DESTROYED();
   return LayoutReplaced::MinimumReplacedHeight();

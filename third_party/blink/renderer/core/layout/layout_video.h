@@ -79,10 +79,6 @@ class LayoutVideo final : public LayoutMedia {
 
   void UpdateLayout() override;
 
-  LayoutUnit ComputeReplacedLogicalWidth(
-      ShouldComputePreferred = kComputeActual) const override;
-  LayoutUnit ComputeReplacedLogicalHeight(
-      LayoutUnit estimated_used_width = LayoutUnit()) const override;
   LayoutUnit MinimumReplacedHeight() const override;
 
   bool CanHaveAdditionalCompositingReasons() const override {
