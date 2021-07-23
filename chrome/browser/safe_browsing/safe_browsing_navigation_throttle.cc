@@ -5,7 +5,6 @@
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_throttle.h"
 
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/interstitials/enterprise_util.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
@@ -38,7 +37,7 @@ SafeBrowsingNavigationThrottle::WillFailRequest() {
         manager_->blocking_page_factory()->CreateSafeBrowsingPage(
             manager_, handle->GetWebContents(), handle->GetURL(), {resource},
             true);
-    MaybeTriggerSecurityInterstitialShownEvent(
+    manager_->ForwardSecurityInterstitialShownExtensionEventToEmbedder(
         handle->GetWebContents(), handle->GetURL(),
         SafeBrowsingUIManager::GetThreatTypeStringForInterstitial(
             resource.threat_type),

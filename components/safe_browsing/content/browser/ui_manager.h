@@ -166,6 +166,14 @@ class SafeBrowsingUIManager : public BaseUIManager {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* remove);
 
+  // Invokes TriggerSecurityInterstitialShownExtensionEventIfDesired() on
+  // |delegate_|.
+  void ForwardSecurityInterstitialShownExtensionEventToEmbedder(
+      content::WebContents* web_contents,
+      const GURL& page_url,
+      const std::string& reason,
+      int net_error_code);
+
   SafeBrowsingBlockingPageFactory* blocking_page_factory() {
     return blocking_page_factory_.get();
   }

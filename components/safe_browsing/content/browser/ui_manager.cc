@@ -308,12 +308,22 @@ BaseBlockingPage* SafeBrowsingUIManager::CreateBlockingPageForSubresource(
           /*should_trigger_reporting=*/false);
 
   // Report that we showed an interstitial.
-  delegate_->TriggerSecurityInterstitialShownExtensionEventIfDesired(
+  ForwardSecurityInterstitialShownExtensionEventToEmbedder(
       contents, blocked_url,
       GetThreatTypeStringForInterstitial(unsafe_resource.threat_type),
       /*net_error_code=*/0);
 
   return blocking_page;
+}
+
+void SafeBrowsingUIManager::
+    ForwardSecurityInterstitialShownExtensionEventToEmbedder(
+        content::WebContents* web_contents,
+        const GURL& page_url,
+        const std::string& reason,
+        int net_error_code) {
+  delegate_->TriggerSecurityInterstitialShownExtensionEventIfDesired(
+      web_contents, page_url, reason, net_error_code);
 }
 
 }  // namespace safe_browsing
