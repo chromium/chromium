@@ -23,6 +23,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/load_info_util.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/trust_tokens/local_trust_token_operation_delegate_impl.h"

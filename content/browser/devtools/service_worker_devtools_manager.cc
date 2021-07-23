@@ -12,6 +12,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "ipc/ipc_listener.h"
+#include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {

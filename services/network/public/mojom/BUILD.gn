@@ -321,6 +321,10 @@ mojom("url_loader_base") {
         "//services/network/public/cpp/url_request_mojom_traits.h",
         "//services/network/public/cpp/network_isolation_key_mojom_traits.h",
       ]
+      traits_private_headers = [
+        "//services/network/public/mojom/devtools_observer.mojom.h",
+        "//services/network/public/mojom/cookie_access_observer.mojom.h",
+      ]
       traits_public_deps = [
         "//base",
         "//url/mojom:url_mojom_gurl",
