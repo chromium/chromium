@@ -64,10 +64,6 @@ class MockPasswordStore : public PasswordStore {
               DisableAutoSignInForOriginsImpl,
               (const base::RepeatingCallback<bool(const GURL&)>&),
               (override));
-  MOCK_METHOD(std::vector<std::unique_ptr<PasswordForm>>,
-              FillMatchingLoginsByPassword,
-              (const std::u16string&),
-              (override));
   MOCK_METHOD(PasswordStoreChangeList,
               AddInsecureCredentialImpl,
               (const InsecureCredential&),

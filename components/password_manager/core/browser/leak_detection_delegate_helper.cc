@@ -33,11 +33,11 @@ void LeakDetectionDelegateHelper::ProcessLeakedPassword(
   password_ = std::move(password);
 
   ++wait_counter_;
-  profile_store_->GetLoginsByPassword(password_, this);
+  profile_store_->GetAutofillableLogins(this);
 
   if (account_store_) {
     ++wait_counter_;
-    account_store_->GetLoginsByPassword(password_, this);
+    account_store_->GetAutofillableLogins(this);
   }
 }
 
@@ -52,7 +52,8 @@ void LeakDetectionDelegateHelper::OnGetPasswordStoreResults(
 
   std::u16string canonicalized_username = CanonicalizeUsername(username_);
   for (const auto& form : partial_results_) {
-    if (CanonicalizeUsername(form->username_value) == canonicalized_username) {
+    if (CanonicalizeUsername(form->username_value) == canonicalized_username &&
+        form->password_value == password_) {
       PasswordStore& store =
           form->IsUsingAccountStore() ? *account_store_ : *profile_store_;
       PasswordForm form_to_update = *form.get();

@@ -116,13 +116,6 @@ class PasswordStoreInterface : public RefcountedKeyedService {
   virtual void GetLogins(const PasswordFormDigest& form,
                          PasswordStoreConsumer* consumer) = 0;
 
-  // Searches for credentials with the specified `plain_text_password`, and
-  // notifies `consumer` on completion. The request will be cancelled if the
-  // consumer is destroyed.
-  // TODO(crbug.com/1217070): Use a smart pointer for consumer.
-  virtual void GetLoginsByPassword(const std::u16string& plain_text_password,
-                                   PasswordStoreConsumer* consumer) = 0;
-
   // Gets the complete list of non-blocklist PasswordForms.`consumer` will be
   // notified on completion.
   // TODO(crbug.com/1217070): Use a smart pointer for consumer.

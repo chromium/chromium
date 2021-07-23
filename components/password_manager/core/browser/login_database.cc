@@ -1662,36 +1662,6 @@ bool LoginDatabase::GetLogins(
   return true;
 }
 
-bool LoginDatabase::GetLoginsByPassword(
-    const std::u16string& plain_text_password,
-    std::vector<std::unique_ptr<PasswordForm>>* forms) {
-  TRACE_EVENT0("passwords", "LoginDatabase::GetLoginsByPassword");
-  DCHECK(forms);
-  forms->clear();
-
-  // Get all autofillable (not blocklisted) logins.
-  DCHECK(!blocklisted_statement_.empty());
-  sql::Statement s(
-      db_.GetCachedStatement(SQL_FROM_HERE, blocklisted_statement_.c_str()));
-  s.BindInt(0, 0);  // blocklisted = false
-
-  // Apply query, check status and copy results if successful.
-  PrimaryKeyToFormMap key_to_form_map;
-  FormRetrievalResult result =
-      StatementToForms(&s, /*matched_form=*/nullptr, &key_to_form_map);
-
-  if (result != FormRetrievalResult::kSuccess) {
-    return false;
-  }
-  for (auto& pair : key_to_form_map) {
-    if (pair.second->password_value == plain_text_password) {
-      // Only add the form the result if the password value matches.
-      forms->push_back(std::move(pair.second));
-    }
-  }
-  return true;
-}
-
 bool LoginDatabase::GetLoginsCreatedBetween(
     const base::Time begin,
     const base::Time end,

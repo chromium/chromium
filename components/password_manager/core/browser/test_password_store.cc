@@ -236,19 +236,6 @@ FieldInfoStore* TestPasswordStore::GetFieldInfoStore() {
   return nullptr;
 }
 
-std::vector<std::unique_ptr<PasswordForm>>
-TestPasswordStore::FillMatchingLoginsByPassword(
-    const std::u16string& plain_text_password) {
-  std::vector<std::unique_ptr<PasswordForm>> matched_forms;
-  for (const auto& elements : stored_passwords_) {
-    for (const auto& password_form : elements.second) {
-      if (password_form.password_value == plain_text_password)
-        matched_forms.push_back(std::make_unique<PasswordForm>(password_form));
-    }
-  }
-  return matched_forms;
-}
-
 void TestPasswordStore::ReportMetricsImpl(const std::string& sync_username,
                                           bool custom_passphrase_sync_enabled,
                                           BulkCheckDone bulk_check_done) {

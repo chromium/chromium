@@ -98,16 +98,6 @@ PasswordStoreChangeList PasswordStoreImpl::DisableAutoSignInForOriginsImpl(
   return changes;
 }
 
-std::vector<std::unique_ptr<PasswordForm>>
-PasswordStoreImpl::FillMatchingLoginsByPassword(
-    const std::u16string& plain_text_password) {
-  std::vector<std::unique_ptr<PasswordForm>> matched_forms;
-  if (login_db_ &&
-      !login_db_->GetLoginsByPassword(plain_text_password, &matched_forms))
-    return std::vector<std::unique_ptr<PasswordForm>>();
-  return matched_forms;
-}
-
 DatabaseCleanupResult PasswordStoreImpl::DeleteUndecryptableLogins() {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   if (!login_db_)

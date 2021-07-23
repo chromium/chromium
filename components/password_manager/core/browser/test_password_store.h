@@ -112,10 +112,6 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
   FieldInfoStore* GetFieldInfoStore() override;
 
-  // PasswordStore interface
-  std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsByPassword(
-      const std::u16string& plain_text_password) override;
-
   // Unused portions of PasswordStore interface
   void ReportMetricsImpl(const std::string& sync_username,
                          bool custom_passphrase_sync_enabled,

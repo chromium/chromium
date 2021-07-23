@@ -47,11 +47,6 @@ class MockPasswordStoreInterface : public PasswordStoreInterface {
               GetLogins,
               (const PasswordFormDigest&, PasswordStoreConsumer*),
               (override));
-
-  MOCK_METHOD(void,
-              GetLoginsByPassword,
-              (const std::u16string&, PasswordStoreConsumer*),
-              (override));
   MOCK_METHOD(void,
               GetAutofillableLogins,
               (PasswordStoreConsumer*),

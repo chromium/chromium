@@ -87,12 +87,14 @@ class LeakDetectionDelegateHelperTest : public testing::Test {
   // Sets the |PasswordForm|s which are retrieve from the |PasswordStore|.
   void SetGetLoginByPasswordConsumerInvocation(
       std::vector<PasswordForm> password_forms) {
-    std::vector<std::unique_ptr<PasswordForm>> results;
-    for (auto& form : password_forms) {
-      results.push_back(std::make_unique<PasswordForm>(std::move(form)));
-    }
-    EXPECT_CALL(*store_, FillMatchingLoginsByPassword)
-        .WillOnce(Return(ByMove(std::move(results))));
+    EXPECT_CALL(*store_, GetAutofillableLogins)
+        .WillOnce(testing::WithArg<0>([password_forms](
+                                          PasswordStoreConsumer* consumer) {
+          std::vector<std::unique_ptr<PasswordForm>> results;
+          for (auto& form : password_forms)
+            results.push_back(std::make_unique<PasswordForm>(std::move(form)));
+          consumer->OnGetPasswordStoreResults(std::move(results));
+        }));
   }
 
   // Set the expectation for the |CredentialLeakType| in the callback_.
@@ -227,6 +229,24 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentialsCanonicalized) {
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false)));
   EXPECT_CALL(*store_, UpdateLogin(non_canonicalized_username));
+  InitiateGetCredentialLeakType();
+}
+
+// Credentials are saved and the password is reused on the same origin &
+// username but with a different password.
+TEST_F(LeakDetectionDelegateHelperTest,
+       SavedCredentialsAndReusedPasswordWithOtherPassword) {
+  std::vector<PasswordForm> password_forms = {
+      CreateForm(kLeakedOrigin, kLeakedUsername),
+      CreateForm(kLeakedOrigin, kLeakedUsername)};
+  password_forms.back().password_value = u"another_password";
+
+  SetGetLoginByPasswordConsumerInvocation(password_forms);
+  SetOnShowLeakDetectionNotificationExpectation(IsSaved(true), IsReused(true));
+  password_forms.at(0).password_issues->insert_or_assign(
+      InsecureType::kLeaked,
+      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+  EXPECT_CALL(*store_, UpdateLogin(password_forms[0]));
   InitiateGetCredentialLeakType();
 }
 

@@ -129,6 +129,20 @@ class LeakDetectionDelegateTest : public testing::Test {
         password_manager::prefs::kPasswordLeakDetectionEnabled, is_on);
   }
 
+  void ExpectPasswords(std::vector<PasswordForm> password_forms) {
+    EXPECT_CALL(*mock_store_, GetAutofillableLogins)
+        .WillOnce(testing::WithArg<0>([password_forms](
+                                          PasswordStoreConsumer* consumer) {
+          std::vector<std::unique_ptr<PasswordForm>> results;
+          for (auto& form : password_forms)
+            results.push_back(std::make_unique<PasswordForm>(std::move(form)));
+          base::ThreadTaskRunnerHandle::Get()->PostTask(
+              FROM_HERE,
+              base::BindOnce(&PasswordStoreConsumer::OnGetPasswordStoreResults,
+                             consumer->GetWeakPtr(), std::move(results)));
+        }));
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -290,7 +304,7 @@ TEST_F(LeakDetectionDelegateTest,
 
   EXPECT_CALL(client(), GetProfilePasswordStore())
       .WillRepeatedly(testing::Return(store()));
-  EXPECT_CALL(*store(), FillMatchingLoginsByPassword);
+  ExpectPasswords({});
   EXPECT_CALL(factory(), TryCreateLeakCheck)
       .WillOnce(
           Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
@@ -314,7 +328,7 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithTrueResult) {
 
   EXPECT_CALL(client(), GetProfilePasswordStore())
       .WillRepeatedly(testing::Return(store()));
-  EXPECT_CALL(*store(), FillMatchingLoginsByPassword);
+  ExpectPasswords({});
   EXPECT_CALL(factory(), TryCreateLeakCheck)
       .WillOnce(
           Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
@@ -338,10 +352,7 @@ TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
 
   EXPECT_CALL(client(), GetProfilePasswordStore())
       .WillRepeatedly(testing::Return(store()));
-  std::vector<std::unique_ptr<PasswordForm>> forms;
-  forms.push_back(std::make_unique<PasswordForm>(form));
-  EXPECT_CALL(*store(), FillMatchingLoginsByPassword)
-      .WillOnce(Return(ByMove(std::move(forms))));
+  ExpectPasswords({form});
   EXPECT_CALL(factory(), TryCreateLeakCheck)
       .WillOnce(
           Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
@@ -364,8 +375,7 @@ TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
 TEST_F(LeakDetectionDelegateTest, CallStartTwice) {
   EXPECT_CALL(client(), GetProfilePasswordStore())
       .WillRepeatedly(testing::Return(store()));
-  EXPECT_CALL(*store(), FillMatchingLoginsByPassword)
-      .Times(testing::AtLeast(1));
+  ExpectPasswords({});
   auto check_instance = std::make_unique<NiceMock<MockLeakDetectionCheck>>();
   EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _))
       .WillOnce(Return(ByMove(std::move(check_instance))));
@@ -380,6 +390,7 @@ TEST_F(LeakDetectionDelegateTest, CallStartTwice) {
 
   // Start the check again on another form in the mean time.
   check_instance = std::make_unique<NiceMock<MockLeakDetectionCheck>>();
+  ExpectPasswords({});
   EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _))
       .WillOnce(Return(ByMove(std::move(check_instance))));
   form.username_value = u"username";

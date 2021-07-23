@@ -2511,49 +2511,6 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, KeychainLockedTest) {
 }
 #endif  // defined(OS_MAC)
 
-// Test retrieving password forms by supplied password.
-TEST_F(LoginDatabaseTest, GetLoginsByPassword) {
-  std::vector<std::unique_ptr<PasswordForm>> result;
-  PrimaryKeyToFormMap key_to_form_map;
-
-  const std::u16string duplicated_password = u"duplicated_password";
-
-  // Insert first logins.
-  PasswordForm form1 = GenerateExamplePasswordForm();
-  form1.password_value = duplicated_password;
-  PasswordStoreChangeList changes = db().AddLogin(form1);
-  ASSERT_EQ(AddChangeForForm(form1), changes);
-
-  // Check if there is exactly one form with this password.
-  std::vector<std::unique_ptr<PasswordForm>> forms;
-  EXPECT_TRUE(db().GetLoginsByPassword(duplicated_password, &forms));
-  EXPECT_THAT(forms, UnorderedElementsAre(Pointee(form1)));
-
-  // Insert another form with a different password for a different origin.
-  PasswordForm form2 = GenerateExamplePasswordForm();
-  form2.url = GURL("https://myrandomsite.com/login.php");
-  form2.signon_realm = form2.url.GetOrigin().spec();
-  form2.password_value = u"my-unique-random-password";
-  changes = db().AddLogin(form2);
-  ASSERT_EQ(AddChangeForForm(form2), changes);
-
-  // Check if there is still exactly one form with the duplicated_password.
-  EXPECT_TRUE(db().GetLoginsByPassword(duplicated_password, &forms));
-  EXPECT_THAT(forms, UnorderedElementsAre(Pointee(form1)));
-
-  // Insert another form with the target password for a different origin.
-  PasswordForm form3 = GenerateExamplePasswordForm();
-  form3.url = GURL("https://myrandomsite1.com/login.php");
-  form3.signon_realm = form3.url.GetOrigin().spec();
-  form3.password_value = duplicated_password;
-  changes = db().AddLogin(form3);
-  ASSERT_EQ(AddChangeForForm(form3), changes);
-
-  // Check if there are exactly two forms with the duplicated_password.
-  EXPECT_TRUE(db().GetLoginsByPassword(duplicated_password, &forms));
-  EXPECT_THAT(forms, UnorderedElementsAre(Pointee(form1), Pointee(form3)));
-}
-
 // Test encrypted passwords are present in add change lists.
 TEST_F(LoginDatabaseTest, EncryptedPasswordAdd) {
   PasswordForm form;

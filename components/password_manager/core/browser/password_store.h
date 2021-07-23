@@ -116,8 +116,6 @@ class PasswordStore : public PasswordStoreInterface {
                    base::OnceClosure completion) override;
   void GetLogins(const PasswordFormDigest& form,
                  PasswordStoreConsumer* consumer) override;
-  void GetLoginsByPassword(const std::u16string& plain_text_password,
-                           PasswordStoreConsumer* consumer) override;
   void GetAutofillableLogins(PasswordStoreConsumer* consumer) override;
   void GetAllLogins(PasswordStoreConsumer* consumer) override;
   void GetAllLoginsWithAffiliationAndBrandingInformation(
@@ -205,11 +203,6 @@ class PasswordStore : public PasswordStoreInterface {
   // Synchronous implementation to disable auto sign-in.
   virtual PasswordStoreChangeList DisableAutoSignInForOriginsImpl(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
-
-  // Finds and returns all not-blocklisted PasswordForms with the specified
-  // |plain_text_password| stored in the credential database.
-  virtual std::vector<std::unique_ptr<PasswordForm>>
-  FillMatchingLoginsByPassword(const std::u16string& plain_text_password);
 
   // Synchronous implementation for manipulating with information about
   // insecure credentials.
@@ -314,11 +307,6 @@ class PasswordStore : public PasswordStoreInterface {
   // Note: subclasses should implement FillMatchingLogins() instead.
   std::vector<std::unique_ptr<PasswordForm>> GetLoginsImpl(
       const PasswordFormDigest& form);
-
-  // Finds all credentials with the specified |plain_text_password|.
-  // Note: subclasses should implement FillMatchingLoginsByPassword() instead.
-  std::vector<std::unique_ptr<PasswordForm>> GetLoginsByPasswordImpl(
-      const std::u16string& plain_text_password);
 
   // Extended version of GetMatchingInsecureCredentialsImpl that also returns
   // credentials stored for the specified affiliated Android applications or Web

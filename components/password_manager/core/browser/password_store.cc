@@ -273,15 +273,6 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
                                     {form});
 }
 
-void PasswordStore::GetLoginsByPassword(
-    const std::u16string& plain_text_password,
-    PasswordStoreConsumer* consumer) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  PostLoginsTaskAndReplyToConsumerWithResult(
-      consumer, base::BindOnce(&PasswordStore::GetLoginsByPasswordImpl, this,
-                               plain_text_password));
-}
-
 void PasswordStore::GetAutofillableLogins(PasswordStoreConsumer* consumer) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
 
@@ -451,16 +442,6 @@ PasswordStoreChangeList PasswordStore::DisableAutoSignInForOriginsImpl(
   return PasswordStoreChangeList();
 }
 
-std::vector<std::unique_ptr<PasswordForm>>
-PasswordStore::FillMatchingLoginsByPassword(
-    const std::u16string& plain_text_password) {
-  // TODO(crbug.com/1217070): Move as implementation detail into backend.
-  LOG(ERROR) << "Called function without implementation: " << __func__;
-  // TODO(crbug.com/1217070): Move as implementation detail into backend.
-  LOG(ERROR) << "Called function without implementation: " << __func__;
-  return std::vector<std::unique_ptr<PasswordForm>>();
-}
-
 PasswordStoreChangeList PasswordStore::AddInsecureCredentialImpl(
     const InsecureCredential& insecure_credential) {
   // TODO(crbug.com/1217070): Move as implementation detail into backend.
@@ -599,14 +580,6 @@ void PasswordStore::UnblocklistInternal(
     notify_callback = std::move(notify_callback).Then(std::move(completion));
 
   handler->InvokeOnCompletion(std::move(notify_callback));
-}
-
-std::vector<std::unique_ptr<PasswordForm>>
-PasswordStore::GetLoginsByPasswordImpl(
-    const std::u16string& plain_text_password) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("passwords", "PasswordStore::GetLoginsByPasswordImpl");
-  return FillMatchingLoginsByPassword(plain_text_password);
 }
 
 std::vector<InsecureCredential>
