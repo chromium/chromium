@@ -69,8 +69,7 @@
     </style>
 
     <!-- Basic theme for an overflow menu displayed in Chrome. -->
-    <style name="Base.OverflowMenuThemeOverlay" parent="Theme.MaterialComponents.DayNight">
-        <item name="colorPrimary">@color/default_bg_color_blue</item>
+    <style name="Base.OverflowMenuThemeOverlay" parent="">
         <item name="android:popupBackground">@null</item>
         <item name="android:listDivider">@null</item>
         <item name="android:listPreferredItemHeightSmall">48dp</item>
@@ -220,8 +219,8 @@
     <style name="ColorOverlay.BrowserUi.DayNight" parent="ColorOverlay.Ui">
         <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
-        <item name="android:textColorPrimary">?attr/colorOnBackground</item>
-        <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textColorPrimary">@color/default_text_color_list</item>
+        <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
     </style>
 
     <!-- It's logically backward, but this is applied to SettingsActivity when
