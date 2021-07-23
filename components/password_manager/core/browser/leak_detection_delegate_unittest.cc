@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/leak_detection_delegate.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -45,6 +46,10 @@ PasswordForm CreateTestForm() {
   form.username_value = u"Adam";
   form.password_value = u"p4ssword";
   form.signon_realm = "http://www.example.com/";
+  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // via UpdateLogin properly set |password_issues|, setting them to an empty
+  // map should be part of the default constructor.
+  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   return form;
 }
 
@@ -329,7 +334,7 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithTrueResult) {
 
 TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
-  const PasswordForm form = CreateTestForm();
+  PasswordForm form = CreateTestForm();
 
   EXPECT_CALL(client(), GetProfilePasswordStore())
       .WillRepeatedly(testing::Return(store()));
@@ -347,10 +352,11 @@ TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, form.url, form.username_value, form.password_value);
 
-  const InsecureCredential compromised_credentials(
-      GetSignonRealm(form.url), form.username_value, base::Time::Now(),
-      InsecureType::kLeaked, IsMuted(false));
-  EXPECT_CALL(*store(), AddInsecureCredentialImpl(compromised_credentials));
+  // The expected form should have a leaked entry.
+  form.password_issues->insert_or_assign(
+      InsecureType::kLeaked,
+      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+  EXPECT_CALL(*store(), UpdateLogin(form));
   WaitForPasswordStore();
 }
 

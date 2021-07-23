@@ -7,6 +7,7 @@
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store.h"
 
 namespace password_manager {
@@ -54,9 +55,11 @@ void LeakDetectionDelegateHelper::OnGetPasswordStoreResults(
     if (CanonicalizeUsername(form->username_value) == canonicalized_username) {
       PasswordStore& store =
           form->IsUsingAccountStore() ? *account_store_ : *profile_store_;
-      store.AddInsecureCredential(InsecureCredential(
-          form->signon_realm, form->username_value, base::Time::Now(),
-          InsecureType::kLeaked, IsMuted(false)));
+      PasswordForm form_to_update = *form.get();
+      form_to_update.password_issues->insert_or_assign(
+          InsecureType::kLeaked,
+          InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+      store.UpdateLogin(form_to_update);
     }
   }
 

@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,6 +46,7 @@ PasswordForm CreateForm(base::StringPiece origin,
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
   form.signon_realm = form.url.GetOrigin().spec();
+  form.in_store = PasswordForm::Store::kProfileStore;
   // TODO(crbug.com/1223022): Once all places that operate changes on forms
   // via UpdateLogin properly set |password_issues|, setting them to an empty
   // map should be part of the default constructor.
@@ -125,7 +127,7 @@ TEST_F(LeakDetectionDelegateHelperTest, SavedLeakedCredentials) {
 
   SetGetLoginByPasswordConsumerInvocation(std::move(password_forms));
   SetOnShowLeakDetectionNotificationExpectation(IsSaved(true), IsReused(false));
-  EXPECT_CALL(*store_, AddInsecureCredentialImpl);
+  EXPECT_CALL(*store_, UpdateLogin);
   InitiateGetCredentialLeakType();
 }
 
@@ -138,7 +140,7 @@ TEST_F(LeakDetectionDelegateHelperTest,
 
   SetGetLoginByPasswordConsumerInvocation(std::move(password_forms));
   SetOnShowLeakDetectionNotificationExpectation(IsSaved(true), IsReused(true));
-  EXPECT_CALL(*store_, AddInsecureCredentialImpl).Times(2);
+  EXPECT_CALL(*store_, UpdateLogin).Times(2);
   InitiateGetCredentialLeakType();
 }
 
@@ -152,7 +154,7 @@ TEST_F(LeakDetectionDelegateHelperTest,
 
   SetGetLoginByPasswordConsumerInvocation(std::move(password_forms));
   SetOnShowLeakDetectionNotificationExpectation(IsSaved(true), IsReused(true));
-  EXPECT_CALL(*store_, AddInsecureCredentialImpl);
+  EXPECT_CALL(*store_, UpdateLogin);
   InitiateGetCredentialLeakType();
 }
 
@@ -173,7 +175,7 @@ TEST_F(LeakDetectionDelegateHelperTest, ReusedPasswordOnOtherOrigin) {
 
   SetGetLoginByPasswordConsumerInvocation(std::move(password_forms));
   SetOnShowLeakDetectionNotificationExpectation(IsSaved(false), IsReused(true));
-  EXPECT_CALL(*store_, AddInsecureCredentialImpl);
+  EXPECT_CALL(*store_, UpdateLogin);
   InitiateGetCredentialLeakType();
 }
 
@@ -190,32 +192,41 @@ TEST_F(LeakDetectionDelegateHelperTest, ReusedPassword) {
 
 // All the credentials with the same username/password are marked as leaked.
 TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentials) {
-  SetGetLoginByPasswordConsumerInvocation(
-      {CreateForm(kLeakedOrigin, kLeakedUsername, kLeakedPassword),
-       CreateForm(kOtherOrigin, kLeakedUsername, kLeakedPassword),
-       CreateForm(kLeakedOrigin, kOtherUsername, kLeakedPassword)});
+  PasswordForm leaked_origin =
+      CreateForm(kLeakedOrigin, kLeakedUsername, kLeakedPassword);
+  PasswordForm other_origin_same_credential =
+      CreateForm(kOtherOrigin, kLeakedUsername, kLeakedPassword);
+  PasswordForm leaked_origin_other_username =
+      CreateForm(kLeakedOrigin, kOtherUsername, kLeakedPassword);
+  SetGetLoginByPasswordConsumerInvocation({leaked_origin,
+                                           other_origin_same_credential,
+                                           leaked_origin_other_username});
+
   SetOnShowLeakDetectionNotificationExpectation(IsSaved(true), IsReused(true));
-  EXPECT_CALL(*store_,
-              AddInsecureCredentialImpl(InsecureCredential(
-                  GetSignonRealm(GURL(kLeakedOrigin)), kLeakedUsername,
-                  base::Time::Now(), InsecureType::kLeaked, IsMuted(false))));
-  EXPECT_CALL(*store_,
-              AddInsecureCredentialImpl(InsecureCredential(
-                  GetSignonRealm(GURL(kOtherOrigin)), kLeakedUsername,
-                  base::Time::Now(), InsecureType::kLeaked, IsMuted(false))));
+  // The expected updated forms should have leaked entries.
+  leaked_origin.password_issues->insert_or_assign(
+      InsecureType::kLeaked,
+      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+  other_origin_same_credential.password_issues->insert_or_assign(
+      InsecureType::kLeaked,
+      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+  EXPECT_CALL(*store_, UpdateLogin(leaked_origin));
+  EXPECT_CALL(*store_, UpdateLogin(other_origin_same_credential));
   InitiateGetCredentialLeakType();
 }
 
 // Credential with the same canonicalized username marked as leaked.
 TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentialsCanonicalized) {
-  SetGetLoginByPasswordConsumerInvocation({CreateForm(
-      kOtherOrigin, kLeakedUsernameNonCanonicalized, kLeakedPassword)});
+  PasswordForm non_canonicalized_username = CreateForm(
+      kOtherOrigin, kLeakedUsernameNonCanonicalized, kLeakedPassword);
+  SetGetLoginByPasswordConsumerInvocation({non_canonicalized_username});
   SetOnShowLeakDetectionNotificationExpectation(IsSaved(false), IsReused(true));
 
-  EXPECT_CALL(*store_, AddInsecureCredentialImpl(InsecureCredential(
-                           GetSignonRealm(GURL(kOtherOrigin)),
-                           kLeakedUsernameNonCanonicalized, base::Time::Now(),
-                           InsecureType::kLeaked, IsMuted(false))));
+  // The expected updated form should have leaked entries.
+  non_canonicalized_username.password_issues->insert_or_assign(
+      InsecureType::kLeaked,
+      InsecurityMetadata(base::Time::Now(), IsMuted(false)));
+  EXPECT_CALL(*store_, UpdateLogin(non_canonicalized_username));
   InitiateGetCredentialLeakType();
 }
 
@@ -246,15 +257,24 @@ class LeakDetectionDelegateHelperWithTwoStoreTest
 }  // namespace
 
 TEST_F(LeakDetectionDelegateHelperWithTwoStoreTest, SavedLeakedCredentials) {
-  profile_store_->AddLogin(CreateForm(kLeakedOrigin, kLeakedUsername));
-  account_store_->AddLogin(CreateForm(kOtherOrigin, kLeakedUsername));
+  PasswordForm profile_store_form = CreateForm(kLeakedOrigin, kLeakedUsername);
+  PasswordForm account_store_form = CreateForm(kOtherOrigin, kLeakedUsername);
+
+  profile_store_->AddLogin(profile_store_form);
+  account_store_->AddLogin(account_store_form);
 
   SetOnShowLeakDetectionNotificationExpectation(IsSaved(true), IsReused(true));
 
   InitiateGetCredentialLeakType();
 
-  EXPECT_FALSE(profile_store_->insecure_credentials().empty());
-  EXPECT_FALSE(account_store_->insecure_credentials().empty());
+  EXPECT_FALSE(profile_store_->stored_passwords()
+                   .at(profile_store_form.signon_realm)
+                   .at(0)
+                   .password_issues->empty());
+  EXPECT_FALSE(account_store_->stored_passwords()
+                   .at(account_store_form.signon_realm)
+                   .at(0)
+                   .password_issues->empty());
 }
 
 }  // namespace password_manager
