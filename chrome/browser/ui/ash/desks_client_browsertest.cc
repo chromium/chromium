@@ -738,3 +738,92 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
       "Ash.DeskTemplate.LaunchFromTemplate";
   histogram_tester.ExpectTotalCount(kLaunchFromTemplateHistogramName, launches);
 }
+
+// Tests that browser windows created from a template have the correct bounds
+// and window state.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, BrowserWindowRestorationTest) {
+  ASSERT_TRUE(DesksClient::Get());
+
+  // Create a new browser and set its bounds.
+  Browser::CreateParams browser_params(Browser::TYPE_NORMAL,
+                                       browser()->profile(),
+                                       /*user_gesture=*/false);
+  Browser* browser_1 = Browser::Create(browser_params);
+  chrome::AddTabAt(browser_1, GURL(kExampleUrl1), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(browser_1, GURL(kExampleUrl2), /*index=*/-1,
+                   /*foreground=*/true);
+  browser_1->window()->Show();
+  const gfx::Rect browser_bounds_1 = gfx::Rect(100, 100, 600, 200);
+  aura::Window* window_1 = browser_1->window()->GetNativeWindow();
+  window_1->SetBounds(browser_bounds_1);
+
+  // Create a new minimized browser.
+  Browser* browser_2 = Browser::Create(browser_params);
+  chrome::AddTabAt(browser_2, GURL(kExampleUrl1), /*index=*/-1,
+                   /*foreground=*/true);
+  const gfx::Rect browser_bounds_2 = gfx::Rect(150, 150, 500, 300);
+  aura::Window* window_2 = browser_2->window()->GetNativeWindow();
+  window_2->SetBounds(browser_bounds_2);
+  EXPECT_EQ(browser_bounds_2, window_2->bounds());
+  browser_2->window()->Minimize();
+
+  // Create a new maximized browser.
+  Browser* browser_3 = Browser::Create(browser_params);
+  chrome::AddTabAt(browser_3, GURL(kExampleUrl1), /*index=*/-1,
+                   /*foreground=*/true);
+  browser_3->window()->Show();
+  browser_3->window()->Maximize();
+
+  EXPECT_EQ(browser_bounds_1, window_1->bounds());
+  EXPECT_EQ(browser_bounds_2, window_2->bounds());
+  ASSERT_TRUE(browser_2->window()->IsMinimized());
+  ASSERT_TRUE(browser_3->window()->IsMaximized());
+
+  const int32_t browser_window_id_1 =
+      window_1->GetProperty(::full_restore::kWindowIdKey);
+  const int32_t browser_window_id_2 =
+      window_2->GetProperty(::full_restore::kWindowIdKey);
+  const int32_t browser_window_id_3 =
+      browser_3->window()->GetNativeWindow()->GetProperty(
+          ::full_restore::kWindowIdKey);
+
+  // Capture the active desk, which contains the two browser windows.
+  base::RunLoop run_loop;
+  std::unique_ptr<ash::DeskTemplate> desk_template;
+  DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
+      base::BindLambdaForTesting(
+          [&](bool success,
+              std::unique_ptr<ash::DeskTemplate> captured_desk_template) {
+            run_loop.Quit();
+            ASSERT_TRUE(captured_desk_template);
+            desk_template = std::move(captured_desk_template);
+          }));
+  run_loop.Run();
+
+  // Set the template and launch it.
+  ash::DeskTemplate* desk_template_ptr = desk_template.get();
+  SetLaunchTemplate(std::move(desk_template));
+  ash::DeskSwitchAnimationWaiter waiter;
+  DesksClient::Get()->LaunchDeskTemplate(
+      desk_template_ptr->uuid().AsLowercaseString(), base::DoNothing());
+  waiter.Wait();
+
+  // Verify that the browser was launched with the correct bounds.
+  Browser* new_browser_1 = FindBrowser(browser_window_id_1);
+  ASSERT_TRUE(new_browser_1);
+  EXPECT_EQ(browser_bounds_1,
+            new_browser_1->window()->GetNativeWindow()->bounds());
+
+  // Verify that the browser was launched and minimized.
+  Browser* new_browser_2 = FindBrowser(browser_window_id_2);
+  ASSERT_TRUE(new_browser_2);
+  ASSERT_TRUE(new_browser_2->window()->IsMinimized());
+  EXPECT_EQ(browser_bounds_2,
+            new_browser_2->window()->GetNativeWindow()->bounds());
+
+  // Verify that the browser was launched and maximized.
+  Browser* new_browser_3 = FindBrowser(browser_window_id_3);
+  ASSERT_TRUE(new_browser_3);
+  ASSERT_TRUE(new_browser_3->window()->IsMaximized());
+}
