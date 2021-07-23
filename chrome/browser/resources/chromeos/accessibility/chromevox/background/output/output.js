@@ -2694,7 +2694,6 @@ Output.ROLE_INFO_ = {
   radioButton: {msgId: 'role_radio'},
   radioGroup: {msgId: 'role_radiogroup', inherits: 'abstractContainer'},
   region: {msgId: 'role_region', inherits: 'abstractContainer'},
-  rootWebArea: {contextOrder: OutputContextOrder.FIRST},
   row: {msgId: 'role_row'},
   rowHeader: {msgId: 'role_rowheader', inherits: 'cell'},
   scrollBar: {msgId: 'role_scrollbar', inherits: 'abstractRange'},

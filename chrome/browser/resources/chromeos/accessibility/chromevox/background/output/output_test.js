@@ -1493,3 +1493,25 @@ TEST_F('ChromeVoxOutputE2ETest', 'ARCCustomAction', function() {
         o);
   });
 });
+
+TEST_F('ChromeVoxOutputE2ETest', 'ContextOrder', function() {
+  this.resetContextualOutput();
+  this.runWithLoadedTree('<p>test</p><div role="menu">a</div>', function(root) {
+    let o = new Output().withSpeech(cursors.Range.fromNode(root));
+    assertEquals('last', o.contextOrder_);
+
+    const p = root.find({role: RoleType.PARAGRAPH});
+    const menu = root.find({role: RoleType.MENU});
+    o = new Output().withSpeech(
+        cursors.Range.fromNode(p), cursors.Range.fromNode(menu));
+    assertEquals('last', o.contextOrder_);
+
+    o = new Output().withSpeech(
+        cursors.Range.fromNode(menu), cursors.Range.fromNode(p));
+    assertEquals('first', o.contextOrder_);
+
+    o = new Output().withSpeech(
+        cursors.Range.fromNode(menu.firstChild), cursors.Range.fromNode(p));
+    assertEquals('first', o.contextOrder_);
+  });
+});
