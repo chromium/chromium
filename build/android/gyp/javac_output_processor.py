@@ -146,7 +146,10 @@ class JavacOutputProcessor:
     suggested_deps = self._class_lookup_index.match(class_to_lookup)
 
     if len(suggested_deps) != 1:
-      return [line]
+      suggested_deps = self._FindFactoryDep(suggested_deps)
+      if len(suggested_deps) != 1:
+        return [line]
+
     suggested_target = suggested_deps[0].target
 
     target_name = self._RemoveSuffixesIfPresent(
@@ -159,6 +162,25 @@ class JavacOutputProcessor:
         "Please add {} dep to {}. ".format(suggested_target, target_name) +
         "File a crbug if this suggestion is incorrect.",
     ]
+
+  @staticmethod
+  def _FindFactoryDep(class_entries):
+    """Find the android_library_factory() GN target."""
+    if len(class_entries) != 2:
+      return []
+
+    # android_library_factory() targets set low_classpath_priority=true.
+    # This logic is correct if GN targets other than android_library_factory()
+    # set low_classpath_priority=true. low_classpath_priority=true indicates
+    # that the target is depended on (and overridden) by other targets which
+    # contain the same class. We want to recommend the leaf target.
+    if class_entries[0].low_classpath_priority == class_entries[
+        1].low_classpath_priority:
+      return []
+
+    if class_entries[0].low_classpath_priority:
+      return [class_entries[0]]
+    return [class_entries[1]]
 
   @staticmethod
   def _RemoveSuffixesIfPresent(suffixes, text):

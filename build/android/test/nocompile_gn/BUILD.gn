@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/android/test/missing_symbol_test.gni")
 import("//build/config/android/android_nocompile.gni")
 import("//build/config/android/rules.gni")
 import("nocompile_sources.gni")
@@ -44,57 +45,6 @@ lint_test("default_locale_lint_test") {
 
 lint_test("new_api_lint_test") {
   sources = new_api_lint_test_nocompile_sources
-}
-
-template("missing_symbol_test") {
-  _library_target_name = "${target_name}_library_java"
-
-  android_library(_library_target_name) {
-    sources = [ "//tools/android/errorprone_plugin/test/src/org/chromium/tools/errorprone/plugin/Empty.java" ]
-    not_needed(invoker,
-               [
-                 "sources",
-                 "importer_srcjar_deps",
-               ])
-    if (enable_android_nocompile_tests) {
-      if (defined(invoker.sources)) {
-        sources += invoker.sources
-      }
-      if (defined(invoker.importer_srcjar_deps)) {
-        srcjar_deps = invoker.importer_srcjar_deps
-      }
-    }
-  }
-
-  java_group(target_name) {
-    # Make java_group() depend on dependencies that |_library_target_name| cannot find so that
-    # the missing symbol resolver can find and suggest the missing GN dep.
-    deps = [ ":${_library_target_name}" ]
-    if (defined(invoker.deps)) {
-      deps += invoker.deps
-    }
-  }
-}
-
-# missing_symbol_test() template wrapper which generates importer class.
-template("missing_symbol_generated_importer_test") {
-  _importer_generator_target = "${target_name}_importer_javagen"
-  java_cpp_template(_importer_generator_target) {
-    sources = [ missing_symbol_generated_importer_template_nocompile_source ]
-    defines = [
-      "_IMPORTER_PACKAGE=${invoker.importer_package}",
-      "_IMPORTEE_PACKAGE=${invoker.imported_package}",
-      "_IMPORTEE_CLASS_NAME=${invoker.imported_class_name}",
-    ]
-  }
-
-  missing_symbol_test(target_name) {
-    importer_srcjar_deps = [ ":${_importer_generator_target}" ]
-
-    if (defined(invoker.deps)) {
-      deps = invoker.deps
-    }
-  }
 }
 
 missing_symbol_generated_importer_test(

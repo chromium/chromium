@@ -3156,6 +3156,7 @@ group("chrome_nocompile_tests") {
   # order to share the target output directory and avoid running 'gn gen'
   # for each android_nocompile_test_suite().
   deps = [
+    "features/android_library_factory/test:android_lookup_dep_tests",
     "//build/android/test:android_nocompile_tests",
     "//tools/android/errorprone_plugin/test:errorprone_plugin_tests",
   ]

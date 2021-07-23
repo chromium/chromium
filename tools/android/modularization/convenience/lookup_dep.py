@@ -102,10 +102,18 @@ def main():
 
 
 @dataclasses.dataclass(frozen=True)
+class TargetInfo:
+  """Container for information about a build target."""
+  target_name: str
+  low_classpath_priority: bool
+
+
+@dataclasses.dataclass(frozen=True)
 class ClassEntry:
   """An assignment of a Java class to a build target."""
   full_class_name: str
   target: str
+  low_classpath_priority: bool
 
 
 class ClassLookupIndex:
@@ -148,11 +156,12 @@ class ClassLookupIndex:
 
   def _entries_for(self, class_name) -> List[ClassEntry]:
     return [
-        ClassEntry(class_name, target)
-        for target in self._class_index.get(class_name)
+        ClassEntry(class_name, target_info.target_name,
+                   target_info.low_classpath_priority)
+        for target_info in self._class_index.get(class_name)
     ]
 
-  def _index_root(self) -> Dict[str, List[str]]:
+  def _index_root(self) -> Dict[str, List[TargetInfo]]:
     """Create the class to target index."""
     logging.debug('Running list_java_targets.py...')
     list_java_targets_command = [
@@ -196,10 +205,12 @@ class ClassLookupIndex:
         continue
 
       target = self._compute_toplevel_target(target)
+      low_classpath_priority = bool(deps_info.get('low_classpath_priority'))
+      target_info = TargetInfo(target, low_classpath_priority)
       full_class_names = self._compute_full_class_names_for_build_config(
           deps_info)
       for full_class_name in full_class_names:
-        class_index[full_class_name].append(target)
+        class_index[full_class_name].append(target_info)
 
     return class_index
 

@@ -55,16 +55,21 @@ template("android_nocompile_test_suite") {
       sources += invoker.sources
     }
 
-    inputs = []
+    # Depend on compile_java Python scripts so that the action is re-run whenever the script is
+    # modified.
+    _pydeps = [ "//build/android/gyp/compile_java.pydeps" ]
     if (defined(invoker.pydeps)) {
-      foreach(_pydeps_file, invoker.pydeps) {
-        _pydeps_file_lines = []
-        _pydeps_file_lines = read_file(_pydeps_file, "list lines")
-        _pydeps_entries = []
-        _pydeps_entries = filter_exclude(_pydeps_file_lines, [ "#*" ])
-        _pydeps_file_dir = get_path_info(_pydeps_file, "dir")
-        inputs += rebase_path(_pydeps_entries, ".", _pydeps_file_dir)
-      }
+      _pydeps += invoker.pydeps
+    }
+
+    inputs = []
+    foreach(_pydeps_file, _pydeps) {
+      _pydeps_file_lines = []
+      _pydeps_file_lines = read_file(_pydeps_file, "list lines")
+      _pydeps_entries = []
+      _pydeps_entries = filter_exclude(_pydeps_file_lines, [ "#*" ])
+      _pydeps_file_dir = get_path_info(_pydeps_file, "dir")
+      inputs += rebase_path(_pydeps_entries, ".", _pydeps_file_dir)
     }
 
     _json_test_configs = []

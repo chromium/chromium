@@ -7,9 +7,6 @@ default_locale_lint_test_nocompile_sources =
 
 new_api_lint_test_nocompile_sources = [ "../../java/test/NewApiLintTest.java" ]
 
-missing_symbol_generated_importer_template_nocompile_source =
-    "../../java/test/missing_symbol/Importer.template"
-
 import_child_missing_symbol_test_nocompile_sources =
     [ "../../java/test/missing_symbol/ImportsSubB.java" ]
 
