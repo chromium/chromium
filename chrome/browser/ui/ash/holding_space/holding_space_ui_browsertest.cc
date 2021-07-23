@@ -2159,23 +2159,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   EXPECT_EQ(download_chips.at(1), in_progress_download_chip);
 }
 
-// Base class for holding space UI browser tests that take screenshots.
-// Parameterized by whether or not `features::CaptureMode` is enabled.
-class HoldingSpaceUiScreenshotBrowserTest
-    : public HoldingSpaceUiBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  HoldingSpaceUiScreenshotBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kCaptureMode,
-                                              GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Verifies that taking a screenshot adds a screenshot holding space item.
-IN_PROC_BROWSER_TEST_P(HoldingSpaceUiScreenshotBrowserTest, AddScreenshot) {
+IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, AddScreenshot) {
   // Verify that no screenshots exist in holding space UI.
   test_api().Show();
   ASSERT_TRUE(test_api().IsShowing());
@@ -2184,15 +2169,13 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiScreenshotBrowserTest, AddScreenshot) {
   test_api().Close();
   ASSERT_FALSE(test_api().IsShowing());
 
-  // Take a screenshot using the keyboard. If `features::kCaptureMode` is
-  // enabled, the screenshot will be taken using the `CaptureModeController`.
-  // Otherwise the screenshot will be taken using the `ChromeScreenshotGrabber`.
+  // Take a screenshot using the keyboard. The screenshot will be taken using
+  // the `CaptureModeController`.
   PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
                      ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
-  // Move the mouse over to the browser window. The reason for that is with
-  // `features::kCaptureMode` enabled, the new capture mode implementation will
-  // not automatically capture the topmost window unless the mouse is hovered
-  // above it.
+  // Move the mouse over to the browser window. The reason for that is the
+  // capture mode implementation will not automatically capture the topmost
+  // window unless the mouse is hovered above it.
   aura::Window* browser_window = browser()->window()->GetNativeWindow();
   ui::test::EventGenerator event_generator(browser_window->GetRootWindow());
   event_generator.MoveMouseTo(
@@ -2221,22 +2204,9 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiScreenshotBrowserTest, AddScreenshot) {
   EXPECT_EQ(1u, test_api().GetScreenCaptureViews().size());
 }
 
-// Base class for holding space UI browser tests that take screen recordings.
-class HoldingSpaceUiScreenCaptureBrowserTest
-    : public HoldingSpaceUiBrowserTest {
- public:
-  HoldingSpaceUiScreenCaptureBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kCaptureMode);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Verifies that taking a screen recording adds a screen recording holding space
 // item.
-IN_PROC_BROWSER_TEST_F(HoldingSpaceUiScreenCaptureBrowserTest,
-                       AddScreenRecording) {
+IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, AddScreenRecording) {
   // Verify that no screen recordings exist in holding space UI.
   test_api().Show();
   ASSERT_TRUE(test_api().IsShowing());
@@ -2276,9 +2246,5 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiScreenCaptureBrowserTest,
   ASSERT_TRUE(test_api().IsShowing());
   EXPECT_EQ(1u, test_api().GetScreenCaptureViews().size());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceUiScreenshotBrowserTest,
-                         testing::Bool());
 
 }  // namespace ash

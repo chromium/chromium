@@ -10,7 +10,6 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/constants/ash_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/display_color_manager.h"
@@ -148,12 +147,10 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
   if (is_cursor_motion_blur_enabled_)
     return true;
 
-  if (features::IsCaptureModeEnabled()) {
-    auto* session = CaptureModeController::Get()->capture_mode_session();
-    if (session && session->is_drag_in_progress()) {
-      // To ensure the cursor is aligned with the dragged region.
-      return true;
-    }
+  auto* session = CaptureModeController::Get()->capture_mode_session();
+  if (session && session->is_drag_in_progress()) {
+    // To ensure the cursor is aligned with the dragged region.
+    return true;
   }
 
   // During startup, we may not have a preference service yet. We need to check

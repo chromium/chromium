@@ -7,7 +7,6 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
-#include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "base/check.h"
@@ -21,8 +20,7 @@ namespace ash {
 namespace capture_mode_util {
 
 bool IsCaptureModeActive() {
-  return features::IsCaptureModeEnabled() &&
-         CaptureModeController::Get()->IsActive();
+  return CaptureModeController::Get()->IsActive();
 }
 
 gfx::Point GetLocationForFineTunePosition(const gfx::Rect& rect,

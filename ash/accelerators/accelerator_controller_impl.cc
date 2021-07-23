@@ -69,7 +69,6 @@
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/touch/touch_hud_debug.h"
-#include "ash/utility/screenshot_controller.h"
 #include "ash/wm/desks/desks_animations.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -739,11 +738,9 @@ void HandleShowKeyboardShortcutViewer() {
 }
 
 bool CanHandleScreenshot(AcceleratorAction action) {
-  // The old screenshot code will handle the different sessions in its own code.
   // |TAKE_SCREENSHOT| is allowed when user session is blocked.
-  if (!features::IsCaptureModeEnabled() || action == TAKE_SCREENSHOT)
-    return true;
-  return !Shell::Get()->session_controller()->IsUserSessionBlocked();
+  return action == TAKE_SCREENSHOT ||
+         !Shell::Get()->session_controller()->IsUserSessionBlocked();
 }
 
 bool CanHandleToggleResizeLockMenu() {
@@ -754,50 +751,29 @@ bool CanHandleToggleResizeLockMenu() {
   return frame_view && frame_view->GetToggleResizeLockMenuCallback();
 }
 
-// Tries to enter capture mode image type with |source|. Returns false if
-// unsuccessful (capture mode disabled).
-bool MaybeEnterImageCaptureMode(CaptureModeSource source,
-                                CaptureModeEntryType entry_type) {
-  if (!features::IsCaptureModeEnabled())
-    return false;
-
+// Enters capture mode image type with |source|.
+void EnterImageCaptureMode(CaptureModeSource source,
+                           CaptureModeEntryType entry_type) {
   auto* capture_mode_controller = CaptureModeController::Get();
   capture_mode_controller->SetSource(source);
   capture_mode_controller->SetType(CaptureModeType::kImage);
   capture_mode_controller->Start(entry_type);
-  return true;
 }
 
 void HandleTakeWindowScreenshot() {
   base::RecordAction(UserMetricsAction("Accel_Take_Window_Screenshot"));
-  if (MaybeEnterImageCaptureMode(
-          CaptureModeSource::kWindow,
-          CaptureModeEntryType::kAccelTakeWindowScreenshot)) {
-    return;
-  }
-
-  Shell::Get()->screenshot_controller()->StartWindowScreenshotSession();
+  EnterImageCaptureMode(CaptureModeSource::kWindow,
+                        CaptureModeEntryType::kAccelTakeWindowScreenshot);
 }
 
 void HandleTakePartialScreenshot() {
   base::RecordAction(UserMetricsAction("Accel_Take_Partial_Screenshot"));
-  if (MaybeEnterImageCaptureMode(
-          CaptureModeSource::kRegion,
-          CaptureModeEntryType::kAccelTakePartialScreenshot)) {
-    return;
-  }
-
-  Shell::Get()->screenshot_controller()->StartPartialScreenshotSession(
-      /*draw_overlay_immediately=*/true);
+  EnterImageCaptureMode(CaptureModeSource::kRegion,
+                        CaptureModeEntryType::kAccelTakePartialScreenshot);
 }
 
 void HandleTakeScreenshot(ui::KeyboardCode key_code) {
   base::RecordAction(UserMetricsAction("Accel_Take_Screenshot"));
-  if (!features::IsCaptureModeEnabled()) {
-    Shell::Get()->screenshot_controller()->TakeScreenshotForAllRootWindows();
-    return;
-  }
-
   // If it is the snip key, toggle capture mode unless the session is blocked,
   // in which case, it behaves like a fullscreen screenshot.
   auto* capture_mode_controller = CaptureModeController::Get();

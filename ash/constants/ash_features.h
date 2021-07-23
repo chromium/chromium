@@ -94,7 +94,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kButtonARCNetworkDiagnostics;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCameraPrivacySwitchNotifications;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kCaptureMode;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kCdmFactoryDaemon;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCellularAllowPerNetworkRoaming;
@@ -451,7 +450,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBentoBarEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsBluetoothAdvertisementMonitoringEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBluetoothRevampEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCellularActivationUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsClipboardHistoryContextMenuNudgeEnabled();

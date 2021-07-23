@@ -71,7 +71,6 @@ class AmbientAshTestHelper;
 class AppListTestHelper;
 class AshTestHelper;
 class Shelf;
-class TestScreenshotDelegate;
 class TestShellDelegate;
 class TestSystemTrayClient;
 class UnifiedSystemTray;
@@ -230,8 +229,6 @@ class AshTestBase : public testing::Test {
   void SetUserPref(const std::string& user_email,
                    const std::string& path,
                    const base::Value& value);
-
-  TestScreenshotDelegate* GetScreenshotDelegate();
 
   TestSessionControllerClient* GetSessionControllerClient();
 

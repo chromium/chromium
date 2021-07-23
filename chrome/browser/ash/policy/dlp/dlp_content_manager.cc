@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/privacy_screen_dlp_helper.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -164,8 +163,7 @@ bool DlpContentManager::IsScreenCaptureRestricted(
 
 void DlpContentManager::OnVideoCaptureStarted(const ScreenshotArea& area) {
   if (IsVideoCaptureRestricted(area)) {
-    if (ash::features::IsCaptureModeEnabled())
-      ChromeCaptureModeDelegate::Get()->InterruptVideoRecordingIfAny();
+    ChromeCaptureModeDelegate::Get()->InterruptVideoRecordingIfAny();
     return;
   }
   DCHECK(!running_video_capture_area_.has_value());
@@ -516,11 +514,9 @@ void DlpContentManager::CheckRunningVideoCapture() {
   RestrictionLevelAndUrl restriction_info = GetAreaRestrictionInfo(
       *running_video_capture_area_, DlpContentRestriction::kVideoCapture);
   if (restriction_info.level == DlpRulesManager::Level::kBlock) {
-    if (ash::features::IsCaptureModeEnabled()) {
-      SYSLOG(INFO) << "DLP interrupted screen recording";
-      DlpBooleanHistogram(dlp::kVideoCaptureInterruptedUMA, true);
-      ChromeCaptureModeDelegate::Get()->InterruptVideoRecordingIfAny();
-    }
+    SYSLOG(INFO) << "DLP interrupted screen recording";
+    DlpBooleanHistogram(dlp::kVideoCaptureInterruptedUMA, true);
+    ChromeCaptureModeDelegate::Get()->InterruptVideoRecordingIfAny();
     running_video_capture_area_.reset();
   }
   if (restriction_info.level == DlpRulesManager::Level::kBlock ||

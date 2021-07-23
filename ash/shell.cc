@@ -90,7 +90,6 @@
 #include "ash/quick_answers/quick_answers_controller_impl.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/root_window_controller.h"
-#include "ash/screenshot_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/contextual_tooltip.h"
 #include "ash/shelf/shelf.h"
@@ -140,7 +139,6 @@
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/tray_action/tray_action.h"
 #include "ash/utility/occlusion_tracker_pauser.h"
-#include "ash/utility/screenshot_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/ash_focus_rules.h"
 #include "ash/wm/container_finder.h"
@@ -775,7 +773,6 @@ Shell::~Shell() {
 
   multidevice_notification_presenter_.reset();
   resolution_notification_controller_.reset();
-  screenshot_controller_.reset();
   mouse_cursor_filter_.reset();
   modality_filter_.reset();
 
@@ -974,10 +971,8 @@ void Shell::Init(
   power_event_observer_ = std::make_unique<PowerEventObserver>();
   window_cycle_controller_ = std::make_unique<WindowCycleController>();
 
-  if (features::IsCaptureModeEnabled()) {
-    capture_mode_controller_ = std::make_unique<CaptureModeController>(
-        shell_delegate_->CreateCaptureModeDelegate());
-  }
+  capture_mode_controller_ = std::make_unique<CaptureModeController>(
+      shell_delegate_->CreateCaptureModeDelegate());
 
   // Accelerometer file reader starts listening to tablet mode controller.
   AccelerometerReader::GetInstance()->StartListenToTabletModeController();
@@ -1132,12 +1127,6 @@ void Shell::Init(
 
   drag_drop_controller_ = std::make_unique<DragDropController>();
 
-  // |screenshot_controller_| needs to be created (and prepended as a
-  // pre-target handler) at this point, because |mouse_cursor_filter_| needs to
-  // process mouse events prior to screenshot session.
-  // See http://crbug.com/459214
-  screenshot_controller_ = std::make_unique<ScreenshotController>(
-      shell_delegate_->CreateScreenshotDelegate());
   mouse_cursor_filter_ = std::make_unique<MouseCursorEventFilter>();
   AddPreTargetHandler(mouse_cursor_filter_.get(),
                       ui::EventTarget::Priority::kAccessibility);

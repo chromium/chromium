@@ -21852,6 +21852,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Screenshot_Annotate">
+  <obsolete>
+    Removed 07/2021. The new screen capture tool doesn't have an annotate button
+    in its notification.
+  </obsolete>
   <owner>derat@chromium.org</owner>
   <owner>jdufault@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
@@ -21862,11 +21866,19 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Screenshot_CopyClipboard">
+  <obsolete>
+    Removed 07/2021. The new screen capture tool copies the image to the
+    clipboard directly.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="Screenshot_ShowInFolder">
+  <obsolete>
+    Removed 07/2021. Use histogram Ash.CaptureModeController.QuickAction
+    instead.
+  </obsolete>
   <owner>xiyuan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <description>

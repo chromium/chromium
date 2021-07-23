@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_POLICY_DLP_MOCK_DLP_CONTENT_MANAGER_H_
 
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
-#include "chrome/browser/ui/ash/chrome_screenshot_grabber.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 

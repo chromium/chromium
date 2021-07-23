@@ -323,17 +323,11 @@
   <message name="IDS_KSV_DESCRIPTION_TAKE_SCREENSHOT" desc="Description of the command in keyboard shortcut viewer.">
     Take screenshot/recording
   </message>
-  <message name="IDS_KSV_DESCRIPTION_TAKE_SCREENSHOT_OLD" desc="Description of the command in keyboard shortcut viewer when capture mode is disabled.">
-    Take screenshot
-  </message>
   <message name="IDS_KSV_DESCRIPTION_TAKE_FULLSCREEN_SCREENSHOT" desc="Description of the command in keyboard shortcut viewer.">
     Take fullscreen screenshot
   </message>
   <message name="IDS_KSV_DESCRIPTION_TAKE_PARTIAL_SCREENSHOT" desc="Description of the command in keyboard shortcut viewer.">
     Take partial screenshot/recording
-  </message>
-  <message name="IDS_KSV_DESCRIPTION_TAKE_PARTIAL_SCREENSHOT_OLD" desc="Description of the command in keyboard shortcut viewer if the capture mode is disabled.">
-    Take partial screenshot
   </message>
   <message name="IDS_KSV_DESCRIPTION_OPEN_FILE_MANAGER" desc="Description of the command in keyboard shortcut viewer.">
     Open the Files app
@@ -748,9 +742,6 @@
   </message>
   <message name="IDS_KSV_DESCRIPTION_TAKE_WINDOW_SCREENSHOT" desc="Description of the command in keyboard shortcut viewer.">
     Take window screenshot/recording
-  </message>
-  <message name="IDS_KSV_DESCRIPTION_TAKE_WINDOW_SCREENSHOT_OLD" desc="Description of the command in keyboard shortcut viewer when capture mode is disabled.">
-    Take window screenshot
   </message>
   <message name="IDS_KSV_DESCRIPTION_SUSPEND" desc="Description of the command in keyboard shortcut viewer.">
     Put device in sleep mode (suspend)

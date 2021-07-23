@@ -40,7 +40,6 @@
 #include "ash/system/power/power_button_controller_test_api.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_media_client.h"
-#include "ash/test_screenshot_delegate.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_item.h"
@@ -1125,30 +1124,6 @@ TEST_F(AcceleratorControllerTest, GlobalAccelerators) {
   EXPECT_TRUE(ProcessInController(
       ui::Accelerator(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE)));
 
-  // The "Take Screenshot", "Take Partial Screenshot", volume, brightness, and
-  // keyboard brightness accelerators are only defined on ChromeOS.
-  if (!features::IsCaptureModeEnabled()) {
-    TestScreenshotDelegate* delegate = GetScreenshotDelegate();
-    delegate->set_can_take_screenshot(false);
-    EXPECT_TRUE(ProcessInController(
-        ui::Accelerator(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN)));
-    EXPECT_TRUE(
-        ProcessInController(ui::Accelerator(ui::VKEY_SNAPSHOT, ui::EF_NONE)));
-    EXPECT_TRUE(ProcessInController(ui::Accelerator(
-        ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)));
-
-    delegate->set_can_take_screenshot(true);
-    EXPECT_EQ(0, delegate->handle_take_screenshot_count());
-    EXPECT_TRUE(ProcessInController(
-        ui::Accelerator(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN)));
-    EXPECT_EQ(1, delegate->handle_take_screenshot_count());
-    EXPECT_TRUE(
-        ProcessInController(ui::Accelerator(ui::VKEY_SNAPSHOT, ui::EF_NONE)));
-    EXPECT_EQ(2, delegate->handle_take_screenshot_count());
-    EXPECT_TRUE(ProcessInController(ui::Accelerator(
-        ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)));
-    EXPECT_EQ(2, delegate->handle_take_screenshot_count());
-  }
   const ui::Accelerator volume_mute(ui::VKEY_VOLUME_MUTE, ui::EF_NONE);
   const ui::Accelerator volume_down(ui::VKEY_VOLUME_DOWN, ui::EF_NONE);
   const ui::Accelerator volume_up(ui::VKEY_VOLUME_UP, ui::EF_NONE);
@@ -1742,11 +1717,6 @@ TEST_F(AcceleratorControllerTest, ToggleCapsLockAccelerators) {
   // 6. Toggle CapsLock shortcut should still work after the partial screenshot
   // shortcut is used. (https://crbug.com/920030)
   {
-    TestScreenshotDelegate* delegate = GetScreenshotDelegate();
-    delegate->set_can_take_screenshot(true);
-
-    EXPECT_EQ(0, delegate->handle_take_partial_screenshot_count());
-
     // Press Ctrl+Shift+F5 then release to enter the partial screenshot session.
     const ui::Accelerator press_partial_screenshot_shortcut(
         ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
@@ -1762,13 +1732,9 @@ TEST_F(AcceleratorControllerTest, ToggleCapsLockAccelerators) {
     generator->PressLeftButton();
     generator->MoveMouseTo(10, 10);
     generator->ReleaseLeftButton();
-    if (features::IsCaptureModeEnabled()) {
-      auto* controller = CaptureModeController::Get();
-      EXPECT_TRUE(controller->IsActive());
-      EXPECT_EQ(CaptureModeSource::kRegion, controller->source());
-    } else {
-      EXPECT_EQ(1, delegate->handle_take_partial_screenshot_count());
-    }
+    auto* capture_mode_controller = CaptureModeController::Get();
+    EXPECT_TRUE(capture_mode_controller->IsActive());
+    EXPECT_EQ(CaptureModeSource::kRegion, capture_mode_controller->source());
 
     // Press Search, Press Alt, Release Search, Release Alt. CapsLock should be
     // triggered.
@@ -1928,65 +1894,41 @@ TEST_F(AcceleratorControllerTest, DisallowedAtModalWindow) {
   //  when a modal window is open
   //
   // Screenshot
-  if (!features::IsCaptureModeEnabled()) {
-    TestScreenshotDelegate* delegate = GetScreenshotDelegate();
-    delegate->set_can_take_screenshot(false);
-    EXPECT_TRUE(ProcessInController(
-        ui::Accelerator(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN)));
-    EXPECT_TRUE(
-        ProcessInController(ui::Accelerator(ui::VKEY_SNAPSHOT, ui::EF_NONE)));
-    EXPECT_TRUE(ProcessInController(ui::Accelerator(
-        ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)));
-    delegate->set_can_take_screenshot(true);
-    EXPECT_EQ(0, delegate->handle_take_screenshot_count());
-    EXPECT_TRUE(ProcessInController(
-        ui::Accelerator(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN)));
-    EXPECT_EQ(1, delegate->handle_take_screenshot_count());
-    EXPECT_TRUE(
-        ProcessInController(ui::Accelerator(ui::VKEY_SNAPSHOT, ui::EF_NONE)));
-    EXPECT_EQ(2, delegate->handle_take_screenshot_count());
-    EXPECT_TRUE(ProcessInController(ui::Accelerator(
-        ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)));
-    EXPECT_EQ(2, delegate->handle_take_screenshot_count());
-  } else {
-    auto* controller = CaptureModeController::Get();
+  auto* controller = CaptureModeController::Get();
+  // Control + shift + F5 opens capture mode to take a region screenshot.
+  EXPECT_TRUE(ProcessInController(ui::Accelerator(
+      ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)));
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_EQ(CaptureModeSource::kRegion, controller->source());
+  controller->Stop();
 
-    // Control + shift + F5 opens capture mode to take a region screenshot.
-    EXPECT_TRUE(ProcessInController(ui::Accelerator(
-        ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)));
-    EXPECT_TRUE(controller->IsActive());
-    EXPECT_EQ(CaptureModeSource::kRegion, controller->source());
-    controller->Stop();
+  // Control + alt + F5 opens capture mode to take a window screenshot.
+  EXPECT_TRUE(ProcessInController(ui::Accelerator(
+      ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN)));
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_EQ(CaptureModeSource::kWindow, controller->source());
+  controller->Stop();
 
-    // Control + alt + F5 opens capture mode to take a window screenshot.
-    EXPECT_TRUE(ProcessInController(ui::Accelerator(
-        ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN)));
-    EXPECT_TRUE(controller->IsActive());
-    EXPECT_EQ(CaptureModeSource::kWindow, controller->source());
-    controller->Stop();
+  // Snapshot key opens capture mode with the last type, and closes it if it
+  // is already open.
+  EXPECT_TRUE(
+      ProcessInController(ui::Accelerator(ui::VKEY_SNAPSHOT, ui::EF_NONE)));
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_EQ(CaptureModeSource::kWindow, controller->source());
+  EXPECT_TRUE(
+      ProcessInController(ui::Accelerator(ui::VKEY_SNAPSHOT, ui::EF_NONE)));
+  ASSERT_FALSE(controller->IsActive());
 
-    // Snapshot key opens capture mode with the last type, and closes it if it
-    // is already open.
-    EXPECT_TRUE(
-        ProcessInController(ui::Accelerator(ui::VKEY_SNAPSHOT, ui::EF_NONE)));
-    EXPECT_TRUE(controller->IsActive());
-    EXPECT_EQ(CaptureModeSource::kWindow, controller->source());
-    EXPECT_TRUE(
-        ProcessInController(ui::Accelerator(ui::VKEY_SNAPSHOT, ui::EF_NONE)));
-    ASSERT_FALSE(controller->IsActive());
-
-    // Control + F5 takes a screenshot of all displays without opening capture
-    // mode. The loop will timeout if a screenshot was not successfully taken
-    // and saved.
-    EXPECT_TRUE(ProcessInController(
-        ui::Accelerator(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN)));
-    EXPECT_FALSE(controller->IsActive());
-    base::RunLoop run_loop;
-    CaptureModeTestApi().SetOnCaptureFileSavedCallback(
-        base::BindLambdaForTesting(
-            [&run_loop](const base::FilePath& path) { run_loop.Quit(); }));
-    run_loop.Run();
-  }
+  // Control + F5 takes a screenshot of all displays without opening capture
+  // mode. The loop will timeout if a screenshot was not successfully taken
+  // and saved.
+  EXPECT_TRUE(ProcessInController(
+      ui::Accelerator(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN)));
+  EXPECT_FALSE(controller->IsActive());
+  base::RunLoop run_loop;
+  CaptureModeTestApi().SetOnCaptureFileSavedCallback(base::BindLambdaForTesting(
+      [&run_loop](const base::FilePath& path) { run_loop.Quit(); }));
+  run_loop.Run();
 
   // Brightness
   const ui::Accelerator brightness_down(ui::VKEY_BRIGHTNESS_DOWN, ui::EF_NONE);

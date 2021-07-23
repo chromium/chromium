@@ -1554,26 +1554,6 @@ const std::vector<ash::KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
     }
 
     for (auto& item : *item_list) {
-      // Capture mode is an improved screenshot and video recording tool, and
-      // the shortuct messages reflect the differences. If capture mode is
-      // disabled, we will swap the strings.
-      // TODO(sammiequon): Remove the strings suffixed with _OLD once capture
-      // mode can no longer be disabled.
-      if (!ash::features::IsCaptureModeEnabled()) {
-        static base::flat_map<int, int> new_to_old_message_id_map = {
-            {IDS_KSV_DESCRIPTION_TAKE_PARTIAL_SCREENSHOT,
-             IDS_KSV_DESCRIPTION_TAKE_PARTIAL_SCREENSHOT_OLD},
-            {IDS_KSV_DESCRIPTION_TAKE_SCREENSHOT,
-             IDS_KSV_DESCRIPTION_TAKE_SCREENSHOT_OLD},
-            {IDS_KSV_DESCRIPTION_TAKE_FULLSCREEN_SCREENSHOT,
-             IDS_KSV_DESCRIPTION_TAKE_SCREENSHOT_OLD},
-            {IDS_KSV_DESCRIPTION_TAKE_WINDOW_SCREENSHOT,
-             IDS_KSV_DESCRIPTION_TAKE_WINDOW_SCREENSHOT_OLD}};
-        const int id = item.description_message_id;
-        if (new_to_old_message_id_map.contains(id))
-          item.description_message_id = new_to_old_message_id_map[id];
-      }
-
       if (item.shortcut_key_codes.empty() && !item.accelerator_ids.empty()) {
         // Only use the first |accelerator_id| because the modifiers are the
         // same even if it is a grouped accelerators.

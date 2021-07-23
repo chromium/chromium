@@ -10,7 +10,6 @@
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/test/test_assistant_service.h"
 #include "ash/assistant/util/assistant_util.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/highlighter/highlighter_controller.h"
@@ -196,9 +195,7 @@ TEST_F(PaletteTrayTest, PaletteTrayWorkflow) {
   // the palette tray button is will not be active.
   PerformTap();
   ASSERT_TRUE(test_api_->tray_bubble_wrapper());
-  const auto capture_tool_id = features::IsCaptureModeEnabled()
-                                   ? PaletteToolId::ENTER_CAPTURE_MODE
-                                   : PaletteToolId::CAPTURE_SCREEN;
+  const auto capture_tool_id = PaletteToolId::ENTER_CAPTURE_MODE;
   test_api_->palette_tool_manager()->ActivateTool(capture_tool_id);
   EXPECT_FALSE(
       test_api_->palette_tool_manager()->IsToolActive(capture_tool_id));

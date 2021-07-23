@@ -5,7 +5,6 @@
 #include "ash/display/output_protection_delegate.h"
 
 #include "ash/capture_mode/capture_mode_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "base/callback_helpers.h"
 #include "ui/display/display.h"
@@ -24,10 +23,8 @@ display::ContentProtectionManager* manager() {
 
 void MaybeSetCaptureModeWindowProtection(aura::Window* window,
                                          uint32_t protection_mask) {
-  if (features::IsCaptureModeEnabled()) {
-    CaptureModeController::Get()->SetWindowProtectionMask(window,
-                                                          protection_mask);
-  }
+  CaptureModeController::Get()->SetWindowProtectionMask(window,
+                                                        protection_mask);
 }
 
 }  // namespace
@@ -139,8 +136,7 @@ void OutputProtectionDelegate::OnWindowMayHaveMovedToAnotherDisplay() {
 
     // The window may have moved to a display that is currently being recorded,
     // so we need to refresh Capture Mode's content protection.
-    if (features::IsCaptureModeEnabled())
-      CaptureModeController::Get()->RefreshContentProtection();
+    CaptureModeController::Get()->RefreshContentProtection();
   }
   display_id_ = new_display_id;
 }

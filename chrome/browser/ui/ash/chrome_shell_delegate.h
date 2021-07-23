@@ -19,7 +19,6 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   bool CanShowWindowForUser(const aura::Window* window) const override;
   std::unique_ptr<ash::CaptureModeDelegate> CreateCaptureModeDelegate()
       const override;
-  std::unique_ptr<ash::ScreenshotDelegate> CreateScreenshotDelegate() override;
   ash::AccessibilityDelegate* CreateAccessibilityDelegate() override;
   std::unique_ptr<ash::BackGestureContextualNudgeDelegate>
   CreateBackGestureContextualNudgeDelegate(

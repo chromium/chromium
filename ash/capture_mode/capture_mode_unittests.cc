@@ -23,7 +23,6 @@
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/capture_mode/video_recording_watcher.h"
-#include "ash/constants/ash_features.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/output_protection_delegate.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -50,7 +49,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/account_id/account_id.h"
@@ -262,12 +260,6 @@ class CaptureModeTest : public AshTestBase {
   CaptureModeTest& operator=(const CaptureModeTest&) = delete;
   ~CaptureModeTest() override = default;
 
-  // AshTestBase:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kCaptureMode);
-    AshTestBase::SetUp();
-  }
-
   CaptureModeBarView* GetCaptureModeBarView() const {
     auto* session = CaptureModeController::Get()->capture_mode_session();
     DCHECK(session);
@@ -464,9 +456,6 @@ class CaptureModeTest : public AshTestBase {
             [&run_loop](const base::FilePath& path) { run_loop.Quit(); }));
     run_loop.Run();
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class CaptureSessionWidgetObserver : public views::WidgetObserver {

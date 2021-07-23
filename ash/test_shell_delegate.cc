@@ -10,7 +10,6 @@
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/public/cpp/test/test_nearby_share_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
-#include "ash/test_screenshot_delegate.h"
 #include "ash/wm/gestures/back_gesture/test_back_gesture_contextual_nudge_delegate.h"
 #include "components/full_restore/app_launch_info.h"
 #include "ui/gfx/image/image.h"
@@ -28,11 +27,6 @@ bool TestShellDelegate::CanShowWindowForUser(const aura::Window* window) const {
 std::unique_ptr<CaptureModeDelegate>
 TestShellDelegate::CreateCaptureModeDelegate() const {
   return std::make_unique<TestCaptureModeDelegate>();
-}
-
-std::unique_ptr<ScreenshotDelegate>
-TestShellDelegate::CreateScreenshotDelegate() {
-  return std::make_unique<TestScreenshotDelegate>();
 }
 
 AccessibilityDelegate* TestShellDelegate::CreateAccessibilityDelegate() {

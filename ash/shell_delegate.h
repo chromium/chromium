@@ -35,7 +35,6 @@ namespace ash {
 
 class AccessibilityDelegate;
 class CaptureModeDelegate;
-class ScreenshotDelegate;
 class BackGestureContextualNudgeDelegate;
 class BackGestureContextualNudgeController;
 class NearbyShareController;
@@ -54,9 +53,6 @@ class ASH_EXPORT ShellDelegate {
   // Creates and returns the delegate of the Capture Mode feature.
   virtual std::unique_ptr<CaptureModeDelegate> CreateCaptureModeDelegate()
       const = 0;
-
-  // Creates the screenshot delegate, which has dependencies on //chrome.
-  virtual std::unique_ptr<ScreenshotDelegate> CreateScreenshotDelegate() = 0;
 
   // Creates a accessibility delegate. Shell takes ownership of the delegate.
   virtual AccessibilityDelegate* CreateAccessibilityDelegate() = 0;

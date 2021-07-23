@@ -4963,11 +4963,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "screen-capture",
-    "owners": [ "afakhry", "gzadina" ],
-    "expiry_milestone": 91
-  },
-  {
     "name": "screen-capture-android",
     "owners": [ "alcooper", "guidou" ],
     "expiry_milestone": 96

@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -15,22 +13,7 @@
 
 // Testing class to test CrOS capture mode, which is a feature to take
 // screenshots and record video.
-class CaptureModeBrowserTest : public InProcessBrowserTest {
- public:
-  CaptureModeBrowserTest() = default;
-  CaptureModeBrowserTest(const CaptureModeBrowserTest&) = delete;
-  CaptureModeBrowserTest& operator=(const CaptureModeBrowserTest&) = delete;
-  ~CaptureModeBrowserTest() override = default;
-
-  // InProcessBrowserTest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kCaptureMode);
-    InProcessBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using CaptureModeBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest, ContextMenuStaysOpen) {
   // Right click the desktop to open a context menu.

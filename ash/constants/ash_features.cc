@@ -220,11 +220,6 @@ const base::Feature kButtonARCNetworkDiagnostics{
 const base::Feature kCameraPrivacySwitchNotifications{
     "CameraPrivacySwitchNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the Capture Mode feature which is an enhanced screenshot and screen
-// capture user experience.
-const base::Feature kCaptureMode{"CaptureMode",
-                                 base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, will use the CDM in the Chrome OS daemon rather than loading the
 // CDM using the library CDM interface.
 const base::Feature kCdmFactoryDaemon{"CdmFactoryDaemon",
@@ -1242,10 +1237,6 @@ bool IsBluetoothAdvertisementMonitoringEnabled() {
 
 bool IsBluetoothRevampEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothRevamp);
-}
-
-bool IsCaptureModeEnabled() {
-  return base::FeatureList::IsEnabled(kCaptureMode);
 }
 
 bool IsCellularActivationUiEnabled() {

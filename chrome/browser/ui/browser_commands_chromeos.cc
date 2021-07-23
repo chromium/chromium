@@ -4,15 +4,13 @@
 
 #include "chrome/browser/ui/browser_commands_chromeos.h"
 
+#include "ash/public/cpp/capture_mode_api.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/ui/ash/chrome_screenshot_grabber.h"
 
 using base::UserMetricsAction;
 
 void TakeScreenshot() {
   base::RecordAction(UserMetricsAction("Menu_Take_Screenshot"));
-  ChromeScreenshotGrabber* grabber = ChromeScreenshotGrabber::Get();
-  if (grabber->CanTakeScreenshot())
-    grabber->HandleTakeScreenshotForAllRootWindows();
+  ash::CaptureScreenshotsOfAllDisplays();
 }

@@ -44,7 +44,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ui_controls_factory_ash.h"
-#include "ash/test_screenshot_delegate.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"

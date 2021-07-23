@@ -10,11 +10,9 @@
 #include "ash/accelerators/pre_target_accelerator_handler.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/capture_mode/capture_mode_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test_screenshot_delegate.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,18 +29,9 @@ using AcceleratorFilterTest = AshTestBase;
 
 // Tests if AcceleratorFilter works without a focused window.
 TEST_F(AcceleratorFilterTest, TestFilterWithoutFocus) {
-  const TestScreenshotDelegate* delegate = GetScreenshotDelegate();
-  EXPECT_EQ(0, delegate->handle_take_screenshot_count());
-
-  // VKEY_SNAPSHOT opens capture mode when the feature is enabled. Otherwise,
-  // AcceleratorController calls ScreenshotDelegate::HandleTakeScreenshot() when
-  // VKEY_SNAPSHOT is pressed. See kAcceleratorData[] in
-  // accelerator_controller.cc.
+  // VKEY_SNAPSHOT opens capture mode.
   PressAndReleaseKey(ui::VKEY_SNAPSHOT);
-  if (features::IsCaptureModeEnabled())
-    EXPECT_TRUE(CaptureModeController::Get()->IsActive());
-  else
-    EXPECT_EQ(1, delegate->handle_take_screenshot_count());
+  EXPECT_TRUE(CaptureModeController::Get()->IsActive());
 }
 
 // Tests if AcceleratorFilter works as expected with a focused window.
@@ -52,16 +41,10 @@ TEST_F(AcceleratorFilterTest, TestFilterWithFocus) {
       CreateTestWindowInShellWithDelegate(&test_delegate, -1, gfx::Rect()));
   wm::ActivateWindow(window.get());
 
-  const TestScreenshotDelegate* delegate = GetScreenshotDelegate();
-  EXPECT_EQ(0, delegate->handle_take_screenshot_count());
-
   // AcceleratorFilter should ignore the key events since the root window is
   // not focused.
   PressAndReleaseKey(ui::VKEY_SNAPSHOT);
-  if (features::IsCaptureModeEnabled())
-    EXPECT_FALSE(CaptureModeController::Get()->IsActive());
-  else
-    EXPECT_EQ(0, delegate->handle_take_screenshot_count());
+  EXPECT_FALSE(CaptureModeController::Get()->IsActive());
 
   // Reset window before |test_delegate| gets deleted.
   window.reset();
@@ -69,26 +52,15 @@ TEST_F(AcceleratorFilterTest, TestFilterWithFocus) {
 
 // Tests if AcceleratorFilter ignores the flag for Caps Lock.
 TEST_F(AcceleratorFilterTest, TestCapsLockMask) {
-  const TestScreenshotDelegate* delegate = GetScreenshotDelegate();
-  EXPECT_EQ(0, delegate->handle_take_screenshot_count());
-
   PressAndReleaseKey(ui::VKEY_SNAPSHOT);
-  const bool capture_mode_enabled = features::IsCaptureModeEnabled();
   auto* controller = CaptureModeController::Get();
-  if (capture_mode_enabled) {
-    EXPECT_TRUE(controller->IsActive());
-    controller->Stop();
-  } else {
-    EXPECT_EQ(1, delegate->handle_take_screenshot_count());
-  }
+  EXPECT_TRUE(controller->IsActive());
+  controller->Stop();
 
   // Check if AcceleratorFilter ignores the mask for Caps Lock. Note that there
   // is no ui::EF_ mask for Num Lock.
   PressAndReleaseKey(ui::VKEY_SNAPSHOT, ui::EF_CAPS_LOCK_ON);
-  if (capture_mode_enabled)
-    EXPECT_TRUE(controller->IsActive());
-  else
-    EXPECT_EQ(2, delegate->handle_take_screenshot_count());
+  EXPECT_TRUE(controller->IsActive());
 }
 
 // Tests if special hardware keys like brightness and volume are consumed as

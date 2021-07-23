@@ -33,7 +33,6 @@ class TestShellDelegate : public ShellDelegate {
   bool CanShowWindowForUser(const aura::Window* window) const override;
   std::unique_ptr<CaptureModeDelegate> CreateCaptureModeDelegate()
       const override;
-  std::unique_ptr<ScreenshotDelegate> CreateScreenshotDelegate() override;
   AccessibilityDelegate* CreateAccessibilityDelegate() override;
   std::unique_ptr<BackGestureContextualNudgeDelegate>
   CreateBackGestureContextualNudgeDelegate(

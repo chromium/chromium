@@ -173,7 +173,6 @@ class ResolutionNotificationController;
 class RootWindowController;
 class ScreenLayoutObserver;
 class ScreenOrientationController;
-class ScreenshotController;
 class ScreenPinningController;
 class ScreenPositionController;
 class ScreenSwitchCheckController;
@@ -485,9 +484,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   ResolutionNotificationController* resolution_notification_controller() {
     return resolution_notification_controller_.get();
   }
-  ScreenshotController* screenshot_controller() {
-    return screenshot_controller_.get();
-  }
   ScreenLayoutObserver* screen_layout_observer() {
     return screen_layout_observer_.get();
   }
@@ -791,8 +787,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<MarkerController> marker_controller_;
   std::unique_ptr<AutoclickController> autoclick_controller_;
   std::unique_ptr<::wm::FocusController> focus_controller_;
-
-  std::unique_ptr<ScreenshotController> screenshot_controller_;
 
   std::unique_ptr<MouseCursorEventFilter> mouse_cursor_filter_;
   std::unique_ptr<ScreenPositionController> screen_position_controller_;

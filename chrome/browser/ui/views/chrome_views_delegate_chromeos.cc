@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/chrome_views_delegate.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
 #include "base/bind.h"
@@ -41,8 +40,7 @@ ChromeViewsDelegate::ProcessAcceleratorWhileMenuShowing(
 
 bool ChromeViewsDelegate::ShouldCloseMenuIfMouseCaptureLost() const {
   // Menu closes unless an ongoing screen capture session is underway.
-  return !(ash::features::IsCaptureModeEnabled() &&
-           ChromeCaptureModeDelegate::Get()->is_session_active());
+  return !ChromeCaptureModeDelegate::Get()->is_session_active();
 }
 
 std::unique_ptr<views::NonClientFrameView>

@@ -10,7 +10,6 @@
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/screenshot_delegate.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/ui/ash/back_gesture_contextual_nudge_delegate.h"
 #include "chrome/browser/ui/ash/chrome_accessibility_delegate.h"
 #include "chrome/browser/ui/ash/chrome_capture_mode_delegate.h"
-#include "chrome/browser/ui/ash/chrome_screenshot_grabber.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_ui.h"
 #include "chrome/browser/ui/ash/session_util.h"
 #include "chrome/browser/ui/ash/tab_scrubber.h"
@@ -292,11 +290,6 @@ ChromeShellDelegate::GetMediaSessionService() {
 
 ash::AccessibilityDelegate* ChromeShellDelegate::CreateAccessibilityDelegate() {
   return new ChromeAccessibilityDelegate;
-}
-
-std::unique_ptr<ash::ScreenshotDelegate>
-ChromeShellDelegate::CreateScreenshotDelegate() {
-  return std::make_unique<ChromeScreenshotGrabber>();
 }
 
 std::unique_ptr<ash::BackGestureContextualNudgeDelegate>

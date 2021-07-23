@@ -4,15 +4,16 @@
 
 #include "chrome/browser/policy/policy_test_utils.h"
 
+#include "ash/public/cpp/capture_mode_api.h"
+#include "ash/public/cpp/capture_mode_test_api.h"
 #include "base/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
+#include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/chrome_screenshot_grabber.h"
-#include "chrome/browser/ui/ash/chrome_screenshot_grabber_test_observer.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -145,34 +146,15 @@ void PolicyTest::SetRequireCTForTesting(bool required) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class QuitMessageLoopAfterScreenshot
-    : public ChromeScreenshotGrabberTestObserver {
- public:
-  explicit QuitMessageLoopAfterScreenshot(base::OnceClosure done)
-      : done_(std::move(done)) {}
-  void OnScreenshotCompleted(ui::ScreenshotResult screenshot_result,
-                             const base::FilePath& screenshot_path) override {
-    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
-        FROM_HERE, base::DoNothing(), std::move(done_));
-  }
-
-  ~QuitMessageLoopAfterScreenshot() override {}
-
- private:
-  base::OnceClosure done_;
-};
-
 void PolicyTest::TestScreenshotFile(bool enabled) {
   base::RunLoop run_loop;
-  QuitMessageLoopAfterScreenshot observer_(run_loop.QuitClosure());
+  ash::CaptureModeTestApi().SetOnCaptureFileSavedCallback(
+      base::BindLambdaForTesting(
+          [&run_loop](const base::FilePath& path) { run_loop.Quit(); }));
 
-  ChromeScreenshotGrabber* grabber = ChromeScreenshotGrabber::Get();
-  grabber->test_observer_ = &observer_;
   SetScreenshotPolicy(enabled);
-  grabber->HandleTakeScreenshotForAllRootWindows();
+  ash::CaptureScreenshotsOfAllDisplays();
   run_loop.Run();
-
-  grabber->test_observer_ = nullptr;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

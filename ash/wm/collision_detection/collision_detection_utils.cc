@@ -6,7 +6,6 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
-#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -156,16 +155,14 @@ std::vector<gfx::Rect> CollectCollisionRects(
   }
 
   // Check the capture bar if capture mode is active.
-  if (features::IsCaptureModeEnabled()) {
-    auto* capture_mode_controller = CaptureModeController::Get();
-    if (capture_mode_controller->IsActive()) {
-      aura::Window* capture_bar_window =
-          capture_mode_controller->capture_mode_session()
-              ->capture_mode_bar_widget()
-              ->GetNativeWindow();
-      rects.push_back(ComputeCollisionRectFromBounds(
-          capture_bar_window->GetTargetBounds(), capture_bar_window->parent()));
-    }
+  auto* capture_mode_controller = CaptureModeController::Get();
+  if (capture_mode_controller->IsActive()) {
+    aura::Window* capture_bar_window =
+        capture_mode_controller->capture_mode_session()
+            ->capture_mode_bar_widget()
+            ->GetNativeWindow();
+    rects.push_back(ComputeCollisionRectFromBounds(
+        capture_bar_window->GetTargetBounds(), capture_bar_window->parent()));
   }
 
   return rects;

@@ -17,8 +17,6 @@ enum class PaletteGroup { ACTION, MODE };
 enum class PaletteToolId {
   NONE,
   CREATE_NOTE,
-  CAPTURE_REGION,
-  CAPTURE_SCREEN,
   LASER_POINTER,
   MAGNIFY,
   METALAYER,

@@ -4,12 +4,10 @@
 
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_test_helper.h"
@@ -154,12 +152,6 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
   DlpContentManagerBrowserTest() = default;
   ~DlpContentManagerBrowserTest() override = default;
 
-  // InProcessBrowserTest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kCaptureMode);
-    InProcessBrowserTest::SetUp();
-  }
-
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
     auto dlp_rules_manager = std::make_unique<MockDlpRulesManager>();
@@ -203,7 +195,6 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
   MockDlpRulesManager* mock_rules_manager_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::vector<DlpPolicyEvent> events_;
 };
 

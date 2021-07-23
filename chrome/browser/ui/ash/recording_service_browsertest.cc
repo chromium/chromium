@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
@@ -15,7 +14,6 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -120,11 +118,6 @@ class RecordingServiceBrowserTest : public InProcessBrowserTest {
   ~RecordingServiceBrowserTest() override = default;
 
   // InProcessBrowserTest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kCaptureMode);
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     aura::Window* browser_window = GetBrowserWindow();
@@ -180,7 +173,6 @@ class RecordingServiceBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 

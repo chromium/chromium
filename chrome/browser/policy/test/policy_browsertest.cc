@@ -155,12 +155,9 @@
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
-#include "chrome/browser/ui/ash/chrome_screenshot_grabber.h"
-#include "chrome/browser/ui/ash/chrome_screenshot_grabber_test_observer.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
-#include "ui/snapshot/screenshot_grabber.h"
 #endif
 
 #if !defined(OS_MAC)

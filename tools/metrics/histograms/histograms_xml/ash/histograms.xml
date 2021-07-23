@@ -2255,6 +2255,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.ScreenshotController.ScreenshotsPerDay" units="int"
     expires_after="2021-09-29">
+  <obsolete>
+    Removed 07/2021. Use Ash.CaptureModeController.ScreenshotsPerDay instead.
+  </obsolete>
   <owner>xiyuan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -2267,6 +2270,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.ScreenshotController.ScreenshotsPerWeek" units="int"
     expires_after="2021-11-28">
+  <obsolete>
+    Removed 07/2021. Use Ash.CaptureModeController.ScreenshotsPerWeek instead.
+  </obsolete>
   <owner>xiyuan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>

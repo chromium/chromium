@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_util.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -13,7 +12,6 @@
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/ui/ash/chrome_capture_mode_delegate.h"
-#include "chrome/browser/ui/ash/chrome_screenshot_grabber.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -41,13 +39,9 @@ void SetLockedFullscreenState(Browser* browser, bool locked) {
   // Update the set of available browser commands.
   browser->command_controller()->LockedFullscreenStateChanged();
 
-  // Disallow screenshots in locked fullscreen mode.
-  ChromeScreenshotGrabber::Get()->set_screenshots_allowed(!locked);
-
   // Disable both screenshots and video screen captures via the capture mode
   // feature.
-  if (ash::features::IsCaptureModeEnabled())
-    ChromeCaptureModeDelegate::Get()->SetIsScreenCaptureLocked(locked);
+  ChromeCaptureModeDelegate::Get()->SetIsScreenCaptureLocked(locked);
 
   // Reset the clipboard and kill dev tools when entering or exiting locked
   // fullscreen (security concerns).
