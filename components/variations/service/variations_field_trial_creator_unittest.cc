@@ -66,7 +66,7 @@ const char kTestSeedSerialNumber[] = "123";
 const char kTestSeedData[] = "a serialized seed, 100% realistic";
 const char kTestSeedSignature[] = "a totally valid signature, I swear!";
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !defined(OS_ANDROID)
 // Trial and group names for the extended variations safe mode experiment.
 const char kExtendedSafeMode[] = "ExtendedVariationsSafeMode";
 const char kDefaultGroup[] = "Default";
@@ -79,7 +79,7 @@ const char kEmptyPrefsFile[] = "{}";
 
 // The suffix of the |kStabilityExitedCleanly| pref.
 const char kExitedCleanly[] = "exited_cleanly";
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !defined(OS_ANDROID)
 
 // Used for similar tests.
 struct TestParams {
@@ -766,7 +766,7 @@ TEST_F(FieldTrialCreatorTest, ClientFilterableState_HardwareClass) {
 }
 #endif  // OS_ANDROID
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !defined(OS_ANDROID)
 class FieldTrialCreatorSafeModeExperimentTest : public FieldTrialCreatorTest {
  public:
   FieldTrialCreatorSafeModeExperimentTest()
@@ -1003,6 +1003,6 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
   histogram_tester.ExpectTotalCount(
       "Variations.ExtendedSafeMode.WritePrefsTime", 1);
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !defined(OS_ANDROID)
 
 }  // namespace variations

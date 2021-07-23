@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/ios/ios_util.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
@@ -420,9 +421,21 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // Initialize the ChromeBrowserProvider.
   ios::GetChromeBrowserProvider().Initialize();
 
-  // If the user is interacting, crashes affect the user experience. Start
-  // reporting as soon as possible.
-  // TODO(crbug.com/507633): Call this even sooner.
+  // If the user has interacted with the app, then start (or continue) watching
+  // for crashes. Otherwise, do not watch for crashes.
+  //
+  // Depending on the client's ExtendedVariationsSafeMode experiment group (see
+  // MaybeExtendVariationsSafeMode() in variations_field_trial_creator.cc for
+  // more info), the signal to start watching for crashes may have occurred
+  // earlier.
+  //
+  // TODO(b/184937096): Remove the below call to OnAppEnterForeground() if this
+  // call is moved earlier for all clients. It is is being kept here for the
+  // time being for the control group of the extended Variations Safe Mode
+  // experiment.
+  //
+  // TODO(crbug/1232027): Stop watching for a crash if this is a background
+  // fetch.
   if (_appState.userInteracted)
     GetApplicationContext()->GetMetricsService()->OnAppEnterForeground();
 
@@ -559,6 +572,9 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)startUpBrowserForegroundInitialization {
+  // TODO(crbug/1232027): Determine whether Chrome needs to resume watching for
+  // crashes.
+
   self.appState.postCrashLaunch = [self mustShowRestoreInfobar];
   self.appState.sessionRestorationRequired =
       [self startUpBeforeFirstWindowCreatedAndPrepareForRestorationPostCrash:

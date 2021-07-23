@@ -183,7 +183,7 @@ class VariationsFieldTrialCreator {
   // Get the platform we're running on, respecting OverrideVariationsPlatform().
   Study::Platform GetPlatform();
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !defined(OS_ANDROID)
   // On channels that support the ExtendedVariationsSafeMode experiment, (a)
   // assigns the client to an experiment group and (b) applies group-specific
   // behavior. Does nothing if the channel does not support the experiment.
