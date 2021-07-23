@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Nuskaityti</translation>
 <translation id="2570743873672969996">Vykdomas „<ph name="TEST_NAME" />“ bandymas...</translation>
 <translation id="2585245331261708204">„Chrome“ OS naujienos</translation>
+<translation id="2619761439309613843">Atnaujinimas per dieną</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2740531572673183784">Gerai</translation>
 <translation id="2751739896257479635">EAP 2 tapatybės nustatymo etapas</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Iš dalies suaktyvinta</translation>
 <translation id="3527036260304016759">Nepavyko – nežinoma klaida</translation>
 <translation id="3532980081107202182">Liko apie <ph name="MIN_REMAINING" /> min.</translation>
+<translation id="3540383942695635079">MAC adresas</translation>
 <translation id="357889014807611375">matuojamas „Wi-Fi“ tinklas</translation>
 <translation id="3595596368722241419">Akumuliatorius įkrautas</translation>
 <translation id="360565022852130722">„Wi-Fi“ tinklas apsaugotas naudojant nepatikimą protokolą WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Kartų, kai akumuliatorius buvo įkraunamas visą ciklą, skaičius</translation>
 <translation id="3941014780699102620">Nepavyko nustatyti prieglobos pavadinimo</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="3966286471246132217">Jei reikia tikslesnių rezultatų, uždarykite visas programas, kol bandymas bus baigtas.</translation>
 <translation id="3967822245660637423">Atsisiuntimas baigtas</translation>
 <translation id="397105322502079400">Skaičiuojama...</translation>
 <translation id="39823212440917567">Senesnės nei <ph name="NUMBER_OF_DAYS" /> d. spausdinimo užduotys bus pašalintos</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Išjungta</translation>
 <translation id="4227825898293920515">Slaptažodžio galiojimas baigsis už <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nėra vykstančių spausdinimo užduočių</translation>
+<translation id="4244962993387259361">Norint atlikti atminties bandymą, reikia bent 500 MB laisvos vietos. Kad atlaisvintumėte vietos, eikite į skiltį „Nustatymai“ &gt; „Saugyklos tvarkymas“.</translation>
 <translation id="4289540628985791613">Apžvalga</translation>
 <translation id="4297501883039923494">Sustabdyta – nežinoma klaida</translation>
 <translation id="4300073214558989">Vaizdų: <ph name="IMAGE_COUNT" /></translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Eternetas</translation>
 <translation id="4483049906298469269">Nepavyko patikrinti ryšio su nenumatytuoju tinklų sietuvu</translation>
 <translation id="4511264077854731334">Portalas</translation>
+<translation id="4536864596629708641">IP konfigūracija</translation>
 <translation id="4548483925627140043">Signalas nerastas</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh akumuliatorius</translation>
 <translation id="4562494484721939086">Nėra paslaugos</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, „<ph name="PRINTER_NAME" />“, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> iš <ph name="TOTAL_PAGE_NUMBER" /> psl. Paspauskite „Enter“, jei norite atšaukti spausdinimo užduotį.</translation>
 <translation id="4646949265910132906">Saugus „Wi-Fi“ ryšys</translation>
 <translation id="4652335678334611408">Išsaugoti seanso žurnalą</translation>
+<translation id="4654549501020883054">Keisti kasdien</translation>
 <translation id="4665014895760275686">Gamintojas</translation>
 <translation id="467510802200863975">Slaptažodžiai neatitinka</translation>
 <translation id="467715984478005772">Įtariama užkarda</translation>
@@ -318,6 +324,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7172721935181587524">Vienas vaizdas</translation>
 <translation id="7177485034254901881">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="MANAGER" />. Administratoriai gali nuotoliniu būdu konfigūruoti įrenginį.</translation>
+<translation id="7180611975245234373">Atnaujinti</translation>
 <translation id="7216409898977639127">Mobiliojo ryšio teikėjas</translation>
 <translation id="7271040990581020067">Skaitytuvas šiuo metu naudojamas. Vėliau bandykite dar kartą.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8498220429738806196">Srauto skaitikliai</translation>
 <translation id="8503813439785031346">Vartotojo vardas</translation>
 <translation id="8503836310948963452">Dar kelios minutės...</translation>
+<translation id="8521021929829989041">Naudoti kaip asmeninį įrenginį</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operatoriui gali būti reikalinga ši parinktis, kad būtų galima prisijungti prie tinklo. Jei reikia išsamios informacijos, susisiekite su operatoriumi.</translation>
 <translation id="8576249514688522074">Neinicijuota</translation>

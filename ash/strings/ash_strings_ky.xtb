@@ -6,7 +6,7 @@
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth түзмөгү жупташуу үчүн уруксат сурап жатат. Ал түзмөккө бул PIN кодду киргизиңиз: <ph name="PINCODE" />.</translation>
 <translation id="1024261588257374085">Сүрөткө тартып алуу үчүн терезенин бир бөлүгү тандалды</translation>
 <translation id="1032891413405719768">Стилус батареясынын кубаты аз</translation>
-<translation id="1036073649888683237">Билдирүүлөрдү башкаруу үчүн Жөндөөлөргө өтүңүз</translation>
+<translation id="1036073649888683237">Билдирүүлөрдү башкаруу үчүн жөндөөлөргө өтүңүз</translation>
 <translation id="1036672894875463507">Мен Google Жардамчыңызмын. Сизге күнү бою жардам берүүгө даярмын!
 Баштоо үчүн булардын бирөөнү жасап көрүңүз.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> кошулду</translation>
@@ -16,7 +16,6 @@
 <translation id="1056775291175587022">Тармактар жок</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Батареяны алмаштырыңыз же кубаттаңыз</translation>
-<translation id="1077253978657569125">Муну жакшырткыбыз келет!</translation>
 <translation id="108486256082349153">Мобилдик: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Кутман күнүңүз менен, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Зеригип жатам</translation>
@@ -420,6 +419,7 @@
 <translation id="4274537685965975248">Ctrl + Alt + ылдый жебе ыкчам баскычы өзгөртүлдү. Аягы баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + oңго жебени басыңыз.</translation>
 <translation id="4279490309300973883">Чагылыштыруу</translation>
 <translation id="4285498937028063278">Бошотуу</translation>
+<translation id="4292904812939562398">Жакында иштетилген колдонмолор</translation>
 <translation id="429402653707266969">Куралдар тилкесинин жайгашкан жерин өчүрүү/күйгүзүү</translation>
 <translation id="4294319844246081198">Кутмандуу таңыңыз менен, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875"><ph name="COUNT" /> билдирменин баарын өчүрүү</translation>

@@ -8,6 +8,10 @@
 <translation id="1047726139967079566">Obeleži ovu stranicu...</translation>
 <translation id="1049743911850919806">Bez arhiviranja</translation>
 <translation id="105093091697134113">Sledeći nalozi koriste lozinke koje su otkrivene pri upadu u podatke treće strane ili koje su unete na obmanjujućem veb-sajtu. Odmah promenite ove lozinke da biste zaštitili naloge.</translation>
+<translation id="105214722824962652">Nećemo vas odjaviti sa Google naloga. <ph name="BEGIN_LINK" />Drugi oblici aktivnosti<ph name="END_LINK" /> mogu da se sačuvaju na Google nalogu kada ste prijavljeni. Možete da ih izbrišete u bilo kom trenutku.
+
+        
+Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživača za brisanje istorije pretrage ako je to primenjivo.</translation>
 <translation id="1063454504051558093">Koristi drugu lozinku...</translation>
 <translation id="1066060668811609597">Upravljajte sinhronizacijom</translation>
 <translation id="1076421457278169141">Skenirali ste kôd</translation>
@@ -132,6 +136,7 @@
 <translation id="2320166752086256636">Sakrij tastaturu</translation>
 <translation id="2339560363438331454">Sinhronizacija i Google usluge</translation>
 <translation id="2351097562818989364">Podešavanja za prevođenje su resetovana.</translation>
+<translation id="235789365079050412">Google politika privatnosti</translation>
 <translation id="2359043044084662842">Prevedi</translation>
 <translation id="2359808026110333948">Nastavite</translation>
 <translation id="2360196772093551345">Zahtevaj mobilni sajt</translation>
@@ -204,6 +209,10 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="298306318844797842">Dodajte način plaćanja...</translation>
 <translation id="2989805286512600854">Otvori na novoj kartici</translation>
 <translation id="3037605927509011580">O, ne!</translation>
+<translation id="3076846064362030967">Nećemo vas odjaviti sa Google naloga. <ph name="BEGIN_LINK" />Drugi oblici aktivnosti<ph name="END_LINK" /> mogu da se sačuvaju na Google nalogu kada ste prijavljeni. Možete da ih izbrišete u bilo kom trenutku.
+
+
+Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to primenjivo.</translation>
 <translation id="3080525922482950719">Možete da sačuvate stranice da biste ih čitali kasnije ili oflajn</translation>
 <translation id="3081338492074632642">Proverite da li se lozinka koju čuvate podudara sa lozinkom za <ph name="WEBSITE" /></translation>
 <translation id="3112556859945124369">Označi…</translation>
@@ -328,7 +337,6 @@ Pratite korake u nastavku:</translation>
 <translation id="4375040482473363939">Pretraga QR kodova</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Dodirnite da biste promenili jezik</translation>
-<translation id="441868831736628555">Obaveštenje o privatnosti</translation>
 <translation id="4454246407045105932">Dodajte jezik</translation>
 <translation id="4469418912670346607">Nastavi podešavanje</translation>
 <translation id="4476574785019001431">Podešavanja</translation>
@@ -404,6 +412,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5140288047769711648">Chrome će zapamtiti ovu lozinku umesto vas. Ne morate vi da je pamtite.</translation>
 <translation id="5150492518600715772">Pošaljite na uređaj</translation>
 <translation id="5168414296986405587">Napravljeno za iPadOS</translation>
+<translation id="5173088371991956744">Sinhronizacija mora da potvrdi da ste to vi</translation>
 <translation id="5181140330217080051">Preuzimanje</translation>
 <translation id="5186185447130319458">Privatno</translation>
 <translation id="5188482106078495165">Podešavanje kolačića se primenjuje na sve kartice. Da biste primenili novo podešavanje na otvorenu karticu, ponovo učitajte karticu.</translation>
@@ -586,6 +595,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="6730682669179532099">Izvoz lozinki nije uspeo</translation>
 <translation id="6748108480210050150">Od</translation>
 <translation id="6760509555861141183">Nazad na nedavnu karticu</translation>
+<translation id="6762812039470893796">Poništi izbor svih stavki</translation>
 <translation id="6780034285637185932">Poštanski broj</translation>
 <translation id="6785453220513215166">Slanje izveštaja o otkazivanju...</translation>
 <translation id="6797885426782475225">Glasovna pretraga</translation>
@@ -714,6 +724,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="802154636333426148">Preuzimanje nije uspelo</translation>
 <translation id="8023878949384262191">Proširuje odeljak.</translation>
 <translation id="8027581147000338959">Otvori u novom prozoru</translation>
+<translation id="804225253087497565"><ph name="BEGIN_LINK" />Istorija pretrage<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />drugi oblici aktivnosti<ph name="END_LINK" /> mogu da budu sačuvani na Google nalogu kada ste prijavljeni. Možete da ih izbrišete u bilo kom trenutku.</translation>
 <translation id="804427445359061970">Ovde ćete pronaći kartice sa drugih uređaja</translation>
 <translation id="8059533439631660104">Skuplja odeljak.</translation>
 <translation id="8065292699993359127">Otvorite URL-ove u Chrome-u u režimu bez arhiviranja</translation>

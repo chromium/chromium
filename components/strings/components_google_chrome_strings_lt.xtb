@@ -3,14 +3,13 @@
 <translationbundle lang="lt">
 <translation id="1016765312371154165">„Chrome“ netinkamai išsijungė.</translation>
 <translation id="130631256467250065">Pakeitimai įsigalios kitą kartą iš naujo paleidus įrenginį.</translation>
+<translation id="1635457557763038537">Pakeitimai įsigalios kitą kartą iš naujo paleidus „Chrome“.</translation>
+<translation id="2447485272386224171">„Chrome“ pasiekiama naudojant <ph name="BEGIN_LINK_CHROMIUM" />„Chromium“<ph name="END_LINK_CHROMIUM" /> atvirojo šaltinio projektą ir kitą <ph name="BEGIN_LINK_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">„Chrome“ logotipas</translation>
-<translation id="2874156562296220396">„Google Chrome“ sukurta pasitelkus atvirojo kodo projektą <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ir kitą <ph name="BEGIN_LINK_OSS" />atvirojo kodo programinę įrangą<ph name="END_LINK_OSS" />.</translation>
-<translation id="3140883423282498090">Pakeitimai įsigalios kitą kartą iš naujo paleidus „Google Chrome“.</translation>
 <translation id="3444832043240812445">Šiame puslapyje rodoma informacija apie paskutines strigtis, jei <ph name="BEGIN_LINK" />įgalinote strigčių ataskaitų teikimą<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Leiskite „Chrome“ pasiekti tinklą užkardos arba antivirusinės
           programos nustatymuose.</translation>
 <translation id="4010643444566880169">„Chrome“ OS neužbaigė šios pradinės sąrankos.</translation>
-<translation id="4853578032408195113">Peržiūrite saugų „Google Chrome“ puslapį</translation>
 <translation id="5005121315113832363">Šį puslapį užblokavo „Chrome“</translation>
 <translation id="6011049234605203654">Eikite į
           „Chrome“ meniu &gt;
@@ -39,6 +38,7 @@
           &gt;
           „LAN nustatymai“
           ir panaikinkite „Naudoti tarpinį serverį LAN tinkle“ pasirinkimą.</translation>
+<translation id="7230956101631259640">Peržiūrite saugų „Chrome“ puslapį</translation>
 <translation id="8187289872471304532">Eikite į
           „Programos“ &gt; „Sistemos nuostatos“ &gt; „Tinklas“ &gt; „Išplėstinis“ &gt; „Tarpiniai serveriai“
           ir panaikinkite visų tarpinių serverių pasirinkimą.</translation>

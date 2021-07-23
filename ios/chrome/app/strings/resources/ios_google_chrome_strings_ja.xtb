@@ -19,6 +19,8 @@
 <translation id="2342919707875585281">Chrome で、許可したサイトと現在地が共有されます。</translation>
 <translation id="2347208864470321755">この機能を有効にすると、外国語のページで翻訳ツールが表示されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Chrome をデフォルトのブラウザにする</translation>
+<translation id="2427791862912929107">Chrome には、インターネットのデータやウェブページの読み込み速度を管理できる機能があります。
+<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2561231791489583059">Chrome を既定のブラウザとして使用すると、危険なサイトから保護され、パスワードを安全に保つことができます</translation>
 <translation id="2574249610672786438">どのデバイスからでも Chrome で自分のタブにアクセスするには、すべてのデバイスでログインしてください</translation>
 <translation id="2576431527583832481">Chrome のアップデートが見つかりました。新しいバージョンが利用可能です。</translation>
@@ -61,8 +63,6 @@
 <translation id="5716154293141027663">他のアプリでタップしたリンクを Chrome で開くことができます</translation>
 <translation id="5854621639439811139">Chrome の使い方のヒント: 戻る、進む、検索など一部のボタンは画面の下部に表示されるようになりました。</translation>
 <translation id="5876773482963502140">Chrome に位置情報の利用を許可すると、許可を与えたサイトに位置情報が提供されます。また、サイトで付近の店舗やニュースなどの地域情報を表示できる場合に位置情報を要求されることがあります。</translation>
-<translation id="6036420186814142909">Google Chromeには、インターネットのデータやウェブページの読み込み速度を管理できる機能があります。
-<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="6063091872902370735">Chrome へのログインを許可する</translation>
 <translation id="6181930887571472871">Chrome に切り替え</translation>
 <translation id="6238746320622508509">Chrome でシークレット タブをロックできるようにします。</translation>

@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Skanuj</translation>
 <translation id="2570743873672969996">Wykonuję test <ph name="TEST_NAME" />…</translation>
 <translation id="2585245331261708204">Co nowego w Chrome OS</translation>
+<translation id="2619761439309613843">Codziennie nowa</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Uwierzytelnianie EAP Phase 2</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Częściowo aktywowane</translation>
 <translation id="3527036260304016759">Niepowodzenie – nieznany błąd</translation>
 <translation id="3532980081107202182">Pozostało około <ph name="MIN_REMAINING" /> min</translation>
+<translation id="3540383942695635079">Adres MAC</translation>
 <translation id="357889014807611375">Wi-Fi z pomiarem użycia danych</translation>
 <translation id="3595596368722241419">Bateria naładowana</translation>
 <translation id="360565022852130722">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Liczba wykonanych pełnych cykli ładowania baterii</translation>
 <translation id="3941014780699102620">Nie udało się znaleźć hosta</translation>
 <translation id="3942420633017001071">Diagnostyka</translation>
+<translation id="3966286471246132217">Aby uzyskać dokładniejsze wyniki, zamknij wszystkie aplikacje do czasu ukończenia testu.</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
 <translation id="39823212440917567">Zadania drukowania starsze niż <ph name="NUMBER_OF_DAYS" /> dni zostaną usunięte</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Wyłączone</translation>
 <translation id="4227825898293920515">Hasło wygasa za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Brak zadań drukowania w toku</translation>
+<translation id="4244962993387259361">Aby można było uruchomić test pamięci, co najmniej 500 MB pamięci musi być wolne. Aby zwolnić miejsce, otwórz Ustawienia &gt; Zarządzanie pamięcią.</translation>
 <translation id="4289540628985791613">Przegląd</translation>
 <translation id="4297501883039923494">Zatrzymano – nieznany błąd</translation>
 <translation id="4300073214558989">Obrazy: <ph name="IMAGE_COUNT" /></translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nie udało się sprawdzić pingiem bramy sieciowej innej niż domyślna</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4536864596629708641">Konfiguracja IP</translation>
 <translation id="4548483925627140043">Nie znaleziono sygnału</translation>
 <translation id="455835558791489930">Bateria <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Brak usługi</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Naciśnij Enter, by anulować zadanie drukowania.</translation>
 <translation id="4646949265910132906">Bezpieczne połączenie z Wi-Fi</translation>
 <translation id="4652335678334611408">Zapisz dziennik sesji</translation>
+<translation id="4654549501020883054">Zmieniaj codziennie</translation>
 <translation id="4665014895760275686">Producent</translation>
 <translation id="467510802200863975">Hasła nie są zgodne</translation>
 <translation id="467715984478005772">przypuszczalnie zapora sieciowa</translation>
@@ -318,6 +324,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7172721935181587524">1 obraz</translation>
 <translation id="7177485034254901881">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />. Administratorzy mogą je zdalnie konfigurować.</translation>
+<translation id="7180611975245234373">Odśwież</translation>
 <translation id="7216409898977639127">Operator komórkowy</translation>
 <translation id="7271040990581020067">Skaner jest obecnie używany. Spróbuj ponownie później.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8498220429738806196">Liczniki natężenia ruchu</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="8503836310948963452">Jeszcze kilka minut…</translation>
+<translation id="8521021929829989041">Użyj jako urządzenia osobistego</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Tej opcji może wymagać operator do połączenia z jego siecią. Aby uzyskać szczegółowe informacje, skontaktuj się z operatorem.</translation>
 <translation id="8576249514688522074">Nie zainicjowano</translation>

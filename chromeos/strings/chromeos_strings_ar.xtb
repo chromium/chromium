@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">فحص</translation>
 <translation id="2570743873672969996">جارٍ تنفيذ اختبار <ph name="TEST_NAME" />...</translation>
 <translation id="2585245331261708204">‏ميزات نظام Chrome الجديدة</translation>
+<translation id="2619761439309613843">إعادة التحميل يوميًا</translation>
 <translation id="2620436844016719705">النظام</translation>
 <translation id="2740531572673183784">حسنًا</translation>
 <translation id="2751739896257479635">‏مصادقة المرحلة الثانية عبر EAP</translation>
@@ -318,6 +319,7 @@
 <translation id="7162487448488904999">معرض الصور</translation>
 <translation id="7172721935181587524">صورة واحدة</translation>
 <translation id="7177485034254901881">يدير <ph name="MANAGER" /> جهاز <ph name="DEVICE_TYPE" /> هذا. ويمكن للمشرفين إعداد هذا الجهاز عن بُعد.</translation>
+<translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7216409898977639127">موفر شبكة الجوّال</translation>
 <translation id="7271040990581020067">يتم حاليًا استخدام الماسح الضوئي. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

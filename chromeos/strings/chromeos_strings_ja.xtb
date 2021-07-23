@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">スキャン</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> のテストを実行しています...</translation>
 <translation id="2585245331261708204">Chrome OS の最新情報</translation>
+<translation id="2619761439309613843">毎日更新する</translation>
 <translation id="2620436844016719705">システム</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP フェーズ 2 認証</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">一部有効</translation>
 <translation id="3527036260304016759">失敗 - 不明なエラー</translation>
 <translation id="3532980081107202182">残り時間: 約 <ph name="MIN_REMAINING" /> 分</translation>
+<translation id="3540383942695635079">MAC アドレス</translation>
 <translation id="357889014807611375">従量制 Wi-Fi</translation>
 <translation id="3595596368722241419">バッテリー残量: フル</translation>
 <translation id="360565022852130722">安全性の低いプロトコル WEP 802.1x が Wi-Fi で使用されています</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">電池がフル充電されたサイクルの回数です</translation>
 <translation id="3941014780699102620">ホストを解決できませんでした</translation>
 <translation id="3942420633017001071">診断</translation>
+<translation id="3966286471246132217">より正確な結果を得るには、テストが完了するまですべてのアプリを閉じてください。</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
 <translation id="397105322502079400">計算しています...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> 日より前の印刷ジョブは削除されます</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">停止中</translation>
 <translation id="4227825898293920515">パスワードの有効期限はあと <ph name="TIME" />です</translation>
 <translation id="4238516577297848345">実行中の印刷ジョブはありません</translation>
+<translation id="4244962993387259361">メモリテストを実行するには 500 MB 以上の空き容量が必要です。空き容量を増やすには、[設定] &gt; [ストレージ管理] に移動します。</translation>
 <translation id="4289540628985791613">概要</translation>
 <translation id="4297501883039923494">停止 - 不明なエラー</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 件の画像</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
 <translation id="4511264077854731334">ポータル</translation>
+<translation id="4536864596629708641">IP 設定</translation>
 <translation id="4548483925627140043">シグナルは検出されませんでした</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh 電池</translation>
 <translation id="4562494484721939086">サービスなし</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />。印刷ジョブをキャンセルするには、Enter キーを押します。</translation>
 <translation id="4646949265910132906">安全な Wi-Fi 接続</translation>
 <translation id="4652335678334611408">セッションログを保存</translation>
+<translation id="4654549501020883054">毎日変更</translation>
 <translation id="4665014895760275686">メーカー</translation>
 <translation id="467510802200863975">パスワードが一致しません</translation>
 <translation id="467715984478005772">ファイアウォールの可能性があります</translation>
@@ -318,6 +324,7 @@
 <translation id="7162487448488904999">ギャラリー</translation>
 <translation id="7172721935181587524">1 件の画像</translation>
 <translation id="7177485034254901881">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。管理者がこのデバイスをリモートで設定している可能性があります。</translation>
+<translation id="7180611975245234373">更新</translation>
 <translation id="7216409898977639127">モバイル プロバイダ</translation>
 <translation id="7271040990581020067">スキャナは現在使用中です。しばらくしてからもう一度お試しください。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@
 <translation id="8498220429738806196">トラフィック カウンタ</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="8503836310948963452">もう少しです…</translation>
+<translation id="8521021929829989041">個人のデバイスとして使用</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ご利用の携帯通信会社でのネットワーク接続にこのオプションが必要な場合があります。詳しくは携帯通信会社にお問い合わせください。</translation>
 <translation id="8576249514688522074">初期化が未完了</translation>

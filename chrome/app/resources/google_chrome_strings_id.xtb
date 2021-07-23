@@ -27,7 +27,6 @@
 <translation id="1597911401261118146">Untuk memeriksa apakah sandi Anda aman dari pelanggaran data dan masalah keamanan lainnya, <ph name="BEGIN_LINK" />login ke Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Agar Chrome lebih aman, kami menonaktifkan ekstensi berikut yang tidak tercantum dalam <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa sepengetahuan Anda.</translation>
 <translation id="1628000112320670027">Dapatkan bantuan Chrome</translation>
-<translation id="1666409074978194368">Update hampir selesai. Luncurkan kembali Google Chrome untuk menyelesaikan update. Jendela Samaran tidak akan dibuka kembali.</translation>
 <translation id="1674870198290878346">Buka Link di Jendela Sa&amp;maran Chrome</translation>
 <translation id="1682634494516646069">Google Chrome tidak dapat membaca dan menulis ke direktori datanya: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome adalah browser web yang menjalankan halaman dan aplikasi web secepat kilat. Cepat, stabil, dan mudah digunakan. Jelajahi web secara lebih aman dengan perlindungan terhadap software perusak dan phishing yang disertakan dalam Google Chrome.</translation>
@@ -87,6 +86,7 @@
 <translation id="2847461019998147611">Tampilkan Google Chrome dalam bahasa ini</translation>
 <translation id="2857540653560290388">Meluncurkan Chrome...</translation>
 <translation id="2857972467023607093">Profil Chrome dengan akun ini sudah ada</translation>
+<translation id="2861074815332034794">Mengupdate Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Anda sudah masuk ke Chrome!</translation>
 <translation id="2885378588091291677">Pengelola Tugas</translation>
 <translation id="2888126860611144412">Tentang Chrome</translation>
@@ -174,10 +174,10 @@
 <translation id="5193136243808726294">Google Chrome OS tidak dapat membuka halaman ini.</translation>
 <translation id="521447420733633466">Jika Anda berbagi perangkat, teman dan keluarga dapat menjelajah secara terpisah dan menyiapkan Chrome sesuai keinginannya</translation>
 <translation id="5251420635869119124">Tamu dapat menggunakan Chrome tanpa meninggalkan apa pun.</translation>
+<translation id="5251679006894510177">Update hampir selesai. Luncurkan kembali Chrome untuk menyelesaikan update. Jendela Samaran tidak akan dibuka kembali.</translation>
 <translation id="5386244825306882791">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chrome atau menelusuri dari Omnibox.</translation>
 <translation id="5394833366792865639">Bagikan tab Chrome</translation>
 <translation id="5430073640787465221">File preferensi Anda rusak atau tidak valid. Google Chrome tidak dapat memulihkan setelan Anda.</translation>
-<translation id="5434383153637353914">Halaman ini memungkinkan Anda mengelola Akun Google yang Anda gunakan untuk login. Akun ini akan tersedia di browser Chrome dan aplikasi Play Store, serta berbagai layanan seperti Gmail, Drive, dan YouTube. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Sebelum memulai, pastikan Anda telah memiliki cadangan terbaru data Anda. Menginstal Chrome OS akan menimpa semua data di hard drive.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Google tidak bertanggung jawab atas hilangnya data, dan tidak menjamin bahwa Chrome OS akan berfungsi di model yang tidak tersertifikasi. Buka [TBD] untuk mempelajari model tersertifikasi lebih lanjut.<ph name="END_PARAGRAPH2" />
           <ph name="BEGIN_PARAGRAPH3" />Pelajari lebih lanjut cara menginstal Chrome OS dan penghapusan data: [TBD URL]<ph name="END_PARAGRAPH3" />
@@ -211,11 +211,9 @@
 <translation id="6235018212288296708">Inbound rule untuk Google Chrome guna mengizinkan lalu lintas mDNS.</translation>
 <translation id="6291089322031436445">Aplikasi Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome sudah terpasang untuk semua pengguna di komputer Anda.</translation>
-<translation id="6338556085225130112">Memperbarui Google Chrome</translation>
 <translation id="6368958679917195344">Chrome OS terwujud karena <ph name="BEGIN_LINK_CROS_OSS" />software sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="6418662306461808273">Beralih ke profil Chrome yang sudah ada?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
-<translation id="6566149418543181476">Memperbarui Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Sistem Chrome OS</translation>
 <translation id="664235759707825982">Siap menginstal Chrome OS</translation>
 <translation id="6676384891291319759">Akses Internet</translation>
@@ -224,12 +222,14 @@
 <translation id="6750954913813541382">Untuk memperbaiki kesalahan ejaan, Chrome mengirim teks yang Anda ketikkan di browser ke Google</translation>
 <translation id="677276454032249905">Tetap tutup Chrome?</translation>
 <translation id="683440813066116847">Inbound rule untuk Google Chrome Canary guna mengizinkan lalu lintas mDNS.</translation>
+<translation id="6881299373831449287">Mengupdate Chrome</translation>
 <translation id="6885412569789873916">Aplikasi Chrome Beta</translation>
 <translation id="6943584222992551122">Data browsing pengguna ini akan dihapus dari perangkat ini. Untuk memulihkan data, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Inbound rule untuk Google Chrome Beta guna mengizinkan traffic mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome telah diperbarui, tetapi Anda belum menggunakannya selama setidaknya 30 hari.</translation>
 <translation id="7025800014283535195">Anda dapat berpindah-pindah profil Chrome di sini</translation>
 <translation id="7062128746136194023">Orang tuamu telah menonaktifkan "Izin untuk situs, aplikasi, dan ekstensi" untuk Chrome. Tindakan menambahkan <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak diizinkan.</translation>
+<translation id="7088681679121566888">Chrome sudah versi terbaru</translation>
 <translation id="7098166902387133879">Google Chrome menggunakan mikrofon Anda.</translation>
 <translation id="7106741999175697885">Pengelola Tugas - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Update baru untuk Chrome telah tersedia dan akan diterapkan segera setelah diluncurkan kembali.}=1{Update baru untuk Chrome telah tersedia dan akan diterapkan segera setelah diluncurkan kembali. Jendela Samaran Anda tidak akan dibuka kembali.}other{Update baru untuk Chrome telah tersedia dan akan diterapkan segera setelah diluncurkan kembali. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
@@ -261,7 +261,6 @@
 <translation id="7801699035218095297">Google Chrome mencoba menyalin sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="7808348361785373670">Hapus dari Chrome...</translation>
 <translation id="7825851276765848807">Pemasangan gagal karena kesalahan yang tidak ditentukan. Silakan download Google Chrome lagi.</translation>
-<translation id="7855730255114109580">Ini adalah Google Chrome versi terbaru</translation>
 <translation id="7890208801193284374">Jika Anda berbagi komputer, teman dan keluarga bisa menjelajah secara terpisah dan menyiapkan Chrome sesuai keinginannya.</translation>
 <translation id="7896673875602241923">Seseorang telah masuk ke Chrome pada komputer ini sebagai <ph name="ACCOUNT_EMAIL_LAST" />. Harap buat pengguna Chrome baru untuk memisahkan informasi Anda.</translation>
 <translation id="7930071585467473040">Google Chrome mencoba menyalin sandi.</translation>

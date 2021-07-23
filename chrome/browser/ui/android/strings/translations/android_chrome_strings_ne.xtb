@@ -318,6 +318,7 @@
 <translation id="3029704984691124060">पासफ्रेजहरू मेल खाँदैनन्</translation>
 <translation id="3031225630520268969">सहायकको प्रयोग गरी भ्वाइस सर्च गर्ने कुराको सहमति लिने UI</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />मद्दत प्राप्त गर्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="3037517125981011456">Chrome मा साइन इन गर्ने निर्देशन देखाउँछ</translation>
 <translation id="3046945242843292318">अर्को पटक यो साइट अझ छिटो खोल्नुहोस्</translation>
 <translation id="305593374596241526">स्थानसम्बन्धी सुविधा निष्क्रिय छ; <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई सक्रिय गर्नुहोस्।</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> पुस्तक चिन्ह}other{<ph name="BOOKMARKS_COUNT_MANY" /> पुस्तक चिन्हहरू}}</translation>
@@ -449,7 +450,6 @@
 <translation id="3928666092801078803">मेरो डेटालाई संयोजन गर्नुहोस्</translation>
 <translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">कुनैपनि सक्षम गरिएको आवाज खोजी उपलब्ध छैन</translation>
-<translation id="3943557322767080599">मैले आफ्नो Google खातामा साइन इन गर्दा Chrome मा साइन इन गर्ने सुझाव दिइयोस्</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{यन्त्र तयार भएपछि Chrome ले तपाईंको पृष्ठ लोड गर्ने छ}other{यन्त्र तयार भएपछि Chrome ले तपाईंका पृष्ठहरू लोड गर्ने छ}}</translation>
 <translation id="3962957115499249330">Wi-Fi मा कनेक्ट भई यो डाउनलोड सुरु हुँदा तपाईं एउटा सूचना देख्नु हुने छ।</translation>
 <translation id="3963007978381181125">पासफ्रेजमार्फत इन्क्रिप्सन गर्ने कार्यअन्तर्गत Google Pay का भुक्तानी विधि र ठेगानाहरू समावेश हुँदैनन्। तपाईंको पासफ्रेज थाहा हुने व्यक्तिले मात्र तपाईंको इन्क्रिप्ट गरिएको डेटा पढ्न सक्छ। उक्त पासफ्रेज Google मा पठाइँदैन वा त्यहाँ भण्डारण गरिँदैन। तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा तपाईं यो सेटिङ परिवर्तन गर्न चाहनुहुन्छ भने तपाईंले सिंक रिसेट गर्नु पर्ने हुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
@@ -597,6 +597,7 @@
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
 <translation id="488187801263602086">फाइलको पुनः नामकरण गर्नुहोस्</translation>
 <translation id="4885273946141277891">असमर्थित संख्याका Chrome दृष्टान्तहरू।</translation>
+<translation id="4905269543817054577">इन्कोग्निटो मोडमा ब्राउज गर्दा इतिहास सेभ गरिँदैन</translation>
 <translation id="4908869848243824489">Google को Discover</translation>
 <translation id="4910889077668685004">भुक्तानी सम्बन्धी एपहरू</translation>
 <translation id="4913161338056004800">तथ्याङ्कहरू रिसेट गर्नुहोस्</translation>
@@ -650,6 +651,7 @@
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="5227554086496586518">खोज परिणामहरू हेर्न ट्याप गर्नुहोस्</translation>
 <translation id="5233638681132016545">नयाँ ट्याब</translation>
+<translation id="5246093389635966745">टुलबारको सर्टकट सम्पादन गर्नुहोस्</translation>
 <translation id="5250483651202458397">स्क्रिनसट। बन्द गर्न ट्याप गर्नुहोस्।</translation>
 <translation id="5262378156578470238"><ph name="DATE" /> मा यो डाउनलोड सुरु हुँदा तपाईं एउटा सूचना देख्नु हुने छ।</translation>
 <translation id="526421993248218238">यो पृष्ठ लोड गर्न सकिएन</translation>
@@ -888,7 +890,6 @@
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659594942844771486">ट्याब</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> मा खोल्नुहोस्</translation>
-<translation id="666981079809192359">Chrome गोपनीयता सूचना</translation>
 <translation id="6671495933530132209">छविको प्रतिलिपि गर्नुहोस्</translation>
 <translation id="6674571176963658787">सिंक गर्ने कार्य सुरु गर्न आफ्नो पासफ्रेज हाल्नुहोस्</translation>
 <translation id="6676840375528380067">यस डिभाइसबाट तपाईंको Chrome को डेटा हटाउने हो?</translation>
@@ -1033,6 +1034,7 @@
 <translation id="7630202231528827509">सेवा प्रदायकको URL</translation>
 <translation id="7638584964844754484">गलत पासफ्रेज</translation>
 <translation id="7641339528570811325">ब्राउजिङको डेटा मेटाउनुहोस्…</translation>
+<translation id="764170292089748542">तपाईंले गोप्य रूपमा ब्राउज गर्दा Chrome ले तपाईंको ब्राउजिङ इतिहास सेभ गर्दैन। तपाईं बुकमार्क प्रयोग गरी आफ्ना मन पर्ने साइटहरूमा जान भने सक्नुहुन्छ।</translation>
 <translation id="7646772052135772216">पासवर्ड सिंक गर्ने सुविधाले काम गर्दै छैन</translation>
 <translation id="7655900163790317559">ब्लुटुथ अन गरिँदै छ…</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>

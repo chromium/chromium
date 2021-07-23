@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Pindai</translation>
 <translation id="2570743873672969996">Menjalankan pengujian <ph name="TEST_NAME" /> ...</translation>
 <translation id="2585245331261708204">Yang baru di Chrome OS</translation>
+<translation id="2619761439309613843">Muat Ulang Harian</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2740531572673183784">Oke</translation>
 <translation id="2751739896257479635">Autentikasi tahap 2 EAP</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Diaktifkan sebagian</translation>
 <translation id="3527036260304016759">Gagal - Error tidak diketahui</translation>
 <translation id="3532980081107202182">Sekitar <ph name="MIN_REMAINING" /> menit lagi</translation>
+<translation id="3540383942695635079">Alamat MAC</translation>
 <translation id="357889014807611375">Wi-Fi berbayar</translation>
 <translation id="3595596368722241419">Baterai penuh</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Frekuensi baterai melalui siklus pengisian daya penuh</translation>
 <translation id="3941014780699102620">Gagal me-resolve host</translation>
 <translation id="3942420633017001071">Diagnosis</translation>
+<translation id="3966286471246132217">Untuk hasil yang lebih akurat, tutup semua aplikasi sampai pengujian selesai.</translation>
 <translation id="3967822245660637423">Download selesai</translation>
 <translation id="397105322502079400">Menghitung...</translation>
 <translation id="39823212440917567">Tugas pencetakan yang sudah lebih dari <ph name="NUMBER_OF_DAYS" /> hari akan dihapus</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Dinonaktifkan</translation>
 <translation id="4227825898293920515">Sandi kedaluwarsa dalam <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Tidak ada tugas pencetakan yang sedang berlangsung</translation>
+<translation id="4244962993387259361">Anda perlu minimal 500 MB untuk menjalankan pengujian Memori. Untuk mengosongkan ruang penyimpanan, buka Setelan &gt; Pengelolaan penyimpanan.</translation>
 <translation id="4289540628985791613">Ikhtisar</translation>
 <translation id="4297501883039923494">Dihentikan - Error tidak diketahui</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Gambar</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Gagal melakukan ping ke gateway jaringan non-default</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4536864596629708641">Konfigurasi IP</translation>
 <translation id="4548483925627140043">Sinyal tidak ditemukan</translation>
 <translation id="455835558791489930">Baterai <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Tidak ada layanan</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> dari <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas pencetakan.</translation>
 <translation id="4646949265910132906">Koneksi Wi-Fi aman</translation>
 <translation id="4652335678334611408">Simpan log sesi</translation>
+<translation id="4654549501020883054">Ubah Tiap Hari</translation>
 <translation id="4665014895760275686">Produsen</translation>
 <translation id="467510802200863975">Sandi tidak cocok</translation>
 <translation id="467715984478005772">Firewall dicurigai</translation>
@@ -318,6 +324,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7162487448488904999">Galeri</translation>
 <translation id="7172721935181587524">1 Gambar</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />. Administrator dapat mengonfigurasi perangkat dari jarak jauh.</translation>
+<translation id="7180611975245234373">Perbarui</translation>
 <translation id="7216409898977639127">Operator seluler</translation>
 <translation id="7271040990581020067">Pemindai sedang digunakan. Coba lagi nanti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8498220429738806196">Penghitung Traffic</translation>
 <translation id="8503813439785031346">Nama Pengguna</translation>
 <translation id="8503836310948963452">Tinggal beberapa menit lagi...</translation>
+<translation id="8521021929829989041">Gunakan sebagai perangkat pribadi</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operator Anda mungkin memerlukan opsi ini untuk terhubung ke jaringan. Hubungi operator untuk mengetahui detailnya.</translation>
 <translation id="8576249514688522074">Tidak diinisialisasi</translation>

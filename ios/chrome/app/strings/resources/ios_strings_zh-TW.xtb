@@ -8,6 +8,10 @@
 <translation id="1047726139967079566">把此頁加入書籤...</translation>
 <translation id="1049743911850919806">無痕模式</translation>
 <translation id="105093091697134113">下列帳戶使用的密碼在第三方資料侵害事件中遭到外洩，或是曾在詐騙網站中輸入。請立即變更這些密碼，確保帳戶安全。</translation>
+<translation id="105214722824962652">你不會因此登出 Google 帳戶。在你登入後，<ph name="BEGIN_LINK" />其他形式的活動<ph name="END_LINK" />可能會儲存至你的 Google 帳戶。你隨時可以刪除這些內容。
+
+        
+你的搜尋引擎是「<ph name="DSE_NAME" />」。如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
 <translation id="1063454504051558093">使用其他密碼...</translation>
 <translation id="1066060668811609597">管理同步功能</translation>
 <translation id="1076421457278169141">已掃描圖碼/條碼</translation>
@@ -132,6 +136,7 @@
 <translation id="2320166752086256636">隱藏鍵盤</translation>
 <translation id="2339560363438331454">同步處理和 Google 服務</translation>
 <translation id="2351097562818989364">您的翻譯設定已重設。</translation>
+<translation id="235789365079050412">Google 隱私權政策</translation>
 <translation id="2359043044084662842">翻譯</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2360196772093551345">切換為行動版網站</translation>
@@ -204,6 +209,10 @@
 <translation id="298306318844797842">新增付款方式...</translation>
 <translation id="2989805286512600854">在新分頁中開啟</translation>
 <translation id="3037605927509011580">糟糕！</translation>
+<translation id="3076846064362030967">你不會因此登出 Google 帳戶。在你登入後，<ph name="BEGIN_LINK" />其他形式的活動<ph name="END_LINK" />可能會儲存至你的 Google 帳戶。你隨時可以刪除這些內容。
+
+
+如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
 <translation id="3080525922482950719">你可以儲存頁面以便稍後閱讀或離線閱讀</translation>
 <translation id="3081338492074632642">請確認要儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
 <translation id="3112556859945124369">標示…</translation>
@@ -328,7 +337,6 @@
 <translation id="4375040482473363939">QR 圖碼搜尋</translation>
 <translation id="4378154925671717803">電話</translation>
 <translation id="4389019817280890563">輕觸即可變更語言。</translation>
-<translation id="441868831736628555">隱私權聲明</translation>
 <translation id="4454246407045105932">新增語言</translation>
 <translation id="4469418912670346607">繼續設定</translation>
 <translation id="4476574785019001431">設定</translation>
@@ -404,6 +412,7 @@
 <translation id="5140288047769711648">Chrome 會為你儲存這組密碼，因此你不必記住密碼。</translation>
 <translation id="5150492518600715772">傳送到你的裝置</translation>
 <translation id="5168414296986405587">專為 iPadOS 打造</translation>
+<translation id="5173088371991956744">同步功能需要驗證你的身分</translation>
 <translation id="5181140330217080051">下載中</translation>
 <translation id="5186185447130319458">私人</translation>
 <translation id="5188482106078495165">你的 Cookie 設定會套用到所有分頁。如要將新的設定套用到已開啟的分頁，請重新載入分頁。</translation>
@@ -586,6 +595,7 @@
 <translation id="6730682669179532099">無法匯出密碼</translation>
 <translation id="6748108480210050150">寄件者</translation>
 <translation id="6760509555861141183">返回「最近」分頁</translation>
+<translation id="6762812039470893796">取消全選</translation>
 <translation id="6780034285637185932">郵遞區號</translation>
 <translation id="6785453220513215166">正在傳送當機報告...</translation>
 <translation id="6797885426782475225">語音搜尋</translation>
@@ -714,6 +724,7 @@
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8023878949384262191">展開這個專區。</translation>
 <translation id="8027581147000338959">在新視窗中開啟</translation>
+<translation id="804225253087497565">在你登入後，<ph name="BEGIN_LINK" />搜尋記錄<ph name="END_LINK" />和<ph name="BEGIN_LINK" />其他形式的活動<ph name="END_LINK" />可能會儲存至你的 Google 帳戶。你隨時可以刪除這些內容。</translation>
 <translation id="804427445359061970">這裡會顯示你在其他裝置上查看的分頁</translation>
 <translation id="8059533439631660104">收合這個專區。</translation>
 <translation id="8065292699993359127">在 Chrome 無痕模式中開啟網址</translation>

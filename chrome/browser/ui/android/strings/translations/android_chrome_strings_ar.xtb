@@ -318,6 +318,7 @@
 <translation id="3029704984691124060">عبارات المرور غير متطابقة</translation>
 <translation id="3031225630520268969">‏واجهة المستخدم الخاصة بالموافقة على استخدام ميزة "البحث الصوتي" في "مساعد Google"</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />الحصول على مساعدة<ph name="END_LINK" /></translation>
+<translation id="3037517125981011456">‏عرض رسائل مطالبة تسجيل الدخول إلى Chrome</translation>
 <translation id="3046945242843292318">الوصول إلى هذا الموقع الإلكتروني بسرعة أكبر في المرة القادمة</translation>
 <translation id="305593374596241526">‏تحديد الموقع الجغرافي متوقف، يمكنك تفعيله من <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{إشارة مرجعية <ph name="BOOKMARKS_COUNT_ONE" />}zero{<ph name="BOOKMARKS_COUNT_MANY" /> إشارات مرجعية}two{إشارتان مرجعيتان (<ph name="BOOKMARKS_COUNT_MANY" />)}few{<ph name="BOOKMARKS_COUNT_MANY" /> إشارات مرجعية}many{<ph name="BOOKMARKS_COUNT_MANY" /> إشارةً مرجعيةً}other{<ph name="BOOKMARKS_COUNT_MANY" /> إشارة مرجعية}}</translation>
@@ -449,7 +450,6 @@
 <translation id="3928666092801078803">جمع البيانات التابعة لي</translation>
 <translation id="3934366560681368531">"</translation>
 <translation id="393697183122708255">لا يتوفر بحث صوتي تم تمكينه</translation>
-<translation id="3943557322767080599">‏عرض تعليمات تسجيل الدخول إلى متصفِّح Chrome عند تسجيل الدخول إلى حسابك في Google</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{‏سيحمِّل Chrome الصفحة عندما تصبح جاهزة}zero{‏لن يحمِّل Chrome أي صفحات عندما تصبح جاهزة}two{‏سيحمِّل Chrome الصفحتين عندما تصبح جاهزتين}few{‏سيحمِّل Chrome الصفحات عندما تصبح جاهزة}many{‏سيحمِّل Chrome الصفحات عندما تصبح جاهزة}other{‏سيحمِّل Chrome الصفحات عندما تصبح جاهزة}}</translation>
 <translation id="3962957115499249330">‏سيصلك إشعار يُعلمك ببدء عمليّة التنزيل على شبكة Wi-Fi.</translation>
 <translation id="3963007978381181125">‏لا يتضمّن التشفير باستخدام عبارة المرور طرق الدفع والعناوين من Google Pay. ولن يتمكّن أي شخص من الاطّلاع على بياناتك المشفرة إلا من يعرف عبارة مرورك. لا تُرسَل عبارة المرور إلى شركة Google ولا تُخزّن لديها. في حال نسيان عبارة المرور أو الرغبة في تغيير هذا الإعداد، ستحتاج إلى إعادة ضبط المزامنة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -598,6 +598,7 @@
 <translation id="4881695831933465202">فتح</translation>
 <translation id="488187801263602086">إعادة تسمية الملف</translation>
 <translation id="4885273946141277891">‏عدد نسخ Chrome غير متوافق.</translation>
+<translation id="4905269543817054577">لا يتم حفظ السجلّ في "وضع التصفُّح المتخفي"</translation>
 <translation id="4908869848243824489">‏اقتراحات من Google</translation>
 <translation id="4910889077668685004">تطبيقات الدفع</translation>
 <translation id="4913161338056004800">إعادة ضبط الإحصاءات</translation>
@@ -651,6 +652,7 @@
 <translation id="5222676887888702881">تسجيل الخروج</translation>
 <translation id="5227554086496586518">انقر للاطّلاع على نتائج البحث.</translation>
 <translation id="5233638681132016545">علامة تبويب جديدة</translation>
+<translation id="5246093389635966745">تعديل الاختصار على شريط الأدوات</translation>
 <translation id="5250483651202458397">انقر لإغلاق لقطة الشاشة.</translation>
 <translation id="5262378156578470238">سيصلك إشعار يُعلمك ببدء عمليّة التنزيل في <ph name="DATE" />.</translation>
 <translation id="526421993248218238">يتعذَّر تحميل هذه الصفحة</translation>
@@ -889,7 +891,6 @@
 <translation id="6657585470893396449">كلمة المرور</translation>
 <translation id="6659594942844771486">علامة تبويب</translation>
 <translation id="666731172850799929">الفتح في <ph name="APP_NAME" /></translation>
-<translation id="666981079809192359">‏إشعار خصوصية Chrome</translation>
 <translation id="6671495933530132209">نسخ الصورة</translation>
 <translation id="6674571176963658787">لبدء المزامنة، يجب إدخال عبارة المرور.</translation>
 <translation id="6676840375528380067">‏هل تريد محو بيانات Chrome من هذا الجهاز؟</translation>
@@ -1034,6 +1035,7 @@
 <translation id="7630202231528827509">‏عنوان URL خاص بمقدِّم الخدمة</translation>
 <translation id="7638584964844754484">عبارة مرور غير صحيحة</translation>
 <translation id="7641339528570811325">محو بيانات التصفّح...</translation>
+<translation id="764170292089748542">‏لا يحفظ Chrome سجلّ التصفُّح عند اختيار التصفُّح بخصوصية تامّة. وسيظلّ بإمكانك استخدام الإشارات المرجعية للوصول إلى مواقعك الإلكترونية المفضَّلة.</translation>
 <translation id="7646772052135772216">مزامنة كلمات المرور لا تعمل</translation>
 <translation id="7655900163790317559">جارٍ تفعيل البلوتوث…</translation>
 <translation id="7658239707568436148">إلغاء</translation>

@@ -27,7 +27,6 @@
 <translation id="1597911401261118146">Щоб перевірити, чи відомі порушення безпеки даних або інші проблеми не заторкнули ваші паролі, <ph name="BEGIN_LINK" />увійдіть у Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Щоб зробити Chrome безпечнішим, ми вимкнули наведене нижче розширення, установлене не із сайту <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> і, можливо, додане без вашого відома.</translation>
 <translation id="1628000112320670027">Довідка щодо Chrome</translation>
-<translation id="1666409074978194368">Майже готово. Перезапустіть Google Chrome, щоб завершити оновлення. Вікна в режимі анонімного перегляду не відновляться й не відкриються знову.</translation>
 <translation id="1674870198290878346">Відкрити посилання в аноні&amp;мному вікні Chrome</translation>
 <translation id="1682634494516646069">Google Chrome не може читати та записувати у свій каталог даних: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome – це веб-переглядач, який запускає веб-сторінки та програми з блискавичною швидкістю. Він швидкий, надійний і зручний у користуванні. Вбудований у Google Chrome захист від шкідливих програм і фішингу гарантує ще більшу безпеку під час перегляду веб-сторінок.</translation>
@@ -87,6 +86,7 @@
 <translation id="2847461019998147611">Вибрати цю мову для Google Chrome</translation>
 <translation id="2857540653560290388">Запускається Chrome…</translation>
 <translation id="2857972467023607093">Профіль Chrome із цим обліковим записом уже існує</translation>
+<translation id="2861074815332034794">Оновлення Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Ви ввійшли в Chrome.</translation>
 <translation id="2885378588091291677">Диспетчер завдань</translation>
 <translation id="2888126860611144412">Про Chrome</translation>
@@ -174,10 +174,10 @@
 <translation id="5193136243808726294">Неможливо відкрити цю сторінку в ОС Google Chrome.</translation>
 <translation id="521447420733633466">Якщо ви користуєтеся пристроєм спільно з друзями та рідними, вони зможуть переглядати веб-сторінки окремо та налаштовувати Chrome на свій смак.</translation>
 <translation id="5251420635869119124">Гості можуть анонімно користуватися Chrome.</translation>
+<translation id="5251679006894510177">Майже готово. Перезапустіть Chrome, щоб завершити оновлення. Вікна в режимі анонімного перегляду не відновляться й не відкриються знову.</translation>
 <translation id="5386244825306882791">Розширення також змінило сторінку, яка відкривається під час запуску Chrome або пошуку в універсальному вікні пошуку.</translation>
 <translation id="5394833366792865639">Поділитися вкладкою Chrome</translation>
 <translation id="5430073640787465221">Ваш файл налаштувань пошкоджений або недійсний. Google Chrome не може відновити ваші налаштування.</translation>
-<translation id="5434383153637353914">На цій сторінці можна керувати обліковими записами Google, у які ви ввійшли. Вони будуть доступні у веб-переглядачі Chrome, додатку Google Play і таких сервісах, як Gmail, Диск та YouTube. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Перш ніж почати, переконайтеся, що у вас є актуальна резервна копія ваших даних. Під час встановлення ОС Chrome буде перезаписано всі дані на жорсткому диску.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Компанія Google не несе відповідальності за втрату даних і не гарантує, що ОС Chrome працюватиме на несертифікованих моделях. Докладніше про сертифіковані моделі можна дізнатися на сайті [TBD].<ph name="END_PARAGRAPH2" />
           <ph name="BEGIN_PARAGRAPH3" />Докладніше про встановлення ОС Chrome і видалення всіх даних на пристрої: [TBD URL]<ph name="END_PARAGRAPH3" />
@@ -211,11 +211,9 @@
 <translation id="6235018212288296708">Вхідне правило для Google Chrome дозволяє трафік mDNS.</translation>
 <translation id="6291089322031436445">Версія Chrome для розробників додатків</translation>
 <translation id="6291549208091401781">Google Chrome уже встановлено для всіх користувачів на вашому комп’ютері.</translation>
-<translation id="6338556085225130112">Оновлення Google Chrome</translation>
 <translation id="6368958679917195344">ОС Chrome стала можливою завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6418662306461808273">Перейти в наявний профіль Chrome?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Версія Google Chrome для розробників</translation>
-<translation id="6566149418543181476">Google Chrome оновлюється (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">ОС Chrome</translation>
 <translation id="664235759707825982">ОС Chrome можна встановити</translation>
 <translation id="6676384891291319759">Доступ до Інтернету</translation>
@@ -224,12 +222,14 @@
 <translation id="6750954913813541382">Щоб виправляти орфографічні помилки, Chrome надсилає в Google текст, який ви вводите у веб-переглядачі</translation>
 <translation id="677276454032249905">Усе одно вийти з Chrome?</translation>
 <translation id="683440813066116847">Вхідне правило для Google Chrome Canary дозволяє трафік mDNS.</translation>
+<translation id="6881299373831449287">Оновлення Chrome</translation>
 <translation id="6885412569789873916">Бета-версія додатків Chrome</translation>
 <translation id="6943584222992551122">Дані веб-перегляду користувача буде видалено з цього пристрою. Щоб відновити їх, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Вхідне правило для бета-версії Google Chrome дозволяє трафік mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome оновлено, проте ви не користувалися цим веб-переглядачем щонайменше 30 днів.</translation>
 <translation id="7025800014283535195">Тут можна перемикати профілі Chrome</translation>
 <translation id="7062128746136194023">Хтось із твоїх батьків вимкнув "Дозволи для сайтів, додатків і розширень" у Chrome. Додавати це <ph name="EXTENSION_TYPE_PARAMETER" /> заборонено.</translation>
+<translation id="7088681679121566888">Chrome оновлено</translation>
 <translation id="7098166902387133879">Google Chrome використовує ваш мікрофон.</translation>
 <translation id="7106741999175697885">Диспетчер завдань - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Доступне оновлення Chrome, його буде застосовано відразу після перезапуску.}=1{Доступне оновлення Chrome, його буде застосовано відразу після перезапуску. Вікно в режимі анонімного перегляду не відновиться й не відкриється знову.}one{Доступне оновлення Chrome, його буде застосовано відразу після перезапуску. # вікно в режимі анонімного перегляду не відновиться й не відкриється знову.}few{Доступне оновлення Chrome, його буде застосовано відразу після перезапуску. # вікна в режимі анонімного перегляду не відновляться й не відкриються знову.}many{Доступне оновлення Chrome, його буде застосовано відразу після перезапуску. # вікон в режимі анонімного перегляду не відновляться й не відкриються знову.}other{Доступне оновлення Chrome, його буде застосовано відразу після перезапуску. # вікна в режимі анонімного перегляду не відновиться й не відкриється знову.}}</translation>
@@ -261,7 +261,6 @@
 <translation id="7801699035218095297">Google Chrome намагається скопіювати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="7808348361785373670">Видалити з Chrome…</translation>
 <translation id="7825851276765848807">Програму не вдалося встановити через невизначену помилку. Завантажте Google Chrome ще раз.</translation>
-<translation id="7855730255114109580">У вас остання версія Google Chrome</translation>
 <translation id="7890208801193284374">Якщо вашим комп’ютером користуєтесь не лише ви, а й ваші друзі чи сім’я, вони можуть налаштувати Chrome на свій смак.</translation>
 <translation id="7896673875602241923">Хтось раніше входив у Chrome на цьому комп’ютері як <ph name="ACCOUNT_EMAIL_LAST" />. Створіть нового користувача Chrome, щоб зберігати свою інформацію окремо.</translation>
 <translation id="7930071585467473040">Google Chrome намагається скопіювати паролі.</translation>

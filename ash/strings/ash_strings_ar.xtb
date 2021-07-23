@@ -16,7 +16,6 @@
 <translation id="1056775291175587022">ما من شبكات</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">استبدِل البطارية أو أعِد شحنها.</translation>
-<translation id="1077253978657569125">نريد تحسين هذه الميزة.</translation>
 <translation id="108486256082349153">خلوي: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">مساء الخير <ph name="GIVEN_NAME" />،</translation>
 <translation id="109942774857561566">أشعر بالملل</translation>
@@ -420,6 +419,7 @@
 <translation id="4274537685965975248">‏تم تغيير اختصارات لوحة المفاتيح "Ctrl + Alt + السهم المتّجه للأسفل". لاستخدام مفتاح End، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه لليمين".</translation>
 <translation id="4279490309300973883">النسخ المطابق</translation>
 <translation id="4285498937028063278">إزالة تثبيت</translation>
+<translation id="4292904812939562398">التطبيقات المستخدمة مؤخرًا</translation>
 <translation id="429402653707266969">تبديل مكان شريط الأدوات</translation>
 <translation id="4294319844246081198">صباح الخير <ph name="GIVEN_NAME" />،</translation>
 <translation id="4296136865091727875">محو جميع الإشعارات التي يبلغ عددها <ph name="COUNT" /></translation>

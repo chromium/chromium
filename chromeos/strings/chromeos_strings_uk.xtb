@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Сканувати</translation>
 <translation id="2570743873672969996">Тестування (<ph name="TEST_NAME" />)…</translation>
 <translation id="2585245331261708204">Нові функції ОС Chrome</translation>
+<translation id="2619761439309613843">Щоденне оновлення</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">2-га фаза автентифікації EAP</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Частково активовано</translation>
 <translation id="3527036260304016759">Не надруковано – невідома помилка</translation>
 <translation id="3532980081107202182">Залишилося приблизно <ph name="MIN_REMAINING" /> хв</translation>
+<translation id="3540383942695635079">MAC-адреса</translation>
 <translation id="357889014807611375">Wi-Fi із тарифікацією трафіку</translation>
 <translation id="3595596368722241419">Акумулятор заряджено</translation>
 <translation id="360565022852130722">Мережа Wi-Fi захищена ненадійним протоколом WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Кількість повних циклів заряджання акумулятора</translation>
 <translation id="3941014780699102620">не вдалося розпізнати хост</translation>
 <translation id="3942420633017001071">Діагностика</translation>
+<translation id="3966286471246132217">Щоб отримати точніші результати, закрийте всі додатки, доки не завершиться тестування.</translation>
 <translation id="3967822245660637423">Завантажено</translation>
 <translation id="397105322502079400">Обчислення...</translation>
 <translation id="39823212440917567">Завдання друку, старіші за <ph name="NUMBER_OF_DAYS" /> дн., буде вилучено</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Вимкнено</translation>
 <translation id="4227825898293920515">Термін дії пароля закінчиться через <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Немає активних завдань друку</translation>
+<translation id="4244962993387259361">Щоб виконати перевірку пам’яті, потрібно принаймні 500 МБ вільного місця. Щоб звільнити пам’ять, перейдіть у розділ "Налаштування" &gt; "Керування пам’яттю".</translation>
 <translation id="4289540628985791613">Огляд</translation>
 <translation id="4297501883039923494">Зупинено – невідома помилка</translation>
 <translation id="4300073214558989">Зображень: <ph name="IMAGE_COUNT" /></translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не вдалося надіслати запит ping шлюзу мережі не за умовчанням</translation>
 <translation id="4511264077854731334">Портал</translation>
+<translation id="4536864596629708641">Конфігурація IP-адрес</translation>
 <translation id="4548483925627140043">сигнал не знайдено</translation>
 <translation id="455835558791489930">Акумулятор ємністю <ph name="CHARGE_VALUE" /> мА·год</translation>
 <translation id="4562494484721939086">Не працює</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Натисніть Enter, щоб скасувати завдання друку.</translation>
 <translation id="4646949265910132906">Надійне з'єднання Wi-Fi</translation>
 <translation id="4652335678334611408">Зберегти журнал сеансу</translation>
+<translation id="4654549501020883054">Змінювати щодня</translation>
 <translation id="4665014895760275686">Виробник</translation>
 <translation id="467510802200863975">Паролі не збігаються</translation>
 <translation id="467715984478005772">можливо, працює брандмауер</translation>
@@ -251,7 +257,7 @@
 <translation id="5916084858004523819">Заборонено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Файл не знайдено</translation>
-<translation id="5972388717451707488">Оновити систему</translation>
+<translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">Автоподавач документів порожній. Покладіть документи та повторіть спробу.</translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6040852767465482106">Анонімна ідентифікація</translation>
@@ -318,6 +324,7 @@
 <translation id="7162487448488904999">Галерея</translation>
 <translation id="7172721935181587524">1 зображення</translation>
 <translation id="7177485034254901881">Цим пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" />. Адміністратори можуть віддалено налаштовувати його.</translation>
+<translation id="7180611975245234373">Оновити</translation>
 <translation id="7216409898977639127">Постачальник мобільного зв’язку</translation>
 <translation id="7271040990581020067">Cканер використовується. Повторіть спробу пізніше.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@
 <translation id="8498220429738806196">Лічильники трафіку</translation>
 <translation id="8503813439785031346">Ім’я користувача</translation>
 <translation id="8503836310948963452">Залишилося кілька хвилин…</translation>
+<translation id="8521021929829989041">Використовувати як особистий пристрій</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Можливо, вам доведеться ввімкнути це налаштування, щоб підключитися до мережі. Щоб дізнатися більше, зверніться до свого оператора.</translation>
 <translation id="8576249514688522074">Не ініціалізовано</translation>
@@ -418,7 +426,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Використовується</translation>
-<translation id="9095775724867566971">Плагін віртуальної машини</translation>
+<translation id="9095775724867566971">PluginVM</translation>
 <translation id="910415269708673980">Оновити квиток для користувача <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканування сторінки <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Розблокувати</translation>

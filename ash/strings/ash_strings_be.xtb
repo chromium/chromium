@@ -16,7 +16,6 @@
 <translation id="1056775291175587022">Няма сетак</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Замяніце або зарадзіце акумулятар</translation>
-<translation id="1077253978657569125">Мы хочам унесці паляпшэнні!</translation>
 <translation id="108486256082349153">Сотавая прылада: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Добры дзень, <ph name="GIVEN_NAME" />!</translation>
 <translation id="109942774857561566">Мне надакучыла</translation>
@@ -420,6 +419,7 @@
 <translation id="4274537685965975248">Змянілася прызначэнне спалучэння клавіш Ctrl + Alt + стрэлка ўніз. Каб выканаць дзеянне клавішы End, націсніце <ph name="LAUNCHER_KEY_NAME" /> + стрэлка ўправа.</translation>
 <translation id="4279490309300973883">Адлюстраванне</translation>
 <translation id="4285498937028063278">Адмацаваць</translation>
+<translation id="4292904812939562398">Нядаўна выкарыстаныя праграмы</translation>
 <translation id="429402653707266969">Змяніць месцазнаходжанне панэлі інструментаў</translation>
 <translation id="4294319844246081198">Добрай раніцы, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Выдаліць усе апавяшчэнні (<ph name="COUNT" />)</translation>

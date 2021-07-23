@@ -27,7 +27,6 @@
 <translation id="1597911401261118146">আপনার পাসওয়ার্ড ডেটার নিরাপত্তা লঙ্ঘন এবং অন্যান্য নিরাপত্তা সংক্রান্ত সমস্যা থেকে সুরক্ষিত কিনা তা চেক করতে <ph name="BEGIN_LINK" />Chrome-এ সাইন-ইন করুন<ph name="END_LINK" />।</translation>
 <translation id="1619887657840448962">Chrome-কে আরও নিরাপদ করতে, আমরা নিচের এক্সটেনশনটি বন্ধ করেছি যা <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-এ তালিকাবদ্ধ করা হয়নি এবং হয়ত আপনাকে না জানিয়ে যোগ করা হয়েছিল৷</translation>
 <translation id="1628000112320670027">Chrome বিষয়ে সাহায্য পান</translation>
-<translation id="1666409074978194368">প্রায় আপডেট হয়ে গেছে! আপডেট সম্পূর্ণ করতে Google Chrome আবার চালু করুন। ছদ্মবেশী উইন্ডো আবার খুলবে না।</translation>
 <translation id="1674870198290878346">Chrome-এ ছদ্মবেশী উইন্ডোতে লিঙ্ক খুলুন</translation>
 <translation id="1682634494516646069">Google Chrome-এর ডেটা নির্দেশিকা পড়তে এবং লিখতে পারে না:
 
@@ -89,6 +88,7 @@
 <translation id="2847461019998147611">এই ভাষায় Google Chrome প্রদর্শন করুন</translation>
 <translation id="2857540653560290388">Chrome লঞ্চ করা হচ্ছে...</translation>
 <translation id="2857972467023607093">এই অ্যাকাউন্টের সাথে আগে থেকেই একটি Chrome প্রোফাইল রয়েছে</translation>
+<translation id="2861074815332034794">Chrome আপডেট হচ্ছে (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">আপনি Chrome এ প্রবেশ করেছেন৷</translation>
 <translation id="2885378588091291677">কার্য পরিচালক</translation>
 <translation id="2888126860611144412">Chrome সম্বন্ধে</translation>
@@ -178,10 +178,10 @@
 <translation id="5193136243808726294">Google Chrome OS এই পৃষ্ঠা খুলতে পারছে না।</translation>
 <translation id="521447420733633466">যদি আপনি কোনও ডিভাইস শেয়ার করেন, তাহলে বন্ধু ও পরিবারের লোকজন পৃথকভাবে ব্রাউজ করতে পারবেন এবং তাদের পছন্দ অনুযায়ী Chrome সেট-আপ করতে পারবেন</translation>
 <translation id="5251420635869119124">অতিথিগণ কোনো কিছুর জন্য অভাব বোধ না করেই Chrome ব্যবহার করতে পারবেন৷</translation>
+<translation id="5251679006894510177">প্রায় আপডেট হয়ে গেছে! আপডেট প্রসেস সম্পূর্ণ করতে, Chrome আবার চালু করুন। বন্ধ করা একই ছদ্মবেশী উইন্ডো আবার খোলা যায় না।</translation>
 <translation id="5386244825306882791">আপনি Chrome শুরু করলে বা Omnibox থেকে সার্চ করলে কোন পৃষ্ঠাটি দেখানো হবে তাও এটি নিয়ন্ত্রণ করে।</translation>
 <translation id="5394833366792865639">একটি Chrome ট্যাব শেয়ার করুন</translation>
 <translation id="5430073640787465221">আপনার পছন্দের ফাইল ক্ষতিকর অথবা ভুল৷\n\nGoogle Chrome আপনার সেটিংস পুনরুদ্ধার করতে পারছে না৷</translation>
-<translation id="5434383153637353914">এই পৃষ্ঠা থেকে আপনি সাইন-করা Google অ্যাকাউন্ট ম্যানেজ করতে পারবেন। এইসব অ্যাকাউন্ট Chrome ব্রাউজার ও Play Store অ্যাপ সহ Gmail, Drive ও YouTube-এর মতো পরিষেবায় উপলভ্য। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />শুরু করার আগে দেখে নিন, আপনার ডেটা সংক্রান্ত ব্যাক-আপ আপ-টু-ডেট করা আছে কিনা। Chrome OS ইনস্টল করলে আপনার হার্ড ড্রাইভে থাকা সব ডেটা মুছে যাবে।<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Google কোনও ডেটা নষ্টের জন্য দায়ী হবে না এবং সার্টিফায়েড নয় এমন কোনও মডেলে কাজ Chrome OS কাজ করবে, এই গ্যারেন্টিও দিচ্ছে না। সার্টিফায়েড মডেল সম্বন্ধে আরও জানতে [TBD] দেখুন।<ph name="END_PARAGRAPH2" />
           <ph name="BEGIN_PARAGRAPH3" />Chrome OS ইনস্টল করা ও ডেটা মুছে দেওয়া সম্বন্ধে আরও জানুন: [TBD URL]<ph name="END_PARAGRAPH3" />
@@ -215,11 +215,9 @@
 <translation id="6235018212288296708">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome এর জন্য ইনবাউন্ড নিয়ম।</translation>
 <translation id="6291089322031436445">Chrome ডেভেলপার অ্যাপ</translation>
 <translation id="6291549208091401781">Google Chrome ইতোমধ্যে আপনার কম্পিউটারের সকল ব্যবহারকারীর জন্য ইনস্টল করা হয়েছে।</translation>
-<translation id="6338556085225130112">Google Chrome আপডেট করা হচ্ছে</translation>
 <translation id="6368958679917195344">Chrome OS সম্ভবত অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" /> দিয়ে তৈরি৷</translation>
 <translation id="6418662306461808273">বর্তমান Chrome প্রোফাইলে পাল্টাতে চান?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
-<translation id="6566149418543181476">Google Chrome আপডেট হচ্ছে (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS সিস্টেম</translation>
 <translation id="664235759707825982">Chrome OS ইনস্টলের জন্য প্রস্তুত</translation>
 <translation id="6676384891291319759">ইন্টারনেটটি অ্যাক্সেস করুন</translation>
@@ -228,12 +226,14 @@
 <translation id="6750954913813541382">বানান ভুল ঠিক করতে, আপনি ব্রাউজারে যে টেক্সট লেখেন Chrome সেটি Google-এ পাঠায়</translation>
 <translation id="677276454032249905">তা স্বত্তেও Chrome বন্ধ করতে চান?</translation>
 <translation id="683440813066116847">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome Canary এর জন্য ইনবাউন্ড নিয়ম।</translation>
+<translation id="6881299373831449287">Chrome আপডেট হচ্ছে</translation>
 <translation id="6885412569789873916">Chrome বিটা অ্যাপ</translation>
 <translation id="6943584222992551122">ডিভাইসটি থেকে এই ব্যক্তির ব্রাউজিং ডেটা মুছে ফেলা হবে। ডেটা ফিরিয়ে আনতে Chrome-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
 <translation id="6967962315388095737">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome বিটার জন্য ইনবাউন্ড নিয়ম।</translation>
 <translation id="6989339256997917931">Google Chrome আপডেট হয়েছে তবে আপনি এটি কমপক্ষে 30 দিন যাবত ব্যবহার করেন নি৷</translation>
 <translation id="7025800014283535195">আপনি এখানে একটি Chrome প্রোফাইল থেকে আরেকটিতে পাল্টাতে পারেন</translation>
 <translation id="7062128746136194023">তোমার অভিভাবক Chrome-এ "সাইট, অ্যাপ ও এক্সটেনশনের অনুমতি" বন্ধ করে দিয়েছেন। এই <ph name="EXTENSION_TYPE_PARAMETER" /> যোগ করার অনুমতি নেই।</translation>
+<translation id="7088681679121566888">Chrome আপ-টু-ডেট আছে</translation>
 <translation id="7098166902387133879">Google Chrome আপনার মাইক্রোফোন ব্যবহার করছে৷</translation>
 <translation id="7106741999175697885">কার্য পরিচালক - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome-এর একটি নতুন আপডেট উপলভ্য আছে এবং আপনি আবার চালু করলেই সেটি প্রয়োগ করা হবে।}=1{Chrome-এর একটি নতুন আপডেট উপলভ্য আছে এবং আপনি আবার চালু করলেই সেটি প্রয়োগ করা হবে। আপনার ছদ্মবেশী উইন্ডো আবার খুলবে না।}one{Chrome-এর একটি নতুন আপডেট উপলভ্য আছে এবং আপনি আবার চালু করলেই সেটি প্রয়োগ করা হবে। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}other{Chrome-এর একটি নতুন আপডেট উপলভ্য আছে এবং আপনি আবার চালু করলেই সেটি প্রয়োগ করা হবে। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}}</translation>
@@ -265,7 +265,6 @@
 <translation id="7801699035218095297">Google Chrome পাসওয়ার্ড কপি করার চেষ্টা করছে। এর অনুমতি দিতে আপনার Windows পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="7808348361785373670">Chrome থেকে সরান...</translation>
 <translation id="7825851276765848807">অনির্দিষ্ট ত্রুটির জন্য ইনস্টল করা যায়নি৷ অনুগ্রহ করে আবার Google Chrome ডাউনলোড করুন৷</translation>
-<translation id="7855730255114109580">Google Chrome আপ টু ডেট আছে</translation>
 <translation id="7890208801193284374">যদি আপনি একটি কম্পিউটার শেয়ার করেন, তাহলে বন্ধু ও পরিবারের লোকজন পৃথকভাবে ব্রাউজ করতে পারবেন এবং তাদের ইচ্ছা অনুযায়ী Chrome-এর সেটআপ করতে পারবেন৷</translation>
 <translation id="7896673875602241923">আগে কোনো একজন এই কম্পিউটারে <ph name="ACCOUNT_EMAIL_LAST" /> হিসাবে Chrome-এ সাইন-ইন করেছেন। আপনার তথ্য আলাদা রাখার জন্য অনুগ্রহ করে একটি নতুন Chrome ব্যবহারকারী তৈরি করুন।</translation>
 <translation id="7930071585467473040">Google Chrome পাসওয়ার্ড কপি করার চেষ্টা করছে।</translation>

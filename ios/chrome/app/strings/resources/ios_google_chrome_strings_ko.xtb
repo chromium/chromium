@@ -19,6 +19,8 @@
 <translation id="2342919707875585281">Chrome은 사용자가 허용한 사이트와 위치 정보를 공유합니다.</translation>
 <translation id="2347208864470321755">이 기능을 사용하면 Chrome에서 Google 번역을 사용하여 외국어로 작성된 페이지를 번역합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Chrome을 기본 브라우저로 설정하세요</translation>
+<translation id="2427791862912929107">Chrome에는 사용자가 간편하게 인터넷 데이터를 관리하고 웹페이지 로드 시간을 제어할 수 있도록 돕는 기능이 있습니다.
+<ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2561231791489583059">Chrome을 기본 브라우저로 사용하여 위험한 사이트를 차단하고 비밀번호를 안전하게 보호합니다.</translation>
 <translation id="2574249610672786438">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 모든 기기에서 로그인하세요.</translation>
 <translation id="2576431527583832481">한층 개선된 Chrome의 최신 버전이 출시되었습니다.</translation>
@@ -61,11 +63,10 @@
 <translation id="5716154293141027663">다른 앱에서 링크를 탭할 때마다 Chrome을 엽니다.</translation>
 <translation id="5854621639439811139">Chrome 도움말. 뒤로, 앞으로, 검색과 같은 일부 버튼이 화면 하단으로 이동했습니다.</translation>
 <translation id="5876773482963502140">위치 정보 사용을 허용하면 Chrome이 권한이 부여된 사이트에 위치 정보를 전송합니다. 근처 상점 또는 뉴스와 같이 표시할 지역 정보가 있는 경우 사이트에서 위치를 요청할 수 있습니다.</translation>
-<translation id="6036420186814142909">Chrome에는 사용자가 간편하게 인터넷 데이터 및 웹페이지 로드 시간을 관리할 수 있는 기능이 있습니다.
-<ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6063091872902370735">Chrome 로그인 허용</translation>
 <translation id="6181930887571472871">Chrome으로 전환</translation>
 <translation id="6238746320622508509">Chrome에서 시크릿 탭을 잠그도록 허용합니다.</translation>
+<translation id="6427126399757991875">조직에서 Chrome을 설정하는 중...</translation>
 <translation id="6600954340915313787">Chrome에 복사됨</translation>
 <translation id="6634107063912726160">로그아웃하면 Chrome에서 더 이상 새로운 데이터를 내 Google 계정에 동기화하지 않습니다. 이전에 동기화된 데이터는 계정에 그대로 유지됩니다.</translation>
 <translation id="6648150602980899529"><ph name="DOMAIN" />에서 관리하는 계정으로 로그인합니다. 계정 관리자가 내 Chrome 데이터를 관리하게 되며 데이터는 이 계정에 영구적으로 연결됩니다. Chrome에서 로그아웃하면 데이터가 기기에서 삭제되지만 Google 계정에는 그대로 유지됩니다.</translation>

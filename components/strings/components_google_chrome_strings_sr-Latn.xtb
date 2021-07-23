@@ -3,14 +3,13 @@
 <translationbundle lang="sr-Latn">
 <translation id="1016765312371154165">Chrome se nije ispravno zatvorio.</translation>
 <translation id="130631256467250065">Promene će stupiti na snagu kada sledeći put ponovo pokrenete uređaj.</translation>
+<translation id="1635457557763038537">Promene će stupiti na snagu kada sledeći put ponovo pokrenete Chrome.</translation>
+<translation id="2447485272386224171">Chrome omogućavaju <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> projekat otvorenog koda i drugi <ph name="BEGIN_LINK_OSS" />softver otvorenog koda<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Chrome logotip</translation>
-<translation id="2874156562296220396"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> projekat softvera otvorenog koda i drugi tipovi <ph name="BEGIN_LINK_OSS" />softvera otvorenog koda<ph name="END_LINK_OSS" /> su omogućili nastanak programa Google Chrome.</translation>
-<translation id="3140883423282498090">Promene će stupiti na snagu kada sledeći put ponovo pokrenete Google Chrome.</translation>
 <translation id="3444832043240812445">Ova stranica prikazuje informacije o nedavnim otkazivanjima samo ukoliko <ph name="BEGIN_LINK" />omogućite izveštavanje o otkazivanjima<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Dozvolite Chrome-u da pristupa mreži u zaštitnom zidu ili antivirusnim
           podešavanjima.</translation>
 <translation id="4010643444566880169">Chrome OS nije dovršio početno podešavanje.</translation>
-<translation id="4853578032408195113">Gledate bezbednu Google Chrome stranicu.</translation>
 <translation id="5005121315113832363">Chrome blokira ovu stranicu</translation>
 <translation id="6011049234605203654">Idite u
           Chrome meni &gt;
@@ -38,5 +37,6 @@
           &gt;
           LAN Settings (Podešavanja lokalne mreže)
           i opozovite izbor opcije „Use a proxy server for your LAN“ (Koristi proksi server za lokalnu mrežu).</translation>
+<translation id="7230956101631259640">Pregledate bezbednu Chrome stranicu</translation>
 <translation id="8187289872471304532">Idite na Applications (Aplikacije) &gt; System Preferences (Podešavanja sistema) &gt; Network (Mreža) &gt; Advanced (Više opcija) &gt; Proxies (Proksiji) i opozovite izbor svih proksija koji su izabrani.</translation>
 </translationbundle>

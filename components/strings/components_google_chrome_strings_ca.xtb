@@ -3,14 +3,13 @@
 <translationbundle lang="ca">
 <translation id="1016765312371154165">Chrome no s'ha tancat correctament.</translation>
 <translation id="130631256467250065">Els canvis es faran efectius la propera vegada que reinicieu el dispositiu.</translation>
+<translation id="1635457557763038537">Els canvis s'aplicaran la propera vegada que reiniciïs Chrome.</translation>
+<translation id="2447485272386224171">Chrome és possible gràcies al projecte de codi obert <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> i a altres <ph name="BEGIN_LINK_OSS" />programes de codi obert<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logotip de Chrome</translation>
-<translation id="2874156562296220396">Google Chrome ha estat possible gràcies al projecte de codi obert <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> i altres <ph name="BEGIN_LINK_OSS" />programes de codi obert<ph name="END_LINK_OSS" />.</translation>
-<translation id="3140883423282498090">Els canvis es faran efectius la propera vegada que reinicieu Google Chrome.</translation>
 <translation id="3444832043240812445">Aquesta pàgina només mostrarà informació sobre els bloqueigs recents si <ph name="BEGIN_LINK" />activeu la creació d'informes de bloqueig<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Configureu el tallafoc o l'antivirus per permetre que Chrome accedeixi
           a la xarxa.</translation>
 <translation id="4010643444566880169">Chrome OS no ha completat la configuració inicial.</translation>
-<translation id="4853578032408195113">Estàs consultant una pàgina segura de Google Chrome</translation>
 <translation id="5005121315113832363">Chrome ha bloquejat aquesta pàgina</translation>
 <translation id="6011049234605203654">Aneu al
           menú de Chrome &gt;
@@ -38,6 +37,7 @@
           &gt;
           Configuració de LAN
           i desmarqueu Utilitza un servidor intermediari per a la LAN.</translation>
+<translation id="7230956101631259640">Estàs consultant una pàgina segura de Chrome</translation>
 <translation id="8187289872471304532">Aneu a
           Aplicacions &gt; Preferències del sistema &gt; Xarxa &gt; Configuració avançada &gt; Servidors intermediaris
           i desmarqueu tots els servidors intermediaris que s'hagin seleccionat.</translation>

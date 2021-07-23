@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">اسکین کریں</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ٹیسٹ چل رہا ہے...</translation>
 <translation id="2585245331261708204">‏Chrome OS میں نیا کیا ہے</translation>
+<translation id="2619761439309613843">روزانہ ریفریش کریں</translation>
 <translation id="2620436844016719705">سسٹم</translation>
 <translation id="2740531572673183784">ٹھیک ہے</translation>
 <translation id="2751739896257479635">‏EAP مرحلہ 2 توثیق</translation>
@@ -132,6 +133,7 @@
 <translation id="387301095347517405">آپ کی بیٹری کے مکمل طور پر چارج ہونے کی تعداد</translation>
 <translation id="3941014780699102620">میزبان کو حل کرنے میں ناکام</translation>
 <translation id="3942420633017001071">تشخیصات</translation>
+<translation id="3966286471246132217">مزید درست نتائج کیلئے، ٹیسٹ مکمل ہونے تک تمام ایپس کو بند کریں۔</translation>
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
 <translation id="397105322502079400">حساب لگایا جا رہا ہے…</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
@@ -144,6 +146,7 @@
 <translation id="4176463684765177261">غیر فعال</translation>
 <translation id="4227825898293920515">پاس ورڈ کی میعاد <ph name="TIME" /> میں ختم ہونے والی ہے</translation>
 <translation id="4238516577297848345">کوئی پرنٹ جاب پیشرفت میں نہیں</translation>
+<translation id="4244962993387259361">‏میموری ٹیسٹ چلانے کیلئے آپ کے پاس کم از کم MB‏ 500 خالی ہونا ضروری ہے۔ اسپیس خالی کرنے کیلئے ترتیبات &gt; اسٹوریج مینیجمنٹ پر جائیں۔</translation>
 <translation id="4289540628985791613">عمومی جائزہ</translation>
 <translation id="4297501883039923494">رک گیا - نامعلوم خرابی</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> تصاویر</translation>
@@ -317,6 +320,7 @@
 <translation id="7162487448488904999">گیلری</translation>
 <translation id="7172721935181587524">1 تصویر</translation>
 <translation id="7177485034254901881">یہ <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے۔ منتظمین دور سے آلے کو کنفیگر کر سکتے ہیں۔</translation>
+<translation id="7180611975245234373">ریفریش کریں</translation>
 <translation id="7216409898977639127">سیلولر فراہم کنندہ</translation>
 <translation id="7271040990581020067">اسکینر فی الحال زیر استعمال ہے۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

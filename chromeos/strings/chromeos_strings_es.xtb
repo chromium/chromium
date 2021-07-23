@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Escanear</translation>
 <translation id="2570743873672969996">Ejecutando prueba <ph name="TEST_NAME" />...</translation>
 <translation id="2585245331261708204">Novedades de Chrome OS</translation>
+<translation id="2619761439309613843">Actualiz. diaria</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 EAP</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Activación parcial</translation>
 <translation id="3527036260304016759">No se ha podido imprimir - Error desconocido</translation>
 <translation id="3532980081107202182">Quedan unos <ph name="MIN_REMAINING" /> minutos</translation>
+<translation id="3540383942695635079">Dirección MAC</translation>
 <translation id="357889014807611375">Wi‑Fi de uso medido</translation>
 <translation id="3595596368722241419">Batería al máximo</translation>
 <translation id="360565022852130722">La red Wi-Fi está protegida con un protocolo poco seguro WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">El número de veces que la batería ha tenido un ciclo de carga completo</translation>
 <translation id="3941014780699102620">No se ha podido resolver el host</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
+<translation id="3966286471246132217">Para obtener resultados más precisos, cierra todas las aplicaciones hasta que se haya completado la prueba.</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="39823212440917567">Los trabajos de impresión con más de <ph name="NUMBER_OF_DAYS" /> días de antigüedad se eliminarán</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Inhabilitado</translation>
 <translation id="4227825898293920515">La contraseña caducará dentro de <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hay ningún trabajo de impresión en curso</translation>
+<translation id="4244962993387259361">Necesitas al menos 500 MB de espacio libre para ejecutar una prueba de memoria. Para liberar espacio, ve a Configuración &gt; Gestión del almacenamiento.</translation>
 <translation id="4289540628985791613">Vista general</translation>
 <translation id="4297501883039923494">Detenido: error desconocido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imágenes</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Se ha producido un error al hacer ping en la puerta de enlace de red no predeterminada</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4536864596629708641">Configuración de IP</translation>
 <translation id="4548483925627140043">Señal no encontrada</translation>
 <translation id="455835558791489930">Batería de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Sin servicio</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Pulsa Intro para cancelar el trabajo de impresión.</translation>
 <translation id="4646949265910132906">Conexión Wi‑Fi segura</translation>
 <translation id="4652335678334611408">Guardar registro de la sesión</translation>
+<translation id="4654549501020883054">Cambiar a diario</translation>
 <translation id="4665014895760275686">Fabricante</translation>
 <translation id="467510802200863975">Las contraseñas no coinciden</translation>
 <translation id="467715984478005772">posible cortafuegos</translation>
@@ -317,6 +323,7 @@
 <translation id="7162487448488904999">Galería</translation>
 <translation id="7172721935181587524">1 imagen</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> gestiona este <ph name="DEVICE_TYPE" />. Los administradores pueden configurar el dispositivo de forma remota.</translation>
+<translation id="7180611975245234373">Actualizar</translation>
 <translation id="7216409898977639127">Proveedor de servicios móviles</translation>
 <translation id="7271040990581020067">El escáner se está usando en este momento. Vuelve a intentarlo más tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -384,6 +391,7 @@
 <translation id="8498220429738806196">Contadores de tráfico</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="8503836310948963452">Solo unos minutos más...</translation>
+<translation id="8521021929829989041">Usar como dispositivo personal</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Es posible que tu operador requiera esta opción para conectarte a su red. Ponte en contacto con tu operador para obtener más información al respecto.</translation>
 <translation id="8576249514688522074">No inicializado</translation>

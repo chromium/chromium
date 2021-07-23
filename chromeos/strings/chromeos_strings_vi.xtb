@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">ĐÃ XẾP VÀO HÀNG ĐỢI</translation>
 <translation id="2161394479394250669">Hủy lệnh in</translation>
+<translation id="2209788852729124853">Đặt lại Bộ đếm lưu lượng truy cập</translation>
 <translation id="2217935453350629363">Tốc độ hiện tại</translation>
 <translation id="2224337661447660594">Không có Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -77,6 +78,7 @@
 <translation id="2517472476991765520">Quét</translation>
 <translation id="2570743873672969996">Đang chạy kiểm tra <ph name="TEST_NAME" />...</translation>
 <translation id="2585245331261708204">Chrome OS có gì mới</translation>
+<translation id="2619761439309613843">Làm mới hàng ngày</translation>
 <translation id="2620436844016719705">Hệ thống</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">Xác thực EAP giai đoạn 2</translation>
@@ -120,6 +122,7 @@
 <translation id="3595596368722241419">Pin đầy</translation>
 <translation id="360565022852130722">Mạng Wi-Fi được bảo mật bằng giao thức yếu WEP 802.1x</translation>
 <translation id="3689839747745352263">Kiểm tra <ph name="TEST_NAME" /></translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Quét lại trang}=1{Quét lại trang {PAGE_NUMBER}}other{Quét lại trang {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> bài đánh giá)</translation>
 <translation id="3748026146096797577">Chưa được kết nối</translation>
 <translation id="3749289110408117711">Tên tệp</translation>
@@ -130,6 +133,7 @@
 <translation id="387301095347517405">Số lần pin của bạn được sạc đầy</translation>
 <translation id="3941014780699102620">Không phân giải được máy chủ</translation>
 <translation id="3942420633017001071">Chẩn đoán</translation>
+<translation id="3966286471246132217">Để có kết quả chính xác hơn, hãy đóng tất cả các ứng dụng cho đến khi quá trình kiểm tra hoàn tất.</translation>
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
 <translation id="397105322502079400">Đang tính...</translation>
 <translation id="39823212440917567">Các lệnh in quá <ph name="NUMBER_OF_DAYS" /> ngày sẽ bị xóa</translation>
@@ -142,6 +146,7 @@
 <translation id="4176463684765177261">Đã tắt</translation>
 <translation id="4227825898293920515">Mật khẩu sẽ hết hạn sau <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Không có lệnh in nào đang xử lý</translation>
+<translation id="4244962993387259361">Bạn cần ít nhất 500 MB trống để chạy tính năng kiểm tra Bộ nhớ. Để giải phóng dung lượng, hãy chuyển đến phần Cài đặt &gt; Trình quản lý bộ nhớ.</translation>
 <translation id="4289540628985791613">Tổng quan</translation>
 <translation id="4297501883039923494">Đã dừng – Lỗi không xác định</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> hình ảnh</translation>
@@ -151,6 +156,7 @@
 <translation id="4425149324548788773">Drive của tôi</translation>
 <translation id="4429881212383817840">Vé Kerberos sẽ sớm hết hạn</translation>
 <translation id="4431821876790500265">Xem báo cáo</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Xóa trang}=1{Xóa trang {PAGE_NUMBER}}other{Xóa trang {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Mật khẩu cũ</translation>
 <translation id="4453205916657964690">Mặt nạ mạng con</translation>
 <translation id="4454245904991689773">Lưu bản quét vào</translation>
@@ -248,6 +254,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5916084858004523819">Bị cấm</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tệp của bạn đã được quét thành công và lưu vào <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Các tệp của bạn đã được quét thành công và lưu vào <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Không tìm thấy tệp</translation>
+<translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">Khay nạp tài liệu của máy quét đang trống. Hãy nạp tài liệu rồi thử lại.</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6040852767465482106">Danh tính ẩn danh</translation>
@@ -285,6 +292,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6527081081771465939">Giao thức bảo mật Wi-Fi không xác định</translation>
 <translation id="65587193855025101">Mặt phẳng</translation>
 <translation id="6564646048574748301">Không thành công – Không thể kết nối với máy in</translation>
+<translation id="6574762126505704998">Toàn bộ ảnh</translation>
 <translation id="6603230386432466813">Bạn đang gặp sự cố khi kết nối?</translation>
 <translation id="6618744767048954150">Đang chạy</translation>
 <translation id="6620487321149975369">Lệnh in sẽ xuất hiện trong lịch sử in trừ phi bạn tự xóa</translation>
@@ -313,6 +321,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7162487448488904999">Thư viện</translation>
 <translation id="7172721935181587524">1 hình ảnh</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý. Quản trị viên có thể định cấu hình từ xa thiết bị này.</translation>
+<translation id="7180611975245234373">Làm mới</translation>
 <translation id="7216409898977639127">Nhà cung cấp dịch vụ di động</translation>
 <translation id="7271040990581020067">Máy quét đang được sử dụng. Hãy thử lại sau.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -333,6 +342,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">Còn <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Tìm hiểu thêm trong Trung tâm trợ giúp</translation>
+<translation id="763165478673169849">Lần đặt lại cuối</translation>
 <translation id="7648838807254605802">Yêu cầu HTTPS có độ trễ cao</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7690294790491645610">Xác nhận mật khẩu mới</translation>
@@ -354,6 +364,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8075838845814659848">Mức pin còn lại</translation>
 <translation id="808894953321890993">Đổi mật khẩu</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
+<translation id="8132480444149501833">Yêu cầu Bộ đếm lưu lượng truy cập</translation>
 <translation id="8206859287963243715">Di động</translation>
 <translation id="8208861521865154048">Đặc quyền</translation>
 <translation id="8214184102975786227">Quét nhiều trang thành một tệp PDF</translation>
@@ -375,8 +386,10 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8475690821716466388">Mạng Wi-Fi được bảo mật bằng giao thức yếu WEP PSK</translation>
 <translation id="8477551185774834963">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đôi chút</translation>
 <translation id="8483248364096924578">Địa chỉ IP</translation>
+<translation id="8498220429738806196">Bộ đếm lưu lượng truy cập</translation>
 <translation id="8503813439785031346">Tên người dùng</translation>
 <translation id="8503836310948963452">Còn một vài phút nữa thôi…</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Nhà mạng của bạn có thể yêu cầu bạn bật tùy chọn này để kết nối với mạng của họ. Hãy liên hệ với nhà mạng để biết thông tin chi tiết.</translation>
 <translation id="8576249514688522074">Chưa khởi chạy</translation>
 <translation id="8620617069779373398">Trạng thái chuyển vùng</translation>
@@ -393,6 +406,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Hình nền</translation>
 <translation id="8845001906332463065">Nhận trợ giúp</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Đã kiểm tra thành công</translation>
 <translation id="8898840733695078011">Cường độ tín hiệu</translation>
 <translation id="8910721771319628100">Mạng mặc định vượt ngưỡng độ trễ</translation>
@@ -408,6 +422,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Mức sử dụng hiện tại</translation>
+<translation id="9095775724867566971">PluginVm</translation>
 <translation id="910415269708673980">Làm mới phiếu cho <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Đang quét trang <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Mở khóa</translation>

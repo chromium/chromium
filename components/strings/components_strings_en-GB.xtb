@@ -213,7 +213,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1662550410081243962">Save and fill payment methods</translation>
 <translation id="1663943134801823270">Cards and addresses are from Chrome. You can manage them in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Pages in <ph name="SOURCE_LANGUAGE" /> will be translated to <ph name="TARGET_LANGUAGE" /> from now on.</translation>
-<translation id="1676269943528358898"><ph name="SITE" /> normally uses encryption to protect your information. When Google Chrome tried to connect to <ph name="SITE" /> this time, the website sent back unusual and incorrect credentials. This may happen when an attacker is trying to pretend to be <ph name="SITE" />, or a Wi-Fi sign-in screen has interrupted the connection. Your information is still secure because Google Chrome stopped the connection before any data was exchanged.</translation>
 <translation id="1677733453456569361"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to play the Chrome Dino game</translation>
 <translation id="1682696192498422849">Short edge first</translation>
 <translation id="168693727862418163">This policy value failed to validate against its schema and will be ignored.</translation>
@@ -409,7 +408,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{In less than a day}=1{In a day}other{In {NUM_DAYS} days}}</translation>
 <translation id="2359629602545592467">Multiple</translation>
 <translation id="2359808026110333948">Continue</translation>
-<translation id="2359961752320758691">Your virtual card number is applied.</translation>
 <translation id="236340516568226369">Resize toggle menu</translation>
 <translation id="2367567093518048410">Level</translation>
 <translation id="2372464001869762664">Once you confirm, card details from your Google Account will be shared with this site. Find the CVC in your Plex account details.</translation>
@@ -471,6 +469,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2587841377698384444">Directory API ID:</translation>
 <translation id="2594318783181750337">Fast web view:</translation>
 <translation id="2595719060046994702">This device and account are not managed by a company or other organisation.</translation>
+<translation id="2596415276201385844">To establish a secure connection, your clock needs to be set correctly. This is because the certificates that websites use to identify themselves are only valid for specific periods of time. Since your device's clock is incorrect, Chrome cannot verify these certificates.</translation>
 <translation id="2597378329261239068">This document is password-protected.  Please enter a password.</translation>
 <translation id="2609632851001447353">Variations</translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
@@ -545,6 +544,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="290376772003165898">Page is not in <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">A network change was detected.</translation>
 <translation id="2911973620368911614">Job accounting user ID</translation>
+<translation id="2914160345369867329"><ph name="SITE" /> normally uses encryption to protect your information. When Chrome tried to connect to <ph name="SITE" /> this time, the website sent back unusual and incorrect credentials. This may happen when an attacker is trying to pretend to be <ph name="SITE" /> or a Wi-Fi sign-in screen has interrupted the connection. Your information is still secure because Chrome stopped the connection before any data was exchanged.</translation>
 <translation id="2915068235268646559">Crash from <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Close other programmes</translation>
 <translation id="2922350208395188000">Server's certificate cannot be checked.</translation>
@@ -561,7 +561,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2951588413176968965">My mailbox</translation>
 <translation id="295526156371527179">Warning: This policy was not merged as a dictionary as specified by policy because it is not a dictionary.</translation>
 <translation id="2955913368246107853">Close find bar</translation>
-<translation id="2969319727213777354">To establish a secure connection, your clock needs to be set correctly. This is because the certificates that websites use to identify themselves are only valid for specific periods of time. Since your device's clock is incorrect, Google Chrome cannot verify these certificates.</translation>
 <translation id="2972581237482394796">&amp;Redo</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, currently selected. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">If enabled, Chromium will store a copy of your card on this device for faster form filling.</translation>
@@ -698,6 +697,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3432601291244612633">Close page</translation>
 <translation id="3435738964857648380">Security</translation>
 <translation id="3438829137925142401">Use passwords saved in your Google Account</translation>
+<translation id="3440783957068352691">square</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">The owner of this device turned off the dinosaur game.</translation>
 <translation id="3447884698081792621">Show certificate (issued by <ph name="ISSUER" />)</translation>
@@ -867,6 +867,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4067947977115446013">Add Valid Address</translation>
 <translation id="4072193657607981494">Loading policies</translation>
 <translation id="4072486802667267160">There was an error processing your order. Please try again.</translation>
+<translation id="4073797364926776829">View card</translation>
 <translation id="4075732493274867456">The client and server don't support a common SSL protocol version or cipher suite.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Proxy configuration is set to use a .pac script URL, not fixed proxy servers.</translation>
@@ -1098,7 +1099,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4800132727771399293">Check your expiration date and CVC and try again</translation>
 <translation id="480334179571489655">Origin Policy Error</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4807049035289105102">You cannot visit <ph name="SITE" /> at the moment because the website sent scrambled credentials that Google Chrome cannot process. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
 <translation id="4809079943450490359">Instructions from your device administrator:</translation>
 <translation id="4813512666221746211">Network error</translation>
 <translation id="4816492930507672669">Fit to page</translation>
@@ -1210,6 +1210,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5172758083709347301">Machine</translation>
 <translation id="5179510805599951267">Not in <ph name="ORIGINAL_LANGUAGE" />? Report this error</translation>
 <translation id="5190835502935405962">Bookmarks Bar</translation>
+<translation id="51918995459521422"><ph name="ORIGIN" /> wants to download multiple files</translation>
 <translation id="519422657042045905">Annotation not available</translation>
 <translation id="5201306358585911203">An embedded page on this page says</translation>
 <translation id="5205222826937269299">Name required</translation>
@@ -1367,6 +1368,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5759751709240058861">Use and move your camera</translation>
 <translation id="5763042198335101085">Enter a valid email address</translation>
 <translation id="5765072501007116331">To see delivery methods and requirements, select an address</translation>
+<translation id="57689295674415555">Virtual card number not filled in?</translation>
 <translation id="5776313857861697733">Priority</translation>
 <translation id="5778550464785688721">MIDI devices full control</translation>
 <translation id="5781136890105823427">Experiment enabled</translation>
@@ -1378,7 +1380,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="578633867165174378">Chrome found the password that you just used in a data breach. We recommend changing this password now.</translation>
 <translation id="5803412860119678065">Do you want to fill in your <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permissions</translation>
-<translation id="5804427196348435412">Use NFC devices</translation>
 <translation id="5810442152076338065">Your connection to <ph name="DOMAIN" /> is encrypted using an obsolete cipher suite.</translation>
 <translation id="5813119285467412249">&amp;Redo Add</translation>
 <translation id="5817918615728894473">Pair</translation>
@@ -1468,7 +1469,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6113594885686374546">Resume journey button; press enter to resume your journey and see relevant activity in your Chrome history</translation>
 <translation id="6116338172782435947">See text and images copied to the clipboard</translation>
 <translation id="6120179357481664955">Remember your UPI ID?</translation>
-<translation id="6123290840358279103">View virtual card</translation>
 <translation id="6124432979022149706">Chrome Enterprise connectors</translation>
 <translation id="6146055958333702838">Check any cables and reboot any routers, modems or other network
     devices you may be using.</translation>
@@ -1622,6 +1622,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6711464428925977395">There is something wrong with the proxy server or the address is incorrect.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> wants to create a 3D map of your surroundings and track camera position</translation>
 <translation id="6718612893943028815">Use camera?</translation>
+<translation id="6721678857435001674">See the make and model of your Security Key</translation>
 <translation id="6738516213925468394">Your data was encrypted with your <ph name="BEGIN_LINK" />sync passphrase<ph name="END_LINK" /> on <ph name="TIME" />. Enter it to start sync.</translation>
 <translation id="674375294223700098">Unknown server certificate error.</translation>
 <translation id="6744009308914054259">While waiting for a connection, you can visit Downloads to read offline articles.</translation>
@@ -1658,6 +1659,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6898699227549475383">Organisation (O)</translation>
 <translation id="6907293445143367439">Allow <ph name="SITE_NAME" /> to:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> wants to get full control of your MIDI devices</translation>
+<translation id="691024665142758461">Download multiple files</translation>
 <translation id="6915804003454593391">User:</translation>
 <translation id="6934672428414710184">This name is from your Google Account</translation>
 <translation id="6944692733090228304">You entered your password on a site that’s not managed by <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. To protect your account, don’t reuse your password on other apps and sites.</translation>
@@ -1974,6 +1976,7 @@ Additional details:
 <translation id="7977538094055660992">Output device</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="798134797138789862">Can ask to use virtual reality devices and data</translation>
+<translation id="7984945080620862648">You cannot visit <ph name="SITE" /> at the moment because the website sent scrambled credentials that Chrome cannot process. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
 <translation id="79859296434321399">To view augmented reality content, install ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Bind</translation>

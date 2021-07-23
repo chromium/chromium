@@ -8,6 +8,10 @@
 <translation id="1047726139967079566">Ajouter cette page aux favoris...</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="105093091697134113">Les comptes suivants utilisent des mots de passe qui ont été exposés lors d'une violation de données d'un tiers ou lorsqu'ils ont été entrés sur un site Web trompeur. Modifiez immédiatement ces mots de passe pour protéger vos comptes.</translation>
+<translation id="105214722824962652">Vous ne serez pas déconnecté de votre compte Google. <ph name="BEGIN_LINK" />D'autres formes d'activités<ph name="END_LINK" /> peuvent être enregistrées dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.
+
+        
+Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les instructions de celui-ci pour supprimer votre historique de recherche, le cas échéant.</translation>
 <translation id="1063454504051558093">Utiliser un autre mot de passe…</translation>
 <translation id="1066060668811609597">Gérer la synchronisation</translation>
 <translation id="1076421457278169141">Code numérisé</translation>
@@ -204,6 +208,10 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="298306318844797842">Ajouter un mode de paiement…</translation>
 <translation id="2989805286512600854">Ouvrir dans un nouvel onglet</translation>
 <translation id="3037605927509011580">Aïe aïe aïe!</translation>
+<translation id="3076846064362030967">Vous ne serez pas déconnecté de votre compte Google. <ph name="BEGIN_LINK" />D'autres formes d'activités<ph name="END_LINK" /> peuvent être enregistrées dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.
+
+
+Consultez les instructions de votre moteur de recherche pour supprimer votre historique de recherche, le cas échéant.</translation>
 <translation id="3080525922482950719">Vous pouvez enregistrer des pages afin de les lire plus tard ou hors ligne</translation>
 <translation id="3081338492074632642">Assurez-vous que le mot de passe que vous enregistrez correspond à celui pour <ph name="WEBSITE" /></translation>
 <translation id="3112556859945124369">Marquer…</translation>
@@ -328,7 +336,6 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4375040482473363939">Recherche de code QR</translation>
 <translation id="4378154925671717803">Numéro de téléphone</translation>
 <translation id="4389019817280890563">Toucher pour changer la langue.</translation>
-<translation id="441868831736628555">Avis de confidentialité</translation>
 <translation id="4454246407045105932">Ajouter une langue</translation>
 <translation id="4469418912670346607">Poursuivre la configuration</translation>
 <translation id="4476574785019001431">Paramètres</translation>
@@ -404,6 +411,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5140288047769711648">Chrome mémorisera ce mot de passe pour vous. Vous n'avez pas à le mémoriser.</translation>
 <translation id="5150492518600715772">Envoyer à votre appareil</translation>
 <translation id="5168414296986405587">Conçu pour iPadOS</translation>
+<translation id="5173088371991956744">La synchronisation doit vérifier qu'il s'agit bien de vous</translation>
 <translation id="5181140330217080051">Téléchargement en cours...</translation>
 <translation id="5186185447130319458">Privé</translation>
 <translation id="5188482106078495165">Votre paramètre de témoins s'applique à tous les onglets. Pour appliquer un nouveau paramètre à un onglet ouvert, actualisez-le.</translation>
@@ -714,6 +722,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="802154636333426148">Échec du téléchargement</translation>
 <translation id="8023878949384262191">Développe la section.</translation>
 <translation id="8027581147000338959">Ouvrir dans une nouvelle fenêtre</translation>
+<translation id="804225253087497565">L'<ph name="BEGIN_LINK" />historique de recherche<ph name="END_LINK" /> et d'<ph name="BEGIN_LINK" />autres formes d'activités<ph name="END_LINK" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="804427445359061970">Vous trouverez ici les onglets ouverts sur d'autres appareils</translation>
 <translation id="8059533439631660104">Réduit la section.</translation>
 <translation id="8065292699993359127">Ouvrir les URL dans Chrome en mode de navigation privée</translation>

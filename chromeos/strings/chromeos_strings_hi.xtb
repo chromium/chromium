@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">स्कैन करें</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> की जांच की जा रही है...</translation>
 <translation id="2585245331261708204">Chrome OS में नया क्या है</translation>
+<translation id="2619761439309613843">हर दिन रीफ़्रेश करें</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2740531572673183784">ठीक है</translation>
 <translation id="2751739896257479635">EAP चरण 2 प्रमाणीकरण</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">आंशिक रूप से सक्रिय किया गया</translation>
 <translation id="3527036260304016759">प्रिंट नहीं हो पाया - अज्ञात गड़बड़ी</translation>
 <translation id="3532980081107202182">करीब <ph name="MIN_REMAINING" /> मिनट बचे हैं</translation>
+<translation id="3540383942695635079">MAC पता</translation>
 <translation id="357889014807611375">सीमित डेटा वाला वाई-फ़ाई</translation>
 <translation id="3595596368722241419">बैटरी पूरी हो गई</translation>
 <translation id="360565022852130722">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP 802.1x से सुरक्षित है</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">इतनी बार आपकी बैटरी पूरी चार्ज हुई है</translation>
 <translation id="3941014780699102620">होस्ट से जुड़ी समस्याओं को हल नहीं किया जा सका</translation>
 <translation id="3942420633017001071">निदान</translation>
+<translation id="3966286471246132217">ज़्यादा सटीक नतीजों के लिए, टेस्ट पूरा होने तक सभी ऐप्लिकेशन बंद रखें.</translation>
 <translation id="3967822245660637423">डाउनलोड पूरा हुआ</translation>
 <translation id="397105322502079400">गणना की जा रही है...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">बंद किया गया</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> में पासवर्ड की समयसीमा खत्म हो जाएगी</translation>
 <translation id="4238516577297848345">फ़िलहाल, कुछ प्रिंट नहीं हो रहा</translation>
+<translation id="4244962993387259361">मेमोरी टेस्ट करने के लिए, 500 एमबी खाली मेमोरी की जगह होनी चाहिए. मेमोरी खाली करने के लिए, सेटिंग &gt; स्टोरेज मैनेजमेंट पर जाएं.</translation>
 <translation id="4289540628985791613">संक्षिप्त विवरण</translation>
 <translation id="4297501883039923494">बंद हो गया - अज्ञात गड़बड़ी</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> इमेज</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">ईथरनेट</translation>
 <translation id="4483049906298469269">ऐसे नेटवर्क गेटवे को पिंग नहीं किया जा सका जो डिफ़ॉल्ट के तौर पर सेट नहीं है</translation>
 <translation id="4511264077854731334">पोर्टल</translation>
+<translation id="4536864596629708641">आईपी कॉन्फ़िगरेशन</translation>
 <translation id="4548483925627140043">सिग्नल नहीं मिला</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh बैटरी</translation>
 <translation id="4562494484721939086">कोई सेवा नहीं</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> में से <ph name="PRINTED_PAGE_NUMBER" />. प्रिंट का काम बंद करने के लिए enter का बटन दबाएं.</translation>
 <translation id="4646949265910132906">सुरक्षित वाई-फ़ाई कनेक्शन</translation>
 <translation id="4652335678334611408">सेशन लॉग सेव करें</translation>
+<translation id="4654549501020883054">रोज़ बदलें</translation>
 <translation id="4665014895760275686">निर्माता</translation>
 <translation id="467510802200863975">पासवर्ड मेल नहीं खाते</translation>
 <translation id="467715984478005772">फ़ायरवॉल हो सकता है</translation>
@@ -318,6 +324,7 @@
 <translation id="7162487448488904999">गैलरी</translation>
 <translation id="7172721935181587524">एक इमेज</translation>
 <translation id="7177485034254901881">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> प्रबंधित करता है. एडमिन इस डिवाइस को किसी दूसरी जगह से भी कॉन्फ़िगर कर सकते हैं.</translation>
+<translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देने वाली कंपनी</translation>
 <translation id="7271040990581020067">स्कैनर पहले से इस्तेमाल में है. कुछ देर बाद कोशिश करें.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@
 <translation id="8498220429738806196">ट्रैफ़िक काउंटर</translation>
 <translation id="8503813439785031346">उपयोगकर्ता नाम</translation>
 <translation id="8503836310948963452">बस कुछ मिनट और...</translation>
+<translation id="8521021929829989041">निजी डिवाइस की तरह इस्तेमाल करें</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">मोबाइल और इंटरनेट सेवा देने वाली आपकी कंपनी को, अपने नेटवर्क से कनेक्ट करने लिए इस विकल्प की ज़रूरत पड़ सकती है. ज़्यादा जानकारी के लिए, उस कंपनी से संपर्क करें जो आपको मोबाइल और इंटरनेट सेवा देती है.</translation>
 <translation id="8576249514688522074">शुरू नहीं किया गया</translation>
@@ -402,7 +410,7 @@
 <translation id="8814190375133053267">वाई-फ़ाई </translation>
 <translation id="8818152010000655963">वॉलपेपर</translation>
 <translation id="8845001906332463065">सहायता पाएं</translation>
-<translation id="8868741746785112895">GUID (ग्लोबली यूनिक आइडेंटिफ़ायर)</translation>
+<translation id="8868741746785112895">GUID (ग्लोबली यूनीक आइडेंटिफ़ायर)</translation>
 <translation id="8881098542468797602">टेस्ट सफल रहा</translation>
 <translation id="8898840733695078011">सिग्‍नल शक्ति</translation>
 <translation id="8910721771319628100">डिफ़ॉल्ट नेटवर्क, इंतज़ार की समयसीमा से ऊपर है</translation>

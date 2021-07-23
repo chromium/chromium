@@ -28,7 +28,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1597911401261118146">Për të kontrolluar nëse fjalëkalimet e tua janë të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe probleme të tjera të sigurisë, <ph name="BEGIN_LINK" />identifikohu në Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Për ta bërë më të sigurt Chrome, çaktivizuam shtesën e mëposhtme që nuk është e listuar në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jetë shtuar pa dijeninë tënde.</translation>
 <translation id="1628000112320670027">Merr ndihmë për Chrome</translation>
-<translation id="1666409074978194368">Pothuajse u përditësua! Rinis Google Chrome për të përfunduar përditësimin. Dritaret "e fshehta" nuk do të hapen.</translation>
 <translation id="1674870198290878346">Hape lidhjen në një drit&amp;are të fshehtë të Chrome</translation>
 <translation id="1682634494516646069">Google Chrome nuk mund të lexojë dhe shkruajë në direktorinë e tij të të dhënave:
 
@@ -90,6 +89,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2847461019998147611">Shfaq Google Chrome në këtë gjuhë</translation>
 <translation id="2857540653560290388">Po hapet Chrome...</translation>
 <translation id="2857972467023607093">Ekziston tashmë një profil i Chrome me këtë llogari</translation>
+<translation id="2861074815332034794">Po përditëson Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Je i identifikuar në Chrome!</translation>
 <translation id="2885378588091291677">Menaxheri i detyrave</translation>
 <translation id="2888126860611144412">Rreth Chrome</translation>
@@ -179,12 +179,12 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër të profil
 <translation id="5193136243808726294">Sistemi operativ Google Chrome nuk mund ta hapë këtë faqe.</translation>
 <translation id="521447420733633466">Nëse e ndan një pajisje, miqtë dhe familja mund të shfletojnë veçmas dhe ta konfigurojnë Chrome pikërisht ashtu si dëshirojnë.</translation>
 <translation id="5251420635869119124">Vizitorët mund të përdorin Chrome pa lënë asgjë prapa.</translation>
+<translation id="5251679006894510177">Pothuajse u përditësua! Rihap Chrome për të përfunduar përditësimin. Dritaret "e fshehta" nuk do të hapen.</translation>
 <translation id="5386244825306882791">Kontrollon po ashtu se cila faqe shfaqet kur nis Chrome ose kur kërkon nga Omnibox.</translation>
 <translation id="5394833366792865639">Ndaj një skedë të Chrome</translation>
 <translation id="5430073640787465221">Skedari i preferencave është i dëmtuar ose i pavlefshëm.
 
 Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
-<translation id="5434383153637353914">Kjo faqe të lejon të menaxhosh "Llogaritë e tua të Google" ku je identifikuar. Këto llogari do të ofrohen në shfletuesin Chrome dhe në aplikacionet e "Dyqanit të Play", si dhe në shërbimet si Gmail, "Disku" dhe YouTube. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Përpara se fillojmë, sigurohu që të kesh një rezervë të përditësuar të të dhënave të tua. Instalimi i Chrome OS do të mbishkruajë të gjitha të dhënat në diskun e ngurtë.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Google nuk është përgjegjëse për humbjen e mundshme të të dhënave dhe nuk jep garanci se Chrome OS do të punojë në modele të pacertifikuara. Vizito [TBD] për të mësuar më shumë për modele të certifikuara. <ph name="END_PARAGRAPH2" />
           <ph name="BEGIN_PARAGRAPH3" />Mëso më shumë për instalimin e Chrome OS dhe fshirjen e të dhënave: [TBD URL]<ph name="END_PARAGRAPH3" />
@@ -218,11 +218,9 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6235018212288296708">Rregulli hyrës për Google Chrome për të lejuar trafikun mDNS.</translation>
 <translation id="6291089322031436445">Aplikacionet e Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome është i instaluar tashmë për të gjithë përdoruesit në kompjuterin tënd.</translation>
-<translation id="6338556085225130112">Po përditëson Google Chrome</translation>
 <translation id="6368958679917195344">Sistemi operativ Chrome bëhet i mundur nga softueri shtesë <ph name="BEGIN_LINK_CROS_OSS" />me burim të hapur<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6418662306461808273">Të kalohet te profili ekzistues i Chrome?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
-<translation id="6566149418543181476">Po përditëson Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Sistemi Chrome OS</translation>
 <translation id="664235759707825982">Gati për instalimin e Chrome OS</translation>
 <translation id="6676384891291319759">Qasu në internet</translation>
@@ -231,12 +229,14 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6750954913813541382">Për të rregulluar gabimet drejtshkrimore, Chrome e dërgon tekstin që shkruan në shfletues te Google</translation>
 <translation id="677276454032249905">Dëshiron të dalësh nga Chrome gjithsesi?</translation>
 <translation id="683440813066116847">Rregulli hyrës për Google Chrome për të lejuar trafikun mDNS.</translation>
+<translation id="6881299373831449287">Po përditëson Chrome</translation>
 <translation id="6885412569789873916">Aplikacionet e Chrome Beta</translation>
 <translation id="6943584222992551122">Të dhënat e shfletimit të këtij personi do të fshihen nga kjo pajisje. Për të rikuperuar të dhënat, identifikohu në Chrome si <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Rregulli hyrës për Google Chrome Beta për të lejuar trafikun mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome është përditësuar, por nuk e ke përdorur për të paktën 30 ditë.</translation>
 <translation id="7025800014283535195">Këtu mund të kalosh nga një profil i Chrome te një tjetër</translation>
 <translation id="7062128746136194023">Prindi yt ka çaktivizuar "Lejet për sajtet, aplikacionet dhe shtesat" për Chrome. Nuk lejohet shtimi për këtë <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="7088681679121566888">Chrome është i përditësuar</translation>
 <translation id="7098166902387133879">Google Chrome po përdor mikrofonin tënd.</translation>
 <translation id="7106741999175697885">Menaxheri i detyrave - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Ka një përditësim të ri për Chrome dhe do të zbatohet sapo ta rinisësh.}=1{Ka një përditësim të ri për Chrome dhe do të zbatohet sapo ta rinisësh. Dritarja jote "e fshehtë" nuk do të rihapet.}other{Ka një përditësim të ri për Chrome dhe do të zbatohet sapo ta rinisësh. # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
@@ -268,7 +268,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7801699035218095297">Google Chrome po përpiqet të kopjojë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="7808348361785373670">Hiqe nga Chrome...</translation>
 <translation id="7825851276765848807">Instalimi dështoi për shkak të një gabimi të papërcaktuar. Shkarkoje Google Chrome përsëri.</translation>
-<translation id="7855730255114109580">Google Chrome është i përditësuar</translation>
 <translation id="7890208801193284374">Nëse e ndan një kompjuter, miqtë dhe familja mund të shfletojnë veçmas dhe ta konfigurojnë Chrome pikërisht ashtu si dëshirojnë.</translation>
 <translation id="7896673875602241923">Dikush është identifikuar më parë në Chrome në këtë kompjuter si <ph name="ACCOUNT_EMAIL_LAST" />. Krijo një përdorues të ri të Chrome për t'i mbajtur të ndara informacionet e tua.</translation>
 <translation id="7930071585467473040">Google Chrome po përpiqet të kopjojë fjalëkalimet.</translation>

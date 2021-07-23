@@ -19,6 +19,8 @@
 <translation id="2342919707875585281">Chrome dijeli vašu lokaciju s web lokacijama koje vi odobrite.</translation>
 <translation id="2347208864470321755">Kada je ova funkcija uključena, Chrome će za stranice koje su napisane na drugim jezicima ponuditi prijevod pomoću Google Prevodioca. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Postavite Chrome kao zadani preglednik</translation>
+<translation id="2427791862912929107">Chrome sadržava funkcije koje vam pomažu prilikom upravljanja internetskim podacima i brzinom učitavanja web lokacija.
+<ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2561231791489583059">Koristite Chrome kao zadani preglednik da se zaštitite od opasnih web lokacija i da zaštitite lozinke</translation>
 <translation id="2574249610672786438">Da vidite kartice s bilo kojeg uređaja na kojem koristite Chrome, prijavite se na svim uređajima</translation>
 <translation id="2576431527583832481">Chrome je postao još bolji! Dostupna je nova verzija.</translation>
@@ -61,8 +63,6 @@
 <translation id="5716154293141027663">Otvorite Chrome kad god dodirnete linkove u drugim aplikacijama</translation>
 <translation id="5854621639439811139">Chrome savjet. Neka dugmad se sada nalaze na dnu ekrana, kao što su dugmad za nazad, naprijed i pretraživanje.</translation>
 <translation id="5876773482963502140">Ako dozvolite Chromeu da zna vašu lokaciju, poslat će je svim web lokacijama koje dozvolite. Web lokacije mogu tražiti vašu lokaciju kada imaju lokalne informacije koje vam mogu prikazati, kao što su prodavnice u blizini ili vijesti.</translation>
-<translation id="6036420186814142909">Google Chrome ima značajke koje vam mogu pomoći u upravljanju internetskim podacima i brzinom kojom se učitavaju web-stranice.
-<ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="6063091872902370735">Omogućite prijavu pomoću Chromea</translation>
 <translation id="6181930887571472871">Pređite na Chrome</translation>
 <translation id="6238746320622508509">Omogućite Chromeu da zaključa vaše anonimne kartice.</translation>

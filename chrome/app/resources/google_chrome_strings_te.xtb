@@ -27,7 +27,6 @@
 <translation id="1597911401261118146">డేటా ఉల్లంఘనల నుండి, ఇతర భద్రతా సమస్యల నుండి మీ పాస్‌వర్డ్‌లు సురక్షితంగా ఉన్నాయో లేదో చెక్ చేయడానికి, <ph name="BEGIN_LINK" />Chromeకు సైన్ ఇన్ చేయండి<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Chromeని సురక్షితం చేయడానికి, మేము క్రింది పొడిగింపుని నిలిపివేసాము, ఇది <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />లో జాబితా చేయబడలేదు మరియు మీకు తెలియకుండా జోడించబడి ఉండవచ్చు.</translation>
 <translation id="1628000112320670027">Chrome గురించి సహాయం పొందండి</translation>
-<translation id="1666409074978194368">దాదాపుగా తాజాగా ఉంది! అప్‌డేట్‌ను పూర్తి చేయడానికి Google Chromeను మళ్లీ ప్రారంభించండి. అజ్ఞాత విండోలు మళ్లీ తెరవబడవు.</translation>
 <translation id="1674870198290878346">Chrome అజ్ఞా&amp;త విండోలో లింక్‌ను తెరువు</translation>
 <translation id="1682634494516646069">Google Chrome దీని డేటా డైరెక్టరీని చదవలేదు మరియు దీనిలో రాయ‌లేదు: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome అనేది మెరుపు వేగంతో వెబ్‌పేజీలను మరియు యాప్‌ల‌ను అమలు చేసే వెబ్ బ్రౌజర్. ఇది వేగమైనది, సామర్థ్యం కలది మరియు ఉపయోగించడానికి సులభమైంది. Google Chromeలో నిర్మితమైన మాల్‌వేర్‌ మరియు ఫిషింగ్ భద్రతతో మరింత సురక్షితంగా వెబ్‌ను బ్రౌజ్ చేయండి.</translation>
@@ -87,6 +86,7 @@
 <translation id="2847461019998147611">Google Chromeను ఈ భాషలో ప్రదర్శించు</translation>
 <translation id="2857540653560290388">Chromeను ప్రారంభిస్తోంది...</translation>
 <translation id="2857972467023607093">ఈ ఖాతాతో ఇప్పటికే ఒక Chrome ప్రొఫైల్ ఉంది</translation>
+<translation id="2861074815332034794">Chromeను అప్‌డేట్ చేస్తోంది (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">మీరు Chromeకు సైన్ ఇన్ చేసారు!</translation>
 <translation id="2885378588091291677">విధి సంచాలకులు</translation>
 <translation id="2888126860611144412">Chrome పరిచయం</translation>
@@ -174,10 +174,10 @@
 <translation id="5193136243808726294">Google Chrome OS ఈ పేజీని తెరవలేదు.</translation>
 <translation id="521447420733633466">మీరు పరికరాన్ని షేర్ చేస్తే, ఫ్రెండ్స్, ఫ్యామిలీ విడివిడిగా బ్రౌజ్ చేయవచ్చు, Chromeను వారికి నచ్చిన విధంగా సెటప్ చేసుకోవచ్చు</translation>
 <translation id="5251420635869119124">అతిథులు ఎటువంటి చరిత్రను వదలకుండానే Chromeను ఉపయోగించవచ్చు.</translation>
+<translation id="5251679006894510177">దాదాపుగా అప్‌డేట్ అయ్యి ఉంది! అప్‌డేట్ చేయడాన్ని పూర్తి చేయడానికి Chromeను రీ-లాంచ్ చేయండి. అజ్ఞాత విండోలు మళ్లీ తెరవబడవు.</translation>
 <translation id="5386244825306882791">ఇది మీరు Chromeను ప్రారంభించేటప్పుడు లేదా ఓమ్నిబాక్స్ నుండి వెతికేటప్పుడు చూపబడే పేజీని కూడా నియంత్రిస్తుంది.</translation>
 <translation id="5394833366792865639">Chrome ట్యాబ్‌ను షేర్ చేయండి</translation>
 <translation id="5430073640787465221">మీ ప్రాధాన్యతల ఫైల్ పాడైంది లేదా చెల్లదు. Google Chrome మీ సెట్టింగ్‌లను తిరిగి పొందలేకపోయింది.</translation>
-<translation id="5434383153637353914">ఈ పేజీ మీరు సైన్ ఇన్ చేసిన Google ఖాతాలను మేనేజ్ చేయడానికి అనుమతిస్తుంది. ఈ ఖాతాలు Chrome బ్రౌజర్, Play స్టోర్ యాప్‌లలోనే కాకుండా Gmail, Drive, ఇంకా YouTube వంటి సర్వీస్‌లలో కూడా అందుబాటులో ఉంటాయి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />మనం ప్రారంభించే ముందు, మీ డేటాకు సంబంధించిన బ్యాకప్ అప్‌డేట్ అయ్యి ఉందని దయచేసి నిర్ధారించుకోండి. Chrome OSను ఇన్‌స్టాల్ చేయడం అనేది మీ హార్డ్ డ్రైవ్‌లోని డేటా అంతటినీ ఓవర్‌రైట్ చేస్తుంది.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />ఏదైనా డేటా కోల్పోతే దానికి Google బాధ్యత వహించదు, అలాగే Chrome OS ధృవీకరించని మోడల్స్‌లో పని చేస్తుందని ఎటువంటి హామీ కూడా ఇవ్వదు. ధృవీకరించిన మోడల్స్ గురించి మరింత తెలుసుకోవడానికి దయచేసి [TBD]ను సందర్శించండి.<ph name="END_PARAGRAPH2" />
           <ph name="BEGIN_PARAGRAPH3" />Chrome OSను ఇన్‌స్టాల్ చేయడం, అలాగే డేటాను ఫ్యాక్టరీ రీసెట్ చేయడం గురించి మరింత తెలుసుకోండి: [TBD URL]<ph name="END_PARAGRAPH3" />
@@ -211,11 +211,9 @@
 <translation id="6235018212288296708">mDNS ట్రాఫిక్‌ను అనుమతించడానికి Google Chrome కోసం ఇన్‌బౌండ్ నియమం.</translation>
 <translation id="6291089322031436445">Chrome డెవలపర్ యాప్‌లు</translation>
 <translation id="6291549208091401781">మీ కంప్యూటర్‌లోని వినియోగదారులందరికీ Google Chrome ఇప్పటికే ఇన్‌స్టాల్ చేయబడింది.</translation>
-<translation id="6338556085225130112">Google Chromeని నవీకరిస్తోంది</translation>
 <translation id="6368958679917195344">అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపన్ సోర్స్ సాఫ్ట్‌వేర్‌<ph name="END_LINK_CROS_OSS" />పై Chrome OS ఎంతగానో ఆధారపడుతుంది.</translation>
 <translation id="6418662306461808273">ప్రస్తుతం ఉన్న Chrome ప్రొఫైల్‌కు స్విచ్ చేయాలా?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
-<translation id="6566149418543181476">Google Chrome నవీకరించబడుతోంది (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS సిస్టమ్</translation>
 <translation id="664235759707825982">Chrome OSను ఇన్‌స్టాల్ చేయడానికి మీరు సిద్ధంగా ఉన్నారు</translation>
 <translation id="6676384891291319759">ఇంటర్నెట్‌ను ఆక్సెస్ చెయ్యండి</translation>
@@ -224,12 +222,14 @@
 <translation id="6750954913813541382">స్పెల్లింగ్ తప్పులను సరిదిద్దడానికి, మీరు బ్రౌజర్‌లో టైప్ చేసే పదాలను Googleకు Chrome పంపుతుంది</translation>
 <translation id="677276454032249905">ఏదేమైనా Chrome నుండి నిష్క్రమించాలా?</translation>
 <translation id="683440813066116847">mDNS ట్రాఫిక్‌ను అనుమతించడానికి Google Chrome కెనరీ కోసం ఇన్‌బౌండ్ నియమం.</translation>
+<translation id="6881299373831449287">Chromeను అప్‌డేట్ చేస్తోంది</translation>
 <translation id="6885412569789873916">Chrome బీటా యాప్‌లు</translation>
 <translation id="6943584222992551122">ఈ వ్యక్తి బ్రౌజింగ్ డేటా ఈ పరికరం నుండి తొలగించబడుతుంది. డేటాను పునరుద్ధరించడానికి, <ph name="USER_EMAIL" />గా Chromeకి సైన్ ఇన్ చేయండి.</translation>
 <translation id="6967962315388095737">mDNS ట్రాఫిక్‌ను అనుమతించడానికి Google Chrome బీటా కోసం ఇన్‌బౌండ్ నియమం.</translation>
 <translation id="6989339256997917931">Google Chrome నవీకరింబడింది, కానీ మీరు దీన్ని కనీసం 30 రోజులు ఉయోగించలేరు.</translation>
 <translation id="7025800014283535195">మీరు ఇక్కడ Chrome ప్రొఫైల్‌ల మధ్య స్విచ్ అవ్వవచ్చు</translation>
 <translation id="7062128746136194023">Chromeలో సైట్‌లు, యాప్‌లు, ఎక్స్‌టెన్షన్‌లకు సంబంధించిన అనుమతులను మీ తల్లి/తండ్రి ఆఫ్ చేశారు. ఈ <ph name="EXTENSION_TYPE_PARAMETER" />ను జోడించడానికి అనుమతి లేదు.</translation>
+<translation id="7088681679121566888">Chrome అప్‌డేట్ చేసి ఉంది</translation>
 <translation id="7098166902387133879">Google Chrome మీ మైక్రోఫోన్‌ని ఉపయోగిస్తోంది.</translation>
 <translation id="7106741999175697885">విధి నిర్వాహకుడు - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chromeకు కొత్త అప్‌డేట్ అందుబాటులో ఉంది, మీరు పునఃప్రారంభించిన వెంటనే వర్తింపజేయబడుతుంది.}=1{Chromeకు కొత్త అప్‌డేట్ అందుబాటులో ఉంది, మీరు పునఃప్రారంభించిన వెంటనే వర్తింపజేయబడుతుంది. మీ అజ్ఞాత విండో మళ్లీ తెరవబడదు.}other{Chromeకు కొత్త అప్‌డేట్ అందుబాటులో ఉంది, మీరు పునఃప్రారంభించిన వెంటనే వర్తింపజేయబడుతుంది. మీ # అజ్ఞాత విండోలు మళ్లీ తెరవబడవు.}}</translation>
@@ -261,7 +261,6 @@
 <translation id="7801699035218095297">పాస్‌వర్డ్‌లను కాపీ చేయడానికి Google Chrome ప్రయత్నిస్తోంది. దీన్ని అనుమతించడానికి మీ Windows పాస్‌వర్డ్‌ను టైప్ చేయండి.</translation>
 <translation id="7808348361785373670">Chrome నుండి తీసివేయి...</translation>
 <translation id="7825851276765848807">నిర్దిష్టంగా తెలియ‌ని ఎర్ర‌ర్‌ కారణంగా ఇన్‌స్ట‌లేష‌న్‌ విఫలమైంది. దయచేసి Google Chromeను మ‌ళ్లీ డౌన్‌లోడ్ చేయండి.</translation>
-<translation id="7855730255114109580">Google Chrome తాజాగా ఉంది</translation>
 <translation id="7890208801193284374">మీరు కంప్యూటర్‌ను షేర్‌ చేస్తే, స్నేహితులు, కుటుంబ సభ్యులు విడివిడిగా బ్రౌజ్ చేయవచ్చు. Chromeను వారికి నచ్చిన రీతిలో సెటప్ చేసుకోవచ్చు.</translation>
 <translation id="7896673875602241923">మునుపు ఒకరు ఈ కంప్యూటర్‌లో Chromeకు <ph name="ACCOUNT_EMAIL_LAST" /> లాగా సైన్ ఇన్ చేశారు. దయచేసి మీ సమాచారాన్ని విడిగా ఉంచడానికి కొత్త Chrome వినియోగదారును సృష్టించండి.</translation>
 <translation id="7930071585467473040">పాస్‌వర్డ్‌లను కాపీ చేయడానికి Google Chrome ప్రయత్నిస్తోంది.</translation>

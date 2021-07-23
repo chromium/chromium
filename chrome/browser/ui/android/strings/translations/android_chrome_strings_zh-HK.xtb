@@ -191,6 +191,7 @@
 <translation id="2276696007612801991">登入 Google 帳戶以檢查密碼</translation>
 <translation id="2278052315791335171">刪除此密碼不會刪除您在 <ph name="SITE" /> 的帳戶</translation>
 <translation id="2286841657746966508">帳單地址</translation>
+<translation id="2294030144029925122">Chrome 隱私權政策</translation>
 <translation id="230115972905494466">找不到兼容的裝置</translation>
 <translation id="230155349749732438">如要使用此設定，請務必開啟<ph name="BEGIN_LINK" />改善搜尋和瀏覽體驗<ph name="END_LINK" />功能</translation>
 <translation id="2318045970523081853">輕按即可撥打電話</translation>
@@ -318,6 +319,7 @@
 <translation id="3029704984691124060">複雜密碼不符</translation>
 <translation id="3031225630520268969">「Google 助理」語音搜尋同意使用者介面</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />取得說明<ph name="END_LINK" /></translation>
+<translation id="3037517125981011456">顯示登入 Chrome 的指示</translation>
 <translation id="3046945242843292318">之後可更快前往此網站</translation>
 <translation id="305593374596241526">位置資訊功能已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟此功能。</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個書籤}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個書籤}}</translation>
@@ -337,6 +339,7 @@
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208584281581115441">立即檢查</translation>
 <translation id="3211426585530211793">已刪除 <ph name="ITEM_TITLE" /></translation>
+<translation id="3214996641768123781">在您登入後，<ph name="BEGIN_LINK1" />搜尋記錄<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />其他形式的活動<ph name="END_LINK2" />可能會儲存至您的 Google 帳戶。您可以隨時刪除這些資料。</translation>
 <translation id="321773570071367578">如果您忘記密碼短語，或希望變更這項設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">如要同步密碼，請驗證您的身分</translation>
 <translation id="3227557059438308877">以 Google Chrome 作為安全密鑰</translation>
@@ -449,7 +452,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="3928666092801078803">合併我的資料</translation>
 <translation id="3934366560681368531">「</translation>
 <translation id="393697183122708255">沒有可用的語音搜尋功能</translation>
-<translation id="3943557322767080599">登入 Google 帳戶時顯示 Chrome 登入提示</translation>
+<translation id="395377504920307820">在未登入帳戶的狀態下使用</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome 準備就緒後將載入您的網頁}other{Chrome 準備就緒後將載入您的網頁}}</translation>
 <translation id="3962957115499249330">透過 Wi-Fi 開始下載時，系統會顯示通知。</translation>
 <translation id="3963007978381181125">密碼短語加密的資料不包括 Google Pay 的付款方法和地址。只有知道您密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 也不會儲存您的密碼短語。如果您忘記自己的密碼短語，或希望變更這項設定，則必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -497,6 +500,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="4256782883801055595">開放原始碼授權</translation>
 <translation id="4263656433980196874">「Google 助理」語音搜尋的同意使用者介面已開啟，顯示於整個畫面</translation>
 <translation id="4269820728363426813">複製連結網址</translation>
+<translation id="4281359692687148179">下拉即可重新整理</translation>
 <translation id="4290281343757112331">要稍後再下載嗎？</translation>
 <translation id="4296252229500326964">新無痕式分頁</translation>
 <translation id="4298388696830689168">已連結的網站</translation>
@@ -598,6 +602,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="4881695831933465202">開啟</translation>
 <translation id="488187801263602086">重新命名檔案</translation>
 <translation id="4885273946141277891">Chrome 實例的數量已超出上限。</translation>
+<translation id="4905269543817054577">在無痕模式下無法儲存記錄</translation>
 <translation id="4908869848243824489">Google 探索</translation>
 <translation id="4910889077668685004">付款應用程式</translation>
 <translation id="4913161338056004800">重設統計資料</translation>
@@ -621,7 +626,9 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5005498671520578047">複製密碼</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> 要求連接至</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5032430150487044192">無法建立 QR 碼</translation>
 <translation id="5039804452771397117">允許</translation>
+<translation id="5054455334322721892">在您登入後，<ph name="BEGIN_LINK1" />其他形式的活動<ph name="END_LINK1" />可能會儲存至您的 Google 帳戶。您可以隨時刪除這些資料。</translation>
 <translation id="5061533557687621530">如要查看天氣，請輕按麥克風圖示，然後說「今日天氣點呀？」</translation>
 <translation id="5087580092889165836">加入新卡</translation>
 <translation id="5091249083535528968">延伸使用情況資料</translation>
@@ -651,6 +658,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5222676887888702881">登出</translation>
 <translation id="5227554086496586518">輕按以查看搜尋結果</translation>
 <translation id="5233638681132016545">新分頁</translation>
+<translation id="5246093389635966745">編輯工具列捷徑</translation>
 <translation id="5250483651202458397">螢幕截圖。輕按以關閉。</translation>
 <translation id="5262378156578470238">下載於 <ph name="DATE" />開始時，系統會顯示通知。</translation>
 <translation id="526421993248218238">無法載入此網頁</translation>
@@ -740,6 +748,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5814131985548525293">在此處輸入或輕按麥克風圖示以開始搜尋</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5833984609253377421">分享連結</translation>
+<translation id="5834764604050996579">如要掃瞄 QR 碼，請允許 Chrome 使用攝錄機</translation>
 <translation id="5836192821815272682">正在下載 Chrome 更新…</translation>
 <translation id="5853623416121554550">已暫停</translation>
 <translation id="5854512288214985237">不向 Google 傳送任何統計資料或當機報告</translation>
@@ -889,7 +898,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6659594942844771486">分頁</translation>
 <translation id="666731172850799929">在「<ph name="APP_NAME" />」中開啟</translation>
-<translation id="666981079809192359">Chrome 私隱聲明</translation>
 <translation id="6671495933530132209">複製圖片</translation>
 <translation id="6674571176963658787">如要開始同步處理，請輸入密碼短語</translation>
 <translation id="6676840375528380067">要清除此裝置上的 Chrome 資料嗎？</translation>
@@ -920,6 +928,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6867400383614725881">新無痕式分頁</translation>
 <translation id="6869056123412990582">電腦</translation>
 <translation id="6882836635272038266">對已知的危險網站、下載檔案及擴充程式提供標準保護功能。</translation>
+<translation id="6883204995689174413">分享</translation>
 <translation id="688738109438487280">將現有資料新增至 <ph name="TO_ACCOUNT" />。</translation>
 <translation id="6891726759199484455">解鎖即可複製您的密碼</translation>
 <translation id="6896758677409633944">複製</translation>
@@ -940,6 +949,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7022756207310403729">在瀏覽器中開啟</translation>
 <translation id="702463548815491781">建議在 TalkBack 或「按鈕控制」開啟時使用</translation>
 <translation id="7027549951530753705">還原咗 <ph name="ITEM_TITLE" /></translation>
+<translation id="7029390216614421513">將 QR 碼/條碼放在此方框中。</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7054588988317389591">要取得圖片說明嗎？</translation>
 <translation id="7055152154916055070">已禁止重新導向：</translation>
@@ -954,8 +964,10 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7138678301420049075">其他</translation>
 <translation id="7146622961999026732">這些網站和應用程式似乎對您很重要：</translation>
 <translation id="7149893636342594995">最近 24 小時</translation>
+<translation id="7155317020660659215">如要掃瞄 QR 碼，請將設定變更為允許 Chrome 使用攝錄機</translation>
 <translation id="7173114856073700355">開啟設定</translation>
 <translation id="7177466738963138057">您稍後可在「設定」中作出變更</translation>
+<translation id="7177873915659574692">無法建立 QR 碼。網址超過 <ph name="CHARACTER_LIMIT" /> 個字元。</translation>
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7187993566681480880">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性。</translation>
 <translation id="718926126787620637">書籤資料夾清單宜家顯示喺成個畫面</translation>
@@ -1005,6 +1017,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7481864133709957613">如要在此頁面上搜尋，請輕觸並按住 (而非輕按) 字詞</translation>
 <translation id="7482656565088326534">預覽分頁</translation>
 <translation id="7484997419527351112">探索 - 關閉</translation>
+<translation id="7485033510383818941">如要重新整理動態提醒內容，請將頁面往下拉</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (上次更新： <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">已節省的數據用量</translation>
 <translation id="7498271377022651285">請稍候…</translation>
@@ -1034,6 +1047,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7630202231528827509">供應商網址</translation>
 <translation id="7638584964844754484">複雜密碼不正確</translation>
 <translation id="7641339528570811325">清除瀏覽資料…</translation>
+<translation id="764170292089748542">當您選擇私下瀏覽內容時，Chrome 將不會儲存您的瀏覽記錄，但您仍可透過書籤存取喜愛的網站。</translation>
 <translation id="7646772052135772216">密碼同步功能無法正常運作</translation>
 <translation id="7655900163790317559">正在開啟藍牙…</translation>
 <translation id="7658239707568436148">取消</translation>
@@ -1082,6 +1096,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7929962904089429003">開啟選單</translation>
 <translation id="7930998711684428189">密碼因資料外洩而被洩露時接收警告</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> 版本過舊。</translation>
+<translation id="7944772052836377867">同步功能需要驗證您的身分</translation>
 <translation id="7947953824732555851">接受並登入</translation>
 <translation id="7961015016161918242">從來沒有</translation>
 <translation id="7961926449547174351">您已停用儲存空間存取權，請前往「設定」頁面啟用該權限。</translation>
@@ -1113,6 +1128,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="8084114998886531721">已儲存的密碼</translation>
 <translation id="8084285576995584326">控制 Google 帳戶資料</translation>
 <translation id="808747664143081553">已連接裝置</translation>
+<translation id="8088176524274673045">如要與附近的使用者分享，請讓對方掃瞄此 QR 碼</translation>
 <translation id="8103578431304235997">無痕式分頁</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">如要將書籤同步到所有裝置，請開啟同步處理功能</translation>
@@ -1221,6 +1237,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="8788265440806329501">導覽記錄閂咗</translation>
 <translation id="8788968922598763114">重新開啟最近關閉的分頁</translation>
 <translation id="8798449543960971550">讀取</translation>
+<translation id="8805097383171548551">如要掃瞄 QR 碼，請使用有攝錄機的裝置。</translation>
 <translation id="8812260976093120287">在部分網站上，您可以透過裝置使用上述支援的付款應用程式付款。</translation>
 <translation id="881688628773363275">無法查看預覽分頁內容。</translation>
 <translation id="8820817407110198400">書籤</translation>

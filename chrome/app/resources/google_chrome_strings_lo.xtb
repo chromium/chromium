@@ -29,7 +29,6 @@
 <translation id="1597911401261118146">ເພື່ອກວດເບິ່ງວ່າລະຫັດຜ່ານຂອງທ່ານປອດໄພຈາກການລະເມີດຂໍ້ມູນ ແລະ ບັນຫາຄວາມປອດໄພອື່ນຫຼືບໍ່, ກະລຸນາ <ph name="BEGIN_LINK" />ເຂົ້າສູ່ລະບົບ Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">ເພື່ອເຮັດໃຫ້ Chrome ປອດໄພຂຶ້ນ, ພວກເຮົາປິດໃຊ້ງານບາງສ່ວນການ​ຕໍ່​ເຂົ້າ​ຫາ ທີ່​ບໍ່​ໄດ້​ເຮັດ​ເປັນ​ລາຍ​ການ​ໄວ້​ຢູ່​ໃນ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ແລະ​ອາດ​ຈະ​ຖືກ​ເອົາ​ເພີ່ມ​ເຂົ້າ​ໂດຍ​ທີ່​ທ່ານ​ບໍ່​ຮູ້​ຈັກ.</translation>
 <translation id="1628000112320670027">ຂໍຄວາມຊ່ວຍເຫຼືອເລື່ອງ Chrome</translation>
-<translation id="1666409074978194368">ເກືອບໃໝ່ຫຼ້າສຸດແລ້ວ! ເປີດໃຊ້ Google Chrome ຄືນໃໝ່ເພື່ອສຳເລັດການອັບເດດ. ໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນຈະບໍ່ເປີດຄືນໃໝ່.</translation>
 <translation id="1674870198290878346">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chrome</translation>
 <translation id="1682634494516646069">Google Chrome ບໍ່ສາມາດອ່ານ ແລະຂຽນໄປໃສ່ໄດເຣັກຕໍຣີຂໍ້ມູນຂອງມັນ:
 
@@ -91,6 +90,7 @@
 <translation id="2847461019998147611">ສະ​ແດງ Google Chrome ເປັນພາສານີ້</translation>
 <translation id="2857540653560290388">ກຳລັງເປີດໃຊ້ Chrome...</translation>
 <translation id="2857972467023607093">ມີໂປຣໄຟລ໌ Chrome ກັບບັນຊີນີ້ຢູ່ກ່ອນແລ້ວ</translation>
+<translation id="2861074815332034794">ກຳລັງອັບເດດ Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">ທ່ານລົງຊື່ເຂົ້າໃຊ້ Chrome ແລ້ວ.</translation>
 <translation id="2885378588091291677">ຕົວຈັດການໜ້າວຽກ</translation>
 <translation id="2888126860611144412">ກ່ຽວ​ກັບ Chrome</translation>
@@ -180,12 +180,12 @@
 <translation id="5193136243808726294">Google Chrome OS ບໍ່ສາມາດເປີດໜ້ານີ້ໄດ້.</translation>
 <translation id="521447420733633466">ຖ້າທ່ານໃຊ້ອຸປະກອນຮ່ວມກັນ, ໝູ່ ແລະ ຄອບຄົວສາມາດທ່ອງເວັບແຍກກັນ ແລະ ຕັ້ງຄ່າ Chrome ໃນແບບທີ່ເຂົາເຈົ້າຕ້ອງການໄດ້</translation>
 <translation id="5251420635869119124">ແຂກສາມາດໃຊ້  Chrome ໂດຍ​ບໍ່​ມີ​ການປະອັນໃດໄວ້ເບື້ອງຫຼັງໄດ້.</translation>
+<translation id="5251679006894510177">ອັບເດດໃກ້ແລ້ວໆ! ເລີ່ມເປີດໃຊ້ Chrome ໃໝ່ເພື່ອອັບເດດໃຫ້ແລ້ວ. ໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນຈະບໍ່ເປີດຄືນໃໝ່.</translation>
 <translation id="5386244825306882791">ມັນຍັງຄວບຄຸມວ່າຈະໃຫ້ສະແດງໜ້າໃດຂຶ້ນ ເມື່ອທ່ານເລີ່ມຕົ້ນເປີດ Chrome ຫຼືຄົ້ນຫາຈາກ Omnibox.</translation>
 <translation id="5394833366792865639">ແບ່ງປັນແຖບ Chrome</translation>
 <translation id="5430073640787465221">ໄຟລ໌ທີ່ມັກຂອງທ່ານຂັດຂ້ອງ ຫຼືໃຊ້ບໍ່ໄດ້.
 
 Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ່າໄດ້.</translation>
-<translation id="5434383153637353914">ໜ້ານີ້ອະນຸຍາດໃຫ້ທ່ານຈັດການບັນຊີ Google ທີ່ເຂົ້າສູ່ລະບົບຂອງທ່ານ. ບັນຊີເຫຼົ່ານີ້ຈະມີໃຫ້ນຳໃຊ້ໃນໂປຣແກຣມທ່ອງເວັບ Chrome ແລະ ແອັບ Play Store, ເຊັ່ນດຽວກັບການບໍລິການຕ່າງໆ ເຊັ່ນ: Gmail, Drive ແລະ YouTube. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />ກ່ອນທີ່ພວກເຮົາຈະເລີ່ມ, ກະລຸນາກວດສອບວ່າທ່ານສຳຮອງຂໍ້ມູນຫຼ້າສຸດຂອງທ່ານໄວ້ແລ້ວ. ການຕິດຕັ້ງ Chrome OS ຈະຂຽນທັບຂໍ້ມູນທັງໝົດຢູ່ຮາດໄດຣຟ໌ຂອງທ່ານ.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Google ບໍ່ຮັບຜິດຊອບຕໍ່ການສູນເສຍຂໍ້ມູນໃດກໍຕາມ ແລະ ບໍ່ຮັບປະກັນວ່າ Chrome OS ຈະເຮັດວຽກໄດ້ຢູ່ຮຸ່ນທີ່ບໍ່ໄດ້ຮັບການຮັບຮອງ. ກະລຸນາເຂົ້າໄປ [TBD] ເພື່ອສຶກສາເພີ່ມເຕີມກ່ຽວກັບຮຸ່ນທີ່ໄດ້ຮັບການຮັບຮອງ.<ph name="END_PARAGRAPH2" />
           <ph name="BEGIN_PARAGRAPH3" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການຕິດຕັ້ງ Chrome OS ແລະ ການລຶບຂໍ້ມູນ: [TBD URL]<ph name="END_PARAGRAPH3" />
@@ -219,11 +219,9 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6235018212288296708">ກົດລະບຽບຂາເຂົ້າສໍາລັບ Google Chrome ເພື່ອອະນຸຍາດໃຫ້ການຈາລະຈອນ mDNS.</translation>
 <translation id="6291089322031436445">ແອັບ Chrome Dev</translation>
 <translation id="6291549208091401781">ຕິດຕັ້ງ Google Chrome ສຳລັບຜູ້ໃຊ້ທຸກຄົນໃນຄອມພິວເຕີຂອງທ່ານແລ້ວ.</translation>
-<translation id="6338556085225130112">ກໍາລັງອັບເດດ Google Chrome</translation>
 <translation id="6368958679917195344">Chrome OS ເຮັດໃຫ້ເປັນໄປໄດ້ໂດຍ <ph name="BEGIN_LINK_CROS_OSS" />ຊອບແວ open source<ph name="END_LINK_CROS_OSS" /> ເພີ່ມເຕີມ.</translation>
 <translation id="6418662306461808273">ສະຫຼັບໄປຫາໂປຣໄຟລ໌ Chrome ທີ່ມີຢູ່ກ່ອນແລ້ວບໍ?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
-<translation id="6566149418543181476">ກຳລັງອັບເດດ Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">ລະບົບ Chrome OS</translation>
 <translation id="664235759707825982">ພ້ອມຕິດຕັ້ງ Chrome OS ແລ້ວ</translation>
 <translation id="6676384891291319759">ການເຂົ້າຫາອິນເຕີເນັດ</translation>
@@ -232,12 +230,14 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6750954913813541382">ເພື່ອແກ້ໄຂຂໍ້ຜິດພາດກ່ຽວກັບການສະກົດຄຳ, Chrome ສົ່ງຂໍ້ຄວາມທີ່ທ່ານພິມໃນໂປຣແກຣມທ່ອງເວັບໃຫ້ Google</translation>
 <translation id="677276454032249905">ຢືນຢັນການອອກຈາກ Chrome ບໍ?</translation>
 <translation id="683440813066116847">ກົດລະບຽບຂາເຂົ້າສໍາລັບ Google Chrome Canary ເພື່ອອະນຸຍາດໃຫ້ການຈາລະຈອນ mDNS.</translation>
+<translation id="6881299373831449287">ກຳລັງອັບເດດ Chrome</translation>
 <translation id="6885412569789873916">ແອັບ Chrome Beta</translation>
 <translation id="6943584222992551122">ຂໍ້ມູນການທ່ອງເວັບຂອງບຸກຄົນນີ້ຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້. ເພື່ອກູ້ຂໍ້ມູນຄືນມາ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ເປັນ <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">ກົດລະບຽບຂາເຂົ້າສໍາລັບ Google Chrome Beta ເພື່ອອະນຸຍາດການຮັບສົ່ງຂໍ້ມູນ mDNS.</translation>
 <translation id="6989339256997917931">ອັບເດດ Google Chrome ແລ້ວ, ແຕ່ທ່ານບໍ່ໄດ້ໃຊ້ມັນເປັນເວລາຢ່າງໜ້ອຍ 30 ວັນແລ້ວ​.</translation>
 <translation id="7025800014283535195">ທ່ານສາມາດສະຫຼັບລະຫວ່າງໂປຣໄຟລ໌ Chrome ໄດ້ຢູ່ບ່ອນນີ້</translation>
 <translation id="7062128746136194023">ພໍ່ແມ່ຂອງທ່ານໄດ້ປິດ "ການອະນຸຍາດສຳລັບເວັບໄຊ, ແອັບ ແລະ ສ່ວນຂະຫຍາຍ" ສຳລັບ Chrome ແລ້ວ. ການເພີ່ມ <ph name="EXTENSION_TYPE_PARAMETER" /> ນີ້ບໍ່ໄດ້ຮັບອະນຸຍາດ.</translation>
+<translation id="7088681679121566888">Chrome ໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
 <translation id="7098166902387133879">Google Chrome ກໍາລັງໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ.</translation>
 <translation id="7106741999175697885">ຕົວຈັດການໜ້າວຽກ - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{ມີການອັບເດດໃໝ່ສຳລັບ Chrome ແລະ ຈະນຳໃຊ້ໃນທັນທີທີ່ທ່ານເປີດໃຊ້ຄືນໃໝ່.}=1{ມີການອັບເດດໃໝ່ສຳລັບ Chrome ແລະ ຈະນຳໃຊ້ໃນທັນທີທີ່ທ່ານເປີດໃຊ້ຄືນໃໝ່. ໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານຈະບໍ່ເປີດຄືນໃໝ່.}other{ມີການອັບເດດໃໝ່ສຳລັບ Chrome ແລະ ຈະນຳໃຊ້ໃນທັນທີທີ່ທ່ານເປີດໃຊ້ຄືນໃໝ່. ໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານ # ລາຍການຈະບໍ່ເປີດຄືນໃໝ່.}}</translation>
@@ -269,7 +269,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7801699035218095297">Google Chrome ກໍາລັງພະຍາຍາມສຳເນົາລະຫັດຜ່ານ. ພິມລະຫັດຜ່ານ Windows ຂອງທ່ານ ເພື່ອອະນຸຍາດອັນນີ້.</translation>
 <translation id="7808348361785373670">ເອົາ​ອອກ​ໄປຈາກ Chrome...</translation>
 <translation id="7825851276765848807">ການ​ຕິດ​ຕັ້ງ​ບໍ່​ສໍາ​ເລັດ ​ເນື່ອງ​ຈາກ​ຄວາມຜິດພາດທີ່ບໍ່ໄດ້ລະບຸ​. ກະ​ລຸ​ນາ​ດາວ​ໂຫລດ Google Chrome ອີກ​.</translation>
-<translation id="7855730255114109580">Google Chrome ແມ່ນເວີຊັນໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
 <translation id="7890208801193284374">ຖ້າທ່ານແຊຣ໌ຄອມພິວເຕີ, ໝູ່​ເພື່ອນ ແລະຄອບຄົວຂອງທ່ານສາມາດທ່ອງເນັດໄດ້ແຍກຕ່າງຫາກ ແລະຕັ້ງ Chrome ​ໃນແບບ​ທີ່​ພວກ​ເຂົາຕ້ອງການ.</translation>
 <translation id="7896673875602241923">ຄົນອື່ນເຄີຍເຂົ້າສູ່ລະບົບ Chrome ໃນຄອມພິວເຕີນີ້ເປັນ <ph name="ACCOUNT_EMAIL_LAST" /> ມາກ່ອນແລ້ວ. ກະລຸນາສ້າງຜູ້ໃຊ້ Chrome ໃໝ່ເພື່ອເກັບຂໍ້ມູນຂອງທ່ານໃຫ້ແຍກກັນຕ່າງຫາກ.</translation>
 <translation id="7930071585467473040">Google Chrome ກໍາລັງພະຍາຍາມສຳເນົາລະຫັດຜ່ານ.</translation>

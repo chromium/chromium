@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Scanner</translation>
 <translation id="2570743873672969996">Exécution du test <ph name="TEST_NAME" />…</translation>
 <translation id="2585245331261708204">Nouveautés de Chrome OS</translation>
+<translation id="2619761439309613843">Actualisation quotidienne</translation>
 <translation id="2620436844016719705">Système</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Authentification EAP phase 2</translation>
@@ -121,7 +122,7 @@
 <translation id="3595596368722241419">Batterie pleine</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est protégé par le protocole peu sécurisé WEP 802.1x</translation>
 <translation id="3689839747745352263">Test de <ph name="TEST_NAME" /></translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Rescanner la page}=1{Rescanner la page {PAGE_NUMBER}}one{Rescanner la page {PAGE_NUMBER}}other{Rescanner la page {PAGE_NUMBER}}}</translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Rescanner la page}=1{Rescanner la page {PAGE_NUMBER}}one{Rescanner la page {PAGE_NUMBER}}other{Rescanner les pages {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> avis)</translation>
 <translation id="3748026146096797577">Non connecté</translation>
 <translation id="3749289110408117711">Nom du fichier</translation>
@@ -132,6 +133,7 @@
 <translation id="387301095347517405">Nombre de cycles de charge complets effectués sur votre batterie</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
+<translation id="3966286471246132217">Pour obtenir des résultats plus précis, gardez toutes les applis fermées jusqu'à la fin du test.</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="397105322502079400">Calcul en cours…</translation>
 <translation id="39823212440917567">Les tâches d'impression de plus de <ph name="NUMBER_OF_DAYS" /> jours seront supprimées</translation>
@@ -144,6 +146,7 @@
 <translation id="4176463684765177261">Désactivé</translation>
 <translation id="4227825898293920515">Le mot de passe arrive à expiration dans <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Aucune tâche d'impression en cours</translation>
+<translation id="4244962993387259361">Vous devez avoir au moins 500 Mo d'espace disponible pour exécuter un test de mémoire. Pour libérer de l'espace, allez dans Paramètres &gt; Gestion du stockage.</translation>
 <translation id="4289540628985791613">Présentation</translation>
 <translation id="4297501883039923494">Tâche suspendue - Erreur inconnue</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
@@ -153,7 +156,7 @@
 <translation id="4425149324548788773">Mon Drive</translation>
 <translation id="4429881212383817840">Le ticket Kerberos arrive bientôt à expiration</translation>
 <translation id="4431821876790500265">Voir le rapport</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Supprimer la page}=1{Supprimer la page {PAGE_NUMBER}}one{Supprimer la page {PAGE_NUMBER}}other{Supprimer la page {PAGE_NUMBER}}}</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Supprimer la page}=1{Supprimer la page {PAGE_NUMBER}}one{Supprimer la page {PAGE_NUMBER}}other{Supprimer les pages {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Ancien mot de passe</translation>
 <translation id="4453205916657964690">Masque de sous-réseau</translation>
 <translation id="4454245904991689773">Enregistrer dans</translation>
@@ -318,6 +321,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7172721935181587524">1 image</translation>
 <translation id="7177485034254901881">Votre <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent le configurer à distance.</translation>
+<translation id="7180611975245234373">Actualiser</translation>
 <translation id="7216409898977639127">Opérateur de téléphonie mobile</translation>
 <translation id="7271040990581020067">Le scanner est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

@@ -3,14 +3,13 @@
 <translationbundle lang="zh-HK">
 <translation id="1016765312371154165">Chrome 未正常關閉。</translation>
 <translation id="130631256467250065">您的變更會在下次重新啟動裝置時生效。</translation>
+<translation id="1635457557763038537">您的變更將於下次重新啟動 Chrome 時生效。</translation>
+<translation id="2447485272386224171">Chrome 的開發有賴 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 開放原始碼計劃和其他<ph name="BEGIN_LINK_OSS" />開放原始碼軟件<ph name="END_LINK_OSS" />的協助才得以完成。</translation>
 <translation id="2588322182880276190">Chrome 標誌</translation>
-<translation id="2874156562296220396">Google Chrome 的開發仰賴 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 開放原始碼計劃與其他<ph name="BEGIN_LINK_OSS" />開放原始碼軟件<ph name="END_LINK_OSS" />的協助才得以完成。</translation>
-<translation id="3140883423282498090">您的變更將於下次重新啟動 Google Chrome 時生效。</translation>
 <translation id="3444832043240812445">如果您<ph name="BEGIN_LINK" />啟用當機報告功能<ph name="END_LINK" />，這個頁面只會顯示最近的當機資料。</translation>
 <translation id="3875312571075912821">在防火牆或防毒軟件設定中允許 Chrome 存取
           網絡。</translation>
 <translation id="4010643444566880169">Chrome OS 的初始設定尚未完成。</translation>
-<translation id="4853578032408195113">您正在查看安全的 Google Chrome 頁面</translation>
 <translation id="5005121315113832363">Chrome 已封鎖此頁面</translation>
 <translation id="6011049234605203654">前往
           [Chrome 選單] &gt;
@@ -38,6 +37,7 @@
           &gt;
           [區域網絡設定]
           然後取消剔選 [在您的區域網絡使用 Proxy 伺服器] 選框。</translation>
+<translation id="7230956101631259640">您正在查看安全的 Chrome 頁面</translation>
 <translation id="8187289872471304532">前往
           [應用程式] &gt; [系統偏好設定] &gt; [網絡] &gt; [進階] &gt; [Proxy]
           然後取消剔選所有已選取的 Proxy。</translation>

@@ -8,6 +8,10 @@
 <translation id="1047726139967079566">Bookmark Halaman Ini...</translation>
 <translation id="1049743911850919806">Samaran</translation>
 <translation id="105093091697134113">Akun berikut ini menggunakan sandi yang terekspos dalam pelanggaran data pihak ketiga atau yang dimasukkan di sebuah situs yang menipu. Segera ubah sandi ini untuk menjaga keamanan akun Anda.</translation>
+<translation id="105214722824962652">Anda tidak akan logout dari Akun Google Anda. <ph name="BEGIN_LINK" />Bentuk aktivitas lainnya<ph name="END_LINK" /> dapat disimpan di Akun Google Anda saat login. Anda dapat menghapusnya kapan saja.
+
+        
+Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk menghapus histori penelusuran Anda, jika memungkinkan.</translation>
 <translation id="1063454504051558093">Gunakan Sandi Lain...</translation>
 <translation id="1066060668811609597">Kelola Sinkronisasi</translation>
 <translation id="1076421457278169141">Kode telah dipindai</translation>
@@ -132,6 +136,7 @@
 <translation id="2320166752086256636">Sembunyikan keyboard</translation>
 <translation id="2339560363438331454">Sinkronisasi dan Layanan Google</translation>
 <translation id="2351097562818989364">Setelan terjemah telah direset.</translation>
+<translation id="235789365079050412">Kebijakan Privasi Google</translation>
 <translation id="2359043044084662842">Terjemahkan</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2360196772093551345">Minta Situs Seluler</translation>
@@ -204,6 +209,10 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="298306318844797842">Tambahkan Metode Pembayaran...</translation>
 <translation id="2989805286512600854">Buka di Tab Baru</translation>
 <translation id="3037605927509011580">Yah!</translation>
+<translation id="3076846064362030967">Anda tidak akan logout dari Akun Google Anda. <ph name="BEGIN_LINK" />Bentuk aktivitas lainnya<ph name="END_LINK" /> dapat disimpan di Akun Google Anda saat login. Anda dapat menghapusnya kapan saja.
+
+
+Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memungkinkan.</translation>
 <translation id="3080525922482950719">Anda dapat menyimpan halaman untuk dibaca nanti atau saat offline</translation>
 <translation id="3081338492074632642">Pastikan sandi yang Anda simpan cocok dengan sandi untuk <ph name="WEBSITE" /></translation>
 <translation id="3112556859945124369">Tandai…</translation>
@@ -328,7 +337,6 @@ Ikuti langkah di bawah:</translation>
 <translation id="4375040482473363939">Telusuri kode QR</translation>
 <translation id="4378154925671717803">Ponsel</translation>
 <translation id="4389019817280890563">Ketuk untuk mengubah bahasa.</translation>
-<translation id="441868831736628555">Notifikasi Privasi</translation>
 <translation id="4454246407045105932">Tambahkan Bahasa</translation>
 <translation id="4469418912670346607">Lanjutkan Penyiapan</translation>
 <translation id="4476574785019001431">Setelan</translation>
@@ -404,6 +412,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5140288047769711648">Chrome akan mengingat sandi ini untuk Anda. Anda tidak perlu mengingatnya.</translation>
 <translation id="5150492518600715772">Kirim ke Perangkat Anda</translation>
 <translation id="5168414296986405587">Dibuat untuk iPadOS</translation>
+<translation id="5173088371991956744">Sinkronisasi Perlu Memverifikasi Diri Anda</translation>
 <translation id="5181140330217080051">Mendownload</translation>
 <translation id="5186185447130319458">Pribadi</translation>
 <translation id="5188482106078495165">Setelan cookie berlaku untuk semua tab. Untuk menerapkan setelan baru pada tab yang terbuka, muat ulang tab.</translation>
@@ -586,6 +595,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6730682669179532099">Tidak Dapat Mengekspor Sandi</translation>
 <translation id="6748108480210050150">Dari</translation>
 <translation id="6760509555861141183">Kembali ke Tab Terbaru</translation>
+<translation id="6762812039470893796">Batalkan Semua Pilihan</translation>
 <translation id="6780034285637185932">Kode Pos</translation>
 <translation id="6785453220513215166">Mengirim laporan kerusakan...</translation>
 <translation id="6797885426782475225">Penelusuran Suara</translation>
@@ -714,6 +724,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="802154636333426148">Download gagal</translation>
 <translation id="8023878949384262191">Luaskan bagian.</translation>
 <translation id="8027581147000338959">Buka di Jendela Baru</translation>
+<translation id="804225253087497565"><ph name="BEGIN_LINK" />Histori penelusuran<ph name="END_LINK" /> dan <ph name="BEGIN_LINK" />bentuk aktivitas lainnya<ph name="END_LINK" /> dapat disimpan di Akun Google Anda saat login. Anda dapat menghapusnya kapan saja.</translation>
 <translation id="804427445359061970">Tab Anda dari perangkat lain akan ditampilkan di sini</translation>
 <translation id="8059533439631660104">Ciutkan bagian.</translation>
 <translation id="8065292699993359127">Buka URL di Chrome dalam mode Samaran</translation>

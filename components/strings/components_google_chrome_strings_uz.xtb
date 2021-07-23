@@ -3,13 +3,12 @@
 <translationbundle lang="uz">
 <translation id="1016765312371154165">Chrome brauzerining ishi noto‘g‘ri tugatilgan.</translation>
 <translation id="130631256467250065">O‘zgartirishlar qurimla qaytadan ishga tushirilganda kuchga kiradi.</translation>
+<translation id="1635457557763038537">Oʻzgartirishlar Google Chrome qaytadan ishga tushirilganda kuchga kiradi.</translation>
+<translation id="2447485272386224171">Google Chrome paydo boʻlishida <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ochiq kodli loyihasi va boshqa <ph name="BEGIN_LINK_OSS" />ochiq kodli dasturiy taʼminotlarning<ph name="END_LINK_OSS" /> katta oʻrni bor.</translation>
 <translation id="2588322182880276190">Chrome logotipi</translation>
-<translation id="2874156562296220396">Google Chrome paydo bo‘lishida <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ochiq kodli loyihasi va boshqa <ph name="BEGIN_LINK_OSS" />ochiq kodli dasturiy ta’minotlarning<ph name="END_LINK_OSS" /> katta o‘rni bor.</translation>
-<translation id="3140883423282498090">O‘zgartirishlar Google Chrome qaytadan ishga tushirilganda kuchga kiradi.</translation>
 <translation id="3444832043240812445">Yaqinda yuz bergan ishdan chiqishlar haqidagi ma’lumotlar bu sahifada faqatgina <ph name="BEGIN_LINK" />ishdan chiqishlar hisoboti funksiyasi yoniq bo‘lganda<ph name="END_LINK" /> ko‘rsatiladi.</translation>
 <translation id="3875312571075912821">Himoya devori yoki antivirus dasturi sozlamalari orqali Chrome brauzeriga tarmoqqa ulanishiga ruxsat bering</translation>
 <translation id="4010643444566880169">Chrome OS boshlang‘ich sozlamalarni yakunlay olmadi.</translation>
-<translation id="4853578032408195113">Xavfsiz Google Chrome sahifasini ko‘rmoqdasiz.</translation>
 <translation id="5005121315113832363">Bu sahifa Chrome tomonidan bloklandi</translation>
 <translation id="6011049234605203654">Bu yerga o‘ting:
           Chrome menyusi &gt;
@@ -30,6 +29,7 @@ tanlang &gt;
 <ph name="PROXIES_TITLE" />
 LAN sozlamalariga kirib,
 “LAN uchun proksi-serverdan foydalanish” bandidan belgini olib tashlang.</translation>
+<translation id="7230956101631259640">Xavfsiz Google Chrome sahifasini koʻrmoqdasiz.</translation>
 <translation id="8187289872471304532">Bu yerga o‘ting
           Dasturlar &gt; Tizim sozlamalari &gt; Tarmoq &gt; Qo‘shimcha &gt; Proksi
           va barcha proksi-serverlardan bayroqchalarni yechib qo‘ying.</translation>

@@ -16,7 +16,6 @@
 <translation id="1056775291175587022">Ցանց չկա</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />՝ <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Փոխարինեք կամ լիցքավորեք մարտկոցը</translation>
-<translation id="1077253978657569125">Մենք ուզում ենք բարելավել սա</translation>
 <translation id="108486256082349153">Բջջային՝ <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Բարի օր, <ph name="GIVEN_NAME" /></translation>
 <translation id="109942774857561566">Ձանձրանում եմ</translation>
@@ -420,6 +419,7 @@
 <translation id="4274537685965975248">«Ctrl + Alt + վար սլաք» ստեղնային դյուրանցումը փոփոխվել է։ End ստեղնի գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + աջ սլաք» ստեղնային դյուրանցումը։</translation>
 <translation id="4279490309300973883">Հայելապատճենում</translation>
 <translation id="4285498937028063278">Ապամրացնել</translation>
+<translation id="4292904812939562398">Վերջերս օգտագործված հավելվածներ</translation>
 <translation id="429402653707266969">Փոխել գործիքագոտու տեղադրությունը</translation>
 <translation id="4294319844246081198">Բարի լույս, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Մաքրել բոլոր <ph name="COUNT" /> ծանուցումները</translation>

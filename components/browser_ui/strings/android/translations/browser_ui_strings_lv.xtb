@@ -3,7 +3,6 @@
 <translationbundle lang="lv">
 <translation id="1006017844123154345">Atvērt tiešsaistē</translation>
 <translation id="1044891598689252897">Vietnes darbosies normāli</translation>
-<translation id="1100504063505580045">Pašreizējā ikona</translation>
 <translation id="1124090076051167250">Tiks notīrīti dati un sīkfaili (<ph name="DATASIZE" />), ko glabā vietnes vai lietotnes jūsu sākuma ekrānā.</translation>
 <translation id="1178581264944972037">Pauzēt</translation>
 <translation id="1181037720776840403">Noņemt</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Izslēgt video skaņu</translation>
 <translation id="3596414637720633074">Inkognito režīmā bloķēt trešo pušu sīkfailus</translation>
 <translation id="3600792891314830896">Izslēgt skaņu vietnēm, kurās tiek atskaņota skaņa</translation>
-<translation id="365089839707261811">Pārskatiet nosaukuma izmaiņas</translation>
 <translation id="3744111561329211289">Sinhronizācija fonā</translation>
 <translation id="3763247130972274048">Divreiz pieskarieties videoklipam pa labi vai pa kreisi, lai izlaistu 10 s.</translation>
 <translation id="381841723434055211">Tālruņa numuri</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Vietne atskaņo multivides saturu</translation>
 <translation id="42981349822642051">Izvērst</translation>
 <translation id="4336434711095810371">Notīrīt visus datus</translation>
-<translation id="4339203724549370495">Atinstalēt lietotni</translation>
 <translation id="4402755511846832236">Nerādīt vietnēm, kad jūs aktīvi lietojat šo ierīci</translation>
 <translation id="4434045419905280838">Uznirstošie elem. un novirzīšana</translation>
 <translation id="445467742685312942">Ļaut vietnēm atskaņot aizsargātu saturu</translation>
@@ -135,12 +132,12 @@
 <translation id="4670064810192446073">Virtuālā realitāte</translation>
 <translation id="4708011789095599544">Vai tiešām vēlaties notīrīt šīs vietnes sīkfailus un citus datus?</translation>
 <translation id="4751476147751820511">Kustību vai gaismas sensori</translation>
-<translation id="4800839971935185386">Pārskatiet nosaukuma un ikonas izmaiņas</translation>
 <translation id="4836046166855586901">Vaicāt, ja vietne vēlas zināt, kad jūs aktīvi lietojat šo ierīci</translation>
 <translation id="4883854917563148705">Pārvaldītos iestatījumus nevar atiestatīt</translation>
 <translation id="4887024562049524730">Vaicāt, pirms atļaut vietnēm piekļūt jūsu virtuālās realitātes ierīcei un datiem (ieteicams)</translation>
 <translation id="4962975101802056554">Atsaukt visas atļaujas, kas piešķirtas ierīcei</translation>
 <translation id="497421865427891073">Doties uz priekšu</translation>
+<translation id="4976702386844183910">Pēdējoreiz apmeklēta: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nav atrasta neviena kontaktpersona</translation>
 <translation id="4996978546172906250">Kopīgošanas veids:</translation>
 <translation id="5039804452771397117">Atļaut</translation>
@@ -151,6 +148,7 @@
 <translation id="5123685120097942451">Inkognito cilne</translation>
 <translation id="5186036860380548585">Opcija pieejama ekrāna augšdaļā</translation>
 <translation id="5197729504361054390">Atlasīto kontaktpersonu dati tiks kopīgoti ar vietni <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">Pēdējoreiz apmeklēta šodien</translation>
 <translation id="528192093759286357">Lai izietu no pilnekrāna režīma, velciet no augšas un pieskarieties pogai Atpakaļ.</translation>
 <translation id="5300589172476337783">Rādīt</translation>
 <translation id="5301954838959518834">Labi, sapratu</translation>
@@ -164,7 +162,6 @@
 <translation id="5403592356182871684">Nosaukumi</translation>
 <translation id="5489227211564503167">Pagājušais laiks: <ph name="ELAPSED_TIME" /> (no <ph name="TOTAL_TIME" />)</translation>
 <translation id="5494752089476963479">Bloķēt reklāmas vietnēs, kurās tiek rādītas traucējošas vai maldinošas reklāmas</translation>
-<translation id="549957179819296104">Jaunā ikona</translation>
 <translation id="5502860503640766021">Atļauta: <ph name="PERMISSION_1" />, bloķēta: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Vietnēs nevar lūgt atļauju sūtīt paziņojumus</translation>
 <translation id="5516455585884385570">Atvērt paziņojumu iestatījumus</translation>
@@ -181,6 +178,7 @@
 <translation id="5804241973901381774">Atļaujas</translation>
 <translation id="5860033963881614850">Izsl.</translation>
 <translation id="5876056640971328065">Apturēt video atskaņošanu</translation>
+<translation id="5887687176710214216">Pēdējoreiz apmeklēta vakar</translation>
 <translation id="5916664084637901428">Iesl.</translation>
 <translation id="5922853908706496913">Notiek jūsu ekrāna kopīgošana</translation>
 <translation id="5939518447894949180">Atiestatīt</translation>
@@ -210,6 +208,7 @@
 <translation id="6527303717912515753">Kopīgot</translation>
 <translation id="6545864417968258051">Bluetooth meklēšana</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}zero{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}one{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}other{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}}</translation>
+<translation id="6554732001434021288">Pēdējoreiz apmeklēta pirms <ph name="NUM_DAYS" /> dienām</translation>
 <translation id="6561560012278703671">Izmantot neuzkrītošāku ziņojumapmaiņu (bloķēt paziņojumu uzvednes, lai tās jūs netraucētu)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Aizsargāts saturs</translation>
@@ -251,7 +250,6 @@
 <translation id="7589445247086920869">Aizliegšana pašreizējai meklētājprogrammai</translation>
 <translation id="7649070708921625228">Palīdzība</translation>
 <translation id="7658239707568436148">Atcelt</translation>
-<translation id="7734541938181328224">Pārskatiet ikonas izmaiņas</translation>
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7791543448312431591">Pievienot</translation>
 <translation id="780301667611848630">Nē, paldies</translation>
@@ -293,7 +291,6 @@
 <translation id="8487700953926739672">Pieejams bezsaistē</translation>
 <translation id="851751545965956758">Neļaut vietnēm izveidot savienojumu ar ierīci</translation>
 <translation id="8525306231823319788">Pilnekrāna režīms</translation>
-<translation id="857074314439694500">Ja šī tīmekļa lietotne ir maldinošs citas lietotnes atdarinājums, atinstalējiet to.</translation>
 <translation id="857943718398505171">Atļauta (ieteicams)</translation>
 <translation id="8609465669617005112">Virziet uz augšu</translation>
 <translation id="8676374126336081632">Notīrīt ievadi</translation>

@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Որոնել</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" />ը ստուգվում է…</translation>
 <translation id="2585245331261708204">Ինչ է փոխվել Chrome OS-ում</translation>
+<translation id="2619761439309613843">Ամենօրյա թարմացում</translation>
 <translation id="2620436844016719705">Համակարգ</translation>
 <translation id="2740531572673183784">Եղավ</translation>
 <translation id="2751739896257479635">EAP նույնականացման փուլ 2</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Մասամբ ակտիվացված</translation>
 <translation id="3527036260304016759">Չհաջողվեց տպել – Անհայտ սխալ</translation>
 <translation id="3532980081107202182">Մնացել է մոտ <ph name="MIN_REMAINING" /> րոպե</translation>
+<translation id="3540383942695635079">MAC-հասցե</translation>
 <translation id="357889014807611375">սահմանափակ Wi-Fi</translation>
 <translation id="3595596368722241419">Մարտկոցը լրիվ լիցքավորված է</translation>
 <translation id="360565022852130722">Wi-Fi ցանցը պաշտպանված է WEP 802.1x թույլ հաղորդակարգով</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Քանի անգամ է ձեր մարտկոցն ամբողջությամբ լիցքավորվել</translation>
 <translation id="3941014780699102620">Չհաջողվեց ճանաչել խնամորդը</translation>
 <translation id="3942420633017001071">Դիագնոստիկա</translation>
+<translation id="3966286471246132217">Ավելի ճշգրիտ արդյունքներ ստանալու համար փակեք բոլոր հավելվածները, մինչև որ փորձարկումը չավարտվի։</translation>
 <translation id="3967822245660637423">Ներբեռնումն ավարտվեց</translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
 <translation id="39823212440917567">Տպման առաջադրանքները, որոնք <ph name="NUMBER_OF_DAYS" /> օրից հին են, կհեռացվեն</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Անջատված է</translation>
 <translation id="4227825898293920515">Գաղտնաբառի գործողության ժամկետը <ph name="TIME" />ից կսպառվի</translation>
 <translation id="4238516577297848345">Տպելու ընթացիկ առաջադրանքներ չկան</translation>
+<translation id="4244962993387259361">Հիշողության ստուգումը գործարկելու համար ձեզ անհրաժեշտ է նվազագույնը 500 ՄԲ ազատ տարածք։ Տարածք ազատելու համար անցեք Կարգավորումներ &gt; Հիշողության կառավարում։</translation>
 <translation id="4289540628985791613">Համատեսք</translation>
 <translation id="4297501883039923494">Դադարեցվել է – Անհայտ սխալ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> պատկեր</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Չհաջողվեց փինգ ուղարկել չկանխադրված ցանցի անցախուցին</translation>
 <translation id="4511264077854731334">Պորտալ</translation>
+<translation id="4536864596629708641">IP-ի կազմաձևում</translation>
 <translation id="4548483925627140043">Ազդանշան չի գտնվել</translation>
 <translation id="455835558791489930">Մարտկոց՝ <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="4562494484721939086">Ցանցը չի գտնվել</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />։ Հպեք Enter՝ տպումը չեղարկելու համար։</translation>
 <translation id="4646949265910132906">Ապահով Wi-Fi կապ</translation>
 <translation id="4652335678334611408">Պահել աշխատաշրջանի տվյալները</translation>
+<translation id="4654549501020883054">Փոխել ամեն օր</translation>
 <translation id="4665014895760275686">Արտադրող</translation>
 <translation id="467510802200863975">Գաղտնաբառերը չեն համընկնում</translation>
 <translation id="467715984478005772">Հնարավոր է, որ հրապատ կա</translation>
@@ -318,6 +324,7 @@
 <translation id="7162487448488904999">Ցուցասրահ</translation>
 <translation id="7172721935181587524">1 պատկեր</translation>
 <translation id="7177485034254901881">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից։ Ադմինիստրատորները կարող են հեռակա փոխել սարքի կարգավորումները։</translation>
+<translation id="7180611975245234373">Թարմացնել</translation>
 <translation id="7216409898977639127">Բջջային օպերատոր</translation>
 <translation id="7271040990581020067">Սկաներն այս պահին օգտագործվում է։ Փորձեք ավելի ուշ։</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@
 <translation id="8498220429738806196">Թրաֆիկի հաշվիչներ</translation>
 <translation id="8503813439785031346">Օգտանուն</translation>
 <translation id="8503836310948963452">Սպասեք ևս մի քանի րոպե…</translation>
+<translation id="8521021929829989041">Օգտագործել անձնական սարք</translation>
 <translation id="8528615187455571738">CrosVm</translation>
 <translation id="8575298406870537639">Ձեր օպերատորի ցանցին միանալու համար կարող է պահանջվել, որ միացնեք այս կարգավորումը։ Մանրամասների համար դիմեք ձեր օպերատորին։</translation>
 <translation id="8576249514688522074">Սկզբնավորված չէ</translation>
@@ -402,7 +410,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Պաստառ</translation>
 <translation id="8845001906332463065">Օգնություն</translation>
-<translation id="8868741746785112895">Համընդհանուր եզակի նույնացուցիչ (GUID)</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Փորձարկումը հաջողվեց</translation>
 <translation id="8898840733695078011">Ազդանշանի հզորությունը</translation>
 <translation id="8910721771319628100">Կանխադրված ցանցը հապաղման սահմանափակման նկատմամբ առավելություն ունի</translation>

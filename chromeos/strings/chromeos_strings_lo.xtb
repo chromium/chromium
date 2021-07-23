@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">ສະແກນ</translation>
 <translation id="2570743873672969996">ກຳລັງເອີ້ນໃຊ້ການທົດສອບ <ph name="TEST_NAME" />...</translation>
 <translation id="2585245331261708204">ມີຫຍັງໃໝ່ກັບ Chrome OS</translation>
+<translation id="2619761439309613843">ການໂຫຼດຂໍ້ມູນໃໝ່ປະຈຳວັນ</translation>
 <translation id="2620436844016719705">ລະ​ບົບ</translation>
 <translation id="2740531572673183784">ຕົກລົງ</translation>
 <translation id="2751739896257479635">ການຮັບຮອງຄວາມຖືກຕ້ອງ EAP ໄລຍະທີ 2</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">ເປີດ​​ໃຊ້ງານ​ບາງ​ສ່ວນເທົ່ານັ້ນ</translation>
 <translation id="3527036260304016759">ບໍ່ສຳເລັດ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
 <translation id="3532980081107202182">ຍັງເຫຼືອອີກປະມານ <ph name="MIN_REMAINING" /> ນາທີ</translation>
+<translation id="3540383942695635079">ທີ່ຢູ່ MAC</translation>
 <translation id="357889014807611375">Wi-Fi ທີ່ວັດແທກການໃຊ້ອິນເຕີເນັດ</translation>
 <translation id="3595596368722241419">ແບັດເຕີຣີເຕັມ</translation>
 <translation id="360565022852130722">ເຄືອຂ່າຍ WiFi ມີການຮັກສາຄວາມປອດໄພດ້ວຍໂປຣໂຕຄໍ WEP 802.1x ທີ່ບໍ່ຮັດກຸມ</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">ຈຳນວນເທື່ອທີ່ແບັດເຕີຣີຂອງທ່ານມີຮອບການສາກໄຟເຕັມ.</translation>
 <translation id="3941014780699102620">ແກ້ໄຂບັນຫາໂຮສບໍ່ສຳເລັດ</translation>
 <translation id="3942420633017001071">ການກວດວິເຄາະບັນຫາ</translation>
+<translation id="3966286471246132217">ເພື່ອຮັບຜົນການຊອກຫາທີ່ມີຄວາມຖືກຕ້ອງຍິ່ງຂຶ້ນ, ໃຫ້ປິດແອັບທັງໝົດຈົນກວ່າການທົດສອບຈະສຳເລັດ.</translation>
 <translation id="3967822245660637423">ດາວ​ໂຫຼດ​ສຳ​ເລັດ</translation>
 <translation id="397105322502079400">ກໍາລັງຄິດ​ໄລ່...</translation>
 <translation id="39823212440917567">ວຽກພິມທີ່ເກົ່າກວ່າ <ph name="NUMBER_OF_DAYS" /> ມື້ຈະຖືກລຶບອອກ</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">ປິດໃຊ້ງານແລ້ວ</translation>
 <translation id="4227825898293920515">ລະຫັດຜ່ານໝົດອາຍຸໃນ <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ບໍ່ມີວຽກການພິມທີ່ພວມດຳເນີນຢູ່</translation>
+<translation id="4244962993387259361">ທ່ານຕ້ອງມີພື້ນທີ່ຫວ່າງຢ່າງໜ້ອຍ 500 MB ເພື່ອເປີດໃຊ້ການທົດສອບໜ່ວຍຄວາມຈຳ. ເພື່ອສ້າງພື້ນທີ່ຫວ່າງ, ໃຫ້ເຂົ້າໄປການຕັ້ງຄ່າ &gt; ການຈັດການບ່ອນຈັດເກັບຂໍ້ມູນ.</translation>
 <translation id="4289540628985791613">ພາບ​ລວມ</translation>
 <translation id="4297501883039923494">ຢຸດພິມ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ຮູບ</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">ອີເທີເນັດ</translation>
 <translation id="4483049906298469269">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍທີ່ບໍ່ແມ່ນຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
 <translation id="4511264077854731334">ໜ້າເວັບ</translation>
+<translation id="4536864596629708641">ການຕັ້ງຄ່າ IP</translation>
 <translation id="4548483925627140043">ບໍ່ພົບສັນຍານ</translation>
 <translation id="455835558791489930">ແບັດເຕີຣີ <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="4562494484721939086">ບໍ່ມີການບໍລິການ</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGE_NUMBER" />. ກົດ Enter ເພື່ອຍົກເລີກວຽກພິມ.</translation>
 <translation id="4646949265910132906">ການເຊື່ອມຕໍ່ WiFi ທີ່ປອດໄພ</translation>
 <translation id="4652335678334611408">ເກັບບັນທຶກເຊດຊັນໄວ້</translation>
+<translation id="4654549501020883054">ປ່ຽນທຸກມື້</translation>
 <translation id="4665014895760275686">ຜູ້​ຜະ​ລິດ</translation>
 <translation id="467510802200863975">ລະຫັດຜ່ານບໍ່ກົງກັນ</translation>
 <translation id="467715984478005772">ສົງໄສວ່າເປັນ Firewall</translation>
@@ -319,6 +325,7 @@
 <translation id="7162487448488904999">ຄັງຮູບ</translation>
 <translation id="7172721935181587524">1 ຮູບ</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />. ຜູ້ເບິ່ງແຍງລະບົບອາດຈະຕັ້ງຄ່າອຸປະກອນຈາກທາງໄກໄດ້.</translation>
+<translation id="7180611975245234373">ຣີເຟຣຊ</translation>
 <translation id="7216409898977639127">ຜູ້ໃຫ້ບໍລິການມືຖື</translation>
 <translation id="7271040990581020067">ຕອນນີ້ມີຄົນໃຊ້ເຄື່ອງສະແກນຢູ່. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -386,6 +393,7 @@
 <translation id="8498220429738806196">ຕົວນັບທຣາບຟິກ</translation>
 <translation id="8503813439785031346">ຊື່​ຜູ້​ໃຊ້</translation>
 <translation id="8503836310948963452">ອີກສອງສາມນາທີ...</translation>
+<translation id="8521021929829989041">ໃຊ້ເປັນອຸປະກອນສ່ວນຕົວ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ຜູ້ໃຫ້ບໍລິການຂອງທ່ານອາດຕ້ອງໃຊ້ຕົວເລືອກນີ້ເພື່ອເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍຂອງເຂົາເຈົ້າ. ກະລຸນາຕິດຕໍ່ຫາຜູ້ໃຫ້ບໍລິການຂອງທ່ານສຳລັບລາຍລະອຽດ.</translation>
 <translation id="8576249514688522074">ບໍ່ໄດ້ລິເລີ່ມ</translation>

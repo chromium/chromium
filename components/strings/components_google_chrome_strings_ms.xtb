@@ -3,14 +3,13 @@
 <translationbundle lang="ms">
 <translation id="1016765312371154165">Chrome tidak ditutup dengan betul.</translation>
 <translation id="130631256467250065">Perubahan anda akan dilaksanakan apabila anda memulakan semula peranti anda pada masa akan datang.</translation>
+<translation id="1635457557763038537">Perubahan anda akan dilaksanakan apabila anda melancarkan semula Chrome selepas ini.</translation>
+<translation id="2447485272386224171">Chrome berjaya dilaksanakan melalui projek sumber terbuka <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> dan <ph name="BEGIN_LINK_OSS" />perisian sumber terbuka<ph name="END_LINK_OSS" /> yang lain.</translation>
 <translation id="2588322182880276190">Logo Chrome</translation>
-<translation id="2874156562296220396">Google Chrome berjaya dilaksanakan melalui projek sumber terbuka <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> dan <ph name="BEGIN_LINK_OSS" />perisian sumber terbuka<ph name="END_LINK_OSS" /> yang lain.</translation>
-<translation id="3140883423282498090">Perubahan anda akan berkuat kuasa apabila anda melancarkan semula Google Chrome pada masa hadapan.</translation>
 <translation id="3444832043240812445">Halaman ini hanya menunjukkan maklumat mengenai nahas terkini anda jika anda <ph name="BEGIN_LINK" />mendayakan laporan nahas<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Benarkan Chrome mengakses rangkaian di tetapan tembok api atau
         antivirus anda.</translation>
 <translation id="4010643444566880169">OS Chrome belum menyelesaikan persediaan awal.</translation>
-<translation id="4853578032408195113">Anda sedang melihat halaman Google Chrome yang selamat</translation>
 <translation id="5005121315113832363">Halaman ini telah disekat oleh Chrome</translation>
 <translation id="6011049234605203654">Pergi ke
           menu Chrome &gt;
@@ -38,6 +37,7 @@
           &gt;
           Tetapan LAN
           dan nyahpilih "Gunakan pelayan proksi untuk LAN anda".</translation>
+<translation id="7230956101631259640">Anda sedang melihat halaman Chrome yang selamat</translation>
 <translation id="8187289872471304532">Pergi ke
           Apikasi &gt; Pilihan Sistem &gt; Rangkaian &gt; Terperinci &gt; Proksi
           dan nyahpilih mana-mana proksi yang telah dipilih.</translation>

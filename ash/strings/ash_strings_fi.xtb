@@ -16,7 +16,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1056775291175587022">Ei verkkoja</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Vaihda tai lataa akku</translation>
-<translation id="1077253978657569125">Haluamme parantaa tätä!</translation>
 <translation id="108486256082349153">Matkapuhelin: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Hyvää päivää <ph name="GIVEN_NAME" /></translation>
 <translation id="109942774857561566">Minulla on tylsää</translation>
@@ -420,6 +419,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4274537685965975248">Pikanäppäinyhdistelmä Ctrl + Alt + alanuoli on muuttunut. Jos haluat käyttää End-näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + oikea nuoli.</translation>
 <translation id="4279490309300973883">Peilaus päällä</translation>
 <translation id="4285498937028063278">Irrota</translation>
+<translation id="4292904812939562398">Viimeksi käytetyt sovellukset</translation>
 <translation id="429402653707266969">Työkalupalkin sijainti päälle/pois</translation>
 <translation id="4294319844246081198">Huomenta <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Poista kaikki <ph name="COUNT" /> ilmoitusta</translation>

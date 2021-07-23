@@ -19,6 +19,8 @@
 <translation id="2342919707875585281">Chrome እርስዎ ከሚፈቅዷቸው ጣቢያዎች ጋር አካባቢዎን ያጋራል።</translation>
 <translation id="2347208864470321755">ይህ ባህሪ ሲበራ Chrome በሌሎች ቋንቋዎች የተጻፉ ገጾች Google ትርጉምን በመጠቀም እንዲተረጎምልዎ ይጠይቀዎታል። <ph name="BEGIN_LINK" />ተጨማሪ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Chromeን የእርስዎ ነባሪ ያድርጉት</translation>
+<translation id="2427791862912929107">Chrome እርስዎ የበይነመረብ ውሂብዎን እና ድረ-ገጾችን በምን ያህል ፍጥነት መጫን እንደሚችሉ እንዲያቀናብሩ የሚያስችሉዎት ባህሪያት አሉት።
+<ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="2561231791489583059">ከአደገኛ ጣቢያዎች እንዲጠበቁ እና የይለፍ ቃላትዎን ደህንነት ለመጠበቅ Chromeን እንደ ነባሪ አሳሽዎ ይጠቀሙ</translation>
 <translation id="2574249610672786438">Chromeን ከሚጠቀሙበት የትኛዉም ቦታ ትሮችን ለማየት በሁሉም መሣሪያዎችዎ ላይ ይግቡ</translation>
 <translation id="2576431527583832481">Chrome አሁን ተሻሽሏል! አዲስ ስሪት አለ።</translation>
@@ -61,8 +63,6 @@
 <translation id="5716154293141027663">በሌሎች መተግበሪያዎች ውስጥ ያሉ አገናኞችን በማንኛውም ጊዜ መታ ሲያደርጉ Chromeን ይክፈቱ</translation>
 <translation id="5854621639439811139">የChrome ጠቃሚ ምክር። አሁን እንደ ተመለስ፣ ወደፊት እና ፍለጋ ያሉ አንዳንድ አዝራሮች በማያ ገጽዎ ግርጌ ላይ ናቸው።</translation>
 <translation id="5876773482963502140">Chrome አካባቢዎን እንዲያውቅ ከፈቀዱ Chrome እርስዎ ወደሚፈቅዷቸው ማናቸውም ጣቢያዎች ይልከዋል። ጣቢያዎች እንደ በአቅራቢያ ያሉ ሱቆች ወይም ዜናዎች ያሉ ለእርስዎ የሚያሳዩት የአከባቢ መረጃ ሲኖራቸው አካባቢዎን ሊጠይቁ ይችላሉ።</translation>
-<translation id="6036420186814142909">Google Chrome እርስዎ የበይነመረብ ውሂብዎን እና ድረ-ገጾችን በምን ያህል ፍጥነት መጫን እንደሚችሉ እንዲያቀናብሩ የሚያስችሉዎት ባህሪያት አሉት።
-<ph name="BEGIN_LINK" />ተጨማሪ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="6063091872902370735">የChrome በመለያ መግባትን ይፍቀዱ</translation>
 <translation id="6181930887571472871">ወደ Chrome ይቀይሩ</translation>
 <translation id="6238746320622508509">Chrome የእርስዎን ማንነት የማያሳውቁ ትሮች እንዲቆልፍ ይፍቀዱለት።</translation>

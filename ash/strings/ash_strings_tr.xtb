@@ -16,7 +16,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1056775291175587022">Ağ yok</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Pili değiştirin veya şarj edin</translation>
-<translation id="1077253978657569125">Bu özelliği iyileştirmek istiyoruz.</translation>
 <translation id="108486256082349153">Cep telefonu: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">İyi günler <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Canım sıkıldı</translation>
@@ -420,6 +419,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Aşağı Ok klavye kısayolu değişti. End tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + Sağ Ok tuşlarına basın.</translation>
 <translation id="4279490309300973883">Yansıtılıyor</translation>
 <translation id="4285498937028063278">Sabitlemeyi kaldır</translation>
+<translation id="4292904812939562398">Son kullanılan uygulamalar</translation>
 <translation id="429402653707266969">Araç çubuğu konumunu aç/kapat</translation>
 <translation id="4294319844246081198">Günaydın <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875"><ph name="COUNT" /> bildirimin tümünü temizle</translation>

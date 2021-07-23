@@ -8,6 +8,10 @@
 <translation id="1047726139967079566">Přidat stránku do záložek...</translation>
 <translation id="1049743911850919806">Anonymní režim</translation>
 <translation id="105093091697134113">Následující účty používají hesla, která byla vyzrazena při porušení zabezpečení údajů u třetích stran nebo zadána na podvodném webu. Chcete-li své účty ochránit, ihned tato hesla změňte.</translation>
+<translation id="105214722824962652">Z účtu Google odhlášeni nebudete. <ph name="BEGIN_LINK" />Další typy aktivity<ph name="END_LINK" /> se mohou ukládat do vašeho účtu Google, když jste přihlášeni. Můžete je kdykoli smazat.
+
+        
+Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici)</translation>
 <translation id="1063454504051558093">Použit jiné heslo...</translation>
 <translation id="1066060668811609597">Správa synchronizace</translation>
 <translation id="1076421457278169141">Kód byl naskenován</translation>
@@ -132,6 +136,7 @@
 <translation id="2320166752086256636">Skrýt klávesnici</translation>
 <translation id="2339560363438331454">Synchronizace a služby Google</translation>
 <translation id="2351097562818989364">Nastavení překladů bylo resetováno.</translation>
+<translation id="235789365079050412">Zásady ochrany soukromí Google</translation>
 <translation id="2359043044084662842">Přeložit</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2360196772093551345">Vyžádat web pro mobily</translation>
@@ -204,6 +209,10 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="298306318844797842">Přidat platební metodu...</translation>
 <translation id="2989805286512600854">Otevřít v nové kartě</translation>
 <translation id="3037605927509011580">Aj, chyba!</translation>
+<translation id="3076846064362030967">Z účtu Google odhlášeni nebudete. <ph name="BEGIN_LINK" />Další typy aktivity<ph name="END_LINK" /> se mohou ukládat do vašeho účtu Google, když jste přihlášeni. Můžete je kdykoli smazat.
+
+
+Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici).</translation>
 <translation id="3080525922482950719">Stránky si můžete uložit a přečíst si je později nebo v režimu offline</translation>
 <translation id="3081338492074632642">Zkontrolujte, zda se ukládané heslo shoduje s heslem pro web <ph name="WEBSITE" />.</translation>
 <translation id="3112556859945124369">Označit…</translation>
@@ -328,7 +337,6 @@ Postupujte podle následujících pokynů:</translation>
 <translation id="4375040482473363939">Hledání QR kódu</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Klepnutím změníte jazyk</translation>
-<translation id="441868831736628555">Oznámení o ochraně soukromí</translation>
 <translation id="4454246407045105932">Přidat jazyk</translation>
 <translation id="4469418912670346607">Pokračovat v nastavování</translation>
 <translation id="4476574785019001431">Nastavení</translation>
@@ -404,6 +412,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5140288047769711648">Chrome si pro vás toto heslo zapamatuje. Vy si ho pamatovat nemusíte.</translation>
 <translation id="5150492518600715772">Odeslat na vaše zařízení</translation>
 <translation id="5168414296986405587">Vytvořeno pro iPadOS</translation>
+<translation id="5173088371991956744">Synchronizace potřebuje ověřit vaši identitu</translation>
 <translation id="5181140330217080051">Stahování</translation>
 <translation id="5186185447130319458">Soukromé</translation>
 <translation id="5188482106078495165">Nastavení souborů cookie se vztahuje na všechny karty. Pokud v otevřené kartě chcete použít nové nastavení, znovu ji načtěte.</translation>
@@ -586,6 +595,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="6730682669179532099">Hesla se nepodařilo exportovat</translation>
 <translation id="6748108480210050150">Od</translation>
 <translation id="6760509555861141183">Zpět na kartu Nedávné</translation>
+<translation id="6762812039470893796">Zrušit výběr všech</translation>
 <translation id="6780034285637185932">PSČ</translation>
 <translation id="6785453220513215166">Odesílání zprávy o selhání...</translation>
 <translation id="6797885426782475225">Hlasové vyhledávání</translation>
@@ -714,6 +724,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="802154636333426148">Stažení se nezdařilo</translation>
 <translation id="8023878949384262191">Rozbalí sekci.</translation>
 <translation id="8027581147000338959">Otevřít v novém okně</translation>
+<translation id="804225253087497565">Když jste přihlášeni, mohou se <ph name="BEGIN_LINK" />historie vyhledávání<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />další typy aktivity<ph name="END_LINK" /> ukládat do vašeho účtu Google. Můžete je kdykoli smazat.</translation>
 <translation id="804427445359061970">Zde najdete své karty z jiných zařízení</translation>
 <translation id="8059533439631660104">Sbalí sekci.</translation>
 <translation id="8065292699993359127">Otevírat adresy URL v Chromu v anonymním režimu</translation>

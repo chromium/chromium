@@ -16,7 +16,6 @@
 <translation id="1056775291175587022">ქსელები არ არის</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">გამოცვალეთ ან ხელახლა დამუხტეთ ბატარეა</translation>
-<translation id="1077253978657569125">ამის გაუმჯობესება გვსურს!</translation>
 <translation id="108486256082349153">ფიჭური: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">შუადღე მშვიდობის, <ph name="GIVEN_NAME" />!</translation>
 <translation id="109942774857561566">მოვიწყინე</translation>
@@ -420,6 +419,7 @@
 <translation id="4274537685965975248">კლავიატურის მალსახმობი „Ctrl + Alt + ქვემოთ მიმართული ისარი“ შეიცვალა. End კლავიშით სარგებლობისთვის დააჭირეთ კლავიშს <ph name="LAUNCHER_KEY_NAME" /> + მარჯვნივ მიმართულ ისარს.</translation>
 <translation id="4279490309300973883">არეკვლა</translation>
 <translation id="4285498937028063278">ჩამაგრების მოხსნა</translation>
+<translation id="4292904812939562398">ახალხან გამოყენებული აპები</translation>
 <translation id="429402653707266969">ხელსაწყოთა ზოლის მდებარეობის გადართვა</translation>
 <translation id="4294319844246081198">დილა მშვიდობის, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875"><ph name="COUNT" />-ვე შეტყობინების გასუფთავება</translation>

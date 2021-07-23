@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Meklēt</translation>
 <translation id="2570743873672969996">Notiek testa “<ph name="TEST_NAME" />” izpilde...</translation>
 <translation id="2585245331261708204">Chrome OS jaunumi</translation>
+<translation id="2619761439309613843">Nomainīt katru dienu</translation>
 <translation id="2620436844016719705">Sistēma</translation>
 <translation id="2740531572673183784">Labi</translation>
 <translation id="2751739896257479635">EAP 2. fāzes autentificēšana</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Daļēji aktivizēts</translation>
 <translation id="3527036260304016759">Neizdevās — nezināma kļūda</translation>
 <translation id="3532980081107202182">Atlikušas aptuveni <ph name="MIN_REMAINING" /> minūtes</translation>
+<translation id="3540383942695635079">MAC adrese</translation>
 <translation id="357889014807611375">Maksas Wi-Fi tīkls</translation>
 <translation id="3595596368722241419">Akumulators pilns</translation>
 <translation id="360565022852130722">Wi-Fi tīklu sargā nedrošs protokols WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Cik pilnu uzlādes ciklu ir bijis jūsu akumulatoram</translation>
 <translation id="3941014780699102620">Neizdevās atrisināt saimniekdatora nosaukumu</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="3966286471246132217">Lai iegūtu precīzākus rezultātus, līdz pārbaudes beigām aizveriet visas lietotnes.</translation>
 <translation id="3967822245660637423">Lejupielāde pabeigta</translation>
 <translation id="397105322502079400">Aprēķina...</translation>
 <translation id="39823212440917567">Drukas uzdevumi, kas ir vecāki par <ph name="NUMBER_OF_DAYS" /> dienām, tiks noņemti</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Atspējota</translation>
 <translation id="4227825898293920515">Paroles derīguma termiņš: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nenotiek neviens drukas darbs</translation>
+<translation id="4244962993387259361">Lai veiktu atmiņas pārbaudi, jābūt vismaz 500 MB brīvai vietai. Lai atbrīvotu vietu, pārejiet uz sadaļu Iestatījumi &gt; Krātuves pārvaldnieks.</translation>
 <translation id="4289540628985791613">Kopsavilkums</translation>
 <translation id="4297501883039923494">Apturēts — nezināma kļūda</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> attēls(-i)</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">tīkls Ethernet</translation>
 <translation id="4483049906298469269">Neizdevās ehotestēt tīkla vārteju, kas nav noklusējuma vārteja</translation>
 <translation id="4511264077854731334">Portāls</translation>
+<translation id="4536864596629708641">IP konfigurācija</translation>
 <translation id="4548483925627140043">Signāls nav atrasts</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh akumulators</translation>
 <translation id="4562494484721939086">Nav pakalpojuma</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />: <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> no <ph name="TOTAL_PAGE_NUMBER" /> lapas(-ām). Lai atceltu drukas uzdevumu, nospiediet taustiņu Enter.</translation>
 <translation id="4646949265910132906">Drošs Wi-Fi savienojums</translation>
 <translation id="4652335678334611408">Saglabāt sesijas žurnālu</translation>
+<translation id="4654549501020883054">Mainīt katru dienu</translation>
 <translation id="4665014895760275686">Ražotājs</translation>
 <translation id="467510802200863975">Paroles nav vienādas</translation>
 <translation id="467715984478005772">Aizdomas par ugunsmūri</translation>
@@ -318,6 +324,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7172721935181587524">1 attēls</translation>
 <translation id="7177485034254901881">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" />. Administratori var attālināti konfigurēt ierīci.</translation>
+<translation id="7180611975245234373">Atsvaidzināt</translation>
 <translation id="7216409898977639127">Mobilo sakaru operators</translation>
 <translation id="7271040990581020067">Skeneris pašlaik tiek izmantots. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8498220429738806196">Datplūsmas skaitītāji</translation>
 <translation id="8503813439785031346">Lietotājvārds</translation>
 <translation id="8503836310948963452">Vēl tikai dažas minūtes...</translation>
+<translation id="8521021929829989041">Izmantot kā personīgo ierīci</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Jūsu mobilo sakaru operators var pieprasīt šīs opcijas izmantošanu, lai varētu izveidot savienojumu ar attiecīgā operatora tīklu. Lai iegūtu detalizētu informāciju, sazinieties ar savu mobilo sakaru operatoru.</translation>
 <translation id="8576249514688522074">Pārbaude nav sākta</translation>

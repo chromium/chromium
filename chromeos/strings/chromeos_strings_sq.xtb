@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Skano</translation>
 <translation id="2570743873672969996">Po ekzekuton testin <ph name="TEST_NAME" />...</translation>
 <translation id="2585245331261708204">Të rejat me Chrome OS</translation>
+<translation id="2619761439309613843">Rifreskimi i përditshëm</translation>
 <translation id="2620436844016719705">Sistemi</translation>
 <translation id="2740531572673183784">Në rregull</translation>
 <translation id="2751739896257479635">Vërtetimi EAP i fazës 2</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">I aktivizuar pjesërisht</translation>
 <translation id="3527036260304016759">Dështoi - Gabim i panjohur</translation>
 <translation id="3532980081107202182">Rreth <ph name="MIN_REMAINING" /> minuta të mbetura</translation>
+<translation id="3540383942695635079">Adresa MAC</translation>
 <translation id="357889014807611375">Wi-Fi me matje</translation>
 <translation id="3595596368722241419">Bateria është plot</translation>
 <translation id="360565022852130722">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Numri i herëve që bateria ka kryer një cikël të plotë karikimi</translation>
 <translation id="3941014780699102620">Zgjidhja e pritësit dështoi</translation>
 <translation id="3942420633017001071">Diagnostikimi</translation>
+<translation id="3966286471246132217">Për rezultate më të sakta, mbylli të gjitha aplikacionet derisa të përfundojë testi.</translation>
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
 <translation id="397105322502079400">Po llogarit...</translation>
 <translation id="39823212440917567">Printimet më të vjetra se <ph name="NUMBER_OF_DAYS" /> ditë do të hiqen</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">I çaktivizuar</translation>
 <translation id="4227825898293920515">Fjalëkalimi skadon për <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nuk ka printime në vazhdim</translation>
+<translation id="4244962993387259361">Të duhen të paktën 500 MB hapësirë e lirë për ekzekutimin e një testi të memories. Për të liruar hapësirën, shko te Cilësimet &gt; Menaxhimi i hapësirës ruajtëse.</translation>
 <translation id="4289540628985791613">Përmbledhje</translation>
 <translation id="4297501883039923494">Ndaloi - Gabim i panjohur</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imazhe</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Dështoi verifikimi "ping" për portën jo të parazgjedhur të kalimit</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4536864596629708641">Konfigurimi i IP-së</translation>
 <translation id="4548483925627140043">Sinjali nuk u gjet</translation>
 <translation id="455835558791489930">Bateria <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Nuk ka shërbim</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> nga <ph name="TOTAL_PAGE_NUMBER" />. Shtyp Enter për të anuluar printimin.</translation>
 <translation id="4646949265910132906">Lidhja e sigurt WiFi</translation>
 <translation id="4652335678334611408">Ruaj evidencën e seancës</translation>
+<translation id="4654549501020883054">Ndrysho çdo ditë</translation>
 <translation id="4665014895760275686">Prodhuesi</translation>
 <translation id="467510802200863975">Fjalëkalimet nuk përputhen</translation>
 <translation id="467715984478005772">Dyshohet për mur mbrojtës</translation>
@@ -317,6 +323,7 @@
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7172721935181587524">1 imazh</translation>
 <translation id="7177485034254901881">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" />. Administratorët mund ta konfigurojnë në distancë pajisjen.</translation>
+<translation id="7180611975245234373">Rifresko</translation>
 <translation id="7216409898977639127">Operatori celular</translation>
 <translation id="7271040990581020067">Skaneri është aktualisht në përdorim. Provo përsëri më vonë.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -384,6 +391,7 @@
 <translation id="8498220429738806196">Matësit e trafikut</translation>
 <translation id="8503813439785031346">Emri i përdoruesit</translation>
 <translation id="8503836310948963452">Edhe vetëm pak minuta...</translation>
+<translation id="8521021929829989041">Përdore si pajisje personale</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operatori celular mund të kërkojë këtë opsion për t'u lidhur me rrjetin e tij. Kontakto me operatorin celular për detaje.</translation>
 <translation id="8576249514688522074">E pafilluar</translation>

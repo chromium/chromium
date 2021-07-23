@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2570743873672969996">Executando proba de <ph name="TEST_NAME" />…</translation>
 <translation id="2585245331261708204">Novidades de Chrome OS</translation>
+<translation id="2619761439309613843">Actualización diaria</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 de EAP</translation>
@@ -132,6 +133,7 @@
 <translation id="387301095347517405">Número de veces que a batería se someteu a un ciclo de carga completo</translation>
 <translation id="3941014780699102620">Produciuse un erro ao resolver o host</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
+<translation id="3966286471246132217">Para obter resultados máis precisos, pecha todas as aplicacións ata que remate a proba.</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="39823212440917567">Quitaranse os traballos de impresión de máis de <ph name="NUMBER_OF_DAYS" /> días</translation>
@@ -144,6 +146,7 @@
 <translation id="4176463684765177261">Desactivado</translation>
 <translation id="4227825898293920515">O contrasinal caduca en <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Non hai ningunha tarefa de impresión en curso</translation>
+<translation id="4244962993387259361">Como mínimo, precísanse 500 MB de espazo para executar unha proba de memoria. Se queres liberar espazo, vai a Configuración &gt; Xestión do almacenamento.</translation>
 <translation id="4289540628985791613">Visión xeral</translation>
 <translation id="4297501883039923494">Detívose (produciuse un erro descoñecido)</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imaxes</translation>
@@ -318,6 +321,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7162487448488904999">Galería</translation>
 <translation id="7172721935181587524">1 imaxe</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> xestiona este dispositivo (<ph name="DEVICE_TYPE" />). Os administradores poden configuralo de forma remota.</translation>
+<translation id="7180611975245234373">Actualizar</translation>
 <translation id="7216409898977639127">Provedor de rede móbil</translation>
 <translation id="7271040990581020067">Nestes momentos, o escáner está en uso. Téntao de novo máis tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

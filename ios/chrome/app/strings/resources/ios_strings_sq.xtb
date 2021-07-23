@@ -8,6 +8,10 @@
 <translation id="1047726139967079566">Regjistroje këtë faqe në faqeshënues...</translation>
 <translation id="1049743911850919806">I fshehtë</translation>
 <translation id="105093091697134113">Llogaritë e mëposhtme përdorin fjalëkalime që janë ekspozuar në një nxjerrje të paautorizuar të të dhënave të një pale të tretë ose që janë futur në një sajt mashtrues uebi. Ndryshoji këto fjalëkalime menjëherë për t'i mbajtur llogaritë e tua të sigurta.</translation>
+<translation id="105214722824962652">Nuk do të dalësh nga "Llogaria jote e Google". <ph name="BEGIN_LINK" />Forma të tjera aktiviteti<ph name="END_LINK" /> mund të ruhen në "Llogarinë tënde të Google" kur je i identifikuar. Mund t'i fshish ato në çdo kohë.
+
+        
+Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimeve, nëse është e vlefshme.</translation>
 <translation id="1063454504051558093">Përdor një fjalëkalim tjetër...</translation>
 <translation id="1066060668811609597">Menaxho sinkronizimin</translation>
 <translation id="1076421457278169141">Kodi u skanua</translation>
@@ -132,6 +136,7 @@
 <translation id="2320166752086256636">Fshih tastierën</translation>
 <translation id="2339560363438331454">Sinkronizimi dhe "Shërbimet e Google"</translation>
 <translation id="2351097562818989364">Cilësimet e tua të përkthimit janë rivendosur.</translation>
+<translation id="235789365079050412">Politika e privatësisë së Google</translation>
 <translation id="2359043044084662842">Përkthe</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2360196772093551345">Kërko sajtin për celular</translation>
@@ -204,6 +209,10 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="298306318844797842">Shto mënyrën e pagesës...</translation>
 <translation id="2989805286512600854">Hape në skedë të re</translation>
 <translation id="3037605927509011580">Ndërprerje aksidentale!</translation>
+<translation id="3076846064362030967">Nuk do të dalësh nga "Llogaria jote e Google". <ph name="BEGIN_LINK" />Forma të tjera aktiviteti<ph name="END_LINK" /> mund të ruhen në "Llogarinë tënde të Google" kur je i identifikuar. Mund t'i fshish ato në çdo kohë.
+
+
+Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimit, nëse është e vlefshme.</translation>
 <translation id="3080525922482950719">Mund t'i ruash faqet për t'i lexuar më vonë ose jashtë linje</translation>
 <translation id="3081338492074632642">Sigurohu që fjalëkalimi që po ruan përputhet me fjalëkalimin tënd për <ph name="WEBSITE" />.</translation>
 <translation id="3112556859945124369">Shëno...</translation>
@@ -328,7 +337,6 @@ Ndiq hapat më poshtë:</translation>
 <translation id="4375040482473363939">Kërkim me kod QR</translation>
 <translation id="4378154925671717803">Telefoni</translation>
 <translation id="4389019817280890563">Trokit për ta ndryshuar gjuhën.</translation>
-<translation id="441868831736628555">Njoftim i privatësisë</translation>
 <translation id="4454246407045105932">Shto gjuhën</translation>
 <translation id="4469418912670346607">Vazhdo konfigurimin</translation>
 <translation id="4476574785019001431">Cilësimet</translation>
@@ -404,6 +412,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5140288047769711648">Chrome do ta kujtojë këtë fjalëkalimin për ty. Nuk është e nevojshme ta mbash mend.</translation>
 <translation id="5150492518600715772">Dërgo te pajisjet e tua</translation>
 <translation id="5168414296986405587">Krijuar për iPadOS</translation>
+<translation id="5173088371991956744">Sinkronizimi ka nevojë të verifikojë që je ti</translation>
 <translation id="5181140330217080051">Po shkarkon</translation>
 <translation id="5186185447130319458">Privat</translation>
 <translation id="5188482106078495165">Cilësimet e tua të kukive zbatohen te të gjitha skedat. Për të zbatuar një cilësim të ri te një skedë e hapur, ringarkoje skedën.</translation>
@@ -586,6 +595,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6730682669179532099">Fjalëkalimet nuk mund të eksportohen</translation>
 <translation id="6748108480210050150">Nga</translation>
 <translation id="6760509555861141183">Kthehu te skeda "Të fundit"</translation>
+<translation id="6762812039470893796">Anulo zgjedhjen për të gjitha</translation>
 <translation id="6780034285637185932">Kodi postar</translation>
 <translation id="6785453220513215166">Po dërgon raportin e ndërprerjeve aksidentale...</translation>
 <translation id="6797885426782475225">Kërkimi me zë</translation>
@@ -714,6 +724,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="802154636333426148">Shkarkimi dështoi</translation>
 <translation id="8023878949384262191">Zgjeron seksionin.</translation>
 <translation id="8027581147000338959">Hape në dritare të re</translation>
+<translation id="804225253087497565"><ph name="BEGIN_LINK" />Historiku i kërkimeve<ph name="END_LINK" /> dhe <ph name="BEGIN_LINK" />forma të tjera aktiviteti<ph name="END_LINK" /> mund të ruhen në "Llogarinë tënde të Google" kur je i identifikuar. Mund t'i fshish ato në çdo kohë.</translation>
 <translation id="804427445359061970">Këtu do të gjesh skedat e tua nga pajisjet e tjera</translation>
 <translation id="8059533439631660104">Mbyll seksionin.</translation>
 <translation id="8065292699993359127">Hap URL-të në Chrome në modalitetin "i fshehtë"</translation>

@@ -3,13 +3,12 @@
 <translationbundle lang="iw">
 <translation id="1016765312371154165">‏כיבוי Chrome לא בוצע כהלכה.</translation>
 <translation id="130631256467250065">השינויים ייכנסו לתוקף בפעם הבאה שהמכשיר יופעל מחדש.</translation>
+<translation id="1635457557763038537">‏השינויים ייכנסו לתוקף בפעם הבאה שדפדפן Chrome יופעל מחדש.</translation>
+<translation id="2447485272386224171">‏Chrome קיים הודות לפרויקט הקוד הפתוח של <ph name="BEGIN_LINK_CHROMIUM" /> Chromium<ph name="END_LINK_CHROMIUM" /> ו<ph name="BEGIN_LINK_OSS" />תוכנות קוד פתוח<ph name="END_LINK_OSS" /> נוספות.</translation>
 <translation id="2588322182880276190">‏הלוגו של Chrome</translation>
-<translation id="2874156562296220396">‏Google Chrome קיים הודות לפרויקט המקור הפתוח <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> <ph name="BEGIN_LINK_OSS" />ותוכנות מקור פתוח אחרות<ph name="END_LINK_OSS" />.</translation>
-<translation id="3140883423282498090">‏השינויים ייכנסו לתוקף בפעם הבאה ש-Google Chrome יופעל מחדש.</translation>
 <translation id="3444832043240812445">דף זה מציג מידע על הקריסות האחרונות בלבד אם <ph name="BEGIN_LINK" />תפעיל את אפשרות הדיווח על קריסות<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">‏כדאי לשנות את הגדרות חומת האש או האנטי-וירוס כדי לאפשר ל-Chrome לגשת לרשת.</translation>
 <translation id="4010643444566880169">‏מערכת ההפעלה של Chrome לא השלימה את ההגדרה הראשונית.</translation>
-<translation id="4853578032408195113">‏זהן דף מאובטח של Google Chrome</translation>
 <translation id="5005121315113832363">‏הדף הזה נחסם על ידי Chrome</translation>
 <translation id="6011049234605203654">‏יש לעבור אל
           תפריט Chrome‏ &gt;
@@ -37,6 +36,7 @@
           &gt;
           הגדרות LAN
           ולבטל את הבחירה באפשרות "שימוש בשרת עבור רשת LAN".</translation>
+<translation id="7230956101631259640">‏מוצג דף מאובטח של Ghrome</translation>
 <translation id="8187289872471304532">‏יש לעבור אל
           'יישומים' &gt; 'העדפות מערכת' &gt; 'רשת' &gt; 'מתקדם' &gt; שרתי Proxy'
           ולבטל את הבחירה בשרתי proxy שנבחרו.</translation>

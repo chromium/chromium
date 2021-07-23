@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Skandeer</translation>
 <translation id="2570743873672969996">Laat loop tans <ph name="TEST_NAME" />-toets …</translation>
 <translation id="2585245331261708204">Wat's nuut in Chrome OS</translation>
+<translation id="2619761439309613843">Herlaai daagliks</translation>
 <translation id="2620436844016719705">Stelsel</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP se fase 2-stawing</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Deels geaktiveer</translation>
 <translation id="3527036260304016759">Misluk – Onbekende fout</translation>
 <translation id="3532980081107202182">Ongeveer <ph name="MIN_REMAINING" /> minute oor</translation>
+<translation id="3540383942695635079">MAC-adres</translation>
 <translation id="357889014807611375">betaalde Wi-Fi</translation>
 <translation id="3595596368722241419">Battery is vol</translation>
 <translation id="360565022852130722">Wi-Fi-netwerk is met swak protokol WEP 802.1x beveilig</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Die aantal keer wat jou battery deur 'n volledige laaisiklus gegaan het</translation>
 <translation id="3941014780699102620">Kon nie gasheer bepaal nie</translation>
 <translation id="3942420633017001071">Diagnostiese inligting</translation>
+<translation id="3966286471246132217">Vir meer akkurate resultate moet jy alle programme toemaak totdat die toets voltooi is.</translation>
 <translation id="3967822245660637423">Aflaai is voltooi</translation>
 <translation id="397105322502079400">Bereken tans …</translation>
 <translation id="39823212440917567">Druktake ouer as <ph name="NUMBER_OF_DAYS" /> dae sal verwyder word</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Gedeaktiveer</translation>
 <translation id="4227825898293920515">Wagwoord verval oor <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Geen druktake aan die gang nie</translation>
+<translation id="4244962993387259361">Jy het minstens 500 MB nodig om 'n geheuetoets uit te voer. Gaan na Instellings &gt; Bergingbestuur om spasie beskikbaar te maak.</translation>
 <translation id="4289540628985791613">Oorsig</translation>
 <translation id="4297501883039923494">Gestop – onbekende fout</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> prente</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kon nie die nieversteknetwerkdeurgang pieng nie</translation>
 <translation id="4511264077854731334">Portaal</translation>
+<translation id="4536864596629708641">IP-opstelling</translation>
 <translation id="4548483925627140043">Kon nie sein kry nie</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-battery</translation>
 <translation id="4562494484721939086">Geen diens nie</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> van <ph name="TOTAL_PAGE_NUMBER" />. Druk om die druktaak te kanselleer.</translation>
 <translation id="4646949265910132906">Veilige wi-fi-verbinding</translation>
 <translation id="4652335678334611408">Stoor sessie-loglêer</translation>
+<translation id="4654549501020883054">Verander daagliks</translation>
 <translation id="4665014895760275686">Vervaardiger</translation>
 <translation id="467510802200863975">Wagwoorde is nie dieselfde nie</translation>
 <translation id="467715984478005772">Brandmuur word vermoed</translation>
@@ -318,6 +324,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7162487448488904999">Galery</translation>
 <translation id="7172721935181587524">1 prent</translation>
 <translation id="7177485034254901881">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />. Administrateurs kan die toestel oor 'n afstand opstel.</translation>
+<translation id="7180611975245234373">Herlaai</translation>
 <translation id="7216409898977639127">Sellulêre diensverskaffer</translation>
 <translation id="7271040990581020067">Skandeerder word tans gebruik Probeer later weer.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8498220429738806196">Verkeertellers</translation>
 <translation id="8503813439785031346">Gebruikernaam</translation>
 <translation id="8503836310948963452">Net 'n paar minute …</translation>
+<translation id="8521021929829989041">Gebruik as persoonlike toestel</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Jou selfoonmaatskappy kan hierdie opsie vereis om aan hul netwerk te koppel. Kontak jou selfoonmaatskappy vir besonderhede.</translation>
 <translation id="8576249514688522074">Ongeïnisieer</translation>

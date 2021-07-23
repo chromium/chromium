@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Skenovať</translation>
 <translation id="2570743873672969996">Prebieha test <ph name="TEST_NAME" />...</translation>
 <translation id="2585245331261708204">Chrome OS – čo je nové</translation>
+<translation id="2619761439309613843">Obnovovať denne</translation>
 <translation id="2620436844016719705">Systém</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Overenie totožnosti EAP – 2. fáza:</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Čiastočne aktivované</translation>
 <translation id="3527036260304016759">Nepodarilo sa – neznáma chyba</translation>
 <translation id="3532980081107202182">Zostávajúci čas je približne <ph name="MIN_REMAINING" /> min.</translation>
+<translation id="3540383942695635079">Adresa MAC</translation>
 <translation id="357889014807611375">Wi‑Fi s meraním dát</translation>
 <translation id="3595596368722241419">Batéria je nabitá</translation>
 <translation id="360565022852130722">Sieť Wi‑Fi je zabezpečená slabým protokolom WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Koľkokrát prešla vaša batéria úplným cyklom nabíjania</translation>
 <translation id="3941014780699102620">Hostiteľa sa nepodarilo vybrať</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="3966286471246132217">Ak chcete získať presnejšie výsledky, zavrite všetky aplikácie, dokým sa test nedokončí.</translation>
 <translation id="3967822245660637423">Sťahovanie dokončené</translation>
 <translation id="397105322502079400">Prebieha výpočet...</translation>
 <translation id="39823212440917567">Tlačové úlohy staršie ako <ph name="NUMBER_OF_DAYS" /> d. budú odstránené</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Deaktivované</translation>
 <translation id="4227825898293920515">Platnosť hesla vyprší o <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Neprebiehajú žiadne tlačové úlohy</translation>
+<translation id="4244962993387259361">Na spustenie testu pamäte potrebujete aspoň 500 MB voľného miesta. Miesto uvoľnite v sekcii Nastavenia &gt; Správa priestoru.</translation>
 <translation id="4289540628985791613">Prehľad</translation>
 <translation id="4297501883039923494">Zastavené – neznáma chyba</translation>
 <translation id="4300073214558989">Počet obrázkov: <ph name="IMAGE_COUNT" /></translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nepredvolenú bránu siete sa nepodarilo otestovať</translation>
 <translation id="4511264077854731334">Portál</translation>
+<translation id="4536864596629708641">Konfigurácia adresy IP</translation>
 <translation id="4548483925627140043">Signál sa nenašiel</translation>
 <translation id="455835558791489930">Batéria s kapacitou <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Žiadny signál</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tlačovú úlohu zrušíte stlačením klávesa Enter.</translation>
 <translation id="4646949265910132906">Zabezpečené pripojenie Wi‑Fi</translation>
 <translation id="4652335678334611408">Uložiť denník relácie</translation>
+<translation id="4654549501020883054">Meniť denne</translation>
 <translation id="4665014895760275686">Výrobca</translation>
 <translation id="467510802200863975">Heslá sa nezhodujú</translation>
 <translation id="467715984478005772">Podozrenie na firewall</translation>
@@ -318,6 +324,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7162487448488904999">Galéria</translation>
 <translation id="7172721935181587524">1 obrázok</translation>
 <translation id="7177485034254901881">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />. Správcovia ho môžu vzdialene konfigurovať.</translation>
+<translation id="7180611975245234373">Obnoviť</translation>
 <translation id="7216409898977639127">Poskytovateľ mobilného pripojenia</translation>
 <translation id="7271040990581020067">Skener sa momentálne používa. Skúste to neskôr.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8498220429738806196">Počítadlá návštevnosti</translation>
 <translation id="8503813439785031346">Meno používateľa</translation>
 <translation id="8503836310948963452">Už iba niekoľko minút…</translation>
+<translation id="8521021929829989041">Použiť osobné zariadenie</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Váš operátor môže túto možnosť vyžadovať na pripojenie k jeho sieti. Podrobnosti vám poskytne operátor.</translation>
 <translation id="8576249514688522074">Nespustené</translation>

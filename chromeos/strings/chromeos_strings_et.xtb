@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Kontrolli</translation>
 <translation id="2570743873672969996">Testi <ph name="TEST_NAME" /> käitamine …</translation>
 <translation id="2585245331261708204">Mis on Chrome OS-is uut?</translation>
+<translation id="2619761439309613843">Igapäevane värskendamine</translation>
 <translation id="2620436844016719705">Süsteem</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP 2. etapi autentimine</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Osaliselt aktiveeritud</translation>
 <translation id="3527036260304016759">Ebaõnnestus – tundmatu viga</translation>
 <translation id="3532980081107202182">Jäänud on ligikaudu <ph name="MIN_REMAINING" /> minutit</translation>
+<translation id="3540383942695635079">MAC-aadress</translation>
 <translation id="357889014807611375">mahupõhine WiFi</translation>
 <translation id="3595596368722241419">Aku on täis</translation>
 <translation id="360565022852130722">WiFi-võrk on kaitstud nõrga protokolliga (WEP 802.1x)</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">See arv näitab, mitu korda on teie seadme aku läbinud täieliku laadimistsükli</translation>
 <translation id="3941014780699102620">Hosti lahendamine ebaõnnestus</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="3966286471246132217">Täpsemate tulemuste saamiseks sulgege kõik rakendused, kuni test on lõpetatud.</translation>
 <translation id="3967822245660637423">Allalaadimine on lõpule viidud</translation>
 <translation id="397105322502079400">Arvutamine ...</translation>
 <translation id="39823212440917567">Prinditööd, mis on vanemad kui <ph name="NUMBER_OF_DAYS" /> päeva, eemaldatakse</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Keelatud</translation>
 <translation id="4227825898293920515">Parooli aegumiseni on jäänud <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ühtegi prinditööd pole pooleli</translation>
+<translation id="4244962993387259361">Mälutesti käitamiseks on vaja vähemalt 500 MB vaba ruumi. Ruumi vabastamiseks tehke valikud Seaded &gt; Salvestusruumi haldamine.</translation>
 <translation id="4289540628985791613">Ülevaade</translation>
 <translation id="4297501883039923494">Peatatud – tundmatu viga</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> pilti</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Mittevaikevõrgulüüsi pingimine ebaõnnestus</translation>
 <translation id="4511264077854731334">Portaal</translation>
+<translation id="4536864596629708641">IP seadistamine</translation>
 <translation id="4548483925627140043">Signaali ei leitud</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh aku</translation>
 <translation id="4562494484721939086">Levi puudub</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Prinditöö tühistamiseks vajutage sisestusklahvi.</translation>
 <translation id="4646949265910132906">Turvaline WiFi-ühendus</translation>
 <translation id="4652335678334611408">Salvesta seansi logi</translation>
+<translation id="4654549501020883054">Muuda iga päev</translation>
 <translation id="4665014895760275686">Tootja</translation>
 <translation id="467510802200863975">Paroolid ei kattu</translation>
 <translation id="467715984478005772">Kahtlustatakse tulemüüri</translation>
@@ -318,6 +324,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7162487448488904999">Galerii</translation>
 <translation id="7172721935181587524">1 pilt</translation>
 <translation id="7177485034254901881">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />. Administraatorid saavad seda seadet kaugühenduse teel seadistada.</translation>
+<translation id="7180611975245234373">Värskenda</translation>
 <translation id="7216409898977639127">Mobiilsideteenuse pakkuja</translation>
 <translation id="7271040990581020067">Skanner on kasutuses. Proovige hiljem uuesti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8498220429738806196">Liiklusloendurid</translation>
 <translation id="8503813439785031346">Kasutajanimi</translation>
 <translation id="8503836310948963452">Veel mõni minut …</translation>
+<translation id="8521021929829989041">Kasuta isikliku seadmena</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Teie operaator võib võrguga ühendamiseks seda valikut nõuda. Lisateavet küsige operaatorilt.</translation>
 <translation id="8576249514688522074">Lähtestamata</translation>

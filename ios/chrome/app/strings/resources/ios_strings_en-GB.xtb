@@ -136,6 +136,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2320166752086256636">Hide keyboard</translation>
 <translation id="2339560363438331454">Sync and Google Services</translation>
 <translation id="2351097562818989364">Your translate settings have been reset.</translation>
+<translation id="235789365079050412">Google Privacy Policy</translation>
 <translation id="2359043044084662842">Translate</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2360196772093551345">Request Mobile Site</translation>
@@ -336,7 +337,6 @@ Follow the steps below:</translation>
 <translation id="4375040482473363939">QR code Search</translation>
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4389019817280890563">Tap to change language.</translation>
-<translation id="441868831736628555">Privacy Notice</translation>
 <translation id="4454246407045105932">Add language</translation>
 <translation id="4469418912670346607">Continue setup</translation>
 <translation id="4476574785019001431">Settings</translation>
@@ -595,6 +595,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6730682669179532099">Can't Export Passwords</translation>
 <translation id="6748108480210050150">From</translation>
 <translation id="6760509555861141183">Return to recent tab</translation>
+<translation id="6762812039470893796">Deselect all</translation>
 <translation id="6780034285637185932">Postcode</translation>
 <translation id="6785453220513215166">Sending crash report...</translation>
 <translation id="6797885426782475225">Voice Search</translation>

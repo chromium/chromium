@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> പരീക്ഷണം റൺ ചെയ്യുന്നു...</translation>
 <translation id="2585245331261708204">Chrome OS-ൽ പുതിയത്</translation>
+<translation id="2619761439309613843">ദിവസവുമുള്ള പുതുക്കൽ</translation>
 <translation id="2620436844016719705">സിസ്റ്റം</translation>
 <translation id="2740531572673183784">ശരി</translation>
 <translation id="2751739896257479635">രണ്ടാം ഘട്ട EAP പരിശോധിച്ചുറപ്പിക്കൽ</translation>
@@ -132,6 +133,7 @@
 <translation id="387301095347517405">നിങ്ങളുടെ ബാറ്ററി പൂർണ്ണമായി ചാർജ് ചെയ്തതിന്റെ എണ്ണം</translation>
 <translation id="3941014780699102620">ഹോസ്‌റ്റ് പരിഹരിക്കാനായില്ല</translation>
 <translation id="3942420633017001071">പ്രശ്‌നനിർണ്ണയം</translation>
+<translation id="3966286471246132217">കൂടുതൽ കൃത്യമായ ഫലങ്ങൾക്ക്, ടെസ്റ്റ് പൂർത്തിയാകുന്നത് വരെ എല്ലാ ആപ്പുകളും അടയ്ക്കുക.</translation>
 <translation id="3967822245660637423">ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="397105322502079400">കണക്കാക്കുന്നു...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ദിവസം മുമ്പുള്ള പ്രിന്റ് ജോലികൾ നീക്കം ചെയ്യും</translation>
@@ -144,6 +146,7 @@
 <translation id="4176463684765177261">അപ്രാപ്തമാക്കി</translation>
 <translation id="4227825898293920515">പാസ്‌വേഡ് <ph name="TIME" /> സമയത്തിനുള്ളിൽ കാലഹരണപ്പെടും</translation>
 <translation id="4238516577297848345">പ്രിന്റ് ജോലികളൊന്നും പുരോഗമിക്കുന്നില്ല</translation>
+<translation id="4244962993387259361">മെമ്മറി ടെസ്റ്റ് റൺ ചെയ്യണമെങ്കിൽ ഏറ്റവും കുറഞ്ഞത് 500 MB ആവശ്യമുണ്ട്. ഇടം സൃഷ്ടിക്കാൻ, ക്രമീകരണം &gt; സ്‌റ്റോറേജ് മാനേജ്മെന്റ് എന്നതിലേക്ക് പോകുക.</translation>
 <translation id="4289540628985791613">അവലോകനം</translation>
 <translation id="4297501883039923494">പ്രിന്റ് ജോലി നിർത്തി - അജ്ഞാതമായ പിശക്</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ചിത്രങ്ങൾ</translation>
@@ -317,6 +320,7 @@
 <translation id="7162487448488904999">ഗാലറി</translation>
 <translation id="7172721935181587524">ഒരു ചിത്രം</translation>
 <translation id="7177485034254901881">ഈ <ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്. അഡ്മിൻമാർ ഉപകരണം വിദൂരമായി കോൺഫിഗർ ചെയ്‌തേക്കാം.</translation>
+<translation id="7180611975245234373">പുതുക്കുക</translation>
 <translation id="7216409898977639127">സെല്ലുലാര്‍‌ സേവനദാതാവ്</translation>
 <translation id="7271040990581020067">സ്‌കാനർ നിലവിൽ ഉപയോഗത്തിലാണ്. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

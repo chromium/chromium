@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Scannen</translation>
 <translation id="2570743873672969996">Test für <ph name="TEST_NAME" /> wird ausgeführt…</translation>
 <translation id="2585245331261708204">Neues bei Chrome OS</translation>
+<translation id="2619761439309613843">Tägliche Aktualisierung</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP-Phase 2-Authentifizierung</translation>
@@ -132,6 +133,7 @@
 <translation id="387301095347517405">Wie oft der Akku vollständig aufgeladen wurde</translation>
 <translation id="3941014780699102620">Host konnte nicht aufgelöst werden</translation>
 <translation id="3942420633017001071">Diagnose</translation>
+<translation id="3966286471246132217">Sie erhalten genauere Ergebnisse, wenn alle Apps während des Tests geschlossen sind.</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
 <translation id="39823212440917567">Druckaufträge, die älter als <ph name="NUMBER_OF_DAYS" /> Tage sind, werden entfernt</translation>
@@ -144,6 +146,7 @@
 <translation id="4176463684765177261">Deaktiviert</translation>
 <translation id="4227825898293920515">Passwort läuft in <ph name="TIME" /> ab</translation>
 <translation id="4238516577297848345">Keine laufenden Druckaufträge</translation>
+<translation id="4244962993387259361">Zum Ausführen eines Speichertests müssen mindestens 500 MB frei sein. Unter „Einstellungen“ &gt; „Speicherplatzverwaltung“ können Sie Speicherplatz freigeben.</translation>
 <translation id="4289540628985791613">Übersicht</translation>
 <translation id="4297501883039923494">Angehalten – Unbekannter Fehler</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Bilder</translation>
@@ -318,6 +321,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7172721935181587524">1 Bild</translation>
 <translation id="7177485034254901881">Dieses <ph name="DEVICE_TYPE" /> wird von <ph name="MANAGER" /> verwaltet. Administratoren können das Gerät per Remotezugriff konfigurieren.</translation>
+<translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="7216409898977639127">Mobilfunkanbieter</translation>
 <translation id="7271040990581020067">Der Scanner wird derzeit verwendet. Versuchen Sie es später noch einmal.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

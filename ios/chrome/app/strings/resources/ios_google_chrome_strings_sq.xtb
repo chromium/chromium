@@ -19,6 +19,8 @@
 <translation id="2342919707875585281">Chrome e ndan vendndodhjen tënde me sajtet që lejon ti.</translation>
 <translation id="2347208864470321755">Kur ky funksion është i aktivizuar, Chrome do të ofrojë që të përkthejë faqet e shkruara në gjuhë të tjera duke përdorur "Përkthe me Google". <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Bëje Chrome shfletuesin tënd të parazgjedhur</translation>
+<translation id="2427791862912929107">Chrome ka funksione që të ndihmojnë të menaxhosh të dhënat e internetit dhe sa shpejt je në gjendje të ngarkosh faqet e uebit.
+<ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="2561231791489583059">Përdor Chrome si shfletuesin tënd të parazgjedhur për të qenë i mbrojtur nga sajtet e rrezikshme dhe për t'i mbajtur fjalëkalimet e tua të sigurta</translation>
 <translation id="2574249610672786438">Për të parë skedat e tua nga çdo vend ku përdor Chrome, identifikohu në të gjitha pajisjet e tua</translation>
 <translation id="2576431527583832481">Chrome sapo është përmirësuar! Ofrohet një version i ri.</translation>
@@ -61,7 +63,6 @@
 <translation id="5716154293141027663">Hap gjithmonë Chrome kur troket te lidhjet në aplikacionet e tjera</translation>
 <translation id="5854621639439811139">Këshillë për Chrome. Disa butona ndodhen tani në fund të ekranit tënd, si p.sh. "Prapa", "Përpara" dhe "Kërko".</translation>
 <translation id="5876773482963502140">Nëse lejon që Chrome të dijë vendndodhjen tënde, Chrome e dërgon atë te çdo sajt që ti lejon. Sajtet mund të kërkojnë për vendndodhjen tënde kur ato kanë informacione lokale për të të shfaqur, si dyqanet në afërsi ose lajme.</translation>
-<translation id="6036420186814142909">Google Chrome ka funksione që të ndihmojnë të menaxhosh të dhënat e internetit dhe sa shpejt mund të ngarkosh faqet e uebit. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="6063091872902370735">Lejo identifikimin në Chrome</translation>
 <translation id="6181930887571472871">Kalo te Chrome</translation>
 <translation id="6238746320622508509">Lejo që Chrome t'i kyçë skedat "e fshehta".</translation>

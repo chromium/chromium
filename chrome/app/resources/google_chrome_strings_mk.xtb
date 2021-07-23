@@ -29,7 +29,6 @@
 <translation id="1597911401261118146">За да проверите дали вашите лозинки се заштитени од упад во податоците и други проблеми со безбедноста, <ph name="BEGIN_LINK" />најавете се на Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">За Chrome да биде побезбеден, ја оневозможивме следнава екстензија што не е наведена во <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и може да е додадена без ваше знаење.</translation>
 <translation id="1628000112320670027">Добијте помош за Chrome</translation>
-<translation id="1666409074978194368">Речиси сте готови! Рестартирајте го Google Chrome за да заврши ажурирањето. Прозорците „Инкогнито“ нема да се отворат повторно.</translation>
 <translation id="1674870198290878346">Отвори го линкот во инко&amp;гнито прозорец на Chrome</translation>
 <translation id="1682634494516646069">Google Chrome не може да чита и да пишува во директориумот за податоци:
 
@@ -91,6 +90,7 @@
 <translation id="2847461019998147611">Прикажи го Google Chrome на овој јазик</translation>
 <translation id="2857540653560290388">Се стартува Chrome…</translation>
 <translation id="2857972467023607093">Веќе постои профил на Chrome со оваа сметка</translation>
+<translation id="2861074815332034794">Chrome се ажурира (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Најавени сте на Chrome!</translation>
 <translation id="2885378588091291677">Управник со задачи</translation>
 <translation id="2888126860611144412">За Chrome</translation>
@@ -180,12 +180,12 @@
 <translation id="5193136243808726294">ОС на Google Chrome не може да ја отвори страницава.</translation>
 <translation id="521447420733633466">Ако споделувате уред, пријателите и членовите на семејството може одделно да прелистуваат и да го поставуваат Chrome како што сакаат</translation>
 <translation id="5251420635869119124">Гостите може да го користат Chrome без оставање никакви траги зад нив.</translation>
+<translation id="5251679006894510177">Речиси сте готови! Рестартирајте го Chrome за да заврши ажурирањето. Прозорците „Инкогнито“ нема да се отворат повторно.</translation>
 <translation id="5386244825306882791">Контролира и која страница се прикажува кога го стартувате Chromе или ако пребарувате од лентата за адреси.</translation>
 <translation id="5394833366792865639">Споделете картичка на Chrome</translation>
 <translation id="5430073640787465221">Вашата датотека со претпочитани вредности е оштетена или неважечка.
 
 Google Chrome не може да ги обнови вашите поставки.</translation>
-<translation id="5434383153637353914">Страницава ви овозможува да управувате со вашите најавени сметки на Google. Сметкиве ќе бидат достапни во прелистувачот Chrome и апликациите на Play Store, но и на услугите како Gmail, Drive и YouTube. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Пред да започнеме, погрижете се дека имате ажурен бекап од вашите податоци. Инсталирањето на Chrome OS ќе ги презапише сите податоци на вашиот хард диск.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Google не е одговорен за загуба на податоци и не гарантира дека Chrome OS ќе функционира на несертифицирани модели. Одете на [TBD] за да дознаете повеќе за сертифицираните модели.<ph name="END_PARAGRAPH2" />
           <ph name="BEGIN_PARAGRAPH3" />Дознајте повеќе за инсталирањето на Chrome OS и бришењето на податоците: [TBD URL]<ph name="END_PARAGRAPH3" />
@@ -219,11 +219,9 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6235018212288296708">Дојдовно правило за Google Chrome за да овозможи сообраќај mDNS.</translation>
 <translation id="6291089322031436445">Апликации на Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome веќе е инсталиран за сите корисници на вашиот компјутер.</translation>
-<translation id="6338556085225130112">Се ажурира Google Chrome</translation>
 <translation id="6368958679917195344">Chrome OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6418662306461808273">Сакате да се префрлите на постојниот профил на Chrome?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
-<translation id="6566149418543181476">Google Chrome се ажурира (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Систем Chrome OS</translation>
 <translation id="664235759707825982">Chrome OS е подготвен за инсталирање</translation>
 <translation id="6676384891291319759">Пристап до интернет</translation>
@@ -232,12 +230,14 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6750954913813541382">За исправка на правописни грешки, Chrome го испраќа текстот што го пишувате во прелистувачот до Google</translation>
 <translation id="677276454032249905">Сепак да се излезе од Chrome?</translation>
 <translation id="683440813066116847">Дојдовно правило за Google Chrome Canary за да овозможи сообраќај mDNS.</translation>
+<translation id="6881299373831449287">Chrome се ажурира</translation>
 <translation id="6885412569789873916">Апликации на Chrome Beta</translation>
 <translation id="6943584222992551122">Податоците од прелистување на ова лице ќе се избришат од уредов. За да ги вратите податоците, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Дојдовно правило за Google Chrome Beta за овозможување mDNS-сообраќај.</translation>
 <translation id="6989339256997917931">Google Chrome се ажурираше, но не сте го употребиле најмалку 30 дена.</translation>
 <translation id="7025800014283535195">Може да се префрлате помеѓу профилите на Chrome тука</translation>
 <translation id="7062128746136194023">Родителот ги исклучил „Дозволите за сајтови, апликации и екстензии“ за Chrome. Не е дозволено додавањето на оваа <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="7088681679121566888">Chrome е ажуриран</translation>
 <translation id="7098166902387133879">Google Chrome го користи вашиот микрофон.</translation>
 <translation id="7106741999175697885">Управник со задачи - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Достапно е ново ажурирање за Chrome и ќе се примени штом рестартирате.}=1{Достапно е ново ажурирање за Chrome и ќе се примени штом рестартирате. Прозорецот „Инкогнито“ нема да се отвори повторно.}one{Достапно е ново ажурирање за Chrome и ќе се примени штом рестартирате. # прозорец „Инкогнито“ нема да се отвори повторно.}other{Достапно е ново ажурирање за Chrome и ќе се примени штом рестартирате. # прозорци „Инкогнито“ нема да се отворат повторно.}}</translation>
@@ -269,7 +269,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7801699035218095297">Google Chrome се обидува да копира лозинки. Внесете ја лозинката за Windows за да се дозволи ова.</translation>
 <translation id="7808348361785373670">Отстрани од Chrome</translation>
 <translation id="7825851276765848807">Инсталацијата не успеа поради неодредена грешка. Преземете го Google Chrome повторно.</translation>
-<translation id="7855730255114109580">Google Chrome е ажуриран</translation>
 <translation id="7890208801193284374">Доколку споделувате компјутер, пријателите и семејството може да прелистуваат одделно и да го поставуваат Chrome токму онака како што сакаат.</translation>
 <translation id="7896673875602241923">Некој претходно се најави на Chrome од овој компјутер како <ph name="ACCOUNT_EMAIL_LAST" />. Создајте нов корисник на Chrome за да ги чувате информациите одделно.</translation>
 <translation id="7930071585467473040">Google Chrome се обидува да копира лозинки.</translation>

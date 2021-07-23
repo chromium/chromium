@@ -29,7 +29,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1597911401261118146">Para comprobar si tus contraseñas han sufrido quiebras de seguridad de datos u otros problemas de seguridad, <ph name="BEGIN_LINK" />inicia sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Para aumentar la seguridad de Chrome, hemos inhabilitado la siguiente extensión que no figura en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> y que puede haberse añadido sin tu conocimiento.</translation>
 <translation id="1628000112320670027">Obtener ayuda de Chrome</translation>
-<translation id="1666409074978194368">La actualización ya casi ha terminado. Reinicia Google Chrome para completarla. Las ventanas de incógnito no se volverán a abrir.</translation>
 <translation id="1674870198290878346">Abrir enlace en una ventana de incó&amp;gnito de Chrome</translation>
 <translation id="1682634494516646069">Google Chrome no puede leer el directorio de datos ni escribir en él:
 
@@ -91,6 +90,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2847461019998147611">Mostrar Google Chrome en este idioma</translation>
 <translation id="2857540653560290388">Iniciando Chrome...</translation>
 <translation id="2857972467023607093">Ya existe un perfil de Chrome con esta cuenta</translation>
+<translation id="2861074815332034794">Actualizando Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Has iniciado sesión en Chrome</translation>
 <translation id="2885378588091291677">Administrador de tareas</translation>
 <translation id="2888126860611144412">Información de Chrome</translation>
@@ -180,12 +180,12 @@ Puede que algunas funciones no estén disponibles. Especifica otro directorio de
 <translation id="5193136243808726294">Google Chrome OS no puede abrir esta página.</translation>
 <translation id="521447420733633466">Si compartes un dispositivo, tus amigos y familiares pueden navegar de forma independiente y configurar Chrome a su gusto.</translation>
 <translation id="5251420635869119124">Los invitados pueden utilizar Chrome sin dejar nada atrás.</translation>
+<translation id="5251679006894510177">La actualización ya casi ha terminado. Reinicia Chrome para completar la actualización. Las ventanas de incógnito no se volverán a abrir.</translation>
 <translation id="5386244825306882791">También controla qué página se muestra al iniciar Chrome o al hacer búsquedas desde el omnibox.</translation>
 <translation id="5394833366792865639">Compartir una pestaña de Chrome</translation>
 <translation id="5430073640787465221">Tu archivo de preferencias está dañado o no es válido.
 
 Google Chrome no puede recuperar tu configuración.</translation>
-<translation id="5434383153637353914">Esta página te permite gestionar las cuentas de Google en las que hayas iniciado sesión. Estas cuentas estarán disponibles en el navegador Chrome y en las aplicaciones de Play Store, así como en otros servicios (por ejemplo, Gmail, Drive o YouTube). <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Antes de empezar, asegúrate de tener una copia de seguridad actualizada de tus datos. Al instalar Chrome OS, se sobrescribirán todos los datos de tu disco duro.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Google no se responsabiliza de la pérdida de datos y no asegura que Chrome OS funcione en modelos no certificados. Visita [TBD] para obtener más información sobre los modelos certificados.<ph name="END_PARAGRAPH2" />
           <ph name="BEGIN_PARAGRAPH3" />Más información sobre cómo instalar Chrome OS y el borrado de datos: [TBD URL]<ph name="END_PARAGRAPH3" />
@@ -219,11 +219,9 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6235018212288296708">Regla entrante para que Google Chrome permita tráfico mDNS.</translation>
 <translation id="6291089322031436445">Aplicaciones de Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome ya está instalado para todos los usuarios de tu ordenador.</translation>
-<translation id="6338556085225130112">Actualizando Google Chrome</translation>
 <translation id="6368958679917195344">Chrome OS está creado con <ph name="BEGIN_LINK_CROS_OSS" />software libre<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="6418662306461808273">¿Cambiar a un perfil de Chrome?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> ‑ Google Chrome Dev</translation>
-<translation id="6566149418543181476">Actualizando Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Sistema Chrome OS</translation>
 <translation id="664235759707825982">Todo listo para instalar Chrome OS</translation>
 <translation id="6676384891291319759">Accede a Internet.</translation>
@@ -232,12 +230,14 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6750954913813541382">Chrome envía a Google el texto que escribes en el navegador para corregir los errores ortográficos</translation>
 <translation id="677276454032249905">¿Quieres salir de Chrome de todas formas?</translation>
 <translation id="683440813066116847">Regla entrante para que Google Chrome Canary permita tráfico mDNS.</translation>
+<translation id="6881299373831449287">Actualizando Chrome</translation>
 <translation id="6885412569789873916">Aplicaciones de Chrome Beta</translation>
 <translation id="6943584222992551122">Los datos de navegación de este usuario se eliminarán del dispositivo. Para recuperar los datos, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regla entrante para que Google Chrome Beta permita tráfico mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome se ha actualizado, pero llevas al menos 30 días sin utilizarlo.</translation>
 <translation id="7025800014283535195">Puedes cambiar de un perfil de Chrome a otro aquí</translation>
 <translation id="7062128746136194023">Tus padres han desactivado "Permisos de sitios, aplicaciones y extensiones" en Chrome. No se permite añadir <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="7088681679121566888">Chrome está actualizado</translation>
 <translation id="7098166902387133879">Google Chrome está utilizando el micrófono.</translation>
 <translation id="7106741999175697885">Administrador de tareas de Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Hay una nueva actualización de Chrome disponible que se aplicará cuando reinicies el navegador.}=1{Hay una nueva actualización de Chrome disponible que se aplicará cuando reinicies el navegador. La ventana de incógnito no se volverá a abrir.}other{Hay una nueva actualización de Chrome disponible que se aplicará cuando reinicies el navegador. Las # ventanas de incógnito no se volverán a abrir.}}</translation>
@@ -269,7 +269,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7801699035218095297">Google Chrome está intentando copiar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="7808348361785373670">Desinstalar de Chrome...</translation>
 <translation id="7825851276765848807">La instalación no se ha podido realizar a causa de un error no especificado. Vuelve a descargar Google Chrome.</translation>
-<translation id="7855730255114109580">Google Chrome está actualizado</translation>
 <translation id="7890208801193284374">Si compartes un ordenador, tus amigos y familiares pueden navegar de forma independiente y configurar Chrome a su gusto.</translation>
 <translation id="7896673875602241923">Otro usuario ha iniciado sesión anteriormente en Chrome con la cuenta <ph name="ACCOUNT_EMAIL_LAST" /> a través de este ordenador. Debes crear un usuario de Chrome para proteger tu información.</translation>
 <translation id="7930071585467473040">Google Chrome está intentando copiar contraseñas.</translation>

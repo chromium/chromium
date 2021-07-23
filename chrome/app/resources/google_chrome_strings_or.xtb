@@ -29,7 +29,6 @@
 <translation id="1597911401261118146">ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକ ଡାଟା ଚୋରି ଏବଂ ଅନ୍ୟ ସୁରକ୍ଷା ସମସ୍ୟାଗୁଡ଼ିକରୁ ସୁରକ୍ଷିତ ଅଛି ନା ନାହିଁ ତାହା ଯାଞ୍ଚ କରିବାକୁ, <ph name="BEGIN_LINK" />Chromeରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="1619887657840448962">Chromeକୁ ଆହୁରି ସୁରକ୍ଷିତ କରିବା ପାଇଁ, ଆମେ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />ରେ ତାଲିକାଭୁକ୍ତ ହୋଇନଥିବା ଏବଂ ଆପଣଙ୍କର ଅଜାଣତରେ ଯୋଗ କରାଯାଇଥିବା ନିମ୍ନୋକ୍ତ ଏକ୍ସ‌ଟେନ୍‌ସନ୍‌କୁ ଅକ୍ଷମ କରିଦେଇଛୁ।</translation>
 <translation id="1628000112320670027">Chrome ସାହାଯ୍ୟରେ ସାହାଯ୍ୟ ପ୍ରାପ୍ତ କରନ୍ତୁ</translation>
-<translation id="1666409074978194368">ପ୍ରାୟ ଅପ୍-ଟୁ-ଡେଟ୍! ଅପ୍‌ଡେଟ୍ କରିବା ସମାପ୍ତ କରିବାକୁ Google Chromeକୁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ ଇନ୍‌କଗ୍ନିଟୋ ୱିଣ୍ଡୋ ପୁଣି ଖୋଲିବ ନାହିଁ।</translation>
 <translation id="1674870198290878346">Chrome ଇନ୍‍କଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="1682634494516646069">Google Chrome ଏହାର ଡାଟା ଡିରେକ୍ଟୋରୀକୁ ପଢ଼ି ଓ ଲେଖି ପାରିବ ନାହିଁ:
 
@@ -91,6 +90,7 @@
 <translation id="2847461019998147611">ଏହି ଭାଷାରେ Google Chrome‍କୁ ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
 <translation id="2857540653560290388">Chrome ଲଞ୍ଚ ହେଉଛି...</translation>
 <translation id="2857972467023607093">ଏହି ଆକାଉଣ୍ଟ ସହ ଏକ Chrome ପ୍ରୋଫାଇଲ୍ ପୂର୍ବରୁ ଅଛି</translation>
+<translation id="2861074815332034794">Chrome ଅପଡେଟ୍ କରାଯାଉଛି (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">ଆପଣ Chromeରେ ସାଇନ୍ ଇନ୍ କରିଛନ୍ତି!</translation>
 <translation id="2885378588091291677">ଟାସ୍କ ପରିଚାଳକ</translation>
 <translation id="2888126860611144412">Chrome ବିଷୟରେ</translation>
@@ -180,12 +180,12 @@
 <translation id="5193136243808726294">ଏହି ପୃଷ୍ଠାକୁ Google Chrome OS ଖୋଲିପାରିବ ନାହିଁ।</translation>
 <translation id="521447420733633466">ଯଦି ଆପଣ ଏକ ଡିଭାଇସ୍ ସେୟାର୍ କରନ୍ତି, ତେବେ ସାଙ୍ଗ ଓ ପରିବାରର ଲୋକମାନେ ଅଲଗା ଭାବରେ ବ୍ରାଉଜ୍ କରିପାରିବେ ଏବଂ ସେମାନଙ୍କ ପସନ୍ଦ ଅନୁସାରେ Chromeକୁ ସେଟ୍ ଅପ୍ କରିପାରିବେ</translation>
 <translation id="5251420635869119124">ଅତିଥିମାନେ, ପଛରେ କିଛି ନଛାଡ଼ି Chrome ବ୍ୟବହାର କରିପାରିବେ।</translation>
+<translation id="5251679006894510177">ପ୍ରାୟ ଅପ୍ ଟୁ ଡେଟ୍! ଅପଡେଟ୍ ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ Chromeକୁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ। ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋଗୁଡ଼ିକ ପୁଣି ଖୋଲିବ ନାହିଁ।</translation>
 <translation id="5386244825306882791">ଯେତେବେଳେ ଆପଣ Chrome ଆରମ୍ଭ କରନ୍ତି କିମ୍ବା ଓମ୍ନିବକ୍ସରୁ ସନ୍ଧାନ କରନ୍ତି, ସେତେବେଳେ କେଉଁ ପୃଷ୍ଠା ଦେଖାଯିବ ତାହା ମଧ୍ୟ ଏହା ନିୟନ୍ତ୍ରଣ କରେ।</translation>
 <translation id="5394833366792865639">ଗୋଟିଏ Chrome ଟାବ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="5430073640787465221">ଆପଣଙ୍କର ଅଗ୍ରାଧିକାର ଫାଇଲ୍‌ ଖରାପ କିମ୍ବା ଅବୈଧ ଅଟେ।
 
 ଆପଣଙ୍କର ସେଟିଂସ୍‌ ପୁନରୁଦ୍ଧାର କରିବାକୁ Google Chrome ଅକ୍ଷମ ଅଟେ।</translation>
-<translation id="5434383153637353914">ଏହି ପୃଷ୍ଠା ଆପଣଙ୍କୁ ଆପଣଙ୍କ ସାଇନ୍-ଇନ୍ ହୋଇଥିବା Google ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବାକୁ ଅନୁମତି ଦେଇଥାଏ। ଏହି ଆକାଉଣ୍ଟଗୁଡ଼ିକ Chrome ବ୍ରାଉଜର୍ ଓ Play Store ଆପଗୁଡ଼ିକ ସହ Gmail, Drive ଏବଂ YouTube ପରି ସେବାଗୁଡ଼ିକରେ ଉପଲବ୍ଧ ହେବ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />ଆମେ ଆରମ୍ଭ କରିବା ପୂର୍ବରୁ, ଦୟାକରି ଆପଣଙ୍କ ପାଖରେ ଆପଣଙ୍କ ଡାଟାର ଏକ ଅପ୍-ଟୁ-ଡେଟ୍ ବ୍ୟାକଅପ୍ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ। Chrome OS ଇନଷ୍ଟଲ୍ କଲେ ଆପଣଙ୍କ ହାର୍ଡ ଡ୍ରାଇଭରେ ଥିବା ସମସ୍ତ ଡାଟାକୁ ଓଭରରାଇଟ୍ କରାଯିବ।<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Google କୌଣସି ଡାଟା ନଷ୍ଟ ପାଇଁ ଦାୟୀ ନୁହେଁ ଏବଂ ସ୍ୱୀକୃତିପ୍ରାପ୍ତ ହୋଇନଥିବା ମଡେଲଗୁଡ଼ିକରେ Chrome OS କାମ କରିବ ବୋଲି Google କୌଣସି ଗ୍ୟାରେଣ୍ଟି ଦିଏ ନାହିଁ। ସ୍ୱୀକୃତିପ୍ରାପ୍ତ ମଡେଲଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣିବା ପାଇଁ ଦୟାକରି [TBD]କୁ ଭିଜିଟ୍ କରନ୍ତୁ।<ph name="END_PARAGRAPH2" />
           <ph name="BEGIN_PARAGRAPH3" />Chrome OS ଇନଷ୍ଟଲ୍ କରିବା ଏବଂ ଡାଟା ଲିଭାଇବା ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ: [TBD URL]<ph name="END_PARAGRAPH3" />
@@ -218,11 +218,9 @@
 <translation id="6235018212288296708">mDNS ଟ୍ରାଫିକ୍‍କୁ ଅନୁମତି ଦେବା ପାଇଁ Google Chromeରେ ଥିବା ଇନ୍‌ବାଉଣ୍ଡ ନିୟମ।</translation>
 <translation id="6291089322031436445">Chrome ଡେଭଲପର୍‌ ଆପ୍ସ</translation>
 <translation id="6291549208091401781">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‌ରେ ସମସ୍ତ ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ପାଇଁ Google Chrome ପୂର୍ବରୁ ଇନ୍‌ଷ୍ଟଲ୍ ଅଛି।</translation>
-<translation id="6338556085225130112">Google Chrome ଅପ୍‌ଡେଟ୍ ହେଉଛି</translation>
 <translation id="6368958679917195344">Chrome OS ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ମୁକ୍ତ ଉତ୍ସ ସଫ୍ଟୱେୟାର୍ <ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋ‍ଇଛି।</translation>
 <translation id="6418662306461808273">ପୂର୍ବରୁ ଥିବା Chrome ପ୍ରୋଫାଇଲକୁ ସ୍ୱିଚ୍ କରିବେ?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
-<translation id="6566149418543181476">Google Chrome ଅପ୍‌ଡେଟ୍ ହେଉଛି (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS ସିଷ୍ଟମ୍</translation>
 <translation id="664235759707825982">Chrome OS ଇନଷ୍ଟଲ୍ କରିବା ପାଇଁ ପ୍ରସ୍ତୁତ</translation>
 <translation id="6676384891291319759">ଇଣ୍ଟର୍ନେଟ୍ ପ୍ରବେଶ କରନ୍ତୁ</translation>
@@ -231,12 +229,14 @@
 <translation id="6750954913813541382">ବନାନ ଗତ ତ୍ରୁଟିଗୁଡ଼ିକର ସମାଧାନ ପାଇଁ, Chrome ବ୍ରାଉଜର୍‌ରେ ଆପଣ ଟାଇପ୍ କରିଥିବା ଟେକ୍ସଟ୍ Googleକୁ ପଠାଇଥାଏ</translation>
 <translation id="677276454032249905">ଯେକୌଣସିମତେ Chromeରୁ ବାହାରିବେ?</translation>
 <translation id="683440813066116847">mDNS ଟ୍ରାଫିକ୍‍କୁ ଅନୁମତି ଦେବା ପାଇଁ Google Chrome Canaryରେ ଅନ୍ତର୍ନିହିତ ଥିବା ନିୟମ।</translation>
+<translation id="6881299373831449287">Chrome ଅପଡେଟ୍ କରାଯାଉଛି</translation>
 <translation id="6885412569789873916">Chrome ବିଟା ଆପ୍ସ</translation>
 <translation id="6943584222992551122">ଏହି ଡିଭାଇସ୍‌ରୁ ଏହି ବ୍ୟକ୍ତିଙ୍କର ବ୍ରାଉଜିଂ ଡାଟା ଡିଲିଟ୍‌ କରାଯିବ। ଡାଟା ପୁନରୁଦ୍ଧାର କରିବାକୁ, <ph name="USER_EMAIL" /> ରୂପେ Chromeରେ ସାଇନ୍‌ ଇନ୍‌ କରନ୍ତୁ।</translation>
 <translation id="6967962315388095737">mDNS ଟ୍ରାଫିକ୍‍କୁ ଅନୁମତି ଦେବା ପାଇଁ Google Chrome Betaରେ ଅନ୍ତର୍ନିହିତ ଥିବା ନିୟମ।</translation>
 <translation id="6989339256997917931">Google Chromeକୁ ଅପ୍‌ଡେଟ୍‌ କରାଯାଇଛି, କିନ୍ତୁ ଆପଣ ଏହାକୁ ଅତିକମରେ 30 ଦିନ ପର୍ଯ୍ୟନ୍ତ ବ୍ୟବହାର କରିନାହାନ୍ତି।</translation>
 <translation id="7025800014283535195">ଏଠାରେ ଆପଣ Chrome ପ୍ରୋଫାଇଲଗୁଡ଼ିକ ମଧ୍ୟରେ ସ୍ୱିଚ୍ କରିପାରିବେ</translation>
 <translation id="7062128746136194023">ଆପଣଙ୍କ ବାପାମା Chrome ପାଇଁ "ସାଇଟ୍, ଆପ୍ ଏବଂ ଏକ୍ସଟେନସନଗୁଡ଼ିକ ନିମନ୍ତେ ଅନୁମତିଗୁଡ଼ିକ" ବନ୍ଦ କରିଦେଇଛନ୍ତି। ଏହି <ph name="EXTENSION_TYPE_PARAMETER" />କୁ ଯୋଗ କରିବା ପାଇଁ ଅନୁମତି ନାହିଁ।</translation>
+<translation id="7088681679121566888">Chrome ଅପ୍ ଟୁ ଡେଟ୍ ଅଛି</translation>
 <translation id="7098166902387133879">Google କ୍ରୋମ୍ ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାର କରୁଛି।</translation>
 <translation id="7106741999175697885">ଟାସ୍କ ପରିଚାଳକ - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome ପାଇଁ ଗୋଟିଏ ନୂଆ ଅପ୍‌ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି ଏବଂ ଆପଣ ପୁଣି ଲଞ୍ଚ କରିବା କ୍ଷଣି ଏହା ଲାଗୁ ହୋଇଯିବ।}=1{Chrome ପାଇଁ ଗୋଟିଏ ନୂଆ ଅପ୍‌ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି ଏବଂ ଆପଣ ପୁଣି ଲଞ୍ଚ କରିବା କ୍ଷଣି ଏହା ଲାଗୁ ହୋଇଯିବ। ଆପଣଙ୍କର ଇନ୍‌କଗ୍ନିଟୋ ୱିଣ୍ଡୋ ପୁଣି ଖୋଲିବ ନାହିଁ।}other{Chrome ପାଇଁ ଗୋଟିଏ ନୂଆ ଅପ୍‌ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି ଏବଂ ଆପଣ ପୁଣି ଲଞ୍ଚ କରିବା କ୍ଷଣି ଏହା ଲାଗୁ ହୋଇଯିବ। ଆପଣଙ୍କର #ଟି ଇନ୍‌କଗ୍ନିଟୋ ୱିଣ୍ଡୋ ପୁଣି ଖୋଲିବ ନାହିଁ।}}</translation>
@@ -268,7 +268,6 @@
 <translation id="7801699035218095297">Google Chrome ପାସୱାର୍ଡଗୁଡ଼ିକ କପି କରିବାକୁ ଚେଷ୍ଟା କରୁଛି। ଏହାକୁ ଅନୁମତି ଦେବା ପାଇଁ ଆପଣଙ୍କର Windows ପାସୱାର୍ଡ ଟାଇପ୍ କରନ୍ତୁ।</translation>
 <translation id="7808348361785373670">Chromeରୁ କାଢ଼ିଦିଅନ୍ତୁ...</translation>
 <translation id="7825851276765848807">ଅଣନିର୍ଦ୍ଧିଷ୍ଟିତ ତ୍ରୁଟି ଯୋଗୁଁ ସଂସ୍ଥାପନ ବିଫଳ ହେଲା । ଦୟାକରି Google Chrome ପୁନଃ ଡାଉନଲୋଡ୍ କରନ୍ତୁ ।</translation>
-<translation id="7855730255114109580">Google Chrome ଅପ୍-ଟୁ-ଡେଟ୍ ଅଛି</translation>
 <translation id="7890208801193284374">ଯଦି ଆପଣ ଗୋଟିଏ କମ୍ପ୍ୟୁଟର୍ ସେୟାର୍ କରନ୍ତି, ତେବେ, ସାଙ୍ଗମାନେ ଓ ପରିବାରର ସଦସ୍ୟମାନେ ଅଲଗା ଭାବରେ ବ୍ରାଉଜ୍ କରିପାରିବେ ଏବଂ ସେମାନଙ୍କ ପସନ୍ଦ ଅନୁସାରେ Chromeକୁ ସେଟ୍ ଅପ୍ କରିପାରିବେ।</translation>
 <translation id="7896673875602241923">ଏହି କମ୍ପ୍ୟୁଟର୍‌ରେ କେହିଜଣେ ପୂର୍ବରୁ Chromeରେ <ph name="ACCOUNT_EMAIL_LAST" /> ଭାବରେ ସାଇନ୍ ଇନ୍ କରିଛନ୍ତି। ଦୟାକରି ଆପଣଙ୍କର ସୂଚନା ଅଲଗା ରଖିବା ପାଇଁ ଏକ ନୂତନ Chrome ଉପଯୋଗକର୍ତ୍ତା ତିଆରି କରନ୍ତୁ।</translation>
 <translation id="7930071585467473040">Google Chrome ପାସୱାର୍ଡଗୁଡ଼ିକ କପି କରିବାକୁ ଚେଷ୍ଟା କରୁଛି।</translation>

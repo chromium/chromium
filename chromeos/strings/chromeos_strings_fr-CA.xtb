@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Rechercher</translation>
 <translation id="2570743873672969996">Le test <ph name="TEST_NAME" /> est en cours d'exécution…</translation>
 <translation id="2585245331261708204">Nouveautés dans Chrome OS</translation>
+<translation id="2619761439309613843">Actualiser tous les jours</translation>
 <translation id="2620436844016719705">Système</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Authentification EAP phase 2</translation>
@@ -132,6 +133,7 @@
 <translation id="387301095347517405">Le nombre de cycles de recharge complets effectués par la pile de votre appareil</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
+<translation id="3966286471246132217">Pour obtenir des résultats plus précis, fermez toutes les applications jusqu'à la fin du test.</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
 <translation id="39823212440917567">Les tâches d'impression datant de plus de <ph name="NUMBER_OF_DAYS" /> jours seront supprimées</translation>
@@ -144,6 +146,7 @@
 <translation id="4176463684765177261">Désactivé</translation>
 <translation id="4227825898293920515">Le mot de passe expire dans <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Aucune tâche d'impression en cours</translation>
+<translation id="4244962993387259361">Vous avez besoin d'au moins 500 Mo d'espace libre pour exécuter un test de mémoire. Pour libérer de l'espace, accédez à Paramètres &gt; Gestionnaire de stockage.</translation>
 <translation id="4289540628985791613">Aperçu</translation>
 <translation id="4297501883039923494">Tâche arrêtée : erreur inconnue</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
@@ -318,6 +321,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7172721935181587524">1 image</translation>
 <translation id="7177485034254901881">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent configurer l'appareil à distance.</translation>
+<translation id="7180611975245234373">Actualiser</translation>
 <translation id="7216409898977639127">Fournisseur cellulaire</translation>
 <translation id="7271040990581020067">Le numériseur est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" /> sur <ph name="TOTAL_PAGES_NUMBER" /></translation>

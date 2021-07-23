@@ -27,7 +27,6 @@
 <translation id="1597911401261118146">‏للتحقُّق مما إذا كانت كلمات المرور آمنة من عمليات اختراق البيانات ومشاكل الأمان الأخرى، يُرجى <ph name="BEGIN_LINK" />تسجيل الدخول إلى متصفِّح Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">‏لجعل Chrome أكثر أمنًا، أوقفنا الإضافة التالية التي لم تُدرج في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> وربما تكون قد أضيفت بدون علمك.</translation>
 <translation id="1628000112320670027">‏الحصول على مساعدة في Chrome</translation>
-<translation id="1666409074978194368">‏أوشك التحديث على الانتهاء. إعادة تشغيل Google Chrome لإنهاء التحديث لن تتم إعادة فتح نوافذ التصفح المتخفي.</translation>
 <translation id="1674870198290878346">‏فتح الرابط في نافذة تصفح متخفٍ في Chrome</translation>
 <translation id="1682634494516646069">‏يتعذر على Google Chrome القراءة والكتابة في دليل البيانات الخاص به:
 
@@ -89,6 +88,7 @@
 <translation id="2847461019998147611">‏عرض Google Chrome بهذه اللغة</translation>
 <translation id="2857540653560290388">‏جارٍ إطلاق Chrome...</translation>
 <translation id="2857972467023607093">‏يتوفّر ملف شخصي بهذا الحساب حاليًا على Chrome.</translation>
+<translation id="2861074815332034794">‏جارٍ تحديث Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">‏تم تسجيل دخولك إلى Chrome!</translation>
 <translation id="2885378588091291677">إدارة المهام</translation>
 <translation id="2888126860611144412">‏لمحة عن Chrome</translation>
@@ -178,10 +178,10 @@
 <translation id="5193136243808726294">‏يتعذر على نظام التشغيل Google Chrome فتح هذه الصفحة.</translation>
 <translation id="521447420733633466">‏في حال مشاركة جهاز مع الأصدقاء والعائلة، يمكنهم الحصول على تجربة تصفّح منفصلة وإعداد Chrome على النحو المفضّل لديهم.</translation>
 <translation id="5251420635869119124">‏يمكن للضيف استخدام Chrome بدون أن يترك أي أثر وراءه.</translation>
+<translation id="5251679006894510177">‏أوشك التحديث على الانتهاء. أعِد تشغيل Chrome لإتمام التحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي.</translation>
 <translation id="5386244825306882791">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chrome أو إجراء بحث من المربع متعدد الاستخدامات.</translation>
 <translation id="5394833366792865639">‏مشاركة علامة تبويب Chrome</translation>
 <translation id="5430073640787465221">‏ملف الإعدادات المفضّلة تالف أو غير صالح. يتعذر على Google Chrome استرداد إعداداتك.</translation>
-<translation id="5434383153637353914">‏تتيح لك هذه الصفحة إدارة حساباتك على Google التي تم تسجيل الدخول إليها. وستكون هذه الحسابات متوفّرة في متصفِّح Chrome وتطبيقات "متجر Play"، بالإضافة إلى خدمات مثل Gmail وDrive وYouTube. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5449497480926255862">‏<ph name="BEGIN_PARAGRAPH1" />قبل أن نبدأ عملية التثبيت، يُرجى التأكّد من احتفاظك بنسخة احتياطية حديثة من بياناتك. سيؤدي تثبيت نظام التشغيل Chrome إلى استبدال جميع البيانات على محرك الأقراص الثابتة.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />لا تتحمل Google أي مسؤولية عن أي فقدان للبيانات، ولا تضمن أن يعمل نظام التشغيل Chrome على طُرز أجهزة غير معتمدة. يُرجى زيارة [TBD] لمزيد من المعلومات حول طُرز الأجهزة المُعتمَدة.<ph name="END_PARAGRAPH2" />
           <ph name="BEGIN_PARAGRAPH3" />تعرّف على مزيد من المعلومات حول تثبيت نظام التشغيل Chrome ومحو البيانات: [TBD URL]<ph name="END_PARAGRAPH3" />
@@ -215,11 +215,9 @@
 <translation id="6235018212288296708">‏قاعدة الوارد إلى Google Chrome للسماح بحركة مرور mDNS.</translation>
 <translation id="6291089322031436445">‏تطبيقات إصدار مطوري البرامج من Chrome</translation>
 <translation id="6291549208091401781">‏تم تثبيت Google Chrome من قبل لجميع المستخدمين على الكمبيوتر.</translation>
-<translation id="6338556085225130112">‏تحديث Google Chrome</translation>
 <translation id="6368958679917195344">‏أصبح نظام التشغيل Chrome متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج مفتوح المصدر<ph name="END_LINK_CROS_OSS" /> إضافي.</translation>
 <translation id="6418662306461808273">‏هل تريد الانتقال إلى ملف شخصي حالي على Chrome؟</translation>
 <translation id="6515495397637126556">‏<ph name="PAGE_TITLE" /> - إصدار قناة مطوري البرامج من Google Chrome</translation>
-<translation id="6566149418543181476">‏جارٍ تحديث Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">‏نظام التشغيل Chrome</translation>
 <translation id="664235759707825982">‏نحن جاهزون لتثبيت نظام التشغيل Chrome</translation>
 <translation id="6676384891291319759">الدخول إلى الإنترنت</translation>
@@ -228,12 +226,14 @@
 <translation id="6750954913813541382">‏لإصلاح الأخطاء الإملائية، يرسِل Chrome النص الذي تكتبه في المتصفّح إلى Google.</translation>
 <translation id="677276454032249905">‏هل تريد الخروج من Chrome على أي حال؟</translation>
 <translation id="683440813066116847">‏قاعدة الوارد إلى Google Chrome Canary للسماح بحركة مرور mDNS.</translation>
+<translation id="6881299373831449287">‏جارٍ تحديث Chrome.</translation>
 <translation id="6885412569789873916">‏تطبيقات الإصدار التجريبي من Chrome</translation>
 <translation id="6943584222992551122">‏سيتم حذف بيانات تصفُّح هذا المستخدم من هذا الجهاز. لاسترداد البيانات، يُرجى تسجيل الدخول إلى Chrome بصفتك <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">‏قاعدة الوارد إلى الإصدار التجريبي من Google Chrome للسماح بحركة مرور mDNS.</translation>
 <translation id="6989339256997917931">‏تم تحديث متصفح Google Chrome، ولكنك لم تستخدمه منذ أكثر من 30 يومًا.</translation>
 <translation id="7025800014283535195">‏يمكنك من هنا التبديل بين الملفات الشخصية على Chrome.</translation>
 <translation id="7062128746136194023">‏أوقفَ أحد والدَيك "أذونات المواقع الإلكترونية والتطبيقات والإضافات" لمتصفِّح Chrome. ولا يمكن تثبيت <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="7088681679121566888">‏Chrome محدّث.</translation>
 <translation id="7098166902387133879">‏يستخدم Google Chrome الميكروفون.</translation>
 <translation id="7106741999175697885">‏مدير المهام - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{‏يتوفر تحديث جديد لبرنامج Chrome وسيتم تطبيقه عند إعادة التشغيل.}=1{‏يتوفر تحديث جديد لبرنامج Chrome وسيتم تطبيقه عند إعادة التشغيل. لن تتم إعادة فتح نافذة التصفح المتخفي.}two{‏يتوفر تحديث جديد لبرنامج Chrome وسيتم تطبيقه عند إعادة التشغيل. لن تتم إعادة فتح نافذتَي التصفح المتخفي.}few{‏يتوفر تحديث جديد لبرنامج Chrome وسيتم تطبيقه عند إعادة التشغيل. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}many{‏يتوفر تحديث جديد لبرنامج Chrome وسيتم تطبيقه عند إعادة التشغيل. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}other{‏يتوفر تحديث جديد لبرنامج Chrome وسيتم تطبيقه عند إعادة التشغيل. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}}</translation>
@@ -265,7 +265,6 @@
 <translation id="7801699035218095297">‏يحاول Google Chrome نسخ كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="7808348361785373670">‏جارٍ الإزالة من Chrome...</translation>
 <translation id="7825851276765848807">‏فشل التثبيت نظرًا لحدوث خطأ غير محدد. يُرجى تنزيل Google Chrome مرة أخرى.</translation>
-<translation id="7855730255114109580">‏Google Chrome محدّث</translation>
 <translation id="7890208801193284374">‏إذا كنت تشارك الكمبيوتر مع أصدقائك وعائلتك، فبإمكانهم التصفح على حدة وإعداد Chrome على النحو الذي يريدونه.</translation>
 <translation id="7896673875602241923">‏سجّل شخص ما الدخول من قبل إلى Chrome على جهاز الكمبيوتر هذا باسم <ph name="ACCOUNT_EMAIL_LAST" />. يُرجى إنشاء حساب مستخدم جديد في Chrome للإبقاء على معلوماتك بشكلٍ منفصل.</translation>
 <translation id="7930071585467473040">‏يحاول Google Chrome نسخ كلمات المرور.</translation>

@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Leita</translation>
 <translation id="2570743873672969996">Keyrir prófið <ph name="TEST_NAME" />...</translation>
 <translation id="2585245331261708204">Nýjungar í Chrome OS</translation>
+<translation id="2619761439309613843">Uppfæra daglega</translation>
 <translation id="2620436844016719705">Kerfi</translation>
 <translation id="2740531572673183784">Í lagi</translation>
 <translation id="2751739896257479635">Annars stigs EAP-auðkenning</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Virkjað að hluta</translation>
 <translation id="3527036260304016759">Mistókst – óþekkt villa</translation>
 <translation id="3532980081107202182">Um <ph name="MIN_REMAINING" /> mínútur eftir</translation>
+<translation id="3540383942695635079">MAC-vistfang</translation>
 <translation id="357889014807611375">Wi-Fi net með mælda notkun</translation>
 <translation id="3595596368722241419">Rafhlaða fullhlaðin</translation>
 <translation id="360565022852130722">Wi-Fi netið er varið með veikum samskiptareglum, WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Fjöldi skipta sem rafhlaðan hefur tæmst og verið fullhlaðin aftur</translation>
 <translation id="3941014780699102620">Ekki tókst að ákvarða hýsil</translation>
 <translation id="3942420633017001071">Greining</translation>
+<translation id="3966286471246132217">Lokaðu öllum forritum þar til prófuninni er lokið til að niðurstöðurnar verði nákvæmari.</translation>
 <translation id="3967822245660637423">Niðurhali lokið</translation>
 <translation id="397105322502079400">Reiknar...</translation>
 <translation id="39823212440917567">Prentverk sem eru eldri en <ph name="NUMBER_OF_DAYS" /> verða fjarlægð</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Óvirkt</translation>
 <translation id="4227825898293920515">Aðgangsorð rennur út eftir <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Engin prentun í gangi</translation>
+<translation id="4244962993387259361">Þú verður að hafa a.m.k. 500 MB laus til að keyra minnisprófun. Til að losa um pláss skaltu opna Stillingar &gt; Geymslustjórnun.</translation>
 <translation id="4289540628985791613">Yfirlit</translation>
 <translation id="4297501883039923494">Stöðvað – óþekkt villa</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> myndir</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ping-prófun ósjálfgefinnar netkerfisgáttar mistókst</translation>
 <translation id="4511264077854731334">Gátt</translation>
+<translation id="4536864596629708641">IP-stilling</translation>
 <translation id="4548483925627140043">Merki fannst ekki</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh rafhlaða</translation>
 <translation id="4562494484721939086">Ekkert símasamband</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> af <ph name="TOTAL_PAGE_NUMBER" />. Ýttu á færslulykilinn til að hætta við prentverkið.</translation>
 <translation id="4646949265910132906">Örugg Wi-Fi tenging</translation>
 <translation id="4652335678334611408">Vista lotuskrá</translation>
+<translation id="4654549501020883054">Breyta daglega</translation>
 <translation id="4665014895760275686">Framleiðandi</translation>
 <translation id="467510802200863975">Aðgangsorð stemma ekki</translation>
 <translation id="467715984478005772">Grunur um eldvegg</translation>
@@ -318,6 +324,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7162487448488904999">Gallerí</translation>
 <translation id="7172721935181587524">1 mynd</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> hefur umsjón með þessu <ph name="DEVICE_TYPE" />. Kerfisstjórar geta stillt tækið í gegnum fjartengingu.</translation>
+<translation id="7180611975245234373">Endurnýja</translation>
 <translation id="7216409898977639127">Farsímafyrirtæki</translation>
 <translation id="7271040990581020067">Skanninn er í notkun núna. Reyndu aftur síðar.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8498220429738806196">Talning umferðar</translation>
 <translation id="8503813439785031346">Notandanafn</translation>
 <translation id="8503836310948963452">Aðeins nokkrar mínútur í viðbót…</translation>
+<translation id="8521021929829989041">Nota sem persónulegt tæki</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Símafyrirtæki kunna að biðja þig um slíkt til að tengjast neti þeirra. Hafðu samband við símafyrirtækið til að fá frekari upplýsingar.</translation>
 <translation id="8576249514688522074">Ekki frumstillt</translation>

@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Скандоо</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> тести аткарылууда...</translation>
 <translation id="2585245331261708204">Chrome OS жаңылыктары</translation>
+<translation id="2619761439309613843">Күн сайын жаңыртуу</translation>
 <translation id="2620436844016719705">Тутум</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP 2-фазадагы аныктыгын текшерүү</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Жарым-жартылай жандырылган</translation>
 <translation id="3527036260304016759">Басылып чыгарылган жок - Белгисиз ката</translation>
 <translation id="3532980081107202182">Болжол менен <ph name="MIN_REMAINING" /> мүнөт калды</translation>
+<translation id="3540383942695635079">MAC дареги</translation>
 <translation id="357889014807611375">чектелген Wi-Fi</translation>
 <translation id="3595596368722241419">Батарея толук</translation>
 <translation id="360565022852130722">WiFi тармагынын WEP 802.1x протоколунун коопсуздугу начар</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Батарея толук кубатталган циклдердин саны</translation>
 <translation id="3941014780699102620">Башкы түйүн чечилген жок</translation>
 <translation id="3942420633017001071">Мүчүлүштүктөрдү аныктоо</translation>
+<translation id="3966286471246132217">Тагыраак жыйынтык алуу үчүн тест аягына чыкмайынча бардык колдонмолорду жаап туруңуз.</translation>
 <translation id="3967822245660637423">Жүктөп алуу аяктады</translation>
 <translation id="397105322502079400">Эсептелүүдө…</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Өчүк</translation>
 <translation id="4227825898293920515">Сырсөздүн мөөнөтү <ph name="TIME" /> кийин бүтөт</translation>
 <translation id="4238516577297848345">Аткарылып жаткан иш жок</translation>
+<translation id="4244962993387259361">Эстутумду сыноо үчүн кеминде 500 Мб бош орун керек. Орун бошотуу үчүн Жөндөөлөр &gt; Сактагычты башкаргычка өтүңүз.</translation>
 <translation id="4289540628985791613">Сереп салуу</translation>
 <translation id="4297501883039923494">Токтоду – Белгисиз ката</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> сүрөт</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Демейкиден башка тармактын шлюзуна ping сурамы жөнөтүлгөн жок</translation>
 <translation id="4511264077854731334">Портал</translation>
+<translation id="4536864596629708641">IP конфигурациясы</translation>
 <translation id="4548483925627140043">Сигнал жок</translation>
 <translation id="455835558791489930">Батареянын кубатынын көлөмү – <ph name="CHARGE_VALUE" />мА/с.</translation>
 <translation id="4562494484721939086">Тейленбейт</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ичинен <ph name="PRINTED_PAGE_NUMBER" /> Басып чыгарууну токтотуу үчүн "Enter" баскычын басыңыз.</translation>
 <translation id="4646949265910132906">Коопсуз WiFi туташуусу</translation>
 <translation id="4652335678334611408">Сеанстын таржымалын сактоо</translation>
+<translation id="4654549501020883054">Күн сайын өзгөртүү</translation>
 <translation id="4665014895760275686">Өндүрүүчү</translation>
 <translation id="467510802200863975">Сырсөздөр дал келген жок</translation>
 <translation id="467715984478005772">Тармактык коргоо бар окшойт</translation>
@@ -318,6 +324,7 @@
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">1 сүрөт</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> түзмөгүн <ph name="MANAGER" /> башкарат. Администраторлор түзмөктү алыстан конфигурациялай алышат.</translation>
+<translation id="7180611975245234373">Жаңылоо</translation>
 <translation id="7216409898977639127">Интернет провайдери</translation>
 <translation id="7271040990581020067">Сканер учурда колдонулуп жатат. Кийинчерээк кайталаңыз.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@
 <translation id="8498220429738806196">Трафикти эсептегичтер</translation>
 <translation id="8503813439785031346">Колдонуучунун ысымы</translation>
 <translation id="8503836310948963452">Дагы бир нече мүнөт калды...</translation>
+<translation id="8521021929829989041">Жеке түзмөктү колдонуу</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Тармакка туташуу үчүн байланыш оператору бул параметрди талап кылышы мүмкүн. Кеңири маалымат үчүн байланыш операторуңузга кайрылыңыз</translation>
 <translation id="8576249514688522074">Аныкталбаган</translation>

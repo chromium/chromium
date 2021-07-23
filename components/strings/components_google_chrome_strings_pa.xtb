@@ -3,13 +3,12 @@
 <translationbundle lang="pa">
 <translation id="1016765312371154165">Chrome ਸਹੀ ਢੰਗ ਨਾਲ ਬੰਦ ਨਹੀਂ ਹੋਇਆ।</translation>
 <translation id="130631256467250065">ਤੁਹਾਡੀਆਂ ਤਬਦੀਲੀਆਂ ਅਗਲੀ ਵਾਰ ਤੁਹਾਡੇ ਡਿਵਾਈਸ ਨੂੰ ਮੁੜ ਚਾਲੂ ਕਰਨ 'ਤੇ ਲਾਗੂ ਹੋਣਗੀਆਂ।</translation>
+<translation id="1635457557763038537">ਤੁਹਾਡੇ ਵੱਲੋਂ ਅਗਲੀ ਵਾਰ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰਨ 'ਤੇ ਤੁਹਾਡੀਆਂ ਤਬਦੀਲੀਆਂ ਲਾਗੂ ਹੋਣਗੀਆਂ।</translation>
+<translation id="2447485272386224171">Chrome ਨੂੰ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ਖੁੱਲ੍ਹਾ ਸਰੋਤ ਪ੍ਰੋਜੈਕਟ ਅਤੇ ਹੋਰ <ph name="BEGIN_LINK_OSS" />ਖੁੱਲ੍ਹਾ ਸਰੋਤ ਸਾਫ਼ਟਵੇਅਰ<ph name="END_LINK_OSS" /> ਵੱਲੋਂ ਸੰਭਵ ਬਣਾਇਆ ਗਿਆ ਹੈ।</translation>
 <translation id="2588322182880276190">Chrome ਲੋਗੋ</translation>
-<translation id="2874156562296220396">Google Chrome ਨੂੰ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ਖੁੱਲ੍ਹਾ ਸਰੋਤ ਪ੍ਰੋਜੈਕਟ ਅਤੇ ਹੋਰ <ph name="BEGIN_LINK_OSS" />ਖੁੱਲ੍ਹਾ ਸਰੋਤ ਸਾਫਟਵੇਅਰ<ph name="END_LINK_OSS" /> ਵੱਲੋਂ ਸੰਭਵ ਬਣਾਇਆ ਗਿਆ ਹੈ।</translation>
-<translation id="3140883423282498090">ਤੁਹਾਡੀਆਂ ਤਬਦੀਲੀਆਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਅਗਲੀ ਵਾਰ Google Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰਨ 'ਤੇ ਲਾਗੂ ਹੋਣਗੀਆਂ।</translation>
 <translation id="3444832043240812445">ਇਹ ਪੰਨਾ ਕੇਵਲ ਤੁਹਾਡੇ ਮੌਜੂਦਾ ਕ੍ਰੈਸ਼ ਬਾਰੇ ਜਾਣਕਾਰੀ ਦਿਖਾਉਂਦਾ ਹੈ ਜੇਕਰ ਤੁਸੀਂ <ph name="BEGIN_LINK" />ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟ ਨੂੰ ਚਾਲੂ<ph name="END_LINK" /> ਕਰਦੇ ਹੋ।</translation>
 <translation id="3875312571075912821">Chrome ਨੂੰ ਆਪਣੀਆਂ ਫ਼ਾਇਰਵਾਲ ਜਾਂ ਐਂਟੀਵਾਇਰਸ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਨੈੱਟਵਰਕ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿਓ।</translation>
 <translation id="4010643444566880169">Chrome OS ਨੇ ਆਪਣਾ ਸ਼ੁਰੂਆਤੀ ਸੈੱਟਅੱਪ ਮੁਕੰਮਲ ਨਹੀਂ ਕੀਤਾ।</translation>
-<translation id="4853578032408195113">ਤੁਸੀਂ ਇੱਕ ਸੁਰੱਖਿਅਤ Google Chrome ਪੰਨਾ ਦੇਖ ਰਹੇ ਹੋ</translation>
 <translation id="5005121315113832363">ਇਸ ਪੰਨੇ ਨੂੰ Chrome ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="6011049234605203654">ਇਸ 'ਤੇ ਜਾਓ
           Chrome ਮੀਨੂ &gt;
@@ -34,6 +33,7 @@
           &gt;
           LAN ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾ ਕੇ
           "ਆਪਣੇ LAN ਲਈ ਇੱਕ ਪ੍ਰੌਕਸੀ ਸਰਵਰ ਵਰਤੋ" ਨੂੰ ਅਣ-ਚੁਣਿਆ ਕਰੋ।</translation>
+<translation id="7230956101631259640">ਤੁਸੀਂ ਇੱਕ ਸੁਰੱਖਿਅਤ Chrome ਪੰਨਾ ਦੇਖ ਰਹੇ ਹੋ</translation>
 <translation id="8187289872471304532">ਐਪਲੀਕੇਸ਼ਨਾਂ&gt; ਸਿਸਟਮ ਤਰਜੀਹਾਂ &gt; ਨੈੱਟਵਰਕ &gt; ਉੱਨਤ &gt; ਪ੍ਰੌਕਸੀਆਂ 'ਤੇ ਜਾਓ ਅਤੇ ਕਿਸੇ ਵੀ ਉਹਨਾਂ 
           ਪ੍ਰੌਕਸੀਆਂ ਨੂੰ ਅਚੋਣਵਾਂ ਕਰੋ ਜੋ ਚੁਣੀਆਂ ਗਈਆਂ ਹਨ।</translation>
 </translationbundle>

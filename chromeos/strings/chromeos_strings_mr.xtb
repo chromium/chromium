@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">स्कॅन करा</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> चाचणी रन होत आहे...</translation>
 <translation id="2585245331261708204">Chrome OS मध्ये नवीन</translation>
+<translation id="2619761439309613843">दैनिक रिफ्रेश</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2740531572673183784">ठीक आहे</translation>
 <translation id="2751739896257479635">EAP टप्पा 2 ऑथेंटिकेशन</translation>
@@ -132,6 +133,7 @@
 <translation id="387301095347517405">तुमची बॅटरी किती वेळा पूर्ण चार्ज झाली त्याची संख्या</translation>
 <translation id="3941014780699102620">होस्टचे निराकरण करता आले नाही</translation>
 <translation id="3942420633017001071">निदान</translation>
+<translation id="3966286471246132217">आणखी अचूक परिणामांसाठी, चाचणी पूर्ण होईपर्यंत सर्व अ‍ॅप्स बंद करा.</translation>
 <translation id="3967822245660637423">पूर्ण डाउनलोड करा</translation>
 <translation id="397105322502079400">गणना करत आहे...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> दिवसांपेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
@@ -144,6 +146,7 @@
 <translation id="4176463684765177261">अक्षम केले</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> मध्ये पासवर्ड एक्स्पायर होईल</translation>
 <translation id="4238516577297848345">कोणतेही प्रिंट जॉब प्रगतीपथावर नाहीत</translation>
+<translation id="4244962993387259361">मेमरीसंबंधित चाचणी रन करण्यासाठी तुमच्याकडे किमान ५०० MB जागा मोकळी असणे आवश्यक आहे. जागा मोकळी करण्यासाठी, सेटिंग्ज &gt; स्टोरेज व्यवस्थापन वर जा.</translation>
 <translation id="4289540628985791613">विहंगावलोकन</translation>
 <translation id="4297501883039923494">थांबले - अज्ञात एरर</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> इमेज</translation>
@@ -318,6 +321,7 @@
 <translation id="7162487448488904999">गॅलरी</translation>
 <translation id="7172721935181587524">एक इमेज</translation>
 <translation id="7177485034254901881">हे <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे. अ‍ॅडमिनिस्ट्रेटर रिमोट पद्धतीने डिव्हाइस काँफिगर करू शकतात.</translation>
+<translation id="7180611975245234373">रिफ्रेश करा</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देणारा</translation>
 <translation id="7271040990581020067">स्कॅनर सध्या वापरात आहे. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

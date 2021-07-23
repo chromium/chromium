@@ -3,7 +3,6 @@
 <translationbundle lang="mn">
 <translation id="1006017844123154345">Онлайнаар нээх</translation>
 <translation id="1044891598689252897">Сайтууд хэвийн ажиллана</translation>
-<translation id="1100504063505580045">Одоогийн дүрс тэмдэг</translation>
 <translation id="1124090076051167250">Энэ нь сайт эсвэл таны Үндсэн нүүрэн дээрх аппуудаас хадгалсан <ph name="DATASIZE" /> өгөгдөл болон күүкиг арилгана.</translation>
 <translation id="1178581264944972037">Түр зогсоох</translation>
 <translation id="1181037720776840403">Хасах</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Видеоны дууг хаах</translation>
 <translation id="3596414637720633074">Нууцлалтай горимд гуравдагч талын күүкиг блоклох</translation>
 <translation id="3600792891314830896">Дуу тоглуулдаг сайтуудын дууг хаах</translation>
-<translation id="365089839707261811">Нэрийн шинэчлэлтүүдийг шалгах</translation>
 <translation id="3744111561329211289">Дэвсгэрт синк хийх</translation>
 <translation id="3763247130972274048">10 секунд алгасахын тулд видеоны зүүн эсвэл баруун талд хоёр товшино уу</translation>
 <translation id="381841723434055211">Утасны дугаар</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Сайт медиа тоглуулж байна</translation>
 <translation id="42981349822642051">Өргөтгөх</translation>
 <translation id="4336434711095810371">Бүх өгөгдлийг устгах</translation>
-<translation id="4339203724549370495">Аппыг устгах</translation>
 <translation id="4402755511846832236">Сайтуудыг таныг энэ төхөөрөмжийг хэзээ идэвхтэй ашиглаж буйг мэдэхийг нь блоклоно</translation>
 <translation id="4434045419905280838">Попап болон дахин чиглүүлэлт</translation>
 <translation id="445467742685312942">Сайтуудад хамгаалагдсан контент тоглуулахыг зөвшөөрөх</translation>
@@ -135,12 +132,12 @@
 <translation id="4670064810192446073">Виртуал бодит байдал</translation>
 <translation id="4708011789095599544">Та энэ веб сайтын күүки болон бусад сайтын өгөгдлийг арилгахдаа итгэлтэй байна уу?</translation>
 <translation id="4751476147751820511">Хөдөлгөөн эсвэл гэрэл мэдрэгч</translation>
-<translation id="4800839971935185386">Нэр болон дүрс тэмдгийн шинэчлэлтүүдийг шалгах</translation>
 <translation id="4836046166855586901">Сайтыг таныг энэ төхөөрөмжийг хэзээ идэвхтэй ашиглаж буйг мэдэхийг хүссэн үед асууна</translation>
 <translation id="4883854917563148705">Хяналттай тохиргоог шинэчлэх боломжгүй</translation>
 <translation id="4887024562049524730">Сайтуудад таны виртуал бодит байдлын төхөөрөмж болон өгөгдлийг ашиглахыг зөвшөөрөхийн өмнө асуух (санал болгосон)</translation>
 <translation id="4962975101802056554">Төхөөрөмжийн бүх зөвшөөрлийг цуцлах</translation>
 <translation id="497421865427891073">Цаашаа явах</translation>
+<translation id="4976702386844183910">Хамгийн сүүлд <ph name="DATE" />-д зочилсон</translation>
 <translation id="4994033804516042629">Харилцагч олдсонгүй</translation>
 <translation id="4996978546172906250">-аар хуваалцах</translation>
 <translation id="5039804452771397117">Зөвшөөрөх</translation>
@@ -151,6 +148,7 @@
 <translation id="5123685120097942451">Нууцлалтай таб</translation>
 <translation id="5186036860380548585">Сонголт дэлгэцийн дээд хэсэгт байна</translation>
 <translation id="5197729504361054390">Таны сонгох харилцагчдыг <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-тай хуваалцана.</translation>
+<translation id="5216942107514965959">Хамгийн сүүлд өнөөдөр зочилсон</translation>
 <translation id="528192093759286357">Бүтэн дэлгэцийн горимоос гарахын тулд дээрээс зөөгөөд, буцах товчлуурыг дарна уу.</translation>
 <translation id="5300589172476337783">Харуулах</translation>
 <translation id="5301954838959518834">OK, ойлголоо</translation>
@@ -164,7 +162,6 @@
 <translation id="5403592356182871684">Нэр</translation>
 <translation id="5489227211564503167">Өнгөрсөн цаг: <ph name="TOTAL_TIME" />-н <ph name="ELAPSED_TIME" />.</translation>
 <translation id="5494752089476963479">Төвөгтэй эсвэл хуурамч зар харуулдаг сайтуудын зарыг блоклох</translation>
-<translation id="549957179819296104">Шинэ дүрс тэмдэг</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" />-г зөвшөөрсөн, <ph name="PERMISSION_2" />-г блоклосон</translation>
 <translation id="5505264765875738116">Сайтууд нь танд мэдэгдэл илгээх зөвшөөрөл асуух боломжгүй</translation>
 <translation id="5516455585884385570">Мэдэгдлийн тохиргоог нээх</translation>
@@ -181,6 +178,7 @@
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
 <translation id="5876056640971328065">Видеог түр зогсоох</translation>
+<translation id="5887687176710214216">Хамгийн сүүлд өчигдөр зочилсон</translation>
 <translation id="5916664084637901428">Асаах</translation>
 <translation id="5922853908706496913">Таны дэлгэцийг хуваалцаж байна</translation>
 <translation id="5939518447894949180">Дахин сэргээх</translation>
@@ -210,6 +208,7 @@
 <translation id="6527303717912515753">Хуваалцах</translation>
 <translation id="6545864417968258051">Bluetooth скан хийх</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г блоклосон}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г блоклосон}}</translation>
+<translation id="6554732001434021288">Хамгийн сүүлд <ph name="NUM_DAYS" /> хоногийн өмнө зочилсон</translation>
 <translation id="6561560012278703671">Илүү чимээгүй мессежийг ашиглах (мэдэгдлийн сануулгад танд саад болохыг хориглодог)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Хамгаалагдсан агуулга</translation>
@@ -251,7 +250,6 @@
 <translation id="7589445247086920869">Одоогийн хайлтын хэрэгсэлд блоклох</translation>
 <translation id="7649070708921625228">Тусламж</translation>
 <translation id="7658239707568436148">Болих</translation>
-<translation id="7734541938181328224">Дүрс тэмдгийн шинэчлэлтүүдийг шалгах</translation>
 <translation id="7781829728241885113">Өчигдөр</translation>
 <translation id="7791543448312431591">Нэмэх</translation>
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
@@ -293,7 +291,6 @@
 <translation id="8487700953926739672">Сүлжээнд холбогдоогүй байна</translation>
 <translation id="851751545965956758">Сайтуудыг төхөөрөмжүүдэд холбогдохыг нь блоклох</translation>
 <translation id="8525306231823319788">Бүтэн дэлгэц</translation>
-<translation id="857074314439694500">Хэрэв энэ веб апп өөрийгөө өөр апп гэж танд итгүүлж, хуурахаар оролдож байвал үүнийг устгана уу.</translation>
 <translation id="857943718398505171">Зөвшөөрөгдсөн (санал болгосон)</translation>
 <translation id="8609465669617005112">Дээш зөөх</translation>
 <translation id="8676374126336081632">Оролтыг цэвэрлэх</translation>

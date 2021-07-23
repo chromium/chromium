@@ -16,7 +16,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1056775291175587022">Sarerik ez</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Aldatu edo kargatu bateria</translation>
-<translation id="1077253978657569125">Hobetu egin nahi dugu hau!</translation>
 <translation id="108486256082349153">Gailu mugikorra: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Arratsalde on, <ph name="GIVEN_NAME" />:</translation>
 <translation id="109942774857561566">Aspertuta nago</translation>
@@ -421,6 +420,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4274537685965975248">Ktrl + Alt + behera egiteko gezi-tekla lasterbidea aldatu egin da. Amaiera tekla erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + eskuinera egiteko gezi-tekla.</translation>
 <translation id="4279490309300973883">Islatzen</translation>
 <translation id="4285498937028063278">Desainguratu</translation>
+<translation id="4292904812939562398">Erabilitako azken aplikazioak</translation>
 <translation id="429402653707266969">Aldatu tresna-barraren kokapena</translation>
 <translation id="4294319844246081198">Egun on, <ph name="GIVEN_NAME" />:</translation>
 <translation id="4296136865091727875">Garbitu <ph name="COUNT" /> jakinarazpenak</translation>

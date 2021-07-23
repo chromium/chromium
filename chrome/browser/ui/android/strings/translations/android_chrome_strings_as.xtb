@@ -318,6 +318,7 @@
 <translation id="3029704984691124060">পাছফ্ৰেজ নিমিলে</translation>
 <translation id="3031225630520268969">Assistantৰ কণ্ঠধ্বনিৰদ্বাৰা সন্ধানৰ সন্মতিৰ ইউআই</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />সহায় লওক<ph name="END_LINK" /></translation>
+<translation id="3037517125981011456">Chromeত ছাইন ইন কৰিবলৈ প্ৰম্প্‌ট প্ৰদৰ্শন কৰে</translation>
 <translation id="3046945242843292318">পৰৱৰ্তী সময়ত এই ছাইটটোলৈ ক্ষিপ্ৰতাৰে আহক</translation>
 <translation id="305593374596241526">অৱস্থান অফ আছে <ph name="BEGIN_LINK" />Android ছেটিংসমূহত<ph name="END_LINK" /> অন কৰক।</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" />টা বুকমাৰ্ক}one{<ph name="BOOKMARKS_COUNT_MANY" />টা বুকমাৰ্ক}other{<ph name="BOOKMARKS_COUNT_MANY" />টা বুকমাৰ্ক}}</translation>
@@ -449,7 +450,6 @@
 <translation id="3928666092801078803">মোৰ ডেটা সংযুক্ত কৰক</translation>
 <translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">সক্ষম কণ্ঠধ্বনিৰে সন্ধানৰ সুবিধা নাই</translation>
-<translation id="3943557322767080599">আপোনাৰ Google একাউণ্টত ছাইন ইন কৰোঁতে Chromeৰ ছাইন-ইন প্ৰম্পট্‌ দেখুৱাওক</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{আপোনাৰ পৃষ্ঠাটো সাজু হ'লে Chromeএ সেইটো ল'ড কৰিব}one{আপোনাৰ পৃষ্ঠাসমূহ সাজু হ'লে Chromeএ সেইটো ল'ড কৰিব}other{আপোনাৰ পৃষ্ঠাসমূহ সাজু হ'লে Chromeএ সেইটো ল'ড কৰিব}}</translation>
 <translation id="3962957115499249330">ৱাই-ফাইত এই ডাউনল'ডটো আৰম্ভ হ'লে আপুনি এটা জাননী দেখা পাব।</translation>
 <translation id="3963007978381181125">পাছফ্ৰেজ এনক্ৰিপশ্বনত Google Payৰ পৰিশোধ পদ্ধতি আৰু ঠিকনা অন্তৰ্ভুক্ত নহয়। আপোনাৰ পাছফ্ৰেজ জনা কোনোবাইহে আপুনি এনক্ৰিপ্ট কৰি থোৱা ডেটা পঢ়িব পাৰে। পাছফ্ৰেজটো ক’লৈকো পঠিওৱা নহয় আৰু সেইটো Googleত ষ্ট'ৰ কৰা নাথাকে। আপুনি যদি নিজৰ পাছফ্ৰেজটো পাহৰে বা এই ছেটিংটো সলাব বিচাৰে, ছিংক ৰিছেট কৰিব লাগিব। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -598,6 +598,7 @@
 <translation id="4881695831933465202">খোলক</translation>
 <translation id="488187801263602086">ফাইলটোৰ নতুন নাম দিয়ক</translation>
 <translation id="4885273946141277891">অসমর্থিত সংখ্যক Chromeৰ কাৰ্যকলাপ।</translation>
+<translation id="4905269543817054577">ইনক’গনিট’ ম’ডত ইতিহাস ছেভ কৰা নহয়</translation>
 <translation id="4908869848243824489">Googleৰ Discover</translation>
 <translation id="4910889077668685004">পৰিশোধ এপ্</translation>
 <translation id="4913161338056004800">পৰিসংখ্যা ৰিছেট কৰক</translation>
@@ -651,6 +652,7 @@
 <translation id="5222676887888702881">ছাইন আউট কৰক</translation>
 <translation id="5227554086496586518">সন্ধানৰ ফলাফল চাবলৈ টিপক</translation>
 <translation id="5233638681132016545">নতুন টেব</translation>
+<translation id="5246093389635966745">টুলবাৰৰ শ্বৰ্টকাট সম্পাদনা কৰক</translation>
 <translation id="5250483651202458397">স্ক্ৰীনশ্বট। বন্ধ কৰিবলৈ টিপক।</translation>
 <translation id="5262378156578470238"><ph name="DATE" />ত ডাউনল'ড আৰম্ভ হ'লে আপুনি এটা জাননী দেখা পাব।</translation>
 <translation id="526421993248218238">এই পৃষ্ঠাটো ল’ড কৰিব নোৱাৰি</translation>
@@ -889,7 +891,6 @@
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
 <translation id="6659594942844771486">টেব</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />ত খোলক</translation>
-<translation id="666981079809192359">Chrome গোপনীয়তাৰ জাননী</translation>
 <translation id="6671495933530132209">প্ৰতিচ্ছবি প্ৰতিলিপি কৰক</translation>
 <translation id="6674571176963658787">ছিংক আৰম্ভ কৰিবলৈ আপোনাৰ পাছফ্ৰেজ দিয়ক</translation>
 <translation id="6676840375528380067">এই ডিভাইচটোৰ পৰা Chrome ডেটা মচিবনে?</translation>
@@ -1033,6 +1034,7 @@
 <translation id="7630202231528827509">প্ৰদানকাৰীৰ URL</translation>
 <translation id="7638584964844754484">ভুল পাছফ্ৰেজ</translation>
 <translation id="7641339528570811325">ব্ৰাউজ কৰা ডেটা মচক…</translation>
+<translation id="764170292089748542">আপুনি ব্যক্তিগতভাৱে ব্ৰাউজ কৰিবলৈ সিদ্ধান্ত ল'লে Chromeএ আপোনাৰ ব্ৰাউজ কৰাৰ ইতিহাস ছেভ নকৰে। আপুনি তথাপি নিজৰ প্ৰিয় ছাইটসমূহ এক্সেছ কৰিবলৈ বুকমাৰ্কসমূহ ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="7646772052135772216">পাছৱৰ্ড ছিংক কৰা সুবিধাটোৱে কাম কৰা নাই</translation>
 <translation id="7655900163790317559">ব্লুটুথ অন কৰি থকা হৈছে…</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>

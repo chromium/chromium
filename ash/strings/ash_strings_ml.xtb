@@ -16,7 +16,6 @@
 <translation id="1056775291175587022">നെറ്റ്‌വർക്കില്ല</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">ബാറ്ററി മാറ്റുക അല്ലെങ്കിൽ റീചാർജ് ചെയ്യുക</translation>
-<translation id="1077253978657569125">ഞങ്ങൾക്ക് ഇത് മെച്ചപ്പെടുത്തണമെന്നുണ്ട്!</translation>
 <translation id="108486256082349153">സെല്ലുലാര്‍‌: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">ഗുഡ് ആഫ്‌റ്റർനൂൺ <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">എനിക്ക് ബോറടിക്കുന്നു</translation>
@@ -420,6 +419,7 @@
 <translation id="4274537685965975248">'Ctrl + Alt + താഴേക്കുള്ള അമ്പടയാളം' കീബോഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. End കീ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> കീ + വലത്തേയ്ക്കുള്ള അമ്പടയാളം അമർത്തുക.</translation>
 <translation id="4279490309300973883">മിററിംഗ്</translation>
 <translation id="4285498937028063278">പിൻചെയ്യൽ മാറ്റുക</translation>
+<translation id="4292904812939562398">അടുത്തിടെ ഉപയോഗിച്ച ആപ്പുകൾ</translation>
 <translation id="429402653707266969">ടൂൾബാർ ലൊക്കേഷൻ മാറ്റുക</translation>
 <translation id="4294319844246081198">ഗുഡ്മോണിംഗ് <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">എല്ലാ <ph name="COUNT" /> അറിയിപ്പുകളും മായ്ക്കുക</translation>

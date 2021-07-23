@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">סריקה</translation>
 <translation id="2570743873672969996">הבדיקה של <ph name="TEST_NAME" /> בתהליך…</translation>
 <translation id="2585245331261708204">‏מה חדש ב-Chrome OS</translation>
+<translation id="2619761439309613843">רענון יומי</translation>
 <translation id="2620436844016719705">מערכת</translation>
 <translation id="2740531572673183784">אישור</translation>
 <translation id="2751739896257479635">‏אימות שלב 2 של EAP</translation>
@@ -132,6 +133,7 @@
 <translation id="387301095347517405">מספר הפעמים שבהן הסוללה נטענה במלואה</translation>
 <translation id="3941014780699102620">לא ניתן היה להתאים את נתוני המארח</translation>
 <translation id="3942420633017001071">אבחון</translation>
+<translation id="3966286471246132217">כדי לקבל תוצאות מדויקות יותר, סוגרים את כל האפליקציות עד להשלמת הבדיקה.</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
 <translation id="39823212440917567">משימות הדפסה בנות יותר מ-<ph name="NUMBER_OF_DAYS" /> ימים יוסרו</translation>
@@ -144,6 +146,7 @@
 <translation id="4176463684765177261">מושבת</translation>
 <translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
 <translation id="4238516577297848345">אין משימות הדפסה שמתבצעות כרגע</translation>
+<translation id="4244962993387259361">‏צריך נפח אחסון פנוי של MB‏500 לפחות כדי להריץ בדיקת זיכרון. כדי לפנות מקום, עוברים להגדרות &gt; ניהול האחסון.</translation>
 <translation id="4289540628985791613">סקירה כללית</translation>
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> תמונות</translation>
@@ -318,6 +321,7 @@
 <translation id="7162487448488904999">גלריה</translation>
 <translation id="7172721935181587524">תמונה אחת</translation>
 <translation id="7177485034254901881">מכשיר <ph name="DEVICE_TYPE" /> זה מנוהל על ידי <ph name="MANAGER" />. מנהלי מערכת עשויים להגדיר את המכשיר הזה מרחוק.</translation>
+<translation id="7180611975245234373">רענון</translation>
 <translation id="7216409898977639127">ספק שירות סלולרי</translation>
 <translation id="7271040990581020067">הסורק נמצא בשימוש כרגע. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

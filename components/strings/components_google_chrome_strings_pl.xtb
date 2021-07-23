@@ -3,14 +3,13 @@
 <translationbundle lang="pl">
 <translation id="1016765312371154165">Chrome nie został poprawnie zamknięty.</translation>
 <translation id="130631256467250065">Zmiany zostaną zastosowane przy następnym uruchomieniu urządzenia.</translation>
+<translation id="1635457557763038537">Zmiany zaczną obowiązywać po ponownym uruchomieniu Chrome.</translation>
+<translation id="2447485272386224171">Stworzenie przeglądarki Chrome było możliwe dzięki projektowi open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> i innym <ph name="BEGIN_LINK_OSS" />programom o otwartym kodzie źródłowym<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logo Chrome</translation>
-<translation id="2874156562296220396">Stworzenie przeglądarki Google Chrome było możliwe dzięki projektowi open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> i innym <ph name="BEGIN_LINK_OSS" />programom o otwartym kodzie źródłowym<ph name="END_LINK_OSS" />.</translation>
-<translation id="3140883423282498090">Zmiany zaczną obowiązywać po ponownym uruchomieniu Google Chrome.</translation>
 <translation id="3444832043240812445">Ta strona zawiera informacje o ostatnich awariach tylko w przypadku <ph name="BEGIN_LINK" />włączenia funkcji zgłaszania awarii<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Zezwalaj Chrome na korzystanie z sieci w ustawieniach zapory sieciowej
         lub oprogramowania antywirusowego.</translation>
 <translation id="4010643444566880169">Nie ukończono wstępnej konfiguracji systemu operacyjnego Chrome.</translation>
-<translation id="4853578032408195113">Przeglądasz bezpieczną stronę Google Chrome</translation>
 <translation id="5005121315113832363">Ta strona została zablokowana przez Chrome</translation>
 <translation id="6011049234605203654">Wybierz
           menu Chrome &gt;
@@ -38,6 +37,7 @@
           &gt;
           Ustawienia sieci LAN
           i usuń zaznaczenie „Użyj serwera proxy dla sieci LAN”.</translation>
+<translation id="7230956101631259640">Przeglądasz bezpieczną stronę Chrome</translation>
 <translation id="8187289872471304532">Wybierz
           Aplikacje &gt; Ustawienia systemowe &gt; Sieć &gt; Zaawansowane &gt; Serwery proxy
           i usuń zaznaczenie wszelkich wybranych serwerów proxy.</translation>

@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Tafuta</translation>
 <translation id="2570743873672969996">Inatekeleza jaribio la <ph name="TEST_NAME" />...</translation>
 <translation id="2585245331261708204">Mapya katika Chrome OS</translation>
+<translation id="2619761439309613843">Onyesha Upya Kila Siku</translation>
 <translation id="2620436844016719705">Mfumo</translation>
 <translation id="2740531572673183784">Sawa</translation>
 <translation id="2751739896257479635">Uthibitisho wa EAP wa awamu ya pili</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Imaeamilisha kidogo</translation>
 <translation id="3527036260304016759">Haijakamilika - Hitilafu isiyojulikana</translation>
 <translation id="3532980081107202182">Zimesalia takriban dakika <ph name="MIN_REMAINING" /></translation>
+<translation id="3540383942695635079">Anwani ya MAC</translation>
 <translation id="357889014807611375">Wi-Fi inayopima data</translation>
 <translation id="3595596368722241419">Betri imejaa</translation>
 <translation id="360565022852130722">Mtandao wa WiFi umelindwa kwa kutumia itifaki hafifu ya WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Mara ambazo betri yako imekamilisha mzunguko kamili wa chaji</translation>
 <translation id="3941014780699102620">Imeshindwa kusuluhisha seva pangishi</translation>
 <translation id="3942420633017001071">Vichunguzi</translation>
+<translation id="3966286471246132217">Ili upate matokeo sahihi zaidi, funga programu zote hadi jaribio litakapokamilika.</translation>
 <translation id="3967822245660637423">Faili imekamilika kupakuliwa</translation>
 <translation id="397105322502079400">Inakokotoa...</translation>
 <translation id="39823212440917567">Kazi za kuchapisha zilizohifadhiwa kwa zaidi ya siku <ph name="NUMBER_OF_DAYS" /> zitaondolewa</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Imezimwa</translation>
 <translation id="4227825898293920515">Muda wa kutumia nenosiri utaisha baada ya <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Hakuna kazi za kuchapisha zinazoendelea</translation>
+<translation id="4244962993387259361">Unahitaji nafasi ya hifadhi ya angalau MB 500 ili uweze kufanya jaribio la Hifadhi. Ili ufute baadhi ya faili na upate nafasi, nenda kwenye Mipangilio &gt; Kudhibiti nafasi ya hifadhi.</translation>
 <translation id="4289540628985791613">Muhtasari</translation>
 <translation id="4297501883039923494">Imesimama - Hitilafu isiyojulikana</translation>
 <translation id="4300073214558989">Picha <ph name="IMAGE_COUNT" /></translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethaneti</translation>
 <translation id="4483049906298469269">Imeshindwa kuita lango la mtandao usio chaguomsingi</translation>
 <translation id="4511264077854731334">Tovuti kuu</translation>
+<translation id="4536864596629708641">Mipangilio ya IP</translation>
 <translation id="4548483925627140043">Mawimbi ya WiFi hayapatikani</translation>
 <translation id="455835558791489930">Betri ya mAh<ph name="CHARGE_VALUE" /></translation>
 <translation id="4562494484721939086">Hakuna huduma</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> kati ya <ph name="TOTAL_PAGE_NUMBER" />. Bonyeza 'Enter' ili ughairi kazi ya kuchapisha.</translation>
 <translation id="4646949265910132906">Muunganisho Salama wa WiFi</translation>
 <translation id="4652335678334611408">Hifadhi kumbukumbu ya kipindi</translation>
+<translation id="4654549501020883054">Badilisha Kila Siku</translation>
 <translation id="4665014895760275686">Mtengenezaji</translation>
 <translation id="467510802200863975">Manenosiri hayalingani</translation>
 <translation id="467715984478005772">Inashukiwa kuna kinga mtandao</translation>
@@ -317,6 +323,7 @@
 <translation id="7162487448488904999">Matunzio</translation>
 <translation id="7172721935181587524">Picha moja</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> hii inadhibitiwa na <ph name="MANAGER" />. Wasimamizi wanaweza kuweka mipangilio ya kifaa kwa mbali.</translation>
+<translation id="7180611975245234373">Onyesha upya</translation>
 <translation id="7216409898977639127">Mtoa huduma za vifaa vya mkononi</translation>
 <translation id="7271040990581020067">Kichanganuzi kinatumika kwa sasa. Jaribu tena baadaye.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -384,6 +391,7 @@
 <translation id="8498220429738806196">Hesabu za Trafiki</translation>
 <translation id="8503813439785031346">Jina la mtumiaji</translation>
 <translation id="8503836310948963452">Dakika chache tu...</translation>
+<translation id="8521021929829989041">Tumia kama kifaa chako binafsi</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Huenda mtoa huduma wako akahitaji chaguo hili ili uweze kuunganisha kwenye mtandao wake. Wasiliana na mtoa huduma wako ili upate maelezo.</translation>
 <translation id="8576249514688522074">Haijaanzishwa</translation>

@@ -136,9 +136,11 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1407135791313364759">Hapi të gjitha</translation>
 <translation id="1408787208417187241">Tri kapje me tel lart</translation>
 <translation id="1413809658975081374">Gabim i privatësisë</translation>
+<translation id="1422930527989633628">Mund të kërkojë të zbulojë pajisjet me Bluetooth në afërsi</translation>
 <translation id="1426410128494586442">Po</translation>
 <translation id="1428146450423315676">Stivuesi 7</translation>
 <translation id="1430915738399379752">Printo</translation>
+<translation id="1436185428532214179">Mund të kërkojë të modifikojë skedarët ose dosjet në pajisjen tënde</translation>
 <translation id="1442386063175183758">Palosje me dritare djathtas</translation>
 <translation id="1442987760062738829">Shpim</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
@@ -211,7 +213,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1662550410081243962">Ruaj dhe plotëso mënyrat e pagesës</translation>
 <translation id="1663943134801823270">Kartat dhe adresat janë nga Chrome. Ato mund t'i menaxhosh te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Faqet në <ph name="SOURCE_LANGUAGE" /> do të përkthehen në <ph name="TARGET_LANGUAGE" /> nga tani e në vazhdim.</translation>
-<translation id="1676269943528358898"><ph name="SITE" /> përdor zakonisht enkriptimin për mbrojtjen e informacioneve të tua. Kur Google Chrome u përpoq të lidhej me <ph name="SITE" /> këtë herë, sajti i uebit dërgoi prapa kredenciale të pazakonta dhe të pasakta. Kjo mund të ndodhë kur një sulmues pretendon se është <ph name="SITE" /> ose kur lidhja është ndërprerë nga një ekran i identifikimit të Wi-Fi. Informacionet e tua janë ende të sigurta sepse Google Chrome e ndaloi lidhjen para se të shkëmbeheshin të dhënat.</translation>
 <translation id="1677733453456569361"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të luajtur lojën Chrome Dino</translation>
 <translation id="1682696192498422849">Ana e shkurtër në fillim</translation>
 <translation id="168693727862418163">Vërtetimi i kësaj vlere të politikës kundrejt skemës së saj dështoi dhe do të shpërfillet.</translation>
@@ -257,6 +258,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ofrohen shumë veprime, shtyp "Tab" për të kaluar në cikël mes tyre</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Emri i mbajtësit të kartës</translation>
+<translation id="1803351196216024260">Mund të kërkojë të përdorë mikrofonin tënd</translation>
 <translation id="1807246157184219062">I lehtë</translation>
 <translation id="1807528111851433570">Fleta e fillimit</translation>
 <translation id="1812527064848182527">peizazh</translation>
@@ -286,6 +288,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1919367280705858090">Merr ndihmë për një mesazh specifik gabimi</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Asnjë}=1{1 sajt}other{# sajte}}</translation>
 <translation id="1924727005275031552">I ri</translation>
+<translation id="1939175642807587452">Mund të kërkojë të dërgojë njoftime</translation>
 <translation id="1945968466830820669">Mund të humbasësh qasjen në llogarinë e organizatës ose mund të pësosh vjedhje të identitetit. Chromium rekomandon që ta ndryshosh fjalëkalimin tani.</translation>
 <translation id="1947454675006758438">Kapje me tel lart djathtas</translation>
 <translation id="1958218078413065209">Rezultati yt maksimal është <ph name="SCORE" />.</translation>
@@ -405,7 +408,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{Për më pak se një ditë}=1{Për një ditë}other{Për {NUM_DAYS} ditë}}</translation>
 <translation id="2359629602545592467">Disa</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
-<translation id="2359961752320758691">Zbatohet numri yt i kartës virtuale.</translation>
 <translation id="236340516568226369">Ndrysho përmasat e menysë së aktivizimit/çaktivizimit</translation>
 <translation id="2367567093518048410">Niveli</translation>
 <translation id="2372464001869762664">Pasi t'i konfirmosh, detajet e kartës nga "Llogaria jote e Google" do të ndahen me këtë sajt. Gjej kodin CVC në të dhënat e llogarisë Plex.</translation>
@@ -416,6 +418,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2392959068659972793">Shfaq politikat pa asnjë vlerë të caktuar</translation>
 <translation id="239429038616798445">Kjo mënyrë dërgimi nuk ofrohet. Provo një mënyrë tjetër.</translation>
 <translation id="2396249848217231973">&amp;Zhbëje fshirjen</translation>
+<translation id="2400600116338235695">Mund të kërkojë të lidhet me portat seriale</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413155254802890957">I vjetër</translation>
 <translation id="2413528052993050574">Ky server nuk mund të dëshmonte se është  <ph name="DOMAIN" />; certifikata e tij e sigurisë mund të jetë e revokuar. Kjo mund të shkaktohet nga një konfigurim i pasaktë ose nga ndërhyrja e një sulmuesi në lidhjen tënde.</translation>
@@ -466,10 +469,12 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2587841377698384444">ID-ja e ndërfaqes API të direktorisë:</translation>
 <translation id="2594318783181750337">Pamja e shpejtë e uebit:</translation>
 <translation id="2595719060046994702">Kjo pajisje dhe llogari nuk menaxhohen nga një kompani ose organizatë tjetër.</translation>
+<translation id="2596415276201385844">Për të krijuar një lidhje të sigurt, ora duhet të vendoset në mënyrë të saktë. Kjo është e domosdoshme për shkak se certifikatat, që faqet e internetit i përdorin për të identifikuar vetveten, janë të vlefshme vetëm për periudha specifike kohore. Meqenëse ora e pajisjes është e pasaktë, Chrome nuk mund t'i verifikojë këto certifikata.</translation>
 <translation id="2597378329261239068">Ky dokument mbrohet me fjalëkalim. Fut një fjalëkalim.</translation>
 <translation id="2609632851001447353">Variantet</translation>
 <translation id="2618023639789766142">C10 (Zarf)</translation>
 <translation id="2625385379895617796">Ora jote është përpara</translation>
+<translation id="262745152991669301">Mund të kërkojë të lidhet me pajisjet me USB</translation>
 <translation id="2629325967560697240">Për të marrë nivelin më të lartë të sigurisë së Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />aktivizo mbrojtjen e përmirësuar<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">Adresa e IP-së së serverit të <ph name="HOST_NAME" /> nuk mund të gjendej.</translation>
 <translation id="2639739919103226564">Statusi:</translation>
@@ -539,6 +544,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="290376772003165898">Faqja nuk është në <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">U zbulua një ndryshim i rrjetit.</translation>
 <translation id="2911973620368911614">ID-ja e përdoruesit të llogarisë së punës</translation>
+<translation id="2914160345369867329"><ph name="SITE" /> përdor zakonisht enkriptimin për mbrojtjen e informacionit tënd. Kur Chrome u përpoq të lidhej me <ph name="SITE" /> këtë herë, sajti i uebit dërgoi prapa kredenciale të pazakonta dhe të pasakta. Kjo mund të ndodhë kur një sulmues po përpiqet të pretendojë se është <ph name="SITE" /> ose lidhja është ndërprerë nga një ekran i identifikimit të Wi-Fi. Informacioni yt është ende i sigurt sepse Chrome e ndaloi lidhjen para se të shkëmbehej ndonjë e dhënë.</translation>
 <translation id="2915068235268646559">Ndërprerje aksidentale nga <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Mbyll programet e tjera</translation>
 <translation id="2922350208395188000">Certifikata e serverit nuk mund të kontrollohet.</translation>
@@ -555,7 +561,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2951588413176968965">Kutia ime postare</translation>
 <translation id="295526156371527179">Paralajmërim: Kjo politikë nuk është bashkuar si fjalor siç specifikohet nga politika sepse nuk është fjalor.</translation>
 <translation id="2955913368246107853">Mbylle shiritin e gjetjes</translation>
-<translation id="2969319727213777354">Për të krijuar një lidhje të sigurt, ora duhet të vendoset në mënyrë të saktë. Kjo ndodh sepse certifikatat që përdorin faqet e internetit për t'u identifikuar janë të vlefshme vetëm për periudha të caktuara kohore. Meqenëse ora e pajisjes është e pasaktë, Google Chrome nuk mund t'i verifikojë këto certifikata.</translation>
 <translation id="2972581237482394796">&amp;Ribëje</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, aktualisht e zgjedhur. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Nëse aktivizohet, Chromium do të ruajë një kopje të kartës tënde në këtë pajisje për plotësim më të shpejtë të formularit.</translation>
@@ -613,6 +618,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3188393374551744535">Balanca e llogarisë</translation>
 <translation id="3194737229810486521"><ph name="URL" /> kërkon të ruajë në mënyrë të përhershme të dhëna në pajisjen tënde</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> në <ph name="SERVER_NAME" /></translation>
+<translation id="3197136577151645743">Mund të kërkojë të dijë kur e përdor pajisjen tënde në mënyrë aktive</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar se çfarë informacionesh sinkronizon ti te cilësimet e Chrome</translation>
 <translation id="320323717674993345">Anulo pagesën</translation>
 <translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
@@ -691,6 +697,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3432601291244612633">Mbyll faqen</translation>
 <translation id="3435738964857648380">Siguria</translation>
 <translation id="3438829137925142401">Përdor fjalëkalimet e ruajtura në "Llogarinë tënde të Google"</translation>
+<translation id="3440783957068352691">katror</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Zotëruesi i kësaj pajisjeje ka çaktivizuar lojën me dinozaurë.</translation>
 <translation id="3447884698081792621">Shfaq certifikatën (lëshuar nga <ph name="ISSUER" />)</translation>
@@ -829,6 +836,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3939773374150895049">Të përdoret WebAuthn në vend të CVC?</translation>
 <translation id="3946209740501886391">Gjithmonë pyet në këtë faqe</translation>
+<translation id="3947595700203588284">Mund të kërkojë të lidhet me pajisjet MIDI</translation>
 <translation id="3949571496842715403">Ky server nuk mund të provonte se është <ph name="DOMAIN" />; certifikata e tij e sigurisë nuk specifikon "Emrat alternativë të subjektit". Kjo mund të shkaktohet nga një keqkonfigurim ose nga një sulmues që po ndërhyn në lidhjen tënde.</translation>
 <translation id="3949601375789751990">Historiku yt i shfletimit shfaqet këtu</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -859,6 +867,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4067947977115446013">Shto adresë të vlefshme</translation>
 <translation id="4072193657607981494">Po ngarkohen politikat</translation>
 <translation id="4072486802667267160">Ndodhi një gabim gjatë përpunimit të porosisë. Provo përsëri.</translation>
+<translation id="4073797364926776829">Shiko kartën</translation>
 <translation id="4075732493274867456">Klienti dhe serveri nuk mbështesin një version të zakonshëm të protokollit SSL ose një paketë të shifrimit.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Konfigurimi i përfaqësuesit është caktuar të përdorë një shkrim URL-je .pac, jo serverë të fiksuar përfaqësues.</translation>
@@ -927,6 +936,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
     &lt;p&gt;Nëse ende e sheh gabimin, kontakto me zotëruesin e sajtit të uebit.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Provo të ekzekutosh diagnostikimin e rrjetit<ph name="END_LINK" />.</translation>
 <translation id="4229544452621580519">Ekzekuto një "Kontroll sigurie" te cilësimet e Chrome</translation>
+<translation id="4230204356098880324">Mund të kërkojë të përdorë dhe lëvizë kamerën tënde</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Vazhdo te <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">I vlefshëm</translation>
 <translation id="4250431568374086873">Lidhja jote me këtë sajt nuk është plotësisht e sigurt</translation>
@@ -989,6 +999,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4434045419905280838">Dritaret kërcyese dhe ridrejtimet</translation>
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Përdorimi i një përfaqësuesi është i çaktivizuar, por është specifikuar një konfigurim i qartë përfaqësuesi.</translation>
+<translation id="4451135742916150903">Mund të kërkojë të lidhet me pajisjet HID</translation>
 <translation id="4460315069258617173">Lejohet derisa të mbyllësh skedat për këtë faqe</translation>
 <translation id="4464826014807964867">Sajtet e uebit me informacione nga organizata jote</translation>
 <translation id="4476953670630786061">Ky formular nuk është i sigurt. Plotësimi automatik është çaktivizuar.</translation>
@@ -1052,6 +1063,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4708268264240856090">Lidhja jote u ndërpre</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Po ekzekuton diagnostikimin e rrjetit të Windows<ph name="END_LINK" /></translation>
+<translation id="4724144314178270921">Mund të kërkojë të shikojë tekstin dhe imazhet në kujtesën e fragmenteve</translation>
 <translation id="4726672564094551039">Ringarko politikat</translation>
 <translation id="4728558894243024398">Platforma</translation>
 <translation id="4731638775147756694">Ky aplikacion është bllokuar nga administratori yt</translation>
@@ -1085,7 +1097,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4800132727771399293">Kontrollo datën e skadimit dhe CVC-në dhe provo sërish.</translation>
 <translation id="480334179571489655">Gabim i politikës së origjinës</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="4807049035289105102">Nuk mund ta vizitosh <ph name="SITE" /> tani sepse sajti i uebit dërgoi kredenciale të koduara që nuk mund të përpunohen nga Google Chrome. Gabimet dhe sulmet në rrjet zakonisht janë të përkohshme, kështu që kjo faqe ndoshta do të punojë më vonë.</translation>
 <translation id="4809079943450490359">Udhëzimet nga administratori i pajisjes sate:</translation>
 <translation id="4813512666221746211">Gabim në rrjet</translation>
 <translation id="4816492930507672669">Përshtate me faqen</translation>
@@ -1197,6 +1208,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5172758083709347301">Pajisja</translation>
 <translation id="5179510805599951267">Jo në <ph name="ORIGINAL_LANGUAGE" />? Raportoje këtë gabim</translation>
 <translation id="5190835502935405962">Shiriti i faqeshënuesve</translation>
+<translation id="51918995459521422"><ph name="ORIGIN" /> dëshiron të shkarkojë disa skedarë</translation>
 <translation id="519422657042045905">Shënimi nuk ofrohet</translation>
 <translation id="5201306358585911203">Një faqe e integruar në këtë faqe thotë</translation>
 <translation id="5205222826937269299">Emri është i detyrueshëm</translation>
@@ -1349,10 +1361,12 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5728056243719941842">C5 (Zarf)</translation>
 <translation id="5730040223043577876">Chrome rekomandon rivendosjen e fjalëkalimit tënd nëse e ke ripërdorur në sajte të tjera.</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Ruaje kartën në "Llogarinë tënde të Google"}other{Ruaji kartat në "Llogarinë tënde të Google"}}</translation>
+<translation id="5745733273847572235">Mund të kërkojë vendndodhjen tënde</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{Përdor një numër virtual për këtë kartë}other{Zgjidh një kartë}}</translation>
 <translation id="5759751709240058861">Të përdorë dhe të lëvizë kamerën tënde</translation>
 <translation id="5763042198335101085">Fut një adresë të vlefshme email-i</translation>
 <translation id="5765072501007116331">Për të parë mënyrat dhe kërkesat e dorëzimit, zgjidh një adresë</translation>
+<translation id="57689295674415555">Nuk është plotësuar numri i kartës virtuale?</translation>
 <translation id="5776313857861697733">Përparësia</translation>
 <translation id="5778550464785688721">Kontroll i plotë i pajisjeve MIDI</translation>
 <translation id="5781136890105823427">Eksperimenti u aktivizua</translation>
@@ -1364,7 +1378,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="578633867165174378">Chrome e gjeti fjalëkalimin që sapo përdore në një nxjerrje të paautorizuar të të dhënave. Ne rekomandojmë ta ndryshosh këtë fjalëkalim tani.</translation>
 <translation id="5803412860119678065">Dëshiron që të plotësosh informacionet për <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Lejet</translation>
-<translation id="5804427196348435412">Përdor pajisjet me NFC</translation>
 <translation id="5810442152076338065">Lidhja jote me <ph name="DOMAIN" /> është enkriptuar duke përdorur një paketë të vjetër shifrimi.</translation>
 <translation id="5813119285467412249">&amp;Ribëje shtimin</translation>
 <translation id="5817918615728894473">Çifto</translation>
@@ -1454,7 +1467,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6113594885686374546">Butoni i rifillimit të udhëtimit. Shtyp Enter për të rifilluar udhëtimin tënd dhe për të parë aktivitetin përkatës në historikun tënd të Chrome</translation>
 <translation id="6116338172782435947">Shiko tekstin dhe imazhet e kopjuara te kujtesa e fragmenteve</translation>
 <translation id="6120179357481664955">Të kujtohet ID-ja e UPI?</translation>
-<translation id="6123290840358279103">Shiko kartën vrituale</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6146055958333702838">Kontrollo kabllot dhe rindiz router-it, modemët ose pajisjet e tjera të rrjetit që mund të jesh duke përdorur.</translation>
 <translation id="614940544461990577">Provo:</translation>
@@ -1466,6 +1478,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6169916984152623906">Tani mund të shfletosh në mënyrë private dhe personat e tjerë që përdorin këtë pajisje nuk do të shikojnë aktivitetin tënd. Sidoqoftë, shkarkimet dhe faqeshënuesit do të ruhen.</translation>
 <translation id="6177128806592000436">Lidhja jote me këtë sajt nuk është e sigurt</translation>
 <translation id="6180316780098470077">Intervali i ripërpjekjes</translation>
+<translation id="619448280891863779">Mund të kërkojë të hapë dhe të vendosë dritare në ekranet e tua</translation>
 <translation id="6196640612572343990">Blloko kukit e palëve të treta</translation>
 <translation id="6203231073485539293">Kontrollo lidhjen e internetit.</translation>
 <translation id="6211666000885129820">Fleta e regjistrimit të sigurt të kredencialeve të pagesës</translation>
@@ -1551,6 +1564,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6502991525169604759">Pa ndryshimet e tua</translation>
 <translation id="6505563257409036437">Mbyll dritaret e fshehta</translation>
 <translation id="6508722015517270189">Rinis Chrome</translation>
+<translation id="6513005815064132016">Mund të kërkojë të monitorojë pozicionin e kamerës</translation>
 <translation id="6517596291481585650">Paralajmërim: Kjo politikë nuk është bashkuar si listë siç specifikohet nga politika sepse nuk është listë.</translation>
 <translation id="6518133107902771759">Verifiko</translation>
 <translation id="6521745193039995384">Jo aktiv</translation>
@@ -1605,6 +1619,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6711464428925977395">Ka një gabim me serverin përfaqësues ose adresa është e pasaktë.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> kërkon të krijojë një hartë 3D të ambientit tënd rrethues dhe të gjurmojë pozicionin e kamerës</translation>
 <translation id="6718612893943028815">Të përdoret kamera?</translation>
+<translation id="6721678857435001674">Shikojë markën dhe modelin e çelësit tënd të sigurisë</translation>
 <translation id="6738516213925468394">Të dhënat e tua u enkriptuan me <ph name="BEGIN_LINK" />frazën e kalimit për sinkronizimin<ph name="END_LINK" /> më <ph name="TIME" />. Fute atë për të nisur sinkronizmin.</translation>
 <translation id="674375294223700098">Gabim i panjohur i certifikatës së serverit</translation>
 <translation id="6744009308914054259">Ndërkohë që pret për një lidhje, mund të vizitosh "Shkarkimet" për të lexuar artikuj jashtë linje.</translation>
@@ -1641,6 +1656,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6898699227549475383">Organizata (O)</translation>
 <translation id="6907293445143367439">Lejo <ph name="SITE_NAME" /> te:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> kërkon të marrë nën kontroll të plotë pajisjet e tua MIDI</translation>
+<translation id="691024665142758461">Shkarko shumë skedarë</translation>
 <translation id="6915804003454593391">Përdoruesi:</translation>
 <translation id="6934672428414710184">Ky emër është nga "Llogaria jote e Google"</translation>
 <translation id="6944692733090228304">Ke futur fjalëkalimin tënd në një faqe që nuk menaxhohet nga <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Për të mbrojtur llogarinë, mos e ripërdor fjalëkalimin tënd në aplikacione dhe faqe të tjera.</translation>
@@ -1651,7 +1667,9 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6949872517221025916">Rivendos fjalëkalimin</translation>
 <translation id="6950684638814147129">Gabim gjatë paraqitjes së vlerës JSON: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Rivendos të gjitha</translation>
+<translation id="6954341342296443517">Mund të kërkojë të hapë llojet e skedarëve</translation>
 <translation id="6957887021205513506">Certifikata e serverit duket se është e rreme.</translation>
+<translation id="6961844873822989059">Mund të kërkojë të përdorë fontet e instaluara në pajisjen tënde</translation>
 <translation id="6963520811470373926">Zëvendëson</translation>
 <translation id="6964255747740675745">Konfigurimi i rrjetit dështoi në analizim (JSON i pavlefshëm).</translation>
 <translation id="6965382102122355670">Në rregull</translation>
@@ -1753,6 +1771,7 @@ Detaje shtesë:
 <translation id="733354035281974745">Anulimi i llogarisë lokale të pajisjes</translation>
 <translation id="7333654844024768166">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chromium rekomandon që të shkosh te <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> dhe sajte të tjera ku e përdor këtë fjalëkalim dhe ta ndryshosh atë tani.</translation>
 <translation id="7334320624316649418">&amp;Ribëj renditjen</translation>
+<translation id="7335157162773372339">Mund të kërkojë të përdorë kamerën tënde</translation>
 <translation id="7337248890521463931">Shfaq më shumë radhë</translation>
 <translation id="7337706099755338005">Nuk ofrohet në këtë platformë.</translation>
 <translation id="733923710415886693">Certifikata e serverit nuk është zbuluar përmes "Transparencës së certifikatave".</translation>
@@ -1940,6 +1959,7 @@ Detaje shtesë:
 <translation id="7937554595067888181">Skadon më <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Certifikata e serverit nuk është ende e vlefshme.</translation>
 <translation id="7942349550061667556">E kuqe</translation>
+<translation id="7943893128817522649">Mund të kërkojë të shkarkojë automatikisht shumë skedarë</translation>
 <translation id="7947285636476623132">Kontrollo vitin e skadimit dhe provo përsëri</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të mësuar për veçoritë e Chrome</translation>
 <translation id="7950027195171824198">Menaxho preferencat e tua për kukit te cilësimet e Chrome</translation>
@@ -1952,6 +1972,8 @@ Detaje shtesë:
 <translation id="7976214039405368314">Ka shumë kërkesa</translation>
 <translation id="7977538094055660992">Pajisja e daljes</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="798134797138789862">Mund të kërkojë të përdorë të dhënat dhe pajisjet e realitetit virtual</translation>
+<translation id="7984945080620862648">Nuk mund ta vizitosh <ph name="SITE" /> tani sepse sajti i uebit dërgoi kredenciale të koduara që nuk mund të përpunohen nga Chrome. Gabimet dhe sulmet në rrjet zakonisht janë të përkohshme, kështu që kjo faqe ndoshta do të punojë më vonë.</translation>
 <translation id="79859296434321399">Për të parë përmbajtje realiteti të zgjeruar, instalo ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Lidhje</translation>
@@ -2141,6 +2163,7 @@ Detaje shtesë:
 <translation id="8699041776323235191">Pajisje HID</translation>
 <translation id="8703575177326907206">Lidhja me <ph name="DOMAIN" /> nuk është e enkriptuar.</translation>
 <translation id="8705331520020532516">Numri i serisë</translation>
+<translation id="8708134712139312373">Mund të kërkojë të lidhet me pajisjet me Bluetooth</translation>
 <translation id="8710842507289500830">Stili i fontit</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8718314106902482036">Pagesa nuk përfundoi</translation>

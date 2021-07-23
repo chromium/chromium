@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2570743873672969996">Kører testen <ph name="TEST_NAME" />...</translation>
 <translation id="2585245331261708204">Nyt i Chrome OS</translation>
+<translation id="2619761439309613843">Nyt hver dag</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP fase 2-godkendelse</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Delvist aktiveret</translation>
 <translation id="3527036260304016759">Handlingen mislykkedes – Ukendt fejl</translation>
 <translation id="3532980081107202182">Ca. <ph name="MIN_REMAINING" /> minutter tilbage</translation>
+<translation id="3540383942695635079">MAC-adresse</translation>
 <translation id="357889014807611375">forbrugsafregnet Wi-Fi</translation>
 <translation id="3595596368722241419">Batteri helt opladet</translation>
 <translation id="360565022852130722">Wi-Fi-netværket er beskyttet med den svage protokol WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Antal gange dit batteri har gennemgået en fuld opladningscyklus</translation>
 <translation id="3941014780699102620">Der kunne ikke identificeres en host</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
+<translation id="3966286471246132217">Luk alle apps, indtil testen er fuldført, for at få mere nøjagtige resultater.</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
 <translation id="397105322502079400">Beregner...</translation>
 <translation id="39823212440917567">Udskriftsjobs, der er ældre end <ph name="NUMBER_OF_DAYS" /> dage, fjernes</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Deaktiveret</translation>
 <translation id="4227825898293920515">Adgangskoden udløber om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen udskriftsjobs er i gang</translation>
+<translation id="4244962993387259361">Du skal have mindst 500 MB ledig hukommelse for at køre en hukommelsestest. Du kan frigøre plads ved at gå til Indstillinger &gt; Administration af lagerplads.</translation>
 <translation id="4289540628985791613">Oversigt</translation>
 <translation id="4297501883039923494">Stoppet – Ukendt fejl</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> billeder</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for det netværk, der ikke er angivet som standardnetværk</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4536864596629708641">IP-konfiguration</translation>
 <translation id="4548483925627140043">Der blev ikke fundet noget signal</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh batteri</translation>
 <translation id="4562494484721939086">Ingen dækning</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ud af <ph name="TOTAL_PAGE_NUMBER" />. Tryk på Enter for at annullere udskriftsjobbet.</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-forbindelse</translation>
 <translation id="4652335678334611408">Gem sessionslog</translation>
+<translation id="4654549501020883054">Skift på daglig basis</translation>
 <translation id="4665014895760275686">Producent</translation>
 <translation id="467510802200863975">Adgangskoderne stemmer ikke overens</translation>
 <translation id="467715984478005772">Der er muligvis en firewall</translation>
@@ -317,6 +323,7 @@
 <translation id="7162487448488904999">Galleri</translation>
 <translation id="7172721935181587524">1 billede</translation>
 <translation id="7177485034254901881">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" />. Administratorer kan fjernkonfigurere enheden.</translation>
+<translation id="7180611975245234373">Opdater</translation>
 <translation id="7216409898977639127">Mobilselskab</translation>
 <translation id="7271040990581020067">Scanneren bruges i øjeblikket. Prøv igen senere.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -384,6 +391,7 @@
 <translation id="8498220429738806196">Trafiktællere</translation>
 <translation id="8503813439785031346">Brugernavn</translation>
 <translation id="8503836310948963452">Det tager kun et par minutter mere...</translation>
+<translation id="8521021929829989041">Brug som personlig enhed</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Dit mobilselskab kræver muligvis denne tilladelse, for at du kan oprette forbindelse til mobilnetværket. Kontakt dit mobilselskab for at få flere oplysninger.</translation>
 <translation id="8576249514688522074">Ikke startet</translation>

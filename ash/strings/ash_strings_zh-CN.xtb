@@ -419,6 +419,7 @@
 <translation id="4274537685965975248">键盘快捷键“Ctrl + Alt + 向下键”已更改。若要使用 End 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向右键。</translation>
 <translation id="4279490309300973883">正在镜像</translation>
 <translation id="4285498937028063278">取消固定</translation>
+<translation id="4292904812939562398">最近使用过的应用</translation>
 <translation id="429402653707266969">切换工具栏位置</translation>
 <translation id="4294319844246081198"><ph name="GIVEN_NAME" />，上午好！</translation>
 <translation id="4296136865091727875">清除所有 <ph name="COUNT" /> 条通知</translation>
@@ -1032,6 +1033,7 @@
 <translation id="9080132581049224423">向上滑动可转到主屏幕</translation>
 <translation id="9080206825613744995">麦克风目前处于使用状态。</translation>
 <translation id="9084606467167974638">切换菜单位置</translation>
+<translation id="9087578468327036362">报告此次查询</translation>
 <translation id="9089416786594320554">输入法</translation>
 <translation id="9091626656156419976">已移除显示器“<ph name="DISPLAY_NAME" />”</translation>
 <translation id="9098969848082897657">将手机设为静音</translation>

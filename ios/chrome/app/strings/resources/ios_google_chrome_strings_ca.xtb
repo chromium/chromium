@@ -19,6 +19,8 @@
 <translation id="2342919707875585281">Chrome comparteix la teva ubicació amb els llocs web que autoritzis.</translation>
 <translation id="2347208864470321755">Quan la funció està activada, Chrome ofereix la traducció de les pàgines escrites en altres idiomes mitjançant el Traductor de Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Estableix Chrome com a predeterminat</translation>
+<translation id="2427791862912929107">Chrome té funcions que t'ajuden a gestionar les teves dades d'Internet i la rapidesa amb què pots carregar pàgines web.
+<ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="2561231791489583059">Utilitza Chrome com a navegador predeterminat per protegir-te de llocs web perillosos i mantenir les teves contrasenyes segures</translation>
 <translation id="2574249610672786438">Per veure les pestanyes des de tots els llocs on facis servir Chrome, inicia la sessió en tots els dispositius</translation>
 <translation id="2576431527583832481">Chrome ara és millor. Hi ha una versió nova disponible.</translation>
@@ -61,8 +63,6 @@
 <translation id="5716154293141027663">Obre Chrome cada vegada que toquis enllaços en altres aplicacions</translation>
 <translation id="5854621639439811139">Consell de Chrome. Ara alguns botons són a la part inferior de la pantalla, per exemple, Enrere, Endavant i Cerca.</translation>
 <translation id="5876773482963502140">Si permets que Chrome sàpiga la teva ubicació, l'enviarà als llocs web a què donis permís. Pot ser que els llocs web demanin la teva ubicació quan tinguin informació local per mostrar-te, com ara botigues o notícies a prop.</translation>
-<translation id="6036420186814142909">Google Chrome té funcions que us ajuden a gestionar les vostres dades d'Internet i la rapidesa amb què podeu carregar pàgines web.
-<ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="6063091872902370735">Permet l'inici de sessió a Chrome</translation>
 <translation id="6181930887571472871">Canvia a Chrome</translation>
 <translation id="6238746320622508509">Deixa que Chrome bloquegi les teves pestanyes d'incògnit.</translation>

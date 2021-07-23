@@ -16,7 +16,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1056775291175587022">Žiadne siete</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Vymeňte alebo dobite batériu</translation>
-<translation id="1077253978657569125">Chceme toto zlepšiť.</translation>
 <translation id="108486256082349153">Mobilné zariadenie: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Dobré popoludnie, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Nudím sa</translation>
@@ -420,6 +419,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4274537685965975248">Klávesová skratka Ctrl + Alt + šípka nadol bola zmenená. Ak chcete použiť kláves End, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + šípka doprava.</translation>
 <translation id="4279490309300973883">Zrkadlenie</translation>
 <translation id="4285498937028063278">Odopnúť</translation>
+<translation id="4292904812939562398">Nedávno použité aplikácie</translation>
 <translation id="429402653707266969">Prepínač umiestnenia panela s nástrojmi</translation>
 <translation id="4294319844246081198">Dobré ráno, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Vymazať všetky upozornenia (počet: <ph name="COUNT" />)</translation>

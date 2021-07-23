@@ -16,7 +16,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1056775291175587022">Žádné sítě</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Vyměňte nebo znovu nabijte baterii</translation>
-<translation id="1077253978657569125">Chceme to zlepšit!</translation>
 <translation id="108486256082349153">Mobilní telefon: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Dobré odpoledne, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Nudím se</translation>
@@ -420,6 +419,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4274537685965975248">Klávesová zkratka Ctrl + Alt + šipka dolů se změnila. Pokud chcete použít klávesu End, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku vpravo.</translation>
 <translation id="4279490309300973883">Zrcadlení</translation>
 <translation id="4285498937028063278">Odepnout</translation>
+<translation id="4292904812939562398">Nedávno použité aplikace</translation>
 <translation id="429402653707266969">Přepnout umístění lišty</translation>
 <translation id="4294319844246081198">Dobré ráno, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Vymazat všechna oznámení (<ph name="COUNT" />)</translation>

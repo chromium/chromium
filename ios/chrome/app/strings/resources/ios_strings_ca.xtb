@@ -8,6 +8,10 @@
 <translation id="1047726139967079566">Afegeix aquesta pàgina a les adreces d'interès...</translation>
 <translation id="1049743911850919806">Incògnit</translation>
 <translation id="105093091697134113">Els comptes següents fan servir contrasenyes que van quedar exposades en una violació de les dades de tercers o es van introduir en un lloc web enganyós. Canvia aquestes contrasenyes immediatament per protegir els comptes.</translation>
+<translation id="105214722824962652">No se't tancarà la sessió del Compte de Google. És possible que es desin <ph name="BEGIN_LINK" />altres tipus d'activitats<ph name="END_LINK" /> al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.
+
+        
+El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau.</translation>
 <translation id="1063454504051558093">Utilitza una altra contrasenya...</translation>
 <translation id="1066060668811609597">Gestiona la sincronització</translation>
 <translation id="1076421457278169141">S'ha escanejat el codi</translation>
@@ -132,6 +136,7 @@
 <translation id="2320166752086256636">Amaga el teclat</translation>
 <translation id="2339560363438331454">Sincron. i serveis de Google</translation>
 <translation id="2351097562818989364">S'ha restablert la configuració del Traductor.</translation>
+<translation id="235789365079050412">Política de privadesa de Google</translation>
 <translation id="2359043044084662842">Tradueix</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2360196772093551345">Sol·licita el lloc web per a mòbils</translation>
@@ -204,6 +209,10 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="298306318844797842">Afegeix una forma de pagament...</translation>
 <translation id="2989805286512600854">Obre en una pestanya nova</translation>
 <translation id="3037605927509011580">Vaja!</translation>
+<translation id="3076846064362030967">No se't tancarà la sessió del Compte de Google. És possible que es desin <ph name="BEGIN_LINK" />altres tipus d'activitats<ph name="END_LINK" /> al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.
+
+
+Consulta les instruccions del teu motor de cerca per suprimir l'historial de cerques, si escau.</translation>
 <translation id="3080525922482950719">Pots desar pàgines per llegir-les més endavant o sense connexió</translation>
 <translation id="3081338492074632642">Assegura't que la contrasenya que estàs desant coincideixi amb la contrasenya de: <ph name="WEBSITE" /></translation>
 <translation id="3112556859945124369">Marca com a…</translation>
@@ -328,7 +337,6 @@ Segueix aquests passos:</translation>
 <translation id="4375040482473363939">Cerca mitjançant un codi QR</translation>
 <translation id="4378154925671717803">Telèfon</translation>
 <translation id="4389019817280890563">Toca per canviar l'idioma.</translation>
-<translation id="441868831736628555">Avís de privadesa</translation>
 <translation id="4454246407045105932">Afegeix un idioma</translation>
 <translation id="4469418912670346607">Continua amb la configuració</translation>
 <translation id="4476574785019001431">Configuració</translation>
@@ -404,6 +412,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5140288047769711648">Chrome recordarà aquesta contrasenya. No cal que la memoritzis.</translation>
 <translation id="5150492518600715772">Envia al teu dispositiu</translation>
 <translation id="5168414296986405587">Creat per a iPadOS</translation>
+<translation id="5173088371991956744">La sincronització ha de verificar la teva identitat</translation>
 <translation id="5181140330217080051">S'està baixant</translation>
 <translation id="5186185447130319458">Privat</translation>
 <translation id="5188482106078495165">La configuració de les galetes s'aplica a totes les pestanyes. Per aplicar una configuració nova a una pestanya oberta, torna a carregar-la.</translation>
@@ -586,6 +595,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="6730682669179532099">No es poden exportar les contrasenyes</translation>
 <translation id="6748108480210050150">De</translation>
 <translation id="6760509555861141183">Torna a la pestanya Recents</translation>
+<translation id="6762812039470893796">Desselecciona-ho tot</translation>
 <translation id="6780034285637185932">Codi postal</translation>
 <translation id="6785453220513215166">S'està enviant l'informe d'error...</translation>
 <translation id="6797885426782475225">Cerca per veu</translation>
@@ -714,6 +724,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="802154636333426148">Error de baixada</translation>
 <translation id="8023878949384262191">Desplega la secció.</translation>
 <translation id="8027581147000338959">Obre en una finestra nova</translation>
+<translation id="804225253087497565">És possible que l'<ph name="BEGIN_LINK" />historial de cerques<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />altres tipus d'activitats<ph name="END_LINK" /> es desin al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.</translation>
 <translation id="804427445359061970">Trobaràs les teves pestanyes d'altres dispositius aquí</translation>
 <translation id="8059533439631660104">Replega la secció.</translation>
 <translation id="8065292699993359127">Obre els URL en mode d'incògnit a Chrome</translation>

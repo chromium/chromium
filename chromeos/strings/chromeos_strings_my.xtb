@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">ရှာဖွေရန်</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> စစ်ဆေးမှု လုပ်ဆောင်နေသည်...</translation>
 <translation id="2585245331261708204">Chrome OS ၏ အသစ်ပါဝင်မှု</translation>
+<translation id="2619761439309613843">နေ့စဉ် ပြန်လည်စတင်ရန်</translation>
 <translation id="2620436844016719705">စနစ်</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP အဆင့် ၂ အထောက်အထားစိစစ်ခြင်း</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">တစ်စိတ်တစ်ဒေသ ဖွင့်သုံးနေ</translation>
 <translation id="3527036260304016759">မအောင်မြင်ပါ - အမည်မသိ အမှား</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> မိနစ်ခန့် ကျန်သည်</translation>
+<translation id="3540383942695635079">MAC လိပ်စာ</translation>
 <translation id="357889014807611375">အခမဲ့မဟုတ်သော Wi-Fi</translation>
 <translation id="3595596368722241419">ဘက်ထရီ အားပြည့်နေ</translation>
 <translation id="360565022852130722">WiFi ကွန်ရက်ကို အားနည်းသောပရိုတိုကော WEP 802.1x ဖြင့် လုံခြုံအောင်ထားသည်</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">သင့်ဘက်ထရီကို အားအပြည့်သွင်းထားသည့် အကြိမ်အရေအတွက်</translation>
 <translation id="3941014780699102620">ဆာဗာပင်ရင်းကို မဖြေရှင်းနိုင်ပါ</translation>
 <translation id="3942420633017001071">အမှားရှာဖွေမှုများ</translation>
+<translation id="3966286471246132217">ပိုမိုတိကျသော ရလဒ်များအတွက် စစ်ဆေးမှုပြီးသည်အထိ အက်ပ်အားလုံးကို ပိတ်ပါ။</translation>
 <translation id="3967822245660637423">ဒေါင်းလုဒ်လုပ်ခြင်း ပြည့်စုံပါပြီ</translation>
 <translation id="397105322502079400">တွက်ချက်နေ...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">ပိတ်ထားသည်။</translation>
 <translation id="4227825898293920515">စကားဝှက်သည် <ph name="TIME" /> တွင် သက်တမ်းကုန်ပါမည်</translation>
 <translation id="4238516577297848345">ပရင့်ထုတ်ရန် ဖိုင်များ လုပ်ဆောင်မနေပါ</translation>
+<translation id="4244962993387259361">မှတ်ဉာဏ်စစ်ဆေးမှု လုပ်ဆောင်ရန် အနည်းဆုံး ၅၀၀ MB လွတ်နေရမည်။ နေရာလွတ်ပြုလုပ်ရန် ဆက်တင်များ &gt; ‘သိုလှောင်ခန်းစီမံခန့်ခွဲမှုစနစ်’ သို့ သွားပါ။</translation>
 <translation id="4289540628985791613">အကျဉ်းချုပ်</translation>
 <translation id="4297501883039923494">ရပ်သွားသည် - အမည်မသိ အမှား</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ပုံ</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">အီတာနက်</translation>
 <translation id="4483049906298469269">မူရင်းမဟုတ်သည့် ကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
 <translation id="4511264077854731334">ပေါ်တယ်</translation>
+<translation id="4536864596629708641">IP စီစဉ်သတ်မှတ်ချက်</translation>
 <translation id="4548483925627140043">လိုင်းဆွဲအား ရှာမတွေ့ပါ</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ဘက်ထရီ</translation>
 <translation id="4562494484721939086">ဝန်ဆောင်မှု မရှိပါ</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />၊ <ph name="PRINTER_NAME" />၊ <ph name="CREATION_TIME" />၊ စာမျက်နှာ <ph name="TOTAL_PAGE_NUMBER" /> မျက်နှာအနက် <ph name="PRINTED_PAGE_NUMBER" /> မျက်နှာ။ ပရင့်ထုတ်ရန်ဖိုင် ပယ်ဖျက်ရန် enter နှိပ်ပါ။</translation>
 <translation id="4646949265910132906">လုံခြုံသော WiFi ချိတ်ဆက်မှု</translation>
 <translation id="4652335678334611408">စက်ရှင်မှတ်တမ်းကို သိမ်းရန်</translation>
+<translation id="4654549501020883054">နေ့စဉ် ပြောင်းရန်</translation>
 <translation id="4665014895760275686">ထုတ်လုပ်သူ</translation>
 <translation id="467510802200863975">စကားဝှက်များ မတူညီပါ</translation>
 <translation id="467715984478005772">Firewall ကို သံသယရှိသည်</translation>
@@ -317,6 +323,7 @@
 <translation id="7162487448488904999">ပြခန်း</translation>
 <translation id="7172721935181587524">1 ပုံ</translation>
 <translation id="7177485034254901881">ဤ <ph name="DEVICE_TYPE" /> ကို <ph name="MANAGER" /> က စီမံခန့်ခွဲသည်။ စီမံခန့်ခွဲသူများက စက်ပစ္စည်းကို အဝေးမှ စီစဉ်သတ်မှတ်နိုင်သည်။</translation>
+<translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>
 <translation id="7216409898977639127">ဆယ်လူလာဝန်ဆောင်မှုပေးသူ</translation>
 <translation id="7271040990581020067">စကင်ဖတ်စက်ကို လက်ရှိ သုံးနေသည်။ နောက်မှ ထပ်စမ်းပါ။</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -384,6 +391,7 @@
 <translation id="8498220429738806196">ကွန်ရက်ဒေတာ ရေတွက်စနစ်များ</translation>
 <translation id="8503813439785031346">အသုံးပြုသူအမည်</translation>
 <translation id="8503836310948963452">နောက်ထပ် မိနစ်အနည်းငယ်သာ လိုသည်…</translation>
+<translation id="8521021929829989041">ကိုယ်ပိုင်စက် အသုံးပြုရန်</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီသည် ၎င်း၏ကွန်ရက်သို့ ချိတ်ဆက်ရန် ဤရွေးချယ်စရာကို သတ်မှတ်ထားနိုင်သည်။ အသေးစိတ်အတွက် သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>
 <translation id="8576249514688522074">စတင်မထားပါ</translation>

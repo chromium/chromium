@@ -182,6 +182,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2243633977138166243">Trykk på venstre- eller høyrepilen for å navigere; trykk på Enter for å aktivere</translation>
 <translation id="224426591676115802">Tale er ikke tilgjengelig for dette språket: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Avslutter læremodus</translation>
+<translation id="2247870315273396641">Stemmeforhåndsvisning</translation>
 <translation id="225732394367814946">Øk talehastigheten</translation>
 <translation id="2267538686624070261">Forlater stavefeilen</translation>
 <translation id="2267945578749931355">Neste tegn</translation>
@@ -198,6 +199,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2390264819538553347">Trykk på Enter for å gå videre eller på tilbaketasten for å gå tilbake.</translation>
 <translation id="2398579267367951220">Skriv for å søke på siden. Trykk på Enter for å hoppe til resultatet, oppover- eller nedoverpilen for å bla gjennom resultatene eller Escape for å avbryte. Fortsett å skrive for å endre søket.</translation>
 <translation id="240709722712693803">Blåfiolett</translation>
+<translation id="2410298923485357543">Bruk naturlig stemme når enheten er på nett</translation>
 <translation id="2416512023405990736">En avmerkingsboks uten hake</translation>
 <translation id="2417569100218200841">Innholdsinformasjon</translation>
 <translation id="2417948780551741035">Sluttnoter</translation>
@@ -299,6 +301,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="3046838483509668188">Alternativer for ChromeVox</translation>
 <translation id="3060756054951570867"><ph name="TITLE" />-menyen er åpen</translation>
 <translation id="3060880924447482063">Sveip til venstre eller høyre for å flytte etter element</translation>
+<translation id="3061302636956643119">Teksten blir sendt til Google for behandling.</translation>
 <translation id="3070245424257836917">Sveip tre fingre opp</translation>
 <translation id="307516670110542567">Hurtigorientering</translation>
 <translation id="3078345202707391975">Neste overskrift på nivå 2</translation>
@@ -421,6 +424,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Lys korallrød</translation>
 <translation id="3816633764618089385">Neste media</translation>
+<translation id="3840823741487267909">Forkortelse</translation>
 <translation id="385383972552776628">Åpne siden med alternativer</translation>
 <translation id="3856075812838139784">Skrivebeskyttet</translation>
 <translation id="3857141338659865495">Mellomturkis</translation>
@@ -937,6 +941,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="7693840228159394336">Forrige alternativknapp</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7713139339518499741">Naturlig stemme</translation>
 <translation id="7714340021005120797">Det finnes ingen flere kombinasjonsfelt</translation>
 <translation id="772146615414628379">Gratulerer! Du har lært det grunnleggende som trengs for å bruke ChromeVox. Husk at du kan åpne kommandomenyen i ChromeVox når som helst ved å trykke på Søk+punktum. For å finne ut enda mer om ChromeVox og Chrome OS, les artiklene nedenfor.
     Hvis du er ferdig med veiledningen, kan du bruke ChromeVox til å navigere til Lukk-knappen og klikke på den.</translation>
@@ -967,6 +972,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="7939428177581522200">lagt til i utvalget</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{krøllalfa}other{# krøllalfategn}}</translation>
 <translation id="7942349550061667556">Rød</translation>
+<translation id="7945703887991230167">Foretrukket stemme</translation>
 <translation id="7948364528129376623">Det finnes ingen flere linker som er besøkt</translation>
 <translation id="7952460583030260752">Kommandoreferanser</translation>
 <translation id="7965147473449754028">menyen er lukket</translation>

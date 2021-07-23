@@ -419,6 +419,7 @@
 <translation id="4274537685965975248">Ctrl + Alt + Down Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। End কী ব্যবহার করতে <ph name="LAUNCHER_KEY_NAME" /> + Right Arrow কী প্রেস করুন।</translation>
 <translation id="4279490309300973883">অনুকরণ করা হচ্ছে</translation>
 <translation id="4285498937028063278">আনপিন</translation>
+<translation id="4292904812939562398">সম্প্রতি ব্যবহার করা অ্যাপ</translation>
 <translation id="429402653707266969">টুলবার লোকেশন টগল করুন</translation>
 <translation id="4294319844246081198">সুপ্রভাত <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875"><ph name="COUNT" />টি বিজ্ঞপ্তি মুছে ফেলুন</translation>
@@ -1032,6 +1033,7 @@
 <translation id="9080132581049224423">'হোম' স্ক্রিনে যাওয়ার জন্য উপরের দিকে সোয়াইপ করুন</translation>
 <translation id="9080206825613744995">মাইক্রোফোন ব্যবহার করা হচ্ছে।</translation>
 <translation id="9084606467167974638">মেনুর অবস্থান টগল করুন</translation>
+<translation id="9087578468327036362">এই কোয়েরি সম্পর্কে রিপোর্ট করুন</translation>
 <translation id="9089416786594320554">ইনপুট পদ্ধতিগুলি</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> প্রদর্শন সরানো হয়েছে</translation>
 <translation id="9098969848082897657">সাইলেন্স ফোন</translation>

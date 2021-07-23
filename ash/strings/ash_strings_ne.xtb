@@ -16,7 +16,6 @@
 <translation id="1056775291175587022">कुनै पनि नेटवर्क छैन</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">ब्याट्री बदल्नुहोस् वा उक्त ब्याट्री रिचार्ज गर्नुहोस्</translation>
-<translation id="1077253978657569125">हामी यसको गुणस्तर सुधार गर्न चाहन्छौँ!</translation>
 <translation id="108486256082349153">सेल्युलर: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">नमस्ते <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">मलाई दिक्क लागिसक्यो</translation>
@@ -420,6 +419,7 @@
 <translation id="4274537685965975248">Ctrl + Alt + डाउन एरो किबोर्ड सर्टकट परिवर्तन गरिएको छ। End की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + राइट एरो थिच्नुहोस्।</translation>
 <translation id="4279490309300973883">प्रतिबिम्ब गर्दै</translation>
 <translation id="4285498937028063278">अनपिन गर्नुहोस्</translation>
+<translation id="4292904812939562398">हालसालै चलाइएका एपहरू</translation>
 <translation id="429402653707266969">टगल गरी टुलबारको स्थान बदल्नुहोस्</translation>
 <translation id="4294319844246081198">नमस्ते <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">सबै <ph name="COUNT" /> सूचनाहरू हटाउनुहोस्</translation>

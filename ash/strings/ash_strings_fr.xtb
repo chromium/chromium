@@ -16,7 +16,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1056775291175587022">Aucun réseau</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" /> : <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Remplacez ou rechargez la batterie</translation>
-<translation id="1077253978657569125">Nous voulons améliorer cela !</translation>
 <translation id="108486256082349153">Mobile : <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Bonjour <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Je m'ennuie</translation>
@@ -420,6 +419,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4274537685965975248">Le raccourci clavier Ctrl+Alt+Flèche vers le bas a été modifié. Pour utiliser la touche Fin, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers la droite.</translation>
 <translation id="4279490309300973883">Mise en miroir</translation>
 <translation id="4285498937028063278">Retirer</translation>
+<translation id="4292904812939562398">Applications récemment utilisées</translation>
 <translation id="429402653707266969">Activer/Désactiver la position de la barre d'outils</translation>
 <translation id="4294319844246081198">Bonjour <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Effacer les <ph name="COUNT" /> notifications</translation>

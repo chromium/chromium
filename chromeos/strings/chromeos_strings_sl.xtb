@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Išči</translation>
 <translation id="2570743873672969996">Izvajanje preizkusa <ph name="TEST_NAME" /> …</translation>
 <translation id="2585245331261708204">Novosti v Chromu OS</translation>
+<translation id="2619761439309613843">Dnevno osveževanje</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2740531572673183784">V redu</translation>
 <translation id="2751739896257479635">2. faza preverjanja pristnosti EAP</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Delno aktivirano</translation>
 <translation id="3527036260304016759">Napaka – neznana napaka</translation>
 <translation id="3532980081107202182">Še približno <ph name="MIN_REMAINING" /> min</translation>
+<translation id="3540383942695635079">Naslov MAC</translation>
 <translation id="357889014807611375">Wi‑Fi z omejeno količino prenosa</translation>
 <translation id="3595596368722241419">Baterija je polna</translation>
 <translation id="360565022852130722">Omrežje Wi-Fi je zavarovano s šibkim protokolom WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Število ciklov popolnega polnjenja baterije.</translation>
 <translation id="3941014780699102620">Ni bilo mogoče razrešiti gostitelja</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="3966286471246132217">Če želite natančnejše rezultate, zaprite vse aplikacije, dokler se preizkus ne dokonča.</translation>
 <translation id="3967822245660637423">Prenos končan</translation>
 <translation id="397105322502079400">Izračunavanje …</translation>
 <translation id="39823212440917567">Odstranjena bodo tiskalna opravila, starejša od toliko dni: <ph name="NUMBER_OF_DAYS" /></translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Onemogočeno</translation>
 <translation id="4227825898293920515">Geslo poteče čez toliko časa: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nobeno tiskalno opravilo ne poteka</translation>
+<translation id="4244962993387259361">Če želite izvajati preizkus pomnilnika, potrebujete najmanj 500 MB prostora. Če želite sprostiti prostor, odprite »Nastavitve &gt; Upravljanje shrambe«.</translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4297501883039923494">Ustavljeno – neznana napaka</translation>
 <translation id="4300073214558989">Št. slik: <ph name="IMAGE_COUNT" /></translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ni bilo mogoče preveriti prehoda omrežja, ki ni privzet</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4536864596629708641">Konfiguracija naslova IP</translation>
 <translation id="4548483925627140043">Signal ni bil najden</translation>
 <translation id="455835558791489930">Baterija zmogljivosti <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Ni storitve</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite tipko Enter, če želite preklicati tiskalno opravilo.</translation>
 <translation id="4646949265910132906">Varna povezava Wi-Fi</translation>
 <translation id="4652335678334611408">Shrani dnevnik seje</translation>
+<translation id="4654549501020883054">Dnevno spreminjanje</translation>
 <translation id="4665014895760275686">Proizvajalec</translation>
 <translation id="467510802200863975">Gesli se ne ujemata</translation>
 <translation id="467715984478005772">Sum na požarni zid</translation>
@@ -318,6 +324,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7172721935181587524">1 slika</translation>
 <translation id="7177485034254901881">To napravo <ph name="DEVICE_TYPE" /> upravlja domena <ph name="MANAGER" />. Skrbniki lahko napravo konfigurirajo na daljavo.</translation>
+<translation id="7180611975245234373">Osveži</translation>
 <translation id="7216409898977639127">Ponudnik mobilnih storitev</translation>
 <translation id="7271040990581020067">Optični bralnik je trenutno v uporabi. Poskusite pozneje.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8498220429738806196">Števci prometa</translation>
 <translation id="8503813439785031346">Uporabniško ime</translation>
 <translation id="8503836310948963452">Samo še nekaj minut …</translation>
+<translation id="8521021929829989041">Uporabi kot osebno napravo</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operater lahko zahteva to možnost za povezovanje z njegovim omrežjem. Za podrobnejše informacije se obrnite na operaterja.</translation>
 <translation id="8576249514688522074">Neinicializirano</translation>

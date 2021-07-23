@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Скенирај</translation>
 <translation id="2570743873672969996">Се извршува тест за <ph name="TEST_NAME" />…</translation>
 <translation id="2585245331261708204">Што е ново во Chrome OS</translation>
+<translation id="2619761439309613843">Дневно освежување</translation>
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2740531572673183784">Во ред</translation>
 <translation id="2751739896257479635">Автентикација со EAP во фаза 2</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Делумно активиран</translation>
 <translation id="3527036260304016759">Неуспешно - непозната грешка</translation>
 <translation id="3532980081107202182">Преостануваат околу <ph name="MIN_REMAINING" /> мин.</translation>
+<translation id="3540383942695635079">MAC-адреса</translation>
 <translation id="357889014807611375">Wi-Fi со ограничен интернет</translation>
 <translation id="3595596368722241419">Батеријата е полна</translation>
 <translation id="360565022852130722">Wi-Fi мрежата е обезбедена со слаб протокол WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Колку пати батеријата поминала низ целосен циклус на полнење</translation>
 <translation id="3941014780699102620">Неуспешно отворање на хостот</translation>
 <translation id="3942420633017001071">Дијагностика</translation>
+<translation id="3966286471246132217">За попрецизни резултати, затворете ги сите апликации додека не заврши тестот.</translation>
 <translation id="3967822245660637423">Преземањето е завршено</translation>
 <translation id="397105322502079400">Се пресметува…</translation>
 <translation id="39823212440917567">Задачите за печатење постари од <ph name="NUMBER_OF_DAYS" /> дена ќе се отстранат</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Оневозможено</translation>
 <translation id="4227825898293920515">Лозинката истекува за <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Нема задачи за печатење во тек</translation>
+<translation id="4244962993387259361">Потребен ви е слободен капацитет од најмалку 500 MB за да извршите тестирање на меморијата. За да ослободите простор, одете во „Поставки &gt; Управување со капацитетот“.</translation>
 <translation id="4289540628985791613">Преглед</translation>
 <translation id="4297501883039923494">Запрено - непозната грешка</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> слики</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4483049906298469269">Не успеа да се пингува нестандардниот мрежен портал</translation>
 <translation id="4511264077854731334">Портал</translation>
+<translation id="4536864596629708641">Конфигурација на IP</translation>
 <translation id="4548483925627140043">Не е најден сигнал</translation>
 <translation id="455835558791489930">Батерија од <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Нема услуга</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> од <ph name="TOTAL_PAGE_NUMBER" />. Притиснете Enter за да го откажете налогот за печатење.</translation>
 <translation id="4646949265910132906">Безбедна Wi-Fi врска</translation>
 <translation id="4652335678334611408">Зачувајте евиденција за сесијата</translation>
+<translation id="4654549501020883054">Менувај секојдневно</translation>
 <translation id="4665014895760275686">Производител</translation>
 <translation id="467510802200863975">Лозинките не се совпаѓаат</translation>
 <translation id="467715984478005772">Можеби има заштитен ѕид</translation>
@@ -318,6 +324,7 @@
 <translation id="7162487448488904999">Галерија</translation>
 <translation id="7172721935181587524">1 слика</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> управува со овој <ph name="DEVICE_TYPE" />. Администраторите може да го конфигурираат уредот оддалеку.</translation>
+<translation id="7180611975245234373">Освежи</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
 <translation id="7271040990581020067">Скенерот се користи во моментов. Обидете се повторно подоцна.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@
 <translation id="8498220429738806196">Бројачи на сообраќај</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="8503836310948963452">Само уште неколку минути…</translation>
+<translation id="8521021929829989041">Користете како личен уред</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Оваа опција може да е задолжителна за да се поврзете на мрежата на операторот. Контактирајте со операторот за детали.</translation>
 <translation id="8576249514688522074">Неиницијализирана</translation>

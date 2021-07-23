@@ -26,7 +26,6 @@
 <translation id="1597911401261118146">若要检查您的密码是否未曾遭遇数据泄露和其他安全问题，请<ph name="BEGIN_LINK" />登录 Chrome<ph name="END_LINK" />。</translation>
 <translation id="1619887657840448962">为了提高 Chrome 的安全性，我们停用了以下扩展程序（该扩展程序未列在<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中，并且可能是在您不知情的情况下添加的）。</translation>
 <translation id="1628000112320670027">获取有关 Chrome 的帮助</translation>
-<translation id="1666409074978194368">即将更新到最新版本！重新启动 Google Chrome 即可完成更新。无痕式窗口不会重新打开。</translation>
 <translation id="1674870198290878346">在 Chrome 无痕式窗口中打开链接(&amp;G)</translation>
 <translation id="1682634494516646069">Google Chrome 无法对其数据目录 <ph name="USER_DATA_DIRECTORY" /> 执行读写操作</translation>
 <translation id="1698376642261615901">Google Chrome 浏览器是一款可高速运行网页和应用的网络浏览器。它快捷、稳定且易于使用。Google Chrome 浏览器内置的恶意软件和网上诱骗防护功能可让您更安全地浏览网页。</translation>
@@ -86,6 +85,7 @@
 <translation id="2847461019998147611">以这种语言显示 Google Chrome</translation>
 <translation id="2857540653560290388">正在启动 Chrome…</translation>
 <translation id="2857972467023607093">已有一份使用此帐号创建的 Chrome 个人资料</translation>
+<translation id="2861074815332034794">正在更新 Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">您已登录 Chrome！</translation>
 <translation id="2885378588091291677">任务管理器</translation>
 <translation id="2888126860611144412">关于 Chrome</translation>
@@ -173,10 +173,10 @@
 <translation id="5193136243808726294">Google Chrome 操作系统无法打开此网页。</translation>
 <translation id="521447420733633466">如果您是与亲朋好友共用一部设备，他们将能够使用单独的帐号进行浏览，并可随心所欲地设置 Chrome</translation>
 <translation id="5251420635869119124">访客使用Chrome不会留下任何痕迹。</translation>
+<translation id="5251679006894510177">离最新版本只有一步之遥了！重新启动 Chrome 即可完成更新。无痕式窗口不会自动重新打开。</translation>
 <translation id="5386244825306882791">它还能够控制您启动Chrome后或通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="5394833366792865639">共享 Chrome 标签页</translation>
 <translation id="5430073640787465221">您的偏好设置文件已损坏或无效。Google Chrome 浏览器无法恢复您的设置。</translation>
-<translation id="5434383153637353914">您可在此页面中管理您已登录的 Google 帐号。这样您就能在 Chrome 浏览器和 Play 商店应用以及 Gmail、Google 云端硬盘和 YouTube 等服务中使用这些帐号了。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />开始安装前，请确保您拥有最新的数据备份。安装 Chrome 操作系统会覆盖您的硬盘上的所有数据。<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Google 不对任何数据损失承担责任，也不保证 Chrome 操作系统能在未经认证的型号上正常运行。如需详细了解经过认证的型号，请访问 [TBD]。<ph name="END_PARAGRAPH2" />
           <ph name="BEGIN_PARAGRAPH3" />如需详细了解 Chrome 操作系统安装方法和数据清除情况，请访问：[TBD URL]<ph name="END_PARAGRAPH3" />
@@ -210,11 +210,9 @@
 <translation id="6235018212288296708">Google Chrome的入站规则，允许mDNS流量。</translation>
 <translation id="6291089322031436445">Chrome 开发者版应用</translation>
 <translation id="6291549208091401781">已为您计算机上的所有用户安装 Google Chrome。</translation>
-<translation id="6338556085225130112">正在更新 Google Chrome</translation>
 <translation id="6368958679917195344">Chrome 操作系统的问世还有其他<ph name="BEGIN_LINK_CROS_OSS" />开放源代码软件<ph name="END_LINK_CROS_OSS" />的一份功劳。</translation>
 <translation id="6418662306461808273">切换到现有的 Chrome 个人资料？</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 开发者版</translation>
-<translation id="6566149418543181476">正在更新 Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome 操作系统</translation>
 <translation id="664235759707825982">一切就绪，可以安装 Chrome 操作系统了</translation>
 <translation id="6676384891291319759">访问互联网</translation>
@@ -223,12 +221,14 @@
 <translation id="6750954913813541382">为了修正拼写错误，Chrome 会将您在浏览器中输入的文字发送给 Google</translation>
 <translation id="677276454032249905">仍要退出 Chrome？</translation>
 <translation id="683440813066116847">Google Chrome Canary版的入站规则，允许mDNS流量。</translation>
+<translation id="6881299373831449287">正在更新 Chrome</translation>
 <translation id="6885412569789873916">Chrome 测试版应用</translation>
 <translation id="6943584222992551122">系统将会从此设备上删除该用户的浏览数据。要想恢复这些数据，请以“<ph name="USER_EMAIL" />”的身份登录 Chrome。</translation>
 <translation id="6967962315388095737">Google Chrome 测试版的入站规则，允许 mDNS 流量。</translation>
 <translation id="6989339256997917931">Google Chrome 浏览器已更新，但您已经至少 30 天未使用它了。</translation>
 <translation id="7025800014283535195">您可在此处切换 Chrome 个人资料</translation>
 <translation id="7062128746136194023">您的家长已为 Chrome 停用“网站、应用和扩展程序的权限”。因此，您无法添加该<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
+<translation id="7088681679121566888">Chrome 已是最新版本</translation>
 <translation id="7098166902387133879">Google Chrome 正在使用您的麦克风。</translation>
 <translation id="7106741999175697885">任务管理器 - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。}=1{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的无痕式窗口不会重新打开。}other{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
@@ -260,7 +260,6 @@
 <translation id="7801699035218095297">Google Chrome 正在尝试复制密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="7808348361785373670">从Chrome中移除…</translation>
 <translation id="7825851276765848807">由于未指定的错误导致安装失败。请重新下载 Google Chrome 浏览器。</translation>
-<translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
 <translation id="7890208801193284374">如果您与亲朋好友共用计算机，他们将能够使用单独的帐号进行浏览，并可随心所欲地设置Chrome。</translation>
 <translation id="7896673875602241923">之前已有人在此计算机上以 <ph name="ACCOUNT_EMAIL_LAST" /> 的身份登录了 Chrome。请新建一个 Chrome 用户来单独保存您的信息。</translation>
 <translation id="7930071585467473040">Google Chrome 正在尝试复制密码。</translation>

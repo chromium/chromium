@@ -419,6 +419,7 @@
 <translation id="4274537685965975248">Ctrl + Alt + 아래쪽 화살표 단축키가 변경되었습니다. End 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 오른쪽 화살표 키를 누르세요.</translation>
 <translation id="4279490309300973883">미러링</translation>
 <translation id="4285498937028063278">고정 해제</translation>
+<translation id="4292904812939562398">최근 사용한 앱</translation>
 <translation id="429402653707266969">툴바 위치 전환</translation>
 <translation id="4294319844246081198">좋은 아침이에요, <ph name="GIVEN_NAME" />님</translation>
 <translation id="4296136865091727875">알림 <ph name="COUNT" />개 모두 지우기</translation>
@@ -1032,6 +1033,7 @@
 <translation id="9080132581049224423">위로 스와이프하여 홈으로 이동</translation>
 <translation id="9080206825613744995">마이크가 사용 중입니다.</translation>
 <translation id="9084606467167974638">메뉴 위치 전환</translation>
+<translation id="9087578468327036362">쿼리 보고</translation>
 <translation id="9089416786594320554">입력 방법</translation>
 <translation id="9091626656156419976">디스플레이 <ph name="DISPLAY_NAME" /> 제거됨</translation>
 <translation id="9098969848082897657">휴대전화 무음 설정</translation>

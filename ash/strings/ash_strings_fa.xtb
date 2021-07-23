@@ -16,7 +16,6 @@
 <translation id="1056775291175587022">شبکه‌ای وجود ندارد</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />:‏ <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">باتری را تعویض یا مجدداً شارژ کنید</translation>
-<translation id="1077253978657569125">می‌خواهیم این را بهبود ببخشیم!</translation>
 <translation id="108486256082349153">دستگاه تلفن همراه: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">بعدازظهر به‌خیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="109942774857561566">‏I’m bored (حوصله‌ام سر رفته)</translation>
@@ -420,6 +419,7 @@
 <translation id="4274537685965975248">میان‌بر صفحه‌کلید «مهار + دگرساز + جهت‌نمای پایین» تغییر کرده است. برای استفاده از کلید «پایان»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + جهت‌نمای راست» را فشار دهید.</translation>
 <translation id="4279490309300973883">بازتاب می‌شود</translation>
 <translation id="4285498937028063278">لغو پین</translation>
+<translation id="4292904812939562398">برنامه‌های اخیراً استفاده‌شده</translation>
 <translation id="429402653707266969">تغییر مکان نوار ابزار</translation>
 <translation id="4294319844246081198">صبح‌به‌خیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="4296136865091727875">پاک کردن همه <ph name="COUNT" /> اعلان</translation>

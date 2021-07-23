@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Skena</translation>
 <translation id="2570743873672969996">Iqalisa ukuhlola kwe-<ph name="TEST_NAME" />...</translation>
 <translation id="2585245331261708204">Yini entsha nge-Chrome OS</translation>
+<translation id="2619761439309613843">Ukuvuselela kwansuku zonke</translation>
 <translation id="2620436844016719705">Isistimu</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">Ukufakazela ubuqiniso kabili kwesigaba se-EAP</translation>
@@ -132,6 +133,7 @@
 <translation id="387301095347517405">Inani lezikhathi ibhethri yakho ebe nomjikelezo wokushaja ogcwele ngayo</translation>
 <translation id="3941014780699102620">Yehlulekile ukulungisa umsingathi</translation>
 <translation id="3942420633017001071">Ukuxilonga</translation>
+<translation id="3966286471246132217">Ukuze uthole imiphumela enembe nakakhulu, vala wonke ama-app kuze kube yilapho ukuhlola sekuqedile.</translation>
 <translation id="3967822245660637423">Ukulanda kuqedile</translation>
 <translation id="397105322502079400">Iyabala...</translation>
 <translation id="39823212440917567">Imisebenzi yokuphrinta engaphezu kwezinsuku ezingu-<ph name="NUMBER_OF_DAYS" /> izosuswa</translation>
@@ -144,6 +146,7 @@
 <translation id="4176463684765177261">Kukhutshaziwe</translation>
 <translation id="4227825898293920515">Iphasiwedi iphelelwa isikhathi ngo-<ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ayikho imisebenzi yokuphrinta eqhubekayo</translation>
+<translation id="4244962993387259361">Udinga okungenani u-500 MB okhululekile ukwenza ukuhlola Kwenkumbulo. Ukuze ukhulule isikhala, iya kokuthi Amasethingi &gt; Ukuphathwa kwesitoreji</translation>
 <translation id="4289540628985791613">Ukubuka konke</translation>
 <translation id="4297501883039923494">Imile - Iphutha elingaziwa</translation>
 <translation id="4300073214558989">Izithombe <ph name="IMAGE_COUNT" /></translation>
@@ -318,6 +321,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7162487448488904999">Igalari</translation>
 <translation id="7172721935181587524">Isithombe esi-1</translation>
 <translation id="7177485034254901881">Le-<ph name="DEVICE_TYPE" /> iphethwe yi-<ph name="MANAGER" />. Abalawuli bangase balungiselele ngokulawula kude idivayisi.</translation>
+<translation id="7180611975245234373">Qala kabusha</translation>
 <translation id="7216409898977639127">Umhlinzeki weselula</translation>
 <translation id="7271040990581020067">Iskena sisasetshenziswa okwamanje. Zama futhi emuva kwesikhathi.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

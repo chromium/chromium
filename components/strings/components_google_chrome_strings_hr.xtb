@@ -3,13 +3,12 @@
 <translationbundle lang="hr">
 <translation id="1016765312371154165">Chrome se nije ispravno zatvorio.</translation>
 <translation id="130631256467250065">Promjene će početi vrijediti sljedeći put kad ponovo pokrenete uređaj.</translation>
+<translation id="1635457557763038537">Promjene će početi vrijediti sljedeći put kad ponovo pokrenete Chrome.</translation>
+<translation id="2447485272386224171">Chrome je omogućio <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />, projekt otvorenog koda i drugi <ph name="BEGIN_LINK_OSS" />softveri otvorenog koda<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logotip Chrome</translation>
-<translation id="2874156562296220396">Google Chrome omogućili su <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />, projekt utemeljen na otvorenom kôdu i drugi <ph name="BEGIN_LINK_OSS" />softveri utemeljeni na otvorenom kôdu<ph name="END_LINK_OSS" />.</translation>
-<translation id="3140883423282498090">Vaše izmjene stupit će na snagu sljedeći put kada se ponovo pokrene Google Chrome.</translation>
 <translation id="3444832043240812445">Ova stranica prikazuje samo informacije o vašim nedavnim padovima ako <ph name="BEGIN_LINK" />omogućite izvješćivanja o padu<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">U postavkama vatrozida ili antivirusnog programa omogućite Chromeu da pristupa mreži.</translation>
 <translation id="4010643444566880169">OS Chrome nije dovršio početno postavljanje.</translation>
-<translation id="4853578032408195113">Gledate sigurnu stranicu Google Chromea</translation>
 <translation id="5005121315113832363">Chrome je blokirao ovu stranicu</translation>
 <translation id="6011049234605203654">Idite na
           izbornik Chrome &gt;
@@ -36,6 +35,7 @@
           &gt;
           Postavke LAN-a
           pa poništite odabir potvrdnog okvira "Upotrijebi proxy poslužitelj za LAN".</translation>
+<translation id="7230956101631259640">Gledate sigurnu stranicu Chromea</translation>
 <translation id="8187289872471304532">Idite na
           Aplikacije &gt; Postavke sustava &gt; Mreža &gt; Napredno &gt; Proxy poslužitelji
           i poništite odabir proxy poslužitelja.</translation>

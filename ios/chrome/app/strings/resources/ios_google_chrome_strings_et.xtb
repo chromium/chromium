@@ -19,6 +19,8 @@
 <translation id="2342919707875585281">Chrome jagab teie asukohateavet saitidega, millele olete loa andnud.</translation>
 <translation id="2347208864470321755">Kui see funktsioon on sisse lülitatud, pakub Chrome võimalust tõlkida teistes keeltes kirjutatud lehti Google'i tõlke abil. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Chrome vaikebrauserina</translation>
+<translation id="2427791862912929107">Chrome'il on funktsioone, mis aitavad teil hallata oma internetiandmeid ja seda, kui kiiresti saate veebilehti laadida.
+<ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="2561231791489583059">Kasutage Chrome'i vaikebrauserina, et ohtlike saitide eest kaitstud olla ja oma paroole turvalisena hoida</translation>
 <translation id="2574249610672786438">Selleks et näha vahelehti kõikjalt, kus Chrome'i kasutate, logige kõigisse oma seadmetesse sisse</translation>
 <translation id="2576431527583832481">Chrome muutus just veelgi paremaks! Saadaval on uus versioon.</translation>
@@ -61,8 +63,6 @@
 <translation id="5716154293141027663">Kui muudes rakendustes linke puudutate, avaneb alati Chrome</translation>
 <translation id="5854621639439811139">Chrome'i nõuanne. Mõned nupud, näiteks Tagasi, Edasi ja Otsing, asuvad nüüd ekraani alaosas.</translation>
 <translation id="5876773482963502140">Kui lubate Chrome'il teada teie asukohateavet, saadab Chrome selle saitidele, mille jaoks loa annate. Saidid võivad teilt küsida asukohateavet, kui neil on teile näidata kohalikku teavet, näiteks lähedalasuvaid poode või uudiseid.</translation>
-<translation id="6036420186814142909">Google Chrome'il on funktsioone, mis aitavad teil hallata oma Interneti-andmeid ja seda, kui kiiresti saate laadida veebilehti.
-<ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="6063091872902370735">Luba Chrome'i sisselogimine</translation>
 <translation id="6181930887571472871">Lülituge Chrome'ile</translation>
 <translation id="6238746320622508509">Laske Chrome'il oma inkognito vahelehed lukustada.</translation>

@@ -318,6 +318,7 @@
 <translation id="3029704984691124060">கடவுத்தொடர்கள் பொருந்தவில்லை</translation>
 <translation id="3031225630520268969">குரல் தேடலுக்கு Assistantடைப் பயன்படுத்துவதற்கான ஒப்புதல் ui</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />உதவி பெறுக<ph name="END_LINK" /></translation>
+<translation id="3037517125981011456">Chromeமில் உள்நுழைவதற்கான அறிவிப்புகளைக் காட்டும்</translation>
 <translation id="3046945242843292318">அடுத்த முறை இந்தத் தளத்தை விரைவாக அணுகலாம்</translation>
 <translation id="305593374596241526">இருப்பிடம் முடக்கப்பட்டுள்ளது; அதை <ph name="BEGIN_LINK" />Android அமைப்புகளில்<ph name="END_LINK" /> இயக்கவும்.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> புக்மார்க்}other{<ph name="BOOKMARKS_COUNT_MANY" /> புக்மார்க்குகள்}}</translation>
@@ -449,7 +450,6 @@
 <translation id="3928666092801078803">எனது தரவை ஒன்றிணை</translation>
 <translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">குரல் தேடல் இயக்கப்படவில்லை</translation>
-<translation id="3943557322767080599">நான் Google கணக்கில் உள்நுழையும்போது Chrome உள்நுழைவு அறிவிப்புகளைக் காட்டு</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{பக்கம் தயாரானதும் Chrome அதை ஏற்றும்}other{பக்கங்கள் தயாரானதும் Chrome அவற்றை ஏற்றும்}}</translation>
 <translation id="3962957115499249330">இந்தப் பதிவிறக்கம் வைஃபையில் தொடங்கும்போது அறிவிப்பைப் பெறுவீர்கள்.</translation>
 <translation id="3963007978381181125">கடவுச்சொற்றொடர் என்க்ரிப்ஷனில் Google Payயிலுள்ள கட்டண முறைகளும் முகவரிகளும் சேர்க்கப்படாது. என்கிரிப்ட் செய்யப்பட்ட தரவை உங்கள் கடவுச்சொற்றொடரை அறிந்தவரால் மட்டுமே படிக்க முடியும். Googleளுக்குக் கடவுச்சொற்றொடர் அனுப்பப்படுவதில்லை. Google அதைச் சேமிப்பதுமில்லை. கடவுச்சொற்றொடரை மறந்துவிட்டாலோ இந்த அமைப்பை மாற்ற விரும்பினாலோ, ஒத்திசைவை மீட்டமைக்க வேண்டும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
@@ -598,6 +598,7 @@
 <translation id="4881695831933465202">திற</translation>
 <translation id="488187801263602086">ஃபைலின் பெயரை மாற்றவும்</translation>
 <translation id="4885273946141277891">ஆதரிக்கப்படாத Chrome நிகழ்வுகளின் எண்ணிக்கை.</translation>
+<translation id="4905269543817054577">மறைநிலைப் பயன்முறையில் தேடல் விவரங்கள் சேமிக்கப்படாது</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">கட்டணம் செலுத்துவதற்கான ஆப்ஸ்</translation>
 <translation id="4913161338056004800">புள்ளிவிவரங்களை மீட்டமை</translation>
@@ -651,6 +652,7 @@
 <translation id="5222676887888702881">வெளியேறு</translation>
 <translation id="5227554086496586518">தேடல் முடிவுகளைப் பார்க்க தட்டுக</translation>
 <translation id="5233638681132016545">புதிய தாவல்</translation>
+<translation id="5246093389635966745">கருவிப்பட்டியின் ஷார்ட்கட்டை மாற்றும்</translation>
 <translation id="5250483651202458397">ஸ்கிரீன்ஷாட். மூடுவதற்குத் தட்டவும்.</translation>
 <translation id="5262378156578470238">இந்தப் பதிவிறக்கம் <ph name="DATE" /> அன்று தொடங்கும்போது அறிவிப்பைப் பெறுவீர்கள்.</translation>
 <translation id="526421993248218238">பக்கத்தை ஏற்ற முடியவில்லை</translation>
@@ -889,7 +891,6 @@
 <translation id="6657585470893396449">கடவுச்சொல்</translation>
 <translation id="6659594942844771486">தாவல்</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> இல் திற</translation>
-<translation id="666981079809192359">Chrome தனியுரிமை அறிக்கை</translation>
 <translation id="6671495933530132209">படத்தை நகலெடு</translation>
 <translation id="6674571176963658787">ஒத்திசைவைத் தொடங்க, கடவுச்சொற்றொடரை உள்ளிடவும்</translation>
 <translation id="6676840375528380067">இந்தச் சாதனத்திலிருந்து உங்கள் Chrome தரவை அழிக்கவா?</translation>
@@ -1034,6 +1035,7 @@
 <translation id="7630202231528827509">URLலை உள்ளிடுக</translation>
 <translation id="7638584964844754484">தவறான கடவுத்தொடர்</translation>
 <translation id="7641339528570811325">உலாவிய தரவை அழி…</translation>
+<translation id="764170292089748542">மறைநிலைப் பயன்முறையில் உலாவும்போது தேடல் விவரங்களை Chrome சேமிக்காது. இருப்பினும், விருப்பமான தளங்களைப் பார்க்க புக்மார்க்குகளைப் பயன்படுத்தலாம்.</translation>
 <translation id="7646772052135772216">கடவுச்சொல் ஒத்திசைவு இயங்கவில்லை</translation>
 <translation id="7655900163790317559">புளூடூத் இயக்கப்படுகிறது…</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>

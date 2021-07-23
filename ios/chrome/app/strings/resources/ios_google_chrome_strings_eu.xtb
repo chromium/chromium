@@ -19,6 +19,8 @@
 <translation id="2342919707875585281">Onartzen dituzun webguneekin partekatuko du kokapena Chrome-k.</translation>
 <translation id="2347208864470321755">Eginbide hau aktibatzen denean, beste hizkuntzetan dauden orriak Google Translate bidez itzuli nahi dituzun galdetuko dizu Chrome-k. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Bihurtu Chrome zure arakatzaile lehenetsi</translation>
+<translation id="2427791862912929107">Chrome-ren eginbide batzuekin errazagoa da Interneteko datuak eta web-orriak kargatzeko behar den denbora kudeatzea.
+<ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="2561231791489583059">Erabili Chrome arakatzaile lehenetsi gisa webgune arriskutsuen aurka babestuta egoteko eta pasahitzak seguru mantentzeko</translation>
 <translation id="2574249610672786438">Chrome erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa gailu guztietan</translation>
 <translation id="2576431527583832481">Chrome hobetu egin dugu! Bertsio berria duzu erabilgarri.</translation>
@@ -61,8 +63,6 @@
 <translation id="5716154293141027663">Ireki Chrome beste aplikazioetako estekak sakatzen dituzunean</translation>
 <translation id="5854621639439811139">Chrome-ri buruzko aholkua: botoi batzuk pantailaren behealdean daude; esaterako, Atzera, Aurrera eta Bilaketa botoiak.</translation>
 <translation id="5876773482963502140">Zure kokapena jakiteko baimena ematen badiozu Chrome-ri, baimena duten webguneei bidaliko die kokapena. Baliteke webguneek kokapena eskatzea tokiko informazioa (adibidez, inguruko dendak edo albisteak) erakusteko.</translation>
-<translation id="6036420186814142909">Google Chrome-ren eginbide batzuekin errazagoa da Interneteko datuak eta web-orriak kargatzeko behar den denbora kudeatzea.
-<ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="6063091872902370735">Eman Chrome-n saioa hasteko baimena</translation>
 <translation id="6181930887571472871">Aldatu Chrome-ra</translation>
 <translation id="6238746320622508509">Utzi Chrome-ri ezkutuko moduko fitxak blokeatzen.</translation>

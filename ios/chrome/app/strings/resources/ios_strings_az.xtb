@@ -8,6 +8,10 @@
 <translation id="1047726139967079566">Bu səhifəni əlfəcinləyin...</translation>
 <translation id="1049743911850919806">Gizli Rejim</translation>
 <translation id="105093091697134113">Aşağıdakı hesablar üçüncü tərəf data pozulmasında oğurlanmış və ya aldadıcı saytda daxil edilmiş parolları istifadə edir. Hesablarınızı qorumaq üçün bu parolları dərhal dəyişin.</translation>
+<translation id="105214722824962652">Google Hesabınızdan çıxmayacaqsınız. <ph name="BEGIN_LINK" />Digər fəaliyyət formaları<ph name="END_LINK" /> daxil olduğunuz zaman Google Hesabınızda saxlanıla bilər. İstənilən zaman onları silə bilərsiniz.
+
+        
+Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək üçün onun təlimatlarına (təmin edilibsə) baxın.</translation>
 <translation id="1063454504051558093">Digər Paroldan İstifadə Edin...</translation>
 <translation id="1066060668811609597">Sinxronizasiyanı İdarə Edin</translation>
 <translation id="1076421457278169141">Kod skan olundu</translation>
@@ -132,6 +136,7 @@
 <translation id="2320166752086256636">Klaviaturanı gizlədin.</translation>
 <translation id="2339560363438331454">Sinxronizasiya və Google Xidmətləri</translation>
 <translation id="2351097562818989364">Tərcümə ayarlarınız sıfırlanmışdır.</translation>
+<translation id="235789365079050412">Google Məxfilik Siyasəti</translation>
 <translation id="2359043044084662842">Tərcümə edin</translation>
 <translation id="2359808026110333948">Davam edin</translation>
 <translation id="2360196772093551345">Mobil Sayt formatına keçid</translation>
@@ -204,6 +209,10 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="298306318844797842">Ödəniş metodu əlavə edin...</translation>
 <translation id="2989805286512600854">Yeni Paneldə açın</translation>
 <translation id="3037605927509011580">Yapon xalq musiqisi dinləmisiniz?</translation>
+<translation id="3076846064362030967">Google Hesabınızdan çıxmayacaqsınız. <ph name="BEGIN_LINK" />Digər fəaliyyət formaları<ph name="END_LINK" /> daxil olduğunuz zaman Google Hesabınızda saxlanıla bilər. İstənilən zaman onları silə bilərsiniz.
+
+
+Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına (təmin edilibsə) baxın.</translation>
 <translation id="3080525922482950719">Sonra və ya oflayn oxumaq üçün səhifələri yadda saxlaya bilərsiniz</translation>
 <translation id="3081338492074632642">Yadda saxlanılan parolun <ph name="WEBSITE" /> paroluna uyğun olduğuna əmin olun</translation>
 <translation id="3112556859945124369">Qeyd edin...</translation>
@@ -328,7 +337,6 @@ Aşağıdakı addımları izləyin:</translation>
 <translation id="4375040482473363939">QR kod Axtarışı</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Dili dəyişmək üçün toxunun.</translation>
-<translation id="441868831736628555">Məxfilik Bildirişi</translation>
 <translation id="4454246407045105932">Dil Əlavə Edin</translation>
 <translation id="4469418912670346607">Quraşdırmağa davam edin</translation>
 <translation id="4476574785019001431">Ayarlar</translation>
@@ -404,6 +412,7 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="5140288047769711648">Chrome bu parolu Sizin üçün yadda saxlayacaq. Parolu yadda saxlamaq məcburiyyətində deyilsiniz.</translation>
 <translation id="5150492518600715772">Cihazınıza göndərin</translation>
 <translation id="5168414296986405587">iPadOS üçün hazırlanıb</translation>
+<translation id="5173088371991956744">Sinxronizasiya kimliyinizi təsdiqləməlidir</translation>
 <translation id="5181140330217080051">Endirilir</translation>
 <translation id="5186185447130319458">Şəxsi</translation>
 <translation id="5188482106078495165">Kuki ayarınız bütün tablara tətbiq edilir. Açıq taba yeni ayar tətbiq etmək üçün tabı yenidən yükləyin.</translation>
@@ -586,6 +595,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6730682669179532099">Parolları Eksport Etmək alınmadı</translation>
 <translation id="6748108480210050150">Kimdən</translation>
 <translation id="6760509555861141183">Son Taba qayıdın</translation>
+<translation id="6762812039470893796">Bütün seçimləri silin</translation>
 <translation id="6780034285637185932">Poçt İndeksi</translation>
 <translation id="6785453220513215166">Qəza haqqında hesabat göndərilir...</translation>
 <translation id="6797885426782475225">Səsli Axtarış</translation>
@@ -714,6 +724,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="802154636333426148">Endirmə alınmadı</translation>
 <translation id="8023878949384262191">Bölməni genişləndirir.</translation>
 <translation id="8027581147000338959">Yeni Pəncərədə Açın</translation>
+<translation id="804225253087497565"><ph name="BEGIN_LINK" />Axtarış tarixçəsi<ph name="END_LINK" /> və <ph name="BEGIN_LINK" />digər fəaliyyət formaları<ph name="END_LINK" /> daxil olduğunuz zaman Google Hesabınızda saxlanıla bilər. İstənilən zaman onları silə bilərsiniz.</translation>
 <translation id="804427445359061970">Digər cihazlardan tabları burada tapa bilərsiniz</translation>
 <translation id="8059533439631660104">Bölməni yığcamlaşdırır.</translation>
 <translation id="8065292699993359127">Keçidləri Chrome'da Anonim rejimdə açın</translation>

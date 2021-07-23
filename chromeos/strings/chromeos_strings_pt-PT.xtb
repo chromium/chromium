@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Analisar</translation>
 <translation id="2570743873672969996">A executar o teste <ph name="TEST_NAME" />…</translation>
 <translation id="2585245331261708204">Novidades no Chrome OS</translation>
+<translation id="2619761439309613843">Atualização diária</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Autenticação da fase 2 de EAP</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Parcialmente activado</translation>
 <translation id="3527036260304016759">Falha – Erro desconhecido</translation>
 <translation id="3532980081107202182">Faltam cerca de <ph name="MIN_REMAINING" /> minutos.</translation>
+<translation id="3540383942695635079">Endereço MAC</translation>
 <translation id="357889014807611375">Wi-Fi com acesso limitado</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
 <translation id="360565022852130722">A rede WiFi está protegida com um protocolo pouco seguro WEP 802.1x.</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">O número de vezes que a bateria concluiu um ciclo de carregamento completo.</translation>
 <translation id="3941014780699102620">Falha ao resolver anfitrião.</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
+<translation id="3966286471246132217">Para obter resultados mais exatos, feche todas as apps até que o teste esteja concluído.</translation>
 <translation id="3967822245660637423">Transferência concluída</translation>
 <translation id="397105322502079400">A calcular...</translation>
 <translation id="39823212440917567">As tarefas de impressão com mais de <ph name="NUMBER_OF_DAYS" /> dias serão removidas.</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Desativado</translation>
 <translation id="4227825898293920515">A palavra-passe expira daqui a <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nenhuma tarefa de impressão em curso.</translation>
+<translation id="4244962993387259361">Precisa de, pelo menos, 500 MB livres para executar um teste de memória. Para libertar espaço, aceda a Definições &gt; Gestão de armazenamento.</translation>
 <translation id="4289540628985791613">Vista geral</translation>
 <translation id="4297501883039923494">Parada – Erro desconhecido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagens</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Falha ao enviar ping ao gateway da rede não predefinida.</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4536864596629708641">Configuração de IP</translation>
 <translation id="4548483925627140043">Sinal não encontrado.</translation>
 <translation id="455835558791489930">Bateria de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Sem serviço</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prima Enter para cancelar a tarefa de impressão.</translation>
 <translation id="4646949265910132906">Ligação segura ao Wi-Fi</translation>
 <translation id="4652335678334611408">Guardar registo da sessão</translation>
+<translation id="4654549501020883054">Alterar diariamente</translation>
 <translation id="4665014895760275686">Fabricante</translation>
 <translation id="467510802200863975">As palavras-passe não correspondem.</translation>
 <translation id="467715984478005772">Firewall suspeita</translation>
@@ -318,6 +324,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7172721935181587524">1 imagem</translation>
 <translation id="7177485034254901881">Este <ph name="DEVICE_TYPE" /> é gerido por <ph name="MANAGER" />. Os administradores podem configurar remotamente o dispositivo.</translation>
+<translation id="7180611975245234373">Atualizar</translation>
 <translation id="7216409898977639127">Operador de telemóvel</translation>
 <translation id="7271040990581020067">O leitor está a ser utilizado atualmente. Tente novamente mais tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8498220429738806196">Contadores de tráfego</translation>
 <translation id="8503813439785031346">Nome de utilizador</translation>
 <translation id="8503836310948963452">Só mais alguns minutos…</translation>
+<translation id="8521021929829989041">Utilizar como dispositivo pessoal</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">O operador pode exigir esta opção para estabelecer ligação à respetiva rede. Contacte o seu operador para obter mais detalhes.</translation>
 <translation id="8576249514688522074">Não iniciada</translation>

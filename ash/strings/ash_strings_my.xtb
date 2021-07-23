@@ -16,7 +16,6 @@
 <translation id="1056775291175587022">ကွန်ရက် မရှိပါ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />− <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">ဘက်ထရီ လဲပါ (သို့) အားသွင်းပါ</translation>
-<translation id="1077253978657569125">၎င်းကို ပိုကောင်းမွန်စေလိုပါသည်။</translation>
 <translation id="108486256082349153">ဆယ်လူလာ− <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">မင်္ဂလာ နေ့လယ်ခင်းပါ <ph name="GIVEN_NAME" /></translation>
 <translation id="109942774857561566">ပျင်းနေတယ်</translation>
@@ -420,6 +419,7 @@
 <translation id="4274537685965975248">‘Ctrl + Alt + အောက်ညွှန်မြား’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘အဆုံးသတ်ရန်’ ကီးသုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ‘ညာညွှန်မြား’ နှိပ်ပါ။</translation>
 <translation id="4279490309300973883">ထင်ဟပ်ပေးနေ</translation>
 <translation id="4285498937028063278">ပင်ဖြုတ်ရန်</translation>
+<translation id="4292904812939562398">မကြာသေးမီကအသုံးပြုထားသော အက်ပ်များ</translation>
 <translation id="429402653707266969">ကိရိယာဘားတည်နေရာ ပြောင်းရန်</translation>
 <translation id="4294319844246081198">မင်္ဂလာ နံနက်ခင်းပါ <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">အကြောင်းကြားချက် <ph name="COUNT" /> ခုလုံးကို ထုတ်ပစ်ရန်</translation>

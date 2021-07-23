@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2570743873672969996">Ejecutando la prueba <ph name="TEST_NAME" />…</translation>
 <translation id="2585245331261708204">Novedades de Chrome OS</translation>
+<translation id="2619761439309613843">Cambiar diario</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 EAP</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Parcialmente activado</translation>
 <translation id="3527036260304016759">Error: Problema desconocido</translation>
 <translation id="3532980081107202182">Quedan aproximadamente <ph name="MIN_REMAINING" /> minutos</translation>
+<translation id="3540383942695635079">Dirección MAC</translation>
 <translation id="357889014807611375">Wi-Fi de uso medido</translation>
 <translation id="3595596368722241419">Batería completa</translation>
 <translation id="360565022852130722">la red Wi-Fi está protegida con el protocolo WEP 802.1x (poco seguro)</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">El número de veces que la batería ha completado un ciclo de carga</translation>
 <translation id="3941014780699102620">no se pudo resolver el host</translation>
 <translation id="3942420633017001071">Diagnóstico</translation>
+<translation id="3966286471246132217">Para obtener resultados más precisos, cierra todas las apps hasta que se complete la prueba.</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="39823212440917567">Se quitarán los trabajos de impresión que tengan más de <ph name="NUMBER_OF_DAYS" /> días</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Inhabilitado</translation>
 <translation id="4227825898293920515">La contraseña caduca en <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hay trabajos de impresión en curso</translation>
+<translation id="4244962993387259361">Necesitas al menos 500 MB libres para ejecutar una prueba de memoria. Para liberar espacio, ve a Configuración &gt; Administración de almacenamiento.</translation>
 <translation id="4289540628985791613">Descripción general</translation>
 <translation id="4297501883039923494">Se detuvo: error desconocido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Imágenes</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">no se pudo hacer ping en la puerta de enlace de la red no predeterminada</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4536864596629708641">Configuración de IP</translation>
 <translation id="4548483925627140043">no se encontró la señal</translation>
 <translation id="455835558791489930">Batería de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Sin servicio</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de un total de <ph name="TOTAL_PAGE_NUMBER" />. Presiona Intro para cancelar el trabajo de impresión.</translation>
 <translation id="4646949265910132906">Conexión Wi-Fi segura</translation>
 <translation id="4652335678334611408">Guardar el registro de la sesión</translation>
+<translation id="4654549501020883054">Cambiar a diario</translation>
 <translation id="4665014895760275686">Fabricante</translation>
 <translation id="467510802200863975">Las contraseñas no coinciden</translation>
 <translation id="467715984478005772">Posible firewall</translation>
@@ -318,6 +324,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7162487448488904999">Galería</translation>
 <translation id="7172721935181587524">1 imagen</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> administra el dispositivo <ph name="DEVICE_TYPE" />. Los administradores pueden configurarlo de forma remota.</translation>
+<translation id="7180611975245234373">Actualizar</translation>
 <translation id="7216409898977639127">Proveedor de red celular</translation>
 <translation id="7271040990581020067">El escáner está en uso. Vuelve a intentarlo más tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -338,7 +345,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">Tiempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Más información en el Centro de ayuda</translation>
-<translation id="763165478673169849">Última vez que se restableció</translation>
+<translation id="763165478673169849">Último restablecimiento</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7690294790491645610">Confirmar contraseña nueva</translation>
@@ -385,6 +392,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8498220429738806196">Contadores de tráfico</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="8503836310948963452">Solo unos minutos más…</translation>
+<translation id="8521021929829989041">Usar como dispositivo personal</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Es posible que tu proveedor necesite que esta opción esté habilitada para que puedas conectarte a su red. Comunícate con el proveedor para obtener más detalles.</translation>
 <translation id="8576249514688522074">No se inicializó</translation>

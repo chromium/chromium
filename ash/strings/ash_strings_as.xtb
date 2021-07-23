@@ -16,7 +16,6 @@
 <translation id="1056775291175587022">নেটৱৰ্ক নাই</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">বেটাৰীটো সলনি কৰক অথবা ৰিচাৰ্জ কৰক</translation>
-<translation id="1077253978657569125">আমি এইটো উন্নত কৰিবলৈ বিচাৰোঁ!</translation>
 <translation id="108486256082349153">চেলুলাৰ: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">শুভ অপৰাহ্ন <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">মই বিৰক্ত হৈছোঁ</translation>
@@ -419,6 +418,7 @@
 <translation id="4274537685965975248">কীব’ৰ্ডৰ শ্বৰ্টকাট কণ্ট্ৰ'ল+ অল্ট + ডাউন এৰ'টো সলনি হৈছে। এণ্ড কীটো ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + ৰাইট এৰ' টিপক।</translation>
 <translation id="4279490309300973883">প্ৰতিবিম্বকৰণ</translation>
 <translation id="4285498937028063278">আনপিন কৰক</translation>
+<translation id="4292904812939562398">শেহতীয়াকৈ ব্যৱহাৰ কৰা এপ্</translation>
 <translation id="429402653707266969">টুলবাৰৰ অৱস্থান ট’গল কৰক</translation>
 <translation id="4294319844246081198">সুপ্ৰভাত <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">সম্পূৰ্ণ <ph name="COUNT" />টা জাননী মচক</translation>

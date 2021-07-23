@@ -3,13 +3,12 @@
 <translationbundle lang="zu">
 <translation id="1016765312371154165">I-Chrome ayizange icishe ngokulungile.</translation>
 <translation id="130631256467250065">Izinguquko zakho zakho zizosebenza ngesikhathi esilandelayo uma uqalisa kabusha idivayisi yakho.</translation>
+<translation id="1635457557763038537">Izinguquko zakho zizosebenza ngesikhathi esilandelayo lapho uqalisa kabusha i-Chrome.</translation>
+<translation id="2447485272386224171">I-Chrome yenziwa ikhonakale i-<ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> iphrojekthi yomthombo ovulekile kanye nenye <ph name="BEGIN_LINK_OSS" />isofthiwe yomthombo ovulekile<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Ilogo ye-Chrome</translation>
-<translation id="2874156562296220396">I-Google Chrome yenziwa ikhonakale yi-<ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> iphrojekthi yomthombo ovulekile kanye nenye <ph name="BEGIN_LINK_OSS" />isofthiwe yomthombo ovulekile<ph name="END_LINK_OSS" />.</translation>
-<translation id="3140883423282498090">Izinguquko zakho zizosebenza ngesikhathi esilandelayo lapho uqalisa kabusha i-Google Chrome.</translation>
 <translation id="3444832043240812445">Leli khasi libonisa kuphela ulwazi lokuphahlazeka kwakho kwakamuva uma ngabe <ph name="BEGIN_LINK" />unika amandla ukubikwa kokuphahlazeka<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Vumela i-Chrome ukufinyelela inethiwekhi kuzilungiselelo zakho zohlelo lokuvikela noma isilwi magciwane.</translation>
 <translation id="4010643444566880169">I-Chrome OS ayiqedanga ukusethwa kwayo kwasekuqaleni.</translation>
-<translation id="4853578032408195113">Ubuka ikhasi eliphephile le-Google Chrome</translation>
 <translation id="5005121315113832363">Leli khasi livinjwe yi-Chrome</translation>
 <translation id="6011049234605203654">Hamba
           kumenyu ye-Chrome &gt;
@@ -36,6 +35,7 @@
           &gt;
           Izilungiselelo ze-LAN
           uphinde uyekise ukukhetha i-"Sebenzisa iseva elibamba nge-LAN yakho".</translation>
+<translation id="7230956101631259640">Ubuka ikhasi eliphephile le-Chrome</translation>
 <translation id="8187289872471304532">Hamba ku-
           Izinhlelo zokusebenza &gt; Okuncamelayo kwesistimu &gt; Inethiwekhi &gt; Okuthuthukisiwe &gt; Ommeleli
           uphinde uyekele ukukhetha noma yibaphi abammeleli abakhethiwe.</translation>

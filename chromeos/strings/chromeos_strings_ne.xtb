@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> परीक्षण गरिँदै छ...</translation>
 <translation id="2585245331261708204">Chrome OS मा नयाँ के छ?</translation>
+<translation id="2619761439309613843">दैनिक पुनः ताजा गर्नुहोस्</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2740531572673183784">ठिक छ</translation>
 <translation id="2751739896257479635">EAP दोस्रो चरणको प्रमाणीकरण</translation>
@@ -317,6 +318,7 @@
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">एउटा फोटो छ</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ। एड्मिनहरू टाढैबाट यो डिभाइस कन्फिगर गर्न सक्छन्।</translation>
+<translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
 <translation id="7216409898977639127">सेलुलर प्रदायक</translation>
 <translation id="7271040990581020067">स्क्यानर हाल प्रयोग भइरहेको छ। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

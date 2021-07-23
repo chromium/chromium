@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Imbas</translation>
 <translation id="2570743873672969996">Menjalankan ujian <ph name="TEST_NAME" />...</translation>
 <translation id="2585245331261708204">Item Baharu OS Chrome</translation>
+<translation id="2619761439309613843">Muat Semula Harian</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">Pengesahan Fasa 2 EAP</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Diaktifkan sebahagian</translation>
 <translation id="3527036260304016759">Gagal - Ralat tidak diketahui</translation>
 <translation id="3532980081107202182">Kira-kira <ph name="MIN_REMAINING" /> minit lagi</translation>
+<translation id="3540383942695635079">Alamat MAC</translation>
 <translation id="357889014807611375">Wi-Fi bermeter</translation>
 <translation id="3595596368722241419">Bateri penuh</translation>
 <translation id="360565022852130722">Rangkaian Wi-Fi selamat dengan protokol lemah WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Bilangan kali bateri anda telah melalui kitaran pengecasan penuh</translation>
 <translation id="3941014780699102620">Gagal untuk menyelesaikan hos</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
+<translation id="3966286471246132217">Untuk mendapatkan keputusan yang lebih tepat, tutup semua apl sehinggalah ujian selesai.</translation>
 <translation id="3967822245660637423">Muat turun selesai</translation>
 <translation id="397105322502079400">Mengira...</translation>
 <translation id="39823212440917567">Tugas cetak yang melebihi <ph name="NUMBER_OF_DAYS" /> hari akan dialih keluar</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Dilumpuhkan</translation>
 <translation id="4227825898293920515">Kata laluan tamat tempoh dalam <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Tiada tugas cetak yang sedang dijalankan</translation>
+<translation id="4244962993387259361">Anda memerlukan sekurang-kurangnya 500 MB ruang kosong untuk menjalankan ujian Memori. Untuk mengosongkan ruang, pergi ke Tetapan &gt; Pengurusan storan.</translation>
 <translation id="4289540628985791613">Gambaran keseluruhan</translation>
 <translation id="4297501883039923494">Dihentikan - Ralat tidak diketahui</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Imej</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Gagal untuk ping get laluan rangkaian bukan lalai</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4536864596629708641">Konfigurasi IP</translation>
 <translation id="4548483925627140043">Isyarat tidak ditemukan</translation>
 <translation id="455835558791489930">Bateri <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Tiada perkhidmatan</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> daripada <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas cetak.</translation>
 <translation id="4646949265910132906">Sambungan WiFi Selamat</translation>
 <translation id="4652335678334611408">Simpan log sesi</translation>
+<translation id="4654549501020883054">Tukar Setiap Hari</translation>
 <translation id="4665014895760275686">Pengeluar</translation>
 <translation id="467510802200863975">Kata laluan tidak sepadan</translation>
 <translation id="467715984478005772">Disyaki tembok api</translation>
@@ -318,6 +324,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7162487448488904999">Galeri</translation>
 <translation id="7172721935181587524">1 Imej</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini diurus oleh <ph name="MANAGER" />. Pentadbir boleh mengkonfigurasikan peranti dari jauh.</translation>
+<translation id="7180611975245234373">Muat semula</translation>
 <translation id="7216409898977639127">Penyedia selular</translation>
 <translation id="7271040990581020067">Pengimbas sedang digunakan. Cuba lagi nanti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8498220429738806196">Pembilang Trafik</translation>
 <translation id="8503813439785031346">Nama pengguna</translation>
 <translation id="8503836310948963452">Hanya beberapa minit lagi…</translation>
+<translation id="8521021929829989041">Gunakan sebagai peranti peribadi</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Pembawa anda mungkin memerlukan pilihan ini untuk menyambung kepada rangkaian mereka. Hubungi pembawa anda untuk mendapatkan butiran.</translation>
 <translation id="8576249514688522074">Tidak diasalkan</translation>

@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Naskenovat</translation>
 <translation id="2570743873672969996">Běží test <ph name="TEST_NAME" />…</translation>
 <translation id="2585245331261708204">Novinky v Chrome OS</translation>
+<translation id="2619761439309613843">Denní obnovení</translation>
 <translation id="2620436844016719705">Systém</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Ověření EAP Phase 2</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Částečně aktivováno</translation>
 <translation id="3527036260304016759">Tisk selhal – neznámá chyba</translation>
 <translation id="3532980081107202182">Zbývající minuty: <ph name="MIN_REMAINING" /></translation>
+<translation id="3540383942695635079">Adresa MAC</translation>
 <translation id="357889014807611375">měřená Wi-Fi</translation>
 <translation id="3595596368722241419">Baterie je nabitá</translation>
 <translation id="360565022852130722">Síť Wi-Fi je zabezpečena slabým protokolem WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Údaj, kolikrát baterie prošla celým cyklem nabíjení</translation>
 <translation id="3941014780699102620">Hostitele se nepodařilo vyřešit</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="3966286471246132217">Pokud chcete přesnější výsledky, zavřete všechny aplikace, dokud test nebude dokončen.</translation>
 <translation id="3967822245660637423">Stahování bylo dokončeno</translation>
 <translation id="397105322502079400">Probíhá výpočet…</translation>
 <translation id="39823212440917567">Tiskové úlohy starší než <ph name="NUMBER_OF_DAYS" /> dní budou odstraněny</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Vypnuto</translation>
 <translation id="4227825898293920515">Platnost hesla vyprší za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nemáte žádné probíhající tiskové úlohy</translation>
+<translation id="4244962993387259361">Ke spuštění testu paměti potřebujete minimálně 500 MB volného místa. Pokud chcete místo uvolnit, přejděte do Nastavení &gt; Správa úložiště.</translation>
 <translation id="4289540628985791613">Přehled</translation>
 <translation id="4297501883039923494">Zastaveno – neznámá chyba</translation>
 <translation id="4300073214558989">Počet obrázků: <ph name="IMAGE_COUNT" /></translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nepodařilo se pingnout bránu jiné než výchozí sítě</translation>
 <translation id="4511264077854731334">Portál</translation>
+<translation id="4536864596629708641">Konfigurace IP adresy</translation>
 <translation id="4548483925627140043">Signál nebyl nalezen</translation>
 <translation id="455835558791489930">Baterie s kapacitou <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Žádný signál</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tiskovou úlohu zrušíte stisknutím klávesy Enter.</translation>
 <translation id="4646949265910132906">Zabezpečené připojení k Wi-Fi</translation>
 <translation id="4652335678334611408">Uložit protokol relace</translation>
+<translation id="4654549501020883054">Měnit denně</translation>
 <translation id="4665014895760275686">Výrobce</translation>
 <translation id="467510802200863975">Hesla se neshodují</translation>
 <translation id="467715984478005772">Podezření na Firewall</translation>
@@ -318,6 +324,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7172721935181587524">1 obrázek</translation>
 <translation id="7177485034254901881">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" />. Administrátoři mohou zařízení vzdáleně konfigurovat.</translation>
+<translation id="7180611975245234373">Obnovit</translation>
 <translation id="7216409898977639127">Poskytovatel mobilních dat</translation>
 <translation id="7271040990581020067">Skener je aktuálně používán. Zkuste to znovu později.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8498220429738806196">Počítadla návštěvnosti</translation>
 <translation id="8503813439785031346">Uživatelské jméno</translation>
 <translation id="8503836310948963452">Ještě pár minut…</translation>
+<translation id="8521021929829989041">Použít jako osobní zařízení</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Někteří operátoři k připojení k síti vyžadují tuto možnost. Na podrobnosti se zeptejte mobilního operátora.</translation>
 <translation id="8576249514688522074">Neinicializováno</translation>

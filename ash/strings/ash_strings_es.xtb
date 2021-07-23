@@ -16,7 +16,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1056775291175587022">No hay redes</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Cambia o recarga la batería</translation>
-<translation id="1077253978657569125">Queremos mejorar esta función.</translation>
 <translation id="108486256082349153">Móvil: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Buenas tardes, <ph name="GIVEN_NAME" /></translation>
 <translation id="109942774857561566">Me aburro</translation>
@@ -421,6 +420,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4274537685965975248">La combinación de teclas Ctrl + Alt + tecla de flecha hacia abajo ha cambiado. Para usar la tecla Fin, pulsa la tecla <ph name="LAUNCHER_KEY_NAME" /> + tecla de flecha hacia la derecha.</translation>
 <translation id="4279490309300973883">Duplicando</translation>
 <translation id="4285498937028063278">No fijar</translation>
+<translation id="4292904812939562398">Aplicaciones utilizadas recientemente</translation>
 <translation id="429402653707266969">Alternar la ubicación de la barra de herramientas</translation>
 <translation id="4294319844246081198">Buenos días, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Borrar las <ph name="COUNT" /> notificaciones</translation>
@@ -940,7 +940,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8413272770729657668">La grabación empezará en 3, 2. 1…</translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8426708595819210923">Buenas noches, <ph name="GIVEN_NAME" /></translation>
-<translation id="8427213022735114808">Dictado envía tu voz a Google para que puedas usar el dictado por voz en cualquier campo de texto.</translation>
+<translation id="8427213022735114808">Dictado envía tu voz a Google para que puedas usar Escribir por voz en cualquier campo de texto.</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8433186206711564395">Configuración de red</translation>
 <translation id="8433977262951327081">La combinación de teclas para mostrar el cuadro del menú de opciones de entrada en la estantería ha cambiado. Utiliza <ph name="NEW_SHORTCUT" /> en lugar de <ph name="OLD_SHORTCUT" />.</translation>

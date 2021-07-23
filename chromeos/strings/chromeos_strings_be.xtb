@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Пошук</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> праходзіць праверку...</translation>
 <translation id="2585245331261708204">Што новага ў Chrome OS</translation>
+<translation id="2619761439309613843">Штодзённае абнаўленне</translation>
 <translation id="2620436844016719705">Сістэма</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Фаза 2 аўтэнтыфікацыі EAP</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Часткова актывавана</translation>
 <translation id="3527036260304016759">Збой: невядомая памылка</translation>
 <translation id="3532980081107202182">Прыблізны час да завяршэння: <ph name="MIN_REMAINING" /> хв</translation>
+<translation id="3540383942695635079">MAC-адрас</translation>
 <translation id="357889014807611375">Wi-Fi з улікам трафіка</translation>
 <translation id="3595596368722241419">Акумулятар поўнасцю зараджаны</translation>
 <translation id="360565022852130722">Сетка Wi-Fi абаронена слабым пратаколам WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Колькасць поўных пройдзеных цыклаў зарадкі акумулятара</translation>
 <translation id="3941014780699102620">Не ўдалося супаставіць хост</translation>
 <translation id="3942420633017001071">Дыягностыка</translation>
+<translation id="3966286471246132217">Каб атрымаць больш дакладныя вынікі, закрыйце ўсе ўкладкі, пакуль праверка не будзе завершана.</translation>
 <translation id="3967822245660637423">Спампоўка завершана</translation>
 <translation id="397105322502079400">Ідзе разлік...</translation>
 <translation id="39823212440917567">Заданні друку, старэйшыя за <ph name="NUMBER_OF_DAYS" /> сут, будуць выдалены</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Выключана</translation>
 <translation id="4227825898293920515">Тэрмін дзеяння пароля заканчваецца праз <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Няма дзеючых заданняў друку</translation>
+<translation id="4244962993387259361">Каб выканаць праверку памяці, вам патрэбна не менш за 500 МБ вольнага месца. Каб вызваліць месца, перайдзіце ў раздзел "Налады &gt; Кіраванне сховішчам".</translation>
 <translation id="4289540628985791613">Агляд</translation>
 <translation id="4297501883039923494">Спынена: невядомая памылка</translation>
 <translation id="4300073214558989">Відарысаў: <ph name="IMAGE_COUNT" /></translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не ўдалося праверыць сувязь з нестандартным сеткавым шлюзам</translation>
 <translation id="4511264077854731334">Партал</translation>
+<translation id="4536864596629708641">Канфігурацыя IP-адраса</translation>
 <translation id="4548483925627140043">Сігнал не знойдзены</translation>
 <translation id="455835558791489930">Магутнасць акумулятара: <ph name="CHARGE_VALUE" /> мА·г</translation>
 <translation id="4562494484721939086">Не абслугоўваецца</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Каб скасаваць заданне друку, націсніце Enter.</translation>
 <translation id="4646949265910132906">Бяспечнае падключэнне да сеткі Wi-Fi</translation>
 <translation id="4652335678334611408">Захаваць журнал сеанса</translation>
+<translation id="4654549501020883054">Змяняць штодня</translation>
 <translation id="4665014895760275686">Вытворца</translation>
 <translation id="467510802200863975">Паролі не супадаюць</translation>
 <translation id="467715984478005772">Магчыма, уключаны брандмаўар</translation>
@@ -318,6 +324,7 @@
 <translation id="7162487448488904999">Галерэя</translation>
 <translation id="7172721935181587524">1 відарыс</translation>
 <translation id="7177485034254901881">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" />. Адміністратары могуць аддалена задаваць налады прылады.</translation>
+<translation id="7180611975245234373">Абнавіць</translation>
 <translation id="7216409898977639127">Сотавы аператар</translation>
 <translation id="7271040990581020067">Сканер зараз выкарыстоўваецца. Паўтарыце спробу пазней.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@
 <translation id="8498220429738806196">Лічыльнікі трафіка</translation>
 <translation id="8503813439785031346">Імя карыстальніка</translation>
 <translation id="8503836310948963452">Яшчэ пару хвілін…</translation>
+<translation id="8521021929829989041">Выкарыстоўваць прыладу як асабістую</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Магчыма, вам спатрэбіцца ўключыць гэту наладу, каб падключыцца да сеткі вашага аператара. Звяжыцеся з аператарам, каб даведацца больш.</translation>
 <translation id="8576249514688522074">Неініцыялізаваная</translation>

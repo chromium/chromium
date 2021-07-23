@@ -27,7 +27,6 @@
 <translation id="1597911401261118146">Wenn Sie prüfen möchten, ob Ihre Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melden Sie sich in Chrome an<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Um Chrome sicherer zu machen, haben wir die folgende Erweiterung deaktiviert. Sie ist nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt und wurde möglicherweise ohne Ihr Wissen hinzugefügt.</translation>
 <translation id="1628000112320670027">Hilfe für Chrome aufrufen</translation>
-<translation id="1666409074978194368">Fast geschafft! Starten Sie Google Chrome neu, um die Aktualisierung abzuschließen. Inkognitofenster werden nicht wieder geöffnet.</translation>
 <translation id="1674870198290878346">Link in Chrome-Inkognitofenster öffnen</translation>
 <translation id="1682634494516646069">Google Chrome kann im folgenden Datenverzeichnis weder lesen noch schreiben: <ph name="USER_DATA_DIRECTORY" />.</translation>
 <translation id="1698376642261615901">Google Chrome ist ein Webbrowser, der Webseiten und Apps in Sekundenschnelle lädt und dabei äußerst stabil und nutzerfreundlich ist. Dank des integrierten Malware- und Phishing-Schutzes können Sie bedenkenlos im Internet surfen.</translation>
@@ -87,6 +86,7 @@
 <translation id="2847461019998147611">Google Chrome in dieser Sprache anzeigen</translation>
 <translation id="2857540653560290388">Chrome wird gestartet…</translation>
 <translation id="2857972467023607093">Ein Chrome-Profil mit diesem Konto ist bereits vorhanden</translation>
+<translation id="2861074815332034794">Chrome wird aktualisiert (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Sie sind in Chrome angemeldet.</translation>
 <translation id="2885378588091291677">Task-Manager</translation>
 <translation id="2888126860611144412">Über Google Chrome</translation>
@@ -174,10 +174,10 @@
 <translation id="5193136243808726294">Google Chrome OS kann diese Seite nicht öffnen.</translation>
 <translation id="521447420733633466">Auf gemeinsam genutzten Geräten können die verschiedenen Nutzer separat surfen und Chrome jeweils nach ihren Wünschen einrichten</translation>
 <translation id="5251420635869119124">Gastnutzer können Chrome verwenden, ohne Daten zu hinterlassen.</translation>
+<translation id="5251679006894510177">Fast geschafft! Starten Sie Chrome zum Abschluss der Aktualisierung neu. Inkognitofenster werden nicht wieder geöffnet.</translation>
 <translation id="5386244825306882791">Die Erweiterung legt auch fest, welche Seite beim Start von Chrome oder bei der Suche über die Omnibox angezeigt wird.</translation>
 <translation id="5394833366792865639">Chrome-Tab freigeben</translation>
 <translation id="5430073640787465221">Ihre Einstellungsdatei ist beschädigt oder ungültig. Google Chrome kann Ihre Einstellungen nicht wiederherstellen.</translation>
-<translation id="5434383153637353914">Auf dieser Seite können Sie Ihre angemeldeten Google-Konten verwalten. Diese Konten sind im Chrome-Browser, in Play Store-Apps und in Diensten wie Gmail, Google Drive und YouTube verfügbar. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Bevor wir beginnen, sollten Sie kontrollieren, ob Ihre Datensicherung auf dem neuesten Stand ist. Wenn Sie Chrome OS installieren, werden alle Daten auf Ihrer Festplatte überschrieben.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Google ist nicht für Datenverluste verantwortlich und übernimmt keine Garantie dafür, dass Chrome OS auf nicht zertifizierten Modellen funktioniert. Auf der Seite [TBD] erhalten Sie weitere Informationen über zertifizierte Modelle.<ph name="END_PARAGRAPH2" />
           <ph name="BEGIN_PARAGRAPH3" />Weitere Informationen über das Installieren von Chrome OS und die Datenlöschung: [TBD URL]<ph name="END_PARAGRAPH3" />
@@ -210,11 +210,9 @@
 <translation id="6235018212288296708">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome</translation>
 <translation id="6291089322031436445">Chrome Dev-Apps</translation>
 <translation id="6291549208091401781">Google Chrome ist bereits für alle Nutzer auf Ihrem Computer installiert.</translation>
-<translation id="6338556085225130112">Google Chrome wird aktualisiert</translation>
 <translation id="6368958679917195344">Chrome OS wird durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="6418662306461808273">Zu bestehendem Chrome-Profil wechseln?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
-<translation id="6566149418543181476">Google Chrome wird aktualisiert (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS-System</translation>
 <translation id="664235759707825982">Bereit für die Installation von Chrome OS</translation>
 <translation id="6676384891291319759">Internetzugriff</translation>
@@ -223,12 +221,14 @@
 <translation id="6750954913813541382">Zur Behebung von Tippfehlern sendet Chrome im Browser eingegebenen Text an Google</translation>
 <translation id="677276454032249905">Chrome trotzdem beenden?</translation>
 <translation id="683440813066116847">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Canary</translation>
+<translation id="6881299373831449287">Chrome wird aktualisiert</translation>
 <translation id="6885412569789873916">Chrome Beta-Apps</translation>
 <translation id="6943584222992551122">Die Browserdaten dieser Person werden von diesem Gerät gelöscht. Um die Daten wiederherzustellen, melden Sie sich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
 <translation id="6967962315388095737">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Beta.</translation>
 <translation id="6989339256997917931">Google Chrome wurde aktualisiert, Sie haben den Browser jedoch mindestens 30 Tage nicht verwendet.</translation>
 <translation id="7025800014283535195">Hier können Sie zwischen Chrome-Profilen wechseln</translation>
 <translation id="7062128746136194023">Dein Elternteil hat "Berechtigungen für Websites, Apps und Erweiterungen" für Chrome deaktiviert. Das Hinzufügen dieser <ph name="EXTENSION_TYPE_PARAMETER" /> ist nicht zulässig.</translation>
+<translation id="7088681679121566888">Chrome ist auf dem neuesten Stand</translation>
 <translation id="7098166902387133879">Google Chrome verwendet Ihr Mikrofon.</translation>
 <translation id="7106741999175697885">Task-Manager - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald Sie den Browser neu starten.}=1{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald Sie den Browser neu starten. Ihr Inkognitofenster wird nicht wieder geöffnet.}other{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald Sie den Browser neu starten. Ihre # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
@@ -260,7 +260,6 @@
 <translation id="7801699035218095297">Google Chrome versucht, Passwörter zu kopieren. Geben Sie Ihr Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="7808348361785373670">Aus Chrome entfernen...</translation>
 <translation id="7825851276765848807">Die Installation ist aufgrund eines unbekannten Fehlers fehlgeschlagen. Laden Sie Google Chrome erneut herunter.</translation>
-<translation id="7855730255114109580">Google Chrome ist auf dem neuesten Stand.</translation>
 <translation id="7890208801193284374">Bei gemeinsam genutzten Computern können die verschiedenen Personen separat surfen und Chrome jeweils nach ihren Wünschen einrichten.</translation>
 <translation id="7896673875602241923">Auf diesem Computer war zuvor ein Nutzer mit dem Konto <ph name="ACCOUNT_EMAIL_LAST" /> in Chrome angemeldet. Erstellen Sie einen neuen Chrome-Nutzer, um Ihre Daten getrennt zu verwenden.</translation>
 <translation id="7930071585467473040">Google Chrome versucht, Passwörter zu kopieren.</translation>

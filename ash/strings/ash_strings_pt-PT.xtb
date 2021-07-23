@@ -16,7 +16,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1056775291175587022">Nenhuma rede</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Substitua ou recarregue a bateria</translation>
-<translation id="1077253978657569125">Pretendemos melhorar isto!</translation>
 <translation id="108486256082349153">Telemóvel: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Boa tarde, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Estou aborrecido</translation>
@@ -420,6 +419,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4274537685965975248">O atalho de teclado Ctrl + Alt + seta para baixo foi alterado. Para utilizar a tecla Fim, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + seta para a direita.</translation>
 <translation id="4279490309300973883">Espelhamento</translation>
 <translation id="4285498937028063278">Soltar</translation>
+<translation id="4292904812939562398">Apps utilizadas recentemente</translation>
 <translation id="429402653707266969">Ativar/desativar a localização da barra de ferramentas</translation>
 <translation id="4294319844246081198">Bom dia, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Limpar todas as <ph name="COUNT" /> notificações</translation>

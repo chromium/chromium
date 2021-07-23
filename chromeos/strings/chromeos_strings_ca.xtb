@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Escaneja</translation>
 <translation id="2570743873672969996">S'està executant la prova <ph name="TEST_NAME" />...</translation>
 <translation id="2585245331261708204">Novetats de Chrome OS</translation>
+<translation id="2619761439309613843">Actualització diària</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2740531572673183784">D'acord</translation>
 <translation id="2751739896257479635">Autenticació de fase 2 d'EAP</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Activat parcialment</translation>
 <translation id="3527036260304016759">Error: error desconegut</translation>
 <translation id="3532980081107202182">Queden aproximadament <ph name="MIN_REMAINING" /> minuts</translation>
+<translation id="3540383942695635079">Adreça MAC</translation>
 <translation id="357889014807611375">Wi‑Fi d'ús mesurat</translation>
 <translation id="3595596368722241419">Bateria carregada.</translation>
 <translation id="360565022852130722">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">El nombre de vegades que la bateria s'ha carregat completament</translation>
 <translation id="3941014780699102620">No s'ha pogut resoldre l'amfitrió</translation>
 <translation id="3942420633017001071">Diagnòstic</translation>
+<translation id="3966286471246132217">Per obtenir uns resultats més precisos, tanca totes les aplicacions fins que la prova hagi finalitzat.</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
 <translation id="39823212440917567">Se suprimiran les tasques d'impressió amb una antiguitat superior a <ph name="NUMBER_OF_DAYS" /> dies</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Desactivat</translation>
 <translation id="4227825898293920515">La contrasenya caduca d'aquí a <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hi ha tasques d'impressió en curs</translation>
+<translation id="4244962993387259361">Necessites com a mínim 500 MB lliures per executar una prova de memòria. Per alliberar espai, ves a Configuració &gt; Gestió de l'emmagatzematge.</translation>
 <translation id="4289540628985791613">Visió general</translation>
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imatges</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">No s'ha pogut fer ping a la passarel·la de xarxa no predeterminada</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4536864596629708641">Configuració de la IP</translation>
 <translation id="4548483925627140043">No s'ha trobat el senyal</translation>
 <translation id="455835558791489930">Bateria de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Sense servei</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prem Retorn per cancel·lar la tasca d'impressió.</translation>
 <translation id="4646949265910132906">Connexió Wi‑Fi segura</translation>
 <translation id="4652335678334611408">Desa el registre de sessió</translation>
+<translation id="4654549501020883054">Canvia cada dia</translation>
 <translation id="4665014895760275686">Fabricant</translation>
 <translation id="467510802200863975">Les contrasenyes no coincideixen</translation>
 <translation id="467715984478005772">Possible tallafoc</translation>
@@ -318,6 +324,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7172721935181587524">1 imatge</translation>
 <translation id="7177485034254901881">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />. És possible que els administradors el configurin de manera remota.</translation>
+<translation id="7180611975245234373">Actualitza</translation>
 <translation id="7216409898977639127">Proveïdor de dades mòbils</translation>
 <translation id="7271040990581020067">L'escàner s'està utilitzant en aquests moments. Torna-ho a provar més tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8498220429738806196">Comptadors de trànsit</translation>
 <translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="8503836310948963452">Només queden uns quants minuts...</translation>
+<translation id="8521021929829989041">Utilitza com a dispositiu personal</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">El teu operador pot requerir aquesta opció per connectar-te a la seva xarxa. Contacta-hi per obtenir-ne més informació.</translation>
 <translation id="8576249514688522074">No s'ha inicialitzat</translation>

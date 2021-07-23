@@ -8,6 +8,10 @@
 <translation id="1047726139967079566">Ezarri laster-marka orriari…</translation>
 <translation id="1049743911850919806">Ezkutuko modua</translation>
 <translation id="105093091697134113">Kontu hauen pasahitzak agerian geratu dira hirugarrenen datuen isilpekotasuna urratu den batean, edo webgune engainagarri batean erabili dira. Kontua babesteko, aldatu pasahitzok berehala.</translation>
+<translation id="105214722824962652">Ez da amaituko Google-ko kontuko saioa. Litekeena da <ph name="BEGIN_LINK" />beste jarduera batzuk<ph name="END_LINK" /> Google-ko kontuan gordetzea saioa hasita daukazun bitartean. Nahi duzunean ezaba ditzakezu.
+
+        
+<ph name="DSE_NAME" /> da bilatzailea. Behar izanez gero, joan haren argibideetara bilaketa-historia ezabatzeari buruzko informazio gehiago lortzeko.</translation>
 <translation id="1063454504051558093">Erabili beste pasahitz bat…</translation>
 <translation id="1066060668811609597">Kudeatu sinkronizazioa</translation>
 <translation id="1076421457278169141">Eskaneatu da kodea</translation>
@@ -132,6 +136,7 @@
 <translation id="2320166752086256636">Ezkutatu teklatua</translation>
 <translation id="2339560363438331454">Sinkronizazioa eta Google-ren zerbitzuak</translation>
 <translation id="2351097562818989364">Itzulpen-ezarpenak berrezarri egin dira.</translation>
+<translation id="235789365079050412">Google-ren Pribatutasun-gidalerroak</translation>
 <translation id="2359043044084662842">Itzuli</translation>
 <translation id="2359808026110333948">Jarraitu</translation>
 <translation id="2360196772093551345">Eskatu mugikorretarako webgunea</translation>
@@ -204,6 +209,10 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="298306318844797842">Gehitu ordainketa-metodoa…</translation>
 <translation id="2989805286512600854">Ireki fitxa berri batean</translation>
 <translation id="3037605927509011580">Hutsegite bat izan da.</translation>
+<translation id="3076846064362030967">Ez da amaituko Google-ko kontuko saioa. Litekeena da <ph name="BEGIN_LINK" />beste jarduera batzuk<ph name="END_LINK" /> Google-ko kontuan gordetzea saioa hasita daukazun bitartean. Nahi duzunean ezaba ditzakezu.
+
+
+Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzeari buruzko informazio gehiago lortzeko.</translation>
 <translation id="3080525922482950719">Orriak gorde ditzakezu, geroago edo konexiorik ez daukazunean irakurtzeko</translation>
 <translation id="3081338492074632642">Ziurtatu gordetzera zoazen pasahitza bat datorrela <ph name="WEBSITE" /> webguneko pasahitzarekin</translation>
 <translation id="3112556859945124369">Markatu…</translation>
@@ -328,7 +337,6 @@ Jarraitu beheko urratsei:</translation>
 <translation id="4375040482473363939">QR kode bidezko bilaketa</translation>
 <translation id="4378154925671717803">Telefonoa</translation>
 <translation id="4389019817280890563">Sakatu hau hizkuntza aldatzeko.</translation>
-<translation id="441868831736628555">Pribatutasun-oharra</translation>
 <translation id="4454246407045105932">Gehitu hizkuntza bat</translation>
 <translation id="4469418912670346607">Jarraitu konfiguratzen</translation>
 <translation id="4476574785019001431">Ezarpenak</translation>
@@ -404,6 +412,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5140288047769711648">Chrome-k gogoratuko du pasahitza. Ez duzu zuk gogoratu beharko.</translation>
 <translation id="5150492518600715772">Bidali beste gailu batera</translation>
 <translation id="5168414296986405587">iPadOS-erako sortua</translation>
+<translation id="5173088371991956744">Sinkronizazioak zure nortasuna egiaztatu behar du</translation>
 <translation id="5181140330217080051">Deskargatzen</translation>
 <translation id="5186185447130319458">Pribatua</translation>
 <translation id="5188482106078495165">Fitxa guztiei aplikatzen zaizkie cookieen ezarpenak. Irekita dagoen fitxa bati beste ezarpenen bat aplikatzeko, kargatu berriro fitxa.</translation>
@@ -586,6 +595,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="6730682669179532099">Ezin dira esportatu pasahitzak</translation>
 <translation id="6748108480210050150">Igorlea</translation>
 <translation id="6760509555861141183">Itzuli aurreko fitxara</translation>
+<translation id="6762812039470893796">Desautatu guztiak</translation>
 <translation id="6780034285637185932">Posta-kodea</translation>
 <translation id="6785453220513215166">Hutsegite-txostena bidaltzen…</translation>
 <translation id="6797885426782475225">Ahozko bilaketa</translation>
@@ -714,6 +724,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="802154636333426148">Ezin izan da deskargatu</translation>
 <translation id="8023878949384262191">Hautapena zabaltzen du.</translation>
 <translation id="8027581147000338959">Ireki beste leiho batean</translation>
+<translation id="804225253087497565">Litekeena da <ph name="BEGIN_LINK" />bilaketa-historia<ph name="END_LINK" /> eta <ph name="BEGIN_LINK" />beste jarduera batzuk<ph name="END_LINK" /> Google-ko kontuan gordetzea saioa hasita daukazun bitartean. Nahi duzunean ezaba ditzakezu.</translation>
 <translation id="804427445359061970">Beste gailuetan erabilitako fitxak aurkituko dituzu hemen</translation>
 <translation id="8059533439631660104">Hautapena tolesten du.</translation>
 <translation id="8065292699993359127">Ireki URLak Chrome-ren ezkutuko moduan</translation>

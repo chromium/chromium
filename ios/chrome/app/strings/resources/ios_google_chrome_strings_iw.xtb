@@ -19,6 +19,8 @@
 <translation id="2342919707875585281">‏המיקום שלך ישותף על ידי Chrome עם אתרים שיאושרו על ידך.</translation>
 <translation id="2347208864470321755">‏כשהתכונה הזו פועלת, Chrome יציע לתרגם דפים שנכתבו בשפות אחרות באמצעות Google Translate‏. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">‏הגדרת Chrome כדפדפן ברירת המחדל</translation>
+<translation id="2427791862912929107">‏דפדפן Chrome כולל תכונות שעוזרות לנהל את נתוני האינטרנט ואת מהירות הטעינה של דפי אינטרנט.
+<ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="2561231791489583059">‏כדאי להשתמש ב-Chrome כדפדפן ברירת המחדל כדי ליהנות מהגנה מפני אתרים מסוכנים ולשמור על אבטחת הסיסמאות</translation>
 <translation id="2574249610672786438">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chrome יש להיכנס לחשבון בכל המכשירים</translation>
 <translation id="2576431527583832481">‏‫Chrome ממשיך להשתפר! קיימת גירסה חדשה.</translation>
@@ -61,8 +63,6 @@
 <translation id="5716154293141027663">‏Chrome ייפתח בכל פעם שתתבצע הקשה על קישור באפליקציות אחרות</translation>
 <translation id="5854621639439811139">‏טיפ למשתמשי Chrome. חלק מהלחצנים נמצאים עכשיו בחלק התחתון של המסך, כמו 'הקודם', 'קדימה' ו'חיפוש'.</translation>
 <translation id="5876773482963502140">‏אם מאפשרים ל-Chrome לדעת את המיקום, Chrome יכול לשלוח את המידע הזה לאתרים שנתת להם הרשאה. אתרים עשויים לבקש את המיקום שלך כאשר יש להם מידע מקומי להציג לך, כמו חדשות או חנויות קרובות.</translation>
-<translation id="6036420186814142909">‏Google Chrome כולל תכונות שעוזרות לך לנהל את נתוני האינטרנט שלך ואת המהירות שבה אפשר לטעון דפים.
-<ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="6063091872902370735">‏התרת כניסה אל Chrome</translation>
 <translation id="6181930887571472871">‏לעבור ל-Chrome?</translation>
 <translation id="6238746320622508509">‏כרטיסיות מצב אנונימי יינעלו באמצעות Chrome.</translation>

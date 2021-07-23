@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">ቃኝ</translation>
 <translation id="2570743873672969996">የ<ph name="TEST_NAME" /> ሙከራን በማሄድ ላይ...</translation>
 <translation id="2585245331261708204">በChrome OS ምን አዲስ ነገር አለ</translation>
+<translation id="2619761439309613843">ዕለታዊ ዕድሳት</translation>
 <translation id="2620436844016719705">ስርዓት</translation>
 <translation id="2740531572673183784">እሺ</translation>
 <translation id="2751739896257479635">EAP የክፍል 2 ማረጋገጥ</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">በከፊል ገብሯል</translation>
 <translation id="3527036260304016759">አልተሳካም - ያልታወቀ ስህተት</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> ደቂቃዎች ገደማ ይቀራል</translation>
+<translation id="3540383942695635079">የማክ አድራሻ</translation>
 <translation id="357889014807611375">የተመጠነ Wi-Fi</translation>
 <translation id="3595596368722241419">ባትሪ ሙሉ ነው</translation>
 <translation id="360565022852130722">የWiFi አውታረ መረብ ደህንነት በደካማ ፕሮቶኮል WEP 802.1x የተጠበቀ ነው</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">ባትሪዎ ሙሉ የኃይል መሙያ ዑደት ውስጥ ያለፈበት ጊዜ ብዛት</translation>
 <translation id="3941014780699102620">ለአስተናጋጅ መፍትሔ መስጠት አልተሳካም</translation>
 <translation id="3942420633017001071">ምርመራ</translation>
+<translation id="3966286471246132217">ይበልጥ ትክክለኛ ውጤቶችን ለማግኘት ሙከራው እስኪጠናቀቅ ድረስ ሁሉንም መተግበሪያዎች ይዝጉ።</translation>
 <translation id="3967822245660637423">ማውረድ ተጠናቅቋል</translation>
 <translation id="397105322502079400">በማስላት ላይ...</translation>
 <translation id="39823212440917567">ከ<ph name="NUMBER_OF_DAYS" /> ቀኖች በላይ ዕድሜ ያላቸው የህትመት ሥራዎች ይወገዳሉ</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">ተሰናክሏል</translation>
 <translation id="4227825898293920515">የይለፍ ቃል በ <ph name="TIME" /> ውስጥ አገልግሎት ጊዜው ያበቃል</translation>
 <translation id="4238516577297848345">በሂደት ላይ ያሉ ምንም የህትመት ስራዎች የሉም</translation>
+<translation id="4244962993387259361">የማህደረ ትውስታ ሙከራን ለማካሄድ ቢያንስ 500 ሜባ ነፃ ያስፈልገዎታል። ቦታን ለማስለቀቅ ወደ ቅንብሮች &gt; የማከማቻ አቀናባሪ ይሂዱ።</translation>
 <translation id="4289540628985791613">ማጠቃለያ</translation>
 <translation id="4297501883039923494">ቆሟል - ያልታወቀ ስህተት</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ምስሎች</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">ኢተርኔት</translation>
 <translation id="4483049906298469269">ነባሪ ያልሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
 <translation id="4511264077854731334">መተላለፊያ</translation>
+<translation id="4536864596629708641">የአይፒ ውቅረት</translation>
 <translation id="4548483925627140043">ሲግናል አልተገኘም</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />ሚአሰ ባትሪ</translation>
 <translation id="4562494484721939086">ምንም አገልግሎት የለም</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />፣ <ph name="PRINTER_NAME" />፣ <ph name="CREATION_TIME" />፣ <ph name="PRINTED_PAGE_NUMBER" /> ከ<ph name="TOTAL_PAGE_NUMBER" /> ዉስጥ የሕትመት ሥራን ለመሰረዝ እባክዎ ያስገቡ።</translation>
 <translation id="4646949265910132906">ደህንነቱ የተጠበቀ የWiFi ግንኙነት</translation>
 <translation id="4652335678334611408">የክፍለ-ጊዜ ምዝግብ ማስታወሻ</translation>
+<translation id="4654549501020883054">በየቀኑ ይለውጡ</translation>
 <translation id="4665014895760275686">አምራች</translation>
 <translation id="467510802200863975">የይለፍ ቃላትዎ አይዛመዱም</translation>
 <translation id="467715984478005772">ኬላ ተጠርጥሯል</translation>
@@ -318,6 +324,7 @@
 <translation id="7162487448488904999">ማዕከለ-ስዕላት</translation>
 <translation id="7172721935181587524">1 ምስል</translation>
 <translation id="7177485034254901881">ይህ <ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው። አስተዳዳሪዎች መሣሪያውን ከርቀት ማዋቀር ይችላሉ።</translation>
+<translation id="7180611975245234373">አድስ</translation>
 <translation id="7216409898977639127">የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ</translation>
 <translation id="7271040990581020067">ቃኚ በአሁኑ ጊዜ ጥቅም ላይ እየዋለ ነው። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@
 <translation id="8498220429738806196">የትራፊክ ቆጣሪዎች</translation>
 <translation id="8503813439785031346">የተጣቃሚ ስም</translation>
 <translation id="8503836310948963452">ጥቂት ተጨማሪ ደቂቃዎች ብቻ...</translation>
+<translation id="8521021929829989041">እንደ የግል መሣሪያ ይጠቀሙ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">አገልግሎት አቅራቢዎ ከአውታረ መረቡ ጋር ለመገናኘት ይህን አማራጭ ሊፈልግ ይችላል። ለዝርዝሮች አገልግሎት አቅራቢዎን ያነጋግሩ።</translation>
 <translation id="8576249514688522074">ያልተጀመረ</translation>

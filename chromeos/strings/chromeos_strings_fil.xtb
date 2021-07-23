@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">I-scan</translation>
 <translation id="2570743873672969996">Nagpapatakbo ng test sa <ph name="TEST_NAME" />...</translation>
 <translation id="2585245331261708204">Ano'ng bago sa Chrome OS</translation>
+<translation id="2619761439309613843">Araw-araw na Pag-refresh</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP Phase 2 na pag-authenticate</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Bahagyang na-activate</translation>
 <translation id="3527036260304016759">Hindi na-print - Hindi kilalang error</translation>
 <translation id="3532980081107202182">Humigit-kumulang <ph name="MIN_REMAINING" /> (na) minuto ang natitira</translation>
+<translation id="3540383942695635079">MAC Address</translation>
 <translation id="357889014807611375">nakametrong Wi-Fi</translation>
 <translation id="3595596368722241419">Puno na ang baterya</translation>
 <translation id="360565022852130722">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Ang dami ng beses na na-full charge ang iyong baterya</translation>
 <translation id="3941014780699102620">Hindi nalutas ang host</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
+<translation id="3966286471246132217">Para sa mga tumpak na resulta, isara ang lahat ng app hanggang sa makumpleto ang pagsusuri.</translation>
 <translation id="3967822245660637423">Tapos na ang pag-download</translation>
 <translation id="397105322502079400">Kinakalkula...</translation>
 <translation id="39823212440917567">Aalisin ang mga pag-print na lampas <ph name="NUMBER_OF_DAYS" /> (na) araw na</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Hindi pinapaganana</translation>
 <translation id="4227825898293920515">Mag-e-expire ang password sa loob ng <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Walang kasalukuyang pag-print</translation>
+<translation id="4244962993387259361">Kailangan mo ng hindi bababa sa bakanteng 500 MB para magpatakbo ng pagsusuri sa Memory. Para magbakante ng espasyo, pumunta sa Mga Setting &gt; Pamamahala sa storage.</translation>
 <translation id="4289540628985791613">Pangkalahatang-ideya</translation>
 <translation id="4297501883039923494">Huminto - Hindi kilalang error</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Larawan</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Hindi na-ping ang hindi default na network gateway</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4536864596629708641">Configuration ng IP</translation>
 <translation id="4548483925627140043">Walang nakitang signal</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ba Baterya</translation>
 <translation id="4562494484721939086">Walang serbisyo</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sa <ph name="TOTAL_PAGE_NUMBER" />. Pindutin ang enter para kanselahin ang pag-print.</translation>
 <translation id="4646949265910132906">Secure na Koneksyon sa WiFi</translation>
 <translation id="4652335678334611408">I-save ang log ng session</translation>
+<translation id="4654549501020883054">Baguhin Araw-araw</translation>
 <translation id="4665014895760275686">Manufacturer</translation>
 <translation id="467510802200863975">Hindi nagtutugma ang mga password</translation>
 <translation id="467715984478005772">May pinaghihinalaang firewall</translation>
@@ -318,6 +324,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">1 Larawan</translation>
 <translation id="7177485034254901881">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /> na ito. Puwedeng i-configure ng mga administrator ang device sa remote na paraan.</translation>
+<translation id="7180611975245234373">I-refresh</translation>
 <translation id="7216409898977639127">Cellular provider</translation>
 <translation id="7271040990581020067">Kasalukuyang ginagamit ang scanner. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8498220429738806196">Mga Traffic Counter</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="8503836310948963452">Ilang minuto na lang...</translation>
+<translation id="8521021929829989041">Gamitin bilang personal na device</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Posibleng kailanganin ng iyong carrier ang opsyong ito para makakonekta sa network nito. Makipag-ugnayan sa iyong carrier para sa mga detalye.</translation>
 <translation id="8576249514688522074">Hindi Nasimulan</translation>

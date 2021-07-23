@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">სკანირება</translation>
 <translation id="2570743873672969996">გაშვებულია <ph name="TEST_NAME" /> ტესტი...</translation>
 <translation id="2585245331261708204">სიახლეები Chrome OS-ში</translation>
+<translation id="2619761439309613843">ყოველდღიური განახლება</translation>
 <translation id="2620436844016719705">სისტემა</translation>
 <translation id="2740531572673183784">კარგი</translation>
 <translation id="2751739896257479635">EAP ავტორიზაციის მე-2 ფაზა</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">ნაწილობრივ გააქტიურებული</translation>
 <translation id="3527036260304016759">ვერ მოხერხდა — უცნობი შეცდომა</translation>
 <translation id="3532980081107202182">დარჩენილია დაახლოებით <ph name="MIN_REMAINING" /> წუთი</translation>
+<translation id="3540383942695635079">MAC მისამართი</translation>
 <translation id="357889014807611375">ლიმიტირებული Wi-Fi</translation>
 <translation id="3595596368722241419">ბატარეა სავსეა</translation>
 <translation id="360565022852130722">Wi-Fi ქსელი უზრუნველყოფილია სუსტი პროტოკოლით WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">ბატარეის დატენის სრული ციკლების რაოდენობა</translation>
 <translation id="3941014780699102620">ჰოსტის გარდაქმნა ვერ მოხერხდა</translation>
 <translation id="3942420633017001071">დიაგნოსტიკა</translation>
+<translation id="3966286471246132217">მაქსიმალურად ზუსტი შედეგები რომ მიიღოთ, დახურეთ ყველა აპი, სანამ ტესტი არ დასრულდება.</translation>
 <translation id="3967822245660637423">ჩამოტვირთვა დასრულდა</translation>
 <translation id="397105322502079400">ანგარიშობს…</translation>
 <translation id="39823212440917567">ბეჭდვის <ph name="NUMBER_OF_DAYS" /> დღეზე ძველი დავალებები ამოიშლება</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">გამორთული</translation>
 <translation id="4227825898293920515">პაროლი ძალაშია <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ბეჭდვის მიმდინარე დავალებები არ არის</translation>
+<translation id="4244962993387259361">მეხსიერების ტესტის გასაშვებად მინიმუმ 500 მბაიტი უნდა გქონდეთ თავისუფალი. მეხსიერების გასათავისუფლებლად გადადით აქ: პარამეტრები &gt; მეხსიერების მართვა.</translation>
 <translation id="4289540628985791613">მიმოხილვა</translation>
 <translation id="4297501883039923494">გაჩერდა — უცნობი შეცდომა</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> სურათი</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">ეთერნეთი</translation>
 <translation id="4483049906298469269">არანაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
 <translation id="4511264077854731334">პორტალი</translation>
+<translation id="4536864596629708641">IP კონფიგურაცია</translation>
 <translation id="4548483925627140043">სიგნალი ვერ მოიძებნა</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> მა·სთ-იანი ბატარეა</translation>
 <translation id="4562494484721939086">მომსახურება არ არის</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> / <ph name="TOTAL_PAGE_NUMBER" />. გთხოვთ დააჭიროთ შეყვანის ღილაკს ამ ბეჭდვის დავალების გასაუქმებლად.</translation>
 <translation id="4646949265910132906">დაცული Wi-Fi კავშირი</translation>
 <translation id="4652335678334611408">სესიის ჟურნალის შენახვა</translation>
+<translation id="4654549501020883054">ყოველდღიურად შეცვლა</translation>
 <translation id="4665014895760275686">მწარმოებელი</translation>
 <translation id="467510802200863975">პაროლები არ ემთხვევა</translation>
 <translation id="467715984478005772">სავარაუდოდ, გამოიყენება ქსელის დაცვა</translation>
@@ -318,6 +324,7 @@
 <translation id="7162487448488904999">გალერეა</translation>
 <translation id="7172721935181587524">1 სურათი</translation>
 <translation id="7177485034254901881">ეს <ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ. ადმინისტრატორებს შეუძლიათ ამ მოწყობილობის დისტანციურად კონფიგურაცია.</translation>
+<translation id="7180611975245234373">განახლება</translation>
 <translation id="7216409898977639127">ფიჭური ქსელის პროვაიდერი</translation>
 <translation id="7271040990581020067">სკანერი ამჟამად გამოიყენება. ცადეთ მოგვიანებით.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@
 <translation id="8498220429738806196">ტრაფიკის მთვლელები</translation>
 <translation id="8503813439785031346">მომხმარებლის სახელი</translation>
 <translation id="8503836310948963452">კიდევ რამდენიმე წუთიც...</translation>
+<translation id="8521021929829989041">პირად მოწყობილობად გამოყენება</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">შესაძლოა, ეს ვარიანტი თქვენს ოპერატორს სჭირდებოდეს, თავის ქსელთან დაკავშირების საშუალება რომ მოგცეთ. დეტალური ინფორმაციისთვის მიმართეთ ოპერატორს.</translation>
 <translation id="8576249514688522074">არაინიცირებული</translation>

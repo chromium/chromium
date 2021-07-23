@@ -19,6 +19,8 @@
 <translation id="2342919707875585281">Chrome joylashuvingiz axborotini siz ruxsat bergan saytlarga ulashadi.</translation>
 <translation id="2347208864470321755">Agar bu funksiya yoniq bo‘lsa, Chrome sahifalarni Google Tarjimon xizmati yordamida tarjima qilishni taklif qiladi. <ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Chrome brauzerini asosiy brauzer qilib belgilash</translation>
+<translation id="2427791862912929107">Google Chrome brauzerida Internet maʼlumotlarini qayta ishlash parametrlari va sahifalarning yuklanish tezligini belgilash mumkin.
+<ph name="BEGIN_LINK" />Batafsil axborot<ph name="END_LINK" /></translation>
 <translation id="2561231791489583059">Internetni xavfsiz kezish va parollaringizni himoyalashda Chrome birlamchi brauzer sifatida ishlatilsin</translation>
 <translation id="2574249610672786438">Boshqa qurilmalardagi Chrome varaqlarini koʻrish uchun barcha qurilmalarda hisobingizga kiring</translation>
 <translation id="2576431527583832481">Chrome ancha yaxshilandi! Uning yangi versiyasi chiqdi.</translation>
@@ -61,8 +63,6 @@
 <translation id="5716154293141027663">Chromeni istalgan vaqt boshqa ilovalardagi havolalarni bosib ochish</translation>
 <translation id="5854621639439811139">Chrome maslahati. Ba’zi tugmalar endi ekranning quyi qismida. Masalan: Orqaga, Oldinga va Qidiruv tugmalari.</translation>
 <translation id="5876773482963502140">Geolokatsiyadan foydalanishga ruxsat bersangiz, Chrome bu maʼlumotlarni siz ruxsat bergan saytlarga yuboradi. Saytlar atrofdagi doʻkonlar yoki yangiliklar kabi axborotlarni chiqarish uchun joylashuvingizni soʻrashi mumkin.</translation>
-<translation id="6036420186814142909">Google Chrome brauzerida Internet ma’lumotlarini qayta ishlash va sahifalar yuklanishi tezligini boshqarish mumkin.
-<ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
 <translation id="6063091872902370735">Chrome hisobiga kirishga ruxsat berish</translation>
 <translation id="6181930887571472871">Chrome brauzeriga almashing</translation>
 <translation id="6238746320622508509">Chrome bilan Inkognito varaqlarni himoyalang.</translation>

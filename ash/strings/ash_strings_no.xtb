@@ -330,6 +330,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3595596368722241419">Batteriet er fullt</translation>
 <translation id="3604801046548457007">Opprettet skrivebord <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">En leselist er tilkoblet.</translation>
+<translation id="3615926715408477684">Hvis du slår på mobildata, blir Bluetooth også slått på</translation>
 <translation id="3616883743181209306">Menyen ble flyttet til øvre høyre hjørne av skjermen.</translation>
 <translation id="3621202678540785336">Inndata</translation>
 <translation id="3621712662352432595">Lydinnstillinger</translation>
@@ -418,6 +419,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4274537685965975248">Hurtigtasten Ctrl + Alt + nedoverpil er endret. For å bruke End-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + høyrepilen.</translation>
 <translation id="4279490309300973883">Speiling</translation>
 <translation id="4285498937028063278">Løsne</translation>
+<translation id="4292904812939562398">Nylig brukte apper</translation>
 <translation id="429402653707266969">Endre verktøylinjens posisjon</translation>
 <translation id="4294319844246081198">God morgen, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Fjern alle <ph name="COUNT" /> varsler</translation>
@@ -552,6 +554,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5283198616748585639">Legg til 1 min</translation>
 <translation id="528468243742722775">Avslutt</translation>
 <translation id="5286194356314741248">Skanning</translation>
+<translation id="5297423144044956168">Fant ingen mobilenheter</translation>
 <translation id="5297704307811127955">Av</translation>
 <translation id="5302048478445481009">Språk</translation>
 <translation id="5308380583665731573">Koble til</translation>
@@ -1030,6 +1033,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="9080132581049224423">Sveip opp for å gå til startskjermen</translation>
 <translation id="9080206825613744995">Mikrofonen er i bruk.</translation>
 <translation id="9084606467167974638">Endre menyplasseringen</translation>
+<translation id="9087578468327036362">Rapportér dette søket</translation>
 <translation id="9089416786594320554">Inndatametoder</translation>
 <translation id="9091626656156419976">Fjernet skjermen <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Demp telefonen</translation>

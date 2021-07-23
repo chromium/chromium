@@ -28,7 +28,6 @@
 <translation id="1597911401261118146">तुमचे पासवर्ड डेटा भंग आणि इतर सुरक्षा समस्यांपासून सुरक्षित आहेत हे तपासण्यासाठी, <ph name="BEGIN_LINK" />Chrome मध्ये साइन इन करा<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Chrome अधिक सुरक्षित करण्यासाठी, आम्ही <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> मध्ये सूचीबद्ध नसलेला आणि तुमच्या माहितीशिवाय कदाचित जोडले गेलेले खालील एक्स्टेंशन बंद केले आहे.</translation>
 <translation id="1628000112320670027">Chrome सह मदत मिळवा</translation>
-<translation id="1666409074978194368">जवळपास अप टू डेट आहे! अपडेट करणे पूर्ण करण्यासाठी Google Chrome पुन्हा लाँच करा. गुप्त विंडो पुन्हा उघडणार नाहीत.</translation>
 <translation id="1674870198290878346">लिंक Chrome गुप्त विंडोमध्ये उघडा</translation>
 <translation id="1682634494516646069">Google Chrome त्याची डेटा डिरेक्टरी वाचू किंवा लिहू शकत नाही:
 
@@ -90,6 +89,7 @@
 <translation id="2847461019998147611">Google Chrome या भाषेत डिस्प्ले करा</translation>
 <translation id="2857540653560290388">Chrome लाँच करत आहे...</translation>
 <translation id="2857972467023607093">हे खाते वापरून तयार केलेली Chrome प्रोफाइल आधीपासून अस्तित्वात आहे</translation>
+<translation id="2861074815332034794">Chrome अपडेट करत आहे (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">तुम्ही Chrome मध्‍ये साइन इन केले आहे!</translation>
 <translation id="2885378588091291677">टास्क मॅनेजर</translation>
 <translation id="2888126860611144412">Chrome बद्दल</translation>
@@ -178,12 +178,12 @@
 <translation id="5193136243808726294">Google Chrome OS हे पृष्ठ उघडू शकत नाही.</translation>
 <translation id="521447420733633466">तुम्ही डिव्हाइस शेअर केल्यास, मित्रमैत्रिणी आणि कुटुंब स्वतंत्रपणे ब्राउझ करू शकतात आणि त्यांना हवे तसे Chrome सेट करू शकतात</translation>
 <translation id="5251420635869119124">अतिथी कोणतीही गोष्ट मागे न सोडता Chrome वापरू शकतात.</translation>
+<translation id="5251679006894510177">जवळजवळ अप टू डेट! अपडेट करणे पूर्ण करण्यासाठी, Chrome पुन्हा लाँच करा. गुप्त विंडो पुन्हा उघडणार नाहीत.</translation>
 <translation id="5386244825306882791">तुम्ही Chrome सुरू करता किंवा ओम्निबॉक्समधून शोध घेता तेव्हा कोणते पृष्ठ दर्शविले जाते हेदेखील हे नियंत्रित करते.</translation>
 <translation id="5394833366792865639">Chrome टॅब शेअर करा</translation>
 <translation id="5430073640787465221">तुमची प्राधान्ये फाइल दूषित किंवा चुकीचे आहेत.
 
 Google Chrome तुमची सेटिंग्ज पुन्हा मिळवू शकत नाही.</translation>
-<translation id="5434383153637353914">हे पेज तुम्हाला तुमची साइन-इन केलेली Google खाती व्यवस्थापित करण्याची अनुमती देते. ही खाती Chrome ब्राउझर आणि Play Store अ‍ॅप्समध्ये तसेच, Gmail, Drive व YouTube यांसारख्या सेवांमध्ये उपलब्ध असतील. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />आम्ही सुरुवात करण्यापूर्वी, कृपया तुमच्याकडे तुमच्या डेटाचा अप टू डेट बॅकअप असल्याची खात्री करा. Chrome OS इंस्टॉल केल्याने, तुमच्या हार्ड ड्राइव्हवरील सर्व डेटा ओव्हरराइट केला जाईल.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />कोणताही डेटा गहाळ होण्यासाठी Google जबाबदार नाही आणि Chrome OS अप्रमाणित मॉडेलवर काम करेल याची कोणतीही हमी देत नाही. कृपया प्रमाणित मॉडेलविषयी अधिक जाणून घेण्यासाठी [TBD] ला भेट द्या.<ph name="END_PARAGRAPH2" />
           <ph name="BEGIN_PARAGRAPH3" />Chrome OS इंस्टॉल करणे आणि डेटा मिटवणे याविषयी अधिक जाणून घ्या: [TBD URL]<ph name="END_PARAGRAPH3" />
@@ -217,11 +217,9 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6235018212288296708">mDNS रहदारीस अनुमती देण्यासाठी Google Chrome साठी अंतर्गामी नियम.</translation>
 <translation id="6291089322031436445">Chrome डेव्हलपर ॲप</translation>
 <translation id="6291549208091401781">तुमच्या कॉंप्युटरवरील सर्व वापरकर्त्यांसाठी Google Chrome आधीच इंस्टॉल केला आहे.</translation>
-<translation id="6338556085225130112">Google Chrome अपडेट होत आहे</translation>
 <translation id="6368958679917195344"> Chrome OS अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> द्वारे शक्य झाले आहे.</translation>
 <translation id="6418662306461808273">सध्याच्या Chrome प्रोफाइलवर स्विच करायचे आहे का?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome डेव्हलपर</translation>
-<translation id="6566149418543181476">Google Chrome अपडेट करीत आहे (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS सिस्टम</translation>
 <translation id="664235759707825982">Chrome OS इंस्टॉल करण्यासाठी तयार आहे</translation>
 <translation id="6676384891291319759">इंटरनेट ॲक्सेस करा</translation>
@@ -230,12 +228,14 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6750954913813541382">शब्दलेखनाच्या चुकांमध्ये सुधारणा करण्यासाठी, तुम्ही ब्राउझरमध्ये टाइप करता तो मजकूर Chrome Google ला पाठवते</translation>
 <translation id="677276454032249905">तरीही Chrome बंद करायचे?</translation>
 <translation id="683440813066116847">mDNS रहदारीस अनुमती देण्यासाठी Google Chrome कॅनरी साठी अंतर्गामी नियम.</translation>
+<translation id="6881299373831449287">Chrome अपडेट करत आहे</translation>
 <translation id="6885412569789873916">Chrome बीटा ॲप</translation>
 <translation id="6943584222992551122">या व्यक्तीचा ब्राउझिंग डेटा या डिव्हाइसवरून हटवला जाईल. डेटा रीकव्हर करण्यासाठी, Chrome वर <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
 <translation id="6967962315388095737">Google Chrome बीटाचा mDNS रहदारीस अनुमती देण्यासाठी इनबाउंड नियम.</translation>
 <translation id="6989339256997917931">Google Chrome अपडेट केला गेला, परंतु तुम्ही तो किमान 30 दिवसांपासून वापरलेला नाही.</translation>
 <translation id="7025800014283535195">तुम्ही Chrome प्रोफाइलदरम्यान येथे स्विच करू शकता</translation>
 <translation id="7062128746136194023">तुमच्या पालकांनी Chrome साठी "साइट, अ‍ॅप्स आणि एक्स्टेंशनकरिता परवानग्या" सुरू केल्या आहेत. हे <ph name="EXTENSION_TYPE_PARAMETER" /> जोडण्याची अनुमती नाही.</translation>
+<translation id="7088681679121566888">Chrome अप टू डेट आहे</translation>
 <translation id="7098166902387133879">Google Chrome तुमचा मायक्रोफोन वापरत आहे.</translation>
 <translation id="7106741999175697885">टास्क मॅनेजर – Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome चे नवीन अपडेट उपलब्ध आहे आणि तुम्ही ते पुन्हा लाँच करताच लागू केले जाईल.}=1{Chrome चे नवीन अपडेट उपलब्ध आहे आणि तुम्ही ते पुन्हा लाँच करताच लागू केले जाईल. तुमची गुप्त विंडो पुन्हा उघडणार नाही.}other{Chrome चे नवीन अपडेट उपलब्ध आहे आणि तुम्ही ते पुन्हा लाँच करताच लागू केले जाईल. तुमच्या # गुप्त विंडो पुन्हा उघडणार नाहीत.}}</translation>
@@ -267,7 +267,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7801699035218095297">Google Chrome पासवर्ड कॉपी करण्याचा प्रयत्‍न करत आहे. हे करू देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
 <translation id="7808348361785373670">Chrome मधून काढून टाका...</translation>
 <translation id="7825851276765848807">नमूद न केलेल्या एररमुळे स्थापना अयशस्वी. कृपया Google Chrome पुन्हा डाउनलोड करा.</translation>
-<translation id="7855730255114109580">Google Chrome अपडेट झाले आहे</translation>
 <translation id="7890208801193284374">तुम्ही कॉंप्युटर शेअर केल्यास, मित्र आणि कुटुंब स्वतंत्रपणे ब्राउझ करू शकतात आणि त्यांना पाहिजे तसे Chrome सेट अप करू शकतात.</translation>
 <translation id="7896673875602241923">कोणीतरी यापूर्वी <ph name="ACCOUNT_EMAIL_LAST" /> म्हणून या संंगणकावरील Chrome मध्ये साइन इन केले आहे. कृपया तुमची माहिती स्वतंत्र ठेवण्यासाठी एक नवीन Chrome वापरकर्ता तयार करा.</translation>
 <translation id="7930071585467473040">Google Chrome पासवर्ड कॉपी करण्याचा प्रयत्न करत आहे.</translation>

@@ -16,7 +16,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1056775291175587022">Nessuna rete</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Sostituisci o ricarica la batteria</translation>
-<translation id="1077253978657569125">Vogliamo migliorare questa funzionalità.</translation>
 <translation id="108486256082349153">Cellulare: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Buon pomeriggio <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Mi annoio</translation>
@@ -421,6 +420,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4274537685965975248">La scorciatoia da tastiera Ctrl + Alt + Freccia giù è cambiata. Per usare il tasto Fine, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia destra.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4285498937028063278">Sblocca</translation>
+<translation id="4292904812939562398">App usate di recente</translation>
 <translation id="429402653707266969">Attiva/disattiva posizionamento barra degli strumenti</translation>
 <translation id="4294319844246081198">Buongiorno <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Cancella tutte e <ph name="COUNT" /> le notifiche</translation>

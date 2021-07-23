@@ -16,7 +16,6 @@
 <translation id="1056775291175587022">Няма мрежи</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Заменете или заредете батерията</translation>
-<translation id="1077253978657569125">Искаме да подобрим това!</translation>
 <translation id="108486256082349153">Мобилно устройство: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Добър ден, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">„I’m bored“ („Скучно ми е“)</translation>
@@ -420,6 +419,7 @@
 <translation id="4274537685965975248">Клавишната комбинация Ctrl + Alt + стрелка надолу се промени. За да използвате клавиша End, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + стрелката надясно.</translation>
 <translation id="4279490309300973883">Дублиране</translation>
 <translation id="4285498937028063278">Освобождаване</translation>
+<translation id="4292904812939562398">Наскоро използвани приложения</translation>
 <translation id="429402653707266969">Превключване на местоположението на лентата с инструменти</translation>
 <translation id="4294319844246081198">Добро утро, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Изчистване на всичките <ph name="COUNT" /> известия</translation>

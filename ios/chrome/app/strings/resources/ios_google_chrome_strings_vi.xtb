@@ -19,6 +19,8 @@
 <translation id="2342919707875585281">Chrome chia sẻ thông tin vị trí của bạn với những trang web mà bạn cho phép.</translation>
 <translation id="2347208864470321755">Khi tính năng này được bật, Chrome sẽ đề xuất sử dụng Google Dịch để dịch các trang viết bằng ngôn ngữ khác. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Đặt Chrome làm trình duyệt mặc định</translation>
+<translation id="2427791862912929107">Chrome có tính năng giúp bạn quản lý dữ liệu Internet của mình và tốc độ mà bạn có thể tải trang web.
+<ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="2561231791489583059">Hãy đặt Chrome làm trình duyệt mặc định để luôn được bảo vệ khỏi các trang web nguy hiểm và giữ cho mật khẩu của bạn an toàn</translation>
 <translation id="2574249610672786438">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy đăng nhập trên tất cả thiết bị.</translation>
 <translation id="2576431527583832481">Chrome được cải tiến hơn! Đã có phiên bản mới.</translation>
@@ -61,11 +63,10 @@
 <translation id="5716154293141027663">Mở Chrome bất cứ khi nào bạn nhấn vào đường liên kết trong các ứng dụng khác</translation>
 <translation id="5854621639439811139">Mẹo dành cho Chrome. Một số nút hiện nằm ở cuối màn hình, chẳng hạn như Quay lại, Tiến lên và Tìm kiếm.</translation>
 <translation id="5876773482963502140">Nếu bạn cho Chrome biết vị trí của bạn, thì Chrome sẽ gửi thông tin này đến mọi trang web mà bạn cho phép. Các trang web có thể yêu cầu thông tin vị trí khi có thông tin địa phương để hiển thị cho bạn, chẳng hạn như tin tức hoặc cửa hàng ở gần.</translation>
-<translation id="6036420186814142909">Google Chrome có tính năng giúp bạn quản lý dữ liệu Internet của mình và tốc độ mà bạn có thể tải trang web.
-<ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="6063091872902370735">Cho phép đăng nhập vào Chrome</translation>
 <translation id="6181930887571472871">Chuyển sang Chrome</translation>
 <translation id="6238746320622508509">Để Chrome khóa các thẻ Ẩn danh của bạn.</translation>
+<translation id="6427126399757991875">Tổ chức của bạn đang thiết lập Chrome...</translation>
 <translation id="6600954340915313787">Đã sao chép vào Chrome</translation>
 <translation id="6634107063912726160">Khi bạn đăng xuất, Chrome sẽ không đồng bộ hóa bất cứ dữ liệu mới nào với Tài khoản Google của bạn. Dữ liệu đã đồng bộ hóa trước đó sẽ vẫn có trong tài khoản này.</translation>
 <translation id="6648150602980899529">Bạn đang đăng nhập bằng tài khoản do <ph name="DOMAIN" /> quản lý và cấp cho quản trị viên quyền kiểm soát dữ liệu Chrome của bạn. Dữ liệu của bạn sẽ được liên kết vĩnh viễn với tài khoản này. Việc đăng xuất khỏi Chrome sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu đó sẽ vẫn được lưu trữ trong Tài khoản Google.</translation>

@@ -3,7 +3,6 @@
 <translationbundle lang="cs">
 <translation id="1006017844123154345">Otevřít online</translation>
 <translation id="1044891598689252897">Weby budou fungovat normálně</translation>
-<translation id="1100504063505580045">Aktuální ikona</translation>
 <translation id="1124090076051167250">Tímto vymažete <ph name="DATASIZE" /> dat a souborů cookie, které uložily weby nebo aplikace na ploše.</translation>
 <translation id="1178581264944972037">Pozastavit</translation>
 <translation id="1181037720776840403">Odebrat</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Vypnout zvuk videa</translation>
 <translation id="3596414637720633074">V anonymním režimu blokovat soubory cookie třetích stran</translation>
 <translation id="3600792891314830896">Ztlumit weby, které přehrávají zvuky</translation>
-<translation id="365089839707261811">Zkontrolujte změny názvů</translation>
 <translation id="3744111561329211289">Synchronizace na pozadí</translation>
 <translation id="3763247130972274048">Dvojitým klepnutím na šipku vlevo nebo vpravo přeskočíte video o 10 s</translation>
 <translation id="381841723434055211">Telefonní čísla</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Web přehrává média</translation>
 <translation id="42981349822642051">Rozbalit</translation>
 <translation id="4336434711095810371">Vymazat všechna data</translation>
-<translation id="4339203724549370495">Odinstalovat aplikaci</translation>
 <translation id="4402755511846832236">Nedovolit webům zjistit, kdy aktivně používáte toto zařízení</translation>
 <translation id="4434045419905280838">Vyskakovací okna a přesměrování</translation>
 <translation id="445467742685312942">Povolit webům přehrávat chráněný obsah</translation>
@@ -135,12 +132,12 @@
 <translation id="4670064810192446073">Virtuální realita</translation>
 <translation id="4708011789095599544">Opravdu chcete vymazat soubory cookie a ostatní data tohoto webu?</translation>
 <translation id="4751476147751820511">Senzory pohybu nebo světla</translation>
-<translation id="4800839971935185386">Zkontrolujte změny ikon a názvů</translation>
 <translation id="4836046166855586901">Zeptat se, když chce web zjistit, kdy aktivně používáte toto zařízení</translation>
 <translation id="4883854917563148705">Spravovaná nastavení nelze resetovat</translation>
 <translation id="4887024562049524730">Předtím, než webům bude povoleno použít zařízení a data pro virtuální realitu, se zeptat (doporučeno)</translation>
 <translation id="4962975101802056554">Zrušit všechna oprávnění pro zařízení</translation>
 <translation id="497421865427891073">Vpřed</translation>
+<translation id="4976702386844183910">Naposledy navštíveno <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nebyly nalezeny žádné kontakty</translation>
 <translation id="4996978546172906250">Sdílet prostřednictvím</translation>
 <translation id="5039804452771397117">Povolit</translation>
@@ -151,6 +148,7 @@
 <translation id="5123685120097942451">Anonymní karta</translation>
 <translation id="5186036860380548585">Možnost je k dispozici u horního okraje obrazovky</translation>
 <translation id="5197729504361054390">Vybrané kontakty budou sdíleny s webem <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">Naposledy navštíveno dnes</translation>
 <translation id="528192093759286357">Režim celé obrazovky ukončíte přetažením z horního okraje obrazovky a klepnutím na tlačítko Zpět.</translation>
 <translation id="5300589172476337783">Zobrazit</translation>
 <translation id="5301954838959518834">Dobře, rozumím</translation>
@@ -164,7 +162,6 @@
 <translation id="5403592356182871684">Názvy</translation>
 <translation id="5489227211564503167">Uplynulá doba: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokovat reklamy na webech, které zobrazují obtěžující nebo zavádějící reklamy</translation>
-<translation id="549957179819296104">Nová ikona</translation>
 <translation id="5502860503640766021">Oprávnění <ph name="PERMISSION_1" /> je povoleno, oprávnění <ph name="PERMISSION_2" /> je blokováno</translation>
 <translation id="5505264765875738116">Weby nemohou žádat o oprávnění zasílat vám oznámení</translation>
 <translation id="5516455585884385570">Otevřít nastavení oznámení</translation>
@@ -181,6 +178,7 @@
 <translation id="5804241973901381774">Oprávnění</translation>
 <translation id="5860033963881614850">Vypnuto</translation>
 <translation id="5876056640971328065">Pozastavit video</translation>
+<translation id="5887687176710214216">Naposledy navštíveno včera</translation>
 <translation id="5916664084637901428">Zapnuto</translation>
 <translation id="5922853908706496913">Sdílíte obrazovku</translation>
 <translation id="5939518447894949180">Resetovat</translation>
@@ -210,6 +208,7 @@
 <translation id="6527303717912515753">Sdílet</translation>
 <translation id="6545864417968258051">Vyhledávání Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Blokovaná oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}few{Blokovaná oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}many{Blokovaná oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}other{Blokovaná oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}}</translation>
+<translation id="6554732001434021288">Naposledy navštíveno před <ph name="NUM_DAYS" /> dny</translation>
 <translation id="6561560012278703671">Použít méně rušivou zprávu (blokuje žádosti o zobrazení oznámení)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Chráněný obsah</translation>
@@ -251,7 +250,6 @@
 <translation id="7589445247086920869">Blokovat pro aktuální vyhledávač</translation>
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7658239707568436148">Zrušit</translation>
-<translation id="7734541938181328224">Zkontrolujte změny ikon</translation>
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7791543448312431591">Přidat</translation>
 <translation id="780301667611848630">Ne, děkuji</translation>
@@ -293,7 +291,6 @@
 <translation id="8487700953926739672">Dostupné offline</translation>
 <translation id="851751545965956758">Bránit webům v připojení k zařízením</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
-<translation id="857074314439694500">Pokud se vás tato aplikace snaží přesvědčit, že se jedná o jinou aplikaci, odinstalujte ji.</translation>
 <translation id="857943718398505171">Povoleno (doporučeno)</translation>
 <translation id="8609465669617005112">Posunout nahoru</translation>
 <translation id="8676374126336081632">Vymazat vstup</translation>

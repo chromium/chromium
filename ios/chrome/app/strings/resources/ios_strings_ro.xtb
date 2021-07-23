@@ -8,6 +8,10 @@
 <translation id="1047726139967079566">Marcați această pagină...</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="105093091697134113">Următoarele conturi folosesc parole care au fost expuse în urma unei încălcări a securității datelor de către terțe părți sau au fost introduse pe un site înșelător. Schimbă imediat următoarele parole pentru a-ți proteja conturile.</translation>
+<translation id="105214722824962652">Nu te vei deconecta de la Contul Google. <ph name="BEGIN_LINK" />Alte tipuri de activități<ph name="END_LINK" /> pot fi salvate în Contul Google dacă te-ai conectat. Le poți șterge oricând.
+
+        
+Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentru ștergerea istoricului căutărilor, dacă este cazul.</translation>
 <translation id="1063454504051558093">Folosește altă parolă...</translation>
 <translation id="1066060668811609597">Gestionează sincronizarea</translation>
 <translation id="1076421457278169141">Codul a fost scanat</translation>
@@ -132,6 +136,7 @@
 <translation id="2320166752086256636">Ascunde tastatura</translation>
 <translation id="2339560363438331454">Sincronizarea și Serviciile Google</translation>
 <translation id="2351097562818989364">Setările de traducere au fost resetate.</translation>
+<translation id="235789365079050412">Politica de confidențialitate Google</translation>
 <translation id="2359043044084662842">Tradu</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2360196772093551345">Solicită site mobil</translation>
@@ -204,6 +209,10 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="298306318844797842">Adaugă o metodă de plată...</translation>
 <translation id="2989805286512600854">Deschideți într-o filă nouă</translation>
 <translation id="3037605927509011580">Of, nu mai merge!</translation>
+<translation id="3076846064362030967">Nu te vei deconecta de la Contul Google. <ph name="BEGIN_LINK" />Alte tipuri de activități<ph name="END_LINK" /> pot fi salvate în Contul Google dacă te-ai conectat. Le poți șterge oricând.
+
+
+Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căutărilor, dacă este cazul.</translation>
 <translation id="3080525922482950719">Poți să salvezi pagini ca să le citești offline sau mai târziu</translation>
 <translation id="3081338492074632642">Asigură-te că parola pe care o salvezi este aceeași cu parola pentru <ph name="WEBSITE" /></translation>
 <translation id="3112556859945124369">Marchează…</translation>
@@ -328,7 +337,6 @@ Urmează pașii de mai jos:</translation>
 <translation id="4375040482473363939">Căutare coduri QR</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Atinge pentru a schimba limba.</translation>
-<translation id="441868831736628555">Notificare de confidențialitate</translation>
 <translation id="4454246407045105932">Adaugă o limbă</translation>
 <translation id="4469418912670346607">Continuă configurarea</translation>
 <translation id="4476574785019001431">Setări</translation>
@@ -404,6 +412,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5140288047769711648">Chrome va memora această parolă pentru tine. Nu trebuie să o ții minte.</translation>
 <translation id="5150492518600715772">Trimite pe dispozitivul tău.</translation>
 <translation id="5168414296986405587">Creat pentru iPadOS</translation>
+<translation id="5173088371991956744">Sincronizarea trebuie să-ți confirme identitatea</translation>
 <translation id="5181140330217080051">Se descarcă</translation>
 <translation id="5186185447130319458">Privat</translation>
 <translation id="5188482106078495165">Setarea pentru cookie-uri se aplică tuturor filelor. Pentru a aplica o nouă setare unei file deschise, reîncarcă fila.</translation>
@@ -586,6 +595,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6730682669179532099">Nu se pot exporta parole</translation>
 <translation id="6748108480210050150">De la</translation>
 <translation id="6760509555861141183">Revino la fila Recente</translation>
+<translation id="6762812039470893796">Debifează tot</translation>
 <translation id="6780034285637185932">Codul poștal</translation>
 <translation id="6785453220513215166">Se trimite raportul de blocare...</translation>
 <translation id="6797885426782475225">Căutare vocală</translation>
@@ -714,6 +724,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="802154636333426148">Descărcarea nu a reușit</translation>
 <translation id="8023878949384262191">Extinde secțiunea.</translation>
 <translation id="8027581147000338959">Deschideți într-o fereastră nouă</translation>
+<translation id="804225253087497565"><ph name="BEGIN_LINK" />Istoricul căutărilor<ph name="END_LINK" /> și <ph name="BEGIN_LINK" />alte tipuri de activități<ph name="END_LINK" /> pot fi salvate în Contul Google dacă te-ai conectat. Le poți șterge oricând.</translation>
 <translation id="804427445359061970">Aici vei vedea filele tale de pe alte dispozitive</translation>
 <translation id="8059533439631660104">Restrânge secțiunea.</translation>
 <translation id="8065292699993359127">Deschide adrese URL în Chrome în modul incognito</translation>

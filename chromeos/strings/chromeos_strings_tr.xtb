@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Tara</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> adlı test çalıştırılıyor...</translation>
 <translation id="2585245331261708204">Chrome OS yenilikleri</translation>
+<translation id="2619761439309613843">Günlük Yenileme</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2740531572673183784">Tamam</translation>
 <translation id="2751739896257479635">EAP Aşama 2 kimlik doğrulaması</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Kısmen etkinleştirildi</translation>
 <translation id="3527036260304016759">İşlem başarısız - Bilinmeyen hata</translation>
 <translation id="3532980081107202182">Yaklaşık <ph name="MIN_REMAINING" /> dakika kaldı</translation>
+<translation id="3540383942695635079">MAC Adresi</translation>
 <translation id="357889014807611375">sayaçlı kablosuz ağ</translation>
 <translation id="3595596368722241419">Pil tam dolu</translation>
 <translation id="360565022852130722">Kablosuz ağ, zayıf bir protokol olan WEP 802.1x ile güvenlik altına alınmış</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Pilinizin tam şarj döngüsünden geçme sayısı</translation>
 <translation id="3941014780699102620">Ana makine çözümlenemedi</translation>
 <translation id="3942420633017001071">Teşhis</translation>
+<translation id="3966286471246132217">Daha doğru sonuçlar için test tamamlanana kadar tüm uygulamaları kapatın.</translation>
 <translation id="3967822245660637423">İndirme tamamlandı</translation>
 <translation id="397105322502079400">Hesaplanııyor...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> günden eski yazdırma işleri silinir</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Devre dışı</translation>
 <translation id="4227825898293920515">Şifrenin süresi <ph name="TIME" /> içinde doluyor</translation>
 <translation id="4238516577297848345">Devam eden bir yazdırma işi yok</translation>
+<translation id="4244962993387259361">Bellek testi yapmak için en az 500 MB boş alana ihtiyacınız var. Yer açmak için Ayarlar &gt; Depolama alanı yönetimi bölümüne gidin.</translation>
 <translation id="4289540628985791613">Genel bakış</translation>
 <translation id="4297501883039923494">Durduruldu - Bilinmeyen hata</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Resim</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Varsayılan olmayan ağ geçidi pinglenemedi</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4536864596629708641">IP Yapılandırması</translation>
 <translation id="4548483925627140043">Sinyal bulunamadı</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh Pil</translation>
 <translation id="4562494484721939086">Hizmet yok</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Yazdırma işini iptal etmek için enter tuşuna basın.</translation>
 <translation id="4646949265910132906">Güvenli Kablosuz Bağlantı</translation>
 <translation id="4652335678334611408">Oturum günlüğünü kaydet</translation>
+<translation id="4654549501020883054">Günlük Olarak Değiştir</translation>
 <translation id="4665014895760275686">Üretici</translation>
 <translation id="467510802200863975">Şifreler eşleşmiyor</translation>
 <translation id="467715984478005772">Güvenlik duvarı olabilir</translation>
@@ -318,6 +324,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7162487448488904999">Galeri</translation>
 <translation id="7172721935181587524">1 Resim</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor. Yöneticiler bu cihazı uzaktan yapılandırabilir.</translation>
+<translation id="7180611975245234373">Yenile</translation>
 <translation id="7216409898977639127">Hücresel sağlayıcı</translation>
 <translation id="7271040990581020067">Tarayıcı şu anda kullanımda. Daha sonra tekrar deneyin.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8498220429738806196">Trafik Sayaçları</translation>
 <translation id="8503813439785031346">Kullanıcı adı</translation>
 <translation id="8503836310948963452">Sadece birkaç dakika kaldı…</translation>
+<translation id="8521021929829989041">Kişisel cihaz olarak kullanın</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operatörünüz, ağlarına bağlanmak için bu seçeneği gerektirebilir. Ayrıntılı bilgiler için operatörünüzle iletişime geçin.</translation>
 <translation id="8576249514688522074">Başlatılmamış</translation>

@@ -19,6 +19,8 @@
 <translation id="2342919707875585281">Chrome delar din plats med webbplatser du tillåter.</translation>
 <translation id="2347208864470321755">När den här funktionen har aktiverats visas alternativet i Chrome att översätta sidor som är skrivna på andra språk med hjälp av Google Översätt. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Använd Chrome som standard</translation>
+<translation id="2427791862912929107">I Chrome finns det funktioner som du kan använda för att hantera din internetdata och inläsningshastigheten för webbsidor.
+<ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="2561231791489583059">Använd Chrome som standardwebbläsare med skydd mot skadliga webbplatser och skydd av dina lösenord</translation>
 <translation id="2574249610672786438">Logga in på alla dina enheter om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>
 <translation id="2576431527583832481">Chrome har blivit ännu bättre! En ny version finns tillgänglig.</translation>
@@ -61,8 +63,6 @@
 <translation id="5716154293141027663">Öppna Chrome varje gång du trycker på länkar i andra appar</translation>
 <translation id="5854621639439811139">Tips för Chrome. Vissa knappar finns nu längst ned på skärmen, till exempel bakåtknappen, framåtknappen och Sök.</translation>
 <translation id="5876773482963502140">När du ger Chrome åtkomst till din plats skickas den från Chrome till alla webbplatser som du ger behörighet. Webbplatser kan fråga efter din plats när det finns lokal information att visa, till exempel butiker i närheten eller nyheter.</translation>
-<translation id="6036420186814142909">I Google Chrome finns det funktioner som du kan använda för att hantera dina internetuppgifter och inläsningshastigheten för webbsidor.
-<ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="6063091872902370735">Tillåt inloggning i Chrome</translation>
 <translation id="6181930887571472871">Byt till Chrome</translation>
 <translation id="6238746320622508509">Låt Chrome låsa inkognitoflikarna.</translation>

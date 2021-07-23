@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2570743873672969996">Running <ph name="TEST_NAME" /> test…</translation>
 <translation id="2585245331261708204">What's new with Chrome OS</translation>
+<translation id="2619761439309613843">Daily Refresh</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP Phase 2 authentication</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Partially activated</translation>
 <translation id="3527036260304016759">Failed – Unknown error</translation>
 <translation id="3532980081107202182">About <ph name="MIN_REMAINING" /> minutes remaining</translation>
+<translation id="3540383942695635079">MAC address</translation>
 <translation id="357889014807611375">metered Wi-Fi</translation>
 <translation id="3595596368722241419">Battery full</translation>
 <translation id="360565022852130722">Wi-Fi network is secured with weak protocol WEP 802.1x</translation>
@@ -162,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Failed to ping the non-default network gateway</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4536864596629708641">IP configuration</translation>
 <translation id="4548483925627140043">Signal not found</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh battery</translation>
 <translation id="4562494484721939086">No service</translation>
@@ -170,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> out of <ph name="TOTAL_PAGE_NUMBER" />. Press Enter to cancel the print job.</translation>
 <translation id="4646949265910132906">Secure Wi-Fi connection</translation>
 <translation id="4652335678334611408">Save session log</translation>
+<translation id="4654549501020883054">Change daily</translation>
 <translation id="4665014895760275686">Manufacturer</translation>
 <translation id="467510802200863975">Passwords do not match</translation>
 <translation id="467715984478005772">Firewall suspected</translation>
@@ -320,6 +324,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">1 image</translation>
 <translation id="7177485034254901881">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />. Administrators may remotely configure the device.</translation>
+<translation id="7180611975245234373">Refresh</translation>
 <translation id="7216409898977639127">Mobile provider</translation>
 <translation id="7271040990581020067">Scanner is currently in use. Try again later.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -387,6 +392,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8498220429738806196">Traffic counters</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="8503836310948963452">Just a few more minutes…</translation>
+<translation id="8521021929829989041">Use as personal device</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Your operator may require this option to connect to their network. Contact your operator for details.</translation>
 <translation id="8576249514688522074">Uninitialised</translation>

@@ -136,9 +136,11 @@
 <translation id="1407135791313364759">Адкрыць усе</translation>
 <translation id="1408787208417187241">Тры скабы зверху</translation>
 <translation id="1413809658975081374">Памылка прыватнасці</translation>
+<translation id="1422930527989633628">Сайт можа запытваць дазвол выяўляць прылады з Bluetooth паблізу</translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="1428146450423315676">Укладчык 7</translation>
 <translation id="1430915738399379752">Друк</translation>
+<translation id="1436185428532214179">Сайт можа запытваць дазвол на змяненне файлаў або папак на прыладзе</translation>
 <translation id="1442386063175183758">Згіб "вароты" справа</translation>
 <translation id="1442987760062738829">Дзірка</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
@@ -211,7 +213,6 @@
 <translation id="1662550410081243962">Захоўваць і запаўняць даныя спосабаў аплаты</translation>
 <translation id="1663943134801823270">Даныя крэдытных картак і адрасы паходзяць з браўзера Chrome. Кіраваць імі можна ў <ph name="BEGIN_LINK" />Наладах<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Цяпер старонкі на мове <ph name="SOURCE_LANGUAGE" /> будуць перакладацца на мову <ph name="TARGET_LANGUAGE" />.</translation>
-<translation id="1676269943528358898"><ph name="SITE" /> звычайна выкарыстоўвае шыфраванне для абароны вашай інфармацыі. Пры спробе Google Chrome падключыцца да <ph name="SITE" />, вэб-сайт адправіў незнаёмыя і няправільныя ўліковыя даныя. Гэта можа адбывацца, калі зламыснік спрабуе выдаць сябе за <ph name="SITE" /> або экран уваходу ў сетцы Wi-Fi перарваў падключэнне. Ваша інфармацыя ўсё роўна абаронена, паколькі Google Chrome перарваў падключэнне да абмену данымі.</translation>
 <translation id="1677733453456569361"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб пагуляць з дыназаўрам у Chrome, націсніце Tab, затым Enter</translation>
 <translation id="1682696192498422849">Спачатку кароткі край</translation>
 <translation id="168693727862418163">Не ўдалося пацвердзіць адпаведнасць значэння палітыкі схеме, таму яно будзе ігнаравацца.</translation>
@@ -258,6 +259,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, даступна некалькі дзеянняў. Для іх прагляду націскайце Tab</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Імя ўладальніка карткі</translation>
+<translation id="1803351196216024260">Сайт можа запытваць дазвол на выкарыстанне мікрафона</translation>
 <translation id="1807246157184219062">Светлая</translation>
 <translation id="1807528111851433570">Пачатковы аркуш</translation>
 <translation id="1812527064848182527">альбомная</translation>
@@ -287,6 +289,7 @@
 <translation id="1919367280705858090">Дапамога пры асобных паведамленнях аб памылцы</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Няма}=1{1 сайт}one{# сайт}few{# сайты}many{# сайтаў}other{# сайта}}</translation>
 <translation id="1924727005275031552">Новая форма</translation>
+<translation id="1939175642807587452">Сайт можа запытваць дазвол на адпраўку апавяшчэнняў</translation>
 <translation id="1945968466830820669">Вы можаце страціць доступ да ўліковага запісу арганізацыі, або ў вас могуць скрасці асабістыя даныя. Chromium рэкамендуе змяніць пароль.</translation>
 <translation id="1947454675006758438">Скаба зверху справа</translation>
 <translation id="1958218078413065209">Ваш рэзультат: <ph name="SCORE" />.</translation>
@@ -406,7 +409,6 @@
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{Менш чым праз дзень}=1{Праз дзень}one{Праз {NUM_DAYS} дзень}few{Праз {NUM_DAYS} дні}many{Праз {NUM_DAYS} дзён}other{Праз {NUM_DAYS} дня}}</translation>
 <translation id="2359629602545592467">Некалькі</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
-<translation id="2359961752320758691">Нумар віртуальнай карткі прыменены.</translation>
 <translation id="236340516568226369">Меню змянення памеру</translation>
 <translation id="2367567093518048410">Узровень</translation>
 <translation id="2372464001869762664">Пасля вашага пацвярджэння даныя карткі з Уліковага запісу Google будуць абагулены з гэтым сайтам. Вы можаце знайсці код CVC у даных уліковага запісу Plex.</translation>
@@ -417,6 +419,7 @@
 <translation id="2392959068659972793">Паказваць палітыкі з незададзенымі значэннямі</translation>
 <translation id="239429038616798445">Гэты спосаб дастаўкі недаступны. Выберыце іншы спосаб.</translation>
 <translation id="2396249848217231973">&amp;Адрабіць выдаленне</translation>
+<translation id="2400600116338235695">Сайт можа запытваць дазвол на падключэнне да паслядоўных партоў</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413155254802890957">Старая форма</translation>
 <translation id="2413528052993050574">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />; магчыма, яго сертыфікат бяспекі адкліканы. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
@@ -467,10 +470,12 @@
 <translation id="2587841377698384444">Ідэнтыфікатар API каталога:</translation>
 <translation id="2594318783181750337">Хуткі прагляд у інтэрнэце:</translation>
 <translation id="2595719060046994702">Гэта прылада не знаходзіцца пад кіраваннем кампаніі або іншай арганізацыі.</translation>
+<translation id="2596415276201385844">Для ўстанаўлення бяспечнага злучэння трэба, каб гадзіннік быў наладжаны правільна. Гэта патрабуецца таму, што сертыфікаты, якія выкарыстоўваюцца вэб-сайтамі для іх ідэнтыфікацыі, дзейнічаюць толькі пэўны час. Калі гадзіннік на вашай прыладзе наладжаны няправільна, Chrome не зможа спраўдзіць гэтыя сертыфікаты.</translation>
 <translation id="2597378329261239068">Гэты дакумент абаронены паролем.  Увядзіце пароль.</translation>
 <translation id="2609632851001447353">Варыянты</translation>
 <translation id="2618023639789766142">C10 (канверт)</translation>
 <translation id="2625385379895617796">Ваш гадзіннік спяшаецца</translation>
+<translation id="262745152991669301">Сайт можа запытваць дазвол на падключэнне да прылад USB</translation>
 <translation id="2629325967560697240">Каб у браўзеры Chrome падтрымліваўся найвышэйшы ўзровень бяспекі, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />уключыце палепшаную абарону<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">IP-адрас сервера хоста <ph name="HOST_NAME" /> не знойдзены.</translation>
 <translation id="2639739919103226564">Стан:</translation>
@@ -540,6 +545,7 @@
 <translation id="290376772003165898">Мова старонкі – не <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">Выканана падключэнне да іншай сеткі.</translation>
 <translation id="2911973620368911614">Ідэнтыфікатар карыстальніка ўліковага запісу задання</translation>
+<translation id="2914160345369867329"><ph name="SITE" /> звычайна выкарыстоўвае шыфраванне для абароны вашай інфармацыі. Пры спробе Chrome падключыцца да <ph name="SITE" />, вэб-сайт адправіў незнаёмыя і няправільныя ўліковыя даныя. Гэта можа адбывацца, калі зламыснік спрабуе выдаць сябе за <ph name="SITE" />, або экран уваходу ў сетцы Wi-Fi перарваў падключэнне. Ваша інфармацыя ўсё роўна абаронена, паколькі Chrome перарваў падключэнне да абмену данымі.</translation>
 <translation id="2915068235268646559">Час збою: <ph name="CRASH_TIME" /></translation>
 <translation id="2916038427272391327">Закрыйце іншыя праграмы.</translation>
 <translation id="2922350208395188000">Немагчыма праверыць сертыфікат сервера.</translation>
@@ -556,7 +562,6 @@
 <translation id="2951588413176968965">Мая паштовая скрынка</translation>
 <translation id="295526156371527179">Увага: гэта палітыка не была аб'яднана як слоўнік згодна з параметрамі, бо яна не з'яўляецца слоўнікам.</translation>
 <translation id="2955913368246107853">Закрыць панэль пошуку</translation>
-<translation id="2969319727213777354">Для ўстанаўлення бяспечнага злучэння трэба, каб гадзіннік быў наладжаны правільна. Гэта патрабуецца таму, што сертыфікаты, якія выкарыстоўваюцца вэб-сайтамі для іх ідэнтыфікацыі, дзейнічаюць толькі пэўны час. Калі гадзіннік на вашай прыладзе наладжаны няправільна, Google Chrome не зможа спраўдзіць гэтыя сертыфікаты.</translation>
 <translation id="2972581237482394796">&amp;Узнавіць</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, радок выбраны. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Калі ўключана, Chromium будзе захоўваць копію вашай карткі на гэтай прыладзе ў мэтах хутчэйшага запаўнення форм.</translation>
@@ -614,6 +619,7 @@
 <translation id="3188393374551744535">Баланс уліковага запісу</translation>
 <translation id="3194737229810486521">Сайт <ph name="URL" /> запытвае дазволу захоўваць даныя на вашай прыладзе</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на серверы <ph name="SERVER_NAME" /></translation>
+<translation id="3197136577151645743">Сайт можа атрымліваць інфармацыю пра тое, калі вы карыстаецеся гэтай прыладай</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб задаць у наладах Chrome, якая іменна інфармацыя будзе сінхранізавацца, націсніце Tab, затым Enter</translation>
 <translation id="320323717674993345">Скасаваць плацеж</translation>
 <translation id="3207960819495026254">Дададзена ў закладкі</translation>
@@ -692,6 +698,7 @@
 <translation id="3432601291244612633">Закрыць старонку</translation>
 <translation id="3435738964857648380">Бяспека</translation>
 <translation id="3438829137925142401">Выкарыстаць паролі, захаваныя ва Уліковым запісе Google</translation>
+<translation id="3440783957068352691">квадратная</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Уладальнік прылады выключыў гульню з дыназаўрам.</translation>
 <translation id="3447884698081792621">Паказаць сертыфікат (выдавец: <ph name="ISSUER" />)</translation>
@@ -829,6 +836,7 @@
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3939773374150895049">Выкарыстоўваць WebAuthn замест CVC?</translation>
 <translation id="3946209740501886391">Заўсёды пытацца на гэтым сайце</translation>
+<translation id="3947595700203588284">Сайт можа запытваць дазвол на падключэнне да прылад MIDI</translation>
 <translation id="3949571496842715403">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />: у сертыфікаце бяспекі не ўказаны альтэрнатыўныя назвы суб'екта. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="3949601375789751990">Гісторыя прагляду сайтаў з'явіцца тут</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -859,6 +867,7 @@
 <translation id="4067947977115446013">Дадайце сапраўдны адрас</translation>
 <translation id="4072193657607981494">Ідзе загрузка палітык</translation>
 <translation id="4072486802667267160">Адбылася памылка апрацоўкi вашага заказу. Паўтарыце спробу.</translation>
+<translation id="4073797364926776829">Праглядзець картку</translation>
 <translation id="4075732493274867456">Кліент і сервер не падтрымліваюць агульную версію пратакола SLL або набор шыфраў.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Канфігурацыяй проксі зададзена выкарыстоўваць URL-адрас сцэнарыя .pac, а не фіксаваныя проксі-серверы.</translation>
@@ -929,6 +938,7 @@
     &lt;p&gt;Калі праблему вырашыць не ўдалося, звярніцеся да ўладальніка вэб-сайта.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Паспрабаваць запусціць дыягностыку сеткі<ph name="END_LINK" />.</translation>
 <translation id="4229544452621580519">Запусціць праверку бяспекі ў наладах Chrome</translation>
+<translation id="4230204356098880324">Сайт можа запытваць дазвол на выкарыстанне і перамяшчэнне камеры</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Перайсці на сайт <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Сапраўдны</translation>
 <translation id="4250431568374086873">Ваша падключэнне да гэтага сайта не цалкам бяспечнае</translation>
@@ -991,6 +1001,7 @@
 <translation id="4434045419905280838">Усплыв. вокны і перанакіраванні</translation>
 <translation id="4435702339979719576">паштоўка)</translation>
 <translation id="443673843213245140">Выкарыстанне проксі-сервера выключана, але яўная канфігурацыя проксі вызначана.</translation>
+<translation id="4451135742916150903">Сайт можа запытваць дазвол на падключэнне да прылад з HID</translation>
 <translation id="4460315069258617173">Дазволена, пакуль вы не закрыеце ўкладкі гэтага сайта</translation>
 <translation id="4464826014807964867">Вэб-сайты са звесткамі ад вашай арганізацыі</translation>
 <translation id="4476953670630786061">Гэта форма не з'яўляецца бяспечнай. Аўтазапаўненне было выключана.</translation>
@@ -1054,6 +1065,7 @@
 <translation id="4708268264240856090">Падключэнне перапынена</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Запусціць дыягностыку сеткі Windows<ph name="END_LINK" /></translation>
+<translation id="4724144314178270921">Сайт можа запытваць дазвол на прагляд тэксту і відарысаў у буферы абмену</translation>
 <translation id="4726672564094551039">Перазагрузіць палітыкі</translation>
 <translation id="4728558894243024398">Платформа</translation>
 <translation id="4731638775147756694">Гэта праграма заблакіравана адміністратарам</translation>
@@ -1087,7 +1099,6 @@
 <translation id="4800132727771399293">Праверце тэрмін дзеяння і код CVC, затым паўтарыце спробу.</translation>
 <translation id="480334179571489655">Памылка палітыкі крыніцы</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
-<translation id="4807049035289105102">Вы не можаце адкрыць вэб-сайт <ph name="SITE" />, бо ён адправіў зашыфраваныя ўліковыя даныя, якія Google Chrome не можа апрацаваць. Сеткавыя памылкі і атакі звычайна маюць часовы характар. Хутчэй за ўсё, праз некаторы час вэб-сайт будзе працаваць зноў.</translation>
 <translation id="4809079943450490359">Інструкцыі ад адміністратара прылады:</translation>
 <translation id="4813512666221746211">Памылка сеткі</translation>
 <translation id="4816492930507672669">Дапасаваць да памераў старонкі</translation>
@@ -1199,6 +1210,7 @@
 <translation id="5172758083709347301">Машына</translation>
 <translation id="5179510805599951267">Мова старонкі – не <ph name="ORIGINAL_LANGUAGE" />? Паведаміце пра памылку</translation>
 <translation id="5190835502935405962">Панэль закладак</translation>
+<translation id="51918995459521422"><ph name="ORIGIN" /> запытвае дазвол на спампоўку некалькіх файлаў</translation>
 <translation id="519422657042045905">Анатацыя недаступная</translation>
 <translation id="5201306358585911203">Убудаваная старонка на гэтай старонцы паведамляе</translation>
 <translation id="5205222826937269299">Увядзіце імя</translation>
@@ -1351,10 +1363,12 @@
 <translation id="5728056243719941842">C5 (канверт)</translation>
 <translation id="5730040223043577876">Chrome рэкамендуе скінуць ваш пароль, калі вы карысталіся ім на іншых сайтах.</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Захавайце плацежную картку ва Уліковым запісе Google}one{Захавайце плацежныя карткі ва Уліковым запісе Google}few{Захавайце плацежныя карткі ва Уліковым запісе Google}many{Захавайце плацежныя карткі ва Уліковым запісе Google}other{Захавайце плацежныя карткі ва Уліковым запісе Google}}</translation>
+<translation id="5745733273847572235">Сайт можа запытваць ваша месцазнаходжанне</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{Выкарыстайце віртуальны нумар для гэтай карткі}one{Выберыце картку}few{Выберыце картку}many{Выберыце картку}other{Выберыце картку}}</translation>
 <translation id="5759751709240058861">Выкарыстоўваць і перамяшчаць вашу камеру.</translation>
 <translation id="5763042198335101085">Увядзіце сапраўдны адрас электроннай пошты</translation>
 <translation id="5765072501007116331">Выберыце адрас, каб убачыць спосабы і ўмовы дастаўкі</translation>
+<translation id="57689295674415555">Не ўказаны нумар віртуальнай карткі?</translation>
 <translation id="5776313857861697733">Прыярытэт</translation>
 <translation id="5778550464785688721">Поўны кантроль над прыладамі MIDI</translation>
 <translation id="5781136890105823427">Эксперымент уключаны</translation>
@@ -1366,7 +1380,6 @@
 <translation id="578633867165174378">Браўзер Chrome выявіў, што пароль, які вы толькі што выкарысталі, быў раскрыты пры ўцечцы даных. Мы рэкамендуем змяніць яго зараз жа.</translation>
 <translation id="5803412860119678065">Запоўніць наступныя даныя: <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Дазволы</translation>
-<translation id="5804427196348435412">выкарыстоўваць прылады NFC</translation>
 <translation id="5810442152076338065">Падключэнне да дамена <ph name="DOMAIN" /> зашыфравана з дапамогай састарэлага алгарытму шыфравання.</translation>
 <translation id="5813119285467412249">&amp;Узнавіць дадаванне</translation>
 <translation id="5817918615728894473">Спалучыць</translation>
@@ -1456,7 +1469,6 @@
 <translation id="6113594885686374546">Кнопка "Працягнуць пошук". Каб пашукаць звязаныя дзеянні ў гісторыі праглядаў Chrome, націсніце Enter</translation>
 <translation id="6116338172782435947">Праглядаць тэкст і відарысы, скапіраваныя ў буфер абмену</translation>
 <translation id="6120179357481664955">Запомніць ідэнтыфікатар UPI?</translation>
-<translation id="6123290840358279103">Праглядзець віртуальную картку</translation>
 <translation id="6124432979022149706">Злучальнікі Chrome Enterprise</translation>
 <translation id="6146055958333702838">Праверце кабелі і перазагрузіце маршрутызатары, мадэмы або іншыя сеткавыя
     прылады, якія выкарыстоўваеце.</translation>
@@ -1469,6 +1481,7 @@
 <translation id="6169916984152623906">Цяпер вы можаце праглядаць вэб-старонкі ў прыватным рэжыме, іншыя карыстальнікі гэтай прылады не будуць бачыць вашы дзеянні. Аднак спампоўкі і закладкі будуць захоўвацца.</translation>
 <translation id="6177128806592000436">Ваша падключэнне да гэтага сайта небяспечнае</translation>
 <translation id="6180316780098470077">Інтэрвал паміж спробамі</translation>
+<translation id="619448280891863779">Сайт можа запытваць дазвол адкрываць і размяшчаць вокны на экранах</translation>
 <translation id="6196640612572343990">Блакіраваць староннія файлы cookie</translation>
 <translation id="6203231073485539293">Праверце падключэнне да інтэрнэту</translation>
 <translation id="6211666000885129820">Аркуш рэгістрацыі ўліковых даных для бяспечных плацяжоў</translation>
@@ -1554,6 +1567,7 @@
 <translation id="6502991525169604759">Без унесеных вамі змяненняў</translation>
 <translation id="6505563257409036437">Закрыць вокны ў рэжыме інкогніта</translation>
 <translation id="6508722015517270189">Перазапусціце Chrome</translation>
+<translation id="6513005815064132016">Сайт можа запытваць дазвол на адсочванне становішча камеры</translation>
 <translation id="6517596291481585650">Увага: гэта палітыка не была аб'яднана як спіс згодна з параметрамі, бо яна не з'яўляецца спісам.</translation>
 <translation id="6518133107902771759">Спраўдзіць</translation>
 <translation id="6521745193039995384">Неактыўная</translation>
@@ -1608,6 +1622,7 @@
 <translation id="6711464428925977395">Нешта не так з проксі-серверам або адрас няправільны.</translation>
 <translation id="6716672519412350405">Сайт <ph name="URL" /> запытвае дазвол стварыць 3D-карту вашага асяроддзя і адсочваць становішча камеры</translation>
 <translation id="6718612893943028815">Выкарыстоўваць камеру?</translation>
+<translation id="6721678857435001674">Даведацца пра марку і мадэль ключа бяспекі</translation>
 <translation id="6738516213925468394">Даныя былі зашыфраваны з дапамогай <ph name="BEGIN_LINK" />фразы-пароля для сінхранізацыі<ph name="END_LINK" /> <ph name="TIME" />. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
 <translation id="674375294223700098">Невядомая памылка сертыфіката сервера.</translation>
 <translation id="6744009308914054259">Пакуль чакаецца падключэнне, вы можаце пачытаць артыкулы, спампаваныя раней.</translation>
@@ -1644,6 +1659,7 @@
 <translation id="6898699227549475383">Арганізацыя (А)</translation>
 <translation id="6907293445143367439">Дазволіць сайту <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763">Сайт <ph name="URL" /> запытвае поўны кантроль над прыладамі MIDI</translation>
+<translation id="691024665142758461">Спампаваць некалькі файлаў</translation>
 <translation id="6915804003454593391">Карыстальнік:</translation>
 <translation id="6934672428414710184">Гэта імя – з вашага Уліковага запісу Google</translation>
 <translation id="6944692733090228304">Вы ўвялі пароль на сайце, які не знаходзіцца пад кіраваннем арганізацыі <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Каб абараніць свой уліковы запіс, не выкарыстоўвайце пароль на іншых прыладах і сайтах.</translation>
@@ -1654,7 +1670,9 @@
 <translation id="6949872517221025916">Скід пароля</translation>
 <translation id="6950684638814147129">Памылка аналізу значэння JSON: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Скінуць усе</translation>
+<translation id="6954341342296443517">Сайт можа запытваць дазвол адкрываць файлы пэўных тыпаў</translation>
 <translation id="6957887021205513506">Здаецца, сертыфікат сервера падроблены.</translation>
+<translation id="6961844873822989059">Сайт можа запытваць дазвол на выкарыстанне шрыфтоў, усталяваных на прыладзе</translation>
 <translation id="6963520811470373926">Ідзе замена</translation>
 <translation id="6964255747740675745">Не ўдалося прааналізаваць канфігурацыю сеткі (няправільны JSON).</translation>
 <translation id="6965382102122355670">ОК</translation>
@@ -1756,6 +1774,7 @@
 <translation id="733354035281974745">Перавызначэнне лакальнага ўліковага запісу прылады</translation>
 <translation id="7333654844024768166">Вы толькі што ўвялі свой пароль на сайце, вядомым падманнымі паводзінамі. Chromium рэкамендуе неадкладна змяніць пароль на сайтах <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> і на іншых сайтах, дзе выкарыстоўваецца гэты пароль.</translation>
 <translation id="7334320624316649418">&amp;Паўтарыць змяненне парадку</translation>
+<translation id="7335157162773372339">Сайт можа запытваць дазвол на выкарыстанне мікрафона</translation>
 <translation id="7337248890521463931">Паказваць больш радкоў</translation>
 <translation id="7337706099755338005">Недаступна на вашай платформе.</translation>
 <translation id="733923710415886693">Сертыфікат сервера не быў раскрыты ў адпаведнасці са стандартам "Празрыстасць сертыфікатаў".</translation>
@@ -1944,6 +1963,7 @@
 <translation id="7937554595067888181">Тэрмін дзеяння: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Сертыфікат сервера яшчэ не сапраўдны.</translation>
 <translation id="7942349550061667556">Чырвоны</translation>
+<translation id="7943893128817522649">Сайт можа запытваць дазвол на аўтаматычнае спампоўванне некалькіх файлаў</translation>
 <translation id="7947285636476623132">Праверце год тэрміну дзеяння і паўтарыце спробу</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб даведацца пра функцыі браўзера Chrome, націсніце Tab, затым Enter</translation>
 <translation id="7950027195171824198">Кіруйце параметрамі файлаў cookie праз налады Chrome</translation>
@@ -1956,6 +1976,8 @@
 <translation id="7976214039405368314">Занадта шмат запытаў</translation>
 <translation id="7977538094055660992">Прылада вываду</translation>
 <translation id="7977894662897852582">EDP</translation>
+<translation id="798134797138789862">Сайт можа запытваць дазвол на выкарыстанне даных і прылад віртуальнай рэальнасці</translation>
+<translation id="7984945080620862648">Вы не можаце адкрыць вэб-сайт <ph name="SITE" />, бо ён адправіў зашыфраваныя ўліковыя даныя, якія Chrome не можа апрацаваць. Звычайна памылкі сеткі і атакі – часовая з'ява, таму гэта старонка будзе, хутчэй за ўсё, працаваць пазней.</translation>
 <translation id="79859296434321399">Каб праглядаць змесціва ў рэжыме дапоўненай рэальнасці, усталюйце ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Пераплёт</translation>
@@ -2145,6 +2167,7 @@
 <translation id="8699041776323235191">Прылада HID</translation>
 <translation id="8703575177326907206">Падключэнне да дамена <ph name="DOMAIN" /> не шыфруецца.</translation>
 <translation id="8705331520020532516">Серыйны нумар</translation>
+<translation id="8708134712139312373">Сайт можа запытваць дазвол на падключэнне да прылад з Bluetooth</translation>
 <translation id="8710842507289500830">Стыль шрыфту</translation>
 <translation id="8712637175834984815">Зразумела</translation>
 <translation id="8718314106902482036">Аплата не завершана</translation>

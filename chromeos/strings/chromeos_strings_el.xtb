@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Σάρωση</translation>
 <translation id="2570743873672969996">Εκτέλεση δοκιμής <ph name="TEST_NAME" />…</translation>
 <translation id="2585245331261708204">Πληρ. ενημέρ. Chrome OS</translation>
+<translation id="2619761439309613843">Ημερήσια ανανέωση</translation>
 <translation id="2620436844016719705">Σύστημα</translation>
 <translation id="2740531572673183784">ΟK</translation>
 <translation id="2751739896257479635">2η φάση ελέγχου ταυτότητας EAP:</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Μερικώς ενεργοποιημένο</translation>
 <translation id="3527036260304016759">Σφάλμα - Άγνωστο σφάλμα</translation>
 <translation id="3532980081107202182">Απομένουν περίπου <ph name="MIN_REMAINING" /> λεπτά</translation>
+<translation id="3540383942695635079">Διεύθυνση MAC</translation>
 <translation id="357889014807611375">Wi-Fi με ογκοχρέωση</translation>
 <translation id="3595596368722241419">Μπαταρία πλήρης</translation>
 <translation id="360565022852130722">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε αδύναμο πρωτόκολλο WEP 802.1x.</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Ο αριθμός των φορών που η μπαταρία σας ολοκλήρωσε έναν πλήρη κύκλο φόρτισης</translation>
 <translation id="3941014780699102620">Αποτυχία επίλυσης κεντρικού υπολογιστή</translation>
 <translation id="3942420633017001071">Διαγνωστικά</translation>
+<translation id="3966286471246132217">Για πιο ακριβή αποτελέσματα, κλείστε όλες τις εφαρμογές έως ότου ολοκληρωθεί ο έλεγχος.</translation>
 <translation id="3967822245660637423">Ολοκλήρωση λήψης</translation>
 <translation id="397105322502079400">Υπολογισμός…</translation>
 <translation id="39823212440917567">Οι εργασίες εκτύπωσης που είναι παλαιότερες των <ph name="NUMBER_OF_DAYS" /> ημερών θα καταργηθούν.</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Απενεργοποιημένη</translation>
 <translation id="4227825898293920515">Ο κωδικός πρόσβασης λήγει σε <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Δεν υπάρχουν εργασίες εκτύπωσης σε εξέλιξη</translation>
+<translation id="4244962993387259361">Χρειάζεστε τουλάχιστον 500 MB ελεύθερης μνήμης για να εκτελέσετε μια δοκιμή μνήμης. Για να ελευθερώσετε χώρο, μεταβείτε στις Ρυθμίσεις &gt; Διαχείριση αποθηκευτικού χώρου.</translation>
 <translation id="4289540628985791613">Επισκόπηση</translation>
 <translation id="4297501883039923494">Διακοπή - Άγνωστο σφάλμα</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> εικόνες</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Αποτυχία ping της μη προεπιλεγμένης πύλης δικτύου.</translation>
 <translation id="4511264077854731334">Πύλη</translation>
+<translation id="4536864596629708641">Διαμόρφωση IP</translation>
 <translation id="4548483925627140043">Δεν βρέθηκε σήμα.</translation>
 <translation id="455835558791489930">Μπαταρία <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Εκτός υπηρεσίας</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> από <ph name="TOTAL_PAGE_NUMBER" />. Πατήστε enter, για να ακυρώσετε την εργασία εκτύπωσης.</translation>
 <translation id="4646949265910132906">Ασφαλής σύνδεση Wi-Fi</translation>
 <translation id="4652335678334611408">Αποθήκευση αρχείου καταγραφής περιόδου λειτουργίας</translation>
+<translation id="4654549501020883054">Αλλαγή καθημερινά</translation>
 <translation id="4665014895760275686">Κατασκευαστής</translation>
 <translation id="467510802200863975">Δεν ταιριάζουν οι κωδικοί πρόσβασης</translation>
 <translation id="467715984478005772">Πιθανή ύπαρξη τείχους προστασίας</translation>
@@ -318,6 +324,7 @@
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">1 εικόνα</translation>
 <translation id="7177485034254901881">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από τον τομέα <ph name="MANAGER" />. Οι διαχειριστές μπορούν να διαμορφώσουν τη συσκευή απομακρυσμένα.</translation>
+<translation id="7180611975245234373">Ανανέωση</translation>
 <translation id="7216409898977639127">Πάροχος δικτύου κινητής τηλεφωνίας</translation>
 <translation id="7271040990581020067">Ο σαρωτής χρησιμοποιείται αυτήν τη στιγμή. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@
 <translation id="8498220429738806196">Μετρητές επισκεψιμότητας</translation>
 <translation id="8503813439785031346">Όνομα χρήστη</translation>
 <translation id="8503836310948963452">Απομένουν λίγα μόνο λεπτά…</translation>
+<translation id="8521021929829989041">Χρήση ως προσωπικής συσκευής</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Αυτή η επιλογή μπορεί να απαιτείται από την εταιρεία κινητής τηλεφωνίας σας για σύνδεση στο δίκτυό της. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας που χρησιμοποιείτε για λεπτομέρειες.</translation>
 <translation id="8576249514688522074">Μη προετοιμασμένο</translation>

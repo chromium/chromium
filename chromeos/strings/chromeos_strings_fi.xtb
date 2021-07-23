@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Etsi</translation>
 <translation id="2570743873672969996">Tehdään testiä <ph name="TEST_NAME" />…</translation>
 <translation id="2585245331261708204">Chrome OS: uutta</translation>
+<translation id="2619761439309613843">Uusi päivittäin</translation>
 <translation id="2620436844016719705">Järjestelmä</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAPin 2. vaiheen todennus</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Osittain aktivoitu</translation>
 <translation id="3527036260304016759">Epäonnistui – Tuntematon virhe</translation>
 <translation id="3532980081107202182">Noin <ph name="MIN_REMAINING" /> minuuttia jäljellä</translation>
+<translation id="3540383942695635079">MAC-osoite</translation>
 <translation id="357889014807611375">maksullinen Wi-Fi</translation>
 <translation id="3595596368722241419">Akku täynnä</translation>
 <translation id="360565022852130722">Wi-Fi-verkko on suojattu heikolla WEP 802.1x -protokollalla</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Kuinka monta kertaa akku on ollut täynnä ja sitten tyhjentynyt</translation>
 <translation id="3941014780699102620">Isännän selvittäminen epäonnistui</translation>
 <translation id="3942420633017001071">Diagnostiikka</translation>
+<translation id="3966286471246132217">Jos haluat tarkempia tuloksia, sulje kaikki sovellukset, kunnes testi on suoritettu.</translation>
 <translation id="3967822245660637423">Lataus on valmis</translation>
 <translation id="397105322502079400">Lasketaan...</translation>
 <translation id="39823212440917567">Yli <ph name="NUMBER_OF_DAYS" /> päivää vanhat tulostustyöt poistetaan</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Pois käytöstä</translation>
 <translation id="4227825898293920515">Salasana vanhenee: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ei tulostustöitä käynnissä</translation>
+<translation id="4244962993387259361">Tarvitset muistitestin suorittamiseen ainakin 500 Mt vapaata tilaa. Voit vapauttaa tilaa valitsemalla Asetukset &gt; Tallennustilan hallinta.</translation>
 <translation id="4289540628985791613">Yleiskatsaus</translation>
 <translation id="4297501883039923494">Pysähtynyt – Tuntematon virhe</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kuvaa</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Muun kuin oletusarvoisen verkkoyhdyskäytävän ping-kutsu epäonnistui</translation>
 <translation id="4511264077854731334">Portaali</translation>
+<translation id="4536864596629708641">IP-määritykset</translation>
 <translation id="4548483925627140043">Ei signaalia</translation>
 <translation id="455835558791489930">Akku: <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Ei yhteyttä</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Peru tulostustyö painamalla Enter.</translation>
 <translation id="4646949265910132906">Suojattu Wi-Fi-yhteys</translation>
 <translation id="4652335678334611408">Tallenna käyttökertaloki</translation>
+<translation id="4654549501020883054">Vaihda päivittäin</translation>
 <translation id="4665014895760275686">Valmistaja</translation>
 <translation id="467510802200863975">Salasanat eivät täsmää</translation>
 <translation id="467715984478005772">Mahdollinen palomuuri</translation>
@@ -318,6 +324,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7162487448488904999">Galleria</translation>
 <translation id="7172721935181587524">1 kuva</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> ylläpitää tätä: <ph name="DEVICE_TYPE" />. Järjestelmänvalvojat voivat määrittää laitteen etänä.</translation>
+<translation id="7180611975245234373">Päivitä</translation>
 <translation id="7216409898977639127">Mobiilioperaattori</translation>
 <translation id="7271040990581020067">Skanneri on tällä hetkellä käytössä. Yritä myöhemmin uudelleen.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8498220429738806196">Liikennelaskurit</translation>
 <translation id="8503813439785031346">Käyttäjätunnus</translation>
 <translation id="8503836310948963452">Vielä pari minuuttia…</translation>
+<translation id="8521021929829989041">Käytä henkilökohtaisena laitteena</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operaattorisi saattaa vaatia tätä asetusta operaattorin verkkoon yhdistämistä varten. Lisätietoja saat operaattoriltasi.</translation>
 <translation id="8576249514688522074">Ei ole alustettu</translation>

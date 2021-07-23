@@ -8,6 +8,10 @@
 <translation id="1047726139967079566">为此页添加书签...</translation>
 <translation id="1049743911850919806">无痕</translation>
 <translation id="105093091697134113">以下帐号使用的密码在第三方数据泄露事件中遭到了外泄，或者曾在诈骗网站上输入过。为确保您帐号的安全，请立即更改这些密码。</translation>
+<translation id="105214722824962652">您不会因此而退出自己的 Google 帐号。当您登录后，系统可能会将<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />保存在您的 Google 帐号中。您可以随时删除这些记录。
+
+        
+您所用的搜索引擎是<ph name="DSE_NAME" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="1063454504051558093">使用其他密码…</translation>
 <translation id="1066060668811609597">管理同步功能</translation>
 <translation id="1076421457278169141">已扫描代码</translation>
@@ -196,6 +200,7 @@
 <translation id="2932085390869194046">建议密码…</translation>
 <translation id="2952581218264071393">1. 打开 Chrome 设置</translation>
 <translation id="2958718410589002129">密码</translation>
+<translation id="2961210776189273067">称谓</translation>
 <translation id="2964349545761222050">阻止第三方 Cookie</translation>
 <translation id="2969979262385602596">登录失败，请稍后重试。</translation>
 <translation id="2975121486251958312">仅无痕模式可用</translation>
@@ -203,6 +208,10 @@
 <translation id="298306318844797842">添加付款方式…</translation>
 <translation id="2989805286512600854">在新标签页中打开</translation>
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
+<translation id="3076846064362030967">您不会因此而退出自己的 Google 帐号。当您登录后，系统可能会将<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />保存在您的 Google 帐号中。您可以随时删除这些记录。
+
+
+请查看您所用搜索引擎的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="3080525922482950719">您可保存网页以供日后阅读或离线阅读</translation>
 <translation id="3081338492074632642">请确保您要保存的密码与您用来登录 <ph name="WEBSITE" /> 的密码相符</translation>
 <translation id="3112556859945124369">标为…</translation>
@@ -327,7 +336,6 @@
 <translation id="4375040482473363939">QR 码搜索</translation>
 <translation id="4378154925671717803">电话机</translation>
 <translation id="4389019817280890563">点按此行即可更改语言。</translation>
-<translation id="441868831736628555">隐私权声明</translation>
 <translation id="4454246407045105932">添加语言</translation>
 <translation id="4469418912670346607">继续设置</translation>
 <translation id="4476574785019001431">设置</translation>
@@ -403,6 +411,7 @@
 <translation id="5140288047769711648">Chrome 将为您记住此密码，因此，您不必记住它。</translation>
 <translation id="5150492518600715772">发送到您的设备</translation>
 <translation id="5168414296986405587">专为 iPadOS 打造</translation>
+<translation id="5173088371991956744">同步功能需要验证您的身份</translation>
 <translation id="5181140330217080051">正在下载</translation>
 <translation id="5186185447130319458">不公开</translation>
 <translation id="5188482106078495165">您的 Cookie 设置适用于所有标签页。若要对某个已打开的标签页应用新设置，请重新加载该标签页。</translation>
@@ -713,6 +722,7 @@
 <translation id="802154636333426148">下载失败</translation>
 <translation id="8023878949384262191">展开此部分。</translation>
 <translation id="8027581147000338959">在新窗口中打开</translation>
+<translation id="804225253087497565">当您登录后，系统可能会将<ph name="BEGIN_LINK" />搜索记录<ph name="END_LINK" />和<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />保存在您的 Google 帐号中。您可以随时删除这些记录。</translation>
 <translation id="804427445359061970">您在其他设备上打开的标签页会显示在此处</translation>
 <translation id="8059533439631660104">合拢此部分。</translation>
 <translation id="8065292699993359127">在 Chrome 中以无痕模式打开网址</translation>

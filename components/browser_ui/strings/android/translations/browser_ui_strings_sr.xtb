@@ -3,7 +3,6 @@
 <translationbundle lang="sr">
 <translation id="1006017844123154345">Отвори онлајн</translation>
 <translation id="1044891598689252897">Сајтови ће нормално радити</translation>
-<translation id="1100504063505580045">Актуелна икона</translation>
 <translation id="1124090076051167250">Овим бришете <ph name="DATASIZE" /> података и колачића које чувају сајтови или апликације на почетном екрану.</translation>
 <translation id="1178581264944972037">Паузирај</translation>
 <translation id="1181037720776840403">Уклони</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Искључите звук видеа</translation>
 <translation id="3596414637720633074">Блокира колачиће трећих страна у режиму без архивирања</translation>
 <translation id="3600792891314830896">Искључи звук сајтова који пуштају звук</translation>
-<translation id="365089839707261811">Прегледајте ажурирања имена</translation>
 <translation id="3744111561329211289">Синхронизација у позадини</translation>
 <translation id="3763247130972274048">Двапут додирните видео лево или десно да бисте прескочили 10 сек</translation>
 <translation id="381841723434055211">Бројеви телефона</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Сајт пушта медијски садржај</translation>
 <translation id="42981349822642051">Проширите</translation>
 <translation id="4336434711095810371">Обриши све податке</translation>
-<translation id="4339203724549370495">Деинсталирај апликацију</translation>
 <translation id="4402755511846832236">Не дозволите сајтовима да знају када активно користите овај уређај</translation>
 <translation id="4434045419905280838">Искачући прозори и преусмеравања</translation>
 <translation id="445467742685312942">Дозволите сајтовима да пуштају заштићени садржај</translation>
@@ -135,12 +132,12 @@
 <translation id="4670064810192446073">Виртуелна реалност</translation>
 <translation id="4708011789095599544">Желите ли стварно да обришете колачиће и друге податке о сајту за овај веб-сајт?</translation>
 <translation id="4751476147751820511">Сензори за покрет или светло</translation>
-<translation id="4800839971935185386">Прегледајте ажурирања имена и икона</translation>
 <translation id="4836046166855586901">Питај када сајт жели да зна када активно користим овај уређај</translation>
 <translation id="4883854917563148705">Подешавања којима се управља не могу да се ресетују</translation>
 <translation id="4887024562049524730">Пре него што дозволите сајтовима да користе уређај и податке виртуелне реалности приказује се упит (препоручено)</translation>
 <translation id="4962975101802056554">Опозовите све дозволе за уређај</translation>
 <translation id="497421865427891073">Кретање унапред</translation>
+<translation id="4976702386844183910">Последња посета: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Није пронађен ниједан контакт</translation>
 <translation id="4996978546172906250">Дељење преко</translation>
 <translation id="5039804452771397117">Дозволи</translation>
@@ -151,6 +148,7 @@
 <translation id="5123685120097942451">Картица без архивирања</translation>
 <translation id="5186036860380548585">Опција је доступна у врху екрана</translation>
 <translation id="5197729504361054390">Контакти које изаберете ће се делити са <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">Последњи посећен данас</translation>
 <translation id="528192093759286357">Превуците од врха екрана и додирните дугме Назад да бисте изашли из режима целог екрана.</translation>
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5301954838959518834">Важи</translation>
@@ -164,7 +162,6 @@
 <translation id="5403592356182871684">Имена</translation>
 <translation id="5489227211564503167">Протекло време: <ph name="ELAPSED_TIME" /> од <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блокирај огласе на сајтовима који приказују огласе који ометају активности или обмањујуће огласе</translation>
-<translation id="549957179819296104">Нова икона</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" />: дозвољено. <ph name="PERMISSION_2" />: блокирано</translation>
 <translation id="5505264765875738116">Сајтови не могу да траже да шаљу обавештења</translation>
 <translation id="5516455585884385570">Отворите подешавања обавештења</translation>
@@ -181,6 +178,7 @@
 <translation id="5804241973901381774">Дозволе</translation>
 <translation id="5860033963881614850">Искључено</translation>
 <translation id="5876056640971328065">Паузирај видео</translation>
+<translation id="5887687176710214216">Последња посета: јуче</translation>
 <translation id="5916664084637901428">Укључено</translation>
 <translation id="5922853908706496913">Дели се екран</translation>
 <translation id="5939518447894949180">Ресетуј</translation>
@@ -210,6 +208,7 @@
 <translation id="6527303717912515753">Дели</translation>
 <translation id="6545864417968258051">Bluetooth скенирање</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}one{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}few{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}other{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}}</translation>
+<translation id="6554732001434021288">Последња посета: пре <ph name="NUM_DAYS" /> дана</translation>
 <translation id="6561560012278703671">Користите ненаметљиву размену порука (спречава упите са обавештењима да вас ометају)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Заштићени садржај</translation>
@@ -251,7 +250,6 @@
 <translation id="7589445247086920869">Блокирај за актуелни претраживач</translation>
 <translation id="7649070708921625228">Помоћ</translation>
 <translation id="7658239707568436148">Откажи</translation>
-<translation id="7734541938181328224">Прегледајте ажурирања иконе</translation>
 <translation id="7781829728241885113">Јуче</translation>
 <translation id="7791543448312431591">Додај</translation>
 <translation id="780301667611848630">Не, хвала</translation>
@@ -293,7 +291,6 @@
 <translation id="8487700953926739672">Доступно ван мреже</translation>
 <translation id="851751545965956758">Онемогући сајтовима да се повезују са уређајима</translation>
 <translation id="8525306231823319788">Цео екран</translation>
-<translation id="857074314439694500">Ако ова веб-апликација покушава да вас превари да је нека друга апликација, деинсталирајте је.</translation>
 <translation id="857943718398505171">Дозвољено (препоручено)</translation>
 <translation id="8609465669617005112">Премести нагоре</translation>
 <translation id="8676374126336081632">Обриши унос</translation>

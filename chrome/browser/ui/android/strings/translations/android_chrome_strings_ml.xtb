@@ -318,6 +318,7 @@
 <translation id="3029704984691124060">പാസ്‌ഫ്രെയ്‌സുകൾ പൊരുത്തപ്പെടുന്നില്ല</translation>
 <translation id="3031225630520268969">Assistant ശബ്‌ദ തിരയൽ സമ്മത UI</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />സഹായം തേടുക<ph name="END_LINK" /></translation>
+<translation id="3037517125981011456">Chrome-ൽ സൈൻ ഇൻ ചെയ്യാനുള്ള നിർദ്ദേശങ്ങൾ കാണിക്കുന്നു</translation>
 <translation id="3046945242843292318">അടുത്ത തവണ കൂടുതൽ വേഗത്തിൽ ഈ സൈറ്റിലേക്ക് എത്തുക</translation>
 <translation id="305593374596241526">ലൊക്കേഷൻ ഓഫാണ്; <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_LINK" /> അത് ഓണാക്കുക.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ബുക്ക്‌മാർക്ക്}other{<ph name="BOOKMARKS_COUNT_MANY" /> ബുക്ക്‌മാർക്കുകൾ}}</translation>
@@ -337,6 +338,7 @@
 <translation id="3207960819495026254">ബുക്ക്‌മാർക്കുചെയ്‌തു</translation>
 <translation id="3208584281581115441">ഇപ്പോൾ പരിശോധിക്കുക</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> ഇല്ലാതാക്കി</translation>
+<translation id="3214996641768123781">നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തിരിക്കുമ്പോൾ <ph name="BEGIN_LINK1" />തിരയൽ ചരിത്രവും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />മറ്റ് തരത്തിലുള്ള ആക്റ്റിവിറ്റിയും<ph name="END_LINK2" /> Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചേക്കാം. അവ ഏതുസമയത്തും നിങ്ങൾക്ക് ഇല്ലാതാക്കാം.</translation>
 <translation id="321773570071367578">നിങ്ങൾ പാസ്‌ഫ്രെയ്‌സ് മറന്നുപോയെങ്കിലോ ഈ ക്രമീകരണം മാറ്റണമെങ്കിലോ, <ph name="BEGIN_LINK" />സമന്വയം റീസെറ്റ് ചെയ്യുക<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">നിങ്ങളുടെ പാസ്‌വേഡുകൾ സമന്വയിപ്പിക്കാൻ, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="3227557059438308877">സുരക്ഷാ കീ ആയി Google Chrome</translation>
@@ -449,7 +451,6 @@
 <translation id="3928666092801078803">എന്റെ വിവരങ്ങൾ സംയോജിപ്പിക്കുക</translation>
 <translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">പ്രവർത്തനക്ഷമമാക്കിയ വോയ്‌സ് തിരയലുകൾ ഒന്നും ലഭ്യമല്ല</translation>
-<translation id="3943557322767080599">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സൈൻ ഇൻ ചെയ്യുമ്പോൾ Chrome സൈൻ ഇൻ നിർദ്ദേശങ്ങൾ കാണിക്കുക</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{നിങ്ങളുടെ പേജ് തയ്യാറാകുമ്പോൾ Chrome ലോഡ് ചെയ്യും}other{നിങ്ങളുടെ പേജുകൾ തയ്യാറാകുമ്പോൾ Chrome ലോഡ് ചെയ്യും}}</translation>
 <translation id="3962957115499249330">വൈഫൈയിൽ ഈ ഡൗൺലോഡ് ആരംഭിക്കുമ്പോൾ നിങ്ങൾ ഒരു അറിയിപ്പ് കാണും.</translation>
 <translation id="3963007978381181125">പാസ്‌ഫ്രെയ്‌സ് എൻക്രിപ്ഷനിൽ, Google Pay-ൽ നിന്നുള്ള പേയ്മെന്‍റ് രീതികളും വിലാസങ്ങളും ഉൾപ്പെടുന്നില്ല. നിങ്ങളുടെ പാസ്‌ഫ്രെയ്‌സുള്ള വ്യക്തിക്ക് മാത്രമേ എൻക്രി‌പ്‌റ്റ് ചെയ്‌ത ഡാറ്റ വായിക്കാനാവൂ. പാസ്‌ഫ്രെയ്‌സ് Google-ലേക്ക് അയയ്‌ക്കുകയോ സംഭരിക്കുകയോ ചെയ്യുന്നില്ല. പാസ്‌ഫ്രെയ്‌സ് മറന്നുപോവുകയോ ഈ ക്രമീകരണം മാറ്റുകയോ ചെയ്യണമെങ്കിൽ, സമന്വയം പുനഃക്രമീകരിക്കേണ്ടി വരും. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
@@ -598,6 +599,7 @@
 <translation id="4881695831933465202">തുറക്കുക</translation>
 <translation id="488187801263602086">ഫയലിന്റെ പേര് മാറ്റുക</translation>
 <translation id="4885273946141277891">പിന്തുണയ്‌ക്കാത്തത്ര Chrome പതിപ്പുകൾ</translation>
+<translation id="4905269543817054577">അദൃശ്യ മോഡിൽ ചരിത്രം സംരക്ഷിച്ചിട്ടില്ല</translation>
 <translation id="4908869848243824489">Google-ന്റെ Discover</translation>
 <translation id="4910889077668685004">പേയ്‌മെന്റ് ആപ്പുകൾ</translation>
 <translation id="4913161338056004800">സ്ഥിതിവിവരക്കണക്കുകൾ റീസെറ്റ് ചെയ്യുക</translation>
@@ -621,7 +623,9 @@
 <translation id="5005498671520578047">പാസ്‌വേഡ് പകർത്തുക</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> കണക്‌റ്റുചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5032430150487044192">QR കോഡ് സൃഷ്‌ടിക്കാനാകില്ല</translation>
 <translation id="5039804452771397117">അനുവദിക്കൂ</translation>
+<translation id="5054455334322721892">നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തിരിക്കുമ്പോൾ <ph name="BEGIN_LINK1" />മറ്റ് തരത്തിലുള്ള ആക്റ്റിവിറ്റി<ph name="END_LINK1" /> Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചേക്കാം. അവ ഏതുസമയത്തും നിങ്ങൾക്ക് ഇല്ലാതാക്കാം.</translation>
 <translation id="5061533557687621530">കാലാവസ്ഥ പരിശോധിക്കാൻ, മൈക്കിൽ ടാപ്പ് ചെയ്ത് “ഇന്നത്തെ കാലാവസ്ഥ എന്താണ്?” എന്ന് പറയുക</translation>
 <translation id="5087580092889165836">കാർഡ് ചേർക്കുക</translation>
 <translation id="5091249083535528968">വിപുലീകൃത ഉപയോഗ ഡാറ്റ</translation>
@@ -651,6 +655,7 @@
 <translation id="5222676887888702881">സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="5227554086496586518">തിരയൽ ഫലങ്ങൾ കാണാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5233638681132016545">പുതിയ ടാബ്</translation>
+<translation id="5246093389635966745">ടൂൾബാർ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="5250483651202458397">സ്‌ക്രീൻഷോട്ട്. അടയ്ക്കാൻ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="5262378156578470238"><ph name="DATE" />-ന് ഈ ഡൗൺലോഡ് ആരംഭിക്കുമ്പോൾ നിങ്ങൾ ഒരു അറിയിപ്പ് കാണും.</translation>
 <translation id="526421993248218238">ഈ പേജ് ലോഡ് ചെയ്യാനായില്ല</translation>
@@ -740,6 +745,7 @@
 <translation id="5814131985548525293">ആരംഭിക്കാൻ ഇവിടെ ടൈപ്പ് ചെയ്യുക അല്ലെങ്കിൽ വോയ്‌സ് ഐക്കണിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="583281660410589416">അജ്ഞാതം</translation>
 <translation id="5833984609253377421">ലിങ്ക് പങ്കിടുക</translation>
+<translation id="5834764604050996579">QR കോഡ് സ്‌കാൻ ചെയ്യാൻ, Chrome-നെ നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാൻ അനുവദിക്കുക</translation>
 <translation id="5836192821815272682">Chrome അപ്‌ഡേറ്റ് ഡൗൺലോഡ് ചെയ്യുന്നു…</translation>
 <translation id="5853623416121554550">താൽക്കാലികമായി നിർത്തി</translation>
 <translation id="5854512288214985237">സ്ഥിതിവിവരക്കണക്കുകളോ ക്രാഷ് റിപ്പോർട്ടുകളോ Google-ന് അയയ്ക്കില്ല</translation>
@@ -889,7 +895,6 @@
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
 <translation id="6659594942844771486">ടാബ്</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />-ൽ തുറക്കുക</translation>
-<translation id="666981079809192359">Chrome സ്വകാര്യതാ അറിയിപ്പ്</translation>
 <translation id="6671495933530132209">ചിത്രം പകർത്തുക</translation>
 <translation id="6674571176963658787">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന്, നിങ്ങളുടെ പാസ്‌ഫ്രെയ്‌സ് നൽകുക</translation>
 <translation id="6676840375528380067">ഉപകരണത്തില്‍ നിന്ന് Chrome ഡാറ്റ മായ്ക്കണോ?</translation>
@@ -920,6 +925,7 @@
 <translation id="6867400383614725881">പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="6869056123412990582">കമ്പ്യൂട്ടർ</translation>
 <translation id="6882836635272038266">അപകടകരമെന്ന് അറിയപ്പെടുന്ന വെബ്സൈറ്റുകൾ, ഡൗൺലോഡുകള്‍, വിപുലീകരണങ്ങൾ എന്നിവയ്ക്ക് എതിരായ സ്‌റ്റാൻഡേർഡ് സുരക്ഷ.</translation>
+<translation id="6883204995689174413">പങ്കിടുക</translation>
 <translation id="688738109438487280">നിലവിലുള്ള വിവരങ്ങളെ <ph name="TO_ACCOUNT" /> അക്കൗണ്ടിലേക്ക് ചേർക്കുക</translation>
 <translation id="6891726759199484455">പാസ്‍വേഡ് പകർത്താൻ അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="6896758677409633944">പകര്‍ത്തുക</translation>
@@ -940,6 +946,7 @@
 <translation id="7022756207310403729">ബ്രൗസറിൽ തുറക്കുക</translation>
 <translation id="702463548815491781">TalkBack അല്ലെങ്കിൽ ആക്‌സസ് മാറുക ഓണായിരിക്കുമ്പോൾ ശുപാർശ ചെയ്യുന്നു</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> പുനഃസ്ഥാപിച്ചു</translation>
+<translation id="7029390216614421513">ഈ ഫ്രെയിമിൽ QR കോഡ്/ബാർ‌കോഡ് സ്ഥാപിക്കുക.</translation>
 <translation id="7029809446516969842">പാസ്‌വേഡുകള്‍</translation>
 <translation id="7054588988317389591">ചിത്ര വിവരണങ്ങൾ നേടണോ?</translation>
 <translation id="7055152154916055070">റീഡയറക്‌റ്റ് ചെയ്യുന്നത് ബ്ലോക്ക് ചെയ്തു</translation>
@@ -954,8 +961,10 @@
 <translation id="7138678301420049075">മറ്റുള്ളവ</translation>
 <translation id="7146622961999026732">ഈ സൈറ്റുകളും ആപ്പുകളും നിങ്ങൾക്ക് പ്രാധാന്യമുള്ളവയാകാം:</translation>
 <translation id="7149893636342594995">അവസാന 24 മണിക്കൂർ</translation>
+<translation id="7155317020660659215">QR കോഡ് സ്‌കാൻ ചെയ്യുന്നതിന് നിങ്ങളുടെ ക്രമീകരണം മാറ്റുക, ഇങ്ങനെ ചെയ്യുന്നതിലൂടെ Chrome-ന് നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാം</translation>
 <translation id="7173114856073700355">ക്രമീകരണം തുറക്കുക</translation>
 <translation id="7177466738963138057">നിങ്ങൾക്കിത് പിന്നീട് ക്രമീകരണങ്ങളിൽ മാറ്റാനാവും</translation>
+<translation id="7177873915659574692">QR കോഡ് സൃഷ്‌ടിക്കാനാകുന്നില്ല. URL-ൽ <ph name="CHARACTER_LIMIT" /> പ്രതീകങ്ങളിൽ കൂടുതൽ അടങ്ങിയിരിക്കുന്നു.</translation>
 <translation id="7180611975245234373">പുതുക്കുക</translation>
 <translation id="7187993566681480880">നിങ്ങൾ സൈൻ ഇൻ ആയിരിക്കുമ്പോൾ Chrome-ൽ നിങ്ങളെ സുരക്ഷിതരാക്കുകയും മറ്റ് Google ആപ്പുകളിൽ നിങ്ങളുടെ സുരക്ഷ മെച്ചപ്പെടുത്താൻ ഉപയോഗിക്കുകയും ചെയ്യും.</translation>
 <translation id="718926126787620637">മുഴുവൻ ഉയരത്തിൽ തുറന്ന ബുക്ക്‌മാർക്ക് ഫോൾഡറുകളുടെ ലിസ്റ്റ്</translation>
@@ -1034,6 +1043,7 @@
 <translation id="7630202231528827509">ദാതാവിന്റെ URL</translation>
 <translation id="7638584964844754484">പാസ്‌ഫ്രെയ്‌സ് തെറ്റാണ്</translation>
 <translation id="7641339528570811325">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുക...</translation>
+<translation id="764170292089748542">നിങ്ങൾ സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ തിരഞ്ഞെടുക്കുമ്പോൾ, Chrome നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം സംരക്ഷിക്കില്ല. നിങ്ങളുടെ പ്രിയപ്പെട്ട സൈറ്റുകൾ ആക്സസ് ചെയ്യാൻ ഇപ്പോഴും ബുക്ക്‌മാർക്കുകൾ ഉപയോഗിക്കാം.</translation>
 <translation id="7646772052135772216">പാസ്‍വേഡ് സമന്വയം പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="7655900163790317559">Bluetooth ഓണാക്കുന്നു…</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
@@ -1082,6 +1092,7 @@
 <translation id="7929962904089429003">മെനു തുറക്കുക</translation>
 <translation id="7930998711684428189">പാസ്‌വേഡുകൾ, ഡാറ്റാ ലംഘനത്തിന്റെ ഭാഗമായി വെളിപ്പെട്ടാൽ നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുന്നു.</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> കാലഹരണപ്പെട്ടതാണ്.</translation>
+<translation id="7944772052836377867">സമന്വയത്തിന് ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കേണ്ടതുണ്ട്</translation>
 <translation id="7947953824732555851">അംഗീകരിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="7961015016161918242">ഒരിക്കലും</translation>
 <translation id="7961926449547174351">നിങ്ങൾ സ്‌റ്റോറേജ് ആക്‌സസ് പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു, ക്രമീകരണത്തിൽ പോയി അത് പ്രവർത്തനക്ഷമമാക്കുക.</translation>
@@ -1113,6 +1124,7 @@
 <translation id="8084114998886531721">സംരക്ഷിച്ച പാസ്‌വേഡ്</translation>
 <translation id="8084285576995584326">നിങ്ങളുടെ Google അക്കൗണ്ട് ഡാറ്റ നിയന്ത്രിക്കുക</translation>
 <translation id="808747664143081553">ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്‌തു</translation>
+<translation id="8088176524274673045">സമീപമുള്ള ആളുകളുമായി പങ്കിടുന്നതിന്, അവരെ ഈ QR കോഡ് സ്‌കാൻ ചെയ്യാൻ അനുവദിക്കുക</translation>
 <translation id="8103578431304235997">അദൃശ്യ ടാബ്</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകൾ ലഭിക്കാൻ, സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
@@ -1221,6 +1233,7 @@
 <translation id="8788265440806329501">നാവിഗേഷന്‍ ചരിത്രം അടച്ചു</translation>
 <translation id="8788968922598763114">അവസാനം അടച്ച ടാബ് വീണ്ടും തുറക്കുക</translation>
 <translation id="8798449543960971550">വായിച്ചവ</translation>
+<translation id="8805097383171548551">QR കോഡ് സ്‌കാൻ ചെയ്യാൻ, ക്യാമറയുള്ള ഒരു ഉപകരണം ഉപയോഗിക്കുക.</translation>
 <translation id="8812260976093120287">ചില വെബ്‌സൈറ്റുകളിൽ, നിങ്ങളുടെ ഉപകരണത്തിൽ ഉപയോഗിക്കാവുന്നതും മുകളിൽ പറഞ്ഞിരിക്കുന്നതുമായ പേയ്‌മെന്റ് ആപ്പുകൾ വഴി പണമടയ്‌ക്കാം.</translation>
 <translation id="881688628773363275">പ്രിവ്യൂ ചെയ്യാൻ ശ്രമിക്കുന്ന ടാബ് ഉള്ളടക്കം കാണാനാകില്ല.</translation>
 <translation id="8820817407110198400">Bookmarks</translation>

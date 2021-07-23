@@ -16,7 +16,6 @@
 <translation id="1056775291175587022">ບໍ່ມີເຄືອຂ່າຍ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">ປ່ຽນ ຫຼື ສາກໄຟແບັດເຕີຣີ</translation>
-<translation id="1077253978657569125">ພວກເຮົາຕ້ອງການປັບປຸງສິ່ງນີ້!</translation>
 <translation id="108486256082349153">ເຊວລູລາ: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">ສະບາຍດີຕອນບ່າຍ <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">ຂ້ອຍເບື່ອຫຼາຍ</translation>
@@ -420,6 +419,7 @@
 <translation id="4274537685965975248">ຄີລັດ Ctrl + Alt + ລູກສອນລົງຖືກປ່ຽນແປງແລ້ວ. ເພື່ອໃຊ້ປຸ່ມ End, ໃຫ້ກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + ລູກສອນຂວາ.</translation>
 <translation id="4279490309300973883">ການສ່ອງ</translation>
 <translation id="4285498937028063278">ຖອນໝຸດ</translation>
+<translation id="4292904812939562398">ແອັບທີ່ໃຊ້ຫຼ້າສຸດ</translation>
 <translation id="429402653707266969">ສະຫຼັບສະຖານທີ່ແຖບ​ເຄື່ອງ​ມື</translation>
 <translation id="4294319844246081198">ສະບາຍດີຕອນເຊົ້າ <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">ລຶບລ້າງການແຈ້ງເຕືອນທັງໝົດ <ph name="COUNT" /> ລາຍການ</translation>

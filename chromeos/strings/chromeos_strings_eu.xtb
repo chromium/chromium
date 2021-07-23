@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Bilatu</translation>
 <translation id="2570743873672969996">Abian da <ph name="TEST_NAME" /> proba…</translation>
 <translation id="2585245331261708204">Chrome OS-en berritasunak</translation>
+<translation id="2619761439309613843">Freskatu egunero</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2740531572673183784">Ados</translation>
 <translation id="2751739896257479635">EAP 2. fasearen autentifikazioa</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Partzialki aktibatuta</translation>
 <translation id="3527036260304016759">Hutsegitea - Errore ezezaguna</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> minutu inguru geratzen dira</translation>
+<translation id="3540383942695635079">MAC helbidea</translation>
 <translation id="357889014807611375">wifi neurtua</translation>
 <translation id="3595596368722241419">Bateria beteta dago</translation>
 <translation id="360565022852130722">WEP 802.1x protokolo ahulak babesten du wifi-sarea</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Bateriak kargatze-ziklo osoa zenbat aldiz egin duen</translation>
 <translation id="3941014780699102620">Ezin izan da ebatzi ostalaria</translation>
 <translation id="3942420633017001071">Diagnostikoak</translation>
+<translation id="3966286471246132217">Emaitza zehatzagoak lortzeko, itxi aplikazio guztiak proba osatu arte.</translation>
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
 <translation id="397105322502079400">Kalkulatzen…</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> egun baino gehiagoko inprimatze-lanak kendu egingo dira</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Desgaituta</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> barru iraungiko da pasahitza</translation>
 <translation id="4238516577297848345">Ez dago inprimatze-lanik abian</translation>
+<translation id="4244962993387259361">Gutxienez 500 MB eduki behar dituzu libre memoriaren proba bat egiteko. Tokia egiteko, joan Ezarpenak &gt; Biltegi-kudeatzailea atalera.</translation>
 <translation id="4289540628985791613">Ikuspegi orokorra</translation>
 <translation id="4297501883039923494">Geldituta: errore ezezaguna</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> irudi</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ezin izan da egin ping lehenetsia ez den sarerako atebidean</translation>
 <translation id="4511264077854731334">Ataria</translation>
+<translation id="4536864596629708641">IParen konfigurazioa</translation>
 <translation id="4548483925627140043">Ez da aurkitu seinalea</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-ko bateria</translation>
 <translation id="4562494484721939086">Zerbitzurik ez</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" /> (<ph name="CREATION_TIME" />) - <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> orri Sakatu Sartu inprimatze-lana bertan behera uzteko.</translation>
 <translation id="4646949265910132906">Wifi-konexio segurua</translation>
 <translation id="4652335678334611408">Gorde saioaren erregistroa</translation>
+<translation id="4654549501020883054">Aldatu egunero</translation>
 <translation id="4665014895760275686">Fabrikatzailea</translation>
 <translation id="467510802200863975">Pasahitzak ez datoz bat</translation>
 <translation id="467715984478005772">suebaki bat dagoela dirudi</translation>
@@ -318,6 +324,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7172721935181587524">1 irudi</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> domeinuak kudeatzen du <ph name="DEVICE_TYPE" /> gailua. Baliteke administratzaileek urrunetik konfiguratzea gailua.</translation>
+<translation id="7180611975245234373">Freskatu</translation>
 <translation id="7216409898977639127">Zerbitzu mugikorraren hornitzailea</translation>
 <translation id="7271040990581020067">Eskanerra erabiltzen ari zara. Saiatu berriro geroago.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8498220429738806196">Trafiko-kontagailuak</translation>
 <translation id="8503813439785031346">Erabiltzaile-izena</translation>
 <translation id="8503836310948963452">Minutu gutxi batzuk baino ez…</translation>
+<translation id="8521021929829989041">Erabili gailu pertsonal gisa</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Baliteke zure operadoreak aukera hau eskatzea haren sarera konektatzeko. Horri buruzko xehetasunak lortzeko, jarri operadorearekin harremanetan.</translation>
 <translation id="8576249514688522074">Hasieratu gabe</translation>

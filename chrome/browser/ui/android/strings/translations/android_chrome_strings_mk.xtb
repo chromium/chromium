@@ -191,6 +191,7 @@
 <translation id="2276696007612801991">Најавете се на сметката на Google за да ги проверите лозинките</translation>
 <translation id="2278052315791335171">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Адреса за наплата</translation>
+<translation id="2294030144029925122">Политика за приватност на Chrome</translation>
 <translation id="230115972905494466">Не се најдени компатибилни уреди</translation>
 <translation id="230155349749732438">За користење на поставкава, мора да е вклучено <ph name="BEGIN_LINK" />Подобрете ги пребарувањата и прелистувањето<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Допрете за да остварите повик</translation>
@@ -318,6 +319,7 @@
 <translation id="3029704984691124060">Лозинките-фрази не се совпаѓаат</translation>
 <translation id="3031225630520268969">Кориснички интерфејс за согласност за гласовно пребарување со „Помошникот“</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Побарајте помош<ph name="END_LINK" /></translation>
+<translation id="3037517125981011456">Прикажува prompt за најава на Chrome</translation>
 <translation id="3046945242843292318">Стигнете на сајтов побрзо следниот пат</translation>
 <translation id="305593374596241526">Локацијата е исклучена, вклучете ја во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> обележувач}one{<ph name="BOOKMARKS_COUNT_MANY" /> обележувач}other{<ph name="BOOKMARKS_COUNT_MANY" /> обележувачи}}</translation>
@@ -337,6 +339,7 @@
 <translation id="3207960819495026254">Обележано</translation>
 <translation id="3208584281581115441">Провери сега</translation>
 <translation id="3211426585530211793">Избришана е ставката <ph name="ITEM_TITLE" /></translation>
+<translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Историјата на пребарување<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />други форми на активност<ph name="END_LINK2" /> може да се зачувуваат во вашата сметка на Google кога сте најавени. Може да ги избришете во секое време.</translation>
 <translation id="321773570071367578">Ако сте ја заборавиле лозинката или сакате да ја измените поставкава, <ph name="BEGIN_LINK" />ресетирајте ја синхронизацијата<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">За да ги синхронизирате лозинките, потврдете дека сте вие</translation>
 <translation id="3227557059438308877">Google Chrome како безбедносен клуч</translation>
@@ -449,7 +452,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="3928666092801078803">Комбинирај ги моите податоци</translation>
 <translation id="3934366560681368531">„</translation>
 <translation id="393697183122708255">Нема достапно овозможено гласовно барање</translation>
-<translation id="3943557322767080599">Прикажувај потсетници за најавување на Chrome при најавување на сметката на Google</translation>
+<translation id="395377504920307820">Користи без сметка</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome ќе ја вчита страницата кога ќе биде спремна}one{Chrome ќе ги вчита страниците кога ќе бидат спремни}other{Chrome ќе ги вчита страниците кога ќе бидат спремни}}</translation>
 <translation id="3962957115499249330">Ќе видите известување кога преземањево ќе започне на Wi-Fi.</translation>
 <translation id="3963007978381181125">Шифрирањето на лозинката не ги вклучува начините на плаќање и адресите од Google Pay. Само некој што ја има вашата лозинка може да ги чита вашите шифрирани податоци. Лозинката не се испраќа, ниту зачувува во Google. Доколку ја заборавите лозинката или сакате да ја промените поставкава, ќе треба да ја ресетирате синхронизацијата. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
@@ -497,6 +500,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4256782883801055595">Лиценци за отворен код</translation>
 <translation id="4263656433980196874">Корисничкиот интерфејс за согласност за гласовно пребарување со „Помошникот“ е отворен на цел екран</translation>
 <translation id="4269820728363426813">Копирај адреса на врска</translation>
+<translation id="4281359692687148179">Повлечете надолу за да освежите</translation>
 <translation id="4290281343757112331">Да се преземе подоцна?</translation>
 <translation id="4296252229500326964">Нова картичка „Инкогнито“</translation>
 <translation id="4298388696830689168">Поврзани сајтови</translation>
@@ -598,6 +602,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4881695831933465202">Отвори</translation>
 <translation id="488187801263602086">Преименување датотеката</translation>
 <translation id="4885273946141277891">Неподдржан број примероци на Chrome.</translation>
+<translation id="4905269543817054577">Историјата не се зачувува кога сте во „Инкогнито“</translation>
 <translation id="4908869848243824489">Discover од Google</translation>
 <translation id="4910889077668685004">Апликации за плаќање</translation>
 <translation id="4913161338056004800">Ресетирај ја статистиката</translation>
@@ -621,7 +626,9 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5005498671520578047">Копирање лозинка</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> сака да се поврзе</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5032430150487044192">Не може да се создаде QR-код</translation>
 <translation id="5039804452771397117">Дозволи</translation>
+<translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Други форми на активност<ph name="END_LINK1" /> може да се зачувуваат во вашата сметка на Google кога сте најавени. Може да ги избришете во секое време.</translation>
 <translation id="5061533557687621530">За да го проверите времето, допрете го микрофонот и кажете „What’s the weather today?“ (Какво е времето денес?)</translation>
 <translation id="5087580092889165836">Додај картичка</translation>
 <translation id="5091249083535528968">Проширени податоци за користењето</translation>
@@ -651,6 +658,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5222676887888702881">Одјави се</translation>
 <translation id="5227554086496586518">Допрете за да ги видите резултатите од пребарувањето</translation>
 <translation id="5233638681132016545">Нова картичка</translation>
+<translation id="5246093389635966745">Изменете ја кратенката за алатникот</translation>
 <translation id="5250483651202458397">Слика од екранот. Допрете за да се затвори.</translation>
 <translation id="5262378156578470238">Ќе видите известување кога преземањево ќе започне на <ph name="DATE" />.</translation>
 <translation id="526421993248218238">Страницава не може да се вчита</translation>
@@ -740,6 +748,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5814131985548525293">Пишувајте тука или допрете ја иконата за микрофон за да започнете</translation>
 <translation id="583281660410589416">Непознат</translation>
 <translation id="5833984609253377421">Сподели го линкот</translation>
+<translation id="5834764604050996579">За да скенирате QR-код, дозволете Chrome да ја користи камерата</translation>
 <translation id="5836192821815272682">Се презема ажурирање на Chrome…</translation>
 <translation id="5853623416121554550">паузирано</translation>
 <translation id="5854512288214985237">Не се испраќа ниту статистика ниту извештаи за падовите до Google</translation>
@@ -889,7 +898,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6659594942844771486">Картичка</translation>
 <translation id="666731172850799929">Отвори во <ph name="APP_NAME" /></translation>
-<translation id="666981079809192359">Известување за приватност на Chrome</translation>
 <translation id="6671495933530132209">Копирај слика</translation>
 <translation id="6674571176963658787">За да започне синхронизацијата, внесете ја лозинката</translation>
 <translation id="6676840375528380067">Да се избришат податоците на Chrome од уредов?</translation>
@@ -920,6 +928,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6867400383614725881">Нова картичка „Инкогнито“</translation>
 <translation id="6869056123412990582">компјутер</translation>
 <translation id="6882836635272038266">Стандардна заштита од веб-сајтови, преземања и екстензии за коишто се знае дека се опасни.</translation>
+<translation id="6883204995689174413">Сподели</translation>
 <translation id="688738109438487280">Додајте ги постоечките податоци во <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Отклучете за да ја копирате лозинката</translation>
 <translation id="6896758677409633944">Копирај</translation>
@@ -940,6 +949,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7022756207310403729">Отвори во прелистувач</translation>
 <translation id="702463548815491781">Препорачано при вклучен TalkBack или „Пристап со прекинувачи“</translation>
 <translation id="7027549951530753705">Преземањето на <ph name="ITEM_TITLE" /> е вратено</translation>
+<translation id="7029390216614421513">Ставете го QR-кодот/бар-кодот во оваа рамка.</translation>
 <translation id="7029809446516969842">Лозинки</translation>
 <translation id="7054588988317389591">Сакате ли да добивате описи на слики?</translation>
 <translation id="7055152154916055070">Пренасочувањето е блокирано:</translation>
@@ -954,8 +964,10 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7138678301420049075">Друго</translation>
 <translation id="7146622961999026732">Изгледа дека сајтовиве и апликацииве ви се важни:</translation>
 <translation id="7149893636342594995">Изминатите 24 часа</translation>
+<translation id="7155317020660659215">За да скенирате QR-код, променете ги поставките за да може Chrome да ја користи камерата</translation>
 <translation id="7173114856073700355">Отвори „Поставки“</translation>
 <translation id="7177466738963138057">Може да го промените ова подоцна во „Поставки“</translation>
+<translation id="7177873915659574692">Не може да се создаде QR-код. URL-адресата има повеќе од <ph name="CHARACTER_LIMIT" /> знаци.</translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7187993566681480880">Ја чува вашата безбедност на Chrome и може да се користи за да ја подобри безбедноста на други апликации на Google кога сте најавени.</translation>
 <translation id="718926126787620637">Список со папки за обележувачи отворени на цел екран</translation>
@@ -1005,6 +1017,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7481864133709957613">За да пребарувате од страницава, допрете и задржете зборови наместо само да ги допрете</translation>
 <translation id="7482656565088326534">Картичка за преглед</translation>
 <translation id="7484997419527351112">Discover е исклучена</translation>
+<translation id="7485033510383818941">За освежување на содржините на активност, повлечете ја страницата надолу</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Ажурирано <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">заштеден сообраќај</translation>
 <translation id="7498271377022651285">Почекајте…</translation>
@@ -1034,6 +1047,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7630202231528827509">URL на операторот</translation>
 <translation id="7638584964844754484">Погрешна лозинка-фраза</translation>
 <translation id="7641339528570811325">Исчисти податоци од прелистување…</translation>
+<translation id="764170292089748542">Chrome не ја зачувува историјата на прелистувањето кога ќе изберете да прелистувате приватно. Сѐ уште може да користите обележувачи за да пристапувате до омилените сајтови.</translation>
 <translation id="7646772052135772216">Синхронизацијата на лозинките не работи</translation>
 <translation id="7655900163790317559">Се вклучува Bluetooth…</translation>
 <translation id="7658239707568436148">Откажи</translation>
@@ -1082,6 +1096,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7929962904089429003">Отворете го менито</translation>
 <translation id="7930998711684428189">Ве предупредува ако лозинките се откриени при упад во податоците.</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> е застарен.</translation>
+<translation id="7944772052836377867">Синхронизацијата треба да потврди дека сте вие</translation>
 <translation id="7947953824732555851">Прифати и најави се</translation>
 <translation id="7961015016161918242">Никогаш</translation>
 <translation id="7961926449547174351">Сте го оневозможиле пристапот до „Капацитет“, одете во „Поставки“ за да го овозможите.</translation>
@@ -1113,6 +1128,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8084114998886531721">Зачувана лозинка</translation>
 <translation id="8084285576995584326">Контролирајте ги податоците од вашата сметка на Google</translation>
 <translation id="808747664143081553">Поврзано со уредот</translation>
+<translation id="8088176524274673045">За да споделувате со луѓе во близина, дозволете им да го скенираат QR-кодов</translation>
 <translation id="8103578431304235997">Инкогнито-картичка</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">За да ги добиете обележувачите на сите ваши уреди, вклучете ја синхронизацијата</translation>
@@ -1221,6 +1237,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8788265440806329501">Историјата на навигација е затворена</translation>
 <translation id="8788968922598763114">Повторно отворете ја последната затворена картичка</translation>
 <translation id="8798449543960971550">Прочитано</translation>
+<translation id="8805097383171548551">За да скенирате QR-код, користете уред со камера.</translation>
 <translation id="8812260976093120287">На некои веб-сајтови, може да плаќате со горенаведените поддржани апликации за плаќање на вашиот уред.</translation>
 <translation id="881688628773363275">Содржините на картичката „Преглед“ не се видливи.</translation>
 <translation id="8820817407110198400">Обележувачи</translation>

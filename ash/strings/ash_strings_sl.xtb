@@ -16,7 +16,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1056775291175587022">Ni omrežij</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Zamenjajte ali napolnite baterijo.</translation>
-<translation id="1077253978657569125">To želimo izboljšati!</translation>
 <translation id="108486256082349153">Mobilna naprava: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Dober dan, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Dolgočasim se</translation>
@@ -420,6 +419,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4274537685965975248">Bližnjica na tipkovnici ctrl + alt + puščica dol je spremenjena. Če želite uporabiti tipko End, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in puščico desno.</translation>
 <translation id="4279490309300973883">Zrcaljenje</translation>
 <translation id="4285498937028063278">Odpni</translation>
+<translation id="4292904812939562398">Nedavno uporabljene aplikacije</translation>
 <translation id="429402653707266969">Vklop/izklop mesta orodne vrstice</translation>
 <translation id="4294319844246081198">Dobro jutro, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Izbris vseh <ph name="COUNT" /> obvestil</translation>

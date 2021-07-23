@@ -19,6 +19,8 @@
 <translation id="2342919707875585281">Chrome deli lokaciju sa sajtovima koje dozvolite.</translation>
 <translation id="2347208864470321755">Kada je ova funkcija uključena, Chrome će nuditi da prevede stranice napisane na drugim jezicima pomoću Google prevodioca. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Postavite Chrome za podrazumevani pregledač</translation>
+<translation id="2427791862912929107">Chrome ima funkcije koje vam pomažu da upravljate internet podacima i brzinom učitavanja veb-stranica.
+<ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2561231791489583059">Koristite Chrome kao podrazumevani pregledač da biste se odbranili od opasnih sajtova i zaštitili lozinke</translation>
 <translation id="2574249610672786438">Da biste videli kartice na bilo kojem uređaju na kom koristite Chrome, prijavite se na svim uređajima</translation>
 <translation id="2576431527583832481">Chrome je upravo postao bolji! Dostupna je nova verzija.</translation>
@@ -61,8 +63,6 @@
 <translation id="5716154293141027663">Otvara Chrome svaki put kada dodirnete linkove u drugim aplikacijama</translation>
 <translation id="5854621639439811139">Savet za Chrome. Neka dugmad se sada nalaze u dnu ekrana, poput dugmadi Nazad, Napred i Pretraži.</translation>
 <translation id="5876773482963502140">Ako dozvolite da Chrome sazna lokaciju, Chrome je šalje svim sajtovima za koje dozvolite. Sajtovi mogu da zatraže lokaciju kada imaju da vam prikažu lokalne informacije, poput radnji ili vesti u blizini.</translation>
-<translation id="6036420186814142909">Google Chrome ima funkcije koje vam pomažu da upravljate internet podacima i brzinom učitavanja veb-stranica.
-<ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="6063091872902370735">Dozvolite prijavljivanje u Chrome</translation>
 <translation id="6181930887571472871">Pređite na Chrome</translation>
 <translation id="6238746320622508509">Dozvolite Chrome-u da zaključa kartice bez arhiviranja.</translation>

@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">કતારમાં</translation>
 <translation id="2161394479394250669">પ્રિન્ટ જોબ રદ કરો</translation>
+<translation id="2209788852729124853">ટ્રાફિક કાઉન્ટર રીસેટ કરો</translation>
 <translation id="2217935453350629363">વર્તમાન ઝડપ</translation>
 <translation id="2224337661447660594">ઇન્ટરનેટ ઍક્સેસ નથી</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -77,6 +78,7 @@
 <translation id="2517472476991765520">સ્કૅન કરો</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> પરીક્ષણ ચલાવી રહ્યાં છીએ…</translation>
 <translation id="2585245331261708204">Chrome OSમાં નવું શું છે</translation>
+<translation id="2619761439309613843">દરરોજ રિફ્રેશ કરો</translation>
 <translation id="2620436844016719705">સિસ્ટમ</translation>
 <translation id="2740531572673183784">બરાબર, સમજાઇ ગયું</translation>
 <translation id="2751739896257479635">EAP તબક્કા 2 માટેનું પ્રમાણીકરણ</translation>
@@ -120,6 +122,7 @@
 <translation id="3595596368722241419">બૅટરી પૂર્ણ ચાર્જ</translation>
 <translation id="360565022852130722">વાઇ-ફાઇ નેટવર્કની સુરક્ષા પ્રમાણમાં નબળા WEP 802.1x પ્રોટોકૉલ વડે કરવામાં આવી છે</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> પરીક્ષણ</translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{પેજ ફરીથી સ્કૅન કરો}=1{પેજ {PAGE_NUMBER} ફરીથી સ્કૅન કરો}one{પેજ {PAGE_NUMBER} ફરીથી સ્કૅન કરો}other{પેજ {PAGE_NUMBER} ફરીથી સ્કૅન કરો}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> રિવ્યૂ)</translation>
 <translation id="3748026146096797577">કનેક્ટેડ નથી</translation>
 <translation id="3749289110408117711">ફાઇલનું નામ</translation>
@@ -151,6 +154,7 @@
 <translation id="4425149324548788773">મારી ડ્રાઇવ</translation>
 <translation id="4429881212383817840">ટૂંક સમયમાં Kerberos ટિકિટની સમયસીમા સમાપ્ત થશે</translation>
 <translation id="4431821876790500265">રિપોર્ટ જુઓ</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{પેજ કાઢી નાખો}=1{{PAGE_NUMBER} પેજ કાઢી નાખો}one{{PAGE_NUMBER} પેજ કાઢી નાખો}other{{PAGE_NUMBER} પેજ કાઢી નાખો}}</translation>
 <translation id="445059817448385655">જૂનો પાસવર્ડ</translation>
 <translation id="4453205916657964690">સબનેટ માસ્ક</translation>
 <translation id="4454245904991689773">સ્કૅન કરીને અહીં સાચવો</translation>
@@ -247,6 +251,7 @@
 <translation id="5916084858004523819">નિષિદ્ધ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{તમારી ફાઇલ સફળતાપૂર્વક સ્કૅન કરવામાં આવી અને <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />માં સાચવવામાં આવી.}one{તમારી ફાઇલ સફળતાપૂર્વક સ્કૅન કરવામાં આવી અને <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />માં સાચવવામાં આવી.}other{તમારી ફાઇલો સફળતાપૂર્વક સ્કૅન કરવામાં આવી અને <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />માં સાચવવામાં આવી.}}</translation>
 <translation id="5931523347251946569">ફાઇલ મળી નથી</translation>
+<translation id="5972388717451707488">એન્જિન અપડેટ કરો</translation>
 <translation id="6037291330010597344">સ્કૅનરનું દસ્તાવેજ ફીડર ખાલી છે. દસ્તાવેજો ઉમેરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6040852767465482106">અજાણ ઓળખાણ</translation>
@@ -284,6 +289,7 @@
 <translation id="6527081081771465939">વાઇ-ફાઇ સુરક્ષાનો અજાણ્યો પ્રોટોકૉલ</translation>
 <translation id="65587193855025101">ફ્લૅટબેડ</translation>
 <translation id="6564646048574748301">નિષ્ફળ થયું - પ્રિન્ટરથી કનેક્ટ થઈ શકાતું નથી</translation>
+<translation id="6574762126505704998">પૂર્ણ સ્ક્રીન</translation>
 <translation id="6603230386432466813">કનેક્ટ કરવામાં મુશ્કેલી આવી રહી છે?</translation>
 <translation id="6618744767048954150">હજીપણ તપાસ થઈ રહી છે</translation>
 <translation id="6620487321149975369">જ્યાં સુધી પ્રિન્ટ કાર્યોને મેન્યુઅલી કાઢી નાખવામાં નહીં આવે, ત્યાં સુધી તે ઇતિહાસમાં દેખાશે</translation>
@@ -312,6 +318,7 @@
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">1 છબી</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે. વ્યવસ્થાપકો દ્વારા ડિવાઇસને રિમોટલી કન્ફિગર કરવામાં આવી શકે છે.</translation>
+<translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="7216409898977639127">સેલ્યુલર પ્રદાતા</translation>
 <translation id="7271040990581020067">સ્કૅનર હાલમાં ઉપયોગમાં છે. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -332,6 +339,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> બાકી</translation>
 <translation id="7620771111601174153">સહાયતા કેન્દ્રમાં વધુ જાણો</translation>
+<translation id="763165478673169849">છેલ્લે રીસેટ કર્યાનો સમય</translation>
 <translation id="7648838807254605802">HTTPSની ઉચ્ચ વિલંબતા</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7690294790491645610">નવા પાસવર્ડની પુષ્ટિ કરો</translation>
@@ -353,6 +361,7 @@
 <translation id="8075838845814659848">બાકી રહેલું બૅટરી ચાર્જિંગ</translation>
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8132480444149501833">ટ્રાફિક કાઉન્ટરની વિનંતી કરો</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>
 <translation id="8208861521865154048">લાભ</translation>
 <translation id="8214184102975786227">એક PDFમાં એકથી વધુ પેજ સ્કૅન કરો</translation>
@@ -374,8 +383,10 @@
 <translation id="8475690821716466388">વાઇ-ફાઇ નેટવર્કની સુરક્ષા પ્રમાણમાં નબળા WEP PSK પ્રોટોકૉલ વડે કરવામાં આવી છે</translation>
 <translation id="8477551185774834963">DNSની વિલંબતા મંજૂરીયોગ્ય થ્રેશોલ્ડ કરતાં થોડી વધુ છે</translation>
 <translation id="8483248364096924578">IP સરનામું</translation>
+<translation id="8498220429738806196">ટ્રાફિક કાઉન્ટર</translation>
 <translation id="8503813439785031346">વપરાશકર્તાનામ</translation>
 <translation id="8503836310948963452">બસ થોડો વધુ સમય...</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">તમારા મોબાઇલ ઑપરેટરને તેમના નેટવર્ક સાથે કનેક્ટ કરવા માટે, આ વિકલ્પની જરૂર પડી શકે છે. વિગતો માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="8576249514688522074">શરૂ કરી નથી</translation>
 <translation id="8620617069779373398">રોમિંગ સ્થિતિ</translation>
@@ -392,6 +403,7 @@
 <translation id="8814190375133053267">વાઇ-ફાઇ</translation>
 <translation id="8818152010000655963">વૉલપેપર</translation>
 <translation id="8845001906332463065">સહાય મેળવો</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">પરીક્ષણ સફળ થયું</translation>
 <translation id="8898840733695078011">સિગ્નલ પ્રબળતા</translation>
 <translation id="8910721771319628100">ડિફૉલ્ટ નેટવર્ક ગેટવેની વિલંબતા જરૂરી થ્રેશોલ્ડ કરતાં વધુ છે</translation>
@@ -407,6 +419,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">બ્લૂટૂથ</translation>
 <translation id="9088306295921699330">વર્તમાન વપરાશ</translation>
+<translation id="9095775724867566971">PluginVM</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> માટે ટિકિટ રિફ્રેશ કરો</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ</translation>
 <translation id="9111102763498581341">અનલોક કરો</translation>

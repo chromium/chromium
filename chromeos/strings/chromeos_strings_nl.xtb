@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Scannen</translation>
 <translation id="2570743873672969996">Test <ph name="TEST_NAME" /> wordt uitgevoerd...</translation>
 <translation id="2585245331261708204">Nieuw bij Chrome OS</translation>
+<translation id="2619761439309613843">Dagelijks vernieuwen</translation>
 <translation id="2620436844016719705">Systeem</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP Phase 2-verificatie</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Gedeeltelijk geactiveerd</translation>
 <translation id="3527036260304016759">Mislukt - Onbekende fout</translation>
 <translation id="3532980081107202182">Nog ongeveer <ph name="MIN_REMAINING" /> minuten</translation>
+<translation id="3540383942695635079">MAC-adres</translation>
 <translation id="357889014807611375">wifi met datalimiet</translation>
 <translation id="3595596368722241419">Batterij is vol</translation>
 <translation id="360565022852130722">Wifi-netwerk is beveiligd met het zwakke protocol WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Het aantal keren dat de batterij een volledige oplaadcyclus heeft doorlopen</translation>
 <translation id="3941014780699102620">Kan host niet omzetten</translation>
 <translation id="3942420633017001071">Diagnose</translation>
+<translation id="3966286471246132217">Sluit voor nauwkeurigere resultaten alle apps totdat de test is afgerond.</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
 <translation id="397105322502079400">Berekenen...</translation>
 <translation id="39823212440917567">Afdruktaken ouder dan <ph name="NUMBER_OF_DAYS" /> dagen worden verwijderd</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Uitgezet</translation>
 <translation id="4227825898293920515">Wachtwoord verloopt over <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Er worden geen afdruktaken uitgevoerd</translation>
+<translation id="4244962993387259361">Je hebt minimaal 500 MB vrije ruimte nodig om een geheugentest uit te voeren. Ga naar Instellingen &gt; Opslagbeheer om ruimte vrij te maken.</translation>
 <translation id="4289540628985791613">Overzicht</translation>
 <translation id="4297501883039923494">Gestopt: onbekende fout</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> afbeeldingen</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kan de niet-standaard netwerkgateway niet pingen</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4536864596629708641">IP-configuratie</translation>
 <translation id="4548483925627140043">Signaal niet gevonden</translation>
 <translation id="455835558791489930">Batterij van <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Geen service</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> van <ph name="TOTAL_PAGE_NUMBER" />. Druk op Enter om de afdruktaak te annuleren.</translation>
 <translation id="4646949265910132906">Beveiligde wifi-verbinding</translation>
 <translation id="4652335678334611408">Sessielogboek opslaan</translation>
+<translation id="4654549501020883054">Dagelijks wijzigen</translation>
 <translation id="4665014895760275686">Fabrikant</translation>
 <translation id="467510802200863975">De wachtwoorden komen niet overeen</translation>
 <translation id="467715984478005772">Vermoedelijke firewall</translation>
@@ -318,6 +324,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7162487448488904999">Galerij</translation>
 <translation id="7172721935181587524">1 afbeelding</translation>
 <translation id="7177485034254901881">Dit <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />. Beheerders kunnen het apparaat op afstand instellen.</translation>
+<translation id="7180611975245234373">Vernieuwen</translation>
 <translation id="7216409898977639127">Mobiele provider</translation>
 <translation id="7271040990581020067">De scanner wordt momenteel gebruikt. Probeer het later opnieuw.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8498220429738806196">Verkeerstellers</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="8503836310948963452">Nog een paar minuten...</translation>
+<translation id="8521021929829989041">Gebruiken als persoonlijk apparaat</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Je provider kan deze optie vereisen om verbinding te maken met hun netwerk. Neem contact op met je provider voor meer informatie.</translation>
 <translation id="8576249514688522074">Niet geïnitialiseerd</translation>

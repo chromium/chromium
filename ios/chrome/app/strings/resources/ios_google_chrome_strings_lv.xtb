@@ -19,6 +19,8 @@
 <translation id="2342919707875585281">Chrome kopīgo jūsu atrašanās vietu ar vietnēm, kam atļaujat saņemt šo informāciju.</translation>
 <translation id="2347208864470321755">Ja šī funkcija ir ieslēgta, Chrome piedāvā tulkot citās valodās rakstītas lapas, izmantojot Google tulkotāju. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="2415682770504543561">Chrome kā noklusējuma pārlūka iestatīšana</translation>
+<translation id="2427791862912929107">Pārlūkā Chrome ir funkcijas, ko varat izmantot, lai pārvaldītu savus interneta datus un tīmekļa lapu ielādes ātrumu.
+<ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="2561231791489583059">Parūpējieties par aizsardzību no bīstamām vietnēm un savu paroļu drošību, izmantojot pārlūku Chrome kā savu noklusējuma pārlūku</translation>
 <translation id="2574249610672786438">Lai skatītu cilnes no ierīcēm, kurās lietojat pārlūku Chrome, pierakstieties visās savās ierīcēs.</translation>
 <translation id="2576431527583832481">Pārlūkprogramma Chrome ir uzlabota! Ir pieejama jauna versija.</translation>
@@ -61,8 +63,6 @@
 <translation id="5716154293141027663">Tiks atvērts pārlūks Chrome ikreiz, kad pieskarsieties saitēm citās lietotnēs.</translation>
 <translation id="5854621639439811139">Chrome padoms. Tagad ekrāna apakšdaļā ir dažas pogas, piemēram, Atpakaļ, Pārsūtīt un Meklēt.</translation>
 <translation id="5876773482963502140">Ja atļaujat pārlūkam Chrome piekļūt jūsu atrašanās vietas informācijai, pārlūkā Chrome šī informācija tiek nosūtīta uz visām vietnēm, kurām piešķirat atļauju. Vietnēs var tikt lūgta atļauja piekļūt atrašanās vietas informācijai, lai rādītu jums vietēju informāciju, piemēram, vietējās ziņas vai informāciju par tuvumā esošiem veikaliem.</translation>
-<translation id="6036420186814142909">Pārlūkā Google Chrome ir funkcijas, ko varat izmantot, lai pārvaldītu interneta datus un tīmekļa lapu ielādes ātrumu.
-<ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="6063091872902370735">Atļaut pierakstīšanos pārlūkā Chrome</translation>
 <translation id="6181930887571472871">Pāriet uz Chrome</translation>
 <translation id="6238746320622508509">Atļaujiet pārlūkā Chrome bloķēt inkognito cilnes.</translation>

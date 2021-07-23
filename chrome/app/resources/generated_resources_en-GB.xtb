@@ -6,11 +6,13 @@
 <translation id="1003088604756913841">Open Link in New <ph name="APP" /> Window</translation>
 <translation id="100323615638474026">USB device (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1004218526896219317">Site access</translation>
+<translation id="100524763483954942">Back to settings</translation>
 <translation id="1005274289863221750">Use your microphone and camera</translation>
 <translation id="1005333234656240382">Enable ADB debugging?</translation>
 <translation id="1006873397406093306">This extension can read and change your data on sites. You can control which sites the extension can access.</translation>
 <translation id="1008186147501209563">Export bookmarks</translation>
 <translation id="1008557486741366299">Not Now</translation>
+<translation id="1009476156254802388"><ph name="WEB_DRIVE" /> location</translation>
 <translation id="1010498023906173788">This tab is connected to a serial port.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Page Unresponsive}other{Pages Unresponsive}}</translation>
 <translation id="1011355516189274711">Text-to-speech volume</translation>
@@ -135,7 +137,6 @@
 <translation id="1139923033416533844">Memory usage</translation>
 <translation id="1140351953533677694">Access your Bluetooth and Serial devices</translation>
 <translation id="114036956334641753">Audio and captions</translation>
-<translation id="1140746652461896221">Block content on any page that you visit</translation>
 <translation id="1143142264369994168">Certificate Signer</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome didn't find harmful software on your computer • Checked 1 minute ago}other{Chrome didn't find harmful software on your computer • Checked {NUM_MINS} minutes ago}}</translation>
 <translation id="1145593918056169051">Printer has stopped</translation>
@@ -159,6 +160,7 @@
 <translation id="1164891049599601209">Entered on deceptive site</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1166212789817575481">Close tabs to the right</translation>
+<translation id="1166583374608765787">Review name update</translation>
 <translation id="1168020859489941584">Opening in <ph name="TIME_REMAINING" />...</translation>
 <translation id="1170288591054440704">Ask when a site wants to use fonts installed on your device</translation>
 <translation id="1171135284592304528">Highlight the object with keyboard focus when it changes</translation>
@@ -237,6 +239,7 @@
 <translation id="1246863218384630739">Couldn't install <ph name="VM_NAME" />: Image URL returned a <ph name="HTTP_ERROR" /> error code. Please contact your administrator.</translation>
 <translation id="1251366534849411931">Expected opening curly bracket: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">This will clear <ph name="TOTAL_USAGE" /> of data stored by sites and installed apps</translation>
+<translation id="1251578593170406502">Scanning for mobile data networks…</translation>
 <translation id="125220115284141797">Default</translation>
 <translation id="1252987234827889034">Profile error occurred</translation>
 <translation id="1254593899333212300">Direct Internet connection</translation>
@@ -281,7 +284,6 @@
 <translation id="1301135395320604080"><ph name="ORIGIN" /> can edit the following files</translation>
 <translation id="1302227299132585524">Allow JavaScript from Apple Events</translation>
 <translation id="1303101771013849280">Bookmarks HTML File</translation>
-<translation id="1303178898338186101">Couldn't reach Google Play. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="1303671224831497365">No Bluetooth devices found</translation>
 <translation id="130491383855577612">Linux apps &amp; files have been successfully replaced</translation>
 <translation id="1306390193749326011">You won't see <ph name="MODULE_NAME" /> again on this page</translation>
@@ -399,7 +401,6 @@
 <translation id="142758023928848008">Enable sticky keys (to perform keyboard shortcuts by typing them sequentially)</translation>
 <translation id="142765311413773645"><ph name="APP_NAME" /> licence has expired</translation>
 <translation id="1429300045468813835">Cleared all</translation>
-<translation id="143027896309062157">Read and change all your data on your computer and the websites that you visit</translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1431188203598586230">Final software update</translation>
 <translation id="1431432486300429272">Google may use your browsing history to personalise Search and other Google services. You or your parent can change this at any time at myaccount.google.com/activitycontrols/search</translation>
@@ -427,6 +428,7 @@
 <translation id="146000042969587795">This frame was blocked because it contains some insecure content.</translation>
 <translation id="146219525117638703">ONC State</translation>
 <translation id="146220085323579959">Internet disconnected. Please check your internet connection and try again.</translation>
+<translation id="1462850958694534228">Review icon update</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> was blocked by Advanced Protection.</translation>
 <translation id="1464044141348608623">Don't allow sites to know when you're actively using your device</translation>
 <translation id="1464258312790801189">Your Accounts</translation>
@@ -558,6 +560,13 @@
 <translation id="1593926297800505364">Save payment method</translation>
 <translation id="1595492813686795610">Linux is upgrading</translation>
 <translation id="1596286373007273895">Available</translation>
+<translation id="1597224195604051602">Voice Match helps Google Assistant identify <ph name="SUPERVISED_USER_NAME" />’s voice on your <ph name="DEVICE_TYPE" /> and tell them apart from others.
+    <ph name="BR" />
+    The Assistant takes clips of your child’s voice to form a unique voice model, which is only stored on their device(s). Your child’s voice model may be sent temporarily to Google to identify their voice better.
+    <ph name="BR" />
+    If you decide later that Voice Match isn’t right for your child, simply remove it in their Assistant settings. To view or delete the audio clips that your child records during Voice Match setup, go to g.co/assistant/match from your child’s account.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME" />’s personal results. To save battery, 'Hey Google' is only on when this device is connected to a power source.</translation>
 <translation id="1598233202702788831">Updates are disabled by your administrator.</translation>
 <translation id="1600857548979126453">Access the page debugger backend</translation>
 <translation id="1601560923496285236">Apply</translation>
@@ -579,6 +588,7 @@
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Checking this data with your organisation's security policies…}=1{Checking this file with your organisation's security policies…}other{Checking these files with your organisation's security policies…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Help Centre</translation>
+<translation id="1619879934359211038">Couldn't connect to Google Play. Check your network connection and try again. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="1620307519959413822">Wrong password. Try again or click ‘Forgot password’ to reset it.</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1621485112342885423">Your baskets</translation>
@@ -683,6 +693,7 @@
 <translation id="1708860176443612387">Experimental browser! May lose data or compromise privacy or security. Please report issues with: Help &gt; 'Report an issue…'</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Native)</translation>
 <translation id="1709217939274742847">Choose a ticket to use for authentication. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
+<translation id="1709762881904163296">Network settings</translation>
 <translation id="1709972045049031556">Can’t share</translation>
 <translation id="1711935594505774770">This will clear all data and cookies stored by <ph name="SITE_GROUP_NAME" />, any sites under it and its installed apps</translation>
 <translation id="1714644264617423774">Enable accessibility features to make your device easier to use. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -747,7 +758,6 @@
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="1778457539567749232">Mark as unread</translation>
 <translation id="1778991607452011493">Send debug logs (recommended)</translation>
-<translation id="1779162884187776723">This page allows you to manage your signed-in Google Accounts. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="1779468444204342338">Minimum</translation>
 <translation id="1779652936965200207">Please enter this passkey on "<ph name="DEVICE_NAME" />":</translation>
 <translation id="177989070088644880"><ph name="ANDROID_PACKAGE_NAME" />, app</translation>
@@ -917,6 +927,7 @@
 <translation id="1937774647013465102">Cannot import container architecture type <ph name="ARCHITECTURE_CONTAINER" /> with this device which is <ph name="ARCHITECTURE_DEVICE" />. You can try restoring this container into a different device, or you can access the files inside this container image by opening in Files app.</translation>
 <translation id="1938351510777341717">External command</translation>
 <translation id="1940546824932169984">Connected devices</translation>
+<translation id="1942128823046546853">Read and change all your data on all websites</translation>
 <translation id="1942600407708803723">Shut down when cover is closed</translation>
 <translation id="1944528062465413897">Bluetooth pairing code</translation>
 <translation id="1944921356641260203">Update found</translation>
@@ -933,6 +944,7 @@
 <translation id="1963976881984600709">Standard protection</translation>
 <translation id="196425401113508486">Highlight the cursor when moving</translation>
 <translation id="1965624977906726414">Has no special permissions.</translation>
+<translation id="1966497651828975688">Network connection was lost. Please check your network connection or try another Wi-Fi network.</translation>
 <translation id="1969654639948595766">WebRTC text logs (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Video mode entered</translation>
 <translation id="197288927597451399">Keep</translation>
@@ -949,6 +961,7 @@
 <translation id="1979095679518582070">Turning off this feature doesn't affect this device's ability to send the information needed for essential services such as system updates and security.</translation>
 <translation id="1979280758666859181">You are changing to a channel with an older version of <ph name="PRODUCT_NAME" />. The channel change will be applied when the channel version matches the version currently installed on your device.</translation>
 <translation id="197989455406964291">KDC does not support encryption type</translation>
+<translation id="1981434377190976112">Read all your data on all websites</translation>
 <translation id="1983497378699148207">To finish setting up Linux, update Chrome OS and try again.</translation>
 <translation id="1984417487208496350">No protection (not recommended)</translation>
 <translation id="1987317783729300807">Accounts</translation>
@@ -1140,6 +1153,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2177950615300672361">Incognito Tab: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA Compromise</translation>
 <translation id="2179416702468739594">Looking for available profiles. This may cause your mobile network to disconnect for a few minutes.</translation>
+<translation id="2180620921879609685">Block content on any page</translation>
 <translation id="2182058453334755893">Copied to your Clipboard</translation>
 <translation id="2184515124301515068">Let Chrome choose when sites can play sound (recommended)</translation>
 <translation id="2186711480981247270">Page shared from another device</translation>
@@ -1508,7 +1522,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2575247648642144396">This icon will be visible when the extension can act on the current page. Use this extension by clicking on the icon or by pressing <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="2575441894380764255">Not allowed to show intrusive or misleading ads</translation>
 <translation id="257779572837908839">Set up as Chromebox for meetings</translation>
-<translation id="2579232805407578790">Couldn’t connect with the server. Please check your network connection and try again. If the problem persists, restart your Chromebook. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="2580889980133367162">Always allow <ph name="HOST" /> to download multiple files</translation>
 <translation id="258095186877893873">Long</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -1828,6 +1841,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
     Server message: <ph name="SERVER_MSG" /></translation>
 <translation id="2908162660801918428">Add Media Gallery by Directory</translation>
 <translation id="2908358077082926882">Press '<ph name="CURRENTKEY" />' again to remove assignment and <ph name="RESPONSE" /></translation>
+<translation id="2909506265808101667">Couldn't connect with Google services. Check your network connection and try again. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Connect to a network and try again</translation>
 <translation id="291056154577034373">UNREAD</translation>
 <translation id="2910718431259223434">Something went wrong. Please try again or contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
@@ -2150,6 +2164,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3274763671541996799">You have gone full screen.</translation>
 <translation id="3275778809241512831">Your internal security key is currently insecure. Please remove it from any services that you used it with. In order to resolve the issue, please reset the security key.</translation>
 <translation id="3275778913554317645">Open as window</translation>
+<translation id="3276572954285630448">Unnamed tab group</translation>
 <translation id="3277691515294482687">Back up my apps and files to the My Files folder before upgrading Linux.</translation>
 <translation id="3278001907972365362">Your Google Account(s) need attention</translation>
 <translation id="3279092821516760512">Selected contacts can share with you when nearby. Transfers won't start until you accept.</translation>
@@ -2187,6 +2202,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3311445899360743395">Data associated with this app may be removed from this device.</translation>
 <translation id="3312424061798279731">Enabled languages</translation>
 <translation id="3313622045786997898">Certificate Signature Value</translation>
+<translation id="3313950410573257029">Check connection</translation>
 <translation id="3315158641124845231">Hide <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Enter reader mode</translation>
 <translation id="3317459757438853210">Two-sided</translation>
@@ -2233,6 +2249,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="337286756654493126">Read folders that you open in the application</translation>
 <translation id="3378572629723696641">This extension may have been corrupted.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> will be installed.</translation>
+<translation id="337995611229308295">Couldn’t connect with the server. Please check your network connection and try again. If you're still having trouble, try restarting your Chromebook.</translation>
 <translation id="3380365263193509176">Unknown error</translation>
 <translation id="3382073616108123819">Oops!  The system failed to determine device identifiers for this device.</translation>
 <translation id="3382200254148930874">Stopping supervision...</translation>
@@ -2343,6 +2360,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3476303763173086583">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account. <ph name="BEGIN_LINK2" />Find out more<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Oops!  The system failed to fetch policy for your device.</translation>
 <translation id="347785443197175480">Continue allowing <ph name="HOST" /> to access your camera and microphone</translation>
+<translation id="3478813605045578676">Enrolment is only supported after installation. To manage this device, install CloudReady first.</translation>
 <translation id="3479552764303398839">Not now</translation>
 <translation id="3479685872808224578">Couldn't detect the print server. Please check the address and try again.</translation>
 <translation id="3480612136143976912">Customise caption size and style for Live Caption. Some apps and sites will also use this setting.</translation>
@@ -2500,7 +2518,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3649505501900178324">Update overdue</translation>
 <translation id="3650753875413052677">Enrolment error</translation>
 <translation id="3650845953328929506">Log upload pending.</translation>
-<translation id="365089839707261811">Review name updates</translation>
 <translation id="3650952250015018111">Allow '<ph name="APP_NAME" />' to access:</translation>
 <translation id="3651488188562686558">Disconnect from Wi-Fi</translation>
 <translation id="3652817283076144888">Initialising</translation>
@@ -2565,11 +2582,11 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3713047097299026954">This security key does not have any sign-in data</translation>
 <translation id="3714195043138862580">This demo device has been placed into a deprovisioned state.</translation>
 <translation id="3714633008798122362">web calendar</translation>
-<translation id="3716758537211256894">Check my network</translation>
 <translation id="3719826155360621982">Homepage</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">You and Google</translation>
 <translation id="3722108462506185496">Error starting the virtual machine service. Please try again.</translation>
+<translation id="3727144509609414201">Available Wi-Fi networks</translation>
 <translation id="3727187387656390258">Inspect pop-up</translation>
 <translation id="372722114124766626">Just Once</translation>
 <translation id="3727473233247516571">Back-forward cached subframe: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2736,6 +2753,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3884152383786131369">Web content available in multiple languages will use the first supported language from this list. These preferences are synced with your browser settings. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Updates are managed by your administrator</translation>
 <translation id="3886446263141354045">Your request to access this site has been sent to <ph name="NAME" /></translation>
+<translation id="3888053818972567950"><ph name="WEB_DRIVE" /> connection</translation>
 <translation id="3888550877729210209">Taking notes with <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">This information helps us better understand your Assistant issue. It's stored for up to 90 days and access is restricted to appropriate engineering and feedback teams.</translation>
 <translation id="3890064827463908288">Turn on Chrome Sync to use Wi-Fi Sync</translation>
@@ -2859,6 +2877,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3994374631886003300">Unlock your phone and bring it closer to unlock your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">USB-C device (right-hand-side back port)</translation>
+<translation id="3999533068584271567">Network connection cannot be established. Please check your network connection and try again.</translation>
 <translation id="4002329649066944389">Manage site specific exceptions</translation>
 <translation id="4002440992267487163">Pin setup</translation>
 <translation id="4005817994523282006">Time zone detection method</translation>
@@ -2903,7 +2922,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4057896668975954729">View in Store</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">Check Document Now</translation>
-<translation id="406070391919917862">Background Apps</translation>
 <translation id="4061374428807229313">To share, right-click on a folder in the Files app, then select 'Share with Parallels Desktop'.</translation>
 <translation id="406213378265872299">Customised behaviours</translation>
 <translation id="4062561150282203854">Sync your <ph name="DEVICE_TYPE" /> apps, settings and more</translation>
@@ -3112,6 +3130,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google Account}other{<ph name="EXTRA_ACCOUNTS" /> Google Accounts}}</translation>
 <translation id="4312866146174492540">Block (default)</translation>
 <translation id="4314815835985389558">Manage sync</translation>
+<translation id="4315933848520197627">Unlink account</translation>
 <translation id="4316850752623536204">Developer Website</translation>
 <translation id="4317820549299924617">Verification was not successful</translation>
 <translation id="4320177379694898372">No internet connection</translation>
@@ -3152,6 +3171,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4364830672918311045">Display notifications</translation>
 <translation id="4366138410738374926">Printing started</translation>
 <translation id="4370975561335139969">The email and password that you entered don't match.</translation>
+<translation id="4371452868325715552">Couldn’t connect with the server. Please check your network connection and try again. If you're still having trouble, try restarting your Chromebook. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Casting desktop</translation>
 <translation id="4374831787438678295">Linux installer</translation>
 <translation id="4375035964737468845">Open downloaded files</translation>
@@ -3378,6 +3398,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4596295440756783523">You have certificates on file that identify these servers</translation>
 <translation id="4598556348158889687">Storage management</translation>
 <translation id="4598776695426288251">Wi-Fi available via multiple devices</translation>
+<translation id="4601426376352205922">Mark as unread</translation>
 <translation id="4602466770786743961">Always allow <ph name="HOST" /> to access your camera and microphone</translation>
 <translation id="4606551464649945562">Do not allow sites to create a 3D map of your surroundings or track camera position</translation>
 <translation id="4608500690299898628">&amp;Find...</translation>
@@ -3569,6 +3590,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4827904420700932487">Create QR code for this Image</translation>
 <translation id="482952334869563894">USB devices from vendor <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Set up PIN</translation>
+<translation id="4830026649400230050">All eligible downloads are routed to your organisation's <ph name="WEB_DRIVE" /> account.</translation>
 <translation id="4830121310592638841">Ask when a site wants to open and place windows on your screens</translation>
 <translation id="4830502475412647084">Installing OS update</translation>
 <translation id="4830573902900904548">Your <ph name="DEVICE_TYPE" /> is unable to connect to the Internet using <ph name="NETWORK_NAME" />. Please choose another network. <ph name="LEARN_MORE_LINK_START" />Find out more<ph name="LEARN_MORE_LINK_END" /></translation>
@@ -3789,6 +3811,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5067867186035333991">Ask if <ph name="HOST" /> wants to access your microphone</translation>
 <translation id="5068918910148307423">Do not allow recently closed sites to finish sending and receiving data</translation>
 <translation id="5068919226082848014">Pizza</translation>
+<translation id="5070710277167211639">Upgrade navigations to HTTPS and warn you before loading sites that don't support it</translation>
 <translation id="5070773577685395116">Didn't get it?</translation>
 <translation id="5071892329440114717">Show standard protection details</translation>
 <translation id="5072052264945641674">Adjust cursor size</translation>
@@ -3899,7 +3922,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5190926251776387065">Activate port</translation>
 <translation id="5191094172448199359">The PINs that you entered don't match</translation>
 <translation id="5191251636205085390">Learn about and control new technologies that aim to replace third-party cookies</translation>
-<translation id="51918995459521422"><ph name="ORIGIN" /> wants to download multiple files</translation>
 <translation id="5192062846343383368">Open the Family Link app to see your supervision settings</translation>
 <translation id="5193988420012215838">Copied to your clipboard</translation>
 <translation id="5194256020863090856">This only affects incognito windows</translation>
@@ -3945,7 +3967,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5235750401727657667">Replace the page that you see when opening a new tab</translation>
 <translation id="5236374273162681467">To easily use them on all your devices, you can move them to your Google Account</translation>
 <translation id="5238278114306905396">The app "<ph name="EXTENSION_NAME" />" was automatically removed.</translation>
-<translation id="5241128660650683457">Read all your data on the websites that you visit</translation>
 <translation id="5242724311594467048">Enable "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Please try again in a few moments</translation>
 <translation id="5244474230056479698">Syncing to <ph name="EMAIL" /></translation>
@@ -4547,7 +4568,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
     This picture will appear on the Chromebook sign-in screen and lock screen.</translation>
 <translation id="5925147183566400388">Certification Practice Statement Pointer</translation>
 <translation id="592880897588170157">Download PDF files instead of automatically opening them in Chrome</translation>
-<translation id="5931146425219109062">Read and change all your data on the websites that you visit</translation>
 <translation id="5932124097031739492">Linux has been successfully upgraded.</translation>
 <translation id="5932224571077948991">Site shows intrusive or misleading ads</translation>
 <translation id="59324397759951282">USB device from <ph name="MANUFACTURER_NAME" /></translation>
@@ -4586,7 +4606,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5963117322306686970">To group tabs together, right-click a tab</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> peak)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Open all in &amp;new window}=1{Open in &amp;new window}other{Open all ({COUNT}) in &amp;new window}}</translation>
-<translation id="5964328685964290415">Upgrade all navigations to HTTPS and warn you before loading sites that don't support it</translation>
 <translation id="5965661248935608907">It also controls what page is shown when you click the Home button or search from the Omnibox.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> can view files in <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Keyboard shortcut notice dismissed</translation>
@@ -4606,6 +4625,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5979353814339191480">This option applies to Chromebooks with a data plan or mobile network dongle, or when tethering to a portable hotspot</translation>
 <translation id="5979421442488174909">&amp;Translate to <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">To bookmark pages, click the star in the address bar</translation>
+<translation id="5983831175889857946">Review completed!</translation>
 <translation id="5984222099446776634">Recently Visited</translation>
 <translation id="5985458664595100876">Invalid URL format. Supported formats are \\server\share and smb://server/share.</translation>
 <translation id="598810097218913399">Remove assignment</translation>
@@ -4615,6 +4635,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{To ensure that you can keep browsing the web, ask your administrator to remove this application.}other{To ensure that you can keep browsing the web, ask your administrator to remove these applications.}}</translation>
 <translation id="5997337190805127100">Learn more about site access</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> results for '<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6001839398155993679">Let's go</translation>
 <translation id="6002210667729577411">Move group to new window</translation>
 <translation id="6002452033851752583">Password deleted from your Google Account</translation>
 <translation id="6002458620803359783">Preferred Voices</translation>
@@ -4892,6 +4913,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6294759976468837022">Auto-scan speed</translation>
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6295855836753816081">Saving...</translation>
+<translation id="629730747756840877">Account</translation>
 <translation id="6298800237463568825">Voice Match helps your Google Assistant identify your voice on your <ph name="DEVICE_TYPE" /> and tell you apart from others.
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Remember:<ph name="END_BOLD" /> A similar voice or recording might be able to access your personal results, too. You can remove Voice Match permission later by turning it off in Assistant settings.</translation>
@@ -4937,7 +4959,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> has disabled ADB debugging. This will reset your <ph name="DEVICE_TYPE" /> in 24 hours. Back up any files that you'd like to keep.</translation>
 <translation id="6338981933082930623">All sites can show any ads to you</translation>
 <translation id="6339668969738228384">Create a new profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="6340017061976355871">Couldn’t connect with the server. Please check your network connection and try again. If the problem persists, restart your Chromebook.</translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
 <translation id="6340526405444716530">Personalisation</translation>
 <translation id="6341850831632289108">Detect your physical location</translation>
@@ -5182,7 +5203,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6619243162837544323">Network state</translation>
 <translation id="6619801788773578757">Add kiosk application</translation>
 <translation id="6619990499523117484">Confirm your PIN</translation>
-<translation id="6621715389962683284">Network connection cannot be established.</translation>
 <translation id="6622980291894852883">Continue blocking images</translation>
 <translation id="6623589891453322342">file handlers</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> has sensitive or dangerous content. Ask its owner to fix it.</translation>
@@ -5270,7 +5290,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6715803357256707211">An error occurred during installation of your Linux application. Click on the notification for details.</translation>
 <translation id="671619610707606484">This will clear <ph name="TOTAL_USAGE" /> of data stored by sites</translation>
 <translation id="671928215901716392">Lock screen</translation>
-<translation id="6721678857435001674">See the make and model of your Security Key</translation>
 <translation id="6721972322305477112">&amp;File</translation>
 <translation id="672208878794563299">This site will ask again next time.</translation>
 <translation id="6723661294526996303">Import bookmarks and settings...</translation>
@@ -5411,6 +5430,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6865708901122695652">WebRTC event logs (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Quiet</translation>
 <translation id="686664946474413495">Colour temperature</translation>
+<translation id="6867117968986026015">Review cookie settings</translation>
 <translation id="6867400383614725881">New Incognito tab</translation>
 <translation id="6868934826811377550">See details.</translation>
 <translation id="6871644448911473373">OCSP Responder: <ph name="LOCATION" /></translation>
@@ -5440,9 +5460,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6904655473976120856">Press App button to exit</translation>
 <translation id="6909422577741440844">Receive from this device?</translation>
 <translation id="6910211073230771657">Deleted</translation>
-<translation id="691024665142758461">Download multiple files</translation>
 <translation id="691106080621596509">This will clear all data and cookies stored by <ph name="SITE_GROUP_NAME" />, any sites under it and its installed app</translation>
-<translation id="6911324888870229398">Network connection was lost. Please check your connection or try another Wi-Fi network.</translation>
 <translation id="6911734910326569517">Memory footprint</translation>
 <translation id="6912007319859991306">Mobile SIM PIN</translation>
 <translation id="691289340230098384">Caption preferences</translation>
@@ -5614,11 +5632,11 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7078120482318506217">All networks</translation>
 <translation id="708060913198414444">C&amp;opy audio address</translation>
 <translation id="7085389578340536476">Allow Chrome to record audio?</translation>
-<translation id="7085805695634549980">Couldn't connect with Google services. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Include Chrome log files in the archive.</translation>
 <translation id="7088434364990739311">Update check failed to start (error code <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – Open and pack ZIP files in Files app.</translation>
 <translation id="7088674813905715446">This device has been placed into a deprovisioned state by the administrator. To enable it for enrolment, please have your administrator place the device into a pending state.</translation>
+<translation id="7093416310351037609">For data safety and security, your organisation requires all eligible downloads to be saved to your organisation's <ph name="WEB_DRIVE" /> account.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Exchange data with the devices named: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C device (left port in the back)</translation>
@@ -5709,13 +5727,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Exit page}other{Exit pages}}</translation>
 <translation id="7207457272187520234">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account.</translation>
 <translation id="7207631048330366454">Search apps</translation>
-<translation id="7210488993538120146">Voice Match helps Google Assistant identify <ph name="SUPERVISED_USER_NAME" />’s voice on your <ph name="DEVICE_TYPE" /> and tell it apart from others.
-    <ph name="BR" />
-    The Assistant takes clips of your child’s voice to form a unique voice model, which is only stored on their device(s). Your child’s voice model may be sent temporarily to Google to identify their voice better.
-    <ph name="BR" />
-    If you decide later that Voice Match isn’t right for your child, simply remove it in their Assistant settings. To view or delete the audio clips your child records during Voice Match setup, go to g.co/assistant/match from your child’s account.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME" />’s personal results. To save battery, 'Hey Google' is only on when this device is connected to a power source.</translation>
 <translation id="7210499381659830293">Extension printers</translation>
 <translation id="7211783048245131419">No switch has been assigned yet</translation>
 <translation id="7212097698621322584">Enter your current PIN to change it. If you don’t know your PIN, you’ll need to reset the security key, then create a new PIN.</translation>
@@ -5746,7 +5757,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7243632151880336635">Clear and Sign Out</translation>
 <translation id="7243784282103630670">There was an error while upgrading Linux. We'll restore the container using your backup.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Best)</translation>
-<translation id="7246079707145287765">View tab <ph name="TAB_ORIGIN" /></translation>
 <translation id="7246230585855757313">Reinsert your security key and try again</translation>
 <translation id="7249777306773517303">This device is managed by <ph name="DOMAIN" /> and requires you to sign in every time.</translation>
 <translation id="7250616558727237648">The device that you're sharing with didn't respond. Try again.</translation>
@@ -5995,8 +6005,10 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7507930499305566459">Status Responder Certificate</translation>
 <translation id="7509097596023256288">Setting up management</translation>
 <translation id="7509246181739783082">Verify your identity</translation>
+<translation id="7509539379068593709">Uninstall app</translation>
 <translation id="7511415964832680006">When on, sites may use the privacy-preserving techniques shown here to provide their content and services. These include alternatives to cross-site tracking. More trials may be added over time.</translation>
 <translation id="7513029293694390567">Automatically sign in to websites using stored credentials. If disabled, you will be asked for confirmation every time before signing in to a website.</translation>
+<translation id="7514236770834963598">Review your current settings for the most critical privacy and security controls</translation>
 <translation id="7514239104543605883">Copy to your device</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7514417110442087199">Add assignment</translation>
@@ -6220,7 +6232,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7730449930968088409">Capture content of your screen</translation>
 <translation id="7730683939467795481">This page was changed by the '<ph name="EXTENSION_NAME" />' extension</translation>
 <translation id="7734486794139738745">I only use one switch</translation>
-<translation id="7734541938181328224">Review icon updates</translation>
 <translation id="7737115349420013392">Pairing with "<ph name="DEVICE_NAME" />" ...</translation>
 <translation id="7737846262459425222">You can change this at any time in Settings &gt; Google Assistant &gt; Screen context.</translation>
 <translation id="7737948071472253612">Not allowed to use your camera</translation>
@@ -6343,6 +6354,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7841134249932030522">Enable dark mode</translation>
 <translation id="7842692330619197998">Visit g.co/ChromeEnterpriseAccount if you need to create a new account.</translation>
 <translation id="784273751836026224">Uninstall Linux</translation>
+<translation id="7843786652787044762">Sign in to <ph name="WEB_DRIVE" /></translation>
 <translation id="7844992432319478437">Updating diff</translation>
 <translation id="7846634333498149051">Keyboard</translation>
 <translation id="7847212883280406910">Press Ctrl + Alt + S to switch to <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
@@ -6596,6 +6608,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="810068641062493918"><ph name="LANGUAGE" /> selected. Press 'Search' plus 'Space' to unselect.</translation>
 <translation id="810185532889603849">Custom colour</translation>
 <translation id="8101987792947961127">Powerwash required on next reboot</translation>
+<translation id="81020759409809034">Local location</translation>
 <translation id="8102139037507939978">Strip personally identifiable information from system_logs.txt.</translation>
 <translation id="8104088837833760645">Download eSIM profile</translation>
 <translation id="8107015733319732394">Installing the Google Play Store on your <ph name="DEVICE_TYPE" />. This could take a few minutes.</translation>
@@ -6804,6 +6817,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8321837372750396788">This <ph name="DEVICE_TYPE" /> will be managed by <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">This page has been blocked from accessing your microphone.</translation>
 <translation id="8323167517179506834">Type URL</translation>
+<translation id="8323317289166663449">Read and change all your data on your computer and all websites</translation>
 <translation id="8324784016256120271">Sites can use cookies to see your browsing activity across different sites, for example, to personalise ads</translation>
 <translation id="8325413836429495820">Not allowed to see your clipboard</translation>
 <translation id="8326478304147373412">PKCS #7, certificate chain</translation>
@@ -6844,6 +6858,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8373652277231415614">Crostini shared directories</translation>
 <translation id="8376137163494131156">Tell us what's happening with Google Cast.</translation>
 <translation id="8376384591331888629">Including third-party cookies on this site</translation>
+<translation id="8376451933628734023">If this web app is trying to trick you into thinking it's a different app, uninstall it.</translation>
 <translation id="8378714024927312812">Managed by your organisation</translation>
 <translation id="8379156816349755485">Upon signing in, a unique authentication token will be stored and used for all future eligible downloads.</translation>
 <translation id="8379878387931047019">This device doesn't support the type of security key requested by this website</translation>
@@ -6992,7 +7007,6 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Attempted to downgrade app.</translation>
 <translation id="8569682776816196752">No destinations found</translation>
-<translation id="857074314439694500">If this web app is trying to trick you into thinking that it is a different app, uninstall it.</translation>
 <translation id="8571213806525832805">Last 4 weeks</translation>
 <translation id="8571687764447439720">Add Kerberos ticket</translation>
 <translation id="8574990355410201600">Always allow sound on <ph name="HOST" /></translation>

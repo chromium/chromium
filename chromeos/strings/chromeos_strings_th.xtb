@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">สแกน</translation>
 <translation id="2570743873672969996">กำลังทำการทดสอบ <ph name="TEST_NAME" />...</translation>
 <translation id="2585245331261708204">มีอะไรใหม่ใน Chrome OS</translation>
+<translation id="2619761439309613843">รีเฟรชทุกวัน</translation>
 <translation id="2620436844016719705">ระบบ</translation>
 <translation id="2740531572673183784">ตกลง</translation>
 <translation id="2751739896257479635">การตรวจสอบสิทธิ์ขั้นที่ 2 ของ EAP</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">เปิดการใช้งานบางส่วน</translation>
 <translation id="3527036260304016759">ไม่สำเร็จ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="3532980081107202182">เหลือเวลาอีกประมาณ <ph name="MIN_REMAINING" /> นาที</translation>
+<translation id="3540383942695635079">ที่อยู่ MAC</translation>
 <translation id="357889014807611375">Wi-Fi ที่มีการวัดปริมาณอินเทอร์เน็ต</translation>
 <translation id="3595596368722241419">แบตเตอรี่เต็ม</translation>
 <translation id="360565022852130722">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP 802.1x ที่ไม่รัดกุม</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">จำนวนครั้งที่ชาร์จแบตเตอรี่จนเต็ม</translation>
 <translation id="3941014780699102620">แก้ไขโฮสต์ไม่สำเร็จ</translation>
 <translation id="3942420633017001071">การวินิจฉัย</translation>
+<translation id="3966286471246132217">ปิดแอปทั้งหมดจนกว่าการทดสอบจะเสร็จสมบูรณ์เพื่อให้ได้ผลลัพธ์ที่ถูกต้องยิ่งขึ้น</translation>
 <translation id="3967822245660637423">ดาวน์โหลดเสร็จสมบูรณ์</translation>
 <translation id="397105322502079400">กำลังคำนวณ...</translation>
 <translation id="39823212440917567">ระบบจะนำงานพิมพ์ที่เก่ากว่า <ph name="NUMBER_OF_DAYS" /> วันออก</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">ปิดการทำงาน</translation>
 <translation id="4227825898293920515">รหัสผ่านจะหมดอายุในอีก <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ไม่มีงานที่กำลังพิมพ์</translation>
+<translation id="4244962993387259361">คุณต้องมีพื้นที่เหลืออย่างน้อย 500 MB จึงจะทดสอบหน่วยความจำได้ ไปที่การตั้งค่า &gt; การจัดการพื้นที่เก็บข้อมูลเพื่อเพิ่มพื้นที่</translation>
 <translation id="4289540628985791613">ภาพรวม</translation>
 <translation id="4297501883039923494">หยุดพิมพ์ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ภาพ</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">อีเทอร์เน็ต</translation>
 <translation id="4483049906298469269">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายที่ไม่ใช่ค่าเริ่มต้นไม่สำเร็จ</translation>
 <translation id="4511264077854731334">พอร์ทัล</translation>
+<translation id="4536864596629708641">การกำหนดค่า IP</translation>
 <translation id="4548483925627140043">ไม่พบสัญญาณ</translation>
 <translation id="455835558791489930">แบตเตอรี่ <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="4562494484721939086">ไม่มีบริการ</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> จาก <ph name="TOTAL_PAGE_NUMBER" /> หน้า กด Enter เพื่อยกเลิกงานพิมพ์</translation>
 <translation id="4646949265910132906">การเชื่อมต่อ Wi-Fi ที่ปลอดภัย</translation>
 <translation id="4652335678334611408">เก็บบันทึกเซสชัน</translation>
+<translation id="4654549501020883054">เปลี่ยนทุกวัน</translation>
 <translation id="4665014895760275686">ผู้ผลิต</translation>
 <translation id="467510802200863975">รหัสผ่านไม่ตรงกัน</translation>
 <translation id="467715984478005772">คาดว่าติดไฟร์วอลล์</translation>
@@ -318,6 +324,7 @@
 <translation id="7162487448488904999">แกลเลอรี</translation>
 <translation id="7172721935181587524">1 ภาพ</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> นี้ได้รับการจัดการโดย <ph name="MANAGER" /> ผู้ดูแลระบบอาจกำหนดค่าอุปกรณ์จากระยะไกล</translation>
+<translation id="7180611975245234373">รีเฟรช</translation>
 <translation id="7216409898977639127">ผู้ให้บริการเครือข่ายมือถือ</translation>
 <translation id="7271040990581020067">เครื่องสแกนกำลังทำงานอยู่ ลองอีกครั้งในภายหลัง</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@
 <translation id="8498220429738806196">ตัวนับการรับส่งข้อมูล</translation>
 <translation id="8503813439785031346">ชื่อผู้ใช้</translation>
 <translation id="8503836310948963452">อีกเพียงไม่กี่นาทีเท่านั้น...</translation>
+<translation id="8521021929829989041">ใช้อุปกรณ์ส่วนตัว</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ผู้ให้บริการอาจกำหนดให้ใช้ตัวเลือกนี้เพื่อให้เชื่อมต่อเครือข่ายของตนได้ โปรดติดต่อสอบถามรายละเอียดจากผู้ให้บริการ</translation>
 <translation id="8576249514688522074">ยังไม่ได้เริ่มต้น</translation>

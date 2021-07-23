@@ -16,7 +16,6 @@
 <translation id="1056775291175587022">沒有網路</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />：<ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">請更換電池或進行充電</translation>
-<translation id="1077253978657569125">我們想改善這項服務！</translation>
 <translation id="108486256082349153">行動裝置：<ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">午安，<ph name="GIVEN_NAME" />：</translation>
 <translation id="109942774857561566">我好無聊</translation>
@@ -420,6 +419,7 @@
 <translation id="4274537685965975248">「Ctrl + Alt + 向下鍵」的鍵盤快速鍵已變更。如要使用 End 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向右鍵。</translation>
 <translation id="4279490309300973883">鏡像</translation>
 <translation id="4285498937028063278">取消固定</translation>
+<translation id="4292904812939562398">最近使用過的應用程式</translation>
 <translation id="429402653707266969">切換工具列位置</translation>
 <translation id="4294319844246081198">早安，<ph name="GIVEN_NAME" />：</translation>
 <translation id="4296136865091727875">清除全部 <ph name="COUNT" /> 則通知</translation>

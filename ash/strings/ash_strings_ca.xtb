@@ -16,7 +16,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1056775291175587022">Cap xarxa</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Substitueix o recarrega la bateria</translation>
-<translation id="1077253978657569125">Volem millorar!</translation>
 <translation id="108486256082349153">Mòbil: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Bona tarda, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">M'avorreixo</translation>
@@ -420,6 +419,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4274537685965975248">La tecla de drecera Ctrl+Alt+fletxa avall ha canviat. Per fer servir la tecla de fi, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa dreta.</translation>
 <translation id="4279490309300973883">S'està creant una rèplica</translation>
 <translation id="4285498937028063278">No fixis</translation>
+<translation id="4292904812939562398">Aplicacions utilitzades fa poc</translation>
 <translation id="429402653707266969">Commuta la ubicació de la barra d'eines</translation>
 <translation id="4294319844246081198">Bon dia, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Esborra les <ph name="COUNT" /> notificacions</translation>

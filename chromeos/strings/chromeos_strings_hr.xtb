@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Traži</translation>
 <translation id="2570743873672969996">Pokretanje testa <ph name="TEST_NAME" />...</translation>
 <translation id="2585245331261708204">Novo u OS-u Chrome</translation>
+<translation id="2619761439309613843">Dnevno osvježavanje</translation>
 <translation id="2620436844016719705">Sustav</translation>
 <translation id="2740531572673183784">U redu</translation>
 <translation id="2751739896257479635">2. faza autentifikacije za EAP</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Djelomično aktivirano</translation>
 <translation id="3527036260304016759">Nije uspjelo – nepoznata pogreška</translation>
 <translation id="3532980081107202182">Preostalo je oko <ph name="MIN_REMAINING" /> min</translation>
+<translation id="3540383942695635079">MAC adresa</translation>
 <translation id="357889014807611375">Wi-Fi s ograničenim prometom</translation>
 <translation id="3595596368722241419">Baterija je puna</translation>
 <translation id="360565022852130722">Wi-Fi mreža zaštićena je slabim protokolom WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Koliko se puta vaša baterija potpuno napunila</translation>
 <translation id="3941014780699102620">Razrješavanje hosta nije uspjelo</translation>
 <translation id="3942420633017001071">Dijagnostika</translation>
+<translation id="3966286471246132217">Da biste dobili preciznije rezultate, zatvorite sve aplikacije dok test ne završi.</translation>
 <translation id="3967822245660637423">Preuzimanje dovršeno</translation>
 <translation id="397105322502079400">Izračun u tijeku…</translation>
 <translation id="39823212440917567">Uklonit će se zadaci ispisa stariji od <ph name="NUMBER_OF_DAYS" /> dana</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Onemogućeno</translation>
 <translation id="4227825898293920515">Zaporka istječe za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nema zadataka ispisa u tijeku</translation>
+<translation id="4244962993387259361">Da biste testirali memoriju, najmanje 500 MB mora biti slobodno. Da biste oslobodili prostor, otvorite Postavke &gt; Upravljanje pohranom.</translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4297501883039923494">Zaustavljeno – nepoznata pogreška</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> slika/slike</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Pinganje pristupnika mreže koja nije zadana nije uspjelo</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4536864596629708641">Konfiguracija IP-ja</translation>
 <translation id="4548483925627140043">Signal nije pronađen</translation>
 <translation id="455835558791489930">Baterija od <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Nema usluge</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite tipku Enter da biste otkazali zadatak ispisa.</translation>
 <translation id="4646949265910132906">Sigurna Wi-Fi veza</translation>
 <translation id="4652335678334611408">Spremi zapisnik sesije</translation>
+<translation id="4654549501020883054">Promijeni svakodnevno</translation>
 <translation id="4665014895760275686">Proizvođač</translation>
 <translation id="467510802200863975">Zaporke se ne podudaraju</translation>
 <translation id="467715984478005772">Moguć je vatrozid</translation>
@@ -318,6 +324,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7172721935181587524">1 slika</translation>
 <translation id="7177485034254901881">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />. Administratori mogu konfigurirati uređaj na daljinu.</translation>
+<translation id="7180611975245234373">Osvježi</translation>
 <translation id="7216409898977639127">Davatelj mobilnih usluga</translation>
 <translation id="7271040990581020067">Skener se trenutačno upotrebljava. Pokušajte ponovo kasnije.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="8498220429738806196">Brojači prometa</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="8503836310948963452">Još samo nekoliko minuta...</translation>
+<translation id="8521021929829989041">Upotrijebi kao osobni uređaj</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Vaš mobilni operater može zahtijevati tu opciju radi povezivanja s njegovom mrežom. Više informacija zatražite od svojeg operatera.</translation>
 <translation id="8576249514688522074">Pokretanje je zaustavljeno</translation>

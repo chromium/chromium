@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Verificar</translation>
 <translation id="2570743873672969996">Executando o teste <ph name="TEST_NAME" />…</translation>
 <translation id="2585245331261708204">Novidades do Chrome OS</translation>
+<translation id="2619761439309613843">Atualização diária</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">Autenticação EAP Fase 2</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Ativado parcialmente</translation>
 <translation id="3527036260304016759">Falha - Erro desconhecido</translation>
 <translation id="3532980081107202182">Aproximadamente <ph name="MIN_REMAINING" /> minutos restantes</translation>
+<translation id="3540383942695635079">Endereço MAC</translation>
 <translation id="357889014807611375">Wi-Fi limitado</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
 <translation id="360565022852130722">A rede Wi-Fi é protegida pelo protocolo fraco WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">O número de vezes que a bateria passou por um ciclo completo de carregamento</translation>
 <translation id="3941014780699102620">Falha na resolução do host</translation>
 <translation id="3942420633017001071">Diagnóstico</translation>
+<translation id="3966286471246132217">Para resultados mais precisos, feche todos os apps até que o teste seja concluído.</translation>
 <translation id="3967822245660637423">Download concluído</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="39823212440917567">Trabalhos de impressão enviados há mais de <ph name="NUMBER_OF_DAYS" /> dias serão removidos</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Desativado</translation>
 <translation id="4227825898293920515">A senha expirará em <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nenhum trabalho de impressão em andamento</translation>
+<translation id="4244962993387259361">É necessário ter pelo menos 500 MB livres para executar um teste de memória. Para liberar espaço, acesse Configurações &gt; Gerenciador de armazenamento.</translation>
 <translation id="4289540628985791613">Visão geral</translation>
 <translation id="4297501883039923494">Parado (erro desconhecido)</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagens</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Falha no ping do gateway de rede não padrão</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4536864596629708641">Configuração do IP</translation>
 <translation id="4548483925627140043">Sinal não encontrado</translation>
 <translation id="455835558791489930">Bateria de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Sem serviço</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Pressione "Enter" para cancelar o trabalho de impressão.</translation>
 <translation id="4646949265910132906">Conexão Wi-Fi segura</translation>
 <translation id="4652335678334611408">Salvar registro da sessão</translation>
+<translation id="4654549501020883054">Mudar diariamente</translation>
 <translation id="4665014895760275686">Fabricante</translation>
 <translation id="467510802200863975">As senhas não são iguais</translation>
 <translation id="467715984478005772">Firewall suspeito</translation>
@@ -318,6 +324,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7172721935181587524">1 imagem</translation>
 <translation id="7177485034254901881">Este <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="MANAGER" />. Os administradores podem configurar o dispositivo remotamente.</translation>
+<translation id="7180611975245234373">Atualizar</translation>
 <translation id="7216409898977639127">Operadora de celular</translation>
 <translation id="7271040990581020067">O scanner está em uso. Tente novamente mais tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8498220429738806196">Contadores de tráfego</translation>
 <translation id="8503813439785031346">Nome de usuário</translation>
 <translation id="8503836310948963452">Só mais alguns minutos…</translation>
+<translation id="8521021929829989041">Usar como dispositivo pessoal</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Pode ser necessário ativar esta opção para se conectar à rede da sua operadora. Entre em contato com a operadora para mais informações.</translation>
 <translation id="8576249514688522074">Não inicializado</translation>

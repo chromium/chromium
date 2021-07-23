@@ -3,14 +3,13 @@
 <translationbundle lang="fa">
 <translation id="1016765312371154165">‏Chrome به درستی بسته نشده است.</translation>
 <translation id="130631256467250065">تغییرات بار بعد که دستگاه راه‌اندازی می‌شود اعمال می‌شوند.</translation>
+<translation id="1635457557763038537">‏دفعه بعد که Chrome را راه‌اندازی مجدد کنید، این تغییرات اعمال خواهد شد.</translation>
+<translation id="2447485272386224171">‏ارائه Chrome با پروژه متن‌باز <ph name="BEGIN_LINK_CHROMIUM" />Chromium <ph name="END_LINK_CHROMIUM" /> و دیگر <ph name="BEGIN_LINK_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_OSS" /> ممکن شده است.</translation>
 <translation id="2588322182880276190">‏نشان‌واره Chrome</translation>
-<translation id="2874156562296220396">‏Google Chrome با پروژه منبع باز <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> و دیگر <ph name="BEGIN_LINK_OSS" />نرم‌افزارهای منبع باز<ph name="END_LINK_OSS" /> کار می‌کند.</translation>
-<translation id="3140883423282498090">‏دفعه بعد که Google Chrome را مجدداً راه‌اندازی می‌کنید، این تغییرات اعمال می‌شوند.</translation>
 <translation id="3444832043240812445">درصورتی‌که <ph name="BEGIN_LINK" />ارسال گزارش خرابی را فعال کنید<ph name="END_LINK" />، این صفحه فقط اطلاعاتی را در مورد مشکلات اخیر شما نشان می‌دهد.</translation>
 <translation id="3875312571075912821">‏در تنظیمات دیوار آتش یا ضدویروستان، به Chrome اجازه دسترسی به شبکه را
           بدهید.</translation>
 <translation id="4010643444566880169">‏سیستم‌عامل Chrome راه‌اندازی اولیه را تمام نکرده است.</translation>
-<translation id="4853578032408195113">‏شما درحال مشاهده یک صفحه امن Google Chrome هستید</translation>
 <translation id="5005121315113832363">‏این صفحه را Chrome مسدود کرده است</translation>
 <translation id="6011049234605203654">‏به
           منوی Chrome &gt;
@@ -38,6 +37,7 @@
           &gt;
           تنظیمات LAN
           بروید و علامت انتخاب «استفاده از سرور پراکسی برای LAN» را بردارید.</translation>
+<translation id="7230956101631259640">‏درحال مشاهده یکی از صفحه‌های امن Chrome هستید</translation>
 <translation id="8187289872471304532">به
           برنامه‌ها &gt; 
 موارد برگزیده سیستم &gt; شبکه &gt; پیشرفته &gt; پراکسی‌ها

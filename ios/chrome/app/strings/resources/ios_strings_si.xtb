@@ -8,6 +8,10 @@
 <translation id="1047726139967079566">මෙම පිටුව පිටු සලකුණු කරයි...</translation>
 <translation id="1049743911850919806">අප්‍රකට</translation>
 <translation id="105093091697134113">පහත දැක්වෙන ගිණුම් තෙවන පාර්ශ්ව දත්ත උල්ලංඝනය කිරීමකට නිරාවරණය වූ හෝ රැවටිලිකාර වෙබ් අඩවියකට ඇතුළත් කළ මුරපද භාවිත කරයි. ඔබේ ගිණුම් ආරක්ෂිතව තබා ගැනීමට මෙම මුරපද වහාම වෙනස් කරන්න.</translation>
+<translation id="105214722824962652">ඔබව ඔබගේ Google ගිණුමෙන් නොවරනු ඇත. <ph name="BEGIN_LINK" />ක්‍රියාකාරකම්වල වෙනත් ආකාර<ph name="END_LINK" /> ඔබ පුරන විට ඔබගේ Google ගිණුමේ සුරැකිය හැකිය. ඔබට ඕනෑම වේලාවක ඒවා මැකිය හැකිය.
+
+        
+ඔබගේ සෙවීම් යන්ත්‍රය වන්නේ <ph name="DSE_NAME" />. අදාළ වන්නේ නම්, ඔබගේ සෙවීම් ඉතිහාසය මැකීම සඳහා ඔවුන්ගේ උපදෙස් බලන්න.</translation>
 <translation id="1063454504051558093">වෙනත් මුරපද භාවිතා කරන්න...</translation>
 <translation id="1066060668811609597">සමමුහූර්තය කළමනා කරන්න</translation>
 <translation id="1076421457278169141">කේතය ස්කෑන් කරන ලදී</translation>
@@ -132,6 +136,7 @@
 <translation id="2320166752086256636">යතුරු පුවරුව සඟවන්න</translation>
 <translation id="2339560363438331454">සමමුහුව සහ Google සේවා</translation>
 <translation id="2351097562818989364">ඔබේ පරිවර්තන සැකසුම් නැවත සැකසී තිබේ.</translation>
+<translation id="235789365079050412">Google පෞද්ගලිකත්ව ප්‍රතිපත්තිය</translation>
 <translation id="2359043044084662842">පරිවර්තනය</translation>
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
 <translation id="2360196772093551345">ජංගම අඩවිය ඉල්ලන්න</translation>
@@ -204,6 +209,10 @@
 <translation id="298306318844797842">ගෙවීමේ ක්‍රමය එක් කරන්න...</translation>
 <translation id="2989805286512600854">නව පටිත්තක විවෘත කරන්න</translation>
 <translation id="3037605927509011580">අනේ, අපොයි!</translation>
+<translation id="3076846064362030967">ඔබව ඔබගේ Google ගිණුමෙන් නොවරනු ඇත. <ph name="BEGIN_LINK" />ක්‍රියාකාරකම්වල වෙනත් ආකාර<ph name="END_LINK" /> ඔබ පුරන විට ඔබගේ Google ගිණුමේ සුරැකිය හැකිය. ඔබට ඕනෑම වේලාවක ඒවා මැකිය හැකිය.
+
+
+අදාළ වන්නේ නම්, ඔබගේ සෙවීම් ඉතිහාසය මැකීම සඳහා ඔබගේ සෙවීම් යන්ත්‍රයේ උපදෙස් බලන්න.</translation>
 <translation id="3080525922482950719">ඔබට පසුව හෝ නොබැඳිව කියවීමට පිටු සුරැකිය හැකිය</translation>
 <translation id="3081338492074632642">ඔබ සුරකින මුරපදය <ph name="WEBSITE" /> සඳහා වන ඔබේ මුරපදයට ගැළපෙන බව සහතික කර ගන්න</translation>
 <translation id="3112556859945124369">ලකුණු කරන්න…</translation>
@@ -328,7 +337,6 @@
 <translation id="4375040482473363939">QR කේතය සෙවීම</translation>
 <translation id="4378154925671717803">දුරකථනය</translation>
 <translation id="4389019817280890563">භාෂාව මාරු කිරීමට තට්ටු කරන්න.</translation>
-<translation id="441868831736628555">රහස්‍යතා නිවේදනය</translation>
 <translation id="4454246407045105932">භාෂාව එක් කරන්න</translation>
 <translation id="4469418912670346607">සැකසීම දිගටම කරන්න</translation>
 <translation id="4476574785019001431">සැකසීම්</translation>
@@ -404,6 +412,7 @@
 <translation id="5140288047769711648">Chrome ඔබ වෙනුවෙන් මෙම මුරපදය මතක තබා ගනියි. ඔබට එය මතක තබා ගැනීමට අවශ්‍ය නැත.</translation>
 <translation id="5150492518600715772">ඔබේ උපාංගය වෙත යවන්න</translation>
 <translation id="5168414296986405587">iPadOS සඳහා තනා ඇත</translation>
+<translation id="5173088371991956744">ඒ ඔබ බව සත්‍යාපනය කිරීමට සමමුහුර්තයට අවශ්‍යයි</translation>
 <translation id="5181140330217080051">බාගනිමින්</translation>
 <translation id="5186185447130319458">රහසිගත</translation>
 <translation id="5188482106078495165">ඔබේ කුකි සැකසීම සියලු ටැබවලට යෙදේ. නව සැකසීමක් විවෘත ටැබයකට යෙදීමට, ටැබය නැවත පූරණය කරන්න.</translation>
@@ -586,6 +595,7 @@
 <translation id="6730682669179532099">මුරපද නිර්යාත කළ නොහැක</translation>
 <translation id="6748108480210050150">වෙතින්</translation>
 <translation id="6760509555861141183">මෑත ටැබය වෙත ආපසු යන්න</translation>
+<translation id="6762812039470893796">සියල්ල තේරීම ඉවත් කරන්න</translation>
 <translation id="6780034285637185932">ZIP කේතය</translation>
 <translation id="6785453220513215166">බිඳ වැටීම් වාර්තාව යවමින්...</translation>
 <translation id="6797885426782475225">හඬ සෙවීම</translation>
@@ -714,6 +724,7 @@
 <translation id="802154636333426148">බාගැනීම අසමත් විය</translation>
 <translation id="8023878949384262191">මෙම කොටස විහිදුවයි.</translation>
 <translation id="8027581147000338959">නව කවුළුවක විවෘත කරන්න</translation>
+<translation id="804225253087497565"><ph name="BEGIN_LINK" />සෙවීම් ඉතිහාසය<ph name="END_LINK" /> සහ <ph name="BEGIN_LINK" />ක්‍රියාකාරකම්වල වෙනත් ආකාර<ph name="END_LINK" /> ඔබ පුරන විට ඔබගේ Google ගිණුමේ සුරැකිය හැකිය. ඔබට ඕනෑම වේලාවක ඒවා මැකිය හැකිය.</translation>
 <translation id="804427445359061970">ඔබ ඔබේ ටැබ මෙහි වෙනත් උපාංගවලින් සොයා ගනු ඇත</translation>
 <translation id="8059533439631660104">මෙම කොටස හකුළුවයි.</translation>
 <translation id="8065292699993359127">අප්‍රසිද්ධ තුළ Chrome හි URL විවෘත කරන්න</translation>

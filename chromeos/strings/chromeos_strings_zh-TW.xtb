@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">掃描</translation>
 <translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試...</translation>
 <translation id="2585245331261708204">Chrome 作業系統的新功能</translation>
+<translation id="2619761439309613843">每日變換新桌布</translation>
 <translation id="2620436844016719705">系統</translation>
 <translation id="2740531572673183784">確定</translation>
 <translation id="2751739896257479635">EAP 第 2 階段驗證</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">部分已啟用</translation>
 <translation id="3527036260304016759">失敗 - 不明的錯誤</translation>
 <translation id="3532980081107202182">大約還剩 <ph name="MIN_REMAINING" /> 分鐘</translation>
+<translation id="3540383942695635079">Mac 位址</translation>
 <translation id="357889014807611375">計量付費的 Wi-Fi</translation>
 <translation id="3595596368722241419">電池已充滿</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網路</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">電池經過的完整充電循環次數</translation>
 <translation id="3941014780699102620">無法解析主機</translation>
 <translation id="3942420633017001071">診斷</translation>
+<translation id="3966286471246132217">如要獲得更準確的結果，請關閉所有應用程式，直到測試完成為止。</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="397105322502079400">計算中…</translation>
 <translation id="39823212440917567">系統會移除 <ph name="NUMBER_OF_DAYS" /> 天前的列印工作</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4227825898293920515">密碼將在 <ph name="TIME" />後到期</translation>
 <translation id="4238516577297848345">沒有任何進行中的列印工作</translation>
+<translation id="4244962993387259361">如要執行記憶體測試，你必須至少有 500 MB 的可用空間。如要釋出空間，請依序點選 [設定] &gt; [儲存空間管理]。</translation>
 <translation id="4289540628985791613">總覽</translation>
 <translation id="4297501883039923494">已停止 - 不明的錯誤</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 張圖片</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">乙太網路</translation>
 <translation id="4483049906298469269">無法連線偵測非預設的網路閘道</translation>
 <translation id="4511264077854731334">入口網站</translation>
+<translation id="4536864596629708641">IP 設定</translation>
 <translation id="4548483925627140043">偵測不到訊號</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh 電池</translation>
 <translation id="4562494484721939086">不提供服務</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已列印 <ph name="PRINTED_PAGE_NUMBER" /> 頁 (共 <ph name="TOTAL_PAGE_NUMBER" /> 頁)。按下 Enter 鍵即可取消列印工作。</translation>
 <translation id="4646949265910132906">安全的 WiFi 連線</translation>
 <translation id="4652335678334611408">儲存工作階段記錄</translation>
+<translation id="4654549501020883054">每天變更</translation>
 <translation id="4665014895760275686">製造商</translation>
 <translation id="467510802200863975">密碼不相符</translation>
 <translation id="467715984478005772">可能有防火牆</translation>
@@ -318,6 +324,7 @@
 <translation id="7162487448488904999">相片庫</translation>
 <translation id="7172721935181587524">1 張圖片</translation>
 <translation id="7177485034254901881">這部 <ph name="DEVICE_TYPE" /> 是由 <ph name="MANAGER" /> 管理。系統管理員可從遠端設定這部裝置。</translation>
+<translation id="7180611975245234373">重新整理</translation>
 <translation id="7216409898977639127">行動網路提供者</translation>
 <translation id="7271040990581020067">掃描器正在使用中，請稍後再試。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@
 <translation id="8498220429738806196">流量計數器</translation>
 <translation id="8503813439785031346">使用者名稱</translation>
 <translation id="8503836310948963452">請稍待幾分鐘…</translation>
+<translation id="8521021929829989041">做為個人裝置使用</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">你的電信業者可能會要求你必須選擇此選項才能連線至他們的網路。如要瞭解詳情，請洽詢你的電信業者。</translation>
 <translation id="8576249514688522074">未初始化</translation>

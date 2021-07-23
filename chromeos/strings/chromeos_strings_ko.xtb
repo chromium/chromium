@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">대기 중</translation>
 <translation id="2161394479394250669">인쇄 작업 취소</translation>
+<translation id="2209788852729124853">트래픽 카운터 재설정</translation>
 <translation id="2217935453350629363">현재 속도</translation>
 <translation id="2224337661447660594">인터넷 연결 없음</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -77,6 +78,7 @@
 <translation id="2517472476991765520">검색</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> 테스트 실행 중…</translation>
 <translation id="2585245331261708204">Chrome OS의 새로운 기능</translation>
+<translation id="2619761439309613843">매일 새로고침</translation>
 <translation id="2620436844016719705">시스템</translation>
 <translation id="2740531572673183784">확인</translation>
 <translation id="2751739896257479635">EAP 2단계 인증</translation>
@@ -116,10 +118,12 @@
 <translation id="3488065109653206955">부분적으로 활성화됨</translation>
 <translation id="3527036260304016759">실패 - 알 수 없는 오류</translation>
 <translation id="3532980081107202182">약 <ph name="MIN_REMAINING" />분 남음</translation>
+<translation id="3540383942695635079">MAC 주소</translation>
 <translation id="357889014807611375">전송량 제한이 있는 Wi-Fi</translation>
 <translation id="3595596368722241419">배터리 충전 완료</translation>
 <translation id="360565022852130722">Wi-Fi 네트워크가 약한 프로토콜 WEP 802.1x로 보호되었습니다.</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> 테스트</translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{페이지 다시 스캔}=1{{PAGE_NUMBER}페이지 다시 스캔}other{{PAGE_NUMBER}페이지 다시 스캔}}</translation>
 <translation id="3740976234706877572">★ <ph name="AVERAGE_SCORE" />개(리뷰 <ph name="AGGREGATED_COUNT" />개)</translation>
 <translation id="3748026146096797577">연결되어 있지 않음</translation>
 <translation id="3749289110408117711">파일 이름</translation>
@@ -130,6 +134,7 @@
 <translation id="387301095347517405">배터리가 완전 방전 및 충전 사이클을 거친 횟수입니다.</translation>
 <translation id="3941014780699102620">호스트를 확인할 수 없습니다.</translation>
 <translation id="3942420633017001071">진단</translation>
+<translation id="3966286471246132217">더욱 정확한 결과를 위해 테스트가 완료될 때까지 모든 앱을 닫으세요.</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" />일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
@@ -142,6 +147,7 @@
 <translation id="4176463684765177261">사용 중지됨</translation>
 <translation id="4227825898293920515">비밀번호가 <ph name="TIME" /> 후에 만료됨</translation>
 <translation id="4238516577297848345">진행 중인 인쇄 작업 없음</translation>
+<translation id="4244962993387259361">메모리 테스트를 실행하려면 500MB 이상의 용량이 남아 있어야 합니다. 공간을 확보하려면 설정 &gt; 스토리지 관리로 이동하세요.</translation>
 <translation id="4289540628985791613">개요</translation>
 <translation id="4297501883039923494">중지됨 - 알 수 없는 오류</translation>
 <translation id="4300073214558989">이미지 <ph name="IMAGE_COUNT" />개</translation>
@@ -151,12 +157,14 @@
 <translation id="4425149324548788773">내 드라이브</translation>
 <translation id="4429881212383817840">Kerberos 티켓이 곧 만료됨</translation>
 <translation id="4431821876790500265">보고서 보기</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{페이지 삭제}=1{{PAGE_NUMBER}페이지 삭제}other{{PAGE_NUMBER}페이지 삭제}}</translation>
 <translation id="445059817448385655">이전 비밀번호</translation>
 <translation id="4453205916657964690">서브넷 마스크</translation>
 <translation id="4454245904991689773">스캔 파일 저장 위치</translation>
 <translation id="4479639480957787382">이더넷</translation>
 <translation id="4483049906298469269">기본이 아닌 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
 <translation id="4511264077854731334">포털</translation>
+<translation id="4536864596629708641">IP 구성</translation>
 <translation id="4548483925627140043">신호를 찾을 수 없습니다.</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh 배터리</translation>
 <translation id="4562494484721939086">서비스 불가</translation>
@@ -165,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> 인쇄 작업을 취소하려면 Enter를 누릅니다.</translation>
 <translation id="4646949265910132906">보안 Wi-Fi 연결</translation>
 <translation id="4652335678334611408">세션 로그 저장</translation>
+<translation id="4654549501020883054">매일 변경</translation>
 <translation id="4665014895760275686">제조업체</translation>
 <translation id="467510802200863975">비밀번호가 일치하지 않습니다.</translation>
 <translation id="467715984478005772">방화벽 의심됨</translation>
@@ -248,6 +257,7 @@
 <translation id="5916084858004523819">금지됨</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}other{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}}</translation>
 <translation id="5931523347251946569">파일을 찾을 수 없음</translation>
+<translation id="5972388717451707488">엔진 업데이트</translation>
 <translation id="6037291330010597344">스캐너의 급지대가 비어 있습니다. 문서를 추가한 후 다시 시도해 보세요.</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6040852767465482106">익명 ID</translation>
@@ -285,6 +295,7 @@
 <translation id="6527081081771465939">알려지지 않은 Wi-Fi 보안 프로토콜입니다.</translation>
 <translation id="65587193855025101">평판</translation>
 <translation id="6564646048574748301">실패 - 프린터에 연결할 수 없음</translation>
+<translation id="6574762126505704998">채우기</translation>
 <translation id="6603230386432466813">연결하는 데 문제가 있나요?</translation>
 <translation id="6618744767048954150">실행 중</translation>
 <translation id="6620487321149975369">수동으로 삭제하지 않으면 인쇄 작업이 기록에 나타납니다.</translation>
@@ -313,6 +324,7 @@
 <translation id="7162487448488904999">갤러리</translation>
 <translation id="7172721935181587524">이미지 1개</translation>
 <translation id="7177485034254901881">이 <ph name="DEVICE_TYPE" />은(는) <ph name="MANAGER" />에서 관리합니다. 관리자가 기기를 원격으로 구성할 수 있습니다.</translation>
+<translation id="7180611975245234373">새로고침</translation>
 <translation id="7216409898977639127">이동통신사</translation>
 <translation id="7271040990581020067">현재 스캐너를 사용하고 있습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -333,6 +345,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> 남음</translation>
 <translation id="7620771111601174153">고객센터에서 자세히 알아보기</translation>
+<translation id="763165478673169849">마지막 재설정 시간</translation>
 <translation id="7648838807254605802">HTTPS 지연 시간 높음</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7690294790491645610">새 비밀번호 확인</translation>
@@ -354,6 +367,7 @@
 <translation id="8075838845814659848">배터리 잔량</translation>
 <translation id="808894953321890993">비밀번호 변경</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
+<translation id="8132480444149501833">트래픽 카운터 요청</translation>
 <translation id="8206859287963243715">휴대전화</translation>
 <translation id="8208861521865154048">혜택</translation>
 <translation id="8214184102975786227">여러 장의 페이지를 스캔하여 하나의 PDF 만들기</translation>
@@ -375,8 +389,11 @@
 <translation id="8475690821716466388">Wi-Fi 네트워크가 약한 프로토콜 WEP PSK로 보호되었습니다.</translation>
 <translation id="8477551185774834963">DNS 지연 시간이 허용되는 기준을 약간 초과했습니다.</translation>
 <translation id="8483248364096924578">IP 주소</translation>
+<translation id="8498220429738806196">트래픽 카운터</translation>
 <translation id="8503813439785031346">사용자이름</translation>
 <translation id="8503836310948963452">몇 분 정도밖에 남지 않았습니다...</translation>
+<translation id="8521021929829989041">개인 기기로 사용</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">이동통신사에서 네트워크에 연결하기 위해 이 옵션을 요구할 수 있습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
 <translation id="8576249514688522074">초기화되지 않음</translation>
 <translation id="8620617069779373398">로밍 상태</translation>
@@ -393,6 +410,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">배경화면</translation>
 <translation id="8845001906332463065">도움말 보기</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">테스트 성공</translation>
 <translation id="8898840733695078011">신호 강도</translation>
 <translation id="8910721771319628100">기본 네트워크가 지연 시간 기준을 초과했습니다.</translation>
@@ -408,6 +426,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">블루투스</translation>
 <translation id="9088306295921699330">현재 사용량</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> 티켓을 새로고침하세요.</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />페이지 스캔 중</translation>
 <translation id="9111102763498581341">잠금 해제</translation>

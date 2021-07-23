@@ -22,6 +22,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> đang hoạt động</translation>
 <translation id="2144806332417375165">Thông số video tùy chỉnh</translation>
 <translation id="2175927920773552910">Mã QR</translation>
+<translation id="2268107369530950373">Chuyển sang chế độ máy quét</translation>
 <translation id="229579744168541441">Xuất ra đĩa</translation>
 <translation id="2320741269052147773">Xoay trái</translation>
 <translation id="2501278716633472235">Quay lại</translation>
@@ -81,6 +82,7 @@
 
 Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc video, vui lòng đính kèm ví dụ về ảnh hoặc video và mô tả vấn đề bạn gặp phải. (Ví dụ: ảnh quá tối hoặc chủ thể trong ảnh không nét.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
+<translation id="667999046851023355">Tài liệu</translation>
 <translation id="6681668084120808868">Chụp ảnh</translation>
 <translation id="6778482348691154169">Không thể chụp ảnh</translation>
 <translation id="695140971690006676">Đặt lại tất cả</translation>

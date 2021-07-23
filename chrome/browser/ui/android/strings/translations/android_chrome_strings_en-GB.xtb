@@ -191,6 +191,7 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2276696007612801991">Sign in to your Google Account to check your passwords</translation>
 <translation id="2278052315791335171">Deleting this password will not delete your account on <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Billing address</translation>
+<translation id="2294030144029925122">Chrome Privacy Policy</translation>
 <translation id="230115972905494466">No compatible devices found</translation>
 <translation id="230155349749732438">To use this setting <ph name="BEGIN_LINK" />Make searches and browsing better<ph name="END_LINK" /> must be turned on</translation>
 <translation id="2318045970523081853">Tap to make call</translation>
@@ -318,6 +319,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3029704984691124060">Passphrases do not match</translation>
 <translation id="3031225630520268969">Assistant voice search consent UI</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Get help<ph name="END_LINK" /></translation>
+<translation id="3037517125981011456">Shows prompts to sign in to Chrome</translation>
 <translation id="3046945242843292318">Get to this site quicker next time</translation>
 <translation id="305593374596241526">Location is off; turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmarks}}</translation>
@@ -450,7 +452,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="3928666092801078803">Combine my data</translation>
 <translation id="3934366560681368531">'</translation>
 <translation id="393697183122708255">No enabled voice search available</translation>
-<translation id="3943557322767080599">Show Chrome sign-in prompts when you sign in to your Google Account</translation>
+<translation id="395377504920307820">Use without an account</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome will load your page when ready}other{Chrome will load your pages when ready}}</translation>
 <translation id="3962957115499249330">You’ll see a notification when this download starts on Wi-Fi.</translation>
 <translation id="3963007978381181125">Passphrase encryption doesn’t include payment methods and addresses from Google Pay. Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to reset sync. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
@@ -498,6 +500,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="4256782883801055595">Open-source licences</translation>
 <translation id="4263656433980196874">Assistant voice search consent UI opened at full height</translation>
 <translation id="4269820728363426813">Copy link address</translation>
+<translation id="4281359692687148179">Pull down to refresh</translation>
 <translation id="4290281343757112331">Download later instead?</translation>
 <translation id="4296252229500326964">New Incognito tab</translation>
 <translation id="4298388696830689168">Linked sites</translation>
@@ -599,6 +602,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4881695831933465202">Open</translation>
 <translation id="488187801263602086">Rename file</translation>
 <translation id="4885273946141277891">Unsupported number of Chrome instances.</translation>
+<translation id="4905269543817054577">History isn’t saved in Incognito</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">Payment apps</translation>
 <translation id="4913161338056004800">Reset statistics</translation>
@@ -654,6 +658,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5227554086496586518">Tap to see search results</translation>
 <translation id="5233638681132016545">New tab</translation>
+<translation id="5246093389635966745">Edit toolbar shortcut</translation>
 <translation id="5250483651202458397">Screenshot. Tap to close.</translation>
 <translation id="5262378156578470238">You’ll see a notification when this download starts on <ph name="DATE" />.</translation>
 <translation id="526421993248218238">Can't load this page</translation>
@@ -893,7 +898,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929">Open in <ph name="APP_NAME" /></translation>
-<translation id="666981079809192359">Chrome Privacy Notice</translation>
 <translation id="6671495933530132209">Copy image</translation>
 <translation id="6674571176963658787">To start sync, enter your passphrase</translation>
 <translation id="6676840375528380067">Clear your Chrome data from this device?</translation>
@@ -1008,12 +1012,12 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7454641608352164238">Not enough space</translation>
 <translation id="7475192538862203634">If you’re seeing this frequently, try these <ph name="BEGIN_LINK" />suggestions<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">SD card not found. Some of your files may be missing.</translation>
-<translation id="7476384249953022816">To clear Incognito browsing history from your device, close all tabs</translation>
 <translation id="7479104141328977413">Tab management</translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7481864133709957613">To search from this page, touch &amp; hold words instead of tapping them</translation>
 <translation id="7482656565088326534">Preview tab</translation>
 <translation id="7484997419527351112">Discover – off</translation>
+<translation id="7485033510383818941">To refresh the feed content, pull down the page</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Updated <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">data saved</translation>
 <translation id="7498271377022651285">Please wait…</translation>
@@ -1043,6 +1047,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7630202231528827509">Provider URL</translation>
 <translation id="7638584964844754484">Incorrect passphrase</translation>
 <translation id="7641339528570811325">Clear browsing data…</translation>
+<translation id="764170292089748542">Chrome doesn’t save your browsing history when you choose to browse privately. You can still use bookmarks to access your favourite sites.</translation>
 <translation id="7646772052135772216">Password sync isn't working</translation>
 <translation id="7655900163790317559">Turning on Bluetooth…</translation>
 <translation id="7658239707568436148">Cancel</translation>
@@ -1278,7 +1283,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="9070377983101773829">Start voice search</translation>
 <translation id="9074336505530349563">To get personalised content suggested by Google, sign in and turn on sync</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9081543426177426948">Sites that you visit aren’t saved in Incognito</translation>
 <translation id="9086302186042011942">Syncing</translation>
 <translation id="9086455579313502267">Unable to access the network</translation>
 <translation id="9100505651305367705">Offer to show articles in simplified view, when supported</translation>

@@ -8,6 +8,10 @@
 <translation id="1047726139967079566">Skapa bokmärke för den här sidan...</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="105093091697134113">I följande konton används lösenord som har läckt ut vid ett dataintrång hos tredje part eller skrivits in på en bedräglig webbplats. Byt genast lösenord för att skydda kontona.</translation>
+<translation id="105214722824962652">Du loggas inte ut från Google-kontot. <ph name="BEGIN_LINK" />Annan aktivitet<ph name="END_LINK" /> kan sparas i Google-kontot när du är inloggad. Du kan radera den när du vill.
+
+        
+Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att radera sökhistoriken om tillämpligt.</translation>
 <translation id="1063454504051558093">Använd ett annat lösenord …</translation>
 <translation id="1066060668811609597">Hantera synkronisering</translation>
 <translation id="1076421457278169141">Koden skannades</translation>
@@ -132,6 +136,7 @@
 <translation id="2320166752086256636">Dölj tangentbordet</translation>
 <translation id="2339560363438331454">Synk och Googles tjänster</translation>
 <translation id="2351097562818989364">Översättningsinställningarna har återställts.</translation>
+<translation id="235789365079050412">Googles integritetspolicy</translation>
 <translation id="2359043044084662842">Översätt</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2360196772093551345">Använd mobilversion</translation>
@@ -204,6 +209,10 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="298306318844797842">Lägg till betalningsmetod …</translation>
 <translation id="2989805286512600854">Öppna i ny flik</translation>
 <translation id="3037605927509011580">Oj, ett fel har uppstått!</translation>
+<translation id="3076846064362030967">Du loggas inte ut från Google-kontot. <ph name="BEGIN_LINK" />Annan aktivitet<ph name="END_LINK" /> kan sparas i Google-kontot när du är inloggad. Du kan radera den när du vill.
+
+
+Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</translation>
 <translation id="3080525922482950719">Du kan spara sidor som du vill läsa senare eller offline</translation>
 <translation id="3081338492074632642">Kontrollera att lösenordet som du sparar överensstämmer med lösenordet för <ph name="WEBSITE" /></translation>
 <translation id="3112556859945124369">Markera …</translation>
@@ -328,7 +337,6 @@ Följ stegen nedan:</translation>
 <translation id="4375040482473363939">Sök med QR-koder</translation>
 <translation id="4378154925671717803">Mobil</translation>
 <translation id="4389019817280890563">Tryck för att byta språk.</translation>
-<translation id="441868831736628555">Integritetsmeddelande</translation>
 <translation id="4454246407045105932">Lägg till språk</translation>
 <translation id="4469418912670346607">Fortsätt konfigurationen</translation>
 <translation id="4476574785019001431">Inställningar</translation>
@@ -404,6 +412,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5140288047769711648">Lösenordet sparas åt dig i Chrome. Du behöver inte komma ihåg det.</translation>
 <translation id="5150492518600715772">Skicka till din enhet</translation>
 <translation id="5168414296986405587">Gjord för iPadOS</translation>
+<translation id="5173088371991956744">Verifiera din identitet för synkronisering</translation>
 <translation id="5181140330217080051">Nedladdning</translation>
 <translation id="5186185447130319458">Privat</translation>
 <translation id="5188482106078495165">Cookie-inställningarna tillämpas för alla flikar. Om du vill tillämpa en ny inställning på en öppen flik läser du in fliken igen.</translation>
@@ -586,6 +595,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6730682669179532099">Det gick inte att exportera lösenord</translation>
 <translation id="6748108480210050150">Från</translation>
 <translation id="6760509555861141183">Återgå till den senaste fliken</translation>
+<translation id="6762812039470893796">Avmarkera alla</translation>
 <translation id="6780034285637185932">Postnummer</translation>
 <translation id="6785453220513215166">Skickar en felrapport ...</translation>
 <translation id="6797885426782475225">Röstsökning</translation>
@@ -714,6 +724,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="802154636333426148">Nedladdningen misslyckades</translation>
 <translation id="8023878949384262191">Expanderar avsnittet.</translation>
 <translation id="8027581147000338959">Öppna i nytt fönster</translation>
+<translation id="804225253087497565"><ph name="BEGIN_LINK" />Sökhistorik<ph name="END_LINK" /> och <ph name="BEGIN_LINK" />annan aktivitet<ph name="END_LINK" /> kan sparas i Google-kontot när du är inloggad. Du kan radera den när du vill.</translation>
 <translation id="804427445359061970">Flikar från andra enheter visas här</translation>
 <translation id="8059533439631660104">Komprimera avsnittet.</translation>
 <translation id="8065292699993359127">Öppna webbadresser i Chrome i inkognitoläge</translation>

@@ -191,6 +191,7 @@
 <translation id="2276696007612801991">Մտեք Google հաշիվ՝ ձեր գաղտնաբառերը ստուգելու համար</translation>
 <translation id="2278052315791335171">Եթե հեռացնեք այս գաղտնաբառը, ձեր հաշիվը չի ջնջվի <ph name="SITE" /> կայքից։</translation>
 <translation id="2286841657746966508">Վճարային հասցե</translation>
+<translation id="2294030144029925122">Chrome-ի գաղտնիության քաղաքականություն</translation>
 <translation id="230115972905494466">Համատեղելի սարքեր չեն գտնվել</translation>
 <translation id="230155349749732438">Այս կարգավորումն օգտագործելու համար միացրեք <ph name="BEGIN_LINK" />Բարելավել որոնումն ու էջերի դիտումը<ph name="END_LINK" /> պարամետրը։</translation>
 <translation id="2318045970523081853">Հպեք՝ զանգելու համար</translation>
@@ -318,6 +319,7 @@
 <translation id="3029704984691124060">Անցաբառերը չեն համընկնում</translation>
 <translation id="3031225630520268969">Օգնականի միջոցով ձայնային որոնման համաձայնության միջերես</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Ստացեք օգնություն<ph name="END_LINK" /></translation>
+<translation id="3037517125981011456">Ցույց է տալիս հաղորդագրություն Chrome-ում մուտք գործելու համար</translation>
 <translation id="3046945242843292318">Հաջորդ անգամ ավելի արագ անցեք այս կայք</translation>
 <translation id="305593374596241526">Տեղորոշումն անջատված է: Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />:</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> էջանիշ}one{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}other{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}}</translation>
@@ -337,6 +339,7 @@
 <translation id="3207960819495026254">Էջանշված է</translation>
 <translation id="3208584281581115441">Ստուգել հիմա</translation>
 <translation id="3211426585530211793">Տարրը (<ph name="ITEM_TITLE" />) ջնջվեց</translation>
+<translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Որոնումների պատմությունը<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />այլ գործողություններ<ph name="END_LINK2" /> կարող են պահվել ձեր Google հաշվում, երբ դուք մուտք եք գործում։ Դրանք ցանկացած ժամանակ հնարավոր է ջնջել։</translation>
 <translation id="321773570071367578">Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="BEGIN_LINK" />վերակայեք համաժամացումը<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Ձեր գաղտնաբառերը համաժամացնելու համար հաստատեք ձեր ինքնությունը</translation>
 <translation id="3227557059438308877">Google Chrome-ը որպես անվտանգության բանալի</translation>
@@ -449,7 +452,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="3928666092801078803">Իմ տվյալների միավորում</translation>
 <translation id="3934366560681368531">«</translation>
 <translation id="393697183122708255">Մատչելի միացված ձայնային որոնում չկա</translation>
-<translation id="3943557322767080599">Ցուցադրել Chrome-ի մուտքի հաղորդագրություններ, երբ մտնում եք Google հաշիվ</translation>
+<translation id="395377504920307820">Օգտագործել առանց հաշվի</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{էջը կբեռնվի, երբ սարքը միացած լինի ցանցին}one{էջը կբեռնվի, երբ սարքը միացած լինի ցանցին}other{էջերը կբեռնվեն, երբ սարքը միացած լինի ցանցին}}</translation>
 <translation id="3962957115499249330">Դուք ծանուցում կտեսնեք, երբ այս ներբեռնումը սկսվի Wi-Fi ցանցի միջոցով։</translation>
 <translation id="3963007978381181125">Անցաբառով գաղտնագրումը չի կիրառվում վճարման եղանակների և Google Pay-ի հասցեների համար։ Միայն ձեր անցաբառն ունեցող օգտատերը կարող է կարդալ ձեր գաղտնագրված տվյալները: Անցաբառը չի ուղարկվում Google-ին և չի պահվում դրա կողմից: Անցաբառը մոռանալու դեպքում ձեզ անհրաժեշտ կլինի վերակայել համաժամացումը: <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -497,6 +500,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4256782883801055595">Բաց կոդով ծրագրերի լիցենզիաներ</translation>
 <translation id="4263656433980196874">Օգնականի միջոցով ձայնային որոնման միջերեսը բացվում է ամբողջ բարձրությամբ</translation>
 <translation id="4269820728363426813">Պատճենել հղման հասցեն</translation>
+<translation id="4281359692687148179">Թարմացնելու համար քաշեք ներքև</translation>
 <translation id="4290281343757112331">Ներբեռնե՞լ ավելի ուշ</translation>
 <translation id="4296252229500326964">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="4298388696830689168">Կապված կայքեր</translation>
@@ -598,6 +602,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4881695831933465202">Բացել</translation>
 <translation id="488187801263602086">Ֆայլի վերանվանում</translation>
 <translation id="4885273946141277891">Chrome-ի բացված էջերի թիվը չի աջակցվում:</translation>
+<translation id="4905269543817054577">Ինկոգնիտո ռեժիմում պատմությունը չի պահվում</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">Հավելվածներ վճարումների համար</translation>
 <translation id="4913161338056004800">Վերակայել վիճակագրությունը</translation>
@@ -616,12 +621,14 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="497421865427891073">Առաջ գնալ</translation>
 <translation id="4988210275050210843">Ֆայլը ներբեռնվում է (<ph name="MEGABYTES" />)։</translation>
 <translation id="4988526792673242964">Էջեր</translation>
-<translation id="5001388021414335527">Հետևել այս կայքին</translation>
+<translation id="5001388021414335527">Հետևեք այս կայքին այստեղ</translation>
 <translation id="5004416275253351869">Google-ում գործողությունների հետագծում</translation>
 <translation id="5005498671520578047">Պատճենել գաղտնաբառը</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> կայքն ուզում է միանալ</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5032430150487044192">Չհաջողվեց ստեղծել QR կոդը</translation>
 <translation id="5039804452771397117">Թույլ տալ</translation>
+<translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Այլ գործողություններ<ph name="END_LINK1" /> կարող են պահվել ձեր Google հաշվում, երբ դուք մուտք եք գործում։ Դրանք ցանկացած ժամանակ հնարավոր է ջնջել։</translation>
 <translation id="5061533557687621530">Եղանակի մասին տեղեկանալու համար հպեք խոսափողին և ասեք․ «What’s the weather today?» (Ի՞նչ եղանակ է այսօր)։</translation>
 <translation id="5087580092889165836">Ավելացնել քարտ</translation>
 <translation id="5091249083535528968">Օգտագործման լրացուցիչ տվյալներ</translation>
@@ -651,6 +658,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5222676887888702881">Դուրս գրվել</translation>
 <translation id="5227554086496586518">Հպեք՝ որոնման արդյունքները տեսնելու համար</translation>
 <translation id="5233638681132016545">Նոր ներդիր</translation>
+<translation id="5246093389635966745">Փոփոխել գործիքագոտու դյուրանցումը</translation>
 <translation id="5250483651202458397">Սքրինշոթ։ Հպեք՝ փակելու համար։</translation>
 <translation id="5262378156578470238">Դուք ծանուցում կտեսնեք, երբ այս ներբեռնումը սկսվի (<ph name="DATE" />)։</translation>
 <translation id="526421993248218238">Չհաջողվեց բեռնել էջը</translation>
@@ -740,6 +748,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5814131985548525293">Սկսելու համար հպեք այստեղ կամ ձայնի պատկերակին</translation>
 <translation id="583281660410589416">Անհայտ</translation>
 <translation id="5833984609253377421">Կիսվել հղումով</translation>
+<translation id="5834764604050996579">QR կոդը սկանավորելու համար թույլ տվեք Chrome-ին օգտագործել ձեր տեսախցիկը</translation>
 <translation id="5836192821815272682">Ներբեռնվում է Chrome-ի նոր տարբերակը…</translation>
 <translation id="5853623416121554550">դադարեցված է</translation>
 <translation id="5854512288214985237">Google-ին վիճակագրություն կամ խափանման մասին հաշվետվություններ չեն ուղարկվում</translation>
@@ -889,7 +898,6 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
 <translation id="6659594942844771486">Ներդիր</translation>
 <translation id="666731172850799929">Բացել <ph name="APP_NAME" /> հավելվածում</translation>
-<translation id="666981079809192359">Chrome-ի Գաղտնիության ծանուցագիր</translation>
 <translation id="6671495933530132209">Պատճենել պատկերը</translation>
 <translation id="6674571176963658787">Համաժամացումը սկսելու համար մուտքագրեք ձեր անցաբառը</translation>
 <translation id="6676840375528380067">Հեռացնե՞լ Chrome-ի տվյալները այս սարքից</translation>
@@ -920,6 +928,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="6867400383614725881">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="6869056123412990582">համակարգիչ</translation>
 <translation id="6882836635272038266">Սովորական պաշտպանություն վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից։</translation>
+<translation id="6883204995689174413">Ուղարկել</translation>
 <translation id="688738109438487280">Ավելացնել առկա տվյալները <ph name="TO_ACCOUNT" /> հաշվում:</translation>
 <translation id="6891726759199484455">Գաղտնաբառը պատճենելու համար ապակողպեք էկրանը</translation>
 <translation id="6896758677409633944">Պատճենել</translation>
@@ -940,6 +949,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7022756207310403729">Բացել դիտարկիչով</translation>
 <translation id="702463548815491781">Խորհուրդ է տրվում, երբ TalkBack-ը կամ Switch Access-ը միացված են</translation>
 <translation id="7027549951530753705">Վերականգնման ամսաթիվը՝ <ph name="ITEM_TITLE" /></translation>
+<translation id="7029390216614421513">Դիրքավորեք QR-կոդը կամ գծակոդը այս շրջանակի մեջ</translation>
 <translation id="7029809446516969842">Գաղտնաբառեր</translation>
 <translation id="7054588988317389591">Ուզո՞ւմ եք ստանալ պատկերների նկարագրություններ</translation>
 <translation id="7055152154916055070">Վերահասցեավորումն արգելափակված է՝</translation>
@@ -954,8 +964,10 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7138678301420049075">Այլ</translation>
 <translation id="7146622961999026732">Այս կայքերը և հավելվածները կարող են կարևոր լինել ձեզ համար՝</translation>
 <translation id="7149893636342594995">Վերջին 24 ժամվա</translation>
+<translation id="7155317020660659215">QR կոդը սկանավորելու համար բացեք կարգավորումները և թույլ տվեք Chrome-ին օգտագործել ձեր տեսախցիկը</translation>
 <translation id="7173114856073700355">Բացել կարգավորումները</translation>
 <translation id="7177466738963138057">Կարող եք սա հետագայում փոխել կարգավորումներում</translation>
+<translation id="7177873915659574692">Չհաջողվեց ստեղծել QR կոդ։ URL-ը կարող է պարունակել առավելագույնը <ph name="CHARACTER_LIMIT" /> նիշ։</translation>
 <translation id="7180611975245234373">Թարմացնել</translation>
 <translation id="7187993566681480880">Ապահովում է ձեր անվտանգությունը Chrome-ում և Google հավելվածներում, երբ մտել եք ձեր հաշիվ։</translation>
 <translation id="718926126787620637">Էջանիշներով պանակների ցանկը բացված է ամբողջությամբ</translation>
@@ -1005,6 +1017,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7481864133709957613">Այս էջում որոնելու համար հպեք բառերին և պահեք (նախկինում անհրաժեշտ էր միայն հպել)</translation>
 <translation id="7482656565088326534">Նախադիտման ներդիր</translation>
 <translation id="7484997419527351112">Discover – անջատված է</translation>
+<translation id="7485033510383818941">Ֆիդի բովանդակությունը թարմացնելու համար էջը ներքև քաշեք</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Թարմացվել է <ph name="TIME_SINCE_UPDATE" />-ին)</translation>
 <translation id="7494974237137038751">խնայվել է</translation>
 <translation id="7498271377022651285">Սպասեք…</translation>
@@ -1034,6 +1047,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7630202231528827509">Մատակարարի URL-ը</translation>
 <translation id="7638584964844754484">Սխալ անցաբառ</translation>
 <translation id="7641339528570811325">Մաքրել այցելությունների պատմությունը…</translation>
+<translation id="764170292089748542">Ձեր այցելությունների պատմությունը չի պահվում Chrome-ում, երբ միացնում եք ինկոգնիտո ռեժիմը։ Ձեր էջանիշները հասանելի կլինեն ձեզ։</translation>
 <translation id="7646772052135772216">Գաղտնաբառերի համաժամացումը չի աշխատում</translation>
 <translation id="7655900163790317559">Bluetooth-ը միանում է…</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
@@ -1082,6 +1096,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7929962904089429003">Բացել ընտրացանկը</translation>
 <translation id="7930998711684428189">Զգուշացնում է, եթե տվյալների արտահոսքի արդյունքում գաղտնաբառերը հայտնի են դարձել կողմնակի անձանց։</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />-ը հնացած է:</translation>
+<translation id="7944772052836377867">Համաժամացման համար անհրաժեշտ է հաստատել ձեր ինքնությունը</translation>
 <translation id="7947953824732555851">Ընդունել և մտնել</translation>
 <translation id="7961015016161918242">Երբեք</translation>
 <translation id="7961926449547174351">Դուք անջատել եք հիշողության հասանելիությունը։ Միացնելու համար անցեք կարգավորումներ։</translation>
@@ -1113,6 +1128,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="8084114998886531721">Պահված գաղտնաբառ</translation>
 <translation id="8084285576995584326">Կառավարեք ձեր Google հաշվի տվյալները</translation>
 <translation id="808747664143081553">Միացված է սարքին</translation>
+<translation id="8088176524274673045">Մոտակայքում գտնվող մարդկանց հետ կիսվելու համար սկանավորեք այս QR կոդը</translation>
 <translation id="8103578431304235997">Ինկոգնիտո ներդիր</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Ձեր ներդիրները բոլոր սարքերում օգտագործելու համար միացրեք համաժամացումը</translation>
@@ -1221,6 +1237,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="8788265440806329501">Նավիգացիայի պատմության թերթը փակված է</translation>
 <translation id="8788968922598763114">Վերաբացել վերջին փակված ներդիրը</translation>
 <translation id="8798449543960971550">Ընթերցված</translation>
+<translation id="8805097383171548551">QR կոդ սկանավորելու համար օգտագործեք տեսախցիկով սարք։</translation>
 <translation id="8812260976093120287">Որոշ կայքերում կարող եք վճարել ձեր սարքից՝ վերոնշյալ աջակցվող վճարային հավելվածների օգնությամբ:</translation>
 <translation id="881688628773363275">Նախադիտման ներդիրի բովանդակությունը չի ցուցադրվում։</translation>
 <translation id="8820817407110198400">Էջանիշներ</translation>

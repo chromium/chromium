@@ -318,6 +318,7 @@
 <translation id="3029704984691124060">ಪಾಸ್‌ಫ್ರೇಸ್‌ಗಳು ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ</translation>
 <translation id="3031225630520268969">Assistant ಧ್ವನಿ ಹುಡುಕಾಟದ ಸಮ್ಮತಿ UI</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />ಸಹಾಯ ಪಡೆಯಿರಿ<ph name="END_LINK" /></translation>
+<translation id="3037517125981011456">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಾಂಪ್ಟ್‌ಗಳನ್ನು ತೋರಿಸುತ್ತದೆ</translation>
 <translation id="3046945242843292318">ಮುಂದಿನ ಬಾರಿ ಈ ಸೈಟ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="305593374596241526">ಸ್ಥಳ ಆಫ್ ಆಗಿದೆ; <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಇದನ್ನು ಆನ್‌ ಮಾಡಿ.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ಬುಕ್‌ಮಾರ್ಕ್‌}one{<ph name="BOOKMARKS_COUNT_MANY" /> ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}other{<ph name="BOOKMARKS_COUNT_MANY" /> ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}}</translation>
@@ -449,7 +450,6 @@
 <translation id="3928666092801078803">ನನ್ನ ಡೇಟಾ ಒಂದುಗೂಡಿಸಿ</translation>
 <translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">ಯಾವುದೇ ಸಕ್ರಿಯಗೊಳಿಸಿದ ಧ್ವನಿ ಹುಡುಕಾಟ ಲಭ್ಯವಿಲ್ಲ</translation>
-<translation id="3943557322767080599">ನಿಮ್ಮ Google ಖಾತೆಗೆ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ Chrome ಸೈನ್-ಇನ್ ಪ್ರಾಂಪ್ಟ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{ಸಿದ್ಧವಾದಾಗ, ನಿಮ್ಮ ಪುಟವನ್ನು Chrome ಲೋಡ್ ಮಾಡುತ್ತದೆ}one{ಸಿದ್ಧವಾದಾಗ, ನಿಮ್ಮ ಪುಟಗಳನ್ನು Chrome ಲೋಡ್ ಮಾಡುತ್ತದೆ}other{ಸಿದ್ಧವಾದಾಗ, ನಿಮ್ಮ ಪುಟಗಳನ್ನು Chrome ಲೋಡ್ ಮಾಡುತ್ತದೆ}}</translation>
 <translation id="3962957115499249330">ಈ ಡೌನ್‌ಲೋಡ್ ವೈ-ಫೈ ನಲ್ಲಿ ಪ್ರಾರಂಭವಾದಾಗ, ನೀವು ಅಧಿಸೂಚನೆಯನ್ನು ನೋಡುತ್ತೀರಿ.</translation>
 <translation id="3963007978381181125">ಪಾಸ್‌ಫ್ರೇಸ್ ಎನ್‌ಕ್ರಿಪ್ಶನ್, Google Pay ನಿಂದ ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಒಳಗೊಂಡಿರುವುದಿಲ್ಲ. ನಿಮ್ಮ ಎನ್‍‍ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾದ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಹೊಂದಿರುವ ಯಾರಾದರೂ ಮಾತ್ರ ಓದಬಹುದು. ಪಾಸ್‍‍ಫ್ರೇಸ್‍ ಅನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುವುದಿಲ್ಲ ಅಥವಾ ಅದನ್ನು Google ನಿಂದ ಸಂಗ್ರಹಿಸಲಾಗುವುದಿಲ್ಲ. ನಿಮ್ಮ ಪಾಸ್‍‍ಫ್ರೇಸ್ ಅನ್ನು ನೀವು ಮರೆತರೆ ಅಥವಾ ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸಲು ಬಯಸಿದರೆ, ನೀವು ಸಿಂಕ್ ಅನ್ನು ಮರುಹೊಂದಿಸುವ ಅಗತ್ಯವಿರುತ್ತದೆ.<ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
@@ -597,6 +597,7 @@
 <translation id="4881695831933465202">ತೆರೆ</translation>
 <translation id="488187801263602086">ಫೈಲ್‌ ಮರುಹೆಸರಿಸಿ</translation>
 <translation id="4885273946141277891">ಬೆಂಬಲಿಸದಿರುವ Chrome ನಿದರ್ಶನಗಳ ಸಂಖ್ಯೆ.</translation>
+<translation id="4905269543817054577">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಇತಿಹಾಸವನ್ನು ಉಳಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="4908869848243824489">Google ನಿಂದ Discover</translation>
 <translation id="4910889077668685004">ಪಾವತಿ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು</translation>
 <translation id="4913161338056004800">ಅಂಕಿ ಅಂಶಗಳನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
@@ -650,6 +651,7 @@
 <translation id="5222676887888702881">ಸೈನ್ ಔಟ್</translation>
 <translation id="5227554086496586518">ಹುಡುಕಾಟದ ಫಲಿತಾಂಶಗಳನ್ನು ನೋಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5233638681132016545">ಹೊಸ ಟ್ಯಾಬ್</translation>
+<translation id="5246093389635966745">ಪರಿಕರಪಟ್ಟಿ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="5250483651202458397">ಸ್ಕ್ರೀನ್‌ಶಾಟ್. ಮುಚ್ಚಲು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="5262378156578470238">ಈ ಡೌನ್‌ಲೋಡ್ <ph name="DATE" /> ರಂದು ಪ್ರಾರಂಭವಾದಾಗ, ನೀವು ಅಧಿಸೂಚನೆಯನ್ನು ನೋಡುತ್ತೀರಿ.</translation>
 <translation id="526421993248218238">ಈ ಪುಟವನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
@@ -888,7 +890,6 @@
 <translation id="6657585470893396449">ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="6659594942844771486">ಟ್ಯಾಬ್</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> ರಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
-<translation id="666981079809192359">Chrome ಗೌಪ್ಯತಾ ಸೂಚನೆ</translation>
 <translation id="6671495933530132209">ಚಿತ್ರವನ್ನು ನಕಲಿಸಿ</translation>
 <translation id="6674571176963658787">ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು, ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="6676840375528380067">ಈ ಸಾಧನದಿಂದ ನಿಮ್ಮ Chrome ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸುವುದೇ?</translation>
@@ -1033,6 +1034,7 @@
 <translation id="7630202231528827509">ಪೂರೈಕೆದಾರರ URL</translation>
 <translation id="7638584964844754484">ತಪ್ಪಾದ ಪಾಸ್‌ಫ್ರೇಸ್</translation>
 <translation id="7641339528570811325">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ…</translation>
+<translation id="764170292089748542">ನೀವು ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಲು ಆಯ್ಕೆ ಮಾಡಿದ ನಂತರ, Chrome ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಉಳಿಸುವುದಿಲ್ಲ. ನಿಮ್ಮ ನೆಚ್ಚಿನ ಸೈಟ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ನೀವು ಈಗಲೂ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="7646772052135772216">ಪಾಸ್‌ವರ್ಡ್ ಸಿಂಕ್ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿಲ್ಲ</translation>
 <translation id="7655900163790317559">ಬ್ಲೂಟೂತ್‌ ಆನ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>

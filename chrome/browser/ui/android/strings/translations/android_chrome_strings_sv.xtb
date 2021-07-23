@@ -191,6 +191,7 @@ Sök genom att trycka på ett ord. Du kan finjustera sökningen genom att trycka
 <translation id="2276696007612801991">Logga in på ditt Google-konto om du vill kontrollera lösenorden</translation>
 <translation id="2278052315791335171">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="SITE" /> raderas</translation>
 <translation id="2286841657746966508">Faktureringsadress</translation>
+<translation id="2294030144029925122">Chromes integritetspolicy</translation>
 <translation id="230115972905494466">Inga kompatibla enheter hittades</translation>
 <translation id="230155349749732438">Om du vill använda den här inställningen behöver du först aktivera <ph name="BEGIN_LINK" />Förbättra sökningar och surfande<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Tryck för att ringa</translation>
@@ -318,6 +319,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3029704984691124060">Lösenfraserna matchar inte</translation>
 <translation id="3031225630520268969">Användargränssnitt för samtycke till röstsökning med assistenten</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Få hjälp<ph name="END_LINK" /></translation>
+<translation id="3037517125981011456">Visar meddelanden om att logga in i Chrome</translation>
 <translation id="3046945242843292318">Besök den här webbplatsen snabbare nästa gång</translation>
 <translation id="305593374596241526">Plats har inaktiverats. Aktivera det i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bokmärke}other{<ph name="BOOKMARKS_COUNT_MANY" /> bokmärken}}</translation>
@@ -337,6 +339,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3207960819495026254">Bokmärkt</translation>
 <translation id="3208584281581115441">Kontrollera nu</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> raderades</translation>
+<translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Sökhistorik<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />annan aktivitet<ph name="END_LINK2" /> kan sparas i Google-kontot när du är inloggad. Du kan radera den när du vill.</translation>
 <translation id="321773570071367578">Om du har glömt lösenfrasen eller vill ändra inställningen <ph name="BEGIN_LINK" />återställer du synkroniseringen<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Verifiera din identitet för att synkronisera lösenord</translation>
 <translation id="3227557059438308877">Google Chrome som säkerhetsnyckel</translation>
@@ -449,7 +452,7 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="3928666092801078803">Slå ihop data</translation>
 <translation id="3934366560681368531">”</translation>
 <translation id="393697183122708255">Röstsökning är inte tillgängligt</translation>
-<translation id="3943557322767080599">Visa inloggningsmeddelanden i Chrome när du loggar in på ditt Google-konto</translation>
+<translation id="395377504920307820">Använd utan ett konto</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Sidan läses in i Chrome när den blir tillgänglig}other{Sidorna läses in i Chrome när de blir tillgängliga}}</translation>
 <translation id="3962957115499249330">Du får en avisering när nedladdningen startas via wifi.</translation>
 <translation id="3963007978381181125">Betalningsmetoder och adresser från Google Pay omfattas inte av kryptering med lösenfras. Endast personer som har ditt lösenord kan läsa dina krypterade uppgifter. Lösenfrasen skickas inte till och sparas inte av Google. Om du glömmer lösenfrasen måste du återställa synkroniseringen. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -497,6 +500,7 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="4256782883801055595">Licenser för öppen källkod</translation>
 <translation id="4263656433980196874">Användargränssnittet för samtycke till röstsökning med assistenten har öppnats över hela skärmen</translation>
 <translation id="4269820728363426813">Kopiera länkadress</translation>
+<translation id="4281359692687148179">Dra ned när du vill uppdatera</translation>
 <translation id="4290281343757112331">Vill du ladda ned senare i stället?</translation>
 <translation id="4296252229500326964">Ny inkognitoflik</translation>
 <translation id="4298388696830689168">Länkade webbplatser</translation>
@@ -598,6 +602,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4881695831933465202">Öppna</translation>
 <translation id="488187801263602086">Byt namn på fil</translation>
 <translation id="4885273946141277891">Fler Chrome-förekomster än det finns stöd för.</translation>
+<translation id="4905269543817054577">Historik sparas inte i inkognitoläge.</translation>
 <translation id="4908869848243824489">Förslag från Google</translation>
 <translation id="4910889077668685004">Betalningsappar</translation>
 <translation id="4913161338056004800">Återställ statistik</translation>
@@ -621,7 +626,9 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5005498671520578047">Kopiera lösenord</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> vill ansluta</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5032430150487044192">Det gick inte att skapa QR-koden</translation>
 <translation id="5039804452771397117">Tillåt</translation>
+<translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Annan aktivitet<ph name="END_LINK1" /> kan sparas i Google-kontot när du är inloggad. Du kan radera den när du vill.</translation>
 <translation id="5061533557687621530">Kolla vädret genom att trycka på mikrofonen och säga ”Vad är det för väder i dag?”</translation>
 <translation id="5087580092889165836">Lägg till kort</translation>
 <translation id="5091249083535528968">Utökad data om användning</translation>
@@ -651,6 +658,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5222676887888702881">Logga ut</translation>
 <translation id="5227554086496586518">Tryck för att visa sökresultat</translation>
 <translation id="5233638681132016545">Ny flik</translation>
+<translation id="5246093389635966745">Redigera genväg i verktygsfältet</translation>
 <translation id="5250483651202458397">Skärmbild. Tryck och stäng.</translation>
 <translation id="5262378156578470238">Du får en avisering när nedladdningen startas den <ph name="DATE" />.</translation>
 <translation id="526421993248218238">Det går inte att läsa in den här sidan</translation>
@@ -740,6 +748,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5814131985548525293">Börja genom att skriva här eller trycka på mikrofonikonen</translation>
 <translation id="583281660410589416">Okänd</translation>
 <translation id="5833984609253377421">Dela länk</translation>
+<translation id="5834764604050996579">Tillåt att Chrome använder kameran om du vill skanna en QR-kod.</translation>
 <translation id="5836192821815272682">Uppdatering för Chrome laddas ned …</translation>
 <translation id="5853623416121554550">pausad</translation>
 <translation id="5854512288214985237">Varken statistik eller felrapporter skickas till Google</translation>
@@ -889,7 +898,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6657585470893396449">Lösenord</translation>
 <translation id="6659594942844771486">Flik</translation>
 <translation id="666731172850799929">Öppna i <ph name="APP_NAME" /></translation>
-<translation id="666981079809192359">Chromes sekretessmeddelande</translation>
 <translation id="6671495933530132209">Kopiera bild</translation>
 <translation id="6674571176963658787">Ange din lösenfras för att starta synkroniseringen</translation>
 <translation id="6676840375528380067">Vill du rensa din data i Chrome från den här enheten?</translation>
@@ -920,6 +928,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6867400383614725881">Ny inkognitoflik</translation>
 <translation id="6869056123412990582">dator</translation>
 <translation id="6882836635272038266">Standardskydd mot kända skadliga webbplatser, nedladdningar och tillägg.</translation>
+<translation id="6883204995689174413">Dela</translation>
 <translation id="688738109438487280">Lägg till befintlig data i <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Lås upp om du vill kopiera lösenordet</translation>
 <translation id="6896758677409633944">Kopiera</translation>
@@ -940,6 +949,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7022756207310403729">Öppna i webbläsaren</translation>
 <translation id="702463548815491781">Rekommenderas när TalkBack eller brytarstyrning är aktiverat</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> återställdes</translation>
+<translation id="7029390216614421513">Passa in QR-koden eller streckkoden i den här rutan</translation>
 <translation id="7029809446516969842">Lösenord</translation>
 <translation id="7054588988317389591">Vill du få bildbeskrivningar?</translation>
 <translation id="7055152154916055070">Omdirigeringen blockerades:</translation>
@@ -954,8 +964,10 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7138678301420049075">Övrigt</translation>
 <translation id="7146622961999026732">De här webbplatserna och apparna verkar vara viktiga för dig:</translation>
 <translation id="7149893636342594995">Senaste 24 timmarna</translation>
+<translation id="7155317020660659215">Om du vill skanna en QR-kod ändrar du inställningarna så att Chrome kan använda kameran</translation>
 <translation id="7173114856073700355">Inställningar</translation>
 <translation id="7177466738963138057">Du kan ändra detta senare i inställningarna</translation>
+<translation id="7177873915659574692">Det gick inte att skapa QR-koden. Webbadressen är längre än <ph name="CHARACTER_LIMIT" /> tecken.</translation>
 <translation id="7180611975245234373">Uppdatera</translation>
 <translation id="7187993566681480880">Skyddar dig i Chrome och kan användas för förbättrad säkerhet i andra Google-appar där du är inloggad.</translation>
 <translation id="718926126787620637">Lista över bokmärkesmappar som har öppnats över hela skärmen</translation>
@@ -1005,6 +1017,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7481864133709957613">Om du vill söka från den här sidan trycker du länge på ord i stället för att trycka på dem</translation>
 <translation id="7482656565088326534">Fliken Förhandsgranskning</translation>
 <translation id="7484997419527351112">Förslag – av</translation>
+<translation id="7485033510383818941">Dra ned sidan för att uppdatera innehållet i flödet</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (uppdaterades <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">Sparad data</translation>
 <translation id="7498271377022651285">Vänta …</translation>
@@ -1034,6 +1047,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7630202231528827509">Leverantörens webbadress</translation>
 <translation id="7638584964844754484">Felaktig lösenfras</translation>
 <translation id="7641339528570811325">Rensa webbinformation …</translation>
+<translation id="764170292089748542">Chrome sparar inte webbhistoriken när du väljer att surfa privat. Du kan fortfarande använda bokmärken för att få åtkomst till dina favoritwebbplatser.</translation>
 <translation id="7646772052135772216">Det går inte att synkronisera lösenord</translation>
 <translation id="7655900163790317559">Bluetooth aktiveras …</translation>
 <translation id="7658239707568436148">Avbryt</translation>
@@ -1082,6 +1096,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7929962904089429003">Öppna menyn</translation>
 <translation id="7930998711684428189">En varning visas om lösenord har läckt ut vid ett dataintrång.</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> är inaktuell.</translation>
+<translation id="7944772052836377867">Verifiera din identitet för synkronisering</translation>
 <translation id="7947953824732555851">Godkänn och logga in</translation>
 <translation id="7961015016161918242">Aldrig</translation>
 <translation id="7961926449547174351">Du har inaktiverat åtkomst till lagringsutrymmet. Återaktivera i inställningarna.</translation>
@@ -1113,6 +1128,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8084114998886531721">Sparat lösenord</translation>
 <translation id="8084285576995584326">Styr data i Google-kontot</translation>
 <translation id="808747664143081553">Ansluten till enheten</translation>
+<translation id="8088176524274673045">Be andra att skanna QR-koden om du vill dela med personer i närheten</translation>
 <translation id="8103578431304235997">Inkognitoflik</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Aktivera synkronisering om du vill ha dina bokmärken tillgängliga på alla enheter</translation>
@@ -1221,6 +1237,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8788265440806329501">Navigeringshistoriken har stängts</translation>
 <translation id="8788968922598763114">Öppna den senast stängda fliken igen</translation>
 <translation id="8798449543960971550">Lästa</translation>
+<translation id="8805097383171548551">Du behöver en enhet med kamera för att skanna en QR-kod.</translation>
 <translation id="8812260976093120287">På vissa webbplatser kan du betala med ovanstående betalningsappar som stöds på enheten.</translation>
 <translation id="881688628773363275">Det går inte att förhandsgranska innehållet.</translation>
 <translation id="8820817407110198400">Bokmärken</translation>

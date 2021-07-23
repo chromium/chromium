@@ -16,7 +16,6 @@
 <translation id="1056775291175587022">Желі табылмады</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Батареяны ауыстырыңыз немесе зарядтаңыз.</translation>
-<translation id="1077253978657569125">Біз мұны жақсартқымыз келеді.</translation>
 <translation id="108486256082349153">Ұялы құрылғының MAC мекенжайы: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Қайырлы күн, <ph name="GIVEN_NAME" />!</translation>
 <translation id="109942774857561566">Ішім пысты</translation>
@@ -201,7 +200,7 @@
 <translation id="2509468283778169019">CAPS LOCK қосулы</translation>
 <translation id="2536159006530886390">Интернетке қосыла алмай жатыр.</translation>
 <translation id="2542089167727451762">Профиль суретіңізді түртіңіз.</translation>
-<translation id="255671100581129685">Google Assistant жалпыға қолжетімді сеанста жұмыс істемейді.</translation>
+<translation id="255671100581129685">Google Assistant әркімге қолжетімді сеанста жұмыс істемейді.</translation>
 <translation id="256712445991462162">бекітілген ұлғайтқыш</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> құрылғысы қосылмады</translation>
 <translation id="2575685495496069081">Бірнеше есептік жазбаға кіру функциясы өшірілді</translation>
@@ -420,6 +419,7 @@
 <translation id="4274537685965975248">Ctrl + Alt + төменге бағыттауыш перне тіркесімінің функциясы өзгерді. End пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + оң жаққа бағыттауыш перне тіркесімін басыңыз.</translation>
 <translation id="4279490309300973883">Экран көшірмесін көрсету</translation>
 <translation id="4285498937028063278">Босату</translation>
+<translation id="4292904812939562398">Жақында пайдаланылған қолданбалар</translation>
 <translation id="429402653707266969">Құралдар тақтасының орнын ауыстыру</translation>
 <translation id="4294319844246081198">Қайырлы таң, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Барлық <ph name="COUNT" /> хабарландыруды өшіру</translation>

@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">اسکن</translation>
 <translation id="2570743873672969996">درحال اجرای آزمایش <ph name="TEST_NAME" />…</translation>
 <translation id="2585245331261708204">‏ویژگی‌های جدید Chrome OS</translation>
+<translation id="2619761439309613843">بازخوانی روزانه</translation>
 <translation id="2620436844016719705">سیستم</translation>
 <translation id="2740531572673183784">تأیید</translation>
 <translation id="2751739896257479635">‏اصالت‌سنجی مرحله ۲ EAP</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">به‌طور نسبی فعال شده است</translation>
 <translation id="3527036260304016759">انجام نشد - خطای نامشخص</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> دقیقه باقی مانده است</translation>
+<translation id="3540383942695635079">‏نشانی MAC</translation>
 <translation id="357889014807611375">‏Wi-Fi کنتوردار</translation>
 <translation id="3595596368722241419">باتری پر است</translation>
 <translation id="360565022852130722">‏شبکه Wi-Fi با پروتکل ضعیف WEP 802.1x ایمن شده است</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">تعداد دفعاتی که باتری‌تان یک دوره شارژ کامل را گذرانده است</translation>
 <translation id="3941014780699102620">حل کردن میزبان انجام نشد</translation>
 <translation id="3942420633017001071">تشخیص خطا</translation>
+<translation id="3966286471246132217">برای دریافت نتایج دقیق‌تر، تا زمان تکمیل شدن آزمایش، همه برنامه‌ها را ببندید.</translation>
 <translation id="3967822245660637423">بارگیری کامل شد</translation>
 <translation id="397105322502079400">در حال محاسبه…</translation>
 <translation id="39823212440917567">کارهای چاپ قدیمی‌تر از <ph name="NUMBER_OF_DAYS" /> روز برداشته می‌شوند</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">غیرفعال شد</translation>
 <translation id="4227825898293920515">گذرواژه <ph name="TIME" /> دیگر منقضی می‌شود</translation>
 <translation id="4238516577297848345">هیچ کار چاپی درحال انجام نیست</translation>
+<translation id="4244962993387259361">برای اجرای «آزمایش حافظه»، حداقل به ۵۰۰ مگابایت فضای آزاد نیاز دارید. برای آزاد کردن فضا، به «تنظیمات &gt; مدیریت فضای ذخیره‌سازی» بروید.</translation>
 <translation id="4289540628985791613">نمای کلی</translation>
 <translation id="4297501883039923494">متوقف شد - خطای نامشخص</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> تصویر</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">اترنت</translation>
 <translation id="4483049906298469269">پینگ کردن دروازه شبکه غیر پیش‌فرض انجام نشد</translation>
 <translation id="4511264077854731334">پورتال</translation>
+<translation id="4536864596629708641">‏پیکربندی IP</translation>
 <translation id="4548483925627140043">سیگنال پیدا نشد</translation>
 <translation id="455835558791489930">باتری <ph name="CHARGE_VALUE" /> میلی‌آمپرساعت</translation>
 <translation id="4562494484721939086">بدون سرویس</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> از مجموع <ph name="TOTAL_PAGE_NUMBER" />. برای لغو کار چاپ، Enter را فشار دهید.</translation>
 <translation id="4646949265910132906">‏اتصال Wi-Fi امن</translation>
 <translation id="4652335678334611408">ذخیره گزارش جلسه</translation>
+<translation id="4654549501020883054">تغییر روزانه</translation>
 <translation id="4665014895760275686">سازنده</translation>
 <translation id="467510802200863975">گذرواژه‌ها با هم مطابقت ندارند</translation>
 <translation id="467715984478005772">احتمال وجود مشکل در دیوار آتش</translation>
@@ -318,6 +324,7 @@
 <translation id="7162487448488904999">گالری</translation>
 <translation id="7172721935181587524">یک تصویر</translation>
 <translation id="7177485034254901881">این <ph name="DEVICE_TYPE" /> توسط <ph name="MANAGER" /> مدیریت می‌شود. سرپرستان می‌توانند این دستگاه را ازراه‌دور پیکربندی کنند.</translation>
+<translation id="7180611975245234373">بازخوانی</translation>
 <translation id="7216409898977639127">ارائه‌دهنده شبکه تلفن همراه</translation>
 <translation id="7271040990581020067">اسکنر درحال استفاده است. بعداً دوباره امتحان کنید.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@
 <translation id="8498220429738806196">شمارش‌گرهای ترافیک</translation>
 <translation id="8503813439785031346">نام کاربری</translation>
 <translation id="8503836310948963452">فقط چند دقیقه دیگر…</translation>
+<translation id="8521021929829989041">استفاده به‌عنوان دستگاه شخصی</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ممکن است شرکت مخابراتی‌تان برای اتصال به شبکه خود به این گزینه نیاز داشته باشد. برای اطلاع از جزئیات با شرکت مخابراتی تماس بگیرید.</translation>
 <translation id="8576249514688522074">راه‌اندازی‌نشده</translation>

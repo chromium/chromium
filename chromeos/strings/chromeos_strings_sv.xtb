@@ -78,6 +78,7 @@
 <translation id="2517472476991765520">Sök</translation>
 <translation id="2570743873672969996">Kör test av <ph name="TEST_NAME" /> …</translation>
 <translation id="2585245331261708204">Nyheter i Chrome OS</translation>
+<translation id="2619761439309613843">Daglig uppdatering</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Fas 2 i EAP-autentisering</translation>
@@ -117,6 +118,7 @@
 <translation id="3488065109653206955">Delvis aktiverat</translation>
 <translation id="3527036260304016759">Misslyckades – okänt fel</translation>
 <translation id="3532980081107202182">Ungefär <ph name="MIN_REMAINING" /> minuter kvar</translation>
+<translation id="3540383942695635079">MAC-adress</translation>
 <translation id="357889014807611375">wifi med datapriser</translation>
 <translation id="3595596368722241419">Batteriet är fulladdat</translation>
 <translation id="360565022852130722">wifi-nätverket använder det svaga säkerhetsprotokollet WEP 802.1x</translation>
@@ -132,6 +134,7 @@
 <translation id="387301095347517405">Antalet gånger som batteriet har laddats hela sin kapacitet</translation>
 <translation id="3941014780699102620">DNS-matchningen misslyckades för värden</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
+<translation id="3966286471246132217">Du får mer exakta resultat om du stänger alla appar tills testet är slutfört.</translation>
 <translation id="3967822245660637423">Nedladdning slutförd</translation>
 <translation id="397105322502079400">Beräknar ...</translation>
 <translation id="39823212440917567">Utskriftsjobb som är äldre än <ph name="NUMBER_OF_DAYS" /> dagar tas bort</translation>
@@ -144,6 +147,7 @@
 <translation id="4176463684765177261">Inaktiverad</translation>
 <translation id="4227825898293920515">Lösenordet upphör att gälla om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Inga utskriftsjobb pågår</translation>
+<translation id="4244962993387259361">Du behöver minst 500 MB ledigt utrymme för att köra ett minnestest. Öppna Inställningar &gt; Lagringshantering om du vill frigöra utrymme.</translation>
 <translation id="4289540628985791613">Översikt</translation>
 <translation id="4297501883039923494">Har stoppats – okänt fel</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> bilder</translation>
@@ -160,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Det gick inte att pinga gateway för nätverket som inte är standard</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4536864596629708641">IP-konfiguration</translation>
 <translation id="4548483925627140043">Ingen signal hittades</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-batteri</translation>
 <translation id="4562494484721939086">Ingen täckning</translation>
@@ -168,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Tryck på retur för att avbryta utskriftsjobbet.</translation>
 <translation id="4646949265910132906">Säker wifi-anslutning</translation>
 <translation id="4652335678334611408">Spara sessionslogg</translation>
+<translation id="4654549501020883054">Ändra dagligen</translation>
 <translation id="4665014895760275686">Tillverkare</translation>
 <translation id="467510802200863975">Lösenorden matchar inte</translation>
 <translation id="467715984478005772">Misstänkt brandvägg</translation>
@@ -318,6 +324,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">1 bild</translation>
 <translation id="7177485034254901881">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />. Administratörer kan fjärrkonfigurera enheten.</translation>
+<translation id="7180611975245234373">Uppdatera</translation>
 <translation id="7216409898977639127">Mobiloperatör</translation>
 <translation id="7271040990581020067">Skannern används för närvarande. Försök igen senare.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -385,6 +392,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8498220429738806196">Trafikräknare</translation>
 <translation id="8503813439785031346">Användarnamn</translation>
 <translation id="8503836310948963452">Bara några minuter kvar …</translation>
+<translation id="8521021929829989041">Använd en personlig enhet</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Det här alternativet kan krävas för att du ska kunna ansluta till operatörens nätverk. Kontakta operatören för mer information.</translation>
 <translation id="8576249514688522074">Inte initierat</translation>

@@ -8,6 +8,10 @@
 <translation id="1047726139967079566">Adicionar esta página aos favoritos...</translation>
 <translation id="1049743911850919806">Modo anônimo</translation>
 <translation id="105093091697134113">As contas a seguir usam senhas que foram expostas em uma violação de dados de terceiros ou inseridas em um site fraudulento. Mude as senhas imediatamente para manter suas contas seguras.</translation>
+<translation id="105214722824962652">Sua Conta do Google não será desconectada. <ph name="BEGIN_LINK" />Outras formas de atividade<ph name="END_LINK" /> podem ser salvas na sua conta quando ela está conectada. É possível excluí-las a qualquer momento.
+
+        
+Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="1063454504051558093">Usar outra senha...</translation>
 <translation id="1066060668811609597">Gerenciar sincronização</translation>
 <translation id="1076421457278169141">Código lido</translation>
@@ -132,6 +136,7 @@
 <translation id="2320166752086256636">Ocultar teclado</translation>
 <translation id="2339560363438331454">Serviços do Google e de sincronização</translation>
 <translation id="2351097562818989364">As configurações de tradução foram redefinidas.</translation>
+<translation id="235789365079050412">Política de Privacidade do Google</translation>
 <translation id="2359043044084662842">Traduzir</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360196772093551345">Solicitar um site móvel</translation>
@@ -204,6 +209,10 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="298306318844797842">Adicionar forma de pagamento…</translation>
 <translation id="2989805286512600854">Abrir em uma nova guia</translation>
 <translation id="3037605927509011580">Ah, não!</translation>
+<translation id="3076846064362030967">Sua Conta do Google não será desconectada. <ph name="BEGIN_LINK" />Outras formas de atividade<ph name="END_LINK" /> podem ser salvas na sua conta quando ela está conectada. É possível excluí-las a qualquer momento.
+
+
+Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="3080525922482950719">Você pode salvar páginas para ler depois ou off-line</translation>
 <translation id="3081338492074632642">A senha que você está salvando precisa corresponder à usada em <ph name="WEBSITE" /></translation>
 <translation id="3112556859945124369">Marcar...</translation>
@@ -328,7 +337,6 @@ Siga estas etapas:</translation>
 <translation id="4375040482473363939">Pesquisa por código QR</translation>
 <translation id="4378154925671717803">Telefone</translation>
 <translation id="4389019817280890563">Toque para mudar o idioma.</translation>
-<translation id="441868831736628555">Aviso de privacidade</translation>
 <translation id="4454246407045105932">Adicionar idioma</translation>
 <translation id="4469418912670346607">Continuar a configuração</translation>
 <translation id="4476574785019001431">Configurações</translation>
@@ -404,6 +412,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5140288047769711648">Esta senha ficará salva no Chrome. Você não precisa memorizá-la.</translation>
 <translation id="5150492518600715772">Enviar para seu dispositivo</translation>
 <translation id="5168414296986405587">Desenvolvido para iPadOS</translation>
+<translation id="5173088371991956744">A sincronização precisa confirmar sua identidade</translation>
 <translation id="5181140330217080051">Fazendo download</translation>
 <translation id="5186185447130319458">Particular</translation>
 <translation id="5188482106078495165">Sua configuração de cookies é aplicada a todas as guias. Para aplicar uma nova configuração a uma guia aberta, atualize a guia.</translation>
@@ -586,6 +595,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6730682669179532099">Não é possível exportar as senhas</translation>
 <translation id="6748108480210050150">De</translation>
 <translation id="6760509555861141183">Voltar à guia recente</translation>
+<translation id="6762812039470893796">Desmarcar tudo</translation>
 <translation id="6780034285637185932">CEP</translation>
 <translation id="6785453220513215166">Enviando relatórios de erros...</translation>
 <translation id="6797885426782475225">Pesquisa por voz</translation>
@@ -714,6 +724,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="802154636333426148">Falha no download</translation>
 <translation id="8023878949384262191">Expande a seção.</translation>
 <translation id="8027581147000338959">Abrir em uma nova janela</translation>
+<translation id="804225253087497565">O <ph name="BEGIN_LINK" />histórico de pesquisa<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />outras formas de atividade<ph name="END_LINK" /> podem ser salvos na sua Conta do Google quando ela está conectada. É possível excluí-los a qualquer momento.</translation>
 <translation id="804427445359061970">Você encontrará as guias de outros dispositivos aqui</translation>
 <translation id="8059533439631660104">Recolhe a seção.</translation>
 <translation id="8065292699993359127">Abrir URLs na navegação anônima do Chrome</translation>

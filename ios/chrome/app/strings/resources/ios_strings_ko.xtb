@@ -8,6 +8,10 @@
 <translation id="1047726139967079566">현재 페이지를 북마크에 추가...</translation>
 <translation id="1049743911850919806">시크릿</translation>
 <translation id="105093091697134113">다음 계정에서 타사의 정보 유출로 인해 노출되었거나 사기성 웹사이트에 입력된 비밀번호를 사용하고 있습니다. 비밀번호를 즉시 변경하여 계정을 안전하게 보호하세요.</translation>
+<translation id="105214722824962652">Google 계정에서 로그아웃되지 않습니다. 로그인할 경우 <ph name="BEGIN_LINK" />다른 활동 형식<ph name="END_LINK" />이 Google 계정에 저장될 수 있습니다. 이러한 데이터는 언제든지 삭제할 수 있습니다.
+
+        
+현재 사용 중인 검색엔진은 <ph name="DSE_NAME" />입니다. 해당 검색엔진에서 검색 기록을 삭제할 수 있는 경우 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="1063454504051558093">다른 비밀번호를 사용하세요...</translation>
 <translation id="1066060668811609597">동기화 관리</translation>
 <translation id="1076421457278169141">코드 스캔됨</translation>
@@ -132,6 +136,7 @@
 <translation id="2320166752086256636">키보드 숨기기</translation>
 <translation id="2339560363438331454">동기화 및 Google 서비스</translation>
 <translation id="2351097562818989364">번역 설정이 재설정되었습니다.</translation>
+<translation id="235789365079050412">Google 개인정보처리방침</translation>
 <translation id="2359043044084662842">번역</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2360196772093551345">모바일 버전으로 보기</translation>
@@ -196,6 +201,7 @@
 <translation id="2932085390869194046">비밀번호 추천...</translation>
 <translation id="2952581218264071393">1. Chrome 설정 열기</translation>
 <translation id="2958718410589002129">비밀번호</translation>
+<translation id="2961210776189273067">제목</translation>
 <translation id="2964349545761222050">타사 쿠키 차단</translation>
 <translation id="2969979262385602596">로그인하지 못했습니다. 나중에 다시 시도하세요.</translation>
 <translation id="2975121486251958312">시크릿 모드만 사용 가능</translation>
@@ -203,6 +209,10 @@
 <translation id="298306318844797842">결제 수단 추가...</translation>
 <translation id="2989805286512600854">새 탭에서 열기</translation>
 <translation id="3037605927509011580">앗, 이런!</translation>
+<translation id="3076846064362030967">Google 계정에서 로그아웃되지 않습니다. 로그인할 경우 <ph name="BEGIN_LINK" />다른 활동 형식<ph name="END_LINK" />이 Google 계정에 저장될 수 있습니다. 이러한 데이터는 언제든지 삭제할 수 있습니다.
+
+
+Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진의 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="3080525922482950719">페이지를 저장하여 나중에 읽거나 오프라인 상태에서 읽을 수 있습니다.</translation>
 <translation id="3081338492074632642">저장하려는 비밀번호가 <ph name="WEBSITE" />의 비밀번호와 일치하는지 확인하세요.</translation>
 <translation id="3112556859945124369">표시…</translation>
@@ -327,7 +337,6 @@
 <translation id="4375040482473363939">QR 코드 검색</translation>
 <translation id="4378154925671717803">전화기</translation>
 <translation id="4389019817280890563">언어를 변경하려면 탭하세요.</translation>
-<translation id="441868831736628555">개인정보처리방침</translation>
 <translation id="4454246407045105932">언어 추가</translation>
 <translation id="4469418912670346607">설정 계속하기</translation>
 <translation id="4476574785019001431">설정</translation>
@@ -403,6 +412,7 @@
 <translation id="5140288047769711648">Chrome에서 이 비밀번호를 기억합니다. 따라서 기억하지 않아도 됩니다.</translation>
 <translation id="5150492518600715772">기기로 보내기</translation>
 <translation id="5168414296986405587">iPadOS 최적화</translation>
+<translation id="5173088371991956744">동기화를 위해 본인 인증 필요</translation>
 <translation id="5181140330217080051">다운로드 중</translation>
 <translation id="5186185447130319458">비공개</translation>
 <translation id="5188482106078495165">쿠키 설정이 모든 탭에 적용됩니다. 새로운 설정을 열려 있는 탭에 적용하려면 탭을 새로고침하세요.</translation>
@@ -585,6 +595,7 @@
 <translation id="6730682669179532099">비밀번호를 내보낼 수 없음</translation>
 <translation id="6748108480210050150">올린이</translation>
 <translation id="6760509555861141183">최근 탭으로 돌아가기</translation>
+<translation id="6762812039470893796">모두 선택 해제</translation>
 <translation id="6780034285637185932">우편번호</translation>
 <translation id="6785453220513215166">비정상 종료 보고서 보내는 중...</translation>
 <translation id="6797885426782475225">음성검색</translation>
@@ -713,6 +724,7 @@
 <translation id="802154636333426148">다운로드 실패</translation>
 <translation id="8023878949384262191">섹션을 확장합니다.</translation>
 <translation id="8027581147000338959">새 창에서 열기</translation>
+<translation id="804225253087497565">로그인할 경우 <ph name="BEGIN_LINK" />검색 기록<ph name="END_LINK" /> 및 <ph name="BEGIN_LINK" />다른 활동 형식<ph name="END_LINK" />이 Google 계정에 저장될 수 있습니다. 이러한 데이터는 언제든지 삭제할 수 있습니다.</translation>
 <translation id="804427445359061970">여기에서 다른 기기의 탭을 확인할 수 있습니다</translation>
 <translation id="8059533439631660104">섹션을 접습니다.</translation>
 <translation id="8065292699993359127">Chrome에서 시크릿 모드로 URL 열기</translation>

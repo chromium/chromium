@@ -16,7 +16,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1056775291175587022">No networks</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Replace or recharge the battery</translation>
-<translation id="1077253978657569125">We want to improve this!</translation>
 <translation id="108486256082349153">Mobile: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Good afternoon <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">I'm bored</translation>
@@ -420,6 +419,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4274537685965975248">The Ctrl + Alt + down arrow keyboard shortcut has changed. To use the End key, press the <ph name="LAUNCHER_KEY_NAME" /> key + right arrow.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4285498937028063278">Unpin</translation>
+<translation id="4292904812939562398">Recently used apps</translation>
 <translation id="429402653707266969">Toggle toolbar location</translation>
 <translation id="4294319844246081198">Good morning <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Clear all <ph name="COUNT" /> notifications</translation>

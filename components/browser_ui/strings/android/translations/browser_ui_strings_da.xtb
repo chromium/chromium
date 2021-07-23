@@ -3,7 +3,6 @@
 <translationbundle lang="da">
 <translation id="1006017844123154345">Åbn på nettet</translation>
 <translation id="1044891598689252897">Websites fungerer som normalt</translation>
-<translation id="1100504063505580045">Aktuelt ikon</translation>
 <translation id="1124090076051167250">Dette rydder <ph name="DATASIZE" /> data og cookies, som er gemt af websites eller apps på din startskærm.</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Fjern</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Slå lyden i videoen fra</translation>
 <translation id="3596414637720633074">Bloker tredjepartscookies i inkognito</translation>
 <translation id="3600792891314830896">Lyden slås fra for websites, der afspiller lyd</translation>
-<translation id="365089839707261811">Gennemgå navneopdateringer</translation>
 <translation id="3744111561329211289">Synkronisering i baggrunden</translation>
 <translation id="3763247130972274048">Tryk to gange i videoens venstre eller højre side for at springe ti sekunder frem eller tilbage</translation>
 <translation id="381841723434055211">Telefonnumre</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Et website afspiller medier</translation>
 <translation id="42981349822642051">Udvid</translation>
 <translation id="4336434711095810371">Ryd alle data</translation>
-<translation id="4339203724549370495">Afinstaller app</translation>
 <translation id="4402755511846832236">Bloker websites fra at vide, hvornår du aktivt bruger denne enhed</translation>
 <translation id="4434045419905280838">Pop op-vinduer og omdirigeringer</translation>
 <translation id="445467742685312942">Tillad, at websites afspiller beskyttet indhold</translation>
@@ -135,12 +132,12 @@
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4708011789095599544">Er du sikker på, at du vil rydde cookies og andre websitedata for dette website?</translation>
 <translation id="4751476147751820511">Bevægelses- eller lyssensorer</translation>
-<translation id="4800839971935185386">Gennemgå navne- og ikonopdateringer</translation>
 <translation id="4836046166855586901">Spørg, når et website vil vide, hvornår du aktivt bruger denne enhed</translation>
 <translation id="4883854917563148705">Administrerede indstillinger kan ikke nulstilles</translation>
 <translation id="4887024562049524730">Spørg, inden websites kan anvende dine virtual reality-enheder og -data (anbefales)</translation>
 <translation id="4962975101802056554">Tilbagekald alle tilladelser for enheden</translation>
 <translation id="497421865427891073">Gå fremad</translation>
+<translation id="4976702386844183910">Senest besøgt <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Der blev ikke fundet nogen kontakter</translation>
 <translation id="4996978546172906250">Del via</translation>
 <translation id="5039804452771397117">Tillad</translation>
@@ -151,6 +148,7 @@
 <translation id="5123685120097942451">Inkognitofane</translation>
 <translation id="5186036860380548585">Se valgmuligheden øverst på skærmen</translation>
 <translation id="5197729504361054390">De kontakter, du vælger, deles med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">Senest besøgt i dag</translation>
 <translation id="528192093759286357">Træk fra toppen, og tryk på tilbageknappen igen for at afslutte fuld skærm.</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5301954838959518834">OK, det er forstået</translation>
@@ -164,7 +162,6 @@
 <translation id="5403592356182871684">Navne</translation>
 <translation id="5489227211564503167">Forløbet tid: <ph name="ELAPSED_TIME" /> af <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloker annoncer på websites, der viser påtrængende eller vildledende annoncer</translation>
-<translation id="549957179819296104">Nyt ikon</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> blev tilladt, <ph name="PERMISSION_2" /> blev blokeret</translation>
 <translation id="5505264765875738116">Websites kan ikke spørge dig, om de må sende dig notifikationer</translation>
 <translation id="5516455585884385570">Åbn indstillinger for notifikationer</translation>
@@ -181,6 +178,7 @@
 <translation id="5804241973901381774">Tilladelser</translation>
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5876056640971328065">Sæt video på pause</translation>
+<translation id="5887687176710214216">Senest besøgt i går</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5922853908706496913">Deling af din skærm</translation>
 <translation id="5939518447894949180">Nulstil</translation>
@@ -210,6 +208,7 @@
 <translation id="6527303717912515753">Del</translation>
 <translation id="6545864417968258051">Bluetooth-scanning</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> mere er blokeret}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more blocked}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> mere er blokeret}}</translation>
+<translation id="6554732001434021288">Senest besøgt for <ph name="NUM_DAYS" /> dage siden</translation>
 <translation id="6561560012278703671">Få lydløse meddelelser (dette sørger for, at dine notifikationsprompts ikke forstyrrer dig)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beskyttet indhold</translation>
@@ -251,7 +250,6 @@
 <translation id="7589445247086920869">Bloker for den aktuelle søgemaskine</translation>
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7658239707568436148">Annuller</translation>
-<translation id="7734541938181328224">Gennemgå ikonopdateringer</translation>
 <translation id="7781829728241885113">I går</translation>
 <translation id="7791543448312431591">Tilføj</translation>
 <translation id="780301667611848630">Nej tak</translation>
@@ -293,7 +291,6 @@
 <translation id="8487700953926739672">Tilgængelig offline</translation>
 <translation id="851751545965956758">Bloker websites fra at oprette forbindelse til enheder</translation>
 <translation id="8525306231823319788">Fuld skærm</translation>
-<translation id="857074314439694500">Hvis denne app forsøger at narre dig til at tro, at den er en anden app, skal du afinstallere den.</translation>
 <translation id="857943718398505171">Tilladt (anbefales)</translation>
 <translation id="8609465669617005112">Flyt op</translation>
 <translation id="8676374126336081632">Ryd indtastning</translation>
