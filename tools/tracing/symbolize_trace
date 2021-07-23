@@ -42,10 +42,7 @@ def main():
     trace_file = args[0]
 
   # Symbolize Trace
-  symbolize_trace.SymbolizeTrace(trace_file=trace_file,
-                                cloud_storage_bucket=options.cloud_storage_bucket,
-                                trace_processor_path=options.trace_processor_path,
-                                breakpad_output_dir=options.breakpad_output_dir)
+  symbolize_trace.SymbolizeTrace(trace_file=trace_file, options=options)
 
 if __name__ == '__main__':
   sys.exit(main())
