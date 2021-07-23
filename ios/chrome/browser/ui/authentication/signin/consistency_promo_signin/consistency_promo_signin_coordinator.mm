@@ -274,9 +274,12 @@ const char* kSigninAccountConsistencyPromoActionSignedInCount =
                                      IDS_IOS_SIGN_IN_FAILURE_TITLE)
                          message:errorMessage];
 
+  __weak __typeof(self) weakSelf = self;
   [self.alertCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SIGN_IN_DISMISS)
-                action:nil
+                action:^() {
+                  weakSelf.alertCoordinator = nil;
+                }
                  style:UIAlertActionStyleCancel];
   [self.alertCoordinator start];
 }
