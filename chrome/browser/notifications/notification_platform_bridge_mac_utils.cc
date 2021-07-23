@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/process/process_handle.h"
-#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"

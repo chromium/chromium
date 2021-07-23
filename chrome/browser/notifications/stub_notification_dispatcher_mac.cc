@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/browser/notifications/stub_alert_dispatcher_mac.h"
+#include "chrome/browser/notifications/stub_notification_dispatcher_mac.h"
 
 #include <algorithm>
 #include <memory>

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NOTIFICATIONS_ALERT_DISPATCHER_MOJO_H_
-#define CHROME_BROWSER_NOTIFICATIONS_ALERT_DISPATCHER_MOJO_H_
+#ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPATCHER_MOJO_H_
+#define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPATCHER_MOJO_H_
 
 #include <memory>
 #include <string>
@@ -13,8 +13,8 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
-#include "chrome/browser/notifications/alert_dispatcher_mac.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
+#include "chrome/browser/notifications/notification_dispatcher_mac.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -78,4 +78,4 @@ class NotificationDispatcherMojo
   base::TimeTicks service_start_time_;
 };
 
-#endif  // CHROME_BROWSER_NOTIFICATIONS_ALERT_DISPATCHER_MOJO_H_
+#endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPATCHER_MOJO_H_

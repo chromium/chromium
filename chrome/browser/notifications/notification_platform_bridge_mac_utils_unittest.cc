@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <AppKit/AppKit.h>
-
 #include <string>
 
 #include "chrome/browser/notifications/notification_platform_bridge.h"
@@ -16,9 +14,7 @@ using message_center::Notification;
 
 class NotificationPlatformBridgeMacUtilsTest : public testing::Test {
  public:
-  void SetUp() override {
-    response_ = BuildDefaultNotificationResponse();
-  }
+  void SetUp() override { response_ = BuildDefaultNotificationResponse(); }
 
  protected:
   mac_notifications::mojom::NotificationMetadataPtr

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NOTIFICATIONS_STUB_ALERT_DISPATCHER_MAC_H_
-#define CHROME_BROWSER_NOTIFICATIONS_STUB_ALERT_DISPATCHER_MAC_H_
+#ifndef CHROME_BROWSER_NOTIFICATIONS_STUB_NOTIFICATION_DISPATCHER_MAC_H_
+#define CHROME_BROWSER_NOTIFICATIONS_STUB_NOTIFICATION_DISPATCHER_MAC_H_
 
 #include <vector>
 
-#include "chrome/browser/notifications/alert_dispatcher_mac.h"
+#include "chrome/browser/notifications/notification_dispatcher_mac.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 
 class StubNotificationDispatcherMac : public NotificationDispatcherMac {
@@ -44,4 +44,4 @@ class StubNotificationDispatcherMac : public NotificationDispatcherMac {
   std::vector<mac_notifications::mojom::NotificationPtr> notifications_;
 };
 
-#endif  // CHROME_BROWSER_NOTIFICATIONS_STUB_ALERT_DISPATCHER_MAC_H_
+#endif  // CHROME_BROWSER_NOTIFICATIONS_STUB_NOTIFICATION_DISPATCHER_MAC_H_
