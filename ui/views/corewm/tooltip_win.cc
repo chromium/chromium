@@ -94,6 +94,8 @@ void TooltipWin::PositionTooltip() {
   // following the cursor.
   if (position_.behavior == TooltipPositionBehavior::kCentered)
     tooltip_bounds.Offset(-size.width() / 2, 0);
+  else if (base::i18n::IsRTL())
+    tooltip_bounds.Offset(-size.width(), 0);
   tooltip_bounds.AdjustToFit(display::win::ScreenWin::DIPToScreenRect(
       parent_hwnd_, display.work_area()));
   SetWindowPos(tooltip_hwnd_, nullptr, tooltip_bounds.x(), tooltip_bounds.y(),

@@ -201,9 +201,12 @@ gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
     case TooltipPositionBehavior::kCentered:
       tooltip_rect.Offset(-tooltip_size.width() / 2, 0);
       break;
-    case TooltipPositionBehavior::kRelativeToCursor:
-      tooltip_rect.Offset(kCursorOffsetX, kCursorOffsetY);
+    case TooltipPositionBehavior::kRelativeToCursor: {
+      const int x_offset =
+          base::i18n::IsRTL() ? -tooltip_size.width() : kCursorOffsetX;
+      tooltip_rect.Offset(x_offset, kCursorOffsetY);
       break;
+    }
   }
 
   display::Screen* screen = display::Screen::GetScreen();
