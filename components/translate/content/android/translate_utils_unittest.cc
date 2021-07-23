@@ -29,12 +29,13 @@ class TranslateUtilsTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
-    delegate_factory_ = new MockTranslateInfoBarDelegateFactory("en", "pl");
+    delegate_factory_ =
+        std::make_unique<MockTranslateInfoBarDelegateFactory>("en", "pl");
     delegate_ = delegate_factory_->GetMockTranslateInfoBarDelegate();
     env_ = base::android::AttachCurrentThread();
   }
 
-  MockTranslateInfoBarDelegateFactory* delegate_factory_;
+  std::unique_ptr<MockTranslateInfoBarDelegateFactory> delegate_factory_;
   MockTranslateInfoBarDelegate* delegate_;
   JNIEnv* env_;
 };
