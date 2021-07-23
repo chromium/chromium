@@ -1094,7 +1094,6 @@ class SmoothScrollAnimationEndNotification : public LayerTreeHostScrollTest {
     child_layer_ = Layer::Create();
     child_layer_->SetElementId(
         LayerIdToElementIdForTesting(child_layer_->id()));
-    child_layer_->SetBounds(gfx::Size(110, 110));
 
     child_layer_->SetIsDrawable(true);
     child_layer_->SetHitTestable(true);
@@ -1111,11 +1110,11 @@ class SmoothScrollAnimationEndNotification : public LayerTreeHostScrollTest {
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
   void WillCommit() override {
+    if (TestEnded())
+      return;
     // Keep the test committing (otherwise the early out for no update
     // will stall the test).
-    if (layer_tree_host()->SourceFrameNumber() < 2) {
-      layer_tree_host()->SetNeedsCommit();
-    }
+    layer_tree_host()->SetNeedsCommit();
   }
 
   void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
