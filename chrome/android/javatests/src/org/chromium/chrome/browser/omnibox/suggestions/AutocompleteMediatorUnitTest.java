@@ -209,21 +209,20 @@ public class AutocompleteMediatorUnitTest {
 
         mHandler = new ImmediatePostingHandler();
 
-        mSuggestionModels = new ModelList();
-        mListModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
-        mListModel.set(SuggestionListProperties.SUGGESTION_MODELS, mSuggestionModels);
-
         mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
         doReturn(mAutocompleteController).when(mAutocompleteControllerJniMock).getForProfile(any());
 
         // clang-format off
-        mMediator = new AutocompleteMediator(ContextUtils.getApplicationContext(),
-                mAutocompleteDelegate, mTextStateProvider, mListModel,
-                mHandler, () -> mModalDialogManager, null, null,
-                mLocationBarDataProvider, tab -> {}, null, url -> false, new DummyJankTracker(),
-                (pixelSize, callback) -> {});
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mSuggestionModels = new ModelList();
+            mListModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
+            mListModel.set(SuggestionListProperties.SUGGESTION_MODELS, mSuggestionModels);
+
+            mMediator = new AutocompleteMediator(ContextUtils.getApplicationContext(),
+                    mAutocompleteDelegate, mTextStateProvider, mListModel,
+                    mHandler, () -> mModalDialogManager, null, null,
+                    mLocationBarDataProvider, tab -> {}, null, url -> false, new DummyJankTracker(),
+                    (pixelSize, callback) -> {});
             mMediator.setAutocompleteProfile(mProfile);
         });
         // clang-format on

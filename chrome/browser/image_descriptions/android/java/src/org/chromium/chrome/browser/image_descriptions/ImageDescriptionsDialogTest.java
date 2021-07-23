@@ -95,9 +95,11 @@ public class ImageDescriptionsDialogTest extends DummyUiChromeActivityTestCase {
         Profile.setLastUsedProfileForTesting(mProfile);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
 
-        mAppModalPresenter = new AppModalPresenter(getActivity());
-        mModalDialogManager =
-                new ModalDialogManager(mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mAppModalPresenter = new AppModalPresenter(getActivity());
+            mModalDialogManager = new ModalDialogManager(
+                    mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
+        });
 
         mManager = SharedPreferencesManager.getInstance();
         mController = ImageDescriptionsController.getInstance();

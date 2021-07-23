@@ -126,11 +126,13 @@ public class ChromeTabModalPresenterTest {
         mManager =
                 TestThreadUtils.runOnUiThreadBlockingNoException(mActivity::getModalDialogManager);
         mTestObserver = new TestObserver();
-        mActivity.getToolbarManager()
-                .getToolbarLayoutForTesting()
-                .getLocationBar()
-                .getOmniboxStub()
-                .addUrlFocusChangeListener(mTestObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivity.getToolbarManager()
+                    .getToolbarLayoutForTesting()
+                    .getLocationBar()
+                    .getOmniboxStub()
+                    .addUrlFocusChangeListener(mTestObserver);
+        });
         mTabModalPresenter =
                 (ChromeTabModalPresenter) mManager.getPresenterForTest(ModalDialogType.TAB);
     }
@@ -196,7 +198,8 @@ public class ChromeTabModalPresenterTest {
     @Feature({"ModalDialog"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testSuspend_ToggleOverview() throws Exception {
-        mActivity.getActivityTab().addObserver(mTestObserver);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivity.getActivityTab().addObserver(mTestObserver));
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
         PropertyModel dialog2 = createDialog(mActivity, mManager, "2", null);
         PropertyModel dialog3 = createDialog(mActivity, mManager, "3", null);
@@ -261,7 +264,8 @@ public class ChromeTabModalPresenterTest {
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
         // Reset states.
-        mActivity.getActivityTab().removeObserver(mTestObserver);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivity.getActivityTab().removeObserver(mTestObserver));
     }
 
     @Test

@@ -92,7 +92,8 @@ public class SyncErrorInfoBarTest {
         mFakeSyncServiceImpl = (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
         mInfoBarObserver = new SyncErrorInfoBarContainerObserver();
         mInfoBarContainer = mSyncTestRule.getInfoBarContainer();
-        mSyncTestRule.getInfoBarContainer().addObserver(mInfoBarObserver);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mSyncTestRule.getInfoBarContainer().addObserver(mInfoBarObserver));
     }
 
     @Test

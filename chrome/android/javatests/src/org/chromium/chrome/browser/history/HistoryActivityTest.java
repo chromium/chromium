@@ -129,8 +129,10 @@ public class HistoryActivityTest {
         mAdapter = mHistoryManager.getContentManagerForTests().getAdapter();
         mRecyclerView = mHistoryManager.getContentManagerForTests().getRecyclerView();
         mTestObserver = new TestObserver();
-        mHistoryManager.getSelectionDelegateForTests().addObserver(mTestObserver);
-        mAdapter.registerAdapterDataObserver(mTestObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mHistoryManager.getSelectionDelegateForTests().addObserver(mTestObserver);
+            mAdapter.registerAdapterDataObserver(mTestObserver);
+        });
     }
 
     @Test

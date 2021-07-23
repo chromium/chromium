@@ -65,7 +65,8 @@ public class StorePersistedTabDataTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mMocker.mock(EndpointFetcherJni.TEST_HOOKS, mEndpointFetcherJniMock);
-        PersistedTabDataConfiguration.setUseTestConfig(true);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> PersistedTabDataConfiguration.setUseTestConfig(true));
         Profile.setLastUsedProfileForTesting(mProfileMock);
     }
 

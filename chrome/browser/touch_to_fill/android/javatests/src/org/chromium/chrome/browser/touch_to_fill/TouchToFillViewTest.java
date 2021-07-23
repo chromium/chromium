@@ -91,11 +91,11 @@ public class TouchToFillViewTest {
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
-        mModel = TouchToFillProperties.createDefaultModel(mDismissHandler);
         mBottomSheetController = mActivityTestRule.getActivity()
                                          .getRootUiCoordinatorForTesting()
                                          .getBottomSheetController();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel = TouchToFillProperties.createDefaultModel(mDismissHandler);
             mTouchToFillView = new TouchToFillView(getActivity(), mBottomSheetController);
             TouchToFillCoordinator.setUpModelChangeProcessors(mModel, mTouchToFillView);
         });

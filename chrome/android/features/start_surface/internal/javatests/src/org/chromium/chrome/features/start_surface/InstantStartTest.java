@@ -1264,7 +1264,8 @@ public class InstantStartTest {
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
         TabAttributeCache.setTitleForTesting(0, "Google");
 
-        HomepageManager.getInstance().setPrefHomepageEnabled(false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> HomepageManager.getInstance().setPrefHomepageEnabled(false));
         Assert.assertFalse(HomepageManager.isHomepageEnabled());
 
         // Launches new Tab from the launcher icon and verifies that a NTP is created and showing.

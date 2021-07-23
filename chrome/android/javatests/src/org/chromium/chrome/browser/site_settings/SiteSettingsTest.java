@@ -103,7 +103,10 @@ public class SiteSettingsTest {
     @After
     public void tearDown() throws TimeoutException {
         if (mPermissionUpdateWaiter != null) {
-            mPermissionRule.getActivity().getActivityTab().removeObserver(mPermissionUpdateWaiter);
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                mPermissionRule.getActivity().getActivityTab().removeObserver(
+                        mPermissionUpdateWaiter);
+            });
         }
 
         // Clean up default content setting and system settings.
@@ -132,13 +135,16 @@ public class SiteSettingsTest {
 
     private void initializeUpdateWaiter(final boolean expectGranted) {
         if (mPermissionUpdateWaiter != null) {
-            mPermissionRule.getActivity().getActivityTab().removeObserver(mPermissionUpdateWaiter);
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                mPermissionRule.getActivity().getActivityTab().removeObserver(
+                        mPermissionUpdateWaiter);
+            });
         }
         Tab tab = mPermissionRule.getActivity().getActivityTab();
 
         mPermissionUpdateWaiter = new PermissionUpdateWaiter(
                 expectGranted ? "Granted" : "Denied", mPermissionRule.getActivity());
-        tab.addObserver(mPermissionUpdateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(mPermissionUpdateWaiter));
     }
 
     private BrowserContextHandle getBrowserContextHandle() {

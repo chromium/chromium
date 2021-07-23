@@ -124,7 +124,7 @@ public class PortalsTest {
         private final CallbackHelper mCallbackHelper;
 
         public LayoutAfterTabContentsSwappedObserver(Tab tab) {
-            tab.addObserver(this);
+            TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(this));
             mCallbackHelper = new CallbackHelper();
         }
 
@@ -148,7 +148,7 @@ public class PortalsTest {
     private void executeScriptAndAwaitSwap(Tab tab, String code) throws Exception {
         TabContentsSwapObserver swapObserver = new TabContentsSwapObserver();
         CallbackHelper swapWaiter = swapObserver.getCallbackHelper();
-        tab.addObserver(swapObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(swapObserver));
 
         int currSwapCount = swapWaiter.getCallCount();
         JavaScriptUtils.executeJavaScript(tab.getWebContents(), code);
@@ -403,7 +403,7 @@ public class PortalsTest {
 
         TabContentsSwapObserver swapObserver = new TabContentsSwapObserver();
         CallbackHelper swapWaiter = swapObserver.getCallbackHelper();
-        tab.addObserver(swapObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(swapObserver));
         int currSwapCount = swapWaiter.getCallCount();
 
         int dragStartX = 30;

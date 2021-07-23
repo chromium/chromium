@@ -206,18 +206,19 @@ public class ScrimTest {
     @Feature({"Scrim"})
     public void testGestureDetector() throws ExecutionException, TimeoutException {
         ColorDrawable customDrawable = new ColorDrawable(Color.BLUE);
-        PropertyModel model =
-                new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
-                        .with(ScrimProperties.TOP_MARGIN, 0)
-                        .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
-                        .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
-                        .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
-                        .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
-                        .with(ScrimProperties.VISIBILITY_CALLBACK, mVisibilityChangeCallback)
-                        .with(ScrimProperties.BACKGROUND_COLOR, Color.RED)
-                        .with(ScrimProperties.BACKGROUND_DRAWABLE, customDrawable)
-                        .with(ScrimProperties.GESTURE_DETECTOR, mCustomGestureDetector)
-                        .build();
+        PropertyModel model = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                    .with(ScrimProperties.TOP_MARGIN, 0)
+                    .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
+                    .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
+                    .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
+                    .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
+                    .with(ScrimProperties.VISIBILITY_CALLBACK, mVisibilityChangeCallback)
+                    .with(ScrimProperties.BACKGROUND_COLOR, Color.RED)
+                    .with(ScrimProperties.BACKGROUND_DRAWABLE, customDrawable)
+                    .with(ScrimProperties.GESTURE_DETECTOR, mCustomGestureDetector)
+                    .build();
+        });
         showScrim(model, false);
 
         int gestureCallCount = mDelegatedEventHelper.getCallCount();
@@ -279,16 +280,17 @@ public class ScrimTest {
     @Feature({"Scrim"})
     public void testAffectsNavigationBar_enabled() throws TimeoutException {
         int callCount = mNavigationBarCallbackHelper.getCallCount();
-        PropertyModel model =
-                new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
-                        .with(ScrimProperties.TOP_MARGIN, 0)
-                        .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
-                        .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
-                        .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
-                        .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
-                        .with(ScrimProperties.VISIBILITY_CALLBACK, mVisibilityChangeCallback)
-                        .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, true)
-                        .build();
+        PropertyModel model = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                    .with(ScrimProperties.TOP_MARGIN, 0)
+                    .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
+                    .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
+                    .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
+                    .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
+                    .with(ScrimProperties.VISIBILITY_CALLBACK, mVisibilityChangeCallback)
+                    .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, true)
+                    .build();
+        });
         showScrim(model, false);
 
         mNavigationBarCallbackHelper.waitForCallback(callCount, 1);
@@ -299,16 +301,17 @@ public class ScrimTest {
     @Feature({"Scrim"})
     public void testAffectsNavigationBar_disabled() throws TimeoutException {
         int callCount = mStatusBarCallbackHelper.getCallCount();
-        PropertyModel model =
-                new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
-                        .with(ScrimProperties.TOP_MARGIN, 0)
-                        .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
-                        .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
-                        .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
-                        .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
-                        .with(ScrimProperties.VISIBILITY_CALLBACK, mVisibilityChangeCallback)
-                        .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, false)
-                        .build();
+        PropertyModel model = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                    .with(ScrimProperties.TOP_MARGIN, 0)
+                    .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
+                    .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
+                    .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
+                    .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
+                    .with(ScrimProperties.VISIBILITY_CALLBACK, mVisibilityChangeCallback)
+                    .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, false)
+                    .build();
+        });
         showScrim(model, false);
 
         assertEquals("No events to the navigation bar delegate should have occurred", callCount,
@@ -320,18 +323,19 @@ public class ScrimTest {
     @Feature({"Scrim"})
     public void testCustomDrawable() throws TimeoutException {
         ColorDrawable customDrawable = new ColorDrawable(Color.BLUE);
-        PropertyModel model =
-                new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
-                        .with(ScrimProperties.TOP_MARGIN, 0)
-                        .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
-                        .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
-                        .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
-                        .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
-                        .with(ScrimProperties.VISIBILITY_CALLBACK, mVisibilityChangeCallback)
-                        .with(ScrimProperties.BACKGROUND_COLOR, Color.RED)
-                        .with(ScrimProperties.BACKGROUND_DRAWABLE, customDrawable)
-                        .with(ScrimProperties.GESTURE_DETECTOR, null)
-                        .build();
+        PropertyModel model = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                    .with(ScrimProperties.TOP_MARGIN, 0)
+                    .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
+                    .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
+                    .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
+                    .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
+                    .with(ScrimProperties.VISIBILITY_CALLBACK, mVisibilityChangeCallback)
+                    .with(ScrimProperties.BACKGROUND_COLOR, Color.RED)
+                    .with(ScrimProperties.BACKGROUND_DRAWABLE, customDrawable)
+                    .with(ScrimProperties.GESTURE_DETECTOR, null)
+                    .build();
+        });
 
         showScrim(model, false);
 
@@ -351,15 +355,16 @@ public class ScrimTest {
     @Feature({"Scrim"})
     public void testTopMargin() throws TimeoutException {
         int topMargin = 100;
-        PropertyModel model =
-                new PropertyModel.Builder(ScrimProperties.REQUIRED_KEYS)
-                        .with(ScrimProperties.TOP_MARGIN, topMargin)
-                        .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
-                        .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
-                        .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
-                        .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
-                        .with(ScrimProperties.VISIBILITY_CALLBACK, mVisibilityChangeCallback)
-                        .build();
+        PropertyModel model = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new PropertyModel.Builder(ScrimProperties.REQUIRED_KEYS)
+                    .with(ScrimProperties.TOP_MARGIN, topMargin)
+                    .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
+                    .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
+                    .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
+                    .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
+                    .with(ScrimProperties.VISIBILITY_CALLBACK, mVisibilityChangeCallback)
+                    .build();
+        });
 
         showScrim(model, false);
 
@@ -397,25 +402,27 @@ public class ScrimTest {
      */
     private PropertyModel buildModel(boolean requiredKeysOnly, boolean affectsStatusBar,
             boolean showInFrontOfAnchor, @ColorInt int color) {
-        PropertyModel model =
-                new PropertyModel
-                        .Builder(requiredKeysOnly ? ScrimProperties.REQUIRED_KEYS
-                                                  : ScrimProperties.ALL_KEYS)
-                        .with(ScrimProperties.TOP_MARGIN, 0)
-                        .with(ScrimProperties.AFFECTS_STATUS_BAR, affectsStatusBar)
-                        .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
-                        .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, showInFrontOfAnchor)
-                        .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
-                        .with(ScrimProperties.VISIBILITY_CALLBACK, mVisibilityChangeCallback)
-                        .build();
+        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            PropertyModel model =
+                    new PropertyModel
+                            .Builder(requiredKeysOnly ? ScrimProperties.REQUIRED_KEYS
+                                                      : ScrimProperties.ALL_KEYS)
+                            .with(ScrimProperties.TOP_MARGIN, 0)
+                            .with(ScrimProperties.AFFECTS_STATUS_BAR, affectsStatusBar)
+                            .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
+                            .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, showInFrontOfAnchor)
+                            .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
+                            .with(ScrimProperties.VISIBILITY_CALLBACK, mVisibilityChangeCallback)
+                            .build();
 
-        if (!requiredKeysOnly) {
-            model.set(ScrimProperties.BACKGROUND_COLOR, color);
-            model.set(ScrimProperties.BACKGROUND_DRAWABLE, null);
-            model.set(ScrimProperties.GESTURE_DETECTOR, null);
-        }
+            if (!requiredKeysOnly) {
+                model.set(ScrimProperties.BACKGROUND_COLOR, color);
+                model.set(ScrimProperties.BACKGROUND_DRAWABLE, null);
+                model.set(ScrimProperties.GESTURE_DETECTOR, null);
+            }
 
-        return model;
+            return model;
+        });
     }
 
     /**

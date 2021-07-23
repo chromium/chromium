@@ -60,22 +60,25 @@ public class ExploreSitesPageTest {
     // clang-format on
 
     ArrayList<ExploreSitesCategory> getTestingCatalog() {
-        final ArrayList<ExploreSitesCategory> categoryList = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            ExploreSitesCategory category =
-                    new ExploreSitesCategory(i, i, "Category #" + Integer.toString(i),
-                            /* ntpShownCount = */ 1, /* interactionCount = */ 0);
-            // 0th category would be filtered out. Tests that row maximums are obeyed.
-            int numSites = 4 * i + 1;
-            for (int j = 0; j < numSites; j++) {
-                ExploreSitesSite site = new ExploreSitesSite(i * 8 + j,
-                        "Site #" + Integer.toString(j), new GURL("https://example.com/"), false);
-                category.addSite(site);
+        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            final ArrayList<ExploreSitesCategory> categoryList = new ArrayList<>();
+            for (int i = 0; i < 5; i++) {
+                ExploreSitesCategory category =
+                        new ExploreSitesCategory(i, i, "Category #" + Integer.toString(i),
+                                /* ntpShownCount = */ 1, /* interactionCount = */ 0);
+                // 0th category would be filtered out. Tests that row maximums are obeyed.
+                int numSites = 4 * i + 1;
+                for (int j = 0; j < numSites; j++) {
+                    ExploreSitesSite site =
+                            new ExploreSitesSite(i * 8 + j, "Site #" + Integer.toString(j),
+                                    new GURL("https://example.com/"), false);
+                    category.addSite(site);
+                }
+                categoryList.add(category);
             }
-            categoryList.add(category);
-        }
 
-        return categoryList;
+            return categoryList;
+        });
     }
 
     @Rule

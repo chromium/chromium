@@ -164,7 +164,7 @@ public class RuntimePermissionTestUtils {
         final Tab tab = activity.getActivityTab();
         final PermissionUpdateWaiter permissionUpdateWaiter = new PermissionUpdateWaiter(
                 expectPermissionAllowed ? "Granted" : "Denied", activity);
-        tab.addObserver(permissionUpdateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(permissionUpdateWaiter));
 
         permissionTestRule.setUpUrl(testUrl);
 
@@ -202,6 +202,6 @@ public class RuntimePermissionTestUtils {
             permissionUpdateWaiter.waitForNumUpdates(0);
         }
 
-        tab.removeObserver(permissionUpdateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(permissionUpdateWaiter));
     }
 }

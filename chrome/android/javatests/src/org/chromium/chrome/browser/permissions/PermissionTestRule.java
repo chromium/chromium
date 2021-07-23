@@ -110,7 +110,8 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     public void setUpActivity() throws InterruptedException {
         startMainActivityOnBlankPage();
         mListener = new InfoBarTestAnimationListener();
-        getInfoBarContainer().addAnimationListener(mListener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> getInfoBarContainer().addAnimationListener(mListener));
     }
 
     public void setUpUrl(final String url) {
