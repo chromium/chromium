@@ -208,6 +208,8 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
     params["line"] = base::NumberToString(*error_report->line_number);
   if (error_report->column_number)
     params["column"] = base::NumberToString(*error_report->column_number);
+  if (error_report->debug_id)
+    params["debug_id"] = std::move(*error_report->debug_id);
   // TODO(crbug/1121816): Chrome crashes have "Process uptime" and "Process
   // type" fields, eventually consider using that for process uptime.
   params["browser_process_uptime_ms"] =

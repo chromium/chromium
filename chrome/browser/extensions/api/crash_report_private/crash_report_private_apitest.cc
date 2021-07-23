@@ -130,6 +130,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, ExtraParamsAndStackTrace) {
         version: "1.0.0.0",
         lineNumber: 123,
         columnNumber: 456,
+        debugId: "2751679EE:233977D75E03BAC9DA/255DD0",
         stackTrace: "   at <anonymous>:1:1",
       },
       () => window.domAutomationController.send(""));
@@ -146,6 +147,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, ExtraParamsAndStackTrace) {
           {"app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
            "\\d+&browser_"
            "version=1.2.3.4&channel=Stable&column=456&"
+           "debug_id=2751679EE%3A233977D75E03BAC9DA%2F255DD0&"
            "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo"
            "&line=123&num-experiments=1&os=ChromeOS"
            "&prod=Chrome%2520\\(Chrome%2520OS\\)&renderer_process_"

@@ -75,6 +75,11 @@ struct COMPONENT_EXPORT(JS_ERROR_REPORTING) JavaScriptErrorReport {
   // privacy-sensitive details we don't want to send.
   absl::optional<std::string> page_url;
 
+  // Some type of debug_id used to tie the JavaScript back to a source map in
+  // the crash reporting backend. Matches the debug_id in the symbol upload
+  // system.
+  absl::optional<std::string> debug_id;
+
   // Uptime of the renderer process in milliseconds. 0 if the callee
   // |web_contents| is null (shouldn't really happen as this is caled from a JS
   // context) or the renderer process doesn't exist (possible due to termination

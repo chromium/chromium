@@ -23,6 +23,7 @@ chrome.crashReportPrivate = {};
  *   version: (string|undefined),
  *   lineNumber: (number|undefined),
  *   columnNumber: (number|undefined),
+ *   debugId: (string|undefined),
  *   stackTrace: (string|undefined)
  * }}
  */

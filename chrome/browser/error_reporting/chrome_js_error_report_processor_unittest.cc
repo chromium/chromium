@@ -161,6 +161,7 @@ void ChromeJsErrorReportProcessorTest::TestAllFields() {
   report.line_number = 83;
   report.column_number = 14;
   report.page_url = "https://www.chromium.org/Home.html";
+  report.debug_id = "ABC:123";
   report.stack_trace = "bad_func(1, 2)\nonclick()\n";
   report.renderer_process_uptime_ms = 1234;
   report.window_type = WindowType::kSystemWebApp;
@@ -178,6 +179,7 @@ void ChromeJsErrorReportProcessorTest::TestAllFields() {
   EXPECT_THAT(actual_report->query,
               HasSubstr("renderer_process_uptime_ms=1234"));
   EXPECT_THAT(actual_report->query, HasSubstr("window_type=SYSTEM_WEB_APP"));
+  EXPECT_THAT(actual_report->query, HasSubstr("debug_id=ABC%3A123"));
   // TODO(iby) research why URL is repeated...
   EXPECT_THAT(
       actual_report->query,
