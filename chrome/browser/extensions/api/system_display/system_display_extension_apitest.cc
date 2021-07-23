@@ -67,7 +67,13 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          SystemDisplayExtensionApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-IN_PROC_BROWSER_TEST_P(SystemDisplayExtensionApiTest, GetDisplayInfo) {
+// TODO(crbug.com/1231357): Flakes (at least) on Windows
+#if defined(OS_WIN)
+#define MAYBE_GetDisplayInfo DISABLED_GetDisplayInfo
+#else
+#define MAYBE_GetDisplayInfo GetDisplayInfo
+#endif  // defined(OS_WIN)
+IN_PROC_BROWSER_TEST_P(SystemDisplayExtensionApiTest, MAYBE_GetDisplayInfo) {
   ASSERT_TRUE(RunExtensionTest(
       "system_display/info", {},
       {.load_as_service_worker = GetParam() == ContextType::kServiceWorker}))
