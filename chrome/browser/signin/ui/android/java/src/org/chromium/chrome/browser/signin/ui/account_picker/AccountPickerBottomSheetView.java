@@ -84,9 +84,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                                        .findViewById(R.id.account_picker_selected_account);
         mDismissButton = mViewFlipper.getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
                                  .findViewById(R.id.account_picker_dismiss_button);
-        if (AccountPickerFeatureUtils.shouldHideDismissButton()) {
-            mDismissButton.setVisibility(View.GONE);
-        }
 
         setUpContinueButton(mViewFlipper.getChildAt(ViewState.NO_ACCOUNTS),
                 R.string.signin_add_account_to_device);

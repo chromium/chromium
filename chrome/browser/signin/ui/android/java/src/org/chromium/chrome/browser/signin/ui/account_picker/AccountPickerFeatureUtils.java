@@ -13,13 +13,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 public class AccountPickerFeatureUtils {
     private static final String CONSECUTIVE_ACTIVE_DISMISSAL_LIMIT_PARAM =
             "consecutive_active_dismissal_limit";
-    private static final String DISMISS_BUTTON_PARAM = "dismiss_button";
-    private static final String HIDE_DISMISS_BUTTON = "hide";
-
-    static boolean shouldHideDismissButton() {
-        return HIDE_DISMISS_BUTTON.equals(ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY_VAR, DISMISS_BUTTON_PARAM));
-    }
 
     public static int getDismissLimit() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
