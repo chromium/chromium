@@ -41,7 +41,7 @@ suite('TabSearchItemTest', () => {
         pinned: false,
         showIcon: true,
         tabId: 0,
-        url: 'https://example.com',
+        url: {url: 'https://example.com'},
         title: text,
       },
       highlightRanges: {
@@ -92,7 +92,7 @@ suite('TabSearchItemTest', () => {
       pinned: false,
       showIcon: true,
       tabId: 0,
-      url: 'https://example.com',
+      url: {url: 'https://example.com'},
       title: 'Example.com site',
     });
 
@@ -126,7 +126,7 @@ suite('TabSearchItemTest', () => {
       showIcon: true,
       tabId: 0,
       groupId: token,
-      url: 'https://example.com',
+      url: {url: 'https://example.com'},
       title: 'Example.com site',
     });
 

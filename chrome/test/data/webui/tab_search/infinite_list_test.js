@@ -88,7 +88,7 @@ suite('InfiniteListTest', () => {
    */
   function sampleTabItems(siteNames) {
     return generateSampleTabsFromSiteNames(siteNames).map(tab => {
-      const tabData = {hostname: new URL(tab.url).hostname, tab};
+      const tabData = {hostname: new URL(tab.url.url).hostname, tab};
       Object.setPrototypeOf(tabData, TabData.prototype);
       return tabData;
     });

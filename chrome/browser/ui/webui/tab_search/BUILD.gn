@@ -9,6 +9,7 @@ mojom("mojo_bindings") {
   public_deps = [
     "//components/tab_groups/public/mojom:mojo_bindings",
     "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
   ]
   webui_module_path = "/"
 }

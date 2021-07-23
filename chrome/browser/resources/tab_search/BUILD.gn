@@ -33,6 +33,7 @@ if (optimize_webui) {
       "chrome://resources/mojo/mojo/public/js/bindings.js",
       "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
       "chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js",
+      "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
       "fuse.js",
     ]
 
