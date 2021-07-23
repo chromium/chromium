@@ -73,8 +73,6 @@ class ZeroStateFileProvider : public SearchProvider,
                           file_manager::file_tasks::FileTasksObserver>
       file_tasks_observer_{this};
 
-  SEQUENCE_CHECKER(sequence_checker_);
-
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<ZeroStateFileProvider> weak_factory_{this};
 
