@@ -48,14 +48,36 @@ GetNetworkFactoryCallback() {
   return *callback;
 }
 
+StoragePartitionConfig GetOrCreateStoragePartitionConfig(
+    BrowserContext* browser_context,
+    SiteInstance* site_instance) {
+  if (site_instance) {
+    SiteInstanceImpl* site_instance_impl =
+        static_cast<SiteInstanceImpl*>(site_instance);
+    return site_instance_impl->GetSiteInfo().GetStoragePartitionConfig(
+        browser_context);
+  }
+  return StoragePartitionConfig::CreateDefault(browser_context);
+}
+
 }  // namespace
 
 MockRenderProcessHost::MockRenderProcessHost(BrowserContext* browser_context,
                                              bool is_for_guests_only)
+    : MockRenderProcessHost(
+          browser_context,
+          StoragePartitionConfig::CreateDefault(browser_context),
+          is_for_guests_only) {}
+
+MockRenderProcessHost::MockRenderProcessHost(
+    BrowserContext* browser_context,
+    const StoragePartitionConfig& storage_partition_config,
+    bool is_for_guests_only)
     : bad_msg_count_(0),
       id_(ChildProcessHostImpl::GenerateChildProcessUniqueId()),
       has_connection_(false),
       browser_context_(browser_context),
+      storage_partition_config_(storage_partition_config),
       prev_routing_id_(0),
       shutdown_requested_(false),
       fast_shutdown_started_(false),
@@ -191,7 +213,7 @@ void MockRenderProcessHost::OnForegroundServiceWorkerRemoved() {
 }
 
 StoragePartition* MockRenderProcessHost::GetStoragePartition() {
-  return browser_context_->GetDefaultStoragePartition();
+  return browser_context_->GetStoragePartition(storage_partition_config_);
 }
 
 void MockRenderProcessHost::AddWord(const std::u16string& word) {}
@@ -324,8 +346,7 @@ BrowserContext* MockRenderProcessHost::GetBrowserContext() {
 
 bool MockRenderProcessHost::InSameStoragePartition(
     StoragePartition* partition) {
-  // Mock RPHs only have one partition.
-  return true;
+  return GetStoragePartition() == partition;
 }
 
 IPC::ChannelProxy* MockRenderProcessHost::GetChannel() {
@@ -519,9 +540,11 @@ RenderProcessHost* MockRenderProcessHostFactory::CreateRenderProcessHost(
     BrowserContext* browser_context,
     SiteInstance* site_instance) {
   const bool is_for_guests_only = site_instance && site_instance->IsGuest();
+  StoragePartitionConfig storage_partition_config =
+      GetOrCreateStoragePartitionConfig(browser_context, site_instance);
   std::unique_ptr<MockRenderProcessHost> host =
-      std::make_unique<MockRenderProcessHost>(browser_context,
-                                              is_for_guests_only);
+      std::make_unique<MockRenderProcessHost>(
+          browser_context, storage_partition_config, is_for_guests_only);
   processes_.push_back(std::move(host));
   return processes_.back().get();
 }

@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_factory.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "ipc/ipc_test_sink.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -61,6 +62,9 @@ class MockRenderProcessHost : public RenderProcessHost {
 
   explicit MockRenderProcessHost(BrowserContext* browser_context,
                                  bool is_for_guests_only = false);
+  MockRenderProcessHost(BrowserContext* browser_context,
+                        const StoragePartitionConfig& storage_partition_config,
+                        bool is_for_guests_only);
   ~MockRenderProcessHost() override;
 
   // Provides access to all IPC messages that would have been sent to the
@@ -269,6 +273,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   BrowserContext* browser_context_;
   base::ObserverList<RenderProcessHostObserver> observers_;
 
+  StoragePartitionConfig storage_partition_config_;
   base::flat_set<PriorityClient*> priority_clients_;
   int prev_routing_id_;
   base::IDMap<IPC::Listener*> listeners_;
