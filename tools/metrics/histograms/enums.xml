@@ -2487,12 +2487,18 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AndroidWebViewProxySchemeFilterType">
+  <obsolete>
+    Removed in July 2021.
+  </obsolete>
   <int value="0" label="HTTP"/>
   <int value="1" label="HTTPS"/>
   <int value="2" label="ALL"/>
 </enum>
 
 <enum name="AndroidWebViewProxyUrlType">
+  <obsolete>
+    Removed in July 2021.
+  </obsolete>
   <int value="0" label="HTTP"/>
   <int value="1" label="HTTPS"/>
   <int value="2" label="DIRECT"/>

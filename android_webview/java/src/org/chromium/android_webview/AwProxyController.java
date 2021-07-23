@@ -4,12 +4,9 @@
 
 package org.chromium.android_webview;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.base.annotations.CalledByNativeUnchecked;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.RecordHistogram;
 
 import java.util.concurrent.Executor;
 
@@ -18,31 +15,6 @@ import java.util.concurrent.Executor;
  */
 @JNINamespace("android_webview")
 public class AwProxyController {
-    /**
-     * Represents the scheme used in proxy rules.
-     * These values are persisted to logs. Entries should not be renumbered
-     * or reordered and numeric values should never be reused.
-     */
-    @IntDef({ProxySchemeType.HTTP, ProxySchemeType.HTTPS, ProxySchemeType.ALL})
-    private @interface ProxySchemeType {
-        int HTTP = 0;
-        int HTTPS = 1;
-        int ALL = 2;
-        int NUM_ENTRIES = 3;
-    }
-
-    /**
-     * Represents the type of proxy url.
-     * These values are persisted to logs. Entries should not be renumbered
-     * or reordered and numeric values should never be reused.
-     */
-    @IntDef({ProxyUrlType.HTTP, ProxyUrlType.HTTPS, ProxyUrlType.DIRECT})
-    private @interface ProxyUrlType {
-        int HTTP = 0;
-        int HTTPS = 1;
-        int DIRECT = 2;
-        int NUM_ENTRIES = 3;
-    }
 
     public AwProxyController() {}
 
@@ -51,40 +23,19 @@ public class AwProxyController {
         int length = (proxyRules == null ? 0 : proxyRules.length);
         String[] urlSchemes = new String[length];
         String[] proxyUrls = new String[length];
-        boolean schemeHttp = false;
-        boolean schemeHttps = false;
-        boolean urlHttp = false;
-        boolean urlHttps = false;
-        boolean urlDirect = false;
         for (int i = 0; i < length; i++) {
-            // URL schemes
-            if (proxyRules[i][0] == null) {
-                urlSchemes[i] = "*";
-            } else {
-                urlSchemes[i] = proxyRules[i][0];
+            String urlSchemeFilter = proxyRules[i][0];
+            String proxyUrl = proxyRules[i][1];
+
+            if (urlSchemeFilter == null) {
+                urlSchemeFilter = "*";
             }
-            // proxy URLs
-            proxyUrls[i] = proxyRules[i][1];
-            if (proxyUrls[i] == null) {
+            urlSchemes[i] = urlSchemeFilter;
+
+            if (proxyUrl == null) {
                 throw new IllegalArgumentException("Proxy rule " + i + " has a null url");
             }
-            // Check schemes for UMA
-            if (proxyRules[i][0].equals("http")) {
-                schemeHttp = true;
-            } else if (proxyRules[i][0].equals("https")) {
-                schemeHttps = true;
-            } else {
-                schemeHttp = true;
-                schemeHttps = true;
-            }
-            // Check URLs for UMA
-            if (proxyUrls[i].startsWith("http://")) {
-                urlHttp = true;
-            } else if (proxyUrls[i].startsWith("https://")) {
-                urlHttps = true;
-            } else if (proxyUrls[i].startsWith("direct://")) {
-                urlDirect = true;
-            }
+            proxyUrls[i] = proxyUrl;
         }
         length = (bypassRules == null ? 0 : bypassRules.length);
         for (int i = 0; i < length; i++) {
@@ -101,40 +52,6 @@ public class AwProxyController {
         if (!result.isEmpty()) {
             throw new IllegalArgumentException(result);
         }
-
-        // In case operation is successful, log UMA data on SetProxyOverride
-        // Proxy scheme filter
-        if (schemeHttp && schemeHttps) {
-            recordProxySchemeType(ProxySchemeType.ALL);
-        } else if (schemeHttp) {
-            recordProxySchemeType(ProxySchemeType.HTTP);
-        } else if (schemeHttps) {
-            recordProxySchemeType(ProxySchemeType.HTTPS);
-        }
-        // Proxy url type
-        if (urlHttp) {
-            recordProxyUrlType(ProxyUrlType.HTTP);
-        }
-        if (urlHttps) {
-            recordProxyUrlType(ProxyUrlType.HTTPS);
-        }
-        if (urlDirect) {
-            recordProxyUrlType(ProxyUrlType.DIRECT);
-        }
-        // Bypass rules
-        RecordHistogram.recordBooleanHistogram("Android.WebView.SetProxyOverride.BypassRules",
-                bypassRules == null || bypassRules.length == 0 ? false : true);
-    }
-
-    private static void recordProxySchemeType(@ProxySchemeType int proxySchemeType) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.WebView.SetProxyOverride.ProxySchemeFilterType", proxySchemeType,
-                ProxySchemeType.NUM_ENTRIES);
-    }
-
-    private static void recordProxyUrlType(@ProxyUrlType int proxyUrlType) {
-        RecordHistogram.recordEnumeratedHistogram("Android.WebView.SetProxyOverride.ProxyUrlType",
-                proxyUrlType, ProxyUrlType.NUM_ENTRIES);
     }
 
     public void clearProxyOverride(Runnable listener, Executor executor) {
@@ -143,8 +60,6 @@ public class AwProxyController {
         }
 
         AwProxyControllerJni.get().clearProxyOverride(AwProxyController.this, listener, executor);
-        // Log UMA data on ClearProxyOverride
-        RecordHistogram.recordBooleanHistogram("Android.WebView.ClearProxyOverride", true);
     }
 
     @CalledByNativeUnchecked
