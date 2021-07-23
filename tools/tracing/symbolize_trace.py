@@ -105,7 +105,7 @@ def _Symbolize(trace_file, symbolizer_path, breakpad_output_dir, output_file):
   """
   # Set environment variable as location of stored breakpad files.
   symbolize_env = os.environ.copy()
-  symbolize_env['BREAKPAD_SYMBOL_DIR'] = os.path.join(breakpad_output_dir, "")
+  symbolize_env['BREAKPAD_SYMBOL_DIR'] = os.path.join(breakpad_output_dir, '')
   cmd = [symbolizer_path, 'symbolize', trace_file]
 
   # Open temporary file where symbols can be stored.
