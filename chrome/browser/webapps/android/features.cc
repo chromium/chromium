@@ -7,8 +7,8 @@
 namespace webapps {
 namespace features {
 
-const base::Feature kPwaInstallUseBottomSheet{
-    "PwaInstallUseBottomSheet", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kPwaInstallUseBottomSheet{"PwaInstallUseBottomSheet",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace webapps

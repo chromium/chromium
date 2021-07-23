@@ -139,21 +139,6 @@
             ]
         }
     ],
-    "AndroidBottomSheetPwaInstall": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PwaInstallUseBottomSheet"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidClipboardSuggestionContentHidden": [
         {
             "platforms": [
