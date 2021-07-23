@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/containers/linked_list.h"
-#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
@@ -36,8 +35,6 @@ class CONTENT_EXPORT IdleMonitor : public base::LinkNode<IdleMonitor> {
   blink::mojom::IdleMonitorPtr client_;
   blink::mojom::IdleStatePtr last_state_;
   base::TimeDelta threshold_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(IdleMonitor);
 };
