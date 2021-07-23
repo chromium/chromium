@@ -515,6 +515,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_person_add_40dp.xml",
   "java/res/drawable/ic_photo_camera_black.xml",
   "java/res/drawable/ic_reading_list_folder.xml",
+  "java/res/drawable/ic_select_window.xml",
   "java/res/drawable/ic_settings_black.xml",
   "java/res/drawable/ic_signout_40dp.xml",
   "java/res/drawable/ic_site_timer.xml",

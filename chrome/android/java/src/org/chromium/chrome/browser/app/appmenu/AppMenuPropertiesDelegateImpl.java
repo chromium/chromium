@@ -44,8 +44,11 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
@@ -300,10 +303,15 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             UpdateMenuItemHelper.getInstance().registerObserver(mAppMenuInvalidator);
         }
 
-        boolean showNewWindow = shouldShowNewWindow();
-        boolean showMoveToOtherWindow = !showNewWindow && shouldShowMoveToOtherWindow();
-        menu.findItem(R.id.new_window_menu_id).setVisible(showNewWindow);
-        menu.findItem(R.id.move_to_other_window_menu_id).setVisible(showMoveToOtherWindow);
+        menu.findItem(R.id.new_window_menu_id).setVisible(shouldShowNewWindow());
+        menu.findItem(R.id.move_to_other_window_menu_id).setVisible(shouldShowMoveToOtherWindow());
+        MenuItem menu_all_windows = menu.findItem(R.id.manage_all_windows_menu_id);
+        boolean showManageAllWindows = shouldShowManageAllWindows();
+        menu_all_windows.setVisible(showManageAllWindows);
+        if (showManageAllWindows) {
+            menu_all_windows.setTitle(
+                    mContext.getString(R.string.menu_manage_all_windows, getInstanceCount()));
+        }
 
         // Don't allow either "chrome://" pages or interstitial pages to be shared.
         menu.findItem(R.id.share_row_menu_id).setVisible(mShareUtils.shouldEnableShare(currentTab));
@@ -360,6 +368,16 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         // TODO(https://crbug.com/1092175): Enable "managed by" menu item after chrome://management
         // page is added.
         managedByMenuItem.setEnabled(false);
+    }
+
+    /**
+     * @return The number of Chrome instances either running alive or dormant but the state
+     *         is present for restoration.
+     */
+    private int getInstanceCount() {
+        return SharedPreferencesManager.getInstance()
+                .readIntsWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_URL)
+                .size();
     }
 
     private void prepareCommonMenuItems(Menu menu, @MenuGroup int menuGroup, boolean isIncognito) {
@@ -475,10 +493,21 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      * @return Whether the "Move to other window" menu item should be displayed.
      */
     protected boolean shouldShowMoveToOtherWindow() {
+        if (!instanceSwitcherEnabled() && shouldShowNewWindow()) return false;
         boolean hasMoreThanOneTab = mTabModelSelector.getTotalTabCount() > 1;
         boolean showAlsoForSingleTab = !isPartnerHomepageEnabled();
-        return mMultiWindowModeStateDispatcher.isOpenInOtherWindowSupported()
-                && (showAlsoForSingleTab || hasMoreThanOneTab);
+        if (!hasMoreThanOneTab && !showAlsoForSingleTab) return false;
+        if (instanceSwitcherEnabled()) {
+            // Moving tabs should be possible to any other instance.
+            return getInstanceCount() > 1;
+        } else {
+            return mMultiWindowModeStateDispatcher.isOpenInOtherWindowSupported();
+        }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public boolean instanceSwitcherEnabled() {
+        return MultiWindowUtils.instanceSwitcherEnabled();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -501,10 +530,22 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      */
     protected boolean shouldShowNewWindow() {
         if (!isNewWindowMenuFeatureEnabled()) return false;
-        if (mMultiWindowModeStateDispatcher.isMultiInstanceRunning()) return false;
-        return (mMultiWindowModeStateDispatcher.canEnterMultiWindowMode() && isTabletSizeScreen())
-                || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
-                || mMultiWindowModeStateDispatcher.isInMultiDisplayMode();
+        if (instanceSwitcherEnabled()) {
+            // Hide the menu if we already have the maximum number of windows.
+            return getInstanceCount() < MultiWindowUtils.getMaxInstances();
+        } else {
+            if (mMultiWindowModeStateDispatcher.isMultiInstanceRunning()) return false;
+            return (mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
+                           && isTabletSizeScreen())
+                    || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
+                    || mMultiWindowModeStateDispatcher.isInMultiDisplayMode();
+        }
+    }
+
+    private boolean shouldShowManageAllWindows() {
+        if (!instanceSwitcherEnabled()) return false;
+        // Show the menu if there is more than one instance to manage.
+        return getInstanceCount() > 1;
     }
 
     /**

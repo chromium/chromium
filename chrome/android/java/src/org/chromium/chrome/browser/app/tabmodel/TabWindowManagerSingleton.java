@@ -25,7 +25,7 @@ public class TabWindowManagerSingleton {
     public static TabWindowManager getInstance() {
         ThreadUtils.assertOnUiThread();
         if (sInstance == null) {
-            int maxSelectors = MultiWindowUtils.instanceSwitcherEnabled() ? 5 : 3;
+            int maxSelectors = MultiWindowUtils.getMaxInstances();
             TabModelSelectorFactory selectorFactory = sSelectorFactoryForTesting == null
                     ? new DefaultTabModelSelectorFactory()
                     : sSelectorFactoryForTesting;

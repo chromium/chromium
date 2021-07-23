@@ -50,6 +50,9 @@
         <item android:id="@+id/move_to_other_window_menu_id"
             android:title="@string/menu_move_to_other_window"
             android:icon="@drawable/ic_open_in_browser" />
+        <item android:id="@+id/manage_all_windows_menu_id"
+            android:title="@string/menu_manage_all_windows"
+            android:icon="@drawable/ic_select_window" />
         <item android:id="@+id/divider_line_id"
             android:title="@null" />
         <item android:id="@+id/open_history_menu_id"

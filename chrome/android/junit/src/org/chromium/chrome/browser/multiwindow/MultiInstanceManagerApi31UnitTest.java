@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.util.Pair;
-import android.util.SparseIntArray;
+import android.util.SparseArray;
 
 import androidx.test.filters.SmallTest;
 
@@ -36,9 +36,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -80,6 +81,8 @@ public class MultiInstanceManagerApi31UnitTest {
     @Mock
     Activity mActivityTask61;
 
+    final Activity mCurrentActivity = mActivityTask56;
+
     Activity[] mActivityPool;
 
     private static final TabModelSelectorFactory sMockTabModelSelectorFactory =
@@ -93,33 +96,31 @@ public class MultiInstanceManagerApi31UnitTest {
             };
 
     private static class TestMultiInstanceManagerApi31 extends MultiInstanceManagerApi31 {
-        // State of each the tab state file tab_state[0-4]. True if the file exists.
-        private final boolean[] mTabStateFileExists = new boolean[mMaxInstances];
-
         // Chrome activities ~ ApplicationStatus.getRunningActivities()
-        // (k, v) = (instance, task)
-        private final SparseIntArray mRunningActivities = new SparseIntArray();
+        // (k, v) = (instance, Activity)
+        private final SparseArray<Activity> mRunningActivities = new SparseArray<Activity>();
 
         // Running tasks containing Chrome activity ~ ActivityManager.getAppTasks()
         private final Set<Integer> mAppTasks = new HashSet<>();
 
-        private TestMultiInstanceManagerApi31(
+        private Activity mAdjacentInstance;
+
+        private TestMultiInstanceManagerApi31(Activity activity,
                 MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
                 ActivityLifecycleDispatcher activityLifecycleDispatcher,
                 MenuOrKeyboardActionController menuOrKeyboardActionController) {
-            super(null, null, multiWindowModeStateDispatcher, activityLifecycleDispatcher,
+            super(activity, null, multiWindowModeStateDispatcher, activityLifecycleDispatcher,
                     menuOrKeyboardActionController);
         }
 
-        @Override
-        public boolean stateFileExists(int index) {
-            return mTabStateFileExists[index];
+        private void createInstance(int instanceId, Activity activity) {
+            MultiInstanceManagerApi31.writeUrl(instanceId, "https://id-" + instanceId + ".com");
+            mRunningActivities.put(instanceId, activity);
+            updateTasks(instanceId, activity);
         }
 
-        private void createInstance(int instanceId, int taskId) {
-            mTabStateFileExists[instanceId] = true;
-            mRunningActivities.put(instanceId, taskId);
-            updateTasks(taskId, instanceId);
+        private void setAdjacentInstance(Activity activity) {
+            mAdjacentInstance = activity;
         }
 
         // Called when activity instance is destroyed but its task remains alive.
@@ -127,20 +128,37 @@ public class MultiInstanceManagerApi31UnitTest {
             mRunningActivities.delete(instanceId);
         }
 
-        private void updateTasks(int taskId, int instanceId) {
+        private void updateTasks(int instanceId, Activity activity) {
             if (instanceId == INVALID_INSTANCE_ID) {
-                mAppTasks.remove(taskId);
-                int index = mRunningActivities.indexOfValue(taskId);
+                mAppTasks.remove(activity.getTaskId());
+                int index = mRunningActivities.indexOfValue(activity);
                 if (index >= 0) mRunningActivities.removeAt(index);
             } else {
-                mAppTasks.add(taskId);
+                mAppTasks.add(activity.getTaskId());
             }
+        }
+
+        @Override
+        protected boolean isRunningInAdjacentWindow(Activity activity) {
+            return activity == mAdjacentInstance;
+        }
+
+        @Override
+        protected List<Activity> getAllRunningActivities() {
+            List<Activity> result = new ArrayList<>();
+            for (int i = 0; i < mRunningActivities.size(); ++i) {
+                result.add(mRunningActivities.valueAt(i));
+            }
+            return result;
         }
 
         @Override
         protected Set<Integer> getAllChromeTasks() {
             return mAppTasks;
         }
+
+        @Override
+        protected void installTabModelObserver() {}
     }
 
     @Before
@@ -162,10 +180,9 @@ public class MultiInstanceManagerApi31UnitTest {
         };
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
                 sMockTabModelSelectorFactory);
-        mMultiInstanceManager = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return new TestMultiInstanceManagerApi31(mMultiWindowModeStateDispatcher,
-                    mActivityLifecycleDispatcher, mMenuOrKeyboardActionController);
-        });
+        mMultiInstanceManager =
+                new TestMultiInstanceManagerApi31(mCurrentActivity, mMultiWindowModeStateDispatcher,
+                        mActivityLifecycleDispatcher, mMenuOrKeyboardActionController);
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
     }
@@ -242,6 +259,30 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(PASSED_ID_2, allocInstanceIndex(PASSED_ID_2, mActivityTask58));
     }
 
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testGetInstanceInfo_size() {
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
+        mMultiInstanceManager.setAdjacentInstance(mActivityTask57);
+
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
+
+        // Removing a task from recent screen doesn't affect instance info list.
+        removeTaskOnRecentsScreen(mActivityTask58);
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
+
+        // Activity destroyed in the background due to memory constraint has no impact either.
+        closeInstanceOnly(mActivityTask57, mActivityTask57.getTaskId());
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
+
+        // Closing an instance removes the entry.
+        mMultiInstanceManager.closeInstance(1, mActivityTask57.getTaskId());
+        assertEquals(2, mMultiInstanceManager.getInstanceInfo().size());
+    }
+
     private int allocInstanceIndex(int passedId, Activity activity) {
         int index = mMultiInstanceManager.allocInstanceId(passedId, activity.getTaskId());
 
@@ -251,8 +292,8 @@ public class MultiInstanceManagerApi31UnitTest {
                         activity, null, null, index);
         if (pair == null) return INVALID_INSTANCE_ID;
 
-        mMultiInstanceManager.createInstance(pair.first, activity.getTaskId());
-        mMultiInstanceManager.updateTaskIdMap(pair.first, activity.getTaskId());
+        mMultiInstanceManager.createInstance(pair.first, activity);
+        mMultiInstanceManager.initialize(pair.first, activity.getTaskId());
         return pair.first;
     }
 
@@ -266,7 +307,7 @@ public class MultiInstanceManagerApi31UnitTest {
     // Simulate a task is removed by swiping it away. Both the task and the associated activity
     // get destroyed. Task map gets updated. The persistent state file remains intact.
     private void removeTaskOnRecentsScreen(Activity activityForTask) {
-        mMultiInstanceManager.updateTasks(activityForTask.getTaskId(), INVALID_INSTANCE_ID);
+        mMultiInstanceManager.updateTasks(INVALID_INSTANCE_ID, activityForTask);
         destroyActivity(activityForTask);
     }
 

@@ -85,9 +85,8 @@ public class MultiInstanceMigrationTest {
     @MediumTest
     @Feature({"TabPersistentStore"})
     public void testMigrateData() throws IOException {
-        final int oldMaxSimultaneousSelectors = 3;
         // Write old state files.
-        File[] stateDirs = createOldStateDirs(oldMaxSimultaneousSelectors, true);
+        File[] stateDirs = createOldStateDirs(TabWindowManager.MAX_SELECTORS_LEGACY, true);
         File stateFile0 = new File(
                 stateDirs[0], TabbedModeTabPersistencePolicy.LEGACY_SAVED_STATE_FILE);
         File stateFile1 = new File(

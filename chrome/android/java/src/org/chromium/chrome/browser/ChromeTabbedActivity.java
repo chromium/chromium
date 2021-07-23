@@ -1765,7 +1765,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             int assignedIndex = TabWindowManagerSingleton.getInstance().getIndexForWindow(this);
             // The given index and the one computed by TabWindowManager should be one and the same.
             assert !MultiWindowUtils.instanceSwitcherEnabled() || assignedIndex == index;
-            mMultiInstanceManager.updateTaskIdMap(assignedIndex, getTaskId());
+            mMultiInstanceManager.initialize(assignedIndex, getTaskId());
         }
 
         mTabModelSelector = mTabModelOrchestrator.getTabModelSelector();

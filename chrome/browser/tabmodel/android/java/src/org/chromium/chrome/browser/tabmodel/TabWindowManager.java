@@ -23,6 +23,13 @@ import org.chromium.ui.base.WindowAndroid;
  * This is the highest level of the hierarchy of Tab containers.
  */
 public interface TabWindowManager {
+    // Maximum number of TabModelSelectors since Android N that supports split screen.
+    public static final int MAX_SELECTORS_LEGACY = 3;
+
+    // Maximum number of TabModelSelectors since Android S that supports multiple instances of
+    // ChromeTabbedActivity.
+    public static final int MAX_SELECTORS_S = 5;
+
     /**
      * @return The maximum number of simultaneous TabModelSelector instances in this Application.
      */

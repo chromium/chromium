@@ -600,6 +600,12 @@ public final class ChromePreferenceKeys {
     // {Instance:Task} ID mapping for multi-instance support.
     public static final KeyPrefix MULTI_INSTANCE_TASK_MAP =
             new KeyPrefix("Chrome.MultiInstance.TaskMap.*");
+    // Information on each instance.
+    public static final KeyPrefix MULTI_INSTANCE_TAB_COUNT =
+            new KeyPrefix("Chrome.MultiInstance.TabCount.*");
+    public static final KeyPrefix MULTI_INSTANCE_TITLE =
+            new KeyPrefix("Chrome.MultiInstance.Title.*");
+    public static final KeyPrefix MULTI_INSTANCE_URL = new KeyPrefix("Chrome.MultiInstance.Url.*");
 
     public static final String NOTIFICATIONS_CHANNELS_VERSION = "channels_version_key";
     public static final String NOTIFICATIONS_LAST_SHOWN_NOTIFICATION_TYPE =
@@ -1065,7 +1071,10 @@ public final class ChromePreferenceKeys {
                 ISOLATED_SPLITS_DEX_COMPILE_VERSION,
                 LAST_SESSION_BROWSER_PID,
                 LAST_SESSION_APPLICATION_STATE,
+                MULTI_INSTANCE_TAB_COUNT.pattern(),
                 MULTI_INSTANCE_TASK_MAP.pattern(),
+                MULTI_INSTANCE_TITLE.pattern(),
+                MULTI_INSTANCE_URL.pattern(),
                 OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS,
                 OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS,
                 OFFLINE_INDICATOR_V2_TIME_IN_FOREGROUND_MS,

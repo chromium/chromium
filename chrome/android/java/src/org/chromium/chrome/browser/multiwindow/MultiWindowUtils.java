@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.ui.display.DisplayAndroidManager;
@@ -55,6 +56,8 @@ import java.util.Locale;
  * Thread-safe: This class may be accessed from any thread.
  */
 public class MultiWindowUtils implements ActivityStateListener {
+    public static final int INVALID_INSTANCE_ID = TabWindowManager.INVALID_WINDOW_INDEX;
+
     private static MultiWindowUtils sInstance = new MultiWindowUtils();
 
     private final boolean mInstanceSwitcherEnabled;
@@ -107,6 +110,11 @@ public class MultiWindowUtils implements ActivityStateListener {
         } catch (IllegalAccessException e) {
             return false;
         }
+    }
+
+    public static int getMaxInstances() {
+        return MultiWindowUtils.instanceSwitcherEnabled() ? TabWindowManager.MAX_SELECTORS_S
+                                                          : TabWindowManager.MAX_SELECTORS_LEGACY;
     }
 
     /**
@@ -218,6 +226,24 @@ public class MultiWindowUtils implements ActivityStateListener {
         // the user presses 'back' button.
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, activity.getPackageName());
         intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
+    }
+
+    /**
+     *
+     */
+    public static Intent createNewWindowIntent(
+            Activity activity, int instanceId, boolean openAdjacently) {
+        assert instanceSwitcherEnabled();
+        Intent intent = new Intent(activity, ChromeTabbedActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        if (instanceId != INVALID_INSTANCE_ID) {
+            intent.putExtra(IntentHandler.EXTRA_WINDOW_ID, instanceId);
+        }
+        if (openAdjacently) intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, activity.getPackageName());
+        intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
+        return intent;
     }
 
     /**

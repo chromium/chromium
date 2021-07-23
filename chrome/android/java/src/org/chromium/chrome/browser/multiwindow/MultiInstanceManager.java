@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.ui.display.DisplayAndroidManager;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -75,8 +76,8 @@ public class MultiInstanceManager
     private ApplicationStatus.ActivityStateListener mOtherCTAStateObserver;
 
     protected final Activity mActivity;
-    private final ObservableSupplier<TabModelOrchestrator> mTabModelOrchestratorSupplier;
-    private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
+    protected final ObservableSupplier<TabModelOrchestrator> mTabModelOrchestratorSupplier;
+    protected final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
 
@@ -464,7 +465,7 @@ public class MultiInstanceManager
         return false;
     }
 
-    private void moveTabToOtherWindow(Tab tab) {
+    protected void moveTabToOtherWindow(Tab tab) {
         Intent intent = mMultiWindowModeStateDispatcher.getOpenInOtherWindowIntent();
         if (intent == null) return;
 
@@ -474,7 +475,7 @@ public class MultiInstanceManager
         RecordUserAction.record("MobileMenuMoveToOtherWindow");
     }
 
-    private void openNewWindow() {
+    protected void openNewWindow() {
         assert mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiDisplayMode();
@@ -485,8 +486,17 @@ public class MultiInstanceManager
         intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
 
         onMultiInstanceModeStarted();
-        mActivity.startActivity(intent);
+        mActivity.startActivity(
+                intent, mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions());
         RecordUserAction.record("MobileMenuNewWindow");
+    }
+
+    /**
+     * @return List of {@link InstanceInfo} structs for an activity that can be switched to, or
+     *         newly launched.
+     */
+    public List<InstanceInfo> getInstanceInfo() {
+        return Collections.emptyList();
     }
 
     /**
@@ -499,11 +509,11 @@ public class MultiInstanceManager
     }
 
     /**
-     * Update the persistent instance - task ID map.
+     * Initialize the manager with the allocated instance ID.
      * @param instanceId Instance ID of the activity.
      * @param taskId Task ID of the activity.
      */
-    public void updateTaskIdMap(int instanceId, int taskId) {}
+    public void initialize(int instanceId, int taskId) {}
 
     /**
      * @return True if tab model merging for Android N+ is enabled.
