@@ -5458,15 +5458,12 @@
                     "params": {
                         "EntitySuggestionsReduceLatencyDecoderTimeout": "405",
                         "MaxZeroSuggestMatches": "10",
-                        "OmniboxBookmarkPathsCounterfactual": "enabled",
-                        "OmniboxBookmarkPathsUiDynamicReplaceUrl": "true",
                         "OmniboxMaxURLMatches": "7",
                         "RichAutocompletionAutocompleteNonPrefixAll": "true",
                         "RichAutocompletionAutocompleteTitles": "true",
                         "UIMaxAutocompleteMatches": "8"
                     },
                     "enable_features": [
-                        "OmniboxBookmarkPaths",
                         "OmniboxClobberTriggersContextualWebZeroSuggest",
                         "OmniboxEntitySuggestionsReduceLatency",
                         "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",
@@ -5475,7 +5472,6 @@
                         "OmniboxMaxZeroSuggestMatches",
                         "OmniboxRemoveSuggestionsFromClipboard",
                         "OmniboxRichAutocompletion",
-                        "OmniboxShortBookmarkSuggestionsByTotalInputLength",
                         "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
                         "OmniboxUIExperimentMaxAutocompleteMatches",
                         "SearchSuggestChips"
