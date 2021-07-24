@@ -127,6 +127,11 @@ void BubbleContentsWrapper::ShowContextMenu(
     host_->ShowCustomContextMenu(point, std::move(menu_model));
 }
 
+void BubbleContentsWrapper::HideContextMenu() {
+  if (host_)
+    host_->HideCustomContextMenu();
+}
+
 base::WeakPtr<BubbleContentsWrapper::Host> BubbleContentsWrapper::GetHost() {
   return host_;
 }

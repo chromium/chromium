@@ -28,6 +28,7 @@ class MojoBubbleWebUIController : public MojoWebUIController {
     virtual void CloseUI() = 0;
     virtual void ShowContextMenu(gfx::Point point,
                                  std::unique_ptr<ui::MenuModel> menu_model) = 0;
+    virtual void HideContextMenu() = 0;
   };
 
   // By default MojoBubbleWebUIController do not have normal WebUI bindings.

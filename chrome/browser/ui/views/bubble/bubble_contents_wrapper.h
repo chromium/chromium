@@ -38,6 +38,7 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
     virtual void ShowCustomContextMenu(
         gfx::Point point,
         std::unique_ptr<ui::MenuModel> menu_model) {}
+    virtual void HideCustomContextMenu() {}
     virtual void ResizeDueToAutoResize(content::WebContents* source,
                                        const gfx::Size& new_size) {}
     virtual bool HandleKeyboardEvent(
@@ -73,6 +74,7 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
   void ShowUI() override;
   void ShowContextMenu(gfx::Point point,
                        std::unique_ptr<ui::MenuModel> menu_model) override;
+  void HideContextMenu() override;
 
   // Reloads the WebContents hosting the WebUI.
   virtual void ReloadWebContents() = 0;

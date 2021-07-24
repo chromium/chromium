@@ -68,6 +68,10 @@ class ReadLaterSidePanelWebView : public views::WebView,
         views::MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_MOUSE,
         contents_wrapper_->web_contents()->GetContentNativeView());
   }
+  void HideCustomContextMenu() override {
+    if (context_menu_runner_)
+      context_menu_runner_->Cancel();
+  }
 
  private:
   base::RepeatingClosure close_cb_;
