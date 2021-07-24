@@ -77,5 +77,10 @@ interface ProfilingClient {
   // There is currently no mechanism to stop recording allocations.
   StartProfiling(ProfilingParams params) => ();
 
+  // Captures and returns a snapshot of the heap profile of the current process.
   RetrieveHeapProfile() => (HeapProfile profile);
+
+  // Captures a snapshot of the heap profile and adds to Perfetto traces in
+  // proto format.
+  AddHeapProfileToTrace() => (bool success);
 };

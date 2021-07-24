@@ -286,7 +286,9 @@ interface HeapProfiler {
   // |strip_path_from_mapped_files| should only be true for traces that will be
   // uploaded to the crash servers - this strips potential PII, but prevents
   // symbolization of local builds.
-  DumpProcessesForTracing(bool strip_path_from_mapped_files) =>
+  // |write_proto| will additionally write proto heap profiles to traces.
+  DumpProcessesForTracing(bool strip_path_from_mapped_files,
+                          bool write_proto) =>
       (array<HeapProfileResult> results);
 };
 

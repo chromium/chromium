@@ -26,6 +26,14 @@ static_library("cpp") {
     "//base:debugging_buildflags",
     "//base/allocator:buildflags",
   ]
+
+  if (!is_ios) {
+    sources += [
+      "heap_profiling_trace_source.cc",
+      "heap_profiling_trace_source.h",
+    ]
+    deps += [ "//services/tracing/public/cpp:cpp" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -41,4 +49,13 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//testing/gtest",
   ]
+  if (!is_ios) {
+    sources += [ "heap_profiling_trace_source_unittest.cc" ]
+    deps += [
+      "//services/tracing:test_utils",
+      "//services/tracing/public/cpp:cpp",
+      "//third_party/perfetto/protos/perfetto/trace:lite",
+      "//third_party/perfetto/protos/perfetto/trace/profiling:lite",
+    ]
+  }
 }

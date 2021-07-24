@@ -53,6 +53,7 @@ class ConnectionManager {
   // returns. The dump is complete when the callback provided in the args is
   // fired.
   void DumpProcessesForTracing(bool strip_path_from_mapped_files,
+                               bool write_proto,
                                DumpProcessesForTracingCallback callback,
                                VmRegions vm_regions);
 

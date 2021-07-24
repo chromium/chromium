@@ -94,6 +94,10 @@ void AddDataSourceConfigs(
         perfetto_config, tracing::mojom::kMemoryInstrumentationDataSourceName,
         chrome_config_string, privacy_filtering_enabled, convert_to_legacy_json,
         client_priority, json_agent_label_filter);
+    AddDataSourceConfig(
+        perfetto_config, tracing::mojom::kNativeHeapProfilerSourceName,
+        chrome_config_string, privacy_filtering_enabled, convert_to_legacy_json,
+        client_priority, json_agent_label_filter);
   }
 
   // Capture actual trace events.

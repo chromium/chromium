@@ -58,7 +58,7 @@ class LoaderLockSamplingThread;
 // field |profiler_| to be thread-safe.
 class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
  public:
-  class StackProfileWriter {
+  class COMPONENT_EXPORT(TRACING_CPP) StackProfileWriter {
    public:
     explicit StackProfileWriter(bool should_enable_filtering);
     ~StackProfileWriter();

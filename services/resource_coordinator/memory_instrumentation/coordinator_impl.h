@@ -190,6 +190,7 @@ class CoordinatorImpl : public Registry,
       this};
 
   const bool use_proto_writer_;
+  const bool write_proto_heap_profile_;
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<CoordinatorImpl> weak_ptr_factory_{this};
