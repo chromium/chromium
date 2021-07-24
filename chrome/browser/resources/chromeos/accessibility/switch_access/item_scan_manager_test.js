@@ -575,16 +575,9 @@ TEST_F('SwitchAccessItemScanManagerTest', 'SyncFocusToNewWindow', function() {
   });
 });
 
-// TODO(crbug.com/1219067): Fails in MSAN builds.
-TEST_F_WITH_PREAMBLE(
-    `
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_LockScreenBlocksUserSession DISABLED_LockScreenBlocksUserSession
-#else
-#define MAYBE_LockScreenBlocksUserSession LockScreenBlocksUserSession
-#endif
-`,
-    'SwitchAccessItemScanManagerTest', 'MAYBE_LockScreenBlocksUserSession',
+// TODO(crbug.com/1219067): Unflake.
+TEST_F(
+    'SwitchAccessItemScanManagerTest', 'DISABLED_LockScreenBlocksUserSession',
     function() {
       const website = `<button autofocus>kitties!</button>`;
       this.runWithLoadedTree(website, async (rootWebArea) => {
