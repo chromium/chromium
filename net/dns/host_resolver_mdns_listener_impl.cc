@@ -75,6 +75,7 @@ void HostResolverMdnsListenerImpl::OnRecordUpdate(
     case DnsQueryType::UNSPECIFIED:
     case DnsQueryType::INTEGRITY:
     case DnsQueryType::HTTPS:
+    case DnsQueryType::HTTPS_EXPERIMENTAL:
       NOTREACHED();
       break;
     case DnsQueryType::A:

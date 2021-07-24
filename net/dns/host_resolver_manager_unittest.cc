@@ -9335,6 +9335,35 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery) {
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
       BuildTestHttpsAliasRecord(kName, "alias.test")};
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/false,
+                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                         kName, dns_protocol::kTypeHttps, records)),
+                     /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+
+  HostResolver::ResolveHostParameters parameters;
+  parameters.dns_query_type = DnsQueryType::HTTPS;
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
+      parameters, resolve_context_.get(), resolve_context_->host_cache()));
+  // TODO(crbug.com/1225776): Expect results once HTTPS-specific results are
+  // implemented.
+  EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_FALSE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+}
+
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery) {
+  const std::string kName = "https.test";
+
+  MockDnsClientRuleList rules;
+  std::vector<DnsResourceRecord> records = {
+      BuildTestHttpsAliasRecord(kName, "alias.test")};
   rules.emplace_back(kName, dns_protocol::kTypeHttps, false /* secure */,
                      MockDnsClientRule::Result(BuildTestDnsResponse(
                          kName, dns_protocol::kTypeHttps, records)),
@@ -9344,7 +9373,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery) {
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
 
   HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
+  parameters.dns_query_type = DnsQueryType::HTTPS_EXPERIMENTAL;
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
@@ -9358,7 +9387,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery) {
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsQueryRejectsIpLiteral) {
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQueryRejectsIpLiteral) {
   MockDnsClientRuleList rules;
 
   // Entry that would resolve if DNS is mistakenly queried to ensure that does
@@ -9387,7 +9416,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQueryRejectsIpLiteral) {
 }
 
 TEST_F(HostResolverManagerDnsTest,
-       HttpsInsecureQueryDisallowedWhenAdditionalTypesDisallowed) {
+       ExperimentalHttpsInsecureQueryDisallowedWhenAdditionalTypesDisallowed) {
   const std::string kName = "https.test";
 
   ChangeDnsConfig(CreateValidDnsConfig());
@@ -9399,7 +9428,7 @@ TEST_F(HostResolverManagerDnsTest,
       /*additional_dns_types_enabled=*/false);
 
   HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
+  parameters.dns_query_type = DnsQueryType::HTTPS_EXPERIMENTAL;
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
@@ -9413,7 +9442,7 @@ TEST_F(HostResolverManagerDnsTest,
 }
 
 TEST_F(HostResolverManagerDnsTest,
-       HttpsSecureQueryAllowedWhenAdditionalTypesDisallowed) {
+       ExperimentalHttpsSecureQueryAllowedWhenAdditionalTypesDisallowed) {
   const std::string kName = "https.test";
 
   MockDnsClientRuleList rules;
@@ -9434,7 +9463,7 @@ TEST_F(HostResolverManagerDnsTest,
       /*additional_dns_types_enabled=*/false);
 
   HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
+  parameters.dns_query_type = DnsQueryType::HTTPS_EXPERIMENTAL;
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
@@ -9449,7 +9478,7 @@ TEST_F(HostResolverManagerDnsTest,
 }
 
 TEST_F(HostResolverManagerDnsTest,
-       HttpsFallbackQueryDisallowedWhenAdditionalTypesDisallowed) {
+       ExperimentalHttpsFallbackQueryDisallowedWhenAdditionalTypesDisallowed) {
   const char kName[] = "https.test";
 
   MockDnsClientRuleList rules;
@@ -9468,7 +9497,7 @@ TEST_F(HostResolverManagerDnsTest,
       /*additional_dns_types_enabled=*/false);
 
   HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
+  parameters.dns_query_type = DnsQueryType::HTTPS_EXPERIMENTAL;
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
@@ -9483,7 +9512,8 @@ TEST_F(HostResolverManagerDnsTest,
 
 // Test that HTTPS records can be extracted from a response that also contains
 // unrecognized record types.
-TEST_F(HostResolverManagerDnsTest, HttpsQuery_MixedWithUnrecognizedType) {
+TEST_F(HostResolverManagerDnsTest,
+       ExperimentalHttpsQuery_MixedWithUnrecognizedType) {
   const std::string kName = "https.test";
 
   MockDnsClientRuleList rules;
@@ -9500,7 +9530,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_MixedWithUnrecognizedType) {
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
 
   HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
+  parameters.dns_query_type = DnsQueryType::HTTPS_EXPERIMENTAL;
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
@@ -9514,7 +9544,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_MixedWithUnrecognizedType) {
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsQuery_MultipleResults) {
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_MultipleResults) {
   const std::string kName = "https.test";
 
   MockDnsClientRuleList rules;
@@ -9530,7 +9560,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_MultipleResults) {
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
 
   HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
+  parameters.dns_query_type = DnsQueryType::HTTPS_EXPERIMENTAL;
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
@@ -9544,13 +9574,13 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_MultipleResults) {
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsQuery_InvalidConfig) {
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_InvalidConfig) {
   set_allow_fallback_to_proctask(false);
   // Set empty DnsConfig.
   InvalidateDnsConfig();
 
   HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
+  parameters.dns_query_type = DnsQueryType::HTTPS_EXPERIMENTAL;
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair("https.test", 108), NetworkIsolationKey(),
@@ -9559,7 +9589,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_InvalidConfig) {
   EXPECT_THAT(response.result_error(), IsError(ERR_DNS_CACHE_MISS));
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsQuery_NonexistentDomain) {
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_NonexistentDomain) {
   const std::string kName = "https.test";
 
   // Setup fallback to confirm it is not used for non-address results.
@@ -9576,7 +9606,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_NonexistentDomain) {
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
 
   HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
+  parameters.dns_query_type = DnsQueryType::HTTPS_EXPERIMENTAL;
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
@@ -9588,7 +9618,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_NonexistentDomain) {
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsQuery_Failure) {
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_Failure) {
   const std::string kName = "https.test";
 
   // Setup fallback to confirm it is not used for non-address results.
@@ -9605,7 +9635,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_Failure) {
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
 
   HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
+  parameters.dns_query_type = DnsQueryType::HTTPS_EXPERIMENTAL;
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
@@ -9620,7 +9650,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_Failure) {
   EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsQuery_Timeout) {
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_Timeout) {
   const std::string kName = "https.test";
 
   // Setup fallback to confirm it is not used for non-address results.
@@ -9637,7 +9667,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_Timeout) {
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
 
   HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
+  parameters.dns_query_type = DnsQueryType::HTTPS_EXPERIMENTAL;
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
@@ -9653,7 +9683,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_Timeout) {
   EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsQuery_Empty) {
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_Empty) {
   const std::string kName = "https.test";
 
   // Setup fallback to confirm it is not used for non-address results.
@@ -9670,7 +9700,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_Empty) {
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
 
   HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
+  parameters.dns_query_type = DnsQueryType::HTTPS_EXPERIMENTAL;
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
@@ -9682,7 +9712,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_Empty) {
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsQuery_Malformed) {
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_Malformed) {
   const std::string kName = "https.test";
 
   // Setup fallback to confirm it is not used for non-address results.
@@ -9699,7 +9729,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_Malformed) {
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
 
   HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
+  parameters.dns_query_type = DnsQueryType::HTTPS_EXPERIMENTAL;
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
@@ -9716,7 +9746,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_Malformed) {
   EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsQuery_MismatchedName) {
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_MismatchedName) {
   const std::string kName = "https.test";
 
   MockDnsClientRuleList rules;
@@ -9731,7 +9761,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_MismatchedName) {
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
 
   HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
+  parameters.dns_query_type = DnsQueryType::HTTPS_EXPERIMENTAL;
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
@@ -9748,7 +9778,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_MismatchedName) {
   EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsQuery_AdditionalRecords) {
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_AdditionalRecords) {
   const std::string kName = "https.test";
 
   MockDnsClientRuleList rules;
@@ -9767,7 +9797,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_AdditionalRecords) {
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
 
   HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
+  parameters.dns_query_type = DnsQueryType::HTTPS_EXPERIMENTAL;
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
@@ -9781,7 +9811,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_AdditionalRecords) {
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsQuery_WrongType) {
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_WrongType) {
   const std::string kName = "https.test";
 
   // Respond to an HTTPS query with an A response.
@@ -9797,7 +9827,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_WrongType) {
   UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
 
   HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
+  parameters.dns_query_type = DnsQueryType::HTTPS_EXPERIMENTAL;
 
   // Responses for the wrong type should be ignored.
   ResolveHostResponseHelper response(resolver_->CreateRequest(
@@ -9815,11 +9845,11 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery_WrongType) {
   EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
 }
 
-// Same as HttpsQuery except we specify DNS HostResolverSource instead of
-// relying on automatic determination.  Expect same results since DNS should be
-// what we automatically determine, but some slightly different logic paths are
-// involved.
-TEST_F(HostResolverManagerDnsTest, HttpsDnsQuery) {
+// Same as ExperimentalHttpsQuery except we specify DNS HostResolverSource
+// instead of relying on automatic determination.  Expect same results since DNS
+// should be what we automatically determine, but some slightly different logic
+// paths are involved.
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsDnsQuery) {
   const std::string kName = "https.test";
 
   MockDnsClientRuleList rules;
@@ -9835,7 +9865,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsDnsQuery) {
 
   HostResolver::ResolveHostParameters parameters;
   parameters.source = HostResolverSource::DNS;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
+  parameters.dns_query_type = DnsQueryType::HTTPS_EXPERIMENTAL;
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
@@ -9849,12 +9879,13 @@ TEST_F(HostResolverManagerDnsTest, HttpsDnsQuery) {
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
-// Same as HttpsInsecureQueryDisallowedWhenAdditionalTypesDisallowed except we
-// specify DNS HostResolverSource instead of relying on automatic determination.
-// Expect same results since DNS should be what we automatically determine, but
-// some slightly different logic paths are involved.
-TEST_F(HostResolverManagerDnsTest,
-       HttpsDnsInsecureQueryDisallowedWhenAdditionalTypesDisallowed) {
+// Same as ExperimentalHttpsInsecureQueryDisallowedWhenAdditionalTypesDisallowed
+// except we specify DNS HostResolverSource instead of relying on automatic
+// determination. Expect same results since DNS should be what we automatically
+// determine, but some slightly different logic paths are involved.
+TEST_F(
+    HostResolverManagerDnsTest,
+    ExperimentalHttpsDnsInsecureQueryDisallowedWhenAdditionalTypesDisallowed) {
   const std::string kName = "https.test";
 
   DnsConfigOverrides overrides;
@@ -9866,7 +9897,7 @@ TEST_F(HostResolverManagerDnsTest,
 
   HostResolver::ResolveHostParameters parameters;
   parameters.source = HostResolverSource::DNS;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
+  parameters.dns_query_type = DnsQueryType::HTTPS_EXPERIMENTAL;
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
@@ -9880,6 +9911,264 @@ TEST_F(HostResolverManagerDnsTest,
 }
 
 TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery) {
+  const char kName[] = "name.test";
+
+  base::test::ScopedFeatureList features(features::kUseDnsHttpsSvcb);
+
+  MockDnsClientRuleList rules;
+  std::vector<DnsResourceRecord> records = {
+      BuildTestHttpsAliasRecord(kName, "alias.test")};
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
+                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                         kName, dns_protocol::kTypeHttps, records)),
+                     /*delay=*/false);
+  rules.emplace_back(kName, dns_protocol::kTypeA, /*secure=*/true,
+                     MockDnsClientRule::Result(MockDnsClientRule::OK),
+                     /*delay=*/false);
+  rules.emplace_back(kName, dns_protocol::kTypeAAAA, /*secure=*/true,
+                     MockDnsClientRule::Result(MockDnsClientRule::OK),
+                     /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
+  resolver_->SetDnsConfigOverrides(overrides);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      url::SchemeHostPort(url::kHttpsScheme, kName, 108), NetworkIsolationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_TRUE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+  // TODO(crbug.com/1225776): Validate expected HTTPS results.
+}
+
+TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryForWssScheme) {
+  const char kName[] = "name.test";
+
+  base::test::ScopedFeatureList features(features::kUseDnsHttpsSvcb);
+
+  MockDnsClientRuleList rules;
+  std::vector<DnsResourceRecord> records = {
+      BuildTestHttpsAliasRecord(kName, "alias.test")};
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
+                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                         kName, dns_protocol::kTypeHttps, records)),
+                     /*delay=*/false);
+  rules.emplace_back(kName, dns_protocol::kTypeA, /*secure=*/true,
+                     MockDnsClientRule::Result(MockDnsClientRule::OK),
+                     /*delay=*/false);
+  rules.emplace_back(kName, dns_protocol::kTypeAAAA, /*secure=*/true,
+                     MockDnsClientRule::Result(MockDnsClientRule::OK),
+                     /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
+  resolver_->SetDnsConfigOverrides(overrides);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      url::SchemeHostPort(url::kWssScheme, kName, 108), NetworkIsolationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_TRUE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+  // TODO(crbug.com/1225776): Validate expected HTTPS results.
+}
+
+TEST_F(HostResolverManagerDnsTest, NoHttpsInAddressQueryWithoutScheme) {
+  const char kName[] = "name.test";
+
+  base::test::ScopedFeatureList features(features::kUseDnsHttpsSvcb);
+
+  MockDnsClientRuleList rules;
+  std::vector<DnsResourceRecord> records = {
+      BuildTestHttpsAliasRecord(kName, "alias.test")};
+  rules.emplace_back(kName, dns_protocol::kTypeA, /*secure=*/true,
+                     MockDnsClientRule::Result(MockDnsClientRule::OK),
+                     /*delay=*/false);
+  rules.emplace_back(kName, dns_protocol::kTypeAAAA, /*secure=*/true,
+                     MockDnsClientRule::Result(MockDnsClientRule::OK),
+                     /*delay=*/false);
+  // Should not be queried.
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
+                     MockDnsClientRule::Result(MockDnsClientRule::UNEXPECTED),
+                     /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
+  resolver_->SetDnsConfigOverrides(overrides);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
+      absl::nullopt, resolve_context_.get(), resolve_context_->host_cache()));
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_TRUE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+}
+
+TEST_F(HostResolverManagerDnsTest, NoHttpsInAddressQueryForNonHttpScheme) {
+  const char kName[] = "name.test";
+
+  base::test::ScopedFeatureList features(features::kUseDnsHttpsSvcb);
+
+  MockDnsClientRuleList rules;
+  std::vector<DnsResourceRecord> records = {
+      BuildTestHttpsAliasRecord(kName, "alias.test")};
+  rules.emplace_back(kName, dns_protocol::kTypeA, /*secure=*/true,
+                     MockDnsClientRule::Result(MockDnsClientRule::OK),
+                     /*delay=*/false);
+  rules.emplace_back(kName, dns_protocol::kTypeAAAA, /*secure=*/true,
+                     MockDnsClientRule::Result(MockDnsClientRule::OK),
+                     /*delay=*/false);
+  // Should not be queried.
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
+                     MockDnsClientRule::Result(MockDnsClientRule::UNEXPECTED),
+                     /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
+  resolver_->SetDnsConfigOverrides(overrides);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      url::SchemeHostPort(url::kFtpScheme, kName, 108), NetworkIsolationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_TRUE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       HttpsInAddressQueryForHttpSchemeWhenUpgradeDisabled) {
+  const char kName[] = "name.test";
+
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "false"}});
+
+  MockDnsClientRuleList rules;
+  std::vector<DnsResourceRecord> records = {
+      BuildTestHttpsAliasRecord(kName, "alias.test")};
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
+                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                         kName, dns_protocol::kTypeHttps, records)),
+                     /*delay=*/false);
+  rules.emplace_back(kName, dns_protocol::kTypeA, /*secure=*/true,
+                     MockDnsClientRule::Result(MockDnsClientRule::OK),
+                     /*delay=*/false);
+  rules.emplace_back(kName, dns_protocol::kTypeAAAA, /*secure=*/true,
+                     MockDnsClientRule::Result(MockDnsClientRule::OK),
+                     /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
+  resolver_->SetDnsConfigOverrides(overrides);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      url::SchemeHostPort(url::kHttpScheme, kName, 108), NetworkIsolationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+
+  // With the param disabled, expect the HTTPS record to have no effect on
+  // results.
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_TRUE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+}
+
+TEST_F(HostResolverManagerDnsTest, HttpsInInsecureAddressQuery) {
+  const char kName[] = "name.test";
+
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbEnableInsecure", "true"}});
+
+  MockDnsClientRuleList rules;
+  std::vector<DnsResourceRecord> records = {
+      BuildTestHttpsAliasRecord(kName, "alias.test")};
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/false,
+                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                         kName, dns_protocol::kTypeHttps, records)),
+                     /*delay=*/false);
+  rules.emplace_back(kName, dns_protocol::kTypeA, /*secure=*/false,
+                     MockDnsClientRule::Result(MockDnsClientRule::OK),
+                     /*delay=*/false);
+  rules.emplace_back(kName, dns_protocol::kTypeAAAA, /*secure=*/false,
+                     MockDnsClientRule::Result(MockDnsClientRule::OK),
+                     /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      url::SchemeHostPort(url::kHttpsScheme, kName, 108), NetworkIsolationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_TRUE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+  // TODO(crbug.com/1225776): Validate expected HTTPS results.
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       NoHttpsInInsecureAddressQueryWhenInsecureHttpsDisabled) {
+  const char kName[] = "name.test";
+
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbEnableInsecure", "false"}});
+
+  MockDnsClientRuleList rules;
+  std::vector<DnsResourceRecord> records = {
+      BuildTestHttpsAliasRecord(kName, "alias.test")};
+  rules.emplace_back(kName, dns_protocol::kTypeA, /*secure=*/false,
+                     MockDnsClientRule::Result(MockDnsClientRule::OK),
+                     /*delay=*/false);
+  rules.emplace_back(kName, dns_protocol::kTypeAAAA, /*secure=*/false,
+                     MockDnsClientRule::Result(MockDnsClientRule::OK),
+                     /*delay=*/false);
+  // Should not be queried.
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/false,
+                     MockDnsClientRule::Result(MockDnsClientRule::UNEXPECTED),
+                     /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      url::SchemeHostPort(url::kHttpsScheme, kName, 108), NetworkIsolationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_TRUE(response.request()->GetAddressResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+}
+
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsInAddressQuery) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
@@ -9918,7 +10207,8 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery) {
               testing::Optional(testing::ElementsAre(true)));
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_MultipleResults) {
+TEST_F(HostResolverManagerDnsTest,
+       ExperimentalHttpsInAddressQuery_MultipleResults) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
@@ -9961,7 +10251,8 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_MultipleResults) {
       testing::Optional(testing::UnorderedElementsAre(true, true, false)));
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_AddressesOnly) {
+TEST_F(HostResolverManagerDnsTest,
+       ExperimentalHttpsInAddressQuery_AddressesOnly) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
@@ -9997,7 +10288,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_AddressesOnly) {
               testing::Optional(testing::IsEmpty()));
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_HttpsOnly) {
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsInAddressQuery_HttpsOnly) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
@@ -10036,7 +10327,8 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_HttpsOnly) {
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_AddressError) {
+TEST_F(HostResolverManagerDnsTest,
+       ExperimentalHttpsInAddressQuery_AddressError) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
@@ -10075,7 +10367,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_AddressError) {
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_HttpsError) {
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsInAddressQuery_HttpsError) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
@@ -10111,7 +10403,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_HttpsError) {
               testing::Optional(testing::IsEmpty()));
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_NoData) {
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsInAddressQuery_NoData) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
@@ -10147,7 +10439,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_NoData) {
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_HttpsLast) {
+TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsInAddressQuery_HttpsLast) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
@@ -10182,8 +10474,8 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_HttpsLast) {
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(response.complete());
 
-  ASSERT_TRUE(
-      dns_client_->CompleteOneDelayedTransactionOfType(DnsQueryType::HTTPS));
+  ASSERT_TRUE(dns_client_->CompleteOneDelayedTransactionOfType(
+      DnsQueryType::HTTPS_EXPERIMENTAL));
 
   EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_TRUE(response.request()->GetAddressResults());
@@ -10193,7 +10485,8 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_HttpsLast) {
               testing::Optional(testing::ElementsAre(true)));
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_AddressesLast) {
+TEST_F(HostResolverManagerDnsTest,
+       ExperimentalHttpsInAddressQuery_AddressesLast) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
@@ -10242,7 +10535,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_AddressesLast) {
 }
 
 TEST_F(HostResolverManagerDnsTest,
-       HttpsInInsecureAddressQueryDisallowedWhenInsecureFeatureDisabled) {
+       ExperimentalHttpsInInsecureAddressQueryDisallowedWhenParamDisabled) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
@@ -10278,8 +10571,9 @@ TEST_F(HostResolverManagerDnsTest,
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
-TEST_F(HostResolverManagerDnsTest,
-       HttpsInInsecureAddressQueryAllowedWhenInsecureFeatureEnabled) {
+TEST_F(
+    HostResolverManagerDnsTest,
+    ExperimentalHttpsInInsecureAddressQueryAllowedWhenInsecureFeatureEnabled) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
@@ -10321,8 +10615,9 @@ TEST_F(HostResolverManagerDnsTest,
               testing::Optional(testing::ElementsAre(true)));
 }
 
-TEST_F(HostResolverManagerDnsTest,
-       HttpsInInsecureAddressQueryDisallowedWhenAdditionalTypesDisallowed) {
+TEST_F(
+    HostResolverManagerDnsTest,
+    ExperimentalHttpsInInsecureAddressQueryDisallowedWithoutAdditionalTypes) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
@@ -10368,7 +10663,7 @@ TEST_F(HostResolverManagerDnsTest,
 }
 
 TEST_F(HostResolverManagerDnsTest,
-       HttpsInSecureAddressQueryAllowedWhenAdditionalQueriesDisallowed) {
+       ExperimentalHttpsInSecureAddressQueryAllowedWithoutAdditionalTypes) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
@@ -10415,7 +10710,7 @@ TEST_F(HostResolverManagerDnsTest,
 }
 
 TEST_F(HostResolverManagerDnsTest,
-       HttpsInAddressFallbackWhenAdditionalQueriesDisallowedIsDisallowed) {
+       ExperimentalHttpsInAddressFallbackDisallowedWithoutAdditionalTypes) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
@@ -10469,7 +10764,8 @@ TEST_F(HostResolverManagerDnsTest,
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
-TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery_ExperimentalTimeout) {
+TEST_F(HostResolverManagerDnsTest,
+       ExperimentalHttpsInAddressQuery_ExperimentalTimeout) {
   const char kName[] = "combined.test";
   const base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(2);
 

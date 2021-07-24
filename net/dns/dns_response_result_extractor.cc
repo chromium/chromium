@@ -509,8 +509,8 @@ ExtractionError ExtractHttpsResults(const DnsResponse& response,
   // can more sensibly return honest results rather than lying to try to be
   // helpful to HostResolverManager.
   if (extraction_error != ExtractionError::kOk) {
-    *out_results =
-        DnsResponseResultExtractor::CreateEmptyResult(DnsQueryType::HTTPS);
+    *out_results = DnsResponseResultExtractor::CreateEmptyResult(
+        DnsQueryType::HTTPS_EXPERIMENTAL);
     return ExtractionError::kOk;
   }
 
@@ -569,8 +569,14 @@ DnsResponseResultExtractor::ExtractDnsResults(
       return ExtractServiceResults(*response_, out_results);
     case DnsQueryType::INTEGRITY:
       return ExtractIntegrityResults(*response_, out_results);
-    case DnsQueryType::HTTPS:
+    case DnsQueryType::HTTPS_EXPERIMENTAL:
       return ExtractHttpsResults(*response_, out_results);
+    case DnsQueryType::HTTPS:
+      // TODO(crbug.com/1225776): Implement.
+      *out_results =
+          HostCache::Entry(ERR_NAME_NOT_RESOLVED, std::vector<bool>(),
+                           HostCache::Entry::SOURCE_DNS);
+      return ExtractionError::kOk;
   }
 }
 
@@ -578,7 +584,7 @@ DnsResponseResultExtractor::ExtractDnsResults(
 HostCache::Entry DnsResponseResultExtractor::CreateEmptyResult(
     DnsQueryType query_type) {
   if (query_type != DnsQueryType::INTEGRITY &&
-      query_type != DnsQueryType::HTTPS) {
+      query_type != DnsQueryType::HTTPS_EXPERIMENTAL) {
     // Currently only used for INTEGRITY/HTTPS.
     NOTIMPLEMENTED();
     return HostCache::Entry(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);

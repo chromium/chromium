@@ -22,13 +22,19 @@ enum class DnsQueryType {
   SRV,
   INTEGRITY,
   HTTPS,
-  MAX = HTTPS
+  HTTPS_EXPERIMENTAL,
+  MAX = HTTPS_EXPERIMENTAL
 };
 
-const DnsQueryType kDnsQueryTypes[] = {
-    DnsQueryType::UNSPECIFIED, DnsQueryType::A,    DnsQueryType::AAAA,
-    DnsQueryType::TXT,         DnsQueryType::PTR,  DnsQueryType::SRV,
-    DnsQueryType::INTEGRITY,   DnsQueryType::HTTPS};
+const DnsQueryType kDnsQueryTypes[] = {DnsQueryType::UNSPECIFIED,
+                                       DnsQueryType::A,
+                                       DnsQueryType::AAAA,
+                                       DnsQueryType::TXT,
+                                       DnsQueryType::PTR,
+                                       DnsQueryType::SRV,
+                                       DnsQueryType::INTEGRITY,
+                                       DnsQueryType::HTTPS,
+                                       DnsQueryType::HTTPS_EXPERIMENTAL};
 
 static_assert(base::size(kDnsQueryTypes) ==
                   static_cast<unsigned>(DnsQueryType::MAX) + 1,

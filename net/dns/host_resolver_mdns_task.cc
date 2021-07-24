@@ -199,6 +199,7 @@ HostCache::Entry HostResolverMdnsTask::ParseResult(
     case DnsQueryType::UNSPECIFIED:
       // Should create two separate transactions with specified type.
     case DnsQueryType::HTTPS:
+    case DnsQueryType::HTTPS_EXPERIMENTAL:
       // Not supported.
       // TODO(ericorth@chromium.org): Consider support for HTTPS in mDNS if it
       // is ever decided to support HTTPS via non-DoH.

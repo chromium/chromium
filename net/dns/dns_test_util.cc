@@ -409,6 +409,11 @@ class MockDnsTransactionFactory::MockTransaction
               DCHECK(!result->response);  // Not expected to be provided.
               result_.response = CreateMalformedResponse(hostname_, qtype_);
               break;
+            case MockDnsClientRule::UNEXPECTED:
+              ADD_FAILURE()
+                  << "Unexpected DNS transaction created for hostname "
+                  << hostname_;
+              break;
           }
 
           break;
@@ -492,6 +497,11 @@ class MockDnsTransactionFactory::MockTransaction
           std::move(callback_).Run(this, ERR_DNS_TIMED_OUT, nullptr,
                                    absl::nullopt);
         }
+        break;
+      case MockDnsClientRule::UNEXPECTED:
+        ADD_FAILURE() << "Unexpected DNS transaction completed for hostname "
+                      << hostname_;
+        break;
     }
   }
 

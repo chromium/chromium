@@ -585,8 +585,9 @@ TEST(DnsResponseResultExtractorTest, ExtractsHttpsResponses) {
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
-  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::HTTPS, &results),
-            DnsResponseResultExtractor::ExtractionError::kOk);
+  EXPECT_EQ(
+      extractor.ExtractDnsResults(DnsQueryType::HTTPS_EXPERIMENTAL, &results),
+      DnsResponseResultExtractor::ExtractionError::kOk);
 
   // Experimental type, so does not affect overall result.
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
@@ -604,8 +605,9 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainHttpsResponses) {
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
-  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::HTTPS, &results),
-            DnsResponseResultExtractor::ExtractionError::kOk);
+  EXPECT_EQ(
+      extractor.ExtractDnsResults(DnsQueryType::HTTPS_EXPERIMENTAL, &results),
+      DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(results.experimental_results(),
@@ -618,8 +620,9 @@ TEST(DnsResponseResultExtractorTest, ExtractsNodataHttpsResponses) {
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
-  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::HTTPS, &results),
-            DnsResponseResultExtractor::ExtractionError::kOk);
+  EXPECT_EQ(
+      extractor.ExtractDnsResults(DnsQueryType::HTTPS_EXPERIMENTAL, &results),
+      DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(results.experimental_results(),
@@ -634,8 +637,9 @@ TEST(DnsResponseResultExtractorTest, RecognizesMalformedHttpsRecord) {
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
-  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::HTTPS, &results),
-            DnsResponseResultExtractor::ExtractionError::kOk);
+  EXPECT_EQ(
+      extractor.ExtractDnsResults(DnsQueryType::HTTPS_EXPERIMENTAL, &results),
+      DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(results.experimental_results(),
@@ -649,13 +653,15 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongNameHttpsRecord) {
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
-  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::HTTPS, &results),
-            DnsResponseResultExtractor::ExtractionError::kOk);
+  EXPECT_EQ(
+      extractor.ExtractDnsResults(DnsQueryType::HTTPS_EXPERIMENTAL, &results),
+      DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
 
   HostCache::Entry default_results =
-      DnsResponseResultExtractor::CreateEmptyResult(DnsQueryType::HTTPS);
+      DnsResponseResultExtractor::CreateEmptyResult(
+          DnsQueryType::HTTPS_EXPERIMENTAL);
   EXPECT_EQ(results.error(), default_results.error());
   EXPECT_EQ(results.experimental_results(),
             default_results.experimental_results());
@@ -668,8 +674,9 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeHttpsResponses) {
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
-  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::HTTPS, &results),
-            DnsResponseResultExtractor::ExtractionError::kOk);
+  EXPECT_EQ(
+      extractor.ExtractDnsResults(DnsQueryType::HTTPS_EXPERIMENTAL, &results),
+      DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(results.experimental_results(),
@@ -687,8 +694,9 @@ TEST(DnsResponseResultExtractorTest, IgnoresAdditionalHttpsRecords) {
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
-  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::HTTPS, &results),
-            DnsResponseResultExtractor::ExtractionError::kOk);
+  EXPECT_EQ(
+      extractor.ExtractDnsResults(DnsQueryType::HTTPS_EXPERIMENTAL, &results),
+      DnsResponseResultExtractor::ExtractionError::kOk);
 
   // Experimental type, so does not affect overall result.
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));

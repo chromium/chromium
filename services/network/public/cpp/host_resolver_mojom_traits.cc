@@ -222,6 +222,7 @@ DnsQueryType EnumTraits<DnsQueryType, net::DnsQueryType>::ToMojom(
     case net::DnsQueryType::HTTPS:
       return DnsQueryType::HTTPS;
     case net::DnsQueryType::INTEGRITY:
+    case net::DnsQueryType::HTTPS_EXPERIMENTAL:
       NOTIMPLEMENTED();
       return DnsQueryType::UNSPECIFIED;
   }

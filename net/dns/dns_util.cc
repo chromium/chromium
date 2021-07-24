@@ -304,6 +304,7 @@ uint16_t DnsQueryTypeToQtype(DnsQueryType dns_query_type) {
     case DnsQueryType::INTEGRITY:
       return dns_protocol::kExperimentalTypeIntegrity;
     case DnsQueryType::HTTPS:
+    case DnsQueryType::HTTPS_EXPERIMENTAL:
       return dns_protocol::kTypeHttps;
   }
 }

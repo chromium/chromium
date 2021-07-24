@@ -283,6 +283,9 @@ struct MockDnsClientRule {
     EMPTY,
     // "Succeed" but with an unparsable response.
     MALFORMED,
+    // Immediately records a test failure if queried. Used to catch unexpected
+    // queries.
+    UNEXPECTED,
 
     // Results in the response in |Result::response| or, if null, results in a
     // localhost IP response.
