@@ -42,7 +42,8 @@ class CORE_EXPORT IntersectionGeometry {
 
     // These flags will be computed
     kRootIsImplicit = 1 << 7,
-    kIsVisible = 1 << 8
+    kDidComputeGeometry = 1 << 8,
+    kIsVisible = 1 << 9
   };
 
   struct RootGeometry {
@@ -125,6 +126,7 @@ class CORE_EXPORT IntersectionGeometry {
   unsigned ThresholdIndex() const { return threshold_index_; }
 
   bool RootIsImplicit() const { return flags_ & kRootIsImplicit; }
+  bool DidComputeGeometry() const { return flags_ & kDidComputeGeometry; }
   bool IsIntersecting() const { return threshold_index_ > 0; }
   bool IsVisible() const { return flags_ & kIsVisible; }
 

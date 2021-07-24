@@ -11,6 +11,7 @@
 #include "base/rand_util.h"
 #include "base/time/default_tick_clock.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
@@ -23,9 +24,22 @@ inline base::HistogramBase::Sample ToSample(int64_t value) {
   return base::saturated_cast<base::HistogramBase::Sample>(value);
 }
 
+inline int64_t ApplyBucket(int64_t value) {
+  return ukm::GetExponentialBucketMinForCounts1000(value);
+}
+
 }  // namespace
 
 namespace blink {
+
+int64_t LocalFrameUkmAggregator::ApplyBucketIfNecessary(int64_t value,
+                                                        unsigned metric_id) {
+  if (metric_id >= kIntersectionObservationInternalCount &&
+      metric_id <= kIntersectionObservationJavascriptCount) {
+    return ApplyBucket(value);
+  }
+  return value;
+}
 
 LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
     scoped_refptr<LocalFrameUkmAggregator> aggregator,
@@ -492,6 +506,17 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent() {
     builder.Set##name(ToSample(absolute_record.pre_fcp_aggregate)); \
   }
 
+#define RECORD_BUCKETED_METRIC(name)                               \
+  {                                                                \
+    auto& absolute_record = absolute_metric_records_[k##name];     \
+    if (absolute_record.uma_aggregate_counter) {                   \
+      absolute_record.uma_aggregate_counter->Count(                \
+          ToSample(absolute_record.pre_fcp_aggregate));            \
+    }                                                              \
+    builder.Set##name(                                             \
+        ToSample(ApplyBucket(absolute_record.pre_fcp_aggregate))); \
+  }
+
   ukm::builders::Blink_PageLoad builder(source_id_);
   primary_metric_.uma_aggregate_counter->Count(
       ToSample(primary_metric_.pre_fcp_aggregate));
@@ -502,6 +527,8 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent() {
   RECORD_METRIC(CompositingInputs);
   RECORD_METRIC(ImplCompositorCommit);
   RECORD_METRIC(IntersectionObservation);
+  RECORD_BUCKETED_METRIC(IntersectionObservationInternalCount);
+  RECORD_BUCKETED_METRIC(IntersectionObservationJavascriptCount);
   RECORD_METRIC(Paint);
   RECORD_METRIC(PrePaint);
   RECORD_METRIC(Style);
@@ -526,6 +553,7 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent() {
 
   builder.Record(recorder_);
 #undef RECORD_METRIC
+#undef RECORD_BUCKETED_METRIC
 }
 
 void LocalFrameUkmAggregator::ReportUpdateTimeEvent() {
@@ -538,6 +566,11 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent() {
       .Set##name##BeginMainFrame(                                \
           current_sample_.sub_main_frame_counts[k##name]);
 
+#define RECORD_BUCKETED_METRIC(name)                                          \
+  builder.Set##name(ApplyBucket(current_sample_.sub_metrics_counts[k##name])) \
+      .Set##name##BeginMainFrame(                                             \
+          ApplyBucket(current_sample_.sub_main_frame_counts[k##name]));
+
   ukm::builders::Blink_UpdateTime builder(source_id_);
   builder.SetMainFrame(current_sample_.primary_metric_count);
   builder.SetMainFrameIsBeforeFCP(fcp_state_ != kHavePassedFCP);
@@ -547,6 +580,8 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent() {
   RECORD_METRIC(CompositingInputs);
   RECORD_METRIC(ImplCompositorCommit);
   RECORD_METRIC(IntersectionObservation);
+  RECORD_BUCKETED_METRIC(IntersectionObservationInternalCount);
+  RECORD_BUCKETED_METRIC(IntersectionObservationJavascriptCount);
   RECORD_METRIC(Paint);
   RECORD_METRIC(PrePaint);
   RECORD_METRIC(Style);
@@ -571,6 +606,7 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent() {
 
   builder.Record(recorder_);
 #undef RECORD_METRIC
+#undef RECORD_BUCKETED_METRIC
 
   // Reset the frames since last report to ensure correct sampling.
   frames_since_last_report_ = 0;

@@ -165,9 +165,11 @@ class CORE_EXPORT IntersectionObserver final
     return margin_target_ == kApplyMarginToTarget ? margin_ : Vector<Length>();
   }
 
-  bool ComputeIntersections(unsigned flags,
-                            absl::optional<base::TimeTicks>& monotonic_time);
+  // Returns the number of IntersectionObservations that recomputed geometry.
+  int64_t ComputeIntersections(unsigned flags,
+                               absl::optional<base::TimeTicks>& monotonic_time);
 
+  bool IsInternal() const;
   LocalFrameUkmAggregator::MetricId GetUkmMetricId() const;
 
   void ReportUpdates(IntersectionObservation&);

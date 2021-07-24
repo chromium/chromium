@@ -27,6 +27,9 @@ specific_include_rules = {
   "local_frame\.cc": [
     "+ui/gfx/transform.h"
   ],
+  "local_frame_ukm_aggregator_test\.cc": [
+    "+base/metrics/statistics_recorder.h"
+  ],
   "local_frame_view\.cc": [
     "+base/timer/lap_timer.h",
     "+cc/document_transition/document_transition_request.h",

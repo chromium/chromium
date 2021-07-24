@@ -458,12 +458,12 @@ DOMHighResTimeStamp IntersectionObserver::GetTimeStamp(
       ->MonotonicTimeToDOMHighResTimeStamp(monotonic_time);
 }
 
-bool IntersectionObserver::ComputeIntersections(
+int64_t IntersectionObserver::ComputeIntersections(
     unsigned flags,
     absl::optional<base::TimeTicks>& monotonic_time) {
   DCHECK(!RootIsImplicit());
   if (!RootIsValid() || !GetExecutionContext() || observations_.IsEmpty())
-    return false;
+    return 0;
 
   // If we're processing post-layout deliveries only and we're not a post-layout
   // delivery observer, then return early. Likewise, return if we need to
@@ -475,7 +475,7 @@ bool IntersectionObserver::ComputeIntersections(
       GetDeliveryBehavior() ==
       IntersectionObserver::kDeliverDuringPostLayoutSteps;
   if (post_layout_delivery_only != is_post_layout_delivery_observer)
-    return false;
+    return 0;
 
   if (use_overflow_clip_edge_)
     flags |= IntersectionObservation::kUseOverflowClipEdge;
@@ -487,11 +487,18 @@ bool IntersectionObserver::ComputeIntersections(
   HeapVector<Member<IntersectionObservation>> observations_to_process;
   // TODO(szager): Is this copy necessary?
   CopyToVector(observations_, observations_to_process);
+  int64_t result = 0;
   for (auto& observation : observations_to_process) {
-    observation->ComputeIntersection(root_geometry, flags, monotonic_time);
+    result +=
+        observation->ComputeIntersection(root_geometry, flags, monotonic_time);
   }
   can_use_cached_rects_ = 1;
-  return trackVisibility();
+  return result;
+}
+
+bool IntersectionObserver::IsInternal() const {
+  return GetUkmMetricId() !=
+         LocalFrameUkmAggregator::kJavascriptIntersectionObserver;
 }
 
 LocalFrameUkmAggregator::MetricId IntersectionObserver::GetUkmMetricId() const {

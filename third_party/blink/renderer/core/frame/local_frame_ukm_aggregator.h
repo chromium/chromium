@@ -127,6 +127,8 @@ class CORE_EXPORT LocalFrameUkmAggregator
     kCompositingInputs,
     kImplCompositorCommit,
     kIntersectionObservation,
+    kIntersectionObservationInternalCount,
+    kIntersectionObservationJavascriptCount,
     kPaint,
     kPrePaint,
     kStyle,
@@ -152,6 +154,10 @@ class CORE_EXPORT LocalFrameUkmAggregator
     kMainFrame
   };
 
+  // For metrics that require it, this converts the input value to use
+  // exponential bucketing.
+  static int64_t ApplyBucketIfNecessary(int64_t value, unsigned metric_id);
+
   typedef struct MetricInitializationData {
     const char* const name;
     bool has_uma;
@@ -159,6 +165,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
 
  private:
   friend class LocalFrameUkmAggregatorTest;
+  friend class LocalFrameUkmAggregatorSimTest;
 
   // Primary metric name
   static const char* primary_metric_name() { return "MainFrame"; }
@@ -171,6 +178,8 @@ class CORE_EXPORT LocalFrameUkmAggregator
         {"CompositingInputs", true},
         {"ImplCompositorCommit", true},
         {"IntersectionObservation", true},
+        {"IntersectionObservationInternalCount", true},
+        {"IntersectionObservationJavascriptCount", true},
         {"Paint", true},
         {"PrePaint", true},
         {"Style", true},

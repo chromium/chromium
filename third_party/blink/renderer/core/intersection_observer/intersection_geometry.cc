@@ -307,6 +307,7 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
                                            const Vector<Length>& target_margin,
                                            CachedRects* cached_rects) {
   DCHECK(cached_rects || !ShouldUseCachedRects());
+  flags_ |= kDidComputeGeometry;
   // Initially:
   //   target_rect_ is in target's coordinate system
   //   root_rect_ is in root's coordinate system

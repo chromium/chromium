@@ -62,9 +62,11 @@ class CORE_EXPORT IntersectionObservation final
   IntersectionObserver* Observer() const { return observer_.Get(); }
   Element* Target() const { return target_; }
   unsigned LastThresholdIndex() const { return last_threshold_index_; }
-  void ComputeIntersection(unsigned flags,
-                           absl::optional<base::TimeTicks>& monotonic_time);
-  void ComputeIntersection(
+  // Returns 1 if the geometry was recalculated, otherwise 0. This could be a
+  // bool, but int64_t matches IntersectionObserver::ComputeIntersections().
+  int64_t ComputeIntersection(unsigned flags,
+                              absl::optional<base::TimeTicks>& monotonic_time);
+  int64_t ComputeIntersection(
       const IntersectionGeometry::RootGeometry& root_geometry,
       unsigned flags,
       absl::optional<base::TimeTicks>& monotonic_time);

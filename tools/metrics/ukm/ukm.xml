@@ -2380,6 +2380,19 @@ be describing additional metrics about the same event.
       and First Contentful Paint, in microseconds.
     </summary>
   </metric>
+  <metric name="IntersectionObservationInternalCount">
+    <summary>
+      The total number of times a blink-internal IntersectionObservation was
+      recomputed between navigation and First Contentful Paint.
+    </summary>
+  </metric>
+  <metric name="IntersectionObservationJavascriptCount">
+    <summary>
+      The total number of times a javascript-instantiated
+      IntersectionObservation was recomputed between navigation and First
+      Contentful Paint.
+    </summary>
+  </metric>
   <metric name="JavascriptDocumentUpdate">
     <summary>
       The time spent doing forced document updates due to generic Javascript API
@@ -3164,6 +3177,44 @@ be describing additional metrics about the same event.
     <summary>
       The total main frame time used to compute IntersectionObserver
       observations, in microseconds.
+    </summary>
+  </metric>
+  <metric name="IntersectionObservationInternalCount">
+    <summary>
+      The number of blink-internal IntersectionObservations that were recomputed
+      during the sampled frame.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="IntersectionObservationInternalCountBeginMainFrame">
+    <summary>
+      The number of blink-internal IntersectionObservations that were recomputed
+      during the sampled frame.
+    </summary>
+  </metric>
+  <metric name="IntersectionObservationJavascriptCount">
+    <summary>
+      The number of javascript-instantiated IntersectionObservations that were
+      recomputed during the sampled frame.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="IntersectionObservationJavascriptCountBeginMainFrame">
+    <summary>
+      The number of javascript-instantiated IntersectionObservations that were
+      recomputed during the sampled frame.
     </summary>
   </metric>
   <metric name="IntersectionObservationPercentage">

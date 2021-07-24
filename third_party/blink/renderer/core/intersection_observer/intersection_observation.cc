@@ -41,7 +41,7 @@ IntersectionObservation::IntersectionObservation(IntersectionObserver& observer,
     cached_rects_ = std::make_unique<IntersectionGeometry::CachedRects>();
 }
 
-void IntersectionObservation::ComputeIntersection(
+int64_t IntersectionObservation::ComputeIntersection(
     const IntersectionGeometry::RootGeometry& root_geometry,
     unsigned compute_flags,
     absl::optional<base::TimeTicks>& monotonic_time) {
@@ -52,12 +52,12 @@ void IntersectionObservation::ComputeIntersection(
     needs_update_ = true;
   }
   if (!ShouldCompute(compute_flags))
-    return;
+    return 0;
   if (!monotonic_time.has_value())
     monotonic_time = base::DefaultTickClock::GetInstance()->NowTicks();
   DOMHighResTimeStamp timestamp = observer_->GetTimeStamp(*monotonic_time);
   if (MaybeDelayAndReschedule(compute_flags, timestamp))
-    return;
+    return 0;
   DCHECK(observer_->root());
   unsigned geometry_flags = GetIntersectionGeometryFlags(compute_flags);
   IntersectionGeometry geometry(
@@ -66,9 +66,10 @@ void IntersectionObservation::ComputeIntersection(
   ProcessIntersectionGeometry(geometry, timestamp);
   last_run_time_ = timestamp;
   needs_update_ = false;
+  return geometry.DidComputeGeometry() ? 1 : 0;
 }
 
-void IntersectionObservation::ComputeIntersection(
+int64_t IntersectionObservation::ComputeIntersection(
     unsigned compute_flags,
     absl::optional<base::TimeTicks>& monotonic_time) {
   DCHECK(Observer());
@@ -78,12 +79,12 @@ void IntersectionObservation::ComputeIntersection(
     needs_update_ = true;
   }
   if (!ShouldCompute(compute_flags))
-    return;
+    return 0;
   if (!monotonic_time.has_value())
     monotonic_time = base::DefaultTickClock::GetInstance()->NowTicks();
   DOMHighResTimeStamp timestamp = observer_->GetTimeStamp(*monotonic_time);
   if (MaybeDelayAndReschedule(compute_flags, timestamp))
-    return;
+    return 0;
   unsigned geometry_flags = GetIntersectionGeometryFlags(compute_flags);
   IntersectionGeometry geometry(
       observer_->root(), *Target(), observer_->RootMargin(),
@@ -91,6 +92,7 @@ void IntersectionObservation::ComputeIntersection(
   ProcessIntersectionGeometry(geometry, timestamp);
   last_run_time_ = timestamp;
   needs_update_ = false;
+  return geometry.DidComputeGeometry() ? 1 : 0;
 }
 
 void IntersectionObservation::TakeRecords(

@@ -65,32 +65,50 @@ bool IntersectionObserverController::ComputeIntersections(
     LocalFrameUkmAggregator& ukm_aggregator,
     absl::optional<base::TimeTicks>& monotonic_time) {
   needs_occlusion_tracking_ = false;
-  if (GetExecutionContext()) {
-    TRACE_EVENT0("blink,devtools.timeline",
-                 "IntersectionObserverController::"
-                 "computeIntersections");
-    HeapVector<Member<IntersectionObserver>> observers_to_process;
-    CopyToVector(tracked_explicit_root_observers_, observers_to_process);
-    HeapVector<Member<IntersectionObservation>> observations_to_process;
-    CopyToVector(tracked_implicit_root_observations_, observations_to_process);
-    {
-      LocalFrameUkmAggregator::IterativeTimer ukm_timer(ukm_aggregator);
-      for (auto& observer : observers_to_process) {
-        if (observer->HasObservations()) {
-          ukm_timer.StartInterval(observer->GetUkmMetricId());
-          needs_occlusion_tracking_ |=
-              observer->ComputeIntersections(flags, monotonic_time);
-        } else {
-          tracked_explicit_root_observers_.erase(observer);
-        }
-      }
-      for (auto& observation : observations_to_process) {
-        ukm_timer.StartInterval(observation->Observer()->GetUkmMetricId());
-        observation->ComputeIntersection(flags, monotonic_time);
-        needs_occlusion_tracking_ |= observation->Observer()->trackVisibility();
+  if (!GetExecutionContext())
+    return false;
+  TRACE_EVENT0("blink,devtools.timeline",
+               "IntersectionObserverController::"
+               "computeIntersections");
+  HeapVector<Member<IntersectionObserver>> observers_to_process;
+  CopyToVector(tracked_explicit_root_observers_, observers_to_process);
+  HeapVector<Member<IntersectionObservation>> observations_to_process;
+  CopyToVector(tracked_implicit_root_observations_, observations_to_process);
+  int64_t internal_observation_count = 0;
+  int64_t javascript_observation_count = 0;
+  {
+    LocalFrameUkmAggregator::IterativeTimer ukm_timer(ukm_aggregator);
+    for (auto& observer : observers_to_process) {
+      if (observer->HasObservations()) {
+        ukm_timer.StartInterval(observer->GetUkmMetricId());
+        int64_t count = observer->ComputeIntersections(flags, monotonic_time);
+        if (observer->IsInternal())
+          internal_observation_count += count;
+        else
+          javascript_observation_count += count;
+        needs_occlusion_tracking_ |= observer->trackVisibility();
+      } else {
+        tracked_explicit_root_observers_.erase(observer);
       }
     }
+    for (auto& observation : observations_to_process) {
+      ukm_timer.StartInterval(observation->Observer()->GetUkmMetricId());
+      int64_t count = observation->ComputeIntersection(flags, monotonic_time);
+      if (observation->Observer()->IsInternal())
+        internal_observation_count += count;
+      else
+        javascript_observation_count += count;
+      needs_occlusion_tracking_ |= observation->Observer()->trackVisibility();
+    }
   }
+
+  ukm_aggregator.RecordCountSample(
+      LocalFrameUkmAggregator::kIntersectionObservationInternalCount,
+      internal_observation_count);
+  ukm_aggregator.RecordCountSample(
+      LocalFrameUkmAggregator::kIntersectionObservationJavascriptCount,
+      javascript_observation_count);
+
   return needs_occlusion_tracking_;
 }
 
