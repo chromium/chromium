@@ -28,7 +28,8 @@ class BitstreamFileWriter : public BitstreamProcessor {
       uint32_t frame_rate,
       uint32_t num_frames,
       absl::optional<size_t> vp9_spatial_layer_index_to_write = absl::nullopt,
-      absl::optional<size_t> num_vp9_temporal_layers_to_write = absl::nullopt);
+      absl::optional<size_t> num_vp9_temporal_layers_to_write = absl::nullopt,
+      const std::vector<gfx::Size>& vp9_spatial_layer_resolutions = {});
   BitstreamFileWriter(const BitstreamFileWriter&) = delete;
   BitstreamFileWriter operator=(const BitstreamFileWriter&) = delete;
   ~BitstreamFileWriter() override;
@@ -39,15 +40,27 @@ class BitstreamFileWriter : public BitstreamProcessor {
 
  private:
   class FrameFileWriter;
-  BitstreamFileWriter(std::unique_ptr<FrameFileWriter> frame_file_writer,
-                      absl::optional<size_t> vp9_spatial_layer_index_to_write,
-                      absl::optional<size_t> num_vp9_temporal_layers_to_write);
+  BitstreamFileWriter(
+      std::unique_ptr<FrameFileWriter> frame_file_writer,
+      absl::optional<size_t> vp9_spatial_layer_index_to_write,
+      absl::optional<size_t> num_vp9_temporal_layers_to_write,
+      const std::vector<gfx::Size>& vp9_spatial_layer_resolutions);
   void WriteBitstreamTask(scoped_refptr<BitstreamRef> bitstream,
                           size_t frame_index);
+
+  // Construct the spatial index conversion table |original_spatial_indices_|
+  // from |spatial_layer_resolutions|.
+  void ConstructSpatialIndices(
+      const std::vector<gfx::Size>& spatial_layer_resolutions);
 
   const std::unique_ptr<FrameFileWriter> frame_file_writer_;
   const absl::optional<size_t> vp9_spatial_layer_index_to_write_;
   const absl::optional<size_t> num_vp9_temporal_layers_to_write_;
+  const std::vector<gfx::Size> vp9_spatial_layer_resolutions_;
+
+  // The conversion table from the current spatial index to the spatial index of
+  // the initial spatial layers. Constructed in ConstructSpatialIndices().
+  std::vector<uint8_t> original_spatial_indices_;
 
   // The number of buffers currently queued for writing.
   size_t num_buffers_writing_ GUARDED_BY(writer_lock_);

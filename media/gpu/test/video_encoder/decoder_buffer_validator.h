@@ -99,7 +99,7 @@ class VP9Validator : public DecoderBufferValidator {
  public:
   VP9Validator(VideoCodecProfile profile,
                const gfx::Rect& visible_rect,
-               size_t num_spatial_layers,
+               size_t max_num_spatial_layers,
                size_t num_temporal_layers);
   ~VP9Validator() override;
 
@@ -118,7 +118,9 @@ class VP9Validator : public DecoderBufferValidator {
 
   // The expected VP9 profile of |decoder_buffer|.
   const int profile_;
-  const size_t num_spatial_layers_;
+  const size_t max_num_spatial_layers_;
+  size_t cur_num_spatial_layers_;
+  std::vector<gfx::Size> spatial_layer_resolutions_;
   const size_t num_temporal_layers_;
   int next_picture_id_;
 

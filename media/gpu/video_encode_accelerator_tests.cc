@@ -138,7 +138,8 @@ class VideoEncoderTest : public ::testing::Test {
       const size_t last_frame_index,
       VideoFrameValidator::GetModelFrameCB get_model_frame_cb,
       absl::optional<size_t> vp9_spatial_layer_index_to_decode,
-      absl::optional<size_t> num_vp9_temporal_layers_to_decode) {
+      absl::optional<size_t> num_vp9_temporal_layers_to_decode,
+      const std::vector<gfx::Size>& vp9_spatial_layer_resolutions) {
     std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors;
 
     // Attach a video frame writer to store individual frames to disk if
@@ -177,7 +178,8 @@ class VideoEncoderTest : public ::testing::Test {
     video_frame_processors.push_back(std::move(ssim_validator));
     return BitstreamValidator::Create(
         decoder_config, last_frame_index, std::move(video_frame_processors),
-        vp9_spatial_layer_index_to_decode, num_vp9_temporal_layers_to_decode);
+        vp9_spatial_layer_index_to_decode, num_vp9_temporal_layers_to_decode,
+        vp9_spatial_layer_resolutions);
   }
 
   std::vector<std::unique_ptr<BitstreamProcessor>> CreateBitstreamProcessors(
@@ -185,6 +187,13 @@ class VideoEncoderTest : public ::testing::Test {
       const VideoEncoderClientConfig& config) {
     std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors;
     const gfx::Rect visible_rect(config.output_resolution);
+    std::vector<gfx::Size> vp9_spatial_layer_resolutions(
+        config.num_spatial_layers);
+    for (size_t i = 0; i < config.num_spatial_layers; ++i) {
+      vp9_spatial_layer_resolutions[i] = gfx::Size(
+          config.spatial_layers[i].width, config.spatial_layers[i].height);
+    }
+
     const VideoCodec codec =
         VideoCodecProfileToVideoCodec(config.output_profile);
     if (g_env->SaveOutputBitstream()) {
@@ -213,7 +222,8 @@ class VideoEncoderTest : public ::testing::Test {
                     base::NumberToString(num_vp9_temporal_layers_to_write - 1)),
                 codec, layer_size, config.framerate,
                 config.num_frames_to_encode, vp9_spatial_layer_index_to_write,
-                num_vp9_temporal_layers_to_write));
+                num_vp9_temporal_layers_to_write,
+                vp9_spatial_layer_resolutions));
             LOG_ASSERT(bitstream_processors.back());
           }
         }
@@ -261,9 +271,8 @@ class VideoEncoderTest : public ::testing::Test {
       for (size_t vp9_spatial_layer_index_to_decode = 0;
            vp9_spatial_layer_index_to_decode < config.num_spatial_layers;
            ++vp9_spatial_layer_index_to_decode) {
-        gfx::Size layer_size = gfx::Size(
-            config.spatial_layers[vp9_spatial_layer_index_to_decode].width,
-            config.spatial_layers[vp9_spatial_layer_index_to_decode].height);
+        const gfx::Size& layer_size =
+            vp9_spatial_layer_resolutions[vp9_spatial_layer_index_to_decode];
         VideoDecoderConfig decoder_config(
             codec, config.output_profile,
             VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
@@ -278,7 +287,7 @@ class VideoEncoderTest : public ::testing::Test {
           bitstream_processors.emplace_back(CreateBitstreamValidator(
               video, decoder_config, config.num_frames_to_encode - 1,
               get_model_frame_cb, vp9_spatial_layer_index_to_decode,
-              num_temporal_layers_to_decode));
+              num_temporal_layers_to_decode, vp9_spatial_layer_resolutions));
           LOG_ASSERT(bitstream_processors.back());
         }
       }
@@ -298,7 +307,8 @@ class VideoEncoderTest : public ::testing::Test {
                               base::Unretained(this), visible_rect);
       bitstream_processors.emplace_back(CreateBitstreamValidator(
           video, decoder_config, config.num_frames_to_encode - 1,
-          get_model_frame_cb, absl::nullopt, absl::nullopt));
+          get_model_frame_cb, absl::nullopt, absl::nullopt,
+          /*vp9_spatial_layer_resolutions=*/{}));
       LOG_ASSERT(bitstream_processors.back());
     }
     return bitstream_processors;
@@ -708,6 +718,78 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingRightAndLeft) {
   EXPECT_EQ(encoder->GetFrameReleasedCount(), nv12_expanded_video->NumFrames());
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
+
+// This tests deactivate and activating spatial layers during encoding.
+TEST_F(VideoEncoderTest, DeactivateAndActivateSpatialLayers) {
+  if (auto skip_reason = SupportsNV12DmaBufInput())
+    GTEST_SKIP() << *skip_reason;
+
+  const auto& spatial_layers = g_env->SpatialLayers();
+  if (spatial_layers.size() <= 1)
+    GTEST_SKIP() << "Skip (de)activate spatial layers test for simple encoding";
+
+  Video* nv12_video = g_env->GenerateNV12Video();
+  const size_t bottom_spatial_idx = 0;
+  const size_t top_spatial_idx = spatial_layers.size() - 1;
+  auto deactivate_spatial_layer =
+      [](VideoBitrateAllocation bitrate_allocation,
+         size_t deactivate_sid) -> VideoBitrateAllocation {
+    for (size_t i = 0; i < VideoBitrateAllocation::kMaxTemporalLayers; ++i)
+      bitrate_allocation.SetBitrate(deactivate_sid, i, 0);
+    return bitrate_allocation;
+  };
+
+  const auto& default_allocation = g_env->Bitrate();
+  std::vector<VideoBitrateAllocation> bitrate_allocations;
+
+  // Deactivate the top layer.
+  bitrate_allocations.emplace_back(
+      deactivate_spatial_layer(default_allocation, top_spatial_idx));
+
+  // Activate the top layer.
+  bitrate_allocations.emplace_back(default_allocation);
+
+  // Deactivate the bottom layer (and top layer if there is still a spatial
+  // layer).
+  auto bitrate_allocation =
+      deactivate_spatial_layer(default_allocation, bottom_spatial_idx);
+  if (bottom_spatial_idx + 1 < top_spatial_idx) {
+    bitrate_allocation =
+        deactivate_spatial_layer(bitrate_allocation, top_spatial_idx);
+  }
+  bitrate_allocations.emplace_back(bitrate_allocation);
+
+  // Deactivate the layers except bottom layer.
+  bitrate_allocation = default_allocation;
+  for (size_t i = bottom_spatial_idx + 1; i < spatial_layers.size(); ++i)
+    bitrate_allocation = deactivate_spatial_layer(bitrate_allocation, i);
+  bitrate_allocations.emplace_back(bitrate_allocation);
+
+  VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
+                                  g_env->SpatialLayers(), g_env->Bitrate());
+  config.input_storage_type =
+      VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
+  std::vector<size_t> num_frames_to_encode(bitrate_allocations.size());
+  for (size_t i = 0; i < num_frames_to_encode.size(); ++i)
+    num_frames_to_encode[i] = config.num_frames_to_encode * (i + 1);
+  config.num_frames_to_encode =
+      num_frames_to_encode.back() + config.num_frames_to_encode;
+
+  auto encoder = CreateVideoEncoder(nv12_video, config);
+
+  for (size_t i = 0; i < bitrate_allocations.size(); ++i) {
+    encoder->EncodeUntil(VideoEncoder::kFrameReleased, num_frames_to_encode[i]);
+    EXPECT_TRUE(encoder->WaitUntilIdle());
+    encoder->UpdateBitrate(bitrate_allocations[i], config.framerate);
+  }
+
+  encoder->Encode();
+  EXPECT_TRUE(encoder->WaitForFlushDone());
+  EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
+  EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
+  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
+}
+
 }  // namespace test
 }  // namespace media
 
