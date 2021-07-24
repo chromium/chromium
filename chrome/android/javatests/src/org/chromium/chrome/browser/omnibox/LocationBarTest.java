@@ -219,6 +219,16 @@ public class LocationBarTest {
         }
     }
 
+    private void updateLocationBar() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            LocationBarMediator mediator = mLocationBarCoordinator.getMediatorForTesting();
+            mediator.onIncognitoStateChanged();
+            mediator.onPrimaryColorChanged();
+            mediator.onSecurityStateChanged();
+            mediator.onUrlChanged();
+        });
+    }
+
     @Test
     @MediumTest
     public void testSetSearchQueryFocusesUrlBar() {
@@ -498,6 +508,35 @@ public class LocationBarTest {
         ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_end), isDisplayed()));
         ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_start), not(isDisplayed())));
         assertTheLastVisibleButtonInSearchBoxById(R.id.lens_camera_button_end);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void testFocusLogic_lenButtonVisibilityOnLocationBarIncognitoStateChange() {
+        startActivityNormally();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+        doReturn(false).when(mLensController).isLensEnabled(any());
+        String url = mActivityTestRule.getEmbeddedTestServerRule().getServer().getURLWithHostName(
+                HOSTNAME, "/");
+        // Test when incognito is true.
+        mActivityTestRule.loadUrlInNewTab(url, /** incognito = */ true);
+        updateLocationBar();
+        onView(withId(R.id.lens_camera_button_end)).check(matches(not(isDisplayed())));
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
+        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_end), not(isDisplayed())));
+        ViewUtils.waitForView(allOf(withId(R.id.mic_button), isDisplayed()));
+        assertTheLastVisibleButtonInSearchBoxById(R.id.mic_button);
+
+        // Test when incognito is false.
+        doReturn(true).when(mLensController).isLensEnabled(any());
+        mActivityTestRule.loadUrlInNewTab(url, /** incognito = */ false);
+        updateLocationBar();
+        onView(withId(R.id.lens_camera_button_end)).check(matches(not(isDisplayed())));
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
+        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button_end), isDisplayed()));
+        assertTheLastVisibleButtonInSearchBoxById(R.id.lens_camera_button_end);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
     }
 
     @Test
