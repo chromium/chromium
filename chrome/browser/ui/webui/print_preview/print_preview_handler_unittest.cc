@@ -69,19 +69,17 @@ const char kTestData[] = "abc";
 
 // Array of all mojom::PrinterTypes.
 constexpr mojom::PrinterType kAllTypes[] = {
-    mojom::PrinterType::kPrivet, mojom::PrinterType::kExtension,
-    mojom::PrinterType::kPdf, mojom::PrinterType::kLocal,
-    mojom::PrinterType::kCloud};
+    mojom::PrinterType::kExtension, mojom::PrinterType::kPdf,
+    mojom::PrinterType::kLocal, mojom::PrinterType::kCloud};
 
 // Array of all mojom::PrinterTypes that have working PrinterHandlers.
 constexpr mojom::PrinterType kAllSupportedTypes[] = {
-    mojom::PrinterType::kPrivet, mojom::PrinterType::kExtension,
-    mojom::PrinterType::kPdf, mojom::PrinterType::kLocal};
-
-// All three printer types that implement PrinterHandler::StartGetPrinters().
-constexpr mojom::PrinterType kFetchableTypes[] = {
-    mojom::PrinterType::kPrivet, mojom::PrinterType::kExtension,
+    mojom::PrinterType::kExtension, mojom::PrinterType::kPdf,
     mojom::PrinterType::kLocal};
+
+// Both printer types that implement PrinterHandler::StartGetPrinters().
+constexpr mojom::PrinterType kFetchableTypes[] = {
+    mojom::PrinterType::kExtension, mojom::PrinterType::kLocal};
 
 struct PrinterInfo {
   std::string id;
@@ -1016,17 +1014,15 @@ TEST_F(PrintPreviewHandlerTest, GetPrinters) {
 }
 
 // Validates the 'printing.printer_type_deny_list' pref by placing the extension
-// and privet printer types on a deny list. A 'getPrinters' Web UI message is
-// then called for all three fetchable printer types; only local printers should
+// printer type on a deny list. A 'getPrinters' Web UI message is
+// then called both fetchable printer types; only local printers should
 // be successfully fetched.
 TEST_F(PrintPreviewHandlerTest, GetNoDenyListPrinters) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   AddToDenyList(mojom::PrinterType::kExtension);
-  AddToDenyList(mojom::PrinterType::kPrivet);
 #else
   base::Value::ListStorage deny_list;
   deny_list.push_back(base::Value("extension"));
-  deny_list.push_back(base::Value("privet"));
   prefs()->Set(prefs::kPrinterTypeDenyList, base::Value(std::move(deny_list)));
 #endif
   Initialize();
@@ -1106,8 +1102,8 @@ TEST_F(PrintPreviewHandlerTest, GetPrinterCapabilities) {
 
 // Validates the 'printing.printer_type_deny_list' pref by placing the local and
 // PDF printer types on the deny list. A 'getPrinterCapabilities' Web UI message
-// is then called for all supported printer types; only privet and extension
-// printer capabilties should be successfully fetched.
+// is then called for all supported printer types; only extension
+// printer capabilities should be successfully fetched.
 TEST_F(PrintPreviewHandlerTest, GetNoDenyListPrinterCapabilities) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   AddToDenyList(mojom::PrinterType::kLocal);
@@ -1129,8 +1125,7 @@ TEST_F(PrintPreviewHandlerTest, GetNoDenyListPrinterCapabilities) {
     handler()->reset_calls();
     SendGetPrinterCapabilities(type, callback_id_in, kDummyPrinterName);
 
-    const bool is_allowed_type = type == mojom::PrinterType::kPrivet ||
-                                 type == mojom::PrinterType::kExtension;
+    const bool is_allowed_type = type == mojom::PrinterType::kExtension;
     EXPECT_EQ(is_allowed_type, handler()->CalledOnlyForType(type));
 
     // Start with 1 call from initial settings, then add 1 more for each loop

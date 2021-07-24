@@ -177,9 +177,6 @@ export class MetricsContext {
   static getPrinters(type) {
     let histogram = '';
     switch (type) {
-      case (PrinterType.PRIVET_PRINTER):
-        histogram = 'PrintPreview.Initialization.GetPrinters.Privet';
-        break;
       case (PrinterType.EXTENSION_PRINTER):
         histogram = 'PrintPreview.Initialization.GetPrinters.Extension';
         break;

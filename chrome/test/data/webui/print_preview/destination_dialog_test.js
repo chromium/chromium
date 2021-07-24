@@ -208,9 +208,6 @@ suite(destination_dialog_test.suiteName, function() {
     const user2 = 'bar@chromium.org';
     cloudPrintInterface.setPrinter(getGoogleDriveDestination(user1));
     cloudPrintInterface.setPrinter(getGoogleDriveDestination(user2));
-    // Override so that privet printers will also be fetched, since we are
-    // simulating the case where the enterprise override is enabled.
-    loadTimeData.overrideValues({'forceEnablePrivetPrinting': true});
     let userSelect = null;
 
     await finishSetup();
@@ -220,9 +217,9 @@ suite(destination_dialog_test.suiteName, function() {
 
     // Enable cloud print.
     assertSignedInState('', 0);
-    // Local, extension, privet, and cloud (since
+    // Local, extension, and cloud (since
     // startLoadAllDestinations() was called).
-    assertEquals(3, nativeLayer.getCallCount('getPrinters'));
+    assertEquals(2, nativeLayer.getCallCount('getPrinters'));
     assertEquals(1, cloudPrintInterface.getCallCount('search'));
 
     // 6 printers, no Google drive (since not signed in).
@@ -241,7 +238,9 @@ suite(destination_dialog_test.suiteName, function() {
     // Now have 7 printers (Google Drive), with user1 signed in.
     const expectedPrinters = 7;
     assertNumPrintersWithDriveAccount(expectedPrinters, user1);
-    assertEquals(3, nativeLayer.getCallCount('getPrinters'));
+    // Still 2 calls as extension and local printers don't get refreshed on
+    // sign in.
+    assertEquals(2, nativeLayer.getCallCount('getPrinters'));
     // Cloud printers should have been re-fetched.
     assertEquals(2, cloudPrintInterface.getCallCount('search'));
 
@@ -252,7 +251,7 @@ suite(destination_dialog_test.suiteName, function() {
     await nativeLayer.whenCalled('signIn');
     // No new printer fetch until the user actually changes the active
     // account.
-    assertEquals(3, nativeLayer.getCallCount('getPrinters'));
+    assertEquals(2, nativeLayer.getCallCount('getPrinters'));
     assertEquals(2, cloudPrintInterface.getCallCount('search'));
     dialog.users = [user1, user2];
     flush();
@@ -286,7 +285,7 @@ suite(destination_dialog_test.suiteName, function() {
 
     // 7 printers (Google Drive), with user2 signed in.
     assertNumPrintersWithDriveAccount(expectedPrinters, user2);
-    assertEquals(3, nativeLayer.getCallCount('getPrinters'));
+    assertEquals(2, nativeLayer.getCallCount('getPrinters'));
     // Cloud print should have been queried again for the new account.
     assertEquals(3, cloudPrintInterface.getCallCount('search'));
   });

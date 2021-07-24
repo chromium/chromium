@@ -47,7 +47,7 @@ void StartLocalPrint(base::Value job_settings,
                      PrinterHandler::PrintCallback callback);
 
 // Parses print job settings. Returns |true| on success.
-// This is used by extension and privet printers.
+// This is used by extension printers.
 bool ParseSettings(const base::Value& settings,
                    std::string* out_destination_id,
                    std::string* out_capabilities,

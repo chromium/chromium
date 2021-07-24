@@ -408,12 +408,6 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
 #endif
 
   source->AddBoolean("isEnterpriseManaged", webui::IsEnterpriseManaged());
-
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-  source->AddBoolean(
-      "forceEnablePrivetPrinting",
-      profile->GetPrefs()->GetBoolean(prefs::kForceEnablePrivetPrinting));
-#endif
 }
 
 void SetupPrintPreviewPlugin(content::WebUIDataSource* source) {

@@ -1313,11 +1313,6 @@ const char kProfileAvatarTutorialShown[] =
 // mode is on, recommending high-contrast extensions and themes.
 const char kInvertNotificationShown[] = "invert_notification_version_2_shown";
 
-// A boolean indicating whether deprecated privet printing should be forced
-// to be enabled.
-const char kForceEnablePrivetPrinting[] =
-    "printing.force_enable_privet_printing";
-
 // A pref holding the list of printer types to be disabled.
 const char kPrinterTypeDenyList[] = "printing.printer_type_deny_list";
 

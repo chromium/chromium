@@ -10,10 +10,6 @@
 #include "chrome/browser/ui/webui/print_preview/pdf_printer_handler.h"
 #include "chrome/common/buildflags.h"
 
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-#include "chrome/browser/ui/webui/print_preview/privet_printer_handler.h"
-#endif
-
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/ui/webui/print_preview/local_printer_handler_chromeos.h"
 #else
@@ -47,14 +43,6 @@ std::unique_ptr<PrinterHandler> PrinterHandler::CreateForPdfPrinter(
   return std::make_unique<PdfPrinterHandler>(profile, preview_web_contents,
                                              sticky_settings);
 }
-
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-// static
-std::unique_ptr<PrinterHandler> PrinterHandler::CreateForPrivetPrinters(
-    Profile* profile) {
-  return std::make_unique<PrivetPrinterHandler>(profile);
-}
-#endif
 
 void PrinterHandler::GetDefaultPrinter(DefaultPrinterCallback cb) {
   NOTREACHED();

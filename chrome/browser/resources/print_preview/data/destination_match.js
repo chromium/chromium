@@ -8,6 +8,7 @@ import {CloudOrigins, Destination, DestinationOrigin, RecentDestination} from '.
 /**
  * Printer types for capabilities and printer list requests.
  * Must match PrinterType in printing/print_job_constants.h
+ * Note: PRIVET_PRINTER is deprecated.
  * @enum {number}
  */
 export const PrinterType = {
@@ -26,9 +27,6 @@ export const PrinterType = {
 export const originToType = function(origin) {
   if (origin === DestinationOrigin.LOCAL || origin === DestinationOrigin.CROS) {
     return PrinterType.LOCAL_PRINTER;
-  }
-  if (origin === DestinationOrigin.PRIVET) {
-    return PrinterType.PRIVET_PRINTER;
   }
   if (origin === DestinationOrigin.EXTENSION) {
     return PrinterType.EXTENSION_PRINTER;

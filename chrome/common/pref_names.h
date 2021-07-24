@@ -428,7 +428,6 @@ extern const char kProfileAvatarTutorialShown[];
 
 extern const char kInvertNotificationShown[];
 
-extern const char kForceEnablePrivetPrinting[];
 extern const char kPrinterTypeDenyList[];
 extern const char kPrintingAllowedBackgroundGraphicsModes[];
 extern const char kPrintingBackgroundGraphicsDefault[];

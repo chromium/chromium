@@ -202,13 +202,6 @@ export class DestinationStore extends EventTarget {
       ],
       [PrinterType.LOCAL_PRINTER, DestinationStorePrinterSearchStatus.START],
     ]);
-    // TODO (https://crbug.com/1223593): Remove the code below once this policy
-    // is no longer supported.
-    if (loadTimeData.getBoolean('forceEnablePrivetPrinting')) {
-      this.destinationSearchStatus_.set(
-          PrinterType.PRIVET_PRINTER,
-          DestinationStorePrinterSearchStatus.START);
-    }
 
     /** @private {!Set<string>} */
     this.inFlightCloudPrintRequests_ = new Set();
@@ -413,11 +406,7 @@ export class DestinationStore extends EventTarget {
     // fetched by Javascript instead of through the native layer (which
     // startLoadDestinations_ invokes).
     for (const printerType of this.typesToSearch_) {
-      // TODO (https://crbug.com/1223593): Remove the code below once this
-      // policy is no longer supported.
-      if (printerType !== PrinterType.CLOUD_PRINTER &&
-          (printerType !== PrinterType.PRIVET_PRINTER ||
-           loadTimeData.getBoolean('forceEnablePrivetPrinting'))) {
+      if (printerType !== PrinterType.CLOUD_PRINTER) {
         this.startLoadDestinations_(printerType);
       }
     }
@@ -617,11 +606,6 @@ export class DestinationStore extends EventTarget {
     const origins = [];
     if (isLocal) {
       origins.push(DestinationOrigin.LOCAL);
-      // TODO (https://crbug.com/1223593): Remove the code below once this
-      // policy is no longer supported.
-      if (loadTimeData.getBoolean('forceEnablePrivetPrinting')) {
-        origins.push(DestinationOrigin.PRIVET);
-      }
       origins.push(DestinationOrigin.EXTENSION);
       origins.push(DestinationOrigin.CROS);
     }
@@ -715,9 +699,7 @@ export class DestinationStore extends EventTarget {
               otherDestination !== destination;
         })) {
       this.metrics_.record(
-          destination.isPrivet ?
-              Metrics.DestinationSearchBucket.PRIVET_DUPLICATE_SELECTED :
-              Metrics.DestinationSearchBucket.CLOUD_DUPLICATE_SELECTED);
+          Metrics.DestinationSearchBucket.CLOUD_DUPLICATE_SELECTED);
     }
     // Notify about selected destination change.
     this.dispatchEvent(
@@ -863,12 +845,6 @@ export class DestinationStore extends EventTarget {
       PrinterType.EXTENSION_PRINTER,
       PrinterType.LOCAL_PRINTER,
     ];
-
-    // TODO (https://crbug.com/1223593): Remove the code below once this policy
-    // is no longer supported.
-    if (loadTimeData.getBoolean('forceEnablePrivetPrinting')) {
-      types.push(PrinterType.PRIVET_PRINTER);
-    }
 
     // Cloud destinations are pulled from the cloud print server instead of the
     // NativeLayer/PrintPreviewHandler.
@@ -1111,10 +1087,8 @@ export class DestinationStore extends EventTarget {
     MetricsContext.getPrinterCapabilities().record(
         Metrics.PrintPreviewInitializationEvents.FUNCTION_SUCCESSFUL);
     let dest = null;
-    if (origin !== DestinationOrigin.PRIVET) {
-      const key = createDestinationKey(id, origin, '');
-      dest = this.destinationMap_.get(key);
-    }
+    const key = createDestinationKey(id, origin, '');
+    dest = this.destinationMap_.get(key);
     if (!dest) {
       // Ignore unrecognized extension printers
       if (!settingsInfo.printer) {

@@ -113,8 +113,6 @@ constexpr size_t kMaxCloudPrintPdfDataSizeInBytes = 80 * 1024 * 1024 / 2;
 
 mojom::PrinterType GetPrinterTypeForUserAction(UserActionBuckets user_action) {
   switch (user_action) {
-    case UserActionBuckets::kPrintWithPrivet:
-      return mojom::PrinterType::kPrivet;
     case UserActionBuckets::kPrintWithExtension:
       return mojom::PrinterType::kExtension;
     // On Chrome OS, printing to Google Drive needs to open the local file
@@ -131,13 +129,6 @@ mojom::PrinterType GetPrinterTypeForUserAction(UserActionBuckets user_action) {
       NOTREACHED();
       return mojom::PrinterType::kLocal;
   }
-}
-
-base::Value GetErrorValue(UserActionBuckets user_action,
-                          base::StringPiece description) {
-  return user_action == UserActionBuckets::kPrintWithPrivet
-             ? base::Value(-1)
-             : base::Value(description);
 }
 
 // Dictionary Fields for Print Preview initial settings. Keep in sync with
@@ -244,8 +235,6 @@ UserActionBuckets DetermineUserAction(const base::Value& settings) {
   mojom::PrinterType type = static_cast<mojom::PrinterType>(
       settings.FindIntKey(kSettingPrinterType).value());
   switch (type) {
-    case mojom::PrinterType::kPrivet:
-      return UserActionBuckets::kPrintWithPrivet;
     case mojom::PrinterType::kExtension:
       return UserActionBuckets::kPrintWithExtension;
     case mojom::PrinterType::kPdf:
@@ -497,9 +486,7 @@ void PrintPreviewHandler::ReadPrinterTypeDenyListFromPrefs() {
   for (const base::Value& deny_list_value : deny_list_from_prefs->GetList()) {
     const std::string& deny_list_str = deny_list_value.GetString();
     mojom::PrinterType printer_type;
-    if (deny_list_str == "privet")
-      printer_type = mojom::PrinterType::kPrivet;
-    else if (deny_list_str == "extension")
+    if (deny_list_str == "extension")
       printer_type = mojom::PrinterType::kExtension;
     else if (deny_list_str == "pdf")
       printer_type = mojom::PrinterType::kPdf;
@@ -724,7 +711,7 @@ void PrintPreviewHandler::HandlePrint(const base::ListValue* args) {
   int page_count = settings.FindIntKey(kSettingPreviewPageCount).value_or(-1);
   if (page_count <= 0) {
     RejectJavascriptCallback(base::Value(callback_id),
-                             GetErrorValue(user_action, "NO_PAGE_COUNT"));
+                             base::Value("NO_PAGE_COUNT"));
     return;
   }
 
@@ -733,8 +720,7 @@ void PrintPreviewHandler::HandlePrint(const base::ListValue* args) {
       COMPLETE_PREVIEW_DOCUMENT_INDEX, &data);
   if (!data) {
     // Nothing to print, no preview available.
-    RejectJavascriptCallback(base::Value(callback_id),
-                             GetErrorValue(user_action, "NO_DATA"));
+    RejectJavascriptCallback(base::Value(callback_id), base::Value("NO_DATA"));
     return;
   }
   DCHECK(data->size());
@@ -1162,16 +1148,6 @@ PrinterHandler* PrintPreviewHandler::GetPrinterHandler(
     }
     return extension_printer_handler_.get();
   }
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-  if (printer_type == mojom::PrinterType::kPrivet &&
-      GetPrefs()->GetBoolean(prefs::kForceEnablePrivetPrinting)) {
-    if (!privet_printer_handler_) {
-      privet_printer_handler_ =
-          PrinterHandler::CreateForPrivetPrinters(Profile::FromWebUI(web_ui()));
-    }
-    return privet_printer_handler_.get();
-  }
-#endif
   if (printer_type == mojom::PrinterType::kPdf) {
     if (!pdf_printer_handler_) {
       pdf_printer_handler_ = PrinterHandler::CreateForPdfPrinter(
@@ -1199,7 +1175,6 @@ PdfPrinterHandler* PrintPreviewHandler::GetPdfPrinterHandler() {
 void PrintPreviewHandler::OnAddedPrinters(mojom::PrinterType printer_type,
                                           const base::ListValue& printers) {
   DCHECK(printer_type == mojom::PrinterType::kExtension ||
-         printer_type == mojom::PrinterType::kPrivet ||
          printer_type == mojom::PrinterType::kLocal);
   DCHECK(!printers.GetList().empty());
   FireWebUIListener("printers-added",

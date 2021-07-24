@@ -37,6 +37,9 @@ export const DestinationOrigin = {
   // <if expr="chromeos or lacros">
   DEVICE: 'device',
   // </if>
+  // Note: Privet is deprecated, but used to filter any legacy entries in the
+  // recent destinations, since we can't guarantee all recent privet printers
+  // have been overridden.
   PRIVET: 'privet',
   EXTENSION: 'extension',
   CROS: 'chrome_os',
@@ -405,13 +408,7 @@ export class Destination {
   get isLocal() {
     return this.origin_ === DestinationOrigin.LOCAL ||
         this.origin_ === DestinationOrigin.EXTENSION ||
-        this.origin_ === DestinationOrigin.CROS ||
-        this.origin_ === DestinationOrigin.PRIVET;
-  }
-
-  /** @return {boolean} Whether the destination is a Privet local printer */
-  get isPrivet() {
-    return this.origin_ === DestinationOrigin.PRIVET;
+        this.origin_ === DestinationOrigin.CROS;
   }
 
   /**

@@ -54,7 +54,6 @@ export let ProvisionalDestinationInfo;
  *        !ProvisionalDestinationInfo} printer Information
  *     about the printer. Type expected depends on |type|:
  *       For LOCAL_PRINTER => LocalDestinationInfo
- *       For PRIVET_PRINTER => PrivetPrinterDescription
  *       For EXTENSION_PRINTER => ProvisionalDestinationInfo
  * @return {?Destination} Only returns null if an invalid value
  *     is provided for |type|.
@@ -63,10 +62,6 @@ export function parseDestination(type, printer) {
   if (type === PrinterType.LOCAL_PRINTER) {
     return parseLocalDestination(
         /** @type {!LocalDestinationInfo} */ (printer));
-  }
-  if (type === PrinterType.PRIVET_PRINTER) {
-    return parsePrivetDestination(
-        /** @type {!PrivetPrinterDescription} */ (printer));
   }
   if (type === PrinterType.EXTENSION_PRINTER) {
     return parseExtensionDestination(
@@ -100,19 +95,6 @@ function parseLocalDestination(destinationInfo) {
       (isChromeOS || isLacros) ? DestinationOrigin.CROS :
                                  DestinationOrigin.LOCAL,
       destinationInfo.printerName, DestinationConnectionStatus.ONLINE, options);
-}
-
-/**
- * Parses a privet destination as a local printer.
- * @param {!PrivetPrinterDescription} destinationInfo Object
- *     that describes a privet printer.
- * @return {!Destination} Parsed destination info.
- */
-function parsePrivetDestination(destinationInfo) {
-  return new Destination(
-      destinationInfo.serviceName, DestinationType.LOCAL,
-      DestinationOrigin.PRIVET, destinationInfo.name,
-      DestinationConnectionStatus.ONLINE, {cloudID: destinationInfo.cloudID});
 }
 
 /**

@@ -1382,7 +1382,7 @@ Polymer({
       ticket.marginsCustom = this.getSettingValue('customMargins');
     }
 
-    if (destination.isPrivet || destination.isExtension) {
+    if (destination.isExtension) {
       // TODO(rbpotter): Get local and PDF printers to use the same ticket and
       // send only this ticket instead of nesting it in a larger ticket.
       ticket.ticket = this.createCloudJobTicket(destination);
@@ -1412,9 +1412,9 @@ Polymer({
    */
   createCloudJobTicket(destination) {
     assert(
-        !destination.isLocal || destination.isPrivet || destination.isExtension,
+        !destination.isLocal || destination.isExtension,
         'Trying to create a Google Cloud Print print ticket for a local ' +
-            ' non-privet and non-extension destination');
+            ' non-extension destination');
     assert(
         destination.capabilities,
         'Trying to create a Google Cloud Print print ticket for a ' +

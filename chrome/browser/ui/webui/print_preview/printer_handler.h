@@ -70,12 +70,6 @@ class PrinterHandler {
       content::WebContents* preview_web_contents,
       Profile* profile);
 
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-  // Creates an instance of a PrinterHandler for privet printers.
-  static std::unique_ptr<PrinterHandler> CreateForPrivetPrinters(
-      Profile* profile);
-#endif
-
   virtual ~PrinterHandler() {}
 
   // Cancels all pending requests.

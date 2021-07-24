@@ -648,6 +648,10 @@ const char kExtensionCheckupOnStartup[] = "extensions.checkup_on_startup";
 // Deprecated 07/2021
 const char kCloudPrintDeprecationWarningsSuppressed[] =
     "cloud_print.deprecation_warnings_suppressed";
+
+// Deprecated 07/2021.
+const char kForceEnablePrivetPrinting[] =
+    "printing.force_enable_privet_printing";
 #endif
 
 // Register local state used only for migration (clearing or moving to a new
@@ -840,6 +844,7 @@ void RegisterProfilePrefsForMigration(
 #if !defined(OS_ANDROID)
   registry->RegisterBooleanPref(kCloudPrintDeprecationWarningsSuppressed,
                                 false);
+  registry->RegisterBooleanPref(kForceEnablePrivetPrinting, false);
 #endif
 }
 
@@ -1640,6 +1645,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if !defined(OS_ANDROID)
   // Added 2021/07
   profile_prefs->ClearPref(kCloudPrintDeprecationWarningsSuppressed);
+  profile_prefs->ClearPref(kForceEnablePrivetPrinting);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

@@ -571,7 +571,7 @@ Polymer({
   // </if>
 
   /**
-   * Called when printing to a privet, cloud, or extension printer fails.
+   * Called when printing to a cloud, or extension printer fails.
    * @param {*} httpError The HTTP error code, or -1 or a string describing
    *     the error, if not an HTTP error.
    * @private

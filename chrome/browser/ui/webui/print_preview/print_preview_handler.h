@@ -273,7 +273,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // |callback_id|: The javascript callback to call.
   void OnGetPrintersDone(const std::string& callback_id);
 
-  // Called when an extension or privet print job is completed.
+  // Called when an extension print job is completed.
   // |callback_id|: The javascript callback to run.
   // |error|: The returned print job error. Useful for reporting a specific
   //     error. None type implies no error.
@@ -296,10 +296,6 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // Handles requests for extension printers. Created lazily by calling
   // GetPrinterHandler().
   std::unique_ptr<PrinterHandler> extension_printer_handler_;
-
-  // Handles requests for privet printers. Created lazily by calling
-  // GetPrinterHandler().
-  std::unique_ptr<PrinterHandler> privet_printer_handler_;
 
   // Handles requests for printing to PDF. Created lazily by calling
   // GetPrinterHandler().
