@@ -172,7 +172,7 @@ function createBrowserSettingsRoutes() {
     r.ADVANCED = new Route('/advanced');
 
     r.LANGUAGES = r.ADVANCED.createSection('/languages', 'languages');
-    // <if expr="not is_macosx">
+    // <if expr="not chromeos and not is_macosx">
     r.EDIT_DICTIONARY = r.LANGUAGES.createChild('/editDictionary');
     // </if>
     // <if expr="not chromeos and not lacros">
