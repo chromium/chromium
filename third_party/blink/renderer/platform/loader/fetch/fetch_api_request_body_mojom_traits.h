@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_API_REQUEST_BODY_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_API_REQUEST_BODY_MOJOM_TRAITS_H_
 
+#include "services/network/public/cpp/data_element.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"

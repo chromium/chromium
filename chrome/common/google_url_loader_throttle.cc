@@ -11,6 +11,7 @@
 #include "chrome/common/net/safe_search_util.h"
 #include "components/google/core/common/google_util.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/x_frame_options.mojom.h"
 

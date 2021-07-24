@@ -18,6 +18,8 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/filter/source_stream.h"
+#include "services/network/public/mojom/devtools_observer.mojom-forward.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

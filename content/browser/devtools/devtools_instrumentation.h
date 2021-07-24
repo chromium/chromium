@@ -16,6 +16,8 @@
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "net/filter/source_stream.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"

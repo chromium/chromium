@@ -8,6 +8,7 @@
 
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/trust_tokens.mojom.h"
 
 PrefetchProxyNetworkContextClient::PrefetchProxyNetworkContextClient() =
     default;

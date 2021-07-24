@@ -42,6 +42,7 @@
 #include "ipc/ipc_message_macros.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"

@@ -14,6 +14,10 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 
+namespace network {
+class DataElement;
+}
+
 namespace mojo {
 
 template <>

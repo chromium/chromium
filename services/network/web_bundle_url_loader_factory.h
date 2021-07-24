@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"

@@ -15,6 +15,7 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/storage_partition.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"

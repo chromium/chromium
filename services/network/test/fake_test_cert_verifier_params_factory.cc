@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_verify_result.h"

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/cancelable_callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event_watcher.h"

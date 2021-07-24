@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/isolation_info.h"
