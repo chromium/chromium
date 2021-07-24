@@ -7429,7 +7429,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSuggestVirtualCardsOnIncompleteForm)},
 
-    {"enable-lens-region-search",
+    {flag_descriptions::kEnableLensRegionSearchFlagId,
      flag_descriptions::kEnableLensRegionSearchName,
      flag_descriptions::kEnableLensRegionSearchDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensRegionSearch)},

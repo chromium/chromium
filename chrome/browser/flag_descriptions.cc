@@ -1146,10 +1146,13 @@ const char kMemlogStackModeNative[] = "Native";
 const char kMemlogStackModeNativeWithThreadNames[] = "Native with thread names";
 const char kMemlogStackModePseudo[] = "Trace events";
 
-const char kEnableLensRegionSearchName[] = "Enable Lens Region Search";
+const char kEnableLensRegionSearchFlagId[] = "enable-lens-region-search";
+const char kEnableLensRegionSearchName[] =
+    "Search your screen with Google Lens";
 const char kEnableLensRegionSearchDescription[] =
-    "Enables a context menu option allowing the user to search a selected"
-    "area of the page with Google Lens.";
+    "Right click and select \"Search part of the page with Google Lens\" to "
+    "search any region of the site to learn more about the visual content you "
+    "see while you browse and shop on the web.";
 
 const char kEnableLoginDetectionName[] = "Enable login detection";
 const char kEnableLoginDetectionDescription[] =
