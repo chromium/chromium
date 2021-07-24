@@ -2461,11 +2461,6 @@ bool LocalFrame::SwapIn() {
   return client->SwapIn(WebFrame::FromCoreFrame(GetProvisionalOwnerFrame()));
 }
 
-void LocalFrame::DidActivateForPrerendering() {
-  DCHECK(features::IsPrerender2Enabled());
-  GetLocalFrameHostRemote().DidActivateForPrerendering();
-}
-
 void LocalFrame::LoadJavaScriptURL(const KURL& url) {
   // Protect privileged pages against bookmarklets and other JavaScript
   // manipulations.

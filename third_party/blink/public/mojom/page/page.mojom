@@ -62,8 +62,19 @@ interface PageBroadcast {
   // Notifies the renderer when audio is started or stopped.
   AudioStateChanged(bool is_audio_playing);
 
-  // Notifies renderers when a prerendered page is activated.
-  ActivatePrerenderedPage();
+  // Notifies the renderer when a prerendered page is activated. The renderer
+  // is expected to update `document.prerendering` and dispatch the
+  // prerenderingchange event on relevant documents.
+  //
+  // `activation_start` is when the activation navigation started for use in
+  // PerformanceNavigationTiming. It is 0 if this blink::WebViewImpl does not
+  // host the main frame, to avoid sending the data cross-origin.
+  //
+  // The renderer calls the callback once all documents in the
+  // blink::WebViewImpl finished activating.
+  //
+  // TODO(falken): Move this to SetPageLifecycleState.
+  ActivatePrerenderedPage(mojo_base.mojom.TimeTicks activation_start) => ();
 
   // Notifies renderers when a portal web contents is activated or if a
   // web contents is adopted as a portal.

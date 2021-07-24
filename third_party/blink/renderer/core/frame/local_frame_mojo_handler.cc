@@ -992,22 +992,6 @@ void LocalFrameMojoHandler::MixedContentFound(
       was_allowed, url_before_redirects, had_redirect, std::move(source));
 }
 
-void LocalFrameMojoHandler::ActivateForPrerendering(
-    base::TimeTicks activation_start) {
-  DCHECK(features::IsPrerender2Enabled());
-
-  // https://jeremyroman.github.io/alternate-loading-modes/#prerendering-browsing-context-activate
-  // Step 8.2. "Let inclusiveDescendants be successorBC extended with
-  // successorBC's active document's list of the descendant browsing contexts."
-  // Step 8.3. "For each bc of inclusiveDescendants, queue a global task on the
-  // networking task source, given bc's active window, to perform the following
-  // steps:"
-  frame_->GetTaskRunner(TaskType::kNetworking)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&Document::ActivateForPrerendering,
-                           WrapPersistent(GetDocument()), activation_start));
-}
-
 void LocalFrameMojoHandler::BindDevToolsAgent(
     mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost> host,
     mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent> receiver) {

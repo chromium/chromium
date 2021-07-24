@@ -3297,10 +3297,8 @@ void RenderFrameHostManager::CommitPending(
     } else {
       DCHECK_EQ(prev_state,
                 RenderFrameHostImpl::LifecycleStateImpl::kPrerendering);
-      for (RenderViewHostImpl* rvh : render_view_hosts_to_restore) {
-        rvh->ActivatePrerenderedPage();
-      }
-      current_frame_host()->ActivateForPrerendering();
+      current_frame_host()->GetPage().ActivateForPrerendering(
+          render_view_hosts_to_restore);
     }
   }
 

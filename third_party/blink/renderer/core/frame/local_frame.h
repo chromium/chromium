@@ -695,10 +695,6 @@ class CORE_EXPORT LocalFrame final : public Frame,
     return window_controls_overlay_rect_;
   }
 
-  // Called after the document in this frame dispatched the prerenderingchange
-  // event.
-  void DidActivateForPrerendering();
-
   void LoadJavaScriptURL(const KURL& url);
 
   void SetEvictCachedSessionStorageOnFreezeOrUnload();

@@ -556,10 +556,6 @@ interface LocalFrameHost {
   // navigation.
   FrameSizeChanged(gfx.mojom.Size size);
 
-  // Used when a prerendered page is activated. Notifies the browser that the
-  // document in this frame dispatched the prerenderingchange event.
-  DidActivateForPrerendering();
-
   // Notifies the frame that the document preferred color scheme has changed
   // due to DevTools media emulation.
   DidUpdatePreferredColorScheme(PreferredColorScheme preferred_color_scheme);
@@ -814,13 +810,6 @@ interface LocalFrame {
                     url.mojom.Url url_before_redirects,
                     bool had_redirect,
                     network.mojom.SourceLocation? source_location);
-
-  // Sent to a prerendered frame to inform it that it is being activated.
-  // The document in the frame updates `document.prerendering` and dispatches
-  // the prerenderingchange event.
-  // |activation_start| is the time that activation started for use in
-  // PerformanceNavigationTiming.
-  ActivateForPrerendering(mojo_base.mojom.TimeTicks activation_start);
 
   // Returns a DevToolsAgent interface for this frame, used for
   // remote debugging. See DevToolsAgent for details.

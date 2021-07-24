@@ -172,7 +172,6 @@ class LocalFrameMojoHandler
       const KURL& url_before_redirects,
       bool had_redirect,
       network::mojom::blink::SourceLocationPtr source_location) final;
-  void ActivateForPrerendering(base::TimeTicks activation_start) final;
   void BindDevToolsAgent(
       mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost> host,
       mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent> receiver)

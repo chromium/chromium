@@ -372,6 +372,8 @@ static_library("test_support") {
     "test_navigation_url_loader_factory.h",
     "test_overscroll_delegate.cc",
     "test_overscroll_delegate.h",
+    "test_page_broadcast.cc",
+    "test_page_broadcast.h",
     "test_render_frame.cc",
     "test_render_frame.h",
     "test_render_frame_host.cc",

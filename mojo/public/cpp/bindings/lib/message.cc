@@ -569,6 +569,10 @@ ReportBadMessageCallback GetBadMessageCallback() {
   return context->GetBadMessageCallback();
 }
 
+bool IsInMessageDispatch() {
+  return internal::MessageDispatchContext::current();
+}
+
 namespace internal {
 
 MessageHeaderV2::MessageHeaderV2() = default;

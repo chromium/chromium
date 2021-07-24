@@ -3303,24 +3303,24 @@ void RenderFrameHostImpl::FrameSizeChanged(const gfx::Size& frame_size) {
   delegate_->FrameSizeChanged(this, frame_size);
 }
 
-void RenderFrameHostImpl::DidActivateForPrerendering() {
+void RenderFrameHostImpl::RendererDidActivateForPrerendering() {
   DCHECK(blink::features::IsPrerender2Enabled());
-  if (!is_notifying_activation_for_prerendering_) {
-    mojo::ReportBadMessage("RFHI: DidActivateForPrerendering is unexpected");
-    return;
-  }
-  is_notifying_activation_for_prerendering_ = false;
 
-  // The renderer calls `DidActivateForPrerendering()` to notify that it fired
-  // the prerenderingchange event on a document. The browser now runs any
-  // binders that were deferred during prerendering. This corresponds to the
-  // following steps of the activate algorithm:
+  // RendererDidActivateForPrerendering() is called after the renderer has
+  // notified that it fired the prerenderingchange event on the documents. The
+  // browser now runs any binders that were deferred during prerendering. This
+  // corresponds to the following steps of the activate algorithm:
   //
   // https://jeremyroman.github.io/alternate-loading-modes/#prerendering-browsing-context-activate
   // Step 8.3.4. "For each steps in doc's post-prerendering activation steps
   // list:"
   // Step 8.3.4.1. "Run steps."
-  broker_.ReleaseMojoBinderPolicies();
+
+  // Release Mojo capability control to run the binders. The RenderFrameHostImpl
+  // may have been created after activation started, in which case it already
+  // does not have Mojo capability control applied.
+  if (broker_.GetMojoBinderPolicyApplier())
+    broker_.ReleaseMojoBinderPolicies();
 }
 
 void RenderFrameHostImpl::OnCreateChildFrame(
@@ -8829,10 +8829,10 @@ void RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy(
   CancelPrerendering(PrerenderHost::FinalStatus::kMojoBinderPolicy);
 }
 
-void RenderFrameHostImpl::ActivateForPrerendering() {
+void RenderFrameHostImpl::RendererWillActivateForPrerendering() {
   DCHECK(blink::features::IsPrerender2Enabled());
 
-  // Loosen the policies of the mojo capability control during dispatching the
+  // Loosen the policies of the Mojo capability control during dispatching the
   // prerenderingchange event in Blink, because the page may start legitimately
   // using controlled interfaces once prerenderingchange is dispatched. We
   // cannot release policies at this point, i.e., we cannot run the deferred
@@ -8842,24 +8842,6 @@ void RenderFrameHostImpl::ActivateForPrerendering() {
   auto* applier = broker_.GetMojoBinderPolicyApplier();
   DCHECK(applier) << "prerendering pages should have a policy applier";
   applier->PrepareToGrantAll();
-
-  DCHECK(!is_notifying_activation_for_prerendering_);
-  is_notifying_activation_for_prerendering_ = true;
-
-  // Currently cross origin iframes are deferred. So the origin must be same
-  // as the main frame's origin. But if we will decide not to defer the cross
-  // origin iframes, we need to remove the DCHECK_EQ and change the code not
-  // to send |activation_start_time_for_prerendering| to the renderer.
-  DCHECK_EQ(GetLastCommittedOrigin(), GetMainFrame()->GetLastCommittedOrigin());
-
-  // Notify the renderer of activation to update the prerendering state and
-  // dispatch the prerenderingchange event.
-  GetAssociatedLocalFrame()->ActivateForPrerendering(
-      *GetMainFrame()
-           ->document_associated_data_->activation_start_time_for_prerendering);
-
-  for (auto& child : children_)
-    child->current_frame_host()->ActivateForPrerendering();
 }
 
 void RenderFrameHostImpl::BindMediaInterfaceFactoryReceiver(
@@ -10004,18 +9986,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
       // Set the NavigationStart time for
       // PerformanceNavigationTiming.activationStart.
       // https://jeremyroman.github.io/alternate-loading-modes/#performance-navigation-timing-extension
-
-      // Currently, prerendering is only supported on same-origin pages. When
-      // supporting cross-origin prerendering (https://crbug.com/1176054), we
-      // need to change this CHECK to "if ()" not to send the activation start
-      // time to the prerendering page so that it is not used to send
-      // identifiers between origins.
-      CHECK_EQ(GetLastCommittedOrigin(),
-               navigation_request->GetOriginToCommit());
-      DCHECK(
-          !document_associated_data_->activation_start_time_for_prerendering);
-      document_associated_data_->activation_start_time_for_prerendering =
-          navigation_request->NavigationStart();
+      GetPage().SetActivationStartTime(navigation_request->NavigationStart());
     }
 
   } else {

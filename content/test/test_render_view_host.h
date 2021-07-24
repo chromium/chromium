@@ -50,6 +50,7 @@ namespace content {
 class FrameTree;
 class SiteInstance;
 class TestRenderFrameHost;
+class TestPageBroadcast;
 class TestWebContents;
 
 // TestRenderWidgetHostView ----------------------------------------------------
@@ -259,6 +260,8 @@ class TestRenderViewHost
 
   // See opener_frame_token() above.
   absl::optional<blink::FrameToken> opener_frame_token_;
+
+  std::unique_ptr<TestPageBroadcast> page_broadcast_;
 
   DISALLOW_COPY_AND_ASSIGN(TestRenderViewHost);
 };

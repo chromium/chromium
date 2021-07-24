@@ -406,6 +406,11 @@ void ReportBadMessage(const std::string& error);
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 ReportBadMessageCallback GetBadMessageCallback();
 
+// Returns true if called directly within the stack frame of a message dispatch.
+// Unlike GetBadMessageCallback(), this can be called multiple times.
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool IsInMessageDispatch();
+
 }  // namespace mojo
 
 #endif  // MOJO_PUBLIC_CPP_BINDINGS_MESSAGE_H_

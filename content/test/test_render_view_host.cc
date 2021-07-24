@@ -26,6 +26,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/drop_data.h"
+#include "content/test/test_page_broadcast.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -323,6 +324,11 @@ bool TestRenderViewHost::CreateRenderView(
 
     proxy_host->SetRenderFrameProxyCreated(true);
   }
+
+  mojo::AssociatedRemote<blink::mojom::PageBroadcast> broadcast_remote;
+  page_broadcast_ = std::make_unique<TestPageBroadcast>(
+      broadcast_remote.BindNewEndpointAndPassDedicatedReceiver());
+  BindPageBroadcast(broadcast_remote.Unbind());
 
   opener_frame_token_ = opener_frame_token;
   DCHECK(IsRenderViewLive());

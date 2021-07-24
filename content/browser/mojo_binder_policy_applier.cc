@@ -88,11 +88,20 @@ void MojoBinderPolicyApplier::PrepareToGrantAll() {
 void MojoBinderPolicyApplier::GrantAll() {
   DCHECK_NE(mode_, Mode::kGrantAll);
 
-  // GrantAll() should be called inside a Mojo message call stack, because it
-  // binds deferred receivers by invoking
-  // BrowserInterfaceBroker::BindInterface(), which assumes it is called within
-  // a Mojo messaging call. See https://crbug.com/1217977 for more information.
-  DCHECK(mojo::GetBadMessageCallback());
+  // Check that we are in a Mojo message dispatch, since the deferred binders
+  // might call mojo::ReportBadMessage().
+  //
+  // TODO(https://crbug.com/1217977): Give the deferred_binders_ a
+  // BadMessageCallback and forbid them from using mojo::ReportBadMessage()
+  // directly. We are currently in the message stack of one of the PageBroadcast
+  // Mojo callbacks handled by RenderViewHost, so if a binder calls
+  // mojo::ReportBadMessage() it kills possibly the wrong renderer. Even if we
+  // only run the binders associated with the RVH for each message per-RVH,
+  // there are still subtle problems with running all these callbacks at once:
+  // for example, mojo::GetMessageCallback()/mojo::ReportBadMessage() can only
+  // be called once per message dispatch.
+  DCHECK(mojo::IsInMessageDispatch());
+
   mode_ = Mode::kGrantAll;
 
   // It's safe to iterate over `deferred_binders_` because no more callbacks

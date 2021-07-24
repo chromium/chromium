@@ -8209,9 +8209,6 @@ void Document::ActivateForPrerendering(base::TimeTicks activation_start) {
   // Step 8.3.5 "For each steps in doc’s post-prerendering activation steps
   // list:"
   RunPostPrerenderingActivationSteps();
-
-  if (LocalFrame* frame = GetFrame())
-    frame->DidActivateForPrerendering();
 }
 
 void Document::AddWillDispatchPrerenderingchangeCallback(

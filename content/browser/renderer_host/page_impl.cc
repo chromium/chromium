@@ -4,12 +4,14 @@
 
 #include "content/browser/renderer_host/page_impl.h"
 
+#include "base/barrier_closure.h"
 #include "content/browser/manifest/manifest_manager_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/page_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
+#include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/public/browser/render_view_host.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
@@ -89,6 +91,61 @@ void PageImpl::DidChangeBackgroundColor(SkColor background_color,
 
 void PageImpl::SetContentsMimeType(std::string mime_type) {
   contents_mime_type_ = std::move(mime_type);
+}
+
+void PageImpl::SetActivationStartTime(base::TimeTicks activation_start) {
+  DCHECK(!activation_start_time_for_prerendering_);
+  activation_start_time_for_prerendering_ = activation_start;
+}
+
+void PageImpl::ActivateForPrerendering(
+    std::set<RenderViewHostImpl*>& render_view_hosts) {
+  base::OnceClosure did_activate_render_views =
+      base::BindOnce(&PageImpl::DidActivateAllRenderViewsForPrerendering,
+                     weak_factory_.GetWeakPtr());
+
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      render_view_hosts.size(), std::move(did_activate_render_views));
+  for (RenderViewHostImpl* rvh : render_view_hosts) {
+    base::TimeTicks navigation_start_to_send;
+    // Only send navigation_start to the RenderViewHost for the main frame to
+    // avoid sending the info cross-origin. Only this RenderViewHost needs the
+    // info, as we expect the other RenderViewHosts are made for cross-origin
+    // iframes which have not yet loaded their document. To the renderer, it
+    // just looks like an ongoing navigation is happening in the frame and has
+    // not yet committed. These RenderViews still need to know about activation
+    // so their documents are created in the non-prerendered state once their
+    // navigation is committed.
+    if (main_document_.GetRenderViewHost() == rvh)
+      navigation_start_to_send = *activation_start_time_for_prerendering_;
+
+    rvh->ActivatePrerenderedPage(navigation_start_to_send, barrier);
+  }
+
+  // Prepare each RenderFrameHostImpl in this Page for activation.
+  // TODO(https://crbug.com/1232528): Currently we check GetPage() below because
+  // RenderFrameHostImpls may be in a different Page, if, e.g., they are in an
+  // inner WebContents. These are in a different FrameTree which might not know
+  // it is being prerendered. We should teach these FrameTrees that they are
+  // being prerendered, or ban inner FrameTrees in a prerendering page.
+  main_document_.ForEachRenderFrameHost(base::BindRepeating(
+      [](PageImpl* page, RenderFrameHostImpl* rfh) {
+        if (&rfh->GetPage() != page)
+          return;
+        rfh->RendererWillActivateForPrerendering();
+      },
+      this));
+}
+
+void PageImpl::DidActivateAllRenderViewsForPrerendering() {
+  // Tell each RenderFrameHostImpl in this Page that activation finished.
+  main_document_.ForEachRenderFrameHost(base::BindRepeating(
+      [](PageImpl* page, RenderFrameHostImpl* rfh) {
+        if (&rfh->GetPage() != page)
+          return;
+        rfh->RendererDidActivateForPrerendering();
+      },
+      this));
 }
 
 RenderFrameHost& PageImpl::GetMainDocumentHelper() {

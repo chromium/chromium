@@ -279,7 +279,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       mojom::blink::PageRestoreParamsPtr page_restore_params,
       SetPageLifecycleStateCallback callback) override;
   void AudioStateChanged(bool is_audio_playing) override;
-  void ActivatePrerenderedPage() override;
+  void ActivatePrerenderedPage(
+      base::TimeTicks activation_start,
+      ActivatePrerenderedPageCallback callback) override;
   void SetInsidePortal(bool is_inside_portal) override;
   void UpdateWebPreferences(
       const blink::web_pref::WebPreferences& preferences) override;

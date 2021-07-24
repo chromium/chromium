@@ -6,8 +6,11 @@
 #define CONTENT_BROWSER_RENDERER_HOST_PAGE_IMPL_H_
 
 #include <memory>
+#include <set>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/page.h"
@@ -22,6 +25,7 @@ namespace content {
 
 class PageDelegate;
 class RenderFrameHostImpl;
+class RenderViewHostImpl;
 
 // This implements the Page interface that is exposed to embedders of content,
 // and adds things only visible to content.
@@ -92,7 +96,21 @@ class CONTENT_EXPORT PageImpl : public Page {
     return anonymous_iframes_nonce_;
   }
 
+  // Sets the start time of the prerender activation navigation for this page.
+  // TODO(falken): Plumb NavigationRequest to
+  // RenderFrameHostManager::CommitPending and remove this.
+  void SetActivationStartTime(base::TimeTicks activation_start);
+
+  // Called during the prerender activation navigation. Sends an IPC to the
+  // RenderViews in the renderers, instructing them to transition their
+  // documents from prerendered to activated. Tells the corresponding
+  // RenderFrameHostImpls that the renderer will be activating their documents.
+  void ActivateForPrerendering(
+      std::set<RenderViewHostImpl*>& render_view_hosts_to_activate);
+
  private:
+  void DidActivateAllRenderViewsForPrerendering();
+
   // This method is needed to ensure that PageImpl can both implement a Page's
   // method and define a new GetMainDocument(). Please refer to page.h for more
   // details.
@@ -155,6 +173,16 @@ class CONTENT_EXPORT PageImpl : public Page {
   // key of anonymous iframes which are children of this page's document.
   const base::UnguessableToken anonymous_iframes_nonce_ =
       base::UnguessableToken::Create();
+
+  // Prerender2: The start time of the activation navigation for prerendering,
+  // which is passed to the renderer process, and will be accessible in the
+  // prerendered page as PerformanceNavigationTiming.activationStart. Set after
+  // navigation commit.
+  // TODO(falken): Plumb NavigationRequest to
+  // RenderFrameHostManager::CommitPending and remove this.
+  absl::optional<base::TimeTicks> activation_start_time_for_prerendering_;
+
+  base::WeakPtrFactory<PageImpl> weak_factory_{this};
 };
 
 }  // namespace content

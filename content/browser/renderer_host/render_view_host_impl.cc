@@ -560,13 +560,16 @@ void RenderViewHostImpl::LeaveBackForwardCache(
       is_in_back_forward_cache_, std::move(page_restore_params));
 }
 
-void RenderViewHostImpl::ActivatePrerenderedPage() {
-  // Null in some unit tests that use TestRenderViewHost.
-  // TODO(falken): Bind this in tests.
-  if (!page_broadcast_)
-    return;
-
-  page_broadcast_->ActivatePrerenderedPage();
+void RenderViewHostImpl::ActivatePrerenderedPage(
+    base::TimeTicks activation_start,
+    base::OnceClosure callback) {
+  // TODO(https://crbug.com/1217977): Consider using a ScopedClosureRunner here
+  // in case the renderer crashes before it can send us the callback. But we
+  // can't do that until the linked bug is fixed, or else we can reach
+  // DidActivateForPrerendering() outside of a Mojo message dispatch which
+  // breaks the DCHECK for releasing Mojo Capability Control.
+  page_broadcast_->ActivatePrerenderedPage(activation_start,
+                                           std::move(callback));
 }
 
 void RenderViewHostImpl::SetFrameTreeVisibility(

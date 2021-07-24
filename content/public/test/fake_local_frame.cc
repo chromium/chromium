@@ -165,9 +165,6 @@ void FakeLocalFrame::MixedContentFound(
     bool had_redirect,
     network::mojom::SourceLocationPtr source_location) {}
 
-void FakeLocalFrame::ActivateForPrerendering(base::TimeTicks activation_start) {
-}
-
 void FakeLocalFrame::BindDevToolsAgent(
     mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgentHost> host,
     mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> receiver) {}
