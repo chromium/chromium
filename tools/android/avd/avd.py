@@ -87,7 +87,8 @@ def main(raw_args):
 
   start_parser = subparsers.add_parser(
       'start',
-      help='Start an AVD instance with the given config.')
+      help='Start an AVD instance with the given config.',
+      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   start_parser.add_argument(
       '--no-read-only',
       action='store_false',
@@ -105,6 +106,14 @@ def main(raw_args):
       default=False,
       help='Enable graphical window display on the emulator.')
   start_parser.add_argument(
+      '--gpu-mode',
+      default='swiftshader_indirect',
+      help='Override the mode of hardware OpenGL ES emulation indicated by the '
+      'AVD. See "emulator -help-gpu" for a full list of modes. Note when set '
+      'to "host", it needs a valid DISPLAY env, even if "--emulator-window" is '
+      'false, and it will not work under remote sessions like chrome remote '
+      'desktop.')
+  start_parser.add_argument(
       '--debug-tags',
       help='Comma-separated list of debug tags. This can be used to enable or '
       'disable debug messages from specific parts of the emulator, e.g. '
@@ -114,12 +123,12 @@ def main(raw_args):
 
   def start_cmd(args):
     inst = avd.AvdConfig(args.avd_config).CreateInstance()
-    inst.Start(
-        read_only=args.read_only,
-        snapshot_save=not args.read_only,
-        window=args.emulator_window,
-        writable_system=args.writable_system,
-        debug_tags=args.debug_tags)
+    inst.Start(read_only=args.read_only,
+               snapshot_save=not args.read_only,
+               window=args.emulator_window,
+               writable_system=args.writable_system,
+               gpu_mode=args.gpu_mode,
+               debug_tags=args.debug_tags)
     print('%s started (pid: %d)' % (str(inst), inst._emulator_proc.pid))
     return 0
 

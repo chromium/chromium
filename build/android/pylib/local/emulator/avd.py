@@ -34,6 +34,9 @@ _DEFAULT_SCREEN_DENSITY = 160
 _DEFAULT_SCREEN_HEIGHT = 960
 _DEFAULT_SCREEN_WIDTH = 480
 
+# Default to swiftshader_indirect since it works for most cases.
+_DEFAULT_GPU_MODE = 'swiftshader_indirect'
+
 
 class AvdException(Exception):
   """Raised when this module has a problem interacting with an AVD."""
@@ -275,8 +278,10 @@ class AvdConfig(object):
                               self._config)
       # Enable debug for snapshot when it is set to True
       debug_tags = 'init,snapshot' if snapshot else None
-      instance.Start(
-          read_only=False, snapshot_save=snapshot, debug_tags=debug_tags)
+      instance.Start(read_only=False,
+                     snapshot_save=snapshot,
+                     debug_tags=debug_tags,
+                     gpu_mode=_DEFAULT_GPU_MODE)
       # Android devices with full-disk encryption are encrypted on first boot,
       # and then get decrypted to continue the boot process (See details in
       # https://bit.ly/3agmjcM).
@@ -519,6 +524,7 @@ class _AvdInstance(object):
             snapshot_save=False,
             window=False,
             writable_system=False,
+            gpu_mode=_DEFAULT_GPU_MODE,
             debug_tags=None):
     """Starts the emulator running an instance of the given AVD."""
 
@@ -532,10 +538,6 @@ class _AvdInstance(object):
           '-report-console',
           'unix:%s' % socket_path,
           '-no-boot-anim',
-          # Set the gpu mode to swiftshader_indirect otherwise the avd may exit
-          # with the error "change of render" under window mode
-          '-gpu',
-          'swiftshader_indirect',
       ]
 
       if read_only:
@@ -544,16 +546,24 @@ class _AvdInstance(object):
         emulator_cmd.append('-no-snapshot-save')
       if writable_system:
         emulator_cmd.append('-writable-system')
+      # Note when "--gpu-mode" is set to "host":
+      #  * It needs a valid DISPLAY env, even if "--emulator-window" is false.
+      #    Otherwise it may throw errors like "Failed to initialize backend
+      #    EGL display". See the code in https://bit.ly/3ruiMlB as an example
+      #    to setup the DISPLAY env with xvfb.
+      #  * It will not work under remote sessions like chrome remote desktop.
+      if gpu_mode:
+        emulator_cmd.extend(['-gpu', gpu_mode])
       if debug_tags:
         emulator_cmd.extend(['-debug', debug_tags])
 
       emulator_env = {}
       if self._emulator_home:
         emulator_env['ANDROID_EMULATOR_HOME'] = self._emulator_home
+      if 'DISPLAY' in os.environ:
+        emulator_env['DISPLAY'] = os.environ.get('DISPLAY')
       if window:
-        if 'DISPLAY' in os.environ:
-          emulator_env['DISPLAY'] = os.environ.get('DISPLAY')
-        else:
+        if 'DISPLAY' not in emulator_env:
           raise AvdException('Emulator failed to start: DISPLAY not defined')
       else:
         emulator_cmd.append('-no-window')
