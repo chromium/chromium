@@ -82,9 +82,11 @@ class SegmentInfoDatabaseTest : public testing::Test {
     if (result.has_value())
       prediction_result.set_result(result.value());
 
-    segment_db_->SaveSegmentResult(
-        segment_id, result.has_value() ? &prediction_result : nullptr,
-        base::DoNothing());
+    segment_db_->SaveSegmentResult(segment_id,
+                                   result.has_value()
+                                       ? absl::make_optional(prediction_result)
+                                       : absl::nullopt,
+                                   base::DoNothing());
     db_->GetCallback(true);
     db_->UpdateCallback(true);
   }

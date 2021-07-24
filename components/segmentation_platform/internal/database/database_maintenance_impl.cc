@@ -44,8 +44,10 @@ std::set<SignalIdentifier> CollectAllSignalIdentifiers(
     const auto& metadata = segment_info.model_metadata();
     for (int i = 0; i < metadata.features_size(); i++) {
       const auto& feature = metadata.features(i);
-      if (feature.has_name_hash() && feature.has_type())
+      if (feature.name_hash() != 0 &&
+          feature.type() != proto::SignalType::UNKNOWN_SIGNAL_TYPE) {
         signal_ids.insert(std::make_pair(feature.name_hash(), feature.type()));
+      }
     }
   }
   return signal_ids;

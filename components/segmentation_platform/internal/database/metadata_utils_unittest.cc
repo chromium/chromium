@@ -37,10 +37,10 @@ TEST_F(MetadataUtilsTest, SegmentInfoValidation) {
             metadata_utils::ValidateSegmentInfo(segment_info));
 }
 
-TEST_F(MetadataUtilsTest, DefaultMetadataIsValid) {
+TEST_F(MetadataUtilsTest, DefaultMetadataIsInvalid) {
   proto::SegmentationModelMetadata empty;
 
-  EXPECT_EQ(metadata_utils::ValidationResult::VALIDATION_SUCCESS,
+  EXPECT_EQ(metadata_utils::ValidationResult::TIME_UNIT_INVALID,
             metadata_utils::ValidateMetadata(empty));
 }
 
@@ -86,11 +86,13 @@ TEST_F(MetadataUtilsTest, MetadataFeatureValidation) {
             metadata_utils::ValidateMetadataFeature(feature));
 
   feature.set_aggregation(proto::Aggregation::COUNT);
-  EXPECT_EQ(metadata_utils::ValidationResult::FEATURE_BUCKET_COUNT_NOT_FOUND,
+  // No bucket_count or tensor_length is valid.
+  EXPECT_EQ(metadata_utils::ValidationResult::VALIDATION_SUCCESS,
             metadata_utils::ValidateMetadataFeature(feature));
 
   feature.set_bucket_count(456);
-  EXPECT_EQ(metadata_utils::ValidationResult::FEATURE_TENSOR_LENGTH_NOT_FOUND,
+  // Aggregation=COUNT requires tensor length = 1.
+  EXPECT_EQ(metadata_utils::ValidationResult::FEATURE_TENSOR_LENGTH_INVALID,
             metadata_utils::ValidateMetadataFeature(feature));
 
   std::vector<proto::Aggregation> tensor_length_1 = {
@@ -208,25 +210,25 @@ TEST_F(MetadataUtilsTest, ValidateSegementInfoMetadataAndFeatures) {
   proto::SegmentInfo segment_info;
   EXPECT_EQ(
       metadata_utils::ValidationResult::SEGMENT_ID_NOT_FOUND,
-      metadata_utils::ValidateSegementInfoMetadataAndFeatures(segment_info));
+      metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info));
 
   segment_info.set_segment_id(optimization_guide::proto::OptimizationTarget::
                                   OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
   EXPECT_EQ(
       metadata_utils::ValidationResult::METADATA_NOT_FOUND,
-      metadata_utils::ValidateSegementInfoMetadataAndFeatures(segment_info));
+      metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info));
 
   auto* metadata = segment_info.mutable_model_metadata();
   metadata->set_time_unit(proto::DAY);
   EXPECT_EQ(
       metadata_utils::ValidationResult::VALIDATION_SUCCESS,
-      metadata_utils::ValidateSegementInfoMetadataAndFeatures(segment_info));
+      metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info));
 
   // Verify adding a single features adds new requirements.
   auto* feature1 = metadata->add_features();
   EXPECT_EQ(
       metadata_utils::ValidationResult::SIGNAL_TYPE_INVALID,
-      metadata_utils::ValidateSegementInfoMetadataAndFeatures(segment_info));
+      metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info));
 
   // Fully flesh out an example feature and verify validation starts working
   // again.
@@ -237,7 +239,7 @@ TEST_F(MetadataUtilsTest, ValidateSegementInfoMetadataAndFeatures) {
   feature1->set_tensor_length(1);
   EXPECT_EQ(
       metadata_utils::ValidationResult::VALIDATION_SUCCESS,
-      metadata_utils::ValidateSegementInfoMetadataAndFeatures(segment_info));
+      metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info));
 }
 
 TEST_F(MetadataUtilsTest, HasFreshResults) {
@@ -315,37 +317,6 @@ TEST_F(MetadataUtilsTest, GetTimeUnit) {
   metadata.set_time_unit(proto::TimeUnit::YEAR);
   EXPECT_EQ(base::TimeDelta::FromDays(365),
             metadata_utils::GetTimeUnit(metadata));
-}
-
-TEST_F(MetadataUtilsTest, GetNameHashForFeature) {
-  proto::Feature feature;
-  EXPECT_FALSE(metadata_utils::GetNameHashForFeature(feature).has_value());
-  feature.set_name_hash(42);
-  auto name_hash = metadata_utils::GetNameHashForFeature(feature);
-  EXPECT_TRUE(name_hash.has_value());
-  EXPECT_EQ(42u, name_hash.value());
-}
-
-TEST_F(MetadataUtilsTest, GetSignalTypeForFeature) {
-  proto::Feature feature;
-  EXPECT_EQ(proto::SignalType::UNKNOWN_SIGNAL_TYPE,
-            metadata_utils::GetSignalTypeForFeature(feature));
-
-  feature.set_type(proto::SignalType::UNKNOWN_SIGNAL_TYPE);
-  EXPECT_EQ(proto::SignalType::UNKNOWN_SIGNAL_TYPE,
-            metadata_utils::GetSignalTypeForFeature(feature));
-
-  feature.set_type(proto::SignalType::USER_ACTION);
-  EXPECT_EQ(proto::SignalType::USER_ACTION,
-            metadata_utils::GetSignalTypeForFeature(feature));
-
-  feature.set_type(proto::SignalType::HISTOGRAM_ENUM);
-  EXPECT_EQ(proto::SignalType::HISTOGRAM_ENUM,
-            metadata_utils::GetSignalTypeForFeature(feature));
-
-  feature.set_type(proto::SignalType::HISTOGRAM_VALUE);
-  EXPECT_EQ(proto::SignalType::HISTOGRAM_VALUE,
-            metadata_utils::GetSignalTypeForFeature(feature));
 }
 
 TEST_F(MetadataUtilsTest, SignalTypeToSignalKind) {

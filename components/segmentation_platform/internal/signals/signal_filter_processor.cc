@@ -39,17 +39,15 @@ void SignalFilterProcessor::FilterSignals(
     const auto& metadata = segment_info.model_metadata();
     for (int i = 0; i < metadata.features_size(); i++) {
       const auto& feature = metadata.features(i);
-      if (feature.has_type() &&
-          feature.type() == proto::SignalType::USER_ACTION &&
-          feature.has_name_hash()) {
+      if (feature.type() == proto::SignalType::USER_ACTION &&
+          feature.name_hash() != 0) {
         user_actions.insert(feature.name_hash());
         continue;
       }
 
-      if (feature.has_type() &&
-          (feature.type() == proto::SignalType::HISTOGRAM_VALUE ||
+      if ((feature.type() == proto::SignalType::HISTOGRAM_VALUE ||
            feature.type() == proto::SignalType::HISTOGRAM_ENUM) &&
-          feature.has_name()) {
+          !feature.name().empty()) {
         histograms.insert(std::make_pair(feature.name(), feature.type()));
         continue;
       }

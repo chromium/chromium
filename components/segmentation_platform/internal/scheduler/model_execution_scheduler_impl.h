@@ -8,7 +8,6 @@
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
 
 #include "base/cancelable_callback.h"
-#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
@@ -51,6 +50,7 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
           all_segments);
   bool ShouldExecuteSegment(bool expired_only,
                             const proto::SegmentInfo& segment_info);
+  void CancelOutstandingExecutionRequests(OptimizationTarget segment_id);
 
   void OnResultSaved(OptimizationTarget segment_id, bool success);
 

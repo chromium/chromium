@@ -133,9 +133,7 @@ void SignalDatabaseImpl::OnGetSamples(
       if (timestamp < start_time || timestamp > end_time)
         continue;
 
-      out.emplace_back(std::make_pair(
-          timestamp, sample.has_value() ? absl::make_optional(sample.value())
-                                        : absl::nullopt));
+      out.emplace_back(std::make_pair(timestamp, sample.value()));
     }
   }
 

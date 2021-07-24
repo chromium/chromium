@@ -221,13 +221,12 @@ void ModelExecutionManagerImpl::ProcessFeatures(
   // Capture all relevant metadata for the current proto::Feature into the
   // FeatureState.
   auto feature_state = std::make_unique<FeatureState>();
-  feature_state->signal_type = metadata_utils::GetSignalTypeForFeature(feature);
+  feature_state->signal_type = feature.type();
   feature_state->aggregation = feature.aggregation();
   feature_state->bucket_count = feature.bucket_count();
   feature_state->tensor_length = feature.tensor_length();
 
-  absl::optional<int64_t> name_hash =
-      metadata_utils::GetNameHashForFeature(feature);
+  auto name_hash = feature.name_hash();
 
   // Enum histograms can optionally only accept some of the enum values.
   // While the proto::Feature is available, capture a vector of the accepted
@@ -258,7 +257,7 @@ void ModelExecutionManagerImpl::ProcessFeatures(
   auto signal_type = feature_state->signal_type;
   auto end_time = state->end_time;
   signal_database_->GetSamples(
-      signal_type, *name_hash, start_time, end_time,
+      signal_type, name_hash, start_time, end_time,
       base::BindOnce(&ModelExecutionManagerImpl::OnGetSamplesForFeature,
                      weak_ptr_factory_.GetWeakPtr(), std::move(state),
                      std::move(feature_state)));
@@ -347,6 +346,12 @@ void ModelExecutionManagerImpl::OnSegmentationModelUpdated(
     proto::SegmentationModelMetadata metadata) {
   TRACE_EVENT("segmentation_platform",
               "ModelExecutionManagerImpl::OnSegmentationModelUpdated");
+  if (segment_id == optimization_guide::proto::OptimizationTarget::
+                        OPTIMIZATION_TARGET_UNKNOWN) {
+    // TODO(nyquist): Add metrics for this.
+    return;
+  }
+
   auto validation = metadata_utils::ValidateMetadataAndFeatures(metadata);
   if (validation != metadata_utils::ValidationResult::VALIDATION_SUCCESS) {
     // TODO(nyquist): Add metrics for this.
@@ -359,6 +364,7 @@ void ModelExecutionManagerImpl::OnSegmentationModelUpdated(
           &ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate,
           weak_ptr_factory_.GetWeakPtr(), segment_id, std::move(metadata)));
 }
+
 void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
     optimization_guide::proto::OptimizationTarget segment_id,
     proto::SegmentationModelMetadata metadata,
@@ -372,13 +378,12 @@ void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
   // is valid, and we can copy over the PredictionResult to the new version
   // we are creating.
   if (old_segment_info.has_value()) {
-    if (old_segment_info->has_segment_id()) {
-      // The retrieved SegmentInfo's ID should match the one we looked up,
-      // otherwise the DB has not upheld its contract.
-      DCHECK_EQ(new_segment_info.segment_id(), old_segment_info->segment_id());
-      // If does not match, we should just overwrite the old entry with one
-      // that has a matching segment ID, otherwise we will keep ignoring it
-      // forever and never be able to clean it up.
+    // The retrieved SegmentInfo's ID should match the one we looked up,
+    // otherwise the DB has not upheld its contract.
+    // If does not match, we should just overwrite the old entry with one
+    // that has a matching segment ID, otherwise we will keep ignoring it
+    // forever and never be able to clean it up.
+    if (new_segment_info.segment_id() != old_segment_info->segment_id()) {
       // TODO(nyquist): Add metrics for this.
     }
 
@@ -393,6 +398,16 @@ void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
   // Inject the newly updated metadata into the new SegmentInfo.
   auto* new_metadata = new_segment_info.mutable_model_metadata();
   new_metadata->CopyFrom(metadata);
+
+  // We have a valid segment id, and the new metadata was valid, therefore the
+  // new metadata should be valid. We are not allowed to invoke the callback
+  // unless the metadata is valid.
+  if (metadata_utils::ValidateSegmentInfoMetadataAndFeatures(
+          new_segment_info) !=
+      metadata_utils::ValidationResult::VALIDATION_SUCCESS) {
+    // TODO(nyquist): Add metrics for this.
+    return;
+  }
 
   // Now that we've merged the old and the new SegmentInfo, we want to store
   // the new version in the database.

@@ -72,7 +72,7 @@ class MockSegmentInfoDatabase : public test::TestSegmentInfoDatabase {
   MOCK_METHOD(void,
               SaveSegmentResult,
               (OptimizationTarget segment_id,
-               proto::PredictionResult* result,
+               absl::optional<proto::PredictionResult> result,
                SuccessCallback callback),
               (override));
 };
@@ -247,9 +247,9 @@ TEST_F(ModelExecutionManagerTest, SingleUserAction) {
   // When the particular user action is looked up with the correct start time,
   // end time, and aggregation type, return 3 samples.
   std::vector<Sample> samples{
-      {clock_.Now(), absl::nullopt},
-      {clock_.Now(), absl::nullopt},
-      {clock_.Now(), absl::nullopt},
+      {clock_.Now(), 0},
+      {clock_.Now(), 0},
+      {clock_.Now(), 0},
   };
   EXPECT_CALL(*signal_database_,
               GetSamples(proto::SignalType::USER_ACTION,
@@ -309,9 +309,9 @@ TEST_F(ModelExecutionManagerTest, MultipleFeatures) {
 
   // First feature should be the user action.
   std::vector<Sample> user_action_samples{
-      {clock_.Now(), absl::nullopt},
-      {clock_.Now(), absl::nullopt},
-      {clock_.Now(), absl::nullopt},
+      {clock_.Now(), 0},
+      {clock_.Now(), 0},
+      {clock_.Now(), 0},
   };
   EXPECT_CALL(*signal_database_,
               GetSamples(proto::SignalType::USER_ACTION,
@@ -397,9 +397,9 @@ TEST_F(ModelExecutionManagerTest, SkipCollectionOnlyFeatures) {
 
   // The first feature in use should be the very first feature.
   std::vector<Sample> user_action_samples{
-      {clock_.Now(), absl::nullopt},
-      {clock_.Now(), absl::nullopt},
-      {clock_.Now(), absl::nullopt},
+      {clock_.Now(), 0},
+      {clock_.Now(), 0},
+      {clock_.Now(), 0},
   };
   EXPECT_CALL(*signal_database_,
               GetSamples(proto::SignalType::USER_ACTION,
@@ -514,14 +514,14 @@ TEST_F(ModelExecutionManagerTest, MultipleFeaturesWithMultipleBuckets) {
   // First feature should be the user action. The timestamp is set to three
   // different buckets.
   std::vector<Sample> user_action_samples{
-      {clock_.Now(), absl::nullopt},
-      {clock_.Now() - kOneSecond, absl::nullopt},
-      {clock_.Now() - bucket_duration, absl::nullopt},
-      {clock_.Now() - bucket_duration - kOneSecond, absl::nullopt},
-      {clock_.Now() - bucket_duration - kTwoSeconds, absl::nullopt},
-      {clock_.Now() - bucket_duration * 2, absl::nullopt},
-      {clock_.Now() - bucket_duration * 2 - kOneSecond, absl::nullopt},
-      {clock_.Now() - bucket_duration * 2 - kTwoSeconds, absl::nullopt},
+      {clock_.Now(), 0},
+      {clock_.Now() - kOneSecond, 0},
+      {clock_.Now() - bucket_duration, 0},
+      {clock_.Now() - bucket_duration - kOneSecond, 0},
+      {clock_.Now() - bucket_duration - kTwoSeconds, 0},
+      {clock_.Now() - bucket_duration * 2, 0},
+      {clock_.Now() - bucket_duration * 2 - kOneSecond, 0},
+      {clock_.Now() - bucket_duration * 2 - kTwoSeconds, 0},
   };
   EXPECT_CALL(*signal_database_,
               GetSamples(proto::SignalType::USER_ACTION,
@@ -606,6 +606,7 @@ TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedNoOldMetadata) {
   proto::SegmentInfo segment_info;
   proto::SegmentationModelMetadata metadata;
   metadata.set_bucket_duration(42u);
+  metadata.set_time_unit(proto::TimeUnit::DAY);
   EXPECT_CALL(callback, Run(_)).WillOnce(SaveArg<0>(&segment_info));
   model_handlers_callbacks_[segment_id].Run(segment_id, metadata);
 
