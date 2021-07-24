@@ -11086,6 +11086,45 @@ void LogVerifyDidCommitParamsDifference(
   UMA_HISTOGRAM_ENUMERATION("Navigation.VerifyDidCommitParams", difference);
 }
 
+std::string GetURLTypeForCrashKey(const GURL& url) {
+  if (url == kUnreachableWebDataURL)
+    return "error";
+  if (url == kBlockedURL)
+    return "blocked";
+  if (url.IsAboutBlank())
+    return "about:blank";
+  if (url.IsAboutSrcdoc())
+    return "about:srcdoc";
+  if (url.is_empty())
+    return "empty";
+  if (!url.is_valid())
+    return "invalid";
+  return url.scheme();
+}
+
+std::string GetURLRelationForCrashKey(
+    const GURL& actual_url,
+    const GURL& predicted_url,
+    const blink::mojom::CommonNavigationParams& common_params,
+    const GURL& last_committed_url,
+    const RenderFrameHostImpl::RendererURLInfo& renderer_url_info) {
+  if (actual_url == predicted_url)
+    return "as predicted";
+  if (actual_url == last_committed_url)
+    return "last committed";
+  if (actual_url == common_params.url)
+    return "common params URL";
+  if (actual_url == common_params.base_url_for_data_url)
+    return "base URL";
+  if (actual_url == common_params.history_url_for_data_url)
+    return "common params history URL";
+  if (actual_url == renderer_url_info.last_document_url)
+    return "last document URL";
+  if (actual_url == renderer_url_info.last_history_url)
+    return "last history URL";
+  return "unknown";
+}
+
 void RenderFrameHostImpl::
     VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch(
         NavigationRequest* request,
@@ -11193,16 +11232,16 @@ void RenderFrameHostImpl::
       "VerifyDidCommit", "prev_ldwbu",
       renderer_url_info_
           .document_has_unreachable_url_from_load_data_with_base_url);
-  SCOPED_CRASH_KEY_BOOL(
-      "VerifyDidCommit", "base_url_fdu_empty",
-      request->common_params().base_url_for_data_url.is_empty());
+  SCOPED_CRASH_KEY_STRING32(
+      "VerifyDidCommit", "history_url_fdu_type",
+      GetURLTypeForCrashKey(request->common_params().base_url_for_data_url));
 #if defined(OS_ANDROID)
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "data_url_empty",
                         request->commit_params().data_url_as_string.empty());
 #endif
-  SCOPED_CRASH_KEY_BOOL(
-      "VerifyDidCommit", "history_url_fdu_empty",
-      request->common_params().history_url_for_data_url.is_empty());
+  SCOPED_CRASH_KEY_STRING32(
+      "VerifyDidCommit", "history_url_fdu_type",
+      GetURLTypeForCrashKey(request->common_params().history_url_for_data_url));
 
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "intended_browser",
                         request->commit_params().intended_as_new_entry);
@@ -11269,6 +11308,16 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "url_renderer",
                              params.url.possibly_invalid_spec());
 
+  SCOPED_CRASH_KEY_STRING32(
+      "VerifyDidCommit", "url_relation",
+      GetURLRelationForCrashKey(params.url, browser_url,
+                                request->common_params(), GetLastCommittedURL(),
+                                renderer_url_info_));
+  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", "url_browser_type",
+                            GetURLTypeForCrashKey(browser_url));
+  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", "url_renderer_type",
+                            GetURLTypeForCrashKey(params.url));
+
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_same_document",
                         is_same_document_navigation);
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_history_api",
@@ -11315,15 +11364,6 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "was_click",
                         request->WasInitiatedByLinkClick());
 
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "nav_url_blank",
-                        params.url.IsAboutBlank());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "nav_url_srcdoc",
-                        params.url.IsAboutSrcdoc());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "nav_url_blocked",
-                        params.url == kBlockedURL);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "nav_url_error",
-                        params.url == kUnreachableWebDataURL);
-
   SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "original_req_url",
                              request->commit_params().original_url.spec());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "original_same_doc",
@@ -11344,14 +11384,8 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "last_history_url",
                              renderer_url_info_.last_history_url.spec());
 
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "last_url_empty",
-                        GetLastCommittedURL().is_empty());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "last_url_blank",
-                        GetLastCommittedURL().IsAboutBlank());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "last_url_srcdoc",
-                        GetLastCommittedURL().IsAboutSrcdoc());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "last_url_error",
-                        GetLastCommittedURL() == kUnreachableWebDataURL);
+  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", "last_url_type",
+                            GetURLTypeForCrashKey(GetLastCommittedURL()));
 
   SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "last_method",
                              last_http_method_);
