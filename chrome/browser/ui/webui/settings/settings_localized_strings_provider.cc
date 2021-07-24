@@ -738,6 +738,7 @@ void AddImportDataStrings(content::WebUIDataSource* html_source) {
 
 void AddLanguagesStrings(content::WebUIDataSource* html_source,
                          Profile* profile) {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"languagesPageTitle", IDS_SETTINGS_LANGUAGES_PAGE_TITLE},
     {"languagesListTitle", IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_TITLE},
@@ -752,8 +753,6 @@ void AddLanguagesStrings(content::WebUIDataSource* html_source,
     {"removeLanguage", IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_REMOVE},
     {"addLanguages", IDS_SETTINGS_LANGUAGES_LANGUAGES_ADD},
     {"addLanguagesDialogTitle", IDS_SETTINGS_LANGUAGES_MANAGE_LANGUAGES_TITLE},
-    {"allLanguages", IDS_SETTINGS_LANGUAGES_ALL_LANGUAGES},
-    {"enabledLanguages", IDS_SETTINGS_LANGUAGES_ENABLED_LANGUAGES},
 #if defined(OS_WIN)
     {"isDisplayedInThisLanguage",
      IDS_SETTINGS_LANGUAGES_IS_DISPLAYED_IN_THIS_LANGUAGE},
@@ -803,24 +802,16 @@ void AddLanguagesStrings(content::WebUIDataSource* html_source,
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
-  const user_manager::User* primary_user = user_manager->GetPrimaryUser();
-  html_source->AddBoolean(
-      "isSecondaryUser",
-      user && user->GetAccountId() != primary_user->GetAccountId());
-
-  html_source->AddString(
+  html_source->AddLocalizedString("languagesPageTitle",
+                                  IDS_SETTINGS_LANGUAGES_PAGE_TITLE);
+  html_source->AddLocalizedString(
       "openChromeOSLanguagesSettingsLabel",
-      l10n_util::GetStringUTF16(
-          IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL));
+      IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL);
   html_source->AddString(
       "chromeOSLanguagesSettingsPath",
       chromeos::settings::mojom::kLanguagesAndInputSectionPath);
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

@@ -1112,28 +1112,9 @@
   <message name="IDS_SETTINGS_LANGUAGES_PAGE_TITLE" desc="Name of the settings page which displays language preferences.">
     Languages
   </message>
-  <message name="IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_TITLE" desc="Title for the currently used language in the header for the collapsible list of languages.">
-    Language
-  </message>
   <message name="IDS_SETTINGS_LANGUAGE_SEARCH" desc="Placeholder/label for the text input field that allows a user to filter languages.">
     Search languages
   </message>
-  <message name="IDS_SETTINGS_LANGUAGES_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the language options. Only visible by screen reader software.">
-    Show language options
-  </message>
-  <if expr="chromeos">
-    <message name="IDS_SETTINGS_LANGUAGES_BROWSER_LANGUAGES_LIST_ORDERING_INSTRUCTIONS" desc="Explanatory message about ordering the list of languages.">
-      Add languages or reorder list.
-    </message>
-  <message name="IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open languages settings in Chrome OS.">
-    Manage languages in Chrome OS settings
-  </message>
-  </if>
-  <if expr="not chromeos">
-    <message name="IDS_SETTINGS_LANGUAGES_BROWSER_LANGUAGES_LIST_ORDERING_INSTRUCTIONS" desc="Explanatory message about ordering the list of languages.">
-      Order languages based on your preference
-    </message>
-  </if>
   <message name="IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_MOVE_TO_TOP" desc="Label for the menu item that moves the language up to the top of the list of languages.">
     Move to the top
   </message>
@@ -1149,95 +1130,103 @@
   <message name="IDS_SETTINGS_LANGUAGES_LANGUAGES_ADD" desc="Button under the list of enabled languages which opens a dialog that lets the user enable additional languages.">
     Add languages
   </message>
-  <message name="IDS_SETTINGS_LANGUAGES_OFFER_TO_TRANSLATE_IN_THIS_LANGUAGE" desc="The label for a checkbox which indicates whether or not pages in this language should be translated by default.">
-    Offer to translate pages in this language
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_OFFER_TO_ENABLE_TRANSLATE" desc="The label of the check-box that enables the prompt to translate a page.">
-    Offer to translate pages that aren't in a language you read
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_TRANSLATE_TARGET" desc="The label under a language's name in a list of enabled languages indicating that pages will be translated to this language.">
-    This language is used when translating pages
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_MANAGED_DIALOG_TITLE" desc="Title text for the dialog informing users that the language they tried modifying is managed.">
-    Language is set by your Organization
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_MANAGED_DIALOG_BODY" desc="Body text for the dialog informing users that the language they tried modifying is managed.">
-    Your administrator has set a default language which cannot be modified.
-  </message>
-  <if expr="chromeos">
-    <message name="IDS_SETTINGS_LANGUAGES_KEYBOARD_APPS" desc="Title for the list of keyboard apps installed via Play Store by the user.">
-      Keyboard apps
-    </message>
-  </if>
   <message name="IDS_SETTINGS_LANGUAGES_MANAGE_LANGUAGES_TITLE" desc="Name of the settings dialog which allows enabling additional languages.">
     Add languages
   </message>
-  <message name="IDS_SETTINGS_LANGUAGES_ALL_LANGUAGES" desc="Header for the list of all supported languages, which the user can use to enable languages, on the Manage Languages page.">
-    All languages
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_ENABLED_LANGUAGES" desc="Header for the list of enabled languages, which the user can use to disable languages, on the Manage Languages page.">
-    Enabled languages
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_NO_LANGUAGES_ADDED" desc="Placeholder for language list settings when no languages have been added, on the Manage Languages page.">
-    No languages added
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_AUTOMATIC_TRANSLATE" desc="Title of Translation settings that lists languages that should be automatically translated.">
-    Automatically translate these languages
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_NEVER_LANGUAGES" desc="Title of Translation settings that lists languages that should never be offered to translate.">
-    Don’t offer to translate these languages
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_SPELL_CHECK_TITLE" desc="Title for the section containing all the options for spell check settings. The options include picking between using the system's spell check or using Google's web service and a list of the enabled languages which support spell checking.">
-    Spell check
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_SPELL_CHECK_BASIC_LABEL" desc="Label for a type of spell check that only relies on the local built-in spell check and does not rely on sending data to Google for suggestions.">
-    Basic spell check
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_SPELL_CHECK_ENHANCED_LABEL" desc="Label for a type of spell check that sends the text the user types to Google for spelling suggestions.">
-    Enhanced spell check
-  </message>
-  <message name="IDS_SETTINGS_LANGUAGES_SPELL_CHECK_ENHANCED_DESCRIPTION" desc="Description for the type of spell check that sends the text the user types to Google for spelling suggestions. It is important that it is communicated that the text the user types in the browser will be sent to Google.">
-    Uses the same spell checker that’s used in Google search. Text you type in the browser is sent to Google.
-  </message>
-  <if expr="not is_macosx">
-    <message name="IDS_SETTING_LANGUAGES_SPELL_CHECK_DISABLED_REASON" desc="Text that indicates to the user that spell check options are disabled because none of the languages they have added have spell check support.">
-      Spell check isn’t supported for the languages you selected
+  <if expr="not chromeos">
+    <message name="IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_TITLE" desc="Title for the currently used language in the header for the collapsible list of languages.">
+      Language
     </message>
-    <message name="IDS_SETTINGS_LANGUAGES_SPELL_CHECK_LANGUAGES_LIST_TITLE" desc="Title for the list of languages that support spell check, from which users can enable or disable spell check for.">
-      Use spell check for
+    <message name="IDS_SETTINGS_LANGUAGES_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the language options. Only visible by screen reader software.">
+      Show language options
     </message>
-    <message name="IDS_SETTINGS_LANGUAGES_SPELL_CHECK_MANAGE" desc="Button under the dropdown of spell check languages which opens a sub-page that lets the user add or remove words to the custom list of words for spell checking.">
-      Customize spell check
+    <message name="IDS_SETTINGS_LANGUAGES_BROWSER_LANGUAGES_LIST_ORDERING_INSTRUCTIONS" desc="Explanatory message about ordering the list of languages.">
+      Order languages based on your preference
     </message>
-    <message name="IDS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_TITLE" desc="Name of the settings sub-page which allows adding and remove custom words from the custom spell check dictionary.">
-      Manage spell check
+    <message name="IDS_SETTINGS_LANGUAGES_OFFER_TO_TRANSLATE_IN_THIS_LANGUAGE" desc="The label for a checkbox which indicates whether or not pages in this language should be translated by default.">
+      Offer to translate pages in this language
     </message>
-    <message name="IDS_SETTINGS_LANGUAGES_ADD_DICTIONARY_WORD" desc="Label for the text input used to add a new word to the custom spell check dictionary.">
-      Add a new word
+    <message name="IDS_SETTINGS_LANGUAGES_OFFER_TO_ENABLE_TRANSLATE" desc="The label of the check-box that enables the prompt to translate a page.">
+      Offer to translate pages that aren't in a language you read
     </message>
-    <message name="IDS_SETTINGS_LANGUAGES_ADD_DICTIONARY_WORD_BUTTON" desc="Button next to the 'add word' text input used to add the word typed by the user to the custom spell check dictionary.">
-      Add word
+    <message name="IDS_SETTINGS_LANGUAGES_TRANSLATE_TARGET" desc="The label under a language's name in a list of enabled languages indicating that pages will be translated to this language.">
+      This language is used when translating pages
     </message>
-    <message name="IDS_SETTINGS_LANGUAGES_ADD_DICTIONARY_WORD_DUPLICATE_ERROR" desc="Error message displayed to the user when the word is duplicated in the text input used to add a new word to the custom spell check dictionary.">
-      Already added
+    <message name="IDS_SETTINGS_LANGUAGES_MANAGED_DIALOG_TITLE" desc="Title text for the dialog informing users that the language they tried modifying is managed.">
+      Language is set by your Organization
     </message>
-    <message name="IDS_SETTINGS_LANGUAGES_ADD_DICTIONARY_WORD_LENGTH_ERROR" desc="Error message displayed to the user when the word is too long in the text input used to add a new word to the custom spell check dictionary.">
-      Cannot exceed 99 letters
+    <message name="IDS_SETTINGS_LANGUAGES_MANAGED_DIALOG_BODY" desc="Body text for the dialog informing users that the language they tried modifying is managed.">
+      Your administrator has set a default language which cannot be modified.
     </message>
-    <message name="IDS_SETTINGS_LANGUAGES_DELETE_DICTIONARY_WORD_BUTTON" desc="Message shown over the button to delete a custom word.">
-      Delete word
+    <message name="IDS_SETTINGS_LANGUAGES_NO_LANGUAGES_ADDED" desc="Placeholder for language list settings when no languages have been added, on the Manage Languages page.">
+      No languages added
     </message>
-    <message name="IDS_SETTINGS_LANGUAGES_DICTIONARY_WORDS" desc="Header for the list of custom dictionary words used for spell check.">
-      Custom words
+    <message name="IDS_SETTINGS_LANGUAGES_AUTOMATIC_TRANSLATE" desc="Title of Translation settings that lists languages that should be automatically translated.">
+      Automatically translate these languages
     </message>
-    <message name="IDS_SETTINGS_LANGUAGES_DICTIONARY_WORDS_NONE" desc="Placeholder that is shown when there are no custom words in the list of saved custom words dictionary.">
-      Saved custom words will appear here
+    <message name="IDS_SETTINGS_LANGUAGES_NEVER_LANGUAGES" desc="Title of Translation settings that lists languages that should never be offered to translate.">
+      Don’t offer to translate these languages
     </message>
-    <message name="IDS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_FAILED" desc="Error message when spell dictionary download fails.">
-      Spell check dictionary download failed.
+    <message name="IDS_SETTINGS_LANGUAGES_SPELL_CHECK_TITLE" desc="Title for the section containing all the options for spell check settings. The options include picking between using the system's spell check or using Google's web service and a list of the enabled languages which support spell checking.">
+      Spell check
     </message>
-    <message name="IDS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_FAILED_HELP" desc="Error message when spell dictionary download fails more than once possibly due to a network policy or configuration.">
-      Please check with your network administrator to make sure that the firewall is not blocking downloads from Google servers.
+    <message name="IDS_SETTINGS_LANGUAGES_SPELL_CHECK_BASIC_LABEL" desc="Label for a type of spell check that only relies on the local built-in spell check and does not rely on sending data to Google for suggestions.">
+      Basic spell check
+    </message>
+    <message name="IDS_SETTINGS_LANGUAGES_SPELL_CHECK_ENHANCED_LABEL" desc="Label for a type of spell check that sends the text the user types to Google for spelling suggestions.">
+      Enhanced spell check
+    </message>
+    <message name="IDS_SETTINGS_LANGUAGES_SPELL_CHECK_ENHANCED_DESCRIPTION" desc="Description for the type of spell check that sends the text the user types to Google for spelling suggestions. It is important that it is communicated that the text the user types in the browser will be sent to Google.">
+      Uses the same spell checker that’s used in Google search. Text you type in the browser is sent to Google.
+    </message>
+    <if expr="not is_macosx">
+      <message name="IDS_SETTING_LANGUAGES_SPELL_CHECK_DISABLED_REASON" desc="Text that indicates to the user that spell check options are disabled because none of the languages they have added have spell check support.">
+        Spell check isn’t supported for the languages you selected
+      </message>
+      <message name="IDS_SETTINGS_LANGUAGES_SPELL_CHECK_LANGUAGES_LIST_TITLE" desc="Title for the list of languages that support spell check, from which users can enable or disable spell check for.">
+        Use spell check for
+      </message>
+      <message name="IDS_SETTINGS_LANGUAGES_SPELL_CHECK_MANAGE" desc="Button under the dropdown of spell check languages which opens a sub-page that lets the user add or remove words to the custom list of words for spell checking.">
+        Customize spell check
+      </message>
+      <message name="IDS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_TITLE" desc="Name of the settings sub-page which allows adding and remove custom words from the custom spell check dictionary.">
+        Manage spell check
+      </message>
+      <message name="IDS_SETTINGS_LANGUAGES_ADD_DICTIONARY_WORD" desc="Label for the text input used to add a new word to the custom spell check dictionary.">
+        Add a new word
+      </message>
+      <message name="IDS_SETTINGS_LANGUAGES_ADD_DICTIONARY_WORD_BUTTON" desc="Button next to the 'add word' text input used to add the word typed by the user to the custom spell check dictionary.">
+        Add word
+      </message>
+      <message name="IDS_SETTINGS_LANGUAGES_ADD_DICTIONARY_WORD_DUPLICATE_ERROR" desc="Error message displayed to the user when the word is duplicated in the text input used to add a new word to the custom spell check dictionary.">
+        Already added
+      </message>
+      <message name="IDS_SETTINGS_LANGUAGES_ADD_DICTIONARY_WORD_LENGTH_ERROR" desc="Error message displayed to the user when the word is too long in the text input used to add a new word to the custom spell check dictionary.">
+        Cannot exceed 99 letters
+      </message>
+      <message name="IDS_SETTINGS_LANGUAGES_DELETE_DICTIONARY_WORD_BUTTON" desc="Message shown over the button to delete a custom word.">
+        Delete word
+      </message>
+      <message name="IDS_SETTINGS_LANGUAGES_DICTIONARY_WORDS" desc="Header for the list of custom dictionary words used for spell check.">
+        Custom words
+      </message>
+      <message name="IDS_SETTINGS_LANGUAGES_DICTIONARY_WORDS_NONE" desc="Placeholder that is shown when there are no custom words in the list of saved custom words dictionary.">
+        Saved custom words will appear here
+      </message>
+      <message name="IDS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_FAILED" desc="Error message when spell dictionary download fails.">
+        Spell check dictionary download failed.
+      </message>
+      <message name="IDS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_FAILED_HELP" desc="Error message when spell dictionary download fails more than once possibly due to a network policy or configuration.">
+        Please check with your network administrator to make sure that the firewall is not blocking downloads from Google servers.
+      </message>
+    </if>
+  </if>
+  <if expr="chromeos">
+    <message name="IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open languages settings in Chrome OS.">
+      Manage languages in Chrome OS settings
+    </message>
+    <message name="IDS_SETTINGS_LANGUAGES_KEYBOARD_APPS" desc="Title for the list of keyboard apps installed via Play Store by the user.">
+      Keyboard apps
     </message>
   </if>
 
