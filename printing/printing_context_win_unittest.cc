@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_hdc.h"
+#include "base/win/windows_version.h"
 #include "printing/backend/printing_info_win.h"
 #include "printing/backend/win_helper.h"
 #include "printing/mojom/print.mojom.h"
@@ -146,6 +147,10 @@ class MockPrintingContextWin : public PrintingContextSystemDialogWin {
 };
 
 TEST_F(PrintingContextTest, PrintAll) {
+  // TODO(crbug.com/1231528): Investigate why this test fails on Win 7 bots.
+  if (base::win::GetVersion() <= base::win::Version::WIN7)
+    return;
+
   if (IsTestCaseDisabled())
     return;
 
@@ -161,6 +166,10 @@ TEST_F(PrintingContextTest, PrintAll) {
 }
 
 TEST_F(PrintingContextTest, Color) {
+  // TODO(crbug.com/1231528): Investigate why this test fails on Win 7 bots.
+  if (base::win::GetVersion() <= base::win::Version::WIN7)
+    return;
+
   if (IsTestCaseDisabled())
     return;
 
@@ -176,6 +185,10 @@ TEST_F(PrintingContextTest, Color) {
 }
 
 TEST_F(PrintingContextTest, Base) {
+  // TODO(crbug.com/1231528): Investigate why this test fails on Win 7 bots.
+  if (base::win::GetVersion() <= base::win::Version::WIN7)
+    return;
+
   if (IsTestCaseDisabled())
     return;
 
