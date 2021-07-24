@@ -122,7 +122,8 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Tests that the "Manage Addresses..." action works.
-- (void)testManageAddressesActionOpensAddressSettings {
+// TODO(crbug.com/
+- (void)DISABLED_testManageAddressesActionOpensAddressSettings {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
