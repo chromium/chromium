@@ -2220,6 +2220,132 @@ TEST_P(AppListPresenterTest, TapAndClickEnablesSearchBox) {
   GetAppListTestHelper()->CheckVisibility(false);
 }
 
+// Tests that the result selection will reset after closing the search box by
+// clicking somewhere outside the search box.
+TEST_P(AppListPresenterTest,
+       ClosingSearchBoxByClickingOutsideResetsResultSelection) {
+  const bool test_mouse_event = TestMouseEventParam();
+  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+  SearchBoxView* search_box_view = GetAppListView()->search_box_view();
+  ResultSelectionController* result_selection_controller =
+      search_result_page()->result_selection_controller();
+
+  // Mark the suggested content info as dismissed so that it does not interfere
+  // with the layout for the selection traversal.
+  Shell::Get()->app_list_controller()->MarkSuggestedContentInfoDismissed();
+
+  // Add search results to the search model.
+  SearchModel* search_model =
+      Shell::Get()->app_list_controller()->GetSearchModel();
+  search_model->results()->Add(CreateOmniboxSuggestionResult("Suggestion1"));
+  search_model->results()->Add(CreateOmniboxSuggestionResult("Suggestion2"));
+  // The results are updated asynchronously. Wait until the update is finished.
+  base::RunLoop().RunUntilIdle();
+
+  // Click the search box, the result selection should be the first one in
+  // default.
+  ShowZeroStateSearchInHalfState();
+
+  EXPECT_TRUE(search_box_view->is_search_box_active());
+  ASSERT_TRUE(result_selection_controller->selected_result());
+  EXPECT_TRUE(result_selection_controller->selected_result()->selected());
+  EXPECT_TRUE(result_selection_controller->selected_location_details()
+                  ->is_first_result());
+
+  // Move the selection to the second result.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->PressKey(ui::KeyboardCode::VKEY_DOWN, 0);
+  ASSERT_TRUE(result_selection_controller->selected_result());
+  EXPECT_TRUE(result_selection_controller->selected_result()->selected());
+  EXPECT_FALSE(result_selection_controller->selected_location_details()
+                   ->is_first_result());
+
+  // Tap on the body of the app list, the search box should deactivate.
+  if (test_mouse_event) {
+    ClickMouseAt(GetPointOutsideSearchbox());
+  } else {
+    generator->GestureTapAt(GetPointOutsideSearchbox());
+  }
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(search_box_view->is_search_box_active());
+
+  // Tap/Click the search box again, the result selection should be reset to the
+  // first one.
+  ShowZeroStateSearchInHalfState();
+
+  EXPECT_TRUE(search_box_view->is_search_box_active());
+  ASSERT_TRUE(result_selection_controller->selected_result());
+  EXPECT_TRUE(result_selection_controller->selected_result()->selected());
+  EXPECT_TRUE(result_selection_controller->selected_location_details()
+                  ->is_first_result());
+}
+
+// Tests that the result selection will reset after closing the search box by
+// clicking the close button.
+TEST_P(AppListPresenterTest,
+       ClosingSearchBoxByClickingCloseButtonResetsResultSelection) {
+  const bool test_mouse_event = TestMouseEventParam();
+  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+  SearchBoxView* search_box_view = GetAppListView()->search_box_view();
+  ResultSelectionController* result_selection_controller =
+      search_result_page()->result_selection_controller();
+
+  // Mark the suggested content info as dismissed so that it does not interfere
+  // with the layout for the selection traversal.
+  Shell::Get()->app_list_controller()->MarkSuggestedContentInfoDismissed();
+
+  // Add search results to the search model.
+  SearchModel* search_model =
+      Shell::Get()->app_list_controller()->GetSearchModel();
+  search_model->results()->Add(CreateOmniboxSuggestionResult("Suggestion1"));
+  search_model->results()->Add(CreateOmniboxSuggestionResult("Suggestion2"));
+  // The results are updated asynchronously. Wait until the update is finished.
+  base::RunLoop().RunUntilIdle();
+
+  // Click the search box, the result selection should be the first one in
+  // default.
+  ShowZeroStateSearchInHalfState();
+
+  EXPECT_TRUE(search_box_view->is_search_box_active());
+  ASSERT_TRUE(result_selection_controller->selected_result());
+  EXPECT_TRUE(result_selection_controller->selected_result()->selected());
+  EXPECT_TRUE(result_selection_controller->selected_location_details()
+                  ->is_first_result());
+
+  // Move the selection to the second result.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->PressKey(ui::KeyboardCode::VKEY_DOWN, 0);
+  ASSERT_TRUE(result_selection_controller->selected_result());
+  EXPECT_TRUE(result_selection_controller->selected_result()->selected());
+  EXPECT_FALSE(result_selection_controller->selected_location_details()
+                   ->is_first_result());
+
+  // Use the close button in search_box_view to close the search box.
+  const views::View* close_button =
+      GetAppListView()->search_box_view()->close_button();
+  if (test_mouse_event) {
+    ClickMouseAt(close_button->GetBoundsInScreen().CenterPoint());
+  } else {
+    generator->GestureTapAt(close_button->GetBoundsInScreen().CenterPoint());
+  }
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(search_box_view->is_search_box_active());
+
+  // Tap/Click the search box again, the result selection should be reset to the
+  // first one.
+  if (test_mouse_event) {
+    ClickMouseAt(GetPointInsideSearchbox());
+  } else {
+    generator->GestureTapAt(GetPointInsideSearchbox());
+  }
+
+  EXPECT_TRUE(search_box_view->is_search_box_active());
+  ASSERT_TRUE(result_selection_controller->selected_result());
+  EXPECT_TRUE(result_selection_controller->selected_result()->selected());
+  EXPECT_TRUE(result_selection_controller->selected_location_details()
+                  ->is_first_result());
+}
+
 // Tests that the shelf background displays/hides with bottom shelf
 // alignment.
 TEST_P(AppListPresenterTest, ShelfBackgroundRespondsToAppListBeingShown) {

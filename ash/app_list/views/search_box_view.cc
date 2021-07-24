@@ -322,8 +322,11 @@ void SearchBoxView::RecordSearchBoxActivationHistogram(
 
 void SearchBoxView::OnSearchBoxActiveChanged(bool active) {
   if (active) {
+    result_selection_controller_->ResetSelection(nullptr,
+                                                 true /* default_selection */);
     search_box()->SetAccessibleName(std::u16string());
   } else {
+    result_selection_controller_->ClearSelection();
     search_box()->SetAccessibleName(l10n_util::GetStringUTF16(
         is_tablet_mode_
             ? IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_TABLET
@@ -604,7 +607,6 @@ void SearchBoxView::ClearSearchAndDeactivateSearchBox() {
   if (!is_search_box_active())
     return;
 
-  result_selection_controller_->ClearSelection();
   a11y_selection_on_search_result_ = false;
   ClearSearch();
   SetSearchBoxActive(false, ui::ET_UNKNOWN);

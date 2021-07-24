@@ -609,7 +609,7 @@ TEST_F(SearchBoxViewTest, ResetSelectionAfterResettingSearchBox) {
   SetSearchBoxActive(true, ui::ET_UNKNOWN);
   result_page_view->OnSearchResultContainerResultsChanged();
 
-  // Selection should again rest on the first result, which is default.
+  // Selection should again reset on the first result, which is default.
   selection =
       result_page_view->result_selection_controller()->selected_result();
   EXPECT_EQ(result_page_view->first_result_view(), selection);
