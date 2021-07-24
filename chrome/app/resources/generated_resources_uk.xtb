@@ -269,7 +269,7 @@
 <translation id="1278859221870828664">Перегляньте додатки й сервіси Google Play</translation>
 <translation id="127946606521051357">Пристрій поблизу надсилає дані</translation>
 <translation id="1280965841156951489">Змінити файли</translation>
-<translation id="1282465000333679776">Поділитися системним аудіо</translation>
+<translation id="1282465000333679776">Надати доступ до системного аудіо</translation>
 <translation id="1285320974508926690">Ніколи не перекладати цей сайт</translation>
 <translation id="1285484354230578868">Зберігати дані в обліковому записі Google Диска</translation>
 <translation id="1285625592773741684">Поточне налаштування використання трафіку: "Мобільний трафік"</translation>
@@ -642,7 +642,7 @@
 <translation id="1660763353352708040">Проблема з адаптером живлення</translation>
 <translation id="1661156625580498328">Застосувати шифрування AES (рекомендовано).</translation>
 <translation id="16620462294541761">На жаль, не вдалося підтвердити ваш пароль. Повторіть спробу.</translation>
-<translation id="1662777896967868795">Увімкнено / Вимкнеться автоматично на світанку</translation>
+<translation id="1662777896967868795">Увімкнено; вимкнеться автоматично на світанку</translation>
 <translation id="166278006618318542">Алгоритм відкритого ключа суб'єкта</translation>
 <translation id="1666232093776384142">Вимкнути обмеження доступу до даних для периферійних пристроїв</translation>
 <translation id="1668435968811469751">Зареєструвати вручну</translation>
@@ -770,7 +770,7 @@
 <translation id="1781398670452016618"><ph name="DOMAIN" />: підключіться до мережі Wi-Fi та завантажте оновлення.</translation>
 <translation id="1781502536226964113">Відкрити сторінку нової вкладки</translation>
 <translation id="1781771911845953849">Облікові записи та синхронізація</translation>
-<translation id="1781979858217752599">Поділитися аудіо з вікна</translation>
+<translation id="1781979858217752599">Надати доступ до аудіо у вікні</translation>
 <translation id="1782101999402987960">Адміністратор заблокував оновлення</translation>
 <translation id="1782196717298160133">Пошук вашого телефона</translation>
 <translation id="1784707308176068866">Запускати у фоновому режимі, коли про це просить партнерський рідний додаток</translation>
@@ -1164,7 +1164,7 @@
 <translation id="2187895286714876935">Помилка імпортування сертифіката сервера</translation>
 <translation id="2187906491731510095">Розширення оновлено</translation>
 <translation id="2188881192257509750">Відкрити <ph name="APPLICATION" /></translation>
-<translation id="2189787291884708275">Поділитися аудіо з вкладки</translation>
+<translation id="2189787291884708275">Надати доступ до аудіо на вкладці</translation>
 <translation id="2190069059097339078">Засіб отримання облікових даних Wi-Fi</translation>
 <translation id="219008588003277019">Модуль Native Client: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(пусто)</translation>
@@ -1626,7 +1626,7 @@
 <translation id="2691385045260836588">Модель</translation>
 <translation id="2691440343905273290">Змінити налаштування методів введення</translation>
 <translation id="2693176596243495071">На жаль, сталася невідома помилка. Спробуйте пізніше або зв’яжіться з адміністратором, якщо проблема не зникне.</translation>
-<translation id="2693640212062142966">За допомогою Voice Match Google Асистент визначає ваш голос на <ph name="DEVICE_TYPE" /> і відрізняє його від інших. Щоб заощадити заряд акумулятора, команда "Ok Google" працюватиме, лише коли пристрій підключено до джерела живлення. Щоб змінити цей параметр, перейдіть у налаштування.
+<translation id="2693640212062142966">Voice Match допомагає Google Асистенту визначати ваш голос на пристрої <ph name="DEVICE_TYPE" /> і відрізняти його від інших. Щоб заощадити заряд акумулятора, команда "Ok Google" працюватиме, лише коли пристрій підключено до джерела живлення. Щоб змінити цей параметр, перейдіть у налаштування.
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Зверніть увагу<ph name="END_BOLD" />: хтось зі схожим голосом або записом вашого голосу також може отримати доступ до персональних результатів. Ви можете будь-коли видалити дозвіл для Voice Match. Для цього вимкніть цю функцію в налаштуваннях Асистента.</translation>
 <translation id="2699911226086014512">Не вдалося провести операцію з PIN-кодом: <ph name="RETRIES" />.</translation>
@@ -2139,7 +2139,7 @@
 <translation id="3246107497225150582">{0,plural, =1{Оновіть пристрій протягом дня}one{Оновіть пристрій протягом # дня}few{Оновіть пристрій протягом # днів}many{Оновіть пристрій протягом # днів}other{Оновіть пристрій протягом # дня}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – помилка мережі</translation>
 <translation id="3248902735035392926">Безпека важлива. <ph name="BEGIN_LINK" />Перевірте свої розширення<ph name="END_LINK" />.</translation>
-<translation id="3251714896659475029">Дозвольте користувачу <ph name="SUPERVISED_USER_NAME" /> отримувати доступ до Google Асистента фразою "Ok Google"</translation>
+<translation id="3251714896659475029">З вашого дозволу <ph name="SUPERVISED_USER_NAME" /> зможе викликати Google Асистента командою "Ok Google"</translation>
 <translation id="3251759466064201842">&lt;Не є частиною сертифіката&gt;</translation>
 <translation id="325238099842880997">Визначте правила користування цифровим контентом, щоб вибрати для дитини час гратися, переглядати сайти й виконувати домашні завдання</translation>
 <translation id="3253448572569133955">Невідомий обліковий запис</translation>
@@ -2560,7 +2560,7 @@
 <translation id="3694027410380121301">Вибрати попередню вкладку</translation>
 <translation id="369489984217678710">Паролі й інші дані для входу</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Перевірку безпеки завершено. Ваші дані буде завантажено.}=1{Перевірку безпеки завершено. Ваш файл буде завантажено.}one{Перевірку безпеки завершено. Ваші файли буде завантажено.}few{Перевірку безпеки завершено. Ваші файли буде завантажено.}many{Перевірку безпеки завершено. Ваші файли буде завантажено.}other{Перевірку безпеки завершено. Ваші файли буде завантажено.}}</translation>
-<translation id="3696576298374669274">Показати журнали сервісу</translation>
+<translation id="3696576298374669274">Показати журнали технічного обслуговування</translation>
 <translation id="3699624789011381381">Електронна адреса</translation>
 <translation id="3699920817649120894">Вимкнути синхронізацію та персоналізацію?</translation>
 <translation id="3700888195348409686">Транслюється (<ph name="PAGE_ORIGIN" />)</translation>
@@ -2620,7 +2620,7 @@
 <translation id="3755411799582650620">Тепер ваш <ph name="PHONE_NAME" /> може також розблоковувати цей пристрій <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Сайт використовує мікрофон</translation>
 <translation id="3756578970075173856">Налаштувати PIN-код</translation>
-<translation id="3756795331760037744">Дозвольте Google Асистенту допомагати, використовуючи інформацію на екрані користувача <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="3756795331760037744">З вашого дозволу <ph name="SUPERVISED_USER_NAME" /> зможе отримувати від Google Асистента відповіді з урахуванням вмісту екрана</translation>
 <translation id="3757733214359997190">Не знайдено сайтів</translation>
 <translation id="375841316537350618">Завантаження сценарію проксі-сервера…</translation>
 <translation id="3758842566811519622">Файли cookie налаштовано</translation>
@@ -3013,7 +3013,7 @@
 <translation id="4154664944169082762">Відбитки</translation>
 <translation id="4157869833395312646">Серверне шифрування Microsoft</translation>
 <translation id="4158364720893025815">Перевірку пройдено</translation>
-<translation id="4159163871835771155">Щоб отримувати більш персоналізовані відповіді на запитання, які ставить <ph name="SUPERVISED_USER_NAME" />, надайте Google Асистенту доступ до інформації на екрані користувача <ph name="SUPERVISED_USER_NAME" /> (наприклад, до даних про пісні або відео, які відтворюються).</translation>
+<translation id="4159163871835771155"><ph name="SUPERVISED_USER_NAME" /> отримуватиме точніші відповіді на свої запитання, якщо ви дозволите Асистенту доступ до вмісту екрана. Наприклад, <ph name="SUPERVISED_USER_NAME" /> зможе дізнатися більше про пісню або відео, які саме відтворюються.</translation>
 <translation id="4159681666905192102"><ph name="CUSTODIAN_EMAIL" /> і <ph name="SECOND_CUSTODIAN_EMAIL" /> керують цим обліковим записом для дітей.</translation>
 <translation id="4163560723127662357">Невідома клавіатура</translation>
 <translation id="4167686856635546851">Сайти використовують JavaScript для показу інтерактивних функцій, як-от відеоігри або веб-форми</translation>
@@ -3502,7 +3502,7 @@
 <translation id="4699172675775169585">Кешовані зображення та файли</translation>
 <translation id="4699357559218762027">(автозапуск)</translation>
 <translation id="4701025263201366865">Вхід для батьків</translation>
-<translation id="4707582759326616943">Потягніть, щоб шукати зображення за допомогою Google Об’єктива</translation>
+<translation id="4707582759326616943">Перетягувати зображення для пошуку через Google Об’єктив</translation>
 <translation id="4708794300267213770">Показувати заблокований екран, коли пристрій виходить із режиму сну</translation>
 <translation id="4708849949179781599">Вийти з <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Відновити налаштування</translation>
@@ -3629,7 +3629,7 @@
 <translation id="4864369630010738180">Вхід…</translation>
 <translation id="4864805589453749318">Вибери, хто з батьків дозволяє додати обліковий запис навчального закладу.</translation>
 <translation id="486635084936119914">Автоматично відкривати певні типи файлів після завантаження</translation>
-<translation id="4868281708609571334">Навчіть Google Асистента розпізнавати голос користувача <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="4868281708609571334"><ph name="SUPERVISED_USER_NAME" /> може навчити Google Асистента розпізнавати свій голос</translation>
 <translation id="48704129375571883">Додати більше функцій</translation>
 <translation id="4870758487381879312">Введіть наданий адміністратором пароль, щоб отримати інформацію про налаштування</translation>
 <translation id="4870903493621965035">Немає підключених пристроїв</translation>
@@ -3656,7 +3656,7 @@
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Відкрити за допомогою системного переглядача</translation>
 <translation id="488785315393301722">Показати деталі</translation>
-<translation id="4889792122460431731">Щоб отримувати більш персоналізовані відповіді на запитання, надайте Google Асистенту доступ до інформації на екрані (наприклад, до даних про пісні або відео, які ви відтворюєте).</translation>
+<translation id="4889792122460431731">Щоб отримувати точніші відповіді на запитання, дозвольте Google Асистенту доступ до вмісту екрана. Наприклад, ви зможете дізнатися більше про пісню або відео, які саме відтворюються.</translation>
 <translation id="4890773143211625964">Показати розширені налаштування принтера</translation>
 <translation id="4891089016822695758">Форум бета-версії</translation>
 <translation id="4892229439761351791">Сайт може використовувати Bluetooth</translation>
@@ -4202,7 +4202,7 @@
 <translation id="5499313591153584299">Цей файл може зашкодити вашому комп’ютеру.</translation>
 <translation id="5499453227627332024">Доступне оновлення для Linux Container. Ви також можете оновити систему пізніше в додатку Налаштування.</translation>
 <translation id="549957179819296104">Новий значок</translation>
-<translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Історія пошуку<ph name="END_LINK_SEARCH" /> та <ph name="BEGIN_LINK_GOOGLE" />дані про інші дії<ph name="END_LINK_GOOGLE" /> можуть зберігатися в обліковому записі Google, коли ви входите в нього. Ви можете будь-коли видалити їх.</translation>
+<translation id="5500168250243071806">Коли ви входите в обліковий запис Google, у ньому можуть зберігатись <ph name="BEGIN_LINK_SEARCH" />Історія пошуку<ph name="END_LINK_SEARCH" /> та <ph name="BEGIN_LINK_GOOGLE" />дані про інші дії<ph name="END_LINK_GOOGLE" />. Ви можете будь-коли видалити їх.</translation>
 <translation id="5500709606820808700">Перевірку безпеки виконано сьогодні</translation>
 <translation id="5501322521654567960">Бічна панель зліва</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}one{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}few{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}many{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}other{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}}</translation>
@@ -4917,7 +4917,7 @@
 <translation id="6295158916970320988">Усі сайти</translation>
 <translation id="6295855836753816081">Зберігання…</translation>
 <translation id="629730747756840877">Обліковий запис</translation>
-<translation id="6298800237463568825">За допомогою Voice Match Google Асистент визначає ваш голос на <ph name="DEVICE_TYPE" /> і відрізняє його від інших.
+<translation id="6298800237463568825">Voice Match допомагає Google Асистенту визначати ваш голос на пристрої <ph name="DEVICE_TYPE" /> і відрізняти його від інших.
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Зверніть увагу<ph name="END_BOLD" />: хтось зі схожим голосом або записом вашого голосу також може отримати доступ до персональних результатів. Ви можете будь-коли видалити дозвіл для Voice Match. Для цього вимкніть цю функцію в налаштуваннях Асистента.</translation>
 <translation id="6298962879096096191">Установлювати додатки Android із Google Play</translation>
@@ -5132,7 +5132,7 @@
 <translation id="6532663472409656417">Зареєстровано підприємством</translation>
 <translation id="6535331821390304775">Завжди дозволяти сайту <ph name="ORIGIN" /> відкривати посилання цього типу у зв'язаному додатку</translation>
 <translation id="653659894138286600">Сканувати документи та зображення</translation>
-<translation id="6537016096312202316">Перетягніть зображення, щоб шукати за допомогою Google Об’єктива</translation>
+<translation id="6537016096312202316">Перетягувати на екрані зображення для пошуку через Google Об’єктив</translation>
 <translation id="6537613839935722475">Назва може містити літери, цифри та дефіси (-)</translation>
 <translation id="6537880577641744343">Командир</translation>
 <translation id="6538098297809675636">Помилка виявлення коду</translation>
@@ -5267,7 +5267,7 @@
 <translation id="6687079240787935001">Сховати <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">Нехай <ph name="SUPERVISED_USER_NAME" /> підійде до комп’ютера. Ваша дитина зачитає декілька фраз на екрані, щоб створити зразок голосу.
     <ph name="BR" />
-    Якщо <ph name="SUPERVISED_USER_NAME" /> потребує допомоги з читанням, нехай повторює після вас. Шепочіть фрази не в мікрофон, щоб Асистент запам’ятав голос дитини, а не ваш.</translation>
+    Якщо <ph name="SUPERVISED_USER_NAME" /> ще не дуже добре читає, нехай повторює за вами. Шепочіть фрази не в мікрофон, щоб Асистент запам’ятав голос дитини, а не ваш.</translation>
 <translation id="6690659332373509948">Неможливо проаналізувати файл: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Керувати синхронізованими даними в Особистому кабінеті Google</translation>
 <translation id="6691541770654083180">Земля</translation>
@@ -5315,7 +5315,7 @@
 <translation id="6745592621698551453">Оновити зараз</translation>
 <translation id="6746124502594467657">Вниз</translation>
 <translation id="674632704103926902">Увімкнути перетягування дотиком</translation>
-<translation id="6748054820659621153">Шукайте об’єкти на екрані за допомогою Google Об’єктива</translation>
+<translation id="6748054820659621153">Пошук об’єктів на екрані через Google Об’єктив</translation>
 <translation id="6748465660675848252">Ви можете продовжити, однак буде відновлено лише синхронізовані дані та налаштування. Усі локальні дані буде втрачено.</translation>
 <translation id="6749006854028927059">Сайти не можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі, зокрема, щоб персоналізувати рекламу. Функції на деяких сайтах можуть не працювати.</translation>
 <translation id="6750757184909117990">Вимкнути мобільну мережу</translation>
@@ -5679,7 +5679,7 @@
 <translation id="7136639886842764730"><ph name="DOMAIN" />: негайно оновіть <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7136694880210472378">Установити за умовчанням</translation>
 <translation id="7136993520339022828">Виявлено помилку. Повторіть спробу, вибравши інші зображення.</translation>
-<translation id="7138515695467025690">Вимкнено / Увімкнеться автоматично після заходу сонця</translation>
+<translation id="7138515695467025690">Вимкнено; увімкнеться автоматично після заходу сонця</translation>
 <translation id="7138678301420049075">Інше</translation>
 <translation id="7139627972753429585">Додаток <ph name="APP_NAME" /> використовує ваш мікрофон</translation>
 <translation id="7141105143012495934">Помилка входу. Не вдалось отримати дані вашого облікового запису. Зв’яжіться з адміністратором або повторіть спробу.</translation>
@@ -6154,7 +6154,7 @@
 <translation id="7652954539215530680">Створіть PIN-код</translation>
 <translation id="7654941827281939388">Цей обліковий запис уже використовується на цьому комп’ютері.</translation>
 <translation id="7655411746932645568">Сайти можуть запитувати дозвіл на підключення до серійних портів</translation>
-<translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Дані про інші дії<ph name="END_LINK_GOOGLE" /> можуть зберігатися в обліковому записі Google, коли ви входите в нього. Ви можете будь-коли видалити їх.</translation>
+<translation id="7657218410916651670">Коли ви входите в обліковий запис Google, у ньому можуть зберігатися <ph name="BEGIN_LINK_GOOGLE" />дані про інші дії<ph name="END_LINK_GOOGLE" />. Ви можете будь-коли видалити їх.</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7659154729610375585">Усе одно вимкнути режим анонімного перегляду?</translation>
 <translation id="7659297516559011665">Паролі лише на цьому пристрої</translation>
@@ -6298,7 +6298,7 @@
 <translation id="7792388396321542707">Більше не ділитися</translation>
 <translation id="779308894558717334">Світло-зелений</translation>
 <translation id="7793098747275782155">Темно-синій</translation>
-<translation id="7797246427375693110">Увімкнено / Вимкнеться автоматично о <ph name="TIME" /></translation>
+<translation id="7797246427375693110">Увімкнено; вимкнеться автоматично о <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Вимкнено</translation>
 <translation id="7798844538707273832">Автоматично заблоковано: <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Фоновий малюнок налаштовано</translation>
@@ -7034,7 +7034,7 @@
 <translation id="8597845839771543242">Формат властивості:</translation>
 <translation id="8599681327221583254">Принаймні одне правило налаштовано неправильно. Зв’яжіться з адміністратором</translation>
 <translation id="8601206103050338563">Автентифікація клієнта TLS WWW</translation>
-<translation id="8601611099293226919">Шукайте об’єкти на екрані за допомогою Google Об’єктива</translation>
+<translation id="8601611099293226919">Пошук об’єктів на екрані через Google Об’єктив</translation>
 <translation id="8602851771975208551">Інша програма на вашому комп’ютері додала програму, яка може змінити роботу Chrome.</translation>
 <translation id="8605428685123651449">Пам’ять SQLite</translation>
 <translation id="8608618451198398104">Додати квиток Kerberos</translation>
@@ -7358,7 +7358,7 @@
 <translation id="8907787635362884532">Видавець: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome може перевірити, чи встановлено на вашому комп'ютері шкідливе програмне забезпечення</translation>
 <translation id="8909298138148012791">Додаток <ph name="APP_NAME" /> видалено</translation>
-<translation id="8909782404367982052">Потягніть, щоб шукати зображення за допомогою Google Об’єктива</translation>
+<translation id="8909782404367982052">Перетягувати зображення для пошуку через Google Об’єктив</translation>
 <translation id="8909833622202089127">Сайт відстежує місцезнаходження</translation>
 <translation id="8910222113987937043">Зміни в закладках, історії, паролях та інших налаштуваннях більше не синхронізуватимуться з вашим обліковим записом Google. Дані, які зберігаються в обліковому записі Google, не буде видалено. Ними можна керувати на <ph name="BEGIN_LINK" />Інформаційній панелі Google<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Обліковий запис Google</translation>
@@ -7498,7 +7498,7 @@
 <translation id="9055636786322918818">Застосовує шифрування RC4. Використання цієї опції підвищує ризик, оскільки шифри RC4 ненадійні.</translation>
 <translation id="9056810968620647706">Збігів не знайдено.</translation>
 <translation id="9057354806206861646">Оновити розклад</translation>
-<translation id="9057599413476594385">Перетягніть зображення, щоб шукати за допомогою Google Об’єктива</translation>
+<translation id="9057599413476594385">Перетягувати на екрані зображення для пошуку через Google Об’єктив</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Помилка в рядках <ph name="ERROR_LINE_START" />–<ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Не вдається зробити знімок конфіденційного контенту</translation>
@@ -7709,7 +7709,7 @@
 <translation id="98515147261107953">Альбомна</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Загальне</translation>
-<translation id="987363316774788151">Вимкнено / Увімкнеться автоматично о <ph name="TIME" /></translation>
+<translation id="987363316774788151">Вимкнено; увімкнеться автоматично о <ph name="TIME" /></translation>
 <translation id="987897973846887088">Немає зображень</translation>
 <translation id="988320949174893488">Час від часу зупиняється</translation>
 <translation id="988978206646512040">Потрібно вказати парольну фразу</translation>

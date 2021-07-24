@@ -636,7 +636,7 @@
 <translation id="1660763353352708040">Problema con l'alimentatore</translation>
 <translation id="1661156625580498328">Applica la crittografia AES (consigliato).</translation>
 <translation id="16620462294541761">Spiacenti, impossibile verificare la password. Riprova.</translation>
-<translation id="1662777896967868795">On / Verrà disattivata automaticamente all'alba</translation>
+<translation id="1662777896967868795">On / Verrà disattivato automaticamente all'alba</translation>
 <translation id="166278006618318542">Algoritmo chiave pubblica del soggetto</translation>
 <translation id="1666232093776384142">Disattiva la protezione dell'accesso ai dati per le periferiche</translation>
 <translation id="1668435968811469751">Registrazione manuale</translation>
@@ -6279,7 +6279,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7792388396321542707">Interrompi condivisione</translation>
 <translation id="779308894558717334">Verde chiaro</translation>
 <translation id="7793098747275782155">Blu scuro</translation>
-<translation id="7797246427375693110">On / Verrà disattivata automaticamente alle ore <ph name="TIME" /></translation>
+<translation id="7797246427375693110">On / Verrà disattivato automaticamente alle ore <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Off</translation>
 <translation id="7798844538707273832">Autorizzazione <ph name="PERMISSION" /> bloccata automaticamente</translation>
 <translation id="7799299114731150374">Sfondo impostato correttamente</translation>
@@ -6474,7 +6474,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7980084013673500153">ID asset: <ph name="ASSET_ID" /></translation>
 <translation id="7981313251711023384">Le pagine vengono precaricate per velocizzare la navigazione e la ricerca</translation>
 <translation id="798145602633458219">Aggiungi il suggerimento <ph name="SUGGESTION_NAME" /> alla casella di ricerca</translation>
-<translation id="7981662863948574132">Mostra EID dispositivo e popup codice QR</translation>
+<translation id="7981662863948574132">Mostra popup con EID dispositivo e codice QR</translation>
 <translation id="7982083145464587921">Riavvia il dispositivo per correggere questo errore.</translation>
 <translation id="7982789257301363584">Rete</translation>
 <translation id="7984068253310542383">Esegui il mirroring di <ph name="DISPLAY_NAME" /></translation>
@@ -7687,7 +7687,7 @@ Puoi assegnare più sensori a questa azione</translation>
 <translation id="98515147261107953">Orizzontale</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Generali</translation>
-<translation id="987363316774788151">Off / Verrà attivata automaticamente alle ore <ph name="TIME" /></translation>
+<translation id="987363316774788151">Off / Verrà attivato automaticamente alle ore <ph name="TIME" /></translation>
 <translation id="987897973846887088">Nessuna immagine disponibile</translation>
 <translation id="988320949174893488">Interruzioni occasionali</translation>
 <translation id="988978206646512040">Non è consentita una passphrase vuota</translation>

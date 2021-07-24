@@ -697,6 +697,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3432601291244612633">Pechar páxina</translation>
 <translation id="3435738964857648380">Seguranza</translation>
 <translation id="3438829137925142401">Utilizar contrasinais gardados na túa Conta de Google</translation>
+<translation id="3440783957068352691">cadrado</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">O propietario deste dispositivo desactivou o xogo do dinosauro.</translation>
 <translation id="3447884698081792621">Mostrar certificado (emitido por <ph name="ISSUER" />)</translation>
@@ -866,6 +867,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4067947977115446013">Engade un enderezo válido</translation>
 <translation id="4072193657607981494">Cargando políticas</translation>
 <translation id="4072486802667267160">Produciuse un erro ao procesar a túa solicitude. Téntao de novo.</translation>
+<translation id="4073797364926776829">Ver tarxeta</translation>
 <translation id="4075732493274867456">O cliente e o servidor non admiten unha versión do protocolo SSL ou o paquete de cifraxe comúns.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">A configuración do proxy está establecida para utilizar un URL de script .pac, non servidores proxy fixos.</translation>
@@ -1366,6 +1368,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5759751709240058861">Utilizar e mover a túa cámara</translation>
 <translation id="5763042198335101085">Introduce un enderezo de correo electrónico válido</translation>
 <translation id="5765072501007116331">Para consultar os requisitos e métodos de entrega, selecciona un enderezo</translation>
+<translation id="57689295674415555">Non se autocompletou o número da tarxeta virtual?</translation>
 <translation id="5776313857861697733">Prioridade</translation>
 <translation id="5778550464785688721">Control total de dispositivos MIDI</translation>
 <translation id="5781136890105823427">O experimento está activado</translation>

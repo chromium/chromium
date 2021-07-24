@@ -118,6 +118,7 @@
 <translation id="3488065109653206955">Partiellement activé</translation>
 <translation id="3527036260304016759">Échec : erreur inconnue</translation>
 <translation id="3532980081107202182">Il reste environ <ph name="MIN_REMAINING" /> minutes</translation>
+<translation id="3540383942695635079">Adresse MAC</translation>
 <translation id="357889014807611375">réseau Wi-Fi mesuré</translation>
 <translation id="3595596368722241419">Batterie entièrement chargée</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP 802.1x</translation>
@@ -163,6 +164,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Impossible d'effectuer un ping avec la passerelle réseau autre que celle par défaut</translation>
 <translation id="4511264077854731334">Portail</translation>
+<translation id="4536864596629708641">Configuration de l'adresse IP</translation>
 <translation id="4548483925627140043">Signal introuvable</translation>
 <translation id="455835558791489930">Pile de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Aucun service</translation>
@@ -171,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
 <translation id="4646949265910132906">Connexion Wi-Fi sécurisée</translation>
 <translation id="4652335678334611408">Enregistrer le journal de la session</translation>
+<translation id="4654549501020883054">Changer tous les jours</translation>
 <translation id="4665014895760275686">Fabricant</translation>
 <translation id="467510802200863975">Les mots de passe ne correspondent pas</translation>
 <translation id="467715984478005772">Un pare-feu semble être présent</translation>
@@ -389,6 +392,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8498220429738806196">Compteurs de trafic</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8503836310948963452">Il ne reste que quelques minutes…</translation>
+<translation id="8521021929829989041">Utiliser comme appareil personnel</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Votre fournisseur de services peut exiger l'activation de cette option pour vous connecter à son réseau. Communiquez avec votre fournisseur de services pour en savoir davantage.</translation>
 <translation id="8576249514688522074">Non initialisé</translation>

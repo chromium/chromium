@@ -2992,7 +2992,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4154664944169082762">Huellas digitales</translation>
 <translation id="4157869833395312646">Criptografía controlada por servidor de Microsoft</translation>
 <translation id="4158364720893025815">Se completó la acción</translation>
-<translation id="4159163871835771155">Si quieres obtener respuestas relevantes cuando <ph name="SUPERVISED_USER_NAME" /> hace preguntas, permite que Asistente use la información que aparecen en la pantalla de <ph name="SUPERVISED_USER_NAME" />. Puede ser información sobre las canciones o videos que se estén reproduciendo.</translation>
+<translation id="4159163871835771155">Para que <ph name="SUPERVISED_USER_NAME" /> obtenga respuestas relevantes cuando haga preguntas, permite que Asistente use la información que aparece en la pantalla de <ph name="SUPERVISED_USER_NAME" />. Puede ser información sobre las canciones o videos que se estén reproduciendo.</translation>
 <translation id="4159681666905192102">Esta es una cuenta para niños administrada por <ph name="CUSTODIAN_EMAIL" /> y <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Teclado desconocido</translation>
 <translation id="4167686856635546851">Por lo general los sitios utilizan JavaScript para mostrar funciones interactivas, como videojuegos o formularios web.</translation>
@@ -5243,7 +5243,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6686665106869989887">Se movió la pestaña hacia la derecha</translation>
 <translation id="6686817083349815241">Guardar la contraseña</translation>
 <translation id="6687079240787935001">Ocultar <ph name="MODULE_TITLE" /></translation>
-<translation id="6689714331348768690">Pídele a <ph name="SUPERVISED_USER_NAME" /> que se acerque a la computadora. Tu hijo deberá leer algunas frases de esta pantalla para crear su modelo del voz.
+<translation id="6689714331348768690">Pídele a <ph name="SUPERVISED_USER_NAME" /> que se acerque a la computadora. Tu hijo deberá leer algunas frases de esta pantalla para crear su modelo de voz.
     <ph name="BR" />
     Si <ph name="SUPERVISED_USER_NAME" /> necesita ayuda para leer, dile a tu hijo que repita después de ti. Susúrrale lejos del micrófono para que Asistente aprenda la voz de tu hijo en lugar de la tuya.</translation>
 <translation id="6690659332373509948">Error al analizar el archivo: <ph name="FILE_NAME" /></translation>

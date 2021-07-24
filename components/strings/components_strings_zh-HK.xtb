@@ -862,7 +862,7 @@
 <translation id="4067947977115446013">新增有效的地址</translation>
 <translation id="4072193657607981494">載入緊政策</translation>
 <translation id="4072486802667267160">處理您的訂單時發生錯誤，請再試一次。</translation>
-<translation id="4073797364926776829">查看卡片</translation>
+<translation id="4073797364926776829">查看虛擬卡</translation>
 <translation id="4075732493274867456">用戶端和伺服器不支援共通 SSL 通訊協定版本或加密套件。</translation>
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Proxy 設定已設為使用 .pac 指令碼網址，而非固定的 Proxy 伺服器。</translation>
@@ -1359,7 +1359,7 @@
 <translation id="5759751709240058861">使用和移動相機</translation>
 <translation id="5763042198335101085">請輸入有效的電郵地址</translation>
 <translation id="5765072501007116331">如要查看送貨方式和要求，請選取一個地址</translation>
-<translation id="57689295674415555">尚未填寫虛擬卡號嗎？</translation>
+<translation id="57689295674415555">未填入虛擬卡號嗎？</translation>
 <translation id="5776313857861697733">優先次序</translation>
 <translation id="5778550464785688721">MIDI 裝置完整控制</translation>
 <translation id="5781136890105823427">實驗已啟用</translation>

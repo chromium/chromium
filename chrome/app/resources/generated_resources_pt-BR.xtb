@@ -6298,7 +6298,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7792388396321542707">Interromper compartilhamento</translation>
 <translation id="779308894558717334">Verde-claro</translation>
 <translation id="7793098747275782155">Azul-escuro</translation>
-<translation id="7797246427375693110">Ativado / Será desativado automaticamente <ph name="TIME" /></translation>
+<translation id="7797246427375693110">Ativado / Será desativado automaticamente às <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Desativado</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> bloqueada automaticamente</translation>
 <translation id="7799299114731150374">Plano de fundo definido</translation>
@@ -7707,7 +7707,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="98515147261107953">Paisagem</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Geral</translation>
-<translation id="987363316774788151">Desativado / Será ativado automaticamente <ph name="TIME" /></translation>
+<translation id="987363316774788151">Desativado / Será ativado automaticamente às <ph name="TIME" /></translation>
 <translation id="987897973846887088">Não há imagens disponíveis</translation>
 <translation id="988320949174893488">Tem falhas intermitentes</translation>
 <translation id="988978206646512040">A senha longa não pode ficar em branco</translation>

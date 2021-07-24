@@ -118,6 +118,7 @@
 <translation id="3488065109653206955">పాక్షికంగా సక్రియం చెయ్యబడింది</translation>
 <translation id="3527036260304016759">విఫలమైంది - తెలియని ఎర్రర్</translation>
 <translation id="3532980081107202182">సుమారు <ph name="MIN_REMAINING" /> నిమిషాలు మిగిలి ఉన్నాయి</translation>
+<translation id="3540383942695635079">MAC అడ్రస్</translation>
 <translation id="357889014807611375">డేటా నియంత్రణ Wi-Fi</translation>
 <translation id="3595596368722241419">బ్యాటరీ నిండింది</translation>
 <translation id="360565022852130722">బలహీనమైన ప్రోటోకాల్ WEP 802.1xతో Wi-Fi నెట్‌వర్క్ సురక్షితం చేయబడింది</translation>
@@ -163,6 +164,7 @@
 <translation id="4479639480957787382">ఈథర్నెట్</translation>
 <translation id="4483049906298469269">డిఫాల్ట్-యేతర నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
 <translation id="4511264077854731334">పోర్టల్</translation>
+<translation id="4536864596629708641">IP కాన్ఫిగరేషన్</translation>
 <translation id="4548483925627140043">సిగ్నల్ కనుగొనబడలేదు</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh బ్యాటరీ</translation>
 <translation id="4562494484721939086">సేవ లేదు</translation>
@@ -171,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />లో <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />. ప్రింట్ టాస్క్‌ను రద్దు చేయడానికి ఎంటర్ నొక్కండి.</translation>
 <translation id="4646949265910132906">సురక్షిత Wi-Fi కనెక్షన్</translation>
 <translation id="4652335678334611408">సెషన్ లాగ్‌ను సేవ్ చేయి</translation>
+<translation id="4654549501020883054">ప్రతి రోజూ మార్చండి</translation>
 <translation id="4665014895760275686">తయారీదారు</translation>
 <translation id="467510802200863975">పాస్‌వర్డ్‌లు సరిపోలడం లేదు</translation>
 <translation id="467715984478005772">ఫైర్‌వాల్‌తో సమస్య ఉన్నట్టుగా ఉంది</translation>
@@ -388,6 +391,7 @@
 <translation id="8498220429738806196">ట్రాఫిక్ కౌంటర్‌లు</translation>
 <translation id="8503813439785031346">యూజర్‌పేరు</translation>
 <translation id="8503836310948963452">మరికొన్ని నిమిషాలు మాత్రమే…</translation>
+<translation id="8521021929829989041">వ్యక్తిగత పరికరంగా ఉపయోగించండి</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">వారి నెట్‌వర్క్‌కు కనెక్ట్ అవ్వడానికి మీ క్యారియర్‌కు ఈ ఆప్షన్ అవసరం పడవచ్చు. వివరాల కోసం మీ క్యారియర్‌ను సంప్రదించండి.</translation>
 <translation id="8576249514688522074">ప్రారంభం కాలేదు</translation>

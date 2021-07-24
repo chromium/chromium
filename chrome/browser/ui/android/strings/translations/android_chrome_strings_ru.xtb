@@ -628,7 +628,7 @@
 <translation id="5016205925109358554">С засечками</translation>
 <translation id="5032430150487044192">Не удалось создать QR-код.</translation>
 <translation id="5039804452771397117">Разрешить</translation>
-<translation id="5054455334322721892">Сведения о <ph name="BEGIN_LINK1" />других действиях<ph name="END_LINK1" /> могут сохраняться в аккаунте Google, если вы в него вошли. Эти данные можно удалить в любое время.</translation>
+<translation id="5054455334322721892">Сведения о <ph name="BEGIN_LINK1" />других действиях<ph name="END_LINK1" /> могут сохраняться в аккаунте Google, если вы в него вошли. Их можно удалить в любое время.</translation>
 <translation id="5061533557687621530">Чтобы узнать погоду, нажмите на значок микрофона и скажите "Какая сейчас погода?"</translation>
 <translation id="5087580092889165836">Добавить карту</translation>
 <translation id="5091249083535528968">Расширенные данные</translation>
@@ -1096,7 +1096,7 @@
 <translation id="7929962904089429003">Открыть меню</translation>
 <translation id="7930998711684428189">Сообщает, если пароли были раскрыты в результате утечки данных.</translation>
 <translation id="7942131818088350342">Версия <ph name="PRODUCT_NAME" /> устарела.</translation>
-<translation id="7944772052836377867">Подтвердите личность для выполнения синхронизации</translation>
+<translation id="7944772052836377867">Подтвердите личность для синхронизации</translation>
 <translation id="7947953824732555851">Принять и войти</translation>
 <translation id="7961015016161918242">Нет</translation>
 <translation id="7961926449547174351">Откройте доступ к хранилищу в настройках устройства.</translation>
@@ -1128,7 +1128,7 @@
 <translation id="8084114998886531721">Сохраненный пароль</translation>
 <translation id="8084285576995584326">Управляйте данными своего аккаунта Google</translation>
 <translation id="808747664143081553">Подключено к устройству</translation>
-<translation id="8088176524274673045">Чтобы предоставить доступ пользователю поблизости, попросите его отсканировать этот QR-код.</translation>
+<translation id="8088176524274673045">Чтобы предоставить доступ пользователю рядом с вами, попросите его отсканировать этот QR-код.</translation>
 <translation id="8103578431304235997">Вкладка инкогнито</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Чтобы получить доступ к закладкам на всех устройствах, включите синхронизацию.</translation>

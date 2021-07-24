@@ -148,7 +148,7 @@
 <translation id="5123685120097942451">गुप्त टैब</translation>
 <translation id="5186036860380548585">यह विकल्प, स्क्रीन के सबसे ऊपरी हिस्से में उपलब्ध है</translation>
 <translation id="5197729504361054390">आप जो संपर्क चुनेंगे उन्हें <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> के साथ शेयर किया जाएगा.</translation>
-<translation id="5216942107514965959">साइट पर आखिरी बार आज गए</translation>
+<translation id="5216942107514965959">साइट पर पिछली बार आज गए</translation>
 <translation id="528192093759286357">फ़ुल स्क्रीन से बाहर निकलने के लिए ऊपर से खींचें और वापस जाएं स्पर्श करें.</translation>
 <translation id="5300589172476337783">दिखाएं</translation>
 <translation id="5301954838959518834">ठीक है, समझ लिया</translation>
@@ -178,7 +178,7 @@
 <translation id="5804241973901381774">अनुमतियां</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5876056640971328065">वीडियो रोकें</translation>
-<translation id="5887687176710214216">साइट पर आखिरी बार कल गए</translation>
+<translation id="5887687176710214216">साइट पर पिछली बार कल गए</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="5922853908706496913">आपकी स्क्रीन शेयर की जा रही है</translation>
 <translation id="5939518447894949180">रीसेट करें</translation>
@@ -208,7 +208,7 @@
 <translation id="6527303717912515753">शेयर करें</translation>
 <translation id="6545864417968258051">ब्लूटूथ स्कैन करना</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को ब्लॉक किया गया}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को ब्लॉक किया गया}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधाओं को ब्लॉक किया गया}}</translation>
-<translation id="6554732001434021288">साइट पर आखिरी बार <ph name="NUM_DAYS" /> दिन पहले गए</translation>
+<translation id="6554732001434021288">साइट पर पिछली बार <ph name="NUM_DAYS" /> दिन पहले गए</translation>
 <translation id="6561560012278703671">बिना आवाज़ के मैसेज पाएं (सूचनाओं में आवाज़ को रोकता है, ताकि आपके काम में रुकावट न आए)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> जीबी</translation>
 <translation id="6612358246767739896">सुरक्षित सामग्री</translation>

@@ -2973,7 +2973,7 @@
 <translation id="4154664944169082762">指纹</translation>
 <translation id="4157869833395312646">Microsoft 服务器网关加密</translation>
 <translation id="4158364720893025815">通过</translation>
-<translation id="4159163871835771155">如果想在<ph name="SUPERVISED_USER_NAME" />提问后获得为他/她量身定制的回复，您不妨允许 Google 助理使用<ph name="SUPERVISED_USER_NAME" />的屏幕中的信息，其中可能包括正在播放的歌曲或视频的相关信息。</translation>
+<translation id="4159163871835771155">如果想在<ph name="SUPERVISED_USER_NAME" />提问后获得为该用户量身定制的回复，您不妨允许 Google 助理使用<ph name="SUPERVISED_USER_NAME" />的屏幕中的信息，其中可能包括正在播放的歌曲或视频的相关信息。</translation>
 <translation id="4159681666905192102">此帐号是由 <ph name="CUSTODIAN_EMAIL" /> 和 <ph name="SECOND_CUSTODIAN_EMAIL" /> 管理的未成年人帐号。</translation>
 <translation id="4163560723127662357">未知键盘</translation>
 <translation id="4167686856635546851">网站通常会使用 JavaScript 来显示互动功能（例如视频游戏或网络表单）</translation>
@@ -3896,7 +3896,7 @@
 <translation id="520621735928254154">导入证书时出现错误</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{已成功更改这个已泄露的密码。您还有 # 个已泄露的密码。Chrome 建议您立即检查这个密码。}other{已成功更改这个已泄露的密码。您还有 # 个已泄露的密码。Chrome 建议您立即检查这些密码。}}</translation>
 <translation id="5207949376430453814">突出显示文本插入符号</translation>
-<translation id="5208548918290612795">系统将会存储您的“<ph name="WEB_DRIVE" />”身份验证令牌</translation>
+<translation id="5208548918290612795">存储“<ph name="WEB_DRIVE" />”身份验证令牌</translation>
 <translation id="520902706163766447">如果您启用此实验，系统将会在 Chrome 界面顶部显示弹出式气泡，供您用来在当前打开的标签页中搜索所需内容。</translation>
 <translation id="5209320130288484488">未找到任何设备</translation>
 <translation id="5210365745912300556">关闭标签页</translation>
@@ -4245,7 +4245,7 @@
 <translation id="5585912436068747822">格式化失败</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">正在加载应用…</translation>
-<translation id="5590265327628802792"><ph name="SUPERVISED_USER_NAME" />似乎已在另一部设备上设置了 Google 助理。<ph name="SUPERVISED_USER_NAME" />只需开启屏幕上下文功能，即可更充分地利用 Google 助理。</translation>
+<translation id="5590265327628802792"><ph name="SUPERVISED_USER_NAME" />似乎已在另一部设备上设置了 Google 助理。<ph name="SUPERVISED_USER_NAME" />可以在开启屏幕上下文功能后更充分地利用 Google 助理。</translation>
 <translation id="5592595402373377407">尚无足够的数据。</translation>
 <translation id="5595485650161345191">修改地址</translation>
 <translation id="5596627076506792578">更多选项</translation>
@@ -4326,7 +4326,7 @@
 <translation id="5684661240348539843">资产标识符</translation>
 <translation id="5687326903064479980">时区</translation>
 <translation id="5689516760719285838">位置信息</translation>
-<translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" />似乎已在另一部设备上为 Google 助理设置了 Voice Match。这些先前的语音录音皆被用来在此设备上创建语音模型。</translation>
+<translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" />似乎已在另一部设备上为 Google 助理设置了 Voice Match。这些先前的语音录音被用来在此设备上创建语音模型。</translation>
 <translation id="56907980372820799">关联数据</translation>
 <translation id="5691581861107245578">根据您输入的内容，获取表情符号建议</translation>
 <translation id="5691772641933328258">无法识别指纹</translation>
@@ -5221,9 +5221,9 @@
 <translation id="6686665106869989887">此标签页已移至右侧</translation>
 <translation id="6686817083349815241">保存您的密码</translation>
 <translation id="6687079240787935001">隐藏<ph name="MODULE_TITLE" /></translation>
-<translation id="6689714331348768690">请让<ph name="SUPERVISED_USER_NAME" />面对计算机。您的孩子将会读出此屏幕上的一些短语，以创建他/她的语音模型。
+<translation id="6689714331348768690">请让<ph name="SUPERVISED_USER_NAME" />面对计算机。您的孩子将会读出此屏幕上的一些短语以创建其语音模型。
     <ph name="BR" />
-    如果<ph name="SUPERVISED_USER_NAME" />有阅读障碍，请让他/她跟着您读。记得要远离麦克风轻声耳语，以便 Google 助理能够了解您孩子（而非您）的语音。</translation>
+    如果<ph name="SUPERVISED_USER_NAME" />有阅读障碍，请让孩子跟着您读。记得要远离麦克风轻声耳语，以便 Google 助理能够了解您孩子（而非您）的语音。</translation>
 <translation id="6690659332373509948">无法解析文件：<ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">通过 Google 信息中心管理已同步的数据</translation>
 <translation id="6691541770654083180">地球</translation>

@@ -267,7 +267,7 @@
 <translation id="1278859221870828664">Google Play पर मिलने वाले ऐप्लिकेशन और सेवाओं की समीक्षा करें</translation>
 <translation id="127946606521051357">आस-पास मौजूद कोई डिवाइस, डेटा शेयर कर रहा है</translation>
 <translation id="1280965841156951489">फ़ाइलों में बदलाव करें</translation>
-<translation id="1282465000333679776">सिस्टम ऑडियो को शेयर करें</translation>
+<translation id="1282465000333679776">सिस्टम ऑडियो शेयर करें</translation>
 <translation id="1285320974508926690">कभी भी इस साइट का अनुवाद न करें</translation>
 <translation id="1285484354230578868">डेटा को अपने Google डिस्क खाते में संगृहीत करें</translation>
 <translation id="1285625592773741684">डेटा खर्च की मौजूदा सेटिंग के मुताबिक, मोबाइल डेटा इस्तेमाल होगा</translation>
@@ -768,7 +768,7 @@
 <translation id="1781398670452016618"><ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अभी वाई-फ़ाई से कनेक्ट करें और अपडेट डाउनलोड करें.</translation>
 <translation id="1781502536226964113">'नया टैब' पेज खोलें</translation>
 <translation id="1781771911845953849">खाते और सिंक</translation>
-<translation id="1781979858217752599">विंडो ऑडियो को शेयर करें</translation>
+<translation id="1781979858217752599">विंडो ऑडियो शेयर करें</translation>
 <translation id="1782101999402987960">आपके एडमिन ने अपडेट ब्लॉक कर दिए हैं</translation>
 <translation id="1782196717298160133">आपका फ़ोन ढूंढा जा रहा है</translation>
 <translation id="1784707308176068866">सहयोगी स्थानीय ऐप्लिकेशन की ओर से अनुरोध किए जाने पर बैकग्राउंड में चलाएं</translation>
@@ -1626,7 +1626,7 @@
 <translation id="2693176596243495071">ओह हो!  कोई अज्ञात गड़बड़ी हुई. कृपया बाद में फिर से कोशिश करें या अगर समस्या फिर भी बनी रहती है, तो अपने एडमिन से संपर्क करें.</translation>
 <translation id="2693640212062142966">वॉइस मैच की सुविधा से Google Assistant, <ph name="DEVICE_TYPE" /> पर आपकी आवाज़ पहचान पाती है. साथ ही, वह आपकी और दूसरे लोगों की आवाज़ में अंतर कर पाती है. "Ok Google" सिर्फ़ तब बोलें, जब आपका डिवाइस चार्ज हो रहा हो. इससे बैटरी बचाने में मदद मिलेगी. बदलाव करने के लिए, सेटिंग पर जाएं.
     <ph name="BR" />
-    <ph name="BEGIN_BOLD" />याद रखें:<ph name="END_BOLD" /> किसी मिलती-जुलती आवाज़ या रिकॉर्डिंग से भी आपके निजी खोज नतीजे ऐक्सेस किए जा सकते हैं. आप बाद में Assistant की सेटिंग में जाकर, वॉइस मैच की सुविधा को बंद करके, इसको दी गई अनुमति हटा सकते हैं.</translation>
+    <ph name="BEGIN_BOLD" />याद रखें:<ph name="END_BOLD" /> किसी मिलती-जुलती आवाज़ या रिकॉर्डिंग से भी आपके निजी खोज नतीजे ऐक्सेस किए जा सकते हैं. आप जब चाहें, Assistant की सेटिंग में वॉइस मैच की सुविधा बंद करके, वॉइस मैच की अनुमति हटा सकते हैं.</translation>
 <translation id="2699911226086014512"><ph name="RETRIES" /> कोड के चलते पिन को सेट नहीं किया जा सका.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> से शेयर किया</translation>
 <translation id="2701737434167469065">साइन इन करें, <ph name="EMAIL" /></translation>
@@ -4198,7 +4198,7 @@
 <translation id="5499313591153584299">यह फ़ाइल आपके कंप्‍यूटर के लिए हानिकारक हो सकती है.</translation>
 <translation id="5499453227627332024">आपके Linux कंटेनर का नया वर्शन उपलब्ध है. आप सेटिंग ऐप्लिकेशन में जाकर, इसे बाद में भी अपग्रेड कर सकते हैं.</translation>
 <translation id="549957179819296104">नया आइकॉन</translation>
-<translation id="5500168250243071806">जब आप साइन इन होंगे, तब हो सकता है कि <ph name="BEGIN_LINK_SEARCH" />खोज इतिहास<ph name="END_LINK_SEARCH" /> और <ph name="BEGIN_LINK_GOOGLE" />अन्य तरह की गतिविधि<ph name="END_LINK_GOOGLE" /> आपके Google खाते में सेव हो जाए. आप किसी भी समय उन्हें मिटा सकते हैं.</translation>
+<translation id="5500168250243071806">जब आप साइन इन होंगे, तब हो सकता है कि <ph name="BEGIN_LINK_SEARCH" />खोज इतिहास<ph name="END_LINK_SEARCH" /> और <ph name="BEGIN_LINK_GOOGLE" />अन्य तरह की गतिविधियां<ph name="END_LINK_GOOGLE" /> आपके Google खाते में सेव हो जाएं. आप किसी भी समय उन्हें मिटा सकते हैं.</translation>
 <translation id="5500709606820808700">आज सुरक्षा जांच हुई है</translation>
 <translation id="5501322521654567960">बाईं ओर अलाइन साइड पैनल</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}one{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}other{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}}</translation>
@@ -4285,7 +4285,7 @@
 <translation id="5585912436068747822">फ़ॉर्मेटिंग विफल रही</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">ऐप्लिकेशन लोड हो रहे हैं...</translation>
-<translation id="5590265327628802792">ऐसा लगता है कि <ph name="SUPERVISED_USER_NAME" /> ने पहले से ही किसी अन्य डिवाइस पर Google Assistant सेट अप कर लिया है. स्क्रीन कॉन्टेक्स्ट चालू करके, <ph name="SUPERVISED_USER_NAME" /> Assistant से ज़्यादा फ़ायदे पा सकते हैं.</translation>
+<translation id="5590265327628802792">ऐसा लगता है कि <ph name="SUPERVISED_USER_NAME" /> ने पहले से ही किसी अन्य डिवाइस पर Google Assistant सेट अप कर लिया है. 'स्क्रीन पर दिखने वाली सामग्री इस्तेमाल करें' चालू करके, <ph name="SUPERVISED_USER_NAME" /> Assistant से ज़्यादा फ़ायदे पा सकते हैं.</translation>
 <translation id="5592595402373377407">अभी काफ़ी डेटा उपलब्ध नहीं है.</translation>
 <translation id="5595485650161345191">पते में बदलाव करें</translation>
 <translation id="5596627076506792578">ज़्यादा विकल्प</translation>
@@ -4915,7 +4915,7 @@
 <translation id="629730747756840877">खाता</translation>
 <translation id="6298800237463568825">वॉइस मैच की सुविधा से Google Assistant, <ph name="DEVICE_TYPE" /> पर आपकी आवाज़ पहचान पाती है. साथ ही, वह आपकी और दूसरे लोगों की आवाज़ में अंतर कर पाती है.
     <ph name="BR" />
-    <ph name="BEGIN_BOLD" />याद रखें:<ph name="END_BOLD" /> किसी मिलती-जुलती आवाज़ या रिकॉर्डिंग से भी आपके निजी खोज नतीजे ऐक्सेस किए जा सकते हैं. आप बाद में Assistant की सेटिंग में जाकर, वॉइस मैच की सुविधा को बंद करके, इसको दी गई अनुमति हटा सकते हैं.</translation>
+    <ph name="BEGIN_BOLD" />याद रखें:<ph name="END_BOLD" /> किसी मिलती-जुलती आवाज़ या रिकॉर्डिंग से भी आपके निजी खोज नतीजे ऐक्सेस किए जा सकते हैं. आप जब चाहें, Assistant की सेटिंग में वॉइस मैच की सुविधा बंद करके, वॉइस मैच की अनुमति हटा सकते हैं.</translation>
 <translation id="6298962879096096191">Android ऐप्लिकेशन इंस्टॉल करने के लिए Google Play का उपयोग करें</translation>
 <translation id="6300177430812514606">डेटा भेजने या पाने की अनुमति नहीं है</translation>
 <translation id="630065524203833229">&amp;बाहर निकलें</translation>
@@ -6150,7 +6150,7 @@
 <translation id="7652954539215530680">एक पिन बनाएं</translation>
 <translation id="7654941827281939388">यह खाता पहले से ही इस कंप्‍यूटर पर उपयोग किया जा रहा है.</translation>
 <translation id="7655411746932645568">साइटें, सीरियल पोर्ट से कनेक्ट करने के लिए पूछ सकती हैं</translation>
-<translation id="7657218410916651670">जब आप साइन इन होंगे, तब हो सकता है कि <ph name="BEGIN_LINK_GOOGLE" />अन्य तरह की गतिविधि<ph name="END_LINK_GOOGLE" /> आपके Google खाते में सेव हो जाए. आप किसी भी समय उन्हें मिटा सकते हैं.</translation>
+<translation id="7657218410916651670">जब आप साइन इन रहते हैं, तब हो सकता है कि <ph name="BEGIN_LINK_GOOGLE" />अन्य तरह की गतिविधियां<ph name="END_LINK_GOOGLE" /> आपके Google खाते में सेव हो जाएं. आप किसी भी समय उन्हें मिटा सकते हैं.</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7659154729610375585">क्या आपको फिर भी गुप्त मोड से बाहर निकलना है?</translation>
 <translation id="7659297516559011665">सिर्फ़ इस डिवाइस में सेव किए गए पासवर्ड</translation>
@@ -6232,7 +6232,7 @@
 <translation id="7730683939467795481">"<ph name="EXTENSION_NAME" />" एक्सटेंशन ने इस पेज में बदलाव किया है</translation>
 <translation id="7734486794139738745">मैं सिर्फ़ एक स्विच इस्तेमाल करता/करती हूं</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" से जोड़ा जा रहा है ...</translation>
-<translation id="7737846262459425222">आप जब चाहें, सेटिंग &gt; Google Assistant &gt; स्क्रीन कॉन्टेक्स्ट में जाकर, बदलाव कर सकते हैं.</translation>
+<translation id="7737846262459425222">आप जब चाहें, सेटिंग &gt; Google Assistant &gt; स्क्रीन पर दिखने वाली सामग्री इस्तेमाल करें, में जाकर बदलाव कर सकते हैं.</translation>
 <translation id="7737948071472253612">कैमरा इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="7740996059027112821">मानक</translation>
 <translation id="7741307896921365578">अपनी रीडिंग लिस्ट और Bookmarks को ऐक्सेस करने के उपयोगी और स्थायी तरीके के लिए, ब्राउज़र-लेवल के साइड पैनल को चालू करें.</translation>

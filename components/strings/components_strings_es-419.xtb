@@ -136,7 +136,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1408787208417187241">Grapas triples en la parte superior</translation>
 <translation id="1413809658975081374">Error de privacidad</translation>
-<translation id="1422930527989633628">Permitir que se solicite permiso para establecer conexión con dispositivos Bluetooth cercanos</translation>
+<translation id="1422930527989633628">Puede solicitar permiso para establecer conexión con dispositivos Bluetooth cercanos</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="1428146450423315676">Apilador 7</translation>
 <translation id="1430915738399379752">Imprimir</translation>
@@ -471,7 +471,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2609632851001447353">Variaciones</translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2625385379895617796">El reloj está adelantado</translation>
-<translation id="262745152991669301">Permitir se solicite permiso para establecer conexión con dispositivos USB</translation>
+<translation id="262745152991669301">Puede solicitar permiso para establecer conexión con dispositivos USB</translation>
 <translation id="2629325967560697240">Para acceder al nivel más alto de seguridad de Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />activa la protección mejorada<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="2634124572758952069">No se pudo encontrar la dirección IP del servidor de <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">Estado:</translation>
@@ -1767,7 +1767,7 @@ Detalles adicionales:
 <translation id="733354035281974745">Se anuló la cuenta local del dispositivo</translation>
 <translation id="7333654844024768166">Ingresaste tu contraseña en un sitio engañoso. Chromium te recomienda cambiar esta contraseña ahora en <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> y otros sitios donde la uses.</translation>
 <translation id="7334320624316649418">&amp;Rehacer Reorganizar</translation>
-<translation id="7335157162773372339">Permitir que se solicite permiso para usar la cámara</translation>
+<translation id="7335157162773372339">Puede solicitar permiso para usar la cámara</translation>
 <translation id="7337248890521463931">Mostrar más líneas</translation>
 <translation id="7337706099755338005">No está disponible para tu plataforma.</translation>
 <translation id="733923710415886693">El certificado del servidor no se divulgó mediante el Certificado de transparencia.</translation>
