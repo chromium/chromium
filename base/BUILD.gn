@@ -1646,6 +1646,7 @@ component("base") {
       "fuchsia/koid.h",
       "fuchsia/process_context.cc",
       "fuchsia/process_context.h",
+      "fuchsia/scheduler.h",
       "fuchsia/scoped_fx_logger.cc",
       "fuchsia/scoped_fx_logger.h",
       "fuchsia/scoped_service_binding.h",
@@ -1715,6 +1716,7 @@ component("base") {
     ]
 
     deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
       "//third_party/fuchsia-sdk/sdk/pkg/async-default",
       "//third_party/fuchsia-sdk/sdk/pkg/async-loop-cpp",

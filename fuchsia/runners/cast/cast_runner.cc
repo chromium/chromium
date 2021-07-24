@@ -42,6 +42,7 @@ static constexpr const char* kServices[] = {
     "fuchsia.input.virtualkeyboard.ControllerCreator",
     "fuchsia.intl.PropertyProvider",
     "fuchsia.logger.LogSink",
+    "fuchsia.media.ProfileProvider",
     "fuchsia.media.SessionAudioConsumerFactory",
     "fuchsia.media.drm.PlayReady",
     "fuchsia.media.drm.Widevine",

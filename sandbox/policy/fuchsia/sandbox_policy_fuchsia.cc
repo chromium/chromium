@@ -13,6 +13,7 @@
 #include <fuchsia/fonts/cpp/fidl.h>
 #include <fuchsia/intl/cpp/fidl.h>
 #include <fuchsia/logger/cpp/fidl.h>
+#include <fuchsia/media/cpp/fidl.h>
 #include <fuchsia/mediacodec/cpp/fidl.h>
 #include <fuchsia/memorypressure/cpp/fidl.h>
 #include <fuchsia/net/cpp/fidl.h>
@@ -66,6 +67,8 @@ struct SandboxConfig {
 
 constexpr SandboxConfig kGpuConfig = {
     base::make_span((const char* const[]){
+        // TODO(crbug.com/1224707): Use the fuchsia.scheduler API instead.
+        fuchsia::media::ProfileProvider::Name_,
         fuchsia::sysmem::Allocator::Name_,
         "fuchsia.vulkan.loader.Loader",
         fuchsia::ui::scenic::Scenic::Name_,
@@ -86,6 +89,8 @@ constexpr SandboxConfig kNetworkConfig = {
 constexpr SandboxConfig kRendererConfig = {
     base::make_span((const char* const[]){
         fuchsia::fonts::Provider::Name_,
+        // TODO(crbug.com/1224707): Use the fuchsia.scheduler API instead.
+        fuchsia::media::ProfileProvider::Name_,
         fuchsia::mediacodec::CodecFactory::Name_,
         fuchsia::memorypressure::Provider::Name_,
         fuchsia::sysmem::Allocator::Name_,

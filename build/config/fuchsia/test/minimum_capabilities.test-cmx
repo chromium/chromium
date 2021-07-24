@@ -21,6 +21,7 @@
     "services": [
       "fuchsia.intl.PropertyProvider",
       "fuchsia.logger.LogSink",
+      "fuchsia.media.ProfileProvider",
       "fuchsia.process.Launcher",
       "fuchsia.sys.Launcher",
       "fuchsia.sys.Loader"

@@ -225,7 +225,7 @@ class BASE_EXPORT PlatformThread {
   // A thread may not be able to raise its priority back up after lowering it if
   // the process does not have a proper permission, e.g. CAP_SYS_NICE on Linux.
   // A thread may not be able to lower its priority back down after raising it
-  // to REALTIME_AUDIO.
+  // to DISPLAY or REALTIME_AUDIO.
   //
   // This function must not be called from the main thread on Mac. This is to
   // avoid performance regressions (https://crbug.com/601270).
