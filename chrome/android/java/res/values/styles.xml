@@ -311,6 +311,7 @@
     <style name="NtpHeaderTabLayoutStyle" parent="TabLayoutStyle">
         <item name="tabTextAppearance">@style/TextAppearance.TextAccentMediumThick</item>
         <item name="tabGravity">center</item>
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
     <style name="TextAppearance.TabLayout" parent="TextAppearance.TextAccentMediumThick">
