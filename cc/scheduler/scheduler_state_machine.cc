@@ -262,8 +262,6 @@ void SchedulerStateMachine::AsProtozeroInto(
       critical_begin_main_frame_to_activate_is_fast_);
   minor_state->set_main_thread_missed_last_deadline(
       main_thread_missed_last_deadline_);
-  minor_state->set_skip_next_begin_main_frame_to_reduce_latency(
-      skip_next_begin_main_frame_to_reduce_latency_);
   minor_state->set_video_needs_begin_frames(video_needs_begin_frames_);
   minor_state->set_defer_begin_main_frame(defer_begin_main_frame_);
   minor_state->set_last_commit_had_no_updates(last_commit_had_no_updates_);
@@ -597,9 +595,6 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
       begin_impl_frame_state_ == BeginImplFrameState::INSIDE_DEADLINE &&
       did_submit_in_last_frame_;
   if (IsDrawThrottled() && !just_submitted_in_deadline)
-    return false;
-
-  if (skip_next_begin_main_frame_to_reduce_latency_)
     return false;
 
   return true;
@@ -1041,13 +1036,6 @@ void SchedulerStateMachine::WillInvalidateLayerTreeFrameSink() {
       current_frame_number_;
 }
 
-void SchedulerStateMachine::SetSkipNextBeginMainFrameToReduceLatency(
-    bool skip) {
-  TRACE_EVENT_INSTANT0("cc", "Scheduler: SkipNextBeginMainFrameToReduceLatency",
-                       TRACE_EVENT_SCOPE_THREAD);
-  skip_next_begin_main_frame_to_reduce_latency_ = skip;
-}
-
 bool SchedulerStateMachine::BeginFrameNeededForVideo() const {
   return video_needs_begin_frames_;
 }
@@ -1192,8 +1180,6 @@ void SchedulerStateMachine::OnBeginImplFrameIdle() {
   // This also allows synchronous compositor to do one PrepareTiles per draw.
   // This is same as the old prepare tiles funnel behavior.
   did_prepare_tiles_ = false;
-
-  skip_next_begin_main_frame_to_reduce_latency_ = false;
 
   // If a new or undrawn active tree is pending after the deadline,
   // then the main thread is in a high latency mode.
@@ -1357,14 +1343,6 @@ void SchedulerStateMachine::SetSkipDraw(bool skip_draw) {
 
 void SchedulerStateMachine::SetNeedsRedraw() {
   needs_redraw_ = true;
-}
-
-bool SchedulerStateMachine::OnlyImplSideUpdatesExpected() const {
-  bool has_impl_updates = needs_redraw_ || needs_one_begin_impl_frame_;
-  bool main_updates_expected =
-      needs_begin_main_frame_ ||
-      begin_main_frame_state_ != BeginMainFrameState::IDLE || has_pending_tree_;
-  return has_impl_updates && !main_updates_expected;
 }
 
 void SchedulerStateMachine::SetNeedsPrepareTiles() {

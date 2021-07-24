@@ -284,7 +284,6 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   bool observing_begin_frame_source_ = false;
 
   bool skipped_last_frame_missed_exceeded_deadline_ = false;
-  bool skipped_last_frame_to_reduce_latency_ = false;
 
   std::unique_ptr<CompositorTimingHistory> compositor_timing_history_;
 
@@ -384,14 +383,6 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   void DrawForced();
   void ProcessScheduledActions();
   void UpdateCompositorTimingHistoryRecordingEnabled();
-  bool ShouldRecoverMainLatency(const viz::BeginFrameArgs& args,
-                                bool can_activate_before_deadline) const;
-  bool ShouldRecoverImplLatency(const viz::BeginFrameArgs& args,
-                                bool can_activate_before_deadline) const;
-  bool CanBeginMainFrameAndActivateBeforeDeadline(
-      const viz::BeginFrameArgs& args,
-      base::TimeDelta bmf_to_activate_estimate,
-      base::TimeTicks now) const;
   void AdvanceCommitStateIfPossible();
 
   void BeginImplFrameWithDeadline(const viz::BeginFrameArgs& args);

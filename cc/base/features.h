@@ -15,9 +15,6 @@ CC_BASE_EXPORT extern const base::Feature kAnimatedImageResume;
 CC_BASE_EXPORT extern const base::Feature kImpulseScrollAnimations;
 CC_BASE_EXPORT extern const base::Feature kSynchronizedScrolling;
 
-CC_BASE_EXPORT bool IsImplLatencyRecoveryEnabled();
-CC_BASE_EXPORT bool IsMainLatencyRecoveryEnabled();
-
 // When enabled, the double tap to zoom will be disabled when the viewport
 // meta tag is properly set for mobile using content=width=device-width
 // or content=initial-scale=1.0

@@ -514,16 +514,8 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.disallow_non_exact_resource_reuse = true;
 #endif
 
-  settings.enable_impl_latency_recovery =
-      ::features::IsImplLatencyRecoveryEnabled();
-  settings.enable_main_latency_recovery =
-      ::features::IsMainLatencyRecoveryEnabled();
-
-  if (cmd.HasSwitch(::switches::kRunAllCompositorStagesBeforeDraw)) {
-    settings.wait_for_all_pipeline_stages_before_draw = true;
-    settings.enable_impl_latency_recovery = false;
-    settings.enable_main_latency_recovery = false;
-  }
+  settings.wait_for_all_pipeline_stages_before_draw =
+      cmd.HasSwitch(::switches::kRunAllCompositorStagesBeforeDraw);
 
   settings.enable_image_animation_resync =
       !cmd.HasSwitch(switches::kDisableImageAnimationResync);

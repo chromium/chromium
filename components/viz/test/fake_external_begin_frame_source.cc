@@ -69,10 +69,6 @@ void FakeExternalBeginFrameSource::RemoveObserver(BeginFrameObserver* obs) {
 
 void FakeExternalBeginFrameSource::DidFinishFrame(BeginFrameObserver* obs) {}
 
-bool FakeExternalBeginFrameSource::IsThrottled() const {
-  return true;
-}
-
 BeginFrameArgs FakeExternalBeginFrameSource::CreateBeginFrameArgs(
     BeginFrameArgs::CreationLocation location,
     const base::TickClock* now_src) {

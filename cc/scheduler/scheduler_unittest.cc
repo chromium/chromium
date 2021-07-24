@@ -414,9 +414,6 @@ class SchedulerTest : public testing::Test {
     client_->set_scheduler(scheduler_.get());
     scheduler_->SetBeginFrameSource(frame_source);
 
-    // Use large estimates by default to avoid latency recovery in most tests.
-    fake_compositor_timing_history_->SetAllEstimatesTo(kSlowDuration);
-
     return scheduler_.get();
   }
 
@@ -581,8 +578,6 @@ class SchedulerTest : public testing::Test {
 
   void AdvanceAndMissOneFrame();
   void CheckMainFrameNotSkippedAfterLateCommit();
-  void ImplFrameSkippedAfterLateAck(bool is_already_receiving_begin_frames,
-                                    bool receive_ack_before_deadline);
   void ImplFrameNotSkippedAfterLateAck();
   void BeginFramesNotFromClient(BeginFrameSourceType bfs_type);
   void BeginFramesNotFromClient_IsDrawThrottled(BeginFrameSourceType bfs_type);
@@ -1774,211 +1769,6 @@ TEST_F(SchedulerTest, MainFrameNotSkippedWhenNoTimingHistory) {
   EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
 }
 
-void SchedulerTest::ImplFrameSkippedAfterLateAck(
-    bool is_already_receiving_begin_frames,
-    bool receive_ack_before_deadline) {
-  // To get into a high latency state, this test disables automatic swap acks.
-  client_->SetAutomaticSubmitCompositorFrameAck(false);
-
-  // Draw and swap for first BeginFrame
-  client_->Reset();
-  scheduler_->SetNeedsBeginMainFrame();
-  scheduler_->SetNeedsRedraw();
-  EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-  SendNextBeginFrame();
-  if (is_already_receiving_begin_frames) {
-    EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
-  } else {
-    EXPECT_ACTIONS("AddObserver(this)", "WillBeginImplFrame",
-                   "ScheduledActionSendBeginMainFrame");
-  }
-
-  client_->Reset();
-  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
-  scheduler_->NotifyReadyToCommit(nullptr);
-  scheduler_->NotifyReadyToActivate();
-  EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
-  EXPECT_ACTIONS("ScheduledActionCommit", "ScheduledActionActivateSyncTree",
-                 "ScheduledActionDrawIfPossible");
-
-  // Verify we skip every other frame if the swap ack consistently
-  // comes back late.
-  for (int i = 0; i < 10; i++) {
-    // Not calling scheduler_->DidReceiveCompositorFrameAck() until after next
-    // BeginImplFrame puts the impl thread in high latency mode.
-    client_->Reset();
-    scheduler_->SetNeedsBeginMainFrame();
-    scheduler_->SetNeedsRedraw();
-    EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-    SendNextBeginFrame();
-    // Verify that we skip the BeginImplFrame
-    EXPECT_NO_ACTION();
-    EXPECT_FALSE(client_->IsInsideBeginImplFrame());
-    EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-    EXPECT_EQ(FrameSkippedReason::kRecoverLatency,
-              client_->last_frame_skipped_reason());
-
-    // Verify that we do not perform any actions after we are no longer
-    // swap throttled.
-    client_->Reset();
-    if (receive_ack_before_deadline) {
-      // It shouldn't matter if the swap ack comes back before the deadline...
-      scheduler_->DidReceiveCompositorFrameAck();
-      task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
-    } else {
-      // ... or after the deadline.
-      task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
-      scheduler_->DidReceiveCompositorFrameAck();
-    }
-    EXPECT_NO_ACTION();
-
-    // Verify that we start the next BeginImplFrame and continue normally
-    // after having just skipped a BeginImplFrame.
-    client_->Reset();
-    EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-    SendNextBeginFrame();
-    EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
-
-    client_->Reset();
-    scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
-    scheduler_->NotifyReadyToCommit(nullptr);
-    scheduler_->NotifyReadyToActivate();
-    task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
-    EXPECT_ACTIONS("ScheduledActionCommit", "ScheduledActionActivateSyncTree",
-                   "ScheduledActionDrawIfPossible");
-  }
-}
-
-TEST_F(SchedulerTest,
-       ImplFrameSkippedAfterLateAck_FastEstimates_SubmitAckThenDeadline) {
-  // Compositor thread latency recovery should be enabled for this test.
-  scheduler_settings_.enable_impl_latency_recovery = true;
-  SetUpScheduler(EXTERNAL_BFS);
-  fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
-
-  bool is_already_receiving_begin_frames = false;
-  bool receive_ack_before_deadline = true;
-  EXPECT_SCOPED(ImplFrameSkippedAfterLateAck(is_already_receiving_begin_frames,
-                                             receive_ack_before_deadline));
-}
-
-TEST_F(SchedulerTest,
-       ImplFrameSkippedAfterLateAck_FastEstimates_DeadlineThenSubmitAck) {
-  // Compositor thread latency recovery should be enabled for this test.
-  scheduler_settings_.enable_impl_latency_recovery = true;
-  SetUpScheduler(EXTERNAL_BFS);
-  fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
-
-  bool is_already_receiving_begin_frames = false;
-  bool receive_ack_before_deadline = false;
-  EXPECT_SCOPED(ImplFrameSkippedAfterLateAck(is_already_receiving_begin_frames,
-                                             receive_ack_before_deadline));
-}
-
-TEST_F(SchedulerTest,
-       ImplFrameSkippedAfterLateAck_LongMainFrameQueueDurationNotCritical) {
-  // Compositor thread latency recovery should be enabled for this test.
-  scheduler_settings_.enable_impl_latency_recovery = true;
-  SetUpScheduler(EXTERNAL_BFS);
-  fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
-  fake_compositor_timing_history_
-      ->SetBeginMainFrameQueueDurationNotCriticalEstimate(kSlowDuration);
-
-  bool is_already_receiving_begin_frames = false;
-  bool receive_ack_before_deadline = false;
-  EXPECT_SCOPED(ImplFrameSkippedAfterLateAck(is_already_receiving_begin_frames,
-                                             receive_ack_before_deadline));
-}
-
-TEST_F(SchedulerTest, ImplFrameSkippedAfterLateAck_ImplLatencyTakesPriority) {
-  // Compositor thread latency recovery should be enabled for this test.
-  scheduler_settings_.enable_impl_latency_recovery = true;
-  SetUpScheduler(EXTERNAL_BFS);
-
-  // Even if every estimate related to the main thread is slow, we should
-  // still expect to recover impl thread latency if the draw is fast and we
-  // are in impl latency takes priority.
-  client_->Reset();
-  scheduler_->SetTreePrioritiesAndScrollState(
-      SMOOTHNESS_TAKES_PRIORITY,
-      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER);
-  fake_compositor_timing_history_->SetAllEstimatesTo(kSlowDuration);
-  fake_compositor_timing_history_->SetDrawDurationEstimate(kFastDuration);
-  EXPECT_ACTIONS("AddObserver(this)");
-
-  bool is_already_receiving_begin_frames = true;
-  bool receive_ack_before_deadline = false;
-  EXPECT_SCOPED(ImplFrameSkippedAfterLateAck(is_already_receiving_begin_frames,
-                                             receive_ack_before_deadline));
-}
-
-TEST_F(SchedulerTest,
-       ImplFrameSkippedAfterLateAck_OnlyImplSideUpdatesExpected) {
-  // Compositor thread latency recovery should be enabled for this test.
-  scheduler_settings_.enable_impl_latency_recovery = true;
-  // This tests that we recover impl thread latency when there are no commits.
-  SetUpScheduler(EXTERNAL_BFS);
-
-  // To get into a high latency state, this test disables automatic swap acks.
-  client_->SetAutomaticSubmitCompositorFrameAck(false);
-
-  // Even if every estimate related to the main thread is slow, we should
-  // still expect to recover impl thread latency if there are no commits from
-  // the main thread.
-  fake_compositor_timing_history_->SetAllEstimatesTo(kSlowDuration);
-  fake_compositor_timing_history_->SetDrawDurationEstimate(kFastDuration);
-
-  // Draw and swap for first BeginFrame
-  client_->Reset();
-  scheduler_->SetNeedsRedraw();
-  EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-  SendNextBeginFrame();
-  EXPECT_ACTIONS("AddObserver(this)", "WillBeginImplFrame");
-
-  client_->Reset();
-  EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
-  EXPECT_ACTIONS("ScheduledActionDrawIfPossible");
-
-  // Verify we skip every other frame if the swap ack consistently
-  // comes back late.
-  for (int i = 0; i < 10; i++) {
-    // Not calling scheduler_->DidReceiveCompositorFrameAck() until after next
-    // BeginImplFrame puts the impl thread in high latency mode.
-    client_->Reset();
-    scheduler_->SetNeedsRedraw();
-    EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-    SendNextBeginFrame();
-    // Verify that we skip the BeginImplFrame
-    EXPECT_NO_ACTION();
-    EXPECT_FALSE(client_->IsInsideBeginImplFrame());
-    EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-    EXPECT_EQ(FrameSkippedReason::kRecoverLatency,
-              client_->last_frame_skipped_reason());
-
-    // Verify that we do not perform any actions after we are no longer
-    // swap throttled.
-    client_->Reset();
-    scheduler_->DidReceiveCompositorFrameAck();
-    EXPECT_NO_ACTION();
-
-    // Verify that we start the next BeginImplFrame and continue normally
-    // after having just skipped a BeginImplFrame.
-    client_->Reset();
-    EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-    SendNextBeginFrame();
-    EXPECT_ACTIONS("WillBeginImplFrame");
-
-    client_->Reset();
-    // Deadline should be immediate.
-    EXPECT_TRUE(client_->IsInsideBeginImplFrame());
-    task_runner_->RunUntilTime(task_runner_->NowTicks());
-    EXPECT_FALSE(client_->IsInsideBeginImplFrame());
-    EXPECT_ACTIONS("ScheduledActionDrawIfPossible");
-  }
-}
-
 void SchedulerTest::ImplFrameNotSkippedAfterLateAck() {
   // To get into a high latency state, this test disables automatic swap acks.
   client_->SetAutomaticSubmitCompositorFrameAck(false);
@@ -2068,123 +1858,6 @@ TEST_F(SchedulerTest, ImplFrameNotSkippedAfterLateAck_DrawEstimateTooLong) {
   fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
   fake_compositor_timing_history_->SetDrawDurationEstimate(kSlowDuration);
   EXPECT_SCOPED(ImplFrameNotSkippedAfterLateAck());
-}
-
-TEST_F(SchedulerTest, MainFrameThenImplFrameSkippedAfterLateCommitAndLateAck) {
-  // Latency recovery should be enabled for this test.
-  scheduler_settings_.enable_impl_latency_recovery = true;
-  scheduler_settings_.enable_main_latency_recovery = true;
-  // Set up client with custom estimates.
-  // This test starts off with expensive estimates to prevent latency recovery
-  // initially, then lowers the estimates to enable it once both the main
-  // and impl threads are in a high latency mode.
-  SetUpScheduler(EXTERNAL_BFS);
-  fake_compositor_timing_history_->SetAllEstimatesTo(kSlowDuration);
-
-  // To get into a high latency state, this test disables automatic swap acks.
-  client_->SetAutomaticSubmitCompositorFrameAck(false);
-
-  // Impl thread hits deadline before commit finishes to make
-  // MainThreadMissedLastDeadline true
-  client_->Reset();
-  scheduler_->SetNeedsBeginMainFrame();
-  EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-  EXPECT_SCOPED(AdvanceFrame());
-  EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
-  EXPECT_TRUE(scheduler_->MainThreadMissedLastDeadline());
-  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
-  scheduler_->NotifyReadyToCommit(nullptr);
-  scheduler_->NotifyReadyToActivate();
-  EXPECT_TRUE(scheduler_->MainThreadMissedLastDeadline());
-
-  EXPECT_ACTIONS("AddObserver(this)", "WillBeginImplFrame",
-                 "ScheduledActionSendBeginMainFrame", "ScheduledActionCommit",
-                 "ScheduledActionActivateSyncTree");
-
-  // Draw and swap for first commit, start second commit.
-  client_->Reset();
-  scheduler_->SetNeedsBeginMainFrame();
-  EXPECT_TRUE(scheduler_->MainThreadMissedLastDeadline());
-  EXPECT_SCOPED(AdvanceFrame());
-  EXPECT_TRUE(scheduler_->MainThreadMissedLastDeadline());
-  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
-  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
-  scheduler_->NotifyReadyToCommit(nullptr);
-  scheduler_->NotifyReadyToActivate();
-
-  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame",
-                 "ScheduledActionDrawIfPossible", "ScheduledActionCommit",
-                 "ScheduledActionActivateSyncTree");
-
-  // Don't call scheduler_->DidReceiveCompositorFrameAck() until after next
-  // frame
-  // to put the impl thread in a high latency mode.
-  client_->Reset();
-  scheduler_->SetNeedsBeginMainFrame();
-  EXPECT_TRUE(scheduler_->MainThreadMissedLastDeadline());
-  EXPECT_SCOPED(AdvanceFrame());
-  EXPECT_TRUE(scheduler_->MainThreadMissedLastDeadline());
-  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
-
-  EXPECT_ACTIONS("WillBeginImplFrame");
-  // Note: BeginMainFrame and swap are skipped here because of
-  // swap ack backpressure, not because of latency recovery.
-  EXPECT_FALSE(client_->HasAction("ScheduledActionSendBeginMainFrame"));
-  EXPECT_FALSE(client_->HasAction("ScheduledActionDrawIfPossible"));
-  EXPECT_TRUE(scheduler_->MainThreadMissedLastDeadline());
-
-  // Lower estimates so that the scheduler will attempt latency recovery.
-  fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
-
-  // Now that both threads are in a high latency mode, make sure we
-  // skip the BeginMainFrame, then the BeginImplFrame, but not both
-  // at the same time.
-
-  // Verify we skip BeginMainFrame first.
-  client_->Reset();
-  // Previous commit request is still outstanding.
-  EXPECT_TRUE(scheduler_->NeedsBeginMainFrame());
-  EXPECT_TRUE(scheduler_->IsDrawThrottled());
-  SendNextBeginFrame();
-  EXPECT_TRUE(scheduler_->MainThreadMissedLastDeadline());
-  scheduler_->DidReceiveCompositorFrameAck();
-  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
-
-  EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionDrawIfPossible");
-
-  // Verify we skip the BeginImplFrame second.
-  client_->Reset();
-  // Previous commit request is still outstanding.
-  EXPECT_TRUE(scheduler_->NeedsBeginMainFrame());
-  EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-  SendNextBeginFrame();
-  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
-  EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-  scheduler_->DidReceiveCompositorFrameAck();
-  EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-
-  EXPECT_NO_ACTION();
-
-  // Then verify we operate in a low latency mode.
-  client_->Reset();
-  // Previous commit request is still outstanding.
-  EXPECT_TRUE(scheduler_->NeedsBeginMainFrame());
-  EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-  SendNextBeginFrame();
-  EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
-  scheduler_->NotifyReadyToCommit(nullptr);
-  scheduler_->NotifyReadyToActivate();
-  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
-  EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-  scheduler_->DidReceiveCompositorFrameAck();
-  EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
-
-  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame",
-                 "ScheduledActionCommit", "ScheduledActionActivateSyncTree",
-                 "ScheduledActionDrawIfPossible");
 }
 
 void SchedulerTest::BeginFramesNotFromClient(BeginFrameSourceType bfs_type) {
@@ -3918,55 +3591,6 @@ TEST_F(SchedulerTest, BeginFrameAckForFinishedImplFrame) {
             client_->last_frame_skipped_reason());
 }
 
-TEST_F(SchedulerTest, BeginFrameAckForSkippedImplFrame) {
-  // Compositor thread latency recovery should be enabled for this test.
-  scheduler_settings_.enable_impl_latency_recovery = true;
-
-  SetUpScheduler(EXTERNAL_BFS);
-
-  // To get into a high latency state, this test disables automatic swap acks.
-  client_->SetAutomaticSubmitCompositorFrameAck(false);
-  fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
-
-  // Run a successful redraw that submits a compositor frame but doesn't receive
-  // a swap ack. Verify that a viz::BeginFrameAck is sent for it.
-  scheduler_->SetNeedsRedraw();
-  client_->Reset();
-
-  viz::BeginFrameArgs args = SendNextBeginFrame();
-  EXPECT_ACTIONS("WillBeginImplFrame");
-  EXPECT_TRUE(client_->IsInsideBeginImplFrame());
-  EXPECT_TRUE(scheduler_->begin_frames_expected());
-  client_->Reset();
-
-  task_runner_->RunPendingTasks();  // Run posted deadline.
-  EXPECT_ACTIONS("ScheduledActionDrawIfPossible");
-  EXPECT_FALSE(client_->IsInsideBeginImplFrame());
-  EXPECT_TRUE(scheduler_->begin_frames_expected());
-
-  // Successful draw caused damage.
-  bool has_damage = true;
-  EXPECT_EQ(viz::BeginFrameAck(args, has_damage),
-            client_->last_begin_frame_ack());
-  client_->Reset();
-
-  // Request another redraw that will be skipped because the swap ack is still
-  // missing. Verify that a new viz::BeginFrameAck is sent.
-  scheduler_->SetNeedsRedraw();
-  client_->Reset();
-
-  args = SendNextBeginFrame();
-  EXPECT_NO_ACTION();
-  EXPECT_FALSE(client_->IsInsideBeginImplFrame());
-  EXPECT_TRUE(scheduler_->begin_frames_expected());
-
-  // Skipped draw: no damage.
-  has_damage = false;
-  EXPECT_EQ(viz::BeginFrameAck(args, has_damage),
-            client_->last_begin_frame_ack());
-  client_->Reset();
-}
-
 TEST_F(SchedulerTest, BeginFrameAckForBeginFrameBeforeLastDeadline) {
   SetUpScheduler(EXTERNAL_BFS);
 
@@ -4326,37 +3950,6 @@ TEST_F(SchedulerTest, SynchronousCompositorImplSideInvalidation) {
   EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
 }
 
-TEST_F(SchedulerTest, DontSkipMainFrameAfterClearingHistory) {
-  // Set up a fast estimate for the main frame and make it miss the deadline.
-  scheduler_settings_.main_frame_before_activation_enabled = true;
-  // Compositor thread latency recovery should be enabled for this test.
-  scheduler_settings_.enable_main_latency_recovery = true;
-  SetUpScheduler(EXTERNAL_BFS);
-  fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
-  client_->Reset();
-  scheduler_->SetNeedsBeginMainFrame();
-  EXPECT_SCOPED(AdvanceFrame());
-  task_runner_->RunTasksWhile(client_->InsideBeginImplFrame(true));
-  EXPECT_ACTIONS("AddObserver(this)", "WillBeginImplFrame",
-                 "ScheduledActionSendBeginMainFrame");
-
-  // Now commit during the second frame, since the main thread missed the last
-  // deadline but we have a fast estimate, we would want to skip the next main
-  // frame.
-  client_->Reset();
-  EXPECT_SCOPED(AdvanceFrame());
-  scheduler_->SetNeedsBeginMainFrame();
-  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
-  scheduler_->NotifyReadyToCommit(nullptr);
-  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionCommit");
-
-  // But during the commit, the history is cleared. So the main frame should not
-  // be skipped.
-  client_->Reset();
-  scheduler_->ClearHistory();
-  EXPECT_ACTIONS("ScheduledActionSendBeginMainFrame");
-}
-
 TEST_F(SchedulerTest, NoInvalidationForAnimateOnlyFrames) {
   SetUpScheduler(EXTERNAL_BFS);
   fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
@@ -4403,8 +3996,6 @@ TEST_F(SchedulerTest, SendEarlyDidNotProduceFrameIfIdle) {
 
 TEST_F(SchedulerTest,
        HighImplLatencyModePrioritizesMainFramesOverImplInvalidation) {
-  scheduler_settings_.enable_main_latency_recovery = false;
-  scheduler_settings_.enable_impl_latency_recovery = false;
   SetUpScheduler(EXTERNAL_BFS);
   fake_compositor_timing_history_->SetAllEstimatesTo(kFastDuration);
 

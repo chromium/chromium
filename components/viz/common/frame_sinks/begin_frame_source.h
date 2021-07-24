@@ -191,10 +191,6 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   virtual void AddObserver(BeginFrameObserver* obs) = 0;
   virtual void RemoveObserver(BeginFrameObserver* obs) = 0;
 
-  // Returns false if the begin frame source will just continue to produce
-  // begin frames without waiting.
-  virtual bool IsThrottled() const = 0;
-
   virtual void AsProtozeroInto(
       perfetto::protos::pbzero::BeginFrameSourceState* state) const;
 
@@ -242,7 +238,6 @@ class VIZ_COMMON_EXPORT StubBeginFrameSource : public BeginFrameSource {
   void DidFinishFrame(BeginFrameObserver* obs) override {}
   void AddObserver(BeginFrameObserver* obs) override {}
   void RemoveObserver(BeginFrameObserver* obs) override {}
-  bool IsThrottled() const override;
   void OnGpuNoLongerBusy() override {}
 };
 
@@ -270,7 +265,6 @@ class VIZ_COMMON_EXPORT BackToBackBeginFrameSource
   void AddObserver(BeginFrameObserver* obs) override;
   void RemoveObserver(BeginFrameObserver* obs) override;
   void DidFinishFrame(BeginFrameObserver* obs) override;
-  bool IsThrottled() const override;
   void OnGpuNoLongerBusy() override;
 
   // SyntheticBeginFrameSource implementation.
@@ -304,7 +298,6 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
   void AddObserver(BeginFrameObserver* obs) override;
   void RemoveObserver(BeginFrameObserver* obs) override;
   void DidFinishFrame(BeginFrameObserver* obs) override {}
-  bool IsThrottled() const override;
   void OnGpuNoLongerBusy() override;
 
   // SyntheticBeginFrameSource implementation.
@@ -357,7 +350,6 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
   void AddObserver(BeginFrameObserver* obs) override;
   void RemoveObserver(BeginFrameObserver* obs) override;
   void DidFinishFrame(BeginFrameObserver* obs) override {}
-  bool IsThrottled() const override;
   void AsProtozeroInto(
       perfetto::protos::pbzero::BeginFrameSourceState* state) const override;
   void OnGpuNoLongerBusy() override;

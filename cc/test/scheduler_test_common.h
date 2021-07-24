@@ -92,8 +92,6 @@ class TestScheduler : public Scheduler {
 
   TestScheduler& operator=(const TestScheduler&) = delete;
 
-  bool IsDrawThrottled() const { return state_machine_.IsDrawThrottled(); }
-
   bool NeedsBeginMainFrame() const {
     return state_machine_.needs_begin_main_frame();
   }

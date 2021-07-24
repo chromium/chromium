@@ -212,8 +212,6 @@ class CC_EXPORT SchedulerStateMachine {
     return did_invalidate_layer_tree_frame_sink_;
   }
 
-  bool OnlyImplSideUpdatesExpected() const;
-
   // Indicates that prepare-tiles is required. This guarantees another
   // PrepareTiles will occur shortly (even if no redraw is required).
   void SetNeedsPrepareTiles();
@@ -264,9 +262,6 @@ class CC_EXPORT SchedulerStateMachine {
   // Call this only in response to receiving an Action::SEND_BEGIN_MAIN_FRAME
   // from NextAction if the client rejects the BeginMainFrame message.
   void BeginMainFrameAborted(CommitEarlyOutReason reason);
-
-  // Indicates production should be skipped to recover latency.
-  void SetSkipNextBeginMainFrameToReduceLatency(bool skip);
 
   // For Android WebView, resourceless software draws are allowed even when
   // invisible.
@@ -453,7 +448,6 @@ class CC_EXPORT SchedulerStateMachine {
       ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER;
   bool critical_begin_main_frame_to_activate_is_fast_ = true;
   bool main_thread_missed_last_deadline_ = false;
-  bool skip_next_begin_main_frame_to_reduce_latency_ = false;
   bool defer_begin_main_frame_ = false;
   bool video_needs_begin_frames_ = false;
   bool last_commit_had_no_updates_ = false;

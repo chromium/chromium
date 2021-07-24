@@ -511,15 +511,6 @@ CompositorTimingHistory::BeginMainFrameQueueToActivateCriticalEstimate() const {
          BeginMainFrameQueueDurationCriticalEstimate();
 }
 
-base::TimeDelta
-CompositorTimingHistory::BeginMainFrameQueueToActivateNotCriticalEstimate()
-    const {
-  return BeginMainFrameStartToReadyToCommitDurationEstimate() +
-         CommitDurationEstimate() + CommitToReadyToActivateDurationEstimate() +
-         ActivateDurationEstimate() +
-         BeginMainFrameQueueDurationNotCriticalEstimate();
-}
-
 void CompositorTimingHistory::WillBeginImplFrame(
     const viz::BeginFrameArgs& args,
     base::TimeTicks now) {

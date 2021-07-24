@@ -1092,10 +1092,6 @@ void LayerTreeTest::RunTest(CompositorMode mode) {
     settings_.commit_to_active_tree = false;
     settings_.single_thread_proxy_scheduler = false;
   }
-  // Disable latency recovery to make the scheduler more predictable in its
-  // actions and less dependent on timings to make decisions.
-  settings_.enable_impl_latency_recovery = false;
-  settings_.enable_main_latency_recovery = false;
   InitializeSettings(&settings_);
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(

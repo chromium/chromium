@@ -554,31 +554,6 @@ void Scheduler::BeginImplFrameWithDeadline(const viz::BeginFrameArgs& args) {
   state_machine_.set_should_defer_invalidation_for_fast_main_frame(
       main_thread_response_expected_before_deadline);
 
-  base::TimeDelta bmf_to_activate_estimate = bmf_to_activate_estimate_critical;
-  if (!begin_main_frame_args_.on_critical_path) {
-    bmf_to_activate_estimate =
-        compositor_timing_history_
-            ->BeginMainFrameQueueToActivateNotCriticalEstimate();
-  }
-  bool can_activate_before_deadline =
-      CanBeginMainFrameAndActivateBeforeDeadline(adjusted_args,
-                                                 bmf_to_activate_estimate, now);
-
-  if (ShouldRecoverMainLatency(adjusted_args, can_activate_before_deadline)) {
-    TRACE_EVENT_INSTANT0("cc", "SkipBeginMainFrameToReduceLatency",
-                         TRACE_EVENT_SCOPE_THREAD);
-    state_machine_.SetSkipNextBeginMainFrameToReduceLatency(true);
-  } else if (ShouldRecoverImplLatency(adjusted_args,
-                                      can_activate_before_deadline)) {
-    TRACE_EVENT_INSTANT0("cc", "SkipBeginImplFrameToReduceLatency",
-                         TRACE_EVENT_SCOPE_THREAD);
-    skipped_last_frame_to_reduce_latency_ = true;
-    SendDidNotProduceFrame(args, FrameSkippedReason::kRecoverLatency);
-    return;
-  }
-
-  skipped_last_frame_to_reduce_latency_ = false;
-
   // A pipeline is activated if it's subscribed to BeginFrame callbacks. For the
   // compositor this implies BeginImplFrames while for the main thread it would
   // be BeginMainFrames.
@@ -967,8 +942,6 @@ void Scheduler::AsProtozeroInto(
   state->set_pending_begin_frame_task(!pending_begin_frame_task_.IsCancelled());
   state->set_skipped_last_frame_missed_exceeded_deadline(
       skipped_last_frame_missed_exceeded_deadline_);
-  state->set_skipped_last_frame_to_reduce_latency(
-      skipped_last_frame_to_reduce_latency_);
   state->set_inside_action(
       SchedulerStateMachine::ActionToProtozeroEnum(inside_action_));
   state->set_deadline_mode(
@@ -1001,89 +974,6 @@ void Scheduler::UpdateCompositorTimingHistoryRecordingEnabled() {
       state_machine_.visible());
 }
 
-bool Scheduler::ShouldRecoverMainLatency(
-    const viz::BeginFrameArgs& args,
-    bool can_activate_before_deadline) const {
-  DCHECK(!settings_.using_synchronous_renderer_compositor);
-
-  if (!settings_.enable_main_latency_recovery)
-    return false;
-
-  // The main thread is in a low latency mode and there's no need to recover.
-  if (!state_machine_.main_thread_missed_last_deadline())
-    return false;
-
-  // When prioritizing impl thread latency, we currently put the
-  // main thread in a high latency mode. Don't try to fight it.
-  if (state_machine_.ImplLatencyTakesPriority())
-    return false;
-
-  // Ensure that we have data from at least one frame before attempting latency
-  // recovery. This prevents skipping of frames during loading where the main
-  // thread is likely slow but we assume it to be fast since we have no history.
-  static const int kMinNumberOfSamplesBeforeLatencyRecovery = 1;
-  if (compositor_timing_history_
-              ->begin_main_frame_start_to_ready_to_commit_sample_count() <
-          kMinNumberOfSamplesBeforeLatencyRecovery ||
-      compositor_timing_history_->commit_to_ready_to_activate_sample_count() <
-          kMinNumberOfSamplesBeforeLatencyRecovery) {
-    return false;
-  }
-
-  return can_activate_before_deadline;
-}
-
-bool Scheduler::ShouldRecoverImplLatency(
-    const viz::BeginFrameArgs& args,
-    bool can_activate_before_deadline) const {
-  DCHECK(!settings_.using_synchronous_renderer_compositor);
-
-  if (!settings_.enable_impl_latency_recovery)
-    return false;
-
-  // Disable impl thread latency recovery when using the unthrottled
-  // begin frame source since we will always get a BeginFrame before
-  // the swap ack and our heuristics below will not work.
-  if (begin_frame_source_ && !begin_frame_source_->IsThrottled())
-    return false;
-
-  // If we are swap throttled at the BeginFrame, that means the impl thread is
-  // very likely in a high latency mode.
-  bool impl_thread_is_likely_high_latency = state_machine_.IsDrawThrottled();
-  if (!impl_thread_is_likely_high_latency)
-    return false;
-
-  // The deadline may be in the past if our draw time is too long.
-  bool can_draw_before_deadline = args.frame_time < args.deadline;
-
-  // When prioritizing impl thread latency, the deadline doesn't wait
-  // for the main thread.
-  if (state_machine_.ImplLatencyTakesPriority())
-    return can_draw_before_deadline;
-
-  // If we only have impl-side updates, the deadline doesn't wait for
-  // the main thread.
-  if (state_machine_.OnlyImplSideUpdatesExpected())
-    return can_draw_before_deadline;
-
-  // If we get here, we know the main thread is in a low-latency mode relative
-  // to the impl thread. In this case, only try to also recover impl thread
-  // latency if both the main and impl threads can run serially before the
-  // deadline.
-  return can_activate_before_deadline;
-}
-
-bool Scheduler::CanBeginMainFrameAndActivateBeforeDeadline(
-    const viz::BeginFrameArgs& args,
-    base::TimeDelta bmf_to_activate_estimate,
-    base::TimeTicks now) const {
-  // Check if the main thread computation and commit can be finished before the
-  // impl thread's deadline.
-  base::TimeTicks estimated_draw_time = now + bmf_to_activate_estimate;
-
-  return estimated_draw_time < args.deadline;
-}
-
 bool Scheduler::IsBeginMainFrameSent() const {
   return state_machine_.begin_main_frame_state() ==
          SchedulerStateMachine::BeginMainFrameState::SENT;
@@ -1095,7 +985,6 @@ viz::BeginFrameAck Scheduler::CurrentBeginFrameAckForActiveTree() const {
 
 void Scheduler::ClearHistory() {
   // Ensure we reset decisions based on history from the previous navigation.
-  state_machine_.SetSkipNextBeginMainFrameToReduceLatency(false);
   compositor_timing_history_->ClearHistory();
   ProcessScheduledActions();
 }

@@ -195,10 +195,6 @@ void BeginFrameSource::AsProtozeroInto(
 StubBeginFrameSource::StubBeginFrameSource()
     : BeginFrameSource(kNotRestartableId) {}
 
-bool StubBeginFrameSource::IsThrottled() const {
-  return true;
-}
-
 // SyntheticBeginFrameSource ----------------------------------------------
 SyntheticBeginFrameSource::SyntheticBeginFrameSource(uint32_t restart_id)
     : BeginFrameSource(restart_id) {}
@@ -242,10 +238,6 @@ void BackToBackBeginFrameSource::DidFinishFrame(BeginFrameObserver* obs) {
     pending_begin_frame_observers_.insert(obs);
     time_source_->SetActive(true);
   }
-}
-
-bool BackToBackBeginFrameSource::IsThrottled() const {
-  return false;
 }
 
 void BackToBackBeginFrameSource::OnGpuNoLongerBusy() {
@@ -338,10 +330,6 @@ void DelayBasedBeginFrameSource::RemoveObserver(BeginFrameObserver* obs) {
     time_source_->SetActive(false);
 }
 
-bool DelayBasedBeginFrameSource::IsThrottled() const {
-  return true;
-}
-
 void DelayBasedBeginFrameSource::OnGpuNoLongerBusy() {
   OnTimerTick();
 }
@@ -420,10 +408,6 @@ void ExternalBeginFrameSource::RemoveObserver(BeginFrameObserver* obs) {
   observers_.erase(obs);
   if (observers_.empty())
     client_->OnNeedsBeginFrames(false);
-}
-
-bool ExternalBeginFrameSource::IsThrottled() const {
-  return true;
 }
 
 void ExternalBeginFrameSource::OnGpuNoLongerBusy() {

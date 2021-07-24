@@ -214,16 +214,8 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   settings.disallow_non_exact_resource_reuse =
       command_line->HasSwitch(switches::kDisallowNonExactResourceReuse);
 
-  settings.enable_impl_latency_recovery =
-      features::IsImplLatencyRecoveryEnabled();
-  settings.enable_main_latency_recovery =
-      features::IsMainLatencyRecoveryEnabled();
-
-  if (command_line->HasSwitch(switches::kRunAllCompositorStagesBeforeDraw)) {
-    settings.wait_for_all_pipeline_stages_before_draw = true;
-    settings.enable_impl_latency_recovery = false;
-    settings.enable_main_latency_recovery = false;
-  }
+  settings.wait_for_all_pipeline_stages_before_draw =
+      command_line->HasSwitch(switches::kRunAllCompositorStagesBeforeDraw);
 
   if (base::FeatureList::IsEnabled(
           features::kCompositorThreadedScrollbarScrolling)) {

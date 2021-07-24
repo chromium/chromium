@@ -60,7 +60,6 @@ class CC_EXPORT CompositorTimingHistory {
   base::TimeDelta BeginMainFrameStartToReadyToCommitCriticalEstimate() const;
   base::TimeDelta BeginMainFrameStartToReadyToCommitNotCriticalEstimate() const;
   base::TimeDelta BeginMainFrameQueueToActivateCriticalEstimate() const;
-  base::TimeDelta BeginMainFrameQueueToActivateNotCriticalEstimate() const;
 
   // State that affects when events should be expected/recorded/reported.
   void SetRecordingEnabled(bool enabled);
@@ -92,13 +91,6 @@ class CC_EXPORT CompositorTimingHistory {
   }
 
   void ClearHistory();
-  size_t begin_main_frame_start_to_ready_to_commit_sample_count() const {
-    return begin_main_frame_start_to_ready_to_commit_duration_history_
-        .sample_count();
-  }
-  size_t commit_to_ready_to_activate_sample_count() const {
-    return commit_to_ready_to_activate_duration_history_.sample_count();
-  }
 
  protected:
   void DidBeginMainFrame(base::TimeTicks begin_main_frame_end_time);

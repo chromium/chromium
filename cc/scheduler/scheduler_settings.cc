@@ -4,6 +4,8 @@
 
 #include "cc/scheduler/scheduler_settings.h"
 
+#include <utility>
+
 #include "base/trace_event/traced_value.h"
 
 namespace cc {
@@ -25,10 +27,6 @@ SchedulerSettings::AsValue() const {
                     maximum_number_of_failed_draws_before_draw_is_forced);
   state->SetBoolean("using_synchronous_renderer_compositor",
                     using_synchronous_renderer_compositor);
-  state->SetBoolean("enable_impl_latency_recovery",
-                    enable_impl_latency_recovery);
-  state->SetBoolean("enable_main_latency_recovery",
-                    enable_main_latency_recovery);
   state->SetBoolean("wait_for_all_pipeline_stages_before_draw",
                     wait_for_all_pipeline_stages_before_draw);
   return std::move(state);

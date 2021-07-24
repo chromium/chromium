@@ -39,20 +39,6 @@ const base::Feature kSynchronizedScrolling = {
     base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-bool IsImplLatencyRecoveryEnabled() {
-  // TODO(crbug.com/1142598): Latency recovery has been disabled by default
-  // since M87. For now, only the flag is removed. If all goes well, remove the
-  // code supporting latency recovery.
-  return false;
-}
-
-bool IsMainLatencyRecoveryEnabled() {
-  // TODO(crbug.com/1142598): Latency recovery has been disabled by default
-  // since M87. For now, only the flag is removed. If all goes well, remove the
-  // code supporting latency recovery.
-  return false;
-}
-
 const base::Feature kRemoveMobileViewportDoubleTap{
     "RemoveMobileViewportDoubleTap", base::FEATURE_ENABLED_BY_DEFAULT};
 
