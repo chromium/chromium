@@ -186,6 +186,21 @@ ScriptPromise MediaDevices::getDisplayMedia(
     ScriptState* script_state,
     const MediaStreamConstraints* options,
     ExceptionState& exception_state) {
+  const ExecutionContext* const context = GetExecutionContext();
+  if (!context) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "No media device controller available; is this a detached window?");
+    return ScriptPromise();
+  }
+
+  if (!context->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kDisplayCapture,
+          ReportOptions::kReportOnFailure)) {
+    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
+    return ScriptPromise();
+  }
+
   return SendUserMediaRequest(script_state,
                               UserMediaRequest::MediaType::kDisplayMedia,
                               options, exception_state);

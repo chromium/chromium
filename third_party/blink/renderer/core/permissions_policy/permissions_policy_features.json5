@@ -186,7 +186,6 @@
     {
       name: "DisplayCapture",
       permissions_policy_name: "display-capture",
-      depends_on: ["GetCurrentBrowsingContextMedia"],
     },
     {
       name: "DocumentDomain",

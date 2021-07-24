@@ -26,7 +26,14 @@
     returnToTest("capture-failure");
   }
 
-  function runTestedFunction(testedFunction, constraints) {
+  function runTestedFunction(testedFunction, constraints, frame) {
+    if (frame == "allowedFrame" || frame == "disallowedFrame") {
+      // Constraints ignored; they're not relevant to the test.
+      document.getElementById(frame).contentWindow.postMessage(testedFunction);
+      // window.domAutomationController.send() called by embedded page.
+      return;
+    }
+
     if (testedFunction == "getDisplayMedia") {
       navigator.mediaDevices.getDisplayMedia(constraints).
         then(handleSuccess).catch(handleError);
@@ -79,6 +86,10 @@
       returnToTest("unmuted");
     }
   }
+
+  // function readLastResultFromEmbedded() {
+  //   // Blocks until the result is reported by the embedded page.
+  // }
   </script>
 </head>
 <body>
@@ -92,6 +103,9 @@
       </td>
     </tr>
   </table>
+  <br/>
+    <iframe id="allowedFrame" src="webrtc_getdisplaymedia_embedded_document.html"></iframe>
+    <iframe id="disallowedFrame" src="webrtc_getdisplaymedia_embedded_document.html" allow="display-capture 'none'"></iframe>
 </body>
 </html>
 

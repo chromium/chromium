@@ -75,14 +75,15 @@ class WebRtcScreenCaptureBrowserTest : public WebRtcTestBase {
                          content::WebContents* tab,
                          const std::string& constraints,
                          bool is_fake_ui,
-                         bool accept_this_tab_capture) {
+                         bool expect_success) {
     std::string result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
         tab->GetMainFrame(),
-        base::StringPrintf("runTestedFunction(\"%s\", %s);",
+        base::StringPrintf("runTestedFunction(\"%s\", %s, \"%s\");",
                            GetTestedFunctionName(tested_function),
-                           constraints.c_str()),
+                           constraints.c_str(), "top-level-document"),
         &result));
+
 #if defined(OS_MAC)
     // Starting from macOS 10.15, screen capture requires system permissions
     // that are disabled by default. The permission is reported as granted
@@ -91,8 +92,7 @@ class WebRtcScreenCaptureBrowserTest : public WebRtcTestBase {
                           ? "capture-success"
                           : "capture-failure");
 #else
-    EXPECT_EQ(result,
-              accept_this_tab_capture ? "capture-success" : "capture-failure");
+    EXPECT_EQ(result, expect_success ? "capture-success" : "capture-failure");
 #endif
   }
 };
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
   const int kMaxWidth = 200;
   const int kMaxFrameRate = 6;
-  const std::string& constraints =
+  const std::string constraints =
       base::StringPrintf("{video: {width: {max: %d}, frameRate: {max: %d}}}",
                          kMaxWidth, kMaxFrameRate);
   RunTestedFunction(test_config_.tested_function, tab, constraints,
@@ -333,3 +333,66 @@ INSTANTIATE_TEST_SUITE_P(
                     TestConfigForFakeUI{
                         TestedFunction::kGetCurrentBrowsingContextMedia,
                         /*display_surface=*/"browser"}));
+
+// TODO(crbug.com/1215089): Enable this test suite on Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+class WebRtcScreenCapturePermissionPolicyBrowserTest
+    : public WebRtcScreenCaptureBrowserTest,
+      public testing::WithParamInterface<std::pair<TestedFunction, bool>> {
+ public:
+  WebRtcScreenCapturePermissionPolicyBrowserTest()
+      : tested_function_(GetParam().first),
+        allowlisted_by_policy_(GetParam().second) {
+    if (tested_function_ == TestedFunction::kGetCurrentBrowsingContextMedia) {
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kRTCGetCurrentBrowsingContextMedia);
+    }
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
+    command_line->AppendSwitchASCII(
+        switches::kAutoSelectTabCaptureSourceByTitle, "WebRTC Automated Test");
+  }
+
+ protected:
+  const TestedFunction tested_function_;
+  const bool allowlisted_by_policy_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebRtcScreenCapturePermissionPolicyBrowserTest,
+    testing::Values(
+        std::make_pair(TestedFunction::kGetDisplayMedia,
+                       /*allowlisted_by_policy=*/false),
+        std::make_pair(TestedFunction::kGetDisplayMedia,
+                       /*allowlisted_by_policy=*/true),
+        std::make_pair(TestedFunction::kGetCurrentBrowsingContextMedia,
+                       /*allowlisted_by_policy=*/false),
+        std::make_pair(TestedFunction::kGetCurrentBrowsingContextMedia,
+                       /*allowlisted_by_policy=*/true)));
+
+IN_PROC_BROWSER_TEST_P(WebRtcScreenCapturePermissionPolicyBrowserTest,
+                       ScreenShareFromEmbedded) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
+  const std::string constraints = "{video: true}";
+
+  std::string result;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab->GetMainFrame(),
+      base::StringPrintf(
+          "runTestedFunction(\"%s\", %s, \"%s\");",
+          GetTestedFunctionName(tested_function_), constraints.c_str(),
+          allowlisted_by_policy_ ? "allowedFrame" : "disallowedFrame"),
+      &result));
+  EXPECT_EQ(result, allowlisted_by_policy_ ? "embedded-capture-success"
+                                           : "embedded-capture-failure");
+}
+#endif

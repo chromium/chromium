@@ -140,7 +140,9 @@ void DisplayMediaAccessHandler::HandleRequest(
 #endif  // defined(OS_MAC)
 
   if (request.video_type ==
-      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
+          blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB ||
+      request.video_type ==
+          blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE) {
     // Repeat the permission test from the render process.
     content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
         request.render_process_id, request.render_frame_id);

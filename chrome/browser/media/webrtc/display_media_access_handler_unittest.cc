@@ -56,7 +56,9 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
          fake_desktop_media_id_response /* selected_source */}};
     picker_factory_->SetTestFlags(test_flags, base::size(test_flags));
     content::MediaStreamRequest request(
-        0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
+        web_contents()->GetMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetMainFrame()->GetRoutingID(), 0,
+        GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
         std::string(), std::string(),
         request_audio ? blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE
                       : blink::mojom::MediaStreamType::NO_SERVICE,
@@ -184,8 +186,9 @@ TEST_F(DisplayMediaAccessHandlerTest, DlpRestricted) {
 #endif
 
 TEST_F(DisplayMediaAccessHandlerTest, UpdateMediaRequestStateWithClosing) {
-  const int render_process_id = 0;
-  const int render_frame_id = 0;
+  const int render_process_id =
+      web_contents()->GetMainFrame()->GetProcess()->GetID();
+  const int render_frame_id = web_contents()->GetMainFrame()->GetRoutingID();
   const int page_request_id = 0;
   const blink::mojom::MediaStreamType video_stream_type =
       blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
@@ -223,8 +226,9 @@ TEST_F(DisplayMediaAccessHandlerTest, UpdateMediaRequestStateWithClosing) {
 }
 
 TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissions) {
-  const int render_process_id = 0;
-  const int render_frame_id = 0;
+  const int render_process_id =
+      web_contents()->GetMainFrame()->GetProcess()->GetID();
+  const int render_frame_id = web_contents()->GetMainFrame()->GetRoutingID();
   const int page_request_id = 0;
   const blink::mojom::MediaStreamType video_stream_type =
       blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
@@ -258,8 +262,9 @@ TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissions) {
 }
 
 TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissionsNormalURLs) {
-  const int render_process_id = 0;
-  const int render_frame_id = 0;
+  const int render_process_id =
+      web_contents()->GetMainFrame()->GetProcess()->GetID();
+  const int render_frame_id = web_contents()->GetMainFrame()->GetRoutingID();
   const int page_request_id = 0;
   const blink::mojom::MediaStreamType video_stream_type =
       blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
@@ -299,8 +304,10 @@ TEST_F(DisplayMediaAccessHandlerTest, WebContentsDestroyed) {
        true /* cancelled */}};
   picker_factory_->SetTestFlags(test_flags, base::size(test_flags));
   content::MediaStreamRequest request(
-      0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
-      std::string(), std::string(), blink::mojom::MediaStreamType::NO_SERVICE,
+      web_contents()->GetMainFrame()->GetProcess()->GetID(),
+      web_contents()->GetMainFrame()->GetRoutingID(), 0, GURL("http://origin/"),
+      false, blink::MEDIA_GENERATE_STREAM, std::string(), std::string(),
+      blink::mojom::MediaStreamType::NO_SERVICE,
       blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
   content::MediaResponseCallback callback;
@@ -339,7 +346,9 @@ TEST_F(DisplayMediaAccessHandlerTest, MultipleRequests) {
   base::RunLoop wait_loop[kTestFlagCount];
   for (size_t i = 0; i < kTestFlagCount; ++i) {
     content::MediaStreamRequest request(
-        0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
+        web_contents()->GetMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetMainFrame()->GetRoutingID(), 0,
+        GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
         std::string(), std::string(), blink::mojom::MediaStreamType::NO_SERVICE,
         blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
         /*disable_local_echo=*/false,

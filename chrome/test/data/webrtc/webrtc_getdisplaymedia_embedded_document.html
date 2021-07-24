@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>WebRTC Automated Test</title>
+    <script type="text/javascript" src="test_functions.js"></script>
+  </head>
+  <body>
+    <script>
+      async function runTestedFunction(testedFunction) {
+        try {
+          await navigator.mediaDevices[testedFunction]();
+          window.domAutomationController.send("embedded-capture-success");
+        } catch (e) {
+          window.domAutomationController.send("embedded-capture-failure");
+        }
+      }
+
+      window.addEventListener("message", (event) => {
+        runTestedFunction(event.data);
+      });
+    </script>
+  </body>
+</html>

@@ -844,13 +844,6 @@
       name: "DisableLayerSquashing",
     },
     {
-      name: "DisplayCapturePermissionPolicy",
-      origin_trial_feature_name: "GetCurrentBrowsingContextMedia",
-      // TODO(crbug.com/1150788): Implement for Android when this is applied
-      // to getDisplayMedia.
-      status: {"Android": "", "default": "experimental"},
-    },
-    {
       name: "DisplayCutoutAPI",
       settable_from_internals: true,
     },
