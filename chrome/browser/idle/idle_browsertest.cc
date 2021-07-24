@@ -100,8 +100,7 @@ IN_PROC_BROWSER_TEST_F(IdleBrowserTest, Start) {
       // Simulates an unlocked screen as user goes back to active.
       .WillRepeatedly(testing::Return(false));
 
-  content::IdleManagerHelper::SetIdleTimeProviderForTest(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+  content::ScopedIdleProviderForTest scoped_idle_provider(
       std::move(mock_time_provider));
 
   std::string result =

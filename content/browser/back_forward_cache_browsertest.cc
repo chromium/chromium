@@ -2619,8 +2619,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIdleManager) {
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver deleted(rfh_a);
 
-  content::IdleManagerHelper::SetIdleTimeProviderForTest(
-      rfh_a, std::make_unique<FakeIdleTimeProvider>());
+  ScopedIdleProviderForTest scoped_idle_provider(
+      std::make_unique<FakeIdleTimeProvider>());
 
   EXPECT_TRUE(ExecJs(rfh_a, R"(
     new Promise(async resolve => {

@@ -5,16 +5,14 @@
 #ifndef CONTENT_BROWSER_IDLE_IDLE_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_IDLE_IDLE_MANAGER_IMPL_H_
 
-#include <memory>
-
-#include "base/callback.h"
 #include "base/containers/linked_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "content/browser/idle/idle_monitor.h"
+#include "content/browser/idle/idle_polling_service.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/idle_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -27,7 +25,8 @@ namespace content {
 class RenderFrameHost;
 
 class CONTENT_EXPORT IdleManagerImpl : public IdleManager,
-                                       public blink::mojom::IdleManager {
+                                       public blink::mojom::IdleManager,
+                                       public IdlePollingService::Observer {
  public:
   explicit IdleManagerImpl(RenderFrameHost* render_frame_host);
   ~IdleManagerImpl() override;
@@ -38,9 +37,6 @@ class CONTENT_EXPORT IdleManagerImpl : public IdleManager,
   // IdleManager:
   void CreateService(mojo::PendingReceiver<blink::mojom::IdleManager> receiver,
                      const url::Origin& origin) override;
-  void SetIdleTimeProviderForTest(
-      std::unique_ptr<IdleTimeProvider> idle_provider) override;
-  bool IsPollingForTest() override;
 
   // blink.mojom.IdleManager:
   void AddMonitor(base::TimeDelta threshold,
@@ -60,25 +56,13 @@ class CONTENT_EXPORT IdleManagerImpl : public IdleManager,
   // |monitors_|.
   void RemoveMonitor(IdleMonitor* monitor);
 
-  // Called internally when a monitor is added via AddMonitor() to maybe
-  // start the polling timer, if not already started.
-  void StartPolling();
-
-  // Called internally by the timer callback to stop the timer if there
-  // are no more monitors. (It is not called from RemoveMonitor() so
-  // that an calls can update the cached state.)
-  void StopPolling();
-
-  // Callback for the polling timer. Kicks off an async query for the state.
-  void UpdateIdleState();
-
-  // Callback for the async state query. Updates monitors as needed.
-  void UpdateIdleStateCallback(int idle_time);
+  // Notifies |monitors_| of the new idle state.
+  void OnIdleStateChange(const IdlePollingService::State& state) override;
 
   blink::mojom::IdleStatePtr CheckIdleState(base::TimeDelta threshold);
 
-  base::RepeatingTimer poll_timer_;
-  std::unique_ptr<IdleTimeProvider> idle_time_provider_;
+  base::ScopedObservation<IdlePollingService, IdlePollingService::Observer>
+      observer_{this};
 
   blink::mojom::IdleStatePtr state_override_;
 

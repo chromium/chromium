@@ -955,6 +955,8 @@ source_set("browser") {
     "idle/idle_manager_impl.h",
     "idle/idle_monitor.cc",
     "idle/idle_monitor.h",
+    "idle/idle_polling_service.cc",
+    "idle/idle_polling_service.h",
     "image_capture/image_capture_impl.cc",
     "image_capture/image_capture_impl.h",
     "indexed_db/cursor_impl.cc",

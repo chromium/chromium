@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/idle/idle_manager_impl.h"
 
 #include <tuple>
 #include <utility>
@@ -13,11 +12,13 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "content/browser/idle/idle_manager_impl.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/idle_test_utils.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
@@ -83,13 +84,14 @@ class IdleManagerTest : public RenderViewHostTestHarness {
 
     idle_time_provider_ = new NiceMock<MockIdleTimeProvider>();
     idle_manager_ = std::make_unique<IdleManagerImpl>(main_rfh());
-    idle_manager_->SetIdleTimeProviderForTest(
+    scoped_idle_time_provider_ = std::make_unique<ScopedIdleProviderForTest>(
         base::WrapUnique(idle_time_provider_));
     idle_manager_->CreateService(service_remote_.BindNewPipeAndPassReceiver(),
                                  Origin::Create(url_));
   }
 
   void TearDown() override {
+    scoped_idle_time_provider_.reset();
     idle_manager_.reset();
     RenderViewHostTestHarness::TearDown();
   }
@@ -164,6 +166,7 @@ class IdleManagerTest : public RenderViewHostTestHarness {
   std::unique_ptr<IdleManagerImpl> idle_manager_;
   MockPermissionManager* permission_manager_;
   MockIdleTimeProvider* idle_time_provider_;
+  std::unique_ptr<ScopedIdleProviderForTest> scoped_idle_time_provider_;
   NiceMock<MockIdleMonitor> idle_monitor_;
   mojo::Receiver<blink::mojom::IdleMonitor> monitor_receiver_{&idle_monitor_};
   GURL url_ = GURL(kTestUrl);
@@ -331,12 +334,11 @@ TEST_F(IdleManagerTest, RemoveMonitorStopsPolling) {
 
   AddMonitorRequest(kThreshold);
 
-  auto* impl = GetIdleManager();
-  EXPECT_TRUE(impl->IsPollingForTest());
+  EXPECT_TRUE(IdlePollingService::GetInstance()->IsPollingForTest());
 
   DisconnectRenderer();
 
-  EXPECT_FALSE(impl->IsPollingForTest());
+  EXPECT_FALSE(IdlePollingService::GetInstance()->IsPollingForTest());
 }
 
 TEST_F(IdleManagerTest, Threshold) {
