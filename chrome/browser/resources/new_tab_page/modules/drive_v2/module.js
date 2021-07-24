@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 import '../module_header.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nBehavior, loadTimeData} from '../../i18n_setup.js';
 import {DriveProxy} from '../drive/drive_module_proxy.js';
+import {InfoDialogElement} from '../info_dialog.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
 /**
@@ -41,6 +43,51 @@ class DriveModuleElement extends mixinBehaviors
   getImageSrc_(file) {
     return 'https://drive-thirdparty.googleusercontent.com/32/type/' +
         file.mimeType;
+  }
+
+  /** @private */
+  onDisableButtonClick_() {
+    const disableEvent = new CustomEvent('disable-module', {
+      composed: true,
+      detail: {
+        message: loadTimeData.getStringF(
+            'disableModuleToastMessage',
+            loadTimeData.getString('modulesDriveSentence2')),
+      },
+    });
+    this.dispatchEvent(disableEvent);
+  }
+
+  /** @private */
+  onDismissButtonClick_() {
+    DriveProxy.getInstance().handler.dismissModule();
+    const dismissEvent = new CustomEvent('dismiss-module', {
+      composed: true,
+      detail: {
+        message: loadTimeData.getStringF(
+            'dismissModuleToastMessage',
+            loadTimeData.getString('modulesDriveFilesSentence')),
+        restoreCallback: () => DriveProxy.getInstance().handler.restoreModule(),
+      },
+    });
+    this.dispatchEvent(dismissEvent);
+  }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onFileClick_(e) {
+    const clickFileEvent = new Event('usage', {composed: true});
+    this.dispatchEvent(clickFileEvent);
+    const index = this.$.fileRepeat.indexForElement(e.target);
+    chrome.metricsPrivate.recordSmallCount('NewTabPage.Drive.FileClick', index);
+  }
+
+  /** @private */
+  onInfoButtonClick_() {
+    /** @type {InfoDialogElement} */
+    (this.$.infoDialogRender.get()).showModal();
   }
 }
 

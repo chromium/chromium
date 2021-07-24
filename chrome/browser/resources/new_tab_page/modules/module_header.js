@@ -89,6 +89,7 @@ export class ModuleHeaderElement extends mixinBehaviors
 
   /** @private */
   onInfoButtonClick_() {
+    this.$.actionMenu.close();
     this.dispatchEvent(new Event('info-button-click', {bubbles: true}));
   }
 

@@ -121,7 +121,8 @@
     [[i18n('modulesCustomizeButtonText')]]
   </button>
   <template is="dom-if" if="[[showInfoButtonDropdown]]">
-    <button id="infoButton" class="dropdown-item">
+    <button id="infoButton" class="dropdown-item"
+        on-click="onInfoButtonClick_">
       [[i18n('moduleInfoButtonTitle')]]
     </button>
   </template>

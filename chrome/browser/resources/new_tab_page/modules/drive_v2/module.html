@@ -80,12 +80,15 @@
     disable-text="[[i18nRecursive('',
                                   'modulesDisableButtonText',
                                   'modulesDriveSentence2')]]"
-    icon-src="icons/drive_logo.svg">
+    icon-src="icons/drive_logo.svg"
+    on-dismiss-button-click="onDismissButtonClick_"
+    on-disable-button-click="onDisableButtonClick_"
+    on-info-button-click="onInfoButtonClick_">
   [[i18n('modulesDriveTitle')]]
 </ntp-module-header>
 <div id="files">
   <template id="fileRepeat" is="dom-repeat" items="[[files]]">
-    <a class="file" href="[[item.itemUrl.url]]">
+    <a class="file" href="[[item.itemUrl.url]]" on-click="onFileClick_">
       <div class="file-info">
         <div class="file-title">[[item.title]]</div>
         <div class="file-description">[[item.justificationText]]</div>
@@ -100,3 +103,9 @@
     </a>
   </template>
 </div>
+<cr-lazy-render id="infoDialogRender">
+  <template>
+    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesDriveInfo')]]">
+    </ntp-info-dialog>
+  </template>
+</cr-lazy-render>

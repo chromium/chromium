@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DriveProxy, driveV2Descriptor} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, DriveProxy, driveV2Descriptor} from 'chrome://new-tab-page/new_tab_page.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 import {isVisible} from 'chrome://test/test_util.m.js';
 
@@ -142,5 +142,96 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     module.$.fileRepeat.render();
 
     assertEquals(198, module.offsetHeight);
+  });
+
+  test('clicking the info button opens the ntp info dialog box', async () => {
+    // Arrange.
+    const data = {
+      files: [
+        {
+          justificationText: 'Edited yesterday',
+          title: 'Abc',
+          id: '012',
+          mimeType: 'application/vnd.google-apps.presentation',
+          itemUrl: {url: 'https://abc.com'},
+        },
+      ]
+    };
+    testProxy.handler.setResultFor('getFiles', Promise.resolve(data));
+    const driveModule = await driveV2Descriptor.initialize();
+    document.body.append(driveModule);
+
+    // Act.
+    const infoEvent = new Event('info-button-click');
+    $$(driveModule, 'ntp-module-header').dispatchEvent(infoEvent);
+
+    // Assert.
+    assertTrue(!!$$(driveModule, 'ntp-info-dialog'));
+  });
+
+  test(
+      'clicking the disable button sets the correct toast message',
+      async () => {
+        // Arrange.
+        const data = {
+          files: [
+            {
+              justificationText: 'Edited yesterday',
+              title: 'Abc',
+              id: '012',
+              mimeType: 'application/vnd.google-apps.presentation',
+              itemUrl: {url: 'https://abc.com'},
+            },
+          ]
+        };
+        testProxy.handler.setResultFor('getFiles', Promise.resolve(data));
+        const driveModule = await driveV2Descriptor.initialize();
+        document.body.append(driveModule);
+
+        // Act.
+        const disable = {event: null};
+        driveModule.addEventListener(
+            'disable-module', (e) => disable.event = e);
+        const disableEvent = new Event('disable-button-click');
+        $$(driveModule, 'ntp-module-header').dispatchEvent(disableEvent);
+
+        // Assert.
+        assertEquals(
+            'You won\'t see Drive files again on this page',
+            disable.event.detail.message);
+      });
+
+  test('backend is notified when module is dismissed or restored', async () => {
+    // Arrange.
+    const data = {
+      files: [
+        {
+          justificationText: 'Edited yesterday',
+          title: 'Abc',
+          id: '012',
+          mimeType: 'application/vnd.google-apps.presentation',
+          itemUrl: {url: 'https://abc.com'},
+        },
+      ]
+    };
+    testProxy.handler.setResultFor('getFiles', Promise.resolve(data));
+    const driveModule = await driveV2Descriptor.initialize();
+    document.body.append(driveModule);
+
+    // Act.
+    const dismiss = {event: null};
+    driveModule.addEventListener('dismiss-module', (e) => dismiss.event = e);
+    const dismissEvent = new Event('dismiss-button-click');
+    $$(driveModule, 'ntp-module-header').dispatchEvent(dismissEvent);
+
+    // Assert.
+    assertEquals('Files hidden', dismiss.event.detail.message);
+    assertEquals(1, testProxy.handler.getCallCount('dismissModule'));
+
+    // Act.
+    dismiss.event.detail.restoreCallback();
+
+    // Assert.
+    assertEquals(1, testProxy.handler.getCallCount('restoreModule'));
   });
 });
