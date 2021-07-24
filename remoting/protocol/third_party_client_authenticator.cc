@@ -66,15 +66,17 @@ void ThirdPartyClientAuthenticator::AddTokenElements(
 void ThirdPartyClientAuthenticator::OnThirdPartyTokenFetched(
     base::OnceClosure resume_callback,
     const std::string& third_party_token,
-    const std::string& shared_secret) {
+    const TokenValidator::ValidationResult& validation_result) {
   token_ = third_party_token;
-  if (token_.empty() || shared_secret.empty()) {
+  if (token_.empty() || validation_result.is_error()) {
     token_state_ = REJECTED;
-    rejection_reason_ = INVALID_CREDENTIALS;
+    rejection_reason_ = validation_result.is_error() ? validation_result.error()
+                                                     : INVALID_CREDENTIALS;
   } else {
+    DCHECK(!validation_result.success().empty());
     token_state_ = MESSAGE_READY;
-    underlying_ =
-        create_base_authenticator_callback_.Run(shared_secret, MESSAGE_READY);
+    underlying_ = create_base_authenticator_callback_.Run(
+        validation_result.success(), MESSAGE_READY);
   }
   std::move(resume_callback).Run();
 }

@@ -78,6 +78,10 @@ class Authenticator {
 
     // Multiple, valid connection requests were received for the same session.
     TOO_MANY_CONNECTIONS,
+
+    // The client is not authorized to connect to this device due to a policy
+    // defined by the third party auth service.
+    AUTHZ_POLICY_CHECK_FAILED,
   };
 
   // Callback used for layered Authenticator implementations, particularly

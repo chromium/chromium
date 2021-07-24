@@ -10,6 +10,8 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
+#include "remoting/base/result.h"
+#include "remoting/protocol/authenticator.h"
 #include "url/gurl.h"
 
 namespace remoting {
@@ -21,11 +23,14 @@ namespace protocol {
 // shared secret for the connection.
 class TokenValidator {
  public:
+  using ValidationResult =
+      Result<std::string, protocol::Authenticator::RejectionReason>;
+
   // Callback passed to |ValidateThirdPartyToken|, and called once the host
-  // authentication finishes. |shared_secret| should be used by the host to
-  // create a V2Authenticator. In case of failure, the callback is called with
-  // an empty |shared_secret|.
-  typedef base::OnceCallback<void(const std::string& shared_secret)>
+  // authentication finishes. |validation_result.success()| should be used by
+  // the host to create a V2Authenticator. In case of failure, the rejection
+  // reason can be found via |validation_result.error()|.
+  typedef base::OnceCallback<void(const ValidationResult& validation_result)>
       TokenValidatedCallback;
 
   virtual ~TokenValidator() = default;
