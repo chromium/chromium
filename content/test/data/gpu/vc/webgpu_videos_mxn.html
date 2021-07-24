@@ -76,7 +76,7 @@ found in the LICENSE file.
       const gpuSetting = await webGpuInit(_totalVideoWidth, _totalVideoHeight);
       if (!gpuSetting) {
         p.innerHTML = "Webgpu not supported!" + "<br />" + "<br />" +
-          "Did you forget to add command line switch --enable-unsafe-webgpu --enable-experimental-web-platform-features?" +
+          "Did you forget to add command line switch --enable-unsafe-webgpu?" +
           "<br />" +
           "Are you running on the latest Canary or Chromium build?"
         return;

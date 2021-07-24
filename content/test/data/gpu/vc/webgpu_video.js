@@ -20,7 +20,7 @@ async function webGpuInit(canvasWidth, canvasHeight) {
   canvas.width = canvasWidth;
   canvas.height = canvasHeight;
 
-  const context = canvas.getContext('gpupresent');
+  const context = canvas.getContext('webgpu');
   if (!context) {
     console.warn('Webgpu not supported. canvas.getContext(gpupresent) fails!');
     return null;
@@ -29,8 +29,8 @@ async function webGpuInit(canvasWidth, canvasHeight) {
   return { device, context, canvas };
 }
 
-  const wgslShaders = {
-    vertex: `
+const wgslShaders = {
+  vertex: `
 struct VertexOutput {
   [[builtin(position)]] Position : vec4<f32>;
   [[location(0)]] fragUV : vec2<f32>;
@@ -47,16 +47,16 @@ struct VertexOutput {
 }
 `,
 
-    fragment: `
+  fragment: `
 [[binding(0), group(0)]] var mySampler: sampler;
-[[binding(1), group(0)]] var myTexture: texture_2d<f32>;
+[[binding(1), group(0)]] var myTexture: texture_external;
 
 [[stage(fragment)]]
 fn main([[location(0)]] fragUV : vec2<f32>) -> [[location(0)]] vec4<f32> {
-  return textureSample(myTexture, mySampler, fragUV);
+  return textureSampleLevel(myTexture, mySampler, fragUV);
 }
 `,
-    vertex_icons: `
+  vertex_icons: `
 [[stage(vertex)]]
 fn main([[location(0)]] position : vec2<f32>)
     -> [[builtin(position)]] vec4<f32> {
@@ -64,26 +64,26 @@ fn main([[location(0)]] position : vec2<f32>)
 }
 `,
 
-    fragment_output_blue: `
+  fragment_output_blue: `
 [[stage(fragment)]]
 fn main() -> [[location(0)]] vec4<f32> {
   return vec4<f32>(0.11328125, 0.4296875, 0.84375, 1.0);
 }
 `,
-    fragment_output_light_blue: `
+  fragment_output_light_blue: `
 [[stage(fragment)]]
 fn main() -> [[location(0)]] vec4<f32> {
   return vec4<f32>(0.3515625, 0.50390625, 0.75390625, 1.0);
 }
 `,
 
-    fragment_output_white: `
+  fragment_output_white: `
 [[stage(fragment)]]
 fn main() -> [[location(0)]] vec4<f32> {
   return vec4<f32>(1.0, 1.0, 1.0, 1.0);
 }
 `,
-  };
+};
 
 function createVertexBuffer(device, videos, videoRows, videoColumns) {
   // Each video takes 6 vertices (2 triangles). Each vertice has 4 floats.
@@ -294,7 +294,26 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     usage: GPUTextureUsage.RENDER_ATTACHMENT,
   });
 
+  const bindGroupLayout = device.createBindGroupLayout({
+    entries: [
+      {
+        binding: 0,
+        visibility: GPUShaderStage.FRAGMENT,
+        sampler: {type: 'filtering'},
+      },
+      {
+        binding: 1,
+        visibility: GPUShaderStage.FRAGMENT,
+        externalTexture: {},
+      },
+    ],
+  });
+
+  const pipelineLayout =
+      device.createPipelineLayout({bindGroupLayouts: [bindGroupLayout]});
+
   const pipeline = device.createRenderPipeline({
+    layout: pipelineLayout,
     vertex: {
       module: device.createShaderModule({
         code: wgslShaders.vertex,
@@ -302,17 +321,20 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
       entryPoint: 'main',
       buffers: [{
         arrayStride: 16,
-        attributes: [{
-          // position
-          shaderLocation: 0,
-          offset: 0,
-          format: 'float32x2',
-        },{
-          // uv
-          shaderLocation: 1,
-          offset: 8,
-          format: 'float32x2',
-        }],
+        attributes: [
+          {
+            // position
+            shaderLocation: 0,
+            offset: 0,
+            format: 'float32x2',
+          },
+          {
+            // uv
+            shaderLocation: 1,
+            offset: 8,
+            format: 'float32x2',
+          }
+        ],
       }],
     },
     fragment: {
@@ -359,20 +381,10 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   }
 
   const bindGroups = [];
+
+  const externalTextureDescriptor = [];
   for (let i = 0; i < videos.length; ++i) {
-    bindGroups[i] = device.createBindGroup({
-      layout: pipeline.getBindGroupLayout(0),
-      entries: [
-        {
-          binding: 0,
-          resource: sampler,
-        },
-        {
-          binding: 1,
-          resource: videoTextures[i].createView(),
-        },
-      ],
-    });
+    externalTextureDescriptor[i] = {source: videos[i]};
   }
 
   // For rendering the icons
@@ -539,21 +551,12 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     }
     lastTimestamp = timestamp;
 
-    // First, destroy all textures that are ready to update, then import all
-    // textures. The performance is better this way than doing destroy and
-    // import one by one.
-    for (let i = 0; i < videos.length; ++i) {
-      if (videoIsReady[i]) {
-        videoTextures[i].destroy();
-      }
-    }
 
+    // Always import all videos. The video textures are destroyed before the
+    // next frame.
     for (let i = 0; i < videos.length; ++i) {
-      if (videoIsReady[i]) {
-        videoTextures[i] = device.experimentalImportTexture(
-          videos[i], GPUTextureUsage.SAMPLED);
-        videoIsReady[i] = false;
-      }
+      videoTextures[i] =
+          device.importExternalTexture(externalTextureDescriptor[i]);
     }
 
     const swapChainTexture = context.getCurrentTexture();
@@ -576,7 +579,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
           },
           {
             binding: 1,
-            resource: videoTextures[i].createView(),
+            resource: videoTextures[i],
           },
         ],
       });
