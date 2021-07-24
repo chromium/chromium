@@ -124,11 +124,13 @@ void DnsConfigService::HostsReader::DoWork() {
     hosts_.reset();
 }
 
-void DnsConfigService::HostsReader::OnWorkFinished() {
+bool DnsConfigService::HostsReader::OnWorkFinished() {
   if (hosts_.has_value()) {
     service_->OnHostsRead(std::move(hosts_).value());
+    return true;
   } else {
     LOG(WARNING) << "Failed to read DnsHosts.";
+    return false;
   }
 }
 

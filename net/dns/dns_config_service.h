@@ -138,7 +138,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
 
     // SerialWorker:
     void DoWork() final;
-    void OnWorkFinished() final;
+    bool OnWorkFinished() final;
 
    private:
     // Raw pointer to owning DnsConfigService. This must never be accessed
