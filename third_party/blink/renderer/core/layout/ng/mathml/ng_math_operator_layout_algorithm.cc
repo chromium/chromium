@@ -53,11 +53,36 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
       To<NGInlineNode>(child).Layout(ConstraintSpace(), nullptr, &context);
   container_builder_.AddResult(*child_layout_result, {});
 
-  // TODO(http://crbug.com/1124301) Implement stretchy operators.
+  // https://w3c.github.io/mathml-core/#layout-of-operators
+  LayoutUnit operator_target_size;
+  LayoutUnit target_stretch_ascent, target_stretch_descent;
+  auto* element = DynamicTo<MathMLOperatorElement>(Node().GetDOMNode());
+  if (element->HasBooleanProperty(MathMLOperatorElement::kStretchy)) {
+    // "If the operator has the stretchy property:"
+    // TODO(http://crbug.com/1124301) Implement horizontal stretchy operators.
+    DCHECK(element->GetOperatorContent().is_vertical);
+    // "Otherwise, the stretch axis of the operator is block."
+    if (auto target_stretch_block_sizes =
+            ConstraintSpace().TargetStretchBlockSizes()) {
+      target_stretch_ascent = target_stretch_block_sizes->ascent;
+      target_stretch_descent = target_stretch_block_sizes->descent;
+      // TODO(http://crbug.com/1124301) Implement symmetric attribute.
+      // TODO(http://crbug.com/1124301) Implement minsize, maxsize attributes.
+      operator_target_size = target_stretch_ascent + target_stretch_descent;
+    }
+  } else {
+    // "If the operator has the largeop property and if math-style on the <mo>
+    // element is normal."
+    DCHECK(element->HasBooleanProperty(MathMLOperatorElement::kLargeOp));
+    DCHECK(HasDisplayStyle(Node().Style()));
+    operator_target_size = DisplayOperatorMinHeight(Style());
+  }
 
-  float operator_target_size = DisplayOperatorMinHeight(Style());
-  StretchyOperatorShaper shaper(GetBaseCodePoint(),
-                                OpenTypeMathStretchData::StretchAxis::Vertical);
+  StretchyOperatorShaper shaper(
+      GetBaseCodePoint(),
+      element->GetOperatorContent().is_vertical
+          ? OpenTypeMathStretchData::StretchAxis::Vertical
+          : OpenTypeMathStretchData::StretchAxis::Horizontal);
   StretchyOperatorShaper::Metrics metrics;
   scoped_refptr<ShapeResult> shape_result =
       shaper.Shape(&Style().GetFont(), operator_target_size, &metrics);
@@ -69,6 +94,10 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
         LayoutUnit(metrics.italic_correction));
   }
 
+  // TODO(http://crbug.com/1124301): The spec says the inline size should be
+  // the one of the stretched glyph, but LayoutNG currently relies on the
+  // min-max sizes. This means there can be excessive gap around vertical
+  // stretchy operators.
   LayoutUnit operator_ascent = LayoutUnit::FromFloatFloor(metrics.ascent);
   LayoutUnit operator_descent = LayoutUnit::FromFloatFloor(metrics.descent);
 
@@ -78,6 +107,16 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
 
   LayoutUnit ascent = BorderScrollbarPadding().block_start + operator_ascent;
   LayoutUnit descent = operator_descent + BorderScrollbarPadding().block_end;
+  if (element->HasBooleanProperty(MathMLOperatorElement::kStretchy) &&
+      element->GetOperatorContent().is_vertical) {
+    // "The stretchy glyph is shifted towards the line-under by a value Δ so
+    // that its center aligns with the center of the target"
+    LayoutUnit delta = ((operator_ascent - operator_descent) -
+                        (target_stretch_ascent - target_stretch_descent)) /
+                       2;
+    ascent -= delta;
+    descent += delta;
+  }
   LayoutUnit intrinsic_block_size = ascent + descent;
   LayoutUnit block_size = ComputeBlockSizeForFragment(
       ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
@@ -92,15 +131,27 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
 
 MinMaxSizesResult NGMathOperatorLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) const {
-  // TODO(http://crbug.com/1124301) Implement stretchy operators.
 
   MinMaxSizes sizes;
-  StretchyOperatorShaper shaper(GetBaseCodePoint(),
-                                OpenTypeMathStretchData::Vertical);
-  StretchyOperatorShaper::Metrics metrics;
-  float operator_target_size = DisplayOperatorMinHeight(Style());
-  shaper.Shape(&Style().GetFont(), operator_target_size, &metrics);
-  sizes.Encompass(LayoutUnit(metrics.advance));
+  // https://w3c.github.io/mathml-core/#layout-of-operators
+  auto* element = DynamicTo<MathMLOperatorElement>(Node().GetDOMNode());
+  if (element->HasBooleanProperty(MathMLOperatorElement::kStretchy)) {
+    // "If the operator has the stretchy property:"
+    // TODO(http://crbug.com/1124301) Implement horizontal stretchy operators.
+    DCHECK(element->GetOperatorContent().is_vertical);
+    // "Otherwise, the stretch axis of the operator is block."
+    sizes =
+        GetMinMaxSizesForVerticalStretchyOperator(Style(), GetBaseCodePoint());
+  } else {
+    // "If the operator has the largeop property and if math-style on the <mo>
+    // element is normal."
+    StretchyOperatorShaper shaper(GetBaseCodePoint(),
+                                  OpenTypeMathStretchData::Vertical);
+    StretchyOperatorShaper::Metrics metrics;
+    LayoutUnit operator_target_size = DisplayOperatorMinHeight(Style());
+    shaper.Shape(&Style().GetFont(), operator_target_size, &metrics);
+    sizes.Encompass(LayoutUnit(metrics.advance));
+  }
 
   sizes += BorderScrollbarPadding().InlineSum();
   return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);

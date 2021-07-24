@@ -39,26 +39,6 @@ def buildKeyAndValueFrom(characters, form):
     }
     return key, value
 
-def createSizeVariants(aFont):
-    for size in (0, 1, 2, 3):
-        g = aFont.createChar(-1, "v%d" % size)
-        mathfont.drawRectangleGlyph(g, mathfont.em, (size + 1) * mathfont.em, 0)
-        g = aFont.createChar(-1, "h%d" % size)
-        mathfont.drawRectangleGlyph(g, (size + 1) * mathfont.em, mathfont.em, 0)
-
-def createStretchy(aFont, codePoint, isHorizontal):
-    if isHorizontal:
-        aFont[codePoint].horizontalVariants = "h0 h1 h2 h3"
-        # Part: (glyphName, isExtender, startConnector, endConnector, fullAdvance)
-        aFont[codePoint].horizontalComponents = \
-            (("h2", False, 0, mathfont.em, 3 * mathfont.em), \
-             ("h1", True, mathfont.em, mathfont.em, 2 * mathfont.em))
-    else:
-        aFont[codePoint].verticalVariants = "v0 v1 v2 v3"
-        # Part: (glyphName, isExtender, startConnector, endConnector, fullAdvance)
-        aFont[codePoint].verticalComponents = \
-            (("v2", False, 0, mathfont.em, 3 * mathfont.em), \
-             ("v1", True, mathfont.em, mathfont.em, 2 * mathfont.em))
 
 # Retrieve the spec files.
 inlineAxisOperatorsTXT = downloadWithProgressBar(InlineAxisOperatorsURL)
@@ -111,7 +91,7 @@ font.math.StretchStackTopShiftUp = 0
 font.math.AccentBaseHeight = 2 * mathfont.em
 font.math.OverbarVerticalGap = 0
 
-createSizeVariants(font)
+mathfont.createSizeVariants(font)
 for key in operatorDictionary:
     value = operatorDictionary[key]
     for c in value["characters"]:
@@ -122,7 +102,7 @@ for key in operatorDictionary:
             mathfont.drawRectangleGlyph(g, mathfont.em, mathfont.em / 3, 0)
         else:
             mathfont.createSquareGlyph(font, c)
-        createStretchy(font, c, c in inlineAxisOperators)
+        mathfont.createStretchy(font, c, c in inlineAxisOperators)
 mathfont.save(font)
 
 # Generate the python file.
