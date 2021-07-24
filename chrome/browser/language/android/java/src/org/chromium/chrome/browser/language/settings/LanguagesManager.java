@@ -165,9 +165,9 @@ public class LanguagesManager {
     }
 
     /**
-     * Get the list of potential languages to show in the {@link AddLanguageFragment} based on which
-     * list or preference a language will be added to. By default the potential languages for the
-     * Accept-Language list is returned.
+     * Get the list of potential languages to show in the {@link SelectLanguageFragment} based on
+     * which list or preference a language will be added to. By default the potential languages for
+     * the Accept-Language list is returned.
      * @param LanguageListType key to select which languages to get.
      * @return A list of LanguageItems to choose from for the given preference.
      */

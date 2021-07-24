@@ -135,9 +135,9 @@ public abstract class LanguageItemListFragment
         addLanguageButton.setOnClickListener(view -> { // Lambda for View.OnClickListener
             recordAddLanguageImpression();
             Intent intent = mSettingsLauncher.createSettingsActivityIntent(
-                    getActivity(), AddLanguageFragment.class.getName());
+                    getActivity(), SelectLanguageFragment.class.getName());
             intent.putExtra(
-                    AddLanguageFragment.INTENT_POTENTIAL_LANGUAGES, getPotentialLanguageType());
+                    SelectLanguageFragment.INTENT_POTENTIAL_LANGUAGES, getPotentialLanguageType());
             startActivityForResult(intent, REQUEST_CODE_SELECT_LANGUAGE);
         });
 
@@ -148,7 +148,7 @@ public abstract class LanguageItemListFragment
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, requestCode, data);
         if (requestCode == REQUEST_CODE_SELECT_LANGUAGE && resultCode == Activity.RESULT_OK) {
-            String code = data.getStringExtra(AddLanguageFragment.INTENT_SELECTED_LANGUAGE);
+            String code = data.getStringExtra(SelectLanguageFragment.INTENT_SELECTED_LANGUAGE);
             onLanguageAdded(code);
             mAdapter.onDataUpdated();
             recordAddAction();

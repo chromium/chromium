@@ -25,7 +25,6 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialog.java",
     "java/src/org/chromium/chrome/browser/language/LanguageAskPrompt.java",
-    "java/src/org/chromium/chrome/browser/language/settings/AddLanguageFragment.java",
     "java/src/org/chromium/chrome/browser/language/settings/AlwaysTranslateListFragment.java",
     "java/src/org/chromium/chrome/browser/language/settings/AppLanguagePreferenceDelegate.java",
     "java/src/org/chromium/chrome/browser/language/settings/ContentLanguagesPreference.java",
@@ -37,6 +36,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/language/settings/LanguageSettings.java",
     "java/src/org/chromium/chrome/browser/language/settings/LanguagesManager.java",
     "java/src/org/chromium/chrome/browser/language/settings/NeverTranslateListFragment.java",
+    "java/src/org/chromium/chrome/browser/language/settings/SelectLanguageFragment.java",
 
     # Todo(https://crbug.com/1176981): Remove cyclical dependancy with Translate bridge.
     "java/src/org/chromium/chrome/browser/translate/TranslateBridge.java",

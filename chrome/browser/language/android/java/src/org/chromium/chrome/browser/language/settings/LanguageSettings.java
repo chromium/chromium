@@ -38,7 +38,7 @@ import org.chromium.components.user_prefs.UserPrefs;
  * seamlessly find and manage their languages preferences across platforms.
  */
 public class LanguageSettings extends PreferenceFragmentCompat
-        implements AddLanguageFragment.Launcher, FragmentSettingsLauncher {
+        implements SelectLanguageFragment.Launcher, FragmentSettingsLauncher {
     // Return codes from launching Intents on preferences.
     private static final int REQUEST_CODE_ADD_ACCEPT_LANGUAGE = 1;
     private static final int REQUEST_CODE_CHANGE_APP_LANGUAGE = 2;
@@ -255,7 +255,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) return;
 
-        String code = data.getStringExtra(AddLanguageFragment.INTENT_SELECTED_LANGUAGE);
+        String code = data.getStringExtra(SelectLanguageFragment.INTENT_SELECTED_LANGUAGE);
         if (requestCode == REQUEST_CODE_ADD_ACCEPT_LANGUAGE) {
             LanguagesManager.getInstance().addToAcceptLanguages(code);
             LanguagesManager.recordAction(
@@ -283,7 +283,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
     }
 
     /**
-     * Overrides AddLanguageFragment.Launcher.launchAddLanguage to handle click events on the
+     * Overrides SelectLanguageFragment.Launcher.launchAddLanguage to handle click events on the
      * Add Language button inside the ContentLanguagesPreference.
      */
     @Override
@@ -331,15 +331,15 @@ public class LanguageSettings extends PreferenceFragmentCompat
     }
 
     /**
-     * Launch the AddLanguageFragment with launch and request codes to select a single language.
+     * Launch the SelectLanguageFragment with launch and request codes to select a single language.
      * @param int launchCode The language options code to filter selectable languages.
      * @param int requestCode The code to return from the select language fragment with.
      */
     private void launchSelectLanguage(
             @LanguagesManager.LanguageListType int languageListType, int requestCode) {
         Intent intent = mSettingsLauncher.createSettingsActivityIntent(
-                getActivity(), AddLanguageFragment.class.getName());
-        intent.putExtra(AddLanguageFragment.INTENT_POTENTIAL_LANGUAGES, languageListType);
+                getActivity(), SelectLanguageFragment.class.getName());
+        intent.putExtra(SelectLanguageFragment.INTENT_POTENTIAL_LANGUAGES, languageListType);
         startActivityForResult(intent, requestCode);
     }
 

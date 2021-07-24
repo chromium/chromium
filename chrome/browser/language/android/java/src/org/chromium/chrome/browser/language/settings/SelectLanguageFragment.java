@@ -35,18 +35,18 @@ import java.util.Locale;
  * Fragment with a {@link RecyclerView} containing a list of languages that users may add to their
  * accept languages. There is a {@link SearchView} on its Actionbar to make a quick lookup.
  */
-public class AddLanguageFragment extends Fragment {
-    // Intent key to pass selected language code from AddLanguageFragment.
-    static final String INTENT_SELECTED_LANGUAGE = "AddLanguageFragment.SelectedLanguages";
+public class SelectLanguageFragment extends Fragment {
+    // Intent key to pass selected language code from SelectLanguageFragment.
+    static final String INTENT_SELECTED_LANGUAGE = "SelectLanguageFragment.SelectedLanguage";
     // Intent key to receive type of languages to populate fragment with.
-    static final String INTENT_POTENTIAL_LANGUAGES = "AddLanguageFragment.PotentialLanguages";
+    static final String INTENT_POTENTIAL_LANGUAGES = "SelectLanguageFragment.PotentialLanguages";
 
     /**
-     * A host to launch AddLanguageFragment and receive the result.
+     * A host to launch SelectLanguageFragment and receive the result.
      */
     interface Launcher {
         /**
-         * Launches AddLanguageFragment.
+         * Launches SelectLanguageFragment.
          */
         void launchAddLanguage();
     }
