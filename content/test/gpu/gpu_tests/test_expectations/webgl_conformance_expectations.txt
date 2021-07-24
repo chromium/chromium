@@ -786,6 +786,9 @@ crbug.com/1186499 [ chromeos chromeos-board-amd64-generic ] conformance/textures
 # Flaky test on chromeos-amd64-generic-rel.
 crbug.com/1202015 [ chromeos chromeos-board-amd64-generic ] conformance/glsl/constructors/glsl-construct-vec3.html [ RetryOnFailure ]
 
+# Failing on chromeos-amd64-generic-rel.
+crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
+
 
 ###########################
 # Lacros/Wayland failures #
