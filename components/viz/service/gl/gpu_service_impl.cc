@@ -597,8 +597,8 @@ void GpuServiceImpl::InitializeWithHost(
       gpu_channel_manager_.get());
 
   // Create and Initialize compositor gpu thread.
-  compositor_gpu_thread_ =
-      CompositorGpuThread::Create(gpu_channel_manager_.get());
+  compositor_gpu_thread_ = CompositorGpuThread::Create(
+      gpu_channel_manager_.get(), !!watchdog_thread_);
 }
 
 void GpuServiceImpl::Bind(
@@ -1137,6 +1137,8 @@ void GpuServiceImpl::OnBackgrounded() {
   DCHECK(io_runner_->BelongsToCurrentThread());
   if (watchdog_thread_)
     watchdog_thread_->OnBackgrounded();
+  if (compositor_gpu_thread_)
+    compositor_gpu_thread_->OnBackgrounded();
 
   main_runner_->PostTask(
       FROM_HERE,
@@ -1154,6 +1156,8 @@ void GpuServiceImpl::OnForegrounded() {
   DCHECK(io_runner_->BelongsToCurrentThread());
   if (watchdog_thread_)
     watchdog_thread_->OnForegrounded();
+  if (compositor_gpu_thread_)
+    compositor_gpu_thread_->OnForegrounded();
 
   main_runner_->PostTask(
       FROM_HERE,

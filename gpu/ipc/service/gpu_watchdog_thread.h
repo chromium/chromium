@@ -82,14 +82,17 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
       public base::TaskObserver,
       public gl::ProgressReporter {
  public:
-  static std::unique_ptr<GpuWatchdogThread> Create(bool start_backgrounded);
+  static std::unique_ptr<GpuWatchdogThread> Create(
+      bool start_backgrounded,
+      const std::string& thread_name);
 
   static std::unique_ptr<GpuWatchdogThread> Create(
       bool start_backgrounded,
       base::TimeDelta timeout,
       int init_factor,
       int restart_factor,
-      bool test_mode);
+      bool test_mode,
+      const std::string& thread_name);
 
   ~GpuWatchdogThread() override;
 
@@ -149,7 +152,8 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   GpuWatchdogThread(base::TimeDelta timeout,
                     int init_factor,
                     int restart_factor,
-                    bool test_mode);
+                    bool test_mode,
+                    const std::string& thread_name);
   void AddPowerObserver();
   void RestartWatchdogTimeoutTask(PauseResumeSource source_of_request);
   void StopWatchdogTimeoutTask(PauseResumeSource source_of_request);

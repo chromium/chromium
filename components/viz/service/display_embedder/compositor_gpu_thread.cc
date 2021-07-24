@@ -24,12 +24,13 @@ namespace viz {
 
 // static
 std::unique_ptr<CompositorGpuThread> CompositorGpuThread::Create(
-    gpu::GpuChannelManager* gpu_channel_manager) {
+    gpu::GpuChannelManager* gpu_channel_manager,
+    bool enable_watchdog) {
   if (!features::IsDrDcEnabled())
     return nullptr;
 
-  auto compositor_gpu_thread =
-      base::WrapUnique(new CompositorGpuThread(gpu_channel_manager));
+  auto compositor_gpu_thread = base::WrapUnique(
+      new CompositorGpuThread(gpu_channel_manager, enable_watchdog));
 
   if (!compositor_gpu_thread->Initialize())
     return nullptr;
@@ -37,17 +38,14 @@ std::unique_ptr<CompositorGpuThread> CompositorGpuThread::Create(
 }
 
 CompositorGpuThread::CompositorGpuThread(
-    gpu::GpuChannelManager* gpu_channel_manager)
+    gpu::GpuChannelManager* gpu_channel_manager,
+    bool enable_watchdog)
     : base::Thread("CompositorGpuThread"),
       gpu_channel_manager_(gpu_channel_manager),
+      enable_watchdog_(enable_watchdog),
       weak_ptr_factory_(this) {}
 
 CompositorGpuThread::~CompositorGpuThread() {
-  base::WaitableEvent event;
-  task_runner()->PostTask(FROM_HERE,
-                          base::BindOnce(&CompositorGpuThread::DestroyOnThread,
-                                         base::Unretained(this), &event));
-  event.Wait();
   base::Thread::Stop();
 }
 
@@ -58,25 +56,24 @@ bool CompositorGpuThread::Initialize() {
     thread_options.priority = base::ThreadPriority::DISPLAY;
   StartWithOptions(std::move(thread_options));
 
-  // Initialize on display compositor gpu thread and wait for init to happen.
-  base::WaitableEvent event;
-  bool success = false;
-  task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&CompositorGpuThread::InitializeOnThread,
-                                base::Unretained(this), &event, &success));
-  event.Wait();
-
-  return success;
+  // Wait until threas is started and Init() is executed in order to return
+  // updated |init_succeded_|.
+  WaitUntilThreadStarted();
+  return init_succeded_;
 }
 
-void CompositorGpuThread::InitializeOnThread(base::WaitableEvent* event,
-                                             bool* success) {
+void CompositorGpuThread::Init() {
+  const auto& gpu_preferences = gpu_channel_manager_->gpu_preferences();
+  if (enable_watchdog_) {
+    watchdog_thread_ = gpu::GpuWatchdogThread::Create(
+        gpu_preferences.watchdog_starts_backgrounded, "GpuWatchdog_Compositor");
+  }
+
   // Create a new share group. Note that this share group is different from the
   // share group which gpu main thread uses.
   auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
   auto surface = gl::init::CreateOffscreenGLSurface(gfx::Size());
 
-  const auto& gpu_preferences = gpu_channel_manager_->gpu_preferences();
   const bool use_passthrough_decoder =
       gpu::gles2::PassthroughCommandDecoderSupported() &&
       gpu_preferences.use_passthrough_cmd_decoder;
@@ -123,17 +120,23 @@ void CompositorGpuThread::InitializeOnThread(base::WaitableEvent* event,
           /*activity_flags=*/nullptr, /*progress_reporter=*/nullptr)) {
     return;
   }
-  *success = true;
-  event->Signal();
+  if (watchdog_thread_)
+    watchdog_thread_->OnInitComplete();
+  init_succeded_ = true;
 }
 
-void CompositorGpuThread::DestroyOnThread(base::WaitableEvent* event) {
+void CompositorGpuThread::CleanUp() {
+  if (watchdog_thread_)
+    watchdog_thread_->OnGpuProcessTearDown();
+
   weak_ptr_factory_.InvalidateWeakPtrs();
   if (shared_context_state_) {
     shared_context_state_->MakeCurrent(nullptr);
     shared_context_state_ = nullptr;
   }
-  event->Signal();
+
+  // WatchDogThread destruction should happen on the CompositorGpuThread.
+  watchdog_thread_.reset();
 }
 
 void CompositorGpuThread::OnMemoryAllocatedChange(
@@ -143,6 +146,16 @@ void CompositorGpuThread::OnMemoryAllocatedChange(
     gpu::GpuPeakMemoryAllocationSource source) {
   gpu_channel_manager_->GetOnMemoryAllocatedChangeCallback().Run(
       id, old_size, new_size, source);
+}
+
+void CompositorGpuThread::OnBackgrounded() {
+  if (watchdog_thread_)
+    watchdog_thread_->OnBackgrounded();
+}
+
+void CompositorGpuThread::OnForegrounded() {
+  if (watchdog_thread_)
+    watchdog_thread_->OnForegrounded();
 }
 
 }  // namespace viz

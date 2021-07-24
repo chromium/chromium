@@ -69,8 +69,9 @@ base::TimeDelta GetGpuWatchdogTimeout() {
 GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
                                      int init_factor,
                                      int restart_factor,
-                                     bool is_test_mode)
-    : base::Thread("GpuWatchdog"),
+                                     bool is_test_mode,
+                                     const std::string& thread_name)
+    : base::Thread(thread_name),
       watchdog_timeout_(timeout),
       watchdog_init_factor_(init_factor),
       watchdog_restart_factor_(restart_factor),
@@ -130,9 +131,10 @@ std::unique_ptr<GpuWatchdogThread> GpuWatchdogThread::Create(
     base::TimeDelta timeout,
     int init_factor,
     int restart_factor,
-    bool is_test_mode) {
+    bool is_test_mode,
+    const std::string& thread_name) {
   auto watchdog_thread = base::WrapUnique(new GpuWatchdogThread(
-      timeout, init_factor, restart_factor, is_test_mode));
+      timeout, init_factor, restart_factor, is_test_mode, thread_name));
   base::Thread::Options options;
   options.timer_slack = base::TIMER_SLACK_MAXIMUM;
   watchdog_thread->StartWithOptions(std::move(options));
@@ -143,9 +145,10 @@ std::unique_ptr<GpuWatchdogThread> GpuWatchdogThread::Create(
 
 // static
 std::unique_ptr<GpuWatchdogThread> GpuWatchdogThread::Create(
-    bool start_backgrounded) {
+    bool start_backgrounded,
+    const std::string& thread_name) {
   return Create(start_backgrounded, GetGpuWatchdogTimeout(), kInitFactor,
-                kRestartFactor, false);
+                kRestartFactor, /*test_mode=*/false, thread_name);
 }
 
 // Android Chrome goes to the background. Called from the gpu thread.

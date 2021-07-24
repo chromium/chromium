@@ -11,6 +11,7 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/ipc/service/gpu_watchdog_thread.h"
 
 namespace gpu {
 class GpuChannelManager;
@@ -23,7 +24,8 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
       public gpu::MemoryTracker::Observer {
  public:
   static std::unique_ptr<CompositorGpuThread> Create(
-      gpu::GpuChannelManager* gpu_channel_manager);
+      gpu::GpuChannelManager* gpu_channel_manager,
+      bool enable_watchdog);
 
   // Disallow copy and assign.
   CompositorGpuThread(const CompositorGpuThread&) = delete;
@@ -35,6 +37,10 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
     return shared_context_state_;
   }
 
+  // base::Thread implementation.
+  void Init() override;
+  void CleanUp() override;
+
   // gpu::MemoryTracker::Observer implementation.
   void OnMemoryAllocatedChange(
       gpu::CommandBufferId id,
@@ -42,16 +48,24 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
       uint64_t new_size,
       gpu::GpuPeakMemoryAllocationSource source) override;
 
+  void OnBackgrounded();
+  void OnForegrounded();
+
  private:
-  explicit CompositorGpuThread(gpu::GpuChannelManager* gpu_channel_manager);
+  CompositorGpuThread(gpu::GpuChannelManager* gpu_channel_manager,
+                      bool enable_watchdog);
 
   bool Initialize();
 
-  // Runs on compositor gpu thread.
-  void InitializeOnThread(base::WaitableEvent* event, bool* success);
-  void DestroyOnThread(base::WaitableEvent* event);
-
   gpu::GpuChannelManager* gpu_channel_manager_;
+  const bool enable_watchdog_;
+  bool init_succeded_ = false;
+
+  // WatchdogThread to monitor CompositorGpuThread. Ensure that the members
+  // which needs to be monitored by |watchdog_thread_| should be destroyed
+  // before it by either adding them below it or explicitly destroying them
+  // before it.
+  std::unique_ptr<gpu::GpuWatchdogThread> watchdog_thread_;
   scoped_refptr<gpu::SharedContextState> shared_context_state_;
 
   base::WeakPtrFactory<CompositorGpuThread> weak_ptr_factory_;

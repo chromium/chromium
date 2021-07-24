@@ -69,11 +69,11 @@ void GpuWatchdogTest::SetUp() {
 
   // Set watchdog timeout to 1000 milliseconds
   watchdog_thread_ = gpu::GpuWatchdogThread::Create(
-      /*start_backgrounded*/ false,
-      /*timeout*/ kGpuWatchdogTimeoutForTesting,
-      /*init_factor*/ kInitFactor,
-      /*restart_factor*/ kRestartFactor,
-      /*test_mode*/ true);
+      /*start_backgrounded=*/false,
+      /*timeout=*/kGpuWatchdogTimeoutForTesting,
+      /*init_factor=*/kInitFactor,
+      /*restart_factor=*/kRestartFactor,
+      /*test_mode=*/true, /*thread_name=*/"GpuWatchdog");
 }
 
 void GpuWatchdogPowerTest::SetUp() {

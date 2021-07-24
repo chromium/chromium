@@ -302,7 +302,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // consuming has completed, otherwise the process is liable to be aborted.
   if (enable_watchdog && !delayed_watchdog_enable) {
     watchdog_thread_ = GpuWatchdogThread::Create(
-        gpu_preferences_.watchdog_starts_backgrounded);
+        gpu_preferences_.watchdog_starts_backgrounded, "GpuWatchdog");
     watchdog_init.SetGpuWatchdogPtr(watchdog_thread_.get());
 
 #if defined(OS_WIN)
@@ -625,7 +625,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     watchdog_init.SetGpuWatchdogPtr(nullptr);
   } else if (enable_watchdog && delayed_watchdog_enable) {
     watchdog_thread_ = GpuWatchdogThread::Create(
-        gpu_preferences_.watchdog_starts_backgrounded);
+        gpu_preferences_.watchdog_starts_backgrounded, "GpuWatchdog");
     watchdog_init.SetGpuWatchdogPtr(watchdog_thread_.get());
   }
 
