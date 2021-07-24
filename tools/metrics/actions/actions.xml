@@ -4619,6 +4619,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ChromeOS.Settings.Languages.Browser">
+  <obsolete>
+    Deprecated as of M88, as the languages browser settings page has been
+    replaced with the languages OS settings page.
+  </obsolete>
   <owner>myy@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <description>

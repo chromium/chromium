@@ -74036,6 +74036,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="SettingsLanguagesPageBrowserInteraction">
+  <obsolete>
+    Deprecated as of M88, as the languages browser settings page has been
+    replaced with the languages OS settings page.
+  </obsolete>
   <int value="0" label="Switch system language"/>
   <int value="1" label="Restart"/>
   <int value="2" label="Open custom spell check"/>
