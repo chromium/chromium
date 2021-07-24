@@ -66,7 +66,19 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
             ConstraintSpace().TargetStretchBlockSizes()) {
       target_stretch_ascent = target_stretch_block_sizes->ascent;
       target_stretch_descent = target_stretch_block_sizes->descent;
-      // TODO(http://crbug.com/1124301) Implement symmetric attribute.
+      if (element->HasBooleanProperty(MathMLOperatorElement::kSymmetric)) {
+        // "If the operator has the symmetric property then set the target
+        // sizes Tascent and Tdescent to Sascent and Sdescent respectively:
+        // Sascent = max( Uascent − AxisHeight, Udescent + AxisHeight ) +
+        // AxisHeight
+        // Sdescent = max( Uascent − AxisHeight, Udescent + AxisHeight ) −
+        // AxisHeight"
+        LayoutUnit axis = MathAxisHeight(Style());
+        LayoutUnit half_target_stretch_size = std::max(
+            target_stretch_ascent - axis, target_stretch_descent + axis);
+        target_stretch_ascent = half_target_stretch_size + axis;
+        target_stretch_descent = half_target_stretch_size - axis;
+      }
       // TODO(http://crbug.com/1124301) Implement minsize, maxsize attributes.
       operator_target_size = target_stretch_ascent + target_stretch_descent;
     }

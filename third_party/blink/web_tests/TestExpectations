@@ -1253,7 +1253,8 @@ crbug.com/1127222 external/wpt/mathml/presentation-markup/mrow/legacy-mrow-like-
 # into account fallback parameters.
 crbug.com/6606 [ Win ] external/wpt/mathml/presentation-markup/fractions/frac-1.html [ Failure ]
 
-# This test fails on macOS.
+# Tests failing only on certain platforms.
+crbug.com/6606 [ Win ] external/wpt/mathml/presentation-markup/operators/mo-axis-height-1.html [ Failure ]
 crbug.com/6606 [ Mac ] external/wpt/mathml/relations/text-and-math/use-typo-metrics-1.html [ Failure ]
 
 # These tests fail because we don't support the MathML href attribute, which is

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL AxisHeight (size variant) assert_approx_equals: mo: size expected 140 +/- 5 but got 70
-FAIL AxisHeight (glyph assembly) assert_approx_equals: mo: size expected 300 +/- 5 but got 200
-Harness: the test ran to completion.
-
