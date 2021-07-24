@@ -12,6 +12,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/user_manager/user_type.h"
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -84,6 +85,11 @@ class ASH_EXPORT BluetoothPowerController
 
   // Sets the bluetooth power given the ready adapter.
   void SetBluetoothPowerOnAdapterReady();
+
+  // Called by dbus:: on completion of the D-Bus method call to set power state
+  // on the device.
+  void OnSetBluetoothPower(device::PoweredStateOperation power_operation,
+                           bool success);
 
   using BluetoothTask = base::OnceClosure;
 

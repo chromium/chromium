@@ -309,6 +309,16 @@ void RecordDeviceSelectionDuration(base::TimeDelta duration,
   }
 }
 
+void RecordPoweredStateOperationResult(PoweredStateOperation operation,
+                                       bool success) {
+  std::string operation_name =
+      operation == PoweredStateOperation::kEnable ? "Enable" : "Disable";
+
+  base::UmaHistogramBoolean(base::StrCat({"Bluetooth.ChromeOS.PoweredState.",
+                                          operation_name, ".Result"}),
+                            success);
+}
+
 void RecordPoweredState(bool is_powered) {
   base::UmaHistogramBoolean("Bluetooth.ChromeOS.PoweredState", is_powered);
 }

@@ -30,6 +30,11 @@ enum class DeviceSelectionUISurfaces {
   kSystemTray,
 };
 
+enum class PoweredStateOperation {
+  kEnable,
+  kDisable,
+};
+
 enum class UserInitiatedReconnectionUISurfaces {
   kSettings,
   kSystemTray,
@@ -97,6 +102,11 @@ DEVICE_BLUETOOTH_EXPORT void RecordDeviceSelectionDuration(
     DeviceSelectionUISurfaces surface,
     bool was_paired,
     BluetoothTransport transport);
+
+// Record the result of device's Bluetooth being powered on or off.
+DEVICE_BLUETOOTH_EXPORT void RecordPoweredStateOperationResult(
+    PoweredStateOperation operation,
+    bool success);
 
 // Record each time the local device's Bluetooth is powered on or off.
 DEVICE_BLUETOOTH_EXPORT void RecordPoweredState(bool is_powered);

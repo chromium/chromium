@@ -119,6 +119,11 @@ TEST_F(BluetoothPowerControllerNoSessionTest, ToggleBluetoothEnabled) {
   histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
                                      0);
 
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 0);
+
   // Toggling bluetooth on/off when there is no user session should affect
   // local state prefs.
   EXPECT_FALSE(
@@ -133,6 +138,10 @@ TEST_F(BluetoothPowerControllerNoSessionTest, ToggleBluetoothEnabled) {
                                      2);
   histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
                                      1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 2);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 1);
 
   // Toggling bluetooth on/off when there is user session should affect
   // user prefs.
@@ -149,6 +158,10 @@ TEST_F(BluetoothPowerControllerNoSessionTest, ToggleBluetoothEnabled) {
                                      3);
   histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
                                      2);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 3);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 2);
 }
 
 // Tests that BluetoothPowerController listens to local state pref changes
@@ -159,6 +172,10 @@ TEST_F(BluetoothPowerControllerTest, ListensPrefChangesLocalState) {
                                      1);
   histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
                                      0);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 0);
   StartWatchingLocalStatePrefsChanges();
 
   // Makes sure we start with bluetooth power off.
@@ -174,6 +191,10 @@ TEST_F(BluetoothPowerControllerTest, ListensPrefChangesLocalState) {
                                      1);
   histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
                                      1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 1);
 
   // Power should be turned off when pref changes to disabled.
   local_state()->SetBoolean(prefs::kSystemBluetoothAdapterEnabled, false);
@@ -183,6 +204,10 @@ TEST_F(BluetoothPowerControllerTest, ListensPrefChangesLocalState) {
                                      2);
   histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
                                      1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 2);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 1);
 }
 
 // Tests that BluetoothPowerController listens to active user pref changes
@@ -214,6 +239,10 @@ TEST_F(BluetoothPowerControllerTest, ListensPrefChangesLongQueue) {
                                      1);
   histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
                                      0);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 0);
   AddUserSessionAndStartWatchingPrefsChanges(kUser1Email);
 
   // Makes sure we start with bluetooth power off.
@@ -241,6 +270,10 @@ TEST_F(BluetoothPowerControllerTest, ListensPrefChangesLongQueue) {
                                      1);
   histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
                                      1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 1);
 }
 
 // Tests how BluetoothPowerController applies the local state pref when
@@ -272,6 +305,10 @@ TEST_F(BluetoothPowerControllerTest, ApplyBluetoothLocalStatePrefOn) {
                                      1);
   histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
                                      0);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 0);
 
   // Set the pref to true.
   local_state()->SetBoolean(prefs::kSystemBluetoothAdapterEnabled, true);
@@ -283,6 +320,10 @@ TEST_F(BluetoothPowerControllerTest, ApplyBluetoothLocalStatePrefOn) {
                                      1);
   histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
                                      1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 1);
 
   // Start with bluetooth power off.
   GetBluetoothAdapter()->SetPowered(false, base::DoNothing(),
@@ -299,6 +340,10 @@ TEST_F(BluetoothPowerControllerTest, ApplyBluetoothLocalStatePrefOn) {
                                      1);
   histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
                                      2);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 2);
 }
 
 // Tests how BluetoothPowerController applies the user pref when
