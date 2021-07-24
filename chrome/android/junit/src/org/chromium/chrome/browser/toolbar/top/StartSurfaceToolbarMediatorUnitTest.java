@@ -706,6 +706,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
     @Test
     public void testShowHomeButtonIPH() {
         createMediator(false, true, false, false);
+        mMediator.setHomeButtonView(mHomeButtonView);
 
         // Show tab switcher surface and the IPH should show.
         assertFalse(mStartSurfaceHomeButtonIPHController.isShowingHomeButtonIPHForTesting());
