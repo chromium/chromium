@@ -158,6 +158,20 @@ TEST_F(TranslateUIDelegateTest, SetLanguageBlocked) {
   EXPECT_FALSE(prefs->IsBlockedLanguage("ar"));
 }
 
+TEST_F(TranslateUIDelegateTest, SetShouldAlwaysTranslateUnblocksSite) {
+  std::unique_ptr<TranslatePrefs> prefs(client_->GetTranslatePrefs());
+
+  // Add example.com to the translate site blocklist.
+  const GURL url("https://www.example.com/hello/world?fg=1");
+  driver_.SetLastCommittedURL(url);
+  delegate_->SetNeverPrompt(true);
+  EXPECT_TRUE(prefs->IsSiteOnNeverPromptList("www.example.com"));
+
+  // Setting always translate should remove the site from the blocklist.
+  delegate_->SetAlwaysTranslate(true);
+  EXPECT_FALSE(prefs->IsSiteOnNeverPromptList("www.example.com"));
+}
+
 TEST_F(TranslateUIDelegateTest, ShouldAlwaysTranslateBeCheckedByDefaultNever) {
   std::unique_ptr<TranslatePrefs> prefs(client_->GetTranslatePrefs());
   prefs->ResetTranslationAcceptedCount("ar");

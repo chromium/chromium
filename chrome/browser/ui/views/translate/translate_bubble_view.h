@@ -150,6 +150,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
                            AlwaysTranslateTriggerTranslation);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
+                           AlwaysTranslateWithNeverTranslateSite);
+  FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
                            ShowOriginalUpdatesViewState);
 
   TranslateBubbleView(views::View* anchor_view,

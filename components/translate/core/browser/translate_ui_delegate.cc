@@ -450,6 +450,10 @@ void TranslateUIDelegate::SetAlwaysTranslate(bool value) {
       translate_manager_->RecordTranslateEvent(
           metrics::TranslateEventProto::USER_ALWAYS_TRANSLATE_LANGUAGE);
     }
+    // If a language is being added to the always translate list on a
+    // blocklisted site, remove that site from the blocklist.
+    if (IsSiteOnNeverPromptList())
+      SetNeverPrompt(false);
   } else {
     prefs_->RemoveLanguagePairFromAlwaysTranslateList(source_lang, target_lang);
   }
