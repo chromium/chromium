@@ -84,7 +84,8 @@ constexpr char kFormHTMLFile[] = "/readonly_form.html";
 
 // Tests that normal fields have Manual Fallback icons after tapping a readonly
 // field.
-- (void)testNormalFieldHasManualFallbackIconsAfterReadonlyField {
+// TODO(crbug.com/1115321): Disabled due to flakiness.
+- (void)DISABLED_testNormalFieldHasManualFallbackIconsAfterReadonlyField {
   // Tap the readonly field.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementReadonly)];
