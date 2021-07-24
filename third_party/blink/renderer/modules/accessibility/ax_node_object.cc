@@ -1884,10 +1884,12 @@ AXObject* AXNodeObject::InPageLinkTarget() const {
   DCHECK(ax_target->IsWebArea() || ax_target->GetElement())
       << "The link target is expected to be a document or an element: "
       << ax_target->ToString(true, true) << "\n* URL fragment = " << fragment;
-  DCHECK(!ax_target->AccessibilityIsIgnored())
-      << "The link target cannot be ignored: "
-      << ax_target->ToString(true, true) << "\n* URL fragment = " << fragment;
 #endif
+
+  // Usually won't be ignored, but could be e.g. if aria-hidden.
+  if (ax_target->AccessibilityIsIgnored())
+    return nullptr;
+
   return ax_target;
 }
 
