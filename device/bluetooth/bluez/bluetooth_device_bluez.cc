@@ -36,6 +36,10 @@
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
+#endif
+
 using device::BluetoothDevice;
 using device::BluetoothRemoteGattService;
 using device::BluetoothSocket;
@@ -118,6 +122,26 @@ BluetoothDevice::ConnectErrorCode DBusErrorToConnectError(
     error_code = BluetoothDevice::ERROR_AUTH_TIMEOUT;
   }
   return error_code;
+}
+
+void OnForgetSuccess(base::OnceClosure callback) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  device::RecordForgetResult(device::ForgetResult::kSuccess);
+#endif
+  std::move(callback).Run();
+}
+
+void OnForgetError(dbus::ObjectPath object_path,
+                   bluez::BluetoothDeviceBlueZ::ErrorCallback error_callback,
+                   const std::string& error_name,
+                   const std::string& error_message) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  device::RecordForgetResult(device::ForgetResult::kFailure);
+#endif
+  BLUETOOTH_LOG(ERROR) << object_path.value()
+                       << ": Failed to remove device: " << error_name << ": "
+                       << error_message;
+  std::move(error_callback).Run();
 }
 
 }  // namespace
@@ -663,10 +687,9 @@ void BluetoothDeviceBlueZ::Forget(base::OnceClosure callback,
                                   ErrorCallback error_callback) {
   BLUETOOTH_LOG(EVENT) << object_path_.value() << ": Removing device";
   bluez::BluezDBusManager::Get()->GetBluetoothAdapterClient()->RemoveDevice(
-      adapter()->object_path(), object_path_, std::move(callback),
-      base::BindOnce(&BluetoothDeviceBlueZ::OnForgetError,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(error_callback)));
+      adapter()->object_path(), object_path_,
+      base::BindOnce(&OnForgetSuccess, std::move(callback)),
+      base::BindOnce(&OnForgetError, object_path_, std::move(error_callback)));
 }
 
 void BluetoothDeviceBlueZ::ConnectToService(
@@ -1124,15 +1147,6 @@ void BluetoothDeviceBlueZ::OnDisconnectError(ErrorCallback error_callback,
   BLUETOOTH_LOG(ERROR) << object_path_.value()
                        << ": Failed to disconnect device: " << error_name
                        << ": " << error_message;
-  std::move(error_callback).Run();
-}
-
-void BluetoothDeviceBlueZ::OnForgetError(ErrorCallback error_callback,
-                                         const std::string& error_name,
-                                         const std::string& error_message) {
-  BLUETOOTH_LOG(ERROR) << object_path_.value()
-                       << ": Failed to remove device: " << error_name << ": "
-                       << error_message;
   std::move(error_callback).Run();
 }
 

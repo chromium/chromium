@@ -41,6 +41,8 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/test/metrics/histogram_tester.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/public/mojom/ble_scan_parser.mojom.h"
@@ -350,6 +352,9 @@ class BluetoothBlueZTest : public testing::Test {
   std::string last_client_error_;
   std::vector<std::unique_ptr<BluetoothDiscoverySession>> discovery_sessions_;
   BluetoothAdapterProfileBlueZ* adapter_profile_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::HistogramTester histogram_tester_;
+#endif
 
  private:
   // Some tests use a message loop since background processing is simulated;
@@ -2356,6 +2361,11 @@ TEST_F(BluetoothBlueZTest, ForgetDevice) {
 
   EXPECT_EQ(1, observer.device_removed_count());
   EXPECT_EQ(address, observer.last_device_address());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  histogram_tester_.ExpectBucketCount("Bluetooth.ChromeOS.Forget.Result",
+                                      device::ForgetResult::kSuccess, 1);
+#endif
 
   // GetDevices shouldn't return the device either.
   devices = adapter_->GetDevices();

@@ -285,13 +285,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
                          const std::string& error_name,
                          const std::string& error_message);
 
-  // Called by dbus:: on failure of the D-Bus method call to unpair the device;
-  // there is no matching completion call since this object is deleted in the
-  // process of unpairing.
-  void OnForgetError(ErrorCallback error_callback,
-                     const std::string& error_name,
-                     const std::string& error_message);
-
   // The dbus object path of the device object.
   dbus::ObjectPath object_path_;
 

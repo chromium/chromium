@@ -35925,6 +35925,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="21" label="IAM missing permission"/>
 </enum>
 
+<enum name="ForgetResult">
+  <int value="0" label="Failure"/>
+  <int value="1" label="Success"/>
+</enum>
+
 <enum name="FormDataDeserializationStatus">
   <int value="0" label="Login database success"/>
   <int value="1" label="Login database failure"/>
