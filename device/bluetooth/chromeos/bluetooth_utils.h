@@ -78,6 +78,14 @@ enum class ForgetResult {
   kMaxValue = kSuccess,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DisconnectResult {
+  kFailure = 0,
+  kSuccess = 1,
+  kMaxValue = kSuccess
+};
+
 // Return filtered devices based on the filter type and max number of devices.
 DEVICE_BLUETOOTH_EXPORT device::BluetoothAdapter::DeviceList
 FilterBluetoothDeviceList(const BluetoothAdapter::DeviceList& devices,
@@ -113,6 +121,11 @@ DEVICE_BLUETOOTH_EXPORT void RecordPoweredState(bool is_powered);
 
 // Record each time a device forget attempt completes.
 DEVICE_BLUETOOTH_EXPORT void RecordForgetResult(ForgetResult forget_result);
+
+// Record the result of each bluetooth device disconnect attempt.
+DEVICE_BLUETOOTH_EXPORT void RecordDisconnectResult(
+    DisconnectResult disconnect_result,
+    BluetoothTransport transport);
 
 // Record each time a bluetooth UI surface is displayed.
 DEVICE_BLUETOOTH_EXPORT void RecordUiSurfaceDisplayed(

@@ -2577,6 +2577,15 @@ TEST_F(BluetoothBlueZTest, DisconnectDevice) {
 
   BluetoothDevice* device = adapter_->GetDevice(
       bluez::FakeBluetoothDeviceClient::kPairedDeviceAddress);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bluez::FakeBluetoothDeviceClient::Properties* properties =
+      fake_bluetooth_device_client_->GetProperties(dbus::ObjectPath(
+          bluez::FakeBluetoothDeviceClient::kPairedDevicePath));
+  properties->type.ReplaceValue(BluetoothDeviceClient::kTypeBredr);
+  properties->type.set_valid(true);
+#endif
+
   ASSERT_TRUE(device != nullptr);
   ASSERT_TRUE(device->IsPaired());
 
@@ -2603,6 +2612,14 @@ TEST_F(BluetoothBlueZTest, DisconnectDevice) {
   EXPECT_EQ(device, observer.last_device());
 
   EXPECT_FALSE(device->IsConnected());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  histogram_tester_.ExpectBucketCount("Bluetooth.ChromeOS.Disconnect.Result",
+                                      device::DisconnectResult::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Bluetooth.ChromeOS.Disconnect.Result.Classic",
+      device::DisconnectResult::kSuccess, 1);
+#endif
 }
 
 TEST_F(BluetoothBlueZTest, DisconnectUnconnectedDevice) {

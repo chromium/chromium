@@ -150,6 +150,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="BluetoothPairedStates" variants="BluetoothPairedStates"/>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.Disconnect.Result{BluetoothTransportTypes}"
+    enum="DisconnectResult" expires_after="2022-07-21">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Emitted each time a bluetooth device disconnect attempt completes.
+    {BluetoothTransportTypes}
+  </summary>
+  <token key="BluetoothTransportTypes" variants="BluetoothTransportTypes">
+    <variant name=""/>
+  </token>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.Forget.Result" enum="ForgetResult"
     expires_after="2022-07-21">
   <owner>khorimoto@chromium.org</owner>

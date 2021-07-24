@@ -20198,6 +20198,11 @@ Called by update_debug_scenarios.py.-->
   <int value="13" label="FontFilePathAndTtcIndex: file count invalid"/>
 </enum>
 
+<enum name="DisconnectResult">
+  <int value="0" label="Failure"/>
+  <int value="1" label="Success"/>
+</enum>
+
 <enum name="DiscoveryNetworkMonitorConnectionType">
   <int value="0" label="Wifi"/>
   <int value="1" label="Ethernet"/>

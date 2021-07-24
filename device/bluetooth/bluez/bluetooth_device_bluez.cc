@@ -1137,6 +1137,10 @@ void BluetoothDeviceBlueZ::OnSetTrusted(bool success) {
 }
 
 void BluetoothDeviceBlueZ::OnDisconnect(base::OnceClosure callback) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  device::RecordDisconnectResult(device::DisconnectResult::kSuccess,
+                                 /*transport=*/GetType());
+#endif
   BLUETOOTH_LOG(EVENT) << object_path_.value() << ": Disconnected";
   std::move(callback).Run();
 }
@@ -1144,6 +1148,10 @@ void BluetoothDeviceBlueZ::OnDisconnect(base::OnceClosure callback) {
 void BluetoothDeviceBlueZ::OnDisconnectError(ErrorCallback error_callback,
                                              const std::string& error_name,
                                              const std::string& error_message) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  device::RecordDisconnectResult(device::DisconnectResult::kFailure,
+                                 /*transport=*/GetType());
+#endif
   BLUETOOTH_LOG(ERROR) << object_path_.value()
                        << ": Failed to disconnect device: " << error_name
                        << ": " << error_message;
