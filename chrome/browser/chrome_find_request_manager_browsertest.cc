@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
@@ -94,9 +95,11 @@ class ChromeFindRequestManagerTest : public InProcessBrowserTest {
 };
 
 class ChromeFindRequestManagerTestWithPdfPartialLoading
-    : public ChromeFindRequestManagerTest {
+    : public base::test::WithFeatureOverride,
+      public ChromeFindRequestManagerTest {
  public:
-  ChromeFindRequestManagerTestWithPdfPartialLoading() {
+  ChromeFindRequestManagerTestWithPdfPartialLoading()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {
     feature_list_.InitWithFeatures(
         {chrome_pdf::features::kPdfIncrementalLoading,
          chrome_pdf::features::kPdfPartialLoading},
@@ -106,6 +109,10 @@ class ChromeFindRequestManagerTestWithPdfPartialLoading
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+// TODO(crbug.com/702993): Stop testing both modes after unseasoned launches.
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    ChromeFindRequestManagerTestWithPdfPartialLoading);
 
 // Tests searching in a full-page PDF.
 // Flaky on Windows ASAN: crbug.com/1030368.
@@ -174,7 +181,7 @@ void SendRangeResponse(net::test_server::ControllableHttpResponse* response,
 
 // Tests searching in a PDF received in chunks via range-requests.  See also
 // https://crbug.com/1027173.
-IN_PROC_BROWSER_TEST_F(ChromeFindRequestManagerTestWithPdfPartialLoading,
+IN_PROC_BROWSER_TEST_P(ChromeFindRequestManagerTestWithPdfPartialLoading,
                        FindInChunkedPDF) {
   constexpr uint32_t kStalledResponseSize =
       chrome_pdf::DocumentLoaderImpl::kDefaultRequestSize + 123;

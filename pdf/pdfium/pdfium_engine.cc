@@ -579,15 +579,6 @@ FontMappingMode PDFiumEngine::GetFontMappingMode() {
   return g_font_mapping_mode;
 }
 
-bool PDFiumEngine::New(const char* url, const char* headers) {
-  url_ = url;
-  if (headers)
-    headers_ = headers;
-  else
-    headers_.clear();
-  return true;
-}
-
 void PDFiumEngine::PageOffsetUpdated(const gfx::Vector2d& page_offset) {
   page_offset_ = page_offset;
 }
@@ -722,18 +713,17 @@ void PDFiumEngine::PostPaint() {
   }
 }
 
-bool PDFiumEngine::HandleDocumentLoad(std::unique_ptr<UrlLoader> loader) {
+bool PDFiumEngine::HandleDocumentLoad(std::unique_ptr<UrlLoader> loader,
+                                      const std::string& original_url) {
   password_tries_remaining_ = kMaxPasswordTries;
   process_when_pending_request_complete_ =
       base::FeatureList::IsEnabled(features::kPdfIncrementalLoading);
 
   if (!doc_loader_set_for_testing_) {
-    auto loader_wrapper =
-        std::make_unique<URLLoaderWrapperImpl>(std::move(loader));
-    loader_wrapper->SetResponseHeaders(headers_);
-
     doc_loader_ = std::make_unique<DocumentLoaderImpl>(this);
-    if (!doc_loader_->Init(std::move(loader_wrapper), url_))
+    if (!doc_loader_->Init(
+            std::make_unique<URLLoaderWrapperImpl>(std::move(loader)),
+            original_url))
       return false;
   }
   document_ = std::make_unique<PDFiumDocument>(doc_loader_.get());

@@ -179,13 +179,7 @@ void URLLoaderWrapperImpl::ReadResponseBodyImpl(ResultCallback callback) {
                      std::move(callback)));
 }
 
-void URLLoaderWrapperImpl::SetResponseHeaders(
-    const std::string& response_headers) {
-  response_headers_ = response_headers;
-  ParseHeaders();
-}
-
-void URLLoaderWrapperImpl::ParseHeaders() {
+void URLLoaderWrapperImpl::ParseHeaders(const std::string& response_headers) {
   content_length_ = -1;
   accept_ranges_bytes_ = false;
   content_encoded_ = false;
@@ -195,11 +189,11 @@ void URLLoaderWrapperImpl::ParseHeaders() {
   byte_range_ = gfx::Range::InvalidRange();
   is_multipart_ = false;
 
-  if (response_headers_.empty())
+  if (response_headers.empty())
     return;
 
-  net::HttpUtil::HeadersIterator it(response_headers_.begin(),
-                                    response_headers_.end(), "\n");
+  net::HttpUtil::HeadersIterator it(response_headers.begin(),
+                                    response_headers.end(), "\n");
   while (it.GetNext()) {
     base::StringPiece name = it.name_piece();
     if (base::LowerCaseEqualsASCII(name, "content-length")) {
@@ -288,7 +282,7 @@ void URLLoaderWrapperImpl::DidRead(ResultCallback callback, int32_t result) {
 }
 
 void URLLoaderWrapperImpl::SetHeadersFromLoader() {
-  SetResponseHeaders(url_loader_->response().headers);
+  ParseHeaders(url_loader_->response().headers);
 }
 
 }  // namespace chrome_pdf

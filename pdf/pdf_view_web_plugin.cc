@@ -670,7 +670,7 @@ std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoaderInternal() {
 void PdfViewWebPlugin::DidOpen(std::unique_ptr<UrlLoader> loader,
                                int32_t result) {
   if (result == Result::kSuccess) {
-    if (!engine()->HandleDocumentLoad(std::move(loader)))
+    if (!engine()->HandleDocumentLoad(std::move(loader), GetURL()))
       DocumentLoadFailed();
   } else {
     NOTIMPLEMENTED();

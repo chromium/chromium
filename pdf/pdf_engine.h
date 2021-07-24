@@ -306,7 +306,6 @@ class PDFEngine {
 
   // Most of these functions are similar to the Pepper functions of the same
   // name, so not repeating the description here unless it's different.
-  virtual bool New(const char* url, const char* headers) = 0;
   virtual void PageOffsetUpdated(const gfx::Vector2d& page_offset) = 0;
   virtual void PluginSizeUpdated(const gfx::Size& size) = 0;
   virtual void ScrolledToXPosition(int position) = 0;
@@ -319,7 +318,6 @@ class PDFEngine {
                      std::vector<gfx::Rect>& ready,
                      std::vector<gfx::Rect>& pending) = 0;
   virtual void PostPaint() = 0;
-  virtual bool HandleDocumentLoad(std::unique_ptr<UrlLoader> loader) = 0;
   virtual bool HandleInputEvent(const blink::WebInputEvent& event) = 0;
   virtual void PrintBegin() = 0;
   virtual std::vector<uint8_t> PrintPages(

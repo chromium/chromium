@@ -176,12 +176,6 @@ export class PDFViewerBaseElement extends PolymerElement {
 
     plugin.setAttribute('original-url', this.originalUrl);
     plugin.setAttribute('src', this.browserApi.getStreamInfo().streamUrl);
-    let headers = '';
-    for (const header in this.browserApi.getStreamInfo().responseHeaders) {
-      headers += header + ': ' +
-          this.browserApi.getStreamInfo().responseHeaders[header] + '\n';
-    }
-    plugin.setAttribute('headers', headers);
 
     plugin.setAttribute('background-color', this.getBackgroundColor());
 

@@ -233,11 +233,14 @@ class PDFExtensionTestWithoutUnseasonedOverride
 
   bool PdfIsExpectedToLoad(const std::string& pdf_file) {
     const char* const kFailingPdfs[] = {
+        // clang-format off
+        "pdf/test-ranges.pdf",
         "pdf_private/accessibility_crash_1.pdf",
         "pdf_private/cfuzz5.pdf",
         "pdf_private/js.pdf",
         "pdf_private/segv-ecx.pdf",
         "pdf_private/tests.pdf",
+        // clang-format on
     };
     for (const char* failing_pdf : kFailingPdfs) {
       if (failing_pdf == pdf_file)

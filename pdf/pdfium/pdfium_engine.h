@@ -81,8 +81,12 @@ class PDFiumEngine : public PDFEngine,
   // Returns the FontMappingMode set during PDFium SDK initialization.
   static FontMappingMode GetFontMappingMode();
 
+  // Starts loading the document from `loader`. Follow-up requests (such as for
+  // partial loading) will use `original_url`.
+  bool HandleDocumentLoad(std::unique_ptr<UrlLoader> loader,
+                          const std::string& original_url);
+
   // PDFEngine:
-  bool New(const char* url, const char* headers) override;
   void PageOffsetUpdated(const gfx::Vector2d& page_offset) override;
   void PluginSizeUpdated(const gfx::Size& size) override;
   void ScrolledToXPosition(int position) override;
@@ -93,7 +97,6 @@ class PDFiumEngine : public PDFEngine,
              std::vector<gfx::Rect>& ready,
              std::vector<gfx::Rect>& pending) override;
   void PostPaint() override;
-  bool HandleDocumentLoad(std::unique_ptr<UrlLoader> loader) override;
   bool HandleInputEvent(const blink::WebInputEvent& event) override;
   void PrintBegin() override;
   std::vector<uint8_t> PrintPages(
@@ -659,8 +662,6 @@ class PDFiumEngine : public PDFEngine,
 
   std::unique_ptr<DocumentLoader> doc_loader_;  // Main document's loader.
   bool doc_loader_set_for_testing_ = false;
-  std::string url_;
-  std::string headers_;
 
   // Set to true if the user is being prompted for their password. Will be set
   // to false after the user finishes getting their password.

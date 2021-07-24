@@ -4,8 +4,8 @@
 
 import {PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
-// Load a plugin with the given paramaters.
-function createPluginForUrl(streamUrl, url, headers, progressCallback) {
+// Load a plugin with the given parameters.
+function createPluginForUrl(streamUrl, url, progressCallback) {
   const plugin = document.createElement('embed');
   plugin.type = 'application/x-google-chrome-pdf';
   plugin.addEventListener('message', function(message) {
@@ -19,22 +19,15 @@ function createPluginForUrl(streamUrl, url, headers, progressCallback) {
   plugin.setAttribute('original-url', url);
   plugin.setAttribute('src', streamUrl);
   plugin.setAttribute('full-frame', '');
-  plugin.setAttribute('headers', headers);
   document.body.appendChild(plugin);
-}
-
-function parseUrl(url) {
-  const a = document.createElement('a');
-  a.href = url;
-  return a;
 }
 
 const tests = [
   // Test that if the plugin is loaded with a URL that redirects it fails.
   function redirectsFail() {
-    const url = parseUrl(viewer.originalUrl);
-    const redirectUrl = url.origin + '/server-redirect?' + viewer.originalUrl;
-    createPluginForUrl(redirectUrl, redirectUrl, '', function(progress) {
+    const base = new URL(viewer.originalUrl);
+    const redirectUrl = new URL('/server-redirect?' + viewer.originalUrl, base);
+    createPluginForUrl(redirectUrl, redirectUrl, function(progress) {
       if (progress === -1) {
         chrome.test.succeed();
       } else {
@@ -46,29 +39,23 @@ const tests = [
   // Test that if the plugin is loaded with a URL that doesn't redirect but
   // subsequent requests do redirect, it fails.
   function partialRedirectsFail() {
-    const url = parseUrl(viewer.originalUrl);
-    const redirectUrl = url.origin + '/server-redirect?' + viewer.originalUrl;
-    // Set the headers manually so that the first request is made using a URL
-    // that doesn't redirect and subsequent requests are made using a URL that
-    // does.
-    const headers = 'Accept-Ranges: bytes\n' +
-        'Content-Length: 101688487\n' +
-        'Content-Type: application/pdf\n';
-    createPluginForUrl(
-        viewer.originalUrl, redirectUrl, headers, function(progress) {
-          if (progress === -1) {
-            chrome.test.succeed();
-          } else {
-            chrome.test.fail();
-          }
-        });
+    const base = new URL(viewer.originalUrl);
+    const partialUrl = new URL('test-ranges.pdf', base);
+    const redirectUrl = new URL('/server-redirect?' + viewer.originalUrl, base);
+    createPluginForUrl(partialUrl, redirectUrl, function(progress) {
+      if (progress === -1) {
+        chrome.test.succeed();
+      } else {
+        chrome.test.fail();
+      }
+    });
   },
 
   // Test that if the plugin is loaded with a URL that doesn't redirect, it
   // succeeds.
   function noRedirectsSucceed() {
     createPluginForUrl(
-        viewer.originalUrl, viewer.originalUrl, '', function(progress) {
+        viewer.originalUrl, viewer.originalUrl, function(progress) {
           if (progress === 100) {
             chrome.test.succeed();
           }

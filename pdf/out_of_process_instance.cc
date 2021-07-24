@@ -467,7 +467,6 @@ bool OutOfProcessInstance::Init(uint32_t argc,
   const char* src_url = nullptr;
   const char* original_url = nullptr;
   const char* top_level_url = nullptr;
-  const char* headers = nullptr;
   for (uint32_t i = 0; i < argc; ++i) {
     if (strcmp(argn[i], "original-url") == 0) {
       original_url = argv[i];
@@ -475,8 +474,6 @@ bool OutOfProcessInstance::Init(uint32_t argc,
       src_url = argv[i];
     } else if (strcmp(argn[i], "top-level-url") == 0) {
       top_level_url = argv[i];
-    } else if (strcmp(argn[i], "headers") == 0) {
-      headers = argv[i];
     } else if (strcmp(argn[i], "full-frame") == 0) {
       set_full_frame(true);
     } else if (strcmp(argn[i], "background-color") == 0) {
@@ -519,7 +516,7 @@ bool OutOfProcessInstance::Init(uint32_t argc,
 #endif  // !BUILDFLAG(ENABLE_INK)
 
   pp::PDF::SetCrashData(this, original_url, top_level_url);
-  return engine()->New(original_url, headers);
+  return true;
 }
 
 void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
@@ -690,7 +687,7 @@ void OutOfProcessInstance::StopFind() {
 void OutOfProcessInstance::DidOpen(std::unique_ptr<UrlLoader> loader,
                                    int32_t result) {
   if (result == PP_OK) {
-    if (!engine()->HandleDocumentLoad(std::move(loader))) {
+    if (!engine()->HandleDocumentLoad(std::move(loader), GetURL())) {
       set_document_load_state(DocumentLoadState::kLoading);
       DocumentLoadFailed();
     }

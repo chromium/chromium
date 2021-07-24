@@ -46,18 +46,15 @@ class URLLoaderWrapperImpl : public URLLoaderWrapper {
                         int buffer_size,
                         ResultCallback callback) override;
 
-  void SetResponseHeaders(const std::string& response_headers);
-
  private:
   void SetHeadersFromLoader();
-  void ParseHeaders();
+  void ParseHeaders(const std::string& response_headers);
   void DidOpen(ResultCallback callback, int32_t result);
   void DidRead(ResultCallback callback, int32_t result);
 
   void ReadResponseBodyImpl(ResultCallback callback);
 
   std::unique_ptr<UrlLoader> url_loader_;
-  std::string response_headers_;
 
   int content_length_ = -1;
   bool accept_ranges_bytes_ = false;

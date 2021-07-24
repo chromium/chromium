@@ -1047,7 +1047,6 @@ void PdfViewPluginBase::HandleResetPrintPreviewModeMessage(
   InitializeEngine(std::make_unique<PDFiumEngine>(
       this, PDFiumFormFiller::ScriptOption::kNoJavaScript));
   engine()->SetGrayscale(is_grayscale);
-  engine()->New(GetURL().c_str(), /*headers=*/nullptr);
 
   paint_manager_.InvalidateRect(gfx::Rect(plugin_rect().size()));
 }
@@ -1557,7 +1556,7 @@ void PdfViewPluginBase::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
   preview_client_ = std::make_unique<PreviewModeClient>(this);
   preview_engine_ = std::make_unique<PDFiumEngine>(
       preview_client_.get(), PDFiumFormFiller::ScriptOption::kNoJavaScript);
-  preview_engine_->HandleDocumentLoad(std::move(loader));
+  preview_engine_->HandleDocumentLoad(std::move(loader), GetURL());
 }
 
 void PdfViewPluginBase::OnPrintPreviewLoaded() {
