@@ -280,8 +280,6 @@ static_library("renderer") {
     sources += [
       "pdf/chrome_pdf_internal_plugin_delegate.cc",
       "pdf/chrome_pdf_internal_plugin_delegate.h",
-      "pdf/chrome_pdf_view_web_plugin_client.cc",
-      "pdf/chrome_pdf_view_web_plugin_client.h",
     ]
 
     deps += [

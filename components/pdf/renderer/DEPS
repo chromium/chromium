@@ -1,6 +1,7 @@
 include_rules = [
   "+content/public/renderer",
   "+content/public/test",
+  "+components/printing/renderer/print_render_frame_helper.h",
   "+components/strings/grit/components_strings.h",
   "+mojo/public/cpp/bindings",
   "+pdf/accessibility_structs.h",
@@ -9,6 +10,7 @@ include_rules = [
   "+pdf/pdf_features.h",
   "+pdf/pdf_view_web_plugin.h",
   "+ppapi",
+  "+printing/buildflags/buildflags.h",
   "+third_party/blink/public",
   "+ui/accessibility",
   "+ui/base",

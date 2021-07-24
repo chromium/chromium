@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "components/pdf/renderer/pdf_internal_plugin_delegate.h"
+#include "components/pdf/renderer/pdf_view_web_plugin_client.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "pdf/mojom/pdf.mojom.h"
@@ -52,7 +53,8 @@ blink::WebPlugin* CreateInternalPlugin(
   render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
       pdf_service_remote.BindNewEndpointAndPassReceiver());
   return new chrome_pdf::PdfViewWebPlugin(
-      delegate->CreateClient(), std::move(pdf_service_remote), params);
+      std::make_unique<PdfViewWebPluginClient>(render_frame),
+      std::move(pdf_service_remote), params);
 }
 
 }  // namespace pdf

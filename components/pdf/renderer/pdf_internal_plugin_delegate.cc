@@ -4,10 +4,6 @@
 
 #include "components/pdf/renderer/pdf_internal_plugin_delegate.h"
 
-#include <memory>
-
-#include "pdf/pdf_view_web_plugin.h"
-
 namespace pdf {
 
 PdfInternalPluginDelegate::PdfInternalPluginDelegate() = default;
@@ -16,11 +12,6 @@ PdfInternalPluginDelegate::~PdfInternalPluginDelegate() = default;
 bool PdfInternalPluginDelegate::IsAllowedFrame(
     const blink::WebFrame& frame) const {
   return false;
-}
-
-std::unique_ptr<chrome_pdf::PdfViewWebPlugin::Client>
-PdfInternalPluginDelegate::CreateClient() {
-  return nullptr;
 }
 
 }  // namespace pdf

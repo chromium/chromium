@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/pdf/chrome_pdf_view_web_plugin_client.h"
+#include "components/pdf/renderer/pdf_view_web_plugin_client.h"
 
 #include "base/check.h"
 #include "printing/buildflags/buildflags.h"
@@ -12,17 +12,21 @@
 #include "components/printing/renderer/print_render_frame_helper.h"
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
-ChromePdfViewWebPluginClient::ChromePdfViewWebPluginClient(
+namespace pdf {
+
+PdfViewWebPluginClient::PdfViewWebPluginClient(
     content::RenderFrame* render_frame)
     : render_frame_(render_frame) {
   DCHECK(render_frame_);
 }
 
-ChromePdfViewWebPluginClient::~ChromePdfViewWebPluginClient() = default;
+PdfViewWebPluginClient::~PdfViewWebPluginClient() = default;
 
-void ChromePdfViewWebPluginClient::Print(const blink::WebElement& element) {
+void PdfViewWebPluginClient::Print(const blink::WebElement& element) {
   DCHECK(!element.IsNull());
 #if BUILDFLAG(ENABLE_PRINTING)
   printing::PrintRenderFrameHelper::Get(render_frame_)->PrintNode(element);
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 }
+
+}  // namespace pdf

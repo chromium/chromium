@@ -5,12 +5,6 @@
 #ifndef COMPONENTS_PDF_RENDERER_PDF_INTERNAL_PLUGIN_DELEGATE_H_
 #define COMPONENTS_PDF_RENDERER_PDF_INTERNAL_PLUGIN_DELEGATE_H_
 
-#include <memory>
-
-// TODO(crbug.com/1218971): Refactor this; only needed for
-// `chrome_pdf::PdfViewWebPlugin::Client` declaration.
-#include "pdf/pdf_view_web_plugin.h"
-
 namespace blink {
 class WebFrame;
 }  // namespace blink
@@ -26,9 +20,6 @@ class PdfInternalPluginDelegate {
 
   // Returns `true` if the frame is allowed to create the internal PDF plugin.
   virtual bool IsAllowedFrame(const blink::WebFrame& frame) const;
-
-  // Creates the client.
-  virtual std::unique_ptr<chrome_pdf::PdfViewWebPlugin::Client> CreateClient();
 };
 
 }  // namespace pdf

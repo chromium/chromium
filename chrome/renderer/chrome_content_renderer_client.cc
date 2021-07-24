@@ -1051,7 +1051,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
             ASCIIToUTF16(ChromeContentClient::kPDFInternalPluginName)) {
           return pdf::CreateInternalPlugin(
               info, std::move(params), render_frame,
-              std::make_unique<ChromePdfInternalPluginDelegate>(render_frame));
+              std::make_unique<ChromePdfInternalPluginDelegate>());
         }
 #endif  // BUILDFLAG(ENABLE_PDF)
 

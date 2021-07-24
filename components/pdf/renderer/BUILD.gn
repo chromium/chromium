@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//pdf/features.gni")
+import("//printing/buildflags/buildflags.gni")
 
 assert(enable_pdf)
 
@@ -22,6 +23,8 @@ static_library("renderer") {
     "pdf_accessibility_tree.cc",
     "pdf_ax_action_target.cc",
     "pdf_internal_plugin_delegate.cc",
+    "pdf_view_web_plugin_client.cc",
+    "pdf_view_web_plugin_client.h",
     "pepper_pdf_host.cc",
   ]
 
@@ -41,6 +44,7 @@ static_library("renderer") {
     "//ppapi/proxy",
     "//ppapi/proxy:ipc",
     "//ppapi/shared_impl",
+    "//printing/buildflags",
     "//third_party/blink/public:blink",
     "//third_party/blink/public/strings:strings_grit",
     "//third_party/icu",
@@ -54,6 +58,10 @@ static_library("renderer") {
     "//ui/accessibility",
     "//ui/gfx/geometry",
   ]
+
+  if (enable_basic_printing) {
+    deps += [ "//components/printing/renderer" ]
+  }
 }
 
 source_set("unit_tests") {
