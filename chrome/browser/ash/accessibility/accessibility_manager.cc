@@ -16,6 +16,7 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/devicetype.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
@@ -510,6 +511,15 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
     chromevox_loader_->Unload();
   }
   UpdateBrailleImeState();
+}
+
+void AccessibilityManager::EnableSpokenFeedbackWithTutorial() {
+  // Automatically start the tutorial if the device is a Chromebook. Skip the
+  // tutorial for all other device types. We want to avoid showing the tutorial
+  // on CFM, for example, since it isn't typically used by external users.
+  if (chromeos::GetDeviceType() == chromeos::DeviceType::kChromebook)
+    start_chromevox_with_tutorial_ = true;
+  EnableSpokenFeedback(true);
 }
 
 bool AccessibilityManager::IsSpokenFeedbackEnabled() const {
@@ -1494,6 +1504,13 @@ void AccessibilityManager::PostLoadChromeVox() {
   // devices.
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition())
     AccessibilityController::Get()->EnableChromeVoxVolumeSlideGesture();
+
+  if (start_chromevox_with_tutorial_) {
+    ShowChromeVoxTutorial();
+    // Reset the state variable to prevent the tutorial from opening
+    // automatically in the future.
+    start_chromevox_with_tutorial_ = false;
+  }
 }
 
 void AccessibilityManager::PostUnloadChromeVox() {

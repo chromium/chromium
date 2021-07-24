@@ -142,6 +142,10 @@ class AccessibilityManager
   // ChromeVox component extension.
   void EnableSpokenFeedback(bool enabled);
 
+  // Enables spoken feedback. Automatically opens the tutorial once ChromeVox
+  // loads.
+  void EnableSpokenFeedbackWithTutorial();
+
   // Returns true if spoken feedback is enabled, or false if not.
   bool IsSpokenFeedbackEnabled() const;
 
@@ -455,6 +459,8 @@ class AccessibilityManager
   bool spoken_feedback_enabled_ = false;
   bool select_to_speak_enabled_ = false;
   bool switch_access_enabled_ = false;
+
+  bool start_chromevox_with_tutorial_ = false;
 
   // A set of pref names of enabled accessibility features using the
   // accessibility common extension.

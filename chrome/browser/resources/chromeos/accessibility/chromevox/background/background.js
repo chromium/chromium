@@ -117,20 +117,6 @@ export class Background extends ChromeVoxState {
     // Set the darkScreen state to false, since the display will be on whenever
     // ChromeVox starts.
     sessionStorage.setItem('darkScreen', 'false');
-
-    chrome.loginState.getSessionState((sessionState) => {
-      if (sessionState === chrome.loginState.SessionState.IN_OOBE_SCREEN) {
-        chrome.chromeosInfoPrivate.get(['deviceType'], (result) => {
-          if (result['deviceType'] ===
-              chrome.chromeosInfoPrivate.DeviceType.CHROMEBOOK) {
-            // Start the tutorial if the following are true:
-            // 1. We are in the OOBE.
-            // 2. The device is a Chromebook.
-            (new PanelCommand(PanelCommandType.TUTORIAL)).send();
-          }
-        });
-      }
-    });
   }
 
   /**

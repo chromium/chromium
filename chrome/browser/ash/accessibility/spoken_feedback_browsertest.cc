@@ -1508,7 +1508,7 @@ class OobeSpokenFeedbackTest : public OobeBaseTest {
 IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest, SpokenFeedbackInOobe) {
   ui_controls::EnableUIControls();
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
-  AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  AccessibilityManager::Get()->EnableSpokenFeedbackWithTutorial();
 
   // If ChromeVox is started in OOBE, the tutorial is automatically opened.
   sm_.ExpectSpeech("Welcome to ChromeVox!");

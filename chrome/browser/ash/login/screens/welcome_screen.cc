@@ -392,7 +392,7 @@ void WelcomeScreen::OnUserAction(const std::string& action_id) {
   }
   if (action_id == kUserActionActivateChromeVoxFromHint) {
     base::UmaHistogramBoolean("OOBE.WelcomeScreen.AcceptChromeVoxHint", true);
-    AccessibilityManager::Get()->EnableSpokenFeedback(true);
+    AccessibilityManager::Get()->EnableSpokenFeedbackWithTutorial();
     return;
   }
   if (action_id == kUserActionDismissChromeVoxHint) {
