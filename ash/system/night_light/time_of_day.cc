@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/time/time_of_day.h"
+#include "ash/system/night_light/time_of_day.h"
 
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"

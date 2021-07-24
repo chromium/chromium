@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_NIGHT_LIGHT_CONTROLLER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/simple_geo_position.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 
@@ -30,6 +29,22 @@ class ASH_PUBLIC_EXPORT NightLightController {
 
     // kMaxValue is required for UMA_HISTOGRAM_ENUMERATION.
     kMaxValue = kCustom,
+  };
+
+  // Represents a geolocation position fix. It's "simple" because it doesn't
+  // expose all the parameters of the position interface as defined by the
+  // Geolocation API Specification:
+  //   https://dev.w3.org/geo/api/spec-source.html#position_interface
+  // The NightLightController is only interested in valid latitude and
+  // longitude. It also doesn't require any specific accuracy. The more accurate
+  // the positions, the more accurate sunset and sunrise times calculations.
+  // However, an IP-based geoposition is considered good enough.
+  struct SimpleGeoposition {
+    bool operator==(const SimpleGeoposition& other) const {
+      return latitude == other.latitude && longitude == other.longitude;
+    }
+    double latitude;
+    double longitude;
   };
 
   class Observer {

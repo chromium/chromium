@@ -31,7 +31,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
-#include "ash/system/time/time_of_day.h"
+#include "ash/system/night_light/time_of_day.h"
 #include "base/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/ptr_util.h"
