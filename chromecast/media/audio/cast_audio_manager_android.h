@@ -9,9 +9,9 @@
 #include <string>
 
 #include "base/single_thread_task_runner.h"
+#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/media/audio/cast_audio_manager_helper.h"
 #include "media/audio/android/audio_manager_android.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace chromecast {
 namespace media {
@@ -24,7 +24,7 @@ class CastAudioManagerAndroid : public ::media::AudioManagerAndroid {
       CastAudioManagerHelper::Delegate* delegate,
       base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-      mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector);
+      external_service_support::ExternalConnector* connector);
   ~CastAudioManagerAndroid() override;
 
   // AudioManager implementation.

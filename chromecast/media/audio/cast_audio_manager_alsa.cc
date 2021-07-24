@@ -85,7 +85,7 @@ CastAudioManagerAlsa::CastAudioManagerAlsa(
     base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
     scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-    mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector,
+    external_service_support::ExternalConnector* connector,
     bool use_mixer)
     : CastAudioManager(std::move(audio_thread),
                        audio_log_factory,
@@ -93,7 +93,7 @@ CastAudioManagerAlsa::CastAudioManagerAlsa(
                        std::move(backend_factory_getter),
                        browser_task_runner,
                        media_task_runner,
-                       std::move(connector),
+                       connector,
                        use_mixer),
       wrapper_(new ::media::AlsaWrapper()) {}
 

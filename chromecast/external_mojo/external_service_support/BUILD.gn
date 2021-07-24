@@ -5,22 +5,26 @@
 import("//chromecast/chromecast.gni")
 
 source_set("external_service") {
-  sources = [
+  public = [
     "external_connector.h",
-    "external_connector_impl.cc",
     "external_connector_impl.h",
-    "external_service.cc",
     "external_service.h",
   ]
-  public_deps = [ "//base" ]
-  deps = [
-    "//chromecast/external_mojo/broker_service",
+  sources = [
+    "external_connector_impl.cc",
+    "external_service.cc",
+  ]
+  public_deps = [
+    "//base",
     "//chromecast/external_mojo/public/mojom",
     "//chromecast/mojo",
-    "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
-    "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
+  ]
+  deps = [
+    "//chromecast/external_mojo/broker_service",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/platform",
     "//services/service_manager/public/cpp",
   ]
 }

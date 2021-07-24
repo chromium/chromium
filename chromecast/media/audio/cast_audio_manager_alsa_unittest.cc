@@ -11,6 +11,7 @@
 #include "base/test/test_message_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/common/mojom/service_connector.mojom.h"
+#include "chromecast/external_mojo/external_service_support/fake_external_connector.h"
 #include "chromecast/media/audio/mock_cast_audio_manager_helper_delegate.h"
 #include "chromecast/media/cma/test/mock_cma_backend_factory.h"
 #include "media/audio/fake_audio_log_factory.h"
@@ -33,12 +34,6 @@ const ::media::AudioParameters kDefaultAudioParams(
 
 void OnLogMessage(const std::string& message) {}
 
-mojo::PendingRemote<chromecast::mojom::ServiceConnector> CreateConnector() {
-  mojo::PendingRemote<chromecast::mojom::ServiceConnector> remote;
-  ignore_result(remote.InitWithNewPipeAndPassReceiver());
-  return remote;
-}
-
 class CastAudioManagerAlsaTest : public testing::Test {
  public:
   CastAudioManagerAlsaTest() : media_thread_("CastMediaThread") {
@@ -51,7 +46,7 @@ class CastAudioManagerAlsaTest : public testing::Test {
         base::BindRepeating(&CastAudioManagerAlsaTest::GetCmaBackendFactory,
                             base::Unretained(this)),
         base::ThreadTaskRunnerHandle::Get(), media_thread_.task_runner(),
-        CreateConnector(), false);
+        &connector_, false);
   }
 
   ~CastAudioManagerAlsaTest() override { audio_manager_->Shutdown(); }
@@ -63,6 +58,7 @@ class CastAudioManagerAlsaTest : public testing::Test {
   base::Thread media_thread_;
   ::media::FakeAudioLogFactory audio_log_factory_;
   MockCastAudioManagerHelperDelegate delegate_;
+  external_service_support::FakeExternalConnector connector_;
   std::unique_ptr<CastAudioManagerAlsa> audio_manager_;
 };
 

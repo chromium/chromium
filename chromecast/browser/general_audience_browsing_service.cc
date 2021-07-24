@@ -55,12 +55,12 @@ net::NetworkTrafficAnnotationTag CreateNetworkTrafficAnnotationTag() {
 }  // namespace
 
 GeneralAudienceBrowsingService::GeneralAudienceBrowsingService(
+    external_service_support::ExternalConnector* connector,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : shared_url_loader_factory_(shared_url_loader_factory) {
-  GetSystemConnector()->Connect(
-      mojom::kChromecastServiceName,
-      general_audience_browsing_api_key_subject_remote_
-          .BindNewPipeAndPassReceiver());
+  connector->BindInterface(mojom::kChromecastServiceName,
+                           general_audience_browsing_api_key_subject_remote_
+                               .BindNewPipeAndPassReceiver());
   general_audience_browsing_api_key_subject_remote_
       ->AddGeneralAudienceBrowsingAPIKeyObserver(
           general_audience_browsing_api_key_observer_receiver_

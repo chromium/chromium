@@ -348,8 +348,8 @@ bool CastAudioOutputStream::Open() {
            << ", session_id=" << application_session_id;
 
   // Connect to the Multiroom interface and fetch the current info.
-  connector_->Connect(chromecast::mojom::kChromecastServiceName,
-                      multiroom_manager_.BindNewPipeAndPassReceiver());
+  connector_->BindInterface(chromecast::mojom::kChromecastServiceName,
+                            multiroom_manager_.BindNewPipeAndPassReceiver());
   multiroom_manager_.set_disconnect_handler(base::BindOnce(
       &CastAudioOutputStream::OnGetMultiroomInfo, audio_weak_this_, "error",
       chromecast::mojom::MultiroomInfo::New()));

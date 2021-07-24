@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "chromecast/base/task_runner_impl.h"
 #include "chromecast/common/mojom/multiroom.mojom.h"
-#include "chromecast/common/mojom/service_connector.mojom.h"
+#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -135,7 +135,7 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
   double volume_;
   AudioOutputState audio_thread_state_;
   CastAudioManagerHelper* const audio_manager_;
-  chromecast::mojom::ServiceConnector* connector_;
+  external_service_support::ExternalConnector* const connector_;
   const ::media::AudioParameters audio_params_;
   // Valid |device_id_| are kDefaultDeviceId, and kCommunicationsDeviceId
   const std::string device_id_;

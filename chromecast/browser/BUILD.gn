@@ -223,6 +223,8 @@ cast_source_set("browser_base") {
     "//chromecast/common:queryable_data",
     "//chromecast/common/media",
     "//chromecast/common/mojom",
+    "//chromecast/external_mojo/broker_service",
+    "//chromecast/external_mojo/external_service_support:external_service",
     "//chromecast/graphics",
     "//chromecast/media",
     "//chromecast/media:libcast_media",

@@ -12,6 +12,7 @@
 #include "base/unguessable_token.h"
 #include "chromecast/common/mojom/multiroom.mojom.h"
 #include "chromecast/common/mojom/service_connector.mojom.h"
+#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/base/video_resolution_policy.h"
 #include "chromecast/media/service/mojom/video_geometry_setter.mojom.h"
@@ -49,7 +50,8 @@ class CastRenderer : public ::media::Renderer,
                VideoModeSwitcher* video_mode_switcher,
                VideoResolutionPolicy* video_resolution_policy,
                const base::UnguessableToken& overlay_plane_id,
-               ::media::mojom::FrameInterfaceFactory* frame_interfaces);
+               ::media::mojom::FrameInterfaceFactory* frame_interfaces,
+               external_service_support::ExternalConnector* connector);
   ~CastRenderer() final;
   // For CmaBackend implementation, CastRenderer must be connected to
   // VideoGeometrySetterService.
@@ -116,6 +118,7 @@ class CastRenderer : public ::media::Renderer,
   base::UnguessableToken overlay_plane_id_;
   mojo::Remote<chromecast::mojom::ServiceConnector> service_connector_;
   ::media::mojom::FrameInterfaceFactory* frame_interfaces_;
+  external_service_support::ExternalConnector* const connector_;
 
   ::media::RendererClient* client_;
   CastCdmContext* cast_cdm_context_;

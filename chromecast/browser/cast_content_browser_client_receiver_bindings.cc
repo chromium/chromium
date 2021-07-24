@@ -173,7 +173,7 @@ void CastContentBrowserClient::CreateMediaService(
       GetCmaBackendFactory(),
       base::BindRepeating(&CastContentBrowserClient::CreateCdmFactory,
                           base::Unretained(this)),
-      GetVideoModeSwitcher(), GetVideoResolutionPolicy());
+      GetVideoModeSwitcher(), GetVideoResolutionPolicy(), connector());
   mojo_media_client->SetVideoGeometrySetterService(
       video_geometry_setter_service_.get());
 

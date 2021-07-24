@@ -60,13 +60,15 @@ CastRenderer::CastRenderer(
     VideoModeSwitcher* video_mode_switcher,
     VideoResolutionPolicy* video_resolution_policy,
     const base::UnguessableToken& overlay_plane_id,
-    ::media::mojom::FrameInterfaceFactory* frame_interfaces)
+    ::media::mojom::FrameInterfaceFactory* frame_interfaces,
+    external_service_support::ExternalConnector* connector)
     : backend_factory_(backend_factory),
       task_runner_(task_runner),
       video_mode_switcher_(video_mode_switcher),
       video_resolution_policy_(video_resolution_policy),
       overlay_plane_id_(overlay_plane_id),
       frame_interfaces_(frame_interfaces),
+      connector_(connector),
       client_(nullptr),
       cast_cdm_context_(nullptr),
       media_task_runner_factory_(
@@ -160,8 +162,8 @@ void CastRenderer::OnApplicationMediaInfoReceived(
                        chromecast::mojom::MultiroomInfo::New());
     return;
   }
-  service_connector_->Connect(chromecast::mojom::kChromecastServiceName,
-                              multiroom_manager_.BindNewPipeAndPassReceiver());
+  connector_->BindInterface(chromecast::mojom::kChromecastServiceName,
+                            multiroom_manager_.BindNewPipeAndPassReceiver());
   multiroom_manager_.set_disconnect_handler(
       base::BindOnce(&CastRenderer::OnGetMultiroomInfo, base::Unretained(this),
                      media_resource, client, application_media_info.Clone(),

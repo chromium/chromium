@@ -805,6 +805,7 @@ void CastBrowserMainParts::PostMainMessageLoopRun() {
 }
 
 void CastBrowserMainParts::PostCreateThreads() {
+  cast_content_browser_client_->InitializeExternalConnector();
 #if !defined(OS_FUCHSIA)
   heap_profiling::Supervisor* supervisor =
       heap_profiling::Supervisor::GetInstance();

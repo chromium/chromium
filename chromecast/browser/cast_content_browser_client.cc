@@ -49,6 +49,7 @@
 #include "chromecast/browser/media/media_caps_impl.h"
 #include "chromecast/browser/service/cast_service_simple.h"
 #include "chromecast/browser/service_connector.h"
+#include "chromecast/browser/service_manager_connection.h"
 #include "chromecast/browser/service_manager_context.h"
 #include "chromecast/common/cast_content_client.h"
 #include "chromecast/common/global_descriptors.h"
@@ -127,10 +128,6 @@
 #include "extensions/common/constants.h"                            // nogncheck
 #endif
 
-#if BUILDFLAG(ENABLE_EXTERNAL_MOJO_SERVICES)
-#include "chromecast/external_mojo/broker_service/broker_service.h"  // nogncheck
-#endif
-
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_OZONE)
 #include "chromecast/browser/webview/webview_controller.h"
 #endif  // (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_OZONE)
@@ -189,6 +186,15 @@ CastContentBrowserClient::~CastContentBrowserClient() {
   DCHECK(!media_resource_tracker_)
       << "ResetMediaResourceTracker was not called";
   cast_network_contexts_.reset();
+}
+
+void CastContentBrowserClient::InitializeExternalConnector() {
+  auto* service_manager_connector =
+      ServiceManagerConnection::GetForProcess()->GetConnector();
+  broker_service_ =
+      std::make_unique<external_mojo::BrokerService>(service_manager_connector);
+  connector_ = external_service_support::ExternalConnector::Create(
+      broker_service_->CreateConnector());
 }
 
 std::unique_ptr<ServiceConnector>
@@ -280,8 +286,7 @@ CastContentBrowserClient::CreateAudioManager(
       std::move(audio_thread), audio_log_factory, cast_session_id_map,
       base::BindRepeating(&CastContentBrowserClient::GetCmaBackendFactory,
                           base::Unretained(this)),
-      content::GetUIThreadTaskRunner({}), GetMediaTaskRunner(),
-      ServiceConnector::MakeRemote(kBrowserProcessClientId),
+      content::GetUIThreadTaskRunner({}), GetMediaTaskRunner(), connector(),
       BUILDFLAG(ENABLE_CAST_AUDIO_MANAGER_MIXER));
 #elif defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(kEnableChromeAudioManagerAndroid)) {
@@ -294,15 +299,13 @@ CastContentBrowserClient::CreateAudioManager(
       std::move(audio_thread), audio_log_factory, cast_session_id_map,
       base::BindRepeating(&CastContentBrowserClient::GetCmaBackendFactory,
                           base::Unretained(this)),
-      GetMediaTaskRunner(),
-      ServiceConnector::MakeRemote(kBrowserProcessClientId));
+      GetMediaTaskRunner(), connector());
 #else
   return std::make_unique<media::CastAudioManager>(
       std::move(audio_thread), audio_log_factory, cast_session_id_map,
       base::BindRepeating(&CastContentBrowserClient::GetCmaBackendFactory,
                           base::Unretained(this)),
-      content::GetUIThreadTaskRunner({}), GetMediaTaskRunner(),
-      ServiceConnector::MakeRemote(kBrowserProcessClientId),
+      content::GetUIThreadTaskRunner({}), GetMediaTaskRunner(), connector(),
       BUILDFLAG(ENABLE_CAST_AUDIO_MANAGER_MIXER));
 #endif
 }
@@ -960,6 +963,7 @@ void CastContentBrowserClient::CreateGeneralAudienceBrowsingService() {
   DCHECK(!general_audience_browsing_service_);
   general_audience_browsing_service_ =
       std::make_unique<GeneralAudienceBrowsingService>(
+          connector(),
           cast_network_contexts_->GetSystemSharedURLLoaderFactory());
 }
 
@@ -978,7 +982,8 @@ void CastContentBrowserClient::BindMediaRenderer(
       std::make_unique<media::CastRenderer>(
           GetCmaBackendFactory(), std::move(media_task_runner),
           GetVideoModeSwitcher(), GetVideoResolutionPolicy(),
-          base::UnguessableToken::Create(), nullptr /* frame_interfaces */),
+          base::UnguessableToken::Create(), nullptr /* frame_interfaces */,
+          connector()),
       std::move(receiver));
 }
 

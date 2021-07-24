@@ -266,6 +266,7 @@ std::unique_ptr<ExternalConnector> ExternalConnectorImpl::Clone() {
   if (broker_connection_) {
     return std::make_unique<ExternalConnectorImpl>(broker_connection_);
   }
+  // Bind to the current sequence since this is a public method.
   BindConnectorIfNecessary();
   mojo::PendingRemote<external_mojo::mojom::ExternalConnector> remote;
   connector_->Clone(remote.InitWithNewPipeAndPassReceiver());

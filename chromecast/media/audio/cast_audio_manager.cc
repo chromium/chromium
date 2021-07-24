@@ -39,7 +39,8 @@ CastAudioManager::CastAudioManager(
     base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
     scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-    mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector,
+    external_service_support::ExternalConnector* connector,
+
     bool use_mixer)
     : CastAudioManager(std::move(audio_thread),
                        audio_log_factory,
@@ -47,7 +48,7 @@ CastAudioManager::CastAudioManager(
                        std::move(backend_factory_getter),
                        std::move(browser_task_runner),
                        std::move(media_task_runner),
-                       std::move(connector),
+                       connector,
                        use_mixer,
                        false) {}
 
@@ -58,7 +59,7 @@ CastAudioManager::CastAudioManager(
     base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
     scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-    mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector,
+    external_service_support::ExternalConnector* connector,
     bool use_mixer,
     bool force_use_cma_backend_for_output)
     : AudioManagerBase(std::move(audio_thread), audio_log_factory),
@@ -66,7 +67,7 @@ CastAudioManager::CastAudioManager(
               delegate,
               std::move(backend_factory_getter),
               std::move(media_task_runner),
-              std::move(connector)),
+              connector),
       browser_task_runner_(std::move(browser_task_runner)),
       force_use_cma_backend_for_output_(force_use_cma_backend_for_output),
       weak_factory_(this) {

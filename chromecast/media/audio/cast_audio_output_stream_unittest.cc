@@ -18,7 +18,8 @@
 #include "base/time/time.h"
 #include "chromecast/common/mojom/constants.mojom.h"
 #include "chromecast/common/mojom/multiroom.mojom.h"
-#include "chromecast/common/mojom/service_connector.mojom.h"
+#include "chromecast/external_mojo/external_service_support/external_service.h"
+#include "chromecast/external_mojo/external_service_support/fake_external_connector.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
@@ -220,8 +221,7 @@ class FakeCmaBackend : public CmaBackend {
   std::unique_ptr<FakeAudioDecoder> audio_decoder_;
 };
 
-class CastAudioOutputStreamTest : public ::testing::Test,
-                                  public chromecast::mojom::ServiceConnector {
+class CastAudioOutputStreamTest : public ::testing::Test {
  public:
   CastAudioOutputStreamTest()
       : audio_thread_("CastAudioThread"),
@@ -229,7 +229,11 @@ class CastAudioOutputStreamTest : public ::testing::Test,
         format_(::media::AudioParameters::AUDIO_PCM_LINEAR),
         channel_layout_(::media::CHANNEL_LAYOUT_MONO),
         sample_rate_(::media::AudioParameters::kAudioCDSampleRate),
-        frames_per_buffer_(256) {}
+        frames_per_buffer_(256) {
+    chromecast_service_.AddInterface(&multiroom_manager_);
+    connector_.RegisterService(chromecast::mojom::kChromecastServiceName,
+                               &chromecast_service_);
+  }
 
   void SetUp() override {
     CreateAudioManagerForTesting();
@@ -242,25 +246,9 @@ class CastAudioOutputStreamTest : public ::testing::Test,
     audio_thread_.Stop();
   }
 
-  // chromecast::mojom::ServiceConnector:
-  void Connect(const std::string& service_name,
-               mojo::GenericPendingReceiver receiver) override {
-    if (service_name != chromecast::mojom::kChromecastServiceName)
-      return;
-
-    if (auto r = receiver.As<mojom::MultiroomManager>())
-      multiroom_manager_.Bind(r.PassPipe());
-  }
-
  protected:
   CmaBackendFactory* GetCmaBackendFactory() {
     return mock_backend_factory_.get();
-  }
-
-  mojo::PendingRemote<chromecast::mojom::ServiceConnector> CreateConnector() {
-    mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector;
-    connector_receivers_.Add(this, connector.InitWithNewPipeAndPassReceiver());
-    return connector;
   }
 
   void CreateAudioManagerForTesting(bool use_mixer = false) {
@@ -281,7 +269,7 @@ class CastAudioOutputStreamTest : public ::testing::Test,
         base::BindRepeating(&CastAudioOutputStreamTest::GetCmaBackendFactory,
                             base::Unretained(this)),
         task_environment_.GetMainThreadTaskRunner(),
-        audio_thread_.task_runner(), CreateConnector(), use_mixer,
+        audio_thread_.task_runner(), &connector_, use_mixer,
         true /* force_use_cma_backend_for_output*/));
     // A few AudioManager implementations post initialization tasks to
     // audio thread. Flush the thread to ensure that |audio_manager_| is
@@ -357,8 +345,9 @@ class CastAudioOutputStreamTest : public ::testing::Test,
 
   FakeCmaBackend* cma_backend_ = nullptr;
   MockCastAudioManagerHelperDelegate delegate_;
+  external_service_support::FakeExternalConnector connector_;
+  external_service_support::ExternalService chromecast_service_;
   std::unique_ptr<CastAudioManager> audio_manager_;
-  mojo::ReceiverSet<chromecast::mojom::ServiceConnector> connector_receivers_;
   MockMultiroomManager multiroom_manager_;
 
   // AudioParameters used to create AudioOutputStream.

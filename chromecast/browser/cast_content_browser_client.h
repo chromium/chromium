@@ -16,6 +16,8 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chromecast/chromecast_buildflags.h"
+#include "chromecast/external_mojo/broker_service/broker_service.h"
+#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/metrics/cast_metrics_service_client.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/content_browser_client.h"
@@ -97,6 +99,14 @@ class CastContentBrowserClient
   static std::vector<std::string> GetCorsExemptHeadersList();
 
   ~CastContentBrowserClient() override;
+
+  // Generally we discourage Initialize methods. Unfortunately, we can't do
+  // total RAII in ContentBrowserClient subclasses because we're missing a lot
+  // of foundational browser state/context at creation time, such as task
+  // runners. The earliest time that we can create most Cast objects is in
+  // CastBrowserMainParts::PostCreateThreads(), which is when this method is
+  // called.
+  void InitializeExternalConnector();
 
   // Creates a ServiceConnector for routing Cast-related service interface
   // binding requests.
@@ -277,6 +287,14 @@ class CastContentBrowserClient
   CastNetworkContexts* cast_network_contexts() {
     return cast_network_contexts_.get();
   }
+  external_mojo::BrokerService* broker_service() {
+    CHECK(broker_service_);
+    return broker_service_.get();
+  }
+  external_service_support::ExternalConnector* connector() {
+    CHECK(connector_);
+    return connector_.get();
+  }
 
  protected:
   explicit CastContentBrowserClient(
@@ -354,6 +372,11 @@ class CastContentBrowserClient
   std::unique_ptr<media::CmaBackendFactory> cma_backend_factory_;
   std::unique_ptr<GeneralAudienceBrowsingService>
       general_audience_browsing_service_;
+
+  // These need to be accessible from internal code, so they live here instead
+  // of CastBrowserMainParts.
+  std::unique_ptr<external_mojo::BrokerService> broker_service_;
+  std::unique_ptr<external_service_support::ExternalConnector> connector_;
 
   CastFeatureListCreator* cast_feature_list_creator_;
 
