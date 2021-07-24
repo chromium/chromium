@@ -9,9 +9,10 @@
         <iframe src="." id="frame"></iframe>
         <script>
 promise_test(async (test) => {
+    const frameDOMException = frame.contentWindow.DOMException;
     const transform = new frame.contentWindow.SFrameTransform;
     frame.remove();
-    assert_throws_dom("InvalidStateError", () => transform.readable);
+    assert_throws_dom("InvalidStateError", frameDOMException, () => transform.readable);
 });
        </script>
     </body>
