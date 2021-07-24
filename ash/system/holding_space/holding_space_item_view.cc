@@ -116,6 +116,12 @@ class MinimumSizableView : public views::View {
 HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
                                            const HoldingSpaceItem* item)
     : delegate_(delegate), item_(item), item_id_(item->id()) {
+  // Subscribe to be notified of `item_` deletion. Note that it is safe to use a
+  // raw pointer here since `this` owns the callback.
+  item_deletion_subscription_ = item_->AddDeletionCallback(base::BindRepeating(
+      [](HoldingSpaceItemView* view) { view->item_ = nullptr; },
+      base::Unretained(this)));
+
   model_observer_.Observe(HoldingSpaceController::Get()->model());
 
   SetProperty(kIsHoldingSpaceItemViewProperty, true);
@@ -424,6 +430,11 @@ void HoldingSpaceItemView::OnPaintSelect(gfx::Canvas* canvas, gfx::Size size) {
 }
 
 void HoldingSpaceItemView::OnPrimaryActionPressed() {
+  // If the associated `item()` has been deleted then `this` is in the process
+  // of being destroyed and no action needs to be taken.
+  if (!item())
+    return;
+
   DCHECK_NE(primary_action_cancel_->GetVisible(),
             primary_action_pin_->GetVisible());
 
@@ -450,6 +461,11 @@ void HoldingSpaceItemView::OnPrimaryActionPressed() {
 }
 
 void HoldingSpaceItemView::UpdatePrimaryAction() {
+  // If the associated `item()` has been deleted then `this` is in the process
+  // of being destroyed and no action needs to be taken.
+  if (!item())
+    return;
+
   if (!IsMouseHovered()) {
     primary_action_container_->SetVisible(false);
     OnPrimaryActionVisibilityChanged(false);

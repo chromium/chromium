@@ -76,7 +76,7 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
               .AddChild(CreatePrimaryActionBuilder(kPrimaryActionSize)))
       .BuildChildren();
 
-  // Subscribe to be notified of changes to `item_`'s image.
+  // Subscribe to be notified of changes to `item`'s image.
   image_subscription_ = item->image().AddImageSkiaChangedCallback(
       base::BindRepeating(&HoldingSpaceItemScreenCaptureView::UpdateImage,
                           base::Unretained(this)));
@@ -95,7 +95,7 @@ views::View* HoldingSpaceItemScreenCaptureView::GetTooltipHandlerForPoint(
 
 std::u16string HoldingSpaceItemScreenCaptureView::GetTooltipText(
     const gfx::Point& point) const {
-  return item()->GetText();
+  return item() ? item()->GetText() : base::EmptyString16();
 }
 
 void HoldingSpaceItemScreenCaptureView::OnHoldingSpaceItemUpdated(
@@ -132,6 +132,11 @@ void HoldingSpaceItemScreenCaptureView::OnThemeChanged() {
 }
 
 void HoldingSpaceItemScreenCaptureView::UpdateImage() {
+  // If the associated `item()` has been deleted then `this` is in the process
+  // of being destroyed and no action needs to be taken.
+  if (!item())
+    return;
+
   image_->SetImage(item()->image().GetImageSkia(
       kHoldingSpaceScreenCaptureSize,
       /*dark_background=*/AshColorProvider::Get()->IsDarkModeEnabled()));

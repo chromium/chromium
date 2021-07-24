@@ -298,7 +298,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
                                 /*min_size=*/gfx::Size()))))
       .BuildChildren();
 
-  // Subscribe to be notified of changes to `item_`'s image.
+  // Subscribe to be notified of changes to `item`'s image.
   image_subscription_ =
       item->image().AddImageSkiaChangedCallback(base::BindRepeating(
           &HoldingSpaceItemChipView::UpdateImage, base::Unretained(this)));
@@ -398,6 +398,11 @@ void HoldingSpaceItemChipView::OnPaintLabelMask(views::Label* label,
 }
 
 void HoldingSpaceItemChipView::OnSecondaryActionPressed() {
+  // If the associated `item()` has been deleted then `this` is in the process
+  // of being destroyed and no action needs to be taken.
+  if (!item())
+    return;
+
   DCHECK_NE(secondary_action_pause_->GetVisible(),
             secondary_action_resume_->GetVisible());
 
@@ -412,6 +417,11 @@ void HoldingSpaceItemChipView::OnSecondaryActionPressed() {
 }
 
 void HoldingSpaceItemChipView::UpdateImage() {
+  // If the associated `item()` has been deleted then `this` is in the process
+  // of being destroyed and no action needs to be taken.
+  if (!item())
+    return;
+
   // Image.
   image_->SetImage(item()->image().GetImageSkia(
       gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize),
@@ -423,6 +433,11 @@ void HoldingSpaceItemChipView::UpdateImage() {
 }
 
 void HoldingSpaceItemChipView::UpdateImageTransform() {
+  // If the associated `item()` has been deleted then `this` is in the process
+  // of being destroyed and no action needs to be taken.
+  if (!item())
+    return;
+
   gfx::Transform transform;
   if (!item()->progress().IsComplete() && !image_->bounds().IsEmpty()) {
     transform = gfx::GetScaleTransform(image_->bounds().CenterPoint(),
@@ -438,6 +453,11 @@ void HoldingSpaceItemChipView::UpdateImageTransform() {
 }
 
 void HoldingSpaceItemChipView::UpdateLabels() {
+  // If the associated `item()` has been deleted then `this` is in the process
+  // of being destroyed and no action needs to be taken.
+  if (!item())
+    return;
+
   const bool multiselect =
       delegate() && delegate()->selection_ui() ==
                         HoldingSpaceViewDelegate::SelectionUi::kMultiSelect;
@@ -462,6 +482,11 @@ void HoldingSpaceItemChipView::UpdateLabels() {
 }
 
 void HoldingSpaceItemChipView::UpdateSecondaryAction() {
+  // If the associated `item()` has been deleted then `this` is in the process
+  // of being destroyed and no action needs to be taken.
+  if (!item())
+    return;
+
   const bool has_secondary_action = !checkmark()->GetVisible() &&
                                     !item()->progress().IsComplete() &&
                                     IsMouseHovered();
