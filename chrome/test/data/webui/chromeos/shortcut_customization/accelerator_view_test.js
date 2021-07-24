@@ -44,4 +44,55 @@ export function acceleratorViewTest() {
     assertEquals(
         'g', keys[2].shadowRoot.querySelector('#key').textContent.trim());
   });
+
+  test('EditableAccelerator', async () => {
+    // TODO(jimmyxgong): Update the type of the test accelerator with the mojom
+    // version.
+    const accelerator = {
+      modifiers: ModifierKeys.SHIFT | ModifierKeys.CONTROL,
+      key: 'g',
+      rawKey: 0x0,
+    };
+
+    viewElement.accelerator = accelerator;
+    await flush();
+    // Enable the edit view.
+    viewElement.isEditable = true;
+
+    await flush();
+
+    const ctrlKey = viewElement.shadowRoot.querySelector('#ctrlKey');
+    const altKey = viewElement.shadowRoot.querySelector('#altKey');
+    const shiftKey = viewElement.shadowRoot.querySelector('#shiftKey');
+    const metaKey = viewElement.shadowRoot.querySelector('#searchKey');
+    const pendingKey = viewElement.shadowRoot.querySelector('#pendingKey');
+
+    // By default, no keys should be registered.
+    assertEquals('not-selected', ctrlKey.keyState);
+    assertEquals('not-selected', altKey.keyState);
+    assertEquals('not-selected', shiftKey.keyState);
+    assertEquals('not-selected', metaKey.keyState);
+    assertEquals('not-selected', pendingKey.keyState);
+    assertEquals('key', pendingKey.key);
+
+    // Simulate Ctrl + Alt + e.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'e',
+      keyCode: '69',
+      code: 'KeyE',
+      ctrlKey: true,
+      altKey: true,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flush();
+
+    assertEquals('modifier-selected', ctrlKey.keyState);
+    assertEquals('modifier-selected', altKey.keyState);
+    assertEquals('not-selected', shiftKey.keyState);
+    assertEquals('not-selected', metaKey.keyState);
+    assertEquals('alpha-numeric-selected', pendingKey.keyState);
+    assertEquals('e', pendingKey.key);
+  });
 }

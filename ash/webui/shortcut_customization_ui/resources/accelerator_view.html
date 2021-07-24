@@ -1,11 +1,21 @@
 <style>
-  #container {
+  .flex-row {
     display: flex;
     flex-direction: row;
   }
+
+  #container:focus {
+    outline: none;
+  }
+
+  #acceleratorSeparator {
+    align-items: center;
+    display: flex;
+    padding-inline-start: 5px;
+  }
 </style>
 
-<div id="container">
+<div id="container" class="flex-row" tabindex="0">
   <template is="dom-if" if=[[!isEditable]]>
     <template is="dom-repeat" items=[[modifiers_]]>
       <input-key key=[[item]] key-state="modifier-selected"></input-key>
@@ -14,10 +24,25 @@
     </input-key>
   </template>
   <template is="dom-if" if=[[isEditable]]>
-    <input-key key="ctrl" key-state="not-selected"></input-key>
-    <input-key key="alt" key-state="not-selected"></input-key>
-    <input-key key="shift" key-state="not-selected"></input-key>
-    <input-key key="search" key-state="not-selected"></input-key>
-    <input-key key="key" key-state="not-selected"></input-key>
+    <div id="editContainer" class="flex-row">
+      <input-key id="ctrlKey" key="ctrl"
+          key-state="[[getCtrlState_(pendingAccelerator_.*)]]">
+      </input-key>
+      <input-key id="altKey" key="alt"
+          key-state="[[getAltState_(pendingAccelerator_.*)]]">
+      </input-key>
+      <input-key id="shiftKey" key="shift"
+          key-state="[[getShiftState_(pendingAccelerator_.*)]]">
+      </input-key>
+      <input-key id="searchKey" key="search"
+          key-state="[[getSearchState_(pendingAccelerator_.*)]]">
+      </input-key>
+      <!-- TODO(jimmyxgong): Conditionally add this separator based off of the
+           shortcut's layout info. -->
+      <div id="acceleratorSeparator"> + </div>
+      <input-key id="pendingKey" key="[[getPendingKey_(pendingAccelerator_.*)]]"
+          key-state="[[getPendingKeyState_(pendingAccelerator_.*)]]">
+      </input-key>
+    </div>
   </template>
 </div>
