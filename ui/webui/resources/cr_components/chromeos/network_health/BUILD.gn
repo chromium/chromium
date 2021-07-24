@@ -103,14 +103,14 @@ polymer_modulizer("network_diagnostics") {
   js_file = "network_diagnostics.js"
   html_file = "network_diagnostics.html"
   html_type = "dom-module"
-  auto_imports = [ "ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics_types.html|Routine,RoutineResponse,RoutineGroup,RoutineType" ]
+  auto_imports = [ "ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics_types.html|Routine,RoutineResponse,RoutineGroup" ]
 }
 
 polymer_modulizer("routine_group") {
   js_file = "routine_group.js"
   html_file = "routine_group.html"
   html_type = "dom-module"
-  auto_imports = [ "ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics_types.html|Icons,Routine,RoutineResponse" ]
+  auto_imports = [ "ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics_types.html|Icons,Routine" ]
 }
 
 js_modulizer("modulize") {

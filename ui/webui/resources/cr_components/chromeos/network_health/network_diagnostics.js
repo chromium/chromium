@@ -12,7 +12,7 @@ const diagnosticsMojom = chromeos.networkDiagnostics.mojom;
 /**
  * Helper function to create a routine object.
  * @param {string} name
- * @param {!RoutineType} type
+ * @param {!diagnosticsMojom.RoutineType} type
  * @param {!RoutineGroup} group
  * @param {!function()} func
  * @return {!Routine} Routine object
@@ -51,8 +51,8 @@ Polymer({
             routines: [
               {
                 name: 'NetworkDiagnosticsLanConnectivity',
-                type: RoutineType.LAN_CONNECTIVITY,
-                func: () => this.networkDiagnostics_.lanConnectivity(),
+                type: diagnosticsMojom.RoutineType.kLanConnectivity,
+                func: () => this.networkDiagnostics_.runLanConnectivity(),
               },
             ]
           },
@@ -61,13 +61,14 @@ Polymer({
             routines: [
               {
                 name: 'NetworkDiagnosticsSignalStrength',
-                type: RoutineType.SIGNAL_STRENGTH,
-                func: () => this.networkDiagnostics_.signalStrength(),
+                type: diagnosticsMojom.RoutineType.kSignalStrength,
+                func: () => this.networkDiagnostics_.runSignalStrength(),
               },
               {
                 name: 'NetworkDiagnosticsHasSecureWiFiConnection',
-                type: RoutineType.SECURE_WIFI,
-                func: () => this.networkDiagnostics_.hasSecureWiFiConnection(),
+                type: diagnosticsMojom.RoutineType.kHasSecureWiFiConnection,
+                func: () =>
+                    this.networkDiagnostics_.runHasSecureWiFiConnection(),
               },
             ]
           },
@@ -76,8 +77,8 @@ Polymer({
             routines: [
               {
                 name: 'NetworkDiagnosticsCaptivePortal',
-                type: RoutineType.CAPTIVE_PORTAL,
-                func: () => this.networkDiagnostics_.captivePortal(),
+                type: diagnosticsMojom.RoutineType.kCaptivePortal,
+                func: () => this.networkDiagnostics_.runCaptivePortal(),
               },
             ]
           },
@@ -86,8 +87,8 @@ Polymer({
             routines: [
               {
                 name: 'NetworkDiagnosticsGatewayCanBePinged',
-                type: RoutineType.GATEWAY_PING,
-                func: () => this.networkDiagnostics_.gatewayCanBePinged(),
+                type: diagnosticsMojom.RoutineType.kGatewayCanBePinged,
+                func: () => this.networkDiagnostics_.runGatewayCanBePinged(),
               },
             ]
           },
@@ -96,18 +97,19 @@ Polymer({
             routines: [
               {
                 name: 'NetworkDiagnosticsHttpFirewall',
-                type: RoutineType.HTTP_FIREWALL,
-                func: () => this.networkDiagnostics_.httpFirewall(),
+                type: diagnosticsMojom.RoutineType.kHttpFirewall,
+                func: () => this.networkDiagnostics_.runHttpFirewall(),
               },
               {
                 name: 'NetworkDiagnosticsHttpsFirewall',
-                type: RoutineType.HTTPS_FIREWALL,
-                func: () => this.networkDiagnostics_.httpsFirewall(),
+                type: diagnosticsMojom.RoutineType.kHttpsFirewall,
+                func: () => this.networkDiagnostics_.runHttpsFirewall(),
+
               },
               {
                 name: 'NetworkDiagnosticsHttpsLatency',
-                type: RoutineType.HTTPS_LATENCY,
-                func: () => this.networkDiagnostics_.httpsLatency(),
+                type: diagnosticsMojom.RoutineType.kHttpsLatency,
+                func: () => this.networkDiagnostics_.runHttpsLatency(),
               },
             ]
           },
@@ -116,18 +118,18 @@ Polymer({
             routines: [
               {
                 name: 'NetworkDiagnosticsDnsResolverPresent',
-                type: RoutineType.DNS_RESOLVER,
-                func: () => this.networkDiagnostics_.dnsResolverPresent(),
+                type: diagnosticsMojom.RoutineType.kDnsResolverPresent,
+                func: () => this.networkDiagnostics_.runDnsResolverPresent(),
               },
               {
                 name: 'NetworkDiagnosticsDnsLatency',
-                type: RoutineType.DNS_LATENCY,
-                func: () => this.networkDiagnostics_.dnsLatency(),
+                type: diagnosticsMojom.RoutineType.kDnsLatency,
+                func: () => this.networkDiagnostics_.runDnsLatency(),
               },
               {
                 name: 'NetworkDiagnosticsDnsResolution',
-                type: RoutineType.DNS_RESOLUTION,
-                func: () => this.networkDiagnostics_.dnsResolution(),
+                type: diagnosticsMojom.RoutineType.kDnsResolution,
+                func: () => this.networkDiagnostics_.runDnsResolution(),
               },
             ]
           },
@@ -136,9 +138,10 @@ Polymer({
             routines: [
               {
                 name: 'NetworkDiagnosticsVideoConferencing',
-                type: RoutineType.VIDEO_CONFERENCING,
-                // A null stun_server_hostname will use the routine default.
-                func: () => this.networkDiagnostics_.videoConferencing(
+                type: diagnosticsMojom.RoutineType.kVideoConferencing,
+                // A null stun_server_hostname will use the routine
+                // default.
+                func: () => this.networkDiagnostics_.runVideoConferencing(
                     /*stun_server_hostname=*/ null),
               },
             ]
@@ -204,9 +207,10 @@ Polymer({
         const result = {};
         result['verdict'] =
             this.getRoutineVerdictRawString_(routine.result.verdict);
-        if (routine.result.problems && routine.result.problems.length > 0) {
-          result['problems'] = this.getRoutineProblemsString_(
-              routine.type, routine.result.problems, false);
+        const problems = this.getRoutineProblemsString_(
+            routine.type, routine.result.problems, false);
+        if (problems.length) {
+          result['problems'] = problems;
         }
 
         results[name] = result;
@@ -227,15 +231,7 @@ Polymer({
   },
 
   /**
-   * @param {!Event} event
-   * @private
-   */
-  onRunRoutineClick_(event) {
-    this.runRoutine_(event.model.index);
-  },
-
-  /**
-   * @param {!RoutineType} type
+   * @param {!diagnosticsMojom.RoutineType} type
    * @private
    */
   runRoutine_(type) {
@@ -251,14 +247,14 @@ Polymer({
   },
 
   /**
-   * @param {!RoutineType} type
-   * @param {!RoutineResponse} result
+   * @param {!diagnosticsMojom.RoutineType} type
+   * @param {!RoutineResponse} response
    * @private
    */
-  evaluateRoutine_(type, result) {
+  evaluateRoutine_(type, response) {
     const routine = `routines_.${type}`;
     this.set(routine + '.running', false);
-    this.set(routine + '.result', result);
+    this.set(routine + '.result', response.result);
 
     const resultMsg = this.getRoutineResult_(this.routines_[type]);
     this.set(routine + '.resultMsg', resultMsg);
@@ -285,10 +281,10 @@ Polymer({
         break;
     }
 
-    if (routine.result && routine.result.problems &&
-        routine.result.problems.length) {
-      const problemStrings = this.getRoutineProblemsString_(
-          routine.type, routine.result.problems, true);
+    const problemStrings = this.getRoutineProblemsString_(
+        routine.type, routine.result.problems, true);
+
+    if (problemStrings.length) {
       return this.i18n(
           'NetworkDiagnosticsResultPlaceholder', verdict, ...problemStrings);
     } else if (routine.result) {
@@ -299,9 +295,9 @@ Polymer({
   },
 
   /**
-   *
-   * @param {!RoutineType} type The type of routine
-   * @param {!Array<number>} problems The list of problems for the routine
+   * @param {!diagnosticsMojom.RoutineType} type The type of routine
+   * @param {!diagnosticsMojom.RoutineProblems} problems The list of
+   *     problems for the routine
    * @param {boolean} translate Flag to return a translated string
    * @return {!Array<string>} List of network diagnostic problem strings
    * @private
@@ -310,17 +306,27 @@ Polymer({
     const getString = s => translate ? this.i18n(s) : s;
 
     const problemStrings = [];
-    for (const problem of problems) {
-      switch (type) {
-        case RoutineType.SIGNAL_STRENGTH:
+    switch (type) {
+      case diagnosticsMojom.RoutineType.kSignalStrength:
+        if (!problems.signalStrengthProblems) {
+          break;
+        }
+
+        for (const problem of problems.signalStrengthProblems) {
           switch (problem) {
             case diagnosticsMojom.SignalStrengthProblem.kWeakSignal:
               problemStrings.push(getString('SignalStrengthProblem_Weak'));
               break;
           }
-          break;
+        }
+        break;
 
-        case RoutineType.GATEWAY_PING:
+      case diagnosticsMojom.RoutineType.kGatewayCanBePinged:
+        if (!problems.gatewayCanBePingedProblems) {
+          break;
+        }
+
+        for (const problem of problems.gatewayCanBePingedProblems) {
           switch (problem) {
             case diagnosticsMojom.GatewayCanBePingedProblem.kUnreachableGateway:
               problemStrings.push(getString('GatewayPingProblem_Unreachable'));
@@ -346,9 +352,15 @@ Polymer({
                   getString('GatewayPingProblem_NonDefaultLatency'));
               break;
           }
-          break;
+        }
+        break;
 
-        case RoutineType.SECURE_WIFI:
+      case diagnosticsMojom.RoutineType.kHasSecureWiFiConnection:
+        if (!problems.hasSecureWifiConnectionProblems) {
+          break;
+        }
+
+        for (const problem of problems.hasSecureWifiConnectionProblems) {
           switch (problem) {
             case diagnosticsMojom.HasSecureWiFiConnectionProblem
                 .kSecurityTypeNone:
@@ -367,9 +379,15 @@ Polymer({
               problemStrings.push(getString('SecureWifiProblem_Unknown'));
               break;
           }
-          break;
+        }
+        break;
 
-        case RoutineType.DNS_RESOLVER:
+      case diagnosticsMojom.RoutineType.kDnsResolverPresent:
+        if (!problems.dnsResolverPresentProblems) {
+          break;
+        }
+
+        for (const problem of problems.dnsResolverPresentProblems) {
           switch (problem) {
             case diagnosticsMojom.DnsResolverPresentProblem.kNoNameServersFound:
               problemStrings.push(
@@ -385,11 +403,17 @@ Polymer({
                   getString('DnsResolverProblem_EmptyNameServers'));
               break;
           }
-          break;
+        }
+        break;
 
-        case RoutineType.DNS_LATENCY:
+      case diagnosticsMojom.RoutineType.kDnsLatency:
+        if (!problems.dnsLatencyProblems) {
+          break;
+        }
+
+        for (const problem of problems.dnsLatencyProblems) {
           switch (problem) {
-            case diagnosticsMojom.DnsLatencyProblem.kFailedToResolveAllHosts:
+            case diagnosticsMojom.DnsLatencyProblem.kHostResolutionFailure:
               problemStrings.push(
                   getString('DnsLatencyProblem_FailedResolveHosts'));
               break;
@@ -403,39 +427,78 @@ Polymer({
                   getString('DnsLatencyProblem_LatencySignificantlyAbove'));
               break;
           }
-          break;
+        }
+        break;
 
-        case RoutineType.DNS_RESOLUTION:
+      case diagnosticsMojom.RoutineType.kDnsResolution:
+        if (!problems.dnsResolutionProblems) {
+          break;
+        }
+
+        for (const problem of problems.dnsResolutionProblems) {
           switch (problem) {
             case diagnosticsMojom.DnsResolutionProblem.kFailedToResolveHost:
               problemStrings.push(
                   getString('DnsResolutionProblem_FailedResolve'));
               break;
           }
-          break;
+        }
+        break;
 
-        case RoutineType.HTTP_FIREWALL:
-        case RoutineType.HTTPS_FIREWALL:
+      case diagnosticsMojom.RoutineType.kHttpFirewall:
+        if (!problems.httpFirewallProblems) {
+          break;
+        }
+
+        for (const problem of problems.httpFirewallProblems) {
           switch (problem) {
             case diagnosticsMojom.HttpFirewallProblem
                 .kDnsResolutionFailuresAboveThreshold:
-            case diagnosticsMojom.HttpsFirewallProblem.kFailedDnsResolutions:
               problemStrings.push(
                   getString('FirewallProblem_DnsResolutionFailureRate'));
               break;
             case diagnosticsMojom.HttpFirewallProblem.kFirewallDetected:
-            case diagnosticsMojom.HttpsFirewallProblem.kFirewallDetected:
               problemStrings.push(
                   getString('FirewallProblem_FirewallDetected'));
               break;
             case diagnosticsMojom.HttpFirewallProblem.kPotentialFirewall:
+              problemStrings.push(
+                  getString('FirewallProblem_FirewallSuspected'));
+              break;
+          }
+        }
+        break;
+
+      case diagnosticsMojom.RoutineType.kHttpsFirewall:
+        if (!problems.httpsFirewallProblems) {
+          break;
+        }
+
+        for (const problem of problems.httpsFirewallProblems) {
+          switch (problem) {
+            case diagnosticsMojom.HttpsFirewallProblem
+                .kHighDnsResolutionFailureRate:
+              problemStrings.push(
+                  getString('FirewallProblem_DnsResolutionFailureRate'));
+              break;
+            case diagnosticsMojom.HttpsFirewallProblem.kFirewallDetected:
+              problemStrings.push(
+                  getString('FirewallProblem_FirewallDetected'));
+              break;
             case diagnosticsMojom.HttpsFirewallProblem.kPotentialFirewall:
               problemStrings.push(
                   getString('FirewallProblem_FirewallSuspected'));
               break;
           }
+        }
+        break;
 
-        case RoutineType.HTTPS_LATENCY:
+      case diagnosticsMojom.RoutineType.kHttpsLatency:
+        if (!problems.httpsLatencyProblems) {
+          break;
+        }
+
+        for (const problem of problems.httpsLatencyProblems) {
           switch (problem) {
             case diagnosticsMojom.HttpsLatencyProblem.kFailedDnsResolutions:
               problemStrings.push(
@@ -453,8 +516,15 @@ Polymer({
                   getString('HttpsLatencyProblem_VeryHighLatency'));
               break;
           }
+        }
+        break;
 
-        case RoutineType.CAPTIVE_PORTAL:
+      case diagnosticsMojom.RoutineType.kCaptivePortal:
+        if (!problems.captivePortalProblems) {
+          break;
+        }
+
+        for (const problem of problems.captivePortalProblems) {
           switch (problem) {
             case diagnosticsMojom.CaptivePortalProblem.kNoActiveNetworks:
               problemStrings.push(
@@ -479,8 +549,15 @@ Polymer({
               problemStrings.push(getString('CaptivePortalProblem_NoInternet'));
               break;
           }
+        }
+        break;
 
-        case RoutineType.VIDEO_CONFERENCING:
+      case diagnosticsMojom.RoutineType.kVideoConferencing:
+        if (!problems.videoConferencingProblems) {
+          break;
+        }
+
+        for (const problem of problems.videoConferencingProblems) {
           switch (problem) {
             case diagnosticsMojom.VideoConferencingProblem.kUdpFailure:
               problemStrings.push(
@@ -495,7 +572,8 @@ Polymer({
                   getString('VideoConferencingProblem_MediaFailure'));
               break;
           }
-      }
+        }
+        break;
     }
 
     return problemStrings;

@@ -113,7 +113,7 @@ Polymer({
 
   /**
    * Helper function to get the icon for a routine based on the result.
-   * @param {!RoutineResponse} result
+   * @param {!chromeos.networkDiagnostics.mojom.RoutineResult} result
    * @return {string}
    * @private
    */
