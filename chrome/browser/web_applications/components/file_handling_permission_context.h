@@ -7,10 +7,6 @@
 
 #include "components/permissions/permission_context_base.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 class FileHandlingPermissionContext
     : public permissions::PermissionContextBase {
  public:
@@ -25,14 +21,6 @@ class FileHandlingPermissionContext
  protected:
   // PermissionContextBase:
   bool IsRestrictedToSecureOrigins() const override;
-  std::unique_ptr<permissions::PermissionRequest> CreatePermissionRequest(
-      const GURL& request_origin,
-      ContentSettingsType content_settings_type,
-      bool has_gesture,
-      content::WebContents* web_contents,
-      permissions::PermissionRequest::PermissionDecidedCallback
-          permission_decided_callback,
-      base::OnceClosure delete_callback) const override;
   void NotifyPermissionSet(const permissions::PermissionRequestID& id,
                            const GURL& requesting_origin,
                            const GURL& embedding_origin,

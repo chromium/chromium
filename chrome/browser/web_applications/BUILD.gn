@@ -28,8 +28,6 @@ source_set("web_applications") {
     "components/file_handler_manager.h",
     "components/file_handling_permission_context.cc",
     "components/file_handling_permission_context.h",
-    "components/file_handling_permission_request_impl.cc",
-    "components/file_handling_permission_request_impl.h",
     "components/install_bounce_metric.cc",
     "components/install_bounce_metric.h",
     "components/install_finalizer.h",

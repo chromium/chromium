@@ -6,10 +6,8 @@
 
 #include <string>
 
-#include "chrome/browser/web_applications/components/file_handling_permission_request_impl.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_context_base.h"
-#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 FileHandlingPermissionContext::FileHandlingPermissionContext(
@@ -23,21 +21,6 @@ FileHandlingPermissionContext::~FileHandlingPermissionContext() = default;
 
 bool FileHandlingPermissionContext::IsRestrictedToSecureOrigins() const {
   return true;
-}
-
-std::unique_ptr<permissions::PermissionRequest>
-FileHandlingPermissionContext::CreatePermissionRequest(
-    const GURL& request_origin,
-    ContentSettingsType content_settings_type,
-    bool has_gesture,
-    content::WebContents* web_contents,
-    permissions::PermissionRequest::PermissionDecidedCallback
-        permission_decided_callback,
-    base::OnceClosure delete_callback) const {
-  DCHECK_EQ(ContentSettingsType::FILE_HANDLING, content_settings_type);
-  return std::make_unique<permissions::FileHandlingPermissionRequestImpl>(
-      request_origin, has_gesture, web_contents,
-      std::move(permission_decided_callback), std::move(delete_callback));
 }
 
 void FileHandlingPermissionContext::NotifyPermissionSet(
