@@ -91,7 +91,7 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURLHelper(
 
       // Note: |default_site_instance_| will get set inside this call
       // via RegisterSiteInstance().
-      site_instance->SetSiteInfoToDefault();
+      site_instance->SetSiteInfoToDefault(site_info.storage_partition_config());
       DCHECK_EQ(default_site_instance_, site_instance.get());
     }
 

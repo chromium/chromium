@@ -77,10 +77,11 @@ class CONTENT_EXPORT ProcessLock {
  public:
   // Create a lock that that represents a process that is associated with at
   // least one SiteInstance, but is not locked to a specific site. Any request
-  // that wants to commit in this process must have web-exposed isolation
-  // information (COOP/COEP, for example) that matches the values used to create
-  // this lock.
+  // that wants to commit in this process must have a StoragePartitionConfig
+  // and web-exposed isolation information (COOP/COEP, for example) that
+  // match the values used to create this lock.
   static ProcessLock CreateAllowAnySite(
+      const StoragePartitionConfig& storage_partition_config,
       const WebExposedIsolationInfo& web_exposed_isolation_info);
 
   // Create a lock for a specific UrlInfo and WebExposedIsolationInfo. This
@@ -135,6 +136,13 @@ class CONTENT_EXPORT ProcessLock {
   // not.
   bool is_origin_keyed() const {
     return site_info_.has_value() && site_info_->is_origin_keyed();
+  }
+
+  // Returns the StoragePartitionConfig that corresponds to the SiteInfo the
+  // lock is used with.
+  StoragePartitionConfig storage_partition_config() const {
+    DCHECK(site_info_.has_value());
+    return site_info_->storage_partition_config();
   }
 
   // Representing agent cluster's "cross-origin isolated" concept.

@@ -27,6 +27,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -98,8 +99,10 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
   }
 
   ProcessLock ProcessLockFromUrl(const std::string& url) {
+    BrowserContext* browser_context = web_contents()->GetBrowserContext();
     return ProcessLock(SiteInfo(
         GURL(url), GURL(url), false /* is_origin_keyed */,
+        StoragePartitionConfig::CreateDefault(browser_context),
         WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
         false /* does_site_request_dedicated_process_for_coop */,
         false /* is_jit_disabled */));
@@ -117,9 +120,11 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
   // Note: do not use this for opt-in origin isolation, as it won't set
   // is_origin_keyed to true.
   ProcessLock GetStrictProcessLock(const GURL& url) {
+    BrowserContext* browser_context = web_contents()->GetBrowserContext();
     GURL origin_url = url::Origin::Create(url).GetURL();
     return ProcessLock(SiteInfo(
         origin_url, origin_url, false /* is_origin_keyed */,
+        StoragePartitionConfig::CreateDefault(browser_context),
         WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
         false /* does_site_request_dedicated_process_for_coop */,
         false /* is_jit_disabled */));
@@ -497,8 +502,10 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   GURL isolated_suborigin_url(
       https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
   GURL origin_url = url::Origin::Create(isolated_suborigin_url).GetURL();
+  BrowserContext* browser_context = web_contents()->GetBrowserContext();
   auto expected_isolated_suborigin_lock = ProcessLock(SiteInfo(
       origin_url, origin_url, true /* is_origin_keyed */,
+      StoragePartitionConfig::CreateDefault(browser_context),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
       false /* is_jit_disabled */));

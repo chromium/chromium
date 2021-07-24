@@ -16,6 +16,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/test/storage_partition_test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,7 +54,8 @@ TEST_F(RecentlyDestroyedHostsTest,
                                            &browser_context_);
   const ProcessLock process_lock = ProcessLock::Create(
       isolation_context,
-      UrlInfo::CreateForTesting(GURL("https://www.google.com")),
+      UrlInfo::CreateForTesting(GURL("https://www.google.com"),
+                                CreateStoragePartitionConfigForTesting()),
       WebExposedIsolationInfo::CreateNonIsolated());
 
   constexpr char kHistogramName[] =

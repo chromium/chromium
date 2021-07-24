@@ -128,7 +128,7 @@ StoragePartition* BrowserContext::GetStoragePartition(
   auto* site_instance_impl = static_cast<SiteInstanceImpl*>(site_instance);
   auto partition_config =
       site_instance_impl
-          ? site_instance_impl->GetSiteInfo().GetStoragePartitionConfig(this)
+          ? site_instance_impl->GetSiteInfo().storage_partition_config()
           : StoragePartitionConfig::CreateDefault(this);
   return GetStoragePartition(partition_config, can_create);
 }

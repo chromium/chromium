@@ -531,15 +531,15 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Provide custom storage partition for test sites.
-  GURL test_url = embedded_test_server()->GetURL("/simple_page.html");
+  GURL test_url = embedded_test_server()->GetURL("a.com", "/simple_page.html");
+  CustomStoragePartitionForSomeSites modified_client(GURL("http://a.com/"));
+  ContentBrowserClient* old_client =
+      SetBrowserClientForTesting(&modified_client);
+
   BrowserContext* browser_context =
       ShellContentBrowserClient::Get()->browser_context();
   scoped_refptr<SiteInstance> test_site_instance =
       SiteInstance::Create(browser_context)->GetRelatedSiteInstance(test_url);
-  GURL test_site = test_site_instance->GetSiteURL();
-  CustomStoragePartitionForSomeSites modified_client(test_site);
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&modified_client);
   StoragePartition* default_storage =
       browser_context->GetDefaultStoragePartition();
   StoragePartition* custom_storage =

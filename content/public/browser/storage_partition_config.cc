@@ -28,6 +28,7 @@ std::string StoragePartitionId::ToString() const {
   return ss.str();
 }
 
+StoragePartitionConfig::StoragePartitionConfig() = default;
 StoragePartitionConfig::StoragePartitionConfig(const StoragePartitionConfig&) =
     default;
 StoragePartitionConfig& StoragePartitionConfig::operator=(

@@ -1224,6 +1224,8 @@ NavigationRequest::NavigationRequest(
                 : NavigationTypeToReloadType(common_params_->navigation_type)),
       nav_entry_id_(entry ? entry->GetUniqueID() : 0),
       from_begin_navigation_(from_begin_navigation),
+      site_info_(
+          frame_tree_node_->navigator().controller().GetBrowserContext()),
       navigation_entry_offset_(
           EstimateHistoryOffset(frame_tree_node_->navigator().controller(),
                                 common_params_->should_replace_current_entry)),

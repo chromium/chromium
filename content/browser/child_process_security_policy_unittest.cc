@@ -25,6 +25,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
+#include "content/test/storage_partition_test_helpers.h"
 #include "content/test/test_content_browser_client.h"
 #include "storage/browser/file_system/file_permission_policy.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -2677,19 +2678,23 @@ TEST_F(ChildProcessSecurityPolicyTest, ProcessLockMatching) {
   IsolationContext isolation_context(browser_context());
   const auto coi_info = WebExposedIsolationInfo::CreateNonIsolated();
 
-  auto ui_nonapp_url_siteinfo = SiteInfo::Create(
-      isolation_context, UrlInfo::CreateForTesting(nonapp_url), coi_info);
-  auto ui_nonapp_url_lock = ProcessLock::Create(
-      isolation_context, UrlInfo::CreateForTesting(nonapp_url), coi_info);
+  auto nonapp_urlinfo = UrlInfo::CreateForTesting(
+      nonapp_url, CreateStoragePartitionConfigForTesting());
+  auto ui_nonapp_url_siteinfo =
+      SiteInfo::Create(isolation_context, nonapp_urlinfo, coi_info);
+  auto ui_nonapp_url_lock =
+      ProcessLock::Create(isolation_context, nonapp_urlinfo, coi_info);
 
-  auto ui_app_url_lock = ProcessLock::Create(
-      isolation_context, UrlInfo::CreateForTesting(app_url), coi_info);
-  auto ui_app_url_siteinfo = SiteInfo::Create(
-      isolation_context, UrlInfo::CreateForTesting(app_url), coi_info);
+  auto app_urlinfo = UrlInfo::CreateForTesting(
+      app_url, CreateStoragePartitionConfigForTesting());
+  auto ui_app_url_lock =
+      ProcessLock::Create(isolation_context, app_urlinfo, coi_info);
+  auto ui_app_url_siteinfo =
+      SiteInfo::Create(isolation_context, app_urlinfo, coi_info);
 
-  SiteInfo io_nonapp_url_siteinfo;
+  SiteInfo io_nonapp_url_siteinfo(browser_context());
   ProcessLock io_nonapp_url_lock;
-  SiteInfo io_app_url_siteinfo;
+  SiteInfo io_app_url_siteinfo(browser_context());
   ProcessLock io_app_url_lock;
 
   base::WaitableEvent io_locks_set_event;
@@ -2699,14 +2704,14 @@ TEST_F(ChildProcessSecurityPolicyTest, ProcessLockMatching) {
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         io_nonapp_url_siteinfo = SiteInfo::CreateOnIOThread(
-            isolation_context, UrlInfo::CreateForTesting(nonapp_url), coi_info);
-        io_nonapp_url_lock = ProcessLock::Create(
-            isolation_context, UrlInfo::CreateForTesting(nonapp_url), coi_info);
+            isolation_context, nonapp_urlinfo, coi_info);
+        io_nonapp_url_lock =
+            ProcessLock::Create(isolation_context, nonapp_urlinfo, coi_info);
 
-        io_app_url_siteinfo = SiteInfo::CreateOnIOThread(
-            isolation_context, UrlInfo::CreateForTesting(app_url), coi_info);
-        io_app_url_lock = ProcessLock::Create(
-            isolation_context, UrlInfo::CreateForTesting(app_url), coi_info);
+        io_app_url_siteinfo = SiteInfo::CreateOnIOThread(isolation_context,
+                                                         app_urlinfo, coi_info);
+        io_app_url_lock =
+            ProcessLock::Create(isolation_context, app_urlinfo, coi_info);
 
         // Tell the UI thread have computed the locks.
         io_locks_set_event.Signal();

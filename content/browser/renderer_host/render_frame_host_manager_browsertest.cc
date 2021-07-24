@@ -8509,6 +8509,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // The foo.com navigation should've used a different process, locked to
   // foo.com.
+  BrowserContext* browser_context = web_contents->GetBrowserContext();
   RenderProcessHost* process2 = web_contents->GetMainFrame()->GetProcess();
   EXPECT_NE(process1, process2);
   EXPECT_EQ(GURL("http://foo.com"),
@@ -8517,6 +8518,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       ProcessLock(SiteInfo(
           GURL("http://foo.com"), GURL("http://foo.com"),
           false /* is_origin_keyed */,
+          StoragePartitionConfig::CreateDefault(browser_context),
           WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
           false /* does_site_request_dedicated_process_for_coop */,
           false /* is_jit_disabled */)),

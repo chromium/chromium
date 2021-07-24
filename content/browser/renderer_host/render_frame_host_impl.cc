@@ -1379,6 +1379,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       frame_tree_(frame_tree),
       frame_tree_node_(frame_tree_node),
       parent_(frame_tree_node_->parent()),
+      last_committed_site_info_(site_instance_->GetBrowserContext()),
       routing_id_(routing_id),
       beforeunload_timeout_delay_(RenderViewHostImpl::kUnloadTimeout),
       last_navigation_previews_state_(
@@ -6915,7 +6916,8 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   const CanCommitStatus can_commit_status = policy->CanCommitOriginAndUrl(
       GetProcess()->GetID(), GetSiteInstance()->GetIsolationContext(), origin,
-      UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone, origin),
+      UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone, origin,
+              GetSiteInstance()->GetSiteInfo().storage_partition_config()),
       GetSiteInstance()->GetWebExposedIsolationInfo());
   if (can_commit_status != CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL) {
     LogCanCommitOriginAndUrlFailureReason("cpspi_disallowed_commit");
@@ -9380,8 +9382,9 @@ void RenderFrameHostImpl::BeforeUnloadTimeout() {
 void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
   // Since |url| has already committed, |origin_isolation_request| below should
   // be set to kNone.
+  BrowserContext* browser_context = GetSiteInstance()->GetBrowserContext();
   SiteInfo site_info =
-      url.is_empty() ? SiteInfo()
+      url.is_empty() ? SiteInfo(browser_context)
                      : SiteInfo::Create(
                            GetSiteInstance()->GetIsolationContext(),
                            UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone),
@@ -9391,17 +9394,15 @@ void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
     return;
 
   if (!last_committed_site_info_.site_url().is_empty()) {
-    RenderProcessHostImpl::RemoveFrameWithSite(
-        frame_tree()->controller().GetBrowserContext(), GetProcess(),
-        last_committed_site_info_);
+    RenderProcessHostImpl::RemoveFrameWithSite(browser_context, GetProcess(),
+                                               last_committed_site_info_);
   }
 
   last_committed_site_info_ = site_info;
 
   if (!last_committed_site_info_.site_url().is_empty()) {
-    RenderProcessHostImpl::AddFrameWithSite(
-        frame_tree()->controller().GetBrowserContext(), GetProcess(),
-        last_committed_site_info_);
+    RenderProcessHostImpl::AddFrameWithSite(browser_context, GetProcess(),
+                                            last_committed_site_info_);
   }
 }
 

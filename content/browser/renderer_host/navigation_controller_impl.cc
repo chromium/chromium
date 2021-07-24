@@ -2586,7 +2586,7 @@ SessionStorageNamespace* NavigationControllerImpl::GetSessionStorageNamespace(
   const StoragePartitionId partition_id =
       site_info.GetStoragePartitionId(browser_context_);
   const StoragePartitionConfig partition_config =
-      site_info.GetStoragePartitionConfig(browser_context_);
+      site_info.storage_partition_config();
 
   StoragePartition* partition =
       browser_context_->GetStoragePartition(partition_config);
@@ -2624,7 +2624,7 @@ SessionStorageNamespace* NavigationControllerImpl::GetSessionStorageNamespace(
 
 SessionStorageNamespace*
 NavigationControllerImpl::GetDefaultSessionStorageNamespace() {
-  return GetSessionStorageNamespace(SiteInfo());
+  return GetSessionStorageNamespace(SiteInfo(GetBrowserContext()));
 }
 
 const SessionStorageNamespaceMap&

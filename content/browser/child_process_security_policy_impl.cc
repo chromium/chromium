@@ -174,11 +174,13 @@ void LogCanAccessDataForOriginCrashKeys(
 
 // static
 ProcessLock ProcessLock::CreateAllowAnySite(
+    const StoragePartitionConfig& storage_partition_config,
     const WebExposedIsolationInfo& web_exposed_isolation_info) {
-  return ProcessLock(SiteInfo(
-      GURL(), GURL(), false, web_exposed_isolation_info, /* is_guest */ false,
-      /* does_site_request_dedicated_process_for_coop */ false,
-      /* is_jit_disabled */ false));
+  return ProcessLock(
+      SiteInfo(GURL(), GURL(), false, storage_partition_config,
+               web_exposed_isolation_info, /* is_guest */ false,
+               /* does_site_request_dedicated_process_for_coop */ false,
+               /* is_jit_disabled */ false));
 }
 
 // static
@@ -186,6 +188,7 @@ ProcessLock ProcessLock::Create(
     const IsolationContext& isolation_context,
     const UrlInfo& url_info,
     const WebExposedIsolationInfo& web_exposed_isolation_info) {
+  DCHECK(url_info.storage_partition_config.has_value());
   if (BrowserThread::CurrentlyOn(BrowserThread::UI))
     return ProcessLock(SiteInfo::Create(isolation_context, url_info,
                                         web_exposed_isolation_info));
@@ -280,6 +283,12 @@ std::string ProcessLock::ToString() const {
         ret += "-application";
       ret += " coi-origin='" +
              web_exposed_isolation_info().origin().GetDebugString() + "'";
+    }
+    if (!storage_partition_config().is_default()) {
+      ret += ", partition=" + storage_partition_config().partition_domain() +
+             "." + storage_partition_config().partition_name();
+      if (storage_partition_config().in_memory())
+        ret += ", in-memory";
     }
   } else {
     ret += " no-site-info";
@@ -859,6 +868,7 @@ void ChildProcessSecurityPolicyImpl::AddForTesting(
   LockProcess(IsolationContext(BrowsingInstanceId(1), browser_context),
               child_id,
               ProcessLock::CreateAllowAnySite(
+                  StoragePartitionConfig::CreateDefault(browser_context),
                   WebExposedIsolationInfo::CreateNonIsolated()));
 }
 
@@ -1678,8 +1688,9 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
         // url.
         //
         // Since we are dealing with a valid ProcessLock at this point, we know
-        // the lock contains valid COOP/COEP information because that
-        // information must be provided when creating the locks.
+        // the lock contains a valid StoragePartitionConfig and COOP/COEP
+        // information because that information must be provided when creating
+        // the locks.
         //
         // At this point, any origin opt-in isolation requests should be
         // complete, so to avoid the possibility of opting something set
@@ -1698,7 +1709,8 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
         // |actual_process_lock|.
         expected_process_lock = ProcessLock::Create(
             isolation_context,
-            UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone),
+            UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone,
+                    actual_process_lock.storage_partition_config()),
             actual_process_lock.web_exposed_isolation_info());
 
         if (actual_process_lock.is_locked_to_site()) {
