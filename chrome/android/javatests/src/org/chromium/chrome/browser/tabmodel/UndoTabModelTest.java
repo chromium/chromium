@@ -119,14 +119,14 @@ public class UndoTabModelTest {
         Assert.assertNotNull(TabModelUtils.getTabById(model, tab.getId()));
 
         final CallbackHelper didReceivePendingClosureHelper = new CallbackHelper();
-        model.addObserver(new TabModelObserver() {
-            @Override
-            public void tabPendingClosure(Tab tab) {
-                didReceivePendingClosureHelper.notifyCalled();
-            }
-        });
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.addObserver(new TabModelObserver() {
+                @Override
+                public void tabPendingClosure(Tab tab) {
+                    didReceivePendingClosureHelper.notifyCalled();
+                }
+            });
+
             // Take action.
             model.closeTab(tab, true, false, undoable);
         });
@@ -160,14 +160,14 @@ public class UndoTabModelTest {
         Assert.assertNull(TabModelUtils.getTabById(model, tab.getId()));
 
         final CallbackHelper didReceiveClosureCancelledHelper = new CallbackHelper();
-        model.addObserver(new TabModelObserver() {
-            @Override
-            public void tabClosureUndone(Tab tab) {
-                didReceiveClosureCancelledHelper.notifyCalled();
-            }
-        });
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.addObserver(new TabModelObserver() {
+                @Override
+                public void tabClosureUndone(Tab tab) {
+                    didReceiveClosureCancelledHelper.notifyCalled();
+                }
+            });
+
             // Take action.
             model.cancelTabClosure(tab.getId());
         });
@@ -186,21 +186,23 @@ public class UndoTabModelTest {
             throws TimeoutException {
         final CallbackHelper tabClosureUndoneHelper = new CallbackHelper();
 
-        for (int i = 0; i < expectedToClose.length; i++) {
-            Tab tab = expectedToClose[i];
-            Assert.assertTrue(tab.isClosing());
-            Assert.assertTrue(tab.isInitialized());
-            Assert.assertTrue(model.isClosurePending(tab.getId()));
-            Assert.assertNull(TabModelUtils.getTabById(model, tab.getId()));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            for (int i = 0; i < expectedToClose.length; i++) {
+                Tab tab = expectedToClose[i];
+                Assert.assertTrue(tab.isClosing());
+                Assert.assertTrue(tab.isInitialized());
+                Assert.assertTrue(model.isClosurePending(tab.getId()));
+                Assert.assertNull(TabModelUtils.getTabById(model, tab.getId()));
 
-            // Make sure that this TabModel throws the right events.
-            model.addObserver(new TabModelObserver() {
-                @Override
-                public void tabClosureUndone(Tab currentTab) {
-                    tabClosureUndoneHelper.notifyCalled();
-                }
-            });
-        }
+                // Make sure that this TabModel throws the right events.
+                model.addObserver(new TabModelObserver() {
+                    @Override
+                    public void tabClosureUndone(Tab currentTab) {
+                        tabClosureUndoneHelper.notifyCalled();
+                    }
+                });
+            }
+        });
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             for (int i = 0; i < expectedToClose.length; i++) {
@@ -229,14 +231,14 @@ public class UndoTabModelTest {
         Assert.assertNull(TabModelUtils.getTabById(model, tab.getId()));
 
         final CallbackHelper didReceiveClosureCommittedHelper = new CallbackHelper();
-        model.addObserver(new TabModelObserver() {
-            @Override
-            public void tabClosureCommitted(Tab tab) {
-                didReceiveClosureCommittedHelper.notifyCalled();
-            }
-        });
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.addObserver(new TabModelObserver() {
+                @Override
+                public void tabClosureCommitted(Tab tab) {
+                    didReceiveClosureCommittedHelper.notifyCalled();
+                }
+            });
+
             // Take action.
             model.commitTabClosure(tab.getId());
         });
@@ -255,22 +257,24 @@ public class UndoTabModelTest {
             throws TimeoutException {
         final CallbackHelper tabClosureCommittedHelper = new CallbackHelper();
 
-        for (int i = 0; i < expectedToClose.length; i++) {
-            Tab tab = expectedToClose[i];
-            Assert.assertTrue(tab.isClosing());
-            Assert.assertTrue(tab.isInitialized());
-            Assert.assertTrue(model.isClosurePending(tab.getId()));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            for (int i = 0; i < expectedToClose.length; i++) {
+                Tab tab = expectedToClose[i];
+                Assert.assertTrue(tab.isClosing());
+                Assert.assertTrue(tab.isInitialized());
+                Assert.assertTrue(model.isClosurePending(tab.getId()));
 
-            // Make sure that this TabModel throws the right events.
-            model.addObserver(new TabModelObserver() {
-                @Override
-                public void tabClosureCommitted(Tab currentTab) {
-                    tabClosureCommittedHelper.notifyCalled();
-                }
-            });
-        }
+                // Make sure that this TabModel throws the right events.
+                model.addObserver(new TabModelObserver() {
+                    @Override
+                    public void tabClosureCommitted(Tab currentTab) {
+                        tabClosureCommittedHelper.notifyCalled();
+                    }
+                });
+            }
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> { model.commitAllTabClosures(); });
+            model.commitAllTabClosures();
+        });
 
         tabClosureCommittedHelper.waitForCallback(0, expectedToClose.length);
         for (int i = 0; i < expectedToClose.length; i++) {
@@ -1600,7 +1604,8 @@ public class UndoTabModelTest {
 
         // Close tab in second window, wait until tab restore service history is created.
         CallbackHelper closedCallback = new CallbackHelper();
-        secondModel.addObserver(new TabClosedObserver(closedCallback));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> secondModel.addObserver(new TabClosedObserver(closedCallback)));
         closeTabOnUiThread(secondModel, secondModel.getTabAt(1), false);
         closedCallback.waitForCallback(0);
 

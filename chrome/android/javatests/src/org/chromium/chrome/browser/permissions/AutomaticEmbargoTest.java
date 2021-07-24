@@ -57,7 +57,7 @@ public class AutomaticEmbargoTest {
         Tab tab = mPermissionRule.getActivity().getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter(updaterPrefix, mPermissionRule.getActivity());
-        tab.addObserver(updateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));
 
         for (int i = 0; i < NUMBER_OF_DISMISSALS; ++i) {
             mPermissionRule.setUpUrl(testFile);
@@ -73,7 +73,7 @@ public class AutomaticEmbargoTest {
         }
 
         mPermissionRule.runNoPromptTest(updateWaiter, testFile, javascript, nUpdates, false, true);
-        tab.removeObserver(updateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
     }
 
     @Test

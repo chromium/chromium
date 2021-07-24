@@ -111,10 +111,12 @@ public class TabListContainerViewBinderTest extends DummyUiChromeActivityTestCas
         mStartedHidingCallback = new CallbackHelper();
         mFinishedHidingCallback = new CallbackHelper();
 
-        mContainerModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mContainerModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
 
-        mMCP = PropertyModelChangeProcessor.create(
-                mContainerModel, mRecyclerView, TabListContainerViewBinder::bind);
+            mMCP = PropertyModelChangeProcessor.create(
+                    mContainerModel, mRecyclerView, TabListContainerViewBinder::bind);
+        });
     }
 
     @Test

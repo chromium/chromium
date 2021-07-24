@@ -101,7 +101,7 @@ public class InfoBarContainerTest {
         // Register for animation notifications
         InfoBarContainer container = sActivityTestRule.getInfoBarContainer();
         mListener = new InfoBarTestAnimationListener();
-        container.addAnimationListener(mListener);
+        TestThreadUtils.runOnUiThreadBlocking(() -> container.addAnimationListener(mListener));
     }
 
     @After
@@ -109,8 +109,8 @@ public class InfoBarContainerTest {
         // Unregister animation notifications
         InfoBarContainer container = sActivityTestRule.getInfoBarContainer();
         if (container != null) {
-            container.removeAnimationListener(mListener);
             TestThreadUtils.runOnUiThreadBlocking(() -> {
+                container.removeAnimationListener(mListener);
                 InfoBarContainer.removeInfoBarContainerForTesting(
                         sActivityTestRule.getActivity().getActivityTab());
             });

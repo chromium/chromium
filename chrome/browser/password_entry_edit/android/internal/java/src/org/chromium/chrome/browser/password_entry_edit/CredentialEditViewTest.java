@@ -73,18 +73,18 @@ public class CredentialEditViewTest {
     @Before
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
-        mModel = new PropertyModel.Builder(ALL_KEYS)
-                         .with(URL_OR_APP, TEST_URL)
-                         .with(FEDERATION_ORIGIN, "")
-                         .build();
         CredentialEditUiFactory.setCreationStrategy((fragmentView, helpLauncher) -> {
             mCredentialEditView = (CredentialEditFragmentView) fragmentView;
             mCredentialEditView.setComponentStateDelegate(mMockComponentStateDelegate);
         });
         mTestRule.startSettingsActivity();
-        runOnUiThreadBlocking(()
-                                      -> CredentialEditCoordinator.setupModelChangeProcessor(
-                                              mModel, mCredentialEditView));
+        runOnUiThreadBlocking(() -> {
+            mModel = new PropertyModel.Builder(ALL_KEYS)
+                             .with(URL_OR_APP, TEST_URL)
+                             .with(FEDERATION_ORIGIN, "")
+                             .build();
+            CredentialEditCoordinator.setupModelChangeProcessor(mModel, mCredentialEditView);
+        });
     }
 
     @Test

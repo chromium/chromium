@@ -111,13 +111,14 @@ public class SigninSignoutIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mSigninManager = IdentityServicesProvider.get().getSigninManager(
                     Profile.getLastUsedRegularProfile());
+            mSigninManager.addSignInStateObserver(mSignInStateObserverMock);
         });
-        mSigninManager.addSignInStateObserver(mSignInStateObserverMock);
     }
 
     @After
     public void tearDown() {
-        mSigninManager.removeSignInStateObserver(mSignInStateObserverMock);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mSigninManager.removeSignInStateObserver(mSignInStateObserverMock));
     }
 
     @Test

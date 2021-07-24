@@ -117,22 +117,24 @@ public class TabModelMergingTest {
         // Create a few tabs in each activity.
         createTabsOnUiThread();
 
-        // Initialize activity states and register for state change events.
-        mActivity1State = ApplicationStatus.getStateForActivity(mActivity1);
-        mActivity2State = ApplicationStatus.getStateForActivity(mActivity2);
-        ApplicationStatus.registerStateListenerForAllActivities(new ActivityStateListener() {
-            @Override
-            public void onActivityStateChange(Activity activity, int newState) {
-                if (activity.equals(mActivity1)) {
-                    mActivity1State = newState;
-                } else if (activity.equals(mActivity2)) {
-                    mActivity2State = newState;
-                } else if (activity instanceof ChromeTabbedActivity2
-                        && newState == ActivityState.CREATED) {
-                    mNewCTA2 = (ChromeTabbedActivity2) activity;
-                    mNewCTA2CallbackHelper.notifyCalled();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Initialize activity states and register for state change events.
+            mActivity1State = ApplicationStatus.getStateForActivity(mActivity1);
+            mActivity2State = ApplicationStatus.getStateForActivity(mActivity2);
+            ApplicationStatus.registerStateListenerForAllActivities(new ActivityStateListener() {
+                @Override
+                public void onActivityStateChange(Activity activity, int newState) {
+                    if (activity.equals(mActivity1)) {
+                        mActivity1State = newState;
+                    } else if (activity.equals(mActivity2)) {
+                        mActivity2State = newState;
+                    } else if (activity instanceof ChromeTabbedActivity2
+                            && newState == ActivityState.CREATED) {
+                        mNewCTA2 = (ChromeTabbedActivity2) activity;
+                        mNewCTA2CallbackHelper.notifyCalled();
+                    }
                 }
-            }
+            });
         });
     }
 

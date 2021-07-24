@@ -66,19 +66,21 @@ public class PasswordManagerDialogTest {
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        ChromeActivity activity = (ChromeActivity) mActivityTestRule.getActivity();
-        ModalDialogManager dialogManager =
-                TestThreadUtils.runOnUiThreadBlockingNoException(activity::getModalDialogManager);
-
-        mCoordinator = new PasswordManagerDialogCoordinator(dialogManager,
-                activity.findViewById(android.R.id.content), activity.getBrowserControlsManager());
-        PasswordManagerDialogContents contents = new PasswordManagerDialogContents(TITLE, DETAILS,
-                R.drawable.data_reduction_illustration, OK_BUTTON, CANCEL_BUTTON, mOnClick);
-        contents.setDialogType(ModalDialogManager.ModalDialogType.TAB);
-        mCoordinator.initialize(activity.getWindowAndroid().getContext().get(), contents);
-        mMediator = mCoordinator.getMediatorForTesting();
-        mModel = mMediator.getModelForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mCoordinator.showDialog(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChromeActivity activity = (ChromeActivity) mActivityTestRule.getActivity();
+            ModalDialogManager dialogManager = activity.getModalDialogManager();
+            mCoordinator = new PasswordManagerDialogCoordinator(dialogManager,
+                    activity.findViewById(android.R.id.content),
+                    activity.getBrowserControlsManager());
+            PasswordManagerDialogContents contents = new PasswordManagerDialogContents(TITLE,
+                    DETAILS, R.drawable.data_reduction_illustration, OK_BUTTON, CANCEL_BUTTON,
+                    mOnClick);
+            contents.setDialogType(ModalDialogManager.ModalDialogType.TAB);
+            mCoordinator.initialize(activity.getWindowAndroid().getContext().get(), contents);
+            mMediator = mCoordinator.getMediatorForTesting();
+            mModel = mMediator.getModelForTesting();
+            mCoordinator.showDialog();
+        });
         onViewWaiting(withId(R.id.positive_button));
     }
 

@@ -124,7 +124,10 @@ public class ReturnToChromeTest {
         if (mUseInstantStart) {
             CommandLine.getInstance().appendSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION);
         }
-        ApplicationStatus.registerStateListenerForAllActivities(new ActivityInflationObserver());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ApplicationStatus.registerStateListenerForAllActivities(
+                    new ActivityInflationObserver());
+        });
     }
 
     /**

@@ -71,7 +71,6 @@ import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 import org.chromium.ui.test.util.ViewUtils;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -155,7 +154,7 @@ public class AccessorySheetRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testAddingPasswordTabToModelRendersTabsView() throws IOException {
+    public void testAddingPasswordTabToModelRendersTabsView() throws Exception {
         final KeyboardAccessoryData.AccessorySheetData sheet =
                 new KeyboardAccessoryData.AccessorySheetData(
                         AccessoryTabType.PASSWORDS, "Passwords", "");
@@ -170,8 +169,9 @@ public class AccessorySheetRenderTest {
         sheet.getFooterCommands().add(
                 new KeyboardAccessoryData.FooterCommand("Manage Passwords", cb -> {}));
 
-        showSheetTab(new PasswordAccessorySheetCoordinator(mActivityTestRule.getActivity(), null),
-                sheet);
+        PasswordAccessorySheetCoordinator coordinator = TestThreadUtils.runOnUiThreadBlocking(
+                () -> new PasswordAccessorySheetCoordinator(mActivityTestRule.getActivity(), null));
+        showSheetTab(coordinator, sheet);
 
         mRenderTestRule.render(mContentView, "Passwords");
     }
@@ -179,7 +179,7 @@ public class AccessorySheetRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testAddingCreditCardToModelRendersTabsView() throws IOException {
+    public void testAddingCreditCardToModelRendersTabsView() throws Exception {
         // Construct a sheet with a few data fields. Leave gaps so that the footer is visible in the
         // screenshot (but supply the fields itself since the field count should be fixed).
         final KeyboardAccessoryData.AccessorySheetData sheet =
@@ -210,8 +210,11 @@ public class AccessorySheetRenderTest {
         sheet.getFooterCommands().add(
                 new KeyboardAccessoryData.FooterCommand("Manage payment methods", cb -> {}));
 
-        showSheetTab(new CreditCardAccessorySheetCoordinator(mActivityTestRule.getActivity(), null),
-                sheet);
+        CreditCardAccessorySheetCoordinator coordinator = TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> new CreditCardAccessorySheetCoordinator(
+                                mActivityTestRule.getActivity(), null));
+        showSheetTab(coordinator, sheet);
 
         mRenderTestRule.render(mContentView, "Payments");
     }
@@ -219,7 +222,7 @@ public class AccessorySheetRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testAddingAddressToModelRendersTabsView() throws IOException {
+    public void testAddingAddressToModelRendersTabsView() throws Exception {
         // Construct a sheet with a few data fields. Leave gaps so that the footer is visible in the
         // screenshot (but supply the fields itself since the field count should be fixed).
         final KeyboardAccessoryData.AccessorySheetData sheet =
@@ -249,8 +252,9 @@ public class AccessorySheetRenderTest {
         sheet.getFooterCommands().add(
                 new KeyboardAccessoryData.FooterCommand("Manage addresses", cb -> {}));
 
-        showSheetTab(
-                new AddressAccessorySheetCoordinator(mActivityTestRule.getActivity(), null), sheet);
+        AddressAccessorySheetCoordinator coordinator = TestThreadUtils.runOnUiThreadBlocking(
+                () -> new AddressAccessorySheetCoordinator(mActivityTestRule.getActivity(), null));
+        showSheetTab(coordinator, sheet);
 
         mRenderTestRule.render(mContentView, "Addresses");
     }
@@ -291,12 +295,14 @@ public class AccessorySheetRenderTest {
 
     private void showSheetTab(AccessorySheetTabCoordinator sheetComponent,
             KeyboardAccessoryData.AccessorySheetData sheetData) {
-        mSheetModel.get(TABS).add(sheetComponent.getTab());
-        Provider<KeyboardAccessoryData.AccessorySheetData> provider = new PropertyProvider<>();
-        sheetComponent.registerDataProvider(provider);
-        provider.notifyObservers(sheetData);
-        mSheetModel.set(ACTIVE_TAB_INDEX, 0);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mSheetModel.set(VISIBLE, true));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mSheetModel.get(TABS).add(sheetComponent.getTab());
+            Provider<KeyboardAccessoryData.AccessorySheetData> provider = new PropertyProvider<>();
+            sheetComponent.registerDataProvider(provider);
+            provider.notifyObservers(sheetData);
+            mSheetModel.set(ACTIVE_TAB_INDEX, 0);
+            mSheetModel.set(VISIBLE, true);
+        });
         ViewUtils.waitForView(mContentView, withId(R.id.keyboard_accessory_sheet));
     }
 }

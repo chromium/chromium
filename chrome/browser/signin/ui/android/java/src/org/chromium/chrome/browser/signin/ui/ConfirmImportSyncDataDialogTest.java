@@ -114,11 +114,14 @@ public class ConfirmImportSyncDataDialogTest {
 
     @Before
     public void setUp() {
-        IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
-        Profile.setLastUsedProfileForTesting(mock(Profile.class));
-        when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
-        mDialogManager = new ModalDialogManager(
-                new AppModalPresenter(sActivityTestRule.getActivity()), ModalDialogType.APP);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
+            Profile.setLastUsedProfileForTesting(mock(Profile.class));
+            when(IdentityServicesProvider.get().getSigninManager(any()))
+                    .thenReturn(mSigninManagerMock);
+            mDialogManager = new ModalDialogManager(
+                    new AppModalPresenter(sActivityTestRule.getActivity()), ModalDialogType.APP);
+        });
     }
 
     @Test
@@ -154,7 +157,7 @@ public class ConfirmImportSyncDataDialogTest {
     @MediumTest
     public void testListenerOnCancelNotCalledWhenDialogDismissedInternally() {
         showConfirmImportSyncDataDialog();
-        mDialogCoordinator.dismissDialog();
+        TestThreadUtils.runOnUiThreadBlocking(mDialogCoordinator::dismissDialog);
         verify(mListenerMock, never()).onCancel();
     }
 

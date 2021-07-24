@@ -23,7 +23,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -63,27 +62,23 @@ public class ScreenshotShareSheetViewTest extends DummyUiChromeActivityTestCase 
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
-        ViewGroup view = new LinearLayout(getActivity());
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ViewGroup view = new LinearLayout(getActivity());
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             getActivity().setContentView(view, params);
 
             mScreenshotView = (ScreenshotShareSheetView) getActivity().getLayoutInflater().inflate(
                     R.layout.screenshot_share_sheet, null);
 
             view.addView(mScreenshotView);
-        });
 
-        SelectionDelegate<Integer> mSelectionDelegate = new SelectionDelegate<>();
-
-        mScreenshotModel =
-                new PropertyModel.Builder(ScreenshotShareSheetViewProperties.ALL_KEYS)
-                        .with(ScreenshotShareSheetViewProperties.NO_ARG_OPERATION_LISTENER,
-                                mMockNoArgListener)
-                        .build();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mScreenshotModel =
+                    new PropertyModel.Builder(ScreenshotShareSheetViewProperties.ALL_KEYS)
+                            .with(ScreenshotShareSheetViewProperties.NO_ARG_OPERATION_LISTENER,
+                                    mMockNoArgListener)
+                            .build();
             mScreenshotMCP = PropertyModelChangeProcessor.create(
                     mScreenshotModel, mScreenshotView, ScreenshotShareSheetViewBinder::bind);
         });
@@ -151,7 +146,7 @@ public class ScreenshotShareSheetViewTest extends DummyUiChromeActivityTestCase 
 
     @Override
     public void tearDownTest() throws Exception {
-        mScreenshotMCP.destroy();
+        TestThreadUtils.runOnUiThreadBlocking(mScreenshotMCP::destroy);
         super.tearDownTest();
     }
 }

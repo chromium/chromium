@@ -64,12 +64,13 @@ public class VideoPlayerViewBinderTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mModel = new PropertyModel(VideoPlayerProperties.ALL_KEYS);
         mActivityTestRule.launchActivity(null);
         ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
         mActivity = mActivityTestRule.getActivity();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel = new PropertyModel(VideoPlayerProperties.ALL_KEYS);
+
             FrameLayout thinWebViewLayout = new FrameLayout(mActivity);
             Mockito.when(mThinWebView.getView()).thenReturn(thinWebViewLayout);
 
@@ -90,8 +91,10 @@ public class VideoPlayerViewBinderTest {
 
     @After
     public void tearDown() throws Exception {
-        mMCP.destroy();
-        mVideoPlayerView.destroy();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mMCP.destroy();
+            mVideoPlayerView.destroy();
+        });
     }
 
     @Test

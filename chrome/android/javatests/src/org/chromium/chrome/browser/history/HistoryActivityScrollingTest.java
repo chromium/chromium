@@ -162,12 +162,14 @@ public class HistoryActivityScrollingTest {
 
     private void launchHistoryActivity() {
         HistoryActivity activity = mActivityTestRule.launchActivity(null);
-        mHistoryManager = activity.getHistoryManagerForTests();
-        mAdapter = mHistoryManager.getContentManagerForTests().getAdapter();
-        mRecyclerView = mHistoryManager.getContentManagerForTests().getRecyclerView();
-        mTestObserver = new TestObserver();
-        mHistoryManager.getSelectionDelegateForTests().addObserver(mTestObserver);
-        mAdapter.registerAdapterDataObserver(mTestObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mHistoryManager = activity.getHistoryManagerForTests();
+            mAdapter = mHistoryManager.getContentManagerForTests().getAdapter();
+            mRecyclerView = mHistoryManager.getContentManagerForTests().getRecyclerView();
+            mTestObserver = new TestObserver();
+            mHistoryManager.getSelectionDelegateForTests().addObserver(mTestObserver);
+            mAdapter.registerAdapterDataObserver(mTestObserver);
+        });
     }
 
     @Test

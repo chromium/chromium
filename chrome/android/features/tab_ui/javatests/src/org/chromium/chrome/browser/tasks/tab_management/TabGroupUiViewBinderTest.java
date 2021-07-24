@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -54,29 +55,31 @@ public class TabGroupUiViewBinderTest extends DummyUiChromeActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        ViewGroup parentView = new FrameLayout(getActivity());
-        TabGroupUiToolbarView toolbarView =
-                (TabGroupUiToolbarView) LayoutInflater.from(getActivity())
-                        .inflate(R.layout.bottom_tab_strip_toolbar, parentView, false);
-        mLeftButton = toolbarView.findViewById(R.id.toolbar_left_button);
-        mRightButton = toolbarView.findViewById(R.id.toolbar_right_button);
-        mContainerView = toolbarView.findViewById(R.id.toolbar_container_view);
-        mMainContent = toolbarView.findViewById(R.id.main_content);
-        RecyclerView recyclerView =
-                (TabListRecyclerView) LayoutInflater.from(getActivity())
-                        .inflate(R.layout.tab_list_recycler_view_layout, parentView, false);
-        recyclerView.setLayoutManager(
-                new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ViewGroup parentView = new FrameLayout(getActivity());
+            TabGroupUiToolbarView toolbarView =
+                    (TabGroupUiToolbarView) LayoutInflater.from(getActivity())
+                            .inflate(R.layout.bottom_tab_strip_toolbar, parentView, false);
+            mLeftButton = toolbarView.findViewById(R.id.toolbar_left_button);
+            mRightButton = toolbarView.findViewById(R.id.toolbar_right_button);
+            mContainerView = toolbarView.findViewById(R.id.toolbar_container_view);
+            mMainContent = toolbarView.findViewById(R.id.main_content);
+            RecyclerView recyclerView =
+                    (TabListRecyclerView) LayoutInflater.from(getActivity())
+                            .inflate(R.layout.tab_list_recycler_view_layout, parentView, false);
+            recyclerView.setLayoutManager(
+                    new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
-        mModel = new PropertyModel(TabGroupUiProperties.ALL_KEYS);
-        mMCP = PropertyModelChangeProcessor.create(mModel,
-                new TabGroupUiViewBinder.ViewHolder(toolbarView, recyclerView),
-                TabGroupUiViewBinder::bind);
+            mModel = new PropertyModel(TabGroupUiProperties.ALL_KEYS);
+            mMCP = PropertyModelChangeProcessor.create(mModel,
+                    new TabGroupUiViewBinder.ViewHolder(toolbarView, recyclerView),
+                    TabGroupUiViewBinder::bind);
+        });
     }
 
     @Override
     public void tearDownTest() throws Exception {
-        mMCP.destroy();
+        TestThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
         super.tearDownTest();
     }
 

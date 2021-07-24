@@ -80,13 +80,15 @@ public class LauncherShortcutTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelector();
 
-        TabModelSelectorObserver tabModelSelectorObserver = new TabModelSelectorObserver() {
-            @Override
-            public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
-                mTabAddedCallback.notifyCalled();
-            }
-        };
-        mTabModelSelector.addObserver(tabModelSelectorObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TabModelSelectorObserver tabModelSelectorObserver = new TabModelSelectorObserver() {
+                @Override
+                public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
+                    mTabAddedCallback.notifyCalled();
+                }
+            };
+            mTabModelSelector.addObserver(tabModelSelectorObserver);
+        });
     }
 
     @After

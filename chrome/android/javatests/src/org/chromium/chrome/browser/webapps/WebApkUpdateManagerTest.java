@@ -207,11 +207,11 @@ public class WebApkUpdateManagerTest {
     private boolean checkUpdateNeeded(
             final CreationData creationData, boolean acceptDialogIfAppears) throws Exception {
         CallbackHelper waiter = new CallbackHelper();
-        final TestWebApkUpdateManager updateManager =
-                new TestWebApkUpdateManager(waiter, mActivity.getActivityTabProvider(),
-                        mActivity.getLifecycleDispatcher(), acceptDialogIfAppears);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TestWebApkUpdateManager updateManager =
+                    new TestWebApkUpdateManager(waiter, mActivity.getActivityTabProvider(),
+                            mActivity.getLifecycleDispatcher(), acceptDialogIfAppears);
             WebappDataStorage storage =
                     WebappRegistry.getInstance().getWebappDataStorage(WEBAPK_ID);
             BrowserServicesIntentDataProvider intentDataProvider =

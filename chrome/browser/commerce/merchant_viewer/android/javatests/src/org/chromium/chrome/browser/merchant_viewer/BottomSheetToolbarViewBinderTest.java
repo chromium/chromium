@@ -175,7 +175,7 @@ public class BottomSheetToolbarViewBinderTest extends DummyUiChromeActivityTestC
 
     @Override
     public void tearDownTest() throws Exception {
-        mItemMCP.destroy();
+        TestThreadUtils.runOnUiThreadBlocking(mItemMCP::destroy);
         super.tearDownTest();
     }
 }

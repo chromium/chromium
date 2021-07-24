@@ -42,6 +42,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.util.ToolbarTestUtils;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.UiRestriction;
@@ -90,7 +91,7 @@ public class StatusViewTest extends DummyUiChromeActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        mStatusMCP.destroy();
+        TestThreadUtils.runOnUiThreadBlocking(mStatusMCP::destroy);
         super.tearDownTest();
     }
 

@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressProperties.CompletionState;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -59,7 +60,8 @@ public class LoadProgressMediatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mModel = new PropertyModel(LoadProgressProperties.ALL_KEYS);
+        mModel = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> new PropertyModel(LoadProgressProperties.ALL_KEYS));
         when(mTab.getUrl()).thenReturn(URL_1);
     }
 

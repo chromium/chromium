@@ -947,29 +947,33 @@ public class TabsTest {
         final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         final int id = activity.getCurrentTabModel().getTabAt(finalIndex).getId();
         final TabModelSelectorTabModelObserver observer =
-                new TabModelSelectorTabModelObserver(activity.getTabModelSelector()) {
-                    @Override
-                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                        if (tab.getId() == id) selectCallback.notifyCalled();
-                    }
-                };
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                    return new TabModelSelectorTabModelObserver(activity.getTabModelSelector()) {
+                        @Override
+                        public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                            if (tab.getId() == id) selectCallback.notifyCalled();
+                        }
+                    };
+                });
 
         int tabSelectedCallCount = selectCallback.getCallCount();
 
         // Listen for changes in the layout to indicate the swipe has completed.
         final CallbackHelper staticLayoutCallbackHelper = new CallbackHelper();
-        activity.getCompositorViewHolder().getLayoutManager().addSceneChangeObserver(
-                new SceneChangeObserver() {
-                    @Override
-                    public void onTabSelectionHinted(int tabId) {}
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            activity.getCompositorViewHolder().getLayoutManager().addSceneChangeObserver(
+                    new SceneChangeObserver() {
+                        @Override
+                        public void onTabSelectionHinted(int tabId) {}
 
-                    @Override
-                    public void onSceneChange(Layout layout) {
-                        if (layout instanceof StaticLayout) {
-                            staticLayoutCallbackHelper.notifyCalled();
+                        @Override
+                        public void onSceneChange(Layout layout) {
+                            if (layout instanceof StaticLayout) {
+                                staticLayoutCallbackHelper.notifyCalled();
+                            }
                         }
-                    }
-                });
+                    });
+        });
 
         int callLayoutChangeCount = staticLayoutCallbackHelper.getCallCount();
         performToolbarSideSwipe(direction);
@@ -1117,11 +1121,13 @@ public class TabsTest {
         final TabModelSelector selector = mActivityTestRule.getActivity().getTabModelSelector();
         mNotifyChangedCalled = false;
 
-        selector.addObserver(new TabModelSelectorObserver() {
-            @Override
-            public void onChange() {
-                mNotifyChangedCalled = true;
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            selector.addObserver(new TabModelSelectorObserver() {
+                @Override
+                public void onChange() {
+                    mNotifyChangedCalled = true;
+                }
+            });
         });
 
         Assert.assertEquals("Too many tabs at startup", 1, model.getCount());

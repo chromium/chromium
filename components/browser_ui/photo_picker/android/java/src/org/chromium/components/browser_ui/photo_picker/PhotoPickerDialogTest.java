@@ -53,7 +53,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -274,24 +273,17 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
 
     private PhotoPickerDialog createDialogWithContentResolver(final ContentResolver contentResolver,
             final boolean multiselect, final List<String> mimeTypes) throws Exception {
-        final PhotoPickerDialog dialog =
-                TestThreadUtils.runOnUiThreadBlocking(new Callable<PhotoPickerDialog>() {
-                    @Override
-                    public PhotoPickerDialog call() {
-                        final PhotoPickerDialog dialog =
-                                new PhotoPickerDialog(mWindowAndroid, contentResolver,
-                                        PhotoPickerDialogTest.this, multiselect, mimeTypes);
-                        dialog.show();
-                        return dialog;
-                    }
-                });
-
-        mSelectionDelegate = dialog.getCategoryViewForTesting().getSelectionDelegateForTesting();
-        if (!multiselect) mSelectionDelegate.setSingleSelectionMode();
-        mSelectionDelegate.addObserver(this);
-        mDialog = dialog;
-
-        return dialog;
+        return TestThreadUtils.runOnUiThreadBlocking(() -> {
+            final PhotoPickerDialog dialog = new PhotoPickerDialog(mWindowAndroid, contentResolver,
+                    PhotoPickerDialogTest.this, multiselect, mimeTypes);
+            dialog.show();
+            mSelectionDelegate =
+                    dialog.getCategoryViewForTesting().getSelectionDelegateForTesting();
+            if (!multiselect) mSelectionDelegate.setSingleSelectionMode();
+            mSelectionDelegate.addObserver(this);
+            mDialog = dialog;
+            return dialog;
+        });
     }
 
     private PhotoPickerDialog createDialog(final boolean multiselect, final List<String> mimeTypes)
