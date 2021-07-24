@@ -1,45 +1,45 @@
 AXWebArea AXTitle='Table example - thead, tbody, tfoot'
 ++AXTable
 ++++AXRow AXIndex=0
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 0}
+++++++AXCell AXColumnIndexRange={loc: 0, len: 1} AXRowIndexRange={loc: 0, len: 1}
 ++++++++AXStaticText AXValue='Sum'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 0}
+++++++AXCell AXColumnIndexRange={loc: 1, len: 1} AXRowIndexRange={loc: 0, len: 1}
 ++++++++AXStaticText AXValue='Subtraction'
 ++++AXRow AXIndex=1
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 1}
+++++++AXCell AXColumnIndexRange={loc: 0, len: 1} AXRowIndexRange={loc: 1, len: 1}
 ++++++++AXStaticText AXValue='10'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 1}
+++++++AXCell AXColumnIndexRange={loc: 1, len: 1} AXRowIndexRange={loc: 1, len: 1}
 ++++++++AXStaticText AXValue='7'
 ++++AXRow AXIndex=2
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 2}
+++++++AXCell AXColumnIndexRange={loc: 0, len: 1} AXRowIndexRange={loc: 2, len: 1}
 ++++++++AXStaticText AXValue='2'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 2}
+++++++AXCell AXColumnIndexRange={loc: 1, len: 1} AXRowIndexRange={loc: 2, len: 1}
 ++++++++AXStaticText AXValue='4'
 ++++AXRow AXIndex=3
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 3}
+++++++AXCell AXColumnIndexRange={loc: 0, len: 1} AXRowIndexRange={loc: 3, len: 1}
 ++++++++AXStaticText AXValue='12'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 3}
+++++++AXCell AXColumnIndexRange={loc: 1, len: 1} AXRowIndexRange={loc: 3, len: 1}
 ++++++++AXStaticText AXValue='3'
 ++++AXColumn AXIndex=0
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 0}
+++++++AXCell AXColumnIndexRange={loc: 0, len: 1} AXRowIndexRange={loc: 0, len: 1}
 ++++++++AXStaticText AXValue='Sum'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 1}
+++++++AXCell AXColumnIndexRange={loc: 0, len: 1} AXRowIndexRange={loc: 1, len: 1}
 ++++++++AXStaticText AXValue='10'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 2}
+++++++AXCell AXColumnIndexRange={loc: 0, len: 1} AXRowIndexRange={loc: 2, len: 1}
 ++++++++AXStaticText AXValue='2'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 3}
+++++++AXCell AXColumnIndexRange={loc: 0, len: 1} AXRowIndexRange={loc: 3, len: 1}
 ++++++++AXStaticText AXValue='12'
 ++++AXColumn AXIndex=1
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 0}
+++++++AXCell AXColumnIndexRange={loc: 1, len: 1} AXRowIndexRange={loc: 0, len: 1}
 ++++++++AXStaticText AXValue='Subtraction'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 1}
+++++++AXCell AXColumnIndexRange={loc: 1, len: 1} AXRowIndexRange={loc: 1, len: 1}
 ++++++++AXStaticText AXValue='7'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 2}
+++++++AXCell AXColumnIndexRange={loc: 1, len: 1} AXRowIndexRange={loc: 2, len: 1}
 ++++++++AXStaticText AXValue='4'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 3}
+++++++AXCell AXColumnIndexRange={loc: 1, len: 1} AXRowIndexRange={loc: 3, len: 1}
 ++++++++AXStaticText AXValue='3'
 ++++AXGroup
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 0}
+++++++AXCell AXColumnIndexRange={loc: 0, len: 1} AXRowIndexRange={loc: 0, len: 1}
 ++++++++AXStaticText AXValue='Sum'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 0}
+++++++AXCell AXColumnIndexRange={loc: 1, len: 1} AXRowIndexRange={loc: 0, len: 1}
 ++++++++AXStaticText AXValue='Subtraction'

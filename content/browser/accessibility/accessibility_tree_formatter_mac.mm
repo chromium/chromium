@@ -377,8 +377,10 @@ base::Value AccessibilityTreeFormatterMac::PopulateRect(
 base::Value AccessibilityTreeFormatterMac::PopulateRange(
     NSRange node_range) const {
   base::Value range(base::Value::Type::DICTIONARY);
-  range.SetIntPath(kRangeLocDictAttr, static_cast<int>(node_range.location));
-  range.SetIntPath(kRangeLenDictAttr, static_cast<int>(node_range.length));
+  range.SetIntPath(AXMakeOrderedKey(kRangeLocDictAttr, 0),
+                   static_cast<int>(node_range.location));
+  range.SetIntPath(AXMakeOrderedKey(kRangeLenDictAttr, 1),
+                   static_cast<int>(node_range.length));
   return range;
 }
 

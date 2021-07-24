@@ -210,6 +210,19 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Serialize_NSRange) {
+  TestFormat(R"~~(data:text/html,<input id='input' value='alphabet'>
+                    <script>
+                      let input = document.getElementById('input');
+                      input.select();
+                    </script>)~~",
+             {":3;AXSelectedTextRange=*"}, R"~~(AXWebArea
+++AXGroup
+++++AXTextField AXSelectedTextRange={loc: 0, len: 8} AXValue='alphabet'
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_Int) {
   TestFormat(R"~~(data:text/html,
                     <p contentEditable='true'>Text</p>)~~",
