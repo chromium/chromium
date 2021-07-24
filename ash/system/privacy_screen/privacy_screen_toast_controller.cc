@@ -14,6 +14,7 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 
 namespace ash {
 
@@ -139,9 +140,9 @@ void PrivacyScreenToastController::UpdateToastView() {
     toast_view_->SetPrivacyScreenEnabled(
         /*enabled=*/privacy_screen_controller->GetEnabled(),
         /*managed=*/privacy_screen_controller->IsManaged());
-    int width = base::ClampToRange(toast_view_->GetPreferredSize().width(),
-                                   kPrivacyScreenToastMinWidth,
-                                   kPrivacyScreenToastMaxWidth);
+    int width =
+        base::clamp(toast_view_->GetPreferredSize().width(),
+                    kPrivacyScreenToastMinWidth, kPrivacyScreenToastMaxWidth);
     bubble_view_->SetPreferredWidth(width);
   }
 }

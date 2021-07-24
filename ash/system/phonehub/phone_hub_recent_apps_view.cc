@@ -13,6 +13,7 @@
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/cxx17_backports.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/label.h"
@@ -118,8 +119,8 @@ void PhoneHubRecentAppsView::RecentAppButtonsView::Layout() {
   if (visible_children.size() > 1) {
     spacing = (child_area.width() - visible_child_width) /
               (static_cast<int>(visible_children.size()) - 1);
-    spacing = base::ClampToRange(spacing, kRecentAppButtonMinSpacing,
-                                 kRecentAppButtonDefaultSpacing);
+    spacing = base::clamp(spacing, kRecentAppButtonMinSpacing,
+                          kRecentAppButtonDefaultSpacing);
   }
 
   int x_delta = child_area.x();

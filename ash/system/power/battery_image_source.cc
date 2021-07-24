@@ -6,6 +6,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/cxx17_backports.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -64,7 +65,7 @@ void BatteryImageSource::Draw(gfx::Canvas* canvas) {
       std::floor(info_.charge_percent / 100.0 * icon_bounds.height());
   const float min_charge_level = dsf * kMinVisualChargeLevel;
   charge_level =
-      base::ClampToRange(charge_level, min_charge_level, icon_bounds.height());
+      base::clamp(charge_level, min_charge_level, icon_bounds.height());
 
   const float charge_y = icon_bounds.bottom() - charge_level;
   gfx::RectF clip_rect(0, charge_y, size().width() * dsf,

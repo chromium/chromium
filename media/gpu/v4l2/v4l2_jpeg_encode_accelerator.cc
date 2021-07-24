@@ -14,7 +14,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -172,7 +172,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstance::FillQuantizationTable(
   for (size_t i = 0; i < kDctSize; i++) {
     temp = ((unsigned int)basic_table[kZigZag8x8[i]] * quality + 50) / 100;
     /* limit the values to the valid range */
-    dst_table[i] = base::ClampToRange(temp, 1u, 255u);
+    dst_table[i] = base::clamp(temp, 1u, 255u);
   }
 }
 
@@ -1009,7 +1009,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FillQuantizationTable(
   for (size_t i = 0; i < kDctSize; i++) {
     temp = ((unsigned int)basic_table[kZigZag8x8[i]] * quality + 50) / 100;
     /* limit the values to the valid range */
-    dst_table[i] = base::ClampToRange(temp, 1u, 255u);
+    dst_table[i] = base::clamp(temp, 1u, 255u);
   }
 }
 

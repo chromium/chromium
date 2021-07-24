@@ -7,8 +7,8 @@
 #include <cmath>
 #include <cstdlib>
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/checked_math.h"
-#include "base/numerics/ranges.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -92,9 +92,9 @@ float XRCPUDepthInformation::getDepthInMeters(
   // `norm_depth_coordinates` becomes `depth_coordinates`:
   depth_coordinates.Scale(size_.width(), size_.height(), 1.0);
 
-  uint32_t column = base::ClampToRange<uint32_t>(
+  uint32_t column = base::clamp<uint32_t>(
       static_cast<uint32_t>(depth_coordinates.x()), 0, size_.width() - 1);
-  uint32_t row = base::ClampToRange<uint32_t>(
+  uint32_t row = base::clamp<uint32_t>(
       static_cast<uint32_t>(depth_coordinates.y()), 0, size_.height() - 1);
 
   auto checked_index =

@@ -8,7 +8,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -231,7 +231,7 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
 
 - (void)setSliderPosition:(CGFloat)sliderPosition {
   // Clamp |selectionOffset| to (0.0 - 1.0).
-  sliderPosition = base::ClampToRange<CGFloat>(sliderPosition, 0.0, 1.0);
+  sliderPosition = base::clamp<CGFloat>(sliderPosition, 0.0, 1.0);
   CGPoint center = self.sliderView.center;
   center.x = self.sliderOrigin + self.sliderRange * sliderPosition;
   self.sliderView.center = center;

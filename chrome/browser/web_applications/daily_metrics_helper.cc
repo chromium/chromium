@@ -4,7 +4,7 @@
 
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -22,8 +22,8 @@ namespace web_app {
 namespace {
 
 int BucketedDailySeconds(base::TimeDelta delta) {
-  int64_t sample = base::ClampToRange(delta.InSeconds(), int64_t(0),
-                                      base::TimeDelta::FromDays(1).InSeconds());
+  int64_t sample = base::clamp(delta.InSeconds(), int64_t(0),
+                               base::TimeDelta::FromDays(1).InSeconds());
   // Result between 1 sec and 1 day, in 50 linear buckets per day.
   int32_t bucket_size = base::TimeDelta::FromDays(1).InSeconds() / 50;
   int result = ukm::GetLinearBucketMin(sample, bucket_size);

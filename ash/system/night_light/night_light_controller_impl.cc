@@ -19,10 +19,10 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "cc/base/math_util.h"
@@ -167,7 +167,7 @@ class NightLightControllerDelegateImpl
 // 3 => Range [60 : 80).
 // 4 => Range [80 : 100] (most warm).
 int GetTemperatureRange(float temperature) {
-  return base::ClampToRange(std::floor(5 * temperature), 0.0f, 4.0f);
+  return base::clamp(std::floor(5 * temperature), 0.0f, 4.0f);
 }
 
 // Returns the color matrix that corresponds to the given |temperature|.
@@ -355,8 +355,7 @@ class ColorTemperatureAnimation : public gfx::LinearAnimation,
     }
 
     start_temperature_ = current_temperature_;
-    target_temperature_ =
-        base::ClampToRange(new_target_temperature, 0.0f, 1.0f);
+    target_temperature_ = base::clamp(new_target_temperature, 0.0f, 1.0f);
 
     if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
@@ -375,7 +374,7 @@ class ColorTemperatureAnimation : public gfx::LinearAnimation,
  private:
   // gfx::Animation:
   void AnimateToState(double state) override {
-    state = base::ClampToRange(state, 0.0, 1.0);
+    state = base::clamp(state, 0.0, 1.0);
     current_temperature_ =
         start_temperature_ + (target_temperature_ - start_temperature_) * state;
   }
@@ -482,9 +481,9 @@ float NightLightControllerImpl::RemapAmbientColorTemperature(
   // maximum. Given that the interval kTable[i].input_temperature,
   // kTable[i+1].input_temperature exclude the upper bound, we clamp it to the
   // last input_temperature element of the table minus 1.
-  const float temperature = base::ClampToRange<float>(
-      temperature_in_kelvin, kTable[0].input_temperature,
-      kTable[kTableSize - 1].input_temperature - 1);
+  const float temperature =
+      base::clamp<float>(temperature_in_kelvin, kTable[0].input_temperature,
+                         kTable[kTableSize - 1].input_temperature - 1);
   for (size_t i = 0; i < kTableSize - 1; i++) {
     if (temperature >= kTable[i].input_temperature &&
         temperature < kTable[i + 1].input_temperature) {

@@ -23,6 +23,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
@@ -197,9 +198,8 @@ gfx::Size AppListBubbleView::CalculatePreferredSize() const {
          ShelfConfig::Get()->shelf_size() + kExtraTopOfScreenSpacing) /
         2;
 
-    height =
-        base::ClampToRange(height_to_fit_all_apps,
-                           kDefaultHeight - margins().height(), max_height);
+    height = base::clamp(height_to_fit_all_apps,
+                         kDefaultHeight - margins().height(), max_height);
   }
 
   return gfx::Size(width, height);

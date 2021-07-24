@@ -13,8 +13,8 @@
 #include "ash/wm/desks/desks_util.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -240,10 +240,10 @@ absl::optional<int> RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(
   float translation_x =
       animation_layer->transform().To2dTranslation().x() + translation_delta_x;
   translation_x =
-      base::ClampToRange(translation_x,
-                         static_cast<float>(-animation_layer->bounds().width() +
-                                            visible_bounds_width),
-                         0.f);
+      base::clamp(translation_x,
+                  static_cast<float>(-animation_layer->bounds().width() +
+                                     visible_bounds_width),
+                  0.f);
   gfx::Transform transform;
   transform.Translate(translation_x, 0.f);
   base::AutoReset<bool> auto_reset(&setting_new_transform_, true);

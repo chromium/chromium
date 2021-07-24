@@ -21,7 +21,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/updater/browser_updater_client.h"  // nogncheck
 #include "chrome/updater/update_service.h"                  // nogncheck
@@ -73,8 +73,7 @@ namespace {
 int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {
   if (downloaded_bytes < 0 || total_bytes <= 0)
     return -1;
-  return 100 *
-         base::ClampToRange(double{downloaded_bytes} / total_bytes, 0.0, 1.0);
+  return 100 * base::clamp(double{downloaded_bytes} / total_bytes, 0.0, 1.0);
 }
 
 void UpdateStatusFromChromiumUpdater(

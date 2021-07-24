@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -401,7 +401,7 @@ void AudioSinkAndroidAudioTrackImpl::SetLimiterVolumeMultiplier(
     float multiplier) {
   RUN_ON_FEEDER_THREAD(SetLimiterVolumeMultiplier, multiplier);
 
-  limiter_volume_multiplier_ = base::ClampToRange(multiplier, 0.0f, 1.0f);
+  limiter_volume_multiplier_ = base::clamp(multiplier, 0.0f, 1.0f);
   LOG(INFO) << __func__ << "(" << this << "): device_id_=" << device_id_
             << " limiter_multiplier=" << limiter_volume_multiplier_
             << " effective=" << EffectiveVolume();

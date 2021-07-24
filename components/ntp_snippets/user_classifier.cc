@@ -11,7 +11,6 @@
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
 #include "components/ntp_snippets/features.h"
@@ -165,7 +164,7 @@ double GetEstimateHoursBetweenEvents(double metric_value,
   //   estimate_hours = log(metric_value / (metric_value - 1)) / discount_rate.
   double estimate_hours =
       std::log(metric_value / (metric_value - 1)) / discount_rate_per_hour;
-  return base::ClampToRange(estimate_hours, min_hours, max_hours);
+  return base::clamp(estimate_hours, min_hours, max_hours);
 }
 
 // The inverse of GetEstimateHoursBetweenEvents().
@@ -174,7 +173,7 @@ double GetMetricValueForEstimateHoursBetweenEvents(
     double discount_rate_per_hour,
     double min_hours,
     double max_hours) {
-  estimate_hours = base::ClampToRange(estimate_hours, min_hours, max_hours);
+  estimate_hours = base::clamp(estimate_hours, min_hours, max_hours);
   // Return |metric_value| such that GetEstimateHoursBetweenEvents for
   // |metric_value| returns |estimate_hours|. Thus, solve |metric_value| in
   //   metric_value = 1 + e^{-discount_rate * estimate_hours} * metric_value,

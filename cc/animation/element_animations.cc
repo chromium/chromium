@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/animation_events.h"
 #include "cc/animation/animation_host.h"
@@ -224,7 +224,7 @@ void ElementAnimations::OnFloatAnimated(const float& value,
             target_property_id);
       break;
     case TargetProperty::OPACITY: {
-      float opacity = base::ClampToRange(value, 0.0f, 1.0f);
+      float opacity = base::clamp(value, 0.0f, 1.0f);
       if (KeyframeModelAffectsActiveElements(keyframe_model))
         OnOpacityAnimated(ElementListType::ACTIVE, opacity, keyframe_model);
       if (KeyframeModelAffectsPendingElements(keyframe_model))

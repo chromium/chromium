@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 
 namespace blink {
 
@@ -48,8 +48,8 @@ void XRSessionViewportScaler::ResetLoad() {
 }
 
 void XRSessionViewportScaler::UpdateRenderingTimeRatio(float new_value) {
-  gpu_load_ += base::ClampToRange(kLoadDecay * (new_value - gpu_load_),
-                                  -kMaxChange, kMaxChange);
+  gpu_load_ += base::clamp(kLoadDecay * (new_value - gpu_load_), -kMaxChange,
+                           kMaxChange);
   float old_scale = scale_;
   if (gpu_load_ > kLoadHigh && scale_ > kMinScale) {
     scale_ *= kScaleStep;
@@ -58,7 +58,7 @@ void XRSessionViewportScaler::UpdateRenderingTimeRatio(float new_value) {
     scale_ /= kScaleStep;
     scale_ = round(scale_ * kRound) / kRound;
   }
-  scale_ = base::ClampToRange(scale_, kMinScale, kMaxScale);
+  scale_ = base::clamp(scale_, kMinScale, kMaxScale);
   if (scale_ != old_scale) {
     ResetLoad();
   }

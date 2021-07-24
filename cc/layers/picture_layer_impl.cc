@@ -15,9 +15,9 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/numerics/ranges.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
@@ -1185,7 +1185,7 @@ float PictureLayerImpl::CalculateDirectlyCompositedImageRasterScale() const {
   float min_scale = MinimumContentsScale();
 
   float clamped_ideal_source_scale =
-      base::ClampToRange(ideal_source_scale_key(), min_scale, max_scale);
+      base::clamp(ideal_source_scale_key(), min_scale, max_scale);
   while (adjusted_raster_scale < clamped_ideal_source_scale)
     adjusted_raster_scale *= 2.f;
 
@@ -1198,7 +1198,7 @@ float PictureLayerImpl::CalculateDirectlyCompositedImageRasterScale() const {
     adjusted_raster_scale /= 2.f;
 
   adjusted_raster_scale =
-      base::ClampToRange(adjusted_raster_scale, min_scale, max_scale);
+      base::clamp(adjusted_raster_scale, min_scale, max_scale);
   return adjusted_raster_scale;
 }
 

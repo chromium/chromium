@@ -4,7 +4,7 @@
 
 #include "ash/accessibility/ui/layer_animation_info.h"
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 
 namespace ash {
 
@@ -33,7 +33,7 @@ void ComputeOpacity(LayerAnimationInfo* animation_info,
     opacity = 1.0 - (change_delta / (fade_in_time + fade_out_time));
 
   // Layer::SetOpacity will throw an error if we're not within 0...1.
-  animation_info->opacity = base::ClampToRange(opacity, 0.0f, 1.0f);
+  animation_info->opacity = base::clamp(opacity, 0.0f, 1.0f);
 }
 
 }  // namespace ash

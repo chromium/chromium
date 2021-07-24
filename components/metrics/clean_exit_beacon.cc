@@ -5,9 +5,9 @@
 #include "components/metrics/clean_exit_beacon.h"
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -57,7 +57,7 @@ void MaybeIncrementCrashStreak(bool did_previous_session_exit_cleanly,
     local_state->CommitPendingWrite();
   }
   base::UmaHistogramSparse("Variations.SafeMode.Streak.Crashes",
-                           base::ClampToRange(num_crashes, 0, 100));
+                           base::clamp(num_crashes, 0, 100));
 }
 
 }  // namespace

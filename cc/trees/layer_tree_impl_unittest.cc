@@ -4,7 +4,7 @@
 
 #include "cc/trees/layer_tree_impl.h"
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/fake_raster_source.h"
@@ -23,8 +23,8 @@ std::pair<gfx::PointF, gfx::PointF> GetVisibleSelectionEndPoints(
     const gfx::RectF& rect,
     const gfx::PointF& top,
     const gfx::PointF& bottom) {
-  gfx::PointF start(base::ClampToRange(top.x(), rect.x(), rect.right()),
-                    base::ClampToRange(top.y(), rect.y(), rect.bottom()));
+  gfx::PointF start(base::clamp(top.x(), rect.x(), rect.right()),
+                    base::clamp(top.y(), rect.y(), rect.bottom()));
   gfx::PointF end =
       start + gfx::Vector2dF(bottom.x() - top.x(), bottom.y() - top.y());
   return {start, end};

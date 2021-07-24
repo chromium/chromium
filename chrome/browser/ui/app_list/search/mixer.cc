@@ -12,9 +12,9 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "base/cxx17_backports.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
@@ -90,8 +90,8 @@ class Mixer::Group {
 
         // We cannot rely on providers to give relevance scores in the range
         // [0.0, 1.0]. Clamp to that range.
-        results_.emplace_back(
-            result.get(), base::ClampToRange(result->relevance(), 0.0, 1.0));
+        results_.emplace_back(result.get(),
+                              base::clamp(result->relevance(), 0.0, 1.0));
       }
     }
 

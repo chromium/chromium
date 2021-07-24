@@ -7,8 +7,8 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/notreached.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -765,7 +765,7 @@ bool UiElement::GetRayDistance(const gfx::Point3F& ray_origin,
 void UiElement::OnFloatAnimated(const float& value,
                                 int target_property_id,
                                 gfx::KeyframeModel* keyframe_model) {
-  opacity_ = base::ClampToRange(value, 0.0f, 1.0f);
+  opacity_ = base::clamp(value, 0.0f, 1.0f);
 }
 
 void UiElement::OnTransformAnimated(const gfx::TransformOperations& operations,

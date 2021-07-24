@@ -9,7 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/numerics/safe_math.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -99,8 +99,8 @@ Thumbnail::Thumbnail() = default;
 Thumbnail::Thumbnail(const gfx::Size& page_size, float device_pixel_ratio) {
   DCHECK_GE(device_pixel_ratio, kMinDevicePixelRatio);
   DCHECK_LE(device_pixel_ratio, kMaxDevicePixelRatio);
-  device_pixel_ratio_ = base::ClampToRange(
-      device_pixel_ratio, kMinDevicePixelRatio, kMaxDevicePixelRatio);
+  device_pixel_ratio_ = base::clamp(device_pixel_ratio, kMinDevicePixelRatio,
+                                    kMaxDevicePixelRatio);
 
   const gfx::Size thumbnail_size_device_pixels =
       CalculateBestFitSize(page_size, device_pixel_ratio_);

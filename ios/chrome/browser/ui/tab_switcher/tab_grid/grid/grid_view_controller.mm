@@ -5,12 +5,12 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/ios/block_types.h"
 #import "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
-#include "base/numerics/ranges.h"
 #import "base/numerics/safe_conversions.h"
 #include "ios/chrome/browser/procedural_block_types.h"
 #import "ios/chrome/browser/ui/commands/thumb_strip_commands.h"
@@ -1106,7 +1106,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // Updates the value stored in |fractionVisibleOfLastItem|.
 - (void)updateFractionVisibleOfLastItem {
   CGFloat offset = self.offsetPastEndOfScrollView;
-  self.fractionVisibleOfLastItem = base::ClampToRange<CGFloat>(
+  self.fractionVisibleOfLastItem = base::clamp<CGFloat>(
       1 - offset / kScrollThresholdForPlusSignButtonHide, 0, 1);
 }
 

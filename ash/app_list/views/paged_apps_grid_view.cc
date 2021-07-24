@@ -25,6 +25,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -285,7 +286,7 @@ void PagedAppsGridView::UpdateOpacity(bool restore_opacity) {
     centerline_above_work_area = std::max<float>(
         app_list_view->GetScreenBottom() - view_bounds.CenterPoint().y(), 0.f);
     const float start_px = GetAppListConfig().all_apps_opacity_start_px();
-    opacity = base::ClampToRange(
+    opacity = base::clamp(
         (centerline_above_work_area - start_px) /
             (GetAppListConfig().all_apps_opacity_end_px() - start_px),
         0.f, 1.0f);

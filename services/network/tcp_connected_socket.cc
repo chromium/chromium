@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log.h"
@@ -22,8 +22,8 @@ namespace network {
 namespace {
 
 int ClampTCPBufferSize(int requested_buffer_size) {
-  return base::ClampToRange(requested_buffer_size, 0,
-                            TCPConnectedSocket::kMaxBufferSize);
+  return base::clamp(requested_buffer_size, 0,
+                     TCPConnectedSocket::kMaxBufferSize);
 }
 
 // Sets the initial options on a fresh socket. Assumes |socket| is currently

@@ -36,10 +36,10 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/guid.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -1341,7 +1341,7 @@ void AppsGridView::UpdateDropTargetForReorder(const gfx::Point& point) {
                                 (cardified_state_ ? kCardifiedScale : 1.0f));
   int col = (point.x() - bounds.x() + x_offset - GetGridCenteringOffset().x()) /
             total_tile_size.width();
-  col = base::ClampToRange(col, 0, cols_ - 1);
+  col = base::clamp(col, 0, cols_ - 1);
   drop_target_ =
       std::min(GridIndex(pagination_model_.selected_page(), row * cols_ + col),
                GetLastTargetIndexOfPage(pagination_model_.selected_page()));
@@ -2339,10 +2339,10 @@ GridIndex AppsGridView::GetNearestTileIndexForPoint(
   bounds.Inset(GetTilePadding());
   const gfx::Size total_tile_size = GetTotalTileSize();
   const gfx::Vector2d grid_offset = GetGridCenteringOffset();
-  int col = base::ClampToRange(
+  int col = base::clamp(
       (point.x() - bounds.x() - grid_offset.x()) / total_tile_size.width(), 0,
       cols_ - 1);
-  int row = base::ClampToRange(
+  int row = base::clamp(
       (point.y() - bounds.y() - grid_offset.y()) / total_tile_size.height(), 0,
       rows_per_page_ - 1);
   return GridIndex(current_page, row * cols_ + col);

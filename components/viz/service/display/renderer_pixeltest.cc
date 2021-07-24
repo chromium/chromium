@@ -11,10 +11,10 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "cc/paint/paint_flags.h"
@@ -5173,9 +5173,9 @@ class ColorTransformPixelTest
       }
       transform->Transform(&color, 1);
       color.Scale(alpha);
-      color.set_x(base::ClampToRange(color.x(), 0.0f, 1.0f));
-      color.set_y(base::ClampToRange(color.y(), 0.0f, 1.0f));
-      color.set_z(base::ClampToRange(color.z(), 0.0f, 1.0f));
+      color.set_x(base::clamp(color.x(), 0.0f, 1.0f));
+      color.set_y(base::clamp(color.y(), 0.0f, 1.0f));
+      color.set_z(base::clamp(color.z(), 0.0f, 1.0f));
       expected_output_colors[i] =
           SkColorSetARGB(255, static_cast<size_t>(255.f * color.x() + 0.5f),
                          static_cast<size_t>(255.f * color.y() + 0.5f),

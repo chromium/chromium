@@ -15,8 +15,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
-#include "base/numerics/ranges.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -1297,8 +1297,8 @@ bool CameraDeviceDelegate::SetPointsOfInterest(
   // the closest allowed value.
   // ref: https://www.w3.org/TR/image-capture/#points-of-interest
 
-  double x = base::ClampToRange(points_of_interest[0]->x, 0.0, 1.0);
-  double y = base::ClampToRange(points_of_interest[0]->y, 0.0, 1.0);
+  double x = base::clamp(points_of_interest[0]->x, 0.0, 1.0);
+  double y = base::clamp(points_of_interest[0]->y, 0.0, 1.0);
 
   // Handle rotation, still in normalized square space.
   std::tie(x, y) = [&]() -> std::pair<double, double> {

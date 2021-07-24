@@ -7,9 +7,9 @@
 #include <cmath>
 #include <map>
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/numerics/ranges.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
@@ -96,7 +96,7 @@ float HidePositionStartValue() {
 // animations to the expected range so that gfx::Tween::CalculateValue() can be
 // used.
 double CapAnimationValue(double value) {
-  return base::ClampToRange(value, 0.0, 1.0);
+  return base::clamp(value, 0.0, 1.0);
 }
 
 // A default CaptionButtonModel that uses the widget delegate's state

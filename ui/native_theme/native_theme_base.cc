@@ -9,8 +9,8 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/notreached.h"
-#include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_flags.h"
@@ -128,7 +128,7 @@ ui::NativeTheme::ColorScheme ColorSchemeForAccentColor(
 SkColor AdjustLuminance(const SkColor& color, double luminance) {
   color_utils::HSL hsl;
   color_utils::SkColorToHSL(color, &hsl);
-  hsl.l = base::ClampToRange(hsl.l + luminance, 0., 1.);
+  hsl.l = base::clamp(hsl.l + luminance, 0., 1.);
   return color_utils::HSLToSkColor(hsl, SkColorGetA(color));
 }
 
@@ -1193,10 +1193,8 @@ SkColor NativeThemeBase::SaturateAndBrighten(SkScalar* hsv,
                                              SkScalar brighten_amount) const {
   SkScalar color[3];
   color[0] = hsv[0];
-  color[1] =
-      base::ClampToRange(hsv[1] + saturate_amount, SkScalar{0}, SK_Scalar1);
-  color[2] =
-      base::ClampToRange(hsv[2] + brighten_amount, SkScalar{0}, SK_Scalar1);
+  color[1] = base::clamp(hsv[1] + saturate_amount, SkScalar{0}, SK_Scalar1);
+  color[2] = base::clamp(hsv[2] + brighten_amount, SkScalar{0}, SK_Scalar1);
   return SkHSVToColor(color);
 }
 
@@ -1273,10 +1271,8 @@ SkColor NativeThemeBase::OutlineColor(SkScalar* hsv1, SkScalar* hsv2) const {
   //
   // The following code has been tested to look OK with all of the
   // default GTK themes.
-  SkScalar min_diff =
-      base::ClampToRange((hsv1[1] + hsv2[1]) * 1.2f, 0.28f, 0.5f);
-  SkScalar diff =
-      base::ClampToRange(fabs(hsv1[2] - hsv2[2]) / 2, min_diff, 0.5f);
+  SkScalar min_diff = base::clamp((hsv1[1] + hsv2[1]) * 1.2f, 0.28f, 0.5f);
+  SkScalar diff = base::clamp(fabs(hsv1[2] - hsv2[2]) / 2, min_diff, 0.5f);
 
   if (hsv1[2] + hsv2[2] > 1.0)
     diff = -diff;

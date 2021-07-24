@@ -16,13 +16,13 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/i18n/number_formatting.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -175,8 +175,8 @@ gfx::Image ResizeImageToFdoMaxSize(const gfx::Image& image) {
   const SkBitmap* image_bitmap = image.ToSkBitmap();
   double scale = std::min(static_cast<double>(kMaxImageWidth) / width,
                           static_cast<double>(kMaxImageHeight) / height);
-  width = base::ClampToRange<int>(scale * width, 1, kMaxImageWidth);
-  height = base::ClampToRange<int>(scale * height, 1, kMaxImageHeight);
+  width = base::clamp<int>(scale * width, 1, kMaxImageWidth);
+  height = base::clamp<int>(scale * height, 1, kMaxImageHeight);
   return gfx::Image(
       gfx::ImageSkia::CreateFrom1xBitmap(skia::ImageOperations::Resize(
           *image_bitmap, skia::ImageOperations::RESIZE_LANCZOS3, width,

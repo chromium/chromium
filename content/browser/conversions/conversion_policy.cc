@@ -4,8 +4,8 @@
 
 #include "content/browser/conversions/conversion_policy.h"
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
-#include "base/numerics/ranges.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 
@@ -124,8 +124,8 @@ base::Time ConversionPolicy::GetExpiryTimeForImpression(
 
   // If the impression specified its own expiry, clamp it to the minimum and
   // maximum.
-  return impression_time + base::ClampToRange(expiry, kMinImpressionExpiry,
-                                              kDefaultImpressionExpiry);
+  return impression_time +
+         base::clamp(expiry, kMinImpressionExpiry, kDefaultImpressionExpiry);
 }
 
 base::Time ConversionPolicy::GetReportTimeForExpiredReportAtStartup(

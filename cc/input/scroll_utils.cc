@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/numerics/ranges.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 

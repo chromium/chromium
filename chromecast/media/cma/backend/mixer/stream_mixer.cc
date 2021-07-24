@@ -15,10 +15,10 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/numerics/ranges.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -897,7 +897,7 @@ void StreamMixer::WriteMixedPcm(int frames, int64_t expected_playback_time) {
   // Hard limit to [1.0, -1.0]
   for (int i = 0; i < frames * loopback_channel_count; ++i) {
     // TODO(bshaya): Warn about clipping here.
-    loopback_data[i] = base::ClampToRange(loopback_data[i], -1.0f, 1.0f);
+    loopback_data[i] = base::clamp(loopback_data[i], -1.0f, 1.0f);
   }
 
   loopback_handler_->SendData(expected_playback_time,
@@ -909,7 +909,7 @@ void StreamMixer::WriteMixedPcm(int frames, int64_t expected_playback_time) {
 
   // Hard limit to [1.0, -1.0].
   for (int i = 0; i < frames * num_output_channels_; ++i) {
-    linearized_data[i] = base::ClampToRange(linearized_data[i], -1.0f, 1.0f);
+    linearized_data[i] = base::clamp(linearized_data[i], -1.0f, 1.0f);
   }
 
   bool playback_interrupted = false;

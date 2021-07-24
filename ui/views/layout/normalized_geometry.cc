@@ -8,7 +8,7 @@
 #include <tuple>
 #include <utility>
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/insets.h"
@@ -65,8 +65,8 @@ void NormalizedSize::SetToMax(int main, int cross) {
 }
 
 void NormalizedSize::SetToMin(int main, int cross) {
-  main_ = base::ClampToRange(main, 0, main_);
-  cross_ = base::ClampToRange(cross, 0, cross_);
+  main_ = base::clamp(main, 0, main_);
+  cross_ = base::clamp(cross, 0, cross_);
 }
 
 void NormalizedSize::SetToMax(const NormalizedSize& other) {

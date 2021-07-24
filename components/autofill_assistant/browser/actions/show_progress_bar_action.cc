@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 
 namespace autofill_assistant {
@@ -47,7 +47,7 @@ void ShowProgressBarAction::InternalProcessAction(
   switch (proto_.show_progress_bar().progress_indicator_case()) {
     case ShowProgressBarProto::ProgressIndicatorCase::kProgress:
       delegate_->SetProgress(
-          base::ClampToRange(proto_.show_progress_bar().progress(), 0, 100));
+          base::clamp(proto_.show_progress_bar().progress(), 0, 100));
       break;
     case ShowProgressBarProto::ProgressIndicatorCase::kActiveStep:
       delegate_->SetProgressActiveStep(

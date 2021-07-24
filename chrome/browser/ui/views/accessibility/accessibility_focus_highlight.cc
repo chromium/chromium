@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/accessibility/accessibility_focus_highlight.h"
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
@@ -343,7 +343,7 @@ float AccessibilityFocusHighlight::ComputeOpacity(
     opacity = 1.0f - (time_since_began_fading / fade_out_time_);
   }
 
-  return base::ClampToRange(opacity, 0.0f, 1.0f);
+  return base::clamp(opacity, 0.0f, 1.0f);
 }
 
 void AccessibilityFocusHighlight::OnAnimationStep(base::TimeTicks timestamp) {

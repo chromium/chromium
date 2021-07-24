@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_tab_list.h"
 
-#include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/favicon_size.h"

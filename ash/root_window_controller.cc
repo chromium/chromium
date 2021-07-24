@@ -75,8 +75,8 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
@@ -382,9 +382,8 @@ class RootWindowTargeter : public aura::WindowTargeter {
   }
 
   gfx::Point FitPointToBounds(const gfx::Point p, const gfx::Rect& bounds) {
-    return gfx::Point(
-        base::ClampToRange(p.x(), bounds.x(), bounds.right() - 1),
-        base::ClampToRange(p.y(), bounds.y(), bounds.bottom() - 1));
+    return gfx::Point(base::clamp(p.x(), bounds.x(), bounds.right() - 1),
+                      base::clamp(p.y(), bounds.y(), bounds.bottom() - 1));
   }
 
   ui::EventType last_mouse_event_type_ = ui::ET_UNKNOWN;

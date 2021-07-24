@@ -9,8 +9,8 @@
 #include <string>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/macros.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -246,10 +246,9 @@ void TestTableModel2::RemoveRow(int row) {
 void TestTableModel2::RemoveRows(int row, int length) {
   DCHECK(row >= 0 && length >= 0);
   if (row >= 0 && row <= static_cast<int>(rows_.size())) {
-    rows_.erase(
-        rows_.begin() + row,
-        rows_.begin() + base::ClampToRange(row + length, 0,
-                                           static_cast<int>(rows_.size())));
+    rows_.erase(rows_.begin() + row,
+                rows_.begin() + base::clamp(row + length, 0,
+                                            static_cast<int>(rows_.size())));
   }
 
   if (observer_ && length > 0)

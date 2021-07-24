@@ -9,8 +9,8 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/numerics/checked_math.h"
-#include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -30,8 +30,7 @@ const uint32_t kMaxPacketSize = kMaxReadSize - 1;
 int ClampUDPBufferSize(int requested_buffer_size) {
   constexpr int kMinBufferSize = 0;
   constexpr int kMaxBufferSize = 128 * 1024;
-  return base::ClampToRange(requested_buffer_size, kMinBufferSize,
-                            kMaxBufferSize);
+  return base::clamp(requested_buffer_size, kMinBufferSize, kMaxBufferSize);
 }
 
 class SocketWrapperImpl : public UDPSocket::SocketWrapper {

@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
@@ -539,11 +539,11 @@ TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::ParseHslString(
       (values.size() == 3 ||
        (base::StringToDouble(values[3], &a) && a >= 0.0 && a <= 1.0))) {
     SkScalar hsv[3];
-    hsv[0] = base::ClampToRange(std::fmod(h, 360.0), 0.0, 360.0);
-    hsv[1] = s > 1.0 ? base::ClampToRange(s, 0.0, 100.0) / 100.0
-                     : base::ClampToRange(s, 0.0, 1.0);
-    hsv[2] = v > 1.0 ? base::ClampToRange(v, 0.0, 100.0) / 100.0
-                     : base::ClampToRange(v, 0.0, 1.0);
+    hsv[0] = base::clamp(std::fmod(h, 360.0), 0.0, 360.0);
+    hsv[1] =
+        s > 1.0 ? base::clamp(s, 0.0, 100.0) / 100.0 : base::clamp(s, 0.0, 1.0);
+    hsv[2] =
+        v > 1.0 ? base::clamp(v, 0.0, 100.0) / 100.0 : base::clamp(v, 0.0, 1.0);
     return absl::make_optional(
         SkHSVToColor(base::ClampRound<SkAlpha>(a * SK_AlphaOPAQUE), hsv));
   }

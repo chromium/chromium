@@ -9,7 +9,7 @@
 
 #include "ash/shell.h"
 #include "base/check_op.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
@@ -55,7 +55,7 @@ float GetNextMagnifierScaleValue(int delta_index,
   const int current_index = IndexFromScale(current_scale);
   const int new_scale_index = current_index + delta_index;
   const float new_scale = std::pow(kMagnificationScaleFactor, new_scale_index);
-  return base::ClampToRange(new_scale, min_scale, max_scale);
+  return base::clamp(new_scale, min_scale, max_scale);
 }
 
 ui::InputMethod* GetInputMethod(aura::Window* root_window) {

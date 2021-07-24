@@ -8,7 +8,7 @@
 #include <cmath>
 
 #include "base/check_op.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 
 namespace gfx {
 
@@ -229,7 +229,7 @@ double CubicBezier::Solve(double x) const {
 }
 
 double CubicBezier::SlopeWithEpsilon(double x, double epsilon) const {
-  x = base::ClampToRange(x, 0.0, 1.0);
+  x = base::clamp(x, 0.0, 1.0);
   double t = SolveCurveX(x, epsilon);
   double dx = SampleCurveDerivativeX(t);
   double dy = SampleCurveDerivativeY(t);

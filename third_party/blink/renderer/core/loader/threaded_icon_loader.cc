@@ -6,8 +6,8 @@
 
 #include <algorithm>
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -138,11 +138,11 @@ void ThreadedIconLoader::DecodeAndResizeImageOnBackgroundThread(
   }
 
   int resized_width =
-      base::ClampToRange(static_cast<int>(scale * decoded_icon_.width()), 1,
-                         resize_dimensions_->width());
+      base::clamp(static_cast<int>(scale * decoded_icon_.width()), 1,
+                  resize_dimensions_->width());
   int resized_height =
-      base::ClampToRange(static_cast<int>(scale * decoded_icon_.height()), 1,
-                         resize_dimensions_->height());
+      base::clamp(static_cast<int>(scale * decoded_icon_.height()), 1,
+                  resize_dimensions_->height());
 
   // Use the RESIZE_GOOD quality allowing the implementation to pick an
   // appropriate method for the resize. Can be increased to RESIZE_BETTER

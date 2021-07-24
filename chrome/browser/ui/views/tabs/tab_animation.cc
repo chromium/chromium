@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "chrome/browser/ui/views/tabs/tab_width_constraints.h"
 #include "ui/gfx/animation/tween.h"
 
@@ -74,7 +74,7 @@ TabAnimationState TabAnimation::GetCurrentState() const {
 
   const base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time_;
   const double normalized_elapsed_time =
-      base::ClampToRange(elapsed_time / duration_, 0.0, 1.0);
+      base::clamp(elapsed_time / duration_, 0.0, 1.0);
   const double interpolation_value = gfx::Tween::CalculateValue(
       gfx::Tween::Type::EASE_OUT, normalized_elapsed_time);
   return TabAnimationState::Interpolate(interpolation_value, initial_state_,

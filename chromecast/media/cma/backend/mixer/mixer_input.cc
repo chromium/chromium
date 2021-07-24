@@ -12,8 +12,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
 #include "chromecast/media/audio/audio_fader.h"
 #include "chromecast/media/audio/audio_log.h"
 #include "chromecast/media/cma/backend/mixer/audio_output_redirector_input.h"
@@ -404,14 +404,13 @@ void MixerInput::SetMuted(bool muted) {
 float MixerInput::TargetVolume() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   float output_volume = stream_volume_multiplier_ * type_volume_multiplier_;
-  float clamped_volume =
-      base::ClampToRange(output_volume, volume_min_, volume_max_);
+  float clamped_volume = base::clamp(output_volume, volume_min_, volume_max_);
   float limited_volume = std::min(clamped_volume, output_volume_limit_);
   float muted_volume = limited_volume * mute_volume_multiplier_;
   // Volume is clamped after all gains have been multiplied, to avoid clipping.
   // TODO(kmackay): Consider removing this clamp and use a postprocessor filter
   // to avoid clipping instead.
-  return base::ClampToRange(muted_volume, 0.0f, 1.0f);
+  return base::clamp(muted_volume, 0.0f, 1.0f);
 }
 
 float MixerInput::InstantaneousVolume() {

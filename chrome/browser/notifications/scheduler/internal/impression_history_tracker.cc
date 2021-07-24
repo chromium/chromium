@@ -10,8 +10,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/notreached.h"
-#include "base/numerics/ranges.h"
 #include "chrome/browser/notifications/scheduler/internal/scheduler_utils.h"
 #include "chrome/browser/notifications/scheduler/internal/stats.h"
 
@@ -414,8 +414,8 @@ void ImpressionHistoryTrackerImpl::ApplyPositiveImpression(
 
   // Increase |current_max_daily_show| by 1.
   client_state->current_max_daily_show =
-      base::ClampToRange(++client_state->current_max_daily_show, 0,
-                         config_.max_daily_shown_per_type);
+      base::clamp(++client_state->current_max_daily_show, 0,
+                  config_.max_daily_shown_per_type);
 }
 
 void ImpressionHistoryTrackerImpl::ApplyNegativeImpression(

@@ -15,10 +15,10 @@
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/notreached.h"
-#include "base/numerics/ranges.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -452,7 +452,7 @@ int InternalAuthVerification::get_verification_window_ticks() {
   if (verification_window_seconds_ > 0)
     candidate = verification_window_seconds_ *
         base::Time::kMicrosecondsPerSecond / kTickUs;
-  return base::ClampToRange(candidate, 1, kVerificationWindowTicks);
+  return base::clamp(candidate, 1, kVerificationWindowTicks);
 }
 
 int InternalAuthVerification::verification_window_seconds_ = 0;
@@ -467,4 +467,3 @@ std::string InternalAuthGeneration::GeneratePassport(
 void InternalAuthGeneration::GenerateNewKey() {
   g_generation_service.Get().GenerateNewKey();
 }
-

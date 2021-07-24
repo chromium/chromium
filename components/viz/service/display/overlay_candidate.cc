@@ -9,6 +9,7 @@
 #include <limits>
 
 #include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
@@ -404,8 +405,7 @@ bool OverlayCandidate::FromSolidColorQuad(
   // opacity.
   SkColor color_with_opacity = quad->color;
   float alpha = (SkColorGetA(color_with_opacity) / 255.f) * candidate->opacity;
-  int alpha_int_clamped =
-      base::ClampToRange(static_cast<int>(alpha * 255.f), 0, 255);
+  int alpha_int_clamped = base::clamp(static_cast<int>(alpha * 255.f), 0, 255);
   color_with_opacity =
       SkColorSetA(color_with_opacity, static_cast<uint8_t>(alpha_int_clamped));
   candidate->solid_color = color_with_opacity;

@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -622,7 +622,7 @@ int ExtensionsToolbarContainer::OnDragUpdated(
   // |visible_icons|, not (|visible_icons| - 1), because we represent the
   // dragged extension being past the last icon as being "before the (last + 1)
   // icon".
-  before_icon = base::ClampToRange(before_icon_unclamped, 0, visible_icons);
+  before_icon = base::clamp(before_icon_unclamped, 0, visible_icons);
 
   if (!drop_info_.get() || drop_info_->index != before_icon) {
     drop_info_ = std::make_unique<DropInfo>(data.id(), before_icon);

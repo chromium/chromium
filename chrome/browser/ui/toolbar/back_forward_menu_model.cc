@@ -9,9 +9,9 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -299,7 +299,7 @@ int BackForwardMenuModel::GetHistoryItemCount() const {
     items = contents->GetController().GetEntryCount() - items - 1;
   }
 
-  return base::ClampToRange(items, 0, kMaxHistoryItems);
+  return base::clamp(items, 0, kMaxHistoryItems);
 }
 
 int BackForwardMenuModel::GetChapterStopCount(int history_items) const {

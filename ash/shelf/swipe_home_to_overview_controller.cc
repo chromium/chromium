@@ -17,8 +17,8 @@
 #include "ash/wm/overview/overview_session.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer_animation_element.h"
@@ -132,7 +132,7 @@ void SwipeHomeToOverviewController::Drag(const gfx::PointF& location_in_screen,
 
   const float progress = gfx::Tween::CalculateValue(
       gfx::Tween::FAST_OUT_SLOW_IN,
-      base::ClampToRange(1.f - distance / target_distance, 0.0f, 1.0f));
+      base::clamp(1.f - distance / target_distance, 0.0f, 1.0f));
 
   float scale = gfx::Tween::FloatValueBetween(progress, 1.0f, kTargetHomeScale);
   Shell::Get()->app_list_controller()->UpdateScaleAndOpacityForHomeLauncher(

@@ -12,10 +12,10 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
 #include "base/process/process_iterator.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/strcat.h"
@@ -325,9 +325,8 @@ int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {
   if (downloaded_bytes == -1 || total_bytes == -1 || total_bytes == 0)
     return -1;
   DCHECK_LE(downloaded_bytes, total_bytes);
-  return 100 *
-         base::ClampToRange(static_cast<double>(downloaded_bytes) / total_bytes,
-                            0.0, 1.0);
+  return 100 * base::clamp(static_cast<double>(downloaded_bytes) / total_bytes,
+                           0.0, 1.0);
 }
 
 base::win::ScopedHandle GetUserTokenFromCurrentSessionId() {

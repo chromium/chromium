@@ -14,9 +14,9 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
@@ -1141,8 +1141,7 @@ TableView::PaintRegion TableView::GetPaintRegion(
   DCHECK(GetRowCount());
 
   PaintRegion region;
-  region.min_row =
-      base::ClampToRange(bounds.y() / row_height_, 0, GetRowCount() - 1);
+  region.min_row = base::clamp(bounds.y() / row_height_, 0, GetRowCount() - 1);
   region.max_row = bounds.bottom() / row_height_;
   if (bounds.bottom() % row_height_ != 0)
     region.max_row++;

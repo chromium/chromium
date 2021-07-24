@@ -10,10 +10,10 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/numerics/ranges.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -565,14 +565,14 @@ void FileVideoCaptureDevice::OnSetPhotoOptions(
   }
 
   if (settings->has_pan) {
-    pan_ = base::ClampToRange(int(settings->pan), 0, zoom_max_levels_);
+    pan_ = base::clamp(int(settings->pan), 0, zoom_max_levels_);
   }
 
   if (settings->has_tilt) {
-    tilt_ = base::ClampToRange(int(settings->tilt), 0, zoom_max_levels_);
+    tilt_ = base::clamp(int(settings->tilt), 0, zoom_max_levels_);
   }
   if (settings->has_zoom) {
-    zoom_ = base::ClampToRange(int(settings->zoom), 0, zoom_max_levels_);
+    zoom_ = base::clamp(int(settings->zoom), 0, zoom_max_levels_);
   }
 
   std::move(callback).Run(true);

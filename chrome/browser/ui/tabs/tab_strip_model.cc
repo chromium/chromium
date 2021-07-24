@@ -11,9 +11,9 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/numerics/ranges.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
@@ -1007,8 +1007,8 @@ void TabStripModel::AddWebContents(
     gfx::Range grouped_tabs =
         group_model_->GetTabGroup(group.value())->ListTabs();
     if (grouped_tabs.length() > 0) {
-      index = base::ClampToRange(index, static_cast<int>(grouped_tabs.start()),
-                                 static_cast<int>(grouped_tabs.end()));
+      index = base::clamp(index, static_cast<int>(grouped_tabs.start()),
+                          static_cast<int>(grouped_tabs.end()));
     }
   } else if (GetTabGroupForTab(index - 1) == GetTabGroupForTab(index)) {
     group = GetTabGroupForTab(index);
@@ -1662,16 +1662,14 @@ bool TabStripModel::ShouldRunUnloadListenerBeforeClosing(
 }
 
 int TabStripModel::ConstrainInsertionIndex(int index, bool pinned_tab) const {
-  return pinned_tab
-             ? base::ClampToRange(index, 0, IndexOfFirstNonPinnedTab())
-             : base::ClampToRange(index, IndexOfFirstNonPinnedTab(), count());
+  return pinned_tab ? base::clamp(index, 0, IndexOfFirstNonPinnedTab())
+                    : base::clamp(index, IndexOfFirstNonPinnedTab(), count());
 }
 
 int TabStripModel::ConstrainMoveIndex(int index, bool pinned_tab) const {
   return pinned_tab
-             ? base::ClampToRange(index, 0, IndexOfFirstNonPinnedTab() - 1)
-             : base::ClampToRange(index, IndexOfFirstNonPinnedTab(),
-                                  count() - 1);
+             ? base::clamp(index, 0, IndexOfFirstNonPinnedTab() - 1)
+             : base::clamp(index, IndexOfFirstNonPinnedTab(), count() - 1);
 }
 
 std::vector<int> TabStripModel::GetIndicesForCommand(int index) const {

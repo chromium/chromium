@@ -5,7 +5,7 @@
 #include "ui/gfx/geometry/resize_utils.h"
 
 #include "base/check_op.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -50,17 +50,17 @@ void SizeRectToAspectRatio(ResizeEdge resize_edge,
     new_size.set_height(base::ClampRound(new_size.width() / aspect_ratio));
     if (min_window_size.height() > new_size.height() ||
         new_size.height() > max_window_size.height()) {
-      new_size.set_height(base::ClampToRange(new_size.height(),
-                                             min_window_size.height(),
-                                             max_window_size.height()));
+      new_size.set_height(base::clamp(new_size.height(),
+                                      min_window_size.height(),
+                                      max_window_size.height()));
       new_size.set_width(base::ClampRound(new_size.height() * aspect_ratio));
     }
   } else {
     new_size.set_width(base::ClampRound(new_size.height() * aspect_ratio));
     if (min_window_size.width() > new_size.width() ||
         new_size.width() > max_window_size.width()) {
-      new_size.set_width(base::ClampToRange(
-          new_size.width(), min_window_size.width(), max_window_size.width()));
+      new_size.set_width(base::clamp(new_size.width(), min_window_size.width(),
+                                     max_window_size.width()));
       new_size.set_height(base::ClampRound(new_size.width() / aspect_ratio));
     }
   }

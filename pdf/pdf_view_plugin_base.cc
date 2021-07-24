@@ -20,13 +20,13 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -867,11 +867,11 @@ gfx::PointF PdfViewPluginBase::BoundScrollPositionToDocument(
   float max_x = std::max(document_size_.width() * static_cast<float>(zoom_) -
                              plugin_dip_size_.width(),
                          0.0f);
-  float x = base::ClampToRange(scroll_position.x(), 0.0f, max_x);
+  float x = base::clamp(scroll_position.x(), 0.0f, max_x);
   float max_y = std::max(document_size_.height() * static_cast<float>(zoom_) -
                              plugin_dip_size_.height(),
                          0.0f);
-  float y = base::ClampToRange(scroll_position.y(), 0.0f, max_y);
+  float y = base::clamp(scroll_position.y(), 0.0f, max_y);
   return gfx::PointF(x, y);
 }
 

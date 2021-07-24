@@ -8,7 +8,6 @@
 #include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/numerics/ranges.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -136,14 +135,14 @@ class YUVReadbackTest : public testing::Test {
   int Channel(SkBitmap* pixels, int x, int y, int c) {
     if (pixels->bytesPerPixel() == 4) {
       uint32_t* data =
-          pixels->getAddr32(base::ClampToRange(x, 0, pixels->width() - 1),
-                            base::ClampToRange(y, 0, pixels->height() - 1));
+          pixels->getAddr32(base::clamp(x, 0, pixels->width() - 1),
+                            base::clamp(y, 0, pixels->height() - 1));
       return (*data) >> (c * 8) & 0xff;
     } else {
       DCHECK_EQ(pixels->bytesPerPixel(), 1);
       DCHECK_EQ(c, 0);
-      return *pixels->getAddr8(base::ClampToRange(x, 0, pixels->width() - 1),
-                               base::ClampToRange(y, 0, pixels->height() - 1));
+      return *pixels->getAddr8(base::clamp(x, 0, pixels->width() - 1),
+                               base::clamp(y, 0, pixels->height() - 1));
     }
   }
 
@@ -156,13 +155,13 @@ class YUVReadbackTest : public testing::Test {
     DCHECK_LT(y, pixels->height());
     if (pixels->bytesPerPixel() == 4) {
       uint32_t* data = pixels->getAddr32(x, y);
-      v = base::ClampToRange(v, 0, 255);
+      v = base::clamp(v, 0, 255);
       *data = (*data & ~(0xffu << (c * 8))) | (v << (c * 8));
     } else {
       DCHECK_EQ(pixels->bytesPerPixel(), 1);
       DCHECK_EQ(c, 0);
       uint8_t* data = pixels->getAddr8(x, y);
-      v = base::ClampToRange(v, 0, 255);
+      v = base::clamp(v, 0, 255);
       *data = v;
     }
   }

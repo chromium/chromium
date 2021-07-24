@@ -5,7 +5,6 @@
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 
 #include "base/metrics/field_trial_params.h"
-#include "base/numerics/ranges.h"
 #include "chrome/common/chrome_features.h"
 
 namespace {

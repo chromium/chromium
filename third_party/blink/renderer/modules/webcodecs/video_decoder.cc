@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"

@@ -6,9 +6,9 @@
 
 #include <algorithm>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromecast/media/audio/audio_log.h"
@@ -37,12 +37,10 @@ bool ParseVolumeLimit(const base::Value* dict, float* min, float* max) {
   *min = 0.0f;
   *max = 1.0f;
   if (min_value) {
-    *min =
-        base::ClampToRange(static_cast<float>(min_value.value()), 0.0f, 1.0f);
+    *min = base::clamp(static_cast<float>(min_value.value()), 0.0f, 1.0f);
   }
   if (max_value) {
-    *max =
-        base::ClampToRange(static_cast<float>(max_value.value()), *min, 1.0f);
+    *max = base::clamp(static_cast<float>(max_value.value()), *min, 1.0f);
   }
   return true;
 }

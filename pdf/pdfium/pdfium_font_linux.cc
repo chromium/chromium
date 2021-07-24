@@ -13,7 +13,6 @@
 #include "base/i18n/encoding_detection.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/no_destructor.h"
-#include "base/numerics/ranges.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "components/services/font/public/cpp/font_loader.h"
@@ -111,8 +110,7 @@ blink::WebFontDescription::Weight WeightToBlinkWeight(int weight) {
   static_assert(blink::WebFontDescription::kWeight900 == 8, "Blink Weight max");
   constexpr int kMinimumWeight = 100;
   constexpr int kMaximumWeight = 900;
-  int normalized_weight =
-      base::ClampToRange(weight, kMinimumWeight, kMaximumWeight);
+  int normalized_weight = base::clamp(weight, kMinimumWeight, kMaximumWeight);
   normalized_weight = (normalized_weight / 100) - 1;
   return static_cast<blink::WebFontDescription::Weight>(normalized_weight);
 }

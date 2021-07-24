@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/containers/cxx20_erase.h"
-#include "base/numerics/ranges.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 

@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "chromecast/graphics/gestures/cast_gesture_handler.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -57,7 +57,7 @@ gfx::Point ConvertPixelsToDIPWithOriginalTransform(
 
 // Correct the given scale value if necessary.
 void ValidateScale(float* scale) {
-  *scale = base::ClampToRange(*scale, kNonMagnifiedScale, kMaxMagnifiedScale);
+  *scale = base::clamp(*scale, kNonMagnifiedScale, kMaxMagnifiedScale);
   DCHECK(kNonMagnifiedScale <= *scale && *scale <= kMaxMagnifiedScale);
 }
 

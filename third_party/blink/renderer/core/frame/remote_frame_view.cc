@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/remote_frame_view.h"
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
@@ -230,8 +230,8 @@ void RemoteFrameView::UpdateCompositingScaleFactor() {
   constexpr float kMinCompositingScaleFactor = 0.25f;
   constexpr float kMaxCompositingScaleFactor = 5.0f;
   compositing_scale_factor_ =
-      base::ClampToRange(compositing_scale_factor_, kMinCompositingScaleFactor,
-                         kMaxCompositingScaleFactor);
+      base::clamp(compositing_scale_factor_, kMinCompositingScaleFactor,
+                  kMaxCompositingScaleFactor);
 
   if (compositing_scale_factor_ != previous_scale_factor)
     remote_frame_->SynchronizeVisualProperties();

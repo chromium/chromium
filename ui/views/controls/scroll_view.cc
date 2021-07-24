@@ -8,10 +8,10 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -80,8 +80,7 @@ bool DoesDescendantHaveLayer(View* view) {
 // Returns the position for the view so that it isn't scrolled off the visible
 // region.
 int CheckScrollBounds(int viewport_size, int content_size, int current_pos) {
-  return base::ClampToRange(current_pos, 0,
-                            std::max(content_size - viewport_size, 0));
+  return base::clamp(current_pos, 0, std::max(content_size - viewport_size, 0));
 }
 
 // Make sure the content is not scrolled out of bounds
@@ -468,7 +467,7 @@ int ScrollView::GetHeightForWidth(int width) const {
   width = std::max(0, width - insets.width());
   int height = contents_ ? contents_->GetHeightForWidth(width) + insets.height()
                          : insets.height();
-  return base::ClampToRange(height, min_height_, max_height_);
+  return base::clamp(height, min_height_, max_height_);
 }
 
 void ScrollView::Layout() {
@@ -898,8 +897,8 @@ void ScrollView::ScrollContentsRegionToBeVisible(const gfx::Rect& rect) {
   const int contents_max_y =
       std::max(contents_viewport_->height(), contents_->height());
 
-  int x = base::ClampToRange(rect.x(), 0, contents_max_x);
-  int y = base::ClampToRange(rect.y(), 0, contents_max_y);
+  int x = base::clamp(rect.x(), 0, contents_max_x);
+  int y = base::clamp(rect.y(), 0, contents_max_y);
 
   // Figure out how far and down the rectangle will go taking width
   // and height into account.  This will be "clipped" by the viewport.

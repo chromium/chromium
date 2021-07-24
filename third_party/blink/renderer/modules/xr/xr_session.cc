@@ -12,8 +12,8 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 
 #include "base/auto_reset.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -356,9 +356,9 @@ XRSession::XRSession(
   UpdateVisibilityState();
 
   // Clamp to a reasonable min/max size for the default framebuffer scale.
-  default_framebuffer_scale_ = base::ClampToRange(
-      device_config->default_framebuffer_scale, kMinDefaultFramebufferScale,
-      kMaxDefaultFramebufferScale);
+  default_framebuffer_scale_ =
+      base::clamp(device_config->default_framebuffer_scale,
+                  kMinDefaultFramebufferScale, kMaxDefaultFramebufferScale);
 
   DVLOG(2) << __func__
            << ": supports_viewport_scaling_=" << supports_viewport_scaling_;

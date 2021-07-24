@@ -8,9 +8,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/numerics/ranges.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -295,7 +295,7 @@ std::unique_ptr<::media::AudioBus> GetMixedAudioData(
         }
       }
 
-      *result = base::ClampToRange(*result, -1.0f, 1.0f);
+      *result = base::clamp(*result, -1.0f, 1.0f);
     }
   }
   return mixed;

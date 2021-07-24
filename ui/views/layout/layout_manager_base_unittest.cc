@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/test_layout_manager.h"
 #include "ui/views/test/test_views.h"
@@ -49,13 +49,13 @@ class TestLayoutManagerBase : public LayoutManagerBase {
       return *forced_layout_;
 
     ProposedLayout layout;
-    layout.host_size.set_width(
-        base::ClampToRange<SizeBound>(size_bounds.width(), kMinimumSize.width(),
-                                      kPreferredSize.width())
-            .value());
-    layout.host_size.set_height(base::ClampToRange<SizeBound>(
-                                    size_bounds.height(), kMinimumSize.height(),
-                                    kPreferredSize.height())
+    layout.host_size.set_width(base::clamp<SizeBound>(size_bounds.width(),
+                                                      kMinimumSize.width(),
+                                                      kPreferredSize.width())
+                                   .value());
+    layout.host_size.set_height(base::clamp<SizeBound>(size_bounds.height(),
+                                                       kMinimumSize.height(),
+                                                       kPreferredSize.height())
                                     .value());
     return layout;
   }

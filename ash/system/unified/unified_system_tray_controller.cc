@@ -58,9 +58,9 @@
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/numerics/ranges.h"
 #include "media/base/media_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/compositor/compositor.h"
@@ -553,11 +553,9 @@ double UnifiedSystemTrayController::GetDragExpandedAmount(
   // If already expanded, only consider swiping down. Otherwise, only consider
   // swiping up.
   if (was_expanded_) {
-    return base::ClampToRange(1.0 - std::max(0.0, y_diff) / drag_threshold_,
-                              0.0, 1.0);
+    return base::clamp(1.0 - std::max(0.0, y_diff) / drag_threshold_, 0.0, 1.0);
   } else {
-    return base::ClampToRange(std::max(0.0, -y_diff) / drag_threshold_, 0.0,
-                              1.0);
+    return base::clamp(std::max(0.0, -y_diff) / drag_threshold_, 0.0, 1.0);
   }
 }
 

@@ -7,9 +7,9 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/numerics/ranges.h"
 #include "base/synchronization/lock.h"
 #include "build/chromeos_buildflags.h"
 #include "media/gpu/vaapi/vaapi_common.h"
@@ -218,7 +218,7 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
       }
     }
 
-#define CLAMP_Q(q) base::ClampToRange(q, 0, 127)
+#define CLAMP_Q(q) base::clamp(q, 0, 127)
     iq_matrix_buf->quantization_index[i][0] = CLAMP_Q(q);
     iq_matrix_buf->quantization_index[i][1] = CLAMP_Q(q + quant_hdr.y_dc_delta);
     iq_matrix_buf->quantization_index[i][2] =
@@ -300,7 +300,7 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
       }
     }
 
-    pic_param->loop_filter_level[i] = base::ClampToRange(lf_level, 0, 63);
+    pic_param->loop_filter_level[i] = base::clamp(lf_level, 0, 63);
   }
 
   static_assert(

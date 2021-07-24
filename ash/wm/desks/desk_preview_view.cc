@@ -24,7 +24,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -349,8 +349,8 @@ int DeskPreviewView::GetHeight(aura::Window* root) {
       root->bounds().width() <= kUseSmallerHeightDividerWidthThreshold
           ? kRootHeightDividerForSmallScreen
           : kRootHeightDivider;
-  return base::ClampToRange(root->bounds().height() / height_divider,
-                            kDeskPreviewMinHeight, kDeskPreviewMaxHeight);
+  return base::clamp(root->bounds().height() / height_divider,
+                     kDeskPreviewMinHeight, kDeskPreviewMaxHeight);
 }
 
 void DeskPreviewView::SetBorderColor(SkColor color) {

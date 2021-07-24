@@ -12,8 +12,8 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -85,7 +85,7 @@ int GetInstallerProgress(const std::string& app_id) {
                   ERROR_SUCCESS) {
     return -1;
   }
-  return base::ClampToRange(progress, DWORD{0}, DWORD{100});
+  return base::clamp(progress, DWORD{0}, DWORD{100});
 }
 
 bool SetInstallerProgressForTesting(const std::string& app_id, int value) {

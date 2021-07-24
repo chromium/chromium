@@ -19,7 +19,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/bind.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -153,7 +153,7 @@ void DockedMagnifierController::SetScale(float scale) {
   if (active_user_pref_service_) {
     active_user_pref_service_->SetDouble(
         prefs::kDockedMagnifierScale,
-        base::ClampToRange(scale, kMinMagnifierScale, kMaxMagnifierScale));
+        base::clamp(scale, kMinMagnifierScale, kMaxMagnifierScale));
   }
 }
 

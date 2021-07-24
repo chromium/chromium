@@ -12,8 +12,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
@@ -946,8 +946,8 @@ void ScreenWin::RecordDisplayScaleFactors() const {
         screen_win_display.display().device_scale_factor();
     // Multiply the reported value by 100 to display it as a percentage. Clamp
     // it so that if it's wildly out-of-band we won't send it to the backend.
-    const int reported_scale = base::ClampToRange(
-        base::checked_cast<int>(scale_factor * 100), 0, 1000);
+    const int reported_scale =
+        base::clamp(base::checked_cast<int>(scale_factor * 100), 0, 1000);
     if (!base::Contains(unique_scale_factors, reported_scale)) {
       unique_scale_factors.push_back(reported_scale);
       base::UmaHistogramSparse("UI.DeviceScale", reported_scale);

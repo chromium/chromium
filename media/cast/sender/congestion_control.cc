@@ -18,9 +18,9 @@
 #include <algorithm>
 #include <deque>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "media/cast/constants.h"
@@ -423,8 +423,8 @@ int AdaptiveCongestionControl::GetBitrate(base::TimeTicks playout_time,
   TRACE_COUNTER_ID1("cast.stream", "Empty Buffer Fraction", this,
                     empty_buffer_fraction);
 
-  return base::ClampToRange(bits_per_second, min_bitrate_configured_,
-                            max_bitrate_configured_);
+  return base::clamp(bits_per_second, min_bitrate_configured_,
+                     max_bitrate_configured_);
 }
 
 }  // namespace cast

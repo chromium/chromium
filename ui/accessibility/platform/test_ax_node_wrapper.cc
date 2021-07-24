@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -585,9 +585,9 @@ bool TestAXNodeWrapper::AccessibilityPerformAction(
       int scroll_y_min = GetIntAttribute(ax::mojom::IntAttribute::kScrollYMin);
       int scroll_y_max = GetIntAttribute(ax::mojom::IntAttribute::kScrollYMax);
       int scroll_x =
-          base::ClampToRange(data.target_point.x(), scroll_x_min, scroll_x_max);
+          base::clamp(data.target_point.x(), scroll_x_min, scroll_x_max);
       int scroll_y =
-          base::ClampToRange(data.target_point.y(), scroll_y_min, scroll_y_max);
+          base::clamp(data.target_point.y(), scroll_y_min, scroll_y_max);
 
       ReplaceIntAttribute(node_->id(), ax::mojom::IntAttribute::kScrollX,
                           scroll_x);

@@ -20,7 +20,6 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/numerics/ranges.h"
 #include "base/scoped_generic.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"

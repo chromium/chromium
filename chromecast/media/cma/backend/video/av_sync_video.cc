@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "chromecast/base/statistics/weighted_moving_linear_regression.h"
 #include "chromecast/media/audio/rate_adjuster.h"

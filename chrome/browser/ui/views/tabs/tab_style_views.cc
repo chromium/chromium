@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "cc/paint/paint_record.h"
@@ -722,7 +722,7 @@ float GM2TabStyle::GetHoverOpacity() const {
   const float range_start = static_cast<float>(GetStandardWidth());
   const float range_end = static_cast<float>(GetMinimumInactiveWidth());
   const float value_in_range = static_cast<float>(tab_->width());
-  const float t = base::ClampToRange(
+  const float t = base::clamp(
       (value_in_range - range_start) / (range_end - range_start), 0.0f, 1.0f);
   return tab_->controller()->GetHoverOpacityForTab(t * t);
 }
@@ -917,7 +917,7 @@ float GM2TabStyle::GetTopCornerRadiusForWidth(int width) {
   // To maintain a round-rect appearance, ensure at least one third of the top
   // of the tab is flat.
   const float radius = top_width / 3.f;
-  return base::ClampToRange<float>(radius, 0, ideal_radius);
+  return base::clamp<float>(radius, 0, ideal_radius);
 }
 
 // static

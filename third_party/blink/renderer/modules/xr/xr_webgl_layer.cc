@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -115,8 +115,8 @@ XRWebGLLayer* XRWebGLLayer::Create(XRSession* session,
     // small to see or unreasonably large.
     // TODO: Would be best to have the max value communicated from the service
     // rather than limited to the native res.
-    framebuffer_scale = base::ClampToRange(
-        initializer->framebufferScaleFactor(), kFramebufferMinScale, max_scale);
+    framebuffer_scale = base::clamp(initializer->framebufferScaleFactor(),
+                                    kFramebufferMinScale, max_scale);
   }
 
   DoubleSize framebuffers_size = session->DefaultFramebufferSize();

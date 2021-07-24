@@ -16,10 +16,10 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/debug/leak_annotations.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -980,8 +980,8 @@ gchar* GetText(AtkText* atk_text, gint start_offset, gint end_offset) {
     end_offset = text.size();
   } else {
     end_offset = obj->UnicodeToUTF16OffsetInText(end_offset);
-    end_offset = base::ClampToRange(static_cast<int>(text.size()), start_offset,
-                                    end_offset);
+    end_offset =
+        base::clamp(static_cast<int>(text.size()), start_offset, end_offset);
   }
 
   DCHECK_GE(start_offset, 0);
@@ -1017,7 +1017,7 @@ gunichar GetCharacterAtOffset(AtkText* atk_text, int offset) {
   int32_t text_length = text.length();
 
   offset = obj->UnicodeToUTF16OffsetInText(offset);
-  int32_t limited_offset = base::ClampToRange(offset, 0, text_length);
+  int32_t limited_offset = base::clamp(offset, 0, text_length);
 
   uint32_t code_point;
   base::ReadUnicodeCharacter(text.c_str(), text_length + 1, &limited_offset,

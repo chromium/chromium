@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
@@ -202,7 +203,7 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   }
 
   if (config->hasBitrate()) {
-    uint32_t bps = static_cast<uint32_t>(base::ClampToRange(
+    uint32_t bps = static_cast<uint32_t>(base::clamp(
         config->bitrate(), uint64_t{0},
         static_cast<uint64_t>(std::numeric_limits<uint32_t>::max())));
     if (config->hasBitrateMode() && config->bitrateMode() == "constant") {

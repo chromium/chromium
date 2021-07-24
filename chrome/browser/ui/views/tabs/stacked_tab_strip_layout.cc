@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
@@ -401,7 +402,7 @@ void StackedTabStripLayout::LayoutUsingCurrentAfter(int index) {
   for (int i = index + 1; i < tab_count(); ++i) {
     int x = std::min(ideal_x(i), ideal_x(i - 1) + tab_offset());
     int min_x = width_ - width_for_count(tab_count() - i);
-    SetIdealBoundsAt(i, base::ClampToRange(x, min_x, GetMaxX(i)));
+    SetIdealBoundsAt(i, base::clamp(x, min_x, GetMaxX(i)));
   }
 }
 
@@ -430,7 +431,7 @@ void StackedTabStripLayout::LayoutForDragAfter(int index) {
   for (int i = index + 1; i < tab_count(); ++i) {
     const int min_x = ideal_x(i - 1) + stacked_padding_;
     const int max_x = ideal_x(i - 1) + tab_offset();
-    SetIdealBoundsAt(i, base::ClampToRange(ideal_x(i), min_x, max_x));
+    SetIdealBoundsAt(i, base::clamp(ideal_x(i), min_x, max_x));
   }
 }
 
@@ -438,7 +439,7 @@ void StackedTabStripLayout::LayoutForDragBefore(int index) {
   for (int i = index - 1; i >= pinned_tab_count_; --i) {
     const int max_x = ideal_x(i + 1) - stacked_padding_;
     const int min_x = ideal_x(i + 1) - tab_offset();
-    SetIdealBoundsAt(i, base::ClampToRange(ideal_x(i), min_x, max_x));
+    SetIdealBoundsAt(i, base::clamp(ideal_x(i), min_x, max_x));
   }
 
   if (pinned_tab_count_ == 0)

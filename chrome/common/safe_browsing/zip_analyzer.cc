@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
-#include "base/numerics/ranges.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

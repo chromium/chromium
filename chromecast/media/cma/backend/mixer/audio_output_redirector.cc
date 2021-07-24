@@ -9,9 +9,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/pattern.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -458,8 +458,7 @@ void AudioOutputRedirector::FinishBuffer() {
 
   // Hard limit to [1.0, -1.0].
   for (int s = 0; s < config_.num_output_channels * next_num_frames_; ++s) {
-    current_mix_data_[s] =
-        base::ClampToRange(current_mix_data_[s], -1.0f, 1.0f);
+    current_mix_data_[s] = base::clamp(current_mix_data_[s], -1.0f, 1.0f);
   }
 
   io_task_runner_->PostTask(

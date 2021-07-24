@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 
 #import "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #import "base/notreached.h"
-#include "base/numerics/ranges.h"
 #import "ios/chrome/browser/ui/gestures/layout_switcher.h"
 #import "ios/chrome/browser/ui/gestures/pan_handler_scroll_view.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
@@ -389,7 +389,7 @@ enum class LayoutTransitionState {
   }
 
   progress += self.progressWhenInterrupted;
-  progress = base::ClampToRange<CGFloat>(progress, 0, 1);
+  progress = base::clamp<CGFloat>(progress, 0, 1);
   self.animator.fractionComplete = progress;
   if (self.layoutTransitionState == LayoutTransitionState::Active) {
     [self.layoutSwitcherProvider.layoutSwitcher

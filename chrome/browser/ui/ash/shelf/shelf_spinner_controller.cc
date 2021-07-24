@@ -8,8 +8,8 @@
 
 #include "ash/public/cpp/shelf_model.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -43,7 +43,7 @@ constexpr double kInactiveTransparency = 0.5;
 double TimeProportionSince(const base::Time& t1,
                            const base::Time& t2,
                            const base::TimeDelta& d) {
-  return base::ClampToRange((t2 - t1) / d, 0.0, 1.0);
+  return base::clamp((t2 - t1) / d, 0.0, 1.0);
 }
 
 }  // namespace

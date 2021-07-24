@@ -12,9 +12,9 @@
 #include "chrome/browser/vr/ui.h"
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/math_constants.h"
-#include "base/numerics/ranges.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/content_input_delegate.h"
@@ -868,11 +868,10 @@ FovRectangle Ui::GetMinimalFov(const gfx::Transform& view_matrix,
     }
 
     // Clamp to Z near plane's boundary.
-    bounds_left = base::ClampToRange(bounds_left, z_near_left, z_near_right);
-    bounds_right = base::ClampToRange(bounds_right, z_near_left, z_near_right);
-    bounds_bottom =
-        base::ClampToRange(bounds_bottom, z_near_bottom, z_near_top);
-    bounds_top = base::ClampToRange(bounds_top, z_near_bottom, z_near_top);
+    bounds_left = base::clamp(bounds_left, z_near_left, z_near_right);
+    bounds_right = base::clamp(bounds_right, z_near_left, z_near_right);
+    bounds_bottom = base::clamp(bounds_bottom, z_near_bottom, z_near_top);
+    bounds_top = base::clamp(bounds_top, z_near_bottom, z_near_top);
 
     left = std::min(bounds_left, left);
     right = std::max(bounds_right, right);

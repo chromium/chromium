@@ -6,8 +6,8 @@
 
 #include <algorithm>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
 #include "remoting/proto/event.pb.h"
 
 namespace remoting {
@@ -43,13 +43,13 @@ void MouseInputFilter::InjectMouseEvent(const MouseEvent& event) {
     int x = out_event.x();
     if (x_output_ != x_input_)
       x = ((x * x_output_) + (x_input_ / 2)) / x_input_;
-    out_event.set_x(output_offset_.x() + base::ClampToRange(x, 0, x_output_));
+    out_event.set_x(output_offset_.x() + base::clamp(x, 0, x_output_));
   }
   if (out_event.has_y()) {
     int y = out_event.y();
     if (y_output_ != y_input_)
       y = ((y * y_output_) + (y_input_ / 2)) / y_input_;
-    out_event.set_y(output_offset_.y() + base::ClampToRange(y, 0, y_output_));
+    out_event.set_y(output_offset_.y() + base::clamp(y, 0, y_output_));
   }
   InputFilter::InjectMouseEvent(out_event);
 }

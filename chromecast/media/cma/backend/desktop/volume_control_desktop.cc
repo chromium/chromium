@@ -12,12 +12,12 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/numerics/ranges.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
 
@@ -71,7 +71,7 @@ class VolumeControlInternal {
       return;
     }
 
-    level = base::ClampToRange(level, 0.0f, 1.0f);
+    level = base::clamp(level, 0.0f, 1.0f);
     thread_.task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&VolumeControlInternal::SetVolumeOnThread,
                                   base::Unretained(this), source, type, level));
@@ -206,13 +206,13 @@ void VolumeControl::SetOutputLimit(AudioContentType type, float limit) {}
 
 // static
 float VolumeControl::VolumeToDbFS(float volume) {
-  volume = base::ClampToRange(volume, 0.0f, 1.0f);
+  volume = base::clamp(volume, 0.0f, 1.0f);
   return kMinVolumeDbfs + volume * (kMaxVolumeDbfs - kMinVolumeDbfs);
 }
 
 // static
 float VolumeControl::DbFSToVolume(float db) {
-  db = base::ClampToRange(db, kMinVolumeDbfs, kMaxVolumeDbfs);
+  db = base::clamp(db, kMinVolumeDbfs, kMaxVolumeDbfs);
   return (db - kMinVolumeDbfs) / (kMaxVolumeDbfs - kMinVolumeDbfs);
 }
 

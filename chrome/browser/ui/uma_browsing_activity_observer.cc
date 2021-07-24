@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/uma_browsing_activity_observer.h"
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -175,7 +175,7 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
       AppendTabBucketCountToHistogramName(tab_count);
   for (auto domain : unique_domain) {
     base::UmaHistogramSparse(tab_count_per_domain_histogram_name,
-                             base::ClampToRange(domain.second, 0, 200));
+                             base::clamp(domain.second, 0, 200));
   }
 
   // Record how many tabs total are open (across all windows).

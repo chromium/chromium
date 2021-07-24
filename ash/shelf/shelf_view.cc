@@ -47,9 +47,9 @@
 #include "base/callback_helpers.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "components/account_id/account_id.h"
@@ -1508,8 +1508,7 @@ void ShelfView::MoveDragViewTo(int primary_axis_coordinate) {
   int target_index = views::ViewModelUtils::DetermineMoveIndex(
       *view_model_, drag_view_, shelf_->IsHorizontalAlignment(),
       drag_view_->x(), drag_view_->y());
-  target_index =
-      base::ClampToRange(target_index, indices.first, indices.second);
+  target_index = base::clamp(target_index, indices.first, indices.second);
 
   // Check the relative position of |drag_view_| and its ideal bounds if it can
   // be dragged across the separator to pin or unpin.

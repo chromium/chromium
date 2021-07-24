@@ -8,7 +8,7 @@
 #include <cmath>
 
 #include "base/bind.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "content/browser/media/capture/slow_window_capturer_chromeos.h"
 #include "media/base/video_frame.h"
@@ -84,7 +84,7 @@ gfx::Rect ToAbsoluteBoundsForI420(const gfx::RectF& relative,
 
 inline int alpha_blend(int alpha, int src, int dst) {
   alpha = (src * alpha + dst * (255 - alpha)) / 255;
-  return base::ClampToRange(alpha, 0, 255);
+  return base::clamp(alpha, 0, 255);
 }
 
 }  // namespace

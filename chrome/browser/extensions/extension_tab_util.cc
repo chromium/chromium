@@ -11,8 +11,8 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -302,7 +302,7 @@ base::DictionaryValue* ExtensionTabUtil::OpenTab(ExtensionFunction* function,
   int index = -1;
   if (params.index.get())
     index = *params.index;
-  index = base::ClampToRange(index, -1, browser->tab_strip_model()->count());
+  index = base::clamp(index, -1, browser->tab_strip_model()->count());
 
   int add_types = active ? TabStripModel::ADD_ACTIVE : TabStripModel::ADD_NONE;
   add_types |= TabStripModel::ADD_FORCE_INDEX;

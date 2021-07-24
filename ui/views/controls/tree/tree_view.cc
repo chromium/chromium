@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/containers/adapters.h"
+#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
-#include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -678,8 +678,8 @@ gfx::Point TreeView::GetKeyboardContextMenuLocation() {
     if (node_bounds.Intersects(vis_bounds))
       node_bounds.Intersect(vis_bounds);
     gfx::Point menu_point(node_bounds.CenterPoint());
-    x = base::ClampToRange(menu_point.x(), vis_bounds.x(), vis_bounds.right());
-    y = base::ClampToRange(menu_point.y(), vis_bounds.y(), vis_bounds.bottom());
+    x = base::clamp(menu_point.x(), vis_bounds.x(), vis_bounds.right());
+    y = base::clamp(menu_point.y(), vis_bounds.y(), vis_bounds.bottom());
   }
   gfx::Point screen_loc(x, y);
   if (base::i18n::IsRTL())
@@ -1363,7 +1363,7 @@ void TreeView::IncrementSelection(IncrementType type) {
   int depth = 0;
   int delta = type == IncrementType::kPrevious ? -1 : 1;
   int row = GetRowForInternalNode(active_node_, &depth);
-  int new_row = base::ClampToRange(row + delta, 0, GetRowCount() - 1);
+  int new_row = base::clamp(row + delta, 0, GetRowCount() - 1);
   if (new_row == row)
     return;  // At the end/beginning.
   SetSelectedNode(GetNodeByRow(new_row, &depth)->model_node());

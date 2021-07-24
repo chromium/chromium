@@ -10,10 +10,10 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
@@ -414,8 +414,8 @@ void MessagePumpForUI::ScheduleNativeTimer(
   } else {
     // TODO(gab): ::SetTimer()'s documentation claims it does this for us.
     // Consider removing this safety net.
-    delay_msec = ClampToRange(delay_msec, UINT(USER_TIMER_MINIMUM),
-                              UINT(USER_TIMER_MAXIMUM));
+    delay_msec =
+        clamp(delay_msec, UINT(USER_TIMER_MINIMUM), UINT(USER_TIMER_MAXIMUM));
 
     // Tell the optimizer to retain the delay to simplify analyzing hangs.
     base::debug::Alias(&delay_msec);

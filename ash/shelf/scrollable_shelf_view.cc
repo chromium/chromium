@@ -20,9 +20,9 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/numerics/ranges.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -660,7 +660,7 @@ float ScrollableShelfView::CalculateClampedScrollOffset(
     int available_space_for_icons) const {
   const float scroll_upper_bound =
       CalculateScrollUpperBound(available_space_for_icons);
-  scroll = base::ClampToRange(scroll, 0.0f, scroll_upper_bound);
+  scroll = base::clamp(scroll, 0.0f, scroll_upper_bound);
   return scroll;
 }
 

@@ -9,9 +9,9 @@
 #include <string>
 
 #include "base/containers/mru_cache.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -708,7 +708,7 @@ absl::optional<double> TabHoverCardBubbleView::GetPreviewImageCrossfadeStart() {
       features::kTabHoverCardImages,
       features::kTabHoverCardImagesCrossfadePreviewAtParameterName, -1.0);
   return start_percent >= 0.0
-             ? absl::make_optional(base::ClampToRange(start_percent, 0.0, 1.0))
+             ? absl::make_optional(base::clamp(start_percent, 0.0, 1.0))
              : absl::nullopt;
 }
 

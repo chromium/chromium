@@ -8,9 +8,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
@@ -562,9 +562,9 @@ void TestDownloadHttpResponse::SendResponseBodyChunk() {
     return;
   }
 
-  int64_t upper_bound = base::ClampToRange(response_sent_offset_ + kBufferSize,
-                                           range_.first_byte_position(),
-                                           range_.last_byte_position());
+  int64_t upper_bound =
+      base::clamp(response_sent_offset_ + kBufferSize,
+                  range_.first_byte_position(), range_.last_byte_position());
   auto buffer_range =
       net::HttpByteRange::Bounded(response_sent_offset_, upper_bound);
 

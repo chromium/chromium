@@ -12,9 +12,9 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/android/media_common_android.h"
@@ -419,7 +419,7 @@ void MediaPlayerBridge::Release() {
 }
 
 void MediaPlayerBridge::SetVolume(double volume) {
-  volume_ = base::ClampToRange(volume, 0.0, 1.0);
+  volume_ = base::clamp(volume, 0.0, 1.0);
   UpdateVolumeInternal();
 }
 

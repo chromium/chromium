@@ -8,10 +8,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/numerics/ranges.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -365,7 +365,7 @@ void CrostiniInstaller::OnLxdStarted(CrostiniResult result) {
 
 void CrostiniInstaller::OnContainerDownloading(int32_t download_percent) {
   DCHECK_EQ(installing_state_, InstallerState::kCreateContainer);
-  container_download_percent_ = base::ClampToRange(download_percent, 0, 100);
+  container_download_percent_ = base::clamp(download_percent, 0, 100);
   RunProgressCallback();
 }
 
@@ -532,9 +532,8 @@ void CrostiniInstaller::RunProgressCallback() {
   // TODO(https://crbug.com/1000173): Calculate configure container step
   // progress based on real progress.
 
-  double progress =
-      state_start_mark + base::ClampToRange(state_fraction, 0.0, 1.0) *
-                             (state_end_mark - state_start_mark);
+  double progress = state_start_mark + base::clamp(state_fraction, 0.0, 1.0) *
+                                           (state_end_mark - state_start_mark);
   progress_callback_.Run(installing_state_, progress);
 }
 

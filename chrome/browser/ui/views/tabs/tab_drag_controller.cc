@@ -13,8 +13,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
-#include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -1567,7 +1567,7 @@ gfx::Point TabDragController::GetAttachedDragPoint(
 
   const int max_x = attached_context_->GetTabDragAreaWidth() -
                     TabStrip::GetSizeNeededForViews(attached_views_);
-  return gfx::Point(base::ClampToRange(x, 0, max_x), 0);
+  return gfx::Point(base::clamp(x, 0, max_x), 0);
 }
 
 std::vector<TabSlotView*> TabDragController::GetViewsMatchingDraggedContents(

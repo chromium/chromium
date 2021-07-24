@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_cube_map.h"
 
+#include "base/cxx17_backports.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
@@ -26,7 +27,7 @@ float HalfFloatToFloat(const uint16_t input) {
 // Linear to sRGB converstion as given in
 // https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_framebuffer_sRGB.txt
 uint8_t LinearToSrgb(float cl) {
-  float cs = base::ClampToRange(
+  float cs = base::clamp(
       cl < 0.0031308f ? 12.92f * cl : 1.055f * std::pow(cl, 0.41666f) - 0.055f,
       0.0f, 1.0f);
   return static_cast<uint8_t>(255.0f * cs + 0.5f);

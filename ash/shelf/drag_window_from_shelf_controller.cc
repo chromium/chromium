@@ -34,8 +34,8 @@
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
@@ -477,8 +477,8 @@ void DragWindowFromShelfController::UpdateDraggedWindow(
   float y_diff = location_in_screen.y() - min_y;
   float scale = (1.0f - kMinimumWindowScaleDuringDragging) * y_diff / y_full +
                 kMinimumWindowScaleDuringDragging;
-  scale = base::ClampToRange(scale, /*min=*/kMinimumWindowScaleDuringDragging,
-                             /*max=*/1.f);
+  scale = base::clamp(scale, /*min=*/kMinimumWindowScaleDuringDragging,
+                      /*max=*/1.f);
 
   // Calculate the desired translation so that the dragged window stays under
   // the finger during the dragging.

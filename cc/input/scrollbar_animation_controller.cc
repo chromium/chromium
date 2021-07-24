@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
-#include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "cc/trees/layer_tree_impl.h"
 
@@ -160,8 +160,7 @@ bool ScrollbarAnimationController::Animate(base::TimeTicks now) {
 float ScrollbarAnimationController::AnimationProgressAtTime(
     base::TimeTicks now) {
   const base::TimeDelta delta = now - last_awaken_time_;
-  return base::ClampToRange(static_cast<float>(delta / fade_duration_), 0.0f,
-                            1.0f);
+  return base::clamp(static_cast<float>(delta / fade_duration_), 0.0f, 1.0f);
 }
 
 void ScrollbarAnimationController::RunAnimationFrame(float progress) {

@@ -13,11 +13,11 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/macros.h"
-#include "base/numerics/ranges.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl_android.h"
@@ -1064,7 +1064,7 @@ jboolean WebContentsAccessibilityAndroid::AdjustSlider(
   // Add/Subtract based on |increment| boolean, then clamp to range.
   float original_value = value;
   value += (increment ? delta : -delta);
-  value = base::ClampToRange(value, min, max);
+  value = base::clamp(value, min, max);
   if (value != original_value) {
     node->manager()->SetValue(*node, base::NumberToString(value));
     return true;
@@ -1362,7 +1362,7 @@ bool WebContentsAccessibilityAndroid::SetRangeValue(
   if (max <= min)
     return false;
 
-  value = base::ClampToRange(value, min, max);
+  value = base::clamp(value, min, max);
   node->manager()->SetValue(*node, base::NumberToString(value));
   return true;
 }

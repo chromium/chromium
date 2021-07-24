@@ -20,7 +20,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
@@ -126,8 +125,8 @@ const wchar_t kSecurityLayerValueName[] = L"SecurityLayer";
 
 webrtc::DesktopSize GetBoundedRdpDesktopSize(int width, int height) {
   return webrtc::DesktopSize(
-      base::ClampToRange(width, kMinRdpScreenWidth, GetMaxRdpScreenWidth()),
-      base::ClampToRange(height, kMinRdpScreenHeight, GetMaxRdpScreenHeight()));
+      base::clamp(width, kMinRdpScreenWidth, GetMaxRdpScreenWidth()),
+      base::clamp(height, kMinRdpScreenHeight, GetMaxRdpScreenHeight()));
 }
 
 // DesktopSession implementation which attaches to the host's physical console.

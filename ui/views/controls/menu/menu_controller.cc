@@ -10,10 +10,10 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "base/cxx17_backports.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -2422,12 +2422,11 @@ gfx::Rect MenuController::CalculateMenuBounds(MenuItemView* item,
   }
 
   // Ensure the menu is not displayed off screen.
-  menu_bounds.set_x(
-      base::ClampToRange(menu_bounds.x(), monitor_bounds.x(),
-                         monitor_bounds.right() - menu_bounds.width()));
+  menu_bounds.set_x(base::clamp(menu_bounds.x(), monitor_bounds.x(),
+                                monitor_bounds.right() - menu_bounds.width()));
   menu_bounds.set_y(
-      base::ClampToRange(menu_bounds.y(), monitor_bounds.y(),
-                         monitor_bounds.bottom() - menu_bounds.height()));
+      base::clamp(menu_bounds.y(), monitor_bounds.y(),
+                  monitor_bounds.bottom() - menu_bounds.height()));
 
   return menu_bounds;
 }
@@ -2611,8 +2610,8 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
                       border_and_shadow_insets.bottom();
     DCHECK_LE(x_min, x_max);
     DCHECK_LE(y_min, y_max);
-    x = base::ClampToRange(x, x_min, x_max);
-    y = base::ClampToRange(y, y_min, y_max);
+    x = base::clamp(x, x_min, x_max);
+    y = base::clamp(y, y_min, y_max);
   } else {
     if (!use_touchable_layout_) {
       NOTIMPLEMENTED()
@@ -2659,10 +2658,9 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
     }
     y = item_bounds.y() - border_and_shadow_insets.top() -
         menu_config.vertical_touchable_menu_item_padding;
-    y = base::ClampToRange(y,
-                           monitor_bounds.y() - border_and_shadow_insets.top(),
-                           monitor_bounds.bottom() - menu_size.height() +
-                               border_and_shadow_insets.top());
+    y = base::clamp(y, monitor_bounds.y() - border_and_shadow_insets.top(),
+                    monitor_bounds.bottom() - menu_size.height() +
+                        border_and_shadow_insets.top());
   }
   return gfx::Rect(x, y, menu_size.width(), menu_size.height());
 }

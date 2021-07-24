@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_id_list.h"
 
@@ -755,9 +755,8 @@ void FrequencyToHex(float frequency,
   int freq = static_cast<int>(frequency);
   int amp = static_cast<int>(amplitude * kVibrationAmplitudeMax);
   // Clamp the target frequency and amplitude to a safe range.
-  freq = base::ClampToRange(freq, kVibrationFrequencyHzMin,
-                            kVibrationFrequencyHzMax);
-  amp = base::ClampToRange(amp, 0, kVibrationAmplitudeMax);
+  freq = base::clamp(freq, kVibrationFrequencyHzMin, kVibrationFrequencyHzMax);
+  amp = base::clamp(amp, 0, kVibrationAmplitudeMax);
   const auto* best_vf = &kVibrationFrequency[0];
   for (size_t i = 1; i < kVibrationFrequencySize; ++i) {
     const auto* vf = &kVibrationFrequency[i];
@@ -1668,7 +1667,7 @@ void NintendoController::RequestSetHomeLight(
 }
 
 void NintendoController::RequestSetHomeLightIntensity(double intensity) {
-  intensity = base::ClampToRange(intensity, 0.0, 1.0);
+  intensity = base::clamp(intensity, 0.0, 1.0);
   uint8_t led_intensity = std::round(intensity * 0x0f);
   // Each pair of bytes in the minicycle data describes two minicyles.
   // The first byte holds two 4-bit values encoding minicycle intensities.

@@ -7,7 +7,7 @@
 #include <limits>
 #include <vector>
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/time/time.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
@@ -56,8 +56,7 @@ ColorTemperatureAnimation::~ColorTemperatureAnimation() = default;
 void ColorTemperatureAnimation::AnimateToNewValue(float new_target_temperature,
                                                   base::TimeDelta duration) {
   start_temperature_ = current_temperature_;
-  target_temperature_ =
-      base::ClampToRange(new_target_temperature, 1000.0f, 20000.0f);
+  target_temperature_ = base::clamp(new_target_temperature, 1000.0f, 20000.0f);
 
   if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
@@ -79,7 +78,7 @@ void ColorTemperatureAnimation::AnimateToNeutral(base::TimeDelta duration) {
 }
 
 void ColorTemperatureAnimation::AnimateToState(double state) {
-  state = base::ClampToRange(state, 0.0, 1.0);
+  state = base::clamp(state, 0.0, 1.0);
   current_temperature_ =
       start_temperature_ + (target_temperature_ - start_temperature_) * state;
   ApplyValuesToDisplay();
@@ -87,9 +86,9 @@ void ColorTemperatureAnimation::AnimateToState(double state) {
 
 void ColorTemperatureAnimation::ApplyValuesToDisplay() {
   // Clamp temperature value to table range.
-  float kelvin = base::ClampToRange(current_temperature_,
-                                    config_.temperature_values.front(),
-                                    config_.temperature_values.back());
+  float kelvin =
+      base::clamp(current_temperature_, config_.temperature_values.front(),
+                  config_.temperature_values.back());
   size_t i = 0;
   // Find greatest index whose value is <= |kelvin|. This is safe since |kelvin|
   // is clamped to fall within the table range.

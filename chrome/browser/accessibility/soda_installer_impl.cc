@@ -12,11 +12,11 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/numerics/ranges.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/soda_component_installer.h"
 #include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
@@ -46,9 +46,8 @@ int GetDownloadProgress(
     return -1;
 
   DCHECK_LE(downloaded_bytes, total_bytes);
-  return 100 *
-         base::ClampToRange(static_cast<double>(downloaded_bytes) / total_bytes,
-                            0.0, 1.0);
+  return 100 * base::clamp(static_cast<double>(downloaded_bytes) / total_bytes,
+                           0.0, 1.0);
 }
 
 }  // namespace

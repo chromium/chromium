@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
 
@@ -534,14 +534,10 @@ void Camera3AController::SetPointOfInterest(gfx::Point point) {
 
   // (xmin, ymin, xmax, ymax, weight)
   std::vector<int32_t> region = {
-      base::ClampToRange(point.x() - roi_radius, 0,
-                         active_array_size.width() - 1),
-      base::ClampToRange(point.y() - roi_radius, 0,
-                         active_array_size.height() - 1),
-      base::ClampToRange(point.x() + roi_radius, 0,
-                         active_array_size.width() - 1),
-      base::ClampToRange(point.y() + roi_radius, 0,
-                         active_array_size.height() - 1),
+      base::clamp(point.x() - roi_radius, 0, active_array_size.width() - 1),
+      base::clamp(point.y() - roi_radius, 0, active_array_size.height() - 1),
+      base::clamp(point.x() + roi_radius, 0, active_array_size.width() - 1),
+      base::clamp(point.y() + roi_radius, 0, active_array_size.height() - 1),
       1,
   };
 

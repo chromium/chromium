@@ -16,7 +16,7 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "chromecast/graphics/accessibility/accessibility_cursor_ring_layer.h"
 #include "chromecast/graphics/accessibility/accessibility_focus_ring_layer.h"
 #include "chromecast/graphics/accessibility/accessibility_highlight_layer.h"
@@ -478,7 +478,7 @@ void AccessibilityFocusRingController::ComputeOpacity(
     opacity = 1.0 - (change_delta / (fade_in_time + fade_out_time));
 
   // Layer::SetOpacity will throw an error if we're not within 0...1.
-  animation_info->opacity = base::ClampToRange(opacity, 0.0f, 1.0f);
+  animation_info->opacity = base::clamp(opacity, 0.0f, 1.0f);
 }
 
 void AccessibilityFocusRingController::AnimateCaretRing(

@@ -10,9 +10,9 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/numerics/ranges.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
@@ -86,8 +86,8 @@ class SelectFileDialogHolder : public ui::SelectFileDialog::Listener {
       // Index is 1-based (hence range 1 to size()), but 0 is allowed because it
       // means "no selection". See ui::SelectFileDialog::SelectFile().
       file_type_index =
-          base::ClampToRange(options->file_types->default_file_type_index, 0,
-                             static_cast<int>(file_types_->extensions.size()));
+          base::clamp(options->file_types->default_file_type_index, 0,
+                      static_cast<int>(file_types_->extensions.size()));
       file_types_->include_all_files = options->file_types->include_all_files;
       file_types_->allowed_paths =
           GetUiAllowedPaths(options->file_types->allowed_paths);

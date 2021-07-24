@@ -17,10 +17,10 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/crc32.h"
-#include "base/numerics/ranges.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -53,7 +53,7 @@ IdentifiabilityStudyState::IdentifiabilityStudyState(PrefService* pref_service)
     : pref_service_(pref_service),
       generation_(features::kIdentifiabilityStudyGeneration.Get()),
       recent_surfaces_(kMruEntries),
-      surface_selection_rate_(base::ClampToRange<int>(
+      surface_selection_rate_(base::clamp<int>(
           features::kIdentifiabilityStudySurfaceSelectionRate.Get(),
           0,
           features::kMaxIdentifiabilityStudySurfaceSelectionRate)),
@@ -63,10 +63,10 @@ IdentifiabilityStudyState::IdentifiabilityStudyState(PrefService* pref_service)
       per_type_selection_rates_(
           DecodeIdentifiabilityFieldTrialParam<TypeSelectionRateMap>(
               features::kIdentifiabilityStudyPerTypeSettings.Get())),
-      max_active_surfaces_(base::ClampToRange<int>(
-          features::kIdentifiabilityStudyMaxSurfaces.Get(),
-          0,
-          features::kMaxIdentifiabilityStudyMaxSurfaces)) {
+      max_active_surfaces_(
+          base::clamp<int>(features::kIdentifiabilityStudyMaxSurfaces.Get(),
+                           0,
+                           features::kMaxIdentifiabilityStudyMaxSurfaces)) {
   InitializeGlobalStudySettings();
   if (IsStudyActive())
     InitFromPrefs();

@@ -26,8 +26,8 @@
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/notreached.h"
-#include "base/numerics/ranges.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -70,7 +70,7 @@ constexpr float kSearchBoxOpacityEndProgress = 1.0f;
 float GetOpacityForProgress(float progress,
                             float transition_start,
                             float transition_end) {
-  return base::ClampToRange(
+  return base::clamp(
       (progress - transition_start) / (transition_end - transition_start), 0.0f,
       1.0f);
 }
@@ -265,9 +265,9 @@ gfx::Size ContentsView::AdjustSearchBoxSizeToFitMargins(
   const int padded_width =
       GetContentsBounds().width() -
       2 * GetAppListConfig().GetIdealHorizontalMargin(GetContentsBounds());
-  return gfx::Size(base::ClampToRange(padded_width, kSearchBarMinWidth,
-                                      preferred_size.width()),
-                   preferred_size.height());
+  return gfx::Size(
+      base::clamp(padded_width, kSearchBarMinWidth, preferred_size.width()),
+      preferred_size.height());
 }
 
 void ContentsView::SetActiveStateInternal(int page_index, bool animate) {

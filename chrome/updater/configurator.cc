@@ -4,7 +4,7 @@
 
 #include "chrome/updater/configurator.h"
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/rand_util.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -60,8 +60,8 @@ double Configurator::InitialDelay() const {
 }
 
 int Configurator::ServerKeepAliveSeconds() const {
-  return base::ClampToRange(external_constants_->ServerKeepAliveSeconds(), 1,
-                            kServerKeepAliveSeconds);
+  return base::clamp(external_constants_->ServerKeepAliveSeconds(), 1,
+                     kServerKeepAliveSeconds);
 }
 
 int Configurator::NextCheckDelay() const {

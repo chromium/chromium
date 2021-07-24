@@ -28,9 +28,9 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/scoped_window_targeter.h"
@@ -263,8 +263,8 @@ class WindowCycleItemView : public WindowMiniView {
 
     // Previews should never be narrower than half or wider than double their
     // fixed height.
-    preview_size.set_width(base::ClampToRange(
-        preview_size.width(), kMinPreviewWidthDp, kMaxPreviewWidthDp));
+    preview_size.set_width(base::clamp(preview_size.width(), kMinPreviewWidthDp,
+                                       kMaxPreviewWidthDp));
 
     const int margin = GetInsets().width();
     preview_size.Enlarge(margin, margin + WindowMiniView::kHeaderHeightDp);
@@ -682,15 +682,15 @@ class WindowCycleView : public views::WidgetDelegateView,
       // However, the container must span the screen, i.e. the maximum x is 0
       // and the minimum for its right boundary is the width of the screen.
       int minimum_x = width() - content_container_bounds.width();
-      x_offset = base::ClampToRange(x_offset, minimum_x, 0);
+      x_offset = base::clamp(x_offset, minimum_x, 0);
 
       // If the user has dragged, offset the container based on how much they
       // have dragged. Cap |horizontal_distance_dragged_| based on the available
       // distance from the container to the left and right boundaries.
       float clamped_horizontal_distance_dragged =
-          base::ClampToRange(horizontal_distance_dragged_,
-                             static_cast<float>(minimum_x - x_offset),
-                             static_cast<float>(-x_offset));
+          base::clamp(horizontal_distance_dragged_,
+                      static_cast<float>(minimum_x - x_offset),
+                      static_cast<float>(-x_offset));
       if (horizontal_distance_dragged_ != clamped_horizontal_distance_dragged)
         OnFlingEnd();
 

@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "base/bind.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/time/default_tick_clock.h"
 #include "remoting/base/constants.h"
 #include "remoting/protocol/frame_stats.h"
@@ -297,7 +297,7 @@ void WebrtcFrameSchedulerSimple::ScheduleNextFrame() {
     // triggering PLI (key-frame request). But the session would be already
     // unusable under such network conditions. And the client would trigger PLI
     // anyway if it doesn't receive any video for > 3 seconds.
-    target_capture_time = base::ClampToRange(
+    target_capture_time = base::clamp(
         target_capture_time, last_capture_started_time_ + kTargetFrameInterval,
         last_capture_started_time_ + kKeepAliveInterval);
   }

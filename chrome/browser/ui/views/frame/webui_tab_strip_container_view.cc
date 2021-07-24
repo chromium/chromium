@@ -9,12 +9,12 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/numerics/ranges.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -679,8 +679,8 @@ void WebUITabStripContainerView::UpdateHeightForDragToOpen(float height_delta) {
   }
 
   current_drag_height_ =
-      base::ClampToRange(*current_drag_height_ + height_delta, 0.0f,
-                         static_cast<float>(GetPreferredSize().height()));
+      base::clamp(*current_drag_height_ + height_delta, 0.0f,
+                  static_cast<float>(GetPreferredSize().height()));
   PreferredSizeChanged();
 }
 

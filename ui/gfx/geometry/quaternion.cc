@@ -8,7 +8,6 @@
 #include <cmath>
 
 #include "base/numerics/math_constants.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 

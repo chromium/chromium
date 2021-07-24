@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/numerics/ranges.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/notification.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -52,7 +52,7 @@ mc::FullscreenVisibility FromMojo(mojom::FullscreenVisibility visibility) {
 std::unique_ptr<mc::Notification> FromMojo(
     mojom::NotificationPtr notification) {
   mc::RichNotificationData rich_data;
-  rich_data.priority = base::ClampToRange(notification->priority, -2, 2);
+  rich_data.priority = base::clamp(notification->priority, -2, 2);
   rich_data.never_timeout = notification->require_interaction;
   rich_data.timestamp = notification->timestamp;
   if (!notification->image.isNull())
@@ -70,7 +70,7 @@ std::unique_ptr<mc::Notification> FromMojo(
     item.message = mojo_item->message;
     rich_data.items.push_back(item);
   }
-  rich_data.progress = base::ClampToRange(notification->progress, -1, 100);
+  rich_data.progress = base::clamp(notification->progress, -1, 100);
   rich_data.progress_status = notification->progress_status;
   for (const auto& mojo_button : notification->buttons) {
     mc::ButtonInfo button;

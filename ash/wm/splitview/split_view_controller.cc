@@ -44,9 +44,9 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/numerics/ranges.h"
 #include "base/system/sys_info.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/full_restore/features.h"
@@ -152,11 +152,10 @@ bool IsExactlyOneRootInSplitView() {
 
 gfx::Point GetBoundedPosition(const gfx::Point& location_in_screen,
                               const gfx::Rect& bounds_in_screen) {
-  return gfx::Point(
-      base::ClampToRange(location_in_screen.x(), bounds_in_screen.x(),
-                         bounds_in_screen.right() - 1),
-      base::ClampToRange(location_in_screen.y(), bounds_in_screen.y(),
-                         bounds_in_screen.bottom() - 1));
+  return gfx::Point(base::clamp(location_in_screen.x(), bounds_in_screen.x(),
+                                bounds_in_screen.right() - 1),
+                    base::clamp(location_in_screen.y(), bounds_in_screen.y(),
+                                bounds_in_screen.bottom() - 1));
 }
 
 WindowStateType GetStateTypeFromSnapPosition(

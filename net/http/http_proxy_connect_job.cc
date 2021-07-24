@@ -9,10 +9,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -319,7 +319,7 @@ base::TimeDelta HttpProxyConnectJob::AlternateNestedConnectionTimeout(
   base::TimeDelta timeout = multiplier * http_rtt_estimate.value();
   // Ensure that connection timeout is between
   // |min_proxy_connection_timeout_| and |max_proxy_connection_timeout_|.
-  return base::ClampToRange(
+  return base::clamp(
       timeout, GetProxyTimeoutExperiments()->min_proxy_connection_timeout(),
       GetProxyTimeoutExperiments()->max_proxy_connection_timeout());
 }

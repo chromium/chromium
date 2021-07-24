@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/numerics/ranges.h"
 #include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -62,9 +62,9 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
                      features::kTabSearchSearchDistance.Get());
   source->AddDouble(
       "searchThreshold",
-      base::ClampToRange<double>(features::kTabSearchSearchThreshold.Get(),
-                                 features::kTabSearchSearchThresholdMin,
-                                 features::kTabSearchSearchThresholdMax));
+      base::clamp<double>(features::kTabSearchSearchThreshold.Get(),
+                          features::kTabSearchSearchThresholdMin,
+                          features::kTabSearchSearchThresholdMax));
   source->AddDouble("searchTitleWeight", features::kTabSearchTitleWeight.Get());
   source->AddDouble("searchHostnameWeight",
                     features::kTabSearchHostnameWeight.Get());

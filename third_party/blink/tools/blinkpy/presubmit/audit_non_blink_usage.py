@@ -206,6 +206,8 @@ _CONFIG = [
 
             # //base/numerics/ranges.h.
             "base::ClampToRange",
+            # //base/cxx17_backports.h.
+            "base::clamp",
 
             # //base/strings/strcat.h.
             'base::StrCat',

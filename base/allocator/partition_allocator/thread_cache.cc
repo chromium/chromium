@@ -14,8 +14,8 @@
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/dcheck_is_on.h"
-#include "base/numerics/ranges.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
@@ -363,7 +363,7 @@ void ThreadCache::SetGlobalLimits(PartitionRoot<ThreadSafe>* root,
     // |PutInBucket()| is called on a full bucket, which should not overflow.
     constexpr size_t kMaxLimit = std::numeric_limits<uint8_t>::max() - 1;
     global_limits_[index] =
-        static_cast<uint8_t>(base::ClampToRange(value, kMinLimit, kMaxLimit));
+        static_cast<uint8_t>(base::clamp(value, kMinLimit, kMaxLimit));
     PA_DCHECK(global_limits_[index] >= kMinLimit);
     PA_DCHECK(global_limits_[index] <= kMaxLimit);
   }

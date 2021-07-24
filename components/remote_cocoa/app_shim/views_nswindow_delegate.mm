@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/mac/mac_util.h"
-#include "base/numerics/ranges.h"
 #include "base/threading/thread_task_runner_handle.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"

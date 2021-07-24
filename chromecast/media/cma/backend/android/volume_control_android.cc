@@ -14,13 +14,13 @@
 #include "base/android/build_info.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
-#include "base/numerics/ranges.h"
 #include "chromecast/base/init_command_line_shlib.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/media/cma/backend/android/audio_track_jni_headers/VolumeControl_jni.h"
@@ -82,7 +82,7 @@ void VolumeControlAndroid::SetVolume(VolumeChangeSource source,
     return;
   }
 
-  level = base::ClampToRange(level, 0.0f, 1.0f);
+  level = base::clamp(level, 0.0f, 1.0f);
   // The input level value is in the kMedia (MUSIC) volume table domain.
   float mapped_level =
       MapIntoDifferentVolumeTableDomain(AudioContentType::kMedia, type, level);
@@ -118,7 +118,7 @@ void VolumeControlAndroid::SetOutputLimit(AudioContentType type, float limit) {
   }
 
   // The input limit is in the kMedia (MUSIC) volume table domain.
-  limit = base::ClampToRange(limit, 0.0f, 1.0f);
+  limit = base::clamp(limit, 0.0f, 1.0f);
   float limit_db = VolumeToDbFSCached(AudioContentType::kMedia, limit);
   AudioSinkManager::Get()->SetOutputLimitDb(type, limit_db);
 }

@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #import "base/mac/foundation_util.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/sys_string_conversions.h"
 #import "content/browser/accessibility/browser_accessibility_cocoa.h"
 #import "content/browser/accessibility/browser_accessibility_mac.h"
@@ -111,13 +111,10 @@ SkColor SkColorFromNSColor(NSColor* color) {
   CGFloat r, g, b, a;
   [color getRed:&r green:&g blue:&b alpha:&a];
 
-  return base::ClampToRange(static_cast<int>(lroundf(255.0f * a)), 0, 255)
-             << 24 |
-         base::ClampToRange(static_cast<int>(lroundf(255.0f * r)), 0, 255)
-             << 16 |
-         base::ClampToRange(static_cast<int>(lroundf(255.0f * g)), 0, 255)
-             << 8 |
-         base::ClampToRange(static_cast<int>(lroundf(255.0f * b)), 0, 255);
+  return base::clamp(static_cast<int>(lroundf(255.0f * a)), 0, 255) << 24 |
+         base::clamp(static_cast<int>(lroundf(255.0f * r)), 0, 255) << 16 |
+         base::clamp(static_cast<int>(lroundf(255.0f * g)), 0, 255) << 8 |
+         base::clamp(static_cast<int>(lroundf(255.0f * b)), 0, 255);
 }
 
 // Extract underline information from an attributed string. Mostly copied from
