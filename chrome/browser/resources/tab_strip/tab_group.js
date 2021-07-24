@@ -50,9 +50,9 @@ export class TabGroupElement extends CustomElement {
 
   /** @return {!HTMLElement} */
   getDragImageCenter() {
-    // Since the drag handle is #chip, the drag image should be centered
-    // relatively to it.
-    return /** @type {!HTMLElement} */ (this.$('#chip'));
+    // Since the drag handle is #dragHandle, the drag image should be
+    // centered relatively to it.
+    return /** @type {!HTMLElement} */ (this.$('#dragHandle'));
   }
 
   /** @private */
@@ -102,6 +102,11 @@ export class TabGroupElement extends CustomElement {
     return this.hasAttribute('dragged-out_');
   }
 
+  /** @param {boolean} isTouchPressed */
+  setTouchPressed(isTouchPressed) {
+    this.toggleAttribute('touch_pressed_', isTouchPressed);
+  }
+
   /**
    * @param {!TabGroupVisualData} visualData
    */
@@ -132,4 +137,12 @@ customElements.define('tabstrip-tab-group', TabGroupElement);
  */
 export function isTabGroupElement(element) {
   return element.tagName === 'TABSTRIP-TAB-GROUP';
+}
+
+/**
+ * @param {!Element} element
+ * @return {boolean}
+ */
+export function isDragHandle(element) {
+  return element.id === 'dragHandle';
 }

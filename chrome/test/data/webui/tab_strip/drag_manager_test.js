@@ -340,7 +340,8 @@ suite('DragManager', () => {
       clientY: 150,
       dataTransfer: mockDataTransfer,
     });
-    draggedGroup.dispatchEvent(dragStartEvent);
+    draggedGroup.shadowRoot.getElementById('dragHandle')
+        .dispatchEvent(dragStartEvent);
 
     // Drag the group over the second tab.
     const dragOverIndex = 1;
@@ -380,7 +381,8 @@ suite('DragManager', () => {
       clientY: 150,
       dataTransfer: mockDataTransfer,
     });
-    draggedGroup.dispatchEvent(dragStartEvent);
+    draggedGroup.shadowRoot.getElementById('dragHandle')
+        .dispatchEvent(dragStartEvent);
 
     // Drag the group over the second tab.
     const dragOverEvent = new DragEvent('dragover', {

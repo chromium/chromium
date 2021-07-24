@@ -17,7 +17,7 @@ import {isRTL} from 'chrome://resources/js/util.m.js';
 
 import {DragManager, DragManagerDelegate} from './drag_manager.js';
 import {isTabElement, TabElement} from './tab.js';
-import {isTabGroupElement, TabGroupElement} from './tab_group.js';
+import {isDragHandle, isTabGroupElement, TabGroupElement} from './tab_group.js';
 import {TabStripEmbedderProxy, TabStripEmbedderProxyImpl} from './tab_strip_embedder_proxy.js';
 import {TabData, TabGroupVisualData, TabsApiProxy, TabsApiProxyImpl} from './tabs_api_proxy.js';
 
@@ -227,8 +227,8 @@ export class TabListElement extends CustomElement {
     /** @private @const {!EventTracker} */
     this.eventTracker_ = new EventTracker();
 
-    /** @private {!TabElement|null} */
-    this.lastTargetedTab_;
+    /** @private {!TabElement|!TabGroupElement|null} */
+    this.lastTargetedItem_;
 
     /** @private {!Object<{x: number, y: number}>|undefined} */
     this.lastTouchPoint_;
@@ -283,7 +283,7 @@ export class TabListElement extends CustomElement {
     this.addWebUIListener_('long-press', () => this.handleLongPress_());
 
     this.addWebUIListener_(
-        'context-menu-closed', () => this.clearLastTargetedTab_());
+        'context-menu-closed', () => this.clearLastTargetedItem_());
 
     this.eventTracker_.add(
         document, 'contextmenu', e => this.onContextMenu_(e));
@@ -298,10 +298,10 @@ export class TabListElement extends CustomElement {
         document, 'touchstart', (e) => this.onTouchStart_(e));
     // Touchend events happen when a touch gesture finishes normally (ie not due
     // to the context menu appearing or drag starting). Clear the last targeted
-    // tab on a drag end to ensure `lastTargetedTab_` is cleared for the cases
+    // item on a drag end to ensure `lastTargetedItem_` is cleared for the cases
     // that do not end with a dragstart or the context menu appearing.
     this.eventTracker_.add(
-        document, 'touchend', () => this.clearLastTargetedTab_());
+        document, 'touchend', () => this.clearLastTargetedItem_());
     this.addWebUIListener_(
         'received-keyboard-focus', () => this.onReceivedKeyboardFocus_());
 
@@ -531,8 +531,8 @@ export class TabListElement extends CustomElement {
 
   /** @private */
   handleLongPress_() {
-    if (this.lastTargetedTab_) {
-      this.lastTargetedTab_.setTouchPressed(true);
+    if (this.lastTargetedItem_) {
+      this.lastTargetedItem_.setTouchPressed(true);
     }
   }
 
@@ -652,10 +652,10 @@ export class TabListElement extends CustomElement {
       return;
     }
 
-    if (this.lastTargetedTab_) {
-      const position = getContextMenuPosition(this.lastTargetedTab_);
+    if (this.lastTargetedItem_ && isTabElement(this.lastTargetedItem_)) {
+      const position = getContextMenuPosition(this.lastTargetedItem_);
       this.tabStripEmbedderProxy_.showTabContextMenu(
-          this.lastTargetedTab_.tab.id, position.x, position.y);
+          this.lastTargetedItem_.tab.id, position.x, position.y);
     } else {
       this.tabStripEmbedderProxy_.showBackgroundContextMenu(
           this.lastTouchPoint_.clientX, this.lastTouchPoint_.clientY);
@@ -826,18 +826,27 @@ export class TabListElement extends CustomElement {
   onTouchStart_(event) {
     const composedPath = /** @type {!Array<!Element>} */ (event.composedPath());
     const dragOverTabElement =
-        /** @type {?TabElement} */ (composedPath.find(isTabElement));
-    this.lastTargetedTab_ = dragOverTabElement;
+        /** @type {!TabElement|!TabGroupElement|null} */ (
+            composedPath.find(isTabElement) ||
+            composedPath.find(isTabGroupElement));
+
+    // Make sure drag handle is under touch point when dragging a tab group.
+    if (dragOverTabElement && isTabGroupElement(dragOverTabElement) &&
+        !composedPath.find(isDragHandle)) {
+      return;
+    }
+
+    this.lastTargetedItem_ = dragOverTabElement;
     const touch = event.changedTouches[0];
     this.lastTouchPoint_ = {clientX: touch.clientX, clientY: touch.clientY};
   }
 
   /** @private */
-  clearLastTargetedTab_() {
-    if (this.lastTargetedTab_) {
-      this.lastTargetedTab_.setTouchPressed(false);
+  clearLastTargetedItem_() {
+    if (this.lastTargetedItem_) {
+      this.lastTargetedItem_.setTouchPressed(false);
     }
-    this.lastTargetedTab_ = null;
+    this.lastTargetedItem_ = null;
     this.lastTouchPoint_ = undefined;
   }
 
