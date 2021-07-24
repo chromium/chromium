@@ -31,6 +31,13 @@
        {}
       ]
      ],
+     "in-page-link-with-aria-hidden.html": [
+      "237707ba074c6943a3922c8a49fa81acb173a566",
+      [
+       null,
+       {}
+      ]
+     ],
      "included-descendant-dom-removal.html": [
       "fd978fb45e5a844f2b61cd4c10fba219410a9682",
       [
@@ -1052,6 +1059,13 @@
     },
     "css-transforms": {
      "crashtests": {
+      "large-scaley-001.html": [
+       "8c3cdeb3e65bcecaf2b8846a01aca47749eded25",
+       [
+        null,
+        {}
+       ]
+      ],
       "preserve3d-containing-block-inline-001.html": [
        "3be0af34cfa60f9d90a019a4ef7bb4a1bb536d2e",
        [
@@ -112075,6 +112089,58 @@
         ],
         {}
        ]
+      ],
+      "custom-highlight-painting-staticrange-004.html": [
+       "fa3d7ce373878fcfac3981c7f82b81bd0f09bc4d",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-painting-staticrange-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "custom-highlight-painting-staticrange-005.html": [
+       "ab486ae644adb2e2dda7f70364bf9a6f95bb8aa1",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "custom-highlight-painting-staticrange-006.html": [
+       "52ab8c7fb05dbd4f66840733b8a0b481c4b62a6c",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-painting-staticrange-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "custom-highlight-painting-staticrange-007.html": [
+       "d56082a119ce21f0d87d69c52cdf0833e5d31a21",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      }
     },
@@ -202364,6 +202430,19 @@
          ],
          {}
         ]
+       ],
+       "padding-border-margin-003.html": [
+        "c54682f309e749600bb7da278f4cee034f38fd16",
+        [
+         null,
+         [
+          [
+           "/mathml/relations/css-styling/padding-border-margin/padding-border-margin-003-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
        ]
       },
       "presentational-hints-001.html": [
@@ -263455,6 +263534,10 @@
       "7a90c74f3e51bf9d61870ec33d16b0857bb07772",
       []
      ],
+     "stretchy.woff": [
+      "f5a2c4a00c9d57f5e1f9894246ede33fec7c563d",
+      []
+     ],
      "underover-accentbaseheight4000-overbarextraascender3000.woff": [
       "2aa7133879b4edc64e44cee3df826092de8e2111",
       []
@@ -280988,10 +281071,6 @@
        "2f823ba9550d1c5a2cac2fe5b4b3bc5867a1be75",
        []
       ],
-      "inferred-mrow-stretchy-expected.txt": [
-       "dbcd828d9975219d0a06173869c2fa01f9dcaa5b",
-       []
-      ],
       "legacy-mfenced-element-001-ref.html": [
        "00c781b6e4fc8f51e98583a35f76d61a3d104440",
        []
@@ -281012,10 +281091,6 @@
      "operators": {
       "embellished-operator-003-expected.txt": [
        "d73ecc2d8c49891fe65f9a5ae30db30d62faaedd",
-       []
-      ],
-      "mo-axis-height-1-expected.txt": [
-       "2ed92752e4badbeb5d07f302b441e0436278b8f1",
        []
       ],
       "mo-font-relative-lengths-001-expected.txt": [
@@ -281047,7 +281122,7 @@
        []
       ],
       "mo-minsize-maxsize-001-expected.txt": [
-       "3bbcaf995abe710995a0995f3805384f51adced6",
+       "f2af4293f7062a82aa7d6d77d705ca86b22fa68f",
        []
       ],
       "mo-movablelimits-default-ref.html": [
@@ -281083,59 +281158,11 @@
        []
       ],
       "mo-stretch-properties-dynamic-001-expected.txt": [
-       "6e33b9d6e7bf8417377f350beb8ae226cb65212c",
+       "a3b49458ea06a81e8402293b4f71ec2c6378c718",
        []
       ],
       "operator-dictionary-combining-expected.txt": [
        "f338045a3e3e67ead37daae3436223edfb5f3ccb",
-       []
-      ],
-      "operator-dictionary-stretchy-001-expected.txt": [
-       "e554aa7810dbbb96899511c8a2e1ec7cb97d99a4",
-       []
-      ],
-      "operator-dictionary-stretchy-002-expected.txt": [
-       "e554aa7810dbbb96899511c8a2e1ec7cb97d99a4",
-       []
-      ],
-      "operator-dictionary-stretchy-003-expected.txt": [
-       "e554aa7810dbbb96899511c8a2e1ec7cb97d99a4",
-       []
-      ],
-      "operator-dictionary-stretchy-004-expected.txt": [
-       "e554aa7810dbbb96899511c8a2e1ec7cb97d99a4",
-       []
-      ],
-      "operator-dictionary-stretchy-005-expected.txt": [
-       "e554aa7810dbbb96899511c8a2e1ec7cb97d99a4",
-       []
-      ],
-      "operator-dictionary-stretchy-006-expected.txt": [
-       "e554aa7810dbbb96899511c8a2e1ec7cb97d99a4",
-       []
-      ],
-      "operator-dictionary-symmetric-001-expected.txt": [
-       "f3f378102d4d27b89435a264bc010a2415fc6805",
-       []
-      ],
-      "operator-dictionary-symmetric-002-expected.txt": [
-       "f3f378102d4d27b89435a264bc010a2415fc6805",
-       []
-      ],
-      "operator-dictionary-symmetric-003-expected.txt": [
-       "f3f378102d4d27b89435a264bc010a2415fc6805",
-       []
-      ],
-      "operator-dictionary-symmetric-004-expected.txt": [
-       "f3f378102d4d27b89435a264bc010a2415fc6805",
-       []
-      ],
-      "operator-dictionary-symmetric-005-expected.txt": [
-       "f3f378102d4d27b89435a264bc010a2415fc6805",
-       []
-      ],
-      "operator-dictionary-symmetric-006-expected.txt": [
-       "f3f378102d4d27b89435a264bc010a2415fc6805",
        []
       ],
       "support": {
@@ -281434,6 +281461,10 @@
        "padding-border-margin-002-ref.html": [
         "e13a9f47ff4f68fd1486123735111079989165cf",
         []
+       ],
+       "padding-border-margin-003-ref.html": [
+        "275494ddd8c5cf0ae39b7402242aedc9b000a6b8",
+        []
        ]
       },
       "presentational-hints-001-ref.html": [
@@ -281626,7 +281657,7 @@
       []
      ],
      "operator-dictionary.py": [
-      "5627c8a8b92be92896f1ae532a943e56f1d0fdd0",
+      "03047a1bc79917df827937dac761a29c74d24701",
       []
      ],
      "operator-dictionary.xsl": [
@@ -281653,6 +281684,10 @@
       "28f116622d33152270a320c45d51d0f2e8a106e6",
       []
      ],
+     "stretchy.py": [
+      "f6a42b01e47b96a11716ffd836facee14fd5cd43",
+      []
+     ],
      "underover.py": [
       "71a31387b14dd84e6b3797fca3208633127209c8",
       []
@@ -281667,7 +281702,7 @@
        []
       ],
       "mathfont.py": [
-       "03af20668e7274148c50d0fe182b2127e309dea2",
+       "72c3b1b144bbdef84f9fde202a5d3e6d8b08f00e",
        []
       ],
       "misc.py": [
@@ -433803,11 +433838,18 @@
       {}
      ]
     ],
-    "max-buffer-size.https.html": [
-     "399b8048b1304e1079dbea4dc1eef0ccc311a131",
+    "max-buffer-size.window.js": [
+     "659d4cd14d6802e4bc5700384ddd07c2469748e0",
      [
-      null,
-      {}
+      "js-self-profiling/max-buffer-size.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/profile-utils.js"
+        ]
+       ]
+      }
      ]
     ],
     "time-domain.window.js": [
@@ -435187,6 +435229,13 @@
       ],
       "spacing.html": [
        "bad3370ca5b8d57ecb102a6e746e08afefd312ec",
+       [
+        null,
+        {}
+       ]
+      ],
+      "stretch-along-block-axis-001.html": [
+       "aae04b59caeeec26f586a3fb26007231e8b76b09",
        [
         null,
         {}
@@ -462967,7 +463016,7 @@
      ]
     ],
     "getRangeAt.html": [
-     "466bfd5286535492311a095173a4fb98b1ac5e8d",
+     "a84ad46f225323585e03974e275b3d037a344446",
      [
       null,
       {}
