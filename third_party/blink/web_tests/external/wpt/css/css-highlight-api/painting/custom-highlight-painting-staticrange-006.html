@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>CSS Highlight API Test: </title>
+<link rel="help" href="https://drafts.csswg.org/css-highlight-api-1/">
+<link rel="match" href="custom-highlight-painting-staticrange-001-ref.html">
+<meta name="assert" value="Highlight is repainted correctly after a node crossed by a StaticRange becomes a containment because of a CSSStyleSheet change (so the range should be painted now)">
+<style>
+  ::highlight(example-highlight) {
+    background-color: yellow;
+    color: blue;
+  }
+</style>
+<body><span>One </span><span id="target"><span>two </span><span>three…</span></span>
+<script>
+  let r = new StaticRange({startContainer: document.body, startOffset: 0, endContainer: document.querySelector("#target"), endOffset: 1});
+  CSS.highlights.set("example-highlight", new Highlight(r));
+
+  let styles = new CSSStyleSheet();
+  document.adoptedStyleSheets = [styles];
+
+  // Force frame paint before changing the style sheet.
+  requestAnimationFrame( () => {
+    requestAnimationFrame( () => {
+      styles.replaceSync(`#target { contain: style; }`);
+    });
+  });
+</script>

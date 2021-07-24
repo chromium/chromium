@@ -64,7 +64,10 @@ class CORE_EXPORT StaticRange final : public AbstractRange {
   Member<Node> end_container_;
   unsigned end_offset_ = 0;
   mutable bool is_valid_ = false;
-  mutable uint64_t dom_tree_version_ = 0;
+  mutable bool crosses_contain_boundary_ = false;
+  mutable uint64_t dom_tree_version_for_is_valid_ = 0;
+  mutable uint64_t style_version_for_crosses_contain_boundary_ =
+      static_cast<uint64_t>(-1);
 };
 
 using StaticRangeVector = HeapVector<Member<StaticRange>>;

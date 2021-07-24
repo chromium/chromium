@@ -75,14 +75,20 @@ Node* GetLowestContainAncestor(const Node* node) {
 
 // Returns true if the range crosses any css-contain subtree boundary.
 bool StaticRange::CrossesContainBoundary() const {
-  return GetLowestContainAncestor(start_container_) !=
-         GetLowestContainAncestor(end_container_);
+  if (style_version_for_crosses_contain_boundary_ ==
+      owner_document_->StyleVersion())
+    return crosses_contain_boundary_;
+  style_version_for_crosses_contain_boundary_ = owner_document_->StyleVersion();
+
+  crosses_contain_boundary_ = GetLowestContainAncestor(start_container_) !=
+                              GetLowestContainAncestor(end_container_);
+  return crosses_contain_boundary_;
 }
 
 bool StaticRange::IsValid() const {
-  if (dom_tree_version_ == owner_document_->DomTreeVersion())
+  if (dom_tree_version_for_is_valid_ == owner_document_->DomTreeVersion())
     return is_valid_;
-  dom_tree_version_ = owner_document_->DomTreeVersion();
+  dom_tree_version_for_is_valid_ = owner_document_->DomTreeVersion();
 
   // The full list of checks is:
   //  1) The start offset is between 0 and the start container’s node length
