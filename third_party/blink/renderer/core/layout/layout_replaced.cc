@@ -147,7 +147,7 @@ bool LayoutReplaced::HasReplacedLogicalHeight() const {
   }
 
   if (StyleRef().LogicalHeight().IsContentOrIntrinsicOrFillAvailable())
-    return true;
+    return StyleRef().AspectRatio().IsAuto();
 
   return false;
 }
@@ -884,10 +884,20 @@ LayoutUnit LayoutReplaced::ComputeReplacedLogicalHeight(
     return ComputeReplacedLogicalHeightRespectingMinMaxHeight(
         LayoutUnit(constrained_size.Height()));
 
+  absl::optional<double> aspect_ratio;
+  if (!intrinsic_sizing_info.aspect_ratio.IsEmpty()) {
+    aspect_ratio = intrinsic_sizing_info.aspect_ratio.Height() /
+                   intrinsic_sizing_info.aspect_ratio.Width();
+  } else if (!StyleRef().AspectRatio().IsAuto() &&
+             !intrinsic_sizing_info.has_height &&
+             intrinsic_sizing_info.has_width) {
+    aspect_ratio = StyleRef().AspectRatio().GetRatio().Height() /
+                   StyleRef().AspectRatio().GetRatio().Width();
+  }
   // Otherwise, if 'height' has a computed value of 'auto', and the element has
   // an intrinsic ratio then the used value of 'height' is:
   // (used width) / (intrinsic ratio)
-  if (!intrinsic_sizing_info.aspect_ratio.IsEmpty()) {
+  if (aspect_ratio) {
     LayoutUnit used_width =
         estimated_used_width ? estimated_used_width : AvailableLogicalWidth();
     NGBoxStrut border_padding(BorderStart() + ComputedCSSPaddingStart(),
@@ -900,10 +910,8 @@ LayoutUnit LayoutReplaced::ComputeReplacedLogicalHeight(
     used_width += border_padding.InlineSum();
     if (StyleRef().AspectRatio().GetType() == EAspectRatioType::kRatio)
       box_sizing = StyleRef().BoxSizing();
-    double aspect_ratio = intrinsic_sizing_info.aspect_ratio.Height() /
-                          intrinsic_sizing_info.aspect_ratio.Width();
     return ComputeReplacedLogicalHeightRespectingMinMaxHeight(
-        BlockSizeFromAspectRatio(border_padding, aspect_ratio, box_sizing,
+        BlockSizeFromAspectRatio(border_padding, *aspect_ratio, box_sizing,
                                  used_width) -
         border_padding.BlockSum());
   }

@@ -1184,7 +1184,6 @@ crbug.com/591099 external/wpt/css/css-sizing/replaced-aspect-ratio-stretch-fit-0
 crbug.com/591099 external/wpt/css/css-sizing/replaced-aspect-ratio-stretch-fit-003.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/aspect-ratio/abspos-020.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-035.html [ Failure ]
-crbug.com/591099 external/wpt/css/css-sizing/aspect-ratio/replaced-element-034.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-typed-om/idlharness.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-ui/box-sizing-014.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-ui/box-sizing-015.html [ Failure ]
