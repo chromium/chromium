@@ -8,7 +8,7 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/update_engine_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/network/network_handler.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/policy/core/common/policy_service.h"

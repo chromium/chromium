@@ -1115,6 +1115,8 @@ static_library("extensions") {
       "//chromeos/dbus/cryptohome",
       "//chromeos/dbus/image_burner",
       "//chromeos/dbus/power",
+      "//chromeos/dbus/update_engine",
+      "//chromeos/dbus/util",
       "//chromeos/disks",
       "//chromeos/login/auth",
       "//chromeos/login/login_state",

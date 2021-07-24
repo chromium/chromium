@@ -34,7 +34,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_update_engine_client.h"
+#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"

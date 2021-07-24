@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/fake_update_engine_client.h"
+#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -13,8 +13,7 @@ FakeUpdateEngineClient::FakeUpdateEngineClient() {}
 
 FakeUpdateEngineClient::~FakeUpdateEngineClient() = default;
 
-void FakeUpdateEngineClient::Init(dbus::Bus* bus) {
-}
+void FakeUpdateEngineClient::Init(dbus::Bus* bus) {}
 
 void FakeUpdateEngineClient::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -68,8 +67,7 @@ void FakeUpdateEngineClient::
 }
 
 void FakeUpdateEngineClient::SetChannel(const std::string& target_channel,
-                                        bool is_powerwash_allowed) {
-}
+                                        bool is_powerwash_allowed) {}
 
 void FakeUpdateEngineClient::GetChannel(bool get_current_channel,
                                         GetChannelCallback callback) {

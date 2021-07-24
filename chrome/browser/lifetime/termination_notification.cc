@@ -16,7 +16,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"  // nogncheck
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/dbus/update_engine_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/login/session/session_termination_manager.h"
 #endif
 

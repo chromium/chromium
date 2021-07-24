@@ -28,7 +28,6 @@ component("dbus") {
   deps = [
     ":metrics_event_proto",
     ":plugin_vm_service_proto",
-    ":update_engine_proto",
     ":vm_applications_apps_proto",
     ":vm_disk_management_proto",
     ":vm_permission_service_proto",
@@ -50,6 +49,9 @@ component("dbus") {
     "//chromeos/dbus/runtime_probe:proto",
     "//chromeos/dbus/smbprovider",
     "//chromeos/dbus/smbprovider:proto",
+    "//chromeos/dbus/update_engine",
+    "//chromeos/dbus/update_engine:proto",
+    "//chromeos/dbus/util",
     "//chromeos/dbus/virtual_file_provider",
     "//chromeos/dbus/vm_plugin_dispatcher",
     "//chromeos/dbus/vm_plugin_dispatcher:proto",
@@ -60,22 +62,15 @@ component("dbus") {
     "//url",
   ]
   sources = [
-    "dbus_client_implementation_type.h",
     "dbus_clients_browser.cc",
     "dbus_clients_browser.h",
     "dbus_thread_manager.cc",
     "dbus_thread_manager.h",
-    "fake_update_engine_client.cc",
-    "fake_update_engine_client.h",
-    "update_engine_client.cc",
-    "update_engine_client.h",
     "usb/fake_usbguard_client.cc",
     "usb/fake_usbguard_client.h",
     "usb/usbguard_client.cc",
     "usb/usbguard_client.h",
     "usb/usbguard_observer.h",
-    "util/version_loader.cc",
-    "util/version_loader.h",
   ]
 }
 
@@ -102,6 +97,7 @@ component("common") {
     "blocking_method_caller.cc",
     "blocking_method_caller.h",
     "dbus_client.h",
+    "dbus_client_implementation_type.h",
     "dbus_method_call_status.h",
     "pipe_reader.cc",
     "pipe_reader.h",
@@ -156,8 +152,10 @@ source_set("unit_tests") {
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//chromeos/dbus/u2f",
     "//chromeos/dbus/u2f:u2f_proto",
+    "//chromeos/dbus/update_engine:unit_tests",
     "//chromeos/dbus/userdataauth",
     "//chromeos/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/dbus/util:unit_tests",
     "//chromeos/tpm:test_support",
     "//components/account_id",
     "//dbus",
@@ -179,13 +177,11 @@ source_set("unit_tests") {
     "native_timer_unittest.cc",
     "pipe_reader_unittest.cc",
     "tpm_manager/tpm_manager_client_unittest.cc",
-    "update_engine_client_unittest.cc",
     "userdataauth/arc_quota_client_unittest.cc",
     "userdataauth/cryptohome_misc_client_unittest.cc",
     "userdataauth/cryptohome_pkcs11_client_unittest.cc",
     "userdataauth/install_attributes_client_unittest.cc",
     "userdataauth/userdataauth_client_unittest.cc",
-    "util/version_loader_unittest.cc",
   ]
 }
 
@@ -223,13 +219,6 @@ proto_library("seneschal_proto") {
       [ "//third_party/cros_system_api/dbus/seneschal/seneschal_service.proto" ]
 
   proto_out_dir = "chromeos/dbus/seneschal"
-}
-
-proto_library("update_engine_proto") {
-  sources =
-      [ "//third_party/cros_system_api/dbus/update_engine/update_engine.proto" ]
-
-  proto_out_dir = "chromeos/dbus/update_engine"
 }
 
 proto_library("vm_applications_apps_proto") {

@@ -62,6 +62,7 @@ component("lib") {
     "//chromeos/dbus",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/dbus/util",
     "//chromeos/services/assistant/public/proto",
     "//chromeos/services/libassistant/public/mojom",
     "//chromeos/strings",

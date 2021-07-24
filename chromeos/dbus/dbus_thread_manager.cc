@@ -38,7 +38,7 @@
 #include "chromeos/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "chromeos/dbus/shill/sms_client.h"
 #include "chromeos/dbus/smbprovider/smb_provider_client.h"
-#include "chromeos/dbus/update_engine_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 
 namespace chromeos {
 

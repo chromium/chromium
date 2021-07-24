@@ -11,7 +11,7 @@
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/browser/upgrade_detector/mock_build_state_observer.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_update_engine_client.h"
+#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

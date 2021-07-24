@@ -12,7 +12,7 @@
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/update_engine_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "third_party/cros_system_api/dbus/update_engine/dbus-constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

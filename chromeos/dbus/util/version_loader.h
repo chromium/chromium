@@ -22,18 +22,19 @@ enum VersionFormat {
 // If |full_version| is true version string with extra info is extracted,
 // otherwise it's in short format x.x.xx.x.
 // May block.
-COMPONENT_EXPORT(CHROMEOS_DBUS) std::string GetVersion(VersionFormat format);
+COMPONENT_EXPORT(CHROMEOS_DBUS_UTIL)
+std::string GetVersion(VersionFormat format);
 
 // Gets the ARC version.
 // May block.
-COMPONENT_EXPORT(CHROMEOS_DBUS) std::string GetARCVersion();
+COMPONENT_EXPORT(CHROMEOS_DBUS_UTIL) std::string GetARCVersion();
 
 // Gets the firmware info.
 // May block.
-COMPONENT_EXPORT(CHROMEOS_DBUS) std::string GetFirmware();
+COMPONENT_EXPORT(CHROMEOS_DBUS_UTIL) std::string GetFirmware();
 
 // Extracts the firmware from the file.
-COMPONENT_EXPORT(CHROMEOS_DBUS)
+COMPONENT_EXPORT(CHROMEOS_DBUS_UTIL)
 std::string ParseFirmware(const std::string& contents);
 
 // Returns true if |new_version| is older than |current_version|.
@@ -41,7 +42,7 @@ std::string ParseFirmware(const std::string& contents);
 // numbers if possible, as strings otherwise. Earlier sections have
 // precedence. If one version is prefix of another, the shorter one is
 // considered older. (See test for examples.)
-COMPONENT_EXPORT(CHROMEOS_DBUS)
+COMPONENT_EXPORT(CHROMEOS_DBUS_UTIL)
 bool IsRollback(const std::string& current_version,
                 const std::string& new_version);
 

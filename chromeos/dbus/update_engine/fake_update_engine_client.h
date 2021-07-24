@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_FAKE_UPDATE_ENGINE_CLIENT_H_
-#define CHROMEOS_DBUS_FAKE_UPDATE_ENGINE_CLIENT_H_
+#ifndef CHROMEOS_DBUS_UPDATE_ENGINE_FAKE_UPDATE_ENGINE_CLIENT_H_
+#define CHROMEOS_DBUS_UPDATE_ENGINE_FAKE_UPDATE_ENGINE_CLIENT_H_
 
 #include <string>
 
 #include "base/component_export.h"
 #include "base/containers/queue.h"
+#include "base/macros.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/update_engine_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 
 namespace chromeos {
 
@@ -18,7 +19,7 @@ namespace chromeos {
 // use set_update_engine_client_status() to set a fake last Status and
 // GetLastStatus() returns the fake with no modification. Other methods do
 // nothing.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeUpdateEngineClient
+class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
     : public UpdateEngineClient {
  public:
   FakeUpdateEngineClient();
@@ -71,12 +72,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeUpdateEngineClient
       const UpdateEngineClient::UpdateCheckResult& result);
 
   void set_can_rollback_check_result(bool result) {
-      can_rollback_stub_result_ = result;
+    can_rollback_stub_result_ = result;
   }
 
   // Returns how many times RebootAfterUpdate() is called.
   int reboot_after_update_call_count() const {
-      return reboot_after_update_call_count_;
+    return reboot_after_update_call_count_;
   }
 
   // Returns how many times RequestUpdateCheck() is called.
@@ -114,6 +115,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeUpdateEngineClient
   int update_over_cellular_permission_count_ = 0;
   int update_over_cellular_one_time_permission_count_ = 0;
   base::Time eol_date_;
+
+  DISALLOW_COPY_AND_ASSIGN(FakeUpdateEngineClient);
 };
 
 }  // namespace chromeos
@@ -124,4 +127,4 @@ namespace ash {
 using ::chromeos::FakeUpdateEngineClient;
 }
 
-#endif  // CHROMEOS_DBUS_FAKE_UPDATE_ENGINE_CLIENT_H_
+#endif  // CHROMEOS_DBUS_UPDATE_ENGINE_FAKE_UPDATE_ENGINE_CLIENT_H_

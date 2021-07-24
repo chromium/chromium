@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_UPDATE_ENGINE_CLIENT_H_
-#define CHROMEOS_DBUS_UPDATE_ENGINE_CLIENT_H_
+#ifndef CHROMEOS_DBUS_UPDATE_ENGINE_UPDATE_ENGINE_CLIENT_H_
+#define CHROMEOS_DBUS_UPDATE_ENGINE_UPDATE_ENGINE_CLIENT_H_
 
 #include <stdint.h>
 
@@ -22,7 +22,8 @@
 namespace chromeos {
 
 // UpdateEngineClient is used to communicate with the update engine.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) UpdateEngineClient : public DBusClient {
+class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) UpdateEngineClient
+    : public DBusClient {
  public:
   // The result code used for RequestUpdateCheck().
   enum UpdateCheckResult {
@@ -177,4 +178,4 @@ namespace ash {
 using ::chromeos::UpdateEngineClient;
 }
 
-#endif  // CHROMEOS_DBUS_UPDATE_ENGINE_CLIENT_H_
+#endif  // CHROMEOS_DBUS_UPDATE_ENGINE_UPDATE_ENGINE_CLIENT_H_

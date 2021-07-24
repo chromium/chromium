@@ -15,7 +15,7 @@
 #include "base/version.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/upgrade_detector/build_state_observer.h"
-#include "chromeos/dbus/update_engine_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
 class PrefRegistrySimple;

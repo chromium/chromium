@@ -66,7 +66,7 @@
 #include "chrome/browser/ui/webui/help/version_updater_chromeos.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/dbus/update_engine_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"

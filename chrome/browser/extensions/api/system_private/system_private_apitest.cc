@@ -14,7 +14,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/dbus_thread_manager.h"  // nogncheck
-#include "chromeos/dbus/fake_update_engine_client.h"
+#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 
 using chromeos::UpdateEngineClient;
 #endif

@@ -56,7 +56,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chromeos/assistant/buildflags.h"
 #include "chromeos/attestation/attestation_flow_utils.h"
-#include "chromeos/dbus/update_engine_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_session_runner.h"

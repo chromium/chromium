@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/update_engine_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 
 #include <stdint.h>
 
@@ -110,9 +110,8 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
   }
 
   void RebootAfterUpdate() override {
-    dbus::MethodCall method_call(
-        update_engine::kUpdateEngineInterface,
-        update_engine::kRebootIfNeeded);
+    dbus::MethodCall method_call(update_engine::kUpdateEngineInterface,
+                                 update_engine::kRebootIfNeeded);
 
     VLOG(1) << "Requesting a reboot";
     update_engine_proxy_->CallMethod(
@@ -123,9 +122,8 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
 
   void Rollback() override {
     VLOG(1) << "Requesting a rollback";
-     dbus::MethodCall method_call(
-        update_engine::kUpdateEngineInterface,
-        update_engine::kAttemptRollback);
+    dbus::MethodCall method_call(update_engine::kUpdateEngineInterface,
+                                 update_engine::kAttemptRollback);
     dbus::MessageWriter writer(&method_call);
     writer.AppendBool(true /* powerwash */);
 
@@ -136,9 +134,8 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
   }
 
   void CanRollbackCheck(RollbackCheckCallback callback) override {
-    dbus::MethodCall method_call(
-        update_engine::kUpdateEngineInterface,
-        update_engine::kCanRollback);
+    dbus::MethodCall method_call(update_engine::kUpdateEngineInterface,
+                                 update_engine::kCanRollback);
 
     VLOG(1) << "Requesting to get rollback availability status";
     update_engine_proxy_->CallMethod(
@@ -156,9 +153,8 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
       return;
     }
 
-    dbus::MethodCall method_call(
-        update_engine::kUpdateEngineInterface,
-        update_engine::kSetChannel);
+    dbus::MethodCall method_call(update_engine::kUpdateEngineInterface,
+                                 update_engine::kSetChannel);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(target_channel);
     writer.AppendBool(is_powerwash_allowed);
@@ -174,9 +170,8 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
 
   void GetChannel(bool get_current_channel,
                   GetChannelCallback callback) override {
-    dbus::MethodCall method_call(
-        update_engine::kUpdateEngineInterface,
-        update_engine::kGetChannel);
+    dbus::MethodCall method_call(update_engine::kUpdateEngineInterface,
+                                 update_engine::kGetChannel);
     dbus::MessageWriter writer(&method_call);
     writer.AppendBool(get_current_channel);
 
@@ -493,8 +488,7 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
   void StatusUpdateConnected(const std::string& interface_name,
                              const std::string& signal_name,
                              bool success) {
-    LOG_IF(WARNING, !success)
-        << "Failed to connect to status updated signal.";
+    LOG_IF(WARNING, !success) << "Failed to connect to status updated signal.";
   }
 
   dbus::ObjectProxy* update_engine_proxy_;

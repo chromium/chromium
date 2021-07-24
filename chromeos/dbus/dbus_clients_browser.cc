@@ -43,7 +43,7 @@
 #include "chromeos/dbus/runtime_probe/runtime_probe_client.h"
 #include "chromeos/dbus/smbprovider/fake_smb_provider_client.h"
 #include "chromeos/dbus/smbprovider/smb_provider_client.h"
-#include "chromeos/dbus/update_engine_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
 #include "chromeos/dbus/virtual_file_provider/virtual_file_provider_client.h"
 #include "chromeos/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
@@ -101,7 +101,12 @@ DBusClientsBrowser::DBusClientsBrowser(bool use_real_clients) {
       CREATE_DBUS_CLIENT(RuntimeProbeClient, use_real_clients);
   smb_provider_client_ =
       CREATE_DBUS_CLIENT(SmbProviderClient, use_real_clients);
+
+  // TODO(crbug.com/1229048): Resolve among the 3 implementations of
+  // UpdateEngineClient and use CREATE_DBUS_CLIENT, or comment on why this
+  // special case (that doesn't use CREATE_DBUS_CLIENT) exists.
   update_engine_client_.reset(UpdateEngineClient::Create(client_impl_type));
+
   virtual_file_provider_client_ =
       CREATE_DBUS_CLIENT(VirtualFileProviderClient, use_real_clients);
   vm_plugin_dispatcher_client_ =
