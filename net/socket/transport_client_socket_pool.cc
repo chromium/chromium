@@ -1702,6 +1702,12 @@ void TransportClientSocketPool::Group::RemoveAllUnboundJobs() {
   }
   unassigned_jobs_.clear();
   never_assigned_job_count_ = 0;
+
+  // Diagnostics check for crbug.com/1231248. `Group`s are deleted only on
+  // removal from `TransportClientSocketPool::group_map_`, so if this check
+  // fails, `this` has been deleted, likely through some reentrancy issue.
+  CHECK(client_socket_pool_->HasGroup(group_id_));
+
   // Delete active jobs.
   jobs_.clear();
   // Stop backup job timer.
