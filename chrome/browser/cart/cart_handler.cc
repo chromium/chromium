@@ -6,10 +6,35 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "components/search/ntp_features.h"
+#include "third_party/re2/src/re2/re2.h"
+
+namespace {
+constexpr base::FeatureParam<std::string> kPartnerMerchantPattern{
+    &ntp_features::kNtpChromeCartModule, "partner-merchant-pattern",
+    // This regex does not match anything.
+    "\\b\\B"};
+
+const re2::RE2& GetPartnerMerchantPattern() {
+  re2::RE2::Options options;
+  options.set_case_sensitive(false);
+  static base::NoDestructor<re2::RE2> instance(kPartnerMerchantPattern.Get(),
+                                               options);
+  return *instance;
+}
+
+bool IsPartnerMerchant(const GURL& url) {
+  const std::string& url_string = url.spec();
+  return RE2::PartialMatch(
+      re2::StringPiece(url_string.data(), url_string.size()),
+      GetPartnerMerchantPattern());
+}
+
+}  // namespace
 
 CartHandler::CartHandler(
     mojo::PendingReceiver<chrome_cart::mojom::CartHandler> handler,
@@ -69,7 +94,15 @@ void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
   for (CartDB::KeyAndValue proto_pair : res) {
     auto cart = chrome_cart::mojom::MerchantCart::New();
     cart->merchant = std::move(proto_pair.second.merchant());
-    cart->cart_url = GURL(std::move(proto_pair.second.merchant_cart_url()));
+
+    if (IsPartnerMerchant(GURL(proto_pair.second.merchant_cart_url()))) {
+      cart->cart_url = CartService::AppendUTM(
+          GURL(std::move(proto_pair.second.merchant_cart_url())),
+          show_discount);
+    } else {
+      cart->cart_url = GURL(std::move(proto_pair.second.merchant_cart_url()));
+    }
+
     std::vector<std::string> image_urls;
     // Not show product images when showing welcome surface.
     if (!cart_service_->ShouldShowWelcomeSurface()) {
