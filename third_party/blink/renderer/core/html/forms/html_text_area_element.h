@@ -72,8 +72,6 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   enum WrapMethod { kNoWrap, kSoftWrap, kHardWrap };
 
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
-  // FIXME: Author shadows should be allowed
-  // https://bugs.webkit.org/show_bug.cgi?id=92608
   bool AreAuthorShadowsAllowed() const override { return false; }
 
   void HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent*) const;
