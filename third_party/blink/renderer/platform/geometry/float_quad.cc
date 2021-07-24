@@ -76,8 +76,9 @@ inline bool IsPointInTriangle(const FloatPoint& p,
   return (u >= 0) && (v >= 0) && (u + v <= 1);
 }
 
-static inline float SaturateInf(float value) {
-  if (UNLIKELY(std::isinf(value))) {
+static inline float ClampToIntRange(float value) {
+  if (UNLIKELY(std::isinf(value) ||
+               std::abs(value) > std::numeric_limits<int>::max())) {
     return std::signbit(value) ? std::numeric_limits<int>::min()
                                : std::numeric_limits<int>::max();
   }
@@ -85,11 +86,11 @@ static inline float SaturateInf(float value) {
 }
 
 FloatRect FloatQuad::BoundingBox() const {
-  float left = SaturateInf(Min4(p1_.X(), p2_.X(), p3_.X(), p4_.X()));
-  float top = SaturateInf(Min4(p1_.Y(), p2_.Y(), p3_.Y(), p4_.Y()));
+  float left = ClampToIntRange(Min4(p1_.X(), p2_.X(), p3_.X(), p4_.X()));
+  float top = ClampToIntRange(Min4(p1_.Y(), p2_.Y(), p3_.Y(), p4_.Y()));
 
-  float right = SaturateInf(Max4(p1_.X(), p2_.X(), p3_.X(), p4_.X()));
-  float bottom = SaturateInf(Max4(p1_.Y(), p2_.Y(), p3_.Y(), p4_.Y()));
+  float right = ClampToIntRange(Max4(p1_.X(), p2_.X(), p3_.X(), p4_.X()));
+  float bottom = ClampToIntRange(Max4(p1_.Y(), p2_.Y(), p3_.Y(), p4_.Y()));
 
   return FloatRect(left, top, right - left, bottom - top);
 }
