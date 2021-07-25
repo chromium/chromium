@@ -6,7 +6,7 @@
 <resources>
     <color name="modal_dialog_scrim_color">@color/black_alpha_65</color>
     <color name="toolbar_shadow_color">@color/black_alpha_11</color>
-    <color name="toolbar_text_box_background">@color/modern_grey_100</color>
+    <color name="toolbar_text_box_background">@color/omnibox_bg_color</color>
     <color name="search_box_hint">@color/default_text_color_secondary</color>
 
     <!-- Progress Bar colors -->

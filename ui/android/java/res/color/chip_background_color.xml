@@ -11,24 +11,20 @@
         android:state_enabled="false" />
 
     <!-- hover -->
-    <item android:alpha="@dimen/default_hovered_alpha"
-        android:color="@color/default_icon_color"
+    <item android:color="@color/chip_bg_color"
         android:state_hovered="true"/>
 
     <!-- focused -->
-    <item android:alpha="@dimen/default_focused_alpha"
-        android:color="@color/default_icon_color"
+    <item android:color="@color/chip_focused"
         android:state_focused="true" />
 
     <!-- hover & focused -->
-    <item android:alpha="@dimen/default_focused_hovered_alpha"
-        android:color="@color/default_icon_color"
+    <item android:color="@color/chip_hover_focused"
         android:state_focused="true"
         android:state_hovered="true" />
 
     <!-- selected -->
-    <item android:alpha="@dimen/chip_background_selected_alpha"
-        android:color="@color/filled_button_bg_color"
+    <item android:color="@color/chip_selected"
         android:state_selected="true" />
 
     <!-- selected & hover -->
