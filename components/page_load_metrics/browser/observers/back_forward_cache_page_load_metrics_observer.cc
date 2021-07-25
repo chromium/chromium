@@ -62,7 +62,7 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 BackForwardCachePageLoadMetricsObserver::OnEnterBackForwardCache(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   in_back_forward_cache_ = true;
-  MaybeRecordLayoutShiftScoreAfterBackForwardCacheRestore(timing);
+  RecordMetricsOnPageVisitEnd(timing);
   return CONTINUE_OBSERVING;
 }
 
@@ -191,12 +191,17 @@ BackForwardCachePageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
 void BackForwardCachePageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   // If the page is in the back-forward cache and OnComplete is called, the page
-  // is evicted from the cache. Do not record CLS here as we have already
-  // recorded it in OnEnterBackForwardCache.
+  // is being evicted from the cache. Do not record metrics here as we have
+  // already recorded them in OnEnterBackForwardCache.
   if (in_back_forward_cache_)
     return;
+  RecordMetricsOnPageVisitEnd(timing);
+}
 
+void BackForwardCachePageLoadMetricsObserver::RecordMetricsOnPageVisitEnd(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
   MaybeRecordLayoutShiftScoreAfterBackForwardCacheRestore(timing);
+  MaybeRecordPageEndAfterBackForwardCacheRestore();
 }
 
 void BackForwardCachePageLoadMetricsObserver::
@@ -271,6 +276,21 @@ void BackForwardCachePageLoadMetricsObserver::
     UMA_HISTOGRAM_COUNTS_100(
         "PageLoad.LayoutInstability.CumulativeShiftScore",
         page_load_metrics::LayoutShiftUmaValue(layout_shift_score));
+  }
+}
+
+void BackForwardCachePageLoadMetricsObserver::
+    MaybeRecordPageEndAfterBackForwardCacheRestore() {
+  // This size check prevents the observer from logging a page end reason if the
+  // page hasn't been restored from the back-forward cache at least once.
+  if (back_forward_cache_navigation_ids_.size() > 0) {
+    auto page_end_reason = GetDelegate().GetPageEndReason();
+    // HistoryNavigation is a singular event, and we share the same instance as
+    // long as we use the same source ID.
+    ukm::builders::HistoryNavigation builder(
+        GetLastUkmSourceIdForBackForwardCacheRestore());
+    builder.SetPageEndReasonAfterBackForwardCacheRestore(page_end_reason);
+    builder.Record(ukm::UkmRecorder::Get());
   }
 }
 

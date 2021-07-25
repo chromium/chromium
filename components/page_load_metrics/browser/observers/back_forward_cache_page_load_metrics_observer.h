@@ -54,6 +54,13 @@ class BackForwardCachePageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
  private:
+  // Records metrics related to the end of a page visit. This occurs either
+  // when the observed page enters (or re-enters) the back-forward cache, or
+  // when OnComplete is called on this observer while the page is not in
+  // the back-forward cache.
+  void RecordMetricsOnPageVisitEnd(
+      const page_load_metrics::mojom::PageLoadTiming& timing);
+
   // Records the layout shift score after the page is restored from the back-
   // forward cache. This is called when the page is navigated away, i.e., when
   // the page enters to the cache, or the page is closed. In the first call, as
@@ -61,6 +68,11 @@ class BackForwardCachePageLoadMetricsObserver
   // the scores.
   void MaybeRecordLayoutShiftScoreAfterBackForwardCacheRestore(
       const page_load_metrics::mojom::PageLoadTiming& timing);
+
+  // Records a page end reason when the page is navigated away from or closed,
+  // after it has been restored from the back forward cache at least once.
+  // Does nothing if the page has never been restored.
+  void MaybeRecordPageEndAfterBackForwardCacheRestore();
 
   // Returns the UKM source ID for index-th back-foward restore navigation.
   int64_t GetUkmSourceIdForBackForwardCacheRestore(size_t index) const;

@@ -7505,6 +7505,14 @@ be describing additional metrics about the same event.
       from the back-forward cache.
     </summary>
   </metric>
+  <metric name="PageEndReasonAfterBackForwardCacheRestore">
+    <summary>
+      The reason (as a |page_load_metrics::PageEndReason|) why the user
+      navigated away from the page after it was restored from the back-forward
+      cache. This includes navigations after which the page is stored in the
+      back-forward cache again, as well as other page-ending events.
+    </summary>
+  </metric>
   <metric name="SameOriginSubframesFeatures">
     <summary>
       Bitmask of features used by the same origin subframes of the previous page

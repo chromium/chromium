@@ -104,6 +104,8 @@ using WebFeature = blink::mojom::WebFeature;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using NoStatePrefetch = ukm::builders::NoStatePrefetch;
+using PageLoad = ukm::builders::PageLoad;
+using HistoryNavigation = ukm::builders::HistoryNavigation;
 
 namespace {
 
@@ -236,7 +238,6 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
   }
 
   void VerifyBasicPageLoadUkms(const GURL& expected_source_url) {
-    using PageLoad = ukm::builders::PageLoad;
     const auto& entries =
         test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
     EXPECT_EQ(1u, entries.size());
@@ -3727,3 +3728,138 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsBrowserTest, PrerenderEvent) {
   histogram_tester_->ExpectBucketCount(
       page_load_metrics::internal::kPageLoadStartedInForeground, false, 1);
 }
+
+enum BackForwardCacheStatus { kDisabled = 0, kEnabled = 1 };
+
+class PageLoadMetricsBackForwardCacheBrowserTest
+    : public PageLoadMetricsBrowserTest,
+      public testing::WithParamInterface<BackForwardCacheStatus> {
+ public:
+  PageLoadMetricsBackForwardCacheBrowserTest() {
+    if (GetParam() == BackForwardCacheStatus::kEnabled) {
+      // Enable BackForwardCache.
+      feature_list_.InitWithFeaturesAndParameters(
+          {{features::kBackForwardCache, {{"enable_same_site", "true"}}}},
+          // Allow BackForwardCache for all devices regardless of their memory.
+          {features::kBackForwardCacheMemoryControls});
+    } else {
+      feature_list_.InitAndDisableFeature(features::kBackForwardCache);
+      DCHECK(!content::BackForwardCache::IsBackForwardCacheFeatureEnabled());
+    }
+  }
+
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return info.param ? "BFCacheEnabled" : "BFCacheDisabled";
+  }
+
+  void VerifyPageEndReasons(const std::vector<PageEndReason>& reasons,
+                            const GURL& url,
+                            bool is_bfcache_enabled);
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies the page end reasons are as we expect. This means that the first
+// page end reason is always recorded in Navigation.PageEndReason3, and
+// subsequent reasons are recorded in HistoryNavigation.PageEndReason if bfcache
+// is enabled, or Navigation.PageEndReason3 if not.
+void PageLoadMetricsBackForwardCacheBrowserTest::VerifyPageEndReasons(
+    const std::vector<PageEndReason>& reasons,
+    const GURL& url,
+    bool is_bfcache_enabled) {
+  unsigned int reason_index = 0;
+  for (auto* entry :
+       test_ukm_recorder_->GetEntriesByName(PageLoad::kEntryName)) {
+    auto* source = test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
+    if (source->url() != url)
+      continue;
+    if (test_ukm_recorder_->EntryHasMetric(
+            entry, PageLoad::kNavigation_PageEndReason3Name)) {
+      if (is_bfcache_enabled) {
+        // If bfcache is on then only one of these should exist, so the index
+        // should be zero.
+        EXPECT_EQ(reason_index, 0U);
+      }
+      ASSERT_LT(reason_index, reasons.size());
+      test_ukm_recorder_->ExpectEntryMetric(
+          entry, PageLoad::kNavigation_PageEndReason3Name,
+          reasons[reason_index++]);
+    }
+  }
+  if (is_bfcache_enabled) {
+    EXPECT_EQ(reason_index, 1U);
+  } else {
+    EXPECT_EQ(reason_index, reasons.size());
+  }
+  for (auto* entry :
+       test_ukm_recorder_->GetEntriesByName(HistoryNavigation::kEntryName)) {
+    auto* source = test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
+    if (source->url() != url)
+      continue;
+    if (test_ukm_recorder_->EntryHasMetric(
+            entry, HistoryNavigation::
+                       kPageEndReasonAfterBackForwardCacheRestoreName)) {
+      EXPECT_TRUE(is_bfcache_enabled);
+      ASSERT_LT(reason_index, reasons.size());
+      test_ukm_recorder_->ExpectEntryMetric(
+          entry,
+          HistoryNavigation::kPageEndReasonAfterBackForwardCacheRestoreName,
+          reasons[reason_index++]);
+    }
+  }
+  // Should have been through all the reasons.
+  EXPECT_EQ(reason_index, reasons.size());
+}
+
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsBackForwardCacheBrowserTest,
+                       LogsPageEndReasons) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  bool back_forward_cache_enabled = GetParam() == kEnabled;
+  // Navigate to A.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+  content::RenderFrameHost* rfh_a = web_contents()->GetMainFrame();
+
+  // Navigate to B.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  if (back_forward_cache_enabled) {
+    ASSERT_EQ(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  }
+
+  std::vector<PageEndReason> expected_reasons_a;
+  expected_reasons_a.push_back(page_load_metrics::END_NEW_NAVIGATION);
+  VerifyPageEndReasons(expected_reasons_a, url_a, back_forward_cache_enabled);
+
+  // Go back to A, restoring it from the back-forward cache (if enabled)
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  // Navigate to B again - this should trigger the
+  // BackForwardCachePageLoadMetricsObserver for A (if enabled)
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  expected_reasons_a.push_back(page_load_metrics::END_NEW_NAVIGATION);
+  VerifyPageEndReasons(expected_reasons_a, url_a, back_forward_cache_enabled);
+
+  // Go back to A, restoring it from the back-forward cache (again)
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  // Navigate to B using GoForward() to verify the correct page end reason
+  // is stored for A.
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  expected_reasons_a.push_back(page_load_metrics::END_FORWARD_BACK);
+  VerifyPageEndReasons(expected_reasons_a, url_a, back_forward_cache_enabled);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageLoadMetricsBackForwardCacheBrowserTest,
+    testing::ValuesIn({BackForwardCacheStatus::kDisabled,
+                       BackForwardCacheStatus::kEnabled}),
+    PageLoadMetricsBackForwardCacheBrowserTest::DescribeParams);

@@ -1032,6 +1032,10 @@ void PageLoadTracker::OnRestoreFromBackForwardCache(
     observer->OnRestoreFromBackForwardCache(metrics_update_dispatcher_.timing(),
                                             navigation_handle);
   }
+
+  // Reset the page end reason to END_NONE. The page has been restored, its
+  // previous end reason is no longer relevant.
+  page_end_reason_ = END_NONE;
 }
 
 void PageLoadTracker::OnV8MemoryChanged(
