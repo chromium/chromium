@@ -19,6 +19,7 @@
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "ash/system/holding_space/holding_space_progress_ring.h"
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
@@ -243,6 +244,9 @@ class ScopedDragDropObserver : public aura::client::DragDropClientObserver,
 // HoldingSpaceTray ------------------------------------------------------------
 
 HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
+  // Ensure the existence of the singleton animation registry.
+  HoldingSpaceAnimationRegistry::GetInstance();
+
   controller_observer_.Observe(HoldingSpaceController::Get());
   session_observer_.Observe(Shell::Get()->session_controller());
   SetVisible(false);

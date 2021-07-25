@@ -34,10 +34,8 @@ float ConvertFromAngleToPosition(float angle_in_degrees) {
 // HoldingSpaceProgressRingIndeterminateAnimation ------------------------------
 
 HoldingSpaceProgressRingIndeterminateAnimation::
-    HoldingSpaceProgressRingIndeterminateAnimation(
-        HoldingSpaceProgressRing* progress_ring)
-    : HoldingSpaceProgressRingAnimation(progress_ring,
-                                        kAnimationDuration,
+    HoldingSpaceProgressRingIndeterminateAnimation()
+    : HoldingSpaceProgressRingAnimation(kAnimationDuration,
                                         /*is_cyclic=*/true) {}
 
 HoldingSpaceProgressRingIndeterminateAnimation::

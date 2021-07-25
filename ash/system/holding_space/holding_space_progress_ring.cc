@@ -103,7 +103,8 @@ class HoldingSpaceControllerProgressRing
  public:
   explicit HoldingSpaceControllerProgressRing(
       HoldingSpaceController* controller)
-      : controller_(controller) {
+      : HoldingSpaceProgressRing(/*animation_key=*/controller),
+        controller_(controller) {
     controller_observation_.Observe(controller_);
     if (controller_->model())
       OnHoldingSpaceModelAttached(controller_->model());
@@ -196,7 +197,7 @@ class HoldingSpaceItemProgressRing : public HoldingSpaceProgressRing,
                                      public HoldingSpaceModelObserver {
  public:
   explicit HoldingSpaceItemProgressRing(const HoldingSpaceItem* item)
-      : item_(item) {
+      : HoldingSpaceProgressRing(/*animation_key=*/item), item_(item) {
     model_observation_.Observe(HoldingSpaceController::Get()->model());
   }
 
@@ -237,10 +238,30 @@ class HoldingSpaceItemProgressRing : public HoldingSpaceProgressRing,
 
 // HoldingSpaceProgressRing ----------------------------------------------------
 
-HoldingSpaceProgressRing::HoldingSpaceProgressRing()
-    : ui::LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)) {
+HoldingSpaceProgressRing::HoldingSpaceProgressRing(const void* animation_key)
+    : ui::LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)),
+      animation_key_(animation_key) {
   layer()->set_delegate(this);
   layer()->SetFillsBoundsOpaquely(false);
+
+  HoldingSpaceAnimationRegistry* animation_registry =
+      HoldingSpaceAnimationRegistry::GetInstance();
+
+  // Register to be notified of changes to the animation associated with this
+  // progress ring's `animation_key_`. Note that it is safe to use a raw pointer
+  // here since `this` owns the subscription.
+  animation_changed_subscription_ =
+      animation_registry->AddProgressRingAnimationChangedCallbackForKey(
+          animation_key_,
+          base::BindRepeating(
+              &HoldingSpaceProgressRing::OnProgressRingAnimationChanged,
+              base::Unretained(this)));
+
+  // If an `animation` is already registered, perform additional initialization.
+  HoldingSpaceProgressRingAnimation* animation =
+      animation_registry->GetProgressRingAnimationForKey(animation_key_);
+  if (animation)
+    OnProgressRingAnimationChanged(animation);
 }
 
 HoldingSpaceProgressRing::~HoldingSpaceProgressRing() = default;
@@ -268,14 +289,19 @@ void HoldingSpaceProgressRing::OnDeviceScaleFactorChanged(float old_scale,
 }
 
 void HoldingSpaceProgressRing::OnPaintLayer(const ui::PaintContext& context) {
+  // Look up the associated `animation` (if one exists).
+  HoldingSpaceProgressRingAnimation* animation =
+      HoldingSpaceAnimationRegistry::GetInstance()
+          ->GetProgressRingAnimationForKey(animation_key_);
+
   // Unless `this` is animating, nothing will paint if `progress_` is complete.
-  if (progress_.has_value() && progress_.value() == 1.f && !animation_)
+  if (progress_ == 1.f && !animation)
     return;
 
   float start, end;
-  if (animation_) {
-    start = animation_->start_position();
-    end = animation_->end_position();
+  if (animation) {
+    start = animation->start_position();
+    end = animation->end_position();
   } else {
     start = 0.f;
     end = progress_.value();
@@ -326,27 +352,25 @@ void HoldingSpaceProgressRing::OnPaintLayer(const ui::PaintContext& context) {
   }
 }
 
-// TODO(crbug.com/1184438): Implement pulse animation on completion.
 void HoldingSpaceProgressRing::UpdateVisualState() {
   // Cache `progress_`.
   progress_ = CalculateProgress();
-
-  // If `progress_` is determinate, validate values and clear any animations.
   if (progress_.has_value()) {
     DCHECK_GE(progress_.value(), 0.f);
     DCHECK_LE(progress_.value(), 1.f);
-    animation_.reset();
-    return;
   }
+}
 
-  if (animation_)
-    return;
-
-  // Since `progress_` is indeterminate, an indeterminate `animation_` should be
-  // created and started.
-  animation_ =
-      std::make_unique<HoldingSpaceProgressRingIndeterminateAnimation>(this);
-  animation_->Start();
+void HoldingSpaceProgressRing::OnProgressRingAnimationChanged(
+    HoldingSpaceProgressRingAnimation* animation) {
+  // Trigger repaint of this progress ring on `animation` updates. Note that it
+  // is safe to use a raw pointer here since `this` owns the subscription.
+  if (animation) {
+    animation_updated_subscription_ = animation->AddAnimationUpdatedCallback(
+        base::BindRepeating(&HoldingSpaceProgressRing::InvalidateLayer,
+                            base::Unretained(this)));
+  }
+  InvalidateLayer();
 }
 
 }  // namespace ash

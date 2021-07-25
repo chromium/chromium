@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/time/time.h"
 #include "ui/gfx/animation/animation_delegate.h"
 
@@ -16,10 +17,8 @@ class SlideAnimation;
 
 namespace ash {
 
-class HoldingSpaceProgressRing;
-
-// An animation for an associated `HoldingSpaceProgressRing` to be painted in
-// lieu of the determinate progress ring that would otherwise be painted.
+// An animation for a `HoldingSpaceProgressRing` to be painted in lieu of the
+// determinate progress ring that would otherwise be painted.
 class HoldingSpaceProgressRingAnimation : public gfx::AnimationDelegate {
  public:
   HoldingSpaceProgressRingAnimation(const HoldingSpaceProgressRingAnimation&) =
@@ -27,6 +26,12 @@ class HoldingSpaceProgressRingAnimation : public gfx::AnimationDelegate {
   HoldingSpaceProgressRingAnimation& operator=(
       const HoldingSpaceProgressRingAnimation&) = delete;
   ~HoldingSpaceProgressRingAnimation() override;
+
+  // Adds the specified `callback` to be notified of animation updates. The
+  // `callback` will continue to receive events so long as both `this` and the
+  // returned subscription exist.
+  base::RepeatingClosureList::Subscription AddAnimationUpdatedCallback(
+      base::RepeatingClosureList::CallbackType callback);
 
   // Immediately starts this animation.
   void Start();
@@ -39,9 +44,7 @@ class HoldingSpaceProgressRingAnimation : public gfx::AnimationDelegate {
   float end_position() const { return end_position_; }
 
  protected:
-  HoldingSpaceProgressRingAnimation(HoldingSpaceProgressRing* progress_ring,
-                                    base::TimeDelta duration,
-                                    bool is_cyclic);
+  HoldingSpaceProgressRingAnimation(base::TimeDelta duration, bool is_cyclic);
 
   // Implementing classes should update any desired animatable properties as
   // appropriate for the specified animation `fraction`.
@@ -58,9 +61,6 @@ class HoldingSpaceProgressRingAnimation : public gfx::AnimationDelegate {
   // animation is being restarted after completion of a full animation cycle.
   void StartInternal(bool is_cyclic_restart);
 
-  // The associated progress ring which paints this animation.
-  HoldingSpaceProgressRing* const progress_ring_;
-
   // The duration for this animation.
   const base::TimeDelta duration_;
 
@@ -76,6 +76,11 @@ class HoldingSpaceProgressRingAnimation : public gfx::AnimationDelegate {
   // Animatable properties.
   float start_position_ = 0.f;
   float end_position_ = 0.f;
+
+  // The list of callbacks for which to notify animation updates.
+  base::RepeatingClosureList animation_updated_callback_list_;
+
+  base::WeakPtrFactory<HoldingSpaceProgressRingAnimation> weak_factory_{this};
 };
 
 }  // namespace ash

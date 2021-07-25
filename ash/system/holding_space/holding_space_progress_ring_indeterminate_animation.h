@@ -9,16 +9,13 @@
 
 namespace ash {
 
-class HoldingSpaceProgressRing;
-
-// An animation for an associated `HoldingSpaceProgressRing` to paint an
-// indeterminate progress ring in lieu of the determinate progress ring that
-// would otherwise be painted.
+// An animation for a `HoldingSpaceProgressRing` to paint an indeterminate
+// progress ring in lieu of the determinate progress ring that would otherwise
+// be painted.
 class HoldingSpaceProgressRingIndeterminateAnimation
     : public HoldingSpaceProgressRingAnimation {
  public:
-  explicit HoldingSpaceProgressRingIndeterminateAnimation(
-      HoldingSpaceProgressRing* progress_ring);
+  HoldingSpaceProgressRingIndeterminateAnimation();
   HoldingSpaceProgressRingIndeterminateAnimation(
       const HoldingSpaceProgressRingIndeterminateAnimation&) = delete;
   HoldingSpaceProgressRingIndeterminateAnimation& operator=(
