@@ -329,7 +329,7 @@ RawVideoFrameValidator::~RawVideoFrameValidator() = default;
 std::unique_ptr<VideoFrameValidator::MismatchedFrameInfo>
 RawVideoFrameValidator::Validate(scoped_refptr<const VideoFrame> frame,
                                  size_t frame_index) {
-  SEQUENCE_CHECKER(validator_thread_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
   auto model_frame = get_model_frame_cb_.Run(frame_index);
   CHECK(model_frame);
   size_t diff_cnt =
@@ -383,7 +383,7 @@ PSNRVideoFrameValidator::~PSNRVideoFrameValidator() = default;
 std::unique_ptr<VideoFrameValidator::MismatchedFrameInfo>
 PSNRVideoFrameValidator::Validate(scoped_refptr<const VideoFrame> frame,
                                   size_t frame_index) {
-  SEQUENCE_CHECKER(validator_thread_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
   auto model_frame = get_model_frame_cb_.Run(frame_index);
   CHECK(model_frame);
   double psnr = ComputePSNR(*frame, *model_frame);
@@ -456,7 +456,7 @@ SSIMVideoFrameValidator::~SSIMVideoFrameValidator() = default;
 std::unique_ptr<VideoFrameValidator::MismatchedFrameInfo>
 SSIMVideoFrameValidator::Validate(scoped_refptr<const VideoFrame> frame,
                                   size_t frame_index) {
-  SEQUENCE_CHECKER(validator_thread_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
   auto model_frame = get_model_frame_cb_.Run(frame_index);
 
   CHECK(model_frame);

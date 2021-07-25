@@ -108,7 +108,7 @@ bool BitstreamValidator::Initialize(const VideoDecoderConfig& decoder_config) {
 void BitstreamValidator::InitializeVideoDecoder(
     const VideoDecoderConfig& decoder_config,
     VideoDecoder::InitCB init_cb) {
-  SEQUENCE_CHECKER(validator_thread_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
   decoder_->Initialize(
       decoder_config, false, nullptr, std::move(init_cb),
       base::BindRepeating(&BitstreamValidator::VerifyOutputFrame,
@@ -201,7 +201,7 @@ void BitstreamValidator::ProcessBitstream(scoped_refptr<BitstreamRef> bitstream,
 void BitstreamValidator::ProcessBitstreamTask(
     scoped_refptr<BitstreamRef> bitstream,
     size_t frame_index) {
-  SEQUENCE_CHECKER(validator_thread_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
   bool should_decode = false;
   bool should_flush = false;
   if (!vp9_spatial_layer_index_to_decode_ &&
@@ -264,7 +264,7 @@ void BitstreamValidator::ProcessBitstreamTask(
 }
 
 void BitstreamValidator::DecodeDone(int64_t timestamp, Status status) {
-  SEQUENCE_CHECKER(validator_thread_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
   if (!status.is_ok()) {
     base::AutoLock lock(validator_lock_);
     if (!decode_error_) {
@@ -300,7 +300,7 @@ void BitstreamValidator::OutputFrameProcessed() {
 }
 
 void BitstreamValidator::VerifyOutputFrame(scoped_refptr<VideoFrame> frame) {
-  SEQUENCE_CHECKER(validator_thread_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
   auto it = decoding_buffers_.Peek(frame->timestamp().InMicroseconds());
   if (it == decoding_buffers_.end()) {
     LOG(WARNING) << "Unexpected timestamp: "
