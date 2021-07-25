@@ -144,10 +144,17 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // the job is finished.
   void ExecuteEncode(VASurfaceID va_surface_id);
 
-  // Callback that returns a no longer used VASurfaceID to
+  // Callback that returns a no longer used ScopedVASurface to
   // |va_surfaces| for reuse and kicks EncodePendingInputs() again.
-  void RecycleVASurfaceID(std::vector<VASurfaceID>* va_surfaces,
-                          VASurfaceID va_surface_id);
+  void RecycleVASurface(
+      std::vector<std::unique_ptr<ScopedVASurface>>* va_surfaces,
+      std::unique_ptr<ScopedVASurface> va_surface,
+      VASurfaceID va_surface_id);
+
+  // Gets available VASurface from |va_surfaces| and returns it as
+  // scoped_refptr<VASurface>.
+  scoped_refptr<VASurface> GetAvailableVASurfaceAsRefCounted(
+      std::vector<std::unique_ptr<ScopedVASurface>>* va_surfaces);
 
   // Returns a bitstream buffer to the client if both a previously executed job
   // awaits to be completed and we have bitstream buffers available to download
@@ -217,22 +224,17 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // Should only be used on |encoder_task_runner_|.
   std::unique_ptr<VaapiVideoEncoderDelegate> encoder_;
 
-  // TODO(crbug.com/1186051): Store ScopedVASurface, not VASurfaceID.
   // VA surfaces available for encoding.
-  std::vector<VASurfaceID> available_va_surface_ids_;
+  std::vector<std::unique_ptr<ScopedVASurface>> available_va_surfaces_;
   // VA surfaces available for scaling.
   // TODO(crbug.com/1186051): Use base::small_map.
-  std::map<gfx::Size, std::vector<VASurfaceID>, SizeComparator>
-      available_vpp_va_surface_ids_;
+  std::map<gfx::Size,
+           std::vector<std::unique_ptr<ScopedVASurface>>,
+           SizeComparator>
+      available_vpp_va_surfaces_;
 
   // VA buffers for coded frames.
   std::vector<VABufferID> available_va_buffer_ids_;
-
-  // Callback via which finished VA surfaces are returned to us.
-  base::RepeatingCallback<void(VASurfaceID)> va_surface_release_cb_;
-  // TODO(crbug.com/1186051): Use base::small_map.
-  std::map<gfx::Size, base::RepeatingCallback<void(VASurfaceID)>,
-      SizeComparator> vpp_va_surface_release_cb_;
 
   // Queue of input frames to be encoded.
   base::queue<std::unique_ptr<InputFrameRef>> input_queue_;

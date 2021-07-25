@@ -350,10 +350,6 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
 
   output_buffer_byte_size_ = encoder_->GetBitstreamBufferSize();
 
-  va_surface_release_cb_ = BindToCurrentLoop(
-      base::BindRepeating(&VaapiVideoEncodeAccelerator::RecycleVASurfaceID,
-                          encoder_weak_this_, &available_va_surface_ids_));
-
   visible_rect_ = gfx::Rect(config.input_visible_size);
   expected_input_coded_size_ = VideoFrame::DetermineAlignedSize(
       config.input_format, config.input_visible_size);
@@ -379,11 +375,12 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
 
   // The surface size for the reconstructed surface (and input surface in non
   // native input mode) is the coded size.
-  if (!vaapi_wrapper_->CreateContextAndSurfaces(
-          kVaSurfaceFormat, encoder_->GetCodedSize(),
-          {VaapiWrapper::SurfaceUsageHint::kVideoEncoder},
-          (num_frames_in_flight_ + 1) * va_surfaces_per_video_frame_,
-          &available_va_surface_ids_)) {
+  available_va_surfaces_ = vaapi_wrapper_->CreateContextAndScopedVASurfaces(
+      kVaSurfaceFormat, encoder_->GetCodedSize(),
+      {VaapiWrapper::SurfaceUsageHint::kVideoEncoder},
+      (num_frames_in_flight_ + 1) * va_surfaces_per_video_frame_,
+      /*visible_size=*/absl::nullopt);
+  if (available_va_surfaces_.empty()) {
     NOTIFY_ERROR(kPlatformFailureError, "Failed creating VASurfaces");
     return;
   }
@@ -412,13 +409,16 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
   SetState(kEncoding);
 }
 
-void VaapiVideoEncodeAccelerator::RecycleVASurfaceID(
-    std::vector<VASurfaceID>* va_surfaces,
+void VaapiVideoEncodeAccelerator::RecycleVASurface(
+    std::vector<std::unique_ptr<ScopedVASurface>>* va_surfaces,
+    std::unique_ptr<ScopedVASurface> va_surface,
     VASurfaceID va_surface_id) {
-  DVLOGF(4) << "va_surface_id: " << va_surface_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
+  DCHECK(va_surface);
+  DCHECK_EQ(va_surface_id, va_surface->id());
+  DVLOGF(4) << "va_surface_id: " << va_surface_id;
 
-  va_surfaces->push_back(va_surface_id);
+  va_surfaces->push_back(std::move(va_surface));
   EncodePendingInputs();
 }
 
@@ -517,6 +517,25 @@ void VaapiVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
 }
 
 scoped_refptr<VASurface>
+VaapiVideoEncodeAccelerator::GetAvailableVASurfaceAsRefCounted(
+    std::vector<std::unique_ptr<ScopedVASurface>>* va_surfaces) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
+  DCHECK(va_surfaces && !va_surfaces->empty());
+  auto scoped_va_surface = std::move(va_surfaces->back());
+  const VASurfaceID id = scoped_va_surface->id();
+  const gfx::Size& size = scoped_va_surface->size();
+  const unsigned int format = scoped_va_surface->format();
+
+  VASurface::ReleaseCB release_cb = BindToCurrentLoop(base::BindOnce(
+      &VaapiVideoEncodeAccelerator::RecycleVASurface, encoder_weak_this_,
+      va_surfaces, std::move(scoped_va_surface)));
+
+  va_surfaces->pop_back();
+  return base::MakeRefCounted<VASurface>(id, size, format,
+                                         std::move(release_cb));
+}
+
+scoped_refptr<VASurface>
 VaapiVideoEncodeAccelerator::BlitSurfaceWithCreateVppIfNeeded(
     const VASurface& input_surface,
     const gfx::Rect& input_visible_rect,
@@ -544,29 +563,23 @@ VaapiVideoEncodeAccelerator::BlitSurfaceWithCreateVppIfNeeded(
     }
   }
 
-  if (!base::Contains(available_vpp_va_surface_ids_, encode_size)) {
-    if (!vpp_vaapi_wrapper_->CreateSurfaces(
-            kVaSurfaceFormat, encode_size,
-            {VaapiWrapper::SurfaceUsageHint::kVideoProcessWrite,
-             VaapiWrapper::SurfaceUsageHint::kVideoEncoder},
-            num_va_surfaces, &available_vpp_va_surface_ids_[encode_size])) {
+  if (!base::Contains(available_vpp_va_surfaces_, encode_size)) {
+    auto scoped_va_surfaces = vpp_vaapi_wrapper_->CreateScopedVASurfaces(
+        kVaSurfaceFormat, encode_size,
+        {VaapiWrapper::SurfaceUsageHint::kVideoProcessWrite,
+         VaapiWrapper::SurfaceUsageHint::kVideoEncoder},
+        num_va_surfaces, /*visible_size=*/absl::nullopt,
+        /*va_fourcc=*/absl::nullopt);
+    if (scoped_va_surfaces.empty()) {
       NOTIFY_ERROR(kPlatformFailureError, "Failed creating VASurfaces");
       return nullptr;
     }
 
-    vpp_va_surface_release_cb_[encode_size] =
-        BindToCurrentLoop(base::BindRepeating(
-            &VaapiVideoEncodeAccelerator::RecycleVASurfaceID,
-            encoder_weak_this_, &available_vpp_va_surface_ids_[encode_size]));
+    available_vpp_va_surfaces_[encode_size] = std::move(scoped_va_surfaces);
   }
 
-  DCHECK(!available_vpp_va_surface_ids_[encode_size].empty());
-  // Scaling the input surface to dest size for K-SVC or simulcast.
-  scoped_refptr<VASurface> blit_surface =
-      new VASurface(available_vpp_va_surface_ids_[encode_size].back(),
-                    encode_size, kVaSurfaceFormat,
-                    base::BindOnce(vpp_va_surface_release_cb_[encode_size]));
-  available_vpp_va_surface_ids_[encode_size].pop_back();
+  auto blit_surface = GetAvailableVASurfaceAsRefCounted(
+      &available_vpp_va_surfaces_[encode_size]);
   if (!vpp_vaapi_wrapper_->BlitSurface(input_surface, *blit_surface,
                                        input_visible_rect,
                                        gfx::Rect(encode_size))) {
@@ -605,15 +618,14 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
 
   const bool do_vpp = frame.visible_rect() != gfx::Rect(encode_size);
   if (do_vpp) {
-    constexpr size_t kNumSurfaces = 2;  // input and reconstructed surface.
-    if (base::Contains(available_vpp_va_surface_ids_, encode_size) &&
-        available_vpp_va_surface_ids_[encode_size].size() < kNumSurfaces) {
+    constexpr size_t kNumSurfaces = 2;  // For input and reconstructed surface.
+    if (base::Contains(available_vpp_va_surfaces_, encode_size) &&
+        available_vpp_va_surfaces_[encode_size].size() < kNumSurfaces) {
       DVLOGF(4) << "Not enough surfaces available";
       return false;
     }
   } else {
-    constexpr size_t kNumSurfaces = 1;  // reconstructed surface.
-    if (available_va_surface_ids_.size() < kNumSurfaces) {
+    if (available_va_surfaces_.empty()) {  // For the reconstructed surface.
       DVLOGF(4) << "Not surface available";
       return false;
     }
@@ -628,7 +640,7 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
   }
 
   *input_surface = vaapi_wrapper_->CreateVASurfaceForPixmap(std::move(pixmap));
-  if (!input_surface) {
+  if (!(*input_surface)) {
     NOTIFY_ERROR(kPlatformFailureError, "Failed to create VASurface");
     return false;
   }
@@ -640,28 +652,22 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
     *input_surface = BlitSurfaceWithCreateVppIfNeeded(
         *input_surface->get(), frame.visible_rect(), encode_size,
         (num_frames_in_flight_ + 1) * 2);
-    DCHECK(input_surface);
-
+    if (!(*input_surface))
+      return false;
     // A reconstructed surface is fine to be created by VPP VaapiWrapper and
     // encoder VaapiWrapper. Use one created by VPP VaapiWrapper when VPP is
     // executed.
-    DCHECK(!available_vpp_va_surface_ids_[encode_size].empty());
-    *reconstructed_surface = base::MakeRefCounted<VASurface>(
-        available_vpp_va_surface_ids_[encode_size].back(), encode_size,
-        kVaSurfaceFormat,
-        base::BindOnce(vpp_va_surface_release_cb_[encode_size]));
-
-    available_vpp_va_surface_ids_[encode_size].pop_back();
+    *reconstructed_surface = GetAvailableVASurfaceAsRefCounted(
+        &available_vpp_va_surfaces_[encode_size]);
   } else {
     // TODO(crbug.com/1186051): Create VA Surface here for the first time, not
     // in Initialize()
-    *reconstructed_surface = base::MakeRefCounted<VASurface>(
-        available_va_surface_ids_.back(), encoder_->GetCodedSize(),
-        kVaSurfaceFormat, base::BindOnce(va_surface_release_cb_));
-    available_va_surface_ids_.pop_back();
+    *reconstructed_surface =
+        GetAvailableVASurfaceAsRefCounted(&available_va_surfaces_);
   }
 
-  return true;
+  DCHECK(*input_surface);
+  return !!(*reconstructed_surface);
 }
 
 bool VaapiVideoEncodeAccelerator::CreateSurfacesForShmemEncoding(
@@ -695,21 +701,14 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForShmemEncoding(
   }
 
   constexpr size_t kNumSurfaces = 2;  // input and reconstructed surface.
-  if (available_va_surface_ids_.size() < kNumSurfaces) {
+  if (available_va_surfaces_.size() < kNumSurfaces) {
     DVLOGF(4) << "Not enough surfaces available";
     return false;
   }
 
-  scoped_refptr<VASurface> surfaces[kNumSurfaces];
-  for (auto& surface : surfaces) {
-    surface = base::MakeRefCounted<VASurface>(
-        available_va_surface_ids_.back(), encoder_->GetCodedSize(),
-        kVaSurfaceFormat, base::BindOnce(va_surface_release_cb_));
-    available_va_surface_ids_.pop_back();
-  }
-
-  *input_surface = std::move(surfaces[0]);
-  *reconstructed_surface = std::move(surfaces[1]);
+  *input_surface = GetAvailableVASurfaceAsRefCounted(&available_va_surfaces_);
+  *reconstructed_surface =
+      GetAvailableVASurfaceAsRefCounted(&available_va_surfaces_);
   return true;
 }
 
@@ -960,17 +959,18 @@ void VaapiVideoEncodeAccelerator::DestroyTask() {
   }
 
   // Clean up members that are to be accessed on the encoder thread only.
+  // Call DestroyContext() explicitly to make sure it's destroyed before
+  // VA surfaces.
   if (vaapi_wrapper_)
-    vaapi_wrapper_->DestroyContextAndSurfaces(available_va_surface_ids_);
-  available_va_surface_ids_.clear();
+    vaapi_wrapper_->DestroyContext();
+
+  available_va_surfaces_.clear();
   available_va_buffer_ids_.clear();
 
-  if (vpp_vaapi_wrapper_) {
+  if (vpp_vaapi_wrapper_)
     vpp_vaapi_wrapper_->DestroyContext();
-    for (const auto& surfaces : available_vpp_va_surface_ids_)
-      vpp_vaapi_wrapper_->DestroySurfaces(surfaces.second);
-    available_vpp_va_surface_ids_.clear();
-  }
+
+  available_vpp_va_surfaces_.clear();
 
   while (!available_bitstream_buffers_.empty())
     available_bitstream_buffers_.pop();
