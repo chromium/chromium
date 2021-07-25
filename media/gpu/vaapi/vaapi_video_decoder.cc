@@ -768,21 +768,18 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
         return;
       }
       const gfx::Size decoder_pic_size = decoder_->GetPicSize();
-      for (size_t i = 0; i < decode_pool_size; ++i) {
-        std::unique_ptr<ScopedVASurface> surface =
-            vaapi_wrapper_->CreateScopedVASurface(
-                base::strict_cast<unsigned int>(va_rt_format), decoder_pic_size,
-                {VaapiWrapper::SurfaceUsageHint::kVideoDecoder},
-                /*visible_size=*/absl::nullopt, va_fourcc);
-        if (!surface) {
-          while (!decode_surface_pool_for_scaling_.empty())
-            decode_surface_pool_for_scaling_.pop();
-          decode_to_output_scale_factor_.reset();
-          SetState(State::kError);
-          return;
-        }
-        decode_surface_pool_for_scaling_.push(std::move(surface));
+      auto scoped_va_surfaces = vaapi_wrapper_->CreateScopedVASurfaces(
+          base::strict_cast<unsigned int>(va_rt_format), decoder_pic_size,
+          {VaapiWrapper::SurfaceUsageHint::kVideoDecoder}, decode_pool_size,
+          /*visible_size=*/absl::nullopt, va_fourcc);
+      if (scoped_va_surfaces.empty()) {
+        decode_to_output_scale_factor_.reset();
+        SetState(State::kError);
+        return;
       }
+
+      for (auto&& scoped_va_surface : scoped_va_surfaces)
+        decode_surface_pool_for_scaling_.push(std::move(scoped_va_surface));
     }
   }
   const gfx::Size natural_size =

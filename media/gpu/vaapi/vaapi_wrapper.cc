@@ -1789,27 +1789,30 @@ bool VaapiWrapper::CreateContextAndSurfaces(
   return success;
 }
 
-std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateContextAndScopedVASurface(
+std::vector<std::unique_ptr<ScopedVASurface>>
+VaapiWrapper::CreateContextAndScopedVASurfaces(
     unsigned int va_format,
     const gfx::Size& size,
     const std::vector<SurfaceUsageHint>& usage_hints,
+    size_t num_surfaces,
     const absl::optional<gfx::Size>& visible_size) {
   if (va_context_id_ != VA_INVALID_ID) {
     LOG(ERROR) << "The current context should be destroyed before creating a "
                   "new one";
-    return nullptr;
+    return {};
   }
 
-  std::unique_ptr<ScopedVASurface> scoped_va_surface =
-      CreateScopedVASurface(va_format, size, usage_hints, visible_size);
-  if (!scoped_va_surface)
-    return nullptr;
+  std::vector<std::unique_ptr<ScopedVASurface>> scoped_va_surfaces =
+      CreateScopedVASurfaces(va_format, size, usage_hints, num_surfaces,
+                             visible_size, /*va_fourcc=*/absl::nullopt);
+  if (scoped_va_surfaces.empty())
+    return {};
 
   if (CreateContext(size))
-    return scoped_va_surface;
+    return scoped_va_surfaces;
 
   DestroyContext();
-  return nullptr;
+  return {};
 }
 
 bool VaapiWrapper::CreateProtectedSession(
@@ -2950,20 +2953,22 @@ bool VaapiWrapper::CreateSurfaces(
   return va_res == VA_STATUS_SUCCESS;
 }
 
-std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateScopedVASurface(
+std::vector<std::unique_ptr<ScopedVASurface>>
+VaapiWrapper::CreateScopedVASurfaces(
     unsigned int va_rt_format,
     const gfx::Size& size,
     const std::vector<SurfaceUsageHint>& usage_hints,
+    size_t num_surfaces,
     const absl::optional<gfx::Size>& visible_size,
-    uint32_t va_fourcc) {
+    const absl::optional<uint32_t>& va_fourcc) {
   if (kInvalidVaRtFormat == va_rt_format) {
     LOG(ERROR) << "Invalid VA RT format to CreateScopedVASurface";
-    return nullptr;
+    return {};
   }
 
   if (size.IsEmpty()) {
     LOG(ERROR) << "Invalid visible size input to CreateScopedVASurface";
-    return nullptr;
+    return {};
   }
 
   VASurfaceAttrib attribs[2];
@@ -2981,28 +2986,32 @@ std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateScopedVASurface(
     attribs[1].type = VASurfaceAttribPixelFormat;
     attribs[1].flags = VA_SURFACE_ATTRIB_SETTABLE;
     attribs[1].value.type = VAGenericValueTypeInteger;
-    attribs[1].value.value.i = base::checked_cast<int32_t>(va_fourcc);
+    attribs[1].value.value.i = base::checked_cast<int32_t>(*va_fourcc);
   }
   base::AutoLock auto_lock(*va_lock_);
-  VASurfaceID va_surface_id = VA_INVALID_ID;
-  VAStatus va_res = vaCreateSurfaces(
+  std::vector<VASurfaceID> va_surface_ids(num_surfaces, VA_INVALID_ID);
+  const VAStatus va_res = vaCreateSurfaces(
       va_display_, va_rt_format, base::checked_cast<unsigned int>(size.width()),
-      base::checked_cast<unsigned int>(size.height()), &va_surface_id, 1u,
-      attribs, num_attribs);
+      base::checked_cast<unsigned int>(size.height()), va_surface_ids.data(),
+      num_surfaces, attribs, num_attribs);
   VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateSurfaces_Allocating,
-                       nullptr);
+                       std::vector<std::unique_ptr<ScopedVASurface>>{});
 
-  DCHECK_NE(VA_INVALID_ID, va_surface_id)
+  DCHECK(!base::Contains(va_surface_ids, VA_INVALID_ID))
       << "Invalid VA surface id after vaCreateSurfaces";
 
   DCHECK(!visible_size.has_value() || !visible_size->IsEmpty());
-  auto scoped_va_surface = std::make_unique<ScopedVASurface>(
-      this, va_surface_id, visible_size.has_value() ? *visible_size : size,
-      va_rt_format);
+  std::vector<std::unique_ptr<ScopedVASurface>> scoped_va_surfaces;
+  scoped_va_surfaces.reserve(num_surfaces);
+  for (const VASurfaceID va_surface_id : va_surface_ids) {
+    auto scoped_va_surface = std::make_unique<ScopedVASurface>(
+        this, va_surface_id, visible_size.has_value() ? *visible_size : size,
+        va_rt_format);
+    DCHECK(scoped_va_surface->IsValid());
+    scoped_va_surfaces.push_back(std::move(scoped_va_surface));
+  }
 
-  DCHECK(scoped_va_surface);
-  DCHECK(scoped_va_surface->IsValid());
-  return scoped_va_surface;
+  return scoped_va_surfaces;
 }
 
 void VaapiWrapper::DestroySurfaces(std::vector<VASurfaceID> va_surfaces) {

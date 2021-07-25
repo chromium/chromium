@@ -419,17 +419,19 @@ TEST_P(VaapiVppTest, BlitWithVAAllocatedSurfaces) {
   const unsigned int va_rt_format_out = ToVaRTFormat(va_fourcc_out);
   ASSERT_NE(va_rt_format_out, kInvalidVaRtFormat);
 
+  auto scoped_surfaces = wrapper->CreateScopedVASurfaces(
+      va_rt_format_in, kInputSize, {VaapiWrapper::SurfaceUsageHint::kGeneric},
+      1u, /*visible_size=*/absl::nullopt, /*va_fourcc=*/absl::nullopt);
+  ASSERT_FALSE(scoped_surfaces.empty());
   std::unique_ptr<ScopedVASurface> scoped_surface_in =
-      wrapper->CreateScopedVASurface(
-          va_rt_format_in, kInputSize,
-          {VaapiWrapper::SurfaceUsageHint::kGeneric});
-  ASSERT_TRUE(!!scoped_surface_in);
+      std::move(scoped_surfaces[0]);
 
+  scoped_surfaces = wrapper->CreateScopedVASurfaces(
+      va_rt_format_out, kOutputSize, {VaapiWrapper::SurfaceUsageHint::kGeneric},
+      1u, /*visible_size=*/absl::nullopt, /*va_fourcc=*/absl::nullopt);
+  ASSERT_FALSE(scoped_surfaces.empty());
   std::unique_ptr<ScopedVASurface> scoped_surface_out =
-      wrapper->CreateScopedVASurface(
-          va_rt_format_out, kOutputSize,
-          {VaapiWrapper::SurfaceUsageHint::kGeneric});
-  ASSERT_TRUE(!!scoped_surface_out);
+      std::move(scoped_surfaces[0]);
 
   scoped_refptr<VASurface> surface_in = base::MakeRefCounted<VASurface>(
       scoped_surface_in->id(), kInputSize, va_rt_format_in, base::DoNothing());

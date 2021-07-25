@@ -256,16 +256,18 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       size_t num_surfaces,
       std::vector<VASurfaceID>* va_surfaces) WARN_UNUSED_RESULT;
 
-  // Creates a single ScopedVASurface of |va_format| and |size| and, if
-  // successful, creates a |va_context_id_| of the same size. Returns nullptr if
-  // creation failed. If |visible_size| is supplied, the returned
+  // Creates |num_surfaces| ScopedVASurfaces of |va_format| and |size| and, if
+  // successful, creates a |va_context_id_| of the same size. Returns an empty
+  // vector if creation failed. If |visible_size| is supplied, the returned
   // ScopedVASurface's size is set to it. Otherwise, it's set to |size| (refer
-  // to CreateScopedVASurface() for details).
-  std::unique_ptr<ScopedVASurface> CreateContextAndScopedVASurface(
+  // to CreateScopedVASurfaces() for details).
+  virtual std::vector<std::unique_ptr<ScopedVASurface>>
+  CreateContextAndScopedVASurfaces(
       unsigned int va_format,
       const gfx::Size& size,
       const std::vector<SurfaceUsageHint>& usage_hints,
-      const absl::optional<gfx::Size>& visible_size = absl::nullopt);
+      size_t num_surfaces,
+      const absl::optional<gfx::Size>& visible_size);
 
   // Attempts to create a protected session that will be attached to the
   // decoding context to enable encrypted video decoding. If it cannot be
@@ -300,20 +302,21 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // Destroys the context identified by |va_context_id_|.
   virtual void DestroyContext();
 
-  // Requests a VA surface of size |size|, |va_rt_format| and optionally
-  // |va_fourcc|. Returns a self-cleaning ScopedVASurface or nullptr if creation
-  // failed. If |visible_size| is supplied, the returned ScopedVASurface's size
-  // is set to it: for example, we may want to request a 16x16 surface to decode
-  // a 13x12 JPEG: we may want to keep track of the visible size 13x12 inside
-  // the ScopedVASurface to inform the surface's users that that's the only
-  // region with meaningful content. If |visible_size| is not supplied, we store
-  // |size| in the returned ScopedVASurface.
-  std::unique_ptr<ScopedVASurface> CreateScopedVASurface(
+  // Requests |num_surfaces| ScopedVASurfaces of size |size|, |va_rt_format| and
+  // optionally |va_fourcc|. Returns self-cleaning ScopedVASurfaces or empty
+  // vector if creation failed. If |visible_size| is supplied, the returned
+  // ScopedVASurfaces' size are set to it: for example, we may want to request a
+  // 16x16 surface to decode a 13x12 JPEG: we may want to keep track of the
+  // visible size 13x12 inside the ScopedVASurface to inform the surface's users
+  // that that's the only region with meaningful content. If |visible_size| is
+  // not supplied, we store |size| in the returned ScopedVASurfaces.
+  virtual std::vector<std::unique_ptr<ScopedVASurface>> CreateScopedVASurfaces(
       unsigned int va_rt_format,
       const gfx::Size& size,
       const std::vector<SurfaceUsageHint>& usage_hints,
-      const absl::optional<gfx::Size>& visible_size = absl::nullopt,
-      uint32_t va_fourcc = 0);
+      size_t num_surfaces,
+      const absl::optional<gfx::Size>& visible_size,
+      const absl::optional<uint32_t>& va_fourcc);
 
   // Creates a self-releasing VASurface from |pixmap|. The created VASurface
   // shares the ownership of the underlying buffer represented by |pixmap|. The
@@ -477,7 +480,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   static void PreSandboxInitialization();
 
   // TODO(crbug.com/1186051): Back to private in favor of using
-  // CreateScopedVASurface().
+  // CreateScopedVASurfaces().
   // Tries to allocate |num_surfaces| VASurfaceIDs of |size| and |va_format|.
   // Fills |va_surfaces| and returns true if successful, or returns false.
   virtual bool CreateSurfaces(unsigned int va_format,

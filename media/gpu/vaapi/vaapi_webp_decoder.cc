@@ -110,16 +110,17 @@ VaapiImageDecodeStatus VaapiWebPDecoder::AllocateVASurfaceAndSubmitVABuffers(
   if (!scoped_va_context_and_surface_ ||
       new_visible_size != scoped_va_context_and_surface_->size()) {
     scoped_va_context_and_surface_.reset();
-    scoped_va_context_and_surface_ = ScopedVAContextAndSurface(
-        vaapi_wrapper_
-            ->CreateContextAndScopedVASurface(
-                kWebPVARtFormat, new_visible_size,
-                {VaapiWrapper::SurfaceUsageHint::kGeneric})
-            .release());
-    if (!scoped_va_context_and_surface_) {
+    auto scoped_va_surfaces = vaapi_wrapper_->CreateContextAndScopedVASurfaces(
+        kWebPVARtFormat, new_visible_size,
+        {VaapiWrapper::SurfaceUsageHint::kGeneric}, 1u,
+        /*visible_size=*/absl::nullopt);
+    if (scoped_va_surfaces.empty()) {
       VLOGF(1) << "CreateContextAndScopedVASurface() failed";
       return VaapiImageDecodeStatus::kSurfaceCreationFailed;
     }
+
+    scoped_va_context_and_surface_ =
+        ScopedVAContextAndSurface(scoped_va_surfaces[0].release());
     DCHECK(scoped_va_context_and_surface_->IsValid());
   }
   DCHECK_NE(scoped_va_context_and_surface_->id(), VA_INVALID_SURFACE);
