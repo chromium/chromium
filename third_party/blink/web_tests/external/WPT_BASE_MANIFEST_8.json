@@ -550,6 +550,13 @@
         null,
         {}
        ]
+      ],
+      "multicol-floats-after-column-span-crash.html": [
+       "4fe3f363eb436dc44b290a95e0a0da4d11565855",
+       [
+        null,
+        {}
+       ]
       ]
      },
      "extremely-tall-multicol-with-extremely-tall-child-crash.html": [
@@ -125036,6 +125043,32 @@
        {}
       ]
      ],
+     "multicol-span-float-002.html": [
+      "ae461a8e6aed52a1ab204b6817bf4dd6c0b17b9a",
+      [
+       null,
+       [
+        [
+         "/css/css-multicol/multicol-span-float-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "multicol-span-float-003.html": [
+      "854db9897ded648dbc6b3f8e049b9bc18697f80d",
+      [
+       null,
+       [
+        [
+         "/css/css-multicol/multicol-span-float-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "multicol-span-none-001.xht": [
       "a2be00b0ccd287effdc446cb18baacdc88fbbe9e",
       [
@@ -240312,6 +240345,10 @@
      ],
      "multicol-span-float-001-ref.xht": [
       "50addc37797b085d7c59e7389f99fca1c54c50c1",
+      []
+     ],
+     "multicol-span-float-002-ref.html": [
+      "5a5ccc6b941ab6f120683c0d118c1814ca4d1b8e",
       []
      ],
      "multicol-span-none-001-ref.xht": [
