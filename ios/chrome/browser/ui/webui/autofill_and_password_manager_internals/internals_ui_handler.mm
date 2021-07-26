@@ -80,9 +80,9 @@ void InternalsUIHandler::OnLoaded(const base::ListValue* args) {
                                    {&incognito_event, &is_incognito});
 
   base::Value variations_event("notify-about-variations");
-  web_ui()->CallJavascriptFunction(
-      "cr.webUIListenerCallback",
-      {&variations_event, version_ui::GetVariationsList().get()});
+  base::Value variations_list = version_ui::GetVariationsList();
+  web_ui()->CallJavascriptFunction("cr.webUIListenerCallback",
+                                   {&variations_event, &variations_list});
   StartSubscription();
 }
 

@@ -119,8 +119,7 @@ void InternalsUIHandler::OnLoaded(const base::ListValue* args) {
   FireWebUIListener(
       "notify-about-incognito",
       base::Value(Profile::FromWebUI(web_ui())->IsIncognitoProfile()));
-  FireWebUIListener("notify-about-variations",
-                    *version_ui::GetVariationsList());
+  FireWebUIListener("notify-about-variations", version_ui::GetVariationsList());
 }
 
 void InternalsUIHandler::OnResetCache(const base::ListValue* args) {

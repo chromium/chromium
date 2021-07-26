@@ -31,6 +31,6 @@ void VersionHandler::HandleRequestVariationInfo(const base::ListValue* args) {
 
   base::Value response(base::Value::Type::DICTIONARY);
   response.SetKey(version_ui::kKeyVariationsList,
-                  std::move(*version_ui::GetVariationsList()));
+                  version_ui::GetVariationsList());
   web_ui()->ResolveJavascriptCallback(base::Value(callback_id), response);
 }

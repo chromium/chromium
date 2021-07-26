@@ -93,7 +93,7 @@ void VersionHandler::HandleRequestVariationInfo(const base::ListValue* args) {
 
   base::Value response(base::Value::Type::DICTIONARY);
   response.SetKey(version_ui::kKeyVariationsList,
-                  std::move(*version_ui::GetVariationsList()));
+                  version_ui::GetVariationsList());
   if (include_variations_cmd) {
     response.SetKey(version_ui::kKeyVariationsCmd,
                     version_ui::GetVariationsCommandLineAsValue());
