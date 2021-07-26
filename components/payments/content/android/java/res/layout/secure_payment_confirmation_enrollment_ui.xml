@@ -63,6 +63,7 @@
                 android:layout_marginHorizontal="@dimen/secure_payment_confirmation_ui_large_padding"
                 android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_medium_padding"
                 android:layout_centerHorizontal="true"
+                android:gravity="center"
                 android:text="@string/payment_credential_enrollment_description"/>
 
             <!-- "Payment" row -->
