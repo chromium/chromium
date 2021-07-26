@@ -25,7 +25,7 @@
     <color name="default_icon_color_blue" tools:ignore="UnusedResources">@color/default_icon_color_blue_dark</color>
     <color name="default_icon_color_secondary" tools:ignore="UnusedResources">@color/default_icon_color_secondary_dark</color>
 
-    <color name="hairline_stroke_color">@color/hairline_stroke_color_light</color>
+    <color name="hairline_stroke_color">@color/hairline_stroke_color_dark</color>
     <color name="default_icon_color_disabled">@color/default_icon_color_disabled_dark</color>
     <color name="default_icon_color_disabled_inverse" tools:ignore="UnusedResources">@color/default_icon_color_disabled_light</color>
 
