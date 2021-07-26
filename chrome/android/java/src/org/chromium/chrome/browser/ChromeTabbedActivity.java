@@ -810,7 +810,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             if (UsageStatsService.isEnabled()) {
                 UsageStatsService.getInstance().createPageViewObserver(
-                        mTabModelSelector, this, getTabContentManagerSupplier());
+                        this, getActivityTabProvider(), getTabContentManagerSupplier());
             }
         }
     }

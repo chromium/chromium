@@ -14,11 +14,11 @@ import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.user_prefs.UserPrefs;
 
 import java.lang.ref.WeakReference;
@@ -86,16 +86,16 @@ public class UsageStatsService {
 
     /**
      * Create a {@link PageViewObserver} for the given tab model selector and activity.
-     * @param tabModelSelector The tab model selector that should be used to get the current tab
-     *         model.
      * @param activity The activity in which page view events are occurring.
+     * @param activityTabProvider The provider of the active tab for the activity.
      * @param tabContentManagerSupplier Supplier of the current {@link TabContentManager},
      */
-    public PageViewObserver createPageViewObserver(TabModelSelector tabModelSelector,
-            Activity activity, Supplier<TabContentManager> tabContentManagerSupplier) {
+    public PageViewObserver createPageViewObserver(Activity activity,
+            ActivityTabProvider activityTabProvider,
+            Supplier<TabContentManager> tabContentManagerSupplier) {
         ThreadUtils.assertOnUiThread();
-        PageViewObserver observer = new PageViewObserver(activity, tabModelSelector, mEventTracker,
-                mTokenTracker, mSuspensionTracker, tabContentManagerSupplier);
+        PageViewObserver observer = new PageViewObserver(activity, activityTabProvider,
+                mEventTracker, mTokenTracker, mSuspensionTracker, tabContentManagerSupplier);
         mPageViewObservers.add(new WeakReference<>(observer));
         return observer;
     }
