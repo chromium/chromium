@@ -14,11 +14,13 @@
 
 namespace chromeos {
 
+// TODO(crbug/1146266): move these to an internal state class / struct
 struct LastKnownTextState {
   std::u16string text;
   bool cursor_at_end_of_text;
 };
 
+// TODO(crbug/1146266): move these to the internal SuggestionState class
 struct LastKnownSuggestionState {
   size_t start_pos;
   std::u16string text;
@@ -59,14 +61,44 @@ class MultiWordSuggester : public Suggester {
                                 size_t anchor_pos);
 
  private:
+  // Used to capture any internal state around the current suggestion shown.
+  class SuggestionState {
+   public:
+    enum State {
+      kNoSuggestionShown,
+      kSuggestionShown,
+      kSuggestionDismissed,
+      kSuggestionAccepted,
+    };
+
+    explicit SuggestionState(MultiWordSuggester* suggester);
+    ~SuggestionState();
+
+    // As the name suggests, used to update the current state and perform
+    // any actions required during a transition.
+    void UpdateState(const State& state);
+
+   private:
+    // Not owned by this class
+    MultiWordSuggester* suggester_;
+
+    // Current state
+    State state_ = State::kNoSuggestionShown;
+  };
+
   void DisplaySuggestion(const std::u16string& text, int confirmed_length);
   void ResetSuggestionState();
   void ResetTextState();
+
+  // Announce the given message to the user.
+  void Announce(const std::u16string& message);
 
   // The currently focused input (zero if none are focused)
   int focused_context_id_ = 0;
 
   // Previous suggestion details
+  //
+  // TODO(crbug/1146266): replace this with the new SuggestionState class
   absl::optional<LastKnownSuggestionState> suggestion_state_;
 
   // The last known state of text in the focused text input
@@ -74,6 +106,9 @@ class MultiWordSuggester : public Suggester {
 
   // Not owned by this class
   SuggestionHandlerInterface* suggestion_handler_;
+
+  // Current suggestion state
+  SuggestionState state_;
 };
 
 }  // namespace chromeos

@@ -20,6 +20,8 @@ using ::chromeos::ime::TextSuggestion;
 using ::chromeos::ime::TextSuggestionMode;
 using ::chromeos::ime::TextSuggestionType;
 
+constexpr int kFocusedContextId = 5;
+
 void SendKeyEvent(MultiWordSuggester* suggester, const ui::DomCode& code) {
   suggester->HandleKeyEvent(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN,
                                          code, ui::EF_NONE, ui::DomKey::NONE,
@@ -31,56 +33,52 @@ void SendKeyEvent(MultiWordSuggester* suggester, const ui::DomCode& code) {
 TEST(MultiWordSuggesterTest, IgnoresIrrelevantExternalSuggestions) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kPrediction,
                      .type = TextSuggestionType::kAssistivePersonalInfo,
                      .text = "my name is John Wayne"}};
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnExternalSuggestionsUpdated(suggestions);
 
   EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
-  EXPECT_NE(suggestion_handler.GetContextId(), focused_context_id);
+  EXPECT_NE(suggestion_handler.GetContextId(), kFocusedContextId);
   EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"");
 }
 
 TEST(MultiWordSuggesterTest, IgnoresEmpyExternalSuggestions) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnExternalSuggestionsUpdated({});
 
   EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
-  EXPECT_NE(suggestion_handler.GetContextId(), focused_context_id);
+  EXPECT_NE(suggestion_handler.GetContextId(), kFocusedContextId);
   EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"");
 }
 
 TEST(MultiWordSuggesterTest, DisplaysRelevantExternalSuggestions) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kPrediction,
                      .type = TextSuggestionType::kMultiWord,
                      .text = "hello there!"}};
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnExternalSuggestionsUpdated(suggestions);
 
   EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
-  EXPECT_EQ(suggestion_handler.GetContextId(), focused_context_id);
+  EXPECT_EQ(suggestion_handler.GetContextId(), kFocusedContextId);
   EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"hello there!");
 }
 
 TEST(MultiWordSuggesterTest, AcceptsSuggestionOnTabPress) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kPrediction,
@@ -88,7 +86,7 @@ TEST(MultiWordSuggesterTest, AcceptsSuggestionOnTabPress) {
                      .text = "hi there!"},
   };
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(&suggester, ui::DomCode::TAB);
 
@@ -101,7 +99,6 @@ TEST(MultiWordSuggesterTest, AcceptsSuggestionOnTabPress) {
 TEST(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnNonTabKeypress) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kPrediction,
@@ -109,7 +106,7 @@ TEST(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnNonTabKeypress) {
                      .text = "hi there!"},
   };
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(&suggester, ui::DomCode::ARROW_DOWN);
 
@@ -121,7 +118,6 @@ TEST(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnNonTabKeypress) {
 TEST(MultiWordSuggesterTest, CalculatesConfirmedLengthForOneWord) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kCompletion,
@@ -129,7 +125,7 @@ TEST(MultiWordSuggesterTest, CalculatesConfirmedLengthForOneWord) {
                      .text = "how are you going"},
   };
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnSurroundingTextChanged(u"ho", /*cursor_pos=*/2, /*anchor_pos=*/2);
   suggester.OnExternalSuggestionsUpdated(suggestions);
 
@@ -141,7 +137,6 @@ TEST(MultiWordSuggesterTest, CalculatesConfirmedLengthForOneWord) {
 TEST(MultiWordSuggesterTest, CalculatesConfirmedLengthForManyWords) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kCompletion,
@@ -149,7 +144,7 @@ TEST(MultiWordSuggesterTest, CalculatesConfirmedLengthForManyWords) {
                      .text = "where are you going"},
   };
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnSurroundingTextChanged(u"hey there sam whe",
                                      /*cursor_pos=*/17, /*anchor_pos=*/17);
   suggester.OnExternalSuggestionsUpdated(suggestions);
@@ -162,7 +157,6 @@ TEST(MultiWordSuggesterTest, CalculatesConfirmedLengthForManyWords) {
 TEST(MultiWordSuggesterTest, TracksLastSuggestionOnSurroundingTextChange) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kCompletion,
@@ -170,7 +164,7 @@ TEST(MultiWordSuggesterTest, TracksLastSuggestionOnSurroundingTextChange) {
                      .text = "where are you going"},
   };
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnSurroundingTextChanged(u"hey there sam whe", 17, 17);
   suggester.OnExternalSuggestionsUpdated(suggestions);
   suggester.OnSurroundingTextChanged(u"hey there sam wher", 18, 18);
@@ -195,7 +189,6 @@ TEST(MultiWordSuggesterTest,
      TracksLastSuggestionOnSurroundingTextChangeAtBeginningText) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kCompletion,
@@ -203,7 +196,7 @@ TEST(MultiWordSuggesterTest,
                      .text = "how are you"},
   };
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnSurroundingTextChanged(u"h", 1, 1);
   suggester.OnExternalSuggestionsUpdated(suggestions);
   suggester.OnSurroundingTextChanged(u"ho", 2, 2);
@@ -219,7 +212,6 @@ TEST(MultiWordSuggesterTest,
 TEST(MultiWordSuggesterTest, TracksLastSuggestionOnLargeSurroundingTextChange) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kCompletion,
@@ -227,7 +219,7 @@ TEST(MultiWordSuggesterTest, TracksLastSuggestionOnLargeSurroundingTextChange) {
                      .text = "how are you"},
   };
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnSurroundingTextChanged(u"h", 1, 1);
   suggester.OnExternalSuggestionsUpdated(suggestions);
   suggester.OnSurroundingTextChanged(u"how ar", 6, 6);
@@ -244,7 +236,6 @@ TEST(MultiWordSuggesterTest,
      DoesNotTrackLastSuggestionIfSurroundingTextChange) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kCompletion,
@@ -252,7 +243,7 @@ TEST(MultiWordSuggesterTest,
                      .text = "how are you"},
   };
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnSurroundingTextChanged(u"h", 1, 1);
   suggester.OnExternalSuggestionsUpdated(suggestions);
   suggester.OnSurroundingTextChanged(u"how ar", 6, 6);
@@ -267,7 +258,6 @@ TEST(MultiWordSuggesterTest,
      DoesNotTrackLastSuggestionIfCursorBeforeSuggestionStartPos) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kCompletion,
@@ -275,7 +265,7 @@ TEST(MultiWordSuggesterTest,
                      .text = " for the example"},
   };
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnSurroundingTextChanged(u"this is some text", 17, 17);
   suggester.OnExternalSuggestionsUpdated(suggestions);
 
@@ -298,9 +288,8 @@ TEST(MultiWordSuggesterTest,
 TEST(MultiWordSuggesterTest, ReturnsGenericActionIfNoSuggestionShown) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnSurroundingTextChanged(u"hey there sam whe", 17, 17);
 
   EXPECT_EQ(suggester.GetProposeActionType(), AssistiveType::kGenericAction);
@@ -310,7 +299,6 @@ TEST(MultiWordSuggesterTest,
      ReturnsCompletionActionIfCompletionSuggestionShown) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kCompletion,
@@ -318,7 +306,7 @@ TEST(MultiWordSuggesterTest,
                      .text = "how are you"},
   };
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnSurroundingTextChanged(u"how ar", 6, 6);
   suggester.OnExternalSuggestionsUpdated(suggestions);
 
@@ -330,7 +318,6 @@ TEST(MultiWordSuggesterTest,
      ReturnsPredictionActionIfPredictionSuggestionShown) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kPrediction,
@@ -338,7 +325,7 @@ TEST(MultiWordSuggesterTest,
                      .text = "how are you"},
   };
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnSurroundingTextChanged(u"how", 3, 3);
   suggester.OnExternalSuggestionsUpdated(suggestions);
 
@@ -349,7 +336,6 @@ TEST(MultiWordSuggesterTest,
 TEST(MultiWordSuggesterTest, RecordsTimeToAcceptMetric) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kPrediction,
@@ -361,7 +347,7 @@ TEST(MultiWordSuggesterTest, RecordsTimeToAcceptMetric) {
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.TimeToAccept.MultiWord", 0);
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnSurroundingTextChanged(u"how", 3, 3);
   suggester.OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(&suggester, ui::DomCode::TAB);
@@ -374,7 +360,6 @@ TEST(MultiWordSuggesterTest, RecordsTimeToAcceptMetric) {
 TEST(MultiWordSuggesterTest, RecordsTimeToDismissMetric) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kPrediction,
@@ -386,7 +371,7 @@ TEST(MultiWordSuggesterTest, RecordsTimeToDismissMetric) {
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.TimeToDismiss.MultiWord", 0);
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnSurroundingTextChanged(u"how", 3, 3);
   suggester.OnExternalSuggestionsUpdated(suggestions);
   suggester.DismissSuggestion();
@@ -398,7 +383,6 @@ TEST(MultiWordSuggesterTest, RecordsTimeToDismissMetric) {
 TEST(MultiWordSuggesterTest, RecordsDismissedAccuracyMetric) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kPrediction,
@@ -410,7 +394,7 @@ TEST(MultiWordSuggesterTest, RecordsDismissedAccuracyMetric) {
   histogram_tester.ExpectUniqueSample(
       "InputMethod.Assistive.DismissedAccuracy.MultiWord", 43, 0);
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnSurroundingTextChanged(u"how ", 4, 4);
   suggester.OnExternalSuggestionsUpdated(suggestions);
   suggester.Suggest(u"how a", 5, 5);
@@ -429,7 +413,6 @@ TEST(MultiWordSuggesterTest, RecordsDismissedAccuracyMetric) {
 TEST(MultiWordSuggesterTest, RecordsZeroValuedDismissedAccuracy) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kPrediction,
@@ -441,7 +424,7 @@ TEST(MultiWordSuggesterTest, RecordsZeroValuedDismissedAccuracy) {
   histogram_tester.ExpectUniqueSample(
       "InputMethod.Assistive.DismissedAccuracy.MultiWord", 0, 0);
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnSurroundingTextChanged(u"how ", 4, 4);
   suggester.OnExternalSuggestionsUpdated(suggestions);
   suggester.Suggest(u"how d", 5, 5);
@@ -455,7 +438,6 @@ TEST(MultiWordSuggesterTest, RecordsZeroValuedDismissedAccuracy) {
 TEST(MultiWordSuggesterTest, RecordsCompletionCandidateDismissedAccuracy) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
-  int focused_context_id = 5;
 
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kCompletion,
@@ -467,7 +449,7 @@ TEST(MultiWordSuggesterTest, RecordsCompletionCandidateDismissedAccuracy) {
   histogram_tester.ExpectUniqueSample(
       "InputMethod.Assistive.DismissedAccuracy.MultiWord", 63, 0);
 
-  suggester.OnFocus(focused_context_id);
+  suggester.OnFocus(kFocusedContextId);
   suggester.OnSurroundingTextChanged(u"why ar", 6, 6);
   suggester.OnExternalSuggestionsUpdated(suggestions);
   suggester.Suggest(u"why are", 7, 7);
@@ -482,6 +464,155 @@ TEST(MultiWordSuggesterTest, RecordsCompletionCandidateDismissedAccuracy) {
   // thus accuracy is 5/8 or approx 62 percent
   histogram_tester.ExpectUniqueSample(
       "InputMethod.Assistive.DismissedAccuracy.MultiWord", 63, 1);
+}
+
+TEST(MultiWordSuggesterTest, SurroundingTextChangesDoNotTriggerAnnouncements) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"why are", 7, 7);
+  suggester.Suggest(u"why are", 7, 7);
+  suggester.OnSurroundingTextChanged(u"why aren", 8, 8);
+  suggester.Suggest(u"why aren", 8, 8);
+  suggester.OnSurroundingTextChanged(u"why aren'", 9, 9);
+  suggester.Suggest(u"why aren'", 9, 9);
+  suggester.OnSurroundingTextChanged(u"why aren't", 10, 10);
+  suggester.Suggest(u"why aren't", 10, 10);
+
+  ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 0);
+}
+
+TEST(MultiWordSuggesterTest, ShowingSuggestionsTriggersAnnouncement) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "aren\'t you"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"why are", 7, 7);
+  suggester.Suggest(u"why are", 7, 7);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+
+  ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 1);
+  EXPECT_EQ(suggestion_handler.GetAnnouncements().back(),
+            u"predictive writing candidate shown, press tab to accept");
+}
+
+TEST(MultiWordSuggesterTest, TrackingSuggestionsTriggersAnnouncementOnlyOnce) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "aren\'t you"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"why are", 7, 7);
+  suggester.Suggest(u"why are", 7, 7);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  suggester.OnSurroundingTextChanged(u"why aren", 8, 8);
+  suggester.Suggest(u"why aren", 8, 8);
+  suggester.OnSurroundingTextChanged(u"why aren'", 9, 9);
+  suggester.Suggest(u"why aren'", 9, 9);
+  suggester.OnSurroundingTextChanged(u"why aren't", 10, 10);
+  suggester.Suggest(u"why aren't", 10, 10);
+
+  ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 1);
+  EXPECT_EQ(suggestion_handler.GetAnnouncements().back(),
+            u"predictive writing candidate shown, press tab to accept");
+}
+
+TEST(MultiWordSuggesterTest, AcceptingSuggestionTriggersAnnouncement) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "aren\'t you"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"why are", 7, 7);
+  suggester.Suggest(u"why are", 7, 7);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  SendKeyEvent(&suggester, ui::DomCode::TAB);
+
+  ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 2);
+  EXPECT_EQ(suggestion_handler.GetAnnouncements().back(),
+            u"predictive writing candidate inserted");
+}
+
+TEST(MultiWordSuggesterTest,
+     TransitionsFromAcceptSuggestionToNoSuggestionDoesNotTriggerAnnounce) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "aren\'t you"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"why are", 7, 7);
+  suggester.Suggest(u"why are", 7, 7);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  SendKeyEvent(&suggester, ui::DomCode::TAB);
+  suggester.OnSurroundingTextChanged(u"why aren", 8, 8);
+  suggester.Suggest(u"why aren", 8, 8);
+
+  ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 2);
+}
+
+TEST(MultiWordSuggesterTest, DismissingSuggestionTriggersAnnouncement) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "aren\'t you"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"why are", 7, 7);
+  suggester.Suggest(u"why are", 7, 7);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  suggester.DismissSuggestion();
+
+  ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 2);
+  EXPECT_EQ(suggestion_handler.GetAnnouncements().back(),
+            u"predictive writing candidate dismissed");
+}
+
+TEST(MultiWordSuggesterTest,
+     TransitionsFromDismissSuggestionToNoSuggestionDoesNotTriggerAnnounce) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "aren\'t you"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"why are", 7, 7);
+  suggester.Suggest(u"why are", 7, 7);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  suggester.DismissSuggestion();
+  suggester.OnSurroundingTextChanged(u"why aren", 8, 8);
+  suggester.Suggest(u"why aren", 8, 8);
+
+  ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 2);
 }
 
 }  // namespace chromeos

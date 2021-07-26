@@ -21,6 +21,9 @@ namespace chromeos {
 // class.
 class FakeSuggestionHandler : public SuggestionHandlerInterface {
  public:
+  FakeSuggestionHandler();
+  ~FakeSuggestionHandler() override;
+
   // SuggestionHandlerInterface overrides
   bool DismissSuggestion(int context_id, std::string* error) override;
   bool SetSuggestion(int context_id,
@@ -50,6 +53,7 @@ class FakeSuggestionHandler : public SuggestionHandlerInterface {
   bool GetShowingSuggestion() { return showing_suggestion_; }
   bool GetAcceptedSuggestion() { return accepted_suggestion_; }
   bool GetDismissedSuggestion() { return dismissed_suggestion_; }
+  std::vector<std::u16string> GetAnnouncements() { return announcements_; }
 
  private:
   int context_id_ = 0;
@@ -58,6 +62,7 @@ class FakeSuggestionHandler : public SuggestionHandlerInterface {
   bool showing_suggestion_ = false;
   bool accepted_suggestion_ = false;
   bool dismissed_suggestion_ = false;
+  std::vector<std::u16string> announcements_;
 };
 
 }  // namespace chromeos

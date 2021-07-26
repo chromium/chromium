@@ -6,6 +6,10 @@
 
 namespace chromeos {
 
+FakeSuggestionHandler::FakeSuggestionHandler() = default;
+
+FakeSuggestionHandler::~FakeSuggestionHandler() = default;
+
 bool FakeSuggestionHandler::DismissSuggestion(int context_id,
                                               std::string* error) {
   showing_suggestion_ = false;
@@ -63,6 +67,8 @@ bool FakeSuggestionHandler::SetAssistiveWindowProperties(
   return false;
 }
 
-void FakeSuggestionHandler::Announce(const std::u16string& message) {}
+void FakeSuggestionHandler::Announce(const std::u16string& message) {
+  announcements_.push_back(message);
+}
 
 }  // namespace chromeos
