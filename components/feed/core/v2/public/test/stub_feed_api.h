@@ -89,6 +89,8 @@ class StubFeedApi : public FeedApi {
   void SetForcedStreamUpdateForDebugging(
       const feedui::StreamUpdate& stream_update) override {}
   base::Time GetLastFetchTime(const StreamType& stream_type) override;
+  void SetContentOrder(const StreamType& stream_type,
+                       ContentOrder content_order) override {}
 
  private:
   StubWebFeedSubscriptions web_feed_subscriptions_;

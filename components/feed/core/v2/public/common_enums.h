@@ -114,6 +114,15 @@ enum class FeedUserActionType {
   kMaxValue = kTappedDismissPostFollowActiveHelp,
 };
 
+// The requested order of the Feed content.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.v2
+enum class ContentOrder : int {
+  // Content is grouped by provider.
+  kGrouped,
+  // Content is ungrouped, and arranged in reverse chronological order.
+  kReverseChron,
+};
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_CORE_V2_PUBLIC_COMMON_ENUMS_H_

@@ -152,6 +152,8 @@ class FeedStream : public FeedApi,
   void ReportOtherUserAction(const StreamType& stream_type,
                              FeedUserActionType action_type) override;
   base::Time GetLastFetchTime(const StreamType& stream_type) override;
+  void SetContentOrder(const StreamType& stream_type,
+                       ContentOrder content_order) override;
 
   // offline_pages::TaskQueue::Delegate.
   void OnTaskQueueIsIdle() override;
@@ -324,6 +326,7 @@ class FeedStream : public FeedApi,
   // A single function task to delete stored feed data and force a refresh.
   // To only be called from within a |Task|.
   void ForceRefreshForDebuggingTask();
+  void ForceRefreshTask(const StreamType& stream_type);
 
   void ScheduleModelUnloadIfNoSurfacesAttached(const StreamType& stream_type);
   void AddUnloadModelIfNoSurfacesAttachedTask(const StreamType& stream_type,

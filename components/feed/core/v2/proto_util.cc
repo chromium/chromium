@@ -15,9 +15,11 @@
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/capability.pb.h"
 #include "components/feed/core/proto/v2/wire/chrome_client_info.pb.h"
+#include "components/feed/core/proto/v2/wire/feed_query.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_request.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/v2/config.h"
+#include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/feed_feature_list.h"
@@ -145,6 +147,14 @@ feedwire::Request CreateFeedQueryRequest(
   *feed_request.mutable_client_info() = CreateClientInfo(request_metadata);
   feedwire::FeedQuery& query = *feed_request.mutable_feed_query();
   query.set_reason(request_reason);
+  switch (request_metadata.content_order) {
+    case ContentOrder::kReverseChron:
+      break;
+    case ContentOrder::kGrouped:
+      query.set_order_by(
+          feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_GROUPED);
+      break;
+  }
 
   // |consistency_token|, for action reporting, is only applicable to signed-in
   // requests. The presence of |client_instance_id|, also signed-in only, can be

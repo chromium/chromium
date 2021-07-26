@@ -642,6 +642,17 @@ void FeedStream::ForceRefreshForDebugging() {
           &FeedStream::ForceRefreshForDebuggingTask, base::Unretained(this))));
 }
 
+void FeedStream::ForceRefreshTask(const StreamType& stream_type) {
+  UnloadModel(stream_type);
+  store_->ClearStreamData(stream_type, base::DoNothing());
+  GetStream(stream_type)
+      .surface_updater->launch_reliability_logger()
+      .LogFeedLaunchOtherStart();
+  if (GetStream(stream_type).surface_updater->HasSurfaceAttached()) {
+    TriggerStreamLoad(stream_type);
+  }
+}
+
 void FeedStream::ForceRefreshForDebuggingTask() {
   UnloadModel(kForYouStream);
   store_->ClearStreamData(kForYouStream, base::DoNothing());
@@ -854,6 +865,9 @@ RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
   result.notice_card_acknowledged =
       notice_card_tracker_.HasAcknowledgedNoticeCard();
   result.autoplay_enabled = delegate_->IsAutoplayEnabled();
+  if (stream_type.IsWebFeed()) {
+    result.content_order = prefs::GetWebFeedContentOrder(*profile_prefs_);
+  }
 
   if (is_for_next_page) {
     // If we are continuing an existing feed, use whatever session continuity
@@ -1226,6 +1240,32 @@ void FeedStream::ReportStreamScrollStart() {
 void FeedStream::ReportOtherUserAction(const StreamType& stream_type,
                                        FeedUserActionType action_type) {
   metrics_reporter_->OtherUserAction(stream_type, action_type);
+}
+
+void FeedStream::SetContentOrder(const StreamType& stream_type,
+                                 ContentOrder content_order) {
+  if (!stream_type.IsWebFeed()) {
+    DLOG(ERROR) << "SetContentOrder is not supported for this stream_type "
+                << stream_type;
+    return;
+  }
+  if (prefs::GetWebFeedContentOrder(*profile_prefs_) == content_order)
+    return;
+
+  prefs::SetWebFeedContentOrder(*profile_prefs_, content_order);
+  // Note that ForceRefreshTask clears stored content and forces a network
+  // refresh. It is possible to instead cache each ordering of the Feed
+  // separately, so that users who switch back and forth can do so more quickly
+  // and efficiently. However, there are some reasons to avoid this
+  // optimization:
+  // * we want content to be fresh, so this optimization would have limited
+  //   effect.
+  // * interactions with the feed can modify content; in these cases we would
+  //   want a full refresh.
+  // * it will add quite a bit of complexity to do it right
+  task_queue_.AddTask(
+      std::make_unique<offline_pages::ClosureTask>(base::BindOnce(
+          &FeedStream::ForceRefreshTask, base::Unretained(this), stream_type)));
 }
 
 }  // namespace feed

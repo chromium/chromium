@@ -2504,6 +2504,45 @@ TEST_F(FeedApiTest, ManualRefreshFailesWhenLoadingInProgress) {
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
 }
 
+TEST_F(FeedStreamTestForAllStreamTypes, ContentOrderIsGroupedByDefault) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestWebFeedSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ(
+      feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_GROUPED,
+      network_.query_request_sent->feed_request().feed_query().order_by());
+}
+
+TEST_F(FeedStreamTestForAllStreamTypes, SetContentOrderReloadsContent) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestWebFeedSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  stream_->SetContentOrder(kWebFeedStream, ContentOrder::kReverseChron);
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ("loading -> 2 slices -> loading -> 2 slices",
+            surface.DescribeUpdates());
+  EXPECT_EQ(
+      feedwire::FeedQuery::ContentOrder::
+          FeedQuery_ContentOrder_CONTENT_ORDER_UNSPECIFIED,
+      network_.query_request_sent->feed_request().feed_query().order_by());
+}
+
+TEST_F(FeedStreamTestForAllStreamTypes, SetContentOrderIsIgnoredIfUnchanged) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestWebFeedSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  stream_->SetContentOrder(kWebFeedStream, ContentOrder::kGrouped);
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+}
+
 // Keep instantiations at the bottom.
 INSTANTIATE_TEST_SUITE_P(FeedApiTest,
                          FeedStreamTestForAllStreamTypes,
