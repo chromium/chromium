@@ -164,11 +164,12 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
 
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
   // EME HEVC is supported on under this build flag, but it is not supported for
-  // clear playback. Remove the HEVC codec strings to avoid asking
-  // IsSupported*MediaFormat() about HEVC. EME support for HEVC profiles is
-  // described via KeySystemProperties::GetSupportedCodecs().
+  // clear playback or when using ClearKey. Remove the HEVC codec strings to
+  // avoid asking IsSupported*MediaFormat() about HEVC. EME support for HEVC
+  // profiles is described via KeySystemProperties::GetSupportedCodecs().
   // TODO(1156282): Decouple the rest of clear vs EME codec support.
-  if (base::ToLowerASCII(container_mime_type) == "video/mp4" &&
+  if (!use_aes_decryptor &&
+      base::ToLowerASCII(container_mime_type) == "video/mp4" &&
       !codec_vector.empty()) {
     auto it = codec_vector.begin();
     while (it != codec_vector.end()) {
