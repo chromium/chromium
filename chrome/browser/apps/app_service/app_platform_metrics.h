@@ -11,6 +11,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/aura/window.h"
 
 class Profile;
@@ -113,6 +114,7 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   struct RunningStartTime {
     base::TimeTicks start_time;
     AppTypeName app_type_name;
+    std::string app_id;
   };
 
   // AppRegistryCache::Observer:
@@ -136,8 +138,18 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // Records the app running duration.
   void RecordAppsRunningDuration();
 
-  // Records the app usage time in five minutes.
+  // Records the app usage time metrics (both UMA and UKM) in five minutes
+  // intervals.
   void RecordAppsUsageTime();
+
+  // Records the app usage time UKM in five minutes intervals.
+  void RecordAppsUsageTimeUkm();
+
+  // Returns true if we are allowed to record UKM. Otherwise, returns false.
+  bool ShouldRecordUkm();
+
+  // Returns the SourceId of UKM for `app_id`.
+  ukm::SourceId GetSourceId(const std::string& app_id);
 
   Profile* const profile_ = nullptr;
 
@@ -148,16 +160,23 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   bool should_refresh_duration_pref = false;
   bool should_refresh_activated_count_pref = false;
 
+  int user_type_by_device_type_;
+
+  std::map<std::string, ukm::SourceId> app_id_to_source_id_;
+
   // |running_start_time_| and |running_duration_| are used for accumulating app
   // running duration per each day interval.
   std::map<aura::Window*, RunningStartTime> running_start_time_;
   std::map<AppTypeName, base::TimeDelta> running_duration_;
   std::map<AppTypeName, int> activated_count_;
 
-  // |start_time_per_five_minutes_| and |running_time_per_five_minutes_| are
-  // used for accumulating app running duration per 5 minutes interval.
+  // |start_time_per_five_minutes_|, |app_type_running_time_per_five_minutes_|
+  // and |app_id_running_time_per_five_minutes_| are used for accumulating app
+  // running duration per 5 minutes interval.
   std::map<aura::Window*, RunningStartTime> start_time_per_five_minutes_;
-  std::map<AppTypeName, base::TimeDelta> running_time_per_five_minutes_;
+  std::map<AppTypeName, base::TimeDelta>
+      app_type_running_time_per_five_minutes_;
+  std::map<std::string, base::TimeDelta> app_id_running_time_per_five_minutes_;
 };
 
 }  // namespace apps
