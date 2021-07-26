@@ -4589,9 +4589,6 @@ crbug.com/843945 external/wpt/cookies/samesite/window-open-reload.https.html [ F
 crbug.com/990439 external/wpt/cookies/samesite/form-post-blank.https.html [ Failure ]
 crbug.com/990439 http/tests/cookies/same-site/popup-cross-site-post.https.html [ Failure ]
 
-# Temporarily disable some tests that produce non-deterministic outputs.
-crbug.com/1074441 external/wpt/cookies/samesite/iframe-reload.https.html [ Skip ]
-crbug.com/1074441 external/wpt/cookies/samesite/iframe.https.html [ Skip ]
 # Flaky Windows-only content_shell crash
 crbug.com/1162205 [ Win ] virtual/schemeful-same-site/external/wpt/cookies/attributes/path-redirect.html [ Crash Pass ]
 crbug.com/1162205 [ Win ] external/wpt/cookies/attributes/path-redirect.html [ Crash Pass ]
