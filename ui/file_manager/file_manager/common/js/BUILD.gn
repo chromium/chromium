@@ -236,6 +236,8 @@ js_library("mock_entry") {
 }
 
 js_library("notifications_browser_proxy") {
+  externs_list =
+      [ "//ui/file_manager/file_manager/externs/app_window_common.js" ]
 }
 
 js_library("progress_center_common") {
