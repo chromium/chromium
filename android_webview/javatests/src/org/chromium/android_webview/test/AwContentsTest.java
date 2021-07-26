@@ -27,6 +27,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.util.concurrent.SettableFuture;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -868,6 +869,47 @@ public class AwContentsTest {
         // Wait for the page to reload and trigger another onPageFinished()
         mContentsClient.getOnPageFinishedHelper().waitForCallback(
                 0, 2, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Regression test for https://crbug.com/1231883. Call stopLoading() before any page has been
+     * loaded, load a page, and then call evaluateJavaScript. The JavaScript code should execute.
+     */
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    public void testEvaluateJavaScriptAfterStopLoading() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+
+        // It should always be safe to call stopLoading() even if we haven't loaded anything yet.
+        mActivityTestRule.stopLoading(awContents);
+        mActivityTestRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(),
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+        mActivityTestRule.runOnUiThread(() -> {
+            // We specifically call AwContents.evaluateJavaScript() rather than the
+            // AwActivityTestRule helper methods to make sure we're using the same code path as
+            // production.
+            awContents.evaluateJavaScript("location.reload()", null);
+        });
+
+        // Wait for the page to reload and trigger another onPageFinished()
+        mContentsClient.getOnPageFinishedHelper().waitForCallback(
+                0, 2, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+
+        // Verify the callback actually contains the execution result.
+        final SettableFuture<String> jsResult = SettableFuture.create();
+        mActivityTestRule.runOnUiThread(() -> {
+            // We specifically call AwContents.evaluateJavaScript() rather than the
+            // AwActivityTestRule helper methods to make sure we're using the same code path as
+            // production.
+            awContents.evaluateJavaScript("1 + 2", jsResult::set);
+        });
+        Assert.assertEquals("JavaScript expression result should be correct", "3",
+                AwActivityTestRule.waitForFuture(jsResult));
     }
 
     /**
