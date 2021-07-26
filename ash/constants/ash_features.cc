@@ -706,10 +706,6 @@ const base::Feature kMediaAppDisplayExif{"MediaAppDisplayExif",
 const base::Feature kMediaAppHandlesPdf{"MediaAppHandlesPdf",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Whether to show the new Video controls UI in the ChromeOS media app.
-const base::Feature kMediaAppVideoControls{"MediaAppVideoControls",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Whether to allow the ChromeOS media app to open with multiple windows.
 const base::Feature kMediaAppMultiWindow{"MediaAppMultiWindow",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

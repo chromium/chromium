@@ -268,8 +268,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kMediaAppMultiWindow;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kManagedTermsOfService;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kMediaAppVideoControls;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kMicMuteNotifications;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kMinimumChromeVersion;
