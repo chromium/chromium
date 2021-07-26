@@ -99,12 +99,19 @@
       <iron-selector id="menu" selected="{{selectedPage}}"
           selectable=".page-item" attr-for-selected="path"
           on-iron-activate="onSelectorActivate_">
-        <a role="menuitem" href="/" class="page-item" path="history"
-            on-click="onItemClick_">
+        <a id="history" role="menuitem" href="/" class="page-item"
+            path="history" on-click="onItemClick_">
           $i18n{historyMenuItem}
           <paper-ripple></paper-ripple>
         </a>
-        <a role="menuitem" href="/syncedTabs" class="page-item"
+        <template is="dom-if" if="[[historyClustersEnabled_]]">
+          <a id="historyClusters" role="menuitem" href="/journeys"
+              class="page-item" path="journeys" on-click="onItemClick_">
+            $i18n{historyClustersMenuItem}
+            <paper-ripple></paper-ripple>
+          </a>
+        </template>
+        <a id="syncedTabs" role="menuitem" href="/syncedTabs" class="page-item"
             path="syncedTabs" on-click="onItemClick_">
           $i18n{openTabsMenuItem}
           <paper-ripple></paper-ripple>

@@ -51,6 +51,11 @@ export class HistorySideBarElement extends PolymerElement {
 
       footerInfo: Object,
 
+      historyClustersEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isHistoryClustersEnabled'),
+      },
+
       /**
        * Used to display notices for profile sign-in status and managed status.
        */

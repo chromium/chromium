@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
 #include "chrome/browser/ui/webui/federated_learning/floc_internals.mojom.h"
 #include "chrome/browser/ui/webui/federated_learning/floc_internals_ui.h"
+#include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/internals/internals_ui.h"
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
 #include "chrome/browser/ui/webui/media/media_history_ui.h"
@@ -146,6 +147,7 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/history_clusters/core/memories_features.h"
 #include "components/search/ntp_features.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -688,8 +690,10 @@ void PopulateChromeWebUIFrameBinders(
       most_visited::mojom::MostVisitedPageHandlerFactory, NewTabPageUI,
       NewTabPageThirdPartyUI>(map);
 
-  RegisterWebUIControllerInterfaceBinder<history_clusters::mojom::PageHandler,
-                                         MemoriesUI>(map);
+  if (base::FeatureList::IsEnabled(history_clusters::kMemories)) {
+    RegisterWebUIControllerInterfaceBinder<history_clusters::mojom::PageHandler,
+                                           HistoryUI, MemoriesUI>(map);
+  }
 
   RegisterWebUIControllerInterfaceBinder<
       promo_browser_command::mojom::CommandHandler, NewTabPageUI>(map);

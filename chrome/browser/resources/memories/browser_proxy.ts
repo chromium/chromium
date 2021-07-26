@@ -14,14 +14,20 @@ export class BrowserProxy {
   handler: PageHandlerRemote;
   callbackRouter: PageCallbackRouter;
 
-  constructor() {
-    this.handler = PageHandler.getRemote();
-    this.callbackRouter = new PageCallbackRouter();
-    this.handler.setPage(this.callbackRouter.$.bindNewPipeAndPassRemote());
+  constructor(handler: PageHandlerRemote, callbackRouter: PageCallbackRouter) {
+    this.handler = handler;
+    this.callbackRouter = callbackRouter;
   }
 
   static getInstance(): BrowserProxy {
-    return instance || (instance = new BrowserProxy());
+    if (instance) {
+      return instance;
+    }
+
+    const handler = PageHandler.getRemote();
+    const callbackRouter = new PageCallbackRouter();
+    handler.setPage(callbackRouter.$.bindNewPipeAndPassRemote());
+    return instance = new BrowserProxy(handler, callbackRouter);
   }
 
   static setInstance(obj: BrowserProxy) {

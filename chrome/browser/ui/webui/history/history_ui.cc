@@ -17,10 +17,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/history/browsing_history_handler.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
 #include "chrome/browser/ui/webui/history/history_login_handler.h"
 #include "chrome/browser/ui/webui/history/navigation_handler.h"
+#include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -30,7 +32,9 @@
 #include "chrome/grit/history_resources.h"
 #include "chrome/grit/history_resources_map.h"
 #include "chrome/grit/locale_settings.h"
+#include "components/favicon_base/favicon_url_parser.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/history_clusters/core/memories_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -113,16 +117,34 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
 
   source->AddBoolean(kIsUserSignedInKey, IsUserSignedIn(profile));
 
+  source->AddBoolean("isHistoryClustersEnabled",
+                     base::FeatureList::IsEnabled(history_clusters::kMemories));
+
+  // TODO(crbug.com/1173908): Replace these with localized strings.
+  source->AddString("headerTitle", u"Based on activity related to \"$1\"");
+  source->AddString("historyClustersMenuItem", u"Journeys");
+  source->AddString("relatedSearchesLabel", u"Related:");
+  source->AddString("removeAllFromHistory", u"Remove Journey from history");
+  source->AddString("removeFromHistoryToast", u"Item removed");
+  source->AddString("savedInTabGroup", u"Saved in tab group");
+  source->AddString("toggleButtonLabelLess", u"Show less");
+  source->AddString("toggleButtonLabelMore", u"Show more");
+
   webui::SetupWebUIDataSource(
       source, base::make_span(kHistoryResources, kHistoryResourcesSize),
       IDR_HISTORY_HISTORY_HTML);
+
+  content::URLDataSource::Add(
+      profile, std::make_unique<FaviconSource>(
+                   profile, chrome::FaviconUrlFormat::kFavicon2));
 
   return source;
 }
 
 }  // namespace
 
-HistoryUI::HistoryUI(content::WebUI* web_ui) : WebUIController(web_ui) {
+HistoryUI::HistoryUI(content::WebUI* web_ui)
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* data_source = CreateHistoryUIHTMLSource(profile);
   ManagedUIHandler::Initialize(web_ui, data_source);
@@ -147,7 +169,9 @@ HistoryUI::HistoryUI(content::WebUI* web_ui) : WebUIController(web_ui) {
           &HistoryUI::UpdateDataSource, base::Unretained(this))));
 }
 
-HistoryUI::~HistoryUI() {}
+HistoryUI::~HistoryUI() = default;
+
+WEB_UI_CONTROLLER_TYPE_IMPL(HistoryUI)
 
 // static
 base::RefCountedMemory* HistoryUI::GetFaviconResourceBytes(
@@ -155,6 +179,15 @@ base::RefCountedMemory* HistoryUI::GetFaviconResourceBytes(
   return static_cast<base::RefCountedMemory*>(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
           IDR_HISTORY_FAVICON, scale_factor));
+}
+
+void HistoryUI::BindInterface(
+    mojo::PendingReceiver<history_clusters::mojom::PageHandler>
+        pending_page_handler) {
+  history_clusters_handler_ =
+      std::make_unique<history_clusters::HistoryClustersHandler>(
+          std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
+          web_ui()->GetWebContents());
 }
 
 void HistoryUI::UpdateDataSource() {

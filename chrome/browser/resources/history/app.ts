@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 
+import './history_clusters/clusters.js';
 import './history_list.js';
 import './history_toolbar.js';
 import './query_manager.js';
@@ -245,6 +246,11 @@ export class HistoryAppElement extends HistoryAppElementBase {
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
+  private historyClustersSelected_(selectedPage: string): boolean {
+    return selectedPage === 'journeys' &&
+        loadTimeData.getBoolean('isHistoryClustersEnabled');
+  }
+
   private onFirstRender_() {
     setTimeout(() => {
       this.browserService_!.recordTime(
@@ -357,7 +363,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
    */
   private onSelectAllCommand_(): boolean {
     if (this.$.toolbar.searchField.isSearchFocused() ||
-        this.syncedTabsSelected_(this.selectedPage_!)) {
+        this.syncedTabsSelected_(this.selectedPage_!) ||
+        this.historyClustersSelected_(this.selectedPage_!)) {
       return false;
     }
     this.selectOrUnselectAll();
