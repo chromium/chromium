@@ -502,11 +502,13 @@ TEST_F(AppIconFactoryTest, ArcActivityIconsToImageSkias) {
 
   EXPECT_TRUE(callback_called);
   EXPECT_EQ(4U, result.size());
-  if (result.size() == 4U) {
-    EXPECT_TRUE(result[0].isNull());
-    EXPECT_FALSE(result[1].isNull());
-    EXPECT_TRUE(result[2].isNull());
-    EXPECT_FALSE(result[3].isNull());
+  EXPECT_TRUE(result[0].isNull());
+  EXPECT_FALSE(result[1].isNull());
+  EXPECT_TRUE(result[2].isNull());
+  EXPECT_FALSE(result[3].isNull());
+
+  for (const auto& icon : result) {
+    EXPECT_TRUE(icon.IsThreadSafe());
   }
 }
 #endif

@@ -990,6 +990,7 @@ void IconLoadingPipeline::OnArcActivityIconLoaded(
   DCHECK(arc_activity_icon);
   ++count_;
   *arc_activity_icon = icon;
+  arc_activity_icon->MakeThreadSafe();
 
   if (count_ == arc_activity_icons_.size() &&
       !arc_activity_icons_callback_.is_null()) {
