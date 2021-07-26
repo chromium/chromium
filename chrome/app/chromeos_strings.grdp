@@ -1113,7 +1113,7 @@
     The following services help keep your data safe and secure. You can turn these features off at any time.
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2" desc="Alternate subtitle of the dialog that explains Chrome Sync and privacy options on first login for non-split.">
-    Your saved preferences will be ready on any Chrome OS device when you sign in with your Google Account. You can choose what to sync in Settings.
+    Your saved preferences and activity will be ready on any Chrome OS device when you sign in with your Google Account. You can choose what to sync in Settings.
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME" desc="Title of the 'Settings sync' section of the sync confirmation dialog that is displayed on the first user log in.">
     Chrome OS settings sync
@@ -3696,10 +3696,10 @@
     Screen context
   </message>
   <message name="IDS_ASSISTANT_SCREEN_CONTEXT_DESC" desc="Description for assistant screen context optin.">
-    To get tailored responses when you ask questions, let your Assistant use info on your screen. This may include info about songs or videos that are playing.
+    To get tailored responses when you ask questions, let your Assistant access a screenshot of what’s on your screen. This may also include info about songs or videos that are playing.
   </message>
   <message name="IDS_ASSISTANT_SCREEN_CONTEXT_DESC_CHILD" desc="Description for assistant screen context optin, when a child account is in use.">
-    To get tailored responses when <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> asks questions, let Assistant use info on <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s screen. This may include info about songs or videos that are playing.
+    To get tailored responses when <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> asks questions, let Assistant access a screenshot of what’s on <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s screen. This may also include info about songs or videos that are playing.
   </message>
   <message name="IDS_ASSISTANT_READY_SCREEN_TITLE" desc="Title for assistant ready screen.">
     Your Assistant is ready
@@ -3720,10 +3720,10 @@
     Google Assistant works here too
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_MESSAGE" desc="Message for assistant related info screen for returned users.">
-    Looks like you’ve already set up Google Assistant on another device. Get even more out of your Assistant by turning on Screen context.
+    Looks like you’ve already set up Google Assistant on another device. Get even more out of your Assistant by turning on Screen context on this device.
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_MESSAGE_CHILD" desc="Message for assistant related info screen for returned users, when a child account is in use.">
-    Looks like <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> has already set up Google Assistant on another device. <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> can get even more out of Assistant by turning on Screen context.
+    Looks like <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> has already set up Google Assistant on another device. <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> can get even more out of Assistant by turning on Screen context on this device.
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE" desc="Message to illustrate the use cases for assistant related info.">
     You could ask “Hey Google, what song is this?” or “Hey Google, what's on my screen?”
@@ -3747,23 +3747,36 @@
     Let <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> access Google Assistant with “Hey Google”
   </message>
   <message name="IDS_ASSISTANT_VOICE_MATCH_MESSAGE" desc="Message for Assistant voice match screen.">
-    Voice Match helps your Google Assistant identify your voice on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> and tell you apart from others.
+    If you agree, Google Assistant will wait in standby mode to detect “Hey Google” and can recognize it is you speaking with Voice Match.
     <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
-    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Keep in mind:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access your personal results, too. You can remove Voice Match permission later by turning it off in Assistant Settings.
+    Voice Match allows your Assistant to identify you and tell you apart from others. The Assistant takes clips of your voice to form a unique voice model, which is only stored on your device. Your voice model may be sent temporarily to Google to better identify your voice.
+    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
+    If you decide later that Voice Match isn’t for you, simply remove it in Assistant settings. To view or delete the audio clips you record during Voice Match setup, go to <ph name="VOICE_MATCH_SETTINGS_URL">g.co/assistant/match</ph>.
+    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
+    <ph name="FOOTER_MESSAGE">$1<ex>Note: A similar voice or recording might be able to access your personal results or your Assistant.</ex></ph>
   </message>
-  <message name="IDS_ASSISTANT_VOICE_MATCH_NO_DSP_MESSAGE" desc="Message without DSP support for Assistant voice match screen.">
-    Voice Match helps your Google Assistant identify your voice on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> and tell you apart from others. To save battery, “Hey Google” is only on when your device is connected to a power source. To make changes, go to Settings.
-    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
-    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Keep in mind:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access your personal results, too. You can remove Voice Match permission later by turning it off in Assistant Settings.
+  <message name="IDS_ASSISTANT_VOICE_MATCH_NOTICE_MESSAGE" desc="Notice message for Assistant voice match screen.">
+    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Note:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access your personal results or your Assistant.
+  </message>
+  <message name="IDS_ASSISTANT_VOICE_MATCH_NO_DSP_NOTICE_MESSAGE" desc="Notice message without DSP support for Assistant voice match screen.">
+    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Note:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access your personal results or your Assistant. To save battery, you can select in your Assistant settings to have “Hey Google” on only when this device is connected to a power source.
   </message>
   <message name="IDS_ASSISTANT_VOICE_MATCH_MESSAGE_CHILD" desc="Message for Assistant voice match screen, when a child account is in use.">
-    Voice Match helps Google Assistant identify <ph name="SUPERVISED_USER_NAME">$2<ex>Child 1</ex></ph>’s voice on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> and tell them apart from others.
+    If you agree, Google Assistant will wait in standby mode to detect “Hey Google” and can recognize it is <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> speaking with Voice Match.
+    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
+    Voice Match helps Google Assistant identify <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s voice on your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> and tell them apart from others.
     <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
     The Assistant takes clips of your child’s voice to form a unique voice model, which is only stored on their device(s). Your child’s voice model may be sent temporarily to Google to better identify their voice.
     <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
-    If you decide later that Voice Match isn’t right for your child, simply remove it in their Assistant Settings. To view or delete the audio clips your child records during Voice Match setup, go to g.co/assistant/match from your child’s account.
+    If you decide later that Voice Match isn’t right for your child, simply remove it in their Assistant Settings. To view or delete the audio clips your child records during Voice Match setup, go to <ph name="VOICE_MATCH_SETTINGS_URL">g.co/assistant/match</ph> from your child’s account.
     <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
-    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Note:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME">$2<ex>Child 1</ex></ph>’s personal results. To save battery, “Hey Google” is only on when this device is connected to a power source.
+    <ph name="FOOTER_MESSAGE">$3<ex>Note: A similar voice or recording might be able to access your personal results or your Assistant.</ex></ph>
+  </message>
+  <message name="IDS_ASSISTANT_VOICE_MATCH_NOTICE_MESSAGE_CHILD" desc="Footer message for Assistant voice match screen, when a child account is in use.">
+    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Note:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s personal results.
+  </message>
+  <message name="IDS_ASSISTANT_VOICE_MATCH_NO_DSP_NOTICE_MESSAGE_CHILD" desc="Footer message without DSP support for Assistant voice match screen, when a child account is in use.">
+    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Note:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s personal results. To save battery, you can select in <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph>’s Assistant settings to have “Hey Google” on only when this device is connected to a power source.
   </message>
   <message name="IDS_ASSISTANT_VOICE_MATCH_RECORDING" desc="Title for recording in assistant voice match screen. This is also used as the sub label for the Assistant voice settings.">
     Teach your Assistant to recognize your voice
