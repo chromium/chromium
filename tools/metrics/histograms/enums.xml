@@ -20245,6 +20245,11 @@ Called by update_debug_scenarios.py.-->
   <int value="15" label="Cache created (from empty files)"/>
 </enum>
 
+<enum name="DisplayCapturePolicyResult">
+  <int value="0" label="kDisallowed"/>
+  <int value="1" label="kAllowed"/>
+</enum>
+
 <enum name="DisplayLinkInstallationStatus">
   <int value="0" label="DisplayLink not installed"/>
   <int value="1" label="7.1 or earlier"/>

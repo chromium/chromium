@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -71,6 +72,14 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
 
  private:
   Member<ScriptPromiseResolver> resolver_;
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DisplayCapturePolicyResult {
+  kDisallowed = 0,
+  kAllowed = 1,
+  kMaxValue = kAllowed
 };
 
 }  // namespace
@@ -194,9 +203,16 @@ ScriptPromise MediaDevices::getDisplayMedia(
     return ScriptPromise();
   }
 
-  if (!context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kDisplayCapture,
-          ReportOptions::kReportOnFailure)) {
+  const bool display_capture_allowed = context->IsFeatureEnabled(
+      mojom::blink::PermissionsPolicyFeature::kDisplayCapture,
+      ReportOptions::kReportOnFailure);
+
+  base::UmaHistogramEnumeration(
+      "Media.Ui.GetDisplayMedia.DisplayCapturePolicyResult",
+      display_capture_allowed ? DisplayCapturePolicyResult::kAllowed
+                              : DisplayCapturePolicyResult::kDisallowed);
+
+  if (!display_capture_allowed) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
     return ScriptPromise();
   }
