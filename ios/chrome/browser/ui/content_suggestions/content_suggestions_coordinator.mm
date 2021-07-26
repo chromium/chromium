@@ -600,6 +600,7 @@
 
 - (void)contentSuggestionsWasUpdated {
   [self.ntpCommandHandler updateDiscoverFeedLayout];
+  [self.ntpCommandHandler setContentOffsetToTop];
 }
 
 - (void)returnToRecentTabWasAdded {

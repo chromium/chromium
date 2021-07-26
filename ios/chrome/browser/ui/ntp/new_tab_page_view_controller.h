@@ -76,7 +76,8 @@
 // set the initial scroll position.
 - (void)setSavedContentOffset:(CGFloat)offset;
 
-// Sets the feed collection contentOffset to the top of the page.
+// Sets the feed collection contentOffset to the top of the page. Resets fake
+// omnibox back to initial state.
 - (void)setContentOffsetToTop;
 
 // Updates the ContentSuggestionsViewController and its header for the current
