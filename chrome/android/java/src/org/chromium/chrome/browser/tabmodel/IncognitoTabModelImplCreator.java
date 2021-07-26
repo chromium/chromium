@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.chrome.browser.incognito.IncognitoUtils.getNonPrimaryOTRProfileFromWindowAndroid;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
@@ -69,23 +68,27 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
         mModelDelegate = modelDelegate;
     }
 
-    private @NonNull Profile getOTRProfile() {
-        if (mWindowAndroidSupplier != null) {
+    private Profile getOTRProfile() {
+        if (mActivityType == ActivityType.TABBED) {
+            // The Incognito profile hasn't been created yet when this method is called for the
+            // first time. The {@link IncognitoTabModelImpl} class creates an {@link EmptyTabModel}
+            // in the beginning and only later creates the profile when a user switches from a
+            // regular {@link TabModel} to Incognito {@link TabModel}.
+            return Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(
+                    /*createIfNeeded=*/true);
+        } else if (mActivityType == ActivityType.CUSTOM_TAB) {
+            assert (mWindowAndroidSupplier != null)
+                : "Incognito CCT relies on a non null instance of WindowAndroidSupplier "
+                  + "to fetch non primary OTR profile.";
             Profile otrProfile =
                     getNonPrimaryOTRProfileFromWindowAndroid(mWindowAndroidSupplier.get());
-
-            // TODO(crbug.com/1023759): PaymentHandlerActivity is an exceptional case that uses the
-            // primary OTR profile. PaymentHandlerActivity would use incognito CCT when the
-            // Incognito CCT flag is enabled by default in which case we would return the non
-            // primary OTR profile.
-            if (otrProfile == null) {
-                return Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(
-                        /*createIfNeeded=*/true);
-            }
-
+            assert (otrProfile != null)
+                : "Failed to find the non-primary OTR profile associated with the Incognito CCT.";
             return otrProfile;
+        } else {
+            assert false : "Incognito is currently only supported for a Tabbed/CustomTab Activity.";
+            return null;
         }
-        return Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(/*createIfNeeded=*/true);
     }
 
     @Override
