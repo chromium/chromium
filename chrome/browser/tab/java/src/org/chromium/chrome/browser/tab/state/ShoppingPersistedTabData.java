@@ -320,11 +320,12 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      * - Tab greater than 90 days old
      * - Tab with a non-shopping related page currently navigated to
      * - Tab with a shopping related page for which no shopping related data was found
+     * - Uninitialized Tab
      */
     public static void from(Tab tab, Callback<ShoppingPersistedTabData> callback) {
         // Shopping related data is not available for incognito or Custom Tabs. For example,
         // for incognito Tabs it is not possible to call a backend service with the user's URL.
-        if (tab.isIncognito() || tab.isCustomTab()) {
+        if (tab.isIncognito() || tab.isCustomTab() || !tab.isInitialized()) {
             PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(null); });
             return;
         }
@@ -333,8 +334,9 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                         -> { return new ShoppingPersistedTabData(tab, data, storage, id); },
                 (supplierCallback)
                         -> {
-                    if (getTimeSinceTabLastOpenedMs(tab)
-                            > TimeUnit.SECONDS.toMillis(getStaleTabThresholdSeconds())) {
+                    if (!tab.isInitialized()
+                            || getTimeSinceTabLastOpenedMs(tab)
+                                    > TimeUnit.SECONDS.toMillis(getStaleTabThresholdSeconds())) {
                         supplierCallback.onResult(null);
                         return;
                     }
