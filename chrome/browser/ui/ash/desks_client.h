@@ -10,6 +10,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/desks_storage/core/desk_model.h"
 
 class DeskTemplateAppLaunchHandler;
 
@@ -17,6 +18,10 @@ namespace ash {
 class DesksHelper;
 class DeskTemplate;
 }  // namespace ash
+
+namespace desks_storage {
+class LocalDeskDataManager;
+}
 
 // Class to handle all Desks in-browser functionalities. Will call into
 // ash::DesksController (via ash::DesksHelper) to do actual desk related
@@ -79,17 +84,56 @@ class DesksClient {
   friend class DesksClientTest;
   friend class ScopedDeskClientAppLaunchHandlerSetter;
 
-  // Callback function that is ran after a desk is created, or has failed to be
-  // created.
-  void OnCreateAndActivateNewDesk(ash::DeskTemplate* desk_template,
-                                  LaunchDeskTemplateCallback callback,
-                                  bool on_create_activate_success);
-
   // Attempts to create `app_launch_handler_` if it doesn't already exist.
   void MaybeCreateAppLaunchHandler();
 
   void RecordWindowAndTabCount(ash::DeskTemplate* desk_template);
   void RecordLaunchFromTemplate();
+
+  // Launches DeskTemplate after retrieval from storage.
+  void OnGetTemplateForDeskLaunch(
+      LaunchDeskTemplateCallback callback,
+      desks_storage::DeskModel::GetEntryByUuidStatus status,
+      std::unique_ptr<ash::DeskTemplate> entry);
+
+  // Callback function that is ran after a desk is created, or has failed to be
+  // created.
+  void OnCreateAndActivateNewDesk(
+      std::unique_ptr<ash::DeskTemplate> desk_template,
+      LaunchDeskTemplateCallback callback,
+      bool on_create_activate_success);
+
+  // Callback function that allows the |CaptureActiveDeskAndSaveTemplate|
+  // |callback| to be called as a |desks_storage::AddOrUpdateEntryCallback|.
+  void OnCaptureActiveDeskAndSaveTemplate(
+      DesksClient::CaptureActiveDeskAndSaveTemplateCallback callback,
+      std::unique_ptr<ash::DeskTemplate> desk_template,
+      desks_storage::DeskModel::AddOrUpdateEntryStatus status);
+
+  // Callback function that allows for the |DeleteDeskTemplateCallback| to be
+  // called as a |desks_storage::DeleteEntryCallback|
+  void OnDeleteDeskTemplate(DesksClient::DeleteDeskTemplateCallback callback,
+                            desks_storage::DeskModel::DeleteEntryStatus status);
+
+  // Callback function that allows the |UpdateDeskTemplateCallback| to be called
+  // as a |desks_storage::AddOrUpdateEntryCallback|.
+  void OnUpdateDeskTemplate(
+      DesksClient::UpdateDeskTemplateCallback callback,
+      desks_storage::DeskModel::AddOrUpdateEntryStatus status);
+
+  // Callback function that handles finding a template to be updated in
+  // |UpdateDeskTemplate|
+  void OnGetTemplateToBeUpdated(
+      const std::u16string& template_name,
+      DesksClient::UpdateDeskTemplateCallback callback,
+      desks_storage::DeskModel::GetEntryByUuidStatus status,
+      std::unique_ptr<ash::DeskTemplate> entry);
+
+  // Callback function that handles getting all DeskTemplates from
+  // storage.
+  void OnGetAllTemplates(DesksClient::GetDeskTemplatesCallback callback,
+                         desks_storage::DeskModel::GetAllEntriesStatus status,
+                         std::vector<ash::DeskTemplate*> entries);
 
   // Convenience pointer to the desks helper which is `ash::DesksController`.
   // Guaranteed to be not null for the duration of `this`.
@@ -100,6 +144,9 @@ class DesksClient {
 
   // A test only template for testing `LaunchDeskTemplate`.
   std::unique_ptr<ash::DeskTemplate> launch_template_for_test_;
+
+  // object responsible for desks storage
+  std::unique_ptr<desks_storage::LocalDeskDataManager> storage_manager_;
 
   base::WeakPtrFactory<DesksClient> weak_ptr_factory_{this};
 };

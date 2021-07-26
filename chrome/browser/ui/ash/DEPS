@@ -8,6 +8,7 @@ include_rules = [
   "+chrome/browser/ui/views",
 
   "+media",
+  "+components/desks_storage"
 ]
 
 specific_include_rules = {

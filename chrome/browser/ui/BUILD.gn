@@ -2836,6 +2836,7 @@ static_library("ui") {
       "//components/assist_ranker/proto",
       "//components/captive_portal/core",
       "//components/consent_auditor:consent_auditor",
+      "//components/desks_storage",
       "//components/digital_asset_links",
       "//components/exo",
       "//components/full_restore",
