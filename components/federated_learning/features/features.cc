@@ -34,7 +34,7 @@ const base::Feature kFlocPagesWithAdResourcesDefaultIncludedInFlocComputation{
 // required.
 // TODO(yaoxia): merge other floc features into this one.
 const base::Feature kFederatedLearningOfCohorts{
-    "FederatedLearningOfCohorts", base::FEATURE_ENABLED_BY_DEFAULT};
+    "FederatedLearningOfCohorts", base::FEATURE_DISABLED_BY_DEFAULT};
 constexpr base::FeatureParam<base::TimeDelta> kFlocIdScheduledUpdateInterval{
     &kFederatedLearningOfCohorts, "update_interval",
     base::TimeDelta::FromDays(7)};
