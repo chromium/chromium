@@ -2217,9 +2217,17 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Flaky on Win7: crbug/1233009.
+#if defined(OS_WIN)
+#define MAYBE_WebAppLaunch_WebAppIsNotLaunchedWithProtocolUrlAndDialogCancel \
+  DISABLED_WebAppLaunch_WebAppIsNotLaunchedWithProtocolUrlAndDialogCancel
+#else
+#define MAYBE_WebAppLaunch_WebAppIsNotLaunchedWithProtocolUrlAndDialogCancel \
+  WebAppLaunch_WebAppIsNotLaunchedWithProtocolUrlAndDialogCancel
+#endif
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
-    WebAppLaunch_WebAppIsNotLaunchedWithProtocolUrlAndDialogCancel) {
+    MAYBE_WebAppLaunch_WebAppIsNotLaunchedWithProtocolUrlAndDialogCancel) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "WebAppProtocolHandlerIntentPickerView");
 
@@ -2241,9 +2249,17 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
 }
 
+// Flaky on Win7: crbug/1233009.
+#if defined(OS_WIN)
+#define MAYBE_WebAppLaunch_WebAppIsLaunchedWithProtocolUrlAndDialogAccept \
+  DISABLED_WebAppLaunch_WebAppIsLaunchedWithProtocolUrlAndDialogAccept
+#else
+#define MAYBE_WebAppLaunch_WebAppIsLaunchedWithProtocolUrlAndDialogAccept \
+  WebAppLaunch_WebAppIsLaunchedWithProtocolUrlAndDialogAccept
+#endif
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
-    WebAppLaunch_WebAppIsLaunchedWithProtocolUrlAndDialogAccept) {
+    MAYBE_WebAppLaunch_WebAppIsLaunchedWithProtocolUrlAndDialogAccept) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "WebAppProtocolHandlerIntentPickerView");
 
@@ -2284,9 +2300,17 @@ IN_PROC_BROWSER_TEST_F(
             web_contents->GetVisibleURL());
 }
 
+// Flaky on Win7: crbug/1233009.
+#if defined(OS_WIN)
+#define MAYBE_WebAppLaunch_WebAppIsNotTranslatedWithUnhandledProtocolUrl \
+  DISABLED_WebAppLaunch_WebAppIsNotTranslatedWithUnhandledProtocolUrl
+#else
+#define MAYBE_WebAppLaunch_WebAppIsNotTranslatedWithUnhandledProtocolUrl \
+  WebAppLaunch_WebAppIsNotTranslatedWithUnhandledProtocolUrl
+#endif
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
-    WebAppLaunch_WebAppIsNotTranslatedWithUnhandledProtocolUrl) {
+    MAYBE_WebAppLaunch_WebAppIsNotTranslatedWithUnhandledProtocolUrl) {
   // Register web app as a protocol handler that should *not* handle the launch.
   blink::Manifest::ProtocolHandler protocol_handler;
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
@@ -2314,9 +2338,17 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
 }
 
+// Flaky on Win7: crbug/1233009.
+#if defined(OS_WIN)
+#define MAYBE_WebAppLaunch_WebAppIsLaunchedWithApprovedProtocolUrlPref \
+  DISABLED_WebAppLaunch_WebAppIsLaunchedWithApprovedProtocolUrlPref
+#else
+#define MAYBE_WebAppLaunch_WebAppIsLaunchedWithApprovedProtocolUrlPref \
+  WebAppLaunch_WebAppIsLaunchedWithApprovedProtocolUrlPref
+#endif
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
-    WebAppLaunch_WebAppIsLaunchedWithApprovedProtocolUrlPref) {
+    MAYBE_WebAppLaunch_WebAppIsLaunchedWithApprovedProtocolUrlPref) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "WebAppProtocolHandlerIntentPickerView");
   // Register web app as a protocol handler that should handle the launch.
