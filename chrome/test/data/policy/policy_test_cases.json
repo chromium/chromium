@@ -4803,7 +4803,19 @@
         },
         "prefs": {
           "managed.serial_allow_all_ports_for_urls": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": [
+              "https://www.google.com"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "managed.serial_allow_all_ports_for_urls": {
+            "location": "local_state",
+            "default_value": []
           }
         }
       }
