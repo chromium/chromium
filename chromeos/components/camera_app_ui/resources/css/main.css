@@ -23,8 +23,11 @@
   --exit-easing: cubic-bezier(0.4, 0, 1, 1);
 
   /* App specific settings */
+  --bottom-line: 44px;
   --default-font-family: 'Google Sans', sans-serif;
   --fixed-width-font-family: 'Cousine', monospace;
+  --left-line: 44px;
+  --right-line: 50px;
 
   /* From https://www.w3.org/TR/css-backgrounds-3/#corner-overlap. */
   --border-radius-rounded-with-short-side: 9999999px;
@@ -706,6 +709,7 @@ body.should-handle-intent-result #open-settings {
 
 #view-camera,
 #view-ptz-panel,
+#view-review-document,
 #view-settings,
 #view-grid-settings,
 #view-timer-settings,
@@ -728,6 +732,7 @@ body.should-handle-intent-result #open-settings {
 
 body.view-camera #view-camera,
 body.view-ptz-panel #view-ptz-panel,
+body.view-review-document #view-review-document,
 body.view-settings #view-settings,
 body.view-grid-settings #view-grid-settings,
 body.view-timer-settings #view-timer-settings,
@@ -781,9 +786,6 @@ html[dir=rtl] body.view-expert-settings .right-stripe {
 
 #view-camera {
   --big-icon: 48px;
-  --bottom-line: 44px;
-  --left-line: 44px;
-  --right-line: 50px;
   --small-icon: 40px;
   --shutter-vertical-center: 180px;
 

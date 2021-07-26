@@ -1,0 +1,72 @@
+/* Copyright 2021 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+#view-review-document {
+  background: black;
+}
+
+#document-frame {
+  align-items: center;
+  border: 1px solid rgba(232, 234, 237, 0.38);
+  bottom: calc(var(--bottom-line) * 2);
+  display: flex;
+  justify-content: center;
+  left: calc(var(--left-line) * 2);
+  position: absolute;
+  right: calc(var(--right-line) * 2);
+  top: 0;
+}
+
+#document-image {
+  max-height: 100%;
+  max-width: 100%;
+}
+
+#review-document-button-groups {
+  bottom: 0;
+  left: calc(var(--left-line) * 2);
+  position: absolute;
+  right: calc(var(--right-line) * 2);
+  top: calc(100% - calc(var(--bottom-line) * 2));
+}
+
+#review-document-button-groups button {
+  border-radius: var(--border-radius-rounded-with-short-side);
+  font-size: 13px
+  font-weight: 500;
+  line-height: 20px;
+  padding: 6px 16px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#review-document-button-groups button:active {
+  transform: translateY(-50%) scale(1.07);
+}
+
+#review-document-button-groups button:not(#save-pdf-document) {
+  border: 1px solid rgba(95, 99, 104, 1);
+  color: rgba(138, 180, 248, 1);
+}
+
+#review-document-button-groups #save-pdf-document {
+  background: rgba(138, 180, 248, 1);
+  color: rgba(32, 33, 36, 1);
+}
+
+/* float direction */
+
+#save-pdf-document,
+#save-photo-document {
+  float: right;
+}
+
+#retake-document {
+  float: left;
+}
+
+#save-photo-document {
+  margin-right: 8px;  /* csschecker-disable-line left-right */
+}

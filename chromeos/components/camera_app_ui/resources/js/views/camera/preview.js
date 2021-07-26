@@ -87,6 +87,12 @@ export class Preview {
      */
     this.vidPid_ = null;
 
+    /**
+     * @type {?MediaStreamConstraints}
+     * @private
+     */
+    this.constraints_ = null;
+
     window.addEventListener('resize', () => this.onWindowStatusChanged_());
 
     windowController.addListener(() => this.onWindowStatusChanged_());
@@ -105,18 +111,17 @@ export class Preview {
 
   /**
    * Current active stream.
-   * @return {?MediaStream}
+   * @return {!MediaStream}
    */
   get stream() {
-    return this.stream_;
+    return assertInstanceof(this.stream_, MediaStream);
   }
 
   /**
    * @return {!MediaStreamTrack}
    */
   getVideoTrack_() {
-    const stream = assertInstanceof(this.stream, MediaStream);
-    return stream.getVideoTracks()[0];
+    return this.stream.getVideoTracks()[0];
   }
 
   /**
@@ -133,6 +138,14 @@ export class Preview {
    */
   getVidPid() {
     return this.vidPid_;
+  }
+
+  /**
+   * @return {!MediaStreamConstraints}
+   */
+  getConstraits() {
+    assert(this.constraints_ !== null);
+    return this.constraints_;
   }
 
   /**
@@ -219,6 +232,7 @@ export class Preview {
    * @return {!Promise<!MediaStream>} Promise resolved to opened preview stream.
    */
   async open(constraints) {
+    this.constraints_ = constraints;
     this.stream_ = await navigator.mediaDevices.getUserMedia(constraints);
     try {
       await this.setSource_(this.stream_);

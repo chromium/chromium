@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {MimeType} from '../type.js';
+
 /**
  * The prefix of image files.
  * @type {string}
@@ -13,6 +15,12 @@ export const IMAGE_PREFIX = 'IMG_';
  * @type {string}
  */
 export const VIDEO_PREFIX = 'VID_';
+
+/**
+ * The prefix of scanned document files.
+ * @type {string}
+ */
+export const DOCUMENT_PREFIX = 'SCN_';
 
 /**
  * The suffix of burst image files.
@@ -91,6 +99,24 @@ export class Filenamer {
    */
   newImageName() {
     return IMAGE_PREFIX + timestampToDatetimeName(this.timestamp_) + '.jpg';
+  }
+
+  /**
+   * Creates new filename for pdf.
+   * @param {!MimeType} type
+   * @return {string} New filename.
+   */
+  newDocumentName(type) {
+    const ext = (() => {
+      switch (type) {
+        case MimeType.JPEG:
+          return 'jpg';
+        case MimeType.PDF:
+          return 'pdf';
+      }
+    })();
+    return DOCUMENT_PREFIX + timestampToDatetimeName(this.timestamp_) + '.' +
+        ext;
   }
 
   /**

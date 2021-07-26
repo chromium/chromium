@@ -126,6 +126,7 @@ export const ViewName = {
   PHOTO_RESOLUTION_SETTINGS: 'view-photo-resolution-settings',
   PTZ_PANEL: 'view-ptz-panel',
   RESOLUTION_SETTINGS: 'view-resolution-settings',
+  REVIEW_DOCUMENT: 'view-review-document',
   SETTINGS: 'view-settings',
   SPLASH: 'view-splash',
   TIMER_SETTINGS: 'view-timer-settings',

@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/css/inkdrop.css">
     <link rel="stylesheet" href="/css/ptz_panel.css">
     <link rel="stylesheet" href="/css/ptz_toast.css">
+    <link rel="stylesheet" href="/css/review_document.css">
     <link rel="stylesheet" href="/css/ripple.css">
     <link rel="stylesheet" href="/css/scanner.css">
     <script src="/js/mojo/mojo_bindings_lite.js"></script>
@@ -272,6 +273,16 @@
         <div id="timer-tick-msg"></div>
       </div>
     </div>
+    <div id="view-review-document">
+      <div id="document-frame">
+        <img id="document-image">
+      </div>
+      <div id="review-document-button-groups">
+        <button id="save-pdf-document" tabindex="0">Save as PDF</button>
+        <button id="save-photo-document" tabindex="0">Save as Photo</button>
+        <button id="retake-document" tabindex="0">Retake</button>
+      </div>
+    </div>
     <div id="view-ptz-panel">
       <div id="ptz-panel">
         <div id="reset-all-container">
@@ -524,8 +535,8 @@
           <span i18n-text="expert_enable_expert_mode"></span>
         </label>
       </div>
+      <div id="spinner" class="centered-overlay"></div>
     </div>
-    <div id="spinner" class="centered-overlay"></div>
     <div id="view-splash"></div>
     <div id="view-warning">
       <div id="error-msg" aria-live="polite"></div>

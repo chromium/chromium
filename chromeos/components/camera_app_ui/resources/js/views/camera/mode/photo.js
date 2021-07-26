@@ -104,6 +104,15 @@ export class Photo extends ModeBase {
   }
 
   /**
+   * @param {!MediaStream} stream
+   */
+  updatePreview(stream) {
+    this.stream_ = stream;
+    this.crosImageCapture_ =
+        new CrosImageCapture(this.stream_.getVideoTracks()[0]);
+  }
+
+  /**
    * @override
    */
   async start_() {

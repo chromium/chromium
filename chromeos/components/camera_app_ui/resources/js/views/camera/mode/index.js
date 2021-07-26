@@ -43,7 +43,7 @@ import {
 } from './video.js';
 
 export {PhotoHandler, PhotoResult} from './photo.js';
-export {ScannerHandler} from './scanner.js';
+export {Scanner, ScannerHandler} from './scanner.js';
 export {setAvc1Parameters, Video, VideoHandler, VideoResult} from './video.js';
 
 /**
