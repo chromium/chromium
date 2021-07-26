@@ -2533,15 +2533,22 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_WEBAPP_UPDATE_EXPLANATION" desc="The text at the top of the dialog, explaining what to do when an app changes its identity." formatter_data="android_java">
         If this web app is trying to trick you into thinking it's a different app, uninstall it.
       </message>
-      <message name="IDS_WEBAPP_UPDATE_NEGATIVE_BUTTON" desc="The text for the negative button (aka. cancel button), allowing the user to uninstall the app and report it to the abuse team." formatter_data="android_java">
-        Uninstall app
-      </message>
       <message name="IDS_WEBAPP_UPDATE_CURRENT_ICON" desc="The accessibility string explaining which icon is the current icon." formatter_data="android_java">
         Current icon
       </message>
       <message name="IDS_WEBAPP_UPDATE_NEW_ICON" desc="The accessibility string explaining which icon is the new icon." formatter_data="android_java">
         New icon
       </message>
+      <if expr="not use_titlecase">
+        <message name="IDS_WEBAPP_UPDATE_NEGATIVE_BUTTON" desc="The text for the negative button (aka. cancel button), allowing the user to uninstall the app and report it to the abuse team (sentence casing)." formatter_data="android_java">
+          Uninstall app
+        </message>
+      </if>
+      <if expr="use_titlecase">
+        <message name="IDS_WEBAPP_UPDATE_NEGATIVE_BUTTON" desc="The text for the negative button (aka. cancel button), allowing the user to uninstall the app and report it to the abuse team (title casing).">
+          Uninstall App
+        </message>
+      </if>
 
       <!-- Finish policy app installation dialog -->
       <message name="IDS_FINISH_POLICY_WEB_APP_INSTALLATION" desc="Main text for the Finish Policy Web App Installation dialog. This is a dialog message that appears on the first launch of an app after it was remotely installed by an enterprise administrator. The app has some cosmetic factors (like the app icon) that can only be fixed if the user launches and then restarts the app. After the initial launch, this dialog encourages users to restart the app to complete the installation.">
