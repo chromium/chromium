@@ -22,6 +22,26 @@ static_library("bluetooth_config") {
   ]
 }
 
+component("in_process_bluetooth_config") {
+  sources = [
+    "in_process_instance.cc",
+    "in_process_instance.h",
+  ]
+
+  defines = [ "IS_IN_PROCESS_BLUETOOTH_CONFIG_IMPL" ]
+
+  public_deps = [
+    "//ash/constants",
+    "//chromeos/services/bluetooth_config/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [
+    ":bluetooth_config",
+    "//device/bluetooth",
+  ]
+}
+
 static_library("test_support") {
   testonly = true
 
