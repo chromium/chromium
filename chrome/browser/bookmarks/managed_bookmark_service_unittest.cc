@@ -318,16 +318,16 @@ TEST_F(ManagedBookmarkServiceTest, HasDescendantsOfManagedNode) {
   EXPECT_TRUE(bookmarks::HasDescendantsOf(nodes, managed_->managed_node()));
 }
 
-TEST_F(ManagedBookmarkServiceTest, GetManagedBookmarksDomain) {
+TEST_F(ManagedBookmarkServiceTest, GetManagedBookmarksManager) {
   // Not managed profile
   profile_->set_profile_name("user@google.com");
   EXPECT_TRUE(
-      ManagedBookmarkServiceFactory::GetManagedBookmarksDomain(profile_.get())
+      ManagedBookmarkServiceFactory::GetManagedBookmarksManager(profile_.get())
           .empty());
 
   // Managed profile
   profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-  EXPECT_EQ(
-      "google.com",
-      ManagedBookmarkServiceFactory::GetManagedBookmarksDomain(profile_.get()));
+  EXPECT_EQ("google.com",
+            ManagedBookmarkServiceFactory::GetManagedBookmarksManager(
+                profile_.get()));
 }
