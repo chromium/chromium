@@ -49,7 +49,7 @@ import java.util.concurrent.TimeUnit;
 public class WebFeedFollowIntroController {
     private static final String TAG = "WFFollowIntroCtrl";
 
-    // In-page time delay to show the recommendation.
+    // In-page time delay to show the intro.
     private static final int DEFAULT_WAIT_TIME_MILLIS = 3 * 1000;
     private static final String PARAM_WAIT_TIME_MILLIS = "intro-wait-time-millis";
     // Visit history requirements.
@@ -147,7 +147,7 @@ public class WebFeedFollowIntroController {
                 // TODO(crbug/1152592): Also check for certificate errors or SafeBrowser warnings.
                 if (tab.isIncognito()
                         || !(url.getScheme().equals("http") || url.getScheme().equals("https"))) {
-                    Log.i(TAG, "No recommendation: URL scheme is not HTTP or HTTPS");
+                    Log.i(TAG, "No intro: URL scheme is not HTTP or HTTPS");
                     return;
                 }
 
@@ -161,8 +161,8 @@ public class WebFeedFollowIntroController {
                             mMeetsVisitRequirement);
                 });
                 WebFeedBridge.getWebFeedMetadataForPage(tab, url, result -> {
-                    // Shouldn't be recommended if there's no metadata, ID doesn't exist, or if it
-                    // is already followed.
+                    // Shouldn't show intro if there's no metadata, ID doesn't exist, it it's not
+                    // recommended or if it is already followed.
                     if (result != null && result.id != null && result.id.length > 0
                             && result.isRecommended
                             && result.subscriptionStatus
@@ -205,16 +205,16 @@ public class WebFeedFollowIntroController {
     private void maybeShowFollowIntro() {
         if (!shouldShowFollowIntro()) return;
 
-        showFollowAccelerator();
+        showFollowIntro();
     }
 
     private boolean shouldUseIPH() {
         return ChromeFeatureList
-                .getFieldTrialParamByFeature(ChromeFeatureList.WEB_FEED, "recommendation_style")
+                .getFieldTrialParamByFeature(ChromeFeatureList.WEB_FEED, "intro_style")
                 .equals("IPH");
     }
 
-    private void showFollowAccelerator() {
+    private void showFollowIntro() {
         mIntroShown = true;
         if (!mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
             long currentTimeMillis = mClock.currentTimeMillis();
@@ -293,17 +293,17 @@ public class WebFeedFollowIntroController {
      */
     private boolean shouldShowFollowIntro() {
         if (mIntroShown) {
-            Log.i(TAG, "No recommendation: it was already shown");
+            Log.i(TAG, "No intro: it was already shown");
             return false;
         }
 
         if (mRecommendedInfo == null) {
-            Log.i(TAG, "No recommendation: URL is not in recommended list");
+            Log.i(TAG, "No intro: URL is not in recommended list");
             return false;
         }
 
         if (mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
-            Log.i(TAG, "Allowed recommendation: debug mode is enabled");
+            Log.i(TAG, "Allowed intro: debug mode is enabled");
             return true;
         }
 
@@ -317,7 +317,7 @@ public class WebFeedFollowIntroController {
         if (!mMeetsVisitRequirement || (timeSinceLastShown < mAppearanceThresholdMillis)
                 || (timeSinceLastShownForWebFeed < WEB_FEED_ID_APPEARANCE_THRESHOLD_MILLIS)) {
             Log.i(TAG,
-                    "No recommendation: mMeetsVisitRequirement=%s, enoughTimeSinceLastShown=%s, "
+                    "No intro: mMeetsVisitRequirement=%s, enoughTimeSinceLastShown=%s, "
                             + "enoughTimeSinceLastShownForWebFeed=%s",
                     mMeetsVisitRequirement, timeSinceLastShown > mAppearanceThresholdMillis,
                     timeSinceLastShownForWebFeed > WEB_FEED_ID_APPEARANCE_THRESHOLD_MILLIS);
@@ -329,11 +329,11 @@ public class WebFeedFollowIntroController {
         // components/feature_engagement/public/feature_configurations.cc.
         if (!mFeatureEngagementTracker.shouldTriggerHelpUI(
                     FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE)) {
-            Log.i(TAG, "No recommendation: not allowed by feature engagement tracker");
+            Log.i(TAG, "No intro: not allowed by feature engagement tracker");
             return false;
         }
 
-        Log.i(TAG, "Allowed recommendation: all requirements met");
+        Log.i(TAG, "Allowed intro: all requirements met");
         return true;
     }
 

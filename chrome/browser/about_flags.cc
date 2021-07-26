@@ -2031,10 +2031,9 @@ const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
 };
 
 const FeatureEntry::FeatureParam kWebFeed_accelerator[] = {
-    {"recommendation_style", "accelerator"}};
+    {"intro_style", "accelerator"}};
 
-const FeatureEntry::FeatureParam kWebFeed_IPH[] = {
-    {"recommendation_style", "IPH"}};
+const FeatureEntry::FeatureParam kWebFeed_IPH[] = {{"intro_style", "IPH"}};
 
 const FeatureEntry::FeatureVariation kWebFeedVariations[] = {
     {"accelerator recommendations", kWebFeed_accelerator,
