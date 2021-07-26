@@ -277,7 +277,9 @@ TEST_F(HidServiceTest, OpenAndCloseHidConnection) {
   EXPECT_FALSE(contents()->IsConnectedToHidDevice());
 }
 
-TEST_F(HidServiceTest, OpenAndNavigateCrossOrigin) {
+// This test is disabled because it fails on the "linux-bfcache-rel" bot.
+// TODO(https://crbug.com/1232841): Re-enable this test.
+TEST_F(HidServiceTest, DISABLED_OpenAndNavigateCrossOrigin) {
   NavigateAndCommit(GURL(kTestUrl));
 
   mojo::Remote<blink::mojom::HidService> service;
