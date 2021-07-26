@@ -75,7 +75,10 @@ DedicatedWorkerHost::DedicatedWorkerHost(
       creator_cross_origin_embedder_policy_(cross_origin_embedder_policy),
       host_receiver_(this, std::move(host)),
       creator_coep_reporter_(std::move(creator_coep_reporter)),
-      ancestor_coep_reporter_(std::move(ancestor_coep_reporter)) {
+      ancestor_coep_reporter_(std::move(ancestor_coep_reporter)),
+      code_cache_host_receivers_(GetProcessHost()
+                                     ->GetStoragePartition()
+                                     ->GetGeneratedCodeCacheContext()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(worker_process_host_);
   DCHECK(worker_process_host_->IsInitializedAndNotDead());
@@ -619,11 +622,7 @@ void DedicatedWorkerHost::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
   RenderProcessHost* rph = GetProcessHost();
-  code_cache_host_receivers_.Add(
-      std::make_unique<CodeCacheHostImpl>(
-          rph->GetID(), rph,
-          rph->GetStoragePartition()->GetGeneratedCodeCacheContext()),
-      std::move(receiver));
+  code_cache_host_receivers_.Add(rph->GetID(), std::move(receiver));
 }
 
 #if !defined(OS_ANDROID)

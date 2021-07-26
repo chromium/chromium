@@ -89,102 +89,27 @@ absl::optional<GURL> GetSecondaryKeyForCodeCache(const GURL& resource_url,
   return absl::nullopt;
 }
 
-}  // namespace
-
-CodeCacheHostImpl::CodeCacheHostImpl(
-    int render_process_id,
-    RenderProcessHost* render_process_host,
-    scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context)
-    : render_process_id_(render_process_id),
-      render_process_host_(render_process_host),
-      generated_code_cache_context_(std::move(generated_code_cache_context)) {}
-
-CodeCacheHostImpl::~CodeCacheHostImpl() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-}
-
-void CodeCacheHostImpl::SetCacheStorageControlForTesting(
-    storage::mojom::CacheStorageControl* cache_storage_control) {
-  cache_storage_control_for_testing_ = cache_storage_control;
-}
-
-void CodeCacheHostImpl::DidGenerateCacheableMetadata(
-    blink::mojom::CodeCacheType cache_type,
-    const GURL& url,
-    base::Time expected_response_time,
-    mojo_base::BigBuffer data) {
-  if (!url.SchemeIsHTTPOrHTTPS()) {
-    mojo::ReportBadMessage("Invalid URL scheme for code cache.");
-    return;
-  }
-
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  GeneratedCodeCache* code_cache = GetCodeCache(cache_type);
-  if (!code_cache)
-    return;
-
-  absl::optional<GURL> origin_lock =
-      GetSecondaryKeyForCodeCache(url, render_process_id_);
-  if (!origin_lock)
-    return;
-
-  code_cache->WriteEntry(url, *origin_lock, expected_response_time,
-                         std::move(data));
-}
-
-void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
-                                        const GURL& url,
-                                        FetchCachedCodeCallback callback) {
-  GeneratedCodeCache* code_cache = GetCodeCache(cache_type);
-  if (!code_cache) {
-    std::move(callback).Run(base::Time(), std::vector<uint8_t>());
-    return;
-  }
-
-  absl::optional<GURL> origin_lock =
-      GetSecondaryKeyForCodeCache(url, render_process_id_);
-  if (!origin_lock) {
-    std::move(callback).Run(base::Time(), std::vector<uint8_t>());
-    return;
-  }
-
-  auto read_callback =
-      base::BindOnce(&CodeCacheHostImpl::OnReceiveCachedCode,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-  code_cache->FetchEntry(url, *origin_lock, std::move(read_callback));
-}
-
-void CodeCacheHostImpl::ClearCodeCacheEntry(
-    blink::mojom::CodeCacheType cache_type,
-    const GURL& url) {
-  GeneratedCodeCache* code_cache = GetCodeCache(cache_type);
-  if (!code_cache)
-    return;
-
-  absl::optional<GURL> origin_lock =
-      GetSecondaryKeyForCodeCache(url, render_process_id_);
-  if (!origin_lock)
-    return;
-
-  code_cache->DeleteEntry(url, *origin_lock);
-}
-
-void CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage(
+void DidGenerateCacheableMetadataInCacheStorageOnUI(
     const GURL& url,
     base::Time expected_response_time,
     mojo_base::BigBuffer data,
     const url::Origin& cache_storage_origin,
-    const std::string& cache_storage_cache_name) {
+    const std::string& cache_storage_cache_name,
+    int render_process_id,
+    storage::mojom::CacheStorageControl* cache_storage_control_for_testing,
+    mojo::ReportBadMessageCallback bad_message_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* render_process_host = RenderProcessHost::FromID(render_process_id);
+  if (!render_process_host)
+    return;
 
   // We cannot trust the renderer to give us the correct origin here.  Validate
   // it against the ChildProcessSecurityPolicy.
   bool origin_allowed =
       ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
-          render_process_id_, cache_storage_origin);
+          render_process_id, cache_storage_origin);
   if (!origin_allowed) {
-    mojo::ReportBadMessage("Bad cache_storage origin.");
+    std::move(bad_message_callback).Run("Bad cache_storage origin.");
     return;
   }
 
@@ -198,9 +123,9 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage(
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
 
   storage::mojom::CacheStorageControl* cache_storage_control =
-      cache_storage_control_for_testing_
-          ? cache_storage_control_for_testing_
-          : render_process_host_->GetStoragePartition()
+      cache_storage_control_for_testing
+          ? cache_storage_control_for_testing
+          : render_process_host->GetStoragePartition()
                 ->GetCacheStorageControl();
 
   // TODO(https://crbug.com/1199077): `CodeCacheHostImpl` will need to get the
@@ -242,8 +167,160 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage(
           std::move(remote)));
 }
 
+void AddCodeCacheReceiver(
+    mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>* receiver_set,
+    scoped_refptr<GeneratedCodeCacheContext> context,
+    int render_process_id,
+    mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
+    CodeCacheHostImpl::ReceiverSet::CodeCacheHostReceiverHandler handler) {
+  auto host = std::make_unique<CodeCacheHostImpl>(render_process_id, context);
+  auto* raw_host = host.get();
+  auto id = receiver_set->Add(std::move(host), std::move(receiver));
+  if (handler)
+    std::move(handler).Run(raw_host, id, *receiver_set);
+}
+
+}  // namespace
+
+CodeCacheHostImpl::ReceiverSet::ReceiverSet(
+    scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context)
+    : generated_code_cache_context_(generated_code_cache_context),
+      receiver_set_(
+          new mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>(),
+          base::OnTaskRunnerDeleter(GeneratedCodeCacheContext::GetTaskRunner(
+              generated_code_cache_context))) {}
+
+CodeCacheHostImpl::ReceiverSet::~ReceiverSet() = default;
+
+void CodeCacheHostImpl::ReceiverSet::Add(
+    int render_process_id,
+    mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
+    CodeCacheHostReceiverHandler handler) {
+  if (!receiver_set_) {
+    receiver_set_ = {
+        new mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>(),
+        base::OnTaskRunnerDeleter(GeneratedCodeCacheContext::GetTaskRunner(
+            generated_code_cache_context_))};
+  }
+  // |receiver_set_| will be deleted on the code cache thread, so it is safe to
+  // post a task to the code cache thread with the raw pointer.
+  GeneratedCodeCacheContext::RunOrPostTask(
+      generated_code_cache_context_, FROM_HERE,
+      base::BindOnce(&AddCodeCacheReceiver, receiver_set_.get(),
+                     generated_code_cache_context_, render_process_id,
+                     std::move(receiver), std::move(handler)));
+}
+
+void CodeCacheHostImpl::ReceiverSet::Add(
+    int render_process_id,
+    mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
+  Add(render_process_id, std::move(receiver), CodeCacheHostReceiverHandler());
+}
+
+void CodeCacheHostImpl::ReceiverSet::Clear() {
+  receiver_set_.reset();
+}
+
+CodeCacheHostImpl::CodeCacheHostImpl(
+    int render_process_id,
+    scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context)
+    : render_process_id_(render_process_id),
+      generated_code_cache_context_(std::move(generated_code_cache_context)) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+CodeCacheHostImpl::~CodeCacheHostImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void CodeCacheHostImpl::SetCacheStorageControlForTesting(
+    storage::mojom::CacheStorageControl* cache_storage_control) {
+  cache_storage_control_for_testing_ = cache_storage_control;
+}
+
+void CodeCacheHostImpl::DidGenerateCacheableMetadata(
+    blink::mojom::CodeCacheType cache_type,
+    const GURL& url,
+    base::Time expected_response_time,
+    mojo_base::BigBuffer data) {
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    mojo::ReportBadMessage("Invalid URL scheme for code cache.");
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  GeneratedCodeCache* code_cache = GetCodeCache(cache_type);
+  if (!code_cache)
+    return;
+
+  absl::optional<GURL> origin_lock =
+      GetSecondaryKeyForCodeCache(url, render_process_id_);
+  if (!origin_lock)
+    return;
+
+  code_cache->WriteEntry(url, *origin_lock, expected_response_time,
+                         std::move(data));
+}
+
+void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
+                                        const GURL& url,
+                                        FetchCachedCodeCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  GeneratedCodeCache* code_cache = GetCodeCache(cache_type);
+  if (!code_cache) {
+    std::move(callback).Run(base::Time(), std::vector<uint8_t>());
+    return;
+  }
+
+  absl::optional<GURL> origin_lock =
+      GetSecondaryKeyForCodeCache(url, render_process_id_);
+  if (!origin_lock) {
+    std::move(callback).Run(base::Time(), std::vector<uint8_t>());
+    return;
+  }
+
+  auto read_callback =
+      base::BindOnce(&CodeCacheHostImpl::OnReceiveCachedCode,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  code_cache->FetchEntry(url, *origin_lock, std::move(read_callback));
+}
+
+void CodeCacheHostImpl::ClearCodeCacheEntry(
+    blink::mojom::CodeCacheType cache_type,
+    const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  GeneratedCodeCache* code_cache = GetCodeCache(cache_type);
+  if (!code_cache)
+    return;
+
+  absl::optional<GURL> origin_lock =
+      GetSecondaryKeyForCodeCache(url, render_process_id_);
+  if (!origin_lock)
+    return;
+
+  code_cache->DeleteEntry(url, *origin_lock);
+}
+
+void CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage(
+    const GURL& url,
+    base::Time expected_response_time,
+    mojo_base::BigBuffer data,
+    const url::Origin& cache_storage_origin,
+    const std::string& cache_storage_cache_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RunOrPostTaskOnThread(
+      FROM_HERE, BrowserThread::UI,
+      base::BindOnce(&DidGenerateCacheableMetadataInCacheStorageOnUI, url,
+                     expected_response_time, std::move(data),
+                     cache_storage_origin, cache_storage_cache_name,
+                     render_process_id_, cache_storage_control_for_testing_,
+                     mojo::GetBadMessageCallback()));
+}
+
 GeneratedCodeCache* CodeCacheHostImpl::GetCodeCache(
     blink::mojom::CodeCacheType cache_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!generated_code_cache_context_)
     return nullptr;
 

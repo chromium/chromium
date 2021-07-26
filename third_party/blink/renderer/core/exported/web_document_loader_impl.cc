@@ -201,6 +201,11 @@ bool WebDocumentLoaderImpl::IsListingFtpDirectory() const {
   return DocumentLoader::IsListingFtpDirectory();
 }
 
+void WebDocumentLoaderImpl::SetCodeCacheHost(
+    mojo::PendingRemote<mojom::CodeCacheHost> code_cache_host) {
+  DocumentLoader::SetCodeCacheHost(std::move(code_cache_host));
+}
+
 void WebDocumentLoaderImpl::Trace(Visitor* visitor) const {
   DocumentLoader::Trace(visitor);
 }

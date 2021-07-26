@@ -35,6 +35,7 @@
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "content/browser/media/frameless_media_interface_proxy.h"
 #include "content/browser/media/media_internals.h"
+#include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/embedded_frame_sink_provider_impl.h"
 #include "content/browser/renderer_host/media/aec_dump_manager_impl.h"
 #include "content/browser/renderer_host/render_process_host_internal_observer.h"
@@ -481,7 +482,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // after the CodeCacheHostImpl is created and bound.  Used for swapping
   // the binding for a test version of the service.
   using CodeCacheHostReceiverHandler = base::RepeatingCallback<void(
-      RenderProcessHost*,
       CodeCacheHostImpl*,
       mojo::ReceiverId,
       mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>&)>;
@@ -1120,8 +1120,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Currently fetching code caches from main thread use the interface
   // associated with the RenderFrameHost. All others (fetches from worker
   // threads, writing into code caches) use per-process interface.
-  mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>
-      code_cache_host_receivers_;
+  CodeCacheHostImpl::ReceiverSet code_cache_host_receivers_;
 
   bool channel_connected_;
   bool sent_render_process_ready_;

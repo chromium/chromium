@@ -1728,6 +1728,8 @@ RenderProcessHostImpl::RenderProcessHostImpl(
       is_unused_(true),
       delayed_cleanup_needed_(false),
       within_process_died_observer_(false),
+      code_cache_host_receivers_(
+          storage_partition_impl_->GetGeneratedCodeCacheContext()),
       channel_connected_(false),
       sent_render_process_ready_(false),
       push_messaging_manager_(
@@ -2689,23 +2691,9 @@ void RenderProcessHostImpl::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // There should be at most one CodeCacheHostImpl for any given
-  // RenderProcessHost.
-  DCHECK(code_cache_host_receivers_.empty());
-
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
-  auto code_cache_host = std::make_unique<CodeCacheHostImpl>(
-      GetID(), this, storage_partition_impl_->GetGeneratedCodeCacheContext());
-  CodeCacheHostImpl* impl = code_cache_host.get();
-  auto receiver_id = code_cache_host_receivers_.Add(std::move(code_cache_host),
-                                                    std::move(receiver));
-
-  // If there is a callback registered, then invoke it with the newly
-  // created CodeCacheHostImpl.
-  if (!GetCodeCacheHostReceiverHandler().is_null()) {
-    GetCodeCacheHostReceiverHandler().Run(this, impl, receiver_id,
-                                          code_cache_host_receivers_);
-  }
+  code_cache_host_receivers_.Add(GetID(), std::move(receiver),
+                                 GetCodeCacheHostReceiverHandler());
 }
 
 void RenderProcessHostImpl::BindMediaInterfaceProxy(

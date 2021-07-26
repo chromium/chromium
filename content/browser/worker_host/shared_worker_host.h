@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
 #include "content/browser/browser_interface_broker_impl.h"
+#include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -296,8 +297,7 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   // CodeCacheHost processes requests to fetch / write generated code for
   // JavaScript / WebAssembly resources.
-  mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>
-      code_cache_host_receivers_;
+  CodeCacheHostImpl::ReceiverSet code_cache_host_receivers_;
 
   // Indicates if Start() was invoked on this instance.
   bool started_ = false;

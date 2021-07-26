@@ -400,34 +400,72 @@ class RemoveCodeCacheTester {
 
   enum Cache { kJs, kWebAssembly };
 
-  bool ContainsEntry(Cache cache, GURL url, GURL origin_lock) {
+  bool ContainsEntry(Cache cache, const GURL& url, const GURL& origin_lock) {
     entry_exists_ = false;
-    GeneratedCodeCache::ReadDataCallback callback = base::BindOnce(
-        &RemoveCodeCacheTester::FetchEntryCallback, base::Unretained(this));
-    GetCache(cache)->FetchEntry(url, origin_lock, std::move(callback));
-    await_completion_.BlockUntilNotified();
+    base::RunLoop loop;
+    GeneratedCodeCacheContext::RunOrPostTask(
+        code_cache_context_, FROM_HERE,
+        base::BindOnce(&RemoveCodeCacheTester::ContainsEntryOnThread,
+                       base::Unretained(this), cache, url, origin_lock,
+                       loop.QuitClosure()));
+    loop.Run();
     return entry_exists_;
   }
 
+  void ContainsEntryOnThread(Cache cache,
+                             const GURL& url,
+                             const GURL& origin_lock,
+                             base::OnceClosure quit) {
+    GeneratedCodeCache::ReadDataCallback callback =
+        base::BindOnce(&RemoveCodeCacheTester::FetchEntryCallback,
+                       base::Unretained(this), std::move(quit));
+    GetCache(cache)->FetchEntry(url, origin_lock, std::move(callback));
+  }
+
   void AddEntry(Cache cache,
-                GURL url,
-                GURL origin_lock,
+                const GURL& url,
+                const GURL& origin_lock,
                 const std::string& data) {
+    base::RunLoop loop;
+    GeneratedCodeCacheContext::RunOrPostTask(
+        code_cache_context_, FROM_HERE,
+        base::BindOnce(&RemoveCodeCacheTester::AddEntryOnThread,
+                       base::Unretained(this), cache, url, origin_lock, data,
+                       loop.QuitClosure()));
+    loop.Run();
+  }
+
+  void AddEntryOnThread(Cache cache,
+                        const GURL& url,
+                        const GURL& origin_lock,
+                        const std::string& data,
+                        base::OnceClosure quit) {
     std::vector<uint8_t> data_vector(data.begin(), data.end());
     GetCache(cache)->WriteEntry(url, origin_lock, base::Time::Now(),
                                 data_vector);
-    base::RunLoop().RunUntilIdle();
+    std::move(quit).Run();
   }
 
   void SetLastUseTime(Cache cache,
-                      GURL url,
-                      GURL origin_lock,
+                      const GURL& url,
+                      const GURL& origin_lock,
                       base::Time time) {
-    GetCache(cache)->SetLastUsedTimeForTest(
-        url, origin_lock, time,
-        base::BindRepeating(&RemoveCodeCacheTester::SetTimeCallback,
-                            base::Unretained(this)));
-    await_completion_.BlockUntilNotified();
+    base::RunLoop loop;
+    GeneratedCodeCacheContext::RunOrPostTask(
+        code_cache_context_, FROM_HERE,
+        base::BindOnce(&RemoveCodeCacheTester::SetLastUseTimeOnThread,
+                       base::Unretained(this), cache, url, origin_lock, time,
+                       loop.QuitClosure()));
+    loop.Run();
+  }
+
+  void SetLastUseTimeOnThread(Cache cache,
+                              const GURL& url,
+                              const GURL& origin_lock,
+                              base::Time time,
+                              base::OnceClosure quit) {
+    GetCache(cache)->SetLastUsedTimeForTest(url, origin_lock, time,
+                                            std::move(quit));
   }
 
   std::string received_data() { return received_data_; }
@@ -440,7 +478,8 @@ class RemoveCodeCacheTester {
       return code_cache_context_->generated_wasm_code_cache();
   }
 
-  void FetchEntryCallback(const base::Time& response_time,
+  void FetchEntryCallback(base::OnceClosure quit,
+                          const base::Time& response_time,
                           mojo_base::BigBuffer data) {
     if (!response_time.is_null()) {
       entry_exists_ = true;
@@ -448,10 +487,8 @@ class RemoveCodeCacheTester {
     } else {
       entry_exists_ = false;
     }
-    await_completion_.Notify();
+    std::move(quit).Run();
   }
-
-  void SetTimeCallback() { await_completion_.Notify(); }
 
   bool entry_exists_;
   AwaitCompletionHelper await_completion_;

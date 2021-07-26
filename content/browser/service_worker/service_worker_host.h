@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/browser_interface_broker_impl.h"
+#include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_process_host.h"
@@ -110,8 +111,7 @@ class CONTENT_EXPORT ServiceWorkerHost {
 
   // CodeCacheHost processes requests to fetch / write generated code for
   // JavaScript / WebAssembly resources.
-  mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>
-      code_cache_host_receivers_;
+  std::unique_ptr<CodeCacheHostImpl::ReceiverSet> code_cache_host_receivers_;
 
   mojo::AssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
       host_receiver_;

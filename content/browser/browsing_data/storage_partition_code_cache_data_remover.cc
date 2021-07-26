@@ -56,7 +56,16 @@ void StoragePartitionCodeCacheDataRemover::Remove(
       << __func__ << " called with a null callback";
   done_callback_ = std::move(done_callback);
 
-  ClearJSCodeCache();
+  GeneratedCodeCacheContext::RunOrPostTask(
+      generated_code_cache_context_, FROM_HERE,
+      base::BindOnce(&StoragePartitionCodeCacheDataRemover::ClearJSCodeCache,
+                     base::Unretained(this)));
+}
+
+void StoragePartitionCodeCacheDataRemover::ClearedCodeCache() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  std::move(done_callback_).Run();
+  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
 }
 
 void StoragePartitionCodeCacheDataRemover::ClearCache(
@@ -129,9 +138,11 @@ void StoragePartitionCodeCacheDataRemover::ClearWASMCodeCache(int rv) {
 // |rv| is the returned when clearing the code cache. We don't handle
 // any errors here, so the result value is ignored.
 void StoragePartitionCodeCacheDataRemover::DoneClearCodeCache(int rv) {
-  // Notify that we are done.
-  std::move(done_callback_).Run();
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  // Notify the UI thread that we are done.
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&StoragePartitionCodeCacheDataRemover::ClearedCodeCache,
+                     base::Unretained(this)));
 }
 
 }  // namespace content
