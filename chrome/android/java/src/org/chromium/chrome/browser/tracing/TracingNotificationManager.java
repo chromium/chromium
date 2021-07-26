@@ -169,13 +169,14 @@ public class TracingNotificationManager {
         Context context = ContextUtils.getApplicationContext();
         String title = MSG_COMPLETE_NOTIFICATION_TITLE;
         String message = MSG_COMPLETE_NOTIFICATION_MESSAGE;
+        int noIcon = 0;
 
         NotificationWrapperBuilder builder =
                 createNotificationWrapperBuilder()
                         .setContentTitle(title)
                         .setContentText(message)
                         .setOngoing(false)
-                        .addAction(R.drawable.ic_share_white_24dp, MSG_OPEN_SETTINGS,
+                        .addAction(noIcon, MSG_OPEN_SETTINGS,
                                 TracingNotificationServiceImpl.getOpenSettingsIntent(context))
                         .setDeleteIntent(
                                 TracingNotificationServiceImpl.getDiscardTraceIntent(context));
