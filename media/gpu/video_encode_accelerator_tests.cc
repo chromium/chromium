@@ -187,12 +187,11 @@ class VideoEncoderTest : public ::testing::Test {
       const VideoEncoderClientConfig& config) {
     std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors;
     const gfx::Rect visible_rect(config.output_resolution);
-    std::vector<gfx::Size> vp9_spatial_layer_resolutions(
-        config.num_spatial_layers);
-    for (size_t i = 0; i < config.num_spatial_layers; ++i) {
-      vp9_spatial_layer_resolutions[i] = gfx::Size(
-          config.spatial_layers[i].width, config.spatial_layers[i].height);
-    }
+    std::vector<gfx::Size> vp9_spatial_layer_resolutions;
+    // |config.spatial_layers| is filled only in temporal layer or spatial layer
+    // encoding.
+    for (const auto& sl : config.spatial_layers)
+      vp9_spatial_layer_resolutions.emplace_back(sl.width, sl.height);
 
     const VideoCodec codec =
         VideoCodecProfileToVideoCodec(config.output_profile);
@@ -204,13 +203,14 @@ class VideoEncoderTest : public ::testing::Test {
           g_env->OutputFolder()
               .Append(g_env->GetTestOutputFilePath())
               .Append(video->FilePath().BaseName().ReplaceExtension(extension));
-      if (config.num_temporal_layers > 1 || config.num_spatial_layers > 1) {
+      if (!vp9_spatial_layer_resolutions.empty()) {
+        CHECK_GE(config.num_spatial_layers, 1u);
+        CHECK_GE(config.num_temporal_layers, 1u);
         for (size_t vp9_spatial_layer_index_to_write = 0;
              vp9_spatial_layer_index_to_write < config.num_spatial_layers;
              ++vp9_spatial_layer_index_to_write) {
-          gfx::Size layer_size = gfx::Size(
-              config.spatial_layers[vp9_spatial_layer_index_to_write].width,
-              config.spatial_layers[vp9_spatial_layer_index_to_write].height);
+          const gfx::Size& layer_size =
+              vp9_spatial_layer_resolutions[vp9_spatial_layer_index_to_write];
           for (size_t num_vp9_temporal_layers_to_write = 1;
                num_vp9_temporal_layers_to_write <= config.num_temporal_layers;
                ++num_vp9_temporal_layers_to_write) {
@@ -264,10 +264,9 @@ class VideoEncoderTest : public ::testing::Test {
       return bitstream_processors;
     }
 
-    if (config.num_temporal_layers > 1 || config.num_spatial_layers > 1) {
+    if (!vp9_spatial_layer_resolutions.empty()) {
       CHECK_GE(config.num_spatial_layers, 1u);
       CHECK_GE(config.num_temporal_layers, 1u);
-      DCHECK_EQ(config.spatial_layers.size(), config.num_spatial_layers);
       for (size_t vp9_spatial_layer_index_to_decode = 0;
            vp9_spatial_layer_index_to_decode < config.num_spatial_layers;
            ++vp9_spatial_layer_index_to_decode) {
