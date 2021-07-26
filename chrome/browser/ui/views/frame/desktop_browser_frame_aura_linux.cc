@@ -32,7 +32,7 @@ DesktopBrowserFrameAuraLinux::DesktopBrowserFrameAuraLinux(
           base::Unretained(this)));
 }
 
-DesktopBrowserFrameAuraLinux::~DesktopBrowserFrameAuraLinux() = default;
+DesktopBrowserFrameAuraLinux::~DesktopBrowserFrameAuraLinux() {}
 
 views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams() {
   views::Widget::InitParams params;
@@ -56,7 +56,6 @@ views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams() {
                             ? std::string(kX11WindowRoleBrowser)
                             : std::string(kX11WindowRolePopup);
   params.remove_standard_frame = UseCustomFrame();
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 
   return params;
 }
@@ -85,17 +84,12 @@ void DesktopBrowserFrameAuraLinux::TabDraggingKindChanged(
   host_->TabDraggingKindChanged(tab_drag_kind);
 }
 
-bool DesktopBrowserFrameAuraLinux::ShouldDrawRestoredFrameShadow() const {
-  return host_->SupportsClientFrameShadow() && UseCustomFrame();
-}
-
 void DesktopBrowserFrameAuraLinux::OnUseCustomChromeFrameChanged() {
   // Tell the window manager to add or remove system borders.
   browser_frame()->set_frame_type(UseCustomFrame()
                                       ? views::Widget::FrameType::kForceCustom
                                       : views::Widget::FrameType::kForceNative);
   browser_frame()->FrameTypeChanged();
-  host_->UpdateFrameHints();
 }
 
 NativeBrowserFrame* NativeBrowserFrameFactory::Create(

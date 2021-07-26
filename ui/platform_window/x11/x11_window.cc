@@ -1654,11 +1654,6 @@ void X11Window::CreateXWindow(const PlatformWindowInitProperties& properties) {
                                           &visual_id, &depth, &colormap,
                                           &visual_has_alpha_);
   }
-  // When drawing translucent windows, ensure a translucent background pixel
-  // value so that a colored border won't be shown in the time after the window
-  // has been resized smaller but before Chrome has finished drawing a frame.
-  if (visual_has_alpha_)
-    req.background_pixel = 0;
 
   // x.org will BadMatch if we don't set a border when the depth isn't the
   // same as the parent depth.
@@ -2316,6 +2311,15 @@ void X11Window::UpdateWindowRegion(
         .destination_window = xwindow_,
         .source_bitmap = x11::Pixmap::None,
     });
+  } else {
+    // Conversely, if the window does not have system borders, the mask must be
+    // manually set to a rectangle that covers the whole window (not null). This
+    // is due to a bug in KWin <= 4.11.5 (KDE bug #330573) where setting a null
+    // shape causes the hint to disable system borders to be ignored (resulting
+    // in a double border).
+    x11::Rectangle r{0, 0, static_cast<uint16_t>(bounds_in_pixels_.width()),
+                     static_cast<uint16_t>(bounds_in_pixels_.height())};
+    set_shape({r});
   }
 }
 
