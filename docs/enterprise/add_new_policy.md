@@ -117,7 +117,7 @@ Usually you need a policy when
             `components/policy/proto/chrome_device_policy.proto`. Please note
             that all proto fields are optional.
         -   Update
-            `chrome/browser/ash/policy/core/device_policy_decoder_chromeos.{h,cc}`
+            `chrome/browser/ash/policy/core/device_policy_decoder.{h,cc}`
             for the new policy.
 7.  Test the policy.
     -   Add a test to verify the policy. You can add a test in

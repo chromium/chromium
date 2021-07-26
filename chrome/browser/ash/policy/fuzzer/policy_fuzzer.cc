@@ -16,7 +16,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
-#include "chrome/browser/ash/policy/core/device_policy_decoder_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_policy_decoder.h"
 #include "chrome/browser/ash/policy/fuzzer/policy_fuzzer.pb.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"

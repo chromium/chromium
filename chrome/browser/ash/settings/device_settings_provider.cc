@@ -24,7 +24,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
-#include "chrome/browser/ash/policy/core/device_policy_decoder_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_policy_decoder.h"
 #include "chrome/browser/ash/policy/handlers/system_proxy_handler.h"
 #include "chrome/browser/ash/policy/off_hours/off_hours_proto_parser.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -168,11 +168,11 @@ const char* const kKnownSettings[] = {
     kVirtualMachinesAllowed,
 };
 
-// Re-use the DecodeJsonStringAndNormalize from device_policy_decoder_chromeos.h
+// Re-use the DecodeJsonStringAndNormalize from device_policy_decoder.h
 // here to decode the json string and validate it against |policy_name|'s
 // schema. If the json string is valid, the decoded base::Value will be stored
 // as |setting_name| in |pref_value_map|. The error can be ignored here since it
-// is already reported during decoding in device_policy_decoder_chromeos.cc.
+// is already reported during decoding in device_policy_decoder.cc.
 void SetJsonDeviceSetting(const std::string& setting_name,
                           const std::string& policy_name,
                           const std::string& json_string,

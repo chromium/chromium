@@ -50,7 +50,7 @@ absl::optional<std::string> ExtractTimezoneFromProto(
 // { "day_of_week" : int # value is from 1 to 7 (1 = Monday, 2 = Tuesday, etc.)
 //   "time" : int # in milliseconds from the beginning of the day.
 // }
-// This function is used by device_policy_decoder_chromeos to save "OffHours"
+// This function is used by device_policy_decoder.cc to save "OffHours"
 // policy in PolicyMap.
 std::unique_ptr<base::DictionaryValue> ConvertOffHoursProtoToValue(
     const enterprise_management::DeviceOffHoursProto& container);

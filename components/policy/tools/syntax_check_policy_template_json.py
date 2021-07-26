@@ -929,7 +929,7 @@ class PolicyTemplateChecker(object):
                     ' still have to implement the enrollment-dependent default '
                     'value handling yourself in all places where the device '
                     'policy proto is evaluated. This will probably include '
-                    'device_policy_decoder_chromeos.cc for chrome, but could '
+                    'device_policy_decoder.cc for chrome, but could '
                     'also have to done in other components if they read the '
                     'proto directly. Details: crbug.com/809653')
 

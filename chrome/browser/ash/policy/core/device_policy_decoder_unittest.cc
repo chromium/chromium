@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/core/device_policy_decoder_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_policy_decoder.h"
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -55,21 +55,20 @@ constexpr char kInvalidBluetoothServiceUUIDList[] = "[\"wrong-uuid\"]";
 
 }  // namespace
 
-class DevicePolicyDecoderChromeOSTest : public testing::Test {
+class DevicePolicyDecoderTest : public testing::Test {
  public:
-  DevicePolicyDecoderChromeOSTest() = default;
-  ~DevicePolicyDecoderChromeOSTest() override = default;
+  DevicePolicyDecoderTest() = default;
+  ~DevicePolicyDecoderTest() override = default;
 
  protected:
   std::unique_ptr<base::Value> GetWallpaperDict() const;
   std::unique_ptr<base::Value> GetBluetoothServiceAllowedList() const;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(DevicePolicyDecoderChromeOSTest);
+  DISALLOW_COPY_AND_ASSIGN(DevicePolicyDecoderTest);
 };
 
-std::unique_ptr<base::Value> DevicePolicyDecoderChromeOSTest::GetWallpaperDict()
-    const {
+std::unique_ptr<base::Value> DevicePolicyDecoderTest::GetWallpaperDict() const {
   auto dict = std::make_unique<base::DictionaryValue>();
   dict->SetKey(kWallpaperUrlPropertyName,
                base::Value(kWallpaperUrlPropertyValue));
@@ -79,7 +78,7 @@ std::unique_ptr<base::Value> DevicePolicyDecoderChromeOSTest::GetWallpaperDict()
 }
 
 std::unique_ptr<base::Value>
-DevicePolicyDecoderChromeOSTest::GetBluetoothServiceAllowedList() const {
+DevicePolicyDecoderTest::GetBluetoothServiceAllowedList() const {
   auto list = std::make_unique<base::ListValue>();
   list->Append(base::Value(kValidBluetoothServiceUUID4));
   list->Append(base::Value(kValidBluetoothServiceUUID8));
@@ -87,8 +86,7 @@ DevicePolicyDecoderChromeOSTest::GetBluetoothServiceAllowedList() const {
   return list;
 }
 
-TEST_F(DevicePolicyDecoderChromeOSTest,
-       DecodeJsonStringAndNormalizeJSONParseError) {
+TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeJSONParseError) {
   std::string error;
   absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kInvalidJson, key::kDeviceWallpaperImage, &error);
@@ -102,8 +100,7 @@ TEST_F(DevicePolicyDecoderChromeOSTest,
 }
 
 #if GTEST_HAS_DEATH_TEST
-TEST_F(DevicePolicyDecoderChromeOSTest,
-       DecodeJsonStringAndNormalizeInvalidSchema) {
+TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeInvalidSchema) {
   std::string error;
   EXPECT_DEATH(
       DecodeJsonStringAndNormalize(kWallpaperJson, kInvalidPolicyName, &error),
@@ -111,8 +108,7 @@ TEST_F(DevicePolicyDecoderChromeOSTest,
 }
 #endif
 
-TEST_F(DevicePolicyDecoderChromeOSTest,
-       DecodeJsonStringAndNormalizeInvalidValue) {
+TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeInvalidValue) {
   std::string error;
   absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kWallpaperJsonInvalidValue, key::kDeviceWallpaperImage, &error);
@@ -125,8 +121,7 @@ TEST_F(DevicePolicyDecoderChromeOSTest,
       localized_error);
 }
 
-TEST_F(DevicePolicyDecoderChromeOSTest,
-       DecodeJsonStringAndNormalizeUnknownProperty) {
+TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeUnknownProperty) {
   std::string error;
   absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kWallpaperJsonUnknownProperty, key::kDeviceWallpaperImage, &error);
@@ -139,7 +134,7 @@ TEST_F(DevicePolicyDecoderChromeOSTest,
       localized_error);
 }
 
-TEST_F(DevicePolicyDecoderChromeOSTest, DecodeJsonStringAndNormalizeSuccess) {
+TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeSuccess) {
   std::string error;
   absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kWallpaperJson, key::kDeviceWallpaperImage, &error);
@@ -147,7 +142,7 @@ TEST_F(DevicePolicyDecoderChromeOSTest, DecodeJsonStringAndNormalizeSuccess) {
   EXPECT_TRUE(error.empty());
 }
 
-TEST_F(DevicePolicyDecoderChromeOSTest, UserWhitelistWarning) {
+TEST_F(DevicePolicyDecoderTest, UserWhitelistWarning) {
   PolicyBundle bundle;
   PolicyMap& policies = bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
 
@@ -176,7 +171,7 @@ TEST_F(DevicePolicyDecoderChromeOSTest, UserWhitelistWarning) {
           .empty());
 }
 
-TEST_F(DevicePolicyDecoderChromeOSTest, ReportDeviceLoginLogout) {
+TEST_F(DevicePolicyDecoderTest, ReportDeviceLoginLogout) {
   PolicyBundle bundle;
   PolicyMap& policies = bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
 
@@ -199,7 +194,7 @@ TEST_F(DevicePolicyDecoderChromeOSTest, ReportDeviceLoginLogout) {
   EXPECT_TRUE(report_device_login_logout_bool);
 }
 
-TEST_F(DevicePolicyDecoderChromeOSTest, ReportDeviceAudioStatus) {
+TEST_F(DevicePolicyDecoderTest, ReportDeviceAudioStatus) {
   PolicyBundle bundle;
   PolicyMap& policies = bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
 
@@ -222,14 +217,15 @@ TEST_F(DevicePolicyDecoderChromeOSTest, ReportDeviceAudioStatus) {
   EXPECT_TRUE(report_device_audio_status_bool);
 }
 
-TEST_F(DevicePolicyDecoderChromeOSTest, ReportDeviceNetworkConfiguration) {
+TEST_F(DevicePolicyDecoderTest, ReportDeviceNetworkConfiguration) {
   PolicyBundle bundle;
   PolicyMap& policies = bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
 
   base::WeakPtr<ExternalDataManager> external_data_manager;
 
   em::ChromeDeviceSettingsProto device_policy;
-  device_policy.mutable_device_reporting()->set_report_network_configuration(true);
+  device_policy.mutable_device_reporting()->set_report_network_configuration(
+      true);
 
   DecodeDevicePolicy(device_policy, external_data_manager, &policies);
 
@@ -245,7 +241,7 @@ TEST_F(DevicePolicyDecoderChromeOSTest, ReportDeviceNetworkConfiguration) {
   EXPECT_TRUE(report_device_network_configuration_bool);
 }
 
-TEST_F(DevicePolicyDecoderChromeOSTest, ReportDeviceNetworkStatus) {
+TEST_F(DevicePolicyDecoderTest, ReportDeviceNetworkStatus) {
   PolicyBundle bundle;
   PolicyMap& policies = bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
 
@@ -268,7 +264,7 @@ TEST_F(DevicePolicyDecoderChromeOSTest, ReportDeviceNetworkStatus) {
   EXPECT_TRUE(report_device_network_status_bool);
 }
 
-TEST_F(DevicePolicyDecoderChromeOSTest, kReportDeviceOsUpdateStatus) {
+TEST_F(DevicePolicyDecoderTest, kReportDeviceOsUpdateStatus) {
   PolicyBundle bundle;
   PolicyMap& policies = bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
 
@@ -291,7 +287,7 @@ TEST_F(DevicePolicyDecoderChromeOSTest, kReportDeviceOsUpdateStatus) {
   EXPECT_TRUE(report_device_os_update_status_bool);
 }
 
-TEST_F(DevicePolicyDecoderChromeOSTest, DecodeServiceUUIDListSuccess) {
+TEST_F(DevicePolicyDecoderTest, DecodeServiceUUIDListSuccess) {
   std::string error;
   absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kValidBluetoothServiceUUIDList, key::kDeviceAllowedBluetoothServices,
@@ -300,7 +296,7 @@ TEST_F(DevicePolicyDecoderChromeOSTest, DecodeServiceUUIDListSuccess) {
   EXPECT_TRUE(error.empty());
 }
 
-TEST_F(DevicePolicyDecoderChromeOSTest, DecodeServiceUUIDListError) {
+TEST_F(DevicePolicyDecoderTest, DecodeServiceUUIDListError) {
   std::string error;
   absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kInvalidBluetoothServiceUUIDList, key::kDeviceAllowedBluetoothServices,
@@ -309,4 +305,5 @@ TEST_F(DevicePolicyDecoderChromeOSTest, DecodeServiceUUIDListError) {
   EXPECT_EQ("Invalid policy value: Invalid value for string (at items[0])",
             error);
 }
+
 }  // namespace policy
