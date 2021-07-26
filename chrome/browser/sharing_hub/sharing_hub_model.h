@@ -14,7 +14,6 @@
 #include "ui/gfx/image/image_skia.h"
 
 class GURL;
-class Profile;
 
 namespace sharing {
 namespace mojom {
@@ -62,12 +61,9 @@ class SharingHubModel : public sharing::ShareTargetsObserver {
   void GetThirdPartyActionList(content::WebContents* web_contents,
                                std::vector<SharingHubAction>* list);
 
-  // Executes the third party action indicated by |id|, i.e. opens a new tab to
+  // Executes the third party action indicated by |id|, i.e. opens a popup to
   // the corresponding webpage.
-  void ExecuteThirdPartyAction(Profile* profile,
-                               int id,
-                               const std::string& url,
-                               const std::u16string& title);
+  void ExecuteThirdPartyAction(content::WebContents* web_contents, int id);
 
   // sharing::ShareTargetsObserver implementation.
   void OnShareTargetsUpdated(
