@@ -22,8 +22,10 @@
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/storage_partition.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -242,9 +244,7 @@ bool AccountChooserDialogAndroid::HandleCredentialChosen(
 
   scoped_refptr<password_manager::BiometricAuthenticator> authenticator =
       client_->GetBiometricAuthenticator();
-  if (authenticator &&
-      authenticator->CanAuthenticate() ==
-          password_manager::BiometricsAvailability::kAvailable) {
+  if (password_manager_util::CanUseBiometricAuth(authenticator.get())) {
     authenticator_ = std::move(authenticator);
     authenticator_->Authenticate(
         password_manager::BiometricAuthRequester::kAccountChooserDialog,

@@ -20,6 +20,8 @@
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/url_formatter/elide_url.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -110,10 +112,7 @@ void TouchToFillController::OnCredentialSelected(
   ukm::builders::TouchToFill_Shown(source_id_)
       .SetUserAction(static_cast<int64_t>(UserAction::kSelectedCredential))
       .Record(ukm::UkmRecorder::Get());
-
-  if (!authenticator_ ||
-      authenticator_->CanAuthenticate() !=
-          password_manager::BiometricsAvailability::kAvailable) {
+  if (!password_manager_util::CanUseBiometricAuth(authenticator_.get())) {
     FillCredential(credential);
     return;
   }

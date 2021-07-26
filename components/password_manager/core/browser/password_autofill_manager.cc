@@ -390,7 +390,6 @@ void PasswordAutofillManager::DidAcceptSuggestion(const std::u16string& value,
                                                   const std::string& backend_id,
                                                   int position) {
   using metrics_util::PasswordDropdownSelectedOption;
-
   if (frontend_id == autofill::POPUP_ITEM_ID_GENERATE_PASSWORD_ENTRY) {
     password_client_->GeneratePassword(PasswordGenerationType::kAutomatic);
     metrics_util::LogPasswordDropdownItemSelected(
@@ -438,8 +437,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(const std::u16string& value,
         password_client_->GetBiometricAuthenticator();
     // Note: this is currently only implemented on Android. For desktop,
     // the `authenticator` will be null.
-    if (!authenticator || authenticator->CanAuthenticate() !=
-                              BiometricsAvailability::kAvailable) {
+    if (!password_manager_util::CanUseBiometricAuth(authenticator.get())) {
       bool success =
           FillSuggestion(GetUsernameFromSuggestion(value), frontend_id);
       DCHECK(success);

@@ -336,4 +336,13 @@ PasswordForm MakeNormalizedBlocklistedForm(
   return result;
 }
 
+bool CanUseBiometricAuth(
+    password_manager::BiometricAuthenticator* authenticator) {
+  return authenticator &&
+         authenticator->CanAuthenticate() ==
+             password_manager::BiometricsAvailability::kAvailable &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kBiometricTouchToFill);
+}
+
 }  // namespace password_manager_util
