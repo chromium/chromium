@@ -550,6 +550,7 @@ bool AppServiceShelfContextMenu::ShouldAddPinMenu() {
       return show_in_launcher;
     }
     case apps::mojom::AppType::kCrostini:
+    case apps::mojom::AppType::kBorealis:
     case apps::mojom::AppType::kExtension:
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb:
@@ -564,7 +565,6 @@ bool AppServiceShelfContextMenu::ShouldAddPinMenu() {
       return false;
     case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kRemote:
-    case apps::mojom::AppType::kBorealis:
       NOTREACHED() << "Type " << app_type_ << " should not appear in shelf.";
       return false;
   }
