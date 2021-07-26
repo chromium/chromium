@@ -751,6 +751,37 @@ void CanonicalCookie::SetSourcePort(int port) {
   }
 }
 
+bool CanonicalCookie::SerializePartitionKey(std::string& out) const {
+  if (!partition_key_) {
+    out = kEmptyCookiePartitionKey;
+    return true;
+  }
+  if (partition_key_->GetURL().SchemeIsFile()) {
+    out = partition_key_->SerializeFileSiteWithHost();
+    return true;
+  }
+  if (partition_key_->opaque())
+    return false;
+  out = partition_key_->Serialize();
+  return true;
+}
+
+// static
+bool CanonicalCookie::DeserializePartitionKey(
+    const std::string& in,
+    absl::optional<SchemefulSite>& out) {
+  if (in == kEmptyCookiePartitionKey) {
+    out = absl::nullopt;
+    return true;
+  }
+  auto schemeful_site = SchemefulSite::Deserialize(in);
+  // SchemefulSite is opaque if the input is invalid.
+  if (schemeful_site.opaque())
+    return false;
+  out = absl::make_optional(schemeful_site);
+  return true;
+}
+
 bool CanonicalCookie::IsEquivalentForSecureCookieMatching(
     const CanonicalCookie& secure_cookie) const {
   // Names must be the same

@@ -137,6 +137,11 @@ std::string SchemefulSite::Serialize() const {
   return site_as_origin_.Serialize();
 }
 
+std::string SchemefulSite::SerializeFileSiteWithHost() const {
+  DCHECK_EQ(url::kFileScheme, site_as_origin_.scheme());
+  return site_as_origin_.GetTupleOrPrecursorTupleIfOpaque().Serialize();
+}
+
 std::string SchemefulSite::GetDebugString() const {
   return site_as_origin_.GetDebugString();
 }

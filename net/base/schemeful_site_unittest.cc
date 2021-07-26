@@ -234,6 +234,39 @@ TEST(SchemefulSiteTest, SerializationConsistent) {
   }
 }
 
+TEST(SchemefulSiteTest, SerializationFileSiteWithHost) {
+  const struct {
+    SchemefulSite site;
+    std::string expected;
+  } kTestCases[] = {
+      {SchemefulSite(GURL("file:///etc/passwd")), "file://"},
+      {SchemefulSite(GURL("file://example.com/etc/passwd")),
+       "file://example.com"},
+      {SchemefulSite(GURL("file://example.com")), "file://example.com"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.site.GetDebugString());
+    std::string serialized_site = test_case.site.SerializeFileSiteWithHost();
+    EXPECT_EQ(test_case.expected, serialized_site);
+    absl::optional<SchemefulSite> deserialized_site =
+        SchemefulSite::Deserialize(serialized_site);
+    EXPECT_TRUE(deserialized_site);
+    EXPECT_EQ(test_case.site, deserialized_site);
+  }
+}
+
+TEST(SchemefulSiteTest, FileURLWithHostEquality) {
+  // Two file URLs with different hosts should result in unequal SchemefulSites.
+  SchemefulSite site1(GURL("file://foo/some/path.txt"));
+  SchemefulSite site2(GURL("file://bar/some/path.txt"));
+  EXPECT_NE(site1, site2);
+
+  // Two file URLs with the same host should result in equal SchemefulSites.
+  SchemefulSite site3(GURL("file://foo/another/path.pdf"));
+  EXPECT_EQ(site1, site3);
+}
+
 TEST(SchemefulSiteTest, OpaqueSerialization) {
   // List of origins which should all share a schemeful site.
   SchemefulSite kTestSites[] = {

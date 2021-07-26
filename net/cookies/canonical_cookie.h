@@ -175,8 +175,23 @@ class NET_EXPORT CanonicalCookie {
     return partition_key_;
   }
 
-  // TODO(crbug.com/1225444) Methods to serialize and deserialize partition
-  // keys.
+  // Methods for serializing and deserializing a partition key to/from a string.
+  // This will be used for Android, storing persistent partitioned cookies, and
+  // loading partitioned cookies into Java code.
+  //
+  // This function returns if the partition key is not opaque. We do not want
+  // to serialize cookies with opaque origins in their partition key to disk,
+  // because if the browser session ends we will not be able to attach the
+  // saved cookie to any future requests. This is because opaque origins' nonces
+  // are only stored in volatile memory.
+  bool SerializePartitionKey(std::string& out) const WARN_UNUSED_RESULT;
+  // Deserializes the result of the method above.
+  // If the result is abls::nullopt, the resulting cookie is not partitioned.
+  //
+  // Returns if the resulting partition key is valid.
+  static bool DeserializePartitionKey(const std::string& in,
+                                      absl::optional<SchemefulSite>& out)
+      WARN_UNUSED_RESULT;
 
   // Returns an enum indicating the scheme of the origin that
   // set this cookie. This is not part of the cookie spec but is being used to

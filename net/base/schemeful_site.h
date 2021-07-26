@@ -95,6 +95,12 @@ class NET_EXPORT SchemefulSite {
   // with their associated nonce is necessary, see `SerializeWithNonce()`.
   std::string Serialize() const;
 
+  // Serializes `site_as_origin_` in cases when it has a 'file' scheme but
+  // we want to preserve the Origin's host.
+  // This was added to serialize cookie partition keys, which may contain
+  // file origins with a host.
+  std::string SerializeFileSiteWithHost() const;
+
   std::string GetDebugString() const;
 
   // Gets the underlying site as a GURL. If the internal Origin is opaque,

@@ -41,6 +41,9 @@ void OnCookiesFetchFinished(const net::CookieList& cookies) {
 
   int index = 0;
   for (auto i = cookies.cbegin(); i != cookies.cend(); ++i) {
+    std::string pk = net::kEmptyCookiePartitionKey;
+    if (!i->SerializePartitionKey(pk))
+      continue;
     ScopedJavaLocalRef<jobject> java_cookie = Java_CookiesFetcher_createCookie(
         env, base::android::ConvertUTF8ToJavaString(env, i->Name()),
         base::android::ConvertUTF8ToJavaString(env, i->Value()),
@@ -51,10 +54,7 @@ void OnCookiesFetchFinished(const net::CookieList& cookies) {
         i->LastAccessDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         i->IsSecure(), i->IsHttpOnly(), static_cast<int>(i->SameSite()),
         i->Priority(), i->IsSameParty(),
-        // TODO(crbug.com/1225444) Use serialized partition key instead of
-        // constant.
-        base::android::ConvertUTF8ToJavaString(env,
-                                               net::kEmptyCookiePartitionKey),
+        base::android::ConvertUTF8ToJavaString(env, pk),
         static_cast<int>(i->SourceScheme()), i->SourcePort());
     env->SetObjectArrayElement(joa.obj(), index++, java_cookie.obj());
   }
@@ -104,6 +104,12 @@ static void JNI_CookiesFetcher_RestoreCookies(
   std::string domain_str(base::android::ConvertJavaStringToUTF8(env, domain));
   std::string path_str(base::android::ConvertJavaStringToUTF8(env, path));
 
+  absl::optional<net::SchemefulSite> pk;
+  if (!net::CanonicalCookie::DeserializePartitionKey(
+          base::android::ConvertJavaStringToUTF8(env, partition_key), pk)) {
+    return;
+  }
+
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::FromStorage(
           base::android::ConvertJavaStringToUTF8(env, name),
@@ -116,10 +122,8 @@ static void JNI_CookiesFetcher_RestoreCookies(
           base::Time::FromDeltaSinceWindowsEpoch(
               base::TimeDelta::FromMicroseconds(last_access)),
           secure, httponly, static_cast<net::CookieSameSite>(same_site),
-          static_cast<net::CookiePriority>(priority), same_party,
-          // TODO(crbug.com/1225444) Deserialize partition key argument.
-          absl::nullopt, static_cast<net::CookieSourceScheme>(source_scheme),
-          source_port);
+          static_cast<net::CookiePriority>(priority), same_party, pk,
+          static_cast<net::CookieSourceScheme>(source_scheme), source_port);
   if (!cookie)
     return;
 
