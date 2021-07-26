@@ -1168,7 +1168,7 @@
         "cros_img": "atlas-release/R93-14083.0.0",
         "name": "lacros_fyi_tast_tests_ATLAS_TOT",
         "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_fyi_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_fyi_tast_tests/",
         "timeout_sec": 10800
@@ -1179,7 +1179,7 @@
         "cros_img": "atlas-release/R92-13982.52.0",
         "name": "lacros_fyi_tast_tests_ATLAS_TOT-1",
         "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_fyi_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_fyi_tast_tests/",
         "timeout_sec": 10800
@@ -1190,7 +1190,7 @@
         "cros_img": "eve-release/R93-14083.0.0",
         "name": "lacros_fyi_tast_tests_EVE_TOT",
         "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_fyi_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_fyi_tast_tests/",
         "timeout_sec": 10800
@@ -1201,7 +1201,7 @@
         "cros_img": "eve-release/R92-13982.52.0",
         "name": "lacros_fyi_tast_tests_EVE_TOT-1",
         "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_fyi_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_fyi_tast_tests/",
         "timeout_sec": 10800
@@ -1259,7 +1259,7 @@
         "cros_img": "kevin-release/R93-14083.0.0",
         "name": "lacros_fyi_tast_tests_KEVIN_TOT",
         "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_fyi_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_fyi_tast_tests/",
         "timeout_sec": 10800
