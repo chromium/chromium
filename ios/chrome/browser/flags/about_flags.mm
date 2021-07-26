@@ -116,6 +116,14 @@ const FeatureEntry::Choice kDelayThresholdMinutesToUpdateGaiaCookieChoices[] = {
     {"60", signin::kDelayThresholdMinutesToUpdateGaiaCookie, "60"},
 };
 
+const FeatureEntry::Choice
+    kWaitThresholdMillisecondsForCapabilitiesApiChoices[] = {
+        {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+        {"200", signin::kWaitThresholdMillisecondsForCapabilitiesApi, "200"},
+        {"500", signin::kWaitThresholdMillisecondsForCapabilitiesApi, "500"},
+        {"5000", signin::kWaitThresholdMillisecondsForCapabilitiesApi, "5000"},
+};
+
 const FeatureEntry::FeatureVariation
     kOmniboxOnDeviceHeadSuggestNonIncognitoExperimentVariations[] = {
         {
@@ -781,6 +789,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnableSaveCardInfoBarAccountIndicationFooter)},
+    {"wait-threshold-seconds-for-capabilities-api",
+     flag_descriptions::kWaitThresholdMillisecondsForCapabilitiesApiName,
+     flag_descriptions::kWaitThresholdMillisecondsForCapabilitiesApiDescription,
+     flags_ui::kOsIos,
+     MULTI_VALUE_TYPE(kWaitThresholdMillisecondsForCapabilitiesApiChoices)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

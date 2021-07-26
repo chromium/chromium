@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 
+#include "base/command_line.h"
 #import "base/strings/sys_string_conversions.h"
+#include "base/time/time.h"
 #import "base/version.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
@@ -31,6 +33,13 @@
 #endif
 
 namespace {
+
+// Maximum delay to wait for fetching the account capabilities before showing
+// the sign-in upgrade promo. If fetching the account capabilities takes more
+// than the delay, then the promo is suppressed - it may be shown on the next
+// start-up.
+constexpr base::TimeDelta kShowSigninUpgradePromoMaxDelay =
+    base::TimeDelta::FromMilliseconds(200);
 
 // Converts an array of identities to a set of gaia ids.
 NSSet<NSString*>* GaiaIdSetWithIdentities(
@@ -66,6 +75,21 @@ bool IsStrictSubset(NSArray<NSString*>* recorded_gaia_ids,
 #pragma mark - Public
 
 namespace signin {
+
+base::TimeDelta GetWaitThresholdForCapabilities() {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(
+          signin::kWaitThresholdMillisecondsForCapabilitiesApi)) {
+    std::string delayString = command_line->GetSwitchValueASCII(
+        signin::kWaitThresholdMillisecondsForCapabilitiesApi);
+    int commandLineDelay = 0;
+    if (base::StringToInt(delayString, &commandLineDelay)) {
+      return base::TimeDelta::FromMilliseconds(commandLineDelay);
+    }
+  }
+  return kShowSigninUpgradePromoMaxDelay;
+}
 
 bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
                                     const base::Version& current_version) {

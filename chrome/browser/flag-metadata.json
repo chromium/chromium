@@ -5681,6 +5681,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "wait-threshold-seconds-for-capabilities-api",
+    "owners": [ "fernandex", "chrome-signin-team" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "wake-on-wifi-allowed",
     "owners": [ "yenlinlai", "chromeos-wifi-team" ],
     "expiry_milestone": 95

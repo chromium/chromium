@@ -142,13 +142,6 @@ namespace {
 // commands that trigger a view controller presentation.
 const int64_t kExpectedTransitionDurationInNanoSeconds = 0.2 * NSEC_PER_SEC;
 
-// Maximum delay to wait for fetching the account capabilities before showing
-// the sign-in upgrade promo. If fetching the account capabilities takes more
-// than the delay, then the promo is suppressed - it may be shown on the next
-// start-up.
-constexpr base::TimeDelta kShowSigninUpgradePromoMaxDelay =
-    base::TimeDelta::FromMilliseconds(200);
-
 // Possible results of snapshotting at the moment the user enters the tab
 // switcher. These values are persisted to logs. Entries should not be
 // renumbered and numeric values should never be reused.
@@ -787,7 +780,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
             "Signin.AccountCapabilities.GetFromSystemLibraryDuration."
             "SigninUpgradePromo",
             fetch_delay);
-        if (fetch_delay > kShowSigninUpgradePromoMaxDelay ||
+        if (fetch_delay > signin::GetWaitThresholdForCapabilities() ||
             result != ios::ChromeIdentityCapabilityResult::kTrue) {
           return;
         }

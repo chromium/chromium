@@ -507,6 +507,12 @@ const char kURLBlocklistIOSDescription[] =
     "When enabled, URLs can be blocked/allowed by the URLBlocklist/URLAllowlist"
     "enterprise policies.";
 
+const char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
+    "Maximum wait time (in seconds) for a response from the Account "
+    "Capabilities API";
+const char kWaitThresholdMillisecondsForCapabilitiesApiDescription[] =
+    "Used for testing purposes to test waiting thresholds in dev.";
+
 const char kWalletServiceUseSandboxName[] = "Use Google Payments sandbox";
 const char kWalletServiceUseSandboxDescription[] =
     "Uses the sandbox service for Google Payments API calls.";

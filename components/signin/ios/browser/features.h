@@ -30,6 +30,10 @@ extern const base::Feature kRestoreGaiaCookiesOnUserAction;
 // for the existence of Gaia cookies for google.com.
 extern const char kDelayThresholdMinutesToUpdateGaiaCookie[];
 
+// Name of multi-value switch that controls the max time (in seconds) for
+// waiting for a response from the Account Capabilities API.
+extern const char kWaitThresholdMillisecondsForCapabilitiesApi[];
+
 // Feature controlling whether to use full username in sign-in notifications.
 extern const base::Feature kSigninNotificationInfobarUsernameInTitle;
 

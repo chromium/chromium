@@ -441,6 +441,11 @@ extern const char kUpdateHistoryEntryPointsInIncognitoDescription[];
 extern const char kURLBlocklistIOSName[];
 extern const char kURLBlocklistIOSDescription[];
 
+// Title and description for the flag to control the maximum wait time (in
+// seconds) for a response from the Account Capabilities API.
+extern const char kWaitThresholdMillisecondsForCapabilitiesApiName[];
+extern const char kWaitThresholdMillisecondsForCapabilitiesApiDescription[];
+
 // Title and description for the flag to control if Google Payments API calls
 // should use the sandbox servers.
 extern const char kWalletServiceUseSandboxName[];

@@ -29,6 +29,9 @@ const base::Feature kRestoreGaiaCookiesOnUserAction{
 const char kDelayThresholdMinutesToUpdateGaiaCookie[] =
     "minutes-delay-to-restore-gaia-cookies-if-deleted";
 
+const char kWaitThresholdMillisecondsForCapabilitiesApi[] =
+    "wait-threshold-milliseconds-for-capabilities-api";
+
 const base::Feature kSigninNotificationInfobarUsernameInTitle{
     "SigninNotificationInfobarUsernameInTitle",
     base::FEATURE_ENABLED_BY_DEFAULT};

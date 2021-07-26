@@ -13,10 +13,14 @@ class ChromeBrowserState;
 class PrefService;
 
 namespace base {
+class TimeDelta;
 class Version;
 }
 
 namespace signin {
+
+// Returns the maximum allowed waiting time for the Account Capabilities API.
+base::TimeDelta GetWaitThresholdForCapabilities();
 
 // Returns true if this user sign-in upgrade should be shown for |browserState|.
 bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
