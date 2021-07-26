@@ -1234,6 +1234,10 @@ const ui::NativeTheme* View::GetNativeTheme() const {
   if (widget)
     return widget->GetNativeTheme();
 
+  // CHECK here to ensure we catch fallthrough to the global NativeTheme
+  // instance on all Chromium builds (crbug.com/1056756).
+  CHECK(false);
+
   return ui::NativeTheme::GetInstanceForNativeUi();
 }
 
