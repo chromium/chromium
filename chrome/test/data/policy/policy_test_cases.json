@@ -2071,12 +2071,35 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "auth.schemes": {
+            "location": "local_state",
+            "default_value": "basic,digest,ntlm,negotiate"
+          }
+        }
+      },
+      {
         "policies": {
-          "AuthSchemes": "AuthSchemes"
+          "AuthSchemes": "negotiate"
         },
         "prefs": {
           "auth.schemes": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": "negotiate"
+          }
+        }
+      },
+      {
+        "note": "Empty value",
+        "policies": {
+          "AuthSchemes": ""
+        },
+        "prefs": {
+          "auth.schemes": {
+            "location": "local_state",
+            "value": ""
           }
         }
       }
@@ -2258,7 +2281,8 @@
         },
         "prefs": {
           "auth.negotiate_delegate_whitelist": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": "localhost"
           }
         }
       }
@@ -2274,12 +2298,36 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "auth.negotiate_delegate_whitelist": {
+            "location": "local_state",
+            "default_value": ""
+          }
+        }
+      },
+      {
         "policies": {
-          "AuthNegotiateDelegateAllowlist": "localhost"
+          "AuthNegotiateDelegateAllowlist": "localhost,*.example.com"
         },
         "prefs": {
           "auth.negotiate_delegate_whitelist": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": "localhost,*.example.com"
+          }
+        }
+      },
+      {
+        "note": "New policy overrides deprecated one",
+        "policies": {
+          "AuthNegotiateDelegateAllowlist": "localhost",
+          "AuthNegotiateDelegateWhitelist": "localhost,*.example.com"
+        },
+        "prefs": {
+          "auth.negotiate_delegate_whitelist": {
+            "location": "local_state",
+            "value": "localhost"
           }
         }
       }
@@ -2293,12 +2341,23 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "auth.negotiate_delegate_by_kdc_policy": {
+            "location": "local_state",
+            "default_value": false
+          }
+        }
+      },
+      {
         "policies": {
           "AuthNegotiateDelegateByKdcPolicy": true
         },
         "prefs": {
           "auth.negotiate_delegate_by_kdc_policy": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }
