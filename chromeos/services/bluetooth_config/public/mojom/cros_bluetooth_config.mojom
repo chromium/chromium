@@ -30,3 +30,16 @@ interface SystemPropertiesObserver {
   // paired device changes (e.g., from connected to disconnected).
   OnPropertiesUpdated(BluetoothSystemProperties properties);
 };
+
+// Provides Bluetooth metadata and controls. Embedded in the browser process.
+//
+// Clients include:
+// * Ash system UI; implemented in C++ as part of the browser process
+// * WebUI such as chrome://os-settings; implemented in JS as part of renderer
+//   processes
+interface CrosBluetoothConfig {
+  // Invokes OnPropertiesUpdated() with initial set of properties when observer
+  // is first added, then again whenever properties are updated. To stop
+  // observing, disconnect |observer|.
+  ObserveSystemProperties(pending_remote<SystemPropertiesObserver> observer);
+};

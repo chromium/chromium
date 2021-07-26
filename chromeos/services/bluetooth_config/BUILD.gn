@@ -6,6 +6,8 @@ assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 static_library("bluetooth_config") {
   sources = [
+    "cros_bluetooth_config.cc",
+    "cros_bluetooth_config.h",
     "system_properties_provider.cc",
     "system_properties_provider.h",
     "system_properties_provider_impl.cc",
@@ -40,7 +42,10 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "system_properties_provider_impl_unittest.cc" ]
+  sources = [
+    "cros_bluetooth_config_unittest.cc",
+    "system_properties_provider_impl_unittest.cc",
+  ]
 
   deps = [
     ":bluetooth_config",
