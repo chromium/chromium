@@ -1059,7 +1059,6 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     const WebElement& initiating_element,
     const FormData& data,
     FieldFilterMask filters,
-    bool force_override,
     mojom::RendererFormDataAction action,
     const Callback& callback) {
   const bool num_elements_matches_num_fields =
@@ -1127,16 +1126,15 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     if (element.GetAutofillState() == WebAutofillState::kAutofilled)
       continue;
 
-    if (!force_override &&
-        // A text field, with a non-empty value that is entered by the user,
-        // and is NOT the value of the input field's "value" or "placeholder"
-        // attribute, is skipped. Some sites fill the fields with formatting
-        // string. To tell the difference between the values entered by the user
-        // and the site, we'll sanitize the value. If the sanitized value is
-        // empty, it means that the site has filled the field, in this case, the
-        // field is not skipped. Nevertheless the below condition does not hold
-        // for sites set the |kValue| attribute to the user-input value.
-        (IsAutofillableInputElement(input_element) ||
+    // A text field, with a non-empty value that is entered by the user,
+    // and is NOT the value of the input field's "value" or "placeholder"
+    // attribute, is skipped. Some sites fill the fields with formatting
+    // string. To tell the difference between the values entered by the user
+    // and the site, we'll sanitize the value. If the sanitized value is
+    // empty, it means that the site has filled the field, in this case, the
+    // field is not skipped. Nevertheless the below condition does not hold
+    // for sites set the |kValue| attribute to the user-input value.
+    if ((IsAutofillableInputElement(input_element) ||
          IsTextAreaElement(element)) &&
         element.UserHasEditedTheField() &&
         !SanitizedFieldIsEmpty(element.Value().Utf16()) &&
@@ -1149,8 +1147,7 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     }
 
     // Check if we should autofill/preview/clear a select element or leave it.
-    if (!force_override && IsSelectElement(element) &&
-        element.UserHasEditedTheField() &&
+    if (IsSelectElement(element) && element.UserHasEditedTheField() &&
         !SanitizedFieldIsEmpty(element.Value().Utf16())) {
       continue;
     }
@@ -1193,14 +1190,12 @@ std::vector<WebFormControlElement> ForEachMatchingFormField(
     const WebElement& initiating_element,
     const FormData& data,
     FieldFilterMask filters,
-    bool force_override,
     mojom::RendererFormDataAction action,
     const Callback& callback) {
   std::vector<WebFormControlElement> control_elements =
       ExtractAutofillableElementsInForm(form_element);
   return ForEachMatchingFormFieldCommon(control_elements, initiating_element,
-                                        data, filters, force_override, action,
-                                        callback);
+                                        data, filters, action, callback);
 }
 
 // For each autofillable field in |data| that matches a field in the set of
@@ -1210,7 +1205,6 @@ std::vector<WebFormControlElement> ForEachMatchingUnownedFormField(
     const WebElement& initiating_element,
     const FormData& data,
     FieldFilterMask filters,
-    bool force_override,
     mojom::RendererFormDataAction action,
     const Callback& callback) {
   if (initiating_element.IsNull())
@@ -1223,8 +1217,7 @@ std::vector<WebFormControlElement> ForEachMatchingUnownedFormField(
     return {};
 
   return ForEachMatchingFormFieldCommon(control_elements, initiating_element,
-                                        data, filters, force_override, action,
-                                        callback);
+                                        data, filters, action, callback);
 }
 
 // Sets the |field|'s value to the value in |data|, and specifies the section
@@ -2276,20 +2269,16 @@ std::vector<WebFormControlElement> FillOrPreviewForm(
   if (form_element.IsNull())
     FindFormElementUpShadowRoots(element, &form_element);
 
+  Callback callback = action == mojom::RendererFormDataAction::kPreview
+                          ? &PreviewFormField
+                          : &FillFormField;
   if (form_element.IsNull()) {
     return ForEachMatchingUnownedFormField(
-        element, form, FILTER_ALL_NON_EDITABLE_ELEMENTS,
-        false, /* dont force override */
-        action,
-        action == mojom::RendererFormDataAction::kPreview ? &PreviewFormField
-                                                          : &FillFormField);
+        element, form, FILTER_ALL_NON_EDITABLE_ELEMENTS, action, callback);
   }
-  return ForEachMatchingFormField(
-      form_element, element, form, FILTER_ALL_NON_EDITABLE_ELEMENTS,
-      false, /* dont force override */
-      action,
-      action == mojom::RendererFormDataAction::kPreview ? &PreviewFormField
-                                                        : &FillFormField);
+  return ForEachMatchingFormField(form_element, element, form,
+                                  FILTER_ALL_NON_EDITABLE_ELEMENTS, action,
+                                  callback);
 }
 
 void ClearPreviewedElements(
