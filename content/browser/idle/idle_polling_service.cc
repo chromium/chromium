@@ -4,6 +4,7 @@
 
 #include "content/browser/idle/idle_polling_service.h"
 
+#include "content/public/browser/idle_time_provider.h"
 #include "ui/base/idle/idle.h"
 
 namespace content {
@@ -14,7 +15,7 @@ constexpr base::TimeDelta kPollInterval = base::TimeDelta::FromSeconds(1);
 
 // Default provider implementation. Everything is delegated to
 // ui::CalculateIdleTime and ui::CheckIdleStateIsLocked.
-class DefaultIdleProvider : public IdleManager::IdleTimeProvider {
+class DefaultIdleProvider : public IdleTimeProvider {
  public:
   DefaultIdleProvider() = default;
   ~DefaultIdleProvider() override = default;
@@ -64,7 +65,7 @@ void IdlePollingService::RemoveObserver(Observer* observer) {
 }
 
 void IdlePollingService::SetProviderForTest(
-    std::unique_ptr<IdleManager::IdleTimeProvider> provider) {
+    std::unique_ptr<IdleTimeProvider> provider) {
   provider_ = std::move(provider);
   if (!provider_) {
     provider_ = std::make_unique<DefaultIdleProvider>();

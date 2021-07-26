@@ -5,11 +5,12 @@
 #include "content/public/test/idle_test_utils.h"
 
 #include "content/browser/idle/idle_polling_service.h"
+#include "content/public/browser/idle_time_provider.h"
 
 namespace content {
 
 ScopedIdleProviderForTest::ScopedIdleProviderForTest(
-    std::unique_ptr<IdleManager::IdleTimeProvider> provider) {
+    std::unique_ptr<IdleTimeProvider> provider) {
   IdlePollingService::GetInstance()->SetProviderForTest(std::move(provider));
 }
 

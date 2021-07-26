@@ -10,14 +10,14 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/idle_time_provider.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
-#include "content/public/test/idle_test_utils.h"
-
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/idle_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -25,7 +25,7 @@ using ::testing::NiceMock;
 
 namespace {
 
-class MockIdleTimeProvider : public content::IdleManager::IdleTimeProvider {
+class MockIdleTimeProvider : public content::IdleTimeProvider {
  public:
   MockIdleTimeProvider() = default;
   ~MockIdleTimeProvider() override = default;

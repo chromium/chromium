@@ -47,7 +47,7 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/document_service_base.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/idle_manager.h"
+#include "content/public/browser/idle_time_provider.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -836,7 +836,7 @@ class PageLifecycleStateManagerTestDelegate
   base::OnceClosure disable_eviction_sent_;
 };
 
-class FakeIdleTimeProvider : public IdleManager::IdleTimeProvider {
+class FakeIdleTimeProvider : public IdleTimeProvider {
  public:
   FakeIdleTimeProvider() = default;
   ~FakeIdleTimeProvider() override = default;

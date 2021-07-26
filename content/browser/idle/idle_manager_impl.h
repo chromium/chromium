@@ -13,7 +13,6 @@
 #include "content/browser/idle/idle_monitor.h"
 #include "content/browser/idle/idle_polling_service.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/idle_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -24,8 +23,7 @@ namespace content {
 
 class RenderFrameHost;
 
-class CONTENT_EXPORT IdleManagerImpl : public IdleManager,
-                                       public blink::mojom::IdleManager,
+class CONTENT_EXPORT IdleManagerImpl : public blink::mojom::IdleManager,
                                        public IdlePollingService::Observer {
  public:
   explicit IdleManagerImpl(RenderFrameHost* render_frame_host);
@@ -34,9 +32,8 @@ class CONTENT_EXPORT IdleManagerImpl : public IdleManager,
   IdleManagerImpl(const IdleManagerImpl&) = delete;
   IdleManagerImpl& operator=(const IdleManagerImpl&) = delete;
 
-  // IdleManager:
   void CreateService(mojo::PendingReceiver<blink::mojom::IdleManager> receiver,
-                     const url::Origin& origin) override;
+                     const url::Origin& origin);
 
   // blink.mojom.IdleManager:
   void AddMonitor(base::TimeDelta threshold,
@@ -44,8 +41,8 @@ class CONTENT_EXPORT IdleManagerImpl : public IdleManager,
                   AddMonitorCallback callback) final;
 
   void SetIdleOverride(blink::mojom::UserIdleState user_state,
-                       blink::mojom::ScreenIdleState screen_state) override;
-  void ClearIdleOverride() override;
+                       blink::mojom::ScreenIdleState screen_state);
+  void ClearIdleOverride();
 
  private:
   // Check permission controller to see if the notification permission is

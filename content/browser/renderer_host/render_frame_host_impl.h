@@ -192,7 +192,6 @@ class FeatureObserver;
 class FrameTree;
 class FrameTreeNode;
 class GeolocationServiceImpl;
-class IdleManager;
 class IdleManagerImpl;
 class NavigationEarlyHintsManager;
 class NavigationRequest;
@@ -1584,7 +1583,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingReceiver<blink::mojom::SerialService> receiver);
 #endif
 
-  IdleManager* GetIdleManager();
+  IdleManagerImpl* GetIdleManager();
 
   void BindIdleManager(
       mojo::PendingReceiver<blink::mojom::IdleManager> receiver);

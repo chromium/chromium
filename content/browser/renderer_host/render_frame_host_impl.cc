@@ -8986,7 +8986,7 @@ void RenderFrameHostImpl::GetHidService(
 }
 #endif
 
-IdleManager* RenderFrameHostImpl::GetIdleManager() {
+IdleManagerImpl* RenderFrameHostImpl::GetIdleManager() {
   return idle_manager_.get();
 }
 

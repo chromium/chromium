@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/idle_manager.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"

@@ -15,6 +15,7 @@
 #include "content/browser/idle/idle_manager_impl.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/idle_time_provider.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/test/browser_task_environment.h"
@@ -53,7 +54,7 @@ class MockIdleMonitor : public blink::mojom::IdleMonitor {
   MOCK_METHOD1(Update, void(IdleStatePtr));
 };
 
-class MockIdleTimeProvider : public IdleManager::IdleTimeProvider {
+class MockIdleTimeProvider : public IdleTimeProvider {
  public:
   MockIdleTimeProvider() = default;
   ~MockIdleTimeProvider() override = default;

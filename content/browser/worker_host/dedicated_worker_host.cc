@@ -27,7 +27,6 @@
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
 #include "content/browser/worker_host/worker_script_fetch_initiator.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/idle_manager.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/network_service_util.h"
