@@ -28,8 +28,9 @@ namespace desks_storage {
 namespace {
 
 constexpr char kJunkData[] = "This is not valid template data.";
-constexpr char kTemplateNameFormat[] = "%s.template";
+constexpr char kTemplateFileNameFormat[] = "%s.template";
 constexpr char kUuidFormat[] = "1c186d5a-502e-49ce-9ee1-00000000000%d";
+constexpr char kTemplateNameFormat[] = "desk_%d";
 
 const base::FilePath kInvalidFilePath = base::FilePath("?");
 const std::string kTestUuid1 = base::StringPrintf(kUuidFormat, 1);
@@ -38,7 +39,7 @@ const std::string kTestUuid3 = base::StringPrintf(kUuidFormat, 3);
 const std::string kTestUuid4 = base::StringPrintf(kUuidFormat, 4);
 const base::Time kTestTime1 = base::Time();
 const std::string kTestFileName1 =
-    base::StringPrintf(kTemplateNameFormat, kTestUuid1.c_str());
+    base::StringPrintf(kTemplateFileNameFormat, kTestUuid1.c_str());
 
 // Search |entry_list| for |entry_query| as a uuid and returns true if
 // found, false if not.
@@ -60,12 +61,30 @@ void VerifyEntryAddedCorrectly(DeskModel::AddOrUpdateEntryStatus status) {
   EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
 }
 
+void VerifyEntryAddedErrorHitMaximumLimit(
+    DeskModel::AddOrUpdateEntryStatus status) {
+  EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kHitMaximumLimit);
+}
+
 void WriteJunkData(const base::FilePath& temp_dir) {
   base::FilePath full_path = temp_dir.Append(kTestFileName1);
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   EXPECT_TRUE(base::WriteFile(full_path, kJunkData));
+}
+
+// Make test desk template with ID containing the index.
+std::unique_ptr<ash::DeskTemplate> MakeTestDeskTemplate(int index) {
+  const std::string template_uuid = base::StringPrintf(kUuidFormat, index);
+  const std::string template_name =
+      base::StringPrintf(kTemplateNameFormat, index);
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      std::make_unique<ash::DeskTemplate>(template_uuid, template_name,
+                                          base::Time::Now());
+  desk_template->set_desk_restore_data(
+      std::make_unique<full_restore::RestoreData>());
+  return desk_template;
 }
 
 }  // namespace
@@ -124,6 +143,20 @@ class LocalDeskDataManagerTest : public testing::Test {
 TEST_F(LocalDeskDataManagerTest, CanAddEntry) {
   data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
                                   base::BindOnce(&VerifyEntryAddedCorrectly));
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(LocalDeskDataManagerTest, ReturnsErrorWhenAddingTooManyEntry) {
+  for (std::size_t index = 0u; index < data_manager_->GetMaxEntryCount();
+       ++index) {
+    data_manager_->AddOrUpdateEntry(MakeTestDeskTemplate(index),
+                                    base::BindOnce(&VerifyEntryAddedCorrectly));
+  }
+
+  data_manager_->AddOrUpdateEntry(
+      MakeTestDeskTemplate(data_manager_->GetMaxEntryCount() + 1),
+      base::BindOnce(&VerifyEntryAddedErrorHitMaximumLimit));
 
   task_environment_.RunUntilIdle();
 }

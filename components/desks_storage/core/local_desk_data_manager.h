@@ -59,6 +59,13 @@ class LocalDeskDataManager : public DeskModel {
                    DeleteEntryCallback callback) override;
   void DeleteAllEntries(DeleteEntryCallback callback) override;
 
+  // Other helper methods.
+
+  // Gets the maximum number of templates this storage backend could hold.
+  // Adding more templates beyond this limit will result in |kHitMaximumLimit|
+  // error.
+  std::size_t GetMaxEntryCount() const;
+
  private:
   // Loads desk templates from |local_path_| into cache if the cache is not
   // loaded yet.

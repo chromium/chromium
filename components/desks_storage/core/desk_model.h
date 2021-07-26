@@ -47,6 +47,7 @@ class DeskModel {
     kOk,
     kFailure,
     kInvalidArgument,
+    kHitMaximumLimit,
   };
 
   // Status codes for deleting desk templates.
