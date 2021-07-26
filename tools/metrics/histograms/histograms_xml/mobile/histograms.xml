@@ -702,7 +702,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MobileFre.CctTos.EnterprisePolicyCheckSpeed2{MobileFreInflationSpeedComparison}"
-    units="ms" expires_after="2021-07-31">
+    units="ms" expires_after="2022-05-01">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -717,7 +717,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MobileFre.CctTos.EnterprisePolicyCheckSpeed{MobileFreInflationSpeedComparison}"
-    units="ms" expires_after="2021-07-31">
+    units="ms" expires_after="2022-05-01">
   <obsolete>
     Deprecated and replaced with MobileFre.CctTos.EnterprisePolicyCheckSpeed2.*.
     as of 11/2020. The starting time of this metrics is changed to when the
@@ -737,7 +737,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MobileFre.CctTos.IsDeviceOwnedCheckSpeed2{MobileFreInflationSpeedComparison}"
-    units="ms" expires_after="2021-07-31">
+    units="ms" expires_after="2022-05-01">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -751,7 +751,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MobileFre.CctTos.IsDeviceOwnedCheckSpeed{MobileFreInflationSpeedComparison}"
-    units="ms" expires_after="2021-07-31">
+    units="ms" expires_after="2022-05-01">
   <obsolete>
     Deprecated and replaced with MobileFre.CctTos.IsDeviceOwnedCheckSpeed2.*. as
     of 11/2020. The starting time of this metrics is changed to when the
@@ -769,7 +769,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileFre.CctTos.LoadingDuration" units="ms"
-    expires_after="2021-07-31">
+    expires_after="2022-05-01">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -813,7 +813,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MobileFre.Lightweight.EnterprisePolicyCheckSpeed{MobileFreInflationSpeedComparison}"
-    units="ms" expires_after="2021-07-31">
+    units="ms" expires_after="2022-05-01">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -827,7 +827,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MobileFre.Lightweight.IsDeviceOwnedCheckSpeed{MobileFreInflationSpeedComparison}"
-    units="ms" expires_after="2021-07-31">
+    units="ms" expires_after="2022-05-01">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -840,7 +840,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileFre.Lightweight.LoadingDuration" units="ms"
-    expires_after="2021-07-31">
+    expires_after="2022-05-01">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -860,7 +860,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileFre.PolicyServiceInitDelayAfterNative{PolicyPresence}"
-    units="ms" expires_after="2021-07-31">
+    units="ms" expires_after="2022-05-01">
   <obsolete>
     Replaced by MobileFre.PolicyServiceInitDelayAfterNative.*2 due to bug fix as
     of 05/2021. See https://crbug.com/1208942.
