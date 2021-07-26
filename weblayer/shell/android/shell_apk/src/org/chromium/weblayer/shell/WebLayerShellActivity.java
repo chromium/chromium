@@ -95,6 +95,7 @@ public class WebLayerShellActivity extends AppCompatActivity {
 
     private static final String NON_INCOGNITO_PROFILE_NAME = "DefaultProfile";
     private static final String EXTRA_START_IN_INCOGNITO = "EXTRA_START_IN_INCOGNITO";
+    private static final String KEY_PREVIOUS_TAB_GUIDS = "previousTabGuids";
 
     private static class ContextMenuCreator
             implements View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
@@ -310,6 +311,19 @@ public class WebLayerShellActivity extends AppCompatActivity {
         } catch (UnsupportedVersionException e) {
             throw new RuntimeException("Failed to initialize WebLayer", e);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // Store the stack of previous tab GUIDs that are used to set the next active tab when a tab
+        // closes. Also used to setup various callbacks again on restore.
+        String[] previousTabGuids = new String[mPreviousTabList.size()];
+        for (int i = 0; i < mPreviousTabList.size(); ++i) {
+            previousTabGuids[i] = mPreviousTabList.get(i).getGuid();
+        }
+        outState.putStringArray(KEY_PREVIOUS_TAB_GUIDS, previousTabGuids);
     }
 
     private void onAppMenuButtonClicked(View appMenuButtonView) {
@@ -597,6 +611,8 @@ public class WebLayerShellActivity extends AppCompatActivity {
 
         createTabCallbacks();
 
+        restorePreviousTabList(savedInstanceState);
+
         registerTabCallbacks(mBrowser.getActiveTab());
 
         updateTopView();
@@ -702,6 +718,24 @@ public class WebLayerShellActivity extends AppCompatActivity {
                 return true;
             }
         };
+    }
+
+    private void restorePreviousTabList(Bundle savedInstanceState) {
+        if (savedInstanceState == null) return;
+        String[] previousTabGuids = savedInstanceState.getStringArray(KEY_PREVIOUS_TAB_GUIDS);
+        if (previousTabGuids == null) return;
+
+        Map<String, Tab> currentTabMap = new HashMap<String, Tab>();
+        for (Tab tab : mBrowser.getTabs()) {
+            currentTabMap.put(tab.getGuid(), tab);
+        }
+
+        for (String tabGuid : previousTabGuids) {
+            Tab tab = currentTabMap.get(tabGuid);
+            if (tab == null) continue;
+            mPreviousTabList.add(tab);
+            registerTabCallbacks(tab);
+        }
     }
 
     private void onTabAddedImpl(Tab newTab) {
