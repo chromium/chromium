@@ -27,7 +27,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -255,12 +254,8 @@ public class DownloadNotificationService {
         updateNotification(notificationId, notification, id,
                 new DownloadSharedPreferenceEntry(id, notificationId, otrProfileID,
                         canDownloadWhileMetered, fileName, true, isTransient));
-        // If the notification is allowed to start foreground service, or if the app is already
-        // foreground, ask the foreground service manager to handle the notification.
-        if (canStartForegroundService() || mDownloadForegroundServiceManager.isServiceBound()) {
-            mDownloadForegroundServiceManager.updateDownloadStatus(
-                    context, DownloadStatus.IN_PROGRESS, notificationId, notification);
-        }
+        mDownloadForegroundServiceManager.updateDownloadStatus(
+                context, DownloadStatus.IN_PROGRESS, notificationId, notification);
 
         startTrackingInProgressDownload(id);
     }
@@ -747,10 +742,5 @@ public class DownloadNotificationService {
     private void rescheduleDownloads() {
         if (getResumptionAttemptLeft() <= 0) return;
         DownloadResumptionScheduler.getDownloadResumptionScheduler().scheduleIfNecessary();
-    }
-
-    private boolean canStartForegroundService() {
-        if (AppHooks.get().canStartForegroundServiceWhileInvisible()) return true;
-        return ApplicationStatus.hasVisibleActivities();
     }
 }

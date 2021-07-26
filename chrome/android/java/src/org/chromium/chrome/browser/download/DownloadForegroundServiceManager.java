@@ -19,8 +19,10 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.download.DownloadNotificationService.DownloadStatus;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
@@ -127,6 +129,9 @@ public class DownloadForegroundServiceManager {
     void processDownloadUpdateQueue(boolean isProcessingPending) {
         DownloadUpdate downloadUpdate = findInterestingDownloadUpdate();
         if (downloadUpdate == null) return;
+        // If foreground service is disallowed, don't handle active download updates. Only stopping
+        // the foreground service is allowed.
+        if (isActive(downloadUpdate.mDownloadStatus) && !canStartForegroundService()) return;
 
         // When nothing has been initialized, just bind the service.
         if (!mIsServiceBound) {
@@ -356,10 +361,8 @@ public class DownloadForegroundServiceManager {
         mStopServiceDelayed = true;
     }
 
-    /**
-     * @return whether the service for making the app foreground is bound.
-     */
-    public boolean isServiceBound() {
-        return mIsServiceBound;
+    private boolean canStartForegroundService() {
+        if (AppHooks.get().canStartForegroundServiceWhileInvisible()) return true;
+        return ApplicationStatus.hasVisibleActivities();
     }
 }
