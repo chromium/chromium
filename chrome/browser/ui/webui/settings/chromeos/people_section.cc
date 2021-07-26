@@ -180,7 +180,7 @@ const std::vector<SearchConcept>& GetRemoveAccountSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetNonSplitSyncSearchConcepts() {
+const std::vector<SearchConcept>& GetNonCategorizedSyncSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_SYNC_AND_GOOGLE_SERVICES,
        mojom::kSyncDeprecatedSubpagePath,
@@ -224,7 +224,8 @@ const std::vector<SearchConcept>& GetNonSplitSyncSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetSplitSyncSearchConcepts() {
+const std::vector<SearchConcept>& GetCategorizedSyncSearchConcepts() {
+  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_SYNC,
        mojom::kSyncSubpagePath,
@@ -236,7 +237,8 @@ const std::vector<SearchConcept>& GetSplitSyncSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetSplitSyncOnSearchConcepts() {
+const std::vector<SearchConcept>& GetSyncOnSearchConcepts() {
+  DCHECK(chromeos::features::IsSyncConsentOptionalEnabled());
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_SYNC_TURN_OFF,
        mojom::kSyncSubpagePath,
@@ -249,7 +251,8 @@ const std::vector<SearchConcept>& GetSplitSyncOnSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetSplitSyncOffSearchConcepts() {
+const std::vector<SearchConcept>& GetSyncOffSearchConcepts() {
+  DCHECK(chromeos::features::IsSyncConsentOptionalEnabled());
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_SYNC_TURN_ON,
        mojom::kSyncSubpagePath,
@@ -739,16 +742,19 @@ PeopleSection::PeopleSection(
     FetchAccounts();
   }
 
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
-    if (sync_service_) {
-      updater.AddSearchTags(GetSplitSyncSearchConcepts());
+  if (sync_service_) {
+    if (chromeos::features::IsSyncConsentOptionalEnabled()) {
+      DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
+      updater.AddSearchTags(GetCategorizedSyncSearchConcepts());
 
       // Sync search tags are added/removed dynamically.
       sync_service_->AddObserver(this);
       OnStateChanged(sync_service_);
+    } else if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
+      updater.AddSearchTags(GetCategorizedSyncSearchConcepts());
+    } else {
+      updater.AddSearchTags(GetNonCategorizedSyncSearchConcepts());
     }
-  } else {
-    updater.AddSearchTags(GetNonSplitSyncSearchConcepts());
   }
 
   // Parental control search tags are added if necessary and do not update
@@ -772,7 +778,7 @@ PeopleSection::PeopleSection(
 }
 
 PeopleSection::~PeopleSection() {
-  if (chromeos::features::IsSplitSettingsSyncEnabled() && sync_service_)
+  if (chromeos::features::IsSyncConsentOptionalEnabled() && sync_service_)
     sync_service_->RemoveObserver(this);
 }
 
@@ -896,7 +902,7 @@ void PeopleSection::AddHandlers(content::WebUI* web_ui) {
             account_manager_, account_manager_facade_, identity_manager_));
   }
 
-  if (chromeos::features::IsSplitSettingsSyncEnabled())
+  if (chromeos::features::IsSyncSettingsCategorizationEnabled())
     web_ui->AddMessageHandler(std::make_unique<OSSyncHandler>(profile()));
 
   web_ui->AddMessageHandler(
@@ -1071,18 +1077,18 @@ void PeopleSection::UpdateAccountManagerSearchTags(
 }
 
 void PeopleSection::OnStateChanged(syncer::SyncService* sync_service) {
-  DCHECK(chromeos::features::IsSplitSettingsSyncEnabled());
+  DCHECK(chromeos::features::IsSyncConsentOptionalEnabled());
   DCHECK_EQ(sync_service, sync_service_);
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
   if (sync_service_->IsEngineInitialized() &&
       sync_service_->GetUserSettings()->IsOsSyncFeatureEnabled()) {
-    updater.AddSearchTags(GetSplitSyncOnSearchConcepts());
-    updater.RemoveSearchTags(GetSplitSyncOffSearchConcepts());
+    updater.AddSearchTags(GetSyncOnSearchConcepts());
+    updater.RemoveSearchTags(GetSyncOffSearchConcepts());
   } else {
-    updater.RemoveSearchTags(GetSplitSyncOnSearchConcepts());
-    updater.AddSearchTags(GetSplitSyncOffSearchConcepts());
+    updater.RemoveSearchTags(GetSyncOnSearchConcepts());
+    updater.AddSearchTags(GetSyncOffSearchConcepts());
   }
 }
 

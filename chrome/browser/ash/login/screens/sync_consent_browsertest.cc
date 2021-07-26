@@ -462,7 +462,12 @@ INSTANTIATE_TEST_SUITE_P(All,
 class SyncConsentOptionalTest : public SyncConsentTest {
  public:
   SyncConsentOptionalTest() {
-    sync_feature_list_.InitAndEnableFeature(features::kSyncConsentOptional);
+    sync_feature_list_.InitWithFeatures(
+        {
+            features::kSyncSettingsCategorization,
+            features::kSyncConsentOptional,
+        },
+        {});
   }
   ~SyncConsentOptionalTest() override = default;
 
@@ -712,7 +717,12 @@ IN_PROC_BROWSER_TEST_F(SyncConsentOptionalTest, SkippedSyncDisabledByPolicy) {
 class SyncConsentActiveDirectoryTest : public OobeBaseTest {
  public:
   SyncConsentActiveDirectoryTest() {
-    sync_feature_list_.InitAndEnableFeature(features::kSyncConsentOptional);
+    sync_feature_list_.InitWithFeatures(
+        {
+            features::kSyncSettingsCategorization,
+            features::kSyncConsentOptional,
+        },
+        {});
   }
   ~SyncConsentActiveDirectoryTest() override = default;
 
