@@ -51,6 +51,7 @@
 #include "components/arc/metrics/arc_metrics_service.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -373,7 +374,13 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
       }
     }
 
-    arc::ArcBootPhaseMonitorBridge::RecordFirstAppLaunchDelayUMA(context);
+    // App launched by user rather than full restore.
+    if (window_info &&
+        window_info->window_id <=
+            full_restore::kArcSessionIdOffsetForRestoredLaunching) {
+      arc::ArcBootPhaseMonitorBridge::RecordFirstAppLaunchDelayUMA(context);
+    }
+
     ChromeShelfController* chrome_controller =
         ChromeShelfController::instance();
     // chrome_controller may be null in tests.
