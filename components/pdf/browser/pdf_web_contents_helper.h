@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -42,6 +42,9 @@ class PDFWebContentsHelper
   static void CreateForWebContentsWithClient(
       content::WebContents* contents,
       std::unique_ptr<PDFWebContentsHelperClient> client);
+  static void BindPdfService(
+      mojo::PendingAssociatedReceiver<mojom::PdfService> pdf_service,
+      content::RenderFrameHost* rfh);
 
   // ui::TouchSelectionControllerClient :
   bool SupportsAnimation() const override;
@@ -92,8 +95,7 @@ class PDFWebContentsHelper
                         int32_t right_height) override;
   void SetPluginCanSave(bool can_save) override;
 
-  content::WebContentsFrameReceiverSet<mojom::PdfService>
-      pdf_service_receivers_;
+  content::RenderFrameHostReceiverSet<mojom::PdfService> pdf_service_receivers_;
   std::unique_ptr<PDFWebContentsHelperClient> const client_;
   content::TouchSelectionControllerClientManager*
       touch_selection_controller_client_manager_ = nullptr;

@@ -82,6 +82,7 @@
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/badging/badge_manager.h"
+#include "components/pdf/browser/pdf_web_contents_helper.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -364,7 +365,15 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
         render_frame_host);
     return true;
   }
-
+#if !defined(OS_ANDROID)
+  if (interface_name == pdf::mojom::PdfService::Name_) {
+    pdf::PDFWebContentsHelper::BindPdfService(
+        mojo::PendingAssociatedReceiver<pdf::mojom::PdfService>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+#endif
   if (interface_name ==
       subresource_filter::mojom::SubresourceFilterHost::Name_) {
     subresource_filter::ContentSubresourceFilterThrottleManager::BindReceiver(

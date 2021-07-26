@@ -30,13 +30,24 @@ void PDFWebContentsHelper::CreateForWebContentsWithClient(
       base::WrapUnique(new PDFWebContentsHelper(contents, std::move(client))));
 }
 
+// static
+void PDFWebContentsHelper::BindPdfService(
+    mojo::PendingAssociatedReceiver<mojom::PdfService> pdf_service,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* pdf_helper = PDFWebContentsHelper::FromWebContents(web_contents);
+  if (!pdf_helper)
+    return;
+  pdf_helper->pdf_service_receivers_.Bind(rfh, std::move(pdf_service));
+}
+
 PDFWebContentsHelper::PDFWebContentsHelper(
     content::WebContents* web_contents,
     std::unique_ptr<PDFWebContentsHelperClient> client)
     : content::WebContentsObserver(web_contents),
-      pdf_service_receivers_(web_contents,
-                             this,
-                             content::WebContentsFrameReceiverSetPassKey()),
+      pdf_service_receivers_(web_contents, this),
       client_(std::move(client)) {}
 
 PDFWebContentsHelper::~PDFWebContentsHelper() {

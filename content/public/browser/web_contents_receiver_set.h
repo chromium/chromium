@@ -37,9 +37,6 @@ class OfflinePageTabHelper;
 namespace page_load_metrics {
 class MetricsWebContentsObserver;
 }
-namespace pdf {
-class PDFWebContentsHelper;
-}
 namespace printing {
 class PrintManager;
 }
@@ -125,7 +122,6 @@ class WebContentsFrameReceiverSetPassKey {
   friend class ::extensions::ExtensionFrameHost;
   friend class ::offline_pages::OfflinePageTabHelper;
   friend class ::page_load_metrics::MetricsWebContentsObserver;
-  friend class ::pdf::PDFWebContentsHelper;
   friend class ::printing::PrintManager;
   friend class ::security_interstitials::SecurityInterstitialTabHelper;
   friend class ::subresource_redirect::SubresourceRedirectObserver;
