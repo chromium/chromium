@@ -36,16 +36,17 @@ PageInfoNewBubbleView::PageInfoNewBubbleView(
     const gfx::Rect& anchor_rect,
     gfx::NativeView parent_window,
     Profile* profile,
-    content::WebContents* web_contents,
+    content::WebContents* associated_web_contents,
     const GURL& url,
     PageInfoClosingCallback closing_callback)
     : PageInfoBubbleViewBase(anchor_view,
                              anchor_rect,
                              parent_window,
                              PageInfoBubbleViewBase::BUBBLE_PAGE_INFO,
-                             web_contents),
+                             associated_web_contents),
       closing_callback_(std::move(closing_callback)) {
   DCHECK(closing_callback_);
+  DCHECK(web_contents());
 
   SetShowTitle(false);
   SetShowCloseButton(false);
@@ -69,7 +70,7 @@ PageInfoNewBubbleView::PageInfoNewBubbleView(
 
   ui_delegate_ = std::make_unique<ChromePageInfoUiDelegate>(profile, url);
   presenter_ = std::make_unique<PageInfo>(
-      std::make_unique<ChromePageInfoDelegate>(web_contents), web_contents,
+      std::make_unique<ChromePageInfoDelegate>(web_contents()), web_contents(),
       url);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
