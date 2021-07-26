@@ -12720,6 +12720,15 @@
             ]
           }
         }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "enterprise_connectors.send_download_to_cloud": {
+            "default_value": [
+            ]
+          }
+        }
       }
     ]
   },
