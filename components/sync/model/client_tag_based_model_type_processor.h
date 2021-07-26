@@ -27,8 +27,11 @@
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/processor_entity_tracker.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/protocol/sync.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace sync_pb {
+class ModelTypeState;
+}
 
 namespace syncer {
 

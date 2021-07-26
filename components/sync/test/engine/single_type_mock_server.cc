@@ -5,6 +5,8 @@
 #include "components/sync/test/engine/single_type_mock_server.h"
 
 #include "components/sync/base/time.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 
 using google::protobuf::RepeatedPtrField;
 

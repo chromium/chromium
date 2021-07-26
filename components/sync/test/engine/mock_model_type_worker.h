@@ -21,8 +21,12 @@
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/model_type_processor.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+
+namespace sync_pb {
+class GarbageCollectionDirective;
+}  // namespace sync_pb
 
 namespace syncer {
 

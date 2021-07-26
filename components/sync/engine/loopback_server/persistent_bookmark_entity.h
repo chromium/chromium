@@ -13,7 +13,13 @@
 
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/unique_position.pb.h"
+
+namespace sync_pb {
+class SyncEntity;
+class EntitySpecifics;
+enum LoopbackServerEntity_Type : int;
+}  // namespace sync_pb
 
 namespace syncer {
 

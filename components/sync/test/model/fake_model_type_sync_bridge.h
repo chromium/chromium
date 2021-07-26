@@ -20,6 +20,10 @@
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace sync_pb {
+class EntitySpecifics;
+}
+
 namespace syncer {
 
 class ClientTagHash;

@@ -16,6 +16,11 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/nigori/cryptographer.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/password_specifics.pb.h"
+#include "components/sync/protocol/sharing_message_specifics.pb.h"
+#include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/engine/fake_cryptographer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

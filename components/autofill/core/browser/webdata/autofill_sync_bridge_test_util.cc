@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_test_util.h"
 
+#include "components/sync/protocol/autofill_specifics.pb.h"
+
 namespace autofill {
 
 AutofillProfile CreateServerProfile(const std::string& server_id) {

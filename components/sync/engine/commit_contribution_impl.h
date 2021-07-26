@@ -13,7 +13,13 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/commit_contribution.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
+
+namespace sync_pb {
+class ClientToServerMessage;
+class SyncEntity;
+class ClientToServerResponse;
+}  // namespace sync_pb
 
 namespace syncer {
 

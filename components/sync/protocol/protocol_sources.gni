@@ -19,6 +19,7 @@ sync_protocol_bases = [
   "dictionary_specifics",
   "encryption",
   "entity_metadata",
+  "entity_specifics",
   "experiments_specifics",
   "extension_setting_specifics",
   "extension_specifics",

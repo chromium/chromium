@@ -8,7 +8,9 @@
 #include <vector>
 
 #include "components/sync/nigori/nigori_test_utils.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
+#include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/fake_server/fake_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

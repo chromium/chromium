@@ -14,6 +14,10 @@
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "url/gurl.h"
 
+namespace sync_pb {
+class EntitySpecifics;
+}
+
 namespace syncer {
 class UniquePosition;
 }

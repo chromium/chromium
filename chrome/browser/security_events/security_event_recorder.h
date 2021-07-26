@@ -9,7 +9,10 @@
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/model_type_controller_delegate.h"
-#include "components/sync/protocol/sync.pb.h"
+
+namespace sync_pb {
+class GaiaPasswordReuse;
+}
 
 // The SecurityEventRecorder class allows to record security events via Chrome
 // Sync for signed-in users.

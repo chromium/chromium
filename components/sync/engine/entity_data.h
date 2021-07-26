@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/unique_position.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 
 // TODO(crbug.com/947443): Code outside components/sync depends on this file
 // to implement new datatypes, so components/sync/engine can't be hidden while

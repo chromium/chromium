@@ -8,7 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "components/sync/engine/cycle/debug_info_getter.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/client_debug_info.pb.h"
 
 namespace syncer {
 

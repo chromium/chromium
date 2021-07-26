@@ -13,6 +13,11 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
+namespace sync_pb {
+class BookmarkSpecifics;
+class EntitySpecifics;
+}  // namespace sync_pb
+
 namespace fake_server {
 
 // Builder for BookmarkEntity objects.

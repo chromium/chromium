@@ -19,7 +19,12 @@
 #include "components/sync/engine/data_type_debug_info_listener.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_manager.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/client_debug_info.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
+
+namespace sync_pb {
+class EncryptedData;
+}
 
 namespace syncer {
 

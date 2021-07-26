@@ -14,8 +14,13 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/protocol/bookmark_model_metadata.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
+
+namespace sync_pb {
+class BookmarkModelMetadata;
+class EntitySpecifics;
+}  // namespace sync_pb
 
 namespace base {
 class GUID;

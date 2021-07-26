@@ -13,7 +13,9 @@
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/loopback_server/persistent_bookmark_entity.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/bookmark_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/unique_position.pb.h"
 
 using std::string;
 using syncer::GenerateSyncableBookmarkHash;

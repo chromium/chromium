@@ -7,7 +7,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/sync/model/model_type_controller_delegate.h"
-#include "components/sync/protocol/sync.pb.h"
+
+namespace sync_pb {
+class SecurityEventSpecifics;
+}
 
 class SecurityEventSyncBridge {
  public:

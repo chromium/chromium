@@ -12,6 +12,7 @@
 #include "base/hash/sha1.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/commit_queue.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 
 namespace syncer {
 

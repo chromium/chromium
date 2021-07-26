@@ -12,10 +12,13 @@
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/arc/mojom/app.mojom-forward.h"
-#include "components/sync/protocol/sync.pb.h"
 
 class Profile;
 class SyncTest;
+
+namespace sync_pb {
+class EntitySpecifics;
+}
 
 namespace arc {
 class FakeAppInstance;

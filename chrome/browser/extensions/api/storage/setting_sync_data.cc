@@ -12,8 +12,8 @@
 #include "base/logging.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/app_setting_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
-#include "components/sync/protocol/sync.pb.h"
 
 namespace extensions {
 

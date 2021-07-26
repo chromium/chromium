@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/app_list/arc/arc_package_syncable_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/sync/protocol/arc_package_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/test/fake_server/fake_server.h"
 #include "content/public/test/browser_test.h"
 

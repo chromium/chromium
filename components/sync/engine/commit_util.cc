@@ -4,6 +4,8 @@
 
 #include "components/sync/engine/commit_util.h"
 
+#include "components/sync/protocol/sync.pb.h"
+
 namespace syncer {
 
 namespace commit_util {

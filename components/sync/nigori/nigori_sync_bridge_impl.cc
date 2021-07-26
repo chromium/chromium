@@ -25,7 +25,6 @@
 #include "components/sync/nigori/pending_local_nigori_commit.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
-#include "components/sync/protocol/nigori_specifics.pb.h"
 
 namespace syncer {
 

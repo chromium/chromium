@@ -28,6 +28,8 @@
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/nigori/cryptographer_impl.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/password_specifics.pb.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/escape.h"
 #include "url/gurl.h"

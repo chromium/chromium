@@ -9,6 +9,8 @@
 #include "base/guid.h"
 #include "base/logging.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/protocol/loopback_server.pb.h"
+#include "components/sync/protocol/sync.pb.h"
 
 using std::string;
 

@@ -23,6 +23,7 @@
 #include "components/sync/nigori/nigori_local_change_processor.h"
 #include "components/sync/nigori/nigori_state.h"
 #include "components/sync/nigori/nigori_sync_bridge.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {

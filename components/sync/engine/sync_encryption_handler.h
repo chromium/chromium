@@ -13,7 +13,10 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+
+namespace sync_pb {
+class EncryptedData;
+}
 
 namespace syncer {
 

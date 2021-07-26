@@ -7,11 +7,18 @@
 
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "components/sync/protocol/app_specifics.pb.h"
-#include "components/sync/protocol/client_debug_info.pb.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/gaia_password_reuse.pb.h"
+#include "components/sync/protocol/get_updates_caller_info.pb.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/reading_list_specifics.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync/protocol/user_consent_types.pb.h"
+#include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
+#include "components/sync/protocol/wifi_configuration_specifics.pb.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
 
 // Keep this file in sync with the .proto files in this directory.

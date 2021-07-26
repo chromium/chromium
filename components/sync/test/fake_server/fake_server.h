@@ -26,6 +26,7 @@
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/client_commands.pb.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -37,6 +38,7 @@ extern const char kDisableFakeServerFailureOutput[];
 }  // namespace switches
 
 namespace sync_pb {
+class EntitySpecifics;
 class DataTypeProgressMarker;
 }  // namespace sync_pb
 
