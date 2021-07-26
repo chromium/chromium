@@ -122,6 +122,10 @@ class WebContentsImplBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUp();
   }
 
+  WebContentsImplBrowserTest(const WebContentsImplBrowserTest&) = delete;
+  WebContentsImplBrowserTest& operator=(const WebContentsImplBrowserTest&) =
+      delete;
+
   void SetUpOnMainThread() override {
     // Setup the server to allow serving separate sites, so we can perform
     // cross-process navigation.
@@ -133,9 +137,6 @@ class WebContentsImplBrowserTest : public ContentBrowserTest {
         static_cast<WebContentsImpl*>(shell()->web_contents());
     return web_contents->current_fullscreen_frame_;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebContentsImplBrowserTest);
 };
 
 // Keeps track of data from LoadNotificationDetails so we can later verify that
@@ -1083,7 +1084,9 @@ class WebDisplayModeDelegate : public WebContentsDelegate {
  public:
   explicit WebDisplayModeDelegate(blink::mojom::DisplayMode mode)
       : mode_(mode) {}
-  ~WebDisplayModeDelegate() override { }
+  ~WebDisplayModeDelegate() override = default;
+  WebDisplayModeDelegate(const WebDisplayModeDelegate&) = delete;
+  WebDisplayModeDelegate& operator=(const WebDisplayModeDelegate&) = delete;
 
   blink::mojom::DisplayMode GetDisplayMode(const WebContents* source) override {
     return mode_;
@@ -1092,8 +1095,6 @@ class WebDisplayModeDelegate : public WebContentsDelegate {
 
  private:
   blink::mojom::DisplayMode mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDisplayModeDelegate);
 };
 
 }  // namespace
@@ -1221,7 +1222,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                      "window.open('" + kViewSourceURL.spec() + "');"));
   console_observer.Wait();
   // Original page shouldn't navigate away, no new tab should be opened.
-  EXPECT_EQ(kUrl, shell()->web_contents()->GetURL());
+  EXPECT_EQ(kUrl, shell()->web_contents()->GetLastCommittedURL());
   EXPECT_EQ(1u, Shell::windows().size());
 }
 
@@ -1241,7 +1242,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                      "window.location = '" + kViewSourceURL.spec() + "';"));
   console_observer.Wait();
   // Original page shouldn't navigate away.
-  EXPECT_EQ(kUrl, shell()->web_contents()->GetURL());
+  EXPECT_EQ(kUrl, shell()->web_contents()->GetLastCommittedURL());
   EXPECT_FALSE(shell()
                    ->web_contents()
                    ->GetController()
@@ -1606,6 +1607,11 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
     web_contents_->SetDelegate(old_delegate_);
   }
 
+  TestWCDelegateForDialogsAndFullscreen(
+      const TestWCDelegateForDialogsAndFullscreen&) = delete;
+  TestWCDelegateForDialogsAndFullscreen& operator=(
+      const TestWCDelegateForDialogsAndFullscreen&) = delete;
+
   void WillWaitForDialog() { waiting_for_ = kDialog; }
   void WillWaitForNewContents() { waiting_for_ = kNewContents; }
   void WillWaitForFullscreenEnter() { waiting_for_ = kFullscreenEnter; }
@@ -1744,8 +1750,6 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
   std::vector<std::unique_ptr<WebContents>> popups_;
 
   std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
-
-  DISALLOW_COPY_AND_ASSIGN(TestWCDelegateForDialogsAndFullscreen);
 };
 
 class MockFileSelectListener : public FileChooserImpl::FileSelectListenerImpl {
@@ -2798,6 +2802,9 @@ class UpdateTargetURLWaiter : public WebContentsDelegate {
     web_contents->SetDelegate(this);
   }
 
+  UpdateTargetURLWaiter(const UpdateTargetURLWaiter&) = delete;
+  UpdateTargetURLWaiter& operator=(const UpdateTargetURLWaiter&) = delete;
+
   const GURL& WaitForUpdatedTargetURL() {
     if (updated_target_url_.has_value())
       return updated_target_url_.value();
@@ -2816,8 +2823,6 @@ class UpdateTargetURLWaiter : public WebContentsDelegate {
 
   absl::optional<GURL> updated_target_url_;
   scoped_refptr<MessageLoopRunner> runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateTargetURLWaiter);
 };
 
 // Verifies that focusing a link in a cross-site frame will correctly tell
@@ -2853,6 +2858,8 @@ class LoadStateWaiter : public WebContentsDelegate {
     contents->SetDelegate(this);
   }
   ~LoadStateWaiter() override = default;
+  LoadStateWaiter(const LoadStateWaiter&) = delete;
+  LoadStateWaiter& operator=(const LoadStateWaiter&) = delete;
 
   // Waits until the WebContents changes its LoadStateHost to |host|.
   void Wait(net::LoadState load_state, const std::u16string& host) {
@@ -2887,8 +2894,6 @@ class LoadStateWaiter : public WebContentsDelegate {
   content::WebContents* web_contents_ = nullptr;
   std::u16string waiting_host_;
   net::LoadState waiting_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoadStateWaiter);
 };
 
 }  // namespace
@@ -3221,6 +3226,10 @@ class FullscreenWebContentsObserver : public WebContentsObserver {
                                 RenderFrameHost* wanted_rfh)
       : WebContentsObserver(web_contents), wanted_rfh_(wanted_rfh) {}
 
+  FullscreenWebContentsObserver(const FullscreenWebContentsObserver&) = delete;
+  FullscreenWebContentsObserver& operator=(
+      const FullscreenWebContentsObserver&) = delete;
+
   // WebContentsObserver override.
   void DidAcquireFullscreen(RenderFrameHost* rfh) override {
     EXPECT_EQ(wanted_rfh_, rfh);
@@ -3241,8 +3250,6 @@ class FullscreenWebContentsObserver : public WebContentsObserver {
   base::RunLoop run_loop_;
   bool found_value_ = false;
   RenderFrameHost* wanted_rfh_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenWebContentsObserver);
 };
 
 }  // namespace
@@ -3542,6 +3549,11 @@ class MockDidOpenRequestedURLObserver : public WebContentsObserver {
   explicit MockDidOpenRequestedURLObserver(Shell* shell)
       : WebContentsObserver(shell->web_contents()) {}
 
+  MockDidOpenRequestedURLObserver(const MockDidOpenRequestedURLObserver&) =
+      delete;
+  MockDidOpenRequestedURLObserver& operator=(
+      const MockDidOpenRequestedURLObserver&) = delete;
+
   MOCK_METHOD8(DidOpenRequestedURL,
                void(WebContents* new_contents,
                     RenderFrameHost* source_render_frame_host,
@@ -3551,9 +3563,6 @@ class MockDidOpenRequestedURLObserver : public WebContentsObserver {
                     ui::PageTransition transition,
                     bool started_from_context_menu,
                     bool renderer_initiated));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDidOpenRequestedURLObserver);
 };
 
 // Test WebContentsObserver::DidOpenRequestedURL for ctrl-click-ed links.
@@ -4264,6 +4273,11 @@ class DidChangeVerticalScrollDirectionObserver : public WebContentsObserver {
   explicit DidChangeVerticalScrollDirectionObserver(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
+  DidChangeVerticalScrollDirectionObserver(
+      const DidChangeVerticalScrollDirectionObserver&) = delete;
+  DidChangeVerticalScrollDirectionObserver& operator=(
+      const DidChangeVerticalScrollDirectionObserver&) = delete;
+
   // WebContentsObserver:
   void DidChangeVerticalScrollDirection(
       viz::VerticalScrollDirection scroll_direction) override {
@@ -4278,8 +4292,6 @@ class DidChangeVerticalScrollDirectionObserver : public WebContentsObserver {
   int call_count_ = 0;
   viz::VerticalScrollDirection last_value_ =
       viz::VerticalScrollDirection::kNull;
-
-  DISALLOW_COPY_AND_ASSIGN(DidChangeVerticalScrollDirectionObserver);
 };
 
 }  // namespace
@@ -4535,6 +4547,10 @@ class DidStopLoadingInterceptor : public mojom::FrameHostInterceptorForTesting {
 
   ~DidStopLoadingInterceptor() override = default;
 
+  DidStopLoadingInterceptor(const DidStopLoadingInterceptor&) = delete;
+  DidStopLoadingInterceptor& operator=(const DidStopLoadingInterceptor&) =
+      delete;
+
   mojom::FrameHost* GetForwardingInterface() override {
     return render_frame_host_;
   }
@@ -4547,8 +4563,6 @@ class DidStopLoadingInterceptor : public mojom::FrameHostInterceptorForTesting {
 
  private:
   RenderFrameHostImpl* render_frame_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(DidStopLoadingInterceptor);
 };
 
 // Test that get_process_idle_time() returns reasonable values when compared
