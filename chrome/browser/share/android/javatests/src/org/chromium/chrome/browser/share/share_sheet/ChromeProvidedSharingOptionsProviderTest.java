@@ -33,6 +33,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
@@ -134,6 +135,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT,
             ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
     @Features.DisableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
+    @DisabledTest(message = "https://crbug.com/1233184")
     public void
     getPropertyModels_screenshotEnabled() {
         setUpChromeProvidedSharingOptionsProviderTest(
@@ -160,6 +162,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
     @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT,
             ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
+    @DisabledTest(message = "https://crbug.com/1233184")
     public void
     getPropertyModels_printingEnabled_includesPrinting() {
         setUpChromeProvidedSharingOptionsProviderTest(
@@ -262,6 +265,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
     @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
+    @DisabledTest(message = "https://crbug.com/1233184")
     public void getPropertyModels_multiWindow_doesNotIncludeScreenshot() {
         setUpChromeProvidedSharingOptionsProviderTest(
                 /*printingEnabled=*/false, LinkGeneration.MAX);
@@ -324,6 +328,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID})
     @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT,
             ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
+    @DisabledTest(message = "https://crbug.com/1233184")
     public void
     getPropertyModels_highlightsEnabled() {
         setUpChromeProvidedSharingOptionsProviderTest(
