@@ -66,6 +66,11 @@ if (ozone_platform_scenic) {
   ozone_platform_test_deps += [ "platform/scenic:scenic_unittests" ]
 }
 
+if (ozone_platform_flatland) {
+  ozone_platforms += [ "flatland" ]
+  ozone_platform_deps += [ "platform/flatland" ]
+}
+
 platform_list_cc_file = "$target_gen_dir/platform_list.cc"
 platform_list_h_file = "$target_gen_dir/platform_list.h"
 platform_list_txt_file = "$target_gen_dir/platform_list.txt"

@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/scenic/ozone_platform_scenic.h"
+#include "ui/ozone/platform/flatland/ozone_platform_flatland.h"
 
 #include <memory>
 #include <utility>
@@ -26,13 +26,12 @@
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/common/stub_overlay_manager.h"
-#include "ui/ozone/platform/scenic/overlay_manager_scenic.h"
-#include "ui/ozone/platform/scenic/scenic_gpu_host.h"
-#include "ui/ozone/platform/scenic/scenic_gpu_service.h"
-#include "ui/ozone/platform/scenic/scenic_surface_factory.h"
-#include "ui/ozone/platform/scenic/scenic_window.h"
-#include "ui/ozone/platform/scenic/scenic_window_manager.h"
-#include "ui/ozone/platform/scenic/sysmem_buffer_collection.h"
+#include "ui/ozone/platform/flatland/flatland_gpu_host.h"
+#include "ui/ozone/platform/flatland/flatland_gpu_service.h"
+#include "ui/ozone/platform/flatland/flatland_surface_factory.h"
+#include "ui/ozone/platform/flatland/flatland_sysmem_buffer_collection.h"
+#include "ui/ozone/platform/flatland/flatland_window.h"
+#include "ui/ozone/platform/flatland/flatland_window_manager.h"
 #include "ui/ozone/platform_selection.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/input_controller.h"
@@ -50,21 +49,23 @@ namespace ui {
 
 namespace {
 
-class ScenicPlatformEventSource : public ui::PlatformEventSource {
+class FlatlandPlatformEventSource : public ui::PlatformEventSource {
  public:
-  ScenicPlatformEventSource() = default;
-  ~ScenicPlatformEventSource() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScenicPlatformEventSource);
+  FlatlandPlatformEventSource() = default;
+  ~FlatlandPlatformEventSource() override = default;
+  FlatlandPlatformEventSource(const FlatlandPlatformEventSource&) = delete;
+  FlatlandPlatformEventSource& operator=(const FlatlandPlatformEventSource&) =
+      delete;
 };
 
-// OzonePlatform for Scenic.
-class OzonePlatformScenic : public OzonePlatform,
-                            public base::CurrentThread::DestructionObserver {
+// OzonePlatform for Flatland.
+class OzonePlatformFlatland : public OzonePlatform,
+                              public base::CurrentThread::DestructionObserver {
  public:
-  OzonePlatformScenic() = default;
-  ~OzonePlatformScenic() override = default;
+  OzonePlatformFlatland() = default;
+  ~OzonePlatformFlatland() override = default;
+  OzonePlatformFlatland(const OzonePlatformFlatland&) = delete;
+  OzonePlatformFlatland& operator=(const OzonePlatformFlatland&) = delete;
 
   // OzonePlatform implementation.
   ui::SurfaceFactoryOzone* GetSurfaceFactoryOzone() override {
@@ -82,7 +83,7 @@ class OzonePlatformScenic : public OzonePlatform,
   }
 
   GpuPlatformSupportHost* GetGpuPlatformSupportHost() override {
-    return scenic_gpu_host_.get();
+    return flatland_gpu_host_.get();
   }
 
   std::unique_ptr<SystemInputInjector> CreateSystemInputInjector() override {
@@ -95,13 +96,14 @@ class OzonePlatformScenic : public OzonePlatform,
       PlatformWindowInitProperties properties) override {
     BindInMainProcessIfNecessary();
 
-    // Allow tests to create a view themselves.
+    // TODO(crbug.com/1230150): Add a hook for the RootPresenter equivalent of
+    // Flatland here to create a window.
     if (!properties.view_token) {
       CHECK(properties.allow_null_view_token_for_test);
       ui::fuchsia::InitializeViewTokenAndPresentView(&properties);
     }
-    return std::make_unique<ScenicWindow>(window_manager_.get(), delegate,
-                                          std::move(properties));
+    return std::make_unique<FlatlandWindow>(window_manager_.get(), delegate,
+                                            std::move(properties));
   }
 
   const PlatformProperties& GetPlatformProperties() override {
@@ -140,22 +142,23 @@ class OzonePlatformScenic : public OzonePlatform,
 
   void InitializeUI(const InitParams& params) override {
     if (!PlatformEventSource::GetInstance())
-      platform_event_source_ = std::make_unique<ScenicPlatformEventSource>();
+      platform_event_source_ = std::make_unique<FlatlandPlatformEventSource>();
     keyboard_layout_engine_ = std::make_unique<StubKeyboardLayoutEngine>();
     KeyboardLayoutEngineManager::SetKeyboardLayoutEngine(
         keyboard_layout_engine_.get());
 
-    window_manager_ = std::make_unique<ScenicWindowManager>();
+    window_manager_ = std::make_unique<FlatlandWindowManager>();
     overlay_manager_ = std::make_unique<StubOverlayManager>();
     input_controller_ = CreateStubInputController();
     cursor_factory_ = std::make_unique<BitmapCursorFactoryOzone>();
 
-    scenic_gpu_host_ = std::make_unique<ScenicGpuHost>(window_manager_.get());
+    flatland_gpu_host_ =
+        std::make_unique<FlatlandGpuHost>(window_manager_.get());
 
     // SurfaceFactory is configured here to use a ui-process remote for software
     // output.
     if (!surface_factory_)
-      surface_factory_ = std::make_unique<ScenicSurfaceFactory>();
+      surface_factory_ = std::make_unique<FlatlandSurfaceFactory>();
 
     if (base::ThreadTaskRunnerHandle::IsSet())
       BindInMainProcessIfNecessary();
@@ -165,40 +168,41 @@ class OzonePlatformScenic : public OzonePlatform,
     DCHECK(!surface_factory_ || params.single_process);
 
     if (!surface_factory_)
-      surface_factory_ = std::make_unique<ScenicSurfaceFactory>();
+      surface_factory_ = std::make_unique<FlatlandSurfaceFactory>();
 
     if (!params.single_process) {
-      mojo::PendingRemote<mojom::ScenicGpuHost> scenic_gpu_host_remote;
-      scenic_gpu_service_ = std::make_unique<ScenicGpuService>(
-          scenic_gpu_host_remote.InitWithNewPipeAndPassReceiver());
+      mojo::PendingRemote<mojom::ScenicGpuHost> flatland_gpu_host_remote;
+      flatland_gpu_service_ = std::make_unique<FlatlandGpuService>(
+          flatland_gpu_host_remote.InitWithNewPipeAndPassReceiver());
 
       // SurfaceFactory is configured here to use a gpu-process remote. The
-      // other end of the pipe will be attached through ScenicGpuService.
-      surface_factory_->Initialize(std::move(scenic_gpu_host_remote));
+      // other end of the pipe will be attached through FlatlandGpuService.
+      surface_factory_->Initialize(std::move(flatland_gpu_host_remote));
     }
 
-    overlay_manager_ = std::make_unique<OverlayManagerScenic>();
+    // TODO(crbug.com/1230150): Add overlay manager.
   }
 
   void AddInterfaces(mojo::BinderMap* binders) override {
     binders->Add<mojom::ScenicGpuService>(
-        scenic_gpu_service_->GetBinderCallback(),
+        flatland_gpu_service_->GetBinderCallback(),
         base::ThreadTaskRunnerHandle::Get());
   }
 
   bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                      gfx::BufferUsage usage) const override {
-    return SysmemBufferCollection::IsNativePixmapConfigSupported(format, usage);
+    return FlatlandSysmemBufferCollection::IsNativePixmapConfigSupported(format,
+                                                                         usage);
   }
 
  private:
-  // Binds main process surface factory to main process ScenicGpuHost
+  // Binds main process surface factory to main process FlatlandGpuHost
   void BindInMainProcessIfNecessary() {
     if (bound_in_main_process_)
       return;
 
     mojo::PendingRemote<mojom::ScenicGpuHost> gpu_host_remote;
-    scenic_gpu_host_->Initialize(
+    flatland_gpu_host_->Initialize(
         gpu_host_remote.InitWithNewPipeAndPassReceiver());
     surface_factory_->Initialize(std::move(gpu_host_remote));
     bound_in_main_process_ = true;
@@ -209,7 +213,7 @@ class OzonePlatformScenic : public OzonePlatform,
   void ShutdownInMainProcess() {
     DCHECK(bound_in_main_process_);
     surface_factory_->Shutdown();
-    scenic_gpu_host_->Shutdown();
+    flatland_gpu_host_->Shutdown();
     window_manager_->Shutdown();
     bound_in_main_process_ = false;
   }
@@ -217,27 +221,25 @@ class OzonePlatformScenic : public OzonePlatform,
   // base::CurrentThread::DestructionObserver implementation.
   void WillDestroyCurrentMessageLoop() override { ShutdownInMainProcess(); }
 
-  std::unique_ptr<ScenicWindowManager> window_manager_;
+  std::unique_ptr<FlatlandWindowManager> window_manager_;
 
   std::unique_ptr<KeyboardLayoutEngine> keyboard_layout_engine_;
   std::unique_ptr<PlatformEventSource> platform_event_source_;
   std::unique_ptr<CursorFactory> cursor_factory_;
   std::unique_ptr<InputController> input_controller_;
   std::unique_ptr<OverlayManagerOzone> overlay_manager_;
-  std::unique_ptr<ScenicGpuHost> scenic_gpu_host_;
-  std::unique_ptr<ScenicGpuService> scenic_gpu_service_;
-  std::unique_ptr<ScenicSurfaceFactory> surface_factory_;
+  std::unique_ptr<FlatlandGpuHost> flatland_gpu_host_;
+  std::unique_ptr<FlatlandGpuService> flatland_gpu_service_;
+  std::unique_ptr<FlatlandSurfaceFactory> surface_factory_;
 
   // Whether the main process has initialized mojo bindings.
   bool bound_in_main_process_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OzonePlatformScenic);
 };
 
 }  // namespace
 
-OzonePlatform* CreateOzonePlatformScenic() {
-  return new OzonePlatformScenic();
+OzonePlatform* CreateOzonePlatformFlatland() {
+  return new OzonePlatformFlatland();
 }
 
 }  // namespace ui

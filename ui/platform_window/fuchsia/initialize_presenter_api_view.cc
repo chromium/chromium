@@ -23,7 +23,8 @@ void InitializeViewTokenAndPresentView(
 
   // Generate ViewToken and ViewHolderToken for the new view.
   auto view_tokens = scenic::ViewTokenPair::New();
-  window_properties_out->view_token = std::move(view_tokens.view_token);
+  window_properties_out->view_token =
+      zx::handle(std::move(view_tokens.view_token.value));
 
   // Create a ViewRefPair so the view can be registered to the SemanticsManager.
   window_properties_out->view_ref_pair = scenic::ViewRefPair::New();

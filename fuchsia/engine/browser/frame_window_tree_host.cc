@@ -60,7 +60,7 @@ FrameWindowTreeHost::FrameWindowTreeHost(
   CreateCompositor();
 
   ui::PlatformWindowInitProperties properties;
-  properties.view_token = std::move(view_token);
+  properties.view_token = std::move(view_token.value);
   properties.view_ref_pair = std::move(view_ref_pair);
   properties.enable_keyboard =
       base::FeatureList::IsEnabled(features::kKeyboardInput);
