@@ -73,9 +73,14 @@ class CoordinatorImplTest : public testing::Test {
 
   void SetUp() override {
     coordinator_ = std::make_unique<NiceMock<FakeCoordinatorImpl>>();
+    task_environment_ = std::make_unique<base::test::TaskEnvironment>(
+        base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME);
   }
 
-  void TearDown() override { coordinator_.reset(); }
+  void TearDown() override {
+    task_environment_.reset();
+    coordinator_.reset();
+  }
 
   void RegisterClientProcess(
       mojo::PendingReceiver<mojom::Coordinator> receiver,
@@ -132,9 +137,7 @@ class CoordinatorImplTest : public testing::Test {
 
  protected:
   std::unique_ptr<NiceMock<FakeCoordinatorImpl>> coordinator_;
-
-  base::test::TaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
 };
 
 class MockClientProcess : public mojom::ClientProcess {
@@ -304,7 +307,7 @@ TEST_F(CoordinatorImplTest, QueuedRequest) {
   // This variable to be static as the lambda below has to convert to a function
   // pointer rather than a functor.
   static base::test::TaskEnvironment* task_environment = nullptr;
-  task_environment = &task_environment_;
+  task_environment = task_environment_.get();
 
   NiceMock<MockClientProcess> client_process_1(this, 1,
                                                mojom::ProcessType::BROWSER);
