@@ -273,11 +273,12 @@ bool BookmarkCodec::DecodeNode(const base::Value& value,
   int64_t id = 0;
   if (ids_valid_) {
     const std::string* string = value.FindStringKey(kIdKey);
-    if (!string || !base::StringToInt64(*string, &id) || ids_.count(id) != 0)
+    if (!string || !base::StringToInt64(*string, &id) || ids_.count(id) != 0) {
       ids_valid_ = false;
-    else
+    } else {
       ids_.insert(id);
-    id_string = *string;
+      id_string = *string;
+    }
   }
 
   maximum_id_ = std::max(maximum_id_, id);
