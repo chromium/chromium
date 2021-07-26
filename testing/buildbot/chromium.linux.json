@@ -13595,7 +13595,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance"
+          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance"
         ],
         "merge": {
           "args": [],
@@ -13617,7 +13617,7 @@
       },
       {
         "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance"
+          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance"
         ],
         "merge": {
           "args": [],
@@ -13639,7 +13639,7 @@
       },
       {
         "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance"
+          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance"
         ],
         "merge": {
           "args": [],
@@ -13661,7 +13661,7 @@
       },
       {
         "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
+          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
           "--test-launcher-filter-file=../../testing/buildbot/filters/bfcache.unit_tests.filter"
         ],
         "merge": {

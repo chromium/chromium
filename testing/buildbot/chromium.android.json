@@ -21619,7 +21619,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
+          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -21670,7 +21670,7 @@
       },
       {
         "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
+          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--git-revision=${got_revision}"
@@ -21728,7 +21728,7 @@
       },
       {
         "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
+          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -21780,7 +21780,7 @@
       },
       {
         "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
+          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -21832,7 +21832,7 @@
       },
       {
         "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
+          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -21884,7 +21884,7 @@
       },
       {
         "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
+          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
           "--test-launcher-filter-file=../../testing/buildbot/filters/bfcache.unit_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
