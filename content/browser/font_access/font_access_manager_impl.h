@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_FONT_ACCESS_FONT_ACCESS_MANAGER_IMPL_H_
 
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/font_access_chooser.h"
 #include "content/public/browser/font_access_context.h"
@@ -71,6 +72,7 @@ class CONTENT_EXPORT FontAccessManagerImpl
   void FindAllFonts(FindAllFontsCallback callback) override;
 
   void SkipPrivacyChecksForTesting(bool skip) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     skip_privacy_checks_for_testing_ = skip;
   }
 
@@ -84,19 +86,21 @@ class CONTENT_EXPORT FontAccessManagerImpl
                            blink::mojom::FontEnumerationStatus status,
                            std::vector<blink::mojom::FontMetadataPtr> fonts);
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   // Registered clients.
-  mojo::ReceiverSet<blink::mojom::FontAccessManager, BindingContext> receivers_;
+  mojo::ReceiverSet<blink::mojom::FontAccessManager, BindingContext> receivers_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  scoped_refptr<base::SequencedTaskRunner> ipc_task_runner_;
-  scoped_refptr<base::TaskRunner> results_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> ipc_task_runner_;
+  const scoped_refptr<base::TaskRunner> results_task_runner_;
 
-  bool skip_privacy_checks_for_testing_ = false;
+  bool skip_privacy_checks_for_testing_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
   // Here to keep the choosers alive for the user to interact with.
   std::map<GlobalRenderFrameHostId, std::unique_ptr<FontAccessChooser>>
-      choosers_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
+      choosers_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace content

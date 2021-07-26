@@ -24,11 +24,10 @@
 
 namespace content {
 
-FontAccessManagerImpl::FontAccessManagerImpl() {
-  ipc_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-  results_task_runner_ = content::GetUIThreadTaskRunner({});
-}
+FontAccessManagerImpl::FontAccessManagerImpl()
+    : ipc_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
+      results_task_runner_(content::GetUIThreadTaskRunner({})) {}
 
 FontAccessManagerImpl::~FontAccessManagerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
