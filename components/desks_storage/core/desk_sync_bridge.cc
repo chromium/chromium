@@ -255,13 +255,20 @@ std::string DeskSyncBridge::GetStorageKey(
   return entity_data.specifics.workspace_desk().uuid();
 }
 
-void DeskSyncBridge::GetAllUuids(GetAllUuidsCallback callback) {
+void DeskSyncBridge::GetAllEntries(GetAllEntriesCallback callback) {
+  std::vector<DeskTemplate*> entries;
+
   if (!IsReady()) {
-    std::move(callback).Run(GetAllUuidsStatus::kFailure, {});
+    std::move(callback).Run(GetAllEntriesStatus::kFailure, std::move(entries));
     return;
   }
 
-  std::move(callback).Run(GetAllUuidsStatus::kOk, GetAllUuids());
+  for (const auto& it : entries_) {
+    DCHECK_EQ(it.first, it.second->uuid());
+    entries.push_back(it.second.get());
+  }
+
+  std::move(callback).Run(GetAllEntriesStatus::kOk, std::move(entries));
 }
 
 void DeskSyncBridge::GetEntryByUUID(const std::string& uuid_str,
@@ -285,8 +292,7 @@ void DeskSyncBridge::GetEntryByUUID(const std::string& uuid_str,
                             std::unique_ptr<DeskTemplate>());
   } else {
     std::move(callback).Run(GetEntryByUuidStatus::kOk,
-                            DeskSyncBridge::FromProto(
-                                DeskSyncBridge::AsSyncProto(it->second.get())));
+                            it->second.get()->Clone());
   }
 }
 

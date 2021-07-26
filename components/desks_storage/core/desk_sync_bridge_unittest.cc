@@ -97,16 +97,16 @@ class DeskSyncBridgeTest : public testing::Test {
  protected:
   static void VerifyAddOrUpdateEntrySuccess(
       DeskModel::AddOrUpdateEntryStatus status) {
-    EXPECT_EQ(status, DeskSyncBridge::AddOrUpdateEntryStatus::kOk);
+    EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
   }
 
   static void VerifyAddOrUpdateEntryFailure(
       DeskModel::AddOrUpdateEntryStatus status) {
-    EXPECT_EQ(status, DeskSyncBridge::AddOrUpdateEntryStatus::kFailure);
+    EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kFailure);
   }
 
   static void VerifyDeleteEntrySuccess(DeskModel::DeleteEntryStatus status) {
-    EXPECT_EQ(status, DeskSyncBridge::DeleteEntryStatus::kOk);
+    EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
   }
 
   DeskSyncBridgeTest()

@@ -26,9 +26,11 @@ class DeskModelObserver;
 // to use asynchronous I/O.
 class DeskModel {
  public:
-  // Status codes for listing all desk template UUIDs.
-  enum class GetAllUuidsStatus {
+  // Status codes for listing all desk template entries.
+  // kPartialFailure indicates that one or more entries failed to load.
+  enum class GetAllEntriesStatus {
     kOk,
+    kPartialFailure,
     kFailure,
   };
 
@@ -58,15 +60,15 @@ class DeskModel {
   DeskModel& operator=(const DeskModel&) = delete;
   virtual ~DeskModel();
 
-  using GetAllUuidsCallback =
-      base::OnceCallback<void(GetAllUuidsStatus status,
-                              const std::vector<std::string>&)>;
-  // Returns a vector of entry IDs in the model.
-  virtual void GetAllUuids(GetAllUuidsCallback callback) = 0;
+  using GetAllEntriesCallback =
+      base::OnceCallback<void(GetAllEntriesStatus status,
+                              std::vector<ash::DeskTemplate*> entries)>;
+  // Returns a vector of entries in the model.
+  virtual void GetAllEntries(GetAllEntriesCallback callback) = 0;
 
   using GetEntryByUuidCallback =
       base::OnceCallback<void(GetEntryByUuidStatus status,
-                              std::unique_ptr<ash::DeskTemplate>)>;
+                              std::unique_ptr<ash::DeskTemplate> entry)>;
   // Get a specific desk template by |uuid|. Actual storage backend does not
   // need to keep desk templates in memory. The storage backend could load the
   // specified desk template into memory and then call the |callback| with a
