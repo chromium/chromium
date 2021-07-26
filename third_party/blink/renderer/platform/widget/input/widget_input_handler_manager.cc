@@ -220,7 +220,7 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
           widget_scheduler_->InputTaskRunner(),
           main_thread_scheduler,
           /*allow_raf_aligned_input=*/!never_composited)),
-      main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      main_thread_task_runner_(widget_scheduler_->InputTaskRunner()),
       compositor_task_runner_(std::move(compositor_task_runner)),
       response_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
@@ -242,7 +242,7 @@ void WidgetInputHandlerManager::InitInputHandler() {
 #endif
   uses_input_handler_ = true;
   base::OnceClosure init_closure = base::BindOnce(
-      &WidgetInputHandlerManager::InitOnInputHandlingThread, this,
+      &WidgetInputHandlerManager::InitOnInputHandlingThread, AsWeakPtr(),
       widget_->LayerTreeHost()->GetDelegateForInput(), sync_compositing);
   InputThreadTaskRunner()->PostTask(FROM_HERE, std::move(init_closure));
 }
