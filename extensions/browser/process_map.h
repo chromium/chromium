@@ -12,6 +12,7 @@
 
 #include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/site_instance.h"
 #include "extensions/common/features/feature.h"
 
 namespace content {
@@ -86,11 +87,13 @@ class ProcessMap : public KeyedService {
 
   size_t size() const { return items_.size(); }
 
-  bool Insert(const std::string& extension_id, int process_id,
-              int site_instance_id);
+  bool Insert(const std::string& extension_id,
+              int process_id,
+              content::SiteInstanceId site_instance_id);
 
-  bool Remove(const std::string& extension_id, int process_id,
-              int site_instance_id);
+  bool Remove(const std::string& extension_id,
+              int process_id,
+              content::SiteInstanceId site_instance_id);
   int RemoveAllFromProcess(int process_id);
 
   bool Contains(const std::string& extension_id, int process_id) const;

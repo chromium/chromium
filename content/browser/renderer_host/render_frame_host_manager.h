@@ -114,8 +114,9 @@ class CONTENT_EXPORT RenderFrameHostManager
     : public SiteInstanceImpl::Observer {
  public:
   using RenderFrameProxyHostMap =
-      std::unordered_map<int32_t /* SiteInstance id */,
-                         std::unique_ptr<RenderFrameProxyHost>>;
+      std::unordered_map<SiteInstanceId,
+                         std::unique_ptr<RenderFrameProxyHost>,
+                         SiteInstanceId::Hasher>;
 
   // Functions implemented by our owner that we need.
   //
@@ -608,7 +609,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   // It can point to an existing one or store the details needed to create a new
   // one.
   struct CONTENT_EXPORT SiteInstanceDescriptor {
-    explicit SiteInstanceDescriptor(content::SiteInstance* site_instance)
+    explicit SiteInstanceDescriptor(SiteInstance* site_instance)
         : existing_site_instance(site_instance),
           relation(SiteInstanceRelation::PREEXISTING),
           web_exposed_isolation_info(
@@ -620,7 +621,7 @@ class CONTENT_EXPORT RenderFrameHostManager
         const WebExposedIsolationInfo& web_exposed_isolation_info);
 
     // Set with an existing SiteInstance to be reused.
-    content::SiteInstance* existing_site_instance;
+    SiteInstance* existing_site_instance;
 
     // In case |existing_site_instance| is null, specify a destination URL.
     UrlInfo dest_url_info;

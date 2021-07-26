@@ -13,6 +13,7 @@
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/process_node.h"
+#include "content/public/browser/site_instance.h"
 
 namespace performance_manager {
 
@@ -73,7 +74,11 @@ class IsolationContextMetrics : public FrameNode::ObserverDefaultImpl,
     // A map between site instance ID and the number of frames with that site
     // instance in the process. This is typically small for most processes, but
     // can go to O(100s) for power users hence the use of small_map.
-    base::small_map<std::unordered_map<int32_t, int>> site_instance_frame_count;
+    base::small_map<
+        std::unordered_map<content::SiteInstanceId,
+                           int,
+                           typename content::SiteInstanceId::Hasher>>
+        site_instance_frame_count;
     // The number of frames in this process.
     int frame_count = 0;
     // The number of site instances with multiple frames in this process.

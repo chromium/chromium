@@ -24,6 +24,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "net/cookies/canonical_cookie.h"
@@ -115,8 +116,9 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
   struct CONTENT_EXPORT Entry {
     using RenderFrameProxyHostMap =
-        std::unordered_map<int32_t /* SiteInstance ID */,
-                           std::unique_ptr<RenderFrameProxyHost>>;
+        std::unordered_map<SiteInstanceId,
+                           std::unique_ptr<RenderFrameProxyHost>,
+                           SiteInstanceId::Hasher>;
 
     Entry(std::unique_ptr<RenderFrameHostImpl> rfh,
           RenderFrameProxyHostMap proxy_hosts,

@@ -1499,7 +1499,7 @@ TEST_F(WebContentsImplTest, NavigationEntryContentStateNewWindow) {
   NavigationEntryImpl* entry_impl =
       NavigationEntryImpl::FromNavigationEntry(entry);
   EXPECT_FALSE(entry_impl->site_instance()->HasSite());
-  int32_t site_instance_id = entry_impl->site_instance()->GetId();
+  auto site_instance_id = entry_impl->site_instance()->GetId();
 
   // Navigating to a normal page should not cause a process swap.
   const GURL new_url("http://www.google.com");

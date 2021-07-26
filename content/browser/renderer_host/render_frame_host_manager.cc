@@ -1472,7 +1472,7 @@ void RenderFrameHostManager::ActiveFrameCountIsZero(
 RenderFrameProxyHost* RenderFrameHostManager::CreateRenderFrameProxyHost(
     SiteInstance* site_instance,
     scoped_refptr<RenderViewHostImpl> rvh) {
-  int site_instance_id = site_instance->GetId();
+  auto site_instance_id = site_instance->GetId();
   CHECK(proxy_hosts_.find(site_instance_id) == proxy_hosts_.end())
       << "A proxy already existed for this SiteInstance.";
   RenderFrameProxyHost* proxy_host =

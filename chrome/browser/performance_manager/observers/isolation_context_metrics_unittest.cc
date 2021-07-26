@@ -85,7 +85,8 @@ class IsolationContextMetricsTest : public GraphTestHarness {
     return CreateNode<FrameNodeImpl>(
         process_node, page_node, parent_frame_node, 0 /* frame_tree_node_id */,
         ++next_render_frame_id_, blink::LocalFrameToken(),
-        content::BrowsingInstanceId(browsing_instance_id), site_instance_id);
+        content::BrowsingInstanceId(browsing_instance_id),
+        content::SiteInstanceId(site_instance_id));
   }
 
   // Advance time until the timer fires.
@@ -120,19 +121,19 @@ TEST_F(IsolationContextMetricsTest, GetProcessDataState) {
             TestIsolationContextMetrics::GetProcessDataState(&data));
 
   // Make up a site instance with one frame.
-  data.site_instance_frame_count[kSID1] = 1;
+  data.site_instance_frame_count[content::SiteInstanceId(kSID1)] = 1;
   EXPECT_EQ(1u, data.site_instance_frame_count.size());
   EXPECT_EQ(ProcessDataState::kOnlyOneFrameExists,
             TestIsolationContextMetrics::GetProcessDataState(&data));
 
   // Make up another site instance with one frame.
-  data.site_instance_frame_count[kSID2] = 1;
+  data.site_instance_frame_count[content::SiteInstanceId(kSID2)] = 1;
   EXPECT_EQ(2u, data.site_instance_frame_count.size());
   EXPECT_EQ(ProcessDataState::kAllFramesHaveDistinctSiteInstances,
             TestIsolationContextMetrics::GetProcessDataState(&data));
 
   // Make one site instance have multiple frames.
-  data.site_instance_frame_count[kSID1] = 2;
+  data.site_instance_frame_count[content::SiteInstanceId(kSID1)] = 2;
   data.multi_frame_site_instance_count = 1;
   data.has_hosted_multiple_frames_with_same_site_instance = true;
   EXPECT_EQ(2u, data.site_instance_frame_count.size());
@@ -140,28 +141,28 @@ TEST_F(IsolationContextMetricsTest, GetProcessDataState) {
             TestIsolationContextMetrics::GetProcessDataState(&data));
 
   // Make the second site instance have multiple frames.
-  data.site_instance_frame_count[kSID2] = 2;
+  data.site_instance_frame_count[content::SiteInstanceId(kSID2)] = 2;
   data.multi_frame_site_instance_count = 2;
   EXPECT_EQ(2u, data.site_instance_frame_count.size());
   EXPECT_EQ(ProcessDataState::kSomeFramesHaveSameSiteInstance,
             TestIsolationContextMetrics::GetProcessDataState(&data));
 
   // Reduce the first site instance to 1 frame.
-  data.site_instance_frame_count[kSID1] = 1;
+  data.site_instance_frame_count[content::SiteInstanceId(kSID1)] = 1;
   data.multi_frame_site_instance_count = 1;
   EXPECT_EQ(2u, data.site_instance_frame_count.size());
   EXPECT_EQ(ProcessDataState::kSomeFramesHaveSameSiteInstance,
             TestIsolationContextMetrics::GetProcessDataState(&data));
 
   // And reduce the second site instance to 1 frame.
-  data.site_instance_frame_count[kSID2] = 1;
+  data.site_instance_frame_count[content::SiteInstanceId(kSID2)] = 1;
   data.multi_frame_site_instance_count = 0;
   EXPECT_EQ(2u, data.site_instance_frame_count.size());
   EXPECT_EQ(ProcessDataState::kAllFramesHaveDistinctSiteInstances,
             TestIsolationContextMetrics::GetProcessDataState(&data));
 
   // Erase the first site instance.
-  data.site_instance_frame_count.erase(kSID1);
+  data.site_instance_frame_count.erase(content::SiteInstanceId(kSID1));
   EXPECT_EQ(1u, data.site_instance_frame_count.size());
   EXPECT_EQ(ProcessDataState::kOnlyOneFrameExists,
             TestIsolationContextMetrics::GetProcessDataState(&data));

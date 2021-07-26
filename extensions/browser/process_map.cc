@@ -17,12 +17,12 @@ namespace extensions {
 
 // Item
 struct ProcessMap::Item {
-  Item(const std::string& extension_id, int process_id,
-       int site_instance_id)
+  Item(const std::string& extension_id,
+       int process_id,
+       content::SiteInstanceId site_instance_id)
       : extension_id(extension_id),
         process_id(process_id),
-        site_instance_id(site_instance_id) {
-  }
+        site_instance_id(site_instance_id) {}
 
   ~Item() {
   }
@@ -38,7 +38,7 @@ struct ProcessMap::Item {
 
   std::string extension_id;
   int process_id = 0;
-  int site_instance_id = 0;
+  content::SiteInstanceId site_instance_id;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(Item);
@@ -57,13 +57,15 @@ ProcessMap* ProcessMap::Get(content::BrowserContext* browser_context) {
   return ProcessMapFactory::GetForBrowserContext(browser_context);
 }
 
-bool ProcessMap::Insert(const std::string& extension_id, int process_id,
-                        int site_instance_id) {
+bool ProcessMap::Insert(const std::string& extension_id,
+                        int process_id,
+                        content::SiteInstanceId site_instance_id) {
   return items_.insert(Item(extension_id, process_id, site_instance_id)).second;
 }
 
-bool ProcessMap::Remove(const std::string& extension_id, int process_id,
-                        int site_instance_id) {
+bool ProcessMap::Remove(const std::string& extension_id,
+                        int process_id,
+                        content::SiteInstanceId site_instance_id) {
   return items_.erase(Item(extension_id, process_id, site_instance_id)) > 0;
 }
 

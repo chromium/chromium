@@ -73,7 +73,7 @@ class FrameNodeImpl
                 int render_frame_id,
                 const blink::LocalFrameToken& frame_token,
                 content::BrowsingInstanceId browsing_instance_id,
-                int32_t site_instance_id);
+                content::SiteInstanceId site_instance_id);
 
   ~FrameNodeImpl() override;
 
@@ -104,7 +104,7 @@ class FrameNodeImpl
   int render_frame_id() const;
   const blink::LocalFrameToken& frame_token() const;
   content::BrowsingInstanceId browsing_instance_id() const;
-  int32_t site_instance_id() const;
+  content::SiteInstanceId site_instance_id() const;
   const RenderFrameHostProxy& render_frame_host_proxy() const;
 
   // Getters for non-const properties. These are not thread safe.
@@ -185,7 +185,7 @@ class FrameNodeImpl
   int GetFrameTreeNodeId() const override;
   const blink::LocalFrameToken& GetFrameToken() const override;
   content::BrowsingInstanceId GetBrowsingInstanceId() const override;
-  int32_t GetSiteInstanceId() const override;
+  content::SiteInstanceId GetSiteInstanceId() const override;
   bool VisitChildFrameNodes(const FrameNodeVisitor& visitor) const override;
   const base::flat_set<const FrameNode*> GetChildFrameNodes() const override;
   bool VisitOpenedPageNodes(const PageNodeVisitor& visitor) const override;
@@ -290,7 +290,7 @@ class FrameNodeImpl
   // The unique ID of the SiteInstance this frame belongs to. Frames in the
   // same SiteInstance may sychronously script each other. Frames with the
   // same |site_instance_id_| will also have the same |browsing_instance_id_|.
-  const int32_t site_instance_id_;
+  const content::SiteInstanceId site_instance_id_;
   // A proxy object that lets the underlying RFH be safely dereferenced on the
   // UI thread.
   const RenderFrameHostProxy render_frame_host_proxy_;

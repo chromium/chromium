@@ -30,7 +30,7 @@ FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
                              int render_frame_id,
                              const blink::LocalFrameToken& frame_token,
                              content::BrowsingInstanceId browsing_instance_id,
-                             int32_t site_instance_id)
+                             content::SiteInstanceId site_instance_id)
     : parent_frame_node_(parent_frame_node),
       page_node_(page_node),
       process_node_(process_node),
@@ -153,7 +153,7 @@ content::BrowsingInstanceId FrameNodeImpl::browsing_instance_id() const {
   return browsing_instance_id_;
 }
 
-int32_t FrameNodeImpl::site_instance_id() const {
+content::SiteInstanceId FrameNodeImpl::site_instance_id() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return site_instance_id_;
 }
@@ -448,7 +448,7 @@ content::BrowsingInstanceId FrameNodeImpl::GetBrowsingInstanceId() const {
   return browsing_instance_id();
 }
 
-int32_t FrameNodeImpl::GetSiteInstanceId() const {
+content::SiteInstanceId FrameNodeImpl::GetSiteInstanceId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return site_instance_id();
 }

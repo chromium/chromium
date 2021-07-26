@@ -2085,7 +2085,7 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_EQ(kOriginalSiteInfo,
               speculative_rfh->GetSiteInstance()->GetSiteInfo());
   }
-  int site_instance_id = speculative_rfh->GetSiteInstance()->GetId();
+  auto site_instance_id = speculative_rfh->GetSiteInstance()->GetId();
 
   // The user starts a navigation towards the redirected URL, for which we have
   // a speculative RenderFrameHost. This shouldn't delete the speculative
@@ -3072,7 +3072,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetFrameTree()
                             ->root();
-  int32_t orig_site_instance_id =
+  auto orig_site_instance_id =
       root->current_frame_host()->GetSiteInstance()->GetId();
   int initial_process_id =
       root->current_frame_host()->GetSiteInstance()->GetProcess()->GetID();

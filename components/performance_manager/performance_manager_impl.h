@@ -24,6 +24,7 @@
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
 #include "content/public/browser/browsing_instance_id.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/common/process_type.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -97,7 +98,7 @@ class PerformanceManagerImpl : public PerformanceManager {
       int render_frame_id,
       const blink::LocalFrameToken& frame_token,
       content::BrowsingInstanceId browsing_instance_id,
-      int32_t site_instance_id,
+      content::SiteInstanceId site_instance_id,
       FrameNodeCreationCallback creation_callback =
           FrameNodeCreationCallback());
   static std::unique_ptr<PageNodeImpl> CreatePageNode(

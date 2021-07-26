@@ -536,7 +536,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   bool IsSameSiteWithURLInfo(const UrlInfo& url_info);
 
   // SiteInstance interface overrides.
-  int32_t GetId() override;
+  SiteInstanceId GetId() override;
   BrowsingInstanceId GetBrowsingInstanceId() override;
   bool HasProcess() override;
   RenderProcessHost* GetProcess() override;
@@ -924,11 +924,8 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // An object used to construct RenderProcessHosts.
   static const RenderProcessHostFactory* g_render_process_host_factory_;
 
-  // The next available SiteInstance ID.
-  static int32_t next_site_instance_id_;
-
   // A unique ID for this SiteInstance.
-  int32_t id_;
+  SiteInstanceId id_;
 
   // The number of active frames in this SiteInstance.
   size_t active_frame_count_;

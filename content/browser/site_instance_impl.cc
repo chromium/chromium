@@ -92,6 +92,8 @@ GURL GetErrorPageSiteAndLockURL() {
   return GURL(kUnreachableWebDataURL);
 }
 
+SiteInstanceId::Generator g_site_instance_id_generator;
+
 }  // namespace
 
 UrlInfo::UrlInfo(const UrlInfo& other) = default;
@@ -122,8 +124,6 @@ UrlInfo::UrlInfo(
       origin(origin_in),
       storage_partition_config(storage_partition_config_in) {}
 UrlInfo::~UrlInfo() = default;
-
-int32_t SiteInstanceImpl::next_site_instance_id_ = 1;
 
 // static
 const GURL& SiteInstanceImpl::GetDefaultSiteURL() {
@@ -711,7 +711,7 @@ class SiteInstanceImpl::DefaultSiteInstanceState {
 };
 
 SiteInstanceImpl::SiteInstanceImpl(BrowsingInstance* browsing_instance)
-    : id_(next_site_instance_id_++),
+    : id_(g_site_instance_id_generator.GenerateNextId()),
       active_frame_count_(0),
       browsing_instance_(browsing_instance),
       process_(nullptr),
@@ -866,7 +866,7 @@ bool SiteInstanceImpl::ShouldAssignSiteForURL(const GURL& url) {
   return GetContentClient()->browser()->ShouldAssignSiteForURL(url);
 }
 
-int32_t SiteInstanceImpl::GetId() {
+SiteInstanceId SiteInstanceImpl::GetId() {
   return id_;
 }
 
@@ -1012,7 +1012,7 @@ void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
   }
 
   TRACE_EVENT2("navigation", "SiteInstanceImpl::SetProcessInternal", "site id",
-               id_, "process id", process_->GetID());
+               id_.value(), "process id", process_->GetID());
   GetContentClient()->browser()->SiteInstanceGotProcess(this);
 
   // Notify SiteInstanceGroupManager that the process was set on this
@@ -1033,8 +1033,8 @@ void SiteInstanceImpl::SetSite(const UrlInfo& url_info) {
   const GURL& url = url_info.url;
   // TODO(creis): Consider calling ShouldAssignSiteForURL internally, rather
   // than before multiple call sites.  See https://crbug.com/949220.
-  TRACE_EVENT2("navigation", "SiteInstanceImpl::SetSite", "site id", id_, "url",
-               url.possibly_invalid_spec());
+  TRACE_EVENT2("navigation", "SiteInstanceImpl::SetSite", "site id",
+               id_.value(), "url", url.possibly_invalid_spec());
   // A SiteInstance's site should not change.
   // TODO(creis): When following links or script navigations, we can currently
   // render pages from other sites in this SiteInstance.  This will eventually
@@ -1053,7 +1053,7 @@ void SiteInstanceImpl::SetSite(const UrlInfo& url_info) {
 void SiteInstanceImpl::SetSiteInfoToDefault(
     const StoragePartitionConfig& storage_partition_config) {
   TRACE_EVENT1("navigation", "SiteInstanceImpl::SetSiteInfoToDefault",
-               "site id", id_);
+               "site id", id_.value());
   DCHECK(!has_site_);
   default_site_instance_state_ = std::make_unique<DefaultSiteInstanceState>();
   original_url_ = GetDefaultSiteURL();
@@ -1807,7 +1807,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
       // additional logic to prevent the non-isolated sites from requesting
       // resources for isolated sites. https://crbug.com/509125
       TRACE_EVENT2("navigation", "RenderProcessHost::SetProcessLock", "site id",
-                   id_, "lock", lock_to_set.ToString());
+                   id_.value(), "lock", lock_to_set.ToString());
       process_->SetProcessLock(GetIsolationContext(), lock_to_set);
     } else if (process_lock != lock_to_set) {
       // We should never attempt to reassign a different origin lock to a
@@ -1896,7 +1896,7 @@ void SiteInstance::StartIsolatingSite(
 
 void SiteInstanceImpl::WriteIntoTrace(perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("id", GetId());
+  dict.Add("id", GetId().value());
   dict.Add("browsing_instance_id", GetBrowsingInstanceId().value());
   dict.Add("is_default", IsDefaultSiteInstance());
   dict.Add("site_info", site_info_);

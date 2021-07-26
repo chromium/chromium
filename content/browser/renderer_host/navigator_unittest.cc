@@ -110,7 +110,7 @@ TEST_F(NavigatorTest, SimpleBrowserInitiatedNavigationFromNonLiveRenderer) {
   // Start a browser-initiated navigation.
   auto navigation =
       NavigationSimulator::CreateBrowserInitiated(kUrl, contents());
-  int32_t site_instance_id = main_test_rfh()->GetSiteInstance()->GetId();
+  auto site_instance_id = main_test_rfh()->GetSiteInstance()->GetId();
   FrameTreeNode* node = main_test_rfh()->frame_tree_node();
   navigation->Start();
   NavigationRequest* request = node->navigation_request();
@@ -713,7 +713,7 @@ TEST_F(NavigatorTest, BrowserInitiatedNavigationCancel) {
   // Confirm a speculative RenderFrameHost was created.
   TestRenderFrameHost* speculative_rfh = GetSpeculativeRenderFrameHost(node);
   ASSERT_TRUE(speculative_rfh);
-  int32_t site_instance_id_1 = speculative_rfh->GetSiteInstance()->GetId();
+  auto site_instance_id_1 = speculative_rfh->GetSiteInstance()->GetId();
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
   } else {
@@ -736,7 +736,7 @@ TEST_F(NavigatorTest, BrowserInitiatedNavigationCancel) {
   // Confirm that a new speculative RenderFrameHost was created.
   speculative_rfh = GetSpeculativeRenderFrameHost(node);
   ASSERT_TRUE(speculative_rfh);
-  int32_t site_instance_id_2 = speculative_rfh->GetSiteInstance()->GetId();
+  auto site_instance_id_2 = speculative_rfh->GetSiteInstance()->GetId();
 
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
@@ -939,7 +939,7 @@ TEST_F(NavigatorTest,
   // Initialization.
   contents()->NavigateAndCommit(kUrl0);
   FrameTreeNode* node = main_test_rfh()->frame_tree_node();
-  int32_t site_instance_id_0 = main_test_rfh()->GetSiteInstance()->GetId();
+  auto site_instance_id_0 = main_test_rfh()->GetSiteInstance()->GetId();
   bool expect_site_instance_change =
       ExpectSiteInstanceChange(main_test_rfh()->GetSiteInstance());
 
@@ -1044,7 +1044,7 @@ TEST_F(NavigatorTest, SpeculativeRendererWorksBaseCase) {
       NavigationSimulator::CreateBrowserInitiated(kUrl, contents());
   navigation->Start();
   TestRenderFrameHost* speculative_rfh = GetSpeculativeRenderFrameHost(node);
-  int32_t site_instance_id = speculative_rfh->GetSiteInstance()->GetId();
+  auto site_instance_id = speculative_rfh->GetSiteInstance()->GetId();
   ASSERT_TRUE(speculative_rfh);
   EXPECT_NE(speculative_rfh, main_test_rfh());
   if (AreDefaultSiteInstancesEnabled()) {
@@ -1070,7 +1070,7 @@ TEST_F(NavigatorTest, SpeculativeRendererDiscardedAfterRedirectToAnotherSite) {
   const GURL kUrlInit("http://wikipedia.org/");
   contents()->NavigateAndCommit(kUrlInit);
   FrameTreeNode* node = main_test_rfh()->frame_tree_node();
-  int32_t init_site_instance_id = main_test_rfh()->GetSiteInstance()->GetId();
+  auto init_site_instance_id = main_test_rfh()->GetSiteInstance()->GetId();
 
   // Begin navigating to another site.
   const GURL kUrl("http://google.com/");
@@ -1081,7 +1081,7 @@ TEST_F(NavigatorTest, SpeculativeRendererDiscardedAfterRedirectToAnotherSite) {
 
   TestRenderFrameHost* speculative_rfh = GetSpeculativeRenderFrameHost(node);
   ASSERT_TRUE(speculative_rfh);
-  int32_t site_instance_id = speculative_rfh->GetSiteInstance()->GetId();
+  auto site_instance_id = speculative_rfh->GetSiteInstance()->GetId();
   RenderFrameDeletedObserver rfh_deleted_observer(speculative_rfh);
   EXPECT_NE(init_site_instance_id, site_instance_id);
   EXPECT_EQ(init_site_instance_id, main_test_rfh()->GetSiteInstance()->GetId());
@@ -1119,8 +1119,7 @@ TEST_F(NavigatorTest, SpeculativeRendererDiscardedAfterRedirectToAnotherSite) {
   EXPECT_EQ(speculative_rfh->navigation_requests().size(), 1u);
   EXPECT_EQ(init_site_instance_id, main_test_rfh()->GetSiteInstance()->GetId());
 
-  int32_t redirect_site_instance_id =
-      speculative_rfh->GetSiteInstance()->GetId();
+  auto redirect_site_instance_id = speculative_rfh->GetSiteInstance()->GetId();
 
   // Expect the initial and redirect SiteInstances to be different because
   // they should be associated with different BrowsingInstances.

@@ -530,7 +530,7 @@ FrameTree::RenderViewHostMapId FrameTree::GetRenderViewHostMapId(
   // TODO(acolwell): Change this to use a SiteInstanceGroup ID once
   // SiteInstanceGroups are implemented so that all SiteInstances within a
   // group can use the same RenderViewHost.
-  return RenderViewHostMapId::FromUnsafeValue(site_instance->GetId());
+  return RenderViewHostMapId::FromUnsafeValue(site_instance->GetId().value());
 }
 
 void FrameTree::RegisterRenderViewHost(RenderViewHostMapId id,
