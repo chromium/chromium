@@ -14,8 +14,8 @@ class FeaturePromoBubbleView;
 // when time outs.
 class FeaturePromoBubbleTimeout {
  public:
-  FeaturePromoBubbleTimeout(base::TimeDelta delay_default,
-                            base::TimeDelta delay_short);
+  FeaturePromoBubbleTimeout(base::TimeDelta delay_no_interaction,
+                            base::TimeDelta delay_after_interaction);
 
   void OnBubbleShown(FeaturePromoBubbleView* feature_promo_bubble_view);
   void OnMouseEntered();
@@ -29,8 +29,8 @@ class FeaturePromoBubbleTimeout {
 
   FeaturePromoBubbleView* feature_promo_bubble_view_;
 
-  const base::TimeDelta delay_default_;
-  const base::TimeDelta delay_short_;
+  const base::TimeDelta delay_no_interaction_;
+  const base::TimeDelta delay_after_interaction_;
 
   DISALLOW_COPY_AND_ASSIGN(FeaturePromoBubbleTimeout);
 };

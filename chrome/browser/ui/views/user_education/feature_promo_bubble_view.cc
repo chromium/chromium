@@ -192,8 +192,10 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
   // Bubble will not auto-dismiss if there's buttons.
   if (params.buttons.empty()) {
     feature_promo_bubble_timeout_ = std::make_unique<FeaturePromoBubbleTimeout>(
-        params.timeout_default ? *params.timeout_default : kDelayDefault,
-        params.timeout_short ? *params.timeout_short : kDelayShort);
+        params.timeout_no_interaction ? *params.timeout_no_interaction
+                                      : kDelayDefault,
+        params.timeout_after_interaction ? *params.timeout_after_interaction
+                                         : kDelayShort);
   }
 
   const std::u16string body_text = std::move(params.body_text);

@@ -9,16 +9,17 @@
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
 
 FeaturePromoBubbleTimeout::FeaturePromoBubbleTimeout(
-    base::TimeDelta delay_default,
-    base::TimeDelta delay_short)
-    : delay_default_(delay_default), delay_short_(delay_short) {}
+    base::TimeDelta delay_no_interaction,
+    base::TimeDelta delay_after_interaction)
+    : delay_no_interaction_(delay_no_interaction),
+      delay_after_interaction_(delay_after_interaction) {}
 
 void FeaturePromoBubbleTimeout::OnBubbleShown(
     FeaturePromoBubbleView* feature_promo_bubble_view) {
   feature_promo_bubble_view_ = feature_promo_bubble_view;
-  if (delay_default_.is_zero())
+  if (delay_no_interaction_.is_zero())
     return;
-  StartAutoCloseTimer(delay_default_);
+  StartAutoCloseTimer(delay_no_interaction_);
 }
 
 void FeaturePromoBubbleTimeout::OnMouseEntered() {
@@ -26,13 +27,13 @@ void FeaturePromoBubbleTimeout::OnMouseEntered() {
 }
 
 void FeaturePromoBubbleTimeout::OnMouseExited() {
-  if (delay_short_.is_zero() && delay_default_.is_zero())
+  if (delay_after_interaction_.is_zero() && delay_no_interaction_.is_zero())
     return;
 
-  if (delay_short_.is_zero())
-    StartAutoCloseTimer(delay_default_);
+  if (delay_after_interaction_.is_zero())
+    StartAutoCloseTimer(delay_no_interaction_);
   else
-    StartAutoCloseTimer(delay_short_);
+    StartAutoCloseTimer(delay_after_interaction_);
 }
 
 void FeaturePromoBubbleTimeout::StartAutoCloseTimer(

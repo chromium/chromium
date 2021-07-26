@@ -684,8 +684,8 @@ void PasswordSaveUpdateWithAccountStoreView::MaybeShowIPH(IPHType type) {
   bubble_params.focus_on_create = true;
   bubble_params.persist_on_blur = false;
   bubble_params.preferred_width = kAccountStoragePromoWidth;
-  bubble_params.timeout_default = GetRegularIPHTimeout();
-  bubble_params.timeout_short = GetShortIPHTimeout();
+  bubble_params.timeout_no_interaction = GetRegularIPHTimeout();
+  bubble_params.timeout_after_interaction = GetShortIPHTimeout();
 
   if (type == IPHType::kRegular) {
     bubble_params.body_string_specifier =

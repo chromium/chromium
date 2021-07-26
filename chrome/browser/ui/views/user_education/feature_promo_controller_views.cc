@@ -264,7 +264,8 @@ void FeaturePromoControllerViews::FinishContinuedPromo() {
   current_iph_feature_ = nullptr;
 }
 
-bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
+FeaturePromoBubbleView::CreateParams
+FeaturePromoControllerViews::GetBaseCreateParams(
     const FeaturePromoBubbleParams& params) {
   // Map |params| to the bubble's create params, fetching needed strings.
   FeaturePromoBubbleView::CreateParams create_params;
@@ -292,8 +293,26 @@ bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
   create_params.arrow = params.arrow;
   create_params.preferred_width = params.preferred_width;
 
-  create_params.timeout_default = params.timeout_default;
-  create_params.timeout_short = params.timeout_short;
+  if (params.allow_snooze) {
+    create_params.timeout_no_interaction =
+        params.timeout_no_interaction ? params.timeout_no_interaction
+                                      : snooze_service_->kTimeoutNoInteraction;
+    create_params.timeout_after_interaction =
+        params.timeout_after_interaction
+            ? params.timeout_after_interaction
+            : snooze_service_->kTimeoutAfterInteraction;
+  } else {
+    create_params.timeout_no_interaction = params.timeout_no_interaction;
+    create_params.timeout_after_interaction = params.timeout_after_interaction;
+  }
+
+  return create_params;
+}
+
+bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
+    const FeaturePromoBubbleParams& params) {
+  FeaturePromoBubbleView::CreateParams create_params =
+      GetBaseCreateParams(params);
 
   if (params.allow_snooze) {
     FeaturePromoBubbleView::ButtonParams snooze_button;

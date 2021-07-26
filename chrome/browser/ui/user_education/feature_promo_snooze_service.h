@@ -32,7 +32,17 @@ class FeaturePromoSnoozeService {
 
   // Maximum count of snoozes to track in UMA histogram.
   // Snooze counts that are equal or larger than this value will be conflated.
-  static const int kUmaMaxSnoozeCount;
+  static constexpr int kUmaMaxSnoozeCount = 10;
+
+  // The amount of time the promo should stay onscreen if the user
+  // never hovers over it.
+  static constexpr base::TimeDelta kTimeoutNoInteraction =
+      base::TimeDelta::FromSeconds(300);
+
+  // The amount of time the promo should stay onscreen after the
+  // user stops hovering over it.
+  static constexpr base::TimeDelta kTimeoutAfterInteraction =
+      base::TimeDelta::FromSeconds(3);
 
   explicit FeaturePromoSnoozeService(Profile* profile);
 

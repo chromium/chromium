@@ -66,7 +66,9 @@ enum class SnoozeType {
 };
 }  // namespace
 
-const int FeaturePromoSnoozeService::kUmaMaxSnoozeCount = 10;
+constexpr int FeaturePromoSnoozeService::kUmaMaxSnoozeCount;
+constexpr base::TimeDelta FeaturePromoSnoozeService::kTimeoutNoInteraction;
+constexpr base::TimeDelta FeaturePromoSnoozeService::kTimeoutAfterInteraction;
 
 FeaturePromoSnoozeService::FeaturePromoSnoozeService(Profile* profile)
     : profile_(profile) {}

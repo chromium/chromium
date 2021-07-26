@@ -25,8 +25,8 @@ class TutorialDialogTest : public DialogBrowserTest {
     params.persist_on_blur = true;
     params.tutorial_progress_current = 3;
     params.tutorial_progress_max = 5;
-    params.timeout_default = base::TimeDelta();
-    params.timeout_short = base::TimeDelta();
+    params.timeout_no_interaction = base::TimeDelta();
+    params.timeout_after_interaction = base::TimeDelta();
 
     FeaturePromoBubbleView::Create(std::move(params));
   }

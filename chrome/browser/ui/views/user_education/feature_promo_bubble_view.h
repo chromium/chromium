@@ -75,8 +75,8 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
     absl::optional<int> tutorial_progress_max;
 
     // Changes the bubble timeout. Intended for tests, avoid use.
-    absl::optional<base::TimeDelta> timeout_default;
-    absl::optional<base::TimeDelta> timeout_short;
+    absl::optional<base::TimeDelta> timeout_no_interaction;
+    absl::optional<base::TimeDelta> timeout_after_interaction;
   };
 
   // NOTE: Please read comment above class. This method shouldn't be

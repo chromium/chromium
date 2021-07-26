@@ -58,6 +58,10 @@ class FeaturePromoControllerViews : public FeaturePromoController {
       const FeaturePromoBubbleParams& params,
       BubbleCloseCallback close_callback = BubbleCloseCallback());
 
+  // Builds the CreateParams from the BubbleParams.
+  FeaturePromoBubbleView::CreateParams GetBaseCreateParams(
+      const FeaturePromoBubbleParams& params);
+
   // Only for security or privacy critical promos. Immedialy shows a
   // promo with |params|, cancelling any normal promo and blocking any
   // further promos until it's done.

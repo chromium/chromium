@@ -27,8 +27,8 @@ class FeaturePromoBubbleViewInteractiveTest : public InProcessBrowserTest {
                              ->toolbar()
                              ->app_menu_button();
     params.arrow = views::BubbleBorder::TOP_RIGHT;
-    params.timeout_default = absl::nullopt;
-    params.timeout_short = absl::nullopt;
+    params.timeout_no_interaction = absl::nullopt;
+    params.timeout_after_interaction = absl::nullopt;
     return params;
   }
 };

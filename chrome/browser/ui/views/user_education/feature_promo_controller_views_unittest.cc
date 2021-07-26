@@ -84,6 +84,12 @@ class FeaturePromoControllerViewsTest : public TestWithBrowserView {
     return params;
   }
 
+  FeaturePromoBubbleParams IPHSnoozeBubbleParams() {
+    FeaturePromoBubbleParams params = DefaultBubbleParams();
+    params.allow_snooze = true;
+    return params;
+  }
+
   FeaturePromoControllerViews* controller_;
   NiceMock<feature_engagement::test::MockTracker>* mock_tracker_;
 
@@ -434,4 +440,14 @@ TEST_F(FeaturePromoControllerViewsTest, FailsIfBubbleIsShowing) {
 
   EXPECT_FALSE(controller_->MaybeShowPromoWithParams(kTestIPHFeature,
                                                      DefaultBubbleParams()));
+}
+
+// Test that IPH defaults are respected in the Snooze case.
+TEST_F(FeaturePromoControllerViewsTest, IPHSnoozeUniqueTimeout) {
+  FeaturePromoBubbleView::CreateParams bubble_params =
+      controller_->GetBaseCreateParams(IPHSnoozeBubbleParams());
+  EXPECT_EQ(FeaturePromoSnoozeService::kTimeoutNoInteraction,
+            bubble_params.timeout_no_interaction);
+  EXPECT_EQ(FeaturePromoSnoozeService::kTimeoutAfterInteraction,
+            bubble_params.timeout_after_interaction);
 }
