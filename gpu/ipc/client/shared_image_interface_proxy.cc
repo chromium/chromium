@@ -190,6 +190,9 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
       params->size, params->format, params->plane));
 
   bool requires_sync_token =
+#if defined(OS_FUCHSIA)
+      params->buffer_handle.type == gfx::NATIVE_PIXMAP ||
+#endif
       params->buffer_handle.type == gfx::IO_SURFACE_BUFFER;
   {
     base::AutoLock lock(lock_);
