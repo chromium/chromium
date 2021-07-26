@@ -2183,7 +2183,8 @@ void URLLoader::ReportFlaggedResponseCookies() {
     devtools_observer->OnRawResponse(
         devtools_request_id().value(), url_request_->maybe_stored_cookies(),
         std::move(header_array), raw_response_headers,
-        IPEndPointToIPAddressSpace(response_info.remote_endpoint));
+        IPEndPointToIPAddressSpace(response_info.remote_endpoint),
+        url_request_->response_headers()->response_code());
   }
 
   if (auto* cookie_observer = GetCookieAccessObserver()) {

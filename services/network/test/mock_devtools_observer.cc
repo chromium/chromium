@@ -44,7 +44,8 @@ void MockDevToolsObserver::OnRawResponse(
     const net::CookieAndLineAccessResultList& cookies_with_access_result,
     std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
     const absl::optional<std::string>& raw_response_headers,
-    network::mojom::IPAddressSpace resource_address_space) {
+    network::mojom::IPAddressSpace resource_address_space,
+    int32_t http_status_code) {
   raw_response_cookies_.insert(raw_response_cookies_.end(),
                                cookies_with_access_result.begin(),
                                cookies_with_access_result.end());
@@ -53,6 +54,7 @@ void MockDevToolsObserver::OnRawResponse(
   resource_address_space_ = resource_address_space;
 
   raw_response_headers_ = raw_response_headers;
+  raw_response_http_status_code_ = http_status_code;
 
   if (wait_for_raw_response_ &&
       raw_response_cookies_.size() >= wait_for_raw_response_goal_) {

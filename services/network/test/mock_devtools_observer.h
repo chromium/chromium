@@ -39,7 +39,8 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       const net::CookieAndLineAccessResultList& cookies_with_access_result,
       std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
       const absl::optional<std::string>& raw_response_headers,
-      network::mojom::IPAddressSpace resource_address_space) override;
+      network::mojom::IPAddressSpace resource_address_space,
+      int32_t http_status_code) override;
 
   void OnPrivateNetworkRequest(
       const absl::optional<std::string>& devtools_request_id,
@@ -117,8 +118,12 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
 
   const std::string devtools_request_id() { return devtools_request_id_; }
 
-  const absl::optional<std::string> raw_response_headers() {
+  const absl::optional<std::string> raw_response_headers() const {
     return raw_response_headers_;
+  }
+
+  int32_t raw_response_http_status_code() const {
+    return raw_response_http_status_code_;
   }
 
   const network::mojom::ClientSecurityStatePtr& client_security_state() const {
@@ -175,6 +180,7 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   network::mojom::IPAddressSpace resource_address_space_;
   std::string devtools_request_id_;
   absl::optional<std::string> raw_response_headers_;
+  int32_t raw_response_http_status_code_ = -1;
 
   bool got_raw_request_ = false;
   net::CookieAccessResultList raw_request_cookies_;

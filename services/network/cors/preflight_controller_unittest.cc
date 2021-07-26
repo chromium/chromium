@@ -299,7 +299,8 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       const net::CookieAndLineAccessResultList& cookies_with_access_result,
       std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
       const absl::optional<std::string>& raw_response_headers,
-      network::mojom::IPAddressSpace resource_address_space) override {
+      network::mojom::IPAddressSpace resource_address_space,
+      int32_t http_status_code) override {
     on_raw_response_called_ = true;
   }
   void OnCorsPreflightRequest(

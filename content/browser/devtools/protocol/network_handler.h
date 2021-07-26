@@ -227,7 +227,8 @@ class NetworkHandler : public DevToolsDomainHandler,
       const net::CookieAndLineAccessResultList& response_cookie_list,
       const std::vector<network::mojom::HttpRawHeaderPairPtr>& response_headers,
       const absl::optional<std::string>& response_headers_text,
-      network::mojom::IPAddressSpace resource_address_space);
+      network::mojom::IPAddressSpace resource_address_space,
+      int32_t http_status_code);
   void OnTrustTokenOperationDone(
       const std::string& devtools_request_id,
       const network::mojom::TrustTokenOperationResult& result);

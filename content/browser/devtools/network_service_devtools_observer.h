@@ -45,7 +45,8 @@ class CONTENT_EXPORT NetworkServiceDevToolsObserver
       const net::CookieAndLineAccessResultList& response_cookie_list,
       std::vector<network::mojom::HttpRawHeaderPairPtr> response_headers,
       const absl::optional<std::string>& response_headers_text,
-      network::mojom::IPAddressSpace resource_address_space) override;
+      network::mojom::IPAddressSpace resource_address_space,
+      int32_t http_status_code) override;
   void OnTrustTokenOperationDone(
       const std::string& devtools_request_id,
       network::mojom::TrustTokenOperationResultPtr result) override;

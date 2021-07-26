@@ -50,7 +50,8 @@ interface DevToolsObserver {
     array<CookieAndLineWithAccessResult> cookies_with_access_result,
     array<HttpRawHeaderPair> headers,
     string? raw_response_headers,
-    IPAddressSpace resource_address_space);
+    IPAddressSpace resource_address_space,
+    int32 http_status_code);
 
   // Called to send information about a private network request that was blocked
   // (then |is_warning| is false), or will be blocked in the future (then
