@@ -54,7 +54,6 @@ const char kChromeURLContentSecurityPolicyHeaderBase[] =
 const char kXFrameOptions[] = "X-Frame-Options";
 const char kChromeURLXFrameOptionsHeader[] = "DENY";
 
-const std::string kWebUIResources = "/ui/webui/resources";
 const char kWebUIResourcesHost[] = "resources";
 
 // Returns whether |url| passes some sanity checks and is a valid GURL.
@@ -89,6 +88,7 @@ void URLToRequestPath(const GURL& url, std::string* path) {
 // The use of x/../../../../ui/webui/resources is mapped by webkit to
 // x/ui/webui/resources so to not go out of scope of the module.
 GURL RedirectWebUIResources(const GURL url) {
+  static std::string kWebUIResources = "/ui/webui/resources";
   if (base::StartsWith(url.path(), kWebUIResources,
                        base::CompareCase::SENSITIVE)) {
     GURL::Replacements replacements;
