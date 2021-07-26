@@ -3428,21 +3428,6 @@
             ]
         }
     ],
-    "EnableExtendedSyncPromosCability": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MinorModeSupport"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableManualPasswordGenerationIOS": [
         {
             "platforms": [
@@ -5156,6 +5141,22 @@
                     },
                     "enable_features": [
                         "MobileIdentityConsistencyVar"
+                    ]
+                }
+            ]
+        }
+    ],
+    "MobileMinorModeSupport": [
+        {
+            "platforms": [
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MinorModeSupport"
                     ]
                 }
             ]
