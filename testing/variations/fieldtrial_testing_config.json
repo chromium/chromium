@@ -1438,27 +1438,6 @@
             ]
         }
     ],
-    "ButterForPaymentsStage2": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Butter_IndicationForAllUsers",
-                    "enable_features": [
-                        "AutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers",
-                        "AutofillEnableInfoBarAccountIndicationFooterForSyncUsers",
-                        "AutofillEnableSaveCardInfoBarAccountIndicationFooter"
-                    ],
-                    "disable_features": [
-                        "AutofillEnablePasswordInfoBarAccountIndicationFooter",
-                        "WalletRequiresFirstSyncSetupComplete"
-                    ]
-                }
-            ]
-        }
-    ],
     "CBCMRemoteCommandsStudy": [
         {
             "platforms": [

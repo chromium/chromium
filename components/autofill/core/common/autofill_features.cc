@@ -164,14 +164,14 @@ const base::Feature kAutofillEnableImportWhenMultiplePhoneNumbers{
 const base::Feature
     kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers{
         "AutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers",
-        base::FEATURE_DISABLED_BY_DEFAULT};
+        base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled and user is syncing, a footer indicating user's e-mail address
 // and profile picture will appear at the bottom of InfoBars which has
 // corresponding account indication footer flags on.
 const base::Feature kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers{
     "AutofillEnableInfoBarAccountIndicationFooterForSyncUsers",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, the precedence is given to the field label over the name when
 // they match different types. Applied only for parsing of address forms in
@@ -186,7 +186,7 @@ const base::Feature kAutofillEnableLabelPrecedenceForTurkishAddresses{
 // InfoBars.
 const base::Feature kAutofillEnablePasswordInfoBarAccountIndicationFooter{
     "AutofillEnablePasswordInfoBarAccountIndicationFooter",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, the address profile deduplication logic runs after the browser
 // startup, once per chrome version.
@@ -457,7 +457,7 @@ const base::Feature kAndroidAutofillQueryServerFieldTypes{
 // be complete.
 // TODO(crbug.com/1134564): Clean up after launch.
 const base::Feature kWalletRequiresFirstSyncSetupComplete{
-    "WalletRequiresFirstSyncSetupComplete", base::FEATURE_ENABLED_BY_DEFAULT};
+    "WalletRequiresFirstSyncSetupComplete", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 }  // namespace features
