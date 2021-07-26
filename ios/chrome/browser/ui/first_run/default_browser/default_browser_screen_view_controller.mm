@@ -13,6 +13,7 @@
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  self.bannerImage = [UIImage imageNamed:@"default_browser_screen_banner"];
   self.titleText = @"WIP Default browser screen title";
   self.subtitleText = @"WIP Default browser screen subtitle";
 

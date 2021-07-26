@@ -23,6 +23,9 @@ source_set("default_browser_ui") {
     "default_browser_screen_view_controller.h",
     "default_browser_screen_view_controller.mm",
   ]
-  deps = [ "//ios/chrome/browser/ui/first_run:first_run_ui" ]
+  deps = [
+    "//ios/chrome/browser/ui/first_run:first_run_ui",
+    "//ios/chrome/browser/ui/first_run/resources:default_browser_screen_banner",
+  ]
   frameworks = [ "UIKit.framework" ]
 }

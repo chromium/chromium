@@ -26,6 +26,16 @@ imageset("checkbox_checked") {
   ]
 }
 
+imageset("default_browser_screen_banner") {
+  sources = [
+    "default_browser_screen_banner.imageset/Contents.json",
+    "default_browser_screen_banner.imageset/default_browser_screen_banner_dark@2x.png",
+    "default_browser_screen_banner.imageset/default_browser_screen_banner_dark@3x.png",
+    "default_browser_screen_banner.imageset/default_browser_screen_banner_light@2x.png",
+    "default_browser_screen_banner.imageset/default_browser_screen_banner_light@3x.png",
+  ]
+}
+
 imageset("first_run_location_permissions") {
   sources = [
     "first_run_location_permissions.imageset/Contents.json",
