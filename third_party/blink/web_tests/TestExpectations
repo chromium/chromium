@@ -6340,9 +6340,6 @@ crbug.com/1161590 external/wpt/html/semantics/forms/textfieldselection/select-ev
 # Wpt importer sheriff 2021-01-05
 crbug.com/1163175 external/wpt/css/css-pseudo/first-letter-punctuation-and-space.html [ Failure ]
 
-# COOP flaky test (timeout)
-crbug.com/1161244 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-from-coop.https.html [ Pass Timeout ]
-
 # Sheriff 2020-12-22
 crbug.com/1161301 [ Mac10.15 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Pass Timeout ]
 crbug.com/1161301 [ Mac10.14 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Failure Pass Timeout ]
@@ -7365,3 +7362,6 @@ crbug.com/1229701 virtual/synchronous_html_parser/http/tests/inspector-protocol/
 crbug.com/1229708 fast/events/pointerevents/pointer-event-in-slop-region.html [ Skip ]
 crbug.com/1229711 [ Linux ] http/tests/devtools/console-resource-errors.js [ Pass Failure ]
 crbug.com/1229725 http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Pass Failure Crash ]
+
+# Merged to branch
+crbug.com/1161244 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-from-coop.https.html?* [ Pass Timeout ]
