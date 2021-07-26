@@ -4,10 +4,16 @@
 
 #include "gpu/command_buffer/tests/gl_test_setup_helper.h"
 
+#include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/gles2_lib.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "ui/gl/init/gl_factory.h"
+
+#if defined(USE_OZONE)
+#include "ui/base/ui_base_features.h"
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace gpu {
 
@@ -25,6 +31,22 @@ GLTestSetupHelper::~GLTestSetupHelper() {
 }
 
 void GLTestSetupHelper::OnTestStart(const testing::TestInfo& test_info) {
+  task_environment_ = std::make_unique<base::test::TaskEnvironment>(
+      base::test::TaskEnvironment::MainThreadType::UI);
+
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform()) {
+    // Make Ozone run in single-process mode.
+    ui::OzonePlatform::InitParams params;
+    params.single_process = true;
+
+    // This initialization must be done after TaskEnvironment has
+    // initialized the UI thread.
+    ui::OzonePlatform::InitializeForUI(params);
+    ui::OzonePlatform::InitializeForGPU(params);
+  }
+#endif  // defined(USE_OZONE)
+
   gpu::GLTestHelper::InitializeGLDefault();
   ::gles2::Initialize();
 }
@@ -35,6 +57,7 @@ void GLTestSetupHelper::OnTestEnd(const testing::TestInfo& test_info) {
   // crashes.
   viz::TestGpuServiceHolder::ResetInstance();
   gl::init::ShutdownGL(/*due_to_fallback=*/false);
+  task_environment_ = nullptr;
 }
 
 }  // namespace gpu
