@@ -46,7 +46,7 @@ void AttachHistoryClustersActions(
               IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX,
               IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH),
           GURL(base::StringPrintf(
-              "chrome://memories/?q=%s",
+              "chrome://history/journeys?q=%s",
               net::EscapeQueryParamValue(query, /*use_plus=*/false).c_str())));
 
       // Only ever attach one action (to the highest match), to not overwhelm
