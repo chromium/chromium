@@ -602,6 +602,10 @@ void TracingSamplerProfiler::MangleModuleIDIfNeeded(std::string* module_id) {
   // Example on version '66.0.3359.170' x64:
   //   Build-ID: "7f0715c2 86f8 b16c 10e4ad349cda3b9b 56c7a773
   //   Debug-ID  "C215077F F886 6CB1 10E4AD349CDA3B9B 0"
+  if (module_id->size() < 32) {
+    module_id->resize(32, '0');
+  }
+
   if (module_id->size() >= 32) {
     *module_id =
         base::StrCat({module_id->substr(6, 2), module_id->substr(4, 2),
