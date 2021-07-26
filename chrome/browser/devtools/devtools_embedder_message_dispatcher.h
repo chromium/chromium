@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "ui/gfx/geometry/insets.h"
