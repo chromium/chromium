@@ -58,15 +58,6 @@ AppLaunchConfiguration AppConfigurationForRelaunch() {
   return config;
 }
 
-// Wait for |timeout| in seconds.
-void WaitForInterval(NSTimeInterval timeout) {
-  XCTestExpectation* neverFulfilled =
-      [[XCTestExpectation alloc] initWithDescription:@"Wait"];
-  XCTWaiterResult result = [XCTWaiter waitForExpectations:@[ neverFulfilled ]
-                                                  timeout:timeout];
-  GREYAssertTrue(result == XCTWaiterResultTimedOut, @"Did not complete wait");
-}
-
 }  // namespace
 
 // Tests the upgrade sign-in promo restrictions.
@@ -108,7 +99,7 @@ void WaitForInterval(NSTimeInterval timeout) {
 
   // Relaunch the app to take the configuration into account.
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-  WaitForInterval(5.0);
+  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(5));
 
   [[EarlGrey selectElementWithMatcher:SigninRecallPromo()]
       assertWithMatcher:grey_notVisible()];
@@ -135,7 +126,7 @@ void WaitForInterval(NSTimeInterval timeout) {
 
   // Relaunch the app to take the configuration into account.
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-  WaitForInterval(5.0);
+  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(5));
 
   [[EarlGrey selectElementWithMatcher:SigninRecallPromo()]
       assertWithMatcher:grey_notVisible()];

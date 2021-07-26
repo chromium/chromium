@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "base/test/ios/wait_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -115,14 +116,7 @@ const char kPDFPath[] = "/complex_document.pdf";
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_tap()];
 
-  // Wait five seconds.
-  XCTestExpectation* neverFulfilled =
-      [[XCTestExpectation alloc] initWithDescription:@"Wait"];
-  XCTWaiterResult result = [XCTWaiter waitForExpectations:@[ neverFulfilled ]
-                                                  timeout:5.0];
-
-  GREYAssertTrue(result == XCTWaiterResultTimedOut,
-                 @"Was not able to complete wait in tab grid with a PDF tab.");
+  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(5));
 
   // Leave the tab grid.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
