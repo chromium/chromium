@@ -231,8 +231,7 @@ id<GREYMatcher> ProfileTableViewButtonMatcher() {
 }
 
 // Tests that the manual fallback view is present in incognito.
-// Disabled due to flakiness. See crbug.com/1115321.
-- (void)DISABLED_testIncognitoManualFallbackMenu {
+- (void)testIncognitoManualFallbackMenu {
   // Add the profile to use for verification.
   [AutofillAppInterface saveExampleProfile];
 

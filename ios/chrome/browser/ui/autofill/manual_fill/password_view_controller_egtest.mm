@@ -337,8 +337,7 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 
 // Tests that the Password View Controller is dismissed when tapping the
 // keyboard icon.
-// TODO(crbug.com/1232510) Re-enable.
-- (void)DISABLED_testKeyboardIconDismissPasswordController {
+- (void)testKeyboardIconDismissPasswordController {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // The keyboard icon is never present in iPads.
     return;
@@ -369,8 +368,7 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 
 // Tests that the Password View Controller is dismissed when tapping the outside
 // the popover on iPad.
-// TODO(crbug.com/1232777): Disabled due to flake.
-- (void)DISABLED_testIPadTappingOutsidePopOverDismissPasswordController {
+- (void)testIPadTappingOutsidePopOverDismissPasswordController {
   if (![ChromeEarlGrey isIPadIdiom]) {
     return;
   }
