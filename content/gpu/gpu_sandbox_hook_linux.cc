@@ -244,6 +244,11 @@ void AddIntelGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   static const char* const kReadOnlyList[] = {
       "/usr/share/vulkan/icd.d",
       "/usr/share/vulkan/icd.d/intel_icd.x86_64.json",
+      // TODO(hob): libvulkan.so is broadly applicable across all platforms
+      // for WebGPU, but let's allowlist only on Intel for now since it's the
+      // first platform to support WebGPU. As we start rolling out WebGPU on
+      // more platforms, we should move this into |AddStandardGpuPermissions|.
+      "/usr/lib64/libvulkan.so.1",
       "/usr/lib64/libvulkan_intel.so"};
   for (const char* item : kReadOnlyList)
     permissions->push_back(BrokerFilePermission::ReadOnly(item));
