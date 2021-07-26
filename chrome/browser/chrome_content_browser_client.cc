@@ -2364,7 +2364,14 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       command_line->HasSwitch(sandbox::policy::switches::kNoSandbox)) {
     command_line->AppendSwitch(switches::kEnableThreadInstructionCount);
   }
-#endif
+
+  // Opt into a hardened stack canary mitigation if it hasn't already been
+  // force-disabled.
+  if (!browser_command_line.HasSwitch(switches::kChangeStackGuardOnFork)) {
+    command_line->AppendSwitchASCII(switches::kChangeStackGuardOnFork,
+                                    switches::kChangeStackGuardOnForkEnabled);
+  }
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 }
 
 std::string
