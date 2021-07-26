@@ -44,9 +44,16 @@ std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
     PrefService* pref_service,
     media::VideoPlaneController* video_plane_controller,
     CastWindowManager* window_manager) {
+  auto network_context_getter = base::BindRepeating(
+      [](CastRuntimeContentBrowserClient* client)
+          -> network::mojom::NetworkContext* {
+        return client->GetSystemNetworkContext();
+      },
+      this);
   return CastRuntimeService::Create(
       GetMediaTaskRunner(), browser_context, window_manager,
-      media_pipeline_backend_manager(), pref_service);
+      media_pipeline_backend_manager(), std::move(network_context_getter),
+      pref_service);
 }
 
 }  // namespace chromecast

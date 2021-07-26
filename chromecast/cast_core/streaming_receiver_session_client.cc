@@ -4,6 +4,8 @@
 
 #include "chromecast/cast_core/streaming_receiver_session_client.h"
 
+#include <utility>
+
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "chromecast/shared/platform_info_serializer.h"
@@ -159,20 +161,26 @@ std::unique_ptr<cast_streaming::ReceiverSession> CreateReceiverSession(
 }  // namespace
 
 StreamingReceiverSessionClient::StreamingReceiverSessionClient(
+    cast_streaming::NetworkContextGetter network_context_getter,
     cast_streaming::ReceiverSession::MessagePortProvider message_port_provider,
     Handler* handler)
     : StreamingReceiverSessionClient(
+          std::move(network_context_getter),
           base::BindOnce(&CreateReceiverSession,
                          std::move(message_port_provider)),
           handler) {}
 
 StreamingReceiverSessionClient::StreamingReceiverSessionClient(
+    cast_streaming::NetworkContextGetter network_context_getter,
     ReceiverSessionFactory receiver_session_factory,
     Handler* handler)
     : handler_(handler),
       receiver_session_factory_(std::move(receiver_session_factory)) {
   DCHECK(handler_);
   DCHECK(receiver_session_factory_);
+  DCHECK(!network_context_getter.is_null());
+
+  cast_streaming::SetNetworkContextGetter(std::move(network_context_getter));
 
   std::unique_ptr<cast_api_bindings::MessagePort> server;
   cast_api_bindings::CreateMessagePortCorePair(&message_port_, &server);
@@ -183,7 +191,9 @@ StreamingReceiverSessionClient::StreamingReceiverSessionClient(
   handler_->StartAvSettingsQuery(std::move(server));
 }
 
-StreamingReceiverSessionClient::~StreamingReceiverSessionClient() = default;
+StreamingReceiverSessionClient::~StreamingReceiverSessionClient() {
+  cast_streaming::SetNetworkContextGetter({});
+}
 
 StreamingReceiverSessionClient::Handler::~Handler() = default;
 

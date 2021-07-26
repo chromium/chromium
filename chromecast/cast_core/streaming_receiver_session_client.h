@@ -9,6 +9,7 @@
 
 #include "chromecast/browser/cast_web_contents.h"
 #include "components/cast/message_port/message_port.h"
+#include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 
 namespace content {
@@ -45,6 +46,7 @@ class StreamingReceiverSessionClient
   // Creates a new instance of this class. |handler| must persist for the
   // lifetime of this instance.
   StreamingReceiverSessionClient(
+      cast_streaming::NetworkContextGetter network_context_getter,
       cast_streaming::ReceiverSession::MessagePortProvider
           message_port_provider,
       Handler* handler);
@@ -67,8 +69,10 @@ class StreamingReceiverSessionClient
           cast_streaming::ReceiverSession::AVConstraints)>;
 
   // This second ctor is required for Unit Testing.
-  StreamingReceiverSessionClient(ReceiverSessionFactory factory,
-                                 Handler* handler);
+  StreamingReceiverSessionClient(
+      cast_streaming::NetworkContextGetter network_context_getter,
+      ReceiverSessionFactory factory,
+      Handler* handler);
 
   // CastWebContents::Observer overrides.
   void MainFrameReadyToCommitNavigation(

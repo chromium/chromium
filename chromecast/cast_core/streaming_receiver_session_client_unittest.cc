@@ -14,6 +14,12 @@
 using testing::_;
 using testing::StrictMock;
 
+namespace network {
+namespace mojom {
+class NetworkContext;
+}  // namespace mojom
+}  // namespace network
+
 namespace chromecast {
 namespace {
 
@@ -41,12 +47,18 @@ class MockStreamingReceiverSessionHandler
 class StreamingReceiverSessionClientTest : public testing::Test {
  public:
   StreamingReceiverSessionClientTest() {
+    // NOTE: Required to ensure this test suite isn't affected by use of this
+    // static function elsewhere in the codebase's tests.
+    cast_streaming::ClearNetworkContextGetter();
+
     auto receiver_session = std::make_unique<StrictMock<MockReceiverSession>>();
     receiver_session_ = receiver_session.get();
     EXPECT_CALL(handler_, StartAvSettingsQuery(_));
 
     // Note: Can't use make_unique<> because the private ctor is needed.
     auto* client = new StreamingReceiverSessionClient(
+        base::BindRepeating(
+            []() -> network::mojom::NetworkContext* { return nullptr; }),
         base::BindOnce(
             &StreamingReceiverSessionClientTest::CreateReceiverSession,
             base::Unretained(this), std::move(receiver_session)),

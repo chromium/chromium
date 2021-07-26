@@ -8,6 +8,7 @@
 #if BUILDFLAG(ENABLE_CAST_MEDIA_RUNTIME)
 #include "chromecast/browser/cast_browser_process.h"  // nogncheck
 #else  // BUILDFLAG(ENABLE_CAST_MEDIA_RUNTIME)
+#include "base/bind.h"
 #include "base/no_destructor.h"
 #endif  // BUILDFLAG(ENABLE_CAST_MEDIA_RUNTIME)
 
@@ -28,12 +29,15 @@ CastRuntimeService* CastRuntimeService::GetInstance() {
 #else
   // TODO(b/186668532): Instead use the CastService singleton instead of
   // creating a new one with NoDestructor.
-  static base::NoDestructor<CastRuntimeService> g_instance;
+  static base::NoDestructor<CastRuntimeService> g_instance(base::BindRepeating(
+      []() -> network::mojom::NetworkContext* { return nullptr; }));
   return g_instance.get();
 #endif  // BUILDFLAG(ENABLE_CAST_MEDIA_RUNTIME)
 }
 
-CastRuntimeService::CastRuntimeService() = default;
+CastRuntimeService::CastRuntimeService(
+    NetworkContextGetter network_context_getter)
+    : network_context_getter_(std::move(network_context_getter)) {}
 
 CastRuntimeService::~CastRuntimeService() = default;
 

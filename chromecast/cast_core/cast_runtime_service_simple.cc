@@ -14,8 +14,10 @@ std::unique_ptr<CastRuntimeService> CastRuntimeService::Create(
     content::BrowserContext* browser_context,
     CastWindowManager* window_manager,
     media::MediaPipelineBackendManager* media_pipeline_backend_manager,
+    CastRuntimeService::NetworkContextGetter network_context_getter,
     PrefService* pref_service) {
-  return std::make_unique<CastRuntimeService>();
+  return std::make_unique<CastRuntimeService>(
+      std::move(network_context_getter));
 }
 
 }  // namespace chromecast
