@@ -36,14 +36,6 @@ const char kPrefLocallyInstalled[] = "locallyInstalled";
 
 }  // namespace
 
-void SetBookmarkAppIsLocallyInstalled(content::BrowserContext* context,
-                                      const Extension* extension,
-                                      bool is_locally_installed) {
-  ExtensionPrefs::Get(context)->UpdateExtensionPref(
-      extension->id(), kPrefLocallyInstalled,
-      std::make_unique<base::Value>(is_locally_installed));
-}
-
 bool BookmarkAppIsLocallyInstalled(content::BrowserContext* context,
                                    const Extension* extension) {
   return BookmarkAppIsLocallyInstalled(ExtensionPrefs::Get(context), extension);
@@ -67,64 +59,6 @@ bool IsInNavigationScopeForLaunchUrl(const GURL& launch_url, const GURL& url) {
   const int scope_str_length = nav_scope.spec().size();
   return base::StringPiece(nav_scope.spec()) ==
          base::StringPiece(url.spec()).substr(0, scope_str_length);
-}
-
-int CountUserInstalledBookmarkApps(content::BrowserContext* browser_context) {
-  // To avoid data races and inaccurate counting, ensure that ExtensionSystem is
-  // always ready at this point.
-  DCHECK(extensions::ExtensionSystem::Get(browser_context)->is_ready());
-
-  int num_user_installed = 0;
-
-  const ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
-  for (scoped_refptr<const Extension> app :
-       ExtensionRegistry::Get(browser_context)->enabled_extensions()) {
-    if (!app->from_bookmark())
-      continue;
-    if (!BookmarkAppIsLocallyInstalled(prefs, app.get()))
-      continue;
-    if (!app->was_installed_by_default())
-      ++num_user_installed;
-  }
-
-  return num_user_installed;
-}
-
-std::vector<SquareSizePx> GetBookmarkAppDownloadedIconSizes(
-    const Extension* extension) {
-  const ExtensionIconSet& icons = IconsInfo::GetIcons(extension);
-
-  std::vector<SquareSizePx> icon_sizes_in_px;
-  icon_sizes_in_px.reserve(icons.map().size());
-
-  for (const ExtensionIconSet::IconMap::value_type& icon_info : icons.map())
-    icon_sizes_in_px.push_back(icon_info.first);
-
-  return icon_sizes_in_px;
-}
-
-std::vector<IconSizes> GetBookmarkAppDownloadedShortcutsMenuIconsSizes(
-    const Extension* extension) {
-  std::vector<IconSizes> shortcuts_menu_icons_sizes;
-
-  const std::map<int, ExtensionIconSet>& shortcuts_menu_icons =
-      WebAppShortcutIconsInfo::GetShortcutIcons(extension);
-  shortcuts_menu_icons_sizes.reserve(shortcuts_menu_icons.size());
-  for (const auto& shortcuts_menu_icon : shortcuts_menu_icons) {
-    std::vector<SquareSizePx> shortcuts_menu_icon_sizes_any;
-    shortcuts_menu_icon_sizes_any.reserve(
-        shortcuts_menu_icon.second.map().size());
-    for (const auto& icon_info : shortcuts_menu_icon.second.map()) {
-      shortcuts_menu_icon_sizes_any.emplace_back(icon_info.first);
-    }
-
-    IconSizes icon_sizes;
-    icon_sizes.SetSizesForPurpose(IconPurpose::ANY,
-                                  std::move(shortcuts_menu_icon_sizes_any));
-    shortcuts_menu_icons_sizes.push_back(std::move(icon_sizes));
-  }
-
-  return shortcuts_menu_icons_sizes;
 }
 
 LaunchContainerAndType GetLaunchContainerAndTypeFromDisplayMode(
