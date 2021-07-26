@@ -84,6 +84,9 @@ namespace blink {
 // storage of the context and allocate a new one.
 static const unsigned kMaxTryRestoreContextAttempts = 4;
 
+// Max delay to fire context lost for context in iframes.
+static const unsigned kMaxIframeContextLoseDelay = 100;
+
 // Drawing methods need to use this instead of SkAutoCanvasRestore in case
 // overdraw detection substitutes the recording canvas (to discard overdrawn
 // draw calls).
@@ -209,8 +212,18 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   }
 
   if (canvas() && canvas()->IsVisible()) {
-    dispatch_context_lost_event_timer_.StartOneShot(base::TimeDelta(),
-                                                    FROM_HERE);
+    // For privacy reasons we need to delay contextLost events of iframes
+    // so that canvas from different domain on the same page don't lose context
+    // at the same time.
+    if (canvas()->GetDocument().GetFrame() &&
+        !canvas()->GetDocument().GetFrame()->IsMainFrame()) {
+      uint32_t delay = base::RandInt(1, kMaxIframeContextLoseDelay);
+      dispatch_context_lost_event_timer_.StartOneShot(
+          base::TimeDelta::FromMilliseconds(delay), FROM_HERE);
+    } else {
+      dispatch_context_lost_event_timer_.StartOneShot(base::TimeDelta(),
+                                                      FROM_HERE);
+    }
   } else {
     needs_context_lost_event_ = true;
   }
