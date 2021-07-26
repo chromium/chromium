@@ -33,6 +33,8 @@ class AccountConsistencyModeManager : public KeyedService {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Helper method, shorthand for calling GetAccountConsistencyMethod().
+  // TODO(crbug.com/1232361): Migrate usages to
+  // `IdentityManager::GetAccountConsistency`.
   static signin::AccountConsistencyMethod GetMethodForProfile(Profile* profile);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

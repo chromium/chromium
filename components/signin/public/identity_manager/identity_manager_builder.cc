@@ -171,6 +171,7 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
       std::move(gaia_cookie_manager_service);
   init_params.primary_account_manager = std::move(primary_account_manager);
   init_params.token_service = std::move(token_service);
+  init_params.account_consistency = params->account_consistency;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   init_params.ash_account_manager = params->account_manager;
 #endif

@@ -106,7 +106,8 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
                         std::move(parameters.accounts_mutator),
                         std::move(parameters.accounts_cookie_mutator),
                         std::move(parameters.device_accounts_synchronizer)),
-      diagnostics_provider_(std::move(parameters.diagnostics_provider)) {
+      diagnostics_provider_(std::move(parameters.diagnostics_provider)),
+      account_consistency_(parameters.account_consistency) {
   DCHECK(account_fetcher_service_);
   DCHECK(diagnostics_provider_);
 
