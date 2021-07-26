@@ -13,6 +13,8 @@
 #error "This file requires ARC support."
 #endif
 
+using base::test::ios::WaitUntilConditionOrTimeout;
+
 @implementation SigninEarlGreyImpl
 
 - (FakeChromeIdentity*)fakeIdentity1 {
@@ -53,7 +55,7 @@
   // Required to avoid any problem since the following test is not dependant
   // to UI, and the previous action has to be totally finished before going
   // through the assert.
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+  GREYAssert(WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForActionTimeout,
                  ^bool {
                    NSString* primaryAccountGaiaID =
@@ -80,8 +82,13 @@
   // the assert.
   GREYWaitForAppToIdle(@"App failed to idle");
 
-  EG_TEST_HELPER_ASSERT_TRUE([SigninEarlGreyAppInterface isSignedOut],
-                             @"Unexpected signed in user");
+  ConditionBlock condition = ^bool {
+    return [SigninEarlGreyAppInterface isSignedOut];
+  };
+  EG_TEST_HELPER_ASSERT_TRUE(
+      WaitUntilConditionOrTimeout(base::test::ios::kWaitForActionTimeout,
+                                  condition),
+      @"Unexpected signed in user");
 }
 
 - (void)verifyAuthenticated {
