@@ -8,6 +8,7 @@ import {MostVisitedBrowserProxy} from 'chrome://resources/cr_components/most_vis
 import {MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
 import {MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import {MostVisitedWindowProxy} from 'chrome://resources/cr_components/most_visited/window_proxy.js';
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
@@ -697,7 +698,7 @@ suite('Modification', () => {
 
       await addTiles(2);
       tile = queryTiles()[1];
-      actionMenuButton = /**@type{CrActionMenuElement}*/ (
+      actionMenuButton = /** @type {!CrActionMenuElement} */ (
           tile.querySelector('#actionMenuButton'));
       actionMenuButton.click();
       $$(mostVisited, '#actionMenuEdit').click();
