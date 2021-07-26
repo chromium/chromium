@@ -114,8 +114,10 @@ void ArcAppLaunchHandler::RestoreArcApps(
       handler_->profile_));
 
   LoadRestoreData();
-  if (app_ids_.empty())
+  if (app_ids_.empty()) {
+    base::UmaHistogramCounts100(kRestoredAppWindowCountHistogram, 0);
     return;
+  }
 
   window_handler_ = FullRestoreArcTaskHandler::GetForProfile(handler_->profile_)
                         ->window_handler();
@@ -130,6 +132,9 @@ void ArcAppLaunchHandler::RestoreArcApps(
 
   if (is_shelf_ready_)
     PrepareLaunchApps();
+
+  if (is_app_connection_ready_)
+    OnAppConnectionReady();
 }
 
 void ArcAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
@@ -159,11 +164,13 @@ void ArcAppLaunchHandler::OnAppRegistryCacheWillBeDestroyed(
 }
 
 void ArcAppLaunchHandler::OnAppConnectionReady() {
-  base::UmaHistogramCounts100(kRestoredAppWindowCountHistogram,
-                              windows_.size() + no_stack_windows_.size());
+  is_app_connection_ready_ = true;
 
   if (!HasRestoreData())
     return;
+
+  base::UmaHistogramCounts100(kRestoredAppWindowCountHistogram,
+                              windows_.size() + no_stack_windows_.size());
 
   // Receive the memory pressure level.
   if (chromeos::ResourcedClient::Get() &&
