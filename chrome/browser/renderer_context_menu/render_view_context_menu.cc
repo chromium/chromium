@@ -976,7 +976,8 @@ void RenderViewContextMenu::InitMenu() {
 #if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_LENS_REGION_SEARCH)) {
-    if (base::FeatureList::IsEnabled(lens::features::kLensRegionSearch)) {
+    if (base::FeatureList::IsEnabled(lens::features::kLensRegionSearch) &&
+        search::DefaultSearchProviderIsGoogle(GetProfile())) {
       menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
       AppendLensRegionSearchItem();
     }
