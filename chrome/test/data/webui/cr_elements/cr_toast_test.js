@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {MockTimer} from '../mock_timer.m.js';

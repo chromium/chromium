@@ -2,108 +2,112 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('cr.toastManager', () => {
-  /* eslint-disable */
-  /** @private {?CrToastManagerElement} */
-  let toastManagerInstance = null;
-  /* eslint-enable */
+import '../../js/cr.m.js';
+import '../../js/event_tracker.m.js';
+import '../hidden_style_css.m.js';
+import './cr_toast.js';
 
-  /** @return {!CrToastManagerElement} */
-  /* #export */ function getToastManager() {
-    return assert(toastManagerInstance);
-  }
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  /** @param {?CrToastManagerElement} instance */
-  function setInstance(instance) {
-    assert(!instance || !toastManagerInstance);
-    toastManagerInstance = instance;
-  }
+import {assert} from '../../js/assert.m.js';
+
+
+/* eslint-disable */
+/** @private {?CrToastManagerElement} */
+let toastManagerInstance = null;
+/* eslint-enable */
+
+/** @return {!CrToastManagerElement} */
+export function getToastManager() {
+  return assert(toastManagerInstance);
+}
+
+/** @param {?CrToastManagerElement} instance */
+function setInstance(instance) {
+  assert(!instance || !toastManagerInstance);
+  toastManagerInstance = instance;
+}
+
+/**
+ * @fileoverview Element which shows toasts with optional undo button.
+ */
+// eslint-disable-next-line
+Polymer({
+  is: 'cr-toast-manager',
+
+  _template: html`{__html_template__}`,
+
+  properties: {
+    duration: {
+      type: Number,
+      value: 0,
+    },
+  },
+
+  /** @return {boolean} */
+  get isToastOpen() {
+    return this.$.toast.open;
+  },
+
+  /** @return {boolean} */
+  get slottedHidden() {
+    return this.$.slotted.hidden;
+  },
+
+  /** @override */
+  attached() {
+    setInstance(this);
+  },
+
+  /** @override */
+  detached() {
+    setInstance(null);
+  },
 
   /**
-   * @fileoverview Element which shows toasts with optional undo button.
+   * @param {string} label The label to display inside the toast.
+   * @param {boolean=} hideSlotted
    */
-  // eslint-disable-next-line
-  Polymer({
-    is: 'cr-toast-manager',
+  show(label, hideSlotted = false) {
+    this.$.content.textContent = label;
+    this.showInternal_(hideSlotted);
+  },
 
-    properties: {
-      duration: {
-        type: Number,
-        value: 0,
-      },
-    },
+  /**
+   * Shows the toast, making certain text fragments collapsible.
+   * @param {!Array<!{value: string, collapsible: boolean}>} pieces
+   * @param {boolean=} hideSlotted
+   */
+  showForStringPieces(pieces, hideSlotted = false) {
+    const content = this.$.content;
+    content.textContent = '';
+    pieces.forEach(function(p) {
+      if (p.value.length === 0) {
+        return;
+      }
 
-    /** @return {boolean} */
-    get isToastOpen() {
-      return this.$.toast.open;
-    },
+      const span = document.createElement('span');
+      span.textContent = p.value;
+      if (p.collapsible) {
+        span.classList.add('collapsible');
+      }
 
-    /** @return {boolean} */
-    get slottedHidden() {
-      return this.$.slotted.hidden;
-    },
+      content.appendChild(span);
+    });
 
-    /** @override */
-    attached() {
-      setInstance(this);
-    },
+    this.showInternal_(hideSlotted);
+  },
 
-    /** @override */
-    detached() {
-      setInstance(null);
-    },
+  /**
+   * @param {boolean} hideSlotted
+   * @private
+   */
+  showInternal_(hideSlotted) {
+    this.$.slotted.hidden = hideSlotted;
+    this.$.toast.show();
+  },
 
-    /**
-     * @param {string} label The label to display inside the toast.
-     * @param {boolean=} hideSlotted
-     */
-    show(label, hideSlotted = false) {
-      this.$.content.textContent = label;
-      this.showInternal_(hideSlotted);
-    },
-
-    /**
-     * Shows the toast, making certain text fragments collapsible.
-     * @param {!Array<!{value: string, collapsible: boolean}>} pieces
-     * @param {boolean=} hideSlotted
-     */
-    showForStringPieces(pieces, hideSlotted = false) {
-      const content = this.$.content;
-      content.textContent = '';
-      pieces.forEach(function(p) {
-        if (p.value.length === 0) {
-          return;
-        }
-
-        const span = document.createElement('span');
-        span.textContent = p.value;
-        if (p.collapsible) {
-          span.classList.add('collapsible');
-        }
-
-        content.appendChild(span);
-      });
-
-      this.showInternal_(hideSlotted);
-    },
-
-    /**
-     * @param {boolean} hideSlotted
-     * @private
-     */
-    showInternal_(hideSlotted) {
-      this.$.slotted.hidden = hideSlotted;
-      this.$.toast.show();
-    },
-
-    hide() {
-      this.$.toast.hide();
-    },
-  });
-
-  // #cr_define_end
-  console.warn('crbug/1173575, non-JS module files deprecated.');
-  return {
-    getToastManager: getToastManager,
-  };
+  hide() {
+    this.$.toast.hide();
+  },
 });

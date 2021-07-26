@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
 import './folder_node.js';
 import './list.js';
@@ -16,9 +16,9 @@ import './command_manager.js';
 import './toolbar.js';
 
 import {CrSplitterElement} from 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
 import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -33,12 +33,12 @@ import {BookmarksToolbarElement} from './toolbar.js';
 import {BookmarksPageState, FolderOpenState} from './types.js';
 import {createEmptyState, normalizeNodes} from './util.js';
 
-const BookmarksAppElementBase =
-    mixinBehaviors([StoreClient, FindShortcutBehavior],
-                   MouseFocusMixin(PolymerElement)) as {
+const BookmarksAppElementBase = mixinBehaviors(
+                                    [StoreClient, FindShortcutBehavior],
+                                    MouseFocusMixin(PolymerElement)) as {
   new (): PolymerElement & BookmarksStoreClientInterface &
-      StoreObserver<BookmarksPageState> & FindShortcutBehavior
-}
+  StoreObserver<BookmarksPageState>& FindShortcutBehavior
+};
 
 export interface BookmarksAppElement {
   $: {

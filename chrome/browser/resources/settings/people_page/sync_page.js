@@ -19,7 +19,7 @@ import './sync_encryption_options.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 // <if expr="not chromeos">
-import '//resources/cr_elements/cr_toast/cr_toast.m.js';
+import '//resources/cr_elements/cr_toast/cr_toast.js';
 // </if>
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';

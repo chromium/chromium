@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
 import {appUtil} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/app_util.js';
 import {assertInstanceof} from 'chrome://resources/js/assert.m.js';

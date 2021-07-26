@@ -344,8 +344,8 @@ js_library("cr_toast_manager_test") {
   deps = [
     "..:chai_assert",
     "..:test_util.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -354,7 +354,7 @@ js_library("cr_toast_test") {
   deps = [
     "..:chai_assert",
     "..:mock_timer.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

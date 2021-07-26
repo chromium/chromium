@@ -11,7 +11,7 @@
 // TODO(xdai): Rename it to 'settings-cups-printers-page'.
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/cr_elements/cr_toast/cr_toast.m.js';
+import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '//resources/js/action_link.js';
 import '//resources/cr_elements/action_link_css.m.js';

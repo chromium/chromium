@@ -76,7 +76,7 @@ js_library("test_util") {
 js_library("video_player_native_controls") {
   deps = [
     "//ui/file_manager/file_manager/common/js:app_util",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:util.m",

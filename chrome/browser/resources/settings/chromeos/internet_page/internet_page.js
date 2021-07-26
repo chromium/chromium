@@ -6,7 +6,7 @@ import '//resources/cr_components/chromeos/cellular_setup/cellular_setup_icons.m
 import '//resources/cr_components/chromeos/network/sim_lock_dialogs.m.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/cr_elements/cr_toast/cr_toast.m.js';
+import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/icons.m.js';
 import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
