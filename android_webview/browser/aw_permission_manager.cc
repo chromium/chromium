@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
@@ -462,9 +463,8 @@ PermissionStatus AwPermissionManager::GetPermissionStatusForFrame(
     const GURL& requesting_origin) {
   return GetPermissionStatus(
       permission, requesting_origin,
-      content::WebContents::FromRenderFrameHost(render_frame_host)
-          ->GetLastCommittedURL()
-          .GetOrigin());
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+          render_frame_host));
 }
 
 AwPermissionManager::SubscriptionId
@@ -595,12 +595,13 @@ int AwPermissionManager::GetRenderFrameID(
 
 GURL AwPermissionManager::LastCommittedOrigin(
     content::RenderFrameHost* render_frame_host) {
-  return content::WebContents::FromRenderFrameHost(render_frame_host)
-      ->GetLastCommittedURL().GetOrigin();
+  return permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+      render_frame_host);
 }
 
 AwBrowserPermissionRequestDelegate* AwPermissionManager::GetDelegate(
-    int render_process_id, int render_frame_id) {
+    int render_process_id,
+    int render_frame_id) {
   return AwBrowserPermissionRequestDelegate::FromID(render_process_id,
                                                     render_frame_id);
 }

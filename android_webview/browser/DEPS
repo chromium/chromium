@@ -28,6 +28,7 @@ include_rules = [
   "+components/navigation_interception",
   "+components/optimization_guide/core/bloom_filter.h",
   "+components/page_load_metrics/browser",
+  "+components/permissions",
   "+components/policy/core/browser",
   "+components/policy/core/common",
   "+components/policy/content",

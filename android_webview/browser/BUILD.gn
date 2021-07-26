@@ -232,6 +232,7 @@ source_set("browser") {
     "//components/minidump_uploader",
     "//components/navigation_interception",
     "//components/page_load_metrics/browser",
+    "//components/permissions",
     "//components/policy:generated",
     "//components/policy/content/",
     "//components/policy/core/browser",

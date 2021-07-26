@@ -14,7 +14,10 @@
 #include "components/permissions/features.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "url/gurl.h"
 
 namespace {
@@ -555,5 +558,73 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest,
 
   // Permission is failed because it is another file.
   VerifyPermissionsForFile(main_rfh, /*expect_granted*/ false);
+}
+
+IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest,
+                       UniversalAccessFromFileUrls) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::WebContents* embedder_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(embedder_contents);
+
+  // Activate the preference to allow universal access from file URLs.
+  blink::web_pref::WebPreferences prefs =
+      embedder_contents->GetOrCreateWebPreferences();
+  prefs.allow_universal_access_from_file_urls = true;
+  embedder_contents->SetWebPreferences(prefs);
+
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  ASSERT_TRUE(main_rfh);
+  EXPECT_FALSE(main_rfh->GetLastCommittedURL().SchemeIsFile());
+
+  main_rfh = ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), CreateFileURL(), 1);
+  EXPECT_TRUE(main_rfh->GetLastCommittedURL().SchemeIsFile());
+  EXPECT_TRUE(main_rfh->GetLastCommittedOrigin().GetURL().SchemeIsFile());
+
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(embedder_contents);
+  std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory =
+      std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+  bubble_factory->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  VerifyPermissionsForFile(main_rfh, /*expect_granted*/ true);
+
+  content::EvalJsResult result = content::EvalJs(
+      embedder_contents, "history.pushState({}, {}, 'https://chromium.org');");
+  EXPECT_EQ(std::string(), result.error);
+  EXPECT_EQ("https://chromium.org/", main_rfh->GetLastCommittedURL().spec());
+  EXPECT_TRUE(main_rfh->GetLastCommittedOrigin().GetURL().SchemeIsFile());
+
+  const struct {
+    std::string check_permission;
+    std::string request_permission;
+  } kTests[] = {
+      {kCheckCamera, kRequestCamera},
+      {kCheckGeolocation, kRequestGeolocation},
+  };
+
+  for (const auto& test : kTests) {
+    ASSERT_FALSE(
+        content::EvalJs(main_rfh, test.check_permission).value.GetBool());
+    EXPECT_EQ("granted",
+              content::EvalJs(main_rfh, test.request_permission,
+                              content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                  .ExtractString());
+    ASSERT_TRUE(
+        content::EvalJs(main_rfh, test.check_permission).value.GetBool());
+  }
+
+  // Notifications is not supported for file:/// with changed URL.
+  ASSERT_FALSE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+  EXPECT_EQ("denied", content::EvalJs(main_rfh, kRequestNotifications,
+                                      content::EXECUTE_SCRIPT_DEFAULT_OPTIONS)
+                          .ExtractString());
 }
 }  // anonymous namespace
