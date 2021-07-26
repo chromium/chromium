@@ -51,6 +51,7 @@ const std::string* GetShellStartupId(const aura::Window* window);
 // the titlebar and shelf are always hidden.
 void SetShellUseImmersiveForFullscreen(aura::Window* window, bool value);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Sets the client accessibility ID for the window. The accessibility ID
 // identifies the accessibility tree provided by client.
 void SetShellClientAccessibilityId(aura::Window* window,
@@ -58,7 +59,6 @@ void SetShellClientAccessibilityId(aura::Window* window,
 const absl::optional<int32_t> GetShellClientAccessibilityId(
     aura::Window* window);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Sets the ClientControlledShellSurface to the property handler.
 void SetShellClientControlledShellSurface(
     ui::PropertyHandler* property_handler,

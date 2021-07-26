@@ -28,6 +28,7 @@
 #include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
+#include "components/exo/window_properties.h"
 #include "extensions/browser/event_router.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -143,9 +144,10 @@ class ArcAccessibilityTreeTracker::WindowsObserver
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override {
-    // We are interested in changes to |kClientAccessibilityIdKey| and
-    // |kApplicationIdKey|, but that they're not accessible outside
-    // shell_surface_util.cc. So we react to all property changes.
+    if (key != exo::kApplicationIdKey &&
+        key != ash::kClientAccessibilityIdKey) {
+      return;
+    }
     owner_->UpdateWindowIdMapping(window);
   }
 

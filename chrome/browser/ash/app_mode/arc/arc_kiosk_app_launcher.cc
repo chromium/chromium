@@ -12,6 +12,8 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
+#include "components/exo/shell_surface_util.h"
+#include "components/exo/window_properties.h"
 #include "ui/aura/env.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
@@ -63,12 +65,9 @@ void ArcKioskAppLauncher::OnWindowPropertyChanged(aura::Window* window,
   // If we do not know yet what task ID to look for, do nothing.
   // Existing windows will be revisited the moment the task ID
   // becomes known.
-  if (task_id_ == -1)
+  if (task_id_ == -1 || key != exo::kApplicationIdKey)
     return;
 
-  // We are only interested in changes to |kApplicationIdKey|,
-  // but that constant is not accessible outside shell_surface.cc.
-  // So we react to all property changes.
   CheckAndPinWindow(window);
 }
 

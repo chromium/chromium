@@ -12,6 +12,7 @@
 #include "components/exo/permission.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/surface.h"
+#include "components/exo/window_properties.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
@@ -24,6 +25,7 @@
 #include "ui/wm/core/window_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/window_properties.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -34,16 +36,8 @@ namespace {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(Surface*, kRootSurfaceKey, nullptr)
 
-// Application Id set by the client. For example:
-// "org.chromium.arc.<task-id>" for ARC++ shell surfaces.
-// "org.chromium.lacros.<window-id>" for Lacros browser shell surfaces.
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kApplicationIdKey, nullptr)
-
 // Startup Id set by the client.
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kStartupIdKey, nullptr)
-
-// Accessibility Id set by the client.
-DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kClientAccessibilityIdKey, -1)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // A property key containing the client controlled shell surface.
@@ -120,27 +114,27 @@ void SetShellUseImmersiveForFullscreen(aura::Window* window, bool value) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
 void SetShellClientAccessibilityId(aura::Window* window,
                                    const absl::optional<int32_t>& id) {
   TRACE_EVENT1("exo", "SetClientAccessibilityId", "id",
                id ? base::NumberToString(*id) : "null");
 
   if (id)
-    window->SetProperty(kClientAccessibilityIdKey, *id);
+    window->SetProperty(ash::kClientAccessibilityIdKey, *id);
   else
-    window->ClearProperty(kClientAccessibilityIdKey);
+    window->ClearProperty(ash::kClientAccessibilityIdKey);
 }
 
 const absl::optional<int32_t> GetShellClientAccessibilityId(
     aura::Window* window) {
-  auto id = window->GetProperty(kClientAccessibilityIdKey);
+  auto id = window->GetProperty(ash::kClientAccessibilityIdKey);
   if (id < 0)
     return absl::nullopt;
   else
     return id;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SetShellClientControlledShellSurface(
     ui::PropertyHandler* property_handler,

@@ -79,6 +79,8 @@ static_library("exo") {
     "touch_delegate.h",
     "vsync_timing_manager.cc",
     "vsync_timing_manager.h",
+    "window_properties.cc",
+    "window_properties.h",
     "wm_helper.cc",
     "wm_helper.h",
   ]
