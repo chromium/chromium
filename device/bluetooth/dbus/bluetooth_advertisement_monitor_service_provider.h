@@ -41,7 +41,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementMonitorServiceProvider {
   virtual ~BluetoothAdvertisementMonitorServiceProvider();
 
   // Writes an array of the service's properties into the provided writer.
-  virtual void WriteProperties(dbus::MessageWriter* writer) = 0;
+  virtual void WriteProperties(dbus::MessageWriter* writer) {}
 
   virtual const dbus::ObjectPath& object_path() const = 0;
 

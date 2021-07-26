@@ -28,6 +28,7 @@
 #include "device/bluetooth/dbus/bluetooth_profile_manager_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_admin_policy_client.h"
+#include "device/bluetooth/dbus/fake_bluetooth_advertisement_monitor_manager_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_agent_manager_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_battery_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_debug_manager_client.h"
@@ -82,6 +83,12 @@ BluetoothDBusClientBundle::BluetoothDBusClientBundle(bool use_fakes)
         std::make_unique<FakeBluetoothAdminPolicyClient>();
     bluetooth_le_advertising_manager_client_ =
         std::make_unique<FakeBluetoothLEAdvertisingManagerClient>();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (chromeos::features::IsBluetoothAdvertisementMonitoringEnabled()) {
+      bluetooth_advertisement_monitor_manager_client_ =
+          std::make_unique<FakeBluetoothAdvertisementMonitorManagerClient>();
+    }
+#endif
     bluetooth_agent_manager_client_ =
         std::make_unique<FakeBluetoothAgentManagerClient>();
     bluetooth_battery_client_ = std::make_unique<FakeBluetoothBatteryClient>();

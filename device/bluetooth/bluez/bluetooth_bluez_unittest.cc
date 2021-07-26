@@ -43,6 +43,12 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/test/metrics/histogram_tester.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
+#include "device/bluetooth/bluetooth_low_energy_scan_session.h"
+#include "device/bluetooth/dbus/fake_bluetooth_advertisement_monitor_manager_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/public/mojom/ble_scan_parser.mojom.h"
@@ -57,6 +63,38 @@ using device::BluetoothDiscoverySession;
 using device::BluetoothUUID;
 using device::TestBluetoothAdapterObserver;
 using device::TestPairingDelegate;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace {
+// Background scanning filter values.
+constexpr int16_t kBackgroundScanningDeviceFoundRSSIThreshold = -80;
+constexpr int16_t kBackgroundScanningDeviceLostRSSIThreshold = -100;
+constexpr base::TimeDelta kBackgroundScanningDeviceFoundTimeout =
+    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kBackgroundScanningDeviceLostTimeout =
+    base::TimeDelta::FromSeconds(5);
+// This pattern value encodes the Fast Initiation service ID of 0xfe2c and the
+// model ID of 0xfc128e.
+constexpr uint8_t kBackgroundScanningFilterPatternValue[] = {0x2c, 0xfe, 0xfc,
+                                                             0x12, 0x8e};
+}  // namespace
+
+std::unique_ptr<device::BluetoothLowEnergyScanFilter>
+CreateLowEnergyScanFilter() {
+  auto pattern_value =
+      std::vector<uint8_t>(std::begin(kBackgroundScanningFilterPatternValue),
+                           std::end(kBackgroundScanningFilterPatternValue));
+  device::BluetoothLowEnergyScanFilter::Pattern pattern(
+      /*start_position=*/0,
+      device::BluetoothLowEnergyScanFilter::AdvertisementDataType::kServiceData,
+      std::move(pattern_value));
+  return device::BluetoothLowEnergyScanFilter::Create(
+      kBackgroundScanningDeviceFoundRSSIThreshold,
+      kBackgroundScanningDeviceLostRSSIThreshold,
+      kBackgroundScanningDeviceFoundTimeout,
+      kBackgroundScanningDeviceLostTimeout, {pattern});
+}
+#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace bluez {
 
@@ -117,11 +155,45 @@ class FakeBluetoothProfileServiceProviderDelegate
   void Cancel() override {}
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class FakeBluetoothLowEnergyScanSessionDelegate
+    : public device::BluetoothLowEnergyScanSession::Delegate {
+ public:
+  FakeBluetoothLowEnergyScanSessionDelegate() = default;
+
+  // device::BluetoothLowEnergyScanSession::Delegate
+  void OnSessionStarted(
+      device::BluetoothLowEnergyScanSession* scan_session,
+      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+          error_code) override {}
+  void OnDeviceFound(device::BluetoothLowEnergyScanSession* scan_session,
+                     device::BluetoothDevice* device) override {}
+  void OnDeviceLost(device::BluetoothLowEnergyScanSession* scan_session,
+                    device::BluetoothDevice* device) override {}
+  void OnSessionInvalidated(
+      device::BluetoothLowEnergyScanSession* scan_session) override {}
+
+  base::WeakPtr<FakeBluetoothLowEnergyScanSessionDelegate> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<FakeBluetoothLowEnergyScanSessionDelegate>
+      weak_ptr_factory_{this};
+};
+#endif
 }  // namespace
 
 
 class BluetoothBlueZTest : public testing::Test {
  public:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  BluetoothBlueZTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ash::features::kBluetoothAdvertisementMonitoring},
+        /*disabled_features=*/{});
+  }
+#endif
   static const char kGapUuid[];
   static const char kGattUuid[];
   static const char kPnpUuid[];
@@ -363,6 +435,9 @@ class BluetoothBlueZTest : public testing::Test {
     if (base::RunLoop::IsRunningOnCurrentThread())
       base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
 };
 const char BluetoothBlueZTest::kGapUuid[] =
     "00001800-0000-1000-8000-00805f9b34fb";
@@ -4577,5 +4652,62 @@ TEST_F(BluetoothBlueZTest, DeviceUUIDsCombinedFromServiceAndAdvertisement) {
                              uuidLaterAdv, uuidLaterServ, uuidLaterBoth,
                              uuidAlwaysAdv, uuidAlwaysServ, uuidAlwaysBoth));
 }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(BluetoothBlueZTest, StartLowEnergyScanSessionAdapterPresent) {
+  GetAdapter();
+
+  FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
+      application_manager =
+          static_cast<FakeBluetoothAdvertisementMonitorManagerClient*>(
+              bluez::BluezDBusManager::Get()
+                  ->GetBluetoothAdvertisementMonitorManagerClient())
+              ->application_provider();
+
+  auto filter = CreateLowEnergyScanFilter();
+  FakeBluetoothLowEnergyScanSessionDelegate delegate;
+
+  auto background_scan_session = adapter_->StartLowEnergyScanSession(
+      std::move(filter), /*delegate=*/delegate.GetWeakPtr());
+
+  // Check that advertisement monitor was added to d-bus layer.
+  ASSERT_EQ(1u, application_manager->AdvertisementMonitorsCount());
+
+  // Check that advertisement monitor gets removed from d-bus layer when the
+  // scan session is destroyed.
+  background_scan_session.reset();
+  ASSERT_EQ(0u, application_manager->AdvertisementMonitorsCount());
+}
+
+TEST_F(BluetoothBlueZTest, StartLowEnergyScanSessionAdapterAddedLater) {
+  fake_bluetooth_adapter_client_->SetPresent(false);
+  GetAdapter();
+  ASSERT_FALSE(adapter_->IsPresent());
+
+  FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
+      application_manager =
+          static_cast<FakeBluetoothAdvertisementMonitorManagerClient*>(
+              bluez::BluezDBusManager::Get()
+                  ->GetBluetoothAdvertisementMonitorManagerClient())
+              ->application_provider();
+
+  auto filter = CreateLowEnergyScanFilter();
+
+  FakeBluetoothLowEnergyScanSessionDelegate delegate;
+  auto background_scan_session = adapter_->StartLowEnergyScanSession(
+      std::move(filter), /*delegate=*/delegate.GetWeakPtr());
+
+  // Check that the advertisement monitor is not yet added to the d-bus layer.
+  // It is queued up until the adapter gets added.
+  ASSERT_EQ(0u, application_manager->AdvertisementMonitorsCount());
+
+  fake_bluetooth_adapter_client_->SetPresent(true);
+  EXPECT_TRUE(adapter_->IsPresent());
+
+  ASSERT_EQ(1u, application_manager->AdvertisementMonitorsCount());
+
+  background_scan_session.reset();
+  ASSERT_EQ(0u, application_manager->AdvertisementMonitorsCount());
+}
+#endif
 
 }  // namespace bluez
