@@ -231,10 +231,10 @@ TEST_F(WebCryptoHmacTest, ImportKeyJwkKeyOpsSignVerify) {
   base::DictionaryValue dict;
   dict.SetString("kty", "oct");
   dict.SetString("k", "GADWrMRHwQfoNaXU5fZvTg");
-  base::ListValue* key_ops =
-      dict.SetList("key_ops", std::make_unique<base::ListValue>());
+  base::Value* key_ops =
+      dict.SetKey("key_ops", base::Value(base::Value::Type::LIST));
 
-  key_ops->AppendString("sign");
+  key_ops->Append("sign");
 
   EXPECT_EQ(Status::Success(),
             ImportKeyJwkFromDict(dict,
@@ -244,7 +244,7 @@ TEST_F(WebCryptoHmacTest, ImportKeyJwkKeyOpsSignVerify) {
 
   EXPECT_EQ(blink::kWebCryptoKeyUsageSign, key.Usages());
 
-  key_ops->AppendString("verify");
+  key_ops->Append("verify");
 
   EXPECT_EQ(Status::Success(),
             ImportKeyJwkFromDict(dict,

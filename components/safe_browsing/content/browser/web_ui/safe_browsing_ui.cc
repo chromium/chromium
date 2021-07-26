@@ -424,39 +424,39 @@ void AddStoreInfo(const DatabaseManagerInfo::DatabaseInfo::StoreInfo store_info,
     database_info_list->Append(base::Value("Unknown store"));
   }
 
-  base::Value store_info_list(base::Value::Type::LIST);
+  base::Value::ListStorage store_info_list;
   if (store_info.has_file_size_bytes()) {
-    store_info_list.Append(
+    store_info_list.push_back(base::Value(
         "Size (in bytes): " +
-        base::UTF16ToUTF8(base::FormatNumber(store_info.file_size_bytes())));
+        base::UTF16ToUTF8(base::FormatNumber(store_info.file_size_bytes()))));
   }
 
   if (store_info.has_update_status()) {
-    store_info_list.Append(
+    store_info_list.push_back(base::Value(
         "Update status: " +
-        base::UTF16ToUTF8(base::FormatNumber(store_info.update_status())));
+        base::UTF16ToUTF8(base::FormatNumber(store_info.update_status()))));
   }
 
   if (store_info.has_last_apply_update_time_millis()) {
-    store_info_list.Append("Last update time: " +
-                           UserReadableTimeFromMillisSinceEpoch(
-                               store_info.last_apply_update_time_millis())
-                               .GetString());
+    store_info_list.push_back(base::Value(
+        "Last update time: " + UserReadableTimeFromMillisSinceEpoch(
+                                   store_info.last_apply_update_time_millis())
+                                   .GetString()));
   }
 
   if (store_info.has_checks_attempted()) {
-    store_info_list.Append(
+    store_info_list.push_back(base::Value(
         "Number of database checks: " +
-        base::UTF16ToUTF8(base::FormatNumber(store_info.checks_attempted())));
+        base::UTF16ToUTF8(base::FormatNumber(store_info.checks_attempted()))));
   }
 
   if (store_info.has_state()) {
     std::string state_base64;
     base::Base64Encode(store_info.state(), &state_base64);
-    store_info_list.Append("State: " + state_base64);
+    store_info_list.push_back(base::Value("State: " + state_base64));
   }
 
-  database_info_list->Append(std::move(store_info_list));
+  database_info_list->Append(base::Value(std::move(store_info_list)));
 }
 
 void AddDatabaseInfo(const DatabaseManagerInfo::DatabaseInfo database_info,
@@ -794,38 +794,38 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
     dict.SetBoolean("archive_valid", cdr.archive_valid());
 
   if (!cdr.archived_binary().empty()) {
-    auto archived_binaries = std::make_unique<base::ListValue>();
+    base::Value::ListStorage archived_binaries;
     for (const auto& archived_binary : cdr.archived_binary()) {
-      auto dict_archived_binary = std::make_unique<base::DictionaryValue>();
+      base::Value dict_archived_binary(base::Value::Type::DICTIONARY);
       if (archived_binary.has_file_basename()) {
-        dict_archived_binary->SetString("file_basename",
-                                        archived_binary.file_basename());
+        dict_archived_binary.SetStringKey("file_basename",
+                                          archived_binary.file_basename());
       }
       if (archived_binary.has_download_type()) {
-        dict_archived_binary->SetInteger("download_type",
-                                         archived_binary.download_type());
+        dict_archived_binary.SetIntKey("download_type",
+                                       archived_binary.download_type());
       }
       if (archived_binary.has_length())
-        dict_archived_binary->SetInteger("length", archived_binary.length());
+        dict_archived_binary.SetIntKey("length", archived_binary.length());
       if (archived_binary.is_encrypted())
-        dict_archived_binary->SetBoolean("is_encrypted", true);
+        dict_archived_binary.SetBoolKey("is_encrypted", true);
       if (archived_binary.digests().has_sha256()) {
         const std::string& sha256 = archived_binary.digests().sha256();
-        dict_archived_binary->SetString(
+        dict_archived_binary.SetStringKey(
             "digests.sha256", base::HexEncode(sha256.c_str(), sha256.size()));
       }
-      archived_binaries->Append(std::move(dict_archived_binary));
+      archived_binaries.push_back(std::move(dict_archived_binary));
     }
-    dict.SetList("archived_binary", std::move(archived_binaries));
+    dict.SetKey("archived_binary", base::Value(std::move(archived_binaries)));
   }
 
   dict.SetKey("population", SerializeChromeUserPopulation(cdr.population()));
 
-  auto referrer_chain = std::make_unique<base::ListValue>();
+  base::Value::ListStorage referrer_chain;
   for (const auto& referrer_chain_entry : cdr.referrer_chain()) {
-    referrer_chain->Append(SerializeReferrer(referrer_chain_entry));
+    referrer_chain.push_back(SerializeReferrer(referrer_chain_entry));
   }
-  dict.SetList("referrer_chain", std::move(referrer_chain));
+  dict.SetKey("referrer_chain", base::Value(std::move(referrer_chain)));
 
   if (cdr.has_request_ap_verdicts())
     dict.SetBoolean("request_ap_verdicts", cdr.request_ap_verdicts());
@@ -915,29 +915,30 @@ std::string SerializeClientPhishingRequest(
   if (cpr.has_model_version())
     dict.SetInteger("model_version", cpr.model_version());
 
-  auto features = std::make_unique<base::ListValue>();
+  base::Value::ListStorage features;
   for (const auto& feature : cpr.feature_map()) {
-    auto dict_features = std::make_unique<base::DictionaryValue>();
-    dict_features->SetStringKey("name", feature.name());
-    dict_features->SetDoubleKey("value", feature.value());
-    features->Append(std::move(dict_features));
+    base::Value dict_features(base::Value::Type::DICTIONARY);
+    dict_features.SetStringKey("name", feature.name());
+    dict_features.SetDoubleKey("value", feature.value());
+    features.push_back(std::move(dict_features));
   }
-  dict.SetList("feature_map", std::move(features));
+  dict.SetKey("feature_map", base::Value(std::move(features)));
 
-  auto non_model_features = std::make_unique<base::ListValue>();
+  base::Value::ListStorage non_model_features;
   for (const auto& feature : cpr.non_model_feature_map()) {
-    auto dict_features = std::make_unique<base::DictionaryValue>();
-    dict_features->SetStringKey("name", feature.name());
-    dict_features->SetDoubleKey("value", feature.value());
-    non_model_features->Append(std::move(dict_features));
+    base::Value dict_features(base::Value::Type::DICTIONARY);
+    dict_features.SetStringKey("name", feature.name());
+    dict_features.SetDoubleKey("value", feature.value());
+    non_model_features.push_back(std::move(dict_features));
   }
-  dict.SetList("non_model_feature_map", std::move(non_model_features));
+  dict.SetKey("non_model_feature_map",
+              base::Value(std::move(non_model_features)));
 
-  auto shingle_hashes = std::make_unique<base::ListValue>();
+  base::Value::ListStorage shingle_hashes;
   for (const auto& hash : cpr.shingle_hashes()) {
-    shingle_hashes->AppendInteger(hash);
+    shingle_hashes.push_back(base::Value(static_cast<int>(hash)));
   }
-  dict.SetList("shingle_hashes", std::move(shingle_hashes));
+  dict.SetKey("shingle_hashes", base::Value(std::move(shingle_hashes)));
 
   dict.SetKey("population", SerializeChromeUserPopulation(cpr.population()));
   if (cpr.has_screenshot_digest()) {
@@ -946,30 +947,32 @@ std::string SerializeClientPhishingRequest(
   dict.SetBoolean("phash_dimension_size", cpr.has_phash_dimension_size());
   dict.SetBoolean("is_dom_match", cpr.is_dom_match());
 
-  auto vision_matches = std::make_unique<base::ListValue>();
+  base::Value::ListStorage vision_matches;
   for (const auto& match : cpr.vision_match()) {
-    auto vision_match = std::make_unique<base::DictionaryValue>();
-    vision_match->SetBoolean("matched_target_digest",
-                             match.has_matched_target_digest());
-    vision_match->SetDoubleKey("vision_matched_phash_score",
-                               match.vision_matched_phash_score());
-    vision_match->SetDoubleKey("vision_matched_emd_score",
-                               match.vision_matched_emd_score());
-    vision_matches->Append(std::move(vision_match));
+    base::Value vision_match(base::Value::Type::DICTIONARY);
+    vision_match.SetBoolKey("matched_target_digest",
+                            match.has_matched_target_digest());
+    vision_match.SetDoubleKey("vision_matched_phash_score",
+                              match.vision_matched_phash_score());
+    vision_match.SetDoubleKey("vision_matched_emd_score",
+                              match.vision_matched_emd_score());
+    vision_matches.push_back(std::move(vision_match));
   }
-  dict.SetList("vision_match", std::move(vision_matches));
+  dict.SetKey("vision_match", base::Value(std::move(vision_matches)));
   dict.SetKey("scoped_oauth_token", base::Value(cprat.token));
 
   if (cpr.has_tflite_model_version())
-    dict.SetInteger("tflite_model_version", cpr.tflite_model_version());
-  dict.SetBoolean("is_tflite_match", cpr.is_tflite_match());
-  auto tflite_scores = std::make_unique<base::ListValue>();
+    dict.SetIntKey("tflite_model_version", cpr.tflite_model_version());
+  dict.SetBoolKey("is_tflite_match", cpr.is_tflite_match());
+
+  base::Value::ListStorage tflite_scores;
   for (const auto& score : cpr.tflite_model_scores()) {
-    auto score_value = std::make_unique<base::DictionaryValue>();
-    score_value->SetStringKey("label", score.label());
-    score_value->SetDoubleKey("lvalue", score.value());
+    base::Value score_value(base::Value::Type::DICTIONARY);
+    score_value.SetStringKey("label", score.label());
+    score_value.SetDoubleKey("lvalue", score.value());
+    tflite_scores.push_back(std::move(score_value));
   }
-  dict.SetList("tflite_model_scores", std::move(tflite_scores));
+  dict.SetKey("tflite_model_scores", base::Value(std::move(tflite_scores)));
 
   base::Value* request_tree = &dict;
   std::string request_serialized;
@@ -1411,25 +1414,26 @@ base::Value SerializeRTThreatInfo(
 }
 
 base::Value SerializeDomFeatures(const DomFeatures& dom_features) {
-  base::DictionaryValue dom_features_dict;
-  auto feature_map = std::make_unique<base::ListValue>();
+  base::Value dom_features_dict(base::Value::Type::DICTIONARY);
+  base::Value::ListStorage feature_map;
   for (const auto& feature : dom_features.feature_map()) {
-    auto feature_dict = std::make_unique<base::DictionaryValue>();
-    feature_dict->SetStringKey("name", feature.name());
-    feature_dict->SetDoubleKey("value", feature.value());
-    feature_map->Append(std::move(feature_dict));
+    base::Value feature_dict(base::Value::Type::DICTIONARY);
+    feature_dict.SetStringKey("name", feature.name());
+    feature_dict.SetDoubleKey("value", feature.value());
+    feature_map.push_back(std::move(feature_dict));
   }
-  dom_features_dict.SetList("feature_map", std::move(feature_map));
+  dom_features_dict.SetKey("feature_map", base::Value(std::move(feature_map)));
 
-  auto shingle_hashes = std::make_unique<base::ListValue>();
+  base::Value::ListStorage shingle_hashes;
   for (const auto& hash : dom_features.shingle_hashes()) {
-    shingle_hashes->AppendInteger(hash);
+    shingle_hashes.push_back(base::Value(static_cast<int>(hash)));
   }
-  dom_features_dict.SetList("shingle_hashes", std::move(shingle_hashes));
+  dom_features_dict.SetKey("shingle_hashes",
+                           base::Value(std::move(shingle_hashes)));
 
-  dom_features_dict.SetInteger("model_version", dom_features.model_version());
+  dom_features_dict.SetIntKey("model_version", dom_features.model_version());
 
-  return std::move(dom_features_dict);
+  return dom_features_dict;
 }
 
 base::Value SerializeUrlDisplayExperiment(
@@ -1635,11 +1639,11 @@ std::string SerializeRTLookupPing(const RTLookupRequestAndToken& ping) {
   }
   request_dict.SetKey("os", base::Value(os));
 
-  auto referrer_chain = std::make_unique<base::ListValue>();
+  base::Value::ListStorage referrer_chain;
   for (const auto& referrer_chain_entry : request.referrer_chain()) {
-    referrer_chain->Append(SerializeReferrer(referrer_chain_entry));
+    referrer_chain.push_back(SerializeReferrer(referrer_chain_entry));
   }
-  request_dict.SetList("referrer_chain", std::move(referrer_chain));
+  request_dict.SetKey("referrer_chain", base::Value(std::move(referrer_chain)));
 
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);
@@ -1966,12 +1970,13 @@ void SafeBrowsingUIHandler::OnGetCookie(
     time = cookies[0].CreationDate().ToJsTime();
   }
 
-  base::Value response(base::Value::Type::LIST);
-  response.Append(base::Value(cookie));
-  response.Append(base::Value(time));
+  base::Value::ListStorage response;
+  response.push_back(base::Value(cookie));
+  response.push_back(base::Value(time));
 
   AllowJavascript();
-  ResolveJavascriptCallback(base::Value(callback_id), std::move(response));
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(std::move(response)));
 }
 
 void SafeBrowsingUIHandler::GetSavedPasswords(const base::ListValue* args) {

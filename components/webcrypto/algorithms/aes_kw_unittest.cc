@@ -58,10 +58,10 @@ TEST_F(WebCryptoAesKwTest, ImportKeyJwkKeyOpsWrapUnwrap) {
   base::DictionaryValue dict;
   dict.SetString("kty", "oct");
   dict.SetString("k", "GADWrMRHwQfoNaXU5fZvTg");
-  base::ListValue* key_ops =
-      dict.SetList("key_ops", std::make_unique<base::ListValue>());
+  base::Value* key_ops =
+      dict.SetKey("key_ops", base::Value(base::Value::Type::LIST));
 
-  key_ops->AppendString("wrapKey");
+  key_ops->Append("wrapKey");
 
   EXPECT_EQ(Status::Success(),
             ImportKeyJwkFromDict(
@@ -70,7 +70,7 @@ TEST_F(WebCryptoAesKwTest, ImportKeyJwkKeyOpsWrapUnwrap) {
 
   EXPECT_EQ(blink::kWebCryptoKeyUsageWrapKey, key.Usages());
 
-  key_ops->AppendString("unwrapKey");
+  key_ops->Append("unwrapKey");
 
   EXPECT_EQ(Status::Success(),
             ImportKeyJwkFromDict(

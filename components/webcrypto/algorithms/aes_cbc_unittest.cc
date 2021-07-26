@@ -263,10 +263,10 @@ TEST_F(WebCryptoAesCbcTest, ImportKeyJwkKeyOpsEncryptDecrypt) {
   base::DictionaryValue dict;
   dict.SetString("kty", "oct");
   dict.SetString("k", "GADWrMRHwQfoNaXU5fZvTg");
-  base::ListValue* key_ops =
-      dict.SetList("key_ops", std::make_unique<base::ListValue>());
+  base::Value* key_ops =
+      dict.SetKey("key_ops", base::Value(base::Value::Type::LIST));
 
-  key_ops->AppendString("encrypt");
+  key_ops->Append("encrypt");
 
   EXPECT_EQ(Status::Success(),
             ImportKeyJwkFromDict(
@@ -275,7 +275,7 @@ TEST_F(WebCryptoAesCbcTest, ImportKeyJwkKeyOpsEncryptDecrypt) {
 
   EXPECT_EQ(blink::kWebCryptoKeyUsageEncrypt, key.Usages());
 
-  key_ops->AppendString("decrypt");
+  key_ops->Append("decrypt");
 
   EXPECT_EQ(Status::Success(),
             ImportKeyJwkFromDict(
