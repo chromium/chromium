@@ -11,37 +11,22 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/process/process_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
-#include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
-#include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/partition.mojom.h"
-#include "components/services/storage/public/mojom/storage_service.mojom.h"
+#include "components/services/storage/public/mojom/storage_service.mojom-forward.h"
 #include "content/browser/appcache/chrome_appcache_service.h"
 #include "content/browser/background_sync/background_sync_context_impl.h"
-#include "content/browser/bluetooth/bluetooth_allowed_devices_map.h"
-#include "content/browser/broadcast_channel/broadcast_channel_provider.h"
-#include "content/browser/buckets/bucket_context.h"
-#include "content/browser/cache_storage/cache_storage_control_wrapper.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/content_index/content_index_context_impl.h"
 #include "content/browser/devtools/devtools_background_services_context_impl.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
-#include "content/browser/font_access/font_access_manager_impl.h"
-#include "content/browser/indexed_db/indexed_db_control_wrapper.h"
-#include "content/browser/locks/lock_manager.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
-#include "content/browser/payments/payment_app_context_impl.h"
-#include "content/browser/push_messaging/push_messaging_context.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
@@ -55,17 +40,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/network_service.mojom.h"
-#include "services/network/public/mojom/trust_tokens.mojom.h"
-#include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom.h"
-
-#if !defined(OS_ANDROID)
-#include "content/browser/host_zoom_level_context.h"
-#endif
 
 namespace leveldb_proto {
 class ProtoDatabaseProvider;
@@ -79,16 +56,26 @@ namespace content {
 
 class BackgroundFetchContext;
 class BlobRegistryWrapper;
-class ConversionManagerImpl;
+class BluetoothAllowedDevicesMap;
+class BroadcastChannelProvider;
+class BucketContext;
+class CacheStorageControlWrapper;
 class ComputePressureManager;
+class ConversionManagerImpl;
 class CookieStoreContext;
-class FontAccessContext;
-class GeneratedCodeCacheContext;
 class FileSystemAccessEntryFactory;
 class FileSystemAccessManagerImpl;
+class FontAccessContext;
+class FontAccessManagerImpl;
+class GeneratedCodeCacheContext;
+class HostZoomLevelContext;
+class IndexedDBControlWrapper;
 class InterestGroupManager;
+class LockManager;
 class NativeIOContextImpl;
+class PaymentAppContextImpl;
 class PrefetchURLLoaderService;
+class PushMessagingContext;
 class QuotaContext;
 
 class CONTENT_EXPORT StoragePartitionImpl
