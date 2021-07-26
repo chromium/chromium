@@ -693,7 +693,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCCompactorForeground" units="ms"
-    expires_after="2021-08-09">
+    expires_after="2022-08-09">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -742,7 +742,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.GCFinalizeMC.Finish" units="ms" expires_after="2021-08-09">
+<histogram name="V8.GCFinalizeMC.Finish" units="ms" expires_after="2022-08-09">
   <owner>ulan@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -752,7 +752,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.GCFinalizeMC.Mark" units="ms" expires_after="2021-08-09">
+<histogram name="V8.GCFinalizeMC.Mark" units="ms" expires_after="2022-08-09">
   <owner>ulan@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
