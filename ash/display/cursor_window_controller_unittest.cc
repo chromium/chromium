@@ -205,7 +205,7 @@ TEST_F(CursorWindowControllerTest, CursorSize) {
       ui::Cursor cursor(ui::mojom::CursorType::kPointer);
       // This would be done by NativeCursorManagerAsh::SetCursor().
       cursor.set_image_scale_factor(ui::GetScaleForResourceScaleFactor(
-          ui::GetSupportedScaleFactor(ui_scale)));
+          ui::GetSupportedResourceScaleFactor(ui_scale)));
 
       // Normal size.
       SetCursorSize(ui::CursorSize::kNormal);

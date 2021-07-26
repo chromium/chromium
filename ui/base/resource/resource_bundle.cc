@@ -532,10 +532,10 @@ gfx::Image& ResourceBundle::GetImageNamed(int resource_id) {
     DCHECK(!data_packs_.empty()) << "Missing call to SetResourcesDataDLL?";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    ResourceScaleFactor scale_factor_to_load = GetMaxScaleFactor();
+    ResourceScaleFactor scale_factor_to_load = GetMaxResourceScaleFactor();
 #elif defined(OS_WIN)
     ResourceScaleFactor scale_factor_to_load =
-        display::win::GetDPIScale() > 1.25 ? GetMaxScaleFactor()
+        display::win::GetDPIScale() > 1.25 ? GetMaxResourceScaleFactor()
                                            : ui::SCALE_FACTOR_100P;
 #else
     ResourceScaleFactor scale_factor_to_load = ui::SCALE_FACTOR_100P;
@@ -813,7 +813,7 @@ void ResourceBundle::ReloadFonts() {
   font_cache_.clear();
 }
 
-ResourceScaleFactor ResourceBundle::GetMaxScaleFactor() const {
+ResourceScaleFactor ResourceBundle::GetMaxResourceScaleFactor() const {
 #if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   return max_scale_factor_;
 #else

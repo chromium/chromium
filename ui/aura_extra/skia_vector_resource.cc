@@ -42,10 +42,10 @@ std::unique_ptr<gfx::SkiaVectorAnimation> GetVectorAnimationNamed(
 
   auto& rb = ui::ResourceBundle::GetSharedInstance();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ui::ResourceScaleFactor scale_factor_to_load = rb.GetMaxScaleFactor();
+  ui::ResourceScaleFactor scale_factor_to_load = rb.GetMaxResourceScaleFactor();
 #elif defined(OS_WIN)
   ui::ResourceScaleFactor scale_factor_to_load =
-      display::win::GetDPIScale() > 1.25 ? rb.GetMaxScaleFactor()
+      display::win::GetDPIScale() > 1.25 ? rb.GetMaxResourceScaleFactor()
                                          : ui::SCALE_FACTOR_100P;
 #else
   ui::ResourceScaleFactor scale_factor_to_load = ui::SCALE_FACTOR_100P;

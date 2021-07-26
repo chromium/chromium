@@ -37,7 +37,7 @@ using TP = ThemeProperties;
 // Maps scale factors (enum values) to file path.
 // A similar typedef in BrowserThemePack is private.
 using TestScaleFactorToFileMap =
-    base::flat_map<ui::ScaleFactor, base::FilePath>;
+    base::flat_map<ui::ResourceScaleFactor, base::FilePath>;
 
 // Maps image ids to maps of scale factors to file paths.
 // A similar typedef in BrowserThemePack is private.
@@ -115,7 +115,7 @@ class BrowserThemePackTest : public ::testing::Test {
 
  private:
   using ScopedSetSupportedScaleFactors =
-      std::unique_ptr<ui::test::ScopedSetSupportedScaleFactors>;
+      std::unique_ptr<ui::test::ScopedSetSupportedResourceScaleFactors>;
 
   // Transformation for link underline colors.
   static SkColor BuildThirdOpacity(SkColor color_link);
@@ -138,11 +138,12 @@ class BrowserThemePackTest : public ::testing::Test {
 BrowserThemePackTest::BrowserThemePackTest()
     : theme_pack_(
           new BrowserThemePack(CustomThemeSupplier::ThemeType::EXTENSION)) {
-  std::vector<ui::ScaleFactor> scale_factors;
+  std::vector<ui::ResourceScaleFactor> scale_factors;
   scale_factors.push_back(ui::SCALE_FACTOR_100P);
   scale_factors.push_back(ui::SCALE_FACTOR_200P);
   scoped_set_supported_scale_factors_ =
-      std::make_unique<ui::test::ScopedSetSupportedScaleFactors>(scale_factors);
+      std::make_unique<ui::test::ScopedSetSupportedResourceScaleFactors>(
+          scale_factors);
   theme_pack_->InitEmptyPack();
 }
 

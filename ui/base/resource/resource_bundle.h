@@ -349,7 +349,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   // Returns the maximum scale factor currently loaded.
   // Returns SCALE_FACTOR_100P if no resource is loaded.
-  ResourceScaleFactor GetMaxScaleFactor() const;
+  ResourceScaleFactor GetMaxResourceScaleFactor() const;
 
   // Returns true if |scale_factor| is supported by this platform.
   static bool IsScaleFactorSupported(ResourceScaleFactor scale_factor);

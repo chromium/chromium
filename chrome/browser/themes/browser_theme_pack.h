@@ -101,8 +101,9 @@ class BrowserThemePack : public CustomThemeSupplier {
   bool GetColor(int id, SkColor* color) const override;
   bool GetDisplayProperty(int id, int* result) const override;
   gfx::Image GetImageNamed(int id) const override;
-  base::RefCountedMemory* GetRawData(int id, ui::ScaleFactor scale_factor)
-      const override;
+  base::RefCountedMemory* GetRawData(
+      int id,
+      ui::ResourceScaleFactor scale_factor) const override;
   bool HasCustomImage(int id) const override;
 
   // Builds the color mixers that represent the state of the current browser
@@ -122,7 +123,8 @@ class BrowserThemePack : public CustomThemeSupplier {
   typedef std::map<uint16_t, base::StringPiece> RawDataForWriting;
 
   // Maps scale factors (enum values) to file paths.
-  typedef base::flat_map<ui::ScaleFactor, base::FilePath> ScaleFactorToFileMap;
+  typedef base::flat_map<ui::ResourceScaleFactor, base::FilePath>
+      ScaleFactorToFileMap;
 
   // Maps image ids to maps of scale factors to file paths.
   typedef base::flat_map<PersistentID, ScaleFactorToFileMap> FilePathMap;
@@ -196,7 +198,7 @@ class BrowserThemePack : public CustomThemeSupplier {
 
   // Helper function to populate the FilePathMap.
   void AddFileAtScaleToMap(const std::string& image_name,
-                           ui::ScaleFactor scale_factor,
+                           ui::ResourceScaleFactor scale_factor,
                            const base::FilePath& image_path,
                            FilePathMap* file_paths) const;
 
@@ -269,13 +271,14 @@ class BrowserThemePack : public CustomThemeSupplier {
   // Returns a unique id to use to store the raw bitmap for |prs_id| at
   // |scale_factor| in memory.
   int GetRawIDByPersistentID(PersistentID prs_id,
-                             ui::ScaleFactor scale_factor) const;
+                             ui::ResourceScaleFactor scale_factor) const;
 
   // Returns true if the |key| specifies a valid scale (e.g. "100") and
   // the corresponding scale factor is currently in use. If true, returns
   // the scale factor in |scale_factor|.
-  bool GetScaleFactorFromManifestKey(const std::string& key,
-                                     ui::ScaleFactor* scale_factor) const;
+  bool GetScaleFactorFromManifestKey(
+      const std::string& key,
+      ui::ResourceScaleFactor* scale_factor) const;
 
   // Generates raw images for any missing scale from an available scale.
   void GenerateRawImageForAllSupportedScales(PersistentID prs_id);
@@ -331,7 +334,7 @@ class BrowserThemePack : public CustomThemeSupplier {
 #pragma pack(pop)
 
   // The scale factors represented by the images in the theme pack.
-  std::vector<ui::ScaleFactor> scale_factors_;
+  std::vector<ui::ResourceScaleFactor> scale_factors_;
 
   // References to raw PNG data. This map isn't touched when |data_pack_| is
   // non-NULL; |image_memory_| is only filled during BuildFromExtension(). Any

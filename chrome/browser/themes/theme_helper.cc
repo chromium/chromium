@@ -200,7 +200,7 @@ int ThemeHelper::GetDisplayProperty(int id,
 base::RefCountedMemory* ThemeHelper::GetRawData(
     int id,
     const CustomThemeSupplier* theme_supplier,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   // Check to see whether we should substitute some images.
   int ntp_alternate =
       GetDisplayProperty(TP::NTP_LOGO_ALTERNATE, theme_supplier);

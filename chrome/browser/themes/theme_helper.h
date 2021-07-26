@@ -62,7 +62,7 @@ class ThemeHelper {
   static base::RefCountedMemory* GetRawData(
       int id,
       const CustomThemeSupplier* theme_supplier,
-      ui::ScaleFactor scale_factor);
+      ui::ResourceScaleFactor scale_factor);
 
   ThemeHelper();
   virtual ~ThemeHelper();

@@ -27,13 +27,6 @@ enum ResourceScaleFactor : int {
 UI_DATA_PACK_EXPORT float GetScaleForResourceScaleFactor(
     ResourceScaleFactor scale_factor);
 
-// Followings are deprecated.
-using ScaleFactor = ResourceScaleFactor;
-
-inline float GetScaleForScaleFactor(ScaleFactor scale_factor) {
-  return GetScaleForResourceScaleFactor(scale_factor);
-}
-
 }  // namespace ui
 
 #endif  // UI_BASE_RESOURCE_SCALE_FACTOR_H_

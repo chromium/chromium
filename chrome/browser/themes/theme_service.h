@@ -222,8 +222,9 @@ class ThemeService : public KeyedService,
     bool ShouldUseNativeFrame() const override;
     bool HasCustomImage(int id) const override;
     bool HasCustomColor(int id) const override;
-    base::RefCountedMemory* GetRawData(int id, ui::ScaleFactor scale_factor)
-        const override;
+    base::RefCountedMemory* GetRawData(
+        int id,
+        ui::ResourceScaleFactor scale_factor) const override;
 
    private:
     const CustomThemeSupplier* GetThemeSupplier() const;

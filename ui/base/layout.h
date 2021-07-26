@@ -58,23 +58,7 @@ class COMPONENT_EXPORT(UI_BASE) ScopedSetSupportedResourceScaleFactors {
   std::vector<ResourceScaleFactor>* original_scale_factors_;
 };
 
-using ScopedSetSupportedScaleFactors = ScopedSetSupportedResourceScaleFactors;
-
 }  // namespace test
-
-// Following are deprecated.
-inline void SetSupportedScaleFactors(
-    const std::vector<ScaleFactor>& scale_factors) {
-  SetSupportedResourceScaleFactors(scale_factors);
-}
-
-inline const std::vector<ScaleFactor>& GetSupportedScaleFactors() {
-  return GetSupportedResourceScaleFactors();
-}
-
-inline ScaleFactor GetSupportedScaleFactor(float image_scale) {
-  return GetSupportedResourceScaleFactor(image_scale);
-}
 
 }  // namespace ui
 

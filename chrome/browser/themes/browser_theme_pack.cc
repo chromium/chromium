@@ -173,25 +173,25 @@ BrowserThemePack::PersistentID GetPersistentIDByIDR(int idr) {
 // Returns true if the scales in |input| match those in |expected|.
 // The order must match as the index is used in determining the raw id.
 bool InputScalesValid(const base::StringPiece& input,
-                      const std::vector<ui::ScaleFactor>& expected) {
+                      const std::vector<ui::ResourceScaleFactor>& expected) {
   if (input.size() != expected.size() * sizeof(float))
     return false;
   std::unique_ptr<float[]> scales(new float[expected.size()]);
   // Do a memcpy to avoid misaligned memory access.
   memcpy(scales.get(), input.data(), input.size());
   for (size_t index = 0; index < expected.size(); ++index) {
-    if (scales[index] != ui::GetScaleForScaleFactor(expected[index]))
+    if (scales[index] != ui::GetScaleForResourceScaleFactor(expected[index]))
       return false;
   }
   return true;
 }
 
 // Returns |scale_factors| as a string to be written to disk.
-std::string GetScaleFactorsAsString(
-    const std::vector<ui::ScaleFactor>& scale_factors) {
+std::string GetResourceScaleFactorsAsString(
+    const std::vector<ui::ResourceScaleFactor>& scale_factors) {
   std::unique_ptr<float[]> scales(new float[scale_factors.size()]);
   for (size_t i = 0; i < scale_factors.size(); ++i)
-    scales[i] = ui::GetScaleForScaleFactor(scale_factors[i]);
+    scales[i] = ui::GetScaleForResourceScaleFactor(scale_factors[i]);
   std::string out_string = std::string(
       reinterpret_cast<const char*>(scales.get()),
       scale_factors.size() * sizeof(float));
@@ -354,13 +354,14 @@ scoped_refptr<base::RefCountedMemory> ReadFileData(const base::FilePath& path) {
 }
 
 // Computes a bitmap at one scale from a bitmap at a different scale.
-SkBitmap CreateLowQualityResizedBitmap(const SkBitmap& source_bitmap,
-                                       ui::ScaleFactor source_scale_factor,
-                                       ui::ScaleFactor desired_scale_factor) {
+SkBitmap CreateLowQualityResizedBitmap(
+    const SkBitmap& source_bitmap,
+    ui::ResourceScaleFactor source_scale_factor,
+    ui::ResourceScaleFactor desired_scale_factor) {
   gfx::Size scaled_size = gfx::ScaleToCeiledSize(
       gfx::Size(source_bitmap.width(), source_bitmap.height()),
-      ui::GetScaleForScaleFactor(desired_scale_factor) /
-          ui::GetScaleForScaleFactor(source_scale_factor));
+      ui::GetScaleForResourceScaleFactor(desired_scale_factor) /
+          ui::GetScaleForResourceScaleFactor(source_scale_factor));
   SkBitmap scaled_bitmap;
   scaled_bitmap.allocN32Pixels(scaled_size.width(), scaled_size.height());
   scaled_bitmap.eraseARGB(0, 0, 0, 0);
@@ -387,7 +388,7 @@ class ThemeImageSource: public gfx::ImageSkiaSource {
     const gfx::ImageSkiaRep& rep_100p = source_.GetRepresentation(1.0f);
     SkBitmap scaled_bitmap = CreateLowQualityResizedBitmap(
         rep_100p.GetBitmap(), ui::SCALE_FACTOR_100P,
-        ui::GetSupportedScaleFactor(scale));
+        ui::GetSupportedResourceScaleFactor(scale));
     return gfx::ImageSkiaRep(scaled_bitmap, scale);
   }
 
@@ -402,8 +403,9 @@ class ThemeImageSource: public gfx::ImageSkiaSource {
 // available scale factor. Computed bitmaps are stored for future look up.
 class ThemeImagePngSource : public gfx::ImageSkiaSource {
  public:
-  typedef std::map<ui::ScaleFactor,
-                   scoped_refptr<base::RefCountedMemory> > PngMap;
+  typedef std::map<ui::ResourceScaleFactor,
+                   scoped_refptr<base::RefCountedMemory>>
+      PngMap;
 
   explicit ThemeImagePngSource(const PngMap& png_map) : png_map_(png_map) {}
 
@@ -411,7 +413,8 @@ class ThemeImagePngSource : public gfx::ImageSkiaSource {
 
  private:
   gfx::ImageSkiaRep GetImageForScale(float scale) override {
-    ui::ScaleFactor scale_factor = ui::GetSupportedScaleFactor(scale);
+    ui::ResourceScaleFactor scale_factor =
+        ui::GetSupportedResourceScaleFactor(scale);
     // Look up the bitmap for |scale factor| in the bitmap map. If found
     // return it.
     BitmapMap::const_iterator exact_bitmap_it = bitmap_map_.find(scale_factor);
@@ -439,14 +442,14 @@ class ThemeImagePngSource : public gfx::ImageSkiaSource {
     for (PngMap::const_iterator png_it = png_map_.begin();
          png_it != png_map_.end(); ++png_it) {
       if (available_png_it == png_map_.end() ||
-          ui::GetScaleForScaleFactor(png_it->first) >
-          ui::GetScaleForScaleFactor(available_png_it->first)) {
+          ui::GetScaleForResourceScaleFactor(png_it->first) >
+              ui::GetScaleForResourceScaleFactor(available_png_it->first)) {
         available_png_it = png_it;
       }
     }
     if (available_png_it == png_map_.end())
       return gfx::ImageSkiaRep();
-    ui::ScaleFactor available_scale_factor = available_png_it->first;
+    ui::ResourceScaleFactor available_scale_factor = available_png_it->first;
 
     // Look up the bitmap for |available_scale_factor| in the bitmap map.
     // If not found, decode the corresponging png data, store the result
@@ -477,7 +480,7 @@ class ThemeImagePngSource : public gfx::ImageSkiaSource {
 
   PngMap png_map_;
 
-  typedef std::map<ui::ScaleFactor, SkBitmap> BitmapMap;
+  typedef std::map<ui::ResourceScaleFactor, SkBitmap> BitmapMap;
   BitmapMap bitmap_map_;
 
   DISALLOW_COPY_AND_ASSIGN(ThemeImagePngSource);
@@ -855,7 +858,7 @@ void BrowserThemePack::BuildFromColors(AutogeneratedThemeColors colors,
 
 BrowserThemePack::BrowserThemePack(ThemeType theme_type)
     : CustomThemeSupplier(theme_type) {
-  scale_factors_ = ui::GetSupportedScaleFactors();
+  scale_factors_ = ui::GetSupportedResourceScaleFactors();
   // On Windows HiDPI SCALE_FACTOR_100P may not be supported by default.
   if (!base::Contains(scale_factors_, ui::SCALE_FACTOR_100P))
     scale_factors_.push_back(ui::SCALE_FACTOR_100P);
@@ -884,9 +887,10 @@ bool BrowserThemePack::WriteToDisk(const base::FilePath& path) const {
       base::StringPiece(reinterpret_cast<const char*>(source_images_),
                         source_count * sizeof(*source_images_));
 
-  // Store results of GetScaleFactorsAsString() in std::string as
+  // Store results of GetResourceScaleFactorsAsString() in std::string as
   // base::StringPiece does not copy data in constructor.
-  std::string scale_factors_string = GetScaleFactorsAsString(scale_factors_);
+  std::string scale_factors_string =
+      GetResourceScaleFactorsAsString(scale_factors_);
   resources[kScaleFactorsID] = scale_factors_string;
 
   AddRawImagesTo(image_memory_, &resources);
@@ -995,7 +999,7 @@ gfx::Image BrowserThemePack::GetImageNamed(int idr_id) const {
 
 base::RefCountedMemory* BrowserThemePack::GetRawData(
     int idr_id,
-    ui::ScaleFactor scale_factor) const {
+    ui::ResourceScaleFactor scale_factor) const {
   base::RefCountedMemory* memory = nullptr;
   PersistentID prs_id = GetPersistentIDByIDR(idr_id);
   int raw_id = GetRawIDByPersistentID(prs_id, scale_factor);
@@ -1361,7 +1365,7 @@ void BrowserThemePack::ParseImageNamesFromJSON(
              !inner_iter.IsAtEnd();
              inner_iter.Advance()) {
           std::string name;
-          ui::ScaleFactor scale_factor = ui::SCALE_FACTOR_NONE;
+          ui::ResourceScaleFactor scale_factor = ui::SCALE_FACTOR_NONE;
           if (GetScaleFactorFromManifestKey(inner_iter.key(), &scale_factor) &&
               inner_iter.value().is_string() &&
               inner_iter.value().GetAsString(&name)) {
@@ -1385,7 +1389,7 @@ void BrowserThemePack::ParseImageNamesFromJSON(
 }
 
 void BrowserThemePack::AddFileAtScaleToMap(const std::string& image_name,
-                                           ui::ScaleFactor scale_factor,
+                                           ui::ResourceScaleFactor scale_factor,
                                            const base::FilePath& image_path,
                                            FilePathMap* file_paths) const {
   PersistentID id = GetPersistentIDByName(image_name);
@@ -1420,7 +1424,7 @@ bool BrowserThemePack::LoadRawBitmapsTo(
       // in image_skia.AddRepresentation() determines the DIP size for
       // all representations.
       for (const auto& s2f : entry.second) {
-        ui::ScaleFactor scale_factor = s2f.first;
+        ui::ResourceScaleFactor scale_factor = s2f.first;
         if ((pass == 0 && scale_factor != ui::SCALE_FACTOR_100P) ||
             (pass == 1 && scale_factor == ui::SCALE_FACTOR_100P)) {
           continue;
@@ -1442,9 +1446,8 @@ bool BrowserThemePack::LoadRawBitmapsTo(
           SkBitmap bitmap;
           if (gfx::PNGCodec::Decode(raw_data->front(), raw_data->size(),
                                     &bitmap)) {
-            image_skia.AddRepresentation(
-                gfx::ImageSkiaRep(bitmap,
-                                  ui::GetScaleForScaleFactor(scale_factor)));
+            image_skia.AddRepresentation(gfx::ImageSkiaRep(
+                bitmap, ui::GetScaleForResourceScaleFactor(scale_factor)));
           } else {
             NOTREACHED() << "Unable to decode theme image resource "
                          << entry.first;
@@ -1829,7 +1832,7 @@ void BrowserThemePack::RepackImages(const ImageCache& images,
       DCHECK(encoded) << "Image file for resource " << image.first
                       << " could not be encoded.";
       int raw_id = GetRawIDByPersistentID(
-          image.first, ui::GetSupportedScaleFactor(rep.scale()));
+          image.first, ui::GetSupportedResourceScaleFactor(rep.scale()));
       (*reencoded_images)[raw_id] =
           base::RefCountedBytes::TakeVector(&bitmap_data);
     }
@@ -1867,7 +1870,7 @@ color_utils::HSL BrowserThemePack::GetTintInternal(int id) const {
 
 int BrowserThemePack::GetRawIDByPersistentID(
     PersistentID prs_id,
-    ui::ScaleFactor scale_factor) const {
+    ui::ResourceScaleFactor scale_factor) const {
   if (prs_id == PersistentID::kInvalid)
     return -1;
 
@@ -1880,13 +1883,13 @@ int BrowserThemePack::GetRawIDByPersistentID(
 
 bool BrowserThemePack::GetScaleFactorFromManifestKey(
     const std::string& key,
-    ui::ScaleFactor* scale_factor) const {
+    ui::ResourceScaleFactor* scale_factor) const {
   int percent = 0;
   if (base::StringToInt(key, &percent)) {
     float scale = static_cast<float>(percent) / 100.0f;
     for (size_t i = 0; i < scale_factors_.size(); ++i) {
-      if (fabs(ui::GetScaleForScaleFactor(scale_factors_[i]) - scale)
-              < 0.001) {
+      if (fabs(ui::GetScaleForResourceScaleFactor(scale_factors_[i]) - scale) <
+          0.001) {
         *scale_factor = scale_factors_[i];
         return true;
       }
@@ -1920,12 +1923,12 @@ void BrowserThemePack::GenerateRawImageForAllSupportedScales(
     return;
 
   // Find available scale factor with highest scale.
-  ui::ScaleFactor available_scale_factor = ui::SCALE_FACTOR_NONE;
+  ui::ResourceScaleFactor available_scale_factor = ui::SCALE_FACTOR_NONE;
   for (size_t i = 0; i < scale_factors_.size(); ++i) {
     int raw_id = GetRawIDByPersistentID(prs_id, scale_factors_[i]);
     if ((available_scale_factor == ui::SCALE_FACTOR_NONE ||
-         (ui::GetScaleForScaleFactor(scale_factors_[i]) >
-          ui::GetScaleForScaleFactor(available_scale_factor))) &&
+         (ui::GetScaleForResourceScaleFactor(scale_factors_[i]) >
+          ui::GetScaleForResourceScaleFactor(available_scale_factor))) &&
         image_memory_.find(raw_id) != image_memory_.end()) {
       available_scale_factor = scale_factors_[i];
     }

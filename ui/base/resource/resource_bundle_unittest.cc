@@ -566,7 +566,7 @@ TEST_F(ResourceBundleImageTest, GetImageNamed) {
   resource_bundle->AddDataPackFromPath(data_1x_path, SCALE_FACTOR_100P);
   resource_bundle->AddDataPackFromPath(data_2x_path, SCALE_FACTOR_200P);
 
-  EXPECT_EQ(SCALE_FACTOR_200P, resource_bundle->GetMaxScaleFactor());
+  EXPECT_EQ(SCALE_FACTOR_200P, resource_bundle->GetMaxResourceScaleFactor());
 
   gfx::ImageSkia* image_skia = resource_bundle->GetImageSkiaNamed(3);
 

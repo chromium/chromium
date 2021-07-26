@@ -67,7 +67,8 @@ class CustomThemeSupplier
   // Returns the raw PNG encoded data for IDR_THEME_NTP_*. This method only
   // works for the NTP attribution and background resources.
   virtual base::RefCountedMemory* GetRawData(
-      int id, ui::ScaleFactor scale_factor) const;
+      int id,
+      ui::ResourceScaleFactor scale_factor) const;
 
   // Whether this theme provides an image for |id|.
   virtual bool HasCustomImage(int id) const;

@@ -23,8 +23,9 @@ class TestThemeProvider : public ui::ThemeProvider {
   bool ShouldUseNativeFrame() const override;
   bool HasCustomImage(int id) const override;
   bool HasCustomColor(int id) const override;
-  base::RefCountedMemory* GetRawData(int id, ui::ScaleFactor scale_factor)
-      const override;
+  base::RefCountedMemory* GetRawData(
+      int id,
+      ui::ResourceScaleFactor scale_factor) const override;
 
   // Set a custom color.
   void SetColor(int id, SkColor color);

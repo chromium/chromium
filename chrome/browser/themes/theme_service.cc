@@ -233,7 +233,7 @@ bool ThemeService::BrowserThemeProvider::HasCustomColor(int id) const {
 
 base::RefCountedMemory* ThemeService::BrowserThemeProvider::GetRawData(
     int id,
-    ui::ScaleFactor scale_factor) const {
+    ui::ResourceScaleFactor scale_factor) const {
   return theme_helper_.GetRawData(id, GetThemeSupplier(), scale_factor);
 }
 
