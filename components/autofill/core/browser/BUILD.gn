@@ -710,6 +710,7 @@ source_set("unit_tests") {
     "data_model/credit_card_unittest.cc",
     "data_model/phone_number_unittest.cc",
     "field_filler_unittest.cc",
+    "field_types_unittest.cc",
     "form_data_importer_unittest.cc",
     "form_parsing/address_field_unittest.cc",
     "form_parsing/credit_card_field_unittest.cc",

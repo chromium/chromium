@@ -10,6 +10,27 @@
 
 namespace autofill {
 
+ServerFieldType ToSafeServerFieldType(
+    std::underlying_type_t<ServerFieldType> raw_value,
+    ServerFieldType fallback_value) {
+  auto IsValid = [](std::underlying_type_t<ServerFieldType> t) {
+    return NO_SERVER_DATA <= t && t < MAX_VALID_FIELD_TYPE &&
+           // Work phone numbers (values [15,19]) are deprecated.
+           !(15 <= t && t <= 19) &&
+           // Cell phone numbers (values [25,29]) are deprecated.
+           !(25 <= t && t <= 29) &&
+           // Shipping addresses (values [44,50]) are deprecated.
+           !(44 <= t && t <= 50) &&
+           // Probably-account creation password (value 94) is deprecated.
+           !(t == 94) &&
+           // Fax numbers (values [20,24]) are deprecated in Chrome, but still
+           // supported by the server.
+           !(t >= PHONE_FAX_NUMBER && t <= PHONE_FAX_WHOLE_NUMBER);
+  };
+  return IsValid(raw_value) ? static_cast<ServerFieldType>(raw_value)
+                            : fallback_value;
+}
+
 bool IsFillableFieldType(ServerFieldType field_type) {
   switch (field_type) {
     case NAME_HONORIFIC_PREFIX:

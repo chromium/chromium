@@ -966,7 +966,7 @@ void AddFieldPredictionsToForm(
     ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion) {
   std::vector<ServerFieldType> types;
   for (auto type : field_types) {
-    types.emplace_back(static_cast<ServerFieldType>(type));
+    types.emplace_back(ToSafeServerFieldType(type, UNKNOWN_TYPE));
   }
   AddFieldPredictionsToForm(field_data, types, form_suggestion);
 }

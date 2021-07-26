@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_driven_test.h"
@@ -206,13 +207,9 @@ class AutofillMergeTest : public DataDrivenTest,
 AutofillMergeTest::AutofillMergeTest() : DataDrivenTest(GetTestDataDir()) {
   CountryNames::SetLocaleString("en-US");
   for (size_t i = NO_SERVER_DATA; i < MAX_VALID_FIELD_TYPE; ++i) {
-    // Some ServerFieldTypes are deprecated and removed from the enum
-    // definition.
-    if ((i >= 15 && i <= 19) || (i >= 25 && i <= 29) || (i >= 44 && i <= 50) ||
-        (i == 94)) {
+    ServerFieldType field_type = ToSafeServerFieldType(i, MAX_VALID_FIELD_TYPE);
+    if (field_type == MAX_VALID_FIELD_TYPE)
       continue;
-    }
-    ServerFieldType field_type = static_cast<ServerFieldType>(i);
     string_to_field_type_map_[AutofillType::ServerFieldTypeToString(
         field_type)] = field_type;
   }

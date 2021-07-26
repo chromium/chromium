@@ -392,7 +392,7 @@ std::ostream& operator<<(std::ostream& out,
 std::string FieldTypeToString(int type) {
   return base::StrCat(
       {base::NumberToString(type), std::string("/"),
-       AutofillType(static_cast<ServerFieldType>(type)).ToString()});
+       AutofillType(ToSafeServerFieldType(type, UNKNOWN_TYPE)).ToString()});
 }
 
 LogBuffer& operator<<(LogBuffer& out,
