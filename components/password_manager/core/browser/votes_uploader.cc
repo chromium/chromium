@@ -728,7 +728,7 @@ bool VotesUploader::SetSingleUsernameVote(
       single_username_vote_data_->username_candidate_value;
   if (single_username_value.find(' ') != std::u16string::npos) {
     type = autofill::NOT_USERNAME;
-    vote_type = AutofillUploadContents::Field::HAD_WHITESPACES;
+    vote_type = AutofillUploadContents::Field::STRONG;
   } else {
 // It's not possible to edit username in the save prompt on Android, thus it's
 // not possible to rely on this heuristic.
@@ -746,13 +746,13 @@ bool VotesUploader::SetSingleUsernameVote(
       type = saved_username_ == single_username_value
                  ? autofill::SINGLE_USERNAME
                  : autofill::NOT_USERNAME;
-      vote_type = AutofillUploadContents::Field::EDITED_IN_PROMPT;
+      vote_type = AutofillUploadContents::Field::STRONG;
     } else {  // saved_username_ == suggested_username
       // The user did NOT edit the username in prompt and accepted it as it is.
       type = saved_username_ == single_username_value
                  ? autofill::SINGLE_USERNAME
                  : autofill::NOT_USERNAME;
-      vote_type = AutofillUploadContents::Field::NOT_EDITED_IN_PROMPT;
+      vote_type = AutofillUploadContents::Field::WEAK;
     }
 #else
     return false;

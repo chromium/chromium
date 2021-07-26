@@ -351,12 +351,12 @@ message AutofillUploadContents {
     // The type of the username first flow signal.
     enum SingleUsernameVoteType {
       DEFAULT = 0;
-      // Recorded if Save/Update prompt was accepted without username edits.
-      NOT_EDITED_IN_PROMPT = 1;
-      // Recorded if Save/Update prompt was accepted after username edits.
-      EDITED_IN_PROMPT = 2;
-      // Recorded when a single username candidate value had whitespaces.
-      HAD_WHITESPACES = 3;
+      // Votes with low confidence (i.e. recorded if Save/Update prompt was
+      // accepted without username edits).
+      WEAK = 1;
+      // Votes with high confidence (i.e. recorded if Save/Update prompt was
+      // accepted after username edits).
+      STRONG = 2;
     }
 
     // The type of the username first flow vote signal, set iff |autofill_type|

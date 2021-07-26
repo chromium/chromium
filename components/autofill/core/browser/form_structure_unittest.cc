@@ -5156,7 +5156,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameVoteType) {
   FormStructure form_structure(form);
   form_structure.set_passwords_were_revealed(true);
   form_structure.field(0)->set_single_username_vote_type(
-      AutofillUploadContents::Field::EDITED_IN_PROMPT);
+      AutofillUploadContents::Field::STRONG);
 
   AutofillUploadContents upload;
   std::vector<FormSignature> signatures;
