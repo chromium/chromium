@@ -57,6 +57,8 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
+#include "chrome/browser/ash/net/rollback_network_config/fake_rollback_network_config.h"
+#include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/fake_auto_enrollment_client.h"
@@ -2779,6 +2781,21 @@ class WizardControllerRollbackFlowTest : public WizardControllerFlowTest {
  protected:
   WizardControllerRollbackFlowTest() {}
 
+  void SetUp() override {
+    std::unique_ptr<FakeRollbackNetworkConfig> network_config =
+        std::make_unique<FakeRollbackNetworkConfig>();
+    network_config_ = network_config.get();
+    // Release ownership of network config. It is to be deleted via `Shutdown`.
+    rollback_network_config::OverrideInProcessInstanceForTesting(
+        std::move(network_config));
+    WizardControllerFlowTest::SetUp();
+  }
+
+  void TearDown() override {
+    rollback_network_config::Shutdown();
+    WizardControllerFlowTest::TearDown();
+  }
+
   // WizardControllerTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WizardControllerFlowTest::SetUpCommandLine(command_line);
@@ -2793,6 +2810,8 @@ class WizardControllerRollbackFlowTest : public WizardControllerFlowTest {
 
   content::MockNotificationObserver observer_;
   content::NotificationRegistrar registrar_;
+
+  ash::FakeRollbackNetworkConfig* network_config_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WizardControllerRollbackFlowTest);
@@ -2811,6 +2830,30 @@ IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
       EnrollmentScreenView::kScreenId);
   CheckCurrentScreen(EnrollmentScreenView::kScreenId);
   mock_enrollment_screen_->ExitScreen(EnrollmentScreen::Result::COMPLETED);
+}
+
+IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
+                       ImportNetworkConfigAfterRollback) {
+  CheckCurrentScreen(WelcomeView::kScreenId);
+  EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
+  EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
+
+  WizardController::default_controller()->AdvanceToScreen(
+      EnrollmentScreenView::kScreenId);
+  CheckCurrentScreen(EnrollmentScreenView::kScreenId);
+  ASSERT_TRUE(network_config_->imported_config() != nullptr);
+
+  const base::Value* network_list =
+      network_config_->imported_config()->FindListKey("NetworkConfigurations");
+  ASSERT_TRUE(network_list);
+  ASSERT_TRUE(network_list->is_list());
+
+  const base::Value& network = network_list->GetList()[0];
+  ASSERT_TRUE(network.is_dict());
+
+  const std::string* guid = network.FindStringKey("GUID");
+  ASSERT_TRUE(guid);
+  EXPECT_EQ(*guid, "wpa-psk-network-guid");
 }
 
 // TODO(nkostylev): Add test for WebUI accelerators http://crosbug.com/22571

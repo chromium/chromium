@@ -89,6 +89,7 @@ OobeTypes.TimezoneDsc;
  *   eulaSendStatistics: (boolean|undefined),
  *   networkUseConnected: (boolean|undefined),
  *   arcTosAutoAccept: (boolean|undefined),
+ *   networkConfig: (string|undefined),
  * }}
  */
 OobeTypes.OobeConfiguration;

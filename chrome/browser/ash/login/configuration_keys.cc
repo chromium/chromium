@@ -57,6 +57,10 @@ const char kNetworkOfflineDemo[] = "networkOfflineDemo";
 // selected automatically.
 const char kNetworkUseConnected[] = "networkUseConnected";
 
+// String that holds network configuration preserved during rollback.
+const char kNetworkConfig[] = "networkConfig";
+
+
 // == EULA screen:
 
 // Boolean value indicating if device should send usage statistics.
@@ -89,8 +93,7 @@ const char kDeviceRequisition[] = "deviceRequisition";
 
 // == Enrollment screen
 
-// Boolean value, indicates that device is actually enrolled, so we only need
-// to perform specific enrollment-time actions (e.g. create robot accounts).
+// Boolean value, indicates that device was enrolled before rollback.
 const char kRestoreAfterRollback[] = "enrollmentRestoreAfterRollback";
 
 // String value containing an enrollment token that would be used during
@@ -125,6 +128,7 @@ constexpr struct {
      ConfigurationHandlerSide::HANDLER_JS},
     {kNetworkUseConnected, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_JS},
+    {kNetworkConfig, ValueType::STRING, ConfigurationHandlerSide::HANDLER_CPP},
     {kEULASendUsageStatistics, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_JS},
     {kEULAAutoAccept, ValueType::BOOLEAN, ConfigurationHandlerSide::HANDLER_JS},

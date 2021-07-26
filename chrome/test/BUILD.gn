@@ -3271,6 +3271,8 @@ if (!is_android) {
         "../browser/ash/login/users/wallpaper_policy_browsertest.cc",
         "../browser/ash/login/webview_login_browsertest.cc",
         "../browser/ash/login/wizard_controller_browsertest.cc",
+        "../browser/ash/net/rollback_network_config/fake_rollback_network_config.cc",
+        "../browser/ash/net/rollback_network_config/fake_rollback_network_config.h",
         "../browser/ash/plugin_vm/plugin_vm_test_helper.cc",
         "../browser/ash/plugin_vm/plugin_vm_test_helper.h",
         "../browser/ash/policy/active_directory/component_active_directory_policy_browsertest.cc",

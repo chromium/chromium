@@ -97,6 +97,7 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
@@ -173,6 +174,7 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
+#include "chromeos/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
 #include "chromeos/settings/timezone_settings.h"
@@ -1833,6 +1835,18 @@ void WizardController::UpdateOobeConfiguration() {
             << requisition_value->GetString();
     policy::EnrollmentRequisitionManager::SetDeviceRequisition(
         requisition_value->GetString());
+  }
+
+  auto* network_config_value = wizard_context_->configuration.FindKeyOfType(
+      chromeos::configuration::kNetworkConfig, base::Value::Type::STRING);
+  if (network_config_value) {
+    std::string network_config = network_config_value->GetString();
+    auto rollback_network_config = std::make_unique<mojo::Remote<
+        chromeos::rollback_network_config::mojom::RollbackNetworkConfig>>();
+    rollback_network_config::BindToInProcessInstance(
+        rollback_network_config->BindNewPipeAndPassReceiver());
+    rollback_network_config->get()->RollbackConfigImport(network_config,
+                                                         base::DoNothing());
   }
 }
 
