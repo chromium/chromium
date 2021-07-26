@@ -319,17 +319,11 @@ class WebMediaPlayerImplTest
       private WebTestingSupport::WebScopedMockScrollbars {
  public:
   WebMediaPlayerImplTest()
-      : WebMediaPlayerImplTest(
-            scheduler::WebThreadScheduler::MainThreadScheduler()
-                ->CreateAgentGroupScheduler()) {}
-  explicit WebMediaPlayerImplTest(
-      std::unique_ptr<scheduler::WebAgentGroupScheduler> agent_group_scheduler)
       : media_thread_("MediaThreadForTest"),
         context_provider_(viz::TestContextProvider::Create()),
         audio_parameters_(media::TestAudioParameters::Normal()),
         memory_dump_manager_(
-            base::trace_event::MemoryDumpManager::CreateInstanceForTesting()),
-        agent_group_scheduler_(std::move(agent_group_scheduler)) {
+            base::trace_event::MemoryDumpManager::CreateInstanceForTesting()) {
     web_view_helper_.Initialize();
     media_thread_.StartAndWaitForTesting();
   }
@@ -362,8 +356,6 @@ class WebMediaPlayerImplTest
     wmpi_.reset();
 
     CycleThreads();
-
-    agent_group_scheduler_ = nullptr;
   }
 
  protected:
@@ -881,8 +873,6 @@ class WebMediaPlayerImplTest
   std::unique_ptr<WebMediaPlayerImpl> wmpi_;
 
   std::unique_ptr<base::trace_event::MemoryDumpManager> memory_dump_manager_;
-
-  std::unique_ptr<scheduler::WebAgentGroupScheduler> agent_group_scheduler_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebMediaPlayerImplTest);
