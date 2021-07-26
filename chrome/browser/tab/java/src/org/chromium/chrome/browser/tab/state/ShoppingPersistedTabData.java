@@ -767,6 +767,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             builder.setMainOfferId(mPriceDropData.offerId);
         }
 
+        if (mPriceDropData.currencyCode != null) {
+            builder.setPriceCurrencyCode(mPriceDropData.currencyCode);
+        }
+
         return () -> {
             return builder.build().toByteString().asReadOnlyByteBuffer();
         };
@@ -788,6 +792,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             setLastUpdatedMs(shoppingPersistedTabDataProto.getLastUpdatedMs());
             mLastPriceChangeTimeMs = shoppingPersistedTabDataProto.getLastPriceChangeTimeMs();
             mPriceDropData.offerId = shoppingPersistedTabDataProto.getMainOfferId();
+            mPriceDropData.currencyCode = shoppingPersistedTabDataProto.getPriceCurrencyCode();
             mPriceDropMetricsLogger = new PriceDropMetricsLogger(this);
             return true;
         } catch (InvalidProtocolBufferException e) {
