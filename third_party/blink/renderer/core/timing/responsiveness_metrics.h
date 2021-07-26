@@ -38,10 +38,6 @@ class ResponsivenessMetrics {
                                    absl::optional<int> key_code,
                                    absl::optional<PointerId> pointer_id,
                                    EventTimestamps event_timestamps);
-  // Useful for testing.
-  void SetUkmRecorder(ukm::UkmRecorder* ukm_recorder) {
-    ukm_recorder_ = ukm_recorder;
-  }
 
   // Stop UKM sampling for testing.
   void StopUkmSamplingForTesting() { sampling_ = false; }
@@ -78,7 +74,6 @@ class ResponsivenessMetrics {
   absl::optional<EventTimestamps> pending_pointer_up_timestamps_;
   absl::optional<EventTimestamps> pending_pointer_down_timestamps_;
   bool is_drag_ = false;
-  ukm::UkmRecorder* ukm_recorder_;
 
   // Whether to perform UKM sampling.
   bool sampling_ = true;
