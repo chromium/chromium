@@ -38,6 +38,7 @@ enum SampleFormat {
   kSampleFormatPlanarF32,
   kSampleFormatPlanarS32,
   kSampleFormatS24,
+  kSampleFormatPlanarU8,
 };
 
 enum StreamId {

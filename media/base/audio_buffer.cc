@@ -374,6 +374,17 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
     }
     return;
   }
+  if (sample_format_ == kSampleFormatPlanarU8) {
+    // Format is planar unsigned 8. Convert each value into float and insert
+    // into output channel data.
+    for (int ch = 0; ch < channel_count_; ++ch) {
+      const uint8_t* source_data = channel_data_[ch] + source_frame_offset;
+      float* dest_data = dest->channel(ch) + dest_frame_offset;
+      for (int i = 0; i < frames_to_copy; ++i)
+        dest_data[i] = UnsignedInt8SampleTypeTraits::ToFloat(source_data[i]);
+    }
+    return;
+  }
 
   if (sample_format_ == kSampleFormatPlanarS16) {
     // Format is planar signed16. Convert each value into float and insert into
@@ -472,6 +483,7 @@ void AudioBuffer::TrimRange(int start, int end) {
   const int frames_to_copy = data_ ? adjusted_frame_count_ - end : 0;
   if (frames_to_copy > 0) {
     switch (sample_format_) {
+      case kSampleFormatPlanarU8:
       case kSampleFormatPlanarS16:
       case kSampleFormatPlanarF32:
       case kSampleFormatPlanarS32:

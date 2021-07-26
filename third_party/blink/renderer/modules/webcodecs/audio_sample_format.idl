@@ -5,14 +5,12 @@
 // https://github.com/WICG/web-codecs
 
 enum AudioSampleFormat {
-  "U8",
-  "S16",
-  "S24",
-  "S32",
-  "FLT",
-  "U8P",
-  "S16P",
-  "S24P",
-  "S32P",
-  "FLTP",
+  "u8",
+  "s16",
+  "s32",
+  "f32",
+  "u8-planar",
+  "s16-planar",
+  "s32-planar",
+  "f32-planar",
 };

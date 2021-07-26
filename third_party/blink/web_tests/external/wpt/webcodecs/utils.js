@@ -18,7 +18,7 @@ function make_audio_data(timestamp, channels, sampleRate, frames) {
     numberOfChannels: channels,
     numberOfFrames: frames,
     sampleRate: sampleRate,
-    format: "FLTP",
+    format: "f32-planar",
   });
 }
 

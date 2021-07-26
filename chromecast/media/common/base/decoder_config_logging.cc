@@ -59,6 +59,8 @@ std::ostream& operator<<(std::ostream& stream,
       return stream << "planar signed 32-bit int";
     case ::chromecast::media::kSampleFormatS24:
       return stream << "interleaved signed 24-bit int";
+    case ::chromecast::media::kSampleFormatPlanarU8:
+      return stream << "planar unsigned 8-bit int";
   }
   NOTREACHED();
   return stream << "UNKNOWN";

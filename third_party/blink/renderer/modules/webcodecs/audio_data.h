@@ -38,7 +38,7 @@ class MODULES_EXPORT AudioData final : public ScriptWrappable {
   void close();
 
   absl::optional<V8AudioSampleFormat> format() const;
-  uint32_t sampleRate() const;
+  float sampleRate() const;
   uint32_t numberOfFrames() const;
   uint32_t numberOfChannels() const;
   uint64_t duration() const;

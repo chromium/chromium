@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 
+#include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
@@ -24,7 +25,6 @@ absl::optional<V8AudioSampleFormat> MediaFormatToBlinkFormat(
 
   DCHECK(media_format != media::SampleFormat::kUnknownSampleFormat);
 
-  // TODO(crbug.com/1205281): Add support for "U8P" and "S24P".
   switch (media_format) {
     case media::SampleFormat::kSampleFormatU8:
       return V8AudioSampleFormat(FormatEnum::kU8);
@@ -33,22 +33,28 @@ absl::optional<V8AudioSampleFormat> MediaFormatToBlinkFormat(
       return V8AudioSampleFormat(FormatEnum::kS16);
 
     case media::SampleFormat::kSampleFormatS24:
-      return V8AudioSampleFormat(FormatEnum::kS24);
-
+      // TODO(crbug.com/1231633): ffmpeg automatically converts kSampleFormatS24
+      // to kSampleFormatS32, but we do not update our labelling. It's ok to
+      // treat the kSampleFormatS24 as kSampleFormatS32 until we update the
+      // labelling, since our code already treats S24 as S32.
+      FALLTHROUGH;
     case media::SampleFormat::kSampleFormatS32:
       return V8AudioSampleFormat(FormatEnum::kS32);
 
     case media::SampleFormat::kSampleFormatF32:
-      return V8AudioSampleFormat(FormatEnum::kFLT);
+      return V8AudioSampleFormat(FormatEnum::kF32);
+
+    case media::SampleFormat::kSampleFormatPlanarU8:
+      return V8AudioSampleFormat(FormatEnum::kU8Planar);
 
     case media::SampleFormat::kSampleFormatPlanarS16:
-      return V8AudioSampleFormat(FormatEnum::kS16P);
+      return V8AudioSampleFormat(FormatEnum::kS16Planar);
 
     case media::SampleFormat::kSampleFormatPlanarS32:
-      return V8AudioSampleFormat(FormatEnum::kS32P);
+      return V8AudioSampleFormat(FormatEnum::kS32Planar);
 
     case media::SampleFormat::kSampleFormatPlanarF32:
-      return V8AudioSampleFormat(FormatEnum::kFLTP);
+      return V8AudioSampleFormat(FormatEnum::kF32Planar);
 
     case media::SampleFormat::kSampleFormatAc3:
     case media::SampleFormat::kSampleFormatEac3:
@@ -70,28 +76,23 @@ media::SampleFormat BlinkFormatToMediaFormat(V8AudioSampleFormat blink_format) {
     case FormatEnum::kS16:
       return media::SampleFormat::kSampleFormatS16;
 
-    case FormatEnum::kS24:
-      return media::SampleFormat::kSampleFormatS24;
-
     case FormatEnum::kS32:
       return media::SampleFormat::kSampleFormatS32;
 
-    case FormatEnum::kFLT:
+    case FormatEnum::kF32:
       return media::SampleFormat::kSampleFormatF32;
 
-    case FormatEnum::kS16P:
+    case FormatEnum::kU8Planar:
+      return media::SampleFormat::kSampleFormatPlanarU8;
+
+    case FormatEnum::kS16Planar:
       return media::SampleFormat::kSampleFormatPlanarS16;
 
-    case FormatEnum::kS32P:
+    case FormatEnum::kS32Planar:
       return media::SampleFormat::kSampleFormatPlanarS32;
 
-    case FormatEnum::kFLTP:
+    case FormatEnum::kF32Planar:
       return media::SampleFormat::kSampleFormatPlanarF32;
-
-    // TODO(crbug.com/1205281): Add support for "U8P" and "S24P".
-    case FormatEnum::kU8P:
-    case FormatEnum::kS24P:
-      return media::SampleFormat::kUnknownSampleFormat;
   }
 }
 
@@ -106,15 +107,6 @@ AudioData* AudioData::Create(AudioDataInit* init,
 AudioData::AudioData(AudioDataInit* init, ExceptionState& exception_state)
     : format_(absl::nullopt), timestamp_(init->timestamp()) {
   media::SampleFormat media_format = BlinkFormatToMediaFormat(init->format());
-
-  // TODO(crbug.com/1205281): Add support for "U8P" and "S24P".
-  if (media_format == media::SampleFormat::kUnknownSampleFormat) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        String::Format("Format '%s' is not supported yet.",
-                       init->format().AsCStr()));
-    return;
-  }
 
   uint32_t bytes_per_sample =
       media::SampleFormatToBytesPerChannel(media_format);
@@ -200,7 +192,7 @@ absl::optional<V8AudioSampleFormat> AudioData::format() const {
   return format_;
 }
 
-uint32_t AudioData::sampleRate() const {
+float AudioData::sampleRate() const {
   if (!data_)
     return 0;
 

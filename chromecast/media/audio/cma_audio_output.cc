@@ -34,6 +34,7 @@ int GetSampleSize(SampleFormat sample_format) {
     case kUnknownSampleFormat:
       return 0;
     case kSampleFormatU8:
+    case kSampleFormatPlanarU8:
       return sizeof(uint8_t);
     case kSampleFormatS16:
     case kSampleFormatPlanarS16:

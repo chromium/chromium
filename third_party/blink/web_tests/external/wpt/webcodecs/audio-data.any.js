@@ -26,7 +26,7 @@ test(t => {
     numberOfFrames: defaultInit.frames,
     numberOfChannels: defaultInit.channels,
     sampleRate: defaultInit.sampleRate,
-    format: 'FLTP',
+    format: 'f32-planar',
   }
 
   let data = new AudioData(audio_data_init);
@@ -38,7 +38,7 @@ test(t => {
   assert_equals(
       data.duration, defaultInit.frames / defaultInit.sampleRate * 1_000_000,
       'duration');
-  assert_equals(data.format, 'FLTP', 'format');
+  assert_equals(data.format, 'f32-planar', 'format');
 
   // Create an Int16 array of the right length.
   let small_data = new Int16Array(defaultInit.channels * defaultInit.frames);
@@ -46,7 +46,7 @@ test(t => {
   let wrong_format_init = {...audio_data_init};
   wrong_format_init.data = small_data;
 
-  // Creating FLTP AudioData from Int16 from should throw.
+  // Creating `f32-planar` AudioData from Int16 from should throw.
   assert_throws_js(TypeError, () => {
     let data = new AudioData(wrong_format_init);
   }, `AudioDataInit.data needs to be big enough`);
