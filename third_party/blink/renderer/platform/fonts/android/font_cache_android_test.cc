@@ -10,12 +10,26 @@
 
 namespace blink {
 
-TEST(FontCacheAndroid, FallbackFontForCharacter) {
+class FontCacheAndroidTest : public testing::Test {
+ protected:
+  // Returns a locale-specific `serif` typeface, or `nullptr` if the system
+  // does not have a locale-specific `serif`.
+  sk_sp<SkTypeface> CreateSerifTypeface(const LayoutLocale* locale) {
+    FontCache* font_cache = FontCache::GetFontCache();
+    FontDescription font_description;
+    font_description.SetLocale(locale);
+    font_description.SetGenericFamily(FontDescription::kSerifFamily);
+    return font_cache->CreateLocaleSpecificTypeface(font_description, "serif");
+  }
+
+  FontCachePurgePreventer purge_preventer;
+};
+
+TEST_F(FontCacheAndroidTest, FallbackFontForCharacter) {
   // A Latin character in the common locale system font, but not in the
   // Chinese locale-preferred font.
   const UChar32 kTestChar = 228;
 
-  FontCachePurgePreventer purge_preventer;
   FontDescription font_description;
   font_description.SetLocale(LayoutLocale::Get("zh"));
   ASSERT_EQ(USCRIPT_SIMPLIFIED_HAN, font_description.GetScript());
@@ -28,27 +42,41 @@ TEST(FontCacheAndroid, FallbackFontForCharacter) {
   EXPECT_TRUE(font_data);
 }
 
-TEST(FontCacheAndroid, LocaleSpecificTypeface) {
-  FontCachePurgePreventer purge_preventer;
+TEST_F(FontCacheAndroidTest, FallbackFontForCharacterSerif) {
+  // Test is valid only if the system has a locale-specific `serif`.
+  const LayoutLocale* ja = LayoutLocale::Get("ja");
+  sk_sp<SkTypeface> serif_ja_typeface = CreateSerifTypeface(ja);
+  if (!serif_ja_typeface)
+    return;
+
+  // When |GenericFamily| set to |kSerifFamily|, it should find the
+  // locale-specific serif font.
+  FontDescription font_description;
+  font_description.SetGenericFamily(FontDescription::kSerifFamily);
+  font_description.SetLocale(ja);
   FontCache* font_cache = FontCache::GetFontCache();
+  ASSERT_TRUE(font_cache);
+  const UChar32 kTestChar = 0x4E00;  // U+4E00 CJK UNIFIED IDEOGRAPH-4E00
+  scoped_refptr<SimpleFontData> font_data =
+      font_cache->FallbackFontForCharacter(font_description, kTestChar,
+                                           nullptr);
+  EXPECT_TRUE(font_data);
+  EXPECT_EQ(serif_ja_typeface.get(), font_data->PlatformData().Typeface());
+}
 
-  FontDescription serif_ja_description;
-  serif_ja_description.SetLocale(LayoutLocale::Get("ja"));
-  serif_ja_description.SetGenericFamily(FontDescription::kSerifFamily);
-  sk_sp<SkTypeface> serif_ja_typeface =
-      font_cache->CreateLocaleSpecificTypeface(serif_ja_description, "serif");
-
-  // |CreateLocaleSpecificTypeface| returns `nullptr` if the system does not
-  // have a locale-specific `serif` for Japanese. In this case, we can't test
-  // further.
+TEST_F(FontCacheAndroidTest, LocaleSpecificTypeface) {
+  // Test is valid only if the system has a locale-specific `serif`.
+  const LayoutLocale* ja = LayoutLocale::Get("ja");
+  sk_sp<SkTypeface> serif_ja_typeface = CreateSerifTypeface(ja);
   if (!serif_ja_typeface)
     return;
 
   // If the system has one, it must be different from the default font.
   FontDescription standard_ja_description;
-  standard_ja_description.SetLocale(LayoutLocale::Get("ja"));
+  standard_ja_description.SetLocale(ja);
   standard_ja_description.SetGenericFamily(FontDescription::kStandardFamily);
   std::string name;
+  FontCache* font_cache = FontCache::GetFontCache();
   sk_sp<SkTypeface> standard_ja_typeface = font_cache->CreateTypeface(
       standard_ja_description, FontFaceCreationParams(), name);
   EXPECT_NE(serif_ja_typeface.get(), standard_ja_typeface.get());

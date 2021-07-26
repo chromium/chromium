@@ -124,8 +124,16 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
     FontFallbackPriority fallback_priority) {
   sk_sp<SkFontMgr> fm(SkFontMgr::RefDefault());
 
+  // Pass "serif" to |matchFamilyStyleCharacter| if the `font-family` list
+  // contains `serif`, so that it fallbacks to i18n serif fonts that has the
+  // specified character. Do this only for `serif` because other generic
+  // families do not have the lang-specific fallback list.
+  const char* generic_family_name = nullptr;
+  if (font_description.GenericFamily() == FontDescription::kSerifFamily)
+    generic_family_name = "serif";
+
   AtomicString family_name = GetFamilyNameForCharacter(
-      fm.get(), c, font_description, nullptr, fallback_priority);
+      fm.get(), c, font_description, generic_family_name, fallback_priority);
 
   // Return the GMS Core emoji font if FontFallbackPriority is kEmojiEmoji and
   // a) no system fallback was found or b) the system fallback font's PostScript
