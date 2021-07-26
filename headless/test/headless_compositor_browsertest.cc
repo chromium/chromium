@@ -160,5 +160,7 @@ HEADLESS_COMPOSITOR_TEST(ScreenshotAfterMetricsOverride,
                          "sanity/screenshot-after-metrics-override.js")
 HEADLESS_COMPOSITOR_TEST(ScreenshotDeviceScaleFactor,
                          "emulation/screenshot-device-scale-factor.js")
+HEADLESS_COMPOSITOR_TEST(VirtualTimeIntersectionObserverWithViewport,
+                         "emulation/intersection-observer-with-viewport.js")
 
 }  // namespace headless

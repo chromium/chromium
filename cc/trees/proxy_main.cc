@@ -170,24 +170,10 @@ void ProxyMain::BeginMainFrame(
   final_pipeline_stage_ = max_requested_pipeline_stage_;
   max_requested_pipeline_stage_ = NO_PIPELINE_STAGE;
 
-  // When we don't need to produce a CompositorFrame, there's also no need to
-  // commit our updates. We still need to run layout and paint though, as it can
-  // have side effects on page loading behavior.
-  bool skip_commit = begin_main_frame_state->begin_frame_args.animate_only;
-
   // If main frame updates and commits are deferred, skip the entire pipeline.
-  bool skip_full_pipeline = defer_main_frame_update_;
-
-  // We may have previously skipped paint and commit. If we should still skip it
-  // now, and there was no intermediate request for a commit since the last
-  // BeginMainFrame, we can skip the full pipeline.
-  skip_full_pipeline |=
-      skip_commit && final_pipeline_stage_ == NO_PIPELINE_STAGE;
-
-  if (skip_full_pipeline) {
+  if (defer_main_frame_update_) {
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_DeferCommit",
                          TRACE_EVENT_SCOPE_THREAD);
-
     // In this case, since the commit is deferred to a later time, gathered
     // events metrics are not discarded so that they can be reported if the
     // commit happens in the future.
@@ -217,7 +203,7 @@ void ProxyMain::BeginMainFrame(
   // the status at this point to keep scroll in sync.
   if (IsDeferringCommits() && base::TimeTicks::Now() > commits_restart_time_)
     StopDeferringCommits(ReasonToTimeoutTrigger(*paint_holding_reason_));
-  skip_commit |= IsDeferringCommits();
+  bool skip_commit = IsDeferringCommits();
 
   if (!skip_commit) {
     // Synchronizes scroll offsets and page scale deltas (for pinch zoom) from
@@ -265,6 +251,11 @@ void ProxyMain::BeginMainFrame(
   // deferring main frame updates. Either may have changed the status
   // of the defer... flags, so re-evaluate skip_commit.
   skip_commit |= defer_main_frame_update_ || IsDeferringCommits();
+
+  // When we don't need to produce a CompositorFrame, there's also no need to
+  // commit our updates. We still need to run layout and paint though, as it can
+  // have side effects on page loading behavior.
+  skip_commit |= begin_main_frame_state->begin_frame_args.animate_only;
 
   if (skip_commit) {
     current_pipeline_stage_ = NO_PIPELINE_STAGE;
