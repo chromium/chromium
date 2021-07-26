@@ -427,6 +427,18 @@ void PasswordStoreImpl::RemoveLoginsByURLAndTimeAsync(
       std::move(callback));
 }
 
+void PasswordStoreImpl::DisableAutoSignInForOriginsAsync(
+    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+    base::OnceClosure completion) {
+  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
+  background_task_runner()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(
+                         &PasswordStoreImpl::DisableAutoSignInForOriginsImpl),
+                     this, origin_filter),
+      std::move(completion));
+}
+
 SmartBubbleStatsStore* PasswordStoreImpl::GetSmartBubbleStatsStore() {
   return this;
 }

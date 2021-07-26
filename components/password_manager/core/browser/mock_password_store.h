@@ -25,6 +25,12 @@ class MockPasswordStore : public PasswordStore {
 
   MOCK_METHOD(void, GetAutofillableLogins, (PasswordStoreConsumer*), (override));
 
+  MOCK_METHOD(void,
+              DisableAutoSignInForOrigins,
+              (const base::RepeatingCallback<bool(const GURL&)>&,
+               base::OnceClosure),
+              (override));
+
   MOCK_METHOD(void, RemoveLogin, (const PasswordForm&), (override));
   MOCK_METHOD(void,
               RemoveLoginsByURLAndTime,
@@ -59,10 +65,6 @@ class MockPasswordStore : public PasswordStore {
   MOCK_METHOD(void,
               ReportMetricsImpl,
               (const std::string&, bool, BulkCheckDone),
-              (override));
-  MOCK_METHOD(PasswordStoreChangeList,
-              DisableAutoSignInForOriginsImpl,
-              (const base::RepeatingCallback<bool(const GURL&)>&),
               (override));
   MOCK_METHOD(PasswordStoreChangeList,
               AddInsecureCredentialImpl,

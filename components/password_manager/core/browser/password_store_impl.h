@@ -48,7 +48,7 @@ class PasswordStoreImpl : protected PasswordStoreSync,
                          bool custom_passphrase_sync_enabled,
                          BulkCheckDone bulk_check_done) override;
   PasswordStoreChangeList DisableAutoSignInForOriginsImpl(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter) override;
+      const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
   DatabaseCleanupResult DeleteUndecryptableLogins() override;
   PasswordStoreChangeList AddInsecureCredentialImpl(
       const InsecureCredential& insecure_credential) override;
@@ -114,6 +114,9 @@ class PasswordStoreImpl : protected PasswordStoreSync,
       base::Time delete_end,
       base::OnceCallback<void(bool)> sync_completion,
       PasswordStoreChangeListReply callback) override;
+  void DisableAutoSignInForOriginsAsync(
+      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+      base::OnceClosure completion) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
   FieldInfoStore* GetFieldInfoStore() override;
 

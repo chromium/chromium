@@ -218,6 +218,11 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
                base::Time delete_end,
                PasswordStoreChangeListReply callback),
               (override));
+  MOCK_METHOD(void,
+              DisableAutoSignInForOriginsAsync,
+              (const base::RepeatingCallback<bool(const GURL&)>&,
+               base::OnceClosure),
+              (override));
   MOCK_METHOD(SmartBubbleStatsStore*, GetSmartBubbleStatsStore, (), (override));
   MOCK_METHOD(FieldInfoStore*, GetFieldInfoStore, (), (override));
 };

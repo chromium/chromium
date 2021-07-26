@@ -200,10 +200,6 @@ class PasswordStore : public PasswordStoreInterface {
                                  bool custom_passphrase_sync_enabled,
                                  BulkCheckDone bulk_check_done);
 
-  // Synchronous implementation to disable auto sign-in.
-  virtual PasswordStoreChangeList DisableAutoSignInForOriginsImpl(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
-
   // Synchronous implementation for manipulating with information about
   // insecure credentials.
   // Returns PasswordStoreChangeList for the updated password forms.
@@ -291,9 +287,6 @@ class PasswordStore : public PasswordStoreInterface {
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::Time delete_begin,
       base::Time delete_end,
-      base::OnceClosure completion);
-  void DisableAutoSignInForOriginsInternal(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion);
   PasswordStoreChangeList RemoveCompromisedCredentialsByUrlAndTimeInternal(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,

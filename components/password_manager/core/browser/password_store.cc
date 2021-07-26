@@ -231,11 +231,8 @@ void PasswordStore::RemoveLoginsCreatedBetween(
 void PasswordStore::DisableAutoSignInForOrigins(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
     base::OnceClosure completion) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  ScheduleTask(
-      base::BindOnce(&PasswordStore::DisableAutoSignInForOriginsInternal, this,
-                     base::RepeatingCallback<bool(const GURL&)>(origin_filter),
-                     std::move(completion)));
+  backend_->DisableAutoSignInForOriginsAsync(origin_filter,
+                                             std::move(completion));
 }
 
 void PasswordStore::Unblocklist(const PasswordFormDigest& form_digest,
@@ -435,13 +432,6 @@ void PasswordStore::ReportMetricsImpl(const std::string& sync_username,
   LOG(ERROR) << "Called function without implementation: " << __func__;
 }
 
-PasswordStoreChangeList PasswordStore::DisableAutoSignInForOriginsImpl(
-    const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {
-  // TODO(crbug.com/1217070): Move as implementation detail into backend.
-  LOG(ERROR) << "Called function without implementation: " << __func__;
-  return PasswordStoreChangeList();
-}
-
 PasswordStoreChangeList PasswordStore::AddInsecureCredentialImpl(
     const InsecureCredential& insecure_credential) {
   // TODO(crbug.com/1217070): Move as implementation detail into backend.
@@ -534,17 +524,6 @@ void PasswordStore::PostInsecureCredentialsTaskAndReplyToConsumerWithResult(
       background_task_runner_.get(), FROM_HERE, std::move(task),
       base::BindOnce(&InsecureCredentialsConsumer::OnGetInsecureCredentialsFrom,
                      consumer->GetWeakPtr(), base::RetainedRef(this)));
-}
-
-void PasswordStore::DisableAutoSignInForOriginsInternal(
-    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-    base::OnceClosure completion) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("passwords",
-               "PasswordStore::DisableAutoSignInForOriginsInternal");
-  DisableAutoSignInForOriginsImpl(origin_filter);
-  if (completion)
-    main_task_runner_->PostTask(FROM_HERE, std::move(completion));
 }
 
 void PasswordStore::UnblocklistInternal(

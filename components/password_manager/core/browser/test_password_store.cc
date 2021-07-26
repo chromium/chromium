@@ -228,6 +228,12 @@ void TestPasswordStore::RemoveLoginsByURLAndTimeAsync(
   NOTIMPLEMENTED();
 }
 
+void TestPasswordStore::DisableAutoSignInForOriginsAsync(
+    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+    base::OnceClosure completion) {
+  NOTIMPLEMENTED();
+}
+
 SmartBubbleStatsStore* TestPasswordStore::GetSmartBubbleStatsStore() {
   return nullptr;
 }
@@ -240,12 +246,6 @@ void TestPasswordStore::ReportMetricsImpl(const std::string& sync_username,
                                           bool custom_passphrase_sync_enabled,
                                           BulkCheckDone bulk_check_done) {
   NOTIMPLEMENTED();
-}
-
-PasswordStoreChangeList TestPasswordStore::DisableAutoSignInForOriginsImpl(
-    const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {
-  NOTIMPLEMENTED();
-  return PasswordStoreChangeList();
 }
 
 PasswordStoreChangeList TestPasswordStore::AddInsecureCredentialImpl(

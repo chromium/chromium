@@ -79,6 +79,12 @@ void PasswordStoreAndroidBackend::RemoveLoginsCreatedBetweenAsync(
   // TODO(https://crbug.com/1229655):Implement.
 }
 
+void PasswordStoreAndroidBackend::DisableAutoSignInForOriginsAsync(
+    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+    base::OnceClosure completion) {
+  // TODO(https://crbug.com/1229655):Implement.
+}
+
 void PasswordStoreAndroidBackend::OnCompleteWithLogins(
     TaskId task_id,
     std::vector<PasswordForm> passwords) {

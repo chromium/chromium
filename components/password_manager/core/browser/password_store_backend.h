@@ -90,8 +90,8 @@ class PasswordStoreBackend {
       base::Time delete_end,
       PasswordStoreChangeListReply callback) = 0;
   virtual void DisableAutoSignInForOriginsAsync(
-      PasswordStoreChangeListReply callback,
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {}
+      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+      base::OnceClosure completion) = 0;
 
   virtual SmartBubbleStatsStore* GetSmartBubbleStatsStore() = 0;
   virtual FieldInfoStore* GetFieldInfoStore() = 0;

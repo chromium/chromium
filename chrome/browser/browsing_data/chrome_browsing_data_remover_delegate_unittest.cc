@@ -2079,8 +2079,11 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, DisableAutoSignIn) {
       BrowsingDataFilterBuilder::BuildNoopFilter();
 
   EXPECT_CALL(*tester.profile_store(),
-              DisableAutoSignInForOriginsImpl(ProbablySameFilter(empty_filter)))
-      .WillOnce(Return(password_manager::PasswordStoreChangeList()));
+              DisableAutoSignInForOrigins(ProbablySameFilter(empty_filter), _))
+      .WillOnce(testing::WithArg<1>([](base::OnceClosure completion) {
+        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                      std::move(completion));
+      }));
 
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 content::BrowsingDataRemover::DATA_TYPE_COOKIES,
@@ -2095,8 +2098,11 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 
   ExpectRemoveLoginsByURLAndTime(tester.profile_store());
   EXPECT_CALL(*tester.profile_store(),
-              DisableAutoSignInForOriginsImpl(ProbablySameFilter(empty_filter)))
-      .WillOnce(Return(password_manager::PasswordStoreChangeList()));
+              DisableAutoSignInForOrigins(ProbablySameFilter(empty_filter), _))
+      .WillOnce(testing::WithArg<1>([](base::OnceClosure completion) {
+        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                      std::move(completion));
+      }));
 
   BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(),
