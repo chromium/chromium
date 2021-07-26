@@ -94,6 +94,7 @@ static const char kPolicyThrottleIdleAndNopAnimation[] =
 static const char kMinTimeInModeMsKey[] = "min_time_in_mode_ms";
 static const char kMinCputimeRatioKey[] = "min_cputime_ratio";
 static const char kProcessTypesKey[] = "process_types";
+static const char kIncludeChargingKey[] = "include_charging";
 
 }  // anonymous namespace
 
@@ -255,6 +256,10 @@ void PowerScheduler::InitializePolicyFromFeatureList() {
         return;
       }
     }
+
+    bool include_charging = field_trial_params[kIncludeChargingKey] == "true";
+    if (include_charging)
+      arbiter_->SetChargingModeEnabled(false);
   }
 
   SetPolicy(params);

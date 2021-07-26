@@ -246,9 +246,30 @@ TEST_F(PowerSchedulerTest,
   params["policy"] = "kThrottleIdle";
   params["min_time_in_mode_ms"] = "1000";
   params["min_cputime_ratio"] = "1.0";
+  params["include_charging"] = "false";
   list.InitAndEnableFeatureWithParameters(features::kPowerScheduler, params);
   scheduler_.InitializePolicyFromFeatureList();
   ExpectPolicy(SchedulingPolicy::kThrottleIdle, 1000, 1.0);
+}
+
+TEST_F(PowerSchedulerTest,
+       InitializePolicyFromFeatureListPowerSchedulerWithParamsIncludeCharging) {
+  base::test::ScopedFeatureList list;
+  base::FieldTrialParams params;
+  params["policy"] = "kThrottleIdle";
+  params["min_time_in_mode_ms"] = "1000";
+  params["min_cputime_ratio"] = "1.0";
+  params["include_charging"] = "true";
+  list.InitAndEnableFeatureWithParameters(features::kPowerScheduler, params);
+  scheduler_.InitializePolicyFromFeatureList();
+  ExpectPolicy(SchedulingPolicy::kThrottleIdle, 1000, 1.0);
+
+  if (base::HasBigCpuCores()) {
+    // |include_charging| disables kCharging modes in the arbiter.
+    std::unique_ptr<PowerModeVoter> voter = arbiter_.NewVoter("test");
+    voter->VoteFor(PowerMode::kCharging);
+    EXPECT_EQ(arbiter_.GetActiveModeForTesting(), PowerMode::kIdle);
+  }
 }
 
 TEST_F(PowerSchedulerTest,
