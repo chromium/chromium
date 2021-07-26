@@ -10696,7 +10696,43 @@
     "reason_for_missing_test": "Maps into CrosSettings"
   },
   "UptimeLimit": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "os": [
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "automatic_reboot.uptime_limit": {
+            "location": "local_state",
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "UptimeLimit": 86400
+        },
+        "prefs": {
+          "automatic_reboot.uptime_limit": {
+            "location": "local_state",
+            "value": 86400
+          }
+        }
+      },
+      {
+        "note": "Values are clamped to be at least 3,600.",
+        "policies": {
+          "UptimeLimit": 1200
+        },
+        "prefs": {
+          "automatic_reboot.uptime_limit": {
+            "location": "local_state",
+            "value": 3600
+          }
+        }
+      }
+    ]
   },
   "RebootAfterUpdate": {
     "os": [
