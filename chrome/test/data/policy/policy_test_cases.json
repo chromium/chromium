@@ -10135,7 +10135,42 @@
     "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
   "RebootAfterUpdate": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "os": [
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "RebootAfterUpdate": true
+        },
+        "prefs": {
+          "automatic_reboot.reboot_after_update": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "RebootAfterUpdate": false
+        },
+        "prefs": {
+          "automatic_reboot.reboot_after_update": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "automatic_reboot.reboot_after_update": {
+            "location": "local_state",
+            "default_value": false
+          }
+        }
+      }
+    ]
   },
   "DeviceScheduledReboot": {
     "os": [
