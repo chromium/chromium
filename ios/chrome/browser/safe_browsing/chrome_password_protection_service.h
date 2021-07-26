@@ -11,7 +11,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/password_manager/core/browser/insecure_credentials_helper.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #import "components/safe_browsing/ios/browser/password_protection/password_protection_service.h"
@@ -38,8 +40,16 @@ class ChromePasswordProtectionService
     : public safe_browsing::PasswordProtectionService,
       public KeyedService {
  public:
-  ChromePasswordProtectionService(SafeBrowsingService* sb_service,
-                                  ChromeBrowserState* browser_state);
+  using ChangePhishedCredentialsCallback = base::RepeatingCallback<void(
+      password_manager::PasswordStoreInterface*,
+      const password_manager::MatchingReusedCredential&)>;
+  ChromePasswordProtectionService(
+      SafeBrowsingService* sb_service,
+      ChromeBrowserState* browser_state,
+      ChangePhishedCredentialsCallback add_phished_credentials =
+          base::BindRepeating(&password_manager::AddPhishedCredentials),
+      ChangePhishedCredentialsCallback remove_phished_credentials =
+          base::BindRepeating(&password_manager::RemovePhishedCredentials));
   ~ChromePasswordProtectionService() override;
 
   // PasswordProtectionServiceBase:
@@ -268,6 +278,14 @@ class ChromePasswordProtectionService
       show_warning_callbacks_;
 
   ChromeBrowserState* browser_state_;
+
+  // Calls `password_manager::AddPhishedCredentials`. Used to facilitate
+  // testing.
+  ChangePhishedCredentialsCallback add_phished_credentials_;
+
+  // Calls `password_manager::RemovePhishedCredentials`. Used to facilitate
+  // testing.
+  ChangePhishedCredentialsCallback remove_phished_credentials_;
 
   base::WeakPtrFactory<ChromePasswordProtectionService> weak_factory_{this};
 };

@@ -10,9 +10,9 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/prefs/pref_service.h"
@@ -43,7 +43,6 @@
 
 using ::testing::_;
 using password_manager::metrics_util::PasswordType;
-using password_manager::MockPasswordStore;
 using safe_browsing::LoginReputationClientRequest;
 using safe_browsing::LoginReputationClientResponse;
 using safe_browsing::PasswordProtectionTrigger;
@@ -82,7 +81,6 @@ constexpr struct {
      PasswordReuseLookup::REQUEST_FAILURE},
     {RequestOutcome::DISABLED_DUE_TO_USER_POPULATION,
      PasswordReuseLookup::REQUEST_FAILURE}};
-
 }  // namespace
 
 class FakeChromePasswordProtectionService
@@ -90,8 +88,13 @@ class FakeChromePasswordProtectionService
  public:
   explicit FakeChromePasswordProtectionService(
       SafeBrowsingService* sb_service,
-      ChromeBrowserState* browser_state)
-      : ChromePasswordProtectionService(sb_service, browser_state),
+      ChromeBrowserState* browser_state,
+      ChangePhishedCredentialsCallback add_phished_credentials,
+      ChangePhishedCredentialsCallback remove_phished_credentials)
+      : ChromePasswordProtectionService(sb_service,
+                                        browser_state,
+                                        add_phished_credentials,
+                                        remove_phished_credentials),
         is_incognito_(false),
         is_account_signed_in_(false),
         is_no_hosted_domain_found_(false) {}
@@ -126,7 +129,8 @@ class ChromePasswordProtectionServiceTest : public ChromeWebTest {
     safe_browsing_service_ = base::MakeRefCounted<FakeSafeBrowsingService>();
 
     service_ = std::make_unique<FakeChromePasswordProtectionService>(
-        safe_browsing_service_.get(), chrome_browser_state_.get());
+        safe_browsing_service_.get(), chrome_browser_state_.get(),
+        mock_add_callback_.Get(), mock_remove_callback_.Get());
 
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     fake_navigation_manager_ = navigation_manager.get();
@@ -149,13 +153,6 @@ class ChromePasswordProtectionServiceTest : public ChromeWebTest {
         fake_navigation_manager_->GetItemCount() - 1);
     item->SetTimestamp(base::Time::Now());
     fake_navigation_manager_->SetLastCommittedItem(item);
-  }
-
-  MockPasswordStore* GetProfilePasswordStore() const {
-    return static_cast<MockPasswordStore*>(
-        IOSChromePasswordStoreFactory::GetForBrowserState(
-            chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
-            .get());
   }
 
   syncer::FakeUserEventService* GetUserEventService() const {
@@ -217,6 +214,12 @@ class ChromePasswordProtectionServiceTest : public ChromeWebTest {
   std::unique_ptr<FakeChromePasswordProtectionService> service_;
   web::FakeWebState fake_web_state_;
   web::FakeNavigationManager* fake_navigation_manager_;
+  base::MockCallback<
+      ChromePasswordProtectionService::ChangePhishedCredentialsCallback>
+      mock_add_callback_;
+  base::MockCallback<
+      ChromePasswordProtectionService::ChangePhishedCredentialsCallback>
+      mock_remove_callback_;
   signin::IdentityTestEnvironment identity_test_env_;
 };
 
@@ -386,8 +389,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
   std::vector<password_manager::MatchingReusedCredential> credentials = {
       {"http://example.test"}, {"http://2.example.com"}};
 
-  EXPECT_CALL(*GetProfilePasswordStore(), AddInsecureCredentialImpl(_))
-      .Times(2);
+  EXPECT_CALL(mock_add_callback_, Run(_, credentials[0]));
+  EXPECT_CALL(mock_add_callback_, Run(_, credentials[1]));
   service_->PersistPhishedSavedPasswordCredential(credentials);
 }
 
@@ -398,12 +401,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
       {"http://example.test", u"username1"},
       {"http://2.example.test", u"username2"}};
 
-  EXPECT_CALL(*GetProfilePasswordStore(),
-              RemoveInsecureCredentialsImpl(
-                  _, _,
-                  password_manager::RemoveInsecureCredentialsReason::
-                      kMarkSiteAsLegitimate))
-      .Times(2);
+  EXPECT_CALL(mock_remove_callback_, Run(_, credentials[0]));
+  EXPECT_CALL(mock_remove_callback_, Run(_, credentials[1]));
   service_->RemovePhishedSavedPasswordCredential(credentials);
 }
 

@@ -58,10 +58,10 @@ void InsecureCredentialsHelper::AddPhishedCredentials(
   PasswordFormDigest digest = {PasswordForm::Scheme::kHtml,
                                credential.signon_realm,
                                GURL(credential.signon_realm)};
-  store_->GetLogins(digest, this);
   operation_ =
       base::BindOnce(&InsecureCredentialsHelper::AddPhishedCredentialsInternal,
                      base::Owned(this), credential);
+  store_->GetLogins(digest, this);
 }
 
 void InsecureCredentialsHelper::RemovePhishedCredentials(
@@ -69,10 +69,10 @@ void InsecureCredentialsHelper::RemovePhishedCredentials(
   PasswordFormDigest digest = {PasswordForm::Scheme::kHtml,
                                credential.signon_realm,
                                GURL(credential.signon_realm)};
-  store_->GetLogins(digest, this);
   operation_ = base::BindOnce(
       &InsecureCredentialsHelper::RemovePhishedCredentialsInternal,
       base::Owned(this), credential);
+  store_->GetLogins(digest, this);
 }
 
 void InsecureCredentialsHelper::OnGetPasswordStoreResults(

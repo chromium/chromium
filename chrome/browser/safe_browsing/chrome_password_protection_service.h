@@ -7,7 +7,7 @@
 
 #include <map>
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -20,6 +20,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
@@ -72,6 +73,9 @@ MaybeCreateNavigationThrottle(content::NavigationHandle* navigation_handle);
 class ChromePasswordProtectionService : public PasswordProtectionService,
                                         public KeyedService {
  public:
+  using ChangePhishedCredentialsCallback = base::RepeatingCallback<void(
+      password_manager::PasswordStoreInterface*,
+      const password_manager::MatchingReusedCredential&)>;
   // Observer is used to coordinate password protection UIs (e.g. modal warning,
   // change password card, etc) in reaction to user events.
   class Observer {
@@ -549,7 +553,9 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
       Profile* profile,
       scoped_refptr<SafeBrowsingUIManager> ui_manager,
       StringProvider sync_password_hash_provider,
-      VerdictCacheManager* cache_manager);
+      VerdictCacheManager* cache_manager,
+      ChangePhishedCredentialsCallback add_phished_credentials,
+      ChangePhishedCredentialsCallback remove_phished_credentials);
 
   // Code shared by both ctors.
   void Init();
@@ -577,6 +583,14 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
 
   // Schedules the next time to log the PasswordCaptured event.
   base::OneShotTimer log_password_capture_timer_;
+
+  // Calls `password_manager::AddPhishedCredentials`. Used to facilitate
+  // testing.
+  ChangePhishedCredentialsCallback add_phished_credentials_;
+
+  // Calls `password_manager::RemovePhishedCredentials`. Used to facilitate
+  // testing.
+  ChangePhishedCredentialsCallback remove_phished_credentials_;
 
   // Bypasses the check for probability when sending sample pings.
   bool bypass_probability_for_tests_ = false;

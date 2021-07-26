@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -33,6 +34,7 @@
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -65,6 +67,7 @@
 #include "extensions/browser/test_event_router.h"
 #endif
 
+using password_manager::MatchingReusedCredential;
 using sync_pb::UserEventSpecifics;
 using GaiaPasswordReuse = sync_pb::GaiaPasswordReuse;
 using GaiaPasswordCaptured = UserEventSpecifics::GaiaPasswordCaptured;
@@ -153,11 +156,15 @@ class MockChromePasswordProtectionService
       Profile* profile,
       scoped_refptr<SafeBrowsingUIManager> ui_manager,
       StringProvider sync_password_hash_provider,
-      VerdictCacheManager* cache_manager)
+      VerdictCacheManager* cache_manager,
+      ChangePhishedCredentialsCallback add_phished_credentials,
+      ChangePhishedCredentialsCallback remove_phished_credentials)
       : ChromePasswordProtectionService(profile,
                                         ui_manager,
                                         sync_password_hash_provider,
-                                        cache_manager),
+                                        cache_manager,
+                                        add_phished_credentials,
+                                        remove_phished_credentials),
         is_incognito_(false),
         is_extended_reporting_(false),
         is_syncing_(false),
@@ -314,7 +321,8 @@ class ChromePasswordProtectionServiceTest
             std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
             std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
             GURL(chrome::kChromeUINewTabURL)),
-        sync_password_hash_provider, cache_manager_.get());
+        sync_password_hash_provider, cache_manager_.get(),
+        mock_add_callback_.Get(), mock_remove_callback_.Get());
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
@@ -416,6 +424,12 @@ class ChromePasswordProtectionServiceTest
 #endif
   std::unique_ptr<VerdictCacheManager> cache_manager_;
   ScopedTestingLocalState local_state_;
+  base::MockCallback<
+      ChromePasswordProtectionService::ChangePhishedCredentialsCallback>
+      mock_add_callback_;
+  base::MockCallback<
+      ChromePasswordProtectionService::ChangePhishedCredentialsCallback>
+      mock_remove_callback_;
 };
 
 TEST_F(ChromePasswordProtectionServiceTest,
@@ -598,7 +612,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
   std::vector<password_manager::MatchingReusedCredential> credentials = {
       {"http://example.test"}, {"http://2.example.com"}};
 
-  EXPECT_CALL(*password_store_, AddInsecureCredentialImpl(_)).Times(2);
+  EXPECT_CALL(mock_add_callback_, Run(password_store_.get(), credentials[0]));
+  EXPECT_CALL(mock_add_callback_, Run(password_store_.get(), credentials[1]));
   service_->PersistPhishedSavedPasswordCredential(credentials);
 }
 
@@ -610,12 +625,11 @@ TEST_F(ChromePasswordProtectionServiceTest,
       {"http://example.test", u"username1"},
       {"http://2.example.test", u"username2"}};
 
-  EXPECT_CALL(*password_store_,
-              RemoveInsecureCredentialsImpl(
-                  _, _,
-                  password_manager::RemoveInsecureCredentialsReason::
-                      kMarkSiteAsLegitimate))
-      .Times(2);
+  EXPECT_CALL(mock_remove_callback_,
+              Run(password_store_.get(), credentials[0]));
+  EXPECT_CALL(mock_remove_callback_,
+              Run(password_store_.get(), credentials[1]));
+
   service_->RemovePhishedSavedPasswordCredential(credentials);
 }
 
@@ -1568,7 +1582,10 @@ TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
       {.signon_realm = "http://2.example.test",
        .in_store = password_manager::PasswordForm::Store::kAccountStore}};
 
-  EXPECT_CALL(*account_password_store_, AddInsecureCredentialImpl(_)).Times(2);
+  EXPECT_CALL(mock_add_callback_,
+              Run(account_password_store_.get(), credentials[0]));
+  EXPECT_CALL(mock_add_callback_,
+              Run(account_password_store_.get(), credentials[1]));
   service_->PersistPhishedSavedPasswordCredential(credentials);
 }
 
@@ -1582,12 +1599,11 @@ TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
       {"http://2.example.test", u"username2",
        password_manager::PasswordForm::Store::kAccountStore}};
 
-  EXPECT_CALL(*account_password_store_,
-              RemoveInsecureCredentialsImpl(
-                  _, _,
-                  password_manager::RemoveInsecureCredentialsReason::
-                      kMarkSiteAsLegitimate))
-      .Times(2);
+  EXPECT_CALL(mock_remove_callback_,
+              Run(account_password_store_.get(), credentials[0]));
+  EXPECT_CALL(mock_remove_callback_,
+              Run(account_password_store_.get(), credentials[1]));
+
   service_->RemovePhishedSavedPasswordCredential(credentials);
 }
 

@@ -44,7 +44,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
-#include "components/password_manager/core/browser/insecure_credentials_table.h"
+#include "components/password_manager/core/browser/insecure_credentials_helper.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -286,6 +286,10 @@ ChromePasswordProtectionService::ChromePasswordProtectionService(
           &ChromePasswordProtectionService::OnEnterprisePasswordUrlChanged,
           base::Unretained(this)));
 
+  add_phished_credentials_ =
+      base::BindRepeating(&password_manager::AddPhishedCredentials);
+  remove_phished_credentials_ =
+      base::BindRepeating(&password_manager::RemovePhishedCredentials);
   // TODO(nparker) Move the rest of the above code into Init()
   // without crashing unittests.
   Init();
@@ -1672,7 +1676,9 @@ ChromePasswordProtectionService::ChromePasswordProtectionService(
     Profile* profile,
     scoped_refptr<SafeBrowsingUIManager> ui_manager,
     StringProvider sync_password_hash_provider,
-    VerdictCacheManager* cache_manager)
+    VerdictCacheManager* cache_manager,
+    ChangePhishedCredentialsCallback add_phished_credentials,
+    ChangePhishedCredentialsCallback remove_phished_credentials)
     : PasswordProtectionService(nullptr,
                                 nullptr,
                                 nullptr,
@@ -1685,6 +1691,8 @@ ChromePasswordProtectionService::ChromePasswordProtectionService(
       trigger_manager_(nullptr),
       profile_(profile),
       cache_manager_(cache_manager),
+      add_phished_credentials_(std::move(add_phished_credentials)),
+      remove_phished_credentials_(std::move(remove_phished_credentials)),
       sync_password_hash_provider_for_testing_(sync_password_hash_provider) {
   Init();
 }
@@ -1751,10 +1759,7 @@ void ChromePasswordProtectionService::PersistPhishedSavedPasswordCredential(
     }
     LogCredentialPhishedStatusChanged(
         CredentialPhishedStatus::kMarkedAsPhished);
-    password_store->AddInsecureCredential(password_manager::InsecureCredential(
-        credential.signon_realm, credential.username, base::Time::Now(),
-        password_manager::InsecureType::kPhished,
-        password_manager::IsMuted(false)));
+    add_phished_credentials_.Run(password_store, credential);
   }
 }
 
@@ -1773,10 +1778,7 @@ void ChromePasswordProtectionService::RemovePhishedSavedPasswordCredential(
     }
     LogCredentialPhishedStatusChanged(
         CredentialPhishedStatus::kSiteMarkedAsLegitimate);
-    password_store->RemoveInsecureCredentials(
-        credential.signon_realm, credential.username,
-        password_manager::RemoveInsecureCredentialsReason::
-            kMarkSiteAsLegitimate);
+    remove_phished_credentials_.Run(password_store, credential);
   }
 }
 

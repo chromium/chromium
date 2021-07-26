@@ -8,6 +8,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 
 namespace password_manager {
@@ -84,7 +85,17 @@ void FakePasswordStoreBackend::RemoveLoginsCreatedBetweenAsync(
   NOTIMPLEMENTED();
 }
 
+void FakePasswordStoreBackend::DisableAutoSignInForOriginsAsync(
+    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+    base::OnceClosure completion) {
+  NOTIMPLEMENTED();
+}
+
 SmartBubbleStatsStore* FakePasswordStoreBackend::GetSmartBubbleStatsStore() {
+  return nullptr;
+}
+
+FieldInfoStore* FakePasswordStoreBackend::GetFieldInfoStore() {
   return nullptr;
 }
 

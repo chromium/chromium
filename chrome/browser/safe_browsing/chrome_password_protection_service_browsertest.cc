@@ -23,11 +23,13 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
+#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -43,13 +45,18 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/user_manager/user_names.h"
 #include "components/variations/service/variations_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+using password_manager::FakePasswordStoreBackend;
+using password_manager::PasswordForm;
+using password_manager::PasswordStore;
 using ::testing::_;
+using ::testing::ElementsAre;
 
 namespace {
 
@@ -57,6 +64,31 @@ const char kGaiaPasswordChangeHistogramName[] =
     "PasswordProtection.GaiaPasswordReusesBeforeGaiaPasswordChanged";
 const char kLoginPageUrl[] = "/safe_browsing/login_page.html";
 const char kChangePasswordUrl[] = "/safe_browsing/change_password_page.html";
+
+PasswordForm CreatePasswordFormWithPhishedEntry(std::string signon_realm,
+                                                std::u16string username) {
+  PasswordForm form;
+  form.signon_realm = signon_realm;
+  form.username_value = username;
+  form.password_value = u"password";
+  form.in_store = PasswordForm::Store::kProfileStore;
+  form.password_issues = {
+      {password_manager::InsecureType::kPhished,
+       password_manager::InsecurityMetadata(base::Time::FromTimeT(1),
+                                            password_manager::IsMuted(false))}};
+
+  return form;
+}
+
+void AddFormToStore(PasswordStore* password_store, const PasswordForm& form) {
+  password_store->AddLogin(form);
+  base::RunLoop().RunUntilIdle();
+  FakePasswordStoreBackend* fake_backend =
+      static_cast<FakePasswordStoreBackend*>(
+          password_store->GetBackendForTesting());
+  ASSERT_THAT(fake_backend->stored_passwords().at(form.signon_realm),
+              ElementsAre(form));
+}
 
 }  // namespace
 
@@ -339,20 +371,28 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
 
   // Simulate removing the compromised credentials on mark site as legitimate
   // action.
-  scoped_refptr<password_manager::MockPasswordStore> password_store =
-      base::WrapRefCounted(static_cast<password_manager::MockPasswordStore*>(
+  scoped_refptr<password_manager::PasswordStore> password_store =
+      base::WrapRefCounted(static_cast<password_manager::PasswordStore*>(
           PasswordStoreFactory::GetInstance()
               ->SetTestingFactoryAndUse(
                   browser()->profile(),
-                  base::BindRepeating(&password_manager::BuildPasswordStore<
-                                      content::BrowserContext,
-                                      password_manager::MockPasswordStore>))
+                  base::BindRepeating(
+                      &password_manager::BuildPasswordStoreWithFakeBackend<
+                          content::BrowserContext>))
               .get()));
+
+  // In order to test removal, we need to make sure it was added first.
+  const std::string kSignonRealm = "https://example.test";
+  const std::u16string kUsername = u"username1";
+  password_manager::PasswordForm form =
+      CreatePasswordFormWithPhishedEntry(kSignonRealm, kUsername);
+  AddFormToStore(password_store.get(), form);
+
   std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"https://example.test", u"username1"}};
+      {kSignonRealm, kUsername}};
+
   service->set_saved_passwords_matching_reused_credentials({credentials});
 
-  EXPECT_CALL(*password_store, RemoveInsecureCredentialsImpl(_, _, _)).Times(1);
   // Simulates clicking on "Mark site legitimate". Site is no longer dangerous.
   service->OnUserAction(web_contents, account_type, RequestOutcome::UNKNOWN,
                         LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
@@ -365,6 +405,13 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   EXPECT_EQ(security_state::NONE, GetSecurityLevel(web_contents));
   EXPECT_EQ(security_state::MALICIOUS_CONTENT_STATUS_NONE,
             GetVisibleSecurityState(web_contents)->malicious_content_status);
+  FakePasswordStoreBackend* fake_backend =
+      static_cast<FakePasswordStoreBackend*>(
+          password_store->GetBackendForTesting());
+  EXPECT_TRUE(fake_backend->stored_passwords()
+                  .at(kSignonRealm)
+                  .at(0)
+                  .password_issues->empty());
 }
 #endif
 

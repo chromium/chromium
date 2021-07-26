@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/password_manager/core/browser/insecure_credentials_helper.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/prefs/pref_service.h"
@@ -136,7 +137,9 @@ std::unique_ptr<UserEventSpecifics> GetUserEventSpecifics(
 
 ChromePasswordProtectionService::ChromePasswordProtectionService(
     SafeBrowsingService* sb_service,
-    ChromeBrowserState* browser_state)
+    ChromeBrowserState* browser_state,
+    ChangePhishedCredentialsCallback add_phished_credentials,
+    ChangePhishedCredentialsCallback remove_phished_credentials)
     : safe_browsing::PasswordProtectionService(
           sb_service->GetDatabaseManager(),
           sb_service->GetURLLoaderFactory(),
@@ -148,7 +151,9 @@ ChromePasswordProtectionService::ChromePasswordProtectionService(
           browser_state->IsOffTheRecord(),
           /*identity_manager=*/nullptr,
           /*try_token_fetch=*/false),
-      browser_state_(browser_state) {}
+      browser_state_(browser_state),
+      add_phished_credentials_(std::move(add_phished_credentials)),
+      remove_phished_credentials_(std::move(remove_phished_credentials)) {}
 
 ChromePasswordProtectionService::~ChromePasswordProtectionService() = default;
 
@@ -265,10 +270,7 @@ void ChromePasswordProtectionService::PersistPhishedSavedPasswordCredential(
     }
     LogCredentialPhishedStatusChanged(
         safe_browsing::CredentialPhishedStatus::kMarkedAsPhished);
-    password_store->AddInsecureCredential(password_manager::InsecureCredential(
-        credential.signon_realm, credential.username, base::Time::Now(),
-        password_manager::InsecureType::kPhished,
-        password_manager::IsMuted(false)));
+    add_phished_credentials_.Run(password_store, credential);
   }
 }
 
@@ -287,10 +289,7 @@ void ChromePasswordProtectionService::RemovePhishedSavedPasswordCredential(
     }
     LogCredentialPhishedStatusChanged(
         safe_browsing::CredentialPhishedStatus::kSiteMarkedAsLegitimate);
-    password_store->RemoveInsecureCredentials(
-        credential.signon_realm, credential.username,
-        password_manager::RemoveInsecureCredentialsReason::
-            kMarkSiteAsLegitimate);
+    remove_phished_credentials_.Run(password_store, credential);
   }
 }
 

@@ -161,6 +161,10 @@ class PasswordStore : public PasswordStoreInterface {
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate();
 
+#if defined(UNIT_TEST)
+  PasswordStoreBackend* GetBackendForTesting() { return backend_; }
+#endif
+
  protected:
   using LoginsTask = base::OnceCallback<LoginsResult()>;
   using LoginsResultProcessor =
