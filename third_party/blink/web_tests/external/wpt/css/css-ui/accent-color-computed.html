@@ -4,7 +4,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/computed-testcommon.js"></script>
 <style>
-  #outer { accent-color: red; }
+  #outer { accent-color: red; color: black; }
 </style>
 <div id="outer">
   <div id="target"></div>
@@ -16,7 +16,7 @@ test_computed_value('accent-color', 'inherit', 'rgb(255, 0, 0)');
 test_computed_value('accent-color', 'red', 'rgb(255, 0, 0)');
 test_computed_value('accent-color', 'blue', 'rgb(0, 0, 255)');
 test_computed_value('accent-color', 'auto', 'auto');
-test_computed_value('accent-color', 'currentcolor', 'currentcolor');
+test_computed_value('accent-color', 'currentcolor', 'rgb(0, 0, 0)');
 test_computed_value('accent-color', '#fff', 'rgb(255, 255, 255)');
 
 // When accent-color isn't specified, it should return 'auto'

@@ -250281,10 +250281,6 @@
       "9f9d73177a9044b4562d0fceebe09152fd6ca7ed",
       []
      ],
-     "accent-color-computed-expected.txt": [
-      "54594b62e7218828cd3b66fdab69d5ad919092af",
-      []
-     ],
      "accent-color-visited-ref.html": [
       "e9c3cfad7c0f12181f73d52ad6b56ea7da9d9b9d",
       []
@@ -352430,7 +352426,7 @@
     },
     "css-ui": {
      "accent-color-computed.html": [
-      "10e080104d7d547757e0e2fc1ea5b47179d2aa5b",
+      "d2d3241060e6fc964099e14d1319e5d422281254",
       [
        null,
        {}
