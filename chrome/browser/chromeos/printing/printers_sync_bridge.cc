@@ -18,8 +18,8 @@
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
-#include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/printer_specifics.pb.h"
 
 namespace chromeos {
 

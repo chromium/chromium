@@ -20,6 +20,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "net/http/http_status_code.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

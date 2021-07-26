@@ -19,7 +19,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/backoff_delay_provider.h"
 #include "components/sync/engine/sync_engine_switches.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 
 using base::TimeDelta;
 using base::TimeTicks;

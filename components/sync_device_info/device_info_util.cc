@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/device_info_specifics.pb.h"
 
 namespace syncer {
 

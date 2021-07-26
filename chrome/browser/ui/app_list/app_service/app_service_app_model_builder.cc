@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/app_list_specifics.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {

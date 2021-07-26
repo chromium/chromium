@@ -9,7 +9,7 @@
 #include <string>
 
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/test/fake_server/fake_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

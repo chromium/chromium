@@ -21,6 +21,7 @@
 #include "components/sync/engine/update_handler.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
 namespace syncer {

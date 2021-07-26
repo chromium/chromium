@@ -11,6 +11,7 @@
 #include "components/sync/engine/syncer_proto_util.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

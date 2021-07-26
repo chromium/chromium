@@ -12,7 +12,8 @@
 #include <utility>
 
 #include "base/values.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/device_info_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 
 namespace syncer {
 

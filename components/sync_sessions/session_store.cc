@@ -24,7 +24,7 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync_device_info/local_device_info_util.h"
 #include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/sync_sessions_client.h"

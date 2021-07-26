@@ -30,7 +30,7 @@
 #include "components/sync/engine/nigori/keystore_keys_handler.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/engine/sync_scheduler.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 
 namespace syncer {
 namespace {

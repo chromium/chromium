@@ -21,6 +21,7 @@
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/fake_server/bookmark_entity_builder.h"
 #include "components/sync/test/fake_server/entity_builder_factory.h"

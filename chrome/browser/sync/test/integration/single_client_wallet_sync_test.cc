@@ -42,7 +42,7 @@
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/test/fake_server/fake_server.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "content/public/test/browser_test.h"

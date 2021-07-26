@@ -10,7 +10,7 @@
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 
 using autofill::AutofillOfferData;
 using autofill::SetAutofillOfferSpecificsFromOfferData;

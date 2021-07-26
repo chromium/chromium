@@ -22,7 +22,6 @@ using ::testing::_;
 
 using sync_pb::ClientToServerMessage;
 using sync_pb::CommitResponse_EntryResponse;
-using sync_pb::SyncEntity;
 
 namespace syncer {
 

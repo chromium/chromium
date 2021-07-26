@@ -10,8 +10,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/entity_data.h"
+#include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
+#include "components/sync/protocol/unique_position.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view_impl.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/send_tab_to_self/target_device_info.h"
-#include "components/sync/protocol/sync.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"

@@ -52,6 +52,7 @@ sync_protocol_bases = [
   "session_specifics",
   "sharing_message_specifics",
   "sync",
+  "sync_entity",
   "sync_enums",
   "sync_invalidations_payload",
   "synced_notification_app_info_specifics",

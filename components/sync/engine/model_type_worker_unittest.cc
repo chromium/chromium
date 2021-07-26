@@ -30,6 +30,7 @@
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/test/engine/fake_cryptographer.h"
 #include "components/sync/test/engine/mock_model_type_processor.h"
 #include "components/sync/test/engine/mock_nudge_handler.h"

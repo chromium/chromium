@@ -18,7 +18,7 @@
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/history_delete_directive_specifics.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/test/fake_server/fake_server.h"
 #include "content/public/test/browser_test.h"
 

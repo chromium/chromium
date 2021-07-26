@@ -17,6 +17,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 
 namespace sync_pb {
 class DataTypeProgressMarker;

@@ -10,6 +10,7 @@
 #include "components/sync/engine/get_updates_processor.h"
 #include "components/sync/engine/update_handler.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/get_updates_caller_info.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {

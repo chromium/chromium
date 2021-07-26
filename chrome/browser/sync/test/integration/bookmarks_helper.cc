@@ -46,7 +46,7 @@
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync/test/fake_server/entity_builder_factory.h"
 #include "content/public/test/test_utils.h"

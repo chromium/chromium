@@ -20,7 +20,7 @@
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/loopback_server.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 

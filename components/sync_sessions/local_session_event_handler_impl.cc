@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "components/sync/model/sync_change.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync_sessions/switches.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_session_tracker.h"

@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
