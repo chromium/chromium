@@ -114,11 +114,12 @@ void CreditCardAccessoryControllerImpl::RegisterFillingSourceObserver(
 
 absl::optional<autofill::AccessorySheetData>
 CreditCardAccessoryControllerImpl::GetSheetData() const {
-  autofill::BrowserAutofillManager* autofill_manager = GetManager();
-  bool valid_manager = web_contents_->GetFocusedFrame() && autofill_manager;
+  // Note that also GetManager() can return nullptr.
+  autofill::BrowserAutofillManager* autofill_manager =
+      web_contents_->GetFocusedFrame() ? GetManager() : nullptr;
   std::vector<UserInfo> info_to_add;
   bool allow_filling =
-      valid_manager &&
+      autofill_manager &&
       ShouldAllowCreditCardFallbacks(autofill_manager->client(),
                                      autofill_manager->last_query_form());
 
@@ -133,7 +134,7 @@ CreditCardAccessoryControllerImpl::GetSheetData() const {
   }
   // Only add cards that are not present in the cache. Otherwise, we might
   // show duplicates.
-  bool add_all_cards = cached_server_cards_.empty() || !valid_manager;
+  bool add_all_cards = cached_server_cards_.empty() || !autofill_manager;
   for (auto* card : cards_cache_) {
     if (add_all_cards || !autofill_manager->credit_card_access_manager()
                               ->IsCardPresentInUnmaskedCache(*card)) {
@@ -151,7 +152,7 @@ CreditCardAccessoryControllerImpl::GetSheetData() const {
   AccessorySheetData data = autofill::CreateAccessorySheetData(
       AccessoryTabType::CREDIT_CARDS, GetTitle(has_suggestions),
       std::move(info_to_add), std::move(footer_commands));
-  if (has_suggestions && !allow_filling && valid_manager) {
+  if (has_suggestions && !allow_filling && autofill_manager) {
     data.set_warning(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION));
   }
