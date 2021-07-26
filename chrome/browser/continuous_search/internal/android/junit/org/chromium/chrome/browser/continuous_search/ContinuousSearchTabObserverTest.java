@@ -33,6 +33,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.continuous_search.SearchResultExtractorClientStatus;
+import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -47,6 +49,8 @@ public class ContinuousSearchTabObserverTest {
     @Mock
     private Tab mTabMock;
     @Mock
+    private WebContents mWebContentsMock;
+    @Mock
     private SearchUrlHelper.Natives mSearchUrlHelperJniMock;
     @Mock
     private ContinuousNavigationUserDataImpl mUserDataMock;
@@ -54,6 +58,8 @@ public class ContinuousSearchTabObserverTest {
     private SearchResultProducer mProducerMock;
     @Mock
     private SearchResultExtractorProducer.Natives mSearchResultExtractorProducerJniMock;
+    @Mock
+    private NavigationHandle mNavigationHandleMock;
 
     private boolean mNeedsTeardown;
     private GURL mSrpUrl;
@@ -88,7 +94,11 @@ public class ContinuousSearchTabObserverTest {
         doReturn(TEST_QUERY).when(mSearchUrlHelperJniMock).getQueryIfValidSrpUrl(eq(mSrpUrl));
         doReturn(null).when(mSearchUrlHelperJniMock).getQueryIfValidSrpUrl(eq(mNonSrpUrl));
         doReturn(false).when(mUserDataMock).isMatchingSrp(eq(mSrpUrl));
+        doReturn(true).when(mUserDataMock).isValid();
         ContinuousNavigationUserDataImpl.setInstanceForTesting(mUserDataMock);
+        doReturn(true).when(mNavigationHandleMock).hasCommitted();
+        doReturn(true).when(mNavigationHandleMock).isInPrimaryMainFrame();
+        doReturn(false).when(mNavigationHandleMock).isSameDocument();
 
         SearchResultProducerFactory.overrideFactory(new FakeSearchResultProducerFactory());
 
@@ -112,7 +122,9 @@ public class ContinuousSearchTabObserverTest {
     public void testLoadNonSrpUrl() {
         InOrder inOrder = inOrder(mUserDataMock);
 
-        mObserver.onUpdateUrl(mTabMock, mNonSrpUrl);
+        doReturn(mNonSrpUrl).when(mNavigationHandleMock).getUrl();
+        mObserver.onDidFinishNavigation(mTabMock, mNavigationHandleMock);
+        inOrder.verify(mUserDataMock).isValid();
         inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mNonSrpUrl));
 
         doReturn(false).when(mUserDataMock).isMatchingSrp(eq(mNonSrpUrl));
@@ -128,7 +140,9 @@ public class ContinuousSearchTabObserverTest {
     public void testLoadSrpUrl() {
         InOrder inOrder = inOrder(mUserDataMock, mProducerMock);
 
-        mObserver.onUpdateUrl(mTabMock, mSrpUrl);
+        doReturn(mSrpUrl).when(mNavigationHandleMock).getUrl();
+        mObserver.onDidFinishNavigation(mTabMock, mNavigationHandleMock);
+        inOrder.verify(mUserDataMock).isValid();
         inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
 
         mObserver.onPageLoadFinished(mTabMock, mSrpUrl);
@@ -146,13 +160,74 @@ public class ContinuousSearchTabObserverTest {
     }
 
     /**
+     * Verifies that update url handles redirects.
+     */
+    @Test
+    public void testLoadRedirect() {
+        InOrder inOrder = inOrder(mUserDataMock);
+        doReturn(mWebContentsMock).when(mTabMock).getWebContents();
+
+        // Case 1: empty/invalid GURL.
+        doReturn(mSrpUrl).when(mNavigationHandleMock).getUrl();
+        doReturn(GURL.emptyGURL())
+                .when(mSearchUrlHelperJniMock)
+                .getOriginalUrlFromWebContents(eq(mWebContentsMock));
+        mObserver.onDidFinishNavigation(mTabMock, mNavigationHandleMock);
+        inOrder.verify(mUserDataMock).isValid();
+        inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
+
+        // Case 2: different unmatched original GURL.
+        mObserver.mOriginMatchesForTesting = new Boolean(false);
+        GURL originalUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+        GURL committedUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_2);
+        doReturn(committedUrl).when(mNavigationHandleMock).getUrl();
+        doReturn(originalUrl)
+                .when(mSearchUrlHelperJniMock)
+                .getOriginalUrlFromWebContents(eq(mWebContentsMock));
+        mObserver.onDidFinishNavigation(mTabMock, mNavigationHandleMock);
+        inOrder.verify(mUserDataMock).isValid();
+        inOrder.verify(mUserDataMock).updateCurrentUrl(eq(committedUrl));
+
+        // Case 3: different matched original GURL.
+        mObserver.mOriginMatchesForTesting = new Boolean(true);
+        doReturn(committedUrl).when(mNavigationHandleMock).getUrl();
+        doReturn(originalUrl)
+                .when(mSearchUrlHelperJniMock)
+                .getOriginalUrlFromWebContents(eq(mWebContentsMock));
+        mObserver.onDidFinishNavigation(mTabMock, mNavigationHandleMock);
+        inOrder.verify(mUserDataMock).isValid();
+        inOrder.verify(mUserDataMock).updateCurrentUrl(eq(originalUrl));
+
+        // Check guards on {@link NavigationHandle} state.
+        doReturn(true).when(mNavigationHandleMock).isSameDocument();
+        mObserver.onDidFinishNavigation(mTabMock, mNavigationHandleMock);
+        doReturn(false).when(mNavigationHandleMock).isSameDocument();
+
+        doReturn(false).when(mNavigationHandleMock).isInPrimaryMainFrame();
+        mObserver.onDidFinishNavigation(mTabMock, mNavigationHandleMock);
+        doReturn(true).when(mNavigationHandleMock).isInPrimaryMainFrame();
+
+        doReturn(false).when(mNavigationHandleMock).hasCommitted();
+        mObserver.onDidFinishNavigation(mTabMock, mNavigationHandleMock);
+        doReturn(true).when(mNavigationHandleMock).hasCommitted();
+
+        doReturn(false).when(mUserDataMock).isValid();
+        mObserver.onDidFinishNavigation(mTabMock, mNavigationHandleMock);
+        inOrder.verify(mUserDataMock).isValid();
+
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    /**
      * Verifies that results are requested when a SRP URL is loaded and errors are handled.
      */
     @Test
     public void testLoadSrpUrlWithError() {
         InOrder inOrder = inOrder(mUserDataMock, mProducerMock);
 
-        mObserver.onUpdateUrl(mTabMock, mSrpUrl);
+        doReturn(mSrpUrl).when(mNavigationHandleMock).getUrl();
+        mObserver.onDidFinishNavigation(mTabMock, mNavigationHandleMock);
+        inOrder.verify(mUserDataMock).isValid();
         inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
 
         mObserver.onPageLoadFinished(mTabMock, mSrpUrl);
@@ -170,7 +245,9 @@ public class ContinuousSearchTabObserverTest {
     public void testCloseContents() {
         InOrder inOrder = inOrder(mUserDataMock, mProducerMock);
 
-        mObserver.onUpdateUrl(mTabMock, mSrpUrl);
+        doReturn(mSrpUrl).when(mNavigationHandleMock).getUrl();
+        mObserver.onDidFinishNavigation(mTabMock, mNavigationHandleMock);
+        inOrder.verify(mUserDataMock).isValid();
         inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
 
         mObserver.onPageLoadFinished(mTabMock, mSrpUrl);
@@ -188,7 +265,9 @@ public class ContinuousSearchTabObserverTest {
     public void testLoadSrpUrlThenCloseTab() {
         InOrder inOrder = inOrder(mUserDataMock, mProducerMock, mTabMock);
 
-        mObserver.onUpdateUrl(mTabMock, mSrpUrl);
+        doReturn(mSrpUrl).when(mNavigationHandleMock).getUrl();
+        mObserver.onDidFinishNavigation(mTabMock, mNavigationHandleMock);
+        inOrder.verify(mUserDataMock).isValid();
         inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
 
         mObserver.onPageLoadFinished(mTabMock, mSrpUrl);
@@ -228,7 +307,8 @@ public class ContinuousSearchTabObserverTest {
         final long nativePtr = 123L;
         doReturn(nativePtr).when(mSearchResultExtractorProducerJniMock).create(any());
 
-        mObserver.onUpdateUrl(mTabMock, mSrpUrl);
+        doReturn(mSrpUrl).when(mNavigationHandleMock).getUrl();
+        mObserver.onDidFinishNavigation(mTabMock, mNavigationHandleMock);
         mObserver.onPageLoadFinished(mTabMock, mSrpUrl);
 
         Assert.assertEquals(1,

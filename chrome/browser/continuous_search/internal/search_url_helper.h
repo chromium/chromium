@@ -11,11 +11,17 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace continuous_search {
 
 absl::optional<std::string> ExtractSearchQueryIfValidUrl(const GURL& url);
 
 PageCategory GetSrpPageCategoryForUrl(const GURL& url);
+
+GURL GetOriginalUrlFromWebContents(content::WebContents* web_contents);
 
 }  // namespace continuous_search
 
