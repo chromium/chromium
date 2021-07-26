@@ -21,7 +21,6 @@ import {
   Mode,
   Resolution,  // eslint-disable-line no-unused-vars
 } from '../../../type.js';
-import * as util from '../../../util.js';
 
 import {
   ModeBase,     // eslint-disable-line no-unused-vars
@@ -61,7 +60,7 @@ export let DoSwitchMode;
  */
 class ModeConfig {
   /**
-   * @param {?string} deviceId
+   * @param {string} deviceId
    * @return {!Promise<boolean>} Resolves to boolean indicating whether the mode
    *     is supported by video device with specified device id.
    * @abstract
@@ -149,33 +148,32 @@ export class Modes {
     /**
      * Returns a set of general constraints for fake cameras.
      * @param {boolean} videoMode Is getting constraints for video mode.
-     * @param {?string} deviceId Id of video device.
+     * @param {string} deviceId Id of video device.
      * @return {!Array<!MediaStreamConstraints>} Result of
      *     constraints-candidates.
      */
     const getConstraintsForFakeCamera = function(videoMode, deviceId) {
-      const /** !Array<!MediaTrackConstraints> */ baseConstraints = [
+      const audio = videoMode ? {echoCancellation: false} : false;
+      const frameRate = {min: 20, ideal: 30};
+      return [
         {
-          aspectRatio: {ideal: videoMode ? 1.7777777778 : 1.3333333333},
-          width: {min: 1280},
-          frameRate: {min: 20, ideal: 30},
+          audio,
+          video: {
+            aspectRatio: {ideal: videoMode ? 1.7777777778 : 1.3333333333},
+            width: {min: 1280},
+            frameRate,
+            deviceId: {exact: deviceId},
+          },
         },
         {
-          width: {min: 640},
-          frameRate: {min: 20, ideal: 30},
+          audio,
+          video: {
+            width: {min: 640},
+            frameRate,
+            deviceId: {exact: deviceId},
+          },
         },
       ];
-      return baseConstraints.map((constraint) => {
-        if (deviceId) {
-          constraint.deviceId = {exact: deviceId};
-        } else {
-          constraint.facingMode = {ideal: util.getDefaultFacing()};
-        }
-        return {
-          audio: videoMode ? {echoCancellation: false} : false,
-          video: constraint,
-        };
-      });
     };
 
     // Workaround for b/184089334 on PTZ camera to use preview frame as photo
@@ -336,10 +334,9 @@ export class Modes {
 
   /**
    * Gets a general set of resolution candidates given by |mode| and |deviceId|
-   * for fake cameras. If |deviceId| is null, prefer facing will be used instead
-   * in the constraints.
+   * for fake cameras.
    * @param {!Mode} mode
-   * @param {?string} deviceId
+   * @param {string} deviceId
    * @return {!Array<!CaptureCandidate>}
    */
   getFakeResolutionCandidates(mode, deviceId) {
@@ -359,7 +356,7 @@ export class Modes {
 
   /**
    * Gets supported modes for video device of given device id.
-   * @param {?string} deviceId Device id of the video device.
+   * @param {string} deviceId Device id of the video device.
    * @return {!Promise<!Array<!Mode>>} All supported mode for
    *     the video device.
    */
@@ -387,7 +384,7 @@ export class Modes {
 
   /**
    * Updates mode selection UI according to given device id.
-   * @param {?string} deviceId
+   * @param {string} deviceId
    * @return {!Promise}
    */
   async updateModeSelectionUI(deviceId) {

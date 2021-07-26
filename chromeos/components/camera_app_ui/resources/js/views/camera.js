@@ -6,7 +6,6 @@ import * as animate from '../animation.js';
 import {
   assert,
   assertInstanceof,
-  assertString,
 } from '../chrome_util.js';
 import {
   PhotoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
@@ -794,7 +793,7 @@ export class Camera extends View {
 
   /**
    * Try start stream reconfiguration with specified mode and device id.
-   * @param {?string} deviceId Null if the default camera should be started.
+   * @param {string} deviceId
    * @param {!Mode} mode
    * @return {!Promise<boolean>} If found suitable stream and reconfigure
    *     successfully.
@@ -804,8 +803,7 @@ export class Camera extends View {
     state.set(state.State.USE_FAKE_CAMERA, deviceOperator === null);
     let resolCandidates;
     if (deviceOperator) {
-      resolCandidates =
-          this.modes_.getResolutionCandidates(mode, assertString(deviceId));
+      resolCandidates = this.modes_.getResolutionCandidates(mode, deviceId);
     } else {
       resolCandidates = this.modes_.getFakeResolutionCandidates(mode, deviceId);
     }
@@ -887,7 +885,7 @@ export class Camera extends View {
 
   /**
    * Try start stream reconfiguration with specified device id.
-   * @param {?string} deviceId
+   * @param {string} deviceId
    * @return {!Promise<boolean>} If found suitable stream and reconfigure
    *     successfully.
    */

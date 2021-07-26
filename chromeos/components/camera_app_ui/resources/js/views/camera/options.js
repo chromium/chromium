@@ -200,7 +200,7 @@ export class Options {
 
   /**
    * Gets the video device ids sorted by preference.
-   * @return {!Promise<!Array<?string>>} May contain null for fake cameras.
+   * @return {!Promise<!Array<string>>}
    */
   async videoDeviceIds() {
     /** @type {!Array<(!Camera3DeviceInfo|!MediaDeviceInfo)>} */
@@ -234,12 +234,6 @@ export class Options {
       }
       return 1;
     });
-    // Prepended 'null' deviceId means there is no facing information to sort
-    // device IDs and prefer the default one. Add it only when the app is
-    // launched (no video-device-id set) and there is at least one device.
-    if (!facings && this.videoDeviceId_ === null && sorted.length > 0) {
-      sorted.unshift(null);
-    }
     return sorted;
   }
 }

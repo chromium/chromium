@@ -563,7 +563,6 @@ export class VideoFactory extends ModeFactory {
    */
   async prepareDevice(constraints, resolution) {
     this.captureResolution_ = resolution;
-    const deviceId = assertString(constraints.video.deviceId.exact);
     if (state.get(state.State.ENABLE_MULTISTREAM_RECORDING)) {
       this.captureConstraints_ = {
         audio: constraints.audio,
@@ -582,6 +581,7 @@ export class VideoFactory extends ModeFactory {
     if (deviceOperator === null) {
       return;
     }
+    const deviceId = assertString(constraints.video.deviceId.exact);
     await deviceOperator.setCaptureIntent(
         deviceId, cros.mojom.CaptureIntent.VIDEO_RECORD);
 
