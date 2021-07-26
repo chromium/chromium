@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 15
+// Next MinVersion: 16
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -11,6 +11,8 @@
 //  - VPN RPCs for integrating Always-on-VPNs and ARC as a VPN provider.
 
 module arc.mojom;
+
+import "url/mojom/url.mojom";
 
 // Indicates if a request send by ARC to the host has successfully completed.
 [Extensible]
@@ -341,6 +343,45 @@ struct AndroidVpnConfiguration {
   array<string> domains@8;
 };
 
+// Result object that is returned to the caller of the ARC DNS
+// Resolution test. Contains information regarding the test result.
+struct ArcDnsResolutionTestResult {
+  // True if the test passed successfully.
+  bool is_successful;
+
+  // RCODE of the DNS response as defined by rfc2929#section-2.3.
+  int32 response_code;
+
+  // Time elapsed for the DNS resolution (milliseconds).
+  int64 duration_ms;
+};
+
+// Result object that is returned to the caller of the ARC HTTP
+// test. Contains information regarding the test result.
+struct ArcHttpTestResult {
+  // True if the HTTP request completed successfully.
+  bool is_successful;
+
+  // Status code of the HTTP response header.
+  int32 status_code;
+
+  // HTTP response header fields.
+  map<string, string> response_header_fields;
+
+  // Time elapsed for the HTTP request and response (milliseconds).
+  int64 duration_ms;
+};
+
+// Result object that is returned to the caller of the ARC
+// Ping test. Contains information regarding the test result.
+struct ArcPingTestResult {
+  // True if the test passed successfully.
+  bool is_successful;
+
+  // Time elapsed for the ping (milliseconds).
+  int64 duration_ms;
+};
+
 // Next Method ID: 14
 // IDs 3 and 9 are missing as they belonged to deprecated methods.
 interface NetHost {
@@ -401,7 +442,7 @@ interface NetHost {
   [MinVersion=9] SetAlwaysOnVpn@13(string vpnPackage, bool lockdown);
 };
 
-// Next Method ID: 8
+// Next Method ID: 11
 // ID 2 is missing as it belonged to deprecated method.
 interface NetInstance {
   // DEPRECATED: Please use Init@6 instead.
@@ -430,4 +471,25 @@ interface NetInstance {
   // properties and data visible in NetworkConfiguration, and not for all shill
   // property updates.
   [MinVersion=10] ActiveNetworksChanged@7(array<NetworkConfiguration> network);
+
+  // Does a DNS query from within ARC and returns result.
+  // The test is bound to the ARC network corresponding to the host transport
+  // name |transport_name|.
+  [MinVersion=15] DnsResolutionTest@8(string transport_name,
+      string host_name) => (ArcDnsResolutionTestResult result);
+
+  // Does an HTTP GET request from within ARC and returns result.
+  // Only HTTP and HTTPS are supported and the connection does not use any
+  // caches/cookie jars/etc. that might exist on the Android side.
+  // The test is bound to the ARC network corresponding to the host transport
+  // name |transport_name|.
+  [MinVersion=15] HttpTest@9(string transport_name, url.mojom.Url url)
+      => (ArcHttpTestResult result);
+
+  // Sends an ICMP echo request from within ARC to the given IP address and
+  // returns result.
+  // The test is bound to the ARC network corresponding to the host transport
+  // name |transport_name|.
+  [MinVersion=15] PingTest@10(string transport_name, string ip_address)
+      => (ArcPingTestResult result);
 };
