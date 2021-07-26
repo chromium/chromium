@@ -179,7 +179,7 @@ constexpr uint32_t kFakeScalingMaxFrequency = 2700000;
 constexpr uint32_t kFakeScalingCurFrequency = 2400000;
 // Since this number is divided by the result of the sysconf(_SC_CLK_TCK)
 // syscall, we need it to be 0 to avoid flaky tests,
-constexpr uint32_t kFakeIdleTime = 0;
+constexpr uint64_t kFakeIdleTime = 0;
 constexpr uint64_t kFakeUserTime = 789;
 constexpr uint64_t kFakeSystemTime = 4680;
 constexpr char kFakeCStateName[] = "fake_c_state_name";

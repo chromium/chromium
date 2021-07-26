@@ -1199,7 +1199,7 @@ message LogicalCpuInfo {
   // Current frequency the CPU is running at.
   optional uint32 scaling_current_frequency_khz = 2;
   // Idle time since last boot.
-  optional uint32 idle_time_seconds = 3;
+  optional uint64 idle_time_seconds = 3;
   // Information about the logical CPU's time in various C-states.
   repeated CpuCStateInfo c_states = 4;
 }
