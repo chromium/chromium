@@ -562,6 +562,35 @@ struct CORE_EXPORT NativeValueTraits<IDLNullable<DOMSharedArrayBuffer>>
                                              ExceptionState& exception_state);
 };
 
+// DOMArrayBufferBase is the common base class of DOMArrayBuffer and
+// DOMSharedArrayBuffer, so it behaves as "[AllowShared] ArrayBuffer" in
+// Web IDL.
+template <>
+struct CORE_EXPORT NativeValueTraits<DOMArrayBufferBase>
+    : public NativeValueTraitsBase<DOMArrayBufferBase*> {
+  static DOMArrayBufferBase* NativeValue(v8::Isolate* isolate,
+                                         v8::Local<v8::Value> value,
+                                         ExceptionState& exception_state);
+
+  static DOMArrayBufferBase* ArgumentValue(v8::Isolate* isolate,
+                                           int argument_index,
+                                           v8::Local<v8::Value> value,
+                                           ExceptionState& exception_state);
+};
+
+template <>
+struct CORE_EXPORT NativeValueTraits<IDLNullable<DOMArrayBufferBase>>
+    : public NativeValueTraitsBase<DOMArrayBufferBase*> {
+  static DOMArrayBufferBase* NativeValue(v8::Isolate* isolate,
+                                         v8::Local<v8::Value> value,
+                                         ExceptionState& exception_state);
+
+  static DOMArrayBufferBase* ArgumentValue(v8::Isolate* isolate,
+                                           int argument_index,
+                                           v8::Local<v8::Value> value,
+                                           ExceptionState& exception_state);
+};
+
 template <typename T>
 struct NativeValueTraits<
     T,

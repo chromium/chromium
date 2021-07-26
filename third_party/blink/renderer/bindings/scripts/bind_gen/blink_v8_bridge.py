@@ -205,7 +205,9 @@ def blink_type_info(idl_type):
 
     if real_type.is_array_buffer:
         if "AllowShared" in idl_type.effective_annotations:
-            typename = "DOMSharedArrayBuffer"
+            # DOMArrayBufferBase is the common base class of DOMArrayBuffer and
+            # DOMSharedArrayBuffer, so it works as [AllowShared] ArrayBuffer.
+            typename = "DOMArrayBufferBase"
         else:
             typename = "DOMArrayBuffer"
         return TypeInfo(typename,
