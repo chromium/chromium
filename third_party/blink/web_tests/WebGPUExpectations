@@ -78,8 +78,7 @@ crbug.com/1161355 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,co
 crbug.com/dawn/1002 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,destroy:error_buffer:* [ Failure ]
 crbug.com/dawn/1002 wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,validation,buffer,destroy:error_buffer:* [ Failure ]
 
-# Unexpected validation error occurred: Attribute location (16) over limits
-# Unexpected validation error occurred: Parser: 3:20 error: location decoration must be positive
+# Dawn implements validation of the limit at createShaderModule time, while the CTS checks at createRenderPipeline time.
 crbug.com/dawn/986 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_input_location_limit:* [ Failure ]
 
 # These tests aren't working on CQ, unclear whether the test or harness (or Chrome) is broken.
@@ -152,10 +151,6 @@ crbug.com/dawn/991 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource
 crbug.com/dawn/1009 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:* [ Slow Failure ]
 crbug.com/dawn/1009 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:* [ Slow Failure ]
 
-# Possible test bug, unsure
-crbug.com/dawn/1019 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertex_buffer_used_multiple_times_interleaved:* [ Failure ]
-crbug.com/dawn/1019 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertex_buffer_used_multiple_times_interleaved:* [ Failure ]
-
 ###
 ### Test bugs (fixed upstream)
 ###
@@ -177,8 +172,6 @@ crbug.com/dawn/485 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_p
 
 crbug.com/1215024 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createComputePipeline:enrty_point_name_must_match:stageEntryPoint="main%5Cu0000";* [ Failure ]
 crbug.com/1215024 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createComputePipeline:enrty_point_name_must_match:stageEntryPoint="main%5Cu0000a";* [ Failure ]
-
-crbug.com/dawn/1010 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_attribute_offset_alignment:* [ Failure ]
 
 # Crash with validation layers (Vulkan/D3D12).
 crbug.com/dawn/808 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,index_format:* [ Skip ]
@@ -303,6 +296,7 @@ crbug.com/1087130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation
 # Nvidia only, worker only, very flaky
 [ Linux ] wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,render_pass,storeop2:* [ Failure ]
 
+# Vulkan drivers incorrectly interpret shader modules with multiple entrypoints.
 crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:buffers_with_varying_step_mode:* [ Crash Failure ]
 crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:non_zero_array_stride_and_attribute_offset:* [ Crash Failure ]
 crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:setVertexBuffer_offset_and_attribute_offset:* [ Crash Failure ]
@@ -344,14 +338,6 @@ crbug.com/1087130 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,c
 
 crbug.com/tint/993 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="function";* [ Failure ]
 crbug.com/tint/993 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="private";* [ Failure ]
-
-# Tint validation errors in HLSL transformation
-crbug.com/tint/994 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertex_format_to_shader_format_conversion:* [ Failure ]
-# Pipeline compilation failure
-crbug.com/tint/995 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_attribute_contained_in_stride:* [ Skip ]
-crbug.com/tint/995 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:setVertexBuffer_offset_and_attribute_offset:* [ Skip ]
-crbug.com/tint/995 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:non_zero_array_stride_and_attribute_offset:* [ Skip ]
-crbug.com/tint/995 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:array_stride_zero:* [ Skip ]
 
 # Missing State: 0x1000: D3D12_RESOURCE_STATE_RESOLVE_DEST
 crbug.com/dawn/988 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pass,resolve:render_pass_resolve:* [ Failure ]
