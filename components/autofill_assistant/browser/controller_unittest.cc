@@ -2205,9 +2205,9 @@ TEST_F(ControllerTest, SetAdditionalValues) {
             value2.mutable_strings()->add_values("");
             ValueProto value3;
             value3.mutable_strings()->add_values("");
-            user_data->additional_values_["key1"] = value1;
-            user_data->additional_values_["key2"] = value2;
-            user_data->additional_values_["key3"] = value3;
+            user_data->SetAdditionalValue("key1", value1);
+            user_data->SetAdditionalValue("key2", value2);
+            user_data->SetAdditionalValue("key3", value3);
             *change = UserData::FieldChange::ADDITIONAL_VALUES;
           });
 
@@ -2234,9 +2234,9 @@ TEST_F(ControllerTest, SetAdditionalValues) {
   value5.mutable_strings()->add_values("value3");
   controller_->SetAdditionalValue("key2", value4);
   controller_->SetAdditionalValue("key3", value5);
-  EXPECT_EQ(controller_->GetUserData()->additional_values_.at("key1"), value1);
-  EXPECT_EQ(controller_->GetUserData()->additional_values_.at("key2"), value4);
-  EXPECT_EQ(controller_->GetUserData()->additional_values_.at("key3"), value5);
+  EXPECT_EQ(*controller_->GetUserData()->GetAdditionalValue("key1"), value1);
+  EXPECT_EQ(*controller_->GetUserData()->GetAdditionalValue("key2"), value4);
+  EXPECT_EQ(*controller_->GetUserData()->GetAdditionalValue("key3"), value5);
 
   ValueProto value6;
   value6.mutable_strings()->add_values("someValue");

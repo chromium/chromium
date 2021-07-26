@@ -1423,7 +1423,7 @@ TEST_F(CollectUserDataActionTest, TextInputSectionWritesToClientMemory) {
           Invoke([this](CollectUserDataOptions* collect_user_data_options) {
             ValueProto value;
             value.mutable_strings()->add_values("modified");
-            user_data_.additional_values_["key2"] = value;
+            user_data_.SetAdditionalValue("key2", value);
             std::move(collect_user_data_options->confirm_callback)
                 .Run(&user_data_, &user_model_);
           }));
@@ -1449,9 +1449,9 @@ TEST_F(CollectUserDataActionTest, TextInputSectionWritesToClientMemory) {
   input_field_3->set_input_type(TextInputProto::INPUT_ALPHANUMERIC);
   input_field_3->set_client_memory_key("key3");
 
-  EXPECT_FALSE(user_data_.has_additional_value("key1"));
-  EXPECT_FALSE(user_data_.has_additional_value("key2"));
-  EXPECT_FALSE(user_data_.has_additional_value("key3"));
+  EXPECT_FALSE(user_data_.HasAdditionalValue("key1"));
+  EXPECT_FALSE(user_data_.HasAdditionalValue("key2"));
+  EXPECT_FALSE(user_data_.HasAdditionalValue("key3"));
   CollectUserDataAction action(&mock_action_delegate_, action_proto);
 
   EXPECT_CALL(
@@ -1470,9 +1470,9 @@ TEST_F(CollectUserDataActionTest, TextInputSectionWritesToClientMemory) {
   value2.mutable_strings()->add_values("modified");
   ValueProto value3;
   value3.mutable_strings()->add_values("");
-  EXPECT_EQ(*user_data_.additional_value("key1"), value1);
-  EXPECT_EQ(*user_data_.additional_value("key2"), value2);
-  EXPECT_EQ(*user_data_.additional_value("key3"), value3);
+  EXPECT_EQ(*user_data_.GetAdditionalValue("key1"), value1);
+  EXPECT_EQ(*user_data_.GetAdditionalValue("key2"), value2);
+  EXPECT_EQ(*user_data_.GetAdditionalValue("key3"), value3);
 }
 
 TEST_F(CollectUserDataActionTest, AllowedBasicCardNetworks) {
@@ -1544,9 +1544,9 @@ TEST_F(CollectUserDataActionTest, OverwriteExistingUserData) {
   value2.mutable_strings()->add_values("val2");
   ValueProto value3;
   value3.mutable_strings()->add_values("val3");
-  user_data_.additional_values_["key1"] = value1;
-  user_data_.additional_values_["key2"] = value2;
-  user_data_.additional_values_["key3"] = value3;
+  user_data_.SetAdditionalValue("key1", value1);
+  user_data_.SetAdditionalValue("key2", value2);
+  user_data_.SetAdditionalValue("key3", value3);
 
   // Set options.
   ActionProto action_proto;
@@ -1583,11 +1583,11 @@ TEST_F(CollectUserDataActionTest, OverwriteExistingUserData) {
   action.ProcessAction(callback_.Get());
 
   EXPECT_EQ(user_data_.terms_and_conditions_, NOT_SELECTED);
-  EXPECT_EQ(user_data_.additional_values_["key1"].strings().values(0),
+  EXPECT_EQ(user_data_.GetAdditionalValue("key1")->strings().values(0),
             "initial");
-  EXPECT_EQ(user_data_.additional_values_["key2"].strings().values(0),
+  EXPECT_EQ(user_data_.GetAdditionalValue("key2")->strings().values(0),
             "initial");
-  EXPECT_EQ(user_data_.additional_values_["key3"].strings().values(0), "val3");
+  EXPECT_EQ(user_data_.GetAdditionalValue("key3")->strings().values(0), "val3");
 }
 
 TEST_F(CollectUserDataActionTest, AttachesProfiles) {
@@ -2359,7 +2359,7 @@ TEST_F(CollectUserDataActionTest, LinkClickWritesPartialUserData) {
           Invoke([this](CollectUserDataOptions* collect_user_data_options) {
             ValueProto value;
             value.mutable_strings()->add_values("modified");
-            user_data_.additional_values_["key1"] = value;
+            user_data_.SetAdditionalValue("key1", value);
             std::move(collect_user_data_options->terms_link_callback)
                 .Run(1, &user_data_, &user_model_);
           }));

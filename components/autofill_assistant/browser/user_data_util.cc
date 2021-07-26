@@ -542,8 +542,8 @@ ClientStatus GetClientMemoryStringValue(const std::string& client_memory_key,
   if (client_memory_key.empty()) {
     return ClientStatus(INVALID_ACTION);
   }
-  if (!user_data->has_additional_value(client_memory_key) ||
-      user_data->additional_value(client_memory_key)
+  if (!user_data->HasAdditionalValue(client_memory_key) ||
+      user_data->GetAdditionalValue(client_memory_key)
               ->strings()
               .values()
               .size() != 1) {
@@ -552,7 +552,7 @@ ClientStatus GetClientMemoryStringValue(const std::string& client_memory_key,
     return ClientStatus(PRECONDITION_FAILED);
   }
   out_value->assign(
-      user_data->additional_value(client_memory_key)->strings().values(0));
+      user_data->GetAdditionalValue(client_memory_key)->strings().values(0));
   return OkClientStatus();
 }
 

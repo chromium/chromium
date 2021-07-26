@@ -267,7 +267,7 @@ TEST_F(ActionDelegateUtilTest, PerformWithClientMemoryKey) {
 
   ValueProto value_proto;
   value_proto.mutable_strings()->add_values("Hello World");
-  user_data_.additional_values_["key"] = value_proto;
+  user_data_.SetAdditionalValue("key", value_proto);
 
   EXPECT_CALL(*this, MockValueAction("Hello World", _, _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));

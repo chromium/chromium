@@ -76,8 +76,8 @@ TEST_F(GeneratePasswordForFormFieldActionTest, GeneratedPassword) {
 
   action.ProcessAction(callback_.Get());
   EXPECT_EQ(kGeneratedPassword,
-            user_data_.additional_values_[kMemoryKeyForGeneratedPassword]
-                .strings()
+            user_data_.GetAdditionalValue(kMemoryKeyForGeneratedPassword)
+                ->strings()
                 .values(0));
 }
 
@@ -101,7 +101,7 @@ TEST_F(GeneratePasswordForFormFieldActionTest, FormDataIsNotRetrieved) {
 
   action.ProcessAction(callback_.Get());
 
-  EXPECT_FALSE(user_data_.has_additional_value(kMemoryKeyForGeneratedPassword));
+  EXPECT_FALSE(user_data_.HasAdditionalValue(kMemoryKeyForGeneratedPassword));
 }
 
 }  // namespace autofill_assistant

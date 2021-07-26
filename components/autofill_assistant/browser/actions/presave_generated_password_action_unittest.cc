@@ -52,8 +52,8 @@ class PresaveGeneratedPasswordActionTest : public testing::Test {
 TEST_F(PresaveGeneratedPasswordActionTest, PresaveGeneratedPassword) {
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL(kFakeUrl), kFakeUsername);
-  user_data_.additional_values_[kMemoryKeyForGeneratedPassword] =
-      SimpleValue(std::string(kGeneratedPassword));
+  user_data_.SetAdditionalValue(kMemoryKeyForGeneratedPassword,
+                                SimpleValue(std::string(kGeneratedPassword)));
   user_data_.password_form_data_ = autofill::FormData();
 
   PresaveGeneratedPasswordProto* presave_password_proto =
@@ -70,8 +70,8 @@ TEST_F(PresaveGeneratedPasswordActionTest, PresaveGeneratedPassword) {
 }
 
 TEST_F(PresaveGeneratedPasswordActionTest, LoginDataMissing) {
-  user_data_.additional_values_[kMemoryKeyForGeneratedPassword] =
-      SimpleValue(std::string(kGeneratedPassword));
+  user_data_.SetAdditionalValue(kMemoryKeyForGeneratedPassword,
+                                SimpleValue(std::string(kGeneratedPassword)));
   user_data_.password_form_data_ = autofill::FormData();
 
   PresaveGeneratedPasswordProto* presave_password_proto =
@@ -106,8 +106,8 @@ TEST_F(PresaveGeneratedPasswordActionTest, GeneratedPasswordMissing) {
 TEST_F(PresaveGeneratedPasswordActionTest, FormDataMissing) {
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL(kFakeUrl), kFakeUsername);
-  user_data_.additional_values_[kMemoryKeyForGeneratedPassword] =
-      SimpleValue(std::string(kGeneratedPassword));
+  user_data_.SetAdditionalValue(kMemoryKeyForGeneratedPassword,
+                                SimpleValue(std::string(kGeneratedPassword)));
 
   PresaveGeneratedPasswordProto* presave_password_proto =
       proto_.mutable_presave_generated_password();

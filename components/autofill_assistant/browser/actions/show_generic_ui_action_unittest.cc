@@ -556,9 +556,9 @@ TEST_F(ShowGenericUiActionTest, RequestUserData) {
   additional_value->set_source_identifier("client_memory_2");
   additional_value->set_model_identifier("target_2");
 
-  user_data_.additional_values_["client_memory_1"] =
-      SimpleValue(std::string("value_1"));
-  user_data_.additional_values_["client_memory_2"] = SimpleValue(123);
+  user_data_.SetAdditionalValue("client_memory_1",
+                                SimpleValue(std::string("value_1")));
+  user_data_.SetAdditionalValue("client_memory_2", SimpleValue(123));
 
   EXPECT_CALL(
       callback_,

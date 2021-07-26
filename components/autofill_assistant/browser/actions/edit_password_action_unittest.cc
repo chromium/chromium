@@ -82,8 +82,8 @@ TEST_F(EditPasswordActionTest, EditPasswordNoPasswordInUserData) {
 TEST_F(EditPasswordActionTest, EditPasswordSuccess) {
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL(kFakeUrl), kFakeUsername);
-  user_data_.additional_values_[kMemoryKey] =
-      SimpleValue(std::string(kPassword));
+  user_data_.SetAdditionalValue(kMemoryKey,
+                                SimpleValue(std::string(kPassword)));
   EditSelectedPasswordProto* edit_password = proto_.mutable_edit_password();
   edit_password->set_memory_key(kMemoryKey);
   EditPasswordAction action(&mock_action_delegate_, proto_);
@@ -100,8 +100,8 @@ TEST_F(EditPasswordActionTest, EditPasswordSuccess) {
 TEST_F(EditPasswordActionTest, EditPasswordNoLoginAvailable) {
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL(kFakeUrl), kFakeUsername);
-  user_data_.additional_values_[kMemoryKey] =
-      SimpleValue(std::string(kPassword));
+  user_data_.SetAdditionalValue(kMemoryKey,
+                                SimpleValue(std::string(kPassword)));
   EditSelectedPasswordProto* edit_password = proto_.mutable_edit_password();
   edit_password->set_memory_key(kMemoryKey);
   EditPasswordAction action(&mock_action_delegate_, proto_);

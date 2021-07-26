@@ -44,10 +44,6 @@ bool UserData::has_selected_address(const std::string& name) const {
   return selected_address(name) != nullptr;
 }
 
-bool UserData::has_additional_value(const std::string& key) const {
-  return additional_values_.find(key) != additional_values_.end();
-}
-
 const autofill::AutofillProfile* UserData::selected_address(
     const std::string& name) const {
   auto it = selected_addresses_.find(name);
@@ -62,7 +58,16 @@ const autofill::CreditCard* UserData::selected_card() const {
   return selected_card_.get();
 }
 
-const ValueProto* UserData::additional_value(const std::string& key) const {
+void UserData::SetAdditionalValue(const std::string& key,
+                                  const ValueProto& value) {
+  additional_values_[key] = value;
+}
+
+bool UserData::HasAdditionalValue(const std::string& key) const {
+  return additional_values_.find(key) != additional_values_.end();
+}
+
+const ValueProto* UserData::GetAdditionalValue(const std::string& key) const {
   auto it = additional_values_.find(key);
   if (it == additional_values_.end()) {
     return nullptr;

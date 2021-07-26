@@ -728,7 +728,7 @@ TEST_F(GetElementStatusActionTest, SucceedsWithPasswordManagerValue) {
 TEST_F(GetElementStatusActionTest, SucceedsWithClientMemoryValue) {
   ValueProto value_proto;
   value_proto.mutable_strings()->add_values("password");
-  user_data_.additional_values_["__password__"] = value_proto;
+  user_data_.SetAdditionalValue("__password__", value_proto);
 
   Selector selector({"#element"});
   *proto_.mutable_selector() = selector.proto;

@@ -73,7 +73,7 @@ void GeneratePasswordForFormFieldAction::StoreGeneratedPasswordToUserData(
     UserData* user_data,
     UserData::FieldChange* field_change) {
   DCHECK(user_data);
-  user_data->additional_values_[memory_key] = SimpleValue(generated_password);
+  user_data->SetAdditionalValue(memory_key, SimpleValue(generated_password));
   user_data->password_form_data_ = form_data;
 }
 

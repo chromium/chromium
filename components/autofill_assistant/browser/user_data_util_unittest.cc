@@ -1223,7 +1223,7 @@ TEST_F(UserDataUtilTextValueTest, GetStoredPasswordFails) {
 TEST_F(UserDataUtilTextValueTest, ClientMemoryKey) {
   ValueProto value_proto;
   value_proto.mutable_strings()->add_values("Hello World");
-  user_data_.additional_values_["key"] = value_proto;
+  user_data_.SetAdditionalValue("key", value_proto);
 
   std::string result;
 
@@ -1307,7 +1307,7 @@ TEST_F(UserDataUtilTextValueTest, TextValuePasswordManagerValue) {
 TEST_F(UserDataUtilTextValueTest, TextValueClientMemoryKey) {
   ValueProto value_proto;
   value_proto.mutable_strings()->add_values("Hello World");
-  user_data_.additional_values_["key"] = value_proto;
+  user_data_.SetAdditionalValue("key", value_proto);
 
   TextValue text_value;
   text_value.set_client_memory_key("key");

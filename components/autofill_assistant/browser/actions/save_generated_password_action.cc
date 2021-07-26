@@ -34,10 +34,10 @@ void SaveGeneratedPasswordAction::InternalProcessAction(
     return;
   }
 
-  if (!delegate_->GetUserData()->has_additional_value(
+  if (!delegate_->GetUserData()->HasAdditionalValue(
           save_password.memory_key()) ||
       delegate_->GetUserData()
-              ->additional_value(save_password.memory_key())
+              ->GetAdditionalValue(save_password.memory_key())
               ->strings()
               .values()
               .size() != 1) {

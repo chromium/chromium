@@ -1531,12 +1531,11 @@ void Controller::SetAdditionalValue(const std::string& client_memory_key,
                                     const ValueProto& value) {
   if (!user_data_)
     return;
-  auto it = user_data_->additional_values_.find(client_memory_key);
-  if (it == user_data_->additional_values_.end()) {
+  if (!user_data_->HasAdditionalValue(client_memory_key)) {
     NOTREACHED() << client_memory_key << " not found";
     return;
   }
-  it->second = value;
+  user_data_->SetAdditionalValue(client_memory_key, value);
   UpdateCollectUserDataActions();
   for (ControllerObserver& observer : observers_) {
     observer.OnUserDataChanged(user_data_.get(),

@@ -56,8 +56,8 @@ TEST_F(SaveGeneratedPasswordActionTest, SavedPassword) {
       proto_.mutable_save_generated_password();
   save_password_proto->set_memory_key(kMemoryKeyForGeneratedPassword);
 
-  user_data_.additional_values_[kMemoryKeyForGeneratedPassword] =
-      SimpleValue(std::string(kGeneratedPassword));
+  user_data_.SetAdditionalValue(kMemoryKeyForGeneratedPassword,
+                                SimpleValue(std::string(kGeneratedPassword)));
 
   ON_CALL(mock_website_login_manager_, ReadyToCommitGeneratedPassword)
       .WillByDefault(Return(true));
@@ -72,7 +72,7 @@ TEST_F(SaveGeneratedPasswordActionTest, SavedPassword) {
 
   action.ProcessAction(callback_.Get());
 
-  EXPECT_TRUE(user_data_.has_additional_value(kMemoryKeyForGeneratedPassword));
+  EXPECT_TRUE(user_data_.HasAdditionalValue(kMemoryKeyForGeneratedPassword));
 }
 
 TEST_F(SaveGeneratedPasswordActionTest, MissingMemoryKeyPreconditionFails) {
@@ -90,8 +90,8 @@ TEST_F(SaveGeneratedPasswordActionTest, PresaveNotCalledPreconditionFails) {
       proto_.mutable_save_generated_password();
   save_password_proto->set_memory_key(kMemoryKeyForGeneratedPassword);
 
-  user_data_.additional_values_[kMemoryKeyForGeneratedPassword] =
-      SimpleValue(std::string(kGeneratedPassword));
+  user_data_.SetAdditionalValue(kMemoryKeyForGeneratedPassword,
+                                SimpleValue(std::string(kGeneratedPassword)));
 
   ON_CALL(mock_website_login_manager_, ReadyToCommitGeneratedPassword)
       .WillByDefault(Return(false));

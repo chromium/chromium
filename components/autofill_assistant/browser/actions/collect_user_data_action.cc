@@ -285,15 +285,15 @@ void FillProtoForAdditionalSection(
     case autofill_assistant::UserFormSectionProto::kTextInputSection:
       for (const auto& text_input :
            additional_section.text_input_section().input_fields()) {
-        if (user_data.has_additional_value(text_input.client_memory_key())) {
+        if (user_data.HasAdditionalValue(text_input.client_memory_key())) {
           processed_action_proto->mutable_collect_user_data_result()
               ->add_set_text_input_memory_keys(text_input.client_memory_key());
           if (additional_section.send_result_to_backend()) {
-            auto value = user_data.additional_values_.find(
-                text_input.client_memory_key());
+            auto* value =
+                user_data.GetAdditionalValue(text_input.client_memory_key());
             autofill_assistant::ModelProto_ModelValue model_value;
             model_value.set_identifier(text_input.client_memory_key());
-            *model_value.mutable_value() = value->second;
+            *model_value.mutable_value() = *value;
             *processed_action_proto->mutable_collect_user_data_result()
                  ->add_additional_sections_values() = model_value;
           }
@@ -301,15 +301,15 @@ void FillProtoForAdditionalSection(
       }
       break;
     case autofill_assistant::UserFormSectionProto::kPopupListSection:
-      if (user_data.has_additional_value(
+      if (user_data.HasAdditionalValue(
               additional_section.popup_list_section().additional_value_key()) &&
           additional_section.send_result_to_backend()) {
-        auto value = user_data.additional_values_.find(
+        auto* value = user_data.GetAdditionalValue(
             additional_section.popup_list_section().additional_value_key());
         autofill_assistant::ModelProto_ModelValue model_value;
         model_value.set_identifier(
             additional_section.popup_list_section().additional_value_key());
-        *model_value.mutable_value() = value->second;
+        *model_value.mutable_value() = *value;
         *processed_action_proto->mutable_collect_user_data_result()
              ->add_additional_sections_values() = model_value;
       }
@@ -322,36 +322,33 @@ void FillProtoForAdditionalSection(
 }
 
 bool IsAdditionalSectionComplete(
-    const std::map<std::string, autofill_assistant::ValueProto>&
-        additional_sections,
+    const UserData& user_data,
     const autofill_assistant::UserFormSectionProto& section) {
   if (section.section_case() !=
           autofill_assistant::UserFormSectionProto::kPopupListSection ||
       !section.popup_list_section().selection_mandatory()) {
     return true;
   }
-  auto find_result = additional_sections.find(
+  auto* value = user_data.GetAdditionalValue(
       section.popup_list_section().additional_value_key());
-  if (find_result != additional_sections.end() &&
-      !find_result->second.ints().values().empty()) {
+  if (value != nullptr && !value->ints().values().empty()) {
     return true;
   }
   return false;
 }
 
 bool AreAdditionalSectionsComplete(
-    const std::map<std::string, autofill_assistant::ValueProto>&
-        additional_sections,
+    const UserData& user_data,
     const CollectUserDataOptions& collect_user_data_options) {
   for (const auto& section :
        collect_user_data_options.additional_prepended_sections) {
-    if (!IsAdditionalSectionComplete(additional_sections, section)) {
+    if (!IsAdditionalSectionComplete(user_data, section)) {
       return false;
     }
   }
   for (const auto& section :
        collect_user_data_options.additional_appended_sections) {
-    if (!IsAdditionalSectionComplete(additional_sections, section)) {
+    if (!IsAdditionalSectionComplete(user_data, section)) {
       return false;
     }
   }
@@ -367,7 +364,7 @@ void SetInitialUserDataForAdditionalSection(
            additional_section.text_input_section().input_fields()) {
         autofill_assistant::ValueProto value;
         value.mutable_strings()->add_values(text_input.value());
-        user_data->additional_values_[text_input.client_memory_key()] = value;
+        user_data->SetAdditionalValue(text_input.client_memory_key(), value);
       }
       break;
     }
@@ -377,8 +374,9 @@ void SetInitialUserDataForAdditionalSection(
            additional_section.popup_list_section().initial_selection()) {
         value.mutable_ints()->add_values(selection);
       }
-      user_data->additional_values_[additional_section.popup_list_section()
-                                        .additional_value_key()] = value;
+      user_data->SetAdditionalValue(
+          additional_section.popup_list_section().additional_value_key(),
+          value);
       break;
     }
     case autofill_assistant::UserFormSectionProto::kStaticTextSection:
@@ -1038,7 +1036,7 @@ bool CollectUserDataAction::IsUserDataComplete(
                               user_data.date_time_range_end_date_,
                               user_data.date_time_range_end_timeslot_,
                               options) &&
-         AreAdditionalSectionsComplete(user_data.additional_values_, options) &&
+         AreAdditionalSectionsComplete(user_data, options) &&
          IsValidUserModel(user_model, options);
 }
 
