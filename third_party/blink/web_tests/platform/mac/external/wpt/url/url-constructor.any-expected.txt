@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 635 tests; 451 PASS, 184 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 635 tests; 452 PASS, 183 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -730,9 +730,7 @@ FAIL Parsing: <abc:rootless> against <abc://host/path> assert_equals: href expec
 FAIL Parsing: <abc:rootless> against <abc:/path> assert_equals: href expected "abc:rootless" but got "abc:/rootless"
 PASS Parsing: <abc:rootless> against <abc:path>
 FAIL Parsing: <abc:/rooted> against <abc://host/path> assert_equals: href expected "abc:/rooted" but got "abc://host/rooted"
-FAIL Parsing: <#> against <null> assert_throws_js: function "function() {
-          bURL(expected.input, expected.base)
-        }" did not throw
+PASS Parsing: <#> against <null>
 PASS Parsing: <?> against <null>
 Harness: the test ran to completion.
 
