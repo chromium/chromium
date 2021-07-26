@@ -196,20 +196,14 @@ Vector<wtf_size_t> AdditiveAlgorithm(unsigned value,
   return result;
 }
 
-namespace {
-
-// TODO(xiaochengh): Reorganize these legacy implementations. Get rid of the
-// EListStyleType enum, and merge them into their callers if possible.
-
 enum CJKLang { kChinese = 1, kKorean, kJapanese };
 
 enum CJKStyle { kFormal, kInformal };
 
 // The table uses the order from the CSS3 specification:
-// first 3 group markers, then 3 digit markers, then ten digits, then negative
-// symbols.
-static String ToCJKIdeographic(int number,
-                               const UChar table[26],
+// first 3 group markers, then 3 digit markers, then ten digits.
+String CJKIdeoGraphicAlgorithm(unsigned number,
+                               const UChar table[21],
                                CJKStyle cjk_style) {
   enum AbstractCJKChar {
     kNoChar = 0,
@@ -231,34 +225,19 @@ static String ToCJKIdeographic(int number,
     kDigit6,
     kDigit7,
     kDigit8,
-    kDigit9,
-    kNeg1,
-    kNeg2,
-    kNeg3,
-    kNeg4,
-    kNeg5
+    kDigit9
   };
 
   if (number == 0)
     return String(&table[kDigit0], 1);
 
-  const bool negative = number < 0;
-  if (negative) {
-    // Negating the most negative integer (INT_MIN) doesn't work, since it has
-    // no positive counterpart. Deal with that here, manually.
-    if (UNLIKELY(number == INT_MIN))
-      number = INT_MAX;
-    else
-      number = -number;
-  }
-
-  const int kGroupLength =
+  const unsigned kGroupLength =
       9;  // 4 digits, 3 digit markers, group marker of size 2.
-  const int kBufferLength = 4 * kGroupLength;
+  const unsigned kBufferLength = 4 * kGroupLength;
   AbstractCJKChar buffer[kBufferLength] = {kNoChar};
 
-  for (int i = 0; i < 4; ++i) {
-    int group_value = number % 10000;
+  for (unsigned i = 0; i < 4; ++i) {
+    unsigned group_value = number % 10000;
     number /= 10000;
 
     // Process least-significant group first, but put it in the buffer last.
@@ -270,7 +249,7 @@ static String ToCJKIdeographic(int number,
     }
 
     // Put in the four digits and digit markers for any non-zero digits.
-    int digit_value = (group_value % 10);
+    unsigned digit_value = (group_value % 10);
     bool trailing_zero = table[kLang] == kChinese && !digit_value;
     if (digit_value) {
       bool drop_one = table[kLang] == kKorean && cjk_style == kInformal &&
@@ -328,15 +307,10 @@ static String ToCJKIdeographic(int number,
 
   // Convert into characters, omitting consecutive runs of Digit0 and
   // any trailing Digit0.
-  int length = 0;
-  const int kMaxLengthForNegativeSymbols = 5;
-  UChar characters[kBufferLength + kMaxLengthForNegativeSymbols];
+  unsigned length = 0;
+  UChar characters[kBufferLength];
   AbstractCJKChar last = kNoChar;
-  if (negative) {
-    while (UChar a = table[kNeg1 + length])
-      characters[length++] = a;
-  }
-  for (int i = 0; i < kBufferLength; ++i) {
+  for (unsigned i = 0; i < kBufferLength; ++i) {
     AbstractCJKChar a = buffer[i];
     if (a != kNoChar) {
       if (a != kDigit0 || (table[kLang] == kChinese && last != kDigit0)) {
@@ -359,7 +333,63 @@ static String ToCJKIdeographic(int number,
   return String(characters, length);
 }
 
-}  // namespace
+String SimpChineseInformalAlgorithm(unsigned value) {
+  static const UChar kSimpleChineseInformalTable[21] = {
+      kChinese, 0x4E07, 0x0000, 0x4EBF, 0x0000, 0x4E07, 0x4EBF,
+      0x5341,   0x767E, 0x5343, 0x96F6, 0x4E00, 0x4E8C, 0x4E09,
+      0x56DB,   0x4E94, 0x516D, 0x4E03, 0x516B, 0x4E5D, 0x0000};
+  return CJKIdeoGraphicAlgorithm(value, kSimpleChineseInformalTable, kInformal);
+}
+
+String SimpChineseFormalAlgorithm(unsigned value) {
+  static const UChar kSimpleChineseFormalTable[21] = {
+      kChinese, 0x4E07, 0x0000, 0x4EBF, 0x0000, 0x4E07, 0x4EBF,
+      0x62FE,   0x4F70, 0x4EDF, 0x96F6, 0x58F9, 0x8D30, 0x53C1,
+      0x8086,   0x4F0D, 0x9646, 0x67D2, 0x634C, 0x7396, 0x0000};
+  return CJKIdeoGraphicAlgorithm(value, kSimpleChineseFormalTable, kFormal);
+}
+
+String TradChineseInformalAlgorithm(unsigned value) {
+  static const UChar kTraditionalChineseInformalTable[21] = {
+      kChinese, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000,
+      0x5341,   0x767E, 0x5343, 0x96F6, 0x4E00, 0x4E8C, 0x4E09,
+      0x56DB,   0x4E94, 0x516D, 0x4E03, 0x516B, 0x4E5D, 0x0000};
+  return CJKIdeoGraphicAlgorithm(value, kTraditionalChineseInformalTable,
+                                 kInformal);
+}
+
+String TradChineseFormalAlgorithm(unsigned value) {
+  static const UChar kTraditionalChineseFormalTable[21] = {
+      kChinese, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000,
+      0x62FE,   0x4F70, 0x4EDF, 0x96F6, 0x58F9, 0x8CB3, 0x53C3,
+      0x8086,   0x4F0D, 0x9678, 0x67D2, 0x634C, 0x7396, 0x0000};
+  return CJKIdeoGraphicAlgorithm(value, kTraditionalChineseFormalTable,
+                                 kFormal);
+}
+
+String KoreanHangulFormalAlgorithm(unsigned value) {
+  static const UChar kKoreanHangulFormalTable[21] = {
+      kKorean, 0xB9CC, 0x0000, 0xC5B5, 0x0000, 0xC870, 0x0000,
+      0xC2ED,  0xBC31, 0xCC9C, 0xC601, 0xC77C, 0xC774, 0xC0BC,
+      0xC0AC,  0xC624, 0xC721, 0xCE60, 0xD314, 0xAD6C, 0x0000};
+  return CJKIdeoGraphicAlgorithm(value, kKoreanHangulFormalTable, kFormal);
+}
+
+String KoreanHanjaInformalAlgorithm(unsigned value) {
+  static const UChar kKoreanHanjaInformalTable[21] = {
+      kKorean, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000,
+      0x5341,  0x767E, 0x5343, 0x96F6, 0x4E00, 0x4E8C, 0x4E09,
+      0x56DB,  0x4E94, 0x516D, 0x4E03, 0x516B, 0x4E5D, 0x0000};
+  return CJKIdeoGraphicAlgorithm(value, kKoreanHanjaInformalTable, kInformal);
+}
+
+String KoreanHanjaFormalAlgorithm(unsigned value) {
+  static const UChar kKoreanHanjaFormalTable[21] = {
+      kKorean, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000,
+      0x62FE,  0x767E, 0x4EDF, 0x96F6, 0x58F9, 0x8CB3, 0x53C3,
+      0x56DB,  0x4E94, 0x516D, 0x4E03, 0x516B, 0x4E5D, 0x0000};
+  return CJKIdeoGraphicAlgorithm(value, kKoreanHanjaFormalTable, kFormal);
+}
 
 String HebrewAlgorithmUnder1000(unsigned number) {
   // FIXME: CSS3 mentions various refinements not implemented here.
@@ -406,79 +436,6 @@ String HebrewAlgorithm(unsigned number) {
   return HebrewAlgorithmUnder1000(number / 1000) +
          kHebrewPunctuationGereshCharacter +
          HebrewAlgorithmUnder1000(number % 1000);
-}
-
-int AbsoluteValueForLegacyCJKAlgorithms(int value) {
-  // @counter-style algorithm works on absolute value, but the legacy
-  // implementation works on the original value (and handles negative sign on
-  // its own). Clamp to the signed int range before proceeding.
-  if (UNLIKELY(value == std::numeric_limits<int>::min()))
-    return std::numeric_limits<int>::max();
-  else
-    return std::abs(value);
-}
-
-String SimpChineseInformalAlgorithm(int value) {
-  static const UChar kSimpleChineseInformalTable[22] = {
-      kChinese, 0x4E07, 0x0000, 0x4EBF, 0x0000, 0x4E07, 0x4EBF, 0x5341,
-      0x767E,   0x5343, 0x96F6, 0x4E00, 0x4E8C, 0x4E09, 0x56DB, 0x4E94,
-      0x516D,   0x4E03, 0x516B, 0x4E5D, 0x8D1F, 0x0000};
-  return ToCJKIdeographic(AbsoluteValueForLegacyCJKAlgorithms(value),
-                          kSimpleChineseInformalTable, kInformal);
-}
-
-String SimpChineseFormalAlgorithm(int value) {
-  static const UChar kSimpleChineseFormalTable[22] = {
-      kChinese, 0x4E07, 0x0000, 0x4EBF, 0x0000, 0x4E07, 0x4EBF, 0x62FE,
-      0x4F70,   0x4EDF, 0x96F6, 0x58F9, 0x8D30, 0x53C1, 0x8086, 0x4F0D,
-      0x9646,   0x67D2, 0x634C, 0x7396, 0x8D1F, 0x0000};
-  return ToCJKIdeographic(AbsoluteValueForLegacyCJKAlgorithms(value),
-                          kSimpleChineseFormalTable, kFormal);
-}
-
-String TradChineseInformalAlgorithm(int value) {
-  static const UChar kTraditionalChineseInformalTable[22] = {
-      kChinese, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000, 0x5341,
-      0x767E,   0x5343, 0x96F6, 0x4E00, 0x4E8C, 0x4E09, 0x56DB, 0x4E94,
-      0x516D,   0x4E03, 0x516B, 0x4E5D, 0x8CA0, 0x0000};
-  return ToCJKIdeographic(AbsoluteValueForLegacyCJKAlgorithms(value),
-                          kTraditionalChineseInformalTable, kInformal);
-}
-
-String TradChineseFormalAlgorithm(int value) {
-  static const UChar kTraditionalChineseFormalTable[22] = {
-      kChinese, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000, 0x62FE,
-      0x4F70,   0x4EDF, 0x96F6, 0x58F9, 0x8CB3, 0x53C3, 0x8086, 0x4F0D,
-      0x9678,   0x67D2, 0x634C, 0x7396, 0x8CA0, 0x0000};
-  return ToCJKIdeographic(AbsoluteValueForLegacyCJKAlgorithms(value),
-                          kTraditionalChineseFormalTable, kFormal);
-}
-
-String KoreanHangulFormalAlgorithm(int value) {
-  static const UChar kKoreanHangulFormalTable[26] = {
-      kKorean, 0xB9CC, 0x0000, 0xC5B5, 0x0000, 0xC870, 0x0000, 0xC2ED, 0xBC31,
-      0xCC9C,  0xC601, 0xC77C, 0xC774, 0xC0BC, 0xC0AC, 0xC624, 0xC721, 0xCE60,
-      0xD314,  0xAD6C, 0xB9C8, 0xC774, 0xB108, 0xC2A4, 0x0020, 0x0000};
-  return ToCJKIdeographic(AbsoluteValueForLegacyCJKAlgorithms(value),
-                          kKoreanHangulFormalTable, kFormal);
-}
-
-String KoreanHanjaInformalAlgorithm(int value) {
-  static const UChar kKoreanHanjaInformalTable[26] = {
-      kKorean, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000, 0x5341, 0x767E,
-      0x5343,  0x96F6, 0x4E00, 0x4E8C, 0x4E09, 0x56DB, 0x4E94, 0x516D, 0x4E03,
-      0x516B,  0x4E5D, 0xB9C8, 0xC774, 0xB108, 0xC2A4, 0x0020, 0x0000};
-  return ToCJKIdeographic(AbsoluteValueForLegacyCJKAlgorithms(value),
-                          kKoreanHanjaInformalTable, kInformal);
-}
-
-String KoreanHanjaFormalAlgorithm(int value) {
-  static const UChar kKoreanHanjaFormalTable[26] = {
-      kKorean, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000, 0x62FE, 0x767E,
-      0x4EDF,  0x96F6, 0x58F9, 0x8CB3, 0x53C3, 0x56DB, 0x4E94, 0x516D, 0x4E03,
-      0x516B,  0x4E5D, 0xB9C8, 0xC774, 0xB108, 0xC2A4, 0x0020, 0x0000};
-  return ToCJKIdeographic(AbsoluteValueForLegacyCJKAlgorithms(value),
-                          kKoreanHanjaFormalTable, kFormal);
 }
 
 String ArmenianAlgorithmUnder10000(unsigned number,
@@ -903,19 +860,19 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
     case CounterStyleSystem::kHebrew:
       return HebrewAlgorithm(abs_value);
     case CounterStyleSystem::kSimpChineseInformal:
-      return SimpChineseInformalAlgorithm(value);
+      return SimpChineseInformalAlgorithm(abs_value);
     case CounterStyleSystem::kSimpChineseFormal:
-      return SimpChineseFormalAlgorithm(value);
+      return SimpChineseFormalAlgorithm(abs_value);
     case CounterStyleSystem::kTradChineseInformal:
-      return TradChineseInformalAlgorithm(value);
+      return TradChineseInformalAlgorithm(abs_value);
     case CounterStyleSystem::kTradChineseFormal:
-      return TradChineseFormalAlgorithm(value);
+      return TradChineseFormalAlgorithm(abs_value);
     case CounterStyleSystem::kKoreanHangulFormal:
-      return KoreanHangulFormalAlgorithm(value);
+      return KoreanHangulFormalAlgorithm(abs_value);
     case CounterStyleSystem::kKoreanHanjaInformal:
-      return KoreanHanjaInformalAlgorithm(value);
+      return KoreanHanjaInformalAlgorithm(abs_value);
     case CounterStyleSystem::kKoreanHanjaFormal:
-      return KoreanHanjaFormalAlgorithm(value);
+      return KoreanHanjaFormalAlgorithm(abs_value);
     case CounterStyleSystem::kLowerArmenian: {
       const bool lower_case = false;
       return ArmenianAlgorithm(abs_value, lower_case);
