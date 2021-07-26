@@ -63,33 +63,32 @@ class ShimlessRmaMojoToProtoTest : public testing::Test {
 };
 
 TEST_F(ShimlessRmaMojoToProtoTest, StatesMatch) {
-  constexpr auto enums =
-      base::MakeFixedFlatMap<mojom::RmaState, rmad::RmadState::StateCase>(
-          {{mojom::RmaState::kWelcomeScreen, rmad::RmadState::kWelcome},
-           {mojom::RmaState::kSelectComponents,
-            rmad::RmadState::kComponentsRepair},
-           {mojom::RmaState::kChooseDestination,
-            rmad::RmadState::kDeviceDestination},
-           {mojom::RmaState::kChooseWriteProtectDisableMethod,
-            rmad::RmadState::kWpDisableMethod},
-           {mojom::RmaState::kEnterRSUWPDisableCode,
-            rmad::RmadState::kWpDisableRsu},
-           {mojom::RmaState::kWaitForManualWPDisable,
-            rmad::RmadState::kWpDisablePhysical},
-           {mojom::RmaState::kWPDisableComplete,
-            rmad::RmadState::kWpDisableComplete},
-           {mojom::RmaState::kChooseFirmwareReimageMethod,
-            rmad::RmadState::kUpdateRoFirmware},
-           {mojom::RmaState::kRestock, rmad::RmadState::kRestock},
-           {mojom::RmaState::kUpdateDeviceInformation,
-            rmad::RmadState::kUpdateDeviceInfo},
-           {mojom::RmaState::kCalibrateComponents,
-            rmad::RmadState::kCalibrateComponents},
-           {mojom::RmaState::kProvisionDevice,
-            rmad::RmadState::kProvisionDevice},
-           {mojom::RmaState::kWaitForManualWPEnable,
-            rmad::RmadState::kWpEnablePhysical},
-           {mojom::RmaState::kRepairComplete, rmad::RmadState::kFinalize}});
+  constexpr auto enums = base::MakeFixedFlatMap<mojom::RmaState,
+                                                rmad::RmadState::StateCase>(
+      {{mojom::RmaState::kWelcomeScreen, rmad::RmadState::kWelcome},
+       {mojom::RmaState::kSelectComponents, rmad::RmadState::kComponentsRepair},
+       {mojom::RmaState::kChooseDestination,
+        rmad::RmadState::kDeviceDestination},
+       {mojom::RmaState::kChooseWriteProtectDisableMethod,
+        rmad::RmadState::kWpDisableMethod},
+       {mojom::RmaState::kEnterRSUWPDisableCode,
+        rmad::RmadState::kWpDisableRsu},
+       {mojom::RmaState::kWaitForManualWPDisable,
+        rmad::RmadState::kWpDisablePhysical},
+       {mojom::RmaState::kWPDisableComplete,
+        rmad::RmadState::kWpDisableComplete},
+       {mojom::RmaState::kChooseFirmwareReimageMethod,
+        rmad::RmadState::kUpdateRoFirmware},
+       {mojom::RmaState::kRestock, rmad::RmadState::kRestock},
+       {mojom::RmaState::kUpdateDeviceInformation,
+        rmad::RmadState::kUpdateDeviceInfo},
+       {mojom::RmaState::kCheckCalibration, rmad::RmadState::kCheckCalibration},
+       {mojom::RmaState::kSetupCalibration, rmad::RmadState::kSetupCalibration},
+       {mojom::RmaState::kRunCalibration, rmad::RmadState::kRunCalibration},
+       {mojom::RmaState::kProvisionDevice, rmad::RmadState::kProvisionDevice},
+       {mojom::RmaState::kWaitForManualWPEnable,
+        rmad::RmadState::kWpEnablePhysical},
+       {mojom::RmaState::kRepairComplete, rmad::RmadState::kFinalize}});
 
   // rmad::RmadState::STATE_NOT_SET is used when RMA is not active so the
   // toMojo conversion is reachable, unlike other enums.
@@ -263,10 +262,13 @@ TEST_F(ShimlessRmaMojoToProtoTest, RepairStatesMatch) {
 TEST_F(ShimlessRmaMojoToProtoTest, CalibrationComponentsMatch) {
   constexpr auto enums = base::MakeFixedFlatMap<
       mojom::CalibrationComponent,
-      rmad::CalibrateComponentsState::CalibrationComponent>(
+      rmad::CheckCalibrationState::CalibrationStatus::Component>(
       {{mojom::CalibrationComponent::kAccelerometer,
-        rmad::CalibrateComponentsState::
-            RMAD_CALIBRATION_COMPONENT_ACCELEROMETER}});
+        rmad::CheckCalibrationState::CalibrationStatus::
+            RMAD_CALIBRATION_COMPONENT_ACCELEROMETER},
+       {mojom::CalibrationComponent::kGyroscope,
+        rmad::CheckCalibrationState::CalibrationStatus::
+            RMAD_CALIBRATION_COMPONENT_GYROSCOPE}});
 
   TestProtoToMojo(enums);
   TestMojoToProto(enums);

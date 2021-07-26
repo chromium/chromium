@@ -145,9 +145,16 @@ class ShimlessRmaServiceTest : public testing::Test {
         state->set_allocated_update_device_info(
             new rmad::UpdateDeviceInfoState());
         break;
-      case rmad::RmadState::kCalibrateComponents:
-        state->set_allocated_calibrate_components(
-            new rmad::CalibrateComponentsState());
+      case rmad::RmadState::kCheckCalibration:
+        state->set_allocated_check_calibration(
+            new rmad::CheckCalibrationState());
+        break;
+      case rmad::RmadState::kSetupCalibration:
+        state->set_allocated_setup_calibration(
+            new rmad::SetupCalibrationState());
+        break;
+      case rmad::RmadState::kRunCalibration:
+        state->set_allocated_run_calibration(new rmad::RunCalibrationState());
         break;
       case rmad::RmadState::kProvisionDevice:
         state->set_allocated_provision_device(new rmad::ProvisionDeviceState());
@@ -1637,15 +1644,16 @@ TEST_F(ShimlessRmaServiceTest, ObserveError) {
 class FakeCalibrationObserver : public mojom::CalibrationObserver {
  public:
   void OnCalibrationUpdated(
-      rmad::CalibrateComponentsState_CalibrationComponent component,
+      rmad::CheckCalibrationState::CalibrationStatus::Component component,
       float progress) override {
     observations.push_back(
-        std::pair<rmad::CalibrateComponentsState_CalibrationComponent, float>(
-            component, progress));
+        std::pair<rmad::CheckCalibrationState::CalibrationStatus::Component,
+                  float>(component, progress));
   }
 
   std::vector<
-      std::pair<rmad::CalibrateComponentsState_CalibrationComponent, float>>
+      std::pair<rmad::CheckCalibrationState::CalibrationStatus::Component,
+                float>>
       observations;
   mojo::Receiver<mojom::CalibrationObserver> receiver{this};
 };
@@ -1656,7 +1664,8 @@ TEST_F(ShimlessRmaServiceTest, ObserveCalibration) {
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
   fake_rmad_client_()->TriggerCalibrationProgressObservation(
-      rmad::CalibrateComponentsState::RMAD_CALIBRATION_COMPONENT_ACCELEROMETER,
+      rmad::CheckCalibrationState::CalibrationStatus::
+          RMAD_CALIBRATION_COMPONENT_ACCELEROMETER,
       0.25);
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);

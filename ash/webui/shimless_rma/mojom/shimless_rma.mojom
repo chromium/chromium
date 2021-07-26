@@ -59,7 +59,9 @@ enum RmaState {
   kChooseFirmwareReimageMethod,
   kRestock,
   kUpdateDeviceInformation,
-  kCalibrateComponents,
+  kCheckCalibration,
+  kSetupCalibration,
+  kRunCalibration,
   kProvisionDevice,
   kWaitForManualWPEnable,
   kRepairComplete,
@@ -228,6 +230,7 @@ struct Component {
 enum CalibrationComponent {
   kCalibrateUnknown = 0,
   kAccelerometer = 1,
+  kGyroscope = 2,
 };
 
 // This must remain in sync with ProvisionDeviceState::ProvisioningStep in

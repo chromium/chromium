@@ -67,7 +67,7 @@ class TestObserver : public RmadClient::Observer {
   int num_error() const { return num_error_; }
   rmad::RmadErrorCode last_error() const { return last_error_; }
   int num_calibration_progress() const { return num_calibration_progress_; }
-  rmad::CalibrateComponentsState::CalibrationComponent
+  rmad::CheckCalibrationState::CalibrationStatus::Component
   last_calibration_component() const {
     return last_calibration_component_;
   }
@@ -97,7 +97,7 @@ class TestObserver : public RmadClient::Observer {
 
   // Called when calibration progress is updated.
   void CalibrationProgress(
-      rmad::CalibrateComponentsState::CalibrationComponent component,
+      rmad::CheckCalibrationState::CalibrationStatus::Component component,
       double progress) override {
     num_calibration_progress_++;
     last_calibration_component_ = component;
@@ -129,9 +129,9 @@ class TestObserver : public RmadClient::Observer {
   int num_error_ = 0;
   rmad::RmadErrorCode last_error_ = rmad::RmadErrorCode::RMAD_ERROR_NOT_SET;
   int num_calibration_progress_ = 0;
-  rmad::CalibrateComponentsState::CalibrationComponent
-      last_calibration_component_ =
-          rmad::CalibrateComponentsState::RMAD_CALIBRATION_COMPONENT_UNKNOWN;
+  rmad::CheckCalibrationState::CalibrationStatus::Component
+      last_calibration_component_ = rmad::CheckCalibrationState::
+          CalibrationStatus::RMAD_CALIBRATION_COMPONENT_UNKNOWN;
   float last_calibration_progress_ = 0.0f;
   int num_provisioning_progress_ = 0;
   rmad::ProvisionDeviceState::ProvisioningStep last_provisioning_step_ =
@@ -474,12 +474,13 @@ TEST_F(FakeRmadClientTest, CalibrationProgressObservation) {
   TestObserver observer_1(client_);
 
   fake_client_()->TriggerCalibrationProgressObservation(
-      rmad::CalibrateComponentsState::RMAD_CALIBRATION_COMPONENT_ACCELEROMETER,
+      rmad::CheckCalibrationState::CalibrationStatus::
+          RMAD_CALIBRATION_COMPONENT_ACCELEROMETER,
       0.5);
   EXPECT_EQ(1, observer_1.num_calibration_progress());
-  EXPECT_EQ(
-      rmad::CalibrateComponentsState::RMAD_CALIBRATION_COMPONENT_ACCELEROMETER,
-      observer_1.last_calibration_component());
+  EXPECT_EQ(rmad::CheckCalibrationState::CalibrationStatus::
+                RMAD_CALIBRATION_COMPONENT_ACCELEROMETER,
+            observer_1.last_calibration_component());
   EXPECT_EQ(0.5, observer_1.last_calibration_progress());
 }
 

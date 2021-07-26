@@ -28,7 +28,7 @@ using ProtoComponentRepairState =
 using MojomCalibrationComponent =
     ash::shimless_rma::mojom::CalibrationComponent;
 using ProtoCalibrationComponent =
-    rmad::CalibrateComponentsState::CalibrationComponent;
+    rmad::CheckCalibrationState::CalibrationStatus::Component;
 
 using MojomProvisioningStep = ash::shimless_rma::mojom::ProvisioningStep;
 using ProtoProvisioningStep = rmad::ProvisionDeviceState::ProvisioningStep;
@@ -58,8 +58,12 @@ MojomRmaState EnumTraits<MojomRmaState, ProtoRmadState>::ToMojom(
       return MojomRmaState::kRestock;
     case ProtoRmadState::kUpdateDeviceInfo:
       return MojomRmaState::kUpdateDeviceInformation;
-    case ProtoRmadState::kCalibrateComponents:
-      return MojomRmaState::kCalibrateComponents;
+    case ProtoRmadState::kCheckCalibration:
+      return MojomRmaState::kCheckCalibration;
+    case ProtoRmadState::kSetupCalibration:
+      return MojomRmaState::kSetupCalibration;
+    case ProtoRmadState::kRunCalibration:
+      return MojomRmaState::kRunCalibration;
     case ProtoRmadState::kProvisionDevice:
       return MojomRmaState::kProvisionDevice;
     case ProtoRmadState::kWpEnablePhysical:
@@ -484,11 +488,15 @@ MojomCalibrationComponent
 EnumTraits<MojomCalibrationComponent, ProtoCalibrationComponent>::ToMojom(
     ProtoCalibrationComponent component) {
   switch (component) {
-    case rmad::CalibrateComponentsState::
+    case rmad::CheckCalibrationState::CalibrationStatus::
         RMAD_CALIBRATION_COMPONENT_ACCELEROMETER:
       return MojomCalibrationComponent::kAccelerometer;
+    case rmad::CheckCalibrationState::CalibrationStatus::
+        RMAD_CALIBRATION_COMPONENT_GYROSCOPE:
+      return MojomCalibrationComponent::kGyroscope;
 
-    case rmad::CalibrateComponentsState::RMAD_CALIBRATION_COMPONENT_UNKNOWN:
+    case rmad::CheckCalibrationState::CalibrationStatus::
+        RMAD_CALIBRATION_COMPONENT_UNKNOWN:
     default:
       NOTREACHED();
       return MojomCalibrationComponent::kCalibrateUnknown;
@@ -503,9 +511,14 @@ bool EnumTraits<MojomCalibrationComponent, ProtoCalibrationComponent>::
               ProtoCalibrationComponent* out) {
   switch (component) {
     case MojomCalibrationComponent::kAccelerometer:
-      *out = rmad::CalibrateComponentsState::
+      *out = rmad::CheckCalibrationState::CalibrationStatus::
           RMAD_CALIBRATION_COMPONENT_ACCELEROMETER;
       return true;
+    case MojomCalibrationComponent::kGyroscope:
+      *out = rmad::CheckCalibrationState::CalibrationStatus::
+          RMAD_CALIBRATION_COMPONENT_GYROSCOPE;
+      return true;
+
     case MojomCalibrationComponent::kCalibrateUnknown:
       NOTREACHED();
       return false;

@@ -122,7 +122,7 @@ const StateComponentMapping = {
     btnCancel: ButtonState.HIDDEN,
     btnBack: ButtonState.VISIBLE,
   },
-  [RmaState.kCalibrateComponents]: {
+  [RmaState.kCheckCalibration]: {
     componentIs: 'reimaging-accelerometer-calibration-page',
     buttonNext: ButtonState.VISIBLE,
     buttonCancel: ButtonState.HIDDEN,

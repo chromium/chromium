@@ -53,13 +53,13 @@ struct EnumTraits<
 
 template <>
 struct EnumTraits<ash::shimless_rma::mojom::CalibrationComponent,
-                  rmad::CalibrateComponentsState::CalibrationComponent> {
+                  rmad::CheckCalibrationState::CalibrationStatus::Component> {
   static ash::shimless_rma::mojom::CalibrationComponent ToMojom(
-      rmad::CalibrateComponentsState::CalibrationComponent key_status);
+      rmad::CheckCalibrationState::CalibrationStatus::Component key_status);
 
   static bool FromMojom(
       ash::shimless_rma::mojom::CalibrationComponent input,
-      rmad::CalibrateComponentsState::CalibrationComponent* out);
+      rmad::CheckCalibrationState::CalibrationStatus::Component* out);
 };
 
 template <>

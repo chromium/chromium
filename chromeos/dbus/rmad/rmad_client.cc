@@ -61,9 +61,14 @@ rmad::RmadState* CreateState(rmad::RmadState::StateCase state_case) {
       state->set_allocated_update_device_info(
           new rmad::UpdateDeviceInfoState());
       break;
-    case rmad::RmadState::kCalibrateComponents:
-      state->set_allocated_calibrate_components(
-          new rmad::CalibrateComponentsState());
+    case rmad::RmadState::kCheckCalibration:
+      state->set_allocated_check_calibration(new rmad::CheckCalibrationState());
+      break;
+    case rmad::RmadState::kSetupCalibration:
+      state->set_allocated_setup_calibration(new rmad::SetupCalibrationState());
+      break;
+    case rmad::RmadState::kRunCalibration:
+      state->set_allocated_run_calibration(new rmad::RunCalibrationState());
       break;
     case rmad::RmadState::kProvisionDevice:
       state->set_allocated_provision_device(new rmad::ProvisionDeviceState());
@@ -192,7 +197,7 @@ void RmadClientImpl::CalibrationProgressReceived(dbus::Signal* signal) {
   }
   for (auto& observer : observers_) {
     observer.CalibrationProgress(
-        static_cast<rmad::CalibrateComponentsState::CalibrationComponent>(
+        static_cast<rmad::CheckCalibrationState::CalibrationStatus::Component>(
             component),
         progress);
   }
