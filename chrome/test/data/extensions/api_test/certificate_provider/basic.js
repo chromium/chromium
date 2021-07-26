@@ -74,8 +74,11 @@ function registerAsCertificateProvider() {
 
 function registerAsLegacyCertificateProvider() {
   function checkResult(rejectedCerts) {
-    assertEq(1, rejectedCerts.length);
-    assertEq(INVALID_CERT, new Uint8Array(rejectedCerts[0]));
+    assertEq(2, rejectedCerts.length);
+    const rejectedCertsBytes =
+        rejectedCerts.map(arrayBuffer => new Uint8Array(arrayBuffer));
+    assertTrue(rejectedCertsBytes.contains(INVALID_CERT));
+    assertTrue(rejectedCertsBytes.contains(l1LeafCert));
   }
 
   function reportCertificates(reportCallback) {
