@@ -30,11 +30,6 @@ void ReportQueueFactory::Create(base::StringPiece dm_token_value,
                                 SuccessCallback success_cb) {
   DCHECK(base::ThreadTaskRunnerHandle::IsSet());
 
-  if (dm_token_value.empty()) {
-    VLOG(1) << "dm_token must not be empty.";
-    return;
-  }
-
   auto config_result = ReportQueueConfiguration::Create(
       std::string(dm_token_value.data()), destination,
       base::BindRepeating([]() { return Status::StatusOK(); }));

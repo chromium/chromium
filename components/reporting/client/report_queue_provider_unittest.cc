@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
 #include "components/reporting/client/report_queue_provider.h"
+#include <memory>
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
@@ -12,10 +12,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/reporting/client/mock_report_queue.h"
+#include "components/reporting/client/mock_report_queue_provider.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
+#include "components/reporting/client/report_queue_provider_test_helper.h"
 #include "components/reporting/proto/record.pb.h"
-#include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -26,63 +27,12 @@
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::NiceMock;
 using ::testing::StrEq;
 using ::testing::WithArg;
 
 namespace reporting {
 namespace {
-
-class MockReportQueueProvider : public ReportQueueProvider {
- public:
-  InitializingContext* InstantiateInitializingContext(
-      InitCompleteCallback init_complete_cb,
-      scoped_refptr<InitializationStateTracker> init_state_tracker) override {
-    return new MockInitializingContext(std::move(init_complete_cb),
-                                       init_state_tracker, this);
-  }
-
-  StatusOr<std::unique_ptr<ReportQueue>> CreateNewQueue(
-      std::unique_ptr<ReportQueueConfiguration> config) override {
-    return std::make_unique<MockReportQueue>();
-  }
-
-  void Reset() { storage_.reset(); }
-
- private:
-  // Mock initialization class.
-  class MockInitializingContext
-      : public ReportQueueProvider::InitializingContext {
-   public:
-    MockInitializingContext(
-        InitCompleteCallback init_complete_cb,
-        scoped_refptr<InitializationStateTracker> init_state_tracker,
-        MockReportQueueProvider* provider)
-        : InitializingContext(std::move(init_complete_cb), init_state_tracker),
-          provider_(provider) {
-      DCHECK(provider_ != nullptr);
-    }
-
-   private:
-    ~MockInitializingContext() override = default;
-
-    void OnStart() override {
-      // Create storage.
-      storage_ = base::MakeRefCounted<test::TestStorageModule>();
-      // Hand it over to the completion.
-      base::ThreadPool::PostTask(
-          FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-          base::BindOnce(&InitializingContext::Complete, base::Unretained(this),
-                         Status::StatusOK()));
-    }
-
-    void OnCompleted() override { provider_->storage_ = std::move(storage_); }
-
-    scoped_refptr<StorageModuleInterface> storage_;
-    MockReportQueueProvider* const provider_;
-  };
-
-  scoped_refptr<StorageModuleInterface> storage_;
-};
 
 class ReportQueueProviderTest : public ::testing::Test {
  protected:
@@ -97,11 +47,17 @@ class ReportQueueProviderTest : public ::testing::Test {
 };
 
 TEST_F(ReportQueueProviderTest, CreateAndGetQueue) {
+  std::unique_ptr<MockReportQueueProvider> provider =
+      std::make_unique<NiceMock<MockReportQueueProvider>>();
+  report_queue_provider_test_helper::SetForTesting(provider.get());
+
   static constexpr char kTestMessage[] = "TEST MESSAGE";
   // Create configuration.
   auto config_result = ReportQueueConfiguration::Create(
       dm_token_, destination_, policy_checker_callback_);
   ASSERT_OK(config_result);
+  EXPECT_CALL(*provider.get(), InitOnCompletedCalled()).Times(1);
+  provider->ExpectCreateNewQueueAndReturnNewMockQueue(1);
   // Use it to asynchronously create ReportingQueue and then asynchronously
   // send the message.
   test::TestEvent<Status> e;
@@ -140,16 +96,8 @@ TEST_F(ReportQueueProviderTest, CreateAndGetQueue) {
           kTestMessage, e.cb(), std::move(config_result.ValueOrDie())));
   const auto res = e.result();
   EXPECT_OK(res) << res;
-  static_cast<MockReportQueueProvider*>(MockReportQueueProvider::GetInstance())
-      ->Reset();
+  report_queue_provider_test_helper::SetForTesting(nullptr);
 }
 
 }  // namespace
-
-// Implementation of the mock report provider for this test.
-ReportQueueProvider* ReportQueueProvider::GetInstance() {
-  static base::NoDestructor<MockReportQueueProvider> provider;
-  return provider.get();
-}
-
 }  // namespace reporting
