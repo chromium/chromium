@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_PLATFORM_METRICS_H_
 
 #include <map>
+#include <set>
 
 #include "base/time/time.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -42,6 +43,16 @@ enum class AppTypeName {
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
   kMaxValue = kStandaloneBrowserExtension,
+};
+
+// This is used for logging, so do not remove or reorder existing entries.
+enum class InstallTime {
+  kInit = 0,
+  kRunning = 1,
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kRunning,
 };
 
 extern const char kAppRunningDuration[];
@@ -145,6 +156,10 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // Records the app usage time UKM in five minutes intervals.
   void RecordAppsUsageTimeUkm();
 
+  // Records the installed app in Chrome OS.
+  void RecordAppsInstallUkm(const apps::AppUpdate& update,
+                            InstallTime install_time);
+
   // Returns true if we are allowed to record UKM. Otherwise, returns false.
   bool ShouldRecordUkm();
 
@@ -177,6 +192,8 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   std::map<AppTypeName, base::TimeDelta>
       app_type_running_time_per_five_minutes_;
   std::map<std::string, base::TimeDelta> app_id_running_time_per_five_minutes_;
+
+  std::set<apps::mojom::AppType> initialized_app_types;
 };
 
 }  // namespace apps
