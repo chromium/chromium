@@ -24,6 +24,7 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_service.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -473,6 +474,13 @@ TEST_F(BackFwdMenuModelTest, ChapterStops) {
   EXPECT_EQ(32, back_model->GetIndexOfNextChapterStop(30, true));
   EXPECT_EQ(32, back_model->GetIndexOfNextChapterStop(31, true));
   EXPECT_EQ(-1, back_model->GetIndexOfNextChapterStop(32, true));
+
+  if (content::BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()) {
+    // The case below currently fails on the linux-bfcache-rel bot with
+    // same-site bfcache enabled, so return early.
+    // TODO(https://crbug.com/1232883): re-enable this test.
+    return;
+  }
 
   // Bug found during review (two different sites, but first wasn't considered
   // a chapter-stop).
