@@ -132,7 +132,7 @@ std::string BuildClientDataJson(
     ret.append(R"("icon":)");
     ret.append(ToJSONString(payment_options->instrument->icon.spec()));
 
-    ret.append(R"(,"name":)");
+    ret.append(R"(,"displayName":)");
     ret.append(ToJSONString(payment_options->instrument->display_name));
 
     ret.append("}}");
