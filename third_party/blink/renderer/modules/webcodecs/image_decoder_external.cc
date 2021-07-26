@@ -120,6 +120,14 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
       tracks_(MakeGarbageCollected<ImageTrackList>(this)),
       completed_property_(
           MakeGarbageCollected<CompletedProperty>(GetExecutionContext())) {
+  // If the context is already destroyed we will never get an OnContextDestroyed
+  // callback, which is critical to invalidating any pending WeakPtr operations.
+  if (GetExecutionContext()->IsContextDestroyed()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Invalid context.");
+    return;
+  }
+
   UseCounter::Count(GetExecutionContext(), WebFeature::kWebCodecs);
 
   // |data| is a required field.
@@ -154,13 +162,9 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
-  if (
-      init->data()->IsReadableStream()
-  ) {
-    if (
-        init->data()->GetAsReadableStream()->IsLocked() ||
-        init->data()->GetAsReadableStream()->IsDisturbed()
-    ) {
+  if (init->data()->IsReadableStream()) {
+    if (init->data()->GetAsReadableStream()->IsLocked() ||
+        init->data()->GetAsReadableStream()->IsDisturbed()) {
       exception_state.ThrowTypeError(
           "ImageDecoder can only accept readable streams that are not yet "
           "locked to a reader");
