@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -32,12 +34,19 @@ public class StartSurfaceHomeButtonIPHController {
     public StartSurfaceHomeButtonIPHController(
             UserEducationHelper userEducationHelper, View homeButtonView) {
         mUserEducationHelper = userEducationHelper;
-        mIPHCommand = new IPHCommandBuilder(homeButtonView.getResources(),
+        assert homeButtonView != null;
+        Resources resources = homeButtonView.getResources();
+        int height = resources.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                + resources.getDimensionPixelSize(R.dimen.toolbar_edge_padding);
+        int width = resources.getDimensionPixelSize(R.dimen.toolbar_button_width);
+        Rect anchorRect = new Rect(width / 2, height, width / 2, height);
+        mIPHCommand = new IPHCommandBuilder(resources,
                 FeatureConstants.START_SURFACE_TAB_SWITCHER_HOME_BUTTON_FEATURE,
                 R.string.iph_ntp_with_feed_text, R.string.iph_ntp_with_feed_accessibility_text)
                               .setAnchorView(homeButtonView)
                               .setHighlightParams(new HighlightParams(HighlightShape.CIRCLE))
                               .setDismissOnTouch(true)
+                              .setAnchorRect(anchorRect)
                               .setOnShowCallback(() -> mIsShowingIPH = true)
                               .setOnDismissCallback(() -> mIsShowingIPH = false)
                               .setAutoDismissTimeout(10 * 1000)
