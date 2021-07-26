@@ -1,0 +1,32 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.bluetooth_config.mojom;
+
+// State of Bluetooth on the device.
+// TODO(khorimoto): Add states for enabling and disabling.
+enum BluetoothSystemState {
+  // Device does not have access to Bluetooth.
+  kUnavailable,
+
+  // Bluetooth is turned off.
+  kDisabled,
+
+  // Bluetooth is turned on.
+  kEnabled,
+};
+
+// Describes the high-level status of system Bluetooth.
+// TODO(khorimoto): Add properties describing paired devices and modification
+// state.
+struct BluetoothSystemProperties {
+  BluetoothSystemState system_state;
+};
+
+// Observer for changes to Bluetooth system properties.
+interface SystemPropertiesObserver {
+  // Invoked whenever any property changes, including whenever a property of a
+  // paired device changes (e.g., from connected to disconnected).
+  OnPropertiesUpdated(BluetoothSystemProperties properties);
+};

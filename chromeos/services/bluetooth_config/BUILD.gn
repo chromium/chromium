@@ -1,0 +1,55 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+static_library("bluetooth_config") {
+  sources = [
+    "system_properties_provider.cc",
+    "system_properties_provider.h",
+    "system_properties_provider_impl.cc",
+    "system_properties_provider_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/services/bluetooth_config/public/mojom",
+    "//device/bluetooth",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_system_properties_observer.cc",
+    "fake_system_properties_observer.h",
+  ]
+
+  deps = [
+    ":bluetooth_config",
+    "//base",
+    "//chromeos/services/bluetooth_config/public/mojom",
+    "//device/bluetooth",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "system_properties_provider_impl_unittest.cc" ]
+
+  deps = [
+    ":bluetooth_config",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//device/bluetooth:mocks",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
