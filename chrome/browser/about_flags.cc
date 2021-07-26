@@ -7651,6 +7651,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kShareUsageRanking)},
 #endif
 
+    {"enable-safe-browsing-per-profile-network-contexts",
+     flag_descriptions::kSafeBrowsingPerProfileNetworkContextsName,
+     flag_descriptions::kSafeBrowsingPerProfileNetworkContextsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(safe_browsing::kSafeBrowsingSeparateNetworkContexts)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

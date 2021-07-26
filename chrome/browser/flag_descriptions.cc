@@ -2186,6 +2186,12 @@ const char kPrivacySandboxSettings2Description[] =
     "Enables the second set of privacy sandbox settings. Requires "
     "#privacy-sandbox-settings to also be enabled";
 
+const char kSafeBrowsingPerProfileNetworkContextsName[] =
+    "Per-profile Safe Browsing network contexts";
+const char kSafeBrowsingPerProfileNetworkContextsDescription[] =
+    "Keys the Safe Browsing network context by the profile initiating the "
+    "request";
+
 const char kSafetyCheckWeakPasswordsName[] = "Safety check for weak passwords";
 const char kSafetyCheckWeakPasswordsDescription[] =
     "If weak passwords were found, show them in safety check.";

@@ -1248,6 +1248,9 @@ extern const char kPrivacySandboxSettingsDescription[];
 extern const char kPrivacySandboxSettings2Name[];
 extern const char kPrivacySandboxSettings2Description[];
 
+extern const char kSafeBrowsingPerProfileNetworkContextsName[];
+extern const char kSafeBrowsingPerProfileNetworkContextsDescription[];
+
 extern const char kSafetyCheckWeakPasswordsName[];
 extern const char kSafetyCheckWeakPasswordsDescription[];
 

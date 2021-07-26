@@ -47072,6 +47072,8 @@ from previous Chrome versions.
   <int value="-1596559650" label="max-tiles-for-interest-area"/>
   <int value="-1596489715" label="AutoScreenBrightness:enabled"/>
   <int value="-1594298767" label="FullscreenToolbarReveal:enabled"/>
+  <int value="-1591974904"
+      label="SafeBrowsingSeparateNetworkContexts:disabled"/>
   <int value="-1591450227" label="enable-microphone-mute-switch-device"/>
   <int value="-1589720671"
       label="DebugHistoryInterventionNoUserActivation:disabled"/>
@@ -49130,6 +49132,7 @@ from previous Chrome versions.
   <int value="61205887" label="enable-text-input-focus-manager"/>
   <int value="61466986" label="AsyncDns:disabled"/>
   <int value="63187126" label="DownloadsAutoResumptionNative:enabled"/>
+  <int value="64016368" label="SafeBrowsingSeparateNetworkContexts:enabled"/>
   <int value="64942701" label="OfflinePagesSvelteConcurrentLoading:disabled"/>
   <int value="65245449" label="FilesBannerFramework:enabled"/>
   <int value="66897259" label="ModalPermissionDialogView:enabled"/>
