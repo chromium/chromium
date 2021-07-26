@@ -67,10 +67,10 @@ export let SendImagesEvent;
 export let SendLocalImagesEvent;
 
 /**
+ * Sends local image data keyed by stringified local image id.
  * @typedef {{
  *   type: EventType,
- *   id: !mojoBase.mojom.UnguessableToken,
- *   data: string,
+ *   data: !Object<string, string>,
  * }}
  */
 export let SendLocalImageDataEvent;

@@ -33,30 +33,15 @@ export function WallpaperCollectionsTest() {
     wallpaperCollectionsElement = null;
   });
 
-  test('shows loading on startup', async () => {
-    wallpaperCollectionsElement = initElement(WallpaperCollections.is);
-
-    const spinner = wallpaperCollectionsElement.shadowRoot.querySelector(
-        'paper-spinner-lite');
-    assertTrue(!!spinner);
-    assertTrue(spinner.active);
-
-    const iframe =
-        wallpaperCollectionsElement.shadowRoot.querySelector('iframe');
-    assertTrue(iframe.hidden);
-  });
-
-  test('shows wallpaper collections when loaded', async () => {
+  test('sends wallpaper collections when loaded', async () => {
     const {sendCollections: sendCollectionsPromise} =
         promisifyIframeFunctionsForTesting();
     wallpaperCollectionsElement = initElement(WallpaperCollections.is);
 
-    const spinner = wallpaperCollectionsElement.shadowRoot.querySelector(
-        'paper-spinner-lite');
-    assertTrue(!!spinner);
-    assertTrue(spinner.active);
-
-    personalizationStore.data.loading = {collections: false};
+    personalizationStore.data.loading = {
+      ...personalizationStore.data.loading,
+      collections: false
+    };
     personalizationStore.data.backdrop.collections =
         wallpaperProvider.collections;
     personalizationStore.notifyObservers();
@@ -64,8 +49,6 @@ export function WallpaperCollectionsTest() {
     // Wait for |sendCollections| to be called.
     const [target, data] = await sendCollectionsPromise;
     await waitAfterNextRender(wallpaperCollectionsElement);
-
-    assertFalse(spinner.active);
 
     const iframe =
         wallpaperCollectionsElement.shadowRoot.querySelector('iframe');
@@ -81,6 +64,7 @@ export function WallpaperCollectionsTest() {
       images: {},
     };
     personalizationStore.data.loading = {
+      ...personalizationStore.data.loading,
       collections: false,
       images: {},
     };
@@ -123,6 +107,7 @@ export function WallpaperCollectionsTest() {
     wallpaperCollectionsElement = initElement(WallpaperCollections.is);
 
     personalizationStore.data.loading = {
+      ...personalizationStore.data.loading,
       collections: false,
       local: {images: false}
     };
@@ -146,21 +131,19 @@ export function WallpaperCollectionsTest() {
   test('shows error when fails to load', async () => {
     wallpaperCollectionsElement = initElement(WallpaperCollections.is);
 
-    const spinner = wallpaperCollectionsElement.shadowRoot.querySelector(
-        'paper-spinner-lite');
-    assertTrue(spinner.active);
-
     // No error displayed while loading.
     const error =
         wallpaperCollectionsElement.shadowRoot.querySelector('#error');
     assertTrue(error.hidden);
 
-    personalizationStore.data.loading = {collections: false};
+    personalizationStore.data.loading = {
+      ...personalizationStore.data.loading,
+      collections: false,
+    };
     personalizationStore.data.backdrop.collections = null;
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperCollectionsElement);
 
-    assertFalse(spinner.active);
     assertFalse(error.hidden);
 
     // Iframe should be hidden if there is an error.
@@ -225,13 +208,13 @@ export function WallpaperCollectionsTest() {
   });
 
   test(
-      'sends the first local images that successfully load thumbnails',
+      'sends the first three local images that successfully load thumbnails',
       async () => {
         // Set up store data. Local image list is loaded, but thumbnails are
         // still loading in.
         personalizationStore.data.loading.local.images = false;
         personalizationStore.data.local.images = [];
-        for (let i = 0; i < kMaximumLocalImagePreviews * 2; i++) {
+        for (let i = 0; i < kMaximumLocalImagePreviews; i++) {
           personalizationStore.data.local.images.push(
               {id: {high: BigInt(i * 2), low: BigInt(i)}, name: `local-${i}`});
           personalizationStore.data.loading.local.data[`${i * 2},${i}`] = true;
@@ -241,7 +224,7 @@ export function WallpaperCollectionsTest() {
             wallpaperProvider.collections;
         personalizationStore.data.loading.collections = false;
 
-        let {sendLocalImages, sendLocalImageData} =
+        const {sendLocalImages, sendLocalImageData} =
             promisifyIframeFunctionsForTesting();
 
         wallpaperCollectionsElement = initElement(WallpaperCollections.is);
@@ -249,22 +232,19 @@ export function WallpaperCollectionsTest() {
         await sendLocalImages;
 
         // No thumbnails loaded so none sent.
-        assertEquals(0, wallpaperCollectionsElement.sentLocalImages_.size);
+        assertFalse(wallpaperCollectionsElement.didSendLocalImageData_);
 
         // First thumbnail loads in.
         personalizationStore.data.loading.local.data = {'0,0': false};
         personalizationStore.data.local.data = {'0,0': 'local_data_0'};
         personalizationStore.notifyObservers();
 
-        // This thumbnail should have just loaded in.
-        let sent = await sendLocalImageData;
-        assertDeepEquals(
-            ['0,0'], Array.from(wallpaperCollectionsElement.sentLocalImages_));
-        assertEquals('0,0', unguessableTokenToString(sent[1].id));
-        assertEquals('local_data_0', sent[2]);
+        await wallpaperCollectionsElement.iframePromise_;
+        await waitAfterNextRender(wallpaperCollectionsElement);
 
-        sendLocalImageData =
-            promisifyIframeFunctionsForTesting().sendLocalImageData;
+        // Should not have sent any image data since more thumbnails are still
+        // loading.
+        assertFalse(wallpaperCollectionsElement.didSendLocalImageData_);
 
         // Second thumbnail fails loading. Third succeeds.
         personalizationStore.data.loading.local.data = {
@@ -279,14 +259,12 @@ export function WallpaperCollectionsTest() {
         };
         personalizationStore.notifyObservers();
 
-        sent = await sendLocalImageData;
-        // '4,2' successfully loaded and '2,1' did not. '4,2' should have been
-        // sent to iframe.
-        assertDeepEquals(
-            ['0,0', '4,2'],
-            Array.from(wallpaperCollectionsElement.sentLocalImages_));
+        // 2 thumbnails have now loaded. 1 failed. But there are no more
+        // remaining to try loading, should send local image data anyway.
+        const [_, sentData] = await sendLocalImageData;
 
-        assertEquals('4,2', unguessableTokenToString(sent[1].id));
-        assertEquals('local_data_2', sent[2]);
+        assertTrue(wallpaperCollectionsElement.didSendLocalImageData_);
+        assertDeepEquals(
+            {'0,0': 'local_data_0', '4,2': 'local_data_2'}, sentData);
       });
 }

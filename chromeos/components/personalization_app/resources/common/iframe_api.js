@@ -61,13 +61,13 @@ export function sendLocalImages(target, images) {
 }
 
 /**
+ * Sends image data keyed by stringified image id.
  * @param {!Window} target
- * @param {!chromeos.personalizationApp.mojom.LocalImage} image
- * @param {!string} data
+ * @param {!Object<string, string>} data
  */
-export function sendLocalImageData(target, image, data) {
+export function sendLocalImageData(target, data) {
   /** @type {!SendLocalImageDataEvent} */
-  const event = {type: EventType.SEND_LOCAL_IMAGE_DATA, id: image.id, data};
+  const event = {type: EventType.SEND_LOCAL_IMAGE_DATA, data};
   target.postMessage(event, untrustedOrigin);
 }
 
@@ -167,7 +167,9 @@ export function validateReceivedData(event, expectedEventType) {
    * @type {
    *   SendCollectionsEvent|
    *   SendImagesEvent|
-   *   SendSelectedWallpaperAssetIdEvent
+   *   SendSelectedWallpaperAssetIdEvent|
+   *   SendLocalImagesEvent|
+   *   SendLocalImageDataEvent
    * }
    */
   const data = event.data;
@@ -175,6 +177,9 @@ export function validateReceivedData(event, expectedEventType) {
     case EventType.SEND_COLLECTIONS:
       assert(isNonEmptyArray(data.collections), 'Expected collections array');
       return data.collections;
+    case EventType.SEND_LOCAL_IMAGE_DATA:
+      assert(typeof data.data === 'object', 'Expected data object');
+      return data.data;
     case EventType.SEND_LOCAL_IMAGES:
     case EventType.SEND_IMAGES:
       // Images array may be empty.

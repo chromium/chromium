@@ -219,10 +219,13 @@ class CollectionsGrid extends PolymerElement {
         }
         break;
       case EventType.SEND_LOCAL_IMAGE_DATA:
-        this.localImageData_ = {
-          ...this.localImageData_,
-          [unguessableTokenToString(message.data.id)]: message.data.data,
-        };
+        try {
+          this.localImageData_ =
+              validateReceivedData(message, EventType.SEND_LOCAL_IMAGE_DATA);
+        } catch (e) {
+          console.warn('Invalid local image data received', e);
+          this.localImageData_ = {};
+        }
         break;
       default:
         console.error(`Unexpected event type ${message.data.type}`);
