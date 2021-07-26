@@ -4,8 +4,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os
 import sys
 
-from blinkpy.web_tests.merge_results import main
+from blinkpy.common.host import Host
 
-main(sys.argv[1:])
+BLINK_TOOLS_PATH = os.path.abspath(os.path.dirname(__file__))
+
+def main():
+    path_to_merge_script = os.path.join(BLINK_TOOLS_PATH,
+                                        'blinkpy',
+                                        'web_tests',
+                                        'merge_results.py')
+    command = ['python3', path_to_merge_script] + sys.argv[1:]
+    host = Host()
+    output = host.executive.run_command(command)
+    print("Output of merge_results.py:\n%s\n" % output)
+
+if __name__ == '__main__':
+    main()
