@@ -461,10 +461,6 @@
       status: "test",
     },
     {
-      name: "CookiesWithoutSameSiteMustBeSecure",
-      status: "test",
-    },
-    {
       name: "CooperativeScheduling"
     },
     {
@@ -1898,10 +1894,6 @@
     // RTCPeerConnection construction (unless otherwise specified).
     {
       name: "RTCUnifiedPlanByDefault",
-    },
-    {
-      name: "SameSiteByDefaultCookies",
-      status: "test",
     },
     {
       name: "SanitizerAPI",
