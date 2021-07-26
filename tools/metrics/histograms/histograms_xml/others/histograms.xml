@@ -9561,6 +9561,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Mac.UniversalLink.APIDuration" units="ms"
+    expires_after="2022-07-01">
+  <owner>avi@chromium.org</owner>
+  <owner>mark@chromium.org</owner>
+  <summary>
+    Native macOS apps can claim regions of the URL space for themselves, and so
+    on every navigation, Chromium calls the SFUniversalLink API to determine if
+    the URL being navigated to requires special handling. The SFUniversalLink
+    API is usually instantaneous, but for some machines it's very slow. This
+    metric logs the amount of time that it the SFUniversalLink API took to run,
+    if over 100ms. This metric is logged once per run of Chrome, because if that
+    API call ever takes longer than 100ms, it is disabled and never used again
+    in that run of Chrome.
+  </summary>
+</histogram>
+
 <histogram base="true" name="MachineLearningService.CpuTimeMicrosec"
     units="microseconds" expires_after="2022-01-15">
 <!-- Name completed by histogram_suffixes
