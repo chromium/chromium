@@ -1,5 +1,5 @@
 {
-  "name": "Shared Module Import Test Not In Whitelist",
+  "name": "Shared Module Import Test Not In Allowlist",
   "manifest_version": 2,
   "version": "1.0",
   "app": {
