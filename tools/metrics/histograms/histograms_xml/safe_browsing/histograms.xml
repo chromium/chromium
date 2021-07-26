@@ -1304,6 +1304,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.RT.LocalMatch.Result.{IsMainframe}"
+    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2022-07-16">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the result of checking the {IsMainframe} URL against the local Safe
+    Browsing high confidence allowlist. Logged each time a top frame URL
+    navigation happens for users who have the real time URL lookups enabled.
+  </summary>
+  <token key="IsMainframe">
+    <variant name="Mainframe" summary="mainframe"/>
+    <variant name="NonMainframe" summary="non mainframe"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.RT.Network.Result"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-12-05">
   <owner>vakh@chromium.org</owner>
