@@ -859,6 +859,9 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   data_use_measurement::ChromeDataUseMeasurement::RegisterPrefs(registry);
   BrowserProcessImpl::RegisterPrefs(registry);
   ChromeContentBrowserClient::RegisterLocalStatePrefs(registry);
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  chrome_labs_prefs::RegisterLocalStatePrefs(registry);
+#endif
   ChromeMetricsServiceClient::RegisterPrefs(registry);
   ChromeTracingDelegate::RegisterPrefs(registry);
   chrome::enterprise_util::RegisterLocalStatePrefs(registry);

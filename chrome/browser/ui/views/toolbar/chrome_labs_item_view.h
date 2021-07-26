@@ -12,6 +12,8 @@
 #include "ui/views/view.h"
 
 class Browser;
+class NewBadgeLabel;
+class Profile;
 struct LabInfo;
 
 namespace views {
@@ -39,9 +41,15 @@ class ChromeLabsItemView : public views::View {
     return feedback_button_;
   }
 
+  NewBadgeLabel* GetNewBadgeForTesting() { return experiment_name_; }
+
   const flags_ui::FeatureEntry* GetFeatureEntry();
 
  private:
+  bool ShouldShowNewBadge(Profile* profile, const LabInfo& lab);
+
+  NewBadgeLabel* experiment_name_;
+
   // Combobox with selected state of the lab.
   views::Combobox* lab_state_combobox_;
 

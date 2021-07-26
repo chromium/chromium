@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
 
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
@@ -14,7 +17,9 @@
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/user_education/new_badge_label.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/flags_ui/feature_entry_macros.h"
@@ -71,7 +76,8 @@ const flags_ui::FeatureEntry::FeatureVariation kTestVariations2[] = {
 class ChromeLabsBubbleTest : public TestWithBrowserView {
  public:
   ChromeLabsBubbleTest()
-      :
+      : TestWithBrowserView(
+            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         user_manager_(new ash::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)),
@@ -191,7 +197,6 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
     return true;
   }
 
- private:
   std::vector<LabInfo> TestLabInfo() {
     std::vector<LabInfo> test_feature_info;
     test_feature_info.emplace_back(LabInfo(kFirstTestFeatureId, u"", u"", "",
@@ -212,6 +217,10 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
     return test_feature_info;
   }
 
+ protected:
+  ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
+
+ private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::FakeChromeUserManager* user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
@@ -219,8 +228,6 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
 
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
 };
 
 class ChromeLabsFeatureTest : public ChromeLabsBubbleTest,
@@ -443,3 +450,49 @@ TEST_F(ChromeLabsBubbleTest, ShowFeedbackPage) {
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 #endif
+
+// This test checks the new badge shows and that after 8 days the new badge is
+// not showing anymore.
+TEST_F(ChromeLabsBubbleTest, NewBadgeTest) {
+  EXPECT_TRUE(first_lab_item()->GetNewBadgeForTesting()->GetDisplayNewBadge());
+  ChromeLabsBubbleView::Hide();
+  constexpr base::TimeDelta kDelay = base::TimeDelta::FromDays(8);
+  task_environment()->AdvanceClock(kDelay);
+  ChromeLabsBubbleView::Show(chrome_labs_button(), browser_view()->browser(),
+                             chrome_labs_model(),
+                             /*user_is_chromeos_owner=*/false);
+  EXPECT_FALSE(first_lab_item()->GetNewBadgeForTesting()->GetDisplayNewBadge());
+}
+
+// This test checks that experiments that are removed from the model will be
+// removed from the PrefService when updating new badge prefs.
+TEST_F(ChromeLabsBubbleTest, CleanUpNewBadgePrefsTest) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const base::DictionaryValue* new_badge_prefs =
+      browser_view()->browser()->profile()->GetPrefs()->GetDictionary(
+          chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
+#else
+  const base::DictionaryValue* new_badge_prefs =
+      g_browser_process->local_state()->GetDictionary(
+          chrome_labs_prefs::kChromeLabsNewBadgeDict);
+#endif
+
+  EXPECT_TRUE(new_badge_prefs->HasKey(kFirstTestFeatureId));
+  EXPECT_TRUE(new_badge_prefs->HasKey(kTestFeatureWithVariationId));
+
+  // Remove two experiments.
+  std::vector<LabInfo> test_experiments = TestLabInfo();
+  base::EraseIf(test_experiments, [](const auto& lab) {
+    return lab.internal_name == kFirstTestFeatureId;
+  });
+  base::EraseIf(test_experiments, [](const auto& lab) {
+    return lab.internal_name == kTestFeatureWithVariationId;
+  });
+
+  scoped_chrome_labs_model_data_.SetModelDataForTesting(test_experiments);
+
+  UpdateChromeLabsNewBadgePrefs(browser_view()->browser()->profile(),
+                                chrome_labs_model());
+  EXPECT_FALSE(new_badge_prefs->HasKey(kFirstTestFeatureId));
+  EXPECT_FALSE(new_badge_prefs->HasKey(kTestFeatureWithVariationId));
+}

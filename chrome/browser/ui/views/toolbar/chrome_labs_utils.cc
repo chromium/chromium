@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
 #include "chrome/common/channel_info.h"
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
+#include "components/prefs/scoped_user_pref_update.h"
 
 bool IsFeatureSupportedOnChannel(const LabInfo& lab) {
   return chrome::GetChannel() <= lab.allowed_channel;
@@ -40,4 +43,41 @@ bool IsChromeLabsFeatureValid(const LabInfo& lab, Profile* profile) {
          IsFeatureSupportedOnPlatform(entry) &&
          !about_flags::ShouldSkipConditionalFeatureEntry(flags_storage.get(),
                                                          *entry);
+}
+
+void UpdateChromeLabsNewBadgePrefs(Profile* profile,
+                                   const ChromeLabsBubbleViewModel* model) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DictionaryPrefUpdate update(
+      profile->GetPrefs(), chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
+#else
+  DictionaryPrefUpdate update(g_browser_process->local_state(),
+                              chrome_labs_prefs::kChromeLabsNewBadgeDict);
+#endif
+
+  base::DictionaryValue* new_badge_prefs = update.Get();
+
+  std::vector<std::string> lab_internal_names;
+  const std::vector<LabInfo>& all_labs = model->GetLabInfo();
+  for (const auto& lab : all_labs) {
+    if (IsChromeLabsFeatureValid(lab, profile)) {
+      lab_internal_names.push_back(lab.internal_name);
+      if (!new_badge_prefs->HasKey(lab.internal_name)) {
+        new_badge_prefs->SetInteger(
+            lab.internal_name,
+            chrome_labs_prefs::kChromeLabsNewExperimentPrefValue);
+      }
+    }
+  }
+  std::vector<std::string> entries_to_remove;
+  for (base::DictionaryValue::Iterator it(*new_badge_prefs); !it.IsAtEnd();
+       it.Advance()) {
+    // The size of |lab_internal_names| is capped around 3-5 elements.
+    if (!base::Contains(lab_internal_names, it.key())) {
+      entries_to_remove.push_back(it.key());
+    }
+  }
+
+  for (const std::string& key : entries_to_remove)
+    new_badge_prefs->Remove(key, nullptr);
 }
