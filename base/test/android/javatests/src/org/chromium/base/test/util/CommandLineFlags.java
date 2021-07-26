@@ -4,13 +4,17 @@
 
 package org.chromium.base.test.util;
 
+import android.app.Activity;
 import android.text.TextUtils;
 
 import org.junit.Assert;
 import org.junit.Rule;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
 import org.chromium.base.CommandLineInitUtil;
+import org.chromium.base.Log;
 import org.chromium.base.test.BaseJUnit4ClassRunner.ClassHook;
 import org.chromium.base.test.BaseJUnit4ClassRunner.TestHook;
 
@@ -59,6 +63,7 @@ import java.util.Set;
  * Note that this class should never be instantiated.
  */
 public final class CommandLineFlags {
+    private static final String TAG = "CommandLineFlags";
     private static final String DISABLE_FEATURES = "disable-features";
     private static final String ENABLE_FEATURES = "enable-features";
 
@@ -120,6 +125,13 @@ public final class CommandLineFlags {
     }
 
     private static void tearDownClass() {
+        for (Activity a : ApplicationStatus.getRunningActivities()) {
+            if (ApplicationStatus.getStateForActivity(a) < ActivityState.RESUMED) {
+                Log.w(TAG,
+                        "Activity " + a + ", is still starting up while the Command Line flags are "
+                                + "being reset. This is a known source of flakiness.");
+            }
+        }
         restoreFlags(sClassFlagsToRemove, sClassFlagsToAdd);
         sClassFlagsToRemove = null;
         sClassFlagsToAdd = null;

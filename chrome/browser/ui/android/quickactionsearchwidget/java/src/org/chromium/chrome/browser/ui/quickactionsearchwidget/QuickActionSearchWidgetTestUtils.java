@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.ui.quickactionsearchwidget;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.lifecycle.Stage;
 import android.view.View;
 
 import org.junit.Assert;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Matchers;
@@ -19,7 +21,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
-import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -36,13 +37,13 @@ class QuickActionSearchWidgetTestUtils {
      * @param shouldActivityLaunchVoiceMode Whether the search activity is expected to launched in
      *         voice mode or not.
      */
-    static void assertSearchActivityLaunchedAfterAction(
+    static void assertSearchActivityLaunchedAfterAction(BaseActivityTestRule<Activity> testRule,
             final Runnable action, final boolean shouldActivityLaunchVoiceMode) {
-        Activity activity = ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SearchActivity.class, action);
+        testRule.setActivity(ApplicationTestUtils.waitForActivityWithClass(
+                SearchActivity.class, Stage.CREATED, action));
 
-        Assert.assertNotNull(activity);
-        assertSearchActivityLaunchedWithCorrectVoiceExtras(activity, shouldActivityLaunchVoiceMode);
+        assertSearchActivityLaunchedWithCorrectVoiceExtras(
+                testRule.getActivity(), shouldActivityLaunchVoiceMode);
     }
 
     /**
@@ -52,11 +53,11 @@ class QuickActionSearchWidgetTestUtils {
      * @param action the runnable such that after running {@link ChromeTabbedActivity} is expected
      *         to be launched.
      */
-    static void assertDinoGameLaunchedAfterAction(Runnable action) {
-        final ChromeTabbedActivity activity = ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), ChromeTabbedActivity.class, action);
-
-        Assert.assertNotNull(activity);
+    static void assertDinoGameLaunchedAfterAction(
+            BaseActivityTestRule<Activity> testRule, Runnable action) {
+        ChromeTabbedActivity activity = ApplicationTestUtils.waitForActivityWithClass(
+                ChromeTabbedActivity.class, Stage.CREATED, action);
+        testRule.setActivity(activity);
 
         CriteriaHelper.pollUiThread(() -> {
             Tab activityTab = activity.getActivityTab();
