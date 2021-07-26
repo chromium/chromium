@@ -2321,12 +2321,36 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Check the default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "auth.allow_cross_origin_prompt": {
+            "location": "local_state",
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: true",
         "policies": {
           "AllowCrossOriginAuthPrompt": true
         },
         "prefs": {
           "auth.allow_cross_origin_prompt": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: false",
+        "policies": {
+          "AllowCrossOriginAuthPrompt": false
+        },
+        "prefs": {
+          "auth.allow_cross_origin_prompt": {
+            "location": "local_state",
+            "value": false
           }
         }
       }
