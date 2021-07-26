@@ -42,6 +42,12 @@ class DownloadReporter
   void OnDownloadDestroyed(download::DownloadItem* download) override;
   void OnDownloadUpdated(download::DownloadItem* download) override;
 
+  // Reports the bypass event for this download because it was opened before the
+  // verdict was available. |danger_type| is the danger type returned by the
+  // async scan.
+  void ReportDelayedBypassEvent(download::DownloadItem* download,
+                                download::DownloadDangerType danger_type);
+
  private:
   base::flat_map<download::DownloadItem*, download::DownloadDangerType>
       danger_types_;
@@ -56,6 +62,9 @@ class DownloadReporter
       observed_downloads_{this};
 
   void AddBypassEventToPref(download::DownloadItem* download);
+  void ReportAndRecordDangerousDownloadWarningBypassed(
+      download::DownloadItem* download,
+      download::DownloadDangerType danger_type);
 
   DISALLOW_COPY_AND_ASSIGN(DownloadReporter);
 };

@@ -416,12 +416,9 @@ void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(
   if (browser_context->IsOffTheRecord())
     return;
 
-  // Only report downloads that are known to be dangerous, or downloads that are
-  // opened while scanning isn't done.
-  if (!item->IsDangerous() &&
-      item->GetDangerType() != download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
+  // Only report downloads that are known to be dangerous.
+  if (!item->IsDangerous())
     return;
-  }
 
   OnDangerousDownloadOpened(item, profile);
   if (sb_service_ &&
@@ -455,6 +452,12 @@ void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(
           << "Unable to serialize the dangerous download opened report.";
     }
   }
+}
+
+void DownloadProtectionService::ReportDelayedBypassEvent(
+    download::DownloadItem* download,
+    download::DownloadDangerType danger_type) {
+  download_reporter_.ReportDelayedBypassEvent(download, danger_type);
 }
 
 std::unique_ptr<ReferrerChainData>
@@ -599,9 +602,36 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
   std::string raw_digest_sha256 = item->GetHash();
   auto* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
-  if (router) {
-    auto* scan_result = static_cast<enterprise_connectors::ScanResult*>(
-        item->GetUserData(enterprise_connectors::ScanResult::kKey));
+  if (!router)
+    return;
+
+  auto* scan_result = static_cast<enterprise_connectors::ScanResult*>(
+      item->GetUserData(enterprise_connectors::ScanResult::kKey));
+
+  // A download with a verdict of "sensitive data warning" can be opened and
+  // |item->IsDangerous()| will return |true| for it but the reported event
+  // should be a "sensitive file bypass" event rather than a "dangerous file
+  // bypass" event.
+  if (scan_result &&
+      item->GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
+    for (const auto& result : scan_result->response.results()) {
+      if (result.tag() != "dlp")
+        continue;
+
+      router->OnAnalysisConnectorWarningBypassed(
+          item->GetURL(), item->GetTargetFilePath().AsUTF8Unsafe(),
+          base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
+          item->GetMimeType(),
+          extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+          scan_result->response.request_token(), DeepScanAccessPoint::DOWNLOAD,
+          result, item->GetTotalBytes());
+
+      // The won't be multiple DLP verdicts in the same response, so no need to
+      // keep iterating.
+      break;
+    }
+  } else {
     router->OnDangerousDownloadOpened(
         item->GetURL(), item->GetTargetFilePath().AsUTF8Unsafe(),
         base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),

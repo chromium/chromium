@@ -184,6 +184,13 @@ class DownloadProtectionService {
       const download::DownloadItem* item,
       bool show_download_in_folder);
 
+  // Called to trigger a bypass event report for |download|. This is used when
+  // the async scan verdict is received for a file that was already opened by
+  // the user while it was being processed, and the verdict ended up being
+  // "dangerous" or "sensitive".
+  void ReportDelayedBypassEvent(download::DownloadItem* download,
+                                download::DownloadDangerType danger_type);
+
   // Uploads |item| to Safe Browsing for deep scanning, using the upload
   // service attached to the profile |item| was downloaded in. This is
   // non-blocking, and the result we be provided through |callback|. |source| is

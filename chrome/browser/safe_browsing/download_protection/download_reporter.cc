@@ -174,12 +174,7 @@ void DownloadReporter::OnDownloadUpdated(download::DownloadItem* download) {
 
   if (DangerTypeIsDangerous(old_danger_type) &&
       current_danger_type == download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
-    AddBypassEventToPref(download);
-    ReportDangerousDownloadWarningBypassed(download, old_danger_type);
-    RecordDangerousDownloadWarningBypassed(
-        old_danger_type, download->GetTargetFilePath(),
-        download->GetURL().SchemeIs(url::kHttpsScheme),
-        download->HasUserGesture());
+    ReportAndRecordDangerousDownloadWarningBypassed(download, old_danger_type);
   }
 
   if (old_danger_type ==
@@ -189,6 +184,21 @@ void DownloadReporter::OnDownloadUpdated(download::DownloadItem* download) {
   }
 
   danger_types_[download] = current_danger_type;
+}
+
+void DownloadReporter::ReportDelayedBypassEvent(
+    download::DownloadItem* download,
+    download::DownloadDangerType danger_type) {
+  // Because the file was opened before the verdict was available, it's possible
+  // that the danger type is "BLOCK" but the file was opened anyways.
+  if (danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING ||
+      danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK) {
+    ReportAnalysisConnectorWarningBypassed(download);
+  }
+
+  if (DangerTypeIsDangerous(danger_type)) {
+    ReportAndRecordDangerousDownloadWarningBypassed(download, danger_type);
+  }
 }
 
 void DownloadReporter::AddBypassEventToPref(download::DownloadItem* download) {
@@ -203,6 +213,17 @@ void DownloadReporter::AddBypassEventToPref(download::DownloadItem* download) {
           SafeBrowsingMetricsCollector::EventType::DANGEROUS_DOWNLOAD_BYPASS);
     }
   }
+}
+
+void DownloadReporter::ReportAndRecordDangerousDownloadWarningBypassed(
+    download::DownloadItem* download,
+    download::DownloadDangerType danger_type) {
+  AddBypassEventToPref(download);
+  ReportDangerousDownloadWarningBypassed(download, danger_type);
+  RecordDangerousDownloadWarningBypassed(
+      danger_type, download->GetTargetFilePath(),
+      download->GetURL().SchemeIs(url::kHttpsScheme),
+      download->HasUserGesture());
 }
 
 }  // namespace safe_browsing
