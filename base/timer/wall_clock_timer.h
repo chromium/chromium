@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_UTIL_TIMER_WALL_CLOCK_TIMER_H_
-#define BASE_UTIL_TIMER_WALL_CLOCK_TIMER_H_
+#ifndef BASE_TIMER_WALL_CLOCK_TIMER_H_
+#define BASE_TIMER_WALL_CLOCK_TIMER_H_
 
+#include "base/base_export.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
@@ -16,9 +17,6 @@
 namespace base {
 class Clock;
 class TickClock;
-}  // namespace base
-
-namespace util {
 
 // WallClockTimer is based on OneShotTimer and provides a simple timer API
 // which is mostly similar to OneShotTimer's API. The main difference is that
@@ -36,15 +34,15 @@ namespace util {
 // destructor.
 // - The destructor may be called from any sequence when the timer is not
 // running and there is no scheduled task active.
-class WallClockTimer : public base::PowerSuspendObserver {
+class BASE_EXPORT WallClockTimer : public PowerSuspendObserver {
  public:
   // Constructs a timer. Start() must be called later to start the timer.
   // If |clock| is provided, it's used instead of
-  // base::DefaultClock::GetInstance() to calulate timer's delay.
-  // If |tick_clock| is provided, it's used instead of base::TimeTicks::Now() to
-  // get base::TimeTicks when scheduling tasks.
+  // DefaultClock::GetInstance() to calulate timer's delay. If |tick_clock|
+  // is provided, it's used instead of TimeTicks::Now() to get TimeTicks when
+  // scheduling tasks.
   WallClockTimer();
-  WallClockTimer(const base::Clock* clock, const base::TickClock* tick_clock);
+  WallClockTimer(const Clock* clock, const TickClock* tick_clock);
   WallClockTimer(const WallClockTimer&) = delete;
   WallClockTimer& operator=(const WallClockTimer&) = delete;
 
@@ -52,20 +50,20 @@ class WallClockTimer : public base::PowerSuspendObserver {
 
   // Starts the timer to run at the given |desired_run_time|. If the timer is
   // already running, it will be replaced to call the given |user_task|.
-  virtual void Start(const base::Location& posted_from,
-                     base::Time desired_run_time,
-                     base::OnceClosure user_task);
+  virtual void Start(const Location& posted_from,
+                     Time desired_run_time,
+                     OnceClosure user_task);
 
   // Starts the timer to run at the given |desired_run_time|. If the timer is
   // already running, it will be replaced to call a task formed from
   // |receiver|->*|method|.
   template <class Receiver>
-  void Start(const base::Location& posted_from,
-             base::Time desired_run_time,
+  void Start(const Location& posted_from,
+             Time desired_run_time,
              Receiver* receiver,
              void (Receiver::*method)()) {
     Start(posted_from, desired_run_time,
-          base::BindOnce(method, base::Unretained(receiver)));
+          BindOnce(method, Unretained(receiver)));
   }
 
   // Stops the timer. It is a no-op if the timer is not running.
@@ -74,10 +72,10 @@ class WallClockTimer : public base::PowerSuspendObserver {
   // Returns true if the timer is running.
   bool IsRunning() const;
 
-  // base::PowerSuspendObserver:
+  // PowerSuspendObserver:
   void OnResume() override;
 
-  base::Time desired_run_time() const { return desired_run_time_; }
+  Time desired_run_time() const { return desired_run_time_; }
 
  private:
   void AddObserver();
@@ -88,25 +86,25 @@ class WallClockTimer : public base::PowerSuspendObserver {
   void RunUserTask();
 
   // Returns the current time count.
-  base::Time Now() const;
+  Time Now() const;
 
   bool observer_added_ = false;
 
   // Location in user code.
-  base::Location posted_from_;
+  Location posted_from_;
 
   // The desired run time of |user_task_|.
-  base::Time desired_run_time_;
+  Time desired_run_time_;
 
-  base::OnceClosure user_task_;
+  OnceClosure user_task_;
 
   // Timer which should notify to run task in the period while system awake
-  base::OneShotTimer timer_;
+  OneShotTimer timer_;
 
   // The clock used to calculate the run time for scheduled tasks.
-  const base::Clock* const clock_ = base::DefaultClock::GetInstance();
+  const Clock* const clock_ = DefaultClock::GetInstance();
 };
 
-}  // namespace util
+}  // namespace base
 
-#endif  // BASE_UTIL_TIMER_WALL_CLOCK_TIMER_H_
+#endif  // BASE_TIMER_WALL_CLOCK_TIMER_H_

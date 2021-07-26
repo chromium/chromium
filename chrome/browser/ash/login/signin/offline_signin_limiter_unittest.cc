@@ -73,7 +73,7 @@ class OfflineSigninLimiterTest : public testing::Test {
   user_manager::ScopedUserManager user_manager_enabler_;
 
   std::unique_ptr<TestingProfile> profile_;
-  util::WallClockTimer* timer_;  // Not owned.
+  base::WallClockTimer* timer_;  // Not owned.
 
   OfflineSigninLimiter* limiter_;  // Owned.
   base::test::ScopedPowerMonitorTestSource test_power_monitor_source_;

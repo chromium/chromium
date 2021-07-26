@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/timer/wall_clock_timer.h"
+#include "base/timer/wall_clock_timer.h"
 
 #include <utility>
 
@@ -12,21 +12,19 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 
-namespace util {
+namespace base {
 
 WallClockTimer::WallClockTimer() = default;
-WallClockTimer::WallClockTimer(const base::Clock* clock,
-                               const base::TickClock* tick_clock)
-    : timer_(tick_clock),
-      clock_(clock ? clock : base::DefaultClock::GetInstance()) {}
+WallClockTimer::WallClockTimer(const Clock* clock, const TickClock* tick_clock)
+    : timer_(tick_clock), clock_(clock ? clock : DefaultClock::GetInstance()) {}
 
 WallClockTimer::~WallClockTimer() {
   RemoveObserver();
 }
 
-void WallClockTimer::Start(const base::Location& posted_from,
-                           base::Time desired_run_time,
-                           base::OnceClosure user_task) {
+void WallClockTimer::Start(const Location& posted_from,
+                           Time desired_run_time,
+                           OnceClosure user_task) {
   user_task_ = std::move(user_task);
   posted_from_ = posted_from;
   desired_run_time_ = desired_run_time;
@@ -53,14 +51,14 @@ void WallClockTimer::OnResume() {
 
 void WallClockTimer::AddObserver() {
   if (!observer_added_) {
-    base::PowerMonitor::AddPowerSuspendObserver(this);
+    PowerMonitor::AddPowerSuspendObserver(this);
     observer_added_ = true;
   }
 }
 
 void WallClockTimer::RemoveObserver() {
   if (observer_added_) {
-    base::PowerMonitor::RemovePowerSuspendObserver(this);
+    PowerMonitor::RemovePowerSuspendObserver(this);
     observer_added_ = false;
   }
 }
@@ -71,8 +69,8 @@ void WallClockTimer::RunUserTask() {
   std::exchange(user_task_, {}).Run();
 }
 
-base::Time WallClockTimer::Now() const {
+Time WallClockTimer::Now() const {
   return clock_->Now();
 }
 
-}  // namespace util
+}  // namespace base

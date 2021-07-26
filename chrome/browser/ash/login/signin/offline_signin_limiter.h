@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
-#include "base/util/timer/wall_clock_timer.h"
+#include "base/timer/wall_clock_timer.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -36,7 +36,7 @@ class OfflineSigninLimiter : public KeyedService,
   // the type of authentication flow that the user went through.
   void SignedIn(UserContext::AuthFlow auth_flow);
 
-  util::WallClockTimer* GetTimerForTesting();
+  base::WallClockTimer* GetTimerForTesting();
 
   // KeyedService:
   void Shutdown() override;
@@ -90,9 +90,9 @@ class OfflineSigninLimiter : public KeyedService,
 
   PrefChangeRegistrar pref_change_registrar_;
 
-  std::unique_ptr<util::WallClockTimer> offline_signin_limit_timer_;
+  std::unique_ptr<base::WallClockTimer> offline_signin_limit_timer_;
 
-  std::unique_ptr<util::WallClockTimer> offline_lock_screen_signin_limit_timer_;
+  std::unique_ptr<base::WallClockTimer> offline_lock_screen_signin_limit_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(OfflineSigninLimiter);
 };

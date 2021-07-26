@@ -13,7 +13,7 @@
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "base/util/timer/wall_clock_timer.h"
+#include "base/timer/wall_clock_timer.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "chromeos/policy/weekly_time/weekly_time_interval.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -128,7 +128,7 @@ class DeviceOffHoursController : public chromeos::SystemClockClient::Observer {
 
   // Timer for updating device settings at the begin of next “OffHours” interval
   // or at the end of current "OffHours" interval.
-  std::unique_ptr<util::WallClockTimer> timer_;
+  std::unique_ptr<base::WallClockTimer> timer_;
 
   // Used for testing purposes, otherwise it's an instance of
   // base::DefaultClock.

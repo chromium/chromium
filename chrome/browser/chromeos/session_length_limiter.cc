@@ -216,7 +216,7 @@ void SessionLengthLimiter::UpdateLimit() {
   }
 
   // Set a timer to log out the user when the session length limit is reached.
-  timer_ = std::make_unique<util::WallClockTimer>(
+  timer_ = std::make_unique<base::WallClockTimer>(
       delegate_->GetClock() /*clock*/, nullptr /*tick_clock*/);
   timer_->Start(FROM_HERE, session_stop_time, delegate_.get(),
                 &SessionLengthLimiter::Delegate::StopSession);

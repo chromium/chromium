@@ -8,7 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/time/time.h"
-#include "base/util/timer/wall_clock_timer.h"
+#include "base/timer/wall_clock_timer.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
@@ -194,7 +194,7 @@ class RelaunchNotificationController : public UpgradeObserver {
   // A timer used either to repeatedly reshow the relaunch recommended bubble
   // once the high annoyance level has been reached, or to trigger browser
   // relaunch once the relaunch required dialog's deadline is reached.
-  util::WallClockTimer timer_;
+  base::WallClockTimer timer_;
 
   // A flag to denote that the relaunch notification type policy value has been
   // overridden to required. Changes to the policy value will not affect the

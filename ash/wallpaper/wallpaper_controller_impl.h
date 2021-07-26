@@ -31,7 +31,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/util/timer/wall_clock_timer.h"
+#include "base/timer/wall_clock_timer.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/compositor/compositor_lock.h"
@@ -359,7 +359,7 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Exposed for testing.
   void UpdateDailyRefreshWallpaperForTesting();
-  util::WallClockTimer& GetDailyRefreshTimerForTesting();
+  base::WallClockTimer& GetDailyRefreshTimerForTesting();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WallpaperControllerTest, BasicReparenting);
@@ -726,7 +726,7 @@ class ASH_EXPORT WallpaperControllerImpl
   // May be null in tests.
   PrefService* local_state_ = nullptr;
 
-  util::WallClockTimer daily_refresh_timer_;
+  base::WallClockTimer daily_refresh_timer_;
 
   base::WeakPtrFactory<WallpaperControllerImpl> weak_factory_{this};
 

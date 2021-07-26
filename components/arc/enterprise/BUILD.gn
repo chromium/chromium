@@ -22,7 +22,7 @@ static_library("enterprise") {
 
   deps = [
     "//ash/constants",
-    "//base/util/timer",
+    "//base",
     "//chromeos",
     "//chromeos/cryptohome",
     "//chromeos/dbus:dbus",

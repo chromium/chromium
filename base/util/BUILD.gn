@@ -8,7 +8,6 @@ test("base_util_unittests") {
   deps = [
     "enum_set:unittests",
     "memory_pressure:unittests",
-    "timer:unittests",
     "values:unittests",
     "//base/test:run_all_unittests",
   ]

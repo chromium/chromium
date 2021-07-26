@@ -42,7 +42,6 @@ static_library("enterprise") {
 
   deps = [
     "//base",
-    "//base/util/timer",
     "//build:chromeos_buildflags",
     "//components/policy/core/browser",
     "//components/policy/core/common",

@@ -11,7 +11,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "base/util/timer/wall_clock_timer.h"
+#include "base/timer/wall_clock_timer.h"
 #include "chromeos/policy/weekly_time/weekly_time_interval.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/user_manager/user_manager.h"
@@ -71,7 +71,7 @@ class SnapshotHoursPolicyService : public user_manager::UserManager::Observer {
       const {
     return intervals_;
   }
-  const util::WallClockTimer* get_timer_for_testing() const { return &timer_; }
+  const base::WallClockTimer* get_timer_for_testing() const { return &timer_; }
 
   void set_snapshot_update_end_time_for_testing(base::Time time) {
     snapshot_update_end_time_ = time;
@@ -135,7 +135,7 @@ class SnapshotHoursPolicyService : public user_manager::UserManager::Observer {
 
   // Timer for updating ARC data snapshot at the begin of next interval or at
   // the end of current interval.
-  util::WallClockTimer timer_;
+  base::WallClockTimer timer_;
 
   base::WeakPtrFactory<SnapshotHoursPolicyService> weak_ptr_factory_{this};
 };

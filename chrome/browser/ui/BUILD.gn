@@ -4538,7 +4538,6 @@ static_library("ui") {
 
     deps += [
       "//base",
-      "//base/util/timer",
       "//chrome/browser/ui/views",
       "//components/constrained_window",
       "//components/content_settings/browser/ui",

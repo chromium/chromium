@@ -1658,7 +1658,7 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaperForTesting() {
   UpdateDailyRefreshWallpaper();
 }
 
-util::WallClockTimer&
+base::WallClockTimer&
 WallpaperControllerImpl::GetDailyRefreshTimerForTesting() {
   return daily_refresh_timer_;
 }

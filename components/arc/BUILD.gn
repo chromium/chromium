@@ -526,7 +526,6 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
-    "//base/util/timer",
     "//chromeos",
     "//chromeos/cryptohome:cryptohome",
     "//chromeos/dbus:test_support",

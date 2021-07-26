@@ -12,7 +12,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "base/util/timer/wall_clock_timer.h"
+#include "base/timer/wall_clock_timer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
@@ -68,7 +68,7 @@ class SessionLengthLimiter : public ui::UserActivityObserver {
   std::unique_ptr<Delegate> delegate_;
   PrefChangeRegistrar pref_change_registrar_;
 
-  std::unique_ptr<util::WallClockTimer> timer_;
+  std::unique_ptr<base::WallClockTimer> timer_;
   base::Time session_start_time_;
   bool user_activity_seen_;
 

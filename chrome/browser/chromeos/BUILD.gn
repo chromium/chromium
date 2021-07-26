@@ -100,7 +100,6 @@ source_set("chromeos") {
     "//ash/webui/shimless_rma",
     "//ash/webui/shortcut_customization_ui",
     "//base",
-    "//base/util/timer",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//chrome/app:command_ids",

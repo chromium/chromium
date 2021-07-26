@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "base/util/timer/wall_clock_timer.h"
+#include "base/timer/wall_clock_timer.h"
 #include "components/enterprise/browser/reporting/real_time_report_generator.h"
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_uploader.h"
@@ -151,7 +151,7 @@ class ReportScheduler {
 
   policy::CloudPolicyClient* cloud_policy_client_;
 
-  util::WallClockTimer request_timer_;
+  base::WallClockTimer request_timer_;
 
   std::unique_ptr<ReportUploader> report_uploader_;
 

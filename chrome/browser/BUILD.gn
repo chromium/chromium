@@ -4255,7 +4255,6 @@ static_library("browser") {
       ":cart_db_content_proto",
       ":theme_properties",
       "//base/util/memory_pressure",
-      "//base/util/timer",
       "//chrome/app:command_ids",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/app/vector_icons",
