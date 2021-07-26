@@ -52,6 +52,7 @@ import java.util.Map;
  */
 public class TabGridDialogView extends FrameLayout {
     private static final int DIALOG_ANIMATION_DURATION = 300;
+    private static final int DIALOG_UNGROUP_ALPHA_ANIMATION_DURATION = 200;
     private static final int DIALOG_ALPHA_ANIMATION_DURATION = 150;
     private static final int CARD_FADE_ANIMATION_DURATION = 50;
     private static Callback<RectF> sSourceRectCallbackForTesting;
@@ -221,9 +222,8 @@ public class TabGridDialogView extends FrameLayout {
             }
         };
 
-        mUngroupBarShow =
-                ObjectAnimator.ofFloat(mUngroupBar, View.TRANSLATION_Y, mUngroupBarHeight, 0);
-        mUngroupBarShow.setDuration(DIALOG_ANIMATION_DURATION);
+        mUngroupBarShow = ObjectAnimator.ofFloat(mUngroupBar, View.ALPHA, 0f, 1f);
+        mUngroupBarShow.setDuration(DIALOG_UNGROUP_ALPHA_ANIMATION_DURATION);
         mUngroupBarShow.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
         mUngroupBarShow.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -233,6 +233,7 @@ public class TabGridDialogView extends FrameLayout {
                 }
                 mCurrentUngroupBarAnimator = mUngroupBarShow;
                 mUngroupBar.setVisibility(View.VISIBLE);
+                mUngroupBar.setAlpha(0f);
             }
 
             @Override
@@ -241,9 +242,8 @@ public class TabGridDialogView extends FrameLayout {
             }
         });
 
-        mUngroupBarHide =
-                ObjectAnimator.ofFloat(mUngroupBar, View.TRANSLATION_Y, 0, mUngroupBarHeight);
-        mUngroupBarHide.setDuration(DIALOG_ANIMATION_DURATION);
+        mUngroupBarHide = ObjectAnimator.ofFloat(mUngroupBar, View.ALPHA, 1f, 0f);
+        mUngroupBarHide.setDuration(DIALOG_UNGROUP_ALPHA_ANIMATION_DURATION);
         mUngroupBarHide.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
         mUngroupBarHide.addListener(new AnimatorListenerAdapter() {
             @Override
