@@ -13,12 +13,16 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
+#include "components/accuracy_tips/accuracy_tip_ui.h"
 #include "components/accuracy_tips/features.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -64,30 +68,61 @@ bool IsLocalMatchButNotOnList(
   return false;
 }
 
+// Handler that simulates a click on the opt-out button.
+void OptOutClicked(
+    content::WebContents*,
+    AccuracyTipStatus,
+    base::OnceCallback<void(AccuracyTipUI::Interaction)> callback) {
+  std::move(callback).Run(AccuracyTipUI::Interaction::kOptOutPressed);
+}
+
 class AccuracyServiceTest : public ::testing::Test {
  protected:
   AccuracyServiceTest() = default;
 
   void SetUp() override {
-    feature_list.InitAndEnableFeatureWithParameters(
-        safe_browsing::kAccuracyTipsFeature,
-        {{kSampleUrl.name, "https://sampleurl.com"}});
+    SetUpFeatureList(feature_list_);
 
+    AccuracyService::RegisterProfilePrefs(prefs_.registry());
     auto ui = std::make_unique<testing::StrictMock<MockAccuracyTipUI>>();
     ui_ = ui.get();
     sb_database_ = base::MakeRefCounted<MockSafeBrowsingDatabaseManager>();
-    service_ = std::make_unique<AccuracyService>(
-        std::move(ui), sb_database_, base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get());
+    service_ =
+        std::make_unique<AccuracyService>(std::move(ui), &prefs_, sb_database_,
+                                          base::ThreadTaskRunnerHandle::Get(),
+                                          base::ThreadTaskRunnerHandle::Get());
+    clock_.SetNow(base::Time::Now());
+    service_->SetClockForTesting(&clock_);
+  }
+
+  AccuracyTipStatus CheckAccuracyStatusSync(const GURL& url) {
+    base::RunLoop run_loop;
+    AccuracyTipStatus status = AccuracyTipStatus::kNone;
+    service_->CheckAccuracyStatus(
+        url, base::BindLambdaForTesting([&](AccuracyTipStatus s) {
+          status = s;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return status;
   }
 
   AccuracyService* service() { return service_.get(); }
   MockAccuracyTipUI* ui() { return ui_; }
+  base::SimpleTestClock* clock() { return &clock_; }
   MockSafeBrowsingDatabaseManager* sb_database() { return sb_database_.get(); }
 
  private:
-  base::test::SingleThreadTaskEnvironment environment;
-  base::test::ScopedFeatureList feature_list;
+  virtual void SetUpFeatureList(base::test::ScopedFeatureList& feature_list) {
+    feature_list.InitAndEnableFeatureWithParameters(
+        safe_browsing::kAccuracyTipsFeature,
+        {{features::kSampleUrl.name, "https://sampleurl.com"}});
+  }
+
+  base::test::SingleThreadTaskEnvironment environment_;
+  base::test::ScopedFeatureList feature_list_;
+  sync_preferences::TestingPrefServiceSyncable prefs_;
+  base::SimpleTestClock clock_;
 
   std::unique_ptr<AccuracyService> service_;
   MockAccuracyTipUI* ui_;
@@ -96,44 +131,31 @@ class AccuracyServiceTest : public ::testing::Test {
 
 TEST_F(AccuracyServiceTest, CheckAccuracyStatusForRandomSite) {
   auto url = GURL("https://example.com");
-  base::MockOnceCallback<void(AccuracyTipStatus)> callback;
-  EXPECT_CALL(callback, Run(AccuracyTipStatus::kNone));
   EXPECT_CALL(*sb_database(), CheckUrlForAccuracyTips(url, _))
       .WillOnce(Return(true));
 
-  service()->CheckAccuracyStatus(url, callback.Get());
-  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kNone);
 }
 
 TEST_F(AccuracyServiceTest, CheckAccuracyStatusForSampleUrl) {
   auto url = GURL("https://sampleurl.com");
-  base::MockOnceCallback<void(AccuracyTipStatus)> callback;
-  EXPECT_CALL(callback, Run(AccuracyTipStatus::kShowAccuracyTip));
-
-  service()->CheckAccuracyStatus(url, callback.Get());
-  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
 }
 
 TEST_F(AccuracyServiceTest, CheckAccuracyStatusForUrlOnList) {
   auto url = GURL("https://badurl.com");
-  base::MockOnceCallback<void(AccuracyTipStatus)> callback;
-  EXPECT_CALL(callback, Run(AccuracyTipStatus::kShowAccuracyTip));
   EXPECT_CALL(*sb_database(), CheckUrlForAccuracyTips(url, _))
       .WillOnce(Invoke(&IsOnList));
 
-  service()->CheckAccuracyStatus(url, callback.Get());
-  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
 }
 
 TEST_F(AccuracyServiceTest, CheckAccuracyStatusForLocalMatch) {
   auto url = GURL("https://notactuallybadurl.com");
-  base::MockOnceCallback<void(AccuracyTipStatus)> callback;
-  EXPECT_CALL(callback, Run(AccuracyTipStatus::kNone));
   EXPECT_CALL(*sb_database(), CheckUrlForAccuracyTips(url, _))
       .WillOnce(Invoke(&IsLocalMatchButNotOnList));
 
-  service()->CheckAccuracyStatus(url, callback.Get());
-  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kNone);
 }
 
 TEST_F(AccuracyServiceTest, ShowUI) {
@@ -141,12 +163,76 @@ TEST_F(AccuracyServiceTest, ShowUI) {
   service()->MaybeShowAccuracyTip(nullptr);
 }
 
-TEST_F(AccuracyServiceTest, ShowUIWithUiDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      safe_browsing::kAccuracyTipsFeature, {{kDisableUi.name, "true"}});
+TEST_F(AccuracyServiceTest, TimeBetweenPrompts) {
+  auto url = GURL("https://example.com");
+  EXPECT_CALL(*sb_database(), CheckUrlForAccuracyTips(url, _))
+      .WillRepeatedly(Invoke(&IsOnList));
+
+  // Show an accuracy tip.
+  EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
+  EXPECT_CALL(*ui(), ShowAccuracyTip(_, _, _));
+  service()->MaybeShowAccuracyTip(nullptr);
+
+  // Future calls will return that the rate limit is active.
+  EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kRateLimited);
+  clock()->Advance(base::TimeDelta::FromDays(1));
+  EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kRateLimited);
+
+  // Until sufficient time passed and the tip can be shown again.
+  clock()->Advance(features::kTimeBetweenPrompts.Get());
+  EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
+}
+
+TEST_F(AccuracyServiceTest, OptOut) {
+  auto url = GURL("https://example.com");
+  EXPECT_CALL(*sb_database(), CheckUrlForAccuracyTips(url, _))
+      .WillRepeatedly(Invoke(&IsOnList));
+
+  EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
+
+  // Clicking the opt-out button will disable future accuracy tips.
+  EXPECT_CALL(*ui(), ShowAccuracyTip(_, _, _)).WillOnce(Invoke(&OptOutClicked));
+  service()->MaybeShowAccuracyTip(nullptr);
+
+  clock()->Advance(base::TimeDelta::FromDays(1));
+  EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kOptOut);
+
+  // Forwarding |kTimeBetweenPrompts| days will also not show the prompt again.
+  clock()->Advance(features::kTimeBetweenPrompts.Get());
+  EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kOptOut);
+}
+
+class AccuracyServiceDisabledUiTest : public AccuracyServiceTest {
+ private:
+  void SetUpFeatureList(base::test::ScopedFeatureList& feature_list) override {
+    feature_list.InitAndEnableFeatureWithParameters(
+        safe_browsing::kAccuracyTipsFeature,
+        {{features::kDisableUi.name, "true"}});
+  }
+};
+
+TEST_F(AccuracyServiceDisabledUiTest, ShowWithUiDisabled) {
   EXPECT_CALL(*ui(), ShowAccuracyTip(_, _, _)).Times(0);
   service()->MaybeShowAccuracyTip(nullptr);
+}
+
+TEST_F(AccuracyServiceDisabledUiTest, TimeBetweenPrompts) {
+  auto url = GURL("https://example.com");
+  EXPECT_CALL(*sb_database(), CheckUrlForAccuracyTips(url, _))
+      .WillRepeatedly(Invoke(&IsOnList));
+
+  // Show an accuracy tip.
+  EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
+  service()->MaybeShowAccuracyTip(nullptr);
+
+  // Future calls will return that the rate limit is active.
+  EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kRateLimited);
+  clock()->Advance(base::TimeDelta::FromDays(1));
+  EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kRateLimited);
+
+  // Until sufficient time passed and the tip can be shown again.
+  clock()->Advance(features::kTimeBetweenPrompts.Get());
+  EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
 }
 
 }  // namespace accuracy_tips

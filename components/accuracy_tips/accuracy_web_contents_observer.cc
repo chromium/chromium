@@ -62,7 +62,7 @@ void AccuracyWebContentsObserver::OnAccuracyStatusObtained(
     AccuracyTipStatus result) {
   UMA_HISTOGRAM_ENUMERATION("Privacy.AccuracyTip.PageStatus", result);
 
-  if (result == AccuracyTipStatus::kNone)
+  if (result != AccuracyTipStatus::kShowAccuracyTip)
     return;
 
   // We are not on this site any more, so the result is invalid.

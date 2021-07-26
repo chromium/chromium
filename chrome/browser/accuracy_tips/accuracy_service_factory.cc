@@ -11,7 +11,9 @@
 #include "chrome/browser/ui/page_info/chrome_accuracy_tip_ui.h"
 #include "components/accuracy_tips/accuracy_service.h"
 #include "components/accuracy_tips/accuracy_tip_ui.h"
+#include "components/accuracy_tips/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -37,14 +39,21 @@ AccuracyServiceFactory::~AccuracyServiceFactory() = default;
 
 // BrowserContextKeyedServiceFactory:
 KeyedService* AccuracyServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* profile) const {
+    content::BrowserContext* browser_context) const {
   DCHECK(base::FeatureList::IsEnabled(safe_browsing::kAccuracyTipsFeature));
+  Profile* profile = Profile::FromBrowserContext(browser_context);
   auto ui = std::make_unique<ChromeAccuracyTipUI>();
   auto sb_database =
       g_browser_process->safe_browsing_service()
           ? g_browser_process->safe_browsing_service()->database_manager()
           : nullptr;
   return new accuracy_tips::AccuracyService(
-      std::move(ui), std::move(sb_database), content::GetUIThreadTaskRunner({}),
-      content::GetIOThreadTaskRunner({}));
+      std::move(ui), profile->GetPrefs(), std::move(sb_database),
+      content::GetUIThreadTaskRunner({}), content::GetIOThreadTaskRunner({}));
+}
+
+void AccuracyServiceFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  if (base::FeatureList::IsEnabled(safe_browsing::kAccuracyTipsFeature))
+    accuracy_tips::AccuracyService::RegisterProfilePrefs(registry);
 }

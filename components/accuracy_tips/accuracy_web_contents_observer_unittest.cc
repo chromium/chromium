@@ -36,7 +36,8 @@ void ReturnIsMisinformation(const GURL&, AccuracyCheckCallback callback) {
 
 class MockAccuracyService : public AccuracyService {
  public:
-  MockAccuracyService() : AccuracyService(nullptr, nullptr, nullptr, nullptr) {}
+  MockAccuracyService()
+      : AccuracyService(nullptr, nullptr, nullptr, nullptr, nullptr) {}
   MOCK_METHOD2(CheckAccuracyStatus, void(const GURL&, AccuracyCheckCallback));
   MOCK_METHOD1(MaybeShowAccuracyTip, void(content::WebContents*));
 };

@@ -14,11 +14,15 @@ static_library("accuracy_tips") {
     "accuracy_web_contents_observer.h",
     "features.cc",
     "features.h",
+    "pref_names.cc",
+    "pref_names.h",
   ]
 
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//components/prefs",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/common",
     "//content/public/browser",
@@ -39,6 +43,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/common",
+    "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

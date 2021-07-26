@@ -15,8 +15,13 @@ enum class AccuracyTipStatus {
   kNone = 0,
   // Site is eligible for showing an accuracy tip.
   kShowAccuracyTip = 1,
+  // The user recently saw an accuracy tip. Accuracy tip elegibility was not
+  // checked.
+  kRateLimited = 2,
+  // The user disabled accuracy tips. Accuracy tip elegibility was not checked.
+  kOptOut = 3,
 
-  kMaxValue = kShowAccuracyTip,
+  kMaxValue = kOptOut,
 };
 
 }  // namespace accuracy_tips

@@ -1146,13 +1146,17 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="kLostFocus"/>
   <int value="2" label="kClosed"/>
   <int value="3" label="kIgnorePressed"/>
-  <int value="4" label="kLearnMorePressed"/>
-  <int value="5" label="kDisabledByExperiment"/>
+  <int value="4" label="kOptOutPressed"/>
+  <int value="5" label="kLearnMorePressed"/>
+  <int value="6" label="kDisabledByExperiment"/>
 </enum>
 
 <enum name="AccuracyTipStatus">
   <int value="0" label="kNone"/>
   <int value="1" label="kShowAccuracyTip"/>
+  <int value="2" label="kEligibleForTipButUiDisabled"/>
+  <int value="3" label="kRateLimited"/>
+  <int value="4" label="kOptOut"/>
 </enum>
 
 <enum name="ActionAfterDoubleTap">

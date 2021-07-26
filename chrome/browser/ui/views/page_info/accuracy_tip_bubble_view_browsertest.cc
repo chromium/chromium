@@ -22,6 +22,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/accuracy_tips/accuracy_service.h"
 #include "components/accuracy_tips/accuracy_tip_ui.h"
+#include "components/accuracy_tips/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -46,7 +47,11 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(safe_browsing::kAccuracyTipsFeature);
+    ASSERT_TRUE(embedded_test_server()->Start());
+    feature_list_.InitAndEnableFeatureWithParameters(
+        safe_browsing::kAccuracyTipsFeature,
+        {{accuracy_tips::features::kSampleUrl.name,
+          GetUrl("badurl.com").spec()}});
 
     // Disable "close on deactivation" since there seems to be an issue with
     // windows losing focus during tests.
@@ -57,9 +62,6 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
-    AccuracyServiceFactory::GetForProfile(browser()->profile())
-        ->SetSampleUrlForTesting(GetUrl("badurl.com"));
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }

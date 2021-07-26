@@ -34,10 +34,12 @@ class AccuracyTipUI {
     kClosed = 2,
     // Ignore button pressed.
     kIgnorePressed = 3,
+    // Opt out button pressed.
+    kOptOutPressed = 4,
     // Learn more button pressed.
-    kLearnMorePressed = 4,
+    kLearnMorePressed = 5,
     // Logged when the UI was not actually shown.
-    kDisabledByExperiment = 5,
+    kDisabledByExperiment = 6,
 
     kMaxValue = kDisabledByExperiment,
   };

@@ -4,5 +4,8 @@ include_rules = [
     "+content/public/test",
     "+components/keyed_service/core",
     "+components/safe_browsing/core",
+    "+components/pref_registry",
+    "+components/prefs",
+    "+components/sync_preferences",
 ]
 
