@@ -30,5 +30,6 @@
 
     <!-- Navigation bar colors -->
     <color name="bottom_system_nav_color">@color/toolbar_background_primary</color>
-    <color name="bottom_system_nav_divider_color">@color/hairline_stroke_color</color>
+    <color name="bottom_system_nav_divider_color">@color/divider_line_bg_color</color>
+    <color name="bottom_system_nav_divider_color_light">@color/divider_line_bg_color_light</color>
 </resources>
