@@ -267,7 +267,8 @@ class DeclarativeNetRequestBrowserTest
 
   content::RenderFrameHost* GetFrameByName(const std::string& name) const {
     return content::FrameMatchingPredicate(
-        web_contents(), base::BindRepeating(&content::FrameMatchesName, name));
+        web_contents()->GetPrimaryPage(),
+        base::BindRepeating(&content::FrameMatchesName, name));
   }
 
   content::PageType GetPageType(Browser* browser) const {

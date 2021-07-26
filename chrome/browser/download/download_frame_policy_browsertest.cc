@@ -208,7 +208,7 @@ class DownloadFramePolicyBrowserTest
     navigation_observer.Wait();
 
     subframe_rfh_ = content::FrameMatchingPredicate(
-        web_contents(),
+        web_contents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameMatchesName, GetSubframeId()));
     DCHECK(subframe_rfh_);
   }

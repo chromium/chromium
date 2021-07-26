@@ -46,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(IframeCspTest, Show) {
       content::NavigateIframeToURL(GetActiveWebContents(), "test", iframe_url));
 
   content::RenderFrameHost* iframe = content::FrameMatchingPredicate(
-      GetActiveWebContents(),
+      GetActiveWebContents()->GetPrimaryPage(),
       base::BindRepeating(&content::FrameHasSourceUrl, iframe_url));
   EXPECT_EQ(iframe_url, iframe->GetLastCommittedURL());
 

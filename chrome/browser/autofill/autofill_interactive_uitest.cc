@@ -254,13 +254,15 @@ static const char kTestShippingFormWithCompanyString[] =
     "<label for=\"company\">First company:</label>"
     " <input type=\"text\" id=\"company\"><br>"
     "</form>";
-// Searches all frames of |web_contents| and returns one called |name|. If
-// there are none, returns null, if there are more, returns an arbitrary one.
+// Searches all frames of the primary page in |web_contents| and returns one
+// called |name|. If there are none, returns null, if there are more, returns
+// an arbitrary one.
 content::RenderFrameHost* RenderFrameHostForName(
     content::WebContents* web_contents,
     const std::string& name) {
   return content::FrameMatchingPredicate(
-      web_contents, base::BindRepeating(&content::FrameMatchesName, name));
+      web_contents->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameMatchesName, name));
 }
 
 }  // namespace

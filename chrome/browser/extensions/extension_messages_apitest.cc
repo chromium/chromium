@@ -235,7 +235,7 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
   Result CanConnectAndSendMessagesToIFrame(const Extension* extension,
                                            const char* message = NULL) {
     content::RenderFrameHost* frame = content::FrameMatchingPredicate(
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser()->tab_strip_model()->GetActiveWebContents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameIsChildOfMainFrame));
     return CanConnectAndSendMessagesToFrame(frame, extension, message);
   }
@@ -260,7 +260,7 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
 
   testing::AssertionResult AreAnyNonWebApisDefinedForIFrame() {
     content::RenderFrameHost* frame = content::FrameMatchingPredicate(
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser()->tab_strip_model()->GetActiveWebContents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameIsChildOfMainFrame));
     return AreAnyNonWebApisDefinedForFrame(frame);
   }

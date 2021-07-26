@@ -225,7 +225,7 @@ content::RenderFrameHost* AdTaggingBrowserTest::CreateDocWrittenFrameImpl(
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded())
       << navigation_observer.last_net_error_code();
   return content::FrameMatchingPredicate(
-      web_contents, base::BindRepeating(&content::FrameMatchesName, name));
+      rfh->GetPage(), base::BindRepeating(&content::FrameMatchesName, name));
 }
 
 content::RenderFrameHost*
@@ -246,8 +246,7 @@ AdTaggingBrowserTest::CreateFrameWithDocWriteAbortedLoadImpl(
   EXPECT_TRUE(content::ExecJs(rfh, script));
   EXPECT_EQ(base::ASCIIToUTF16(name), title_watcher.WaitAndGetTitle());
   return content::FrameMatchingPredicate(
-      content::WebContents::FromRenderFrameHost(rfh),
-      base::BindRepeating(&content::FrameMatchesName, name));
+      rfh->GetPage(), base::BindRepeating(&content::FrameMatchesName, name));
 }
 
 content::RenderFrameHost*
@@ -268,8 +267,7 @@ AdTaggingBrowserTest::CreateFrameWithWindowStopAbortedLoadImpl(
   EXPECT_TRUE(content::ExecJs(rfh, script));
   EXPECT_EQ(base::ASCIIToUTF16(name), title_watcher.WaitAndGetTitle());
   return content::FrameMatchingPredicate(
-      content::WebContents::FromRenderFrameHost(rfh),
-      base::BindRepeating(&content::FrameMatchesName, name));
+      rfh->GetPage(), base::BindRepeating(&content::FrameMatchesName, name));
 }
 
 // Given a RenderFrameHost, navigates the page to the given |url| and waits

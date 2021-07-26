@@ -161,7 +161,8 @@ void NavigateToFeedAndValidate(net::EmbeddedTestServer* server,
   EXPECT_STREQ(expected_msg.c_str(), message.c_str());
 
   content::RenderFrameHost* frame = content::FrameMatchingPredicate(
-      tab, base::BindRepeating(&content::FrameMatchesName, "preview"));
+      tab->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameMatchesName, "preview"));
   ASSERT_TRUE(ValidatePageElement(
       tab->GetMainFrame(), kScriptFeedTitle, expected_feed_title));
   ASSERT_TRUE(ValidatePageElement(frame, kScriptAnchor, expected_item_title));

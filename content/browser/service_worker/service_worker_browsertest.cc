@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, RequestOrigin) {
               .spec()),
       1);
   RenderFrameHost* subframe_rfh = FrameMatchingPredicate(
-      shell()->web_contents(),
+      shell()->web_contents()->GetPrimaryPage(),
       base::BindRepeating(&FrameMatchesName, "subframe_name"));
   DCHECK(subframe_rfh);
 

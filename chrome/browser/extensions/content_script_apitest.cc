@@ -1577,7 +1577,8 @@ IN_PROC_BROWSER_TEST_F(
     // The allowed site is the initiator of the data URL frame, and the
     // extension should inject.
     content::RenderFrameHost* data_url_host = content::FrameMatchingPredicate(
-        tab, base::BindRepeating(content::FrameHasSourceUrl, data_url()));
+        tab->GetPrimaryPage(),
+        base::BindRepeating(content::FrameHasSourceUrl, data_url()));
     ASSERT_TRUE(data_url_host);
     EXPECT_EQ(data_url(), data_url_host->GetLastCommittedURL());
     EXPECT_TRUE(DidScriptRunInFrame(data_url_host));
@@ -1591,7 +1592,8 @@ IN_PROC_BROWSER_TEST_F(
     // Since the top frame (which the extension may not access) is now the
     // initiator of the data: URL, the extension shouldn't inject.
     content::RenderFrameHost* data_url_host = content::FrameMatchingPredicate(
-        tab, base::BindRepeating(content::FrameHasSourceUrl, data_url()));
+        tab->GetPrimaryPage(),
+        base::BindRepeating(content::FrameHasSourceUrl, data_url()));
     ASSERT_TRUE(data_url_host);
     EXPECT_EQ(data_url(), data_url_host->GetLastCommittedURL());
     EXPECT_FALSE(DidScriptRunInFrame(data_url_host));
@@ -1619,7 +1621,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptDataURLTest,
     // The disallowed site is the initiator of the data URL frame, and the
     // extension should not inject.
     content::RenderFrameHost* data_url_host = content::FrameMatchingPredicate(
-        tab, base::BindRepeating(content::FrameHasSourceUrl, data_url()));
+        tab->GetPrimaryPage(),
+        base::BindRepeating(content::FrameHasSourceUrl, data_url()));
     ASSERT_TRUE(data_url_host);
     EXPECT_TRUE(data_url_host->GetParent());
     EXPECT_EQ(data_url(), data_url_host->GetLastCommittedURL());
@@ -1632,7 +1635,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptDataURLTest,
 
   {
     content::RenderFrameHost* data_url_host = content::FrameMatchingPredicate(
-        tab, base::BindRepeating(content::FrameHasSourceUrl, data_url()));
+        tab->GetPrimaryPage(),
+        base::BindRepeating(content::FrameHasSourceUrl, data_url()));
     ASSERT_TRUE(data_url_host);
     EXPECT_TRUE(data_url_host->GetParent());
     EXPECT_EQ(data_url(), data_url_host->GetLastCommittedURL());

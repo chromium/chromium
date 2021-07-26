@@ -1287,14 +1287,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 
   RenderFrameHost* devtools_extension_a_devtools_rfh =
       content::FrameMatchingPredicate(
-          main_web_contents(),
+          main_web_contents()->GetPrimaryPage(),
           base::BindRepeating(&content::FrameHasSourceUrl,
                               devtools_a_extension->GetResourceURL(
                                   "/panel_devtools_page.html")));
   EXPECT_TRUE(devtools_extension_a_devtools_rfh);
   RenderFrameHost* devtools_extension_b_devtools_rfh =
       content::FrameMatchingPredicate(
-          main_web_contents(),
+          main_web_contents()->GetPrimaryPage(),
           base::BindRepeating(&content::FrameHasSourceUrl,
                               devtools_b_extension->GetResourceURL(
                                   "/simple_devtools_page.html")));

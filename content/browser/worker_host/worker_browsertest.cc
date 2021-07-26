@@ -813,7 +813,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest,
   navigation_observer.Wait();
 
   RenderFrameHost* subframe_rfh = FrameMatchingPredicate(
-      shell()->web_contents(),
+      shell()->web_contents()->GetPrimaryPage(),
       base::BindRepeating(&FrameMatchesName, kSubframeName));
   ASSERT_TRUE(subframe_rfh);
   EXPECT_EQ(kNoCookie,
@@ -855,7 +855,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest,
   navigation_observer.Wait();
 
   RenderFrameHost* subframe_rfh = FrameMatchingPredicate(
-      shell()->web_contents(),
+      shell()->web_contents()->GetPrimaryPage(),
       base::BindRepeating(&FrameMatchesName, kSubframeName));
   ASSERT_TRUE(subframe_rfh);
   EXPECT_EQ(kNoCookie,

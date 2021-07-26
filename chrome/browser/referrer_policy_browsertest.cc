@@ -642,7 +642,8 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, IFrame) {
   // Verify that the referrer policy was honored and the main page's origin was
   // send as referrer.
   content::RenderFrameHost* frame = content::FrameMatchingPredicate(
-      tab, base::BindRepeating(&content::FrameIsChildOfMainFrame));
+      tab->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameIsChildOfMainFrame));
   std::string title;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
       frame,

@@ -122,7 +122,8 @@ content::WebContents* SubresourceFilterBrowserTest::web_contents() {
 content::RenderFrameHost* SubresourceFilterBrowserTest::FindFrameByName(
     const std::string& name) {
   return content::FrameMatchingPredicate(
-      web_contents(), base::BindRepeating(&content::FrameMatchesName, name));
+      web_contents()->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameMatchesName, name));
 }
 
 bool SubresourceFilterBrowserTest::WasParsedScriptElementLoaded(

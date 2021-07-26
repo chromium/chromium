@@ -856,12 +856,12 @@ EvalJsResult EvalJsAfterLifecycleUpdate(
                                   int32_t world_id = ISOLATED_WORLD_ID_GLOBAL)
     WARN_UNUSED_RESULT;
 
-// Walks the frame tree of the specified WebContents and returns the sole
-// frame that matches the specified predicate function. This function will
-// DCHECK if no frames match the specified predicate, or if more than one
-// frame matches.
+// Walks the frame tree of the specified `page`, also descending into any inner
+// frame-trees (e.g. GuestView), and returns the sole frame that matches the
+// specified predicate function. This function will DCHECK if no frames match
+// the specified predicate, or if more than one frame matches.
 RenderFrameHost* FrameMatchingPredicate(
-    WebContents* web_contents,
+    Page& page,
     base::RepeatingCallback<bool(RenderFrameHost*)> predicate);
 
 // Predicates for use with FrameMatchingPredicate.

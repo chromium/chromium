@@ -45,7 +45,7 @@ class FileIFrameAPITest : public extensions::ExtensionBrowserTest {
             ->GetBackgroundHostForExtension(last_loaded_extension_id());
     ASSERT_TRUE(background_host);
     content::RenderFrameHost* file_iframe = content::FrameMatchingPredicate(
-        background_host->host_contents(),
+        background_host->host_contents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameMatchesName, "file_iframe"));
     bool is_file_url = file_iframe->GetLastCommittedURL() == GURL("file:///");
     EXPECT_EQ(expect_will_load_file_iframe, is_file_url)

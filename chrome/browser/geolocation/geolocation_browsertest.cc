@@ -307,7 +307,7 @@ void GeolocationBrowserTest::SetFrameForScriptExecution(
     render_frame_host_ = web_contents()->GetMainFrame();
   } else {
     render_frame_host_ = content::FrameMatchingPredicate(
-        web_contents(),
+        web_contents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameMatchesName, frame_name));
   }
   DCHECK(render_frame_host_);

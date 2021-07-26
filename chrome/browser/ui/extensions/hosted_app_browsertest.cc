@@ -843,7 +843,8 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
     nav_observer.Wait();
 
     RenderFrameHost* subframe = content::FrameMatchingPredicate(
-        web_contents, base::BindRepeating(&content::FrameHasSourceUrl, url));
+        parent_rfh->GetPage(),
+        base::BindRepeating(&content::FrameHasSourceUrl, url));
 
     EXPECT_EQ(expect_same_process,
               parent_rfh->GetProcess() == subframe->GetProcess())
@@ -903,7 +904,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, IframesInsideHostedApp) {
 
   auto find_frame = [web_contents](const std::string& name) {
     return content::FrameMatchingPredicate(
-        web_contents, base::BindRepeating(&content::FrameMatchesName, name));
+        web_contents->GetPrimaryPage(),
+        base::BindRepeating(&content::FrameMatchesName, name));
   };
   RenderFrameHost* app = web_contents->GetMainFrame();
   RenderFrameHost* same_dir = find_frame("SameOrigin-SamePath");
@@ -1086,7 +1088,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, PopupsInsideHostedApp) {
 
   auto find_frame = [web_contents](const std::string& name) {
     return content::FrameMatchingPredicate(
-        web_contents, base::BindRepeating(&content::FrameMatchesName, name));
+        web_contents->GetPrimaryPage(),
+        base::BindRepeating(&content::FrameMatchesName, name));
   };
   RenderFrameHost* app = web_contents->GetMainFrame();
   RenderFrameHost* same_dir = find_frame("SameOrigin-SamePath");

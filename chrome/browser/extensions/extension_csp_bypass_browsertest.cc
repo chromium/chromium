@@ -104,7 +104,8 @@ class ExtensionCSPBypassTest : public ExtensionBrowserTest {
 
   content::RenderFrameHost* GetFrameByName(const std::string& name) {
     return content::FrameMatchingPredicate(
-        web_contents(), base::BindRepeating(&content::FrameMatchesName, name));
+        web_contents()->GetPrimaryPage(),
+        base::BindRepeating(&content::FrameMatchesName, name));
   }
 
  private:

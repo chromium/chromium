@@ -105,11 +105,11 @@ IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
       content::NavigateIframeToURL(GetWebContents(), "iframe2", iframe_url_2));
 
   content::RenderFrameHost* frame_1 = content::FrameMatchingPredicate(
-      GetWebContents(),
+      GetWebContents()->GetPrimaryPage(),
       base::BindRepeating(&content::FrameMatchesName, "iframe1"));
   EXPECT_NE(nullptr, frame_1);
   content::RenderFrameHost* frame_2 = content::FrameMatchingPredicate(
-      GetWebContents(),
+      GetWebContents()->GetPrimaryPage(),
       base::BindRepeating(&content::FrameMatchesName, "iframe2"));
   EXPECT_NE(nullptr, frame_2);
 

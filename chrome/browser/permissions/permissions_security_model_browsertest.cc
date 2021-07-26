@@ -109,7 +109,7 @@ content::RenderFrameHost* EmbedIframeFromURL(
   EXPECT_EQ(true, result);  // For the error message.
 
   content::RenderFrameHost* iframe_rfh = content::FrameMatchingPredicate(
-      content::WebContents::FromRenderFrameHost(parent_rfh),
+      parent_rfh->GetPage(),
       base::BindRepeating(&content::FrameMatchesName, "my_iframe"));
   return iframe_rfh;
 }
@@ -314,8 +314,8 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest,
 
   content::RenderFrameHost* about_blank_iframe =
       content::FrameMatchingPredicate(
-          embedder_contents, base::BindRepeating(&content::FrameMatchesName,
-                                                 "about_blank_iframe"));
+          main_rfh->GetPage(), base::BindRepeating(&content::FrameMatchesName,
+                                                   "about_blank_iframe"));
   ASSERT_TRUE(about_blank_iframe);
 
   VeriftyPermissions(embedder_contents, about_blank_iframe);
@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest, EmbedIframeSrcDoc) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   content::RenderFrameHost* srcdoc_iframe = content::FrameMatchingPredicate(
-      embedder_contents,
+      main_rfh->GetPage(),
       base::BindRepeating(&content::FrameMatchesName, "srcdoc_iframe"));
   ASSERT_TRUE(srcdoc_iframe);
 
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest, EmbedIframeBlob) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   content::RenderFrameHost* blob_iframe_rfh = content::FrameMatchingPredicate(
-      embedder_contents,
+      main_rfh->GetPage(),
       base::BindRepeating(&content::FrameMatchesName, "blob_iframe"));
   ASSERT_TRUE(blob_iframe_rfh);
   EXPECT_TRUE(blob_iframe_rfh->GetLastCommittedURL().SchemeIsBlob());

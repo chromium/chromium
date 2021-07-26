@@ -377,7 +377,8 @@ content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingName(
     const std::string& name,
     const base::TimeDelta timeout) {
   content::RenderFrameHost* frame = FrameMatchingPredicate(
-      web_contents(), base::BindRepeating(&content::FrameMatchesName, name));
+      web_contents()->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameMatchesName, name));
   if (frame) {
     return frame;
   } else {
@@ -393,8 +394,9 @@ content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingName(
 content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingOrigin(
     const GURL origin,
     const base::TimeDelta timeout) {
-  content::RenderFrameHost* frame = FrameMatchingPredicate(
-      web_contents(), base::BindRepeating(&FrameHasOrigin, origin));
+  content::RenderFrameHost* frame =
+      FrameMatchingPredicate(web_contents()->GetPrimaryPage(),
+                             base::BindRepeating(&FrameHasOrigin, origin));
   if (frame) {
     return frame;
   } else {
@@ -411,7 +413,8 @@ content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingUrl(
     const GURL url,
     const base::TimeDelta timeout) {
   content::RenderFrameHost* frame = FrameMatchingPredicate(
-      web_contents(), base::BindRepeating(&content::FrameHasSourceUrl, url));
+      web_contents()->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameHasSourceUrl, url));
   if (frame) {
     return frame;
   } else {
