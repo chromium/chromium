@@ -437,16 +437,22 @@ TEST_F(LocalPrinterAshTest, GetPrinters) {
   EXPECT_EQ("saved", printers[0]->name);
   EXPECT_EQ("description1", printers[0]->description);
   EXPECT_FALSE(printers[0]->configured_via_policy);
+  ASSERT_TRUE(printers[0]->uri);
+  EXPECT_EQ(kPrinterUri, *printers[0]->uri);
 
   EXPECT_EQ("printer2", printers[1]->id);
   EXPECT_EQ("enterprise", printers[1]->name);
   EXPECT_EQ("description2", printers[1]->description);
   EXPECT_TRUE(printers[1]->configured_via_policy);
+  ASSERT_TRUE(printers[1]->uri);
+  EXPECT_EQ(kPrinterUri, *printers[1]->uri);
 
   EXPECT_EQ("printer3", printers[2]->id);
   EXPECT_EQ("automatic", printers[2]->name);
   EXPECT_EQ("description3", printers[2]->description);
   EXPECT_FALSE(printers[2]->configured_via_policy);
+  ASSERT_TRUE(printers[2]->uri);
+  EXPECT_EQ(kPrinterUri, *printers[2]->uri);
 }
 
 // Tests that fetching capabilities for an existing installed printer is
@@ -490,6 +496,8 @@ TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityValidPrinter) {
   EXPECT_EQ("saved", fetched_caps->basic_info->name);
   EXPECT_EQ("description1", fetched_caps->basic_info->description);
   EXPECT_FALSE(fetched_caps->basic_info->configured_via_policy);
+  ASSERT_TRUE(fetched_caps->basic_info->uri);
+  EXPECT_EQ(kPrinterUri, *fetched_caps->basic_info->uri);
 
   // printing::mojom::ColorModeRestriction::kMonochrome |
   // printing::mojom::ColorModeRestriction::kColor

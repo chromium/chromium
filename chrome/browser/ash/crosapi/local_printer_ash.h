@@ -9,6 +9,9 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/chromeos/printing/cups_print_job.h"
+#include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
 #include "chrome/browser/chromeos/printing/print_servers_manager.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -30,6 +33,7 @@ namespace crosapi {
 // Implements the crosapi interface for LocalPrinter. Lives in Ash-Chrome on the
 // UI thread.
 class LocalPrinterAsh : public mojom::LocalPrinter,
+                        public chromeos::CupsPrintJobManager::Observer,
                         public chromeos::PrintServersManager::Observer {
  public:
   LocalPrinterAsh();
@@ -60,6 +64,16 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
 
   void BindReceiver(mojo::PendingReceiver<mojom::LocalPrinter> receiver);
 
+  // chromeos::CupsPrintJobManager::Observer:
+  void OnPrintJobCreated(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+  void OnPrintJobStarted(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+  void OnPrintJobUpdated(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+  void OnPrintJobSuspended(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+  void OnPrintJobResumed(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+  void OnPrintJobDone(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+  void OnPrintJobError(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+  void OnPrintJobCancelled(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+
   // chromeos::PrintServersManager::Observer:
   void OnPrintServersChanged(
       const chromeos::PrintServersConfig& config) override;
@@ -78,6 +92,9 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
       ShowSystemPrintSettingsCallback callback) override;
   void CreatePrintJob(mojom::PrintJobPtr job,
                       CreatePrintJobCallback callback) override;
+  void CancelPrintJob(const std::string& printer_id,
+                      unsigned int job_id,
+                      CancelPrintJobCallback callback) override;
   void GetPrintServersConfig(GetPrintServersConfigCallback callback) override;
   void ChoosePrintServers(const std::vector<std::string>& print_server_ids,
                           ChoosePrintServersCallback callback) override;
@@ -87,8 +104,14 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
   void GetPolicies(GetPoliciesCallback callback) override;
   void GetUsernamePerPolicy(GetUsernamePerPolicyCallback callback) override;
   void GetPrinterTypeDenyList(GetPrinterTypeDenyListCallback callback) override;
+  void AddPrintJobObserver(mojo::PendingRemote<mojom::PrintJobObserver> remote,
+                           mojom::PrintJobSource source,
+                           AddPrintJobObserverCallback callback) override;
 
  private:
+  void NotifyPrintJobUpdate(base::WeakPtr<chromeos::CupsPrintJob> job,
+                            mojom::PrintJobStatus status);
+
   // Exposed so that unit tests can override them.
   virtual Profile* GetProfile();
   virtual scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(
@@ -111,6 +134,12 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
   mojo::ReceiverSet<mojom::LocalPrinter> receivers_;
 
   mojo::RemoteSet<mojom::PrintServerObserver> print_server_remotes_;
+
+  // Remotes which observe all print jobs.
+  mojo::RemoteSet<mojom::PrintJobObserver> print_job_remotes_;
+
+  // Remotes which observe only extension print jobs.
+  mojo::RemoteSet<mojom::PrintJobObserver> extension_print_job_remotes_;
 };
 
 }  // namespace crosapi

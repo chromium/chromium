@@ -35,6 +35,12 @@ void FakeLocalPrinter::CreatePrintJob(crosapi::mojom::PrintJobPtr job,
   FAIL();
 }
 
+void FakeLocalPrinter::CancelPrintJob(const std::string& printer_id,
+                                      unsigned int job_id,
+                                      CancelPrintJobCallback callback) {
+  FAIL();
+}
+
 void FakeLocalPrinter::GetPrintServersConfig(
     GetPrintServersConfigCallback callback) {
   FAIL();
@@ -63,5 +69,12 @@ void FakeLocalPrinter::GetUsernamePerPolicy(
 
 void FakeLocalPrinter::GetPrinterTypeDenyList(
     GetPrinterTypeDenyListCallback callback) {
+  FAIL();
+}
+
+void FakeLocalPrinter::AddPrintJobObserver(
+    mojo::PendingRemote<crosapi::mojom::PrintJobObserver> remote,
+    crosapi::mojom::PrintJobSource source,
+    AddPrintJobObserverCallback callback) {
   FAIL();
 }

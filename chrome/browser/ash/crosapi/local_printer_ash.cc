@@ -15,16 +15,20 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/printing/cups_print_job.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
 #include "chrome/browser/chromeos/printing/ppd_provider_factory.h"
+#include "chrome/browser/chromeos/printing/print_management/printing_manager.h"
+#include "chrome/browser/chromeos/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/chromeos/printing/print_server.h"
 #include "chrome/browser/chromeos/printing/print_servers_manager.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
@@ -33,6 +37,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/browser/prefs_util.h"
@@ -113,7 +118,8 @@ mojom::LocalDestinationInfoPtr LocalPrinterAsh::PrinterToMojom(
     const chromeos::Printer& printer) {
   return mojom::LocalDestinationInfo::New(
       printer.id(), printer.display_name(), printer.description(),
-      printer.source() == chromeos::Printer::SRC_POLICY);
+      printer.source() == chromeos::Printer::SRC_POLICY,
+      printer.uri().GetNormalized(/*always_print_port=*/true));
 }
 
 // static
@@ -136,6 +142,61 @@ void LocalPrinterAsh::BindReceiver(
   receivers_.Add(this, std::move(pending_receiver));
 }
 
+void LocalPrinterAsh::OnPrintJobCreated(
+    base::WeakPtr<chromeos::CupsPrintJob> job) {
+  NotifyPrintJobUpdate(job, mojom::PrintJobStatus::kCreated);
+}
+
+void LocalPrinterAsh::OnPrintJobStarted(
+    base::WeakPtr<chromeos::CupsPrintJob> job) {
+  NotifyPrintJobUpdate(job, mojom::PrintJobStatus::kStarted);
+}
+
+void LocalPrinterAsh::OnPrintJobUpdated(
+    base::WeakPtr<chromeos::CupsPrintJob> job) {
+  NotifyPrintJobUpdate(job, mojom::PrintJobStatus::kUpdated);
+}
+
+void LocalPrinterAsh::OnPrintJobSuspended(
+    base::WeakPtr<chromeos::CupsPrintJob> job) {
+  NotifyPrintJobUpdate(job, mojom::PrintJobStatus::kSuspended);
+}
+
+void LocalPrinterAsh::OnPrintJobResumed(
+    base::WeakPtr<chromeos::CupsPrintJob> job) {
+  NotifyPrintJobUpdate(job, mojom::PrintJobStatus::kResumed);
+}
+
+void LocalPrinterAsh::OnPrintJobDone(
+    base::WeakPtr<chromeos::CupsPrintJob> job) {
+  NotifyPrintJobUpdate(job, mojom::PrintJobStatus::kDone);
+}
+
+void LocalPrinterAsh::OnPrintJobError(
+    base::WeakPtr<chromeos::CupsPrintJob> job) {
+  NotifyPrintJobUpdate(job, mojom::PrintJobStatus::kError);
+}
+
+void LocalPrinterAsh::OnPrintJobCancelled(
+    base::WeakPtr<chromeos::CupsPrintJob> job) {
+  NotifyPrintJobUpdate(job, mojom::PrintJobStatus::kCancelled);
+}
+
+void LocalPrinterAsh::NotifyPrintJobUpdate(
+    base::WeakPtr<chromeos::CupsPrintJob> job,
+    mojom::PrintJobStatus status) {
+  if (!job) {
+    LOG(WARNING) << "Ignoring invalid print job";
+    return;
+  }
+  for (auto& remote : print_job_remotes_)
+    remote->OnPrintJobUpdate(job->printer().id(), job->job_id(), status);
+  if (job->source() != mojom::PrintJob::Source::EXTENSION)
+    return;
+  for (auto& remote : extension_print_job_remotes_)
+    remote->OnPrintJobUpdate(job->printer().id(), job->job_id(), status);
+}
+
 void LocalPrinterAsh::OnPrintServersChanged(
     const chromeos::PrintServersConfig& config) {
   for (auto& remote : print_server_remotes_)
@@ -155,15 +216,18 @@ void LocalPrinterAsh::RegisterObservers() {
   if (!profile)
     return;
   observers_registered_ = true;
-  auto* manager =
+  auto* print_servers_manager =
       chromeos::CupsPrintersManagerFactory::GetForBrowserContext(profile)
           ->GetPrintServersManager();
-  if (manager) {
-    manager->AddObserver(this);
+  if (print_servers_manager) {
+    print_servers_manager->AddObserver(this);
   } else {
     // This can occur during browser tests.
     LOG(ERROR) << "PrintServersManager object not found";
   }
+  auto* print_job_manager =
+      chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(profile);
+  print_job_manager->AddObserver(this);
 }
 
 void LocalPrinterAsh::GetPrinters(GetPrintersCallback callback) {
@@ -272,6 +336,18 @@ void LocalPrinterAsh::CreatePrintJob(mojom::PrintJobPtr job,
                                     job->page_count, job->source,
                                     job->source_id, std::move(settings));
   std::move(callback).Run();
+}
+
+void LocalPrinterAsh::CancelPrintJob(const std::string& printer_id,
+                                     unsigned int job_id,
+                                     CancelPrintJobCallback callback) {
+  Profile* profile = GetProfile();
+  DCHECK(profile);
+  chromeos::printing::print_management::PrintingManagerFactory::GetForProfile(
+      profile)
+      ->CancelPrintJob(
+          chromeos::CupsPrintJob::CreateUniqueId(printer_id, job_id),
+          std::move(callback));
 }
 
 void LocalPrinterAsh::GetPrintServersConfig(
@@ -394,6 +470,18 @@ Profile* LocalPrinterAsh::GetProfile() {
   DCHECK(user_manager::UserManager::IsInitialized());
   DCHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
   return ProfileManager::GetPrimaryUserProfile();
+}
+
+void LocalPrinterAsh::AddPrintJobObserver(
+    mojo::PendingRemote<mojom::PrintJobObserver> remote,
+    mojom::PrintJobSource source,
+    AddPrintJobObserverCallback callback) {
+  RegisterObservers();
+  if (source == mojom::PrintJobSource::kExtension)
+    extension_print_job_remotes_.Add(std::move(remote));
+  if (source == mojom::PrintJobSource::kAny)
+    print_job_remotes_.Add(std::move(remote));
+  std::move(callback).Run();
 }
 
 scoped_refptr<chromeos::PpdProvider> LocalPrinterAsh::CreatePpdProvider(

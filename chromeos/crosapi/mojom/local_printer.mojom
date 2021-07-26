@@ -25,6 +25,8 @@ struct LocalDestinationInfo {
   // Corresponds to the cupsEnterprisePrinter field of the js
   // LocalDestinationInfo object.
   bool configured_via_policy@3;
+  // The GURL class cannot be used as it does not support the ipp/ipps scheme.
+  [MinVersion=3] string? uri@4;
 };
 
 // A container for the results of a printer status query. A printer status
@@ -231,6 +233,35 @@ interface PrintServerObserver {
   OnServerPrintersChanged@1();
 };
 
+// Corresponds to functions in CupsPrintJobManager::Observer
+// (chrome/browser/chromeos/printing/cups_print_job_manager.h).
+[Stable, Extensible]
+enum PrintJobStatus {
+  [Default] kUnknown, // reserved
+  kCreated,
+  kStarted,
+  kUpdated,
+  kSuspended,
+  kResumed,
+  kDone,
+  kError,
+  kCancelled,
+};
+
+// This interface is used to notify Lacros about print job events.
+[Stable, Uuid="a372ba50-7409-4c16-86b9-47a1725947d0"]
+interface PrintJobObserver {
+  // Runs when the status of a print job changes.
+  OnPrintJobUpdate@0(string printer_id, uint32 job_id, PrintJobStatus status);
+};
+
+// Used to specify which source(s) to observe print jobs from.
+[Stable, Extensible]
+enum PrintJobSource {
+ [Default] kAny, // reserved
+ kExtension,
+};
+
 // This interface is used to query information about local printers
 // associated with the current Ash profile that can be used for
 // printing from Lacros.
@@ -261,6 +292,11 @@ interface LocalPrinter {
   // Adds a new print job to the ash print job manager.
   CreatePrintJob@5(PrintJob job) => ();
 
+  // Cancels a print job. Forwards to CancelPrintJob() in
+  // chromeos/components/print_management/mojom/printing_manager.mojom.
+  [MinVersion=3]
+  CancelPrintJob@12(string printer_id, uint32 job_id) => (bool attempted);
+
   // Gets print server information.
   GetPrintServersConfig@6() => (PrintServersConfig config);
 
@@ -285,4 +321,10 @@ interface LocalPrinter {
   // Gets list of printers types included in the deny list policy.
   [MinVersion=2]
   GetPrinterTypeDenyList@11() => (array<printing.mojom.PrinterType> deny_list);
+
+  // Adds a print job observer for print jobs from source `source`.
+  [MinVersion=3]
+  AddPrintJobObserver@13(
+    pending_remote<PrintJobObserver> observer,
+    PrintJobSource source) => ();
 };
