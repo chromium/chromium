@@ -2414,8 +2414,12 @@ bool ComputeUnignoredSelectionEndpoint(
     int32_t& offset,
     ax::mojom::TextAffinity& affinity) {
   AXNode* node = tree.GetFromId(node_id);
-  if (!node)
-    return true;
+  if (!node) {
+    node_id = kInvalidAXNodeID;
+    offset = -1;
+    affinity = ax::mojom::TextAffinity::kDownstream;
+    return false;
+  }
 
   AXNodePosition::AXPositionInstance position =
       AXNodePosition::CreatePosition(*node, offset, affinity);
