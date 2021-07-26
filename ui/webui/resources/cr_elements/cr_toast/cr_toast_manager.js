@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/** @fileoverview Element which shows toasts with optional undo button. */
+
 import '../../js/cr.m.js';
 import '../../js/event_tracker.m.js';
 import '../hidden_style_css.m.js';
 import './cr_toast.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assert} from '../../js/assert.m.js';
 
-
-/* eslint-disable */
 /** @private {?CrToastManagerElement} */
 let toastManagerInstance = null;
-/* eslint-enable */
 
 /** @return {!CrToastManagerElement} */
 export function getToastManager() {
@@ -28,41 +27,48 @@ function setInstance(instance) {
   toastManagerInstance = instance;
 }
 
-/**
- * @fileoverview Element which shows toasts with optional undo button.
- */
-// eslint-disable-next-line
-Polymer({
-  is: 'cr-toast-manager',
+/** @polymer */
+export class CrToastManagerElement extends PolymerElement {
+  static get is() {
+    return 'cr-toast-manager';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    duration: {
-      type: Number,
-      value: 0,
-    },
-  },
+  static get properties() {
+    return {
+      duration: {
+        type: Number,
+        value: 0,
+      },
+    };
+  }
 
   /** @return {boolean} */
   get isToastOpen() {
     return this.$.toast.open;
-  },
+  }
 
   /** @return {boolean} */
   get slottedHidden() {
     return this.$.slotted.hidden;
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     setInstance(this);
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     setInstance(null);
-  },
+  }
 
   /**
    * @param {string} label The label to display inside the toast.
@@ -71,7 +77,7 @@ Polymer({
   show(label, hideSlotted = false) {
     this.$.content.textContent = label;
     this.showInternal_(hideSlotted);
-  },
+  }
 
   /**
    * Shows the toast, making certain text fragments collapsible.
@@ -96,7 +102,7 @@ Polymer({
     });
 
     this.showInternal_(hideSlotted);
-  },
+  }
 
   /**
    * @param {boolean} hideSlotted
@@ -105,9 +111,11 @@ Polymer({
   showInternal_(hideSlotted) {
     this.$.slotted.hidden = hideSlotted;
     this.$.toast.show();
-  },
+  }
 
   hide() {
     this.$.toast.hide();
-  },
-});
+  }
+}
+
+customElements.define(CrToastManagerElement.is, CrToastManagerElement);

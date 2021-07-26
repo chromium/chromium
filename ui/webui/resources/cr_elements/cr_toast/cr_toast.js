@@ -7,31 +7,44 @@
 import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../shared_vars_css.m.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'cr-toast',
+/** @polymer */
+export class CrToastElement extends PolymerElement {
+  static get is() {
+    return 'cr-toast';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    duration: {
-      type: Number,
-      value: 0,
-    },
+  static get properties() {
+    return {
+      duration: {
+        type: Number,
+        value: 0,
+      },
 
-    open: {
-      readOnly: true,
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
-  },
+      open: {
+        readOnly: true,
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+    };
+  }
 
-  observers: ['resetAutoHide_(duration, open)'],
+  static get observers() {
+    return ['resetAutoHide_(duration, open)'];
+  }
 
-  /** @private {number|null} */
-  hideTimeoutId_: null,
+  constructor() {
+    super();
+
+    /** @private {?number} */
+    this.hideTimeoutId_ = null;
+  }
 
   /**
    * Cancels existing auto-hide, and sets up new auto-hide.
@@ -48,7 +61,7 @@ Polymer({
         this.hide();
       }, this.duration);
     }
-  },
+  }
 
   /**
    * Shows the toast and auto-hides after |this.duration| milliseconds has
@@ -76,7 +89,7 @@ Polymer({
     if (shouldResetAutohide) {
       this.resetAutoHide_();
     }
-  },
+  }
 
   /**
    * Hides the toast and ensures that screen readers cannot its contents while
@@ -85,5 +98,7 @@ Polymer({
   hide() {
     this.setAttribute('aria-hidden', 'true');
     this._setOpen(false);
-  },
-});
+  }
+}
+
+customElements.define(CrToastElement.is, CrToastElement);
