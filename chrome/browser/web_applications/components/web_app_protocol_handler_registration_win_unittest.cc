@@ -165,6 +165,9 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
 
 TEST_F(WebAppProtocolHandlerRegistrationWinTest,
        AddAndVerifyProtocolAssociations) {
+  // App protocol handlers are not supported on Windows 7.
+  if (base::win::GetVersion() <= base::win::Version::WIN7)
+    return;
   AddAndVerifyProtocolAssociations(kApp1Id, kApp1Name, kApp1Url, GetProfile(),
                                    "");
 }
