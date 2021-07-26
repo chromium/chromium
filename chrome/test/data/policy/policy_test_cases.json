@@ -4543,7 +4543,19 @@
           ]
         },
         "prefs": {
-          "profile.managed_sensors_allowed_for_urls": {}
+          "profile.managed_sensors_allowed_for_urls": {
+            "value": [
+              "[*.]google.com"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "profile.managed_sensors_allowed_for_urls": {
+            "default_value": []
+          }
         }
       }
     ]
