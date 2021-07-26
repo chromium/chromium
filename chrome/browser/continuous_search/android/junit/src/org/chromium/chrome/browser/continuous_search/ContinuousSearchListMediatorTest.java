@@ -25,7 +25,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemProperties;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemType;
-import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ProviderProperties;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -110,14 +109,17 @@ public class ContinuousSearchListMediatorTest {
         Assert.assertEquals("mLayoutVisibilityFalse should have been called.", 2,
                 mLayoutVisibilityFalse.getCallCount());
 
-        // 1 result available. UI should be shown.
-        PageItem pageItem = new PageItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1), "result 1");
-        PageGroup pageGroup = new PageGroup("result", false, Arrays.asList(pageItem));
+        // 2 results available. UI should be shown.
+        PageItem pageItem1 =
+                new PageItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1), "result 1");
+        PageItem pageItem2 =
+                new PageItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_2), "result 2");
+        PageGroup pageGroup = new PageGroup("result", false, Arrays.asList(pageItem1, pageItem2));
         ContinuousNavigationMetadata continuousNavigationMetadata =
                 new ContinuousNavigationMetadata(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL),
                         "query", getProvider(null), Arrays.asList(pageGroup));
         mMediator.onUpdate(continuousNavigationMetadata);
-        mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1), false);
+        mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_2), false);
         Assert.assertEquals("mLayoutVisibilityTrue should have been called.", 1,
                 mLayoutVisibilityTrue.getCallCount());
         Assert.assertEquals("mLayoutVisibilityFalse should not have been called.", 2,
@@ -324,7 +326,7 @@ public class ContinuousSearchListMediatorTest {
         // Click on provider label and verify there's a request for going to the start navigation
         // index.
         Mockito.verify(navigationController, Mockito.never()).goToNavigationIndex(Mockito.anyInt());
-        mModelList.get(0).model.get(ProviderProperties.CLICK_LISTENER).onClick(null);
+        mRootViewModel.get(ContinuousSearchListProperties.PROVIDER_CLICK_LISTENER).onClick(null);
         Mockito.verify(navigationController, Mockito.times(1))
                 .goToNavigationIndex(startNavigationIndex);
     }
@@ -358,27 +360,17 @@ public class ContinuousSearchListMediatorTest {
                         getProvider("Test"), Arrays.asList(pageGroup1, pageGroup2, pageGroup3));
         mMediator.onUpdate(continuousNavigationMetadata);
 
-        // We should have 1 provider label item on top of page items. So in total we should
-        // have 7 items in the model list.
-        Assert.assertEquals("ModelList length is incorrect.", 7, mModelList.size());
-
-        // Assert the list item for provider label is correctly populated.
-        Assert.assertEquals("List item type should be PROVIDER.", ListItemType.PROVIDER,
-                mModelList.get(0).type);
-        Assert.assertTrue("Provider label item doesn't match its category string.",
-                mModelList.get(0)
-                        .model.get(ProviderProperties.LABEL)
-                        .contains(continuousNavigationMetadata.getProvider().getName()));
+        Assert.assertEquals("ModelList length is incorrect.", 6, mModelList.size());
 
         // Assert the list items for search results are correctly populated.
-        assertListItemEqualsSearchResult(mModelList.get(1), pageItem11, true);
-        assertListItemEqualsSearchResult(mModelList.get(2), pageItem21, false);
-        assertListItemEqualsSearchResult(mModelList.get(3), pageItem22, false);
-        assertListItemEqualsSearchResult(mModelList.get(4), pageItem31, false);
-        assertListItemEqualsSearchResult(mModelList.get(5), pageItem32, false);
-        assertListItemEqualsSearchResult(mModelList.get(6), pageItem33, false);
+        assertListItemEqualsSearchResult(mModelList.get(0), pageItem11, true);
+        assertListItemEqualsSearchResult(mModelList.get(1), pageItem21, false);
+        assertListItemEqualsSearchResult(mModelList.get(2), pageItem22, false);
+        assertListItemEqualsSearchResult(mModelList.get(3), pageItem31, false);
+        assertListItemEqualsSearchResult(mModelList.get(4), pageItem32, false);
+        assertListItemEqualsSearchResult(mModelList.get(5), pageItem33, false);
 
-        mModelList.get(1).model.get(ListItemProperties.CLICK_LISTENER).onClick(null);
+        mModelList.get(0).model.get(ListItemProperties.CLICK_LISTENER).onClick(null);
         ArgumentCaptor<LoadUrlParams> params = ArgumentCaptor.forClass(LoadUrlParams.class);
         Mockito.verify(tab, Mockito.times(1)).loadUrl(params.capture());
         Assert.assertEquals(url11.getSpec(), params.getValue().getUrl());
@@ -446,7 +438,7 @@ public class ContinuousSearchListMediatorTest {
                 new ContinuousNavigationMetadata(Mockito.mock(GURL.class), "query",
                         getProvider(null), Arrays.asList(pageGroup));
         mMediator.onUpdate(continuousNavigationMetadata);
-        Assert.assertEquals("ModelList length is incorrect.", 2, mModelList.size());
+        Assert.assertEquals("ModelList length is incorrect.", 1, mModelList.size());
 
         mMediator.onResult(null);
         Assert.assertEquals("ModelList length is incorrect.", 0, mModelList.size());
@@ -464,7 +456,7 @@ public class ContinuousSearchListMediatorTest {
                 new ContinuousNavigationMetadata(Mockito.mock(GURL.class), "query",
                         getProvider(null), Arrays.asList(pageGroup));
         mMediator.onUpdate(continuousNavigationMetadata);
-        Assert.assertEquals("ModelList length is incorrect.", 2, mModelList.size());
+        Assert.assertEquals("ModelList length is incorrect.", 1, mModelList.size());
 
         // Use a dark color.
         int color = 0xFFFFFF;
@@ -494,7 +486,7 @@ public class ContinuousSearchListMediatorTest {
                         mLayoutVisibilityTrue.notifyCalled();
                     } else {
                         mLayoutVisibilityFalse.notifyCalled();
-                        Runnable runnable = visibilitySettings.getOnHideRunnable();
+                        Runnable runnable = visibilitySettings.getOnFinishRunnable();
                         if (runnable != null) {
                             runnable.run();
                         }

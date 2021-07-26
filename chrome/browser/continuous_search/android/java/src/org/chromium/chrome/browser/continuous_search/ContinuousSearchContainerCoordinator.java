@@ -42,19 +42,19 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
 
     static class VisibilitySettings {
         private boolean mIsVisible;
-        private Runnable mOnHideRunnable;
+        private Runnable mOnFinishRunnable;
 
-        VisibilitySettings(boolean isVisible, Runnable onHideRunnable) {
+        VisibilitySettings(boolean isVisible, Runnable onFinishRunnable) {
             mIsVisible = isVisible;
-            mOnHideRunnable = onHideRunnable;
+            mOnFinishRunnable = onFinishRunnable;
         }
 
         boolean isVisible() {
             return mIsVisible;
         }
 
-        Runnable getOnHideRunnable() {
-            return mOnHideRunnable;
+        Runnable getOnFinishRunnable() {
+            return mOnFinishRunnable;
         }
     }
 
@@ -90,9 +90,9 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
 
     private void updateVisibility(VisibilitySettings visibilitySettings) {
         if (visibilitySettings.isVisible()) {
-            mContainerMediator.show();
+            mContainerMediator.show(visibilitySettings.getOnFinishRunnable());
         } else {
-            mContainerMediator.hide(visibilitySettings.getOnHideRunnable());
+            mContainerMediator.hide(visibilitySettings.getOnFinishRunnable());
         }
     }
 

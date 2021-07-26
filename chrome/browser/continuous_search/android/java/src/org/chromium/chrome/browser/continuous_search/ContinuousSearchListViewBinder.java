@@ -10,9 +10,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemProperties;
-import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ProviderProperties;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -24,24 +25,6 @@ import org.chromium.url.GURL;
  * Responsible for binding the {@link PropertyModel} for a search result item to a View.
  */
 class ContinuousSearchListViewBinder {
-    static void bindProvider(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (ProviderProperties.LABEL == propertyKey) {
-            TextView textView = view.findViewById(R.id.continuous_search_provider_label);
-            textView.setText(model.get(ProviderProperties.LABEL));
-        } else if (ProviderProperties.ICON_RESOURCE == propertyKey) {
-            TextView textView = view.findViewById(R.id.continuous_search_provider_label);
-            // Add the icon at the start of the provider label
-            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    model.get(ProviderProperties.ICON_RESOURCE), 0, 0, 0);
-        } else if (ProviderProperties.CLICK_LISTENER == propertyKey) {
-            view.setOnClickListener(model.get(ProviderProperties.CLICK_LISTENER));
-        } else if (ProviderProperties.TEXT_STYLE == propertyKey) {
-            TextView textView = view.findViewById(R.id.continuous_search_provider_label);
-            ApiCompatibilityUtils.setTextAppearance(
-                    textView, model.get(ProviderProperties.TEXT_STYLE));
-        }
-    }
-
     /**
      * Binds properties related to an individual item within the RecyclerView.
      */
@@ -107,6 +90,8 @@ class ContinuousSearchListViewBinder {
      * Binds properties related to the root view, that includes the RecyclerView.
      */
     static void bindRootView(PropertyModel model, View view, PropertyKey propertyKey) {
+        TextView providerView = view.findViewById(R.id.continuous_search_provider_label);
+
         if (ContinuousSearchListProperties.BACKGROUND_COLOR == propertyKey) {
             view.setBackgroundColor(model.get(ContinuousSearchListProperties.BACKGROUND_COLOR));
         } else if (ContinuousSearchListProperties.FOREGROUND_COLOR == propertyKey) {
@@ -117,6 +102,22 @@ class ContinuousSearchListViewBinder {
             ImageView buttonDismiss = view.findViewById(R.id.button_dismiss);
             buttonDismiss.setOnClickListener(
                     model.get(ContinuousSearchListProperties.DISMISS_CLICK_CALLBACK));
+        } else if (ContinuousSearchListProperties.SELECTED_ITEM_POSITION == propertyKey) {
+            RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
+            recyclerView.smoothScrollToPosition(
+                    model.get(ContinuousSearchListProperties.SELECTED_ITEM_POSITION));
+        } else if (ContinuousSearchListProperties.PROVIDER_LABEL == propertyKey) {
+            providerView.setText(model.get(ContinuousSearchListProperties.PROVIDER_LABEL));
+        } else if (ContinuousSearchListProperties.PROVIDER_ICON_RESOURCE == propertyKey) {
+            // Add the icon at the start of the provider label
+            providerView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    model.get(ContinuousSearchListProperties.PROVIDER_ICON_RESOURCE), 0, 0, 0);
+        } else if (ContinuousSearchListProperties.PROVIDER_CLICK_LISTENER == propertyKey) {
+            providerView.setOnClickListener(
+                    model.get(ContinuousSearchListProperties.PROVIDER_CLICK_LISTENER));
+        } else if (ContinuousSearchListProperties.PROVIDER_TEXT_STYLE == propertyKey) {
+            ApiCompatibilityUtils.setTextAppearance(
+                    providerView, model.get(ContinuousSearchListProperties.PROVIDER_TEXT_STYLE));
         }
     }
 }

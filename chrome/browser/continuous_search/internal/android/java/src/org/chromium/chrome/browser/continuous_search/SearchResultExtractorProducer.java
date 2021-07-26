@@ -36,7 +36,7 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
     private static final boolean USE_PROVIDER_ICON_DEFAULT_VALUE = true;
 
     @VisibleForTesting
-    static final @DrawableRes int PROVIDER_ICON_RESOURCE = R.drawable.ic_logo_googleg_24dp;
+    static final @DrawableRes int PROVIDER_ICON_RESOURCE = R.drawable.ic_logo_googleg_20dp;
 
     private long mNativeSearchResultExtractorProducer;
     private @State int mState;

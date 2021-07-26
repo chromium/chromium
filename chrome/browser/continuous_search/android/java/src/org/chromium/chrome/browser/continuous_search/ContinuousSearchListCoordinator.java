@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
@@ -52,10 +53,6 @@ public class ContinuousSearchListCoordinator {
                 mRootViewModel, setLayoutVisibility, themeColorProvider, resources);
 
         boolean twoLineChip = mListMediator.shouldShowResultTitle();
-        mRecyclerViewAdapter.registerType(ListItemType.PROVIDER,
-                (parent)
-                        -> inflateListItemView(parent, ListItemType.PROVIDER, false),
-                ContinuousSearchListViewBinder::bindProvider);
         mRecyclerViewAdapter.registerType(ListItemType.SEARCH_RESULT,
                 (parent)
                         -> inflateListItemView(parent, ListItemType.SEARCH_RESULT, twoLineChip),
@@ -71,7 +68,7 @@ public class ContinuousSearchListCoordinator {
 
     private View inflateListItemView(
             ViewGroup parentView, @ListItemType int listItemType, boolean twoLineChip) {
-        int layoutId = R.layout.continuous_search_list_provider;
+        int layoutId = 0;
         switch (listItemType) {
             case ListItemType.SEARCH_RESULT:
                 layoutId = R.layout.continuous_search_list_item;
@@ -79,6 +76,8 @@ public class ContinuousSearchListCoordinator {
             case ListItemType.AD:
                 layoutId = R.layout.continuous_search_list_ad;
                 break;
+            case ListItemType.DEPRECATED_PROVIDER:
+                assert false : "CSN provider should not be a ListItem";
         }
 
         View view =
@@ -98,8 +97,27 @@ public class ContinuousSearchListCoordinator {
         container.addView(rootView, /*index=*/0, lp);
 
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
+        // TODO(crbug.com/1231562): Add tests.
         LinearLayoutManager layoutManager = new LinearLayoutManager(
-                container.getContext(), LinearLayoutManager.HORIZONTAL, false);
+                container.getContext(), LinearLayoutManager.HORIZONTAL, false) {
+            @Override
+            public void smoothScrollToPosition(
+                    RecyclerView recyclerView, State state, int position) {
+                LinearSmoothScroller scroller =
+                        new LinearSmoothScroller(recyclerView.getContext()) {
+                            @Override
+                            public int calculateDtToFit(int viewStart, int viewEnd, int boxStart,
+                                    int boxEnd, int snapPreference) {
+                                // Return distance between visible view's center and selected item's
+                                // center
+                                return (boxStart + (boxEnd - boxStart) / 2)
+                                        - (viewStart + (viewEnd - viewStart) / 2);
+                            }
+                        };
+                scroller.setTargetPosition(position);
+                startSmoothScroll(scroller);
+            }
+        };
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new SpaceItemDecoration(mResources));
         recyclerView.setAdapter(mRecyclerViewAdapter);
@@ -134,7 +152,9 @@ public class ContinuousSearchListCoordinator {
             boolean isFirst = position == 0;
             boolean isLast = position == parent.getAdapter().getItemCount() - 1;
 
-            outRect.left = isFirst ? mSidePaddingPx : mChipSpacingPx;
+            // Provider icon/text already has the required padding so the first item doesn't need to
+            // have any.
+            outRect.left = isFirst ? 0 : mChipSpacingPx;
             outRect.right = isLast ? mSidePaddingPx : mChipSpacingPx;
         }
     }

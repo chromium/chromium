@@ -22,6 +22,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,7 +40,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemProperties;
-import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ProviderProperties;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
@@ -182,43 +183,19 @@ public class ContinuousSearchListViewBinderTest {
     }
 
     @Test
-    public void testBindProvider() {
-        View view = mock(View.class);
-        TextView textView = mock(TextView.class);
-        InOrder inOrder = inOrder(view, textView);
-        PropertyModel model = new PropertyModel(ProviderProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(
-                model, view, ContinuousSearchListViewBinder::bindProvider);
-
-        doReturn(textView).when(view).findViewById(anyInt());
-
-        int iconRes = 11;
-        model.set(ProviderProperties.ICON_RESOURCE, iconRes);
-        inOrder.verify(textView).setCompoundDrawablesRelativeWithIntrinsicBounds(
-                eq(iconRes), eq(0), eq(0), eq(0));
-
-        final String label = "Label";
-        model.set(ProviderProperties.LABEL, label);
-        inOrder.verify(textView).setText(eq(label));
-
-        int id = 123;
-        model.set(ProviderProperties.TEXT_STYLE, id);
-        inOrder.verify(textView).setTextAppearance(any(), eq(id));
-
-        View.OnClickListener listener = (v) -> {};
-        model.set(ProviderProperties.CLICK_LISTENER, listener);
-        inOrder.verify(view).setOnClickListener(eq(listener));
-    }
-
-    @Test
     public void testBindRootView() {
         View view = mock(View.class);
+        RecyclerView recyclerView = mock(RecyclerView.class);
+        TextView textView = mock(TextView.class);
         ImageView imageView = mock(ImageView.class);
-        InOrder inOrder = inOrder(view, imageView);
+        InOrder inOrder = inOrder(view, textView, imageView, recyclerView);
         PropertyModel model = new PropertyModel(ContinuousSearchListProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(
                 model, view, ContinuousSearchListViewBinder::bindRootView);
-        doReturn(imageView).when(view).findViewById(anyInt());
+
+        doReturn(imageView).when(view).findViewById(eq(R.id.button_dismiss));
+        doReturn(textView).when(view).findViewById(eq(R.id.continuous_search_provider_label));
+        doReturn(recyclerView).when(view).findViewById(eq(R.id.recycler_view));
 
         int color = 0xAABBCC;
         model.set(ContinuousSearchListProperties.BACKGROUND_COLOR, color);
@@ -230,5 +207,27 @@ public class ContinuousSearchListViewBinderTest {
         View.OnClickListener listener = (v) -> {};
         model.set(ContinuousSearchListProperties.DISMISS_CLICK_CALLBACK, listener);
         inOrder.verify(imageView).setOnClickListener(eq(listener));
+
+        int position = 5;
+        model.set(ContinuousSearchListProperties.SELECTED_ITEM_POSITION, position);
+        inOrder.verify(recyclerView).smoothScrollToPosition(position);
+
+        // Provider properties
+
+        int iconRes = 11;
+        model.set(ContinuousSearchListProperties.PROVIDER_ICON_RESOURCE, iconRes);
+        inOrder.verify(textView).setCompoundDrawablesRelativeWithIntrinsicBounds(
+                eq(iconRes), eq(0), eq(0), eq(0));
+
+        final String label = "Label";
+        model.set(ContinuousSearchListProperties.PROVIDER_LABEL, label);
+        inOrder.verify(textView).setText(eq(label));
+
+        int id = 123;
+        model.set(ContinuousSearchListProperties.PROVIDER_TEXT_STYLE, id);
+        inOrder.verify(textView).setTextAppearance(any(), eq(id));
+
+        model.set(ContinuousSearchListProperties.PROVIDER_CLICK_LISTENER, listener);
+        inOrder.verify(textView).setOnClickListener(eq(listener));
     }
 }

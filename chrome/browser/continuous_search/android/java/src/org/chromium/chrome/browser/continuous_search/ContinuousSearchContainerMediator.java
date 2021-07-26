@@ -37,6 +37,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
             new TokenHolder(this::onVisibilityTokenUpdate);
 
     private Runnable mOnFinishedHide;
+    private Runnable mOnFinishedShow;
     private boolean mInitialized;
     private boolean mIsVisible;
     private boolean mWantVisible;
@@ -103,11 +104,15 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
      * Displays the container. This will increase the top controls height with an animation that
      * is controlled by cc and displays the container.
      */
-    void show() {
+    void show(Runnable onFinishedShow) {
         mOnFinishedHide = null;
+        mOnFinishedShow = onFinishedShow;
         mWantVisible = true;
 
-        if (mIsVisible) return;
+        if (mIsVisible) {
+            runOnFinishedShow();
+            return;
+        }
 
         mInitializeLayout.run();
         mInitialized = true;
@@ -124,6 +129,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
      */
     void hide(Runnable onFinishedHide) {
         mOnFinishedHide = onFinishedHide;
+        mOnFinishedShow = null;
         mWantVisible = false;
 
         if (!mInitialized || !mIsVisible) {
@@ -223,6 +229,8 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
                                         : View.GONE);
         mModel.set(ContinuousSearchContainerProperties.ANDROID_VIEW_VISIBILITY, androidViewState);
 
+        if (androidViewState == View.VISIBLE) runOnFinishedShow();
+
         final boolean doneHiding = !isUiVisible && !mIsVisible;
         if (doneHiding) {
             mHideToolbarShadow.onResult(false);
@@ -249,11 +257,19 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
         mModel.set(ContinuousSearchContainerProperties.ANDROID_VIEW_VISIBILITY, androidViewState);
     }
 
+    // TODO(crbug.com/1232595): merge onFinishedShow and onFinishedHide logic.
     @VisibleForTesting
     void runOnFinishedHide() {
         if (mOnFinishedHide != null) {
             mOnFinishedHide.run();
             mOnFinishedHide = null;
+        }
+    }
+
+    void runOnFinishedShow() {
+        if (mOnFinishedShow != null) {
+            mOnFinishedShow.run();
+            mOnFinishedShow = null;
         }
     }
 
