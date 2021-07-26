@@ -6034,9 +6034,6 @@ crbug.com/1097005 http/tests/devtools/console/console-search.js [ Crash Failure 
 crbug.com/1093445 http/tests/loading/pdf-commit-load-callbacks.html [ Failure Pass ]
 crbug.com/1093497 http/tests/history/client-redirect-after-push-state.html [ Failure Pass ]
 
-# Sheriff 2020-06-24
-crbug.com/1098676 http/tests/devtools/console-xhr-logging.js [ Failure Pass ]
-
 # Tests blocking WPT importer
 crbug.com/1098844 external/wpt/wasm/jsapi/functions/entry.html [ Crash Pass Timeout ]
 crbug.com/1098844 external/wpt/wasm/jsapi/functions/entry-different-function-realm.html [ Crash Pass Timeout ]

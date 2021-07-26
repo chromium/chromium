@@ -19,25 +19,25 @@
 
   TestRunner.evaluateInPage(`requestHelper('GET', 'resources/xhr-exists.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(3);
-  await ConsoleTestRunner.dumpConsoleMessages();
+  await dumpConsoleMessagesSorted();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPage(`requestHelper('GET', 'resources/xhr-does-not-exist.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(3);
-  await ConsoleTestRunner.dumpConsoleMessages();
+  await dumpConsoleMessagesSorted();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPageAsync(`requestHelper('POST', 'resources/post-target.cgi')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(2);
-  await ConsoleTestRunner.dumpConsoleMessages();
+  await dumpConsoleMessagesSorted();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPageAsync(`requestHelper('GET', 'http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(4);
-  await ConsoleTestRunner.dumpConsoleMessages();
+  await dumpConsoleMessagesSorted();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');
 
@@ -45,30 +45,36 @@
 
   TestRunner.evaluateInPageAsync(`requestHelper('GET', 'resources/xhr-exists.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(1);
-  await ConsoleTestRunner.dumpConsoleMessages();
+  await dumpConsoleMessagesSorted();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPageAsync(`requestHelper('GET', 'resources/xhr-does-not-exist.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(2);
-  await ConsoleTestRunner.dumpConsoleMessages();
+  await dumpConsoleMessagesSorted();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPageAsync(`requestHelper('POST', 'resources/post-target.cgi')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(1);
-  await ConsoleTestRunner.dumpConsoleMessages();
+  await dumpConsoleMessagesSorted();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.evaluateInPageAsync(`requestHelper('GET', 'http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html')`);
   await ConsoleTestRunner.waitForConsoleMessagesPromise(3);
-  await ConsoleTestRunner.dumpConsoleMessages();
+  await dumpConsoleMessagesSorted();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');
 
   TestRunner.deprecatedRunAfterPendingDispatches(async () => {
-    await ConsoleTestRunner.dumpConsoleMessages();
+    await dumpConsoleMessagesSorted();
     TestRunner.completeTest();
   });
+
+  async function dumpConsoleMessagesSorted() {
+    const messages = await ConsoleTestRunner.dumpConsoleMessagesIntoArray();
+    messages.sort().forEach(TestRunner.addResult);
+  };
+
 })();
