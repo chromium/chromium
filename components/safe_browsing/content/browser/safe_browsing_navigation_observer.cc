@@ -138,87 +138,22 @@ void SafeBrowsingNavigationObserver::DidStartNavigation(
     return;
   }
 
-  // When navigating a newly created portal contents, establish an association
-  // with its creator, so we can track the referrer chain across portal
-  // activations.
-  if (web_contents()->IsPortal() &&
-      !web_contents()->GetController().GetLastCommittedEntry()) {
-    content::RenderFrameHost* initiator_frame_host =
-        navigation_handle->GetInitiatorFrameToken().has_value()
-            ? content::RenderFrameHost::FromFrameToken(
-                  navigation_handle->GetInitiatorProcessID(),
-                  navigation_handle->GetInitiatorFrameToken().value())
-            : nullptr;
-    // TODO(https://crbug.com/1074422): Handle the case where the initiator
-    // RenderFrameHost is gone.
-    if (initiator_frame_host) {
-      content::WebContents* initiator_contents =
-          content::WebContents::FromRenderFrameHost(initiator_frame_host);
-      GetObserverManager()->RecordNewWebContents(
-          initiator_contents, initiator_frame_host, navigation_handle->GetURL(),
-          navigation_handle->GetPageTransition(), web_contents(),
-          navigation_handle->IsRendererInitiated());
-    }
-  }
+  MaybeRecordNewWebContentsForPortalContents(navigation_handle);
 
   std::unique_ptr<NavigationEvent> nav_event =
       std::make_unique<NavigationEvent>();
-  auto it = navigation_handle_map_.find(navigation_handle);
-  // It is possible to see multiple DidStartNavigation(..) with the same
-  // navigation_handle (e.g. cross-process transfer). If that's the case,
-  // we need to copy the navigation_initiation field.
-  if (it != navigation_handle_map_.end() &&
-      it->second->navigation_initiation != ReferrerChainEntry::UNDEFINED) {
-    nav_event->navigation_initiation = it->second->navigation_initiation;
-  } else {
-    // If this is the first time we see this navigation_handle, create a new
-    // NavigationEvent, and decide if it is triggered by user.
-    if (!navigation_handle->IsRendererInitiated()) {
-      nav_event->navigation_initiation = ReferrerChainEntry::BROWSER_INITIATED;
-    } else if (GetObserverManager()->HasUnexpiredUserGesture(web_contents())) {
-      nav_event->navigation_initiation =
-          ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
-    } else {
-      nav_event->navigation_initiation =
-          ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE;
-    }
-    GetObserverManager()->OnUserGestureConsumed(web_contents());
-  }
-
+  SetNavigationInitiationAndRecordUserGesture(navigation_handle,
+                                              nav_event.get());
   // All the other fields are reconstructed based on current content of
   // navigation_handle.
   nav_event->frame_id = navigation_handle->GetFrameTreeNodeId();
-
-  // If there was a URL previously committed in the current RenderFrameHost,
-  // set it as the source url of this navigation. Otherwise, this is the
-  // first url going to commit in this frame.
-  content::RenderFrameHost* current_frame_host =
-      content::RenderFrameHost::FromID(
-          navigation_handle->GetPreviousRenderFrameHostId());
-  // For browser initiated navigation (e.g. from address bar or bookmark), we
-  // don't fill the source_url to prevent attributing navigation to the last
-  // committed navigation.
-  if (navigation_handle->IsRendererInitiated() && current_frame_host &&
-      current_frame_host->GetLastCommittedURL().is_valid()) {
-    nav_event->source_url = SafeBrowsingNavigationObserverManager::ClearURLRef(
-        current_frame_host->GetLastCommittedURL());
-  }
+  SetNavigationSourceUrl(navigation_handle, nav_event.get());
   nav_event->original_request_url =
       SafeBrowsingNavigationObserverManager::ClearURLRef(
           navigation_handle->GetURL());
-
   nav_event->source_tab_id =
       sessions::SessionTabHelper::IdForTab(navigation_handle->GetWebContents());
-
-  if (navigation_handle->IsInMainFrame()) {
-    nav_event->source_main_frame_url = nav_event->source_url;
-  } else {
-    nav_event->source_main_frame_url =
-        SafeBrowsingNavigationObserverManager::ClearURLRef(
-            navigation_handle->GetParentFrame()
-                ->GetMainFrame()
-                ->GetLastCommittedURL());
-  }
+  SetNavigationSourceMainFrameUrl(navigation_handle, nav_event.get());
 
   std::unique_ptr<NavigationEvent> pending_nav_event =
       std::make_unique<NavigationEvent>(*nav_event);
@@ -313,6 +248,92 @@ void SafeBrowsingNavigationObserver::OnContentSettingChanged(
       primary_pattern.Matches(web_contents()->GetLastCommittedURL()) &&
       PageInfoUI::ContentSettingsTypeInPageInfo(content_type)) {
     OnUserInteraction();
+  }
+}
+
+void SafeBrowsingNavigationObserver::MaybeRecordNewWebContentsForPortalContents(
+    content::NavigationHandle* navigation_handle) {
+  // When navigating a newly created portal contents, establish an association
+  // with its creator, so we can track the referrer chain across portal
+  // activations.
+  if (web_contents()->IsPortal() &&
+      !web_contents()->GetController().GetLastCommittedEntry()) {
+    content::RenderFrameHost* initiator_frame_host =
+        navigation_handle->GetInitiatorFrameToken().has_value()
+            ? content::RenderFrameHost::FromFrameToken(
+                  navigation_handle->GetInitiatorProcessID(),
+                  navigation_handle->GetInitiatorFrameToken().value())
+            : nullptr;
+    // TODO(https://crbug.com/1074422): Handle the case where the initiator
+    // RenderFrameHost is gone.
+    if (initiator_frame_host) {
+      content::WebContents* initiator_contents =
+          content::WebContents::FromRenderFrameHost(initiator_frame_host);
+      GetObserverManager()->RecordNewWebContents(
+          initiator_contents, initiator_frame_host, navigation_handle->GetURL(),
+          navigation_handle->GetPageTransition(), web_contents(),
+          navigation_handle->IsRendererInitiated());
+    }
+  }
+}
+
+void SafeBrowsingNavigationObserver::
+    SetNavigationInitiationAndRecordUserGesture(
+        content::NavigationHandle* navigation_handle,
+        NavigationEvent* nav_event) {
+  auto it = navigation_handle_map_.find(navigation_handle);
+  // It is possible to see multiple DidStartNavigation(..) with the same
+  // navigation_handle (e.g. cross-process transfer). If that's the case,
+  // we need to copy the navigation_initiation field.
+  if (it != navigation_handle_map_.end() &&
+      it->second->navigation_initiation != ReferrerChainEntry::UNDEFINED) {
+    nav_event->navigation_initiation = it->second->navigation_initiation;
+  } else {
+    // If this is the first time we see this navigation_handle, decide if it is
+    // triggered by user.
+    if (!navigation_handle->IsRendererInitiated()) {
+      nav_event->navigation_initiation = ReferrerChainEntry::BROWSER_INITIATED;
+    } else if (GetObserverManager()->HasUnexpiredUserGesture(web_contents())) {
+      nav_event->navigation_initiation =
+          ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
+    } else {
+      nav_event->navigation_initiation =
+          ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE;
+    }
+    GetObserverManager()->OnUserGestureConsumed(web_contents());
+  }
+}
+
+void SafeBrowsingNavigationObserver::SetNavigationSourceUrl(
+    content::NavigationHandle* navigation_handle,
+    NavigationEvent* nav_event) {
+  // If there was a URL previously committed in the current RenderFrameHost,
+  // set it as the source url of this navigation. Otherwise, this is the
+  // first url going to commit in this frame.
+  content::RenderFrameHost* current_frame_host =
+      content::RenderFrameHost::FromID(
+          navigation_handle->GetPreviousRenderFrameHostId());
+  // For browser initiated navigation (e.g. from address bar or bookmark), we
+  // don't fill the source_url to prevent attributing navigation to the last
+  // committed navigation.
+  if (navigation_handle->IsRendererInitiated() && current_frame_host &&
+      current_frame_host->GetLastCommittedURL().is_valid()) {
+    nav_event->source_url = SafeBrowsingNavigationObserverManager::ClearURLRef(
+        current_frame_host->GetLastCommittedURL());
+  }
+}
+
+void SafeBrowsingNavigationObserver::SetNavigationSourceMainFrameUrl(
+    content::NavigationHandle* navigation_handle,
+    NavigationEvent* nav_event) {
+  if (navigation_handle->IsInMainFrame()) {
+    nav_event->source_main_frame_url = nav_event->source_url;
+  } else {
+    nav_event->source_main_frame_url =
+        SafeBrowsingNavigationObserverManager::ClearURLRef(
+            navigation_handle->GetParentFrame()
+                ->GetMainFrame()
+                ->GetLastCommittedURL());
   }
 }
 

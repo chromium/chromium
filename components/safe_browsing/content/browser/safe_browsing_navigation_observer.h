@@ -156,11 +156,27 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
                                const ContentSettingsPattern& secondary_pattern,
                                ContentSettingsType content_type) override;
 
-  // Map keyed on NavigationHandle* to keep track of all the ongoing navigation
-  // events. NavigationHandle pointers are owned by RenderFrameHost. Since a
-  // NavigationHandle object will be destructed after navigation is done,
-  // at the end of DidFinishNavigation(...) corresponding entries in this map
-  // will be removed from navigation_handle_map_ and added to
+  // If the navigation is created from portal contents, records the new contents
+  // to track the referrer chain across portal activations.
+  void MaybeRecordNewWebContentsForPortalContents(
+      content::NavigationHandle* navigation_handle);
+
+  // Setter functions for fields in |nav_event|.
+  void SetNavigationInitiationAndRecordUserGesture(
+      content::NavigationHandle* navigation_handle,
+      NavigationEvent* nav_event);
+  void SetNavigationSourceUrl(content::NavigationHandle* navigation_handle,
+                              NavigationEvent* nav_event);
+  void SetNavigationSourceMainFrameUrl(
+      content::NavigationHandle* navigation_handle,
+      NavigationEvent* nav_event);
+
+  // Map keyed on NavigationHandle* to keep track of all the ongoing
+  // navigation events. NavigationHandle pointers are owned by
+  // RenderFrameHost. Since a NavigationHandle object will be destructed
+  // after navigation is done, at the end of DidFinishNavigation(...)
+  // corresponding entries in this map will be removed from
+  // navigation_handle_map_ and added to
   // SafeBrowsingNavigationObserverManager::navigation_map_.
   NavigationHandleMap navigation_handle_map_;
 
