@@ -252,9 +252,15 @@ class TestContentBrowserClient : public ContentBrowserClient {
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) override {
     checked_allow_web_bluetooth_ = true;
+
+    if (block_globally_disabled_)
+      return AllowWebBluetoothResult::BLOCK_GLOBALLY_DISABLED;
+
     return ContentBrowserClient::AllowWebBluetooth(
         browser_context, requesting_origin, embedding_origin);
   }
+
+  void block_globally_disabled() { block_globally_disabled_ = true; }
 
   bool checked_allow_web_bluetooth() { return checked_allow_web_bluetooth_; }
 
@@ -267,6 +273,7 @@ class TestContentBrowserClient : public ContentBrowserClient {
  private:
   TestBluetoothDelegate bluetooth_delegate_;
   bool checked_allow_web_bluetooth_ = false;
+  bool block_globally_disabled_ = false;
 };
 
 }  // namespace
@@ -325,6 +332,8 @@ class WebBluetoothServiceImplBrowserTest : public ContentBrowserTest {
   bool CheckedAllowWebBluetooth() {
     return browser_client_.checked_allow_web_bluetooth();
   }
+
+  void BlockGloballyDisabled() { browser_client_.block_globally_disabled(); }
 
   WebBluetoothServiceImpl* GetWebBluetoothServiceForTesting(
       RenderFrameHost* render_frame_host) {
@@ -554,6 +563,47 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   // It should be called when activated.
   EXPECT_TRUE(CheckedAllowWebBluetooth());
   EXPECT_NE(GetWebBluetoothServiceForTesting(prerendered_frame_host), nullptr);
+  EXPECT_CALL(*adapter(), RemoveObserver(_));
+}
+
+// Tests that console messages have correct source frames.
+IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
+                       ConsoleLogFromSourceFrame) {
+  WebContentsConsoleObserver console_observer(GetWebContents());
+  constexpr char kConsoleLog[] = "Bluetooth permission has been blocked.";
+  console_observer.SetPattern(kConsoleLog);
+
+  // Block Web Bluetooth to get the console message.
+  BlockGloballyDisabled();
+
+  GURL url = embedded_test_server()->GetURL("/page_with_blank_iframe.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_CALL(*adapter(), AddObserver(_));
+
+  ASSERT_EQ(2u, GetWebContents()->GetAllFrames().size());
+
+  RenderFrameHost* sub_frame = GetWebContents()->GetAllFrames().back();
+  constexpr char kErrorMessage[] =
+      "NotFoundError: Web Bluetooth API globally disabled.";
+
+  EXPECT_EQ(kErrorMessage, content::EvalJs(sub_frame, R"(
+    (async() => {
+      try {
+        let device = await navigator.bluetooth.requestDevice({
+          filters: [{name: 'Test Device', services: ['heart_rate']}]});
+        return "";
+      } catch(e) {
+        return `${e.name}: ${e.message}`;
+      }
+    })()
+  )"));
+
+  console_observer.Wait();
+  std::vector<WebContentsConsoleObserver::Message> messages =
+      console_observer.messages();
+  EXPECT_EQ(messages.size(), 1u);
+  EXPECT_EQ(messages.back().source_frame, sub_frame);
   EXPECT_CALL(*adapter(), RemoveObserver(_));
 }
 

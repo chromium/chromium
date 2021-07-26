@@ -225,7 +225,6 @@ BluetoothDeviceChooserController::BluetoothDeviceChooserController(
     : adapter_(std::move(adapter)),
       web_bluetooth_service_(web_bluetooth_service),
       render_frame_host_(render_frame_host),
-      web_contents_(WebContents::FromRenderFrameHost(render_frame_host_)),
       discovery_session_timer_(
           FROM_HERE,
           base::TimeDelta::FromSeconds(scan_duration_),
@@ -273,7 +272,7 @@ void BluetoothDeviceChooserController::GetDevice(
         break;
       case WebBluetoothResult::CHOOSER_NOT_SHOWN_API_GLOBALLY_DISABLED: {
         // Log to the developer console.
-        web_contents_->GetMainFrame()->AddMessageToConsole(
+        render_frame_host_->AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kInfo,
             "Bluetooth permission has been blocked.");
         // Block requests.
