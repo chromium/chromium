@@ -6027,18 +6027,21 @@
     ],
     "policy_pref_mapping_tests": [
       {
-        "os": [
-          "win",
-          "linux",
-          "mac",
-          "chromeos",
-          "android"
-        ],
         "policies": {
           "AllowedDomainsForApps": "google.com,mit.edu"
         },
         "prefs": {
-          "settings.allowed_domains_for_apps": {}
+          "settings.allowed_domains_for_apps": {
+            "value": "google.com,mit.edu"
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "settings.allowed_domains_for_apps": {
+            "default_value": ""
+          }
         }
       }
     ]
@@ -9105,7 +9108,19 @@
           ]
         },
         "prefs": {
-          "settings.language.allowed_input_methods": {}
+          "settings.language.allowed_input_methods": {
+            "value": [
+              "xkb:us::en"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "settings.language.allowed_input_methods": {
+            "default_value": []
+          }
         }
       }
     ]
