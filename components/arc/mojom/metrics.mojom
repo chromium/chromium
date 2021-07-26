@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 13
+// Next MinVersion: 14
 
 module arc.mojom;
 
@@ -149,6 +149,15 @@ enum CompanionLibApiId {
   IS_CLIPPING_TO_TASK_DISABLED = 23,
 };
 
+[Extensible]
+enum ArcDnsQuery {
+  // All other hostnames.
+  OTHER_HOST_NAME = 0,
+
+  // android.googleapis.com used by Android checkin.
+  ANDROID_API_HOST_NAME = 1,
+};
+
 // Describes the type of app kill being reported.
 [Extensible]
 enum AppKillType {
@@ -232,7 +241,7 @@ enum LowLatencyStylusLibApiId {
   kGLInkOverlaySetViewMatrix = 4,
 };
 
-// Next method ID: 16
+// Next method ID: 17
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -293,6 +302,11 @@ interface MetricsHost {
   [MinVersion=12] ReportPerAppFixupMetrics@15(
       mojo_base.mojom.TimeDelta duration,
       uint32 number_of_directories);
+
+  // Reports the result of DNS query inside ARC.
+  [MinVersion=13] ReportDnsQueryResult@16(
+      ArcDnsQuery query,
+      bool success);
 };
 
 // Next method ID: 3

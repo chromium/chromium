@@ -959,6 +959,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Arc.Net.DnsQuery.AndroidApi" enum="BooleanSuccess"
+    expires_after="2022-07-22">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Records the success result of DNS query resolution inside ARC.
+  </summary>
+</histogram>
+
+<histogram name="Arc.Net.DnsQuery.Other" enum="BooleanSuccess"
+    expires_after="2022-07-22">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Records the success result of DNS query resolution inside ARC.
+  </summary>
+</histogram>
+
 <histogram name="Arc.OOMKills.Count" units="kills" expires_after="2021-03-07">
   <obsolete>
     Removed in Oct 2020. Now reported as Memory.OOMKills.Count.

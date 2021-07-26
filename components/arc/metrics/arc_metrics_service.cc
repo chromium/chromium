@@ -119,6 +119,17 @@ const char* LowLatencyStylusLibraryTypeToString(
   return "";
 }
 
+const char* DnsQueryToString(mojom::ArcDnsQuery query) {
+  switch (query) {
+    case mojom::ArcDnsQuery::OTHER_HOST_NAME:
+      return "Other";
+    case mojom::ArcDnsQuery::ANDROID_API_HOST_NAME:
+      return "AndroidApi";
+  }
+  NOTREACHED();
+  return "";
+}
+
 }  // namespace
 
 // static
@@ -354,6 +365,15 @@ void ArcMetricsService::ReportAppKill(mojom::AppKillPtr app_kill) {
       NotifyOOMKillCount(app_kill->count);
       break;
   }
+}
+
+void ArcMetricsService::ReportDnsQueryResult(mojom::ArcDnsQuery query,
+                                             bool success) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  std::string metric_name =
+      base::StrCat({"Arc.Net.DnsQuery.", DnsQueryToString(query)});
+  VLOG(1) << metric_name << ": " << success;
+  base::UmaHistogramBoolean(metric_name, success);
 }
 
 void ArcMetricsService::NotifyLowMemoryKill() {

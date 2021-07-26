@@ -102,6 +102,7 @@ class ArcMetricsService : public KeyedService,
                           mojom::BootType boot_type) override;
   void ReportNativeBridge(mojom::NativeBridgeType native_bridge_type) override;
   void ReportCompanionLibApiUsage(mojom::CompanionLibApiId api_id) override;
+  void ReportDnsQueryResult(mojom::ArcDnsQuery query, bool success) override;
   void ReportAppKill(mojom::AppKillPtr app_kill) override;
   void ReportArcCorePriAbiMigEvent(
       mojom::ArcCorePriAbiMigEvent event_type) override;
