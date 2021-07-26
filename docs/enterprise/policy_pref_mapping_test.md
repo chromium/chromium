@@ -38,6 +38,10 @@ To run the preference mapping tests, use `browser_tests` command with a
 - `PolicyTest.AllPoliciesHaveATestCase` (iOS only)
 - `PolicyTest.PolicyToPrefMappings` (iOS only)
 
+Individual policies for PolicyPrefsTest.PolicyToPrefsMapping could be filtered
+by `--test_policy_to_pref_mappings_filter` flag. The flag accepts policy names
+(with the .optionalTestNameSuffix) separated by colon.
+
 ## Example
 
 The following example tests the `IdleAction` policy, i.e. its mapping to two

@@ -10,12 +10,15 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -27,6 +30,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -36,6 +40,14 @@ namespace {
 // The name of the instructions key in policy_test_cases.json that does not need
 // to be parsed.
 const char kInstructionKeyName[] = "-- Instructions --";
+
+// The name of the switch to filter the testcases by
+// ${policy_name}[.optionalTestNameSuffix]. Several names could be passed
+// separated by colon. (For example --test_policy_to_pref_mappings_filter=\
+// AuthNegotiateDelegateByKdcPolicy:\
+// BuiltInDnsClientEnabled.FeatureEnabledByDefault
+const char kPolicyToPrefMappingsFilterSwitch[] =
+    "test_policy_to_pref_mappings_filter";
 
 enum class PrefLocation {
   kUserProfile,
@@ -481,6 +493,23 @@ void SetProviderPolicy(MockConfigurationPolicyProvider* provider,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+absl::optional<base::flat_set<std::string>> GetTestFilter() {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kPolicyToPrefMappingsFilterSwitch)) {
+    return absl::nullopt;
+  }
+
+  std::string value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kPolicyToPrefMappingsFilterSwitch);
+  auto list = base::SplitString(value, ":", base::TRIM_WHITESPACE,
+                                base::SPLIT_WANT_NONEMPTY);
+  if (list.empty())
+    return absl::nullopt;
+
+  return base::flat_set<std::string>(std::move(list));
+}
+
 }  // namespace
 
 void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_path) {
@@ -536,8 +565,17 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
 
   const PreprocessorMacrosChecker preprocessor_macros_checker;
   const PolicyTestCases test_cases(test_case_path);
+
+  auto test_filter = GetTestFilter();
+
   for (const auto& policy : test_cases) {
     for (const auto& test_case : policy.second) {
+      if (test_filter.has_value() &&
+          !base::Contains(test_filter.value(), test_case->name())) {
+        // Skip policy based on the filter.
+        continue;
+      }
+
       if (!chrome_schema.GetKnownProperty(policy.first).valid() &&
           test_case->IsSupported()) {
         // Print warning message if a deprecated policy is still supported by
