@@ -114,10 +114,13 @@ class DropdownBarHost : public ui::AcceleratorTarget,
   views::View* view() { return view_; }
   const views::View* view() const { return view_; }
 
-  // Returns the focus tracker.
+  void SetFocusTracker(
+      std::unique_ptr<views::ExternalFocusTracker> focus_tracker);
   views::ExternalFocusTracker* focus_tracker() const {
     return focus_tracker_.get();
   }
+
+  std::unique_ptr<views::ExternalFocusTracker> TakeFocusTracker();
 
   // Resets the focus tracker.
   void ResetFocusTracker();

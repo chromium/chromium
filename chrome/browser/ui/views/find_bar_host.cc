@@ -19,6 +19,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
@@ -33,6 +34,40 @@
 using content::NativeWebKeyboardEvent;
 
 namespace {
+
+class FindBarHostHelper
+    : public content::WebContentsUserData<FindBarHostHelper> {
+ public:
+  static FindBarHostHelper* CreateOrGetFromWebContents(
+      content::WebContents* web_contents) {
+    CreateForWebContents(web_contents);
+    return FromWebContents(web_contents);
+  }
+
+  void SetExternalFocusTracker(
+      std::unique_ptr<views::ExternalFocusTracker> external_focus_tracker) {
+    external_focus_tracker_ = std::move(external_focus_tracker);
+  }
+
+  std::unique_ptr<views::ExternalFocusTracker> TakeExternalFocusTracker() {
+    return std::move(external_focus_tracker_);
+  }
+
+  views::ExternalFocusTracker* focus_tracker() {
+    return external_focus_tracker_.get();
+  }
+
+ private:
+  friend class content::WebContentsUserData<FindBarHostHelper>;
+
+  explicit FindBarHostHelper(content::WebContents* web_contents) {}
+
+  std::unique_ptr<views::ExternalFocusTracker> external_focus_tracker_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(FindBarHostHelper)
 
 gfx::Rect GetLocationForFindBarView(gfx::Rect view_location,
                                     const gfx::Rect& dialog_bounds,
@@ -125,10 +160,16 @@ void FindBarHost::SetFindBarController(FindBarController* find_bar_controller) {
 }
 
 void FindBarHost::Show(bool animate) {
+  RestoreFocusTracker();
   DropdownBarHost::Show(animate);
 }
 
 void FindBarHost::Hide(bool animate) {
+  // Restore/Save is non-symmetric as hiding the DropdownBarHost could change
+  // the focus state of the external view. Saving the focus tracker before the
+  // hide preserves the appropriate view in the event the FindBarHost visibility
+  // is restored as part of a tab change.
+  SaveFocusTracker();
   DropdownBarHost::Hide(animate);
 }
 
@@ -192,11 +233,25 @@ bool FindBarHost::IsFindBarVisible() const {
 }
 
 void FindBarHost::RestoreSavedFocus() {
-  if (focus_tracker() == NULL) {
+  std::unique_ptr<views::ExternalFocusTracker> focus_tracker_from_web_contents;
+  views::ExternalFocusTracker* tracker = focus_tracker();
+  if (!tracker) {
+    auto* web_contents = find_bar_controller_->web_contents();
+    if (web_contents) {
+      auto* helper = FindBarHostHelper::FromWebContents(web_contents);
+      if (helper) {
+        focus_tracker_from_web_contents = helper->TakeExternalFocusTracker();
+        tracker = focus_tracker_from_web_contents.get();
+      }
+    }
+  }
+
+  if (tracker) {
+    tracker->FocusLastFocusedExternalView();
+    ResetFocusTracker();
+  } else {
     // TODO(brettw): Focus() should be on WebContentsView.
     find_bar_controller_->web_contents()->Focus();
-  } else {
-    focus_tracker()->FocusLastFocusedExternalView();
   }
 }
 
@@ -428,4 +483,32 @@ void FindBarHost::MoveWindowIfNecessaryWithRect(
   // May need to redraw our frame to accommodate bookmark bar styles.
   view()->Layout();  // Bounds may have changed.
   view()->SchedulePaint();
+}
+
+void FindBarHost::SaveFocusTracker() {
+  auto* web_contents = find_bar_controller_->web_contents();
+  if (!web_contents)
+    return;
+
+  std::unique_ptr<views::ExternalFocusTracker> focus_tracker =
+      TakeFocusTracker();
+  if (focus_tracker) {
+    focus_tracker->SetFocusManager(nullptr);
+    FindBarHostHelper::CreateOrGetFromWebContents(web_contents)
+        ->SetExternalFocusTracker(std::move(focus_tracker));
+  }
+}
+
+void FindBarHost::RestoreFocusTracker() {
+  auto* web_contents = find_bar_controller_->web_contents();
+  if (!web_contents)
+    return;
+
+  std::unique_ptr<views::ExternalFocusTracker> focus_tracker =
+      FindBarHostHelper::CreateOrGetFromWebContents(web_contents)
+          ->TakeExternalFocusTracker();
+  if (focus_tracker) {
+    focus_tracker->SetFocusManager(GetWidget()->GetFocusManager());
+    SetFocusTracker(std::move(focus_tracker));
+  }
 }

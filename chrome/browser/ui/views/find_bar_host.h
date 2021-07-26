@@ -149,6 +149,14 @@ class FindBarHost : public DropdownBarHost,
     return static_cast<const FindBarView*>(view());
   }
 
+  // Saves the focus tracker for potential restoration later during a
+  // WebContents change.
+  void SaveFocusTracker();
+
+  // Takes the focus tracker from a WebContents and restores it to the
+  // DropdownBarHost.
+  void RestoreFocusTracker();
+
   // A pointer back to the owning controller.
   FindBarController* find_bar_controller_ = nullptr;
 

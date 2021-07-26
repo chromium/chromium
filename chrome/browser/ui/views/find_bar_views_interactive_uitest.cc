@@ -430,6 +430,45 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitch) {
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 }
 
+IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitchDismiss) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // First we navigate to our test page (tab A).
+  GURL url = embedded_test_server()->GetURL(kSimplePage);
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  chrome::Find(browser());
+  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
+
+  content::WindowedNotificationObserver observer(
+      content::NOTIFICATION_LOAD_STOP,
+      content::NotificationService::AllSources());
+  chrome::AddSelectedTabWithURL(browser(), url, ui::PAGE_TRANSITION_TYPED);
+  observer.Wait();
+
+  // Make sure Find box is not open when starting the new tab.
+  EXPECT_FALSE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
+
+  // Select tab A. Find bar should get focus.
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, {TabStripModel::GestureType::kOther});
+  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
+
+  // Dismiss the Find box. Focus should go to the content view.
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
+                                              false, false, false));
+
+  // Wait until the focus settles.
+  content::RunUntilInputProcessed(browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetRenderWidgetHostView()
+                                      ->GetRenderWidgetHost());
+  ASSERT_FALSE(IsFindBarVisible());
+  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+}
+
 // FindInPage on Mac doesn't use prepopulated values. Search there is global.
 #if !defined(OS_MAC) && !defined(USE_AURA)
 // Flaky because the test server fails to start? See: http://crbug.com/96594.
