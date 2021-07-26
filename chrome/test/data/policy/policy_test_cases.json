@@ -443,11 +443,37 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Check the default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "history.deleting_enabled": {
+            "location": "user_profile",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: true",
+        "policies": {
+          "AllowDeletingBrowserHistory": true
+        },
+        "prefs": {
+          "history.deleting_enabled": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: false",
         "policies": {
           "AllowDeletingBrowserHistory": false
         },
         "prefs": {
-          "history.deleting_enabled": {}
+          "history.deleting_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
         }
       }
     ]
