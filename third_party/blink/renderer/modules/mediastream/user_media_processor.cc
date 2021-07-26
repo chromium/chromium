@@ -153,9 +153,7 @@ std::string GetOnTrackStartedLogString(
 void InitializeAudioTrackControls(UserMediaRequest* user_media_request,
                                   TrackControls* track_controls) {
   if (user_media_request->MediaRequestType() ==
-          UserMediaRequest::MediaType::kDisplayMedia ||
-      user_media_request->MediaRequestType() ==
-          UserMediaRequest::MediaType::kGetCurrentBrowsingContextMedia) {
+      UserMediaRequest::MediaType::kDisplayMedia) {
     track_controls->requested = true;
     track_controls->stream_type = MediaStreamType::DISPLAY_AUDIO_CAPTURE;
     return;
@@ -191,13 +189,10 @@ void InitializeVideoTrackControls(UserMediaRequest* user_media_request,
   if (user_media_request->MediaRequestType() ==
       UserMediaRequest::MediaType::kDisplayMedia) {
     track_controls->requested = true;
-    track_controls->stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
-    return;
-  } else if (user_media_request->MediaRequestType() ==
-             UserMediaRequest::MediaType::kGetCurrentBrowsingContextMedia) {
-    track_controls->requested = true;
     track_controls->stream_type =
-        MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB;
+        user_media_request->should_prefer_current_tab()
+            ? MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB
+            : MediaStreamType::DISPLAY_VIDEO_CAPTURE;
     return;
   }
 

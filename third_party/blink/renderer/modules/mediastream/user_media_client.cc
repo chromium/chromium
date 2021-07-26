@@ -28,8 +28,8 @@ namespace {
 
 static int g_next_request_id = 0;
 
-// The histogram counts the number of calls to the JS API
-// getUserMedia(), getDisplayMedia() or GetCurrentBrowsingContextMedia().
+// The histogram counts the number of calls to the JS APIs
+// getUserMedia() and getDisplayMedia().
 void UpdateAPICount(UserMediaRequest::MediaType media_type) {
   RTCAPIName api_name = RTCAPIName::kGetUserMedia;
   switch (media_type) {
@@ -38,9 +38,6 @@ void UpdateAPICount(UserMediaRequest::MediaType media_type) {
       break;
     case UserMediaRequest::MediaType::kDisplayMedia:
       api_name = RTCAPIName::kGetDisplayMedia;
-      break;
-    case UserMediaRequest::MediaType::kGetCurrentBrowsingContextMedia:
-      api_name = RTCAPIName::kGetCurrentBrowsingContextMedia;
       break;
   }
   UpdateWebRTCMethodCount(api_name);

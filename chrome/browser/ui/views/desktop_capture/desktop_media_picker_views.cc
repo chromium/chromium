@@ -49,14 +49,14 @@
 
 using content::DesktopMediaID;
 
-enum class DesktopMediaPickerDialogView::DialogSource : int {
-  kGetCurrentBrowsingContextMedia = 0,
-  kGetDisplayMedia = 1
+enum class DesktopMediaPickerDialogView::DialogType : int {
+  kStandard = 0,
+  kPreferCurrentTab = 1
 };
 
 namespace {
 
-using DialogSource = DesktopMediaPickerDialogView::DialogSource;
+using DialogType = DesktopMediaPickerDialogView::DialogType;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_AURA)
 DesktopMediaID::Id AcceleratedWidgetToDesktopMediaId(
@@ -92,7 +92,7 @@ enum class GDMResult {
 
 void RecordUma(GCBCMResult result) {
   base::UmaHistogramEnumeration(
-      "Media.Ui.GetCurrentBrowsingContextMedia.ExplicitSelection."
+      "Media.Ui.GetDisplayMediaPreferCurrentTab.ExplicitSelection."
       "UserInteraction",
       result);
 }
@@ -102,16 +102,16 @@ void RecordUma(GDMResult result) {
                                 result);
 }
 
-void RecordUmaDismissal(DialogSource dialog_source) {
-  if (dialog_source == DialogSource::kGetCurrentBrowsingContextMedia) {
+void RecordUmaDismissal(DialogType dialog_type) {
+  if (dialog_type == DialogType::kPreferCurrentTab) {
     RecordUma(GCBCMResult::kDialogDismissed);
   } else {
     RecordUma(GDMResult::kDialogDismissed);
   }
 }
 
-void RecordUmaCancellation(DialogSource dialog_source) {
-  if (dialog_source == DialogSource::kGetCurrentBrowsingContextMedia) {
+void RecordUmaCancellation(DialogType dialog_type) {
+  if (dialog_type == DialogType::kPreferCurrentTab) {
     RecordUma(GCBCMResult::kUserCancelled);
   } else {
     RecordUma(GDMResult::kUserCancelled);
@@ -121,7 +121,7 @@ void RecordUmaCancellation(DialogSource dialog_source) {
 // Convenience function for recording UMA.
 // |source_type| is there to help us distinguish the current tab being
 // selected explicitly, from it being selected from the list of all tabs.
-void RecordUmaSelection(DialogSource dialog_source,
+void RecordUmaSelection(DialogType dialog_type,
                         content::WebContents* web_contents,
                         const DesktopMediaID& selected_media,
                         DesktopMediaList::Type source_type) {
@@ -132,7 +132,7 @@ void RecordUmaSelection(DialogSource dialog_source,
     }
 
     case DesktopMediaList::Type::kScreen: {
-      if (dialog_source == DialogSource::kGetCurrentBrowsingContextMedia) {
+      if (dialog_type == DialogType::kPreferCurrentTab) {
         RecordUma(GCBCMResult::kUserSelectedScreen);
       } else {
         RecordUma(GDMResult::kUserSelectedScreen);
@@ -141,7 +141,7 @@ void RecordUmaSelection(DialogSource dialog_source,
     }
 
     case DesktopMediaList::Type::kWindow: {
-      if (dialog_source == DialogSource::kGetCurrentBrowsingContextMedia) {
+      if (dialog_type == DialogType::kPreferCurrentTab) {
         RecordUma(GCBCMResult::kUserSelectedWindow);
       } else {
         RecordUma(GDMResult::kUserSelectedWindow);
@@ -160,7 +160,7 @@ void RecordUmaSelection(DialogSource dialog_source,
           web_contents->GetMainFrame()->GetRoutingID() ==
               selected_media.web_contents_id.main_render_frame_id;
 
-      if (dialog_source == DialogSource::kGetCurrentBrowsingContextMedia) {
+      if (dialog_type == DialogType::kPreferCurrentTab) {
         RecordUma(current_tab_selected
                       ? GCBCMResult::kUserSelectedThisTabAsGenericTab
                       : GCBCMResult::kUserSelectedOtherTab);
@@ -281,9 +281,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         return list->GetMediaListType() == DesktopMediaList::Type::kCurrentTab;
       });
 
-  dialog_source_ = current_tab_among_sources
-                       ? DialogSource::kGetCurrentBrowsingContextMedia
-                       : DialogSource::kGetDisplayMedia;
+  dialog_type_ = current_tab_among_sources ? DialogType::kPreferCurrentTab
+                                           : DialogType::kStandard;
 
   for (auto& source_list : source_lists) {
     switch (source_list->GetMediaListType()) {
@@ -491,8 +490,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
 DesktopMediaPickerDialogView::~DesktopMediaPickerDialogView() {}
 
-DialogSource DesktopMediaPickerDialogView::GetDialogSource() const {
-  return dialog_source_;
+DialogType DesktopMediaPickerDialogView::GetDialogType() const {
+  return dialog_type_;
 }
 
 void DesktopMediaPickerDialogView::TabSelectedAt(int index) {
@@ -612,8 +611,7 @@ bool DesktopMediaPickerDialogView::Accept() {
   source.audio_share = audio_share_checkbox_ &&
                        audio_share_checkbox_->GetVisible() &&
                        audio_share_checkbox_->GetChecked();
-  if (source.audio_share &&
-      dialog_source_ == DialogSource::kGetCurrentBrowsingContextMedia) {
+  if (source.audio_share && dialog_type_ == DialogType::kPreferCurrentTab) {
     source.web_contents_id.disable_local_echo = true;
   }
 
@@ -639,7 +637,7 @@ bool DesktopMediaPickerDialogView::Accept() {
 #endif
   }
 
-  RecordUmaSelection(dialog_source_, web_contents_, source,
+  RecordUmaSelection(dialog_type_, web_contents_, source,
                      GetSelectedSourceListType());
 
   if (parent_)
@@ -650,7 +648,7 @@ bool DesktopMediaPickerDialogView::Accept() {
 }
 
 bool DesktopMediaPickerDialogView::Cancel() {
-  RecordUmaCancellation(dialog_source_);
+  RecordUmaCancellation(dialog_type_);
   return views::DialogDelegateView::Cancel();
 }
 
@@ -705,7 +703,7 @@ DesktopMediaPickerViews::DesktopMediaPickerViews() : dialog_(nullptr) {}
 
 DesktopMediaPickerViews::~DesktopMediaPickerViews() {
   if (dialog_) {
-    RecordUmaDismissal(dialog_->GetDialogSource());
+    RecordUmaDismissal(dialog_->GetDialogType());
     dialog_->DetachParent();
     dialog_->GetWidget()->Close();
   }

@@ -20,7 +20,7 @@ enum class RTCAPIName {
   kCanvasCaptureStream,
   kVideoCaptureStream,
   kGetDisplayMedia,
-  kGetCurrentBrowsingContextMedia,
+  kGetCurrentBrowsingContextMedia,  // Deprecated.
   kInvalidName
 };
 

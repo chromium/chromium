@@ -206,36 +206,6 @@ ScriptPromise MediaDevices::getDisplayMedia(
                               options, exception_state);
 }
 
-ScriptPromise MediaDevices::getCurrentBrowsingContextMedia(
-    ScriptState* script_state,
-    const MediaStreamConstraints* options,
-    ExceptionState& exception_state) {
-  const ExecutionContext* const context = GetExecutionContext();
-  if (!context) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "The implementation did not support the requested type of object or "
-        "operation.");
-    return ScriptPromise();
-  }
-
-  // This call should not be possible otherwise, as per the RuntimeEnabled
-  // in the IDL.
-  CHECK(RuntimeEnabledFeatures::GetCurrentBrowsingContextMediaEnabled(context));
-
-  if (!context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kDisplayCapture,
-          ReportOptions::kReportOnFailure)) {
-    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
-    return ScriptPromise();
-  }
-
-  return SendUserMediaRequest(
-      script_state,
-      UserMediaRequest::MediaType::kGetCurrentBrowsingContextMedia, options,
-      exception_state);
-}
-
 void MediaDevices::setCaptureHandleConfig(ScriptState* script_state,
                                           const CaptureHandleConfig* config,
                                           ExceptionState& exception_state) {

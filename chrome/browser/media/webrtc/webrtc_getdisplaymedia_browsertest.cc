@@ -28,60 +28,47 @@
 
 namespace {
 
-// Note that this is used for both getDisplayMedia as well as for
-// getCurrentBrowsingContextMedia.
 static const char kMainHtmlPage[] = "/webrtc/webrtc_getdisplaymedia_test.html";
 
-enum class TestedFunction {
-  kGetDisplayMedia,
-  kGetCurrentBrowsingContextMedia,
+enum class GetDisplayMediaVariant : int {
+  kStandard = 0,
+  kPreferCurrentTab = 1
 };
 
 struct TestConfigForPicker {
-  TestedFunction tested_function;
-  // |accept_this_tab_capture| is only applicable for
-  // getCurrentBrowsingContextMedia API, where setting this bool false implies
-  // no tab-capture by canceling the confirmation box.
+  bool should_prefer_current_tab_;
+  // |accept_this_tab_capture| is only applicable if
+  // |should_prefer_current_tab_| is set to true. Then, setting
+  // |accept_this_tab_capture| to true accepts the current tab, and
+  // |accept_this_tab_capture| set to false implies dismissing the media picker.
   bool accept_this_tab_capture;
 };
 
 struct TestConfigForFakeUI {
-  TestedFunction tested_function;
+  bool should_prefer_current_tab_;
   const char* display_surface;
 };
 
-const char* GetTestedFunctionName(TestedFunction tested_function) {
-  switch (tested_function) {
-    case TestedFunction::kGetDisplayMedia:
-      return "getDisplayMedia";
-    case TestedFunction::kGetCurrentBrowsingContextMedia:
-      return "getCurrentBrowsingContextMedia";
-  }
-  CHECK(false) << "Invalid function to test.";
-  return "";
-}
-
 }  // namespace
 
-// Base class for top level tests for getDisplayMedia() and
-// getCurrentBrowsingContextMedia().
+// Base class for top level tests for getDisplayMedia().
 class WebRtcScreenCaptureBrowserTest : public WebRtcTestBase {
  public:
+  ~WebRtcScreenCaptureBrowserTest() override = default;
+
   void SetUpInProcessBrowserTestFixture() override {
     DetectErrorsInJavaScript();
   }
 
-  void RunTestedFunction(const TestedFunction tested_function,
-                         content::WebContents* tab,
-                         const std::string& constraints,
-                         bool is_fake_ui,
-                         bool expect_success) {
+  void RunGetDisplayMedia(content::WebContents* tab,
+                          const std::string& constraints,
+                          bool is_fake_ui,
+                          bool expect_success) {
     std::string result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
         tab->GetMainFrame(),
-        base::StringPrintf("runTestedFunction(\"%s\", %s, \"%s\");",
-                           GetTestedFunctionName(tested_function),
-                           constraints.c_str(), "top-level-document"),
+        base::StringPrintf("runGetDisplayMedia(%s, \"top-level-document\");",
+                           constraints.c_str()),
         &result));
 
 #if defined(OS_MAC)
@@ -95,17 +82,24 @@ class WebRtcScreenCaptureBrowserTest : public WebRtcTestBase {
     EXPECT_EQ(result, expect_success ? "capture-success" : "capture-failure");
 #endif
   }
+
+  virtual bool PreferCurrentTab() const = 0;
+
+  std::string GetConstraints(bool video, bool audio) const {
+    return base::StringPrintf(
+        "{video:%s, audio: %s, preferCurrentTab: %s}", video ? "true" : "false",
+        audio ? "true" : "false", PreferCurrentTab() ? "true" : "false");
+  }
 };
 
-// Top level test for getDisplayMedia() and getCurrentBrowsingContextMedia().
+// Top level test for getDisplayMedia().
 // Pops picker UI and shares by default.
 class WebRtcScreenCaptureBrowserTestWithPicker
     : public WebRtcScreenCaptureBrowserTest,
       public testing::WithParamInterface<TestConfigForPicker> {
  public:
   WebRtcScreenCaptureBrowserTestWithPicker() : test_config_(GetParam()) {
-    if (test_config_.tested_function ==
-        TestedFunction::kGetCurrentBrowsingContextMedia) {
+    if (test_config_.should_prefer_current_tab_) {
       scoped_feature_list_.InitAndEnableFeature(
           blink::features::kRTCGetCurrentBrowsingContextMedia);
     }
@@ -114,24 +108,23 @@ class WebRtcScreenCaptureBrowserTestWithPicker
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
-    switch (test_config_.tested_function) {
-      case TestedFunction::kGetDisplayMedia: {
+    if (test_config_.should_prefer_current_tab_) {
+      command_line->AppendSwitch(test_config_.accept_this_tab_capture
+                                     ? switches::kThisTabCaptureAutoAccept
+                                     : switches::kThisTabCaptureAutoReject);
+    } else {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        command_line->AppendSwitchASCII(
-            switches::kAutoSelectDesktopCaptureSource, "Display");
+      command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
+                                      "Display");
 #else
-        command_line->AppendSwitchASCII(
-            switches::kAutoSelectDesktopCaptureSource, "Entire screen");
+      command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
+                                      "Entire screen");
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-        break;
-      }
-      case TestedFunction::kGetCurrentBrowsingContextMedia: {
-        command_line->AppendSwitch(test_config_.accept_this_tab_capture
-                                       ? switches::kThisTabCaptureAutoAccept
-                                       : switches::kThisTabCaptureAutoReject);
-        break;
-      }
     }
+  }
+
+  bool PreferCurrentTab() const override {
+    return test_config_.should_prefer_current_tab_;
   }
 
   const TestConfigForPicker test_config_;
@@ -149,9 +142,9 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
-  std::string constraints("{video:true}");
-  RunTestedFunction(test_config_.tested_function, tab, constraints,
-                    /*is_fake_ui=*/false, test_config_.accept_this_tab_capture);
+  RunGetDisplayMedia(tab, GetConstraints(/*video=*/true, /*audio=*/false),
+                     /*is_fake_ui=*/false,
+                     test_config_.accept_this_tab_capture);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -161,9 +154,9 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
 
   policy::DlpContentManagerTestHelper helper;
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
-  std::string constraints("{video:true}");
-  RunTestedFunction(test_config_.tested_function, tab, constraints,
-                    /*is_fake_ui=*/false, test_config_.accept_this_tab_capture);
+  RunGetDisplayMedia(tab, GetConstraints(/*video=*/true, /*audio=*/false),
+                     /*is_fake_ui=*/false,
+                     test_config_.accept_this_tab_capture);
 
   if (!test_config_.accept_this_tab_capture) {
     // This test is not relevant for this parameterized test case because it
@@ -214,31 +207,29 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
-  std::string constraints("{video:true, audio:true}");
-  RunTestedFunction(test_config_.tested_function, tab, constraints,
-                    /*is_fake_ui=*/false, test_config_.accept_this_tab_capture);
+  RunGetDisplayMedia(tab, GetConstraints(/*video=*/true, /*audio=*/true),
+                     /*is_fake_ui=*/false,
+                     test_config_.accept_this_tab_capture);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebRtcScreenCaptureBrowserTestWithPicker,
-    testing::Values(
-        TestConfigForPicker{TestedFunction::kGetDisplayMedia,
-                            /*accept_this_tab_capture=*/true},
-        TestConfigForPicker{TestedFunction::kGetCurrentBrowsingContextMedia,
-                            /*accept_this_tab_capture=*/true},
-        TestConfigForPicker{TestedFunction::kGetCurrentBrowsingContextMedia,
-                            /*accept_this_tab_capture=*/false}));
+    testing::Values(TestConfigForPicker{/*should_prefer_current_tab_=*/false,
+                                        /*accept_this_tab_capture=*/true},
+                    TestConfigForPicker{/*should_prefer_current_tab_=*/true,
+                                        /*accept_this_tab_capture=*/true},
+                    TestConfigForPicker{/*should_prefer_current_tab_=*/true,
+                                        /*accept_this_tab_capture=*/false}));
 
-// Top level test for getDisplayMedia() and getCurrentBrowsingContextMedia().
+// Top level test for getDisplayMedia().
 // Skips picker UI and uses fake device with specified type.
 class WebRtcScreenCaptureBrowserTestWithFakeUI
     : public WebRtcScreenCaptureBrowserTest,
       public testing::WithParamInterface<TestConfigForFakeUI> {
  public:
   WebRtcScreenCaptureBrowserTestWithFakeUI() : test_config_(GetParam()) {
-    if (test_config_.tested_function ==
-        TestedFunction::kGetCurrentBrowsingContextMedia) {
+    if (test_config_.should_prefer_current_tab_) {
       scoped_feature_list_.InitAndEnableFeature(
           blink::features::kRTCGetCurrentBrowsingContextMedia);
     }
@@ -255,6 +246,10 @@ class WebRtcScreenCaptureBrowserTestWithFakeUI
                            test_config_.display_surface));
   }
 
+  bool PreferCurrentTab() const override {
+    return test_config_.should_prefer_current_tab_;
+  }
+
  protected:
   const TestConfigForFakeUI test_config_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -265,9 +260,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
-  std::string constraints("{video:true}");
-  RunTestedFunction(test_config_.tested_function, tab, constraints,
-                    /*is_fake_ui=*/true, /*accept_this_tab_capture=*/true);
+  RunGetDisplayMedia(tab, GetConstraints(/*video=*/true, /*audio=*/false),
+                     /*is_fake_ui=*/true, /*expect_success=*/true);
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
@@ -288,9 +282,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
-  std::string constraints("{video:true, audio:true}");
-  RunTestedFunction(test_config_.tested_function, tab, constraints,
-                    /*is_fake_ui=*/true, /*accept_this_tab_capture=*/true);
+  RunGetDisplayMedia(tab, GetConstraints(/*video=*/true, /*audio=*/true),
+                     /*is_fake_ui=*/true, /*expect_success=*/true);
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
@@ -305,11 +298,14 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
   const int kMaxWidth = 200;
   const int kMaxFrameRate = 6;
-  const std::string constraints =
-      base::StringPrintf("{video: {width: {max: %d}, frameRate: {max: %d}}}",
-                         kMaxWidth, kMaxFrameRate);
-  RunTestedFunction(test_config_.tested_function, tab, constraints,
-                    /*is_fake_ui=*/true, /*accept_this_tab_capture=*/true);
+  const std::string constraints = base::StringPrintf(
+      "{video: {width: {max: %d}, frameRate: {max: %d}}, "
+      "should_prefer_current_tab_: "
+      "%s}",
+      kMaxWidth, kMaxFrameRate,
+      test_config_.should_prefer_current_tab_ ? "true" : "false");
+  RunGetDisplayMedia(tab, constraints,
+                     /*is_fake_ui=*/true, /*expect_success=*/true);
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
@@ -324,30 +320,32 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebRtcScreenCaptureBrowserTestWithFakeUI,
-    testing::Values(TestConfigForFakeUI{TestedFunction::kGetDisplayMedia,
+    testing::Values(TestConfigForFakeUI{/*should_prefer_current_tab_=*/false,
                                         /*display_surface=*/"monitor"},
-                    TestConfigForFakeUI{TestedFunction::kGetDisplayMedia,
+                    TestConfigForFakeUI{/*should_prefer_current_tab_=*/false,
                                         /*display_surface=*/"window"},
-                    TestConfigForFakeUI{TestedFunction::kGetDisplayMedia,
+                    TestConfigForFakeUI{/*should_prefer_current_tab_=*/false,
                                         /*display_surface=*/"browser"},
-                    TestConfigForFakeUI{
-                        TestedFunction::kGetCurrentBrowsingContextMedia,
-                        /*display_surface=*/"browser"}));
+                    TestConfigForFakeUI{/*should_prefer_current_tab_=*/true,
+                                        /*display_surface=*/"browser"}));
 
 // TODO(crbug.com/1215089): Enable this test suite on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 class WebRtcScreenCapturePermissionPolicyBrowserTest
     : public WebRtcScreenCaptureBrowserTest,
-      public testing::WithParamInterface<std::pair<TestedFunction, bool>> {
+      public testing::WithParamInterface<
+          std::pair<GetDisplayMediaVariant, bool>> {
  public:
   WebRtcScreenCapturePermissionPolicyBrowserTest()
-      : tested_function_(GetParam().first),
+      : tested_variant_(GetParam().first),
         allowlisted_by_policy_(GetParam().second) {
-    if (tested_function_ == TestedFunction::kGetCurrentBrowsingContextMedia) {
+    if (tested_variant_ == GetDisplayMediaVariant::kPreferCurrentTab) {
       scoped_feature_list_.InitAndEnableFeature(
           blink::features::kRTCGetCurrentBrowsingContextMedia);
     }
   }
+
+  ~WebRtcScreenCapturePermissionPolicyBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
@@ -356,8 +354,12 @@ class WebRtcScreenCapturePermissionPolicyBrowserTest
         switches::kAutoSelectTabCaptureSourceByTitle, "WebRTC Automated Test");
   }
 
+  bool PreferCurrentTab() const override {
+    return tested_variant_ == GetDisplayMediaVariant::kPreferCurrentTab;
+  }
+
  protected:
-  const TestedFunction tested_function_;
+  const GetDisplayMediaVariant tested_variant_;
   const bool allowlisted_by_policy_;
 
  private:
@@ -367,29 +369,28 @@ class WebRtcScreenCapturePermissionPolicyBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebRtcScreenCapturePermissionPolicyBrowserTest,
-    testing::Values(
-        std::make_pair(TestedFunction::kGetDisplayMedia,
-                       /*allowlisted_by_policy=*/false),
-        std::make_pair(TestedFunction::kGetDisplayMedia,
-                       /*allowlisted_by_policy=*/true),
-        std::make_pair(TestedFunction::kGetCurrentBrowsingContextMedia,
-                       /*allowlisted_by_policy=*/false),
-        std::make_pair(TestedFunction::kGetCurrentBrowsingContextMedia,
-                       /*allowlisted_by_policy=*/true)));
+    testing::Values(std::make_pair(GetDisplayMediaVariant::kStandard,
+                                   /*allowlisted_by_policy=*/false),
+                    std::make_pair(GetDisplayMediaVariant::kStandard,
+                                   /*allowlisted_by_policy=*/true),
+                    std::make_pair(GetDisplayMediaVariant::kPreferCurrentTab,
+                                   /*allowlisted_by_policy=*/false),
+                    std::make_pair(GetDisplayMediaVariant::kPreferCurrentTab,
+                                   /*allowlisted_by_policy=*/true)));
 
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCapturePermissionPolicyBrowserTest,
                        ScreenShareFromEmbedded) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
-  const std::string constraints = "{video: true}";
+  const std::string constraints =
+      base::StringPrintf("{video: true, preferCurrentTab: %s}",
+                         PreferCurrentTab() ? "true" : "false");
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(),
+      OpenTestPageInNewTab(kMainHtmlPage)->GetMainFrame(),
       base::StringPrintf(
-          "runTestedFunction(\"%s\", %s, \"%s\");",
-          GetTestedFunctionName(tested_function_), constraints.c_str(),
+          "runGetDisplayMedia(%s, \"%s\");", constraints.c_str(),
           allowlisted_by_policy_ ? "allowedFrame" : "disallowedFrame"),
       &result));
   EXPECT_EQ(result, allowlisted_by_policy_ ? "embedded-capture-success"

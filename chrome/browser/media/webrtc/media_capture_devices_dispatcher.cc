@@ -165,7 +165,6 @@ void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
   }
 #endif
 
-  // Kill switch for getCurrentBrowsingContextMedia().
   if (request.video_type ==
       blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
     if (!base::FeatureList::IsEnabled(

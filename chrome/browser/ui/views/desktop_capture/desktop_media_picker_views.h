@@ -27,7 +27,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
                                      public views::TabbedPaneListener {
  public:
   // Used for UMA. Visible to this class's .cc file, but opaque beyond.
-  enum class DialogSource : int;
+  enum class DialogType : int;
 
   METADATA_HEADER(DesktopMediaPickerDialogView);
   DesktopMediaPickerDialogView(
@@ -51,7 +51,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   // Relevant for UMA. (E.g. for DesktopMediaPickerViews to report
   // when the dialog gets dismissed.)
-  DialogSource GetDialogSource() const;
+  DialogType GetDialogType() const;
 
   // views::TabbedPaneListener:
   void TabSelectedAt(int index) override;
@@ -109,7 +109,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   std::vector<DisplaySurfaceCategory> categories_;
   int previously_selected_category_ = 0;
 
-  DialogSource dialog_source_;
+  DialogType dialog_type_;
 
   absl::optional<content::DesktopMediaID> accepted_source_;
 };

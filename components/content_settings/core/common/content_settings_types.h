@@ -230,8 +230,10 @@ enum class ContentSettingsType : int32_t {
   // by the File System Access API.
   FILE_SYSTEM_LAST_PICKED_DIRECTORY,
 
-  // Capture the current tab using getCurrentBrowsingContextMedia().
-  // TODO(crbug.com/1150788): Apply this to getDisplayMedia() as well.
+  // Controls access to the getDisplayMedia API when {preferCurrentTab: true}
+  // is specified.
+  // TODO(crbug.com/1150788): Also apply this when getDisplayMedia() is called
+  // without specifying {preferCurrentTab: true}.
   // No values are stored for this type, this is solely needed to be able to
   // register the PermissionContext.
   DISPLAY_CAPTURE,

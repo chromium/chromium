@@ -362,9 +362,7 @@ UserMediaRequest* UserMediaRequest::Create(
       error_state.ThrowTypeError("Mandatory zoom constraint is not supported");
       return nullptr;
     }
-  } else if (media_type == UserMediaRequest::MediaType::kDisplayMedia ||
-             media_type ==
-                 UserMediaRequest::MediaType::kGetCurrentBrowsingContextMedia) {
+  } else if (media_type == UserMediaRequest::MediaType::kDisplayMedia) {
     // https://w3c.github.io/mediacapture-screen-share/#mediadevices-additions
     // MediaDevices Additions
     // The user agent MUST reject audio-only requests.
@@ -421,7 +419,8 @@ UserMediaRequest* UserMediaRequest::Create(
     CountVideoConstraintUses(context, video);
 
   return MakeGarbageCollected<UserMediaRequest>(
-      context, controller, media_type, audio, video, callbacks, surface);
+      context, controller, media_type, audio, video,
+      options->preferCurrentTab(), callbacks, surface);
 }
 
 UserMediaRequest* UserMediaRequest::Create(
@@ -443,7 +442,7 @@ UserMediaRequest* UserMediaRequest::CreateForTesting(
     const MediaConstraints& video) {
   return MakeGarbageCollected<UserMediaRequest>(
       nullptr, nullptr, UserMediaRequest::MediaType::kUserMedia, audio, video,
-      nullptr, IdentifiableSurface());
+      /*should_prefer_current_tab=*/false, nullptr, IdentifiableSurface());
 }
 
 UserMediaRequest::UserMediaRequest(ExecutionContext* context,
@@ -451,12 +450,14 @@ UserMediaRequest::UserMediaRequest(ExecutionContext* context,
                                    UserMediaRequest::MediaType media_type,
                                    MediaConstraints audio,
                                    MediaConstraints video,
+                                   bool should_prefer_current_tab,
                                    Callbacks* callbacks,
                                    IdentifiableSurface surface)
     : ExecutionContextLifecycleObserver(context),
       media_type_(media_type),
       audio_(audio),
       video_(video),
+      should_prefer_current_tab_(should_prefer_current_tab),
       should_disable_hardware_noise_suppression_(
           RuntimeEnabledFeatures::DisableHardwareNoiseSuppressionEnabled(
               context)),

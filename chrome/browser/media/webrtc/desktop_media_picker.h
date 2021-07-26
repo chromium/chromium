@@ -25,9 +25,7 @@ class WebContents;
 }
 
 // Base class for desktop media picker UI. It's used by Desktop Media API, and
-// by ARC to let user choose a desktop media source. It is also used by
-// getCurrentBrowsingContextMedia API to request user's permission to share the
-// current browser context.
+// by ARC to let user choose a desktop media source.
 //
 // TODO(crbug.com/987001): Rename this class.
 class DesktopMediaPicker {

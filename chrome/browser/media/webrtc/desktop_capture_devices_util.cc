@@ -207,7 +207,7 @@ std::string DeviceNamePrefix(
   }
 
   // Note that all of these must still be checked, as the explicit-selection
-  // dialog for |getCurrentBrowsingContextMedia| could still return something
+  // dialog for DISPLAY_VIDEO_CAPTURE_THIS_TAB could still return something
   // other than the current tab - be it a screen, window, or another tab.
   if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS &&
       web_contents->GetMainFrame()->GetProcess()->GetID() ==

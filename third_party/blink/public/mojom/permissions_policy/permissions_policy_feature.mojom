@@ -123,7 +123,7 @@ enum PermissionsPolicyFeature {
   // Controls use of WebOTP API.
   kOTPCredentials = 80,
 
-  // Controls access to getDisplayMedia() and getCurrentBrowsingContextMedia().
+  // Controls access to screen capture via getDisplayMedia().
   kDisplayCapture = 81,
 
   // Controls the access to the interest cohort as well as the eligibility for

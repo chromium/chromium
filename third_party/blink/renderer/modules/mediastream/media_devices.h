@@ -60,10 +60,6 @@ class MODULES_EXPORT MediaDevices final
                                 const MediaStreamConstraints*,
                                 ExceptionState&);
 
-  ScriptPromise getCurrentBrowsingContextMedia(ScriptState*,
-                                               const MediaStreamConstraints*,
-                                               ExceptionState&);
-
   void setCaptureHandleConfig(ScriptState*,
                               const CaptureHandleConfig*,
                               ExceptionState&);
