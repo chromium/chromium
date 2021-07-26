@@ -693,12 +693,6 @@
     "args": ["--enable-features=UseCommonSelectPopup"]
   },
   {
-    "prefix": "legacy-samesite",
-    "bases": ["external/wpt/cookies/samesite"],
-    "args": ["--disable-features=SameSiteByDefaultCookies",
-             "--disable-features=CookiesWithoutSameSiteMustBeSecure"]
-  },
-  {
     "prefix": "forced-high-contrast-colors",
     "bases": ["external/wpt/forced-colors-mode",
               "html/details_summary/color-scheme-validation"],

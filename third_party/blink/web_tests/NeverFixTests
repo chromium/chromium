@@ -1724,52 +1724,6 @@ crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/idlharness.win
 crbug.com/1207146 virtual/force-eager/external/wpt/measure-memory/service-worker.https.any.serviceworker.html [ Skip ]
 crbug.com/1207146 virtual/force-eager/external/wpt/measure-memory/shared-worker.https.any.sharedworker.html [ Skip ]
 
-# Legacy SameSite cookie tests do not apply when non-legacy behavior is in effect.
-crbug.com/961439 external/wpt/cookies/samesite/fetch.https.html?legacy-samesite [ Skip ]
-crbug.com/961439 external/wpt/cookies/samesite/form-get-blank-reload.https.html?legacy-samesite [ Skip ]
-crbug.com/961439 external/wpt/cookies/samesite/form-get-blank.https.html?legacy-samesite [ Skip ]
-crbug.com/961439 external/wpt/cookies/samesite/form-post-blank-reload.https.html?legacy-samesite [ Skip ]
-crbug.com/961439 external/wpt/cookies/samesite/form-post-blank.https.html?legacy-samesite [ Skip ]
-crbug.com/961439 external/wpt/cookies/samesite/iframe-reload.https.html?legacy-samesite [ Skip ]
-crbug.com/961439 external/wpt/cookies/samesite/iframe.https.html?legacy-samesite [ Skip ]
-crbug.com/961439 external/wpt/cookies/samesite/img.https.html?legacy-samesite [ Skip ]
-crbug.com/1161591 external/wpt/cookies/samesite/multiple-samesite-attributes.https.html?legacy-samesite [ Skip ]
-crbug.com/1161591 virtual/schemeful-same-site/external/wpt/cookies/samesite/multiple-samesite-attributes.https.html?legacy-samesite [ Skip ]
-crbug.com/961439 external/wpt/cookies/samesite/setcookie-lax.https.html?legacy-samesite [ Skip ]
-crbug.com/961439 external/wpt/cookies/samesite/setcookie-navigation.https.html?legacy-samesite [ Skip ]
-crbug.com/961439 external/wpt/cookies/samesite/window-open-reload.https.html?legacy-samesite [ Skip ]
-crbug.com/961439 external/wpt/cookies/samesite/window-open.https.html?legacy-samesite [ Skip ]
-
-# Unskip the above tests for virtual/legacy-samesite.
-virtual/legacy-samesite/external/wpt/cookies/samesite/fetch.https.html?legacy-samesite [ Pass ]
-virtual/legacy-samesite/external/wpt/cookies/samesite/form-get-blank-reload.https.html?legacy-samesite [ Pass ]
-virtual/legacy-samesite/external/wpt/cookies/samesite/form-get-blank.https.html?legacy-samesite [ Pass ]
-virtual/legacy-samesite/external/wpt/cookies/samesite/form-post-blank-reload.https.html?legacy-samesite [ Pass ]
-virtual/legacy-samesite/external/wpt/cookies/samesite/form-post-blank.https.html?legacy-samesite [ Pass ]
-virtual/legacy-samesite/external/wpt/cookies/samesite/iframe-reload.https.html?legacy-samesite [ Pass ]
-virtual/legacy-samesite/external/wpt/cookies/samesite/iframe.https.html?legacy-samesite [ Pass ]
-virtual/legacy-samesite/external/wpt/cookies/samesite/img.https.html?legacy-samesite [ Pass ]
-virtual/legacy-samesite/external/wpt/cookies/samesite/multiple-samesite-attributes.https.html?legacy-samesite [ Pass ]
-virtual/legacy-samesite/external/wpt/cookies/samesite/setcookie-lax.https.html?legacy-samesite [ Pass ]
-virtual/legacy-samesite/external/wpt/cookies/samesite/setcookie-navigation.https.html?legacy-samesite [ Pass ]
-virtual/legacy-samesite/external/wpt/cookies/samesite/window-open-reload.https.html?legacy-samesite [ Pass ]
-virtual/legacy-samesite/external/wpt/cookies/samesite/window-open.https.html?legacy-samesite [ Pass ]
-
-# Non-legacy SameSite cookie tests do not apply when legacy SameSite behavior is in effect.
-crbug.com/961439 virtual/legacy-samesite/external/wpt/cookies/samesite/fetch.https.html [ Skip ]
-crbug.com/961439 virtual/legacy-samesite/external/wpt/cookies/samesite/form-get-blank-reload.https.html [ Skip ]
-crbug.com/961439 virtual/legacy-samesite/external/wpt/cookies/samesite/form-get-blank.https.html [ Skip ]
-crbug.com/961439 virtual/legacy-samesite/external/wpt/cookies/samesite/form-post-blank-reload.https.html [ Skip ]
-crbug.com/961439 virtual/legacy-samesite/external/wpt/cookies/samesite/form-post-blank.https.html [ Skip ]
-crbug.com/961439 virtual/legacy-samesite/external/wpt/cookies/samesite/iframe-reload.https.html [ Skip ]
-crbug.com/961439 virtual/legacy-samesite/external/wpt/cookies/samesite/iframe.https.html [ Skip ]
-crbug.com/961439 virtual/legacy-samesite/external/wpt/cookies/samesite/img.https.html [ Skip ]
-crbug.com/1161591 virtual/legacy-samesite/external/wpt/cookies/samesite/multiple-samesite-attributes.https.html [ Skip ]
-crbug.com/961439 virtual/legacy-samesite/external/wpt/cookies/samesite/setcookie-lax.https.html [ Skip ]
-crbug.com/961439 virtual/legacy-samesite/external/wpt/cookies/samesite/setcookie-navigation.https.html [ Skip ]
-crbug.com/961439 virtual/legacy-samesite/external/wpt/cookies/samesite/window-open-reload.https.html [ Skip ]
-crbug.com/961439 virtual/legacy-samesite/external/wpt/cookies/samesite/window-open.https.html [ Skip ]
-
 # AppCache tests that need to run only in a virtual test suite
 # But have to live under non-virtual http/ to get http/ behavior
 crbug.com/582750 http/tests/appcache/* [ Skip ]
