@@ -34,7 +34,7 @@
 #include "chrome/browser/ui/ash/chrome_new_window_delegate_provider.h"
 #include "chrome/browser/ui/ash/crosapi_new_window_delegate.h"
 #include "chrome/browser/ui/ash/desks_client.h"
-#include "chrome/browser/ui/ash/ime_controller_client.h"
+#include "chrome/browser/ui/ash/ime_controller_client_impl.h"
 #include "chrome/browser/ui/ash/in_session_auth_dialog_client.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
@@ -163,7 +163,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
             std::move(crosapi_new_window_delegate));
   }
 
-  ime_controller_client_ = std::make_unique<ImeControllerClient>(
+  ime_controller_client_ = std::make_unique<ImeControllerClientImpl>(
       chromeos::input_method::InputMethodManager::Get());
   ime_controller_client_->Init();
 

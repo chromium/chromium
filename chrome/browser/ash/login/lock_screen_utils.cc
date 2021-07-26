@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/ime_controller_client.h"
+#include "chrome/browser/ui/ash/ime_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -138,8 +138,8 @@ void EnforceDevicePolicyInputMethods(std::string user_input_method) {
   chromeos::input_method::InputMethodManager* imm =
       chromeos::input_method::InputMethodManager::Get();
   imm->GetActiveIMEState()->SetAllowedInputMethods(allowed_input_methods, true);
-  if (ImeControllerClient::Get())  // Can be null in tests.
-    ImeControllerClient::Get()->SetImesManagedByPolicy(true);
+  if (ImeControllerClientImpl::Get())  // Can be null in tests.
+    ImeControllerClientImpl::Get()->SetImesManagedByPolicy(true);
 }
 
 void StopEnforcingPolicyInputMethods() {
@@ -148,8 +148,8 @@ void StopEnforcingPolicyInputMethods() {
   chromeos::input_method::InputMethodManager* imm =
       chromeos::input_method::InputMethodManager::Get();
   imm->GetActiveIMEState()->SetAllowedInputMethods(allowed_input_methods, true);
-  if (ImeControllerClient::Get())  // Can be null in tests.
-    ImeControllerClient::Get()->SetImesManagedByPolicy(false);
+  if (ImeControllerClientImpl::Get())  // Can be null in tests.
+    ImeControllerClientImpl::Get()->SetImesManagedByPolicy(false);
   imm->GetActiveIMEState()->SetInputMethodLoginDefault();
 }
 

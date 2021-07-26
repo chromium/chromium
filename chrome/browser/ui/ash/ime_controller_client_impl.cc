@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/ime_controller_client.h"
+#include "chrome/browser/ui/ash/ime_controller_client_impl.h"
 
 #include <memory>
 #include <vector>
@@ -22,11 +22,11 @@ using ui::ime::InputMethodMenuManager;
 
 namespace {
 
-ImeControllerClient* g_ime_controller_client_instance = nullptr;
+ImeControllerClientImpl* g_ime_controller_client_instance = nullptr;
 
 }  // namespace
 
-ImeControllerClient::ImeControllerClient(InputMethodManager* manager)
+ImeControllerClientImpl::ImeControllerClientImpl(InputMethodManager* manager)
     : input_method_manager_(manager) {
   DCHECK(input_method_manager_);
   input_method_manager_->AddObserver(this);
@@ -42,7 +42,7 @@ ImeControllerClient::ImeControllerClient(InputMethodManager* manager)
   g_ime_controller_client_instance = this;
 }
 
-ImeControllerClient::~ImeControllerClient() {
+ImeControllerClientImpl::~ImeControllerClientImpl() {
   ime_controller_->SetClient(nullptr);
   DCHECK_EQ(this, g_ime_controller_client_instance);
   g_ime_controller_client_instance = nullptr;
@@ -54,7 +54,7 @@ ImeControllerClient::~ImeControllerClient() {
     input_method_manager_->GetImeKeyboard()->RemoveObserver(this);
 }
 
-void ImeControllerClient::Init() {
+void ImeControllerClientImpl::Init() {
   // Connect to the controller in ash.
   ime_controller_ = ash::ImeController::Get();
   DCHECK(ime_controller_);
@@ -62,70 +62,70 @@ void ImeControllerClient::Init() {
 }
 
 // static
-ImeControllerClient* ImeControllerClient::Get() {
+ImeControllerClientImpl* ImeControllerClientImpl::Get() {
   return g_ime_controller_client_instance;
 }
 
-void ImeControllerClient::SetImesManagedByPolicy(bool managed) {
+void ImeControllerClientImpl::SetImesManagedByPolicy(bool managed) {
   ime_controller_->SetImesManagedByPolicy(managed);
 }
 
 // ash::mojom::ImeControllerClient:
-void ImeControllerClient::SwitchToNextIme() {
+void ImeControllerClientImpl::SwitchToNextIme() {
   InputMethodManager::State* state =
       input_method_manager_->GetActiveIMEState().get();
   if (state)
     state->SwitchToNextInputMethod();
 }
 
-void ImeControllerClient::SwitchToLastUsedIme() {
+void ImeControllerClientImpl::SwitchToLastUsedIme() {
   InputMethodManager::State* state =
       input_method_manager_->GetActiveIMEState().get();
   if (state)
     state->SwitchToLastUsedInputMethod();
 }
 
-void ImeControllerClient::SwitchImeById(const std::string& id,
-                                        bool show_message) {
+void ImeControllerClientImpl::SwitchImeById(const std::string& id,
+                                            bool show_message) {
   InputMethodManager::State* state =
       input_method_manager_->GetActiveIMEState().get();
   if (state)
     state->ChangeInputMethod(id, show_message);
 }
 
-void ImeControllerClient::ActivateImeMenuItem(const std::string& key) {
+void ImeControllerClientImpl::ActivateImeMenuItem(const std::string& key) {
   input_method_manager_->ActivateInputMethodMenuItem(key);
 }
 
-void ImeControllerClient::SetCapsLockEnabled(bool caps_enabled) {
+void ImeControllerClientImpl::SetCapsLockEnabled(bool caps_enabled) {
   chromeos::input_method::ImeKeyboard* keyboard =
       chromeos::input_method::InputMethodManager::Get()->GetImeKeyboard();
   if (keyboard)
     keyboard->SetCapsLockEnabled(caps_enabled);
 }
 
-void ImeControllerClient::UpdateMirroringState(bool mirroring_enabled) {
+void ImeControllerClientImpl::UpdateMirroringState(bool mirroring_enabled) {
   ui::IMEEngineHandlerInterface* ime_engine =
       ui::IMEBridge::Get()->GetCurrentEngineHandler();
   if (ime_engine)
     ime_engine->SetMirroringEnabled(mirroring_enabled);
 }
 
-void ImeControllerClient::UpdateCastingState(bool casting_enabled) {
+void ImeControllerClientImpl::UpdateCastingState(bool casting_enabled) {
   ui::IMEEngineHandlerInterface* ime_engine =
       ui::IMEBridge::Get()->GetCurrentEngineHandler();
   if (ime_engine)
     ime_engine->SetCastingEnabled(casting_enabled);
 }
 
-void ImeControllerClient::OverrideKeyboardKeyset(
+void ImeControllerClientImpl::OverrideKeyboardKeyset(
     chromeos::input_method::ImeKeyset keyset,
     OverrideKeyboardKeysetCallback callback) {
   input_method_manager_->OverrideKeyboardKeyset(keyset);
   std::move(callback).Run();
 }
 
-void ImeControllerClient::ShowModeIndicator() {
+void ImeControllerClientImpl::ShowModeIndicator() {
   // Get the short name of the changed input method (e.g. US, JA, etc.)
   const InputMethodDescriptor descriptor =
       input_method_manager_->GetActiveIMEState()->GetCurrentInputMethod();
@@ -152,43 +152,43 @@ void ImeControllerClient::ShowModeIndicator() {
 }
 
 // chromeos::input_method::InputMethodManager::Observer:
-void ImeControllerClient::InputMethodChanged(InputMethodManager* manager,
-                                             Profile* profile,
-                                             bool show_message) {
+void ImeControllerClientImpl::InputMethodChanged(InputMethodManager* manager,
+                                                 Profile* profile,
+                                                 bool show_message) {
   RefreshIme();
   if (show_message)
     ShowModeIndicator();
 }
 
 // chromeos::input_method::InputMethodManager::ImeMenuObserver:
-void ImeControllerClient::ImeMenuActivationChanged(bool is_active) {
+void ImeControllerClientImpl::ImeMenuActivationChanged(bool is_active) {
   ime_controller_->ShowImeMenuOnShelf(is_active);
 }
 
-void ImeControllerClient::ImeMenuListChanged() {
+void ImeControllerClientImpl::ImeMenuListChanged() {
   RefreshIme();
 }
 
-void ImeControllerClient::ImeMenuItemsChanged(
+void ImeControllerClientImpl::ImeMenuItemsChanged(
     const std::string& engine_id,
     const std::vector<InputMethodManager::MenuItem>& items) {}
 
 // ui::ime::InputMethodMenuManager::Observer:
-void ImeControllerClient::InputMethodMenuItemChanged(
+void ImeControllerClientImpl::InputMethodMenuItemChanged(
     InputMethodMenuManager* manager) {
   RefreshIme();
 }
 
 // chromeos::input_method::ImeKeyboard::Observer:
-void ImeControllerClient::OnCapsLockChanged(bool enabled) {
+void ImeControllerClientImpl::OnCapsLockChanged(bool enabled) {
   ime_controller_->UpdateCapsLockState(enabled);
 }
 
-void ImeControllerClient::OnLayoutChanging(const std::string& layout_name) {
+void ImeControllerClientImpl::OnLayoutChanging(const std::string& layout_name) {
   ime_controller_->OnKeyboardLayoutNameChanged(layout_name);
 }
 
-void ImeControllerClient::InitAndSetClient() {
+void ImeControllerClientImpl::InitAndSetClient() {
   ime_controller_->SetClient(this);
 
   // Now that the client is set, flush state from observed objects to
@@ -201,7 +201,7 @@ void ImeControllerClient::InitAndSetClient() {
   }
 }
 
-ash::ImeInfo ImeControllerClient::GetAshImeInfo(
+ash::ImeInfo ImeControllerClientImpl::GetAshImeInfo(
     const InputMethodDescriptor& ime) const {
   InputMethodUtil* util = input_method_manager_->GetInputMethodUtil();
   ash::ImeInfo info;
@@ -212,7 +212,7 @@ ash::ImeInfo ImeControllerClient::GetAshImeInfo(
   return info;
 }
 
-void ImeControllerClient::RefreshIme() {
+void ImeControllerClientImpl::RefreshIme() {
   InputMethodManager::State* state =
       input_method_manager_->GetActiveIMEState().get();
   if (!state) {
@@ -247,7 +247,7 @@ void ImeControllerClient::RefreshIme() {
                               std::move(ash_menu_items));
 }
 
-void ImeControllerClient::OnExtraInputEnabledStateChange(
+void ImeControllerClientImpl::OnExtraInputEnabledStateChange(
     bool is_extra_input_options_enabled,
     bool is_emoji_enabled,
     bool is_handwriting_enabled,

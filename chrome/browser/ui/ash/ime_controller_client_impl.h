@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_IME_CONTROLLER_CLIENT_H_
-#define CHROME_BROWSER_UI_ASH_IME_CONTROLLER_CLIENT_H_
+#ifndef CHROME_BROWSER_UI_ASH_IME_CONTROLLER_CLIENT_IMPL_H_
+#define CHROME_BROWSER_UI_ASH_IME_CONTROLLER_CLIENT_IMPL_H_
 
 #include "ash/public/cpp/ime_controller.h"
 #include "ash/public/cpp/ime_info.h"
@@ -13,16 +13,16 @@
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
 // Connects the ImeController in ash to the InputMethodManagerImpl in chrome.
-class ImeControllerClient
+class ImeControllerClientImpl
     : public ash::ImeControllerClient,
       public chromeos::input_method::InputMethodManager::Observer,
       public chromeos::input_method::InputMethodManager::ImeMenuObserver,
       public chromeos::input_method::ImeKeyboard::Observer,
       public ui::ime::InputMethodMenuManager::Observer {
  public:
-  explicit ImeControllerClient(
+  explicit ImeControllerClientImpl(
       chromeos::input_method::InputMethodManager* manager);
-  ~ImeControllerClient() override;
+  ~ImeControllerClientImpl() override;
 
   // Initializes and connects to ash.
   void Init();
@@ -30,7 +30,7 @@ class ImeControllerClient
   // Tests can shim in a mock interface for the ash controller.
   void InitForTesting(ash::ImeController* controller);
 
-  static ImeControllerClient* Get();
+  static ImeControllerClientImpl* Get();
 
   // Sets whether the list of IMEs is managed by device policy.
   void SetImesManagedByPolicy(bool managed);
@@ -89,7 +89,7 @@ class ImeControllerClient
   // ImeController in ash.
   ash::ImeController* ime_controller_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(ImeControllerClient);
+  DISALLOW_COPY_AND_ASSIGN(ImeControllerClientImpl);
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_IME_CONTROLLER_CLIENT_H_
+#endif  // CHROME_BROWSER_UI_ASH_IME_CONTROLLER_CLIENT_IMPL_H_

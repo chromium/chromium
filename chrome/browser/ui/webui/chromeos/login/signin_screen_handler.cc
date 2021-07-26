@@ -53,7 +53,7 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_metrics.h"
-#include "chrome/browser/ui/ash/ime_controller_client.h"
+#include "chrome/browser/ui/ash/ime_controller_client_impl.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
@@ -213,8 +213,8 @@ SigninScreenHandler::SigninScreenHandler(
 
 SigninScreenHandler::~SigninScreenHandler() {
   // Ash maybe released before us.
-  if (ImeControllerClient::Get())  // Can be null in tests.
-    ImeControllerClient::Get()->SetImesManagedByPolicy(false);
+  if (ImeControllerClientImpl::Get())  // Can be null in tests.
+    ImeControllerClientImpl::Get()->SetImesManagedByPolicy(false);
   weak_factory_.InvalidateWeakPtrs();
   if (delegate_)
     delegate_->SetWebUIHandler(nullptr);

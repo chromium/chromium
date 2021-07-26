@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/ime_controller_client.h"
+#include "chrome/browser/ui/ash/ime_controller_client_impl.h"
 
 #include <memory>
 #include <string>
@@ -147,13 +147,13 @@ class TestInputMethodManager : public MockInputMethodManager {
   DISALLOW_COPY_AND_ASSIGN(TestInputMethodManager);
 };
 
-class ImeControllerClientTest : public testing::Test {
+class ImeControllerClientImplTest : public testing::Test {
  public:
-  ImeControllerClientTest() {
+  ImeControllerClientImplTest() {
     input_method_manager_.delegate_.set_get_localized_string_callback(
         base::BindRepeating(&GetLocalizedString));
   }
-  ~ImeControllerClientTest() override = default;
+  ~ImeControllerClientImplTest() override = default;
 
  protected:
   TestInputMethodManager input_method_manager_;
@@ -164,12 +164,12 @@ class ImeControllerClientTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
 
-  DISALLOW_COPY_AND_ASSIGN(ImeControllerClientTest);
+  DISALLOW_COPY_AND_ASSIGN(ImeControllerClientImplTest);
 };
 
-TEST_F(ImeControllerClientTest, Construction) {
-  std::unique_ptr<ImeControllerClient> client =
-      std::make_unique<ImeControllerClient>(&input_method_manager_);
+TEST_F(ImeControllerClientImplTest, Construction) {
+  std::unique_ptr<ImeControllerClientImpl> client =
+      std::make_unique<ImeControllerClientImpl>(&input_method_manager_);
   client->Init();
   EXPECT_EQ(1, input_method_manager_.add_observer_count_);
   EXPECT_EQ(1, input_method_manager_.add_menu_observer_count_);
@@ -179,16 +179,16 @@ TEST_F(ImeControllerClientTest, Construction) {
   EXPECT_EQ(1, input_method_manager_.remove_menu_observer_count_);
 }
 
-TEST_F(ImeControllerClientTest, SetImesManagedByPolicy) {
-  ImeControllerClient client(&input_method_manager_);
+TEST_F(ImeControllerClientImplTest, SetImesManagedByPolicy) {
+  ImeControllerClientImpl client(&input_method_manager_);
   client.Init();
 
   client.SetImesManagedByPolicy(true);
   EXPECT_TRUE(ime_controller_.managed_by_policy_);
 }
 
-TEST_F(ImeControllerClientTest, CapsLock) {
-  ImeControllerClient client(&input_method_manager_);
+TEST_F(ImeControllerClientImplTest, CapsLock) {
+  ImeControllerClientImpl client(&input_method_manager_);
   client.Init();
 
   client.OnCapsLockChanged(true);
@@ -198,8 +198,8 @@ TEST_F(ImeControllerClientTest, CapsLock) {
   EXPECT_FALSE(ime_controller_.is_caps_lock_enabled_);
 }
 
-TEST_F(ImeControllerClientTest, LayoutName) {
-  ImeControllerClient client(&input_method_manager_);
+TEST_F(ImeControllerClientImplTest, LayoutName) {
+  ImeControllerClientImpl client(&input_method_manager_);
   client.Init();
 
   client.OnLayoutChanging("us(dvorak)");
@@ -209,8 +209,8 @@ TEST_F(ImeControllerClientTest, LayoutName) {
   EXPECT_EQ("us", ime_controller_.keyboard_layout_name_);
 }
 
-TEST_F(ImeControllerClientTest, ExtraInputEnabledStateChange) {
-  ImeControllerClient client(&input_method_manager_);
+TEST_F(ImeControllerClientImplTest, ExtraInputEnabledStateChange) {
+  ImeControllerClientImpl client(&input_method_manager_);
   client.Init();
 
   client.OnExtraInputEnabledStateChange(true, true, false, false);
@@ -232,22 +232,22 @@ TEST_F(ImeControllerClientTest, ExtraInputEnabledStateChange) {
   EXPECT_FALSE(ime_controller_.is_voice_enabled_);
 }
 
-TEST_F(ImeControllerClientTest, ShowImeMenuOnShelf) {
-  ImeControllerClient client(&input_method_manager_);
+TEST_F(ImeControllerClientImplTest, ShowImeMenuOnShelf) {
+  ImeControllerClientImpl client(&input_method_manager_);
   client.Init();
 
   client.ImeMenuActivationChanged(true);
   EXPECT_TRUE(ime_controller_.show_ime_menu_on_shelf_);
 }
 
-TEST_F(ImeControllerClientTest, InputMethodChanged) {
+TEST_F(ImeControllerClientImplTest, InputMethodChanged) {
   ui::IMEBridge::Initialize();
   std::unique_ptr<chromeos::MockIMECandidateWindowHandler>
       mock_candidate_window =
           std::make_unique<chromeos::MockIMECandidateWindowHandler>();
   ui::IMEBridge::Get()->SetCandidateWindowHandler(mock_candidate_window.get());
 
-  ImeControllerClient client(&input_method_manager_);
+  ImeControllerClientImpl client(&input_method_manager_);
   client.Init();
 
   // Simulate a switch to IME 2.
@@ -273,8 +273,8 @@ TEST_F(ImeControllerClientTest, InputMethodChanged) {
   EXPECT_TRUE(ime_controller_.show_mode_indicator_);
 }
 
-TEST_F(ImeControllerClientTest, NoActiveState) {
-  ImeControllerClient client(&input_method_manager_);
+TEST_F(ImeControllerClientImplTest, NoActiveState) {
+  ImeControllerClientImpl client(&input_method_manager_);
   client.Init();
 
   input_method_manager_.state_ = nullptr;
@@ -285,8 +285,8 @@ TEST_F(ImeControllerClientTest, NoActiveState) {
   EXPECT_TRUE(ime_controller_.menu_items_.empty());
 }
 
-TEST_F(ImeControllerClientTest, MenuItemChanged) {
-  ImeControllerClient client(&input_method_manager_);
+TEST_F(ImeControllerClientImplTest, MenuItemChanged) {
+  ImeControllerClientImpl client(&input_method_manager_);
   client.Init();
   const bool is_selection_item = true;
   InputMethodMenuItem item1("key1", "label1", is_selection_item,
@@ -306,22 +306,22 @@ TEST_F(ImeControllerClientTest, MenuItemChanged) {
   EXPECT_FALSE(ime_controller_.menu_items_[1].checked);
 }
 
-TEST_F(ImeControllerClientTest, SwitchToNextIme) {
-  ImeControllerClient client(&input_method_manager_);
+TEST_F(ImeControllerClientImplTest, SwitchToNextIme) {
+  ImeControllerClientImpl client(&input_method_manager_);
   client.Init();
   client.SwitchToNextIme();
   EXPECT_EQ(1, input_method_manager_.state_->next_input_method_count_);
 }
 
-TEST_F(ImeControllerClientTest, SwitchToPreviousIme) {
-  ImeControllerClient client(&input_method_manager_);
+TEST_F(ImeControllerClientImplTest, SwitchToPreviousIme) {
+  ImeControllerClientImpl client(&input_method_manager_);
   client.Init();
   client.SwitchToLastUsedIme();
   EXPECT_EQ(1, input_method_manager_.state_->previous_input_method_count_);
 }
 
-TEST_F(ImeControllerClientTest, SwitchImeById) {
-  ImeControllerClient client(&input_method_manager_);
+TEST_F(ImeControllerClientImplTest, SwitchImeById) {
+  ImeControllerClientImpl client(&input_method_manager_);
   client.Init();
   client.SwitchImeById("id2", true /* show_message */);
   EXPECT_EQ(1, input_method_manager_.state_->change_input_method_count_);
@@ -334,15 +334,15 @@ TEST_F(ImeControllerClientTest, SwitchImeById) {
   EXPECT_FALSE(input_method_manager_.state_->last_show_message_);
 }
 
-TEST_F(ImeControllerClientTest, ActivateImeMenuItem) {
-  ImeControllerClient client(&input_method_manager_);
+TEST_F(ImeControllerClientImplTest, ActivateImeMenuItem) {
+  ImeControllerClientImpl client(&input_method_manager_);
   client.Init();
   client.ActivateImeMenuItem("key1");
   EXPECT_EQ("key1", input_method_manager_.last_activate_menu_item_key_);
 }
 
-TEST_F(ImeControllerClientTest, OverrideKeyboardKeyset) {
-  ImeControllerClient client(&input_method_manager_);
+TEST_F(ImeControllerClientImplTest, OverrideKeyboardKeyset) {
+  ImeControllerClientImpl client(&input_method_manager_);
   client.Init();
   bool callback_called = false;
   client.OverrideKeyboardKeyset(

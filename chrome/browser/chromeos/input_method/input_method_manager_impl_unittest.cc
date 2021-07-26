@@ -21,7 +21,7 @@
 #include "chrome/browser/chromeos/input_method/mock_candidate_window_controller.h"
 #include "chrome/browser/chromeos/input_method/mock_input_method_engine.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/ime_controller_client.h"
+#include "chrome/browser/ui/ash/ime_controller_client_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
 #include "chrome/browser/ui/ash/test_ime_controller.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -1460,10 +1460,10 @@ TEST_F(InputMethodManagerImplTest, SetLoginDefaultWithAllowedKeyboardLayouts) {
 }
 
 // Verifies that the combination of InputMethodManagerImpl and
-// ImeControllerClient sends the correct data to ash.
+// ImeControllerClientImpl sends the correct data to ash.
 TEST_F(InputMethodManagerImplTest, IntegrationWithAsh) {
   TestImeController ime_controller;
-  ImeControllerClient ime_controller_client(manager_);
+  ImeControllerClientImpl ime_controller_client(manager_);
   ime_controller_client.Init();
 
   // Setup 3 IMEs.

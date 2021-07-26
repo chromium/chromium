@@ -29,7 +29,7 @@ class AppListClientImpl;
 class AshShellInit;
 class CastConfigControllerMediaRouter;
 class DesksClient;
-class ImeControllerClient;
+class ImeControllerClientImpl;
 class InSessionAuthDialogClient;
 class LoginScreenClientImpl;
 class MediaClientImpl;
@@ -89,7 +89,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
       accessibility_controller_client_;
   std::unique_ptr<AppListClientImpl> app_list_client_;
   std::unique_ptr<ash::NewWindowDelegateProvider> new_window_delegate_provider_;
-  std::unique_ptr<ImeControllerClient> ime_controller_client_;
+  std::unique_ptr<ImeControllerClientImpl> ime_controller_client_;
   std::unique_ptr<InSessionAuthDialogClient> in_session_auth_dialog_client_;
   std::unique_ptr<ScreenOrientationDelegateChromeos>
       screen_orientation_delegate_;
