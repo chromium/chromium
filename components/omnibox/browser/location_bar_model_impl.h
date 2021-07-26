@@ -31,6 +31,7 @@ class LocationBarModelImpl : public LocationBarModel {
   std::u16string GetURLForDisplay() const override;
   GURL GetURL() const override;
   security_state::SecurityLevel GetSecurityLevel() const override;
+  net::CertStatus GetCertStatus() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
       OmniboxFocusSource focus_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;

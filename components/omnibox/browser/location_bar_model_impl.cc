@@ -150,6 +150,14 @@ security_state::SecurityLevel LocationBarModelImpl::GetSecurityLevel() const {
   return delegate_->GetSecurityLevel();
 }
 
+net::CertStatus LocationBarModelImpl::GetCertStatus() const {
+  // When empty, assume no cert status.
+  if (!ShouldDisplayURL())
+    return 0;
+
+  return delegate_->GetCertStatus();
+}
+
 OmniboxEventProto::PageClassification
 LocationBarModelImpl::GetPageClassification(OmniboxFocusSource focus_source) {
   // We may be unable to fetch the current URL during startup or shutdown when

@@ -44,6 +44,9 @@ class LocationBarModel {
   // Returns the security level that the toolbar should display.
   virtual security_state::SecurityLevel GetSecurityLevel() const = 0;
 
+  // Returns the cert status of the current navigation entry.
+  virtual net::CertStatus GetCertStatus() const = 0;
+
   // Classify the current page being viewed as, for example, the new tab
   // page or a normal web page.  Used for logging omnibox events for
   // UMA opted-in users.  Examines the user's profile to determine if the

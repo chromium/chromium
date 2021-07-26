@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -98,11 +99,23 @@ class TestingOmniboxView : public OmniboxViewViews {
   // absl::nullopt if no color has been applied to |range|.
   absl::optional<SkColor> GetLatestColorForRange(const gfx::Range& range);
 
+  // Returns the latest style applied to |range| via ApplyStyle(), or
+  // absl::nullopt if no color has been applied to |range|.
+  absl::optional<std::pair<gfx::TextStyle, bool>> GetLatestStyleForRange(
+      const gfx::Range& range) const;
+
+  // Resets the captured styles.
+  void ResetStyles();
+
   // OmniboxViewViews:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {}
   void OnThemeChanged() override;
 
   using OmniboxView::OnInlineAutocompleteTextMaybeChanged;
+
+ protected:
+  // OmniboxViewViews:
+  void UpdateSchemeStyle(const Range& range) override;
 
  private:
   // OmniboxViewViews:
@@ -111,8 +124,10 @@ class TestingOmniboxView : public OmniboxViewViews {
   // capture relevant state at the time of the call, to be checked by test code.
   void UpdatePopup() override;
   void SetEmphasis(bool emphasize, const Range& range) override;
-  void UpdateSchemeStyle(const Range& range) override;
   void ApplyColor(SkColor color, const gfx::Range& range) override;
+  void ApplyStyle(gfx::TextStyle style,
+                  bool value,
+                  const gfx::Range& range) override;
 
   size_t update_popup_call_count_ = 0;
   std::u16string update_popup_text_;
@@ -127,6 +142,10 @@ class TestingOmniboxView : public OmniboxViewViews {
   // Stores the colors applied to ranges via ApplyColor(), in chronological
   // order.
   std::vector<std::pair<SkColor, gfx::Range>> range_colors_;
+
+  // Stores the styles applied to ranges via ApplyStyle(), in chronological
+  // order.
+  std::vector<std::tuple<gfx::TextStyle, bool, gfx::Range>> range_styles_;
 
   // SetEmphasis() logs whether the base color of the text is emphasized.
   bool base_text_emphasis_;
@@ -171,10 +190,31 @@ absl::optional<SkColor> TestingOmniboxView::GetLatestColorForRange(
   return absl::nullopt;
 }
 
+absl::optional<std::pair<gfx::TextStyle, bool>>
+TestingOmniboxView::GetLatestStyleForRange(const gfx::Range& range) const {
+  // Iterate backwards to get the most recently applied style for |range|.
+  for (auto range_style = range_styles_.rbegin();
+       range_style != range_styles_.rend(); range_style++) {
+    if (range == std::get<gfx::Range>(*range_style))
+      return std::make_pair(std::get<gfx::TextStyle>(*range_style),
+                            std::get<bool>(*range_style));
+  }
+  return absl::nullopt;
+}
+
+void TestingOmniboxView::ResetStyles() {
+  range_styles_.clear();
+}
+
 void TestingOmniboxView::OnThemeChanged() {
   // This method is overridden simply to expose this protected method for tests
   // to call.
   OmniboxViewViews::OnThemeChanged();
+}
+
+void TestingOmniboxView::UpdateSchemeStyle(const Range& range) {
+  scheme_range_ = range;
+  OmniboxViewViews::UpdateSchemeStyle(range);
 }
 
 void TestingOmniboxView::UpdatePopup() {
@@ -200,13 +240,16 @@ void TestingOmniboxView::SetEmphasis(bool emphasize, const Range& range) {
   emphasis_range_ = range;
 }
 
-void TestingOmniboxView::UpdateSchemeStyle(const Range& range) {
-  scheme_range_ = range;
+void TestingOmniboxView::ApplyColor(SkColor color, const gfx::Range& range) {
+  range_colors_.emplace_back(color, range);
+  OmniboxViewViews::ApplyColor(color, range);
 }
 
-void TestingOmniboxView::ApplyColor(SkColor color, const gfx::Range& range) {
-  range_colors_.emplace_back(std::pair<SkColor, gfx::Range>(color, range));
-  OmniboxViewViews::ApplyColor(color, range);
+void TestingOmniboxView::ApplyStyle(gfx::TextStyle style,
+                                    bool value,
+                                    const gfx::Range& range) {
+  range_styles_.emplace_back(style, value, range);
+  OmniboxViewViews::ApplyStyle(style, value, range);
 }
 
 // TestingOmniboxEditController -----------------------------------------------
@@ -845,6 +888,40 @@ TEST_F(OmniboxViewViewsTest, OverflowingAutocompleteText) {
   omnibox_textfield()->OnBlur();
   EXPECT_EQ(render_text->GetUpdatedDisplayOffset().x(), 0);
   EXPECT_FALSE(omnibox_view()->IsSelectAll());
+}
+
+TEST_F(OmniboxViewViewsTest, SchemeStrikethrough) {
+  constexpr gfx::Range kSchemeRange(0, 5);
+  location_bar_model()->set_url(GURL("https://test.com/"));
+  omnibox_view()->model()->ResetDisplayTexts();
+  omnibox_view()->ResetStyles();
+
+  // Strikethrough should not be keyed off the security state.
+  location_bar_model()->set_security_level(security_state::DANGEROUS);
+  omnibox_view()->RevertAll();
+  auto style = omnibox_view()->GetLatestStyleForRange(kSchemeRange);
+  EXPECT_FALSE(style.has_value());
+  omnibox_view()->ResetStyles();
+
+  // Rather, it should be keyed off the cert status.
+  location_bar_model()->set_cert_status(net::CERT_STATUS_REVOKED);
+  omnibox_view()->RevertAll();
+  style = omnibox_view()->GetLatestStyleForRange(kSchemeRange);
+  ASSERT_TRUE(style.has_value());
+  EXPECT_EQ(style.value(), std::make_pair(gfx::TEXT_STYLE_STRIKE, true));
+  omnibox_view()->ResetStyles();
+
+  location_bar_model()->set_security_level(security_state::NONE);
+  omnibox_view()->RevertAll();
+  style = omnibox_view()->GetLatestStyleForRange(kSchemeRange);
+  ASSERT_TRUE(style.has_value());
+  EXPECT_EQ(style.value(), std::make_pair(gfx::TEXT_STYLE_STRIKE, true));
+  omnibox_view()->ResetStyles();
+
+  location_bar_model()->set_cert_status(0);
+  omnibox_view()->RevertAll();
+  style = omnibox_view()->GetLatestStyleForRange(kSchemeRange);
+  EXPECT_FALSE(style.has_value());
 }
 
 class OmniboxViewViewsClipboardTest

@@ -157,13 +157,18 @@ class OmniboxViewViews : public OmniboxView,
   }
 
  protected:
+  // OmniboxView:
+  void UpdateSchemeStyle(const gfx::Range& range) override;
+
   // views::Textfield:
   void OnThemeChanged() override;
   bool IsDropCursorForInsertion() const override;
 
-  // Applies the given |color| to |range|. This is a wrapper method around
-  // Textfield::ApplyColor that tests can override.
+  // Wrappers around Textfield methods that tests can override.
   virtual void ApplyColor(SkColor color, const gfx::Range& range);
+  virtual void ApplyStyle(gfx::TextStyle style,
+                          bool value,
+                          const gfx::Range& range);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
@@ -243,7 +248,6 @@ class OmniboxViewViews : public OmniboxView,
   void HideImeIfNeeded() override;
   int GetOmniboxTextLength() const override;
   void SetEmphasis(bool emphasize, const gfx::Range& range) override;
-  void UpdateSchemeStyle(const gfx::Range& range) override;
 
   // views::View
   void OnMouseMoved(const ui::MouseEvent& event) override;

@@ -57,6 +57,9 @@ class LocationBarModelDelegate {
   // user edits that may be in progress.
   virtual security_state::SecurityLevel GetSecurityLevel() const;
 
+  // Returns the underlying cert status of the page.
+  virtual net::CertStatus GetCertStatus() const;
+
   // Returns the underlying security state of the page without regard to any
   // user edits that may be in progress. Should never return nullptr.
   virtual std::unique_ptr<security_state::VisibleSecurityState>

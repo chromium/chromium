@@ -42,6 +42,10 @@ security_state::SecurityLevel TestLocationBarModel::GetSecurityLevel() const {
   return security_level_;
 }
 
+net::CertStatus TestLocationBarModel::GetCertStatus() const {
+  return cert_status_;
+}
+
 metrics::OmniboxEventProto::PageClassification
 TestLocationBarModel::GetPageClassification(OmniboxFocusSource focus_source) {
   return metrics::OmniboxEventProto::OTHER;

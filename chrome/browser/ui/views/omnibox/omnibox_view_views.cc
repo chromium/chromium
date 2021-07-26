@@ -558,6 +558,29 @@ void OmniboxViewViews::RemovedFromWidget() {
   scoped_compositor_observation_.Reset();
 }
 
+void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
+  DCHECK(range.IsValid());
+  DCHECK(!model()->user_input_in_progress());
+
+  // Do not style the scheme for non-http/https URLs. For such schemes, styling
+  // could be confusing or misleading. For example, the scheme isn't meaningful
+  // in about:blank URLs. Or in blob: or filesystem: URLs, which have an inner
+  // origin, the URL is likely too syntax-y to be able to meaningfully draw
+  // attention to any part of it.
+  auto* const location_bar_model = controller()->GetLocationBarModel();
+  if (!location_bar_model->GetURL().SchemeIsHTTPOrHTTPS())
+    return;
+
+  if (net::IsCertStatusError(location_bar_model->GetCertStatus())) {
+    if (location_bar_view_) {
+      ApplyColor(location_bar_view_->GetSecurityChipColor(
+                     controller()->GetLocationBarModel()->GetSecurityLevel()),
+                 range);
+    }
+    ApplyStyle(gfx::TEXT_STYLE_STRIKE, true, range);
+  }
+}
+
 void OmniboxViewViews::OnThemeChanged() {
   views::Textfield::OnThemeChanged();
 
@@ -579,6 +602,12 @@ bool OmniboxViewViews::IsDropCursorForInsertion() const {
 
 void OmniboxViewViews::ApplyColor(SkColor color, const gfx::Range& range) {
   Textfield::ApplyColor(color, range);
+}
+
+void OmniboxViewViews::ApplyStyle(gfx::TextStyle style,
+                                  bool value,
+                                  const gfx::Range& range) {
+  Textfield::ApplyStyle(style, value, range);
 }
 
 void OmniboxViewViews::SetTextAndSelectedRanges(
@@ -959,33 +988,6 @@ void OmniboxViewViews::SetEmphasis(bool emphasize, const gfx::Range& range) {
     ApplyColor(color, range);
   else
     SetColor(color);
-}
-
-void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
-  DCHECK(range.IsValid());
-  DCHECK(!model()->user_input_in_progress());
-
-  // Do not style the scheme for non-http/https URLs. For such schemes, styling
-  // could be confusing or misleading. For example, the scheme isn't meaningful
-  // in about:blank URLs. Or in blob: or filesystem: URLs, which have an inner
-  // origin, the URL is likely too syntax-y to be able to meaningfully draw
-  // attention to any part of it.
-  if (!controller()->GetLocationBarModel()->GetURL().SchemeIsHTTPOrHTTPS())
-    return;
-
-  security_state::SecurityLevel security_level =
-      controller()->GetLocationBarModel()->GetSecurityLevel();
-
-  // Only SECURE and DANGEROUS levels (pages served over HTTPS or flagged by
-  // SafeBrowsing) get a special scheme color treatment. If the security level
-  // is NONE or WARNING, we do not override the text style
-  // previously applied to the scheme text range by SetEmphasis().
-  if (security_level == security_state::NONE ||
-      security_level == security_state::WARNING)
-    return;
-  ApplyColor(location_bar_view_->GetSecurityChipColor(security_level), range);
-  if (security_level == security_state::DANGEROUS)
-    ApplyStyle(gfx::TEXT_STYLE_STRIKE, true, range);
 }
 
 void OmniboxViewViews::OnMouseMoved(const ui::MouseEvent& event) {

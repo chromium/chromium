@@ -152,6 +152,17 @@ security_state::SecurityLevel ChromeLocationBarModelDelegate::GetSecurityLevel()
   return helper->GetSecurityLevel();
 }
 
+net::CertStatus ChromeLocationBarModelDelegate::GetCertStatus() const {
+  content::WebContents* web_contents = GetActiveWebContents();
+  // If there is no active WebContents (which can happen during toolbar
+  // initialization), assume no cert status.
+  if (!web_contents) {
+    return 0;
+  }
+  auto* helper = SecurityStateTabHelper::FromWebContents(web_contents);
+  return helper->GetVisibleSecurityState()->cert_status;
+}
+
 std::unique_ptr<security_state::VisibleSecurityState>
 ChromeLocationBarModelDelegate::GetVisibleSecurityState() const {
   content::WebContents* web_contents = GetActiveWebContents();

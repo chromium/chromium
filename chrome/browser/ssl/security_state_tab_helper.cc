@@ -186,9 +186,8 @@ void SecurityStateTabHelper::DidFinishNavigation(
     return;
   }
 
-  std::unique_ptr<security_state::VisibleSecurityState> visible_security_state =
-      GetVisibleSecurityState();
-  if (net::IsCertStatusError(visible_security_state->cert_status) &&
+  net::CertStatus cert_status = GetVisibleSecurityState()->cert_status;
+  if (net::IsCertStatusError(cert_status) &&
       !navigation_handle->IsErrorPage()) {
     // Record each time a user visits a site after having clicked through a
     // certificate warning interstitial. This is used as a baseline for
@@ -198,8 +197,7 @@ void SecurityStateTabHelper::DidFinishNavigation(
     UMA_HISTOGRAM_BOOLEAN("interstitial.ssl.visited_site_after_warning", true);
   }
 
-  MaybeShowKnownInterceptionDisclosureDialog(
-      web_contents(), visible_security_state->cert_status);
+  MaybeShowKnownInterceptionDisclosureDialog(web_contents(), cert_status);
 }
 
 void SecurityStateTabHelper::DidChangeVisibleSecurityState() {

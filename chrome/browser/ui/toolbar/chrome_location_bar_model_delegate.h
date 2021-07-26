@@ -38,6 +38,7 @@ class ChromeLocationBarModelDelegate : public LocationBarModelDelegate {
   bool ShouldDisplayURL() const override;
   bool ShouldUseUpdatedConnectionSecurityIndicators() const override;
   security_state::SecurityLevel GetSecurityLevel() const override;
+  net::CertStatus GetCertStatus() const override;
   std::unique_ptr<security_state::VisibleSecurityState>
   GetVisibleSecurityState() const override;
   scoped_refptr<net::X509Certificate> GetCertificate() const override;
