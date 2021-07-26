@@ -75,8 +75,29 @@ void ServiceResultToMojom(
   for (const auto& cluster : result.clusters) {
     auto cluster_mojom = mojom::Cluster::New();
     cluster_mojom->id = cluster.cluster_id;
-    for (const auto& visit : cluster.scored_annotated_visits)
-      cluster_mojom->visits.push_back(VisitToMojom(visit));
+    for (const auto& visit : cluster.scored_annotated_visits) {
+      if (cluster_mojom->visits.empty()) {
+        // First visit is always the top visit.
+        cluster_mojom->visits.push_back(VisitToMojom(visit));
+      } else {
+        auto& top_visit = cluster_mojom->visits.front();
+        DCHECK(visit.score <= top_visit->score);
+
+        // After 3 related visits are attached, any subsequent visits scored
+        // below 0.5 are considered below the fold. 0-scored "ghost" visits are
+        // always considered below the fold. They are always hidden in
+        // production, but shown when the kDebug flag is enabled for debugging.
+        mojom::URLVisitPtr visit_mojom = VisitToMojom(visit);
+        visit_mojom->below_the_fold = (top_visit->related_visits.size() > 3 &&
+                                       visit_mojom->score < 0.5) ||
+                                      visit_mojom->score == 0.0;
+
+        // We leave any 0-scored visits (most likely duplicates) still in the
+        // cluster, so that deleting the whole cluster deletes these related
+        // duplicates too.
+        top_visit->related_visits.push_back(std::move(visit_mojom));
+      }
+    }
     clusters_mojoms.emplace_back(std::move(cluster_mojom));
   }
 
