@@ -935,7 +935,7 @@ void GpuChannelManager::OnContextLost(bool synthetic_loss) {
 
   context_lost_time_ = lost_time;
 
-  if (synthetic_loss)
+  if (synthetic_loss && shared_context_state_->GrContextIsGL())
     return;
 
   // Lose all other contexts.
