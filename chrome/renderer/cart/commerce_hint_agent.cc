@@ -43,6 +43,7 @@ constexpr unsigned kLengthLimit = 4096;
 constexpr char kAmazonDomain[] = "amazon.com";
 constexpr char kEbayDomain[] = "ebay.com";
 constexpr char kElectronicExpressDomain[] = "electronicexpress.com";
+constexpr char kGStoreHost[] = "store.google.com";
 
 constexpr base::FeatureParam<std::string> kSkipPattern{
     &ntp_features::kNtpChromeCartModule, "product-skip-pattern",
@@ -450,6 +451,8 @@ void DetectAddToCart(content::RenderFrame* render_frame,
     is_add_to_cart =
         CommerceHintAgent::IsAddToCart(url.spec()) &&
         GetProductIdFromRequest(url.spec().substr(0, kLengthLimit), nullptr);
+  } else if (navigation_url.host() == kGStoreHost) {
+    is_add_to_cart = url.spec().find("O2JPA") != std::string::npos;
   } else {
     is_add_to_cart = CommerceHintAgent::IsAddToCart(url.path_piece());
   }

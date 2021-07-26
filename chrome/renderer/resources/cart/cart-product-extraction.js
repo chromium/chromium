@@ -52,6 +52,10 @@ function getLargeImages(root, atLeast, relaxed = false) {
     // Aliexpress
     candidates = root.querySelectorAll('amp-img');
   }
+  if (candidates.length == 0) {
+    // Google store
+    candidates = root.querySelectorAll('.bg-img');
+  }
   images = [];
   function shouldStillKeep(image) {
     if (!relaxed)
@@ -125,6 +129,18 @@ function extractImage(item) {
   if (lazyUrl != null)
     return lazyUrl;
 
+  // Special handling for Google store.
+  if (image.className === "bg-img") {
+    if (image.style.backgroundImage == undefined) {
+      return null;
+    }
+    const matches = image.style.backgroundImage.match('\"(.*)\"');
+    if (matches === null) {
+      return null;
+    } else {
+      return matches[1];
+    }
+  }
   // If |image| is <amp-img>, image.src won't work.
   const src = image.src || image.getAttribute('src');
   if (verbose > 1)
@@ -639,7 +655,7 @@ function extractOneItem(item, extracted_items, processed, output,
       console.log('too tall', item);
     return;
   }
-  if (item.querySelectorAll('img, amp-img').length == 0) {
+  if (item.querySelectorAll('img, amp-img, .bg-img').length == 0) {
     if (verbose > 0)
       console.log('no image', item);
     return;
