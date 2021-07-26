@@ -6,16 +6,18 @@
 #include "base/test/scoped_chromeos_version_info.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/test/hid_controller_mixin.h"
+#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "content/public/test/browser_test.h"
 
 namespace chromeos {
 
 class OobeTestApiTest : public OobeBaseTest {
  public:
-  OobeTestApiTest() {}
-  ~OobeTestApiTest() override {}
+  OobeTestApiTest() = default;
+  ~OobeTestApiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kEnableOobeTestAPI);
@@ -69,12 +71,32 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiTestChromebox, HIDDetectionScreen) {
 
 class NoOobeTestApiTest : public OobeBaseTest {
  public:
-  NoOobeTestApiTest() {}
-  ~NoOobeTestApiTest() override {}
+  NoOobeTestApiTest() = default;
+  ~NoOobeTestApiTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(NoOobeTestApiTest, NoOobeAPI) {
   test::OobeJS().ExpectFalse("window.OobeAPI");
+}
+
+class OobeTestApiRemoraRequisitionTest : public OobeTestApiTest,
+                                         public LocalStateMixin::Delegate {
+ public:
+  OobeTestApiRemoraRequisitionTest() = default;
+  ~OobeTestApiRemoraRequisitionTest() override = default;
+
+  // LocalStateMixin::Delegate:
+  void SetUpLocalState() override {
+    policy::EnrollmentRequisitionManager::SetDeviceRequisition(
+        policy::EnrollmentRequisitionManager::kRemoraRequisition);
+  }
+
+ private:
+  LocalStateMixin local_state_mixin_{&mixin_host_, this};
+};
+
+IN_PROC_BROWSER_TEST_F(OobeTestApiRemoraRequisitionTest, SkipsEula) {
+  test::OobeJS().ExpectTrue("OobeAPI.screens.EulaScreen.shouldSkip()");
 }
 
 }  // namespace chromeos

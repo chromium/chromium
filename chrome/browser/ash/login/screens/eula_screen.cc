@@ -111,6 +111,12 @@ EulaScreen::~EulaScreen() {
 }
 
 bool EulaScreen::MaybeSkip(WizardContext* context) {
+  // TODO(https://crbug.com/1233010) Handle GOOGLE_CHROME_BRANDING build flag in
+  // this file instead of WizardController::is_branded_build_.
+
+  // This should be kept in sync with `testapi_shouldSkipEula`. If the logic
+  // became too complicated we need to consider extract and reuse parts of it.
+
   // Remora (CfM) devices are enterprise only. To enroll device it is required
   // to accept ToS on the server side. Thus for such devices it is not needed to
   // accept EULA on the client side.

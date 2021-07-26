@@ -91,6 +91,7 @@
 -MarketingOptInExtendedContries/MarketingOptInScreenTest.*
 -MarketingOptInScreenTestDisabled.*
 -NetworkErrorScreenTest.*
+-NoOobeTestApiTest.*
 -OAuth2Test.*
 -OnboardingUserActivityTest.*
 -OobeBaseTest.*
@@ -101,6 +102,8 @@
 -OobeDisplayChooserTest.*
 -OobeSpokenFeedbackTest.*
 -OobeTest.*
+-OobeTestApiRemoraRequisitionTest.*
+-OobeTestApiTest.*
 -OobeZeroTouchInteractiveUITest.*
 -OsInstallScreenTest.*
 -PackagedLicenseScreenTest.*

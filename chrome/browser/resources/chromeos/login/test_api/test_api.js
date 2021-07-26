@@ -153,8 +153,8 @@ class EulaScreen extends ScreenElementApi {
 
   /** @override */
   shouldSkip() {
-    // Eula screen should be skipped when it is non-branded build.
-    return !loadTimeData.getBoolean('isBrandedBuild');
+    // Eula screen should skipped on non-branded build and on CfM devices.
+    return loadTimeData.getBoolean('testapi_shouldSkipEula');
   }
 }
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/testapi/oobe_test_api_handler.h"
 
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 
 namespace chromeos {
 
@@ -13,7 +14,7 @@ OobeTestAPIHandler::OobeTestAPIHandler(JSCallsContainer* js_calls_container)
   DCHECK(js_calls_container);
 }
 
-OobeTestAPIHandler::~OobeTestAPIHandler() {}
+OobeTestAPIHandler::~OobeTestAPIHandler() = default;
 
 void OobeTestAPIHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
@@ -21,7 +22,10 @@ void OobeTestAPIHandler::DeclareLocalizedValues(
 void OobeTestAPIHandler::Initialize() {}
 
 void OobeTestAPIHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
-  dict->SetBoolean("isBrandedBuild", BUILDFLAG(GOOGLE_CHROME_BRANDING));
+  dict->SetBoolean(
+      "testapi_shouldSkipEula",
+      policy::EnrollmentRequisitionManager::IsRemoraRequisition() ||
+          !BUILDFLAG(GOOGLE_CHROME_BRANDING));
 }
 
 }  // namespace chromeos
