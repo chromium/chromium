@@ -491,9 +491,7 @@ void DesktopCaptureAccessHandler::ProcessChangeSourceRequest(
 
   std::unique_ptr<DesktopMediaPicker> picker;
 
-  if (!base::FeatureList::IsEnabled(
-          features::kDesktopCaptureTabSharingInfobar) ||
-      request.requested_video_device_id.empty()) {
+  if (request.requested_video_device_id.empty()) {
     picker = picker_factory_->CreatePicker(&request);
     if (!picker) {
       std::move(callback).Run(

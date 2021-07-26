@@ -276,9 +276,7 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
   // If required, register to display the notification for stream capture.
   std::unique_ptr<MediaStreamUI> notification_ui;
   if (display_notification) {
-    if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS &&
-        base::FeatureList::IsEnabled(
-            features::kDesktopCaptureTabSharingInfobar)) {
+    if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
       content::GlobalRenderFrameHostId capturer_id;
       if (web_contents && web_contents->GetMainFrame()) {
         capturer_id = web_contents->GetMainFrame()->GetGlobalId();

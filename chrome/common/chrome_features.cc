@@ -210,10 +210,6 @@ const base::Feature kDefaultPinnedAppsUpdate2021Q2{
     "DefaultPinnedAppsUpdate2021Q2", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-// Enable using tab sharing infobars for desktop capture.
-const base::Feature kDesktopCaptureTabSharingInfobar{
-    "DesktopCaptureTabSharingInfobar", base::FEATURE_ENABLED_BY_DEFAULT};
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables Desktop PWAs shortcuts menu to be visible and executable in ChromeOS
 // UI surfaces.
