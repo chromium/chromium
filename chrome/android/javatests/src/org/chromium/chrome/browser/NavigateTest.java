@@ -391,6 +391,7 @@ public class NavigateTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1233114")
     @Feature({"Navigation"})
     public void testIntentFallbackRedirection() throws Exception {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
