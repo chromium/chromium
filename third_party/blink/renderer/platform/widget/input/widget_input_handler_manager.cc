@@ -300,6 +300,7 @@ void WidgetInputHandlerManager::WillShutdown() {
     synchronous_compositor_registry_->DestroyProxy();
 #endif
   input_handler_proxy_.reset();
+  dropped_event_counts_timer_.reset();
 }
 
 void WidgetInputHandlerManager::DispatchNonBlockingEventToMainThread(
