@@ -79,7 +79,7 @@ bool SyncedBookmarkTracker::Entity::IsUnsynced() const {
   return metadata_->sequence_number() > metadata_->acked_sequence_number();
 }
 
-bool SyncedBookmarkTracker::Entity::MatchesDataIgnoringParent(
+bool SyncedBookmarkTracker::Entity::MatchesDataPossiblyIncludingParent(
     const syncer::EntityData& data) const {
   if (metadata_->is_deleted() || data.is_deleted()) {
     // In case of deletion, no need to check the specifics.
@@ -357,6 +357,9 @@ void SyncedBookmarkTracker::Remove(const Entity* entity) {
 
 void SyncedBookmarkTracker::IncrementSequenceNumber(const Entity* entity) {
   DCHECK(entity);
+  DCHECK(!entity->bookmark_node() ||
+         !entity->bookmark_node()->is_permanent_node());
+
   // TODO(crbug.com/516866): Update base hash specifics here if the entity is
   // not already out of sync.
   AsMutableEntity(entity)->metadata()->set_sequence_number(

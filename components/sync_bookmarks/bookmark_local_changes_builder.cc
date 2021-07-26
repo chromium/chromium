@@ -71,11 +71,12 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
 
     if (!metadata->is_deleted()) {
       const bookmarks::BookmarkNode* node = entity->bookmark_node();
+      DCHECK(!node->is_permanent_node());
+
       // Skip current entity if its favicon is not loaded yet. It will be
       // committed once the favicon is loaded in
       // BookmarkModelObserverImpl::BookmarkNodeFaviconChanged.
-      if (!node->is_folder() && !node->is_favicon_loaded() &&
-          !node->is_permanent_node()) {
+      if (!node->is_folder() && !node->is_favicon_loaded()) {
         // Force the favicon to be loaded. The worker will be nudged for commit
         // in BookmarkModelObserverImpl::BookmarkNodeFaviconChanged() once
         // favicon is loaded.

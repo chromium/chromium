@@ -86,6 +86,8 @@ TEST(BookmarkSpecificsConversionsTest, ShouldCreateSpecificsFromBookmarkNode) {
       node, model.get(), /*force_favicon_load=*/false);
   const sync_pb::BookmarkSpecifics& bm_specifics = specifics.bookmark();
   EXPECT_THAT(bm_specifics.guid(), Eq(node->guid().AsLowercaseString()));
+  EXPECT_THAT(bm_specifics.parent_guid(),
+              Eq(bookmarks::BookmarkNode::kBookmarkBarNodeGuid));
   EXPECT_THAT(bm_specifics.legacy_canonicalized_title(), Eq(kTitle));
   EXPECT_THAT(GURL(bm_specifics.url()), Eq(kUrl));
   EXPECT_THAT(

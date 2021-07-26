@@ -51,8 +51,9 @@ enum class InvalidBookmarkSpecificsError {
   kInvalidIconURL = 3,
   kNonUniqueMetaInfoKeys = 4,
   kInvalidGUID = 5,
+  kInvalidParentGUID = 6,
 
-  kMaxValue = kInvalidGUID,
+  kMaxValue = kInvalidParentGUID,
 };
 
 void LogInvalidSpecifics(InvalidBookmarkSpecificsError error) {
@@ -242,6 +243,10 @@ sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
   DCHECK(node->guid().is_valid()) << "Actual: " << node->guid();
   bm_specifics->set_guid(node->guid().AsLowercaseString());
 
+  DCHECK(node->parent()->guid().is_valid())
+      << "Actual: " << node->parent()->guid();
+  bm_specifics->set_parent_guid(node->parent()->guid().AsLowercaseString());
+
   const std::string node_title = base::UTF16ToUTF8(node->GetTitle());
   bm_specifics->set_legacy_canonicalized_title(
       FullTitleToLegacyCanonicalizedTitle(node_title));
@@ -375,11 +380,20 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics,
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kEmptySpecifics);
     is_valid = false;
   }
-  base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
+  const base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
   if (!guid.is_valid()) {
     DLOG(ERROR) << "Invalid bookmark: invalid GUID in the specifics.";
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidGUID);
     is_valid = false;
+  }
+  if (specifics.has_parent_guid()) {
+    const base::GUID parent_guid =
+        base::GUID::ParseLowercase(specifics.parent_guid());
+    if (!parent_guid.is_valid()) {
+      DLOG(ERROR) << "Invalid bookmark: invalid parent GUID in specifics.";
+      LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidParentGUID);
+      is_valid = false;
+    }
   }
   if (!is_folder) {
     if (!GURL(specifics.url()).is_valid()) {

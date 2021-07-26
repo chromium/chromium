@@ -155,7 +155,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldAddEntity) {
   syncer::EntityData data;
   *data.specifics.mutable_bookmark() = specifics.bookmark();
   data.unique_position = unique_position;
-  EXPECT_TRUE(entity->MatchesDataIgnoringParent(data));
+  EXPECT_TRUE(entity->MatchesDataPossiblyIncludingParent(data));
 
   EXPECT_THAT(tracker->GetEntityForSyncId("unknown id"), IsNull());
 }

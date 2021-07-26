@@ -50,4 +50,6 @@ message BookmarkSpecifics {
   // Contains full title as is. |legacy_canonicalized_title| is a prefix of
   // |full_title| with escaped symbols.
   optional string full_title = 11;
+  // Introduced in M94, represents the GUID (field |guid|) of the parent.
+  optional string parent_guid = 12;
 }
