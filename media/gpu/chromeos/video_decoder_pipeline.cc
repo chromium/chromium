@@ -13,6 +13,7 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/async_destroy_video_decoder.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
@@ -24,6 +25,14 @@
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(USE_VAAPI)
+#include "media/gpu/vaapi/vaapi_video_decoder.h"
+#elif BUILDFLAG(USE_V4L2_CODEC)
+#include "media/gpu/v4l2/v4l2_video_decoder.h"
+#else
+#error Either VA-API or V4L2 must be used for decode acceleration on Chrome OS.
+#endif
 
 namespace media {
 namespace {
@@ -67,17 +76,56 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     std::unique_ptr<DmabufVideoFramePool> frame_pool,
     std::unique_ptr<VideoFrameConverter> frame_converter,
-    std::unique_ptr<MediaLog> /*media_log*/,
-    CreateDecoderFunctionCB create_decoder_function_cb) {
+    std::unique_ptr<MediaLog> /*media_log*/) {
   DCHECK(client_task_runner);
   DCHECK(frame_pool);
   DCHECK(frame_converter);
+
+  CreateDecoderFunctionCB create_decoder_function_cb =
+#if BUILDFLAG(USE_VAAPI)
+      base::BindOnce(&VaapiVideoDecoder::Create);
+#elif BUILDFLAG(USE_V4L2_CODEC)
+      base::BindOnce(&V4L2VideoDecoder::Create);
+#endif
 
   auto* pipeline = new VideoDecoderPipeline(
       std::move(client_task_runner), std::move(frame_pool),
       std::move(frame_converter), std::move(create_decoder_function_cb));
   return std::make_unique<AsyncDestroyVideoDecoder<VideoDecoderPipeline>>(
       base::WrapUnique(pipeline));
+}
+
+// static
+SupportedVideoDecoderConfigs VideoDecoderPipeline::GetSupportedConfigs(
+    const gpu::GpuDriverBugWorkarounds& workarounds) {
+#if BUILDFLAG(USE_VAAPI)
+  auto configs = VaapiVideoDecoder::GetSupportedConfigs();
+#elif BUILDFLAG(USE_V4L2_CODEC)
+  auto configs = V4L2VideoDecoder::GetSupportedConfigs();
+#endif
+
+  if (workarounds.disable_accelerated_vp8_decode) {
+    base::EraseIf(configs, [](const auto& config) {
+      return config.profile_min >= VP8PROFILE_MIN &&
+             config.profile_max <= VP8PROFILE_MAX;
+    });
+  }
+
+  if (workarounds.disable_accelerated_vp9_decode) {
+    base::EraseIf(configs, [](const auto& config) {
+      return config.profile_min >= VP9PROFILE_PROFILE0 &&
+             config.profile_max <= VP9PROFILE_PROFILE0;
+    });
+  }
+
+  if (workarounds.disable_accelerated_vp9_profile2_decode) {
+    base::EraseIf(configs, [](const auto& config) {
+      return config.profile_min >= VP9PROFILE_PROFILE2 &&
+             config.profile_max <= VP9PROFILE_PROFILE2;
+    });
+  }
+
+  return configs;
 }
 
 VideoDecoderPipeline::VideoDecoderPipeline(

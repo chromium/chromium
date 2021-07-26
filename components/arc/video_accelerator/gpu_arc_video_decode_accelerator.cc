@@ -16,11 +16,12 @@
 #include "components/arc/arc_features.h"
 #include "components/arc/video_accelerator/arc_video_accelerator_util.h"
 #include "components/arc/video_accelerator/protected_buffer_manager.h"
+#include "media/base/media_log.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buffer_validation.h"
-#include "media/gpu/chromeos/chromeos_video_decoder_factory.h"
 #include "media/gpu/chromeos/vd_video_decode_accelerator.h"
+#include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/gpu_video_decode_accelerator_factory.h"
 #include "media/gpu/macros.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -336,7 +337,7 @@ void GpuArcVideoDecodeAccelerator::InitializeTask(
     VLOGF(2) << "Using VideoDecoder-backed VdVideoDecodeAccelerator.";
     vda_config.is_deferred_initialization_allowed = true;
     vda_ = media::VdVideoDecodeAccelerator::Create(
-        base::BindRepeating(&media::ChromeosVideoDecoderFactory::Create), this,
+        base::BindRepeating(&media::VideoDecoderPipeline::Create), this,
         vda_config, base::SequencedTaskRunnerHandle::Get());
   } else {
     VLOGF(2) << "Using original VDA";

@@ -12,6 +12,7 @@
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "media/base/cdm_context.h"
+#include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -26,6 +27,10 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 namespace base {
 class SequencedTaskRunner;
+}
+
+namespace gpu {
+class GpuDriverBugWorkarounds;
 }
 
 namespace media {
@@ -145,12 +150,16 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
           scoped_refptr<base::SequencedTaskRunner>,
           base::WeakPtr<DecoderInterface::Client>)>;
 
+  // Creates a VideoDecoderPipeline instance that allocates VideoFrames from
+  // |frame_pool| and converts the decoded VideoFrames using |frame_converter|.
   static std::unique_ptr<VideoDecoder> Create(
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       std::unique_ptr<DmabufVideoFramePool> frame_pool,
       std::unique_ptr<VideoFrameConverter> frame_converter,
-      std::unique_ptr<MediaLog> media_log,
-      CreateDecoderFunctionCB create_decoder_function_cb);
+      std::unique_ptr<MediaLog> media_log);
+
+  static SupportedVideoDecoderConfigs GetSupportedConfigs(
+      const gpu::GpuDriverBugWorkarounds& workarounds);
 
   ~VideoDecoderPipeline() override;
   static void DestroyAsync(std::unique_ptr<VideoDecoderPipeline>);

@@ -16,9 +16,8 @@ source_set("chromeos") {
   # TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
-    "chromeos_video_decoder_factory.cc",
-    "chromeos_video_decoder_factory.h",
     "image_processor_factory.cc",
+    "video_decoder_pipeline.cc",
   ]
 
   public_deps = [ ":common" ]
@@ -67,7 +66,6 @@ source_set("common") {
     "vd_video_decode_accelerator.h",
     "vda_video_frame_pool.cc",
     "vda_video_frame_pool.h",
-    "video_decoder_pipeline.cc",
     "video_decoder_pipeline.h",
     "video_frame_converter.cc",
     "video_frame_converter.h",
