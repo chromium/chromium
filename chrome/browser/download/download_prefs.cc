@@ -77,8 +77,8 @@ bool DownloadPathIsDangerous(const base::FilePath& download_path) {
   }
 #endif
 
-#if defined(OS_ANDROID)
-  // Android does not have a desktop dir.
+#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+  // Neither Fuchsia nor Android have a desktop dir.
   return false;
 #else
   base::FilePath desktop_dir;
@@ -91,10 +91,10 @@ bool DownloadPathIsDangerous(const base::FilePath& download_path) {
 }
 
 base::FilePath::StringType StringToFilePathString(const std::string& src) {
-#if defined(OS_POSIX)
-  return src;
-#elif defined(OS_WIN)
+#if defined(OS_WIN)
   return base::UTF8ToWide(src);
+#else
+  return src;
 #endif
 }
 
@@ -535,11 +535,11 @@ void DownloadPrefs::SkipSanitizeDownloadTargetPathForTesting() {
 void DownloadPrefs::SaveAutoOpenState() {
   std::string extensions;
   for (auto it : auto_open_by_user_) {
-#if defined(OS_POSIX)
-    std::string this_extension = it;
-#elif defined(OS_WIN)
+#if defined(OS_WIN)
     // TODO(phajdan.jr): Why we're using Sys conversion here, but not in ctor?
     std::string this_extension = base::SysWideToUTF8(it);
+#else  // defined(OS_WIN)
+    std::string this_extension = it;
 #endif
     extensions += this_extension + ":";
   }
