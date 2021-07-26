@@ -1284,6 +1284,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaStrong) {
   RunAriaTest(FILE_PATH_LITERAL("aria-strong.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaSubscript) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-subscript.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaSuperscript) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-superscript.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaSwitch) {
   RunAriaTest(FILE_PATH_LITERAL("aria-switch.html"));
 }

@@ -1,0 +1,5 @@
+AXWebArea
+++AXGroup
+++++AXStaticText AXValue='This text contains '
+++++AXStaticText AXValue='subscript'
+++++AXStaticText AXValue=' text.'

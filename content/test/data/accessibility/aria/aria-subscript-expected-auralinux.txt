@@ -1,0 +1,5 @@
+[document web]
+++[paragraph] text-position=sub
+++++[static] name='This text contains '
+++++[subscript] name='subscript' text-position=sub
+++++[static] name=' text.'

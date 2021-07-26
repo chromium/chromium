@@ -618,6 +618,7 @@ const char* const ATK_OBJECT_ATTRIBUTES[] = {
     "text-align",
     "text-indent",
     "text-input-type",
+    "text-position",
     "valuemin",
     "valuemax",
     "valuenow",

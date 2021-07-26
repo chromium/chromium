@@ -1,0 +1,5 @@
+Document
+++Group IsControlElement=false
+++++Text Name='This text contains '
+++++Text Name='subscript'
+++++Text Name=' text.'
