@@ -455,7 +455,7 @@ Runner.prototype = {
 
     // Add checkbox to slow down the game.
     this.slowSpeedCheckboxLabel = document.createElement('label');
-    this.slowSpeedCheckboxLabel.className = 'slow-speed-toggle hidden';
+    this.slowSpeedCheckboxLabel.className = 'slow-speed-option hidden';
     this.slowSpeedCheckboxLabel.textContent =
         getA11yString(A11Y_STRINGS.speedLabel);
 
