@@ -14,7 +14,8 @@ import java.util.concurrent.TimeUnit;
 public class MerchantViewerConfig {
     private static final String TRUST_SIGNALS_MESSAGE_DELAY_PARAM =
             "trust_signals_message_delay_ms";
-    private static final String TRUST_SIGNALS_MESSAGE_WINDOW_DURATION_PARAM =
+    @VisibleForTesting
+    public static final String TRUST_SIGNALS_MESSAGE_WINDOW_DURATION_PARAM =
             "trust_signals_message_window_duration_ms";
     @VisibleForTesting
     public static final String TRUST_SIGNALS_SHEET_USE_PAGE_TITLE_PARAM =
