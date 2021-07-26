@@ -182,11 +182,14 @@ void LocaleSwitchScreen::SwitchLocale(std::string locale) {
   locale_util::SwitchLanguageCallback callback(
       base::BindOnce(&LocaleSwitchScreen::OnLanguageChangedCallback,
                      weak_factory_.GetWeakPtr()));
-  locale_util::SwitchLanguage(locale,
-                              true,   // enable_locale_keyboard_layouts
-                              false,  // login_layouts_only
-                              std::move(callback),
-                              ProfileManager::GetActiveUserProfile());
+  locale_util::SwitchLanguage(
+      locale,
+      /*enable_locale_keyboard_layouts=*/false,  // The layouts will be synced
+                                                 // instead. Also new user could
+                                                 // enable required layouts from
+                                                 // the settings.
+      /*login_layouts_only=*/false, std::move(callback),
+      ProfileManager::GetActiveUserProfile());
 }
 
 void LocaleSwitchScreen::OnLanguageChangedCallback(
