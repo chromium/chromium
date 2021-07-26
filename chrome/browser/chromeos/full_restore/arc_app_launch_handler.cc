@@ -68,9 +68,6 @@ constexpr int kCpuUsageThreshold = 90;
 // |kCpuRestrictCoresCondition|.
 constexpr int kCpuRestrictCoresCondition = 2;
 
-constexpr char kRestoredAppWindowCountHistogram[] =
-    "Apps.RestoreArcWindowCount";
-
 constexpr char kRestoredArcAppResultHistogram[] = "Apps.RestoreArcAppsResult";
 
 constexpr char kArcGhostWindowLaunchHistogram[] = "Apps.ArcGhostWindowLaunch";
@@ -117,7 +114,7 @@ void ArcAppLaunchHandler::RestoreArcApps(
       handler_->profile_));
 
   LoadRestoreData();
-  if (!HasRestoreData())
+  if (app_ids_.empty())
     return;
 
   window_handler_ = FullRestoreArcTaskHandler::GetForProfile(handler_->profile_)
@@ -136,8 +133,10 @@ void ArcAppLaunchHandler::RestoreArcApps(
 }
 
 void ArcAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
-  if (!HasRestoreData() || !update.ReadinessChanged())
+  if (!update.ReadinessChanged() ||
+      update.AppType() != apps::mojom::AppType::kArc) {
     return;
+  }
 
   if (!apps_util::IsInstalled(update.Readiness())) {
     RemoveWindowsForApp(update.AppId());
@@ -148,8 +147,10 @@ void ArcAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.Readiness() != apps::mojom::Readiness::kReady)
     return;
 
-  if (is_shelf_ready_ && base::Contains(app_ids_, update.AppId()))
+  if (is_shelf_ready_ && base::Contains(app_ids_, update.AppId())) {
+    AddWindows(update.AppId());
     PrepareAppLaunching(update.AppId());
+  }
 }
 
 void ArcAppLaunchHandler::OnAppRegistryCacheWillBeDestroyed(
@@ -158,6 +159,9 @@ void ArcAppLaunchHandler::OnAppRegistryCacheWillBeDestroyed(
 }
 
 void ArcAppLaunchHandler::OnAppConnectionReady() {
+  base::UmaHistogramCounts100(kRestoredAppWindowCountHistogram,
+                              windows_.size() + no_stack_windows_.size());
+
   if (!HasRestoreData())
     return;
 
@@ -279,41 +283,27 @@ void ArcAppLaunchHandler::OnWindowDestroying(aura::Window* window) {
 
 void ArcAppLaunchHandler::LoadRestoreData() {
   DCHECK(handler_);
-  apps::AppRegistryCache& cache =
-      apps::AppServiceProxyFactory::GetForProfile(handler_->profile_)
-          ->AppRegistryCache();
-
-  for (const auto& it : handler_->restore_data_->app_id_to_launch_list()) {
-    bool should_restore = false;
-    cache.ForOneApp(it.first, [&should_restore](const apps::AppUpdate& update) {
-      if (update.AppType() == apps::mojom::AppType::kArc &&
-          apps_util::IsInstalled(update.Readiness())) {
-        should_restore = true;
-      }
-    });
-
-    if (!should_restore)
-      continue;
-
+  for (const auto& it : handler_->restore_data_->app_id_to_launch_list())
     app_ids_.insert(it.first);
-    for (const auto& data_it : it.second) {
-      if (data_it.second->activation_index.has_value()) {
-        windows_[data_it.second->activation_index.value()] = {it.first,
-                                                              data_it.first};
-      } else {
-        no_stack_windows_.push_back({it.first, data_it.first});
-      }
+}
+
+void ArcAppLaunchHandler::AddWindows(const std::string& app_id) {
+  DCHECK(handler_);
+  auto it = handler_->restore_data_->app_id_to_launch_list().find(app_id);
+  for (const auto& data_it : it->second) {
+    if (data_it.second->activation_index.has_value()) {
+      windows_[data_it.second->activation_index.value()] = {app_id,
+                                                            data_it.first};
+    } else {
+      no_stack_windows_.push_back({app_id, data_it.first});
     }
   }
-
-  base::UmaHistogramCounts100(kRestoredAppWindowCountHistogram,
-                              windows_.size() + no_stack_windows_.size());
 }
 
 void ArcAppLaunchHandler::PrepareLaunchApps() {
   is_shelf_ready_ = true;
 
-  if (!HasRestoreData())
+  if (app_ids_.empty())
     return;
 
   apps::AppRegistryCache& cache =
@@ -325,13 +315,16 @@ void ArcAppLaunchHandler::PrepareLaunchApps() {
   std::set<std::string> app_ids;
   cache.ForEachApp([&app_ids, this](const apps::AppUpdate& update) {
     if (update.Readiness() == apps::mojom::Readiness::kReady &&
-        app_ids_.find(update.AppId()) != app_ids_.end()) {
+        update.AppType() == apps::mojom::AppType::kArc &&
+        base::Contains(app_ids_, update.AppId())) {
       app_ids.insert(update.AppId());
     }
   });
 
-  for (const auto& app_id : app_ids)
+  for (const auto& app_id : app_ids) {
+    AddWindows(app_id);
     PrepareAppLaunching(app_id);
+  }
 }
 
 void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {

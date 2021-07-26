@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -1936,6 +1937,11 @@ class ArcAppLaunchHandlerArcAppBrowserTest
     return arc_app_launch_handler_->app_ids_;
   }
 
+  void OnAppConnectionReady() {
+    DCHECK(arc_app_launch_handler_);
+    arc_app_launch_handler_->OnAppConnectionReady();
+  }
+
   void VerifyWindows(int32_t index,
                      const std::string& app_id,
                      int32_t window_id) {
@@ -1996,6 +2002,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, RemoveApps) {
 
   WaitForAppLaunchInfoSaved();
 
+  base::HistogramTester histogram_tester;
   Restore();
   widget1->CloseNow();
 
@@ -2016,12 +2023,22 @@ IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, RemoveApps) {
   VerifyRestoreData(app_id1, kTaskId1);
   VerifyNoRestoreData(app_id2);
 
+  OnAppConnectionReady();
+  EXPECT_EQ(
+      1, histogram_tester.GetBucketCount(kRestoredAppWindowCountHistogram, 1));
+
   // Remove app_id1, and verify windows and restore data for `app_id1` have been
   // removed.
   RemoveApp(app_id1);
   EXPECT_FALSE(HasRestoreData(app_id1));
   VerifyNoRestoreData(app_id1);
   VerifyNoRestoreData(app_id2);
+
+  // Modify `app_id1` status to be ready to simulate `app_id1` is installed.
+  UpdateApp(app_id1, apps::mojom::Readiness::kReady);
+  EXPECT_FALSE(HasRestoreData(app_id1));
+  EXPECT_TRUE(GetAppIds().empty());
+  VerifyNoRestoreData(app_id1);
 
   StopInstance();
 }
@@ -2064,44 +2081,167 @@ IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, UpdateApps) {
 
   WaitForAppLaunchInfoSaved();
 
-  // Modify apps status before restoring, so that apps can't be restored, to
-  // verify the saved restore data.
+  // Modify apps status before restoring, so that apps can't be restored.
   UpdateApp(app_id1, apps::mojom::Readiness::kDisabledByPolicy);
   UpdateApp(app_id2, apps::mojom::Readiness::kDisabledByPolicy);
+  base::HistogramTester histogram_tester;
   Restore();
   widget1->CloseNow();
 
   app_host()->OnTaskDestroyed(kTaskId1);
   app_host()->OnTaskDestroyed(kTaskId2);
 
-  EXPECT_TRUE(HasRestoreData());
-  VerifyWindows(activation_index1, app_id1, kTaskId1);
-  VerifyNoStackWindows(app_id2, kTaskId2);
-
   std::set<std::string> app_ids = GetAppIds();
+  EXPECT_EQ(2u, app_ids.size());
   EXPECT_TRUE(base::Contains(app_ids, app_id1));
   EXPECT_TRUE(base::Contains(app_ids, app_id2));
-  VerifyRestoreData(app_id1, kTaskId1);
-  VerifyRestoreData(app_id2, kTaskId2);
+  EXPECT_FALSE(HasRestoreData());
 
-  // Modify the app_id1 status to be ready to prepare launching app_id1.
+  // Modify `app_id1` status to be ready to prepare launching `app_id1`.
   UpdateApp(app_id1, apps::mojom::Readiness::kReady);
   app_ids = GetAppIds();
   EXPECT_FALSE(base::Contains(app_ids, app_id1));
   EXPECT_TRUE(base::Contains(app_ids, app_id2));
+  VerifyWindows(activation_index1, app_id1, kTaskId1);
 
+  // Modify `app_id2` status to be ready to prepare launching `app_id2`.
   UpdateApp(app_id2, apps::mojom::Readiness::kReady);
   app_ids = GetAppIds();
   EXPECT_FALSE(base::Contains(app_ids, app_id1));
   EXPECT_FALSE(base::Contains(app_ids, app_id2));
+  VerifyNoStackWindows(app_id2, kTaskId2);
 
   // Verify the restore data and windows for `app_id1` and `app_id2` are not
   // removed.
   VerifyRestoreData(app_id1, kTaskId1);
   VerifyRestoreData(app_id2, kTaskId2);
 
+  OnAppConnectionReady();
+  EXPECT_EQ(
+      1, histogram_tester.GetBucketCount(kRestoredAppWindowCountHistogram, 2));
+
+  StopInstance();
+}
+
+// Verify the saved windows in ArcAppLaunchHandler when only restore one of the
+// apps.
+IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, RestoreOneApp) {
+  SetProfile();
+  InstallTestApps(kTestAppPackage, true);
+
+  const std::string app_id1 = GetTestApp1Id(kTestAppPackage);
+  const std::string app_id2 = GetTestApp2Id(kTestAppPackage);
+
+  int32_t session_id1 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+
+  SaveAppLaunchInfo(app_id1, session_id1);
+
+  // Simulate creating kTaskId1. The task id needs to match the |window_app_id|
+  // arg of CreateExoWindow.
+  int32_t kTaskId1 = 100;
+  CreateTask(app_id1, kTaskId1, session_id1);
+
+  // Create the window for the app1.
+  views::Widget* widget1 = CreateExoWindow("org.chromium.arc.100");
+  aura::Window* window1 = widget1->GetNativeWindow();
+
+  WaitForAppLaunchInfoSaved();
+
+  int32_t activation_index1 = 11;
+  SaveWindowInfo(window1, activation_index1,
+                 chromeos::WindowStateType::kNormal);
+
+  WaitForAppLaunchInfoSaved();
+
+  base::HistogramTester histogram_tester;
+  Restore();
+  widget1->CloseNow();
+  app_host()->OnTaskDestroyed(kTaskId1);
+
+  EXPECT_TRUE(GetAppIds().empty());
+  EXPECT_TRUE(HasRestoreData());
+  VerifyWindows(activation_index1, app_id1, kTaskId1);
+
+  // Verify the restore data and windows for `app_id1` are not removed.
+  VerifyRestoreData(app_id1, kTaskId1);
+  VerifyNoRestoreData(app_id2);
+
+  OnAppConnectionReady();
+  EXPECT_EQ(
+      1, histogram_tester.GetBucketCount(kRestoredAppWindowCountHistogram, 1));
+
+  StopInstance();
+}
+
+// Verify the saved windows in ArcAppLaunchHandler when one of apps is ready
+// late.
+IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, AppIsReadyLate) {
+  SetProfile();
+  InstallTestApps(kTestAppPackage, true);
+
+  const std::string app_id1 = GetTestApp1Id(kTestAppPackage);
+  const std::string app_id2 = GetTestApp2Id(kTestAppPackage);
+
+  int32_t session_id1 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+  int32_t session_id2 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+
+  SaveAppLaunchInfo(app_id1, session_id1);
+  SaveAppLaunchInfo(app_id2, session_id2);
+
+  // Simulate creating kTaskId1. The task id needs to match the |window_app_id|
+  // arg of CreateExoWindow.
+  int32_t kTaskId1 = 100;
+  CreateTask(app_id1, kTaskId1, session_id1);
+
+  // Create the window for the app1.
+  views::Widget* widget1 = CreateExoWindow("org.chromium.arc.100");
+  aura::Window* window1 = widget1->GetNativeWindow();
+
+  // Simulate creating kTaskId2 for the app2.
+  int32_t kTaskId2 = 101;
+  CreateTask(app_id2, kTaskId2, session_id2);
+
+  WaitForAppLaunchInfoSaved();
+
+  int32_t activation_index1 = 11;
+  SaveWindowInfo(window1, activation_index1,
+                 chromeos::WindowStateType::kNormal);
+
+  WaitForAppLaunchInfoSaved();
+
+  // Remove `app_id2` before restoring, so that `app_id2` can't be restored.
+  RemoveApp(app_id2);
+  base::HistogramTester histogram_tester;
+  Restore();
+  widget1->CloseNow();
+
+  app_host()->OnTaskDestroyed(kTaskId1);
+  app_host()->OnTaskDestroyed(kTaskId2);
+
+  std::set<std::string> app_ids = GetAppIds();
+  EXPECT_EQ(1u, app_ids.size());
+  EXPECT_TRUE(base::Contains(app_ids, app_id2));
+  EXPECT_TRUE(HasRestoreData());
+  VerifyWindows(activation_index1, app_id1, kTaskId1);
+
+  OnAppConnectionReady();
+  EXPECT_EQ(
+      1, histogram_tester.GetBucketCount(kRestoredAppWindowCountHistogram, 1));
+
+  // Modify `app_id2` status to be ready to prepare launching `app_id2`.
+  UpdateApp(app_id2, apps::mojom::Readiness::kReady);
+  EXPECT_TRUE(GetAppIds().empty());
+  EXPECT_TRUE(HasRestoreData());
   VerifyWindows(activation_index1, app_id1, kTaskId1);
   VerifyNoStackWindows(app_id2, kTaskId2);
+
+  // Verify the restore data and windows for `app_id1` and `app_id2` are not
+  // removed.
+  VerifyRestoreData(app_id1, kTaskId1);
+  VerifyRestoreData(app_id2, kTaskId2);
 
   StopInstance();
 }
@@ -2162,6 +2302,20 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
   bool HasWindowInfo(int32_t restore_window_id) {
     return ::full_restore::FullRestoreReadHandler::GetInstance()->HasWindowInfo(
         restore_window_id);
+  }
+
+  void ModifyAppReadiness(apps::mojom::Readiness readiness) {
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+    std::vector<apps::mojom::AppPtr> deltas;
+    apps::AppRegistryCache& cache = proxy->AppRegistryCache();
+    apps::mojom::AppPtr app = apps::mojom::App::New();
+    app->app_id =
+        *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::HELP);
+    app->app_type = apps::mojom::AppType::kWeb;
+    app->readiness = readiness;
+    deltas.push_back(std::move(app));
+    cache.OnApps(std::move(deltas), apps::mojom::AppType::kWeb,
+                 false /* should_notify_initialized */);
   }
 
  private:
@@ -2243,6 +2397,61 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   window = new_app_browser->window()->GetNativeWindow();
   auto* window_state = ash::WindowState::Get(window);
   EXPECT_FALSE(window_state->HasRestoreBounds());
+}
+
+// Verify the restoration if the SWA is not available when set
+// restore, and the restoration can work if the SWA is added later.
+IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
+                       NoSWAWhenRestore) {
+  Browser* app_browser = LaunchSystemWebApp();
+  ASSERT_TRUE(app_browser);
+  ASSERT_NE(browser(), app_browser);
+
+  // Get the window id.
+  aura::Window* window = app_browser->window()->GetNativeWindow();
+  int32_t window_id = window->GetProperty(::full_restore::kWindowIdKey);
+
+  WaitForAppLaunchInfoSaved();
+
+  // Close app_browser so that the SWA can be relaunched.
+  web_app::CloseAndWait(app_browser);
+
+  // Modify the app readiness to uninstall to simulate the app is not installed
+  // during the system startup phase.
+  ModifyAppReadiness(apps::mojom::Readiness::kUninstalledByUser);
+
+  // Create FullRestoreAppLaunchHandler.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
+
+  // Set should restore.
+  app_launch_handler->SetShouldRestore();
+
+  // Wait for the restoration.
+  content::RunAllTasksUntilIdle();
+
+  // Verify the app is not restored because the app is not installed.
+  Browser* restore_app_browser = GetBrowserForWindowId(window_id);
+  ASSERT_FALSE(restore_app_browser);
+
+  // Modify the app readiness to kReady to simulate the app is installed.
+  ModifyAppReadiness(apps::mojom::Readiness::kReady);
+
+  // Wait for the restoration.
+  content::RunAllTasksUntilIdle();
+
+  // Get the restored browser for the system web app to verify the app is
+  // restored.
+  restore_app_browser = GetBrowserForWindowId(window_id);
+  ASSERT_TRUE(restore_app_browser);
+  ASSERT_NE(browser(), restore_app_browser);
+
+  // Get the restore window id.
+  window = restore_app_browser->window()->GetNativeWindow();
+  int32_t restore_window_id =
+      window->GetProperty(::full_restore::kRestoreWindowIdKey);
+
+  EXPECT_EQ(window_id, restore_window_id);
 }
 
 IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,

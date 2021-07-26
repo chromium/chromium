@@ -53,6 +53,9 @@ enum class RestoreResult {
   kMaxValue = kNotFinish,
 };
 
+constexpr char kRestoredAppWindowCountHistogram[] =
+    "Apps.RestoreArcWindowCount";
+
 // The restoration process might be blocked by some issues, e.g. the memory
 // pressure, CPU rate, etc. However we don't want to have the restoration
 // process taking too long to interact the normal usage. So if the restoration
@@ -113,6 +116,9 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   // `no_stack_windows_` and `app_ids_`.
   void LoadRestoreData();
 
+  // Adds the restore windows to `windows_` or `no_stack_windows_`.
+  void AddWindows(const std::string& app_id);
+
   // Creates ghost windows or displays spin icons for all ARC apps to be
   // restored.
   void PrepareLaunchApps();
@@ -167,9 +173,9 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
 
   FullRestoreAppLaunchHandler* handler_ = nullptr;
 
-  // The app id list to be restored. When the ARC app is ready in
-  // AppRegistryCache, launch the ghost window or spin the icon and remove it
-  // from `app_ids`.
+  // The app id list from the restore data. If the app has been added the
+  // AppRegistryCache, the app will be removed from `app_ids_` to
+  // prevent restoring the app multiple times.
   std::set<std::string> app_ids_;
 
   // The map from the window stack to the app id and the window id. This map is
