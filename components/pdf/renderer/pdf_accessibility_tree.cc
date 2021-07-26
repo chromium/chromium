@@ -1127,7 +1127,8 @@ class PdfAccessibilityTreeBuilder {
 PdfAccessibilityTree::PdfAccessibilityTree(
     content::RenderFrame* render_frame,
     content::PepperPluginInstance* plugin_instance)
-    : render_frame_(render_frame), plugin_instance_(plugin_instance) {}
+    : content::RenderFrameObserver(render_frame),
+      plugin_instance_(plugin_instance) {}
 
 PdfAccessibilityTree::~PdfAccessibilityTree() {
   // Even if `render_accessibility` is disabled, still let it know `this` is
@@ -1474,7 +1475,7 @@ void PdfAccessibilityTree::ClearAccessibilityNodes() {
 }
 
 content::RenderAccessibility* PdfAccessibilityTree::GetRenderAccessibility() {
-  return render_frame_ ? render_frame_->GetRenderAccessibility() : nullptr;
+  return render_frame() ? render_frame()->GetRenderAccessibility() : nullptr;
 }
 
 content::RenderAccessibility*
@@ -1578,6 +1579,8 @@ std::unique_ptr<ui::AXActionTarget> PdfAccessibilityTree::CreateActionTarget(
     const ui::AXNode& target_node) {
   return std::make_unique<PdfAXActionTarget>(target_node, this);
 }
+
+void PdfAccessibilityTree::OnDestruct() {}
 
 bool PdfAccessibilityTree::ShowContextMenu() {
   content::RenderAccessibility* render_accessibility =

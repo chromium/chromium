@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "content/public/renderer/plugin_ax_tree_source.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "ppapi/c/private/ppb_pdf.h"
 #include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/shared_impl/pdf_accessibility_shared.h"
@@ -40,7 +41,8 @@ class Transform;
 
 namespace pdf {
 
-class PdfAccessibilityTree : public content::PluginAXTreeSource {
+class PdfAccessibilityTree : public content::PluginAXTreeSource,
+                             public content::RenderFrameObserver {
  public:
   PdfAccessibilityTree(content::RenderFrame* render_frame,
                        content::PepperPluginInstance* plugin_instance);
@@ -82,7 +84,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource {
                            uint32_t char_offset_in_node,
                            PP_PdfPageCharacterIndex* page_char_index) const;
 
-  // PluginAXTreeSource implementation.
+  // content::PluginAXTreeSource:
   bool GetTreeData(ui::AXTreeData* tree_data) const override;
   ui::AXNode* GetRoot() const override;
   ui::AXNode* GetFromId(int32_t id) const override;
@@ -98,6 +100,9 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource {
       const override;
   std::unique_ptr<ui::AXActionTarget> CreateActionTarget(
       const ui::AXNode& target_node) override;
+
+  // content::RenderFrameObserver:
+  void OnDestruct() override;
 
   bool ShowContextMenu();
 
@@ -139,7 +144,6 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource {
   ui::AXTree tree_;
 
   // Unowned. Must outlive |this|.
-  content::RenderFrame* const render_frame_;
   content::PepperPluginInstance* const plugin_instance_;
 
   // |zoom_| signifies the zoom level set in for the browser content.
