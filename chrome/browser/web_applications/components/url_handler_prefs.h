@@ -92,7 +92,16 @@ void RemoveWebApp(PrefService* local_state,
 void RemoveProfile(PrefService* local_state,
                    const base::FilePath& profile_path);
 
+// Returns true if there are any apps with valid 'url_handlers' installed to the
+// profile at 'profile_path'.
+bool ProfileHasUrlHandlers(PrefService* local_state,
+                           const base::FilePath& profile_path);
+
 void Clear(PrefService* local_state);
+
+// Returns true if any path dictionary in |handler| matches |profile_path|.
+bool IsHandlerForProfile(const base::Value& handler,
+                         const base::FilePath& profile_path);
 
 // Search for all (app, profile) combinations that have active URL handlers
 // which matches `url`.
@@ -119,8 +128,32 @@ void SaveOpenInBrowser(PrefService* local_state,
                        const GURL& url,
                        const base::Time& time = base::Time::Now());
 
-// TODO(crbug/1072058): Implement methods to list and reset saved choices. These
-// will be used to expose saved URL handling app choices to chrome://settings.
+// Users can reset previously saved choices from the settings page. This
+// function can be used by the settings page to reset both |kOpenInApp| and
+// |kOpenInBrowser| choices. If app_id.has_value() is false, matching entries
+// from all apps will be reset.
+void ResetSavedChoice(PrefService* local_state,
+                      const absl::optional<std::string>& app_id,
+                      const base::FilePath& profile_path,
+                      const std::string& origin,
+                      bool has_origin_wildcard,
+                      const std::string& url_path,
+                      const base::Time& time = base::Time::Now());
+
+// Used to hold the pieces of handler information needed for saving default
+// choices.
+struct HandlerView {
+  const std::string& app_id;
+  base::FilePath profile_path;
+  bool has_origin_wildcard;
+  base::Value& include_paths;
+  base::Value& exclude_paths;
+};
+
+absl::optional<const HandlerView> GetConstHandlerView(
+    const base::Value& handler);
+
+absl::optional<HandlerView> GetHandlerView(base::Value& handler);
 
 }  // namespace url_handler_prefs
 

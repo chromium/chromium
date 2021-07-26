@@ -3579,6 +3579,8 @@ static_library("ui") {
     sources += [
       "startup/web_app_url_handling_startup_utils.cc",
       "startup/web_app_url_handling_startup_utils.h",
+      "webui/settings/url_handlers_handler.cc",
+      "webui/settings/url_handlers_handler.h",
     ]
   }
 

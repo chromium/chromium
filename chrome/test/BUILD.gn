@@ -5865,6 +5865,10 @@ test("unit_tests") {
             [ "../browser/updater/browser_updater_client_mac_unittest.mm" ]
       }
     }
+    if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+      sources +=
+          [ "../browser/ui/webui/settings/url_handlers_handler_unittest.cc" ]
+    }
 
     deps += [
       "//chrome:packed_resources_integrity_hash",

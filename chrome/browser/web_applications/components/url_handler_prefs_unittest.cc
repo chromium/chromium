@@ -60,6 +60,11 @@ class UrlHandlerPrefsTest : public ::testing::Test {
 
   ~UrlHandlerPrefsTest() override = default;
 
+ protected:
+  PrefService* LocalState() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
+  }
+
   void ExpectUrlHandlerPrefs(const std::string& expected_prefs) {
     const base::Value* const stored_prefs =
         LocalState()->Get(prefs::kWebAppsUrlHandlerInfo);
@@ -67,11 +72,6 @@ class UrlHandlerPrefsTest : public ::testing::Test {
     const base::Value expected_prefs_value =
         base::test::ParseJson(expected_prefs);
     EXPECT_EQ(*stored_prefs, expected_prefs_value);
-  }
-
- protected:
-  PrefService* LocalState() {
-    return TestingBrowserProcess::GetGlobal()->local_state();
   }
 
   std::unique_ptr<WebApp> WebAppWithUrlHandlers(
@@ -1482,6 +1482,350 @@ TEST_F(UrlHandlerPrefsTest, UpdateAppWithSavedChoice_SubdomainMatch) {
         "timestamp": "12591331200000000"
       } ],
       "profile_path": "/profile1"
+    } ]
+  })");
+}
+
+TEST_F(UrlHandlerPrefsTest, ProfileHasUrlHandlers) {
+  // No profiles have apps installed.
+  EXPECT_FALSE(
+      url_handler_prefs::ProfileHasUrlHandlers(LocalState(), profile_1_));
+  EXPECT_FALSE(
+      url_handler_prefs::ProfileHasUrlHandlers(LocalState(), profile_2_));
+
+  // Profile 1 has web_app_1 installed.
+  const auto web_app_1 =
+      WebAppWithUrlHandlers(app_url_1_, {apps::UrlHandlerInfo(origin_1_)});
+  url_handler_prefs::AddWebApp(LocalState(), web_app_1->app_id(), profile_1_,
+                               web_app_1->url_handlers());
+  EXPECT_TRUE(
+      url_handler_prefs::ProfileHasUrlHandlers(LocalState(), profile_1_));
+  EXPECT_FALSE(
+      url_handler_prefs::ProfileHasUrlHandlers(LocalState(), profile_2_));
+
+  // Profile 1 has web_app_1 installed -and- Profile 2 has web_app_2 installed.
+  const auto web_app_2 =
+      WebAppWithUrlHandlers(app_url_2_, {apps::UrlHandlerInfo(origin_2_)});
+  url_handler_prefs::AddWebApp(LocalState(), web_app_2->app_id(), profile_2_,
+                               web_app_2->url_handlers());
+  EXPECT_TRUE(
+      url_handler_prefs::ProfileHasUrlHandlers(LocalState(), profile_1_));
+  EXPECT_TRUE(
+      url_handler_prefs::ProfileHasUrlHandlers(LocalState(), profile_2_));
+
+  // No profiles have apps installed.
+  url_handler_prefs::RemoveWebApp(LocalState(), web_app_1->app_id(),
+                                  profile_1_);
+  url_handler_prefs::RemoveWebApp(LocalState(), web_app_2->app_id(),
+                                  profile_2_);
+  EXPECT_FALSE(
+      url_handler_prefs::ProfileHasUrlHandlers(LocalState(), profile_1_));
+  EXPECT_FALSE(
+      url_handler_prefs::ProfileHasUrlHandlers(LocalState(), profile_2_));
+}
+
+TEST_F(UrlHandlerPrefsTest, ResetSavedChoice_InApp) {
+  // Profile 1 has web_app_1 installed. Profile 2 has web_app_2 installed.
+  const auto web_app_1 = WebAppWithUrlHandlers(
+      app_url_1_, {apps::UrlHandlerInfo(origin_1_, false, {"/a", "/b"}, {})});
+  url_handler_prefs::AddWebApp(LocalState(), web_app_1->app_id(), profile_1_,
+                               web_app_1->url_handlers(), time_1_);
+  const auto web_app_2 =
+      WebAppWithUrlHandlers(app_url_2_, {apps::UrlHandlerInfo(origin_2_)});
+  url_handler_prefs::AddWebApp(LocalState(), web_app_2->app_id(), profile_2_,
+                               web_app_2->url_handlers(), time_1_);
+
+  // Save all paths as UrlHandlerSavedChoice::kInApp.
+  url_handler_prefs::SaveOpenInApp(LocalState(), web_app_1->app_id(),
+                                   profile_1_, origin_url_1_.Resolve("/a"),
+                                   time_2_);
+  url_handler_prefs::SaveOpenInApp(LocalState(), web_app_1->app_id(),
+                                   profile_1_, origin_url_1_.Resolve("/b"),
+                                   time_2_);
+  url_handler_prefs::SaveOpenInApp(LocalState(), web_app_2->app_id(),
+                                   profile_2_, origin_url_2_, time_2_);
+
+  constexpr char prefs_before_invalid_resets[] = R"({
+    "https://origin-1.com": [ {
+      "app_id": "hfbpnmjjjooicehokhgjihcnkmbbpefl",
+      "exclude_paths": [ ],
+      "has_origin_wildcard": false,
+      "include_paths": [ {
+        "choice": 2,
+        "path": "/a",
+        "timestamp": "12591244800000000"
+      },
+      {
+        "choice": 2,
+        "path": "/b",
+        "timestamp": "12591244800000000"
+      } ],
+      "profile_path": "/profile1"
+    } ],
+    "https://origin-2.com": [ {
+      "app_id": "dioomdeompgjpnegoidgaopfdnbbljlb",
+      "exclude_paths": [ ],
+      "has_origin_wildcard": false,
+      "include_paths": [ {
+        "choice": 2,
+        "path": "/*",
+        "timestamp": "12591244800000000"
+      } ],
+      "profile_path": "/profile2"
+    } ]
+  })";
+  ExpectUrlHandlerPrefs(prefs_before_invalid_resets);
+
+  // Try reset with invalid input.
+  // /x path doesn't exist.
+  url_handler_prefs::ResetSavedChoice(
+      LocalState(), web_app_1->app_id(), profile_1_, "https://origin-1.com",
+      /*has_origin_wildcard=*/false, "/x", time_3_);
+  // Profile_2_ did not add web_app_1.
+  url_handler_prefs::ResetSavedChoice(
+      LocalState(), web_app_1->app_id(), profile_2_, "https://origin-1.com",
+      /*has_origin_wildcard=*/false, "/a", time_3_);
+  // Profile_1_ does not target origin-2.com.
+  url_handler_prefs::ResetSavedChoice(
+      LocalState(), web_app_1->app_id(), profile_1_, "https://origin-2.com",
+      /*has_origin_wildcard=*/false, "/a", time_3_);
+  //  Neither app was added with origin_wildcard.
+  url_handler_prefs::ResetSavedChoice(
+      LocalState(), web_app_1->app_id(), profile_1_, "https://origin-1.com",
+      /*has_origin_wildcard=*/true, "/a", time_3_);
+
+  // Prefs should remain the same after invalid resets.
+  ExpectUrlHandlerPrefs(prefs_before_invalid_resets);
+
+  // Reset with valid input.
+  url_handler_prefs::ResetSavedChoice(
+      LocalState(), web_app_1->app_id(), profile_1_, "https://origin-1.com",
+      /*has_origin_wildcard=*/false, "/a", time_3_);
+
+  // Choice for /a is reset.
+  // Choice for /b is unchanged.
+  // Choice for https://origin-2.com/* is unchanged.
+  ExpectUrlHandlerPrefs(R"({
+    "https://origin-1.com": [ {
+      "app_id": "hfbpnmjjjooicehokhgjihcnkmbbpefl",
+      "exclude_paths": [ ],
+      "has_origin_wildcard": false,
+      "include_paths": [ {
+        "choice": 1,
+        "path": "/a",
+        "timestamp": "12591331200000000"
+      },
+      {
+        "choice": 2,
+        "path": "/b",
+        "timestamp": "12591244800000000"
+      }],
+      "profile_path": "/profile1"
+    } ],
+    "https://origin-2.com": [ {
+      "app_id": "dioomdeompgjpnegoidgaopfdnbbljlb",
+      "exclude_paths": [ ],
+      "has_origin_wildcard": false,
+      "include_paths": [ {
+        "choice": 2,
+        "path": "/*",
+        "timestamp": "12591244800000000"
+      } ],
+      "profile_path": "/profile2"
+    } ]
+  })");
+}
+
+TEST_F(UrlHandlerPrefsTest, ResetSavedChoice_InBrowser) {
+  const auto web_app_1 =
+      WebAppWithUrlHandlers(app_url_1_, {apps::UrlHandlerInfo(origin_1_)});
+  url_handler_prefs::AddWebApp(LocalState(), web_app_1->app_id(), profile_1_,
+                               web_app_1->url_handlers(), time_1_);
+  // Save choice as UrlHandlerSavedChoice::kInBrowser.
+  url_handler_prefs::SaveOpenInBrowser(LocalState(), origin_url_1_, time_2_);
+  ExpectUrlHandlerPrefs(R"({
+    "https://origin-1.com": [ {
+      "app_id": "hfbpnmjjjooicehokhgjihcnkmbbpefl",
+      "exclude_paths": [ ],
+      "has_origin_wildcard": false,
+      "include_paths": [ {
+        "choice": 0,
+        "path": "/*",
+        "timestamp": "12591244800000000"
+      } ],
+      "profile_path": "/profile1"
+    } ]
+  })");
+
+  // Reset with valid input.
+  url_handler_prefs::ResetSavedChoice(LocalState(), /*app_id=*/absl::nullopt,
+                                      profile_1_, "https://origin-1.com",
+                                      /*has_origin_wildcard=*/false, "/*",
+                                      time_3_);
+  ExpectUrlHandlerPrefs(R"({
+    "https://origin-1.com": [ {
+      "app_id": "hfbpnmjjjooicehokhgjihcnkmbbpefl",
+      "exclude_paths": [ ],
+      "has_origin_wildcard": false,
+      "include_paths": [ {
+        "choice": 1,
+        "path": "/*",
+        "timestamp": "12591331200000000"
+      } ],
+      "profile_path": "/profile1"
+    } ]
+  })");
+}
+
+TEST_F(UrlHandlerPrefsTest, ResetSavedChoice_OriginWildcardInApp) {
+  const auto web_app_1 = WebAppWithUrlHandlers(
+      app_url_1_,
+      {apps::UrlHandlerInfo(origin_1_, /*has_origin_wildcard=*/true, {}, {})});
+  url_handler_prefs::AddWebApp(LocalState(), web_app_1->app_id(), profile_1_,
+                               web_app_1->url_handlers(), time_1_);
+  // Save choice as UrlHandlerSavedChoice::kInBrowser.
+  url_handler_prefs::SaveOpenInApp(LocalState(), web_app_1->app_id(),
+                                   profile_1_, origin_url_1_, time_2_);
+  ExpectUrlHandlerPrefs(R"({
+    "https://origin-1.com": [ {
+      "app_id": "hfbpnmjjjooicehokhgjihcnkmbbpefl",
+      "exclude_paths": [ ],
+      "has_origin_wildcard": true,
+      "include_paths": [ {
+        "choice": 2,
+        "path": "/*",
+        "timestamp": "12591244800000000"
+      } ],
+      "profile_path": "/profile1"
+    } ]
+  })");
+
+  // Reset with valid input.
+  url_handler_prefs::ResetSavedChoice(LocalState(), /*app_id=*/absl::nullopt,
+                                      profile_1_, "https://origin-1.com",
+                                      /*has_origin_wildcard=*/true, "/*",
+                                      time_3_);
+  ExpectUrlHandlerPrefs(R"({
+    "https://origin-1.com": [ {
+      "app_id": "hfbpnmjjjooicehokhgjihcnkmbbpefl",
+      "exclude_paths": [ ],
+      "has_origin_wildcard": true,
+      "include_paths": [ {
+        "choice": 1,
+        "path": "/*",
+        "timestamp": "12591331200000000"
+      } ],
+      "profile_path": "/profile1"
+    } ]
+  })");
+}
+
+TEST_F(UrlHandlerPrefsTest, ResetSavedChoice_InBrowserInMultipleApps) {
+  const auto web_app_1 = WebAppWithUrlHandlers(
+      app_url_1_, {apps::UrlHandlerInfo(origin_1_, false, {"/a", "/b"}, {})});
+  url_handler_prefs::AddWebApp(LocalState(), web_app_1->app_id(), profile_1_,
+                               web_app_1->url_handlers(), time_1_);
+  const auto web_app_2 = WebAppWithUrlHandlers(
+      app_url_2_, {apps::UrlHandlerInfo(origin_1_, false, {"/a"}, {})});
+  url_handler_prefs::AddWebApp(LocalState(), web_app_2->app_id(), profile_2_,
+                               web_app_2->url_handlers(), time_1_);
+  // Save all paths as UrlHandlerSavedChoice::kInApp.
+  url_handler_prefs::SaveOpenInBrowser(LocalState(),
+                                       origin_url_1_.Resolve("/a"), time_2_);
+  ExpectUrlHandlerPrefs(R"({
+    "https://origin-1.com": [ {
+      "app_id": "hfbpnmjjjooicehokhgjihcnkmbbpefl",
+      "exclude_paths": [ ],
+      "has_origin_wildcard": false,
+      "include_paths": [ {
+        "choice": 0,
+        "path": "/a",
+        "timestamp": "12591244800000000"
+      },
+      {
+        "choice": 1,
+        "path": "/b",
+        "timestamp": "12591158400000000"
+      } ],
+      "profile_path": "/profile1"
+    },
+    {
+      "app_id": "dioomdeompgjpnegoidgaopfdnbbljlb",
+      "exclude_paths": [ ],
+      "has_origin_wildcard": false,
+      "include_paths": [ {
+        "choice": 0,
+        "path": "/a",
+        "timestamp": "12591244800000000"
+      } ],
+      "profile_path": "/profile2"
+    } ]
+  })");
+
+  url_handler_prefs::ResetSavedChoice(LocalState(), absl::nullopt, profile_1_,
+                                      "https://origin-1.com", false, "/a",
+                                      time_3_);
+
+  ExpectUrlHandlerPrefs(R"({
+    "https://origin-1.com": [ {
+      "app_id": "hfbpnmjjjooicehokhgjihcnkmbbpefl",
+      "exclude_paths": [ ],
+      "has_origin_wildcard": false,
+      "include_paths": [ {
+        "choice": 1,
+        "path": "/a",
+        "timestamp": "12591331200000000"
+      },
+      {
+        "choice": 1,
+        "path": "/b",
+        "timestamp": "12591158400000000"
+      } ],
+      "profile_path": "/profile1"
+    },
+    {
+      "app_id": "dioomdeompgjpnegoidgaopfdnbbljlb",
+      "exclude_paths": [ ],
+      "has_origin_wildcard": false,
+      "include_paths": [ {
+        "choice": 0,
+        "path": "/a",
+        "timestamp": "12591244800000000"
+      } ],
+      "profile_path": "/profile2"
+    } ]
+  })");
+
+  url_handler_prefs::ResetSavedChoice(LocalState(), absl::nullopt, profile_2_,
+                                      "https://origin-1.com", false, "/a",
+                                      time_3_);
+  ExpectUrlHandlerPrefs(R"({
+    "https://origin-1.com": [ {
+      "app_id": "hfbpnmjjjooicehokhgjihcnkmbbpefl",
+      "exclude_paths": [ ],
+      "has_origin_wildcard": false,
+      "include_paths": [ {
+        "choice": 1,
+        "path": "/a",
+        "timestamp": "12591331200000000"
+      },
+      {
+        "choice": 1,
+        "path": "/b",
+        "timestamp": "12591158400000000"
+      } ],
+      "profile_path": "/profile1"
+    },
+    {
+      "app_id": "dioomdeompgjpnegoidgaopfdnbbljlb",
+      "exclude_paths": [ ],
+      "has_origin_wildcard": false,
+      "include_paths": [ {
+        "choice": 1,
+        "path": "/a",
+        "timestamp": "12591331200000000"
+      } ],
+      "profile_path": "/profile2"
     } ]
   })");
 }

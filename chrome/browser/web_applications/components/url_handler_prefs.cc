@@ -23,6 +23,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/url_formatter/elide_url.h"
+#include "components/url_formatter/url_formatter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -40,14 +42,6 @@ constexpr const char kDefaultPath[] = "/*";
 constexpr const char kPath[] = "path";
 constexpr const char kChoice[] = "choice";
 constexpr const char kTimestamp[] = "timestamp";
-
-// Used to hold the pieces of handler information needed for saving default
-// choices.
-struct HandlerView {
-  const std::string& app_id;
-  base::FilePath profile_path;
-  base::Value& include_paths;
-};
 
 // Returns true if |url| has the same origin as origin_str. If
 // |look_for_subdomains| is true, url must have an origin that extends
@@ -174,9 +168,6 @@ bool ExcludePathMatches(const std::string& url_path,
 // Given a list of handlers that matched an origin, apply the rules in each
 // handler against |url| and return only handlers that match |url| by appending
 // to |matches|.
-// |origin_trimmed| indicates if the input URL's origin had to be shortened to
-// find a matching key. If true, filter out and matches that did not allow an
-// origin prefix wildcard in their manifest.
 void FilterAndAddMatches(const base::Value& all_handlers,
                          const GURL& url,
                          bool origin_trimmed,
@@ -184,48 +175,36 @@ void FilterAndAddMatches(const base::Value& all_handlers,
   if (!all_handlers.is_list())
     return;
 
-  for (auto& handler : all_handlers.GetList()) {
-    if (!handler.is_dict())
+  for (const base::Value& handler : all_handlers.GetList()) {
+    absl::optional<const HandlerView> handler_view =
+        GetConstHandlerView(handler);
+    if (!handler_view)
       continue;
 
-    const std::string* const app_id = handler.FindStringKey(kAppId);
-    if (!app_id || app_id->empty())
+    // |origin_trimmed| indicates if the input URL's origin had to be shortened
+    // to find a matching key. If true, filter out any matches that did not
+    // allow an origin prefix wildcard in their manifest.
+    if (origin_trimmed && !handler_view->has_origin_wildcard)
       continue;
-
-    absl::optional<base::FilePath> profile_path =
-        util::ValueToFilePath(handler.FindKey(kProfilePath));
-    if (!profile_path || profile_path->empty())
-      continue;
-
-    if (origin_trimmed) {
-      absl::optional<bool> has_wildcard =
-          handler.FindBoolKey(kHasOriginWildcard);
-      if (!has_wildcard || !*has_wildcard)
-        continue;
-    }
 
     const std::string& url_path = url.path();
-    const base::Value* const include_paths = handler.FindListKey(kIncludePaths);
-
-    bool include_paths_exist = include_paths && include_paths->is_list() &&
-                               !include_paths->GetList().empty();
-
+    bool include_paths_exist = !handler_view->include_paths.GetList().empty();
     UrlHandlerSavedChoice best_choice = UrlHandlerSavedChoice::kNone;
     base::Time latest_timestamp = base::Time::Min();
-    if (include_paths_exist &&
-        !FindBestMatchingIncludePathChoice(url_path, *include_paths,
-                                           &best_choice, &latest_timestamp)) {
+    if (include_paths_exist && !FindBestMatchingIncludePathChoice(
+                                   url_path, handler_view->include_paths,
+                                   &best_choice, &latest_timestamp)) {
       continue;
     }
 
-    const base::Value* const exclude_paths = handler.FindListKey(kExcludePaths);
-    bool exclude_paths_exist = exclude_paths && exclude_paths->is_list() &&
-                               !exclude_paths->GetList().empty();
-    if (exclude_paths_exist && ExcludePathMatches(url_path, *exclude_paths))
+    bool exclude_paths_exist = !handler_view->exclude_paths.GetList().empty();
+    if (exclude_paths_exist &&
+        ExcludePathMatches(url_path, handler_view->exclude_paths)) {
       continue;
+    }
 
-    matches.emplace_back(*profile_path, *app_id, url, best_choice,
-                         latest_timestamp);
+    matches.emplace_back(handler_view->profile_path, handler_view->app_id, url,
+                         best_choice, latest_timestamp);
   }
 }
 
@@ -375,17 +354,14 @@ bool IsHandlerForApp(const AppId& app_id,
                      const base::FilePath& profile_path,
                      bool match_app_id,
                      const base::Value& handler) {
-  const std::string* const handler_app_id = handler.FindStringKey(kAppId);
-  absl::optional<base::FilePath> handler_profile_path =
-      util::ValueToFilePath(handler.FindKey(kProfilePath));
-
-  if (!handler_app_id || !handler_profile_path)
+  auto handler_view = GetConstHandlerView(handler);
+  if (!handler_view)
     return false;
 
-  if (*handler_profile_path != profile_path)
+  if (handler_view->profile_path != profile_path)
     return false;
 
-  return !match_app_id || *handler_app_id == app_id;
+  return !match_app_id || handler_view->app_id == app_id;
 }
 
 // Removes entries that match |profile_path| and |app_id|.
@@ -425,7 +401,7 @@ using PathSet = base::flat_set<std::string>;
 
 // Sets |choice| on every include path in |all_include_paths| where the path
 // exists in |updated_include_paths|.
-void UpdateSavedChoiceInIncludePaths(PathSet updated_include_paths,
+void UpdateSavedChoiceInIncludePaths(const PathSet& updated_include_paths,
                                      UrlHandlerSavedChoice choice,
                                      const base::Time& time,
                                      base::Value& all_include_paths) {
@@ -482,29 +458,6 @@ PathSet UpdateSavedChoice(const GURL& url,
   }
   include_paths = base::Value(std::move(include_paths_list));
   return std::move(updated_include_paths);
-}
-
-absl::optional<HandlerView> GetHandlerView(base::Value& handler) {
-  if (!handler.is_dict())
-    return absl::nullopt;
-
-  const std::string* const handler_app_id = handler.FindStringKey(kAppId);
-  absl::optional<base::FilePath> handler_profile_path =
-      util::ValueToFilePath(handler.FindKey(kProfilePath));
-  if (!handler_app_id || !handler_profile_path)
-    return absl::nullopt;
-
-  base::Value* const include_paths = handler.FindListKey(kIncludePaths);
-  if (!include_paths)
-    return absl::nullopt;
-
-  HandlerView handler_view = {
-      *handler_app_id,
-      handler_profile_path.value(),
-      *include_paths,
-  };
-
-  return handler_view;
 }
 
 // Update the save choice on every include path that matches the |url|.
@@ -727,30 +680,20 @@ void UpdateExcludePaths(base::Value& current_handler,
 // profile_path, and has_origin_wildcard values.
 bool HasExpectedIdenticalFields(const base::Value& handler_lh,
                                 const base::Value& handler_rh) {
-  const std::string* app_id_lh = handler_lh.FindStringKey(kAppId);
-  const std::string* app_id_rh = handler_rh.FindStringKey(kAppId);
-  if (!app_id_lh || !app_id_rh)
-    return false;
-  if (*app_id_lh != *app_id_rh)
+  auto handler_view_lh = GetConstHandlerView(handler_lh);
+  auto handler_view_rh = GetConstHandlerView(handler_rh);
+  if (!handler_view_lh || !handler_view_rh)
     return false;
 
-  absl::optional<base::FilePath> profile_path_lh =
-      util::ValueToFilePath(handler_lh.FindKey(kProfilePath));
-  absl::optional<base::FilePath> profile_path_rh =
-      util::ValueToFilePath(handler_rh.FindKey(kProfilePath));
-  if (!profile_path_lh || !profile_path_rh)
+  if (handler_view_lh->app_id != handler_view_rh->app_id)
     return false;
-  if (*profile_path_lh != *profile_path_rh)
+  if (handler_view_lh->profile_path != handler_view_rh->profile_path)
     return false;
 
-  absl::optional<bool> has_origin_wildcard_lh =
-      handler_lh.FindBoolKey(kHasOriginWildcard);
-  absl::optional<bool> has_origin_wildcard_rh =
-      handler_rh.FindBoolKey(kHasOriginWildcard);
-  if (!has_origin_wildcard_lh || !has_origin_wildcard_rh)
+  if (handler_view_lh->has_origin_wildcard !=
+      handler_view_rh->has_origin_wildcard) {
     return false;
-  if (*has_origin_wildcard_lh != *has_origin_wildcard_rh)
-    return false;
+  }
 
   return true;
 }
@@ -834,7 +777,7 @@ void UpdateWebApp(PrefService* local_state,
     // same app_id and profile but are no longer found in 'new_url_handlers'.
     curent_handlers.erase(
         base::ranges::remove_if(
-            curent_handlers.begin(), curent_handlers.end(),
+            curent_handlers,
             // Returns true if 'current_handler' should be removed because it
             // was previously added for 'app_id' and 'profile_path' but is no
             // longer found in 'new_url_handlers' from the update.
@@ -849,7 +792,7 @@ void UpdateWebApp(PrefService* local_state,
               // UrlHandlerInfo in 'new_url_handlers'. If not, it is no longer
               // relevant to the updated app and can be removed.
               const auto same_origin_it = base::ranges::find_if(
-                  new_url_handlers.begin(), new_url_handlers.end(),
+                  new_url_handlers,
                   [&current_handler,
                    &origin_str](const apps::UrlHandlerInfo& new_handler) {
                     if (origin_str != new_handler.origin.Serialize())
@@ -929,6 +872,31 @@ void RemoveProfile(PrefService* local_state,
   RemoveEntries(*pref_value, /*app_id*/ "", profile_path);
 }
 
+bool IsHandlerForProfile(const base::Value& handler,
+                         const base::FilePath& profile_path) {
+  auto handler_view = GetConstHandlerView(handler);
+  if (!handler_view)
+    return false;
+
+  return handler_view->profile_path == profile_path;
+}
+
+bool ProfileHasUrlHandlers(PrefService* local_state,
+                           const base::FilePath& profile_path) {
+  const base::Value* const pref_value =
+      local_state->Get(prefs::kWebAppsUrlHandlerInfo);
+  if (!pref_value || !pref_value->is_dict())
+    return false;
+
+  for (const auto origin_value : pref_value->DictItems()) {
+    for (const auto& handler : origin_value.second.GetList()) {
+      if (IsHandlerForProfile(handler, profile_path))
+        return true;
+    }
+  }
+  return false;
+}
+
 void Clear(PrefService* local_state) {
   DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
   base::Value* const pref_value = update.Get();
@@ -965,6 +933,87 @@ void SaveOpenInBrowser(PrefService* local_state,
                        const base::Time& time) {
   SaveChoice(local_state, /*app_id=*/nullptr, /*profile_path=*/nullptr, url,
              UrlHandlerSavedChoice::kInBrowser, time);
+}
+
+void ResetSavedChoice(PrefService* local_state,
+                      const absl::optional<std::string>& app_id,
+                      const base::FilePath& profile_path,
+                      const std::string& origin,
+                      bool has_origin_wildcard,
+                      const std::string& url_path,
+                      const base::Time& time) {
+  DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
+  base::Value* const pref_value = update.Get();
+  if (!pref_value || !pref_value->is_dict())
+    return;
+  base::Value* const handlers_mutable = pref_value->FindListKey(origin);
+  if (!handlers_mutable)
+    return;
+
+  for (auto& handler : handlers_mutable->GetList()) {
+    auto handler_view = GetHandlerView(handler);
+    if (!handler_view)
+      continue;
+    if (handler_view->profile_path != profile_path)
+      continue;
+    // Do not filter by app_id if no value is provided.
+    if (app_id && handler_view->app_id != *app_id)
+      continue;
+    if (handler_view->has_origin_wildcard != has_origin_wildcard)
+      continue;
+
+    // Reset the choice and timestamp in every include_paths dict. where the
+    // path member matches |url_path|.
+    UpdateSavedChoiceInIncludePaths(PathSet({url_path}),
+                                    UrlHandlerSavedChoice::kNone, time,
+                                    handler_view->include_paths);
+  }
+}
+
+absl::optional<const HandlerView> GetConstHandlerView(
+    const base::Value& handler) {
+  if (!handler.is_dict())
+    return absl::nullopt;
+
+  const std::string* const handler_app_id = handler.FindStringKey(kAppId);
+  if (!handler_app_id)
+    return absl::nullopt;
+
+  absl::optional<base::FilePath> handler_profile_path =
+      util::ValueToFilePath(handler.FindKey(kProfilePath));
+  if (!handler_profile_path)
+    return absl::nullopt;
+
+  absl::optional<bool> has_origin_wildcard =
+      handler.FindBoolKey(kHasOriginWildcard);
+  if (!has_origin_wildcard)
+    return absl::nullopt;
+
+  base::Value* include_paths =
+      const_cast<base::Value&>(handler).FindListKey(kIncludePaths);
+  if (!include_paths || !include_paths->is_list())
+    return absl::nullopt;
+
+  base::Value* exclude_paths =
+      const_cast<base::Value&>(handler).FindListKey(kExcludePaths);
+  if (!exclude_paths || !exclude_paths->is_list())
+    return absl::nullopt;
+
+  HandlerView handler_view = {
+      *handler_app_id,      handler_profile_path.value(),
+      *has_origin_wildcard, *include_paths,
+      *exclude_paths,
+  };
+
+  return handler_view;
+}
+
+absl::optional<HandlerView> GetHandlerView(base::Value& handler) {
+  absl::optional<const HandlerView> handler_view = GetConstHandlerView(handler);
+  if (!handler_view)
+    return absl::nullopt;
+
+  return const_cast<HandlerView&>(*handler_view);
 }
 
 }  // namespace url_handler_prefs
