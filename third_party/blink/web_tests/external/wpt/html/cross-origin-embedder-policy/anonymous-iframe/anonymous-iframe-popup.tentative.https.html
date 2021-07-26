@@ -3,6 +3,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
+<script src="../credentialless/resources/common.js"></script>
+<script src="../credentialless/resources/dispatcher.js"></script>
 <body>
 <script>
 const {ORIGIN, REMOTE_ORIGIN} = get_host_info();
@@ -29,30 +31,41 @@ promise_setup(async t => {
 // Create cross-origin popup from iframes. The opener should be blocked for
 // anonymous iframe and work for normal iframe.
 promise_test(async t => {
-  src_popup = REMOTE_ORIGIN + `/common/blank.html`;
-  const popup_1 = control_iframe.contentWindow.open(src_popup);
+  const control_token = token();
+  const control_src = REMOTE_ORIGIN + executor_path + `&uuid=${control_token}`;
+  const control_popup = control_iframe.contentWindow.open(control_src);
+  add_completion_callback(() => send(control_token, "close();"));
   assert_equals(
-    popup_1.opener, control_iframe.contentWindow,
+    control_popup.opener, control_iframe.contentWindow,
     "Opener from normal iframe should be available.");
 
-  const popup_2 = anonymous_iframe.contentWindow.open(src_popup);
+  const anonymous_token = token();
+  const anonymous_src =
+    REMOTE_ORIGIN + executor_path + `&uuid=${anonymous_token}`;
+  const anonymous_popup = anonymous_iframe.contentWindow.open(anonymous_src);
+  add_completion_callback(() => send(anonymous_token, "close();"));
   assert_equals(
-    popup_2, null, "Opener from anonymous iframe should be blocked.");
+    anonymous_popup, null, "Opener from anonymous iframe should be blocked.");
 }, 'Cross-origin popup from normal/anonymous iframes.');
 
 // Create a same-origin popup from iframes. The opener should be blocked for
 // anonymous iframe and work for normal iframe.
 promise_test(async t => {
-  src_popup = ORIGIN + `/common/blank.html`;
-  const popup_1 = control_iframe.contentWindow.open(src_popup);
+  const control_token = token();
+  const control_src = REMOTE_ORIGIN + executor_path + `&uuid=${control_token}`;
+  const control_popup = control_iframe.contentWindow.open(control_src);
+  add_completion_callback(() => send(control_token, "close();"));
   assert_equals(
-    popup_1.opener, control_iframe.contentWindow,
+    control_popup.opener, control_iframe.contentWindow,
     "Opener from normal iframe should be available.");
 
-  const popup_2 = anonymous_iframe.contentWindow.open(src_popup);
+  const anonymous_token = token();
+  const anonymous_src =
+    REMOTE_ORIGIN + executor_path + `&uuid=${anonymous_token}`;
+  const anonymous_popup = anonymous_iframe.contentWindow.open(anonymous_src);
+  add_completion_callback(() => send(anonymous_token, "close();"));
   assert_equals(
-    popup_2, null, "Opener from anonymous iframe should be blocked.");
+    anonymous_popup, null, "Opener from anonymous iframe should be blocked.");
 }, 'Same-origin popup from normal/anonymous iframes.');
-
 </script>
 </body>
