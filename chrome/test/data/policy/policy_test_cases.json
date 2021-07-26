@@ -1607,17 +1607,91 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "sync.apps": {
+            "default_value": false
+          },
+          "sync.autofill": {
+            "default_value": false
+          },
+          "sync.bookmarks": {
+            "default_value": false
+          },
+          "sync.extensions": {
+            "default_value": false
+          },
+          "sync.passwords": {
+            "default_value": false
+          },
+          "sync.preferences": {
+            "default_value": false
+          },
+          "sync.reading_list": {
+            "default_value": false
+          },
+          "sync.tabs": {
+            "default_value": false
+          },
+          "sync.themes": {
+            "default_value": false
+          },
+          "sync.typed_urls": {
+            "default_value": false
+          },
+          "sync.wifi_configurations": {
+            "default_value": false
+          }
+        }
+      },
+      {
         "policies": {
           "SyncTypesListDisabled": [
+            "apps",
+            "autofill",
+            "bookmarks",
+            "extensions",
+            "passwords",
             "preferences",
-            "bookmarks"
+            "readingList",
+            "tabs",
+            "themes",
+            "typedUrls",
+            "wifiConfigurations"
           ]
         },
         "prefs": {
-          "sync.preferences": {
+          "sync.apps": {
+            "value": false
+          },
+          "sync.autofill": {
             "value": false
           },
           "sync.bookmarks": {
+            "value": false
+          },
+          "sync.extensions": {
+            "value": false
+          },
+          "sync.passwords": {
+            "value": false
+          },
+          "sync.preferences": {
+            "value": false
+          },
+          "sync.reading_list": {
+            "value": false
+          },
+          "sync.tabs": {
+            "value": false
+          },
+          "sync.themes": {
+            "value": false
+          },
+          "sync.typed_urls": {
+            "value": false
+          },
+          "sync.wifi_configurations": {
             "value": false
           }
         }
@@ -3257,6 +3331,24 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "devtools.availability": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeveloperToolsDisabled": false
+        },
+        "prefs": {
+          "devtools.availability": {
+            "value": 1
+          }
+        }
+      },
+      {
         "policies": {
           "DeveloperToolsDisabled": true
         },
@@ -3277,7 +3369,47 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "devtools.availability": {
+            "default_value": 0
+          }
+        }
+      },
+      {
         "policies": {
+          "DeveloperToolsAvailability": 0
+        },
+        "prefs": {
+          "devtools.availability": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeveloperToolsAvailability": 1
+        },
+        "prefs": {
+          "devtools.availability": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeveloperToolsAvailability": 2
+        },
+        "prefs": {
+          "devtools.availability": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "note": "DeveloperToolsAvailability overwrites DeveloperToolsDisabled if both are set",
+        "policies": {
+          "DeveloperToolsDisabled": false,
           "DeveloperToolsAvailability": 2
         },
         "prefs": {
@@ -4904,11 +5036,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "disable_3d_apis": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "Disable3DAPIs": false
+        },
+        "prefs": {
+          "disable_3d_apis": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "Disable3DAPIs": true
         },
         "prefs": {
-          "disable_3d_apis": {}
+          "disable_3d_apis": {
+            "value": true
+          }
         }
       }
     ]
@@ -5375,11 +5527,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "printing.print_preview_disabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
         "policies": {
           "DisablePrintPreview": false
         },
         "prefs": {
-          "printing.print_preview_disabled": {}
+          "printing.print_preview_disabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DisablePrintPreview": true
+        },
+        "prefs": {
+          "printing.print_preview_disabled": {
+            "value": true
+          }
         }
       }
     ]
@@ -5477,11 +5649,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "safebrowsing.proceed_anyway_disabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DisableSafeBrowsingProceedAnyway": false
+        },
+        "prefs": {
+          "safebrowsing.proceed_anyway_disabled": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "DisableSafeBrowsingProceedAnyway": true
         },
         "prefs": {
-          "safebrowsing.proceed_anyway_disabled": {}
+          "safebrowsing.proceed_anyway_disabled": {
+            "value": true
+          }
         }
       }
     ]
@@ -5528,11 +5720,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "disable_screenshots": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DisableScreenshots": false
+        },
+        "prefs": {
+          "disable_screenshots": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "DisableScreenshots": true
         },
         "prefs": {
-          "disable_screenshots": {}
+          "disable_screenshots": {
+            "value": true
+          }
         }
       }
     ]
@@ -7003,11 +7215,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "gdata.disabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DriveDisabled": false
+        },
+        "prefs": {
+          "gdata.disabled": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "DriveDisabled": true
         },
         "prefs": {
-          "gdata.disabled": {}
+          "gdata.disabled": {
+            "value": true
+          }
         }
       }
     ]
@@ -7018,11 +7250,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "gdata.cellular.disabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DriveDisabledOverCellular": false
+        },
+        "prefs": {
+          "gdata.cellular.disabled": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "DriveDisabledOverCellular": true
         },
         "prefs": {
-          "gdata.cellular.disabled": {}
+          "gdata.cellular.disabled": {
+            "value": true
+          }
         }
       }
     ]
@@ -7049,11 +7301,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "hardware.external_storage_disabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExternalStorageDisabled": false
+        },
+        "prefs": {
+          "hardware.external_storage_disabled": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "ExternalStorageDisabled": true
         },
         "prefs": {
-          "hardware.external_storage_disabled": {}
+          "hardware.external_storage_disabled": {
+            "value": true
+          }
         }
       }
     ]
@@ -7064,11 +7336,31 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "hardware.external_storage_read_only": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExternalStorageReadOnly": false
+        },
+        "prefs": {
+          "hardware.external_storage_read_only": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "ExternalStorageReadOnly": true
         },
         "prefs": {
-          "hardware.external_storage_read_only": {}
+          "hardware.external_storage_read_only": {
+            "value": true
+          }
         }
       }
     ]
@@ -8599,12 +8891,33 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "hardware_acceleration_mode.enabled": {
+            "location": "local_state",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "HardwareAccelerationModeEnabled": false
+        },
+        "prefs": {
+          "hardware_acceleration_mode.enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "HardwareAccelerationModeEnabled": true
         },
         "prefs": {
           "hardware_acceleration_mode.enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }
