@@ -383,6 +383,8 @@ void V4ProtocolManagerUtil::UrlToFullHashes(
 
   std::vector<std::string> paths;
   GeneratePathVariantsToCheck(canon_path, canon_query, &paths);
+
+  full_hashes->reserve(full_hashes->size() + hosts.size() * paths.size());
   for (const std::string& host : hosts) {
     for (const std::string& path : paths) {
       full_hashes->push_back(crypto::SHA256HashString(host + path));
