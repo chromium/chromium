@@ -212,7 +212,8 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   // Test the sync error message is visible.
-  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
+  [[EarlGrey selectElementWithMatcher:GoogleServicesSettingsButton()]
+      performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
                                    IDS_IOS_SYNC_ERROR_TITLE))]
