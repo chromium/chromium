@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/location.h"
@@ -154,10 +155,8 @@ void PDFiumFormFiller::Form_OutputSelectedRect(FPDF_FORMFILLINFO* param,
                                                double bottom) {
   PDFiumEngine* engine = GetEngine(param);
   int page_index = engine->GetVisiblePageIndex(page);
-  if (page_index == -1) {
-    NOTREACHED();
-    return;
-  }
+  DCHECK_NE(page_index, -1);
+
   gfx::Rect rect = engine->pages_[page_index]->PageToScreen(
       engine->GetVisibleRect().origin(), engine->current_zoom_, left, top,
       right, bottom, engine->layout_.options().default_page_orientation());
@@ -230,10 +229,7 @@ FPDF_PAGE PDFiumFormFiller::Form_GetCurrentPage(FPDF_FORMFILLINFO* param,
   int index = engine->last_focused_page_;
   if (index == -1) {
     index = engine->GetMostVisiblePage();
-    if (index == -1) {
-      NOTREACHED();
-      return nullptr;
-    }
+    DCHECK_NE(index, -1);
   }
 
   return engine->pages_[index]->GetPage();

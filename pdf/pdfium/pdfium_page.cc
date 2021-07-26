@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/numerics/math_constants.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -1639,8 +1638,9 @@ uint32_t PDFiumPage::CountLinkHighlightOverlaps(
 }
 
 int ToPDFiumRotation(PageOrientation orientation) {
-  // Could static_cast<int>(orientation), but using an exhaustive switch will
-  // trigger an error if we ever change the definition of PageOrientation.
+  // Could use static_cast<int>(orientation), but using an exhaustive switch
+  // will trigger an error if we ever change the definition of
+  // `PageOrientation`.
   switch (orientation) {
     case PageOrientation::kOriginal:
       return 0;
@@ -1651,8 +1651,6 @@ int ToPDFiumRotation(PageOrientation orientation) {
     case PageOrientation::kClockwise270:
       return 3;
   }
-  NOTREACHED();
-  return 0;
 }
 
 }  // namespace chrome_pdf

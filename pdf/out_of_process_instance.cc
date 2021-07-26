@@ -729,10 +729,6 @@ void OutOfProcessInstance::UpdateCursor(ui::mojom::CursorType new_cursor_type) {
       reinterpret_cast<const PPB_CursorControl_Dev*>(
           pp::Module::Get()->GetBrowserInterface(
               PPB_CURSOR_CONTROL_DEV_INTERFACE));
-  if (!cursor_interface) {
-    NOTREACHED();
-    return;
-  }
 
   cursor_interface->SetCursor(pp_instance(),
                               PPCursorTypeFromCursorType(cursor_type()),

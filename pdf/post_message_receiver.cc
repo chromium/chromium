@@ -14,7 +14,6 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
 #include "base/sequenced_task_runner.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
@@ -128,11 +127,8 @@ void PostMessageReceiver::PostMessage(v8::Local<v8::Value> message) {
     return;
 
   std::unique_ptr<base::Value> converted_message = ConvertMessage(message);
-  if (!converted_message) {
-    NOTREACHED() << "The PDF Viewer UI should not be sending messages that "
-                    "cannot be converted.";
-    return;
-  }
+  DCHECK(converted_message) << "The PDF Viewer UI should not be sending "
+                               "messages that cannot be converted.";
 
   client_task_runner_->PostTask(FROM_HERE,
                                 base::BindOnce(&Client::OnMessage, client_,
