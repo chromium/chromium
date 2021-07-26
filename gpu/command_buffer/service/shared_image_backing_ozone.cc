@@ -33,9 +33,11 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/buildflags.h"
+#include "ui/gl/gl_image_native_pixmap.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
@@ -87,6 +89,37 @@ class SharedImageBackingOzone::SharedImageRepresentationVaapiOzone
     // compositor should be completely done with a VideoFrame before returning
     // it).
   }
+};
+
+class SharedImageBackingOzone::SharedImageRepresentationOverlayOzone
+    : public SharedImageRepresentationOverlay {
+ public:
+  SharedImageRepresentationOverlayOzone(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<gl::GLImageNativePixmap> image)
+      : SharedImageRepresentationOverlay(manager, backing, tracker),
+        gl_image_(image) {}
+  ~SharedImageRepresentationOverlayOzone() override = default;
+
+ private:
+  bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences) override {
+    auto* ozone_backing = static_cast<SharedImageBackingOzone*>(backing());
+    std::vector<gfx::GpuFenceHandle> fences;
+    ozone_backing->BeginAccess(&fences);
+    for (auto& fence : fences) {
+      acquire_fences->emplace_back(std::move(fence));
+    }
+    return true;
+  }
+  void EndReadAccess(gfx::GpuFenceHandle release_fence) override {
+    auto* ozone_backing = static_cast<SharedImageBackingOzone*>(backing());
+    ozone_backing->EndAccess(true, std::move(release_fence));
+  }
+  gl::GLImage* GetGLImage() override { return gl_image_.get(); }
+
+  scoped_refptr<gl::GLImageNativePixmap> gl_image_;
 };
 
 std::unique_ptr<SharedImageBackingOzone> SharedImageBackingOzone::Create(
@@ -196,8 +229,11 @@ SharedImageBackingOzone::ProduceSkia(
 std::unique_ptr<SharedImageRepresentationOverlay>
 SharedImageBackingOzone::ProduceOverlay(SharedImageManager* manager,
                                         MemoryTypeTracker* tracker) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  gfx::BufferFormat buffer_format = viz::BufferFormat(format());
+  auto image = base::MakeRefCounted<gl::GLImageNativePixmap>(
+      pixmap_->GetBufferSize(), buffer_format);
+  return std::make_unique<SharedImageRepresentationOverlayOzone>(
+      manager, this, tracker, image);
 }
 
 SharedImageBackingOzone::SharedImageBackingOzone(
@@ -249,7 +285,8 @@ bool SharedImageBackingOzone::VaSync() {
 }
 
 bool SharedImageBackingOzone::NeedsSynchronization() const {
-  return usage() & SHARED_IMAGE_USAGE_WEBGPU;
+  return (usage() & SHARED_IMAGE_USAGE_WEBGPU) ||
+         (usage() & SHARED_IMAGE_USAGE_SCANOUT);
 }
 
 void SharedImageBackingOzone::BeginAccess(

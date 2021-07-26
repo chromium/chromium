@@ -79,6 +79,7 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
   friend class SharedImageRepresentationGLOzone;
   friend class SharedImageRepresentationDawnOzone;
   class SharedImageRepresentationVaapiOzone;
+  class SharedImageRepresentationOverlayOzone;
 
   SharedImageBackingOzone(
       const Mailbox& mailbox,
