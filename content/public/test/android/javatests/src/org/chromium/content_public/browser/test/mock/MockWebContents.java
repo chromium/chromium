@@ -37,6 +37,7 @@ import java.util.List;
 @SuppressLint("ParcelCreator")
 public class MockWebContents implements WebContents {
     public RenderFrameHost renderFrameHost;
+    private GURL mLastCommittedUrl;
 
     @Override
     public void initialize(String productVersion, ViewAndroidDelegate viewDelegate,
@@ -188,7 +189,11 @@ public class MockWebContents implements WebContents {
 
     @Override
     public GURL getLastCommittedUrl() {
-        return null;
+        return mLastCommittedUrl;
+    }
+
+    public void setLastCommittedUrl(GURL url) {
+        mLastCommittedUrl = url;
     }
 
     @Override
