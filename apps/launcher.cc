@@ -50,6 +50,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -475,6 +477,12 @@ void LaunchPlatformAppWithFileHandler(
     const Extension* app,
     const std::string& handler_id,
     const std::vector<base::FilePath>& entry_paths) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto launch_info = std::make_unique<full_restore::AppLaunchInfo>(
+      app->id(), handler_id, entry_paths);
+  full_restore::SaveAppLaunchInfo(context->GetPath(), std::move(launch_info));
+#endif
+
   scoped_refptr<PlatformAppPathLauncher> launcher =
       new PlatformAppPathLauncher(context, app, entry_paths);
   launcher->LaunchWithHandler(handler_id);

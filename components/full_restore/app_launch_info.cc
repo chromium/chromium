@@ -59,6 +59,11 @@ AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
       display_id(display_id),
       intent(std::move(intent)) {}
 
+AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
+                             const std::string& handler_id,
+                             std::vector<base::FilePath> files)
+    : app_id(app_id), handler_id(handler_id), file_paths(std::move(files)) {}
+
 AppLaunchInfo::~AppLaunchInfo() = default;
 
 }  // namespace full_restore

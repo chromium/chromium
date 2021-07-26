@@ -83,6 +83,7 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   absl::optional<int32_t> container;
   absl::optional<int32_t> disposition;
   absl::optional<int64_t> display_id;
+  absl::optional<std::string> handler_id;
   absl::optional<std::vector<GURL>> urls;
   absl::optional<int32_t> active_tab_index;
   absl::optional<apps::mojom::IntentPtr> intent;

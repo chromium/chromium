@@ -20,6 +20,7 @@ constexpr char kEventFlagKey[] = "event_flag";
 constexpr char kContainerKey[] = "container";
 constexpr char kDispositionKey[] = "disposition";
 constexpr char kDisplayIdKey[] = "display_id";
+constexpr char kHandlerIdKey[] = "handler_id";
 constexpr char kUrlsKey[] = "urls";
 constexpr char kActiveTabIndexKey[] = "active_tab_index";
 constexpr char kIntentKey[] = "intent";
@@ -84,6 +85,15 @@ absl::optional<uint32_t> GetUIntValueFromDict(const base::DictionaryValue& dict,
     return absl::nullopt;
   }
   return result;
+}
+
+absl::optional<std::string> GetStringValueFromDict(
+    const base::DictionaryValue& dict,
+    const std::string& key_name) {
+  if (!dict.HasKey(key_name))
+    return absl::nullopt;
+  const std::string* value = dict.FindStringKey(key_name);
+  return value ? absl::optional<std::string>(*value) : absl::nullopt;
 }
 
 absl::optional<std::u16string> GetU16StringValueFromDict(
@@ -239,6 +249,7 @@ AppRestoreData::AppRestoreData(base::Value&& value) {
   container = GetIntValueFromDict(*data_dict, kContainerKey);
   disposition = GetIntValueFromDict(*data_dict, kDispositionKey);
   display_id = GetDisplayIdFromDict(*data_dict);
+  handler_id = GetStringValueFromDict(*data_dict, kHandlerIdKey);
   urls = GetUrlsFromDict(*data_dict);
   active_tab_index = GetIntValueFromDict(*data_dict, kActiveTabIndexKey);
   file_paths = GetFilePathsFromDict(*data_dict);
@@ -272,6 +283,7 @@ AppRestoreData::AppRestoreData(std::unique_ptr<AppLaunchInfo> app_launch_info) {
   container = std::move(app_launch_info->container);
   disposition = std::move(app_launch_info->disposition);
   display_id = std::move(app_launch_info->display_id);
+  handler_id = std::move(app_launch_info->handler_id);
   urls = std::move(app_launch_info->urls);
   active_tab_index = std::move(app_launch_info->active_tab_index);
   file_paths = std::move(app_launch_info->file_paths);
@@ -295,6 +307,9 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
 
   if (display_id.has_value())
     data->display_id = display_id.value();
+
+  if (handler_id.has_value())
+    data->handler_id = handler_id.value();
 
   if (urls.has_value())
     data->urls = urls.value();
@@ -366,6 +381,9 @@ base::Value AppRestoreData::ConvertToValue() const {
     launch_info_dict.SetStringKey(kDisplayIdKey,
                                   base::NumberToString(display_id.value()));
   }
+
+  if (handler_id.has_value())
+    launch_info_dict.SetStringKey(kHandlerIdKey, handler_id.value());
 
   if (urls.has_value() && !urls.value().empty()) {
     base::Value urls_list(base::Value::Type::LIST);
@@ -513,6 +531,7 @@ std::unique_ptr<AppLaunchInfo> AppRestoreData::GetAppLaunchInfo(
   app_launch_info->container = container;
   app_launch_info->disposition = disposition;
   app_launch_info->display_id = display_id;
+  app_launch_info->handler_id = handler_id;
   app_launch_info->urls = urls;
   app_launch_info->file_paths = file_paths;
   if (intent.has_value())

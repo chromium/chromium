@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "apps/launcher.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -17,7 +18,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension.h"
 
 namespace chromeos {
 
@@ -178,6 +181,19 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
 
   for (const auto& it : launch_list) {
     RecordRestoredAppLaunch(GetHistogrameAppType(app_type));
+
+    if (it.second->handler_id.has_value()) {
+      const extensions::Extension* extension =
+          extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
+              app_id);
+      if (extension) {
+        DCHECK(it.second->file_paths.has_value());
+        apps::LaunchPlatformAppWithFileHandler(profile_, extension,
+                                               it.second->handler_id.value(),
+                                               it.second->file_paths.value());
+      }
+      continue;
+    }
 
     DCHECK(it.second->container.has_value());
     DCHECK(it.second->disposition.has_value());

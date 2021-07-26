@@ -49,7 +49,10 @@ static_library("apps") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//components/user_manager" ]
+    deps += [
+      "//components/full_restore",
+      "//components/user_manager",
+    ]
   }
 }
 

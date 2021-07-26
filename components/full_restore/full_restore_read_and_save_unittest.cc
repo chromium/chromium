@@ -48,6 +48,11 @@ constexpr int32_t kArcSessionId2 = kArcSessionIdOffsetForRestoredLaunching + 1;
 constexpr int32_t kArcTaskId1 = 666;
 constexpr int32_t kArcTaskId2 = 888;
 
+constexpr char kFilePath1[] = "path1";
+constexpr char kFilePath2[] = "path2";
+
+constexpr char kHandlerId[] = "audio";
+
 constexpr char kExampleUrl1[] = "https://www.example1.com";
 constexpr char kExampleUrl2[] = "https://www.example2.com";
 
@@ -219,6 +224,16 @@ class FullRestoreReadAndSaveTest : public testing::Test {
     launch_info->urls = urls;
     launch_info->active_tab_index = active_tab_index;
     full_restore::SaveAppLaunchInfo(file_path, std::move(launch_info));
+  }
+
+  void AddChromeAppLaunchInfo(const base::FilePath& file_path) {
+    std::unique_ptr<AppLaunchInfo> app_launch_info =
+        std::make_unique<AppLaunchInfo>(
+            kAppId, kHandlerId,
+            std::vector<base::FilePath>{base::FilePath(kFilePath1),
+                                        base::FilePath(kFilePath2)});
+    app_launch_info->window_id = kId1;
+    full_restore::SaveAppLaunchInfo(file_path, std::move(app_launch_info));
   }
 
   void CreateWindowInfo(int32_t id,
@@ -652,6 +667,38 @@ TEST_F(FullRestoreReadAndSaveTest, ReadBrowserRestoreData) {
 
   EXPECT_TRUE(data->active_tab_index.has_value());
   EXPECT_EQ(data->active_tab_index.value(), active_tab_index);
+}
+
+TEST_F(FullRestoreReadAndSaveTest, ReadChromeAppRestoreData) {
+  FullRestoreSaveHandler* save_handler = FullRestoreSaveHandler::GetInstance();
+  base::OneShotTimer* timer = save_handler->GetTimerForTesting();
+
+  // Add Chrome app launch info.
+  AddChromeAppLaunchInfo(GetPath());
+  EXPECT_TRUE(timer->IsRunning());
+  timer->FireNow();
+  task_environment().RunUntilIdle();
+
+  // Now read from the file.
+  ReadFromFile(GetPath());
+
+  const auto* restore_data = GetRestoreData(GetPath());
+  ASSERT_TRUE(restore_data);
+  const auto& launch_list = restore_data->app_id_to_launch_list();
+  EXPECT_EQ(1u, launch_list.size());
+  const auto launch_list_it = launch_list.find(kAppId);
+  EXPECT_TRUE(launch_list_it != launch_list.end());
+  EXPECT_EQ(1u, launch_list_it->second.size());
+  const auto app_restore_data_it = launch_list_it->second.find(kId1);
+  EXPECT_TRUE(app_restore_data_it != launch_list_it->second.end());
+
+  const auto& data = app_restore_data_it->second;
+  EXPECT_TRUE(data->handler_id.has_value());
+  EXPECT_EQ(kHandlerId, data->handler_id.value());
+  EXPECT_TRUE(data->file_paths.has_value());
+  EXPECT_EQ(2u, data->file_paths.value().size());
+  EXPECT_EQ(base::FilePath(kFilePath1), data->file_paths.value()[0]);
+  EXPECT_EQ(base::FilePath(kFilePath2), data->file_paths.value()[1]);
 }
 
 }  // namespace full_restore
