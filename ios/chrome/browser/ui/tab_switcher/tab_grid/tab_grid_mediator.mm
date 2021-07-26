@@ -37,7 +37,6 @@
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/util/url_with_title.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
@@ -472,16 +471,15 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   [self.delegate tabGridMediator:self shareURLs:URLs anchor:buttonAnchor];
 }
 
-- (NSArray<UIMenuElement*>*)addToButtonMenuElementsForGridViewController:
-    (GridViewController*)gridViewController {
+- (NSArray<UIMenuElement*>*)addToButtonMenuElementsForItems:
+    (NSArray<NSString*>*)items {
   ActionFactory* actionFactory =
       [[ActionFactory alloc] initWithScenario:MenuScenario::kTabGridAddTo];
 
-  __weak GridViewController* weakGrid = gridViewController;
   __weak TabGridMediator* weakSelf = self;
 
   UIAction* bookmarkAction = [actionFactory actionToBookmarkWithBlock:^{
-    [weakSelf addItemsToBookmarks:weakGrid.selectedShareableItemIDsForEditing];
+    [weakSelf addItemsToBookmarks:items];
   }];
   // Bookmarking can be disabled from prefs (from an enterprise policy),
   // if that's the case grey out the option in the menu.
@@ -493,8 +491,7 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 
   return @[
     [actionFactory actionToAddToReadingListWithBlock:^{
-      [weakSelf
-          addItemsToReadingList:weakGrid.selectedShareableItemIDsForEditing];
+      [weakSelf addItemsToReadingList:items];
     }],
     bookmarkAction
   ];

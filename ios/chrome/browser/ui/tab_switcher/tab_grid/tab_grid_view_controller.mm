@@ -1307,19 +1307,19 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (@available(iOS 14, *)) {
     GridViewController* gridViewController =
         [self gridViewControllerForPage:self.currentPage];
+    NSArray<NSString*>* items =
+        gridViewController.selectedShareableItemIDsForEditing;
     UIMenu* menu = nil;
     switch (self.currentPage) {
       case TabGridPageIncognitoTabs:
         menu = [UIMenu
             menuWithChildren:[self.incognitoTabsDelegate
-                                 addToButtonMenuElementsForGridViewController:
-                                     gridViewController]];
+                                 addToButtonMenuElementsForItems:items]];
         break;
       case TabGridPageRegularTabs:
         menu = [UIMenu
             menuWithChildren:[self.regularTabsDelegate
-                                 addToButtonMenuElementsForGridViewController:
-                                     gridViewController]];
+                                 addToButtonMenuElementsForItems:items]];
         break;
       case TabGridPageRemoteTabs:
         // No-op, Add To button inaccessible in remote tabs page.
