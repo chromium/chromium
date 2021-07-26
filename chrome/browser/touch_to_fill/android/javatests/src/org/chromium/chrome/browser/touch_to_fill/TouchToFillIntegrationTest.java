@@ -63,7 +63,7 @@ public class TouchToFillIntegrationTest {
     private static Credential sAna;
     private static Credential sBob;
 
-    private final TouchToFillComponent mTouchToFill = new TouchToFillCoordinator();
+    private TouchToFillComponent mTouchToFill;
 
     @Mock
     private TouchToFillComponent.Delegate mMockBridge;
@@ -86,6 +86,7 @@ public class TouchToFillIntegrationTest {
 
         mActivityTestRule.startMainActivityOnBlankPage();
         runOnUiThreadBlocking(() -> {
+            mTouchToFill = new TouchToFillCoordinator();
             mBottomSheetController = BottomSheetControllerProvider.from(
                     mActivityTestRule.getActivity().getWindowAndroid());
             mTouchToFill.initialize(

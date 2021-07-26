@@ -115,22 +115,24 @@ public class AccessorySheetViewTest {
     @MediumTest
     public void testAddingTabToModelRendersTabsView() throws InterruptedException {
         final String kSampleAction = "Some Action";
-        mModel.get(TABS).add(new Tab("Passwords", null, null, R.layout.empty_accessory_sheet,
-                AccessoryTabType.PASSWORDS, new Tab.Listener() {
-                    @Override
-                    public void onTabCreated(ViewGroup view) {
-                        assertNotNull("The tab must have been created!", view);
-                        assertTrue("Empty tab is a layout.", view instanceof LinearLayout);
-                        LinearLayout baseLayout = (LinearLayout) view;
-                        TextView sampleTextView = new TextView(mActivityTestRule.getActivity());
-                        sampleTextView.setText(kSampleAction);
-                        baseLayout.addView(sampleTextView);
-                    }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(TABS).add(new Tab("Passwords", null, null, R.layout.empty_accessory_sheet,
+                    AccessoryTabType.PASSWORDS, new Tab.Listener() {
+                        @Override
+                        public void onTabCreated(ViewGroup view) {
+                            assertNotNull("The tab must have been created!", view);
+                            assertTrue("Empty tab is a layout.", view instanceof LinearLayout);
+                            LinearLayout baseLayout = (LinearLayout) view;
+                            TextView sampleTextView = new TextView(mActivityTestRule.getActivity());
+                            sampleTextView.setText(kSampleAction);
+                            baseLayout.addView(sampleTextView);
+                        }
 
-                    @Override
-                    public void onTabShown() {}
-                }));
-        mModel.set(ACTIVE_TAB_INDEX, 0);
+                        @Override
+                        public void onTabShown() {}
+                    }));
+            mModel.set(ACTIVE_TAB_INDEX, 0);
+        });
         // Shouldn't cause the view to be inflated.
         assertNull(mViewPager.poll());
 
@@ -146,10 +148,12 @@ public class AccessorySheetViewTest {
     public void testSettingActiveTabIndexChangesTab() {
         final String kFirstTab = "First Tab";
         final String kSecondTab = "Second Tab";
-        mModel.get(TABS).add(createTestTabWithTextView(kFirstTab));
-        mModel.get(TABS).add(createTestTabWithTextView(kSecondTab));
-        mModel.set(ACTIVE_TAB_INDEX, 0);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true)); // Render view.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(TABS).add(createTestTabWithTextView(kFirstTab));
+            mModel.get(TABS).add(createTestTabWithTextView(kSecondTab));
+            mModel.set(ACTIVE_TAB_INDEX, 0);
+            mModel.set(VISIBLE, true);
+        }); // Render view.
 
         onView(withText(kFirstTab)).check(matches(isDisplayed()));
 
@@ -163,10 +167,12 @@ public class AccessorySheetViewTest {
     public void testRemovingTabDeletesItsView() {
         final String kFirstTab = "First Tab";
         final String kSecondTab = "Second Tab";
-        mModel.get(TABS).add(createTestTabWithTextView(kFirstTab));
-        mModel.get(TABS).add(createTestTabWithTextView(kSecondTab));
-        mModel.set(ACTIVE_TAB_INDEX, 0);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true)); // Render view.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(TABS).add(createTestTabWithTextView(kFirstTab));
+            mModel.get(TABS).add(createTestTabWithTextView(kSecondTab));
+            mModel.set(ACTIVE_TAB_INDEX, 0);
+            mModel.set(VISIBLE, true);
+        }); // Render view.
 
         onView(withText(kFirstTab)).check(matches(isDisplayed()));
 
@@ -180,9 +186,11 @@ public class AccessorySheetViewTest {
     @MediumTest
     public void testReplaceLastTab() {
         final String kFirstTab = "First Tab";
-        mModel.get(TABS).add(createTestTabWithTextView(kFirstTab));
-        mModel.set(ACTIVE_TAB_INDEX, 0);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true)); // Render view.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(TABS).add(createTestTabWithTextView(kFirstTab));
+            mModel.set(ACTIVE_TAB_INDEX, 0);
+            mModel.set(VISIBLE, true);
+        }); // Render view.
 
         // Remove the last tab.
         onView(withText(kFirstTab)).check(matches(isDisplayed()));
@@ -202,9 +210,11 @@ public class AccessorySheetViewTest {
     @Test
     @MediumTest
     public void testTopShadowVisiblitySetByModel() {
-        mModel.get(TABS).add(createTestTabWithTextView("SomeTab"));
-        mModel.set(TOP_SHADOW_VISIBLE, false);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true)); // Render view.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(TABS).add(createTestTabWithTextView("SomeTab"));
+            mModel.set(TOP_SHADOW_VISIBLE, false);
+            mModel.set(VISIBLE, true);
+        }); // Render view.
         onView(isRoot()).check(
                 waitForView(withId(R.id.accessory_sheet_shadow), ViewUtils.VIEW_INVISIBLE));
 

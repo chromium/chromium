@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.layouts;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -29,9 +30,9 @@ public class LayoutTestUtils {
                 finishedShowingCallbackHelper.notifyCalled();
             }
         };
-        layoutManager.addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> layoutManager.addObserver(observer));
 
         finishedShowingCallbackHelper.waitForFirst();
-        layoutManager.removeObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> layoutManager.removeObserver(observer));
     }
 }

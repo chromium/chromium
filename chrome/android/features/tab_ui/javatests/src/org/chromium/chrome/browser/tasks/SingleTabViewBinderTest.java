@@ -66,7 +66,7 @@ public class SingleTabViewBinderTest extends DummyUiChromeActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        mPropertyModelChangeProcessor.destroy();
+        TestThreadUtils.runOnUiThreadBlocking(mPropertyModelChangeProcessor::destroy);
         mPropertyModel = null;
         mSingleTabView = null;
     }

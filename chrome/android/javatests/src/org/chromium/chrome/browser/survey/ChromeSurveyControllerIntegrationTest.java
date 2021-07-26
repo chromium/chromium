@@ -90,13 +90,18 @@ public class ChromeSurveyControllerIntegrationTest {
         SurveyController.setInstanceForTesting(mTestSurveyController);
 
         mActivityTestRule.startMainActivityOnBlankPage();
-        mActivityTestRule.getInfoBarContainer().addAnimationListener(mInfoBarAnimationListener);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getInfoBarContainer().addAnimationListener(mInfoBarAnimationListener);
+        });
         waitUntilInfoBarPresented();
     }
 
     @After
     public void tearDown() {
-        mActivityTestRule.getInfoBarContainer().removeAnimationListener(mInfoBarAnimationListener);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getInfoBarContainer().removeAnimationListener(
+                    mInfoBarAnimationListener);
+        });
         SurveyController.setInstanceForTesting(null);
         mSharedPreferenceManager.removeKey(mPrefKey);
         ChromeSurveyController.forceIsUMAEnabledForTesting(false);

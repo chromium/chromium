@@ -198,9 +198,11 @@ public final class ShareButtonControllerTest {
             public void onDismiss(PropertyModel model, int dismissalCause) {}
         };
 
-        PropertyModel dialogModel = (new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                                             .with(ModalDialogProperties.CONTROLLER, controller)
-                                             .build());
+        PropertyModel dialogModel = TestThreadUtils.runOnUiThreadBlockingNoException(
+                ()
+                        -> new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                                   .with(ModalDialogProperties.CONTROLLER, controller)
+                                   .build());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mActivityTestRule.getActivity().getModalDialogManager().showDialog(

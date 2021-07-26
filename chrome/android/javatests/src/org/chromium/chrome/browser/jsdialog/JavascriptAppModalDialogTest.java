@@ -228,9 +228,10 @@ public class JavascriptAppModalDialogTest {
     private void tapViewAndWait() throws TimeoutException {
         final TapGestureStateListener tapGestureStateListener = new TapGestureStateListener();
         int callCount = tapGestureStateListener.getCallCount();
-        WebContentsUtils.getGestureListenerManager(mActivityTestRule.getWebContents())
-                .addListener(tapGestureStateListener);
-
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            WebContentsUtils.getGestureListenerManager(mActivityTestRule.getWebContents())
+                    .addListener(tapGestureStateListener);
+        });
         TouchCommon.singleClickView(mActivityTestRule.getActivity().getActivityTab().getView());
         tapGestureStateListener.waitForTap(callCount);
     }

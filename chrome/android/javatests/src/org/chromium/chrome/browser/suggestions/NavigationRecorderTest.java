@@ -120,8 +120,9 @@ public class NavigationRecorderTest {
     /** Loads the provided URL in the current tab and sets up navigation recording for it. */
     private void loadUrlAndRecordVisit(
             final String url, Callback<NavigationRecorder.VisitData> visitCallback) {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mInitialTab.loadUrl(new LoadUrlParams(url)); });
-        NavigationRecorder.record(mInitialTab, visitCallback);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mInitialTab.loadUrl(new LoadUrlParams(url));
+            NavigationRecorder.record(mInitialTab, visitCallback);
+        });
     }
 }

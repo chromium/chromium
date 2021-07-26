@@ -81,13 +81,17 @@ public class AssistantVoiceSearchConsentUiTest {
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        mBottomSheetController = cta.getRootUiCoordinatorForTesting().getBottomSheetController();
-        mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
-        mAssistantVoiceSearchConsentUi = new AssistantVoiceSearchConsentUi(cta.getWindowAndroid(),
-                cta, mSharedPreferencesManager,
-                () -> AutofillAssistantPreferenceFragment.launchSettings(cta),
-                mBottomSheetController);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+            mBottomSheetController =
+                    cta.getRootUiCoordinatorForTesting().getBottomSheetController();
+            mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
+            mAssistantVoiceSearchConsentUi = new AssistantVoiceSearchConsentUi(
+                    cta.getWindowAndroid(), cta, mSharedPreferencesManager,
+                    ()
+                            -> AutofillAssistantPreferenceFragment.launchSettings(cta),
+                    mBottomSheetController);
+        });
     }
 
     @After
@@ -106,8 +110,10 @@ public class AssistantVoiceSearchConsentUiTest {
     @MediumTest
     public void testNoBottomSheetControllerAvailable() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        AssistantVoiceSearchConsentUi.show(
-                cta.getWindowAndroid(), mSharedPreferencesManager, () -> {}, null, mCallback);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AssistantVoiceSearchConsentUi.show(
+                    cta.getWindowAndroid(), mSharedPreferencesManager, () -> {}, null, mCallback);
+        });
         Mockito.verify(mCallback, Mockito.timeout(1000)).onResult(false);
     }
 

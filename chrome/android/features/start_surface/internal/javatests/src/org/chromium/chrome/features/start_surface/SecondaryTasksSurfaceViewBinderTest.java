@@ -51,13 +51,13 @@ public class SecondaryTasksSurfaceViewBinderTest extends DummyUiChromeActivityTe
             mTasksSurfaceView = new View(getActivity());
             mTopToolbarPlaceholderView = new View(getActivity());
             getActivity().setContentView(mParentView);
-        });
 
-        mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
-        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(mPropertyModel,
-                new TasksSurfaceViewBinder.ViewHolder(
-                        mParentView, mTasksSurfaceView, mTopToolbarPlaceholderView),
-                SecondaryTasksSurfaceViewBinder::bind);
+            mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
+            mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(mPropertyModel,
+                    new TasksSurfaceViewBinder.ViewHolder(
+                            mParentView, mTasksSurfaceView, mTopToolbarPlaceholderView),
+                    SecondaryTasksSurfaceViewBinder::bind);
+        });
     }
 
     @Test

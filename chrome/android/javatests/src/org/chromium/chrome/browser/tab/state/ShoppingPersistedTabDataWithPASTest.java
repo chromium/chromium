@@ -83,12 +83,12 @@ public class ShoppingPersistedTabDataWithPASTest {
                 mOptimizationGuideBridgeJniMock,
                 HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR.getNumber(),
                 OptimizationGuideDecision.TRUE, null);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> PersistedTabDataConfiguration.setUseTestConfig(true));
-
-        Profile.setLastUsedProfileForTesting(mProfileMock);
         doReturn(mPageAnnotationsServiceMock).when(mServiceFactoryMock).getForLastUsedProfile();
-        ShoppingPersistedTabData.sPageAnnotationsServiceFactory = mServiceFactoryMock;
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PersistedTabDataConfiguration.setUseTestConfig(true);
+            Profile.setLastUsedProfileForTesting(mProfileMock);
+            ShoppingPersistedTabData.sPageAnnotationsServiceFactory = mServiceFactoryMock;
+        });
     }
 
     @SmallTest

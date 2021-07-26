@@ -88,9 +88,12 @@ public class ConfirmSyncDataIntegrationTest extends DummyUiChromeActivityTestCas
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         Profile.setLastUsedProfileForTesting(mProfile);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
-        mDelegate = new ConfirmSyncDataStateMachineDelegate(getActivity(),
-                getActivity().getSupportFragmentManager(),
-                new ModalDialogManager(new AppModalPresenter(getActivity()), ModalDialogType.APP));
+        mDelegate = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new ConfirmSyncDataStateMachineDelegate(getActivity(),
+                    getActivity().getSupportFragmentManager(),
+                    new ModalDialogManager(
+                            new AppModalPresenter(getActivity()), ModalDialogType.APP));
+        });
     }
 
     @Test
