@@ -104,9 +104,10 @@ bool IsValidMessagingSource(RenderProcessHost& process,
       if (source_endpoint.extension_id.has_value() &&
           !ContentScriptTracker::DidProcessRunContentScriptFromExtension(
               process, source_endpoint.extension_id.value())) {
-        bad_message::ReceivedBadMessage(
-            &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT);
-        return false;
+        // TODO(https://crbug.com/1212918: Re-enable the enforcement after
+        // investigating and fixing the root cause of bad message reports coming
+        // from the end users.
+        LOG(ERROR) << "EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT";
       }
       return true;
   }
