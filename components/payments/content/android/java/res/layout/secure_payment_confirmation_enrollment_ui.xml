@@ -99,6 +99,7 @@
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
+                android:gravity="center"
                 android:layout_marginHorizontal="@dimen/secure_payment_confirmation_ui_large_padding"
                 android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_large_padding"
                 android:text="@string/payment_credential_enrollment_off_the_record_description"/>
