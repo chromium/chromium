@@ -20,6 +20,7 @@ import "third_party/blink/public/mojom/permissions_policy/policy_value.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/loader/code_cache.mojom";
+import "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom";
 import "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
@@ -173,9 +174,7 @@ struct DidCommitProvisionalLoadParams {
 struct DidCommitSameDocumentNavigationParams {
   // Will be true if the navigation is the result of history.pushState or
   // history.replaceState.
-  // TODO(crbug.com/1131832): Port SameDocumentNavigationSource enum to mojo
-  // and use that instead of bool here.
-  bool is_history_api_navigation = false;
+  blink.mojom.SameDocumentNavigationType same_document_navigation_type;
 
   // Whether the navigation is a result of a client redirect (e.g. a
   // script-initiated navigation) or not (e.g. a link click).

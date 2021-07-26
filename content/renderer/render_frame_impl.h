@@ -548,10 +548,11 @@ class CONTENT_EXPORT RenderFrameImpl
   void RunScriptsAtDocumentIdle() override;
   void DidHandleOnloadEvents() override;
   void DidFinishLoad() override;
-  void DidFinishSameDocumentNavigation(blink::WebHistoryCommitType commit_type,
-                                       bool is_synchronously_committed,
-                                       bool is_history_api_navigation,
-                                       bool is_client_redirect) override;
+  void DidFinishSameDocumentNavigation(
+      blink::WebHistoryCommitType commit_type,
+      bool is_synchronously_committed,
+      blink::mojom::SameDocumentNavigationType same_document_navigation_type,
+      bool is_client_redirect) override;
   void WillFreezePage() override;
   void DidOpenDocumentInputStream(const blink::WebURL& url) override;
   void DidSetPageLifecycleState() override;

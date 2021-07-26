@@ -130,11 +130,12 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       const ResourceResponse&) = 0;
 
   virtual void DispatchDidHandleOnloadEvents() = 0;
-  virtual void DidFinishSameDocumentNavigation(HistoryItem*,
-                                               WebHistoryCommitType,
-                                               bool is_synchronously_committed,
-                                               bool is_history_api_navigation,
-                                               bool is_client_redirect) {}
+  virtual void DidFinishSameDocumentNavigation(
+      HistoryItem*,
+      WebHistoryCommitType,
+      bool is_synchronously_committed,
+      mojom::blink::SameDocumentNavigationType,
+      bool is_client_redirect) {}
   virtual void DispatchDidOpenDocumentInputStream(const KURL&) {}
   virtual void DispatchDidReceiveTitle(const String&) = 0;
   virtual void DispatchDidCommitLoad(

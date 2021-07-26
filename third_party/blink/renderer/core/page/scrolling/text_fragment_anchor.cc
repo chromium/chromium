@@ -114,10 +114,11 @@ bool TextFragmentAnchor::GenerateNewToken(const DocumentLoader& loader) {
 bool TextFragmentAnchor::GenerateNewTokenForSameDocument(
     const DocumentLoader& loader,
     WebFrameLoadType load_type,
-    SameDocumentNavigationSource source) {
+    mojom::blink::SameDocumentNavigationType same_document_navigation_type) {
   if ((load_type != WebFrameLoadType::kStandard &&
        load_type != WebFrameLoadType::kReplaceCurrentItem) ||
-      source != kSameDocumentNavigationDefault)
+      same_document_navigation_type !=
+          mojom::blink::SameDocumentNavigationType::kFragment)
     return false;
 
   // Same-document text fragment navigations are allowed only when initiated
@@ -491,8 +492,8 @@ bool TextFragmentAnchor::Dismiss() {
   // fragment shown in the URL matches the state of the highlight on the page.
   // This is equivalent to history.replaceState in javascript.
   frame_->DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
-      url, kSameDocumentNavigationDefault, /*data=*/nullptr,
-      WebFrameLoadType::kReplaceCurrentItem,
+      url, mojom::blink::SameDocumentNavigationType::kFragment,
+      /*data=*/nullptr, WebFrameLoadType::kReplaceCurrentItem,
       mojom::blink::ScrollRestorationType::kAuto);
 
   return dismissed_;

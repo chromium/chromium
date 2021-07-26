@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_TEXT_FRAGMENT_ANCHOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_TEXT_FRAGMENT_ANCHOR_H_
 
+#include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
-#include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/page/scrolling/element_fragment_anchor.h"
 #include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor_metrics.h"
@@ -50,7 +50,7 @@ class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
   static bool GenerateNewTokenForSameDocument(
       const DocumentLoader&,
       WebFrameLoadType load_type,
-      SameDocumentNavigationSource source);
+      mojom::blink::SameDocumentNavigationType same_document_navigation_type);
 
   static TextFragmentAnchor* TryCreateFragmentDirective(
       const KURL& url,

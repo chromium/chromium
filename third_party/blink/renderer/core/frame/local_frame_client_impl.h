@@ -94,7 +94,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DidFinishSameDocumentNavigation(HistoryItem*,
                                        WebHistoryCommitType,
                                        bool is_handled_within_agent,
-                                       bool is_history_api_navigation,
+                                       mojom::blink::SameDocumentNavigationType,
                                        bool is_client_redirect) override;
   void DispatchDidOpenDocumentInputStream(const KURL& url) override;
   void DispatchDidReceiveTitle(const String&) override;

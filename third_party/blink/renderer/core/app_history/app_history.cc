@@ -511,8 +511,8 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
     // TODO(japhet): Figure out how cross-document back-forward should work.
     if (type != WebFrameLoadType::kBackForward) {
       GetSupplementable()->document()->Loader()->RunURLAndHistoryUpdateSteps(
-          url, kSameDocumentNavigationAppHistoryRespondWith, state_object,
-          type);
+          url, mojom::blink::SameDocumentNavigationType::kAppHistoryRespondWith,
+          state_object, type);
     }
   }
 

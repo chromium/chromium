@@ -4010,7 +4010,7 @@ void RenderFrameImpl::DidFinishLoad() {
 void RenderFrameImpl::DidFinishSameDocumentNavigation(
     blink::WebHistoryCommitType commit_type,
     bool is_synchronously_committed,
-    bool is_history_api_navigation,
+    blink::mojom::SameDocumentNavigationType same_document_navigation_type,
     bool is_client_redirect) {
   TRACE_EVENT1("navigation,rail",
                "RenderFrameImpl::didFinishSameDocumentNavigation", "id",
@@ -4026,7 +4026,8 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
       GetTransitionType(frame_->GetDocumentLoader(), IsMainFrame());
   auto same_document_params =
       mojom::DidCommitSameDocumentNavigationParams::New();
-  same_document_params->is_history_api_navigation = is_history_api_navigation;
+  same_document_params->same_document_navigation_type =
+      same_document_navigation_type;
   same_document_params->is_client_redirect = is_client_redirect;
   DidCommitNavigationInternal(
       commit_type, transition,

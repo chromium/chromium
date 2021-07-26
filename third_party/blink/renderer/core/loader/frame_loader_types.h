@@ -38,12 +38,6 @@ enum LoadStartType {
   kNavigationWithinSameDocument
 };
 
-enum SameDocumentNavigationSource {
-  kSameDocumentNavigationDefault,
-  kSameDocumentNavigationHistoryApi,
-  kSameDocumentNavigationAppHistoryRespondWith,
-};
-
 enum class SavePreviousDocumentResources {
   kNever,
   kUntilOnDOMContentLoaded,

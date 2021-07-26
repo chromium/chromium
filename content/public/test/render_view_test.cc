@@ -846,12 +846,12 @@ void RenderViewTest::SimulateUserInputChangeForElement(
 void RenderViewTest::OnSameDocumentNavigation(blink::WebLocalFrame* frame,
                                               bool is_new_navigation) {
   static_cast<RenderFrameImpl*>(GetMainRenderFrame())
-      ->DidFinishSameDocumentNavigation(is_new_navigation
-                                            ? blink::kWebStandardCommit
-                                            : blink::kWebHistoryInertCommit,
-                                        false /* is_synchronously_committed */,
-                                        false /* is_history_api_navigation */,
-                                        false /* is_client_redirect */);
+      ->DidFinishSameDocumentNavigation(
+          is_new_navigation ? blink::kWebStandardCommit
+                            : blink::kWebHistoryInertCommit,
+          false /* is_synchronously_committed */,
+          blink::mojom::SameDocumentNavigationType::kFragment,
+          false /* is_client_redirect */);
 }
 
 void RenderViewTest::SetUseZoomForDSFEnabled(bool enabled) {

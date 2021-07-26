@@ -1,0 +1,17 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Enumerates the types of same document navigation as relevant to logic in the
+// browser process
+enum SameDocumentNavigationType {
+  // Navigating to a fragment in the page, e.g. location.hash = "#foo"
+  kFragment = 0,
+  // Navigating with window.history
+  kHistoryApi = 1,
+  // Navigating with AppHistoryNavigateEvent.respondWith()
+  kAppHistoryRespondWith = 2,
+};
+

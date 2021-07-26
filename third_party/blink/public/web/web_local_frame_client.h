@@ -51,6 +51,7 @@
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-shared.h"
+#include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom-shared.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-shared.h"
 #include "third_party/blink/public/platform/blame_context.h"
@@ -426,10 +427,11 @@ class BLINK_EXPORT WebLocalFrameClient {
   // |is_synchronously_committed| is true if the navigation is synchronously
   // committed from within Blink, as opposed to being driven by the browser's
   // navigation stack.
-  virtual void DidFinishSameDocumentNavigation(WebHistoryCommitType,
-                                               bool is_synchronously_committed,
-                                               bool is_history_api_navigation,
-                                               bool is_client_redirect) {}
+  virtual void DidFinishSameDocumentNavigation(
+      WebHistoryCommitType,
+      bool is_synchronously_committed,
+      mojom::SameDocumentNavigationType,
+      bool is_client_redirect) {}
 
   // Called before a frame's page is frozen.
   virtual void WillFreezePage() {}
