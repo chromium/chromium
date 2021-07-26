@@ -85,4 +85,9 @@ tast_disabled_tests_from_chrome_all = [
 
   # b/192195806
   "policy.PrintingEnabled.print_with_hotkey",
+
+  # crbug.com/1182538
+  "policy.URLCheck.allowlist",
+  "policy.URLCheck.blocklist",
+  "policy.URLCheck.whitelist",  # nocheck
 ]
