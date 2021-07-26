@@ -27,6 +27,7 @@ android_library("content_java_test_support") {
     "//services/service_manager/public/java:service_manager_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit:junit",
     "//ui/android:ui_java",

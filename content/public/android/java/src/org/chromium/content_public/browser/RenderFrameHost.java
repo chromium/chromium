@@ -7,6 +7,7 @@ package org.chromium.content_public.browser;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.mojo.bindings.Interface;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -15,6 +16,25 @@ import org.chromium.url.Origin;
  * The RenderFrameHost Java wrapper to allow communicating with the native RenderFrameHost object.
  */
 public interface RenderFrameHost {
+    /** The results of {@link #GetAssertionWebAuthSecurityChecks}. */
+    final class WebAuthSecurityChecksResults {
+        public final boolean isCrossOrigin;
+        public final @AuthenticatorStatus.EnumType int securityCheckResult;
+
+        /**
+         * Creates an instance of this class.
+         * @param securityCheckResult The status code indicating the result of the GetAssertion
+         *        request security checks.
+         * @param isCrossOrigin Whether the given origin is cross-origin with any frame in the
+         *        current frame's ancestor chain.
+         */
+        public WebAuthSecurityChecksResults(
+                @AuthenticatorStatus.EnumType int securityCheckResult, boolean isCrossOrigin) {
+            this.securityCheckResult = securityCheckResult;
+            this.isCrossOrigin = isCrossOrigin;
+        }
+    }
+
     /**
      * Get the last committed URL of the frame.
      *
@@ -112,9 +132,12 @@ public interface RenderFrameHost {
      * therefore have to provide its own effective origin. The return value is a code corresponding
      * to the AuthenticatorStatus mojo enum.
      *
-     * @return Status code indicating the result of the GetAssertion request security checks.
+     * @return An object containing (1) the status code indicating the result of the GetAssertion
+     *         request security checks. (2) whether the effectiveOrigin is a cross-origin with any
+     *         frame in this frame's ancestor chain.
      */
-    int performGetAssertionWebAuthSecurityChecks(String relyingPartyId, Origin effectiveOrigin);
+    WebAuthSecurityChecksResults performGetAssertionWebAuthSecurityChecks(
+            String relyingPartyId, Origin effectiveOrigin);
 
     /**
      * Runs security checks associated with a Web Authentication MakeCredential request for the

@@ -5,6 +5,7 @@
 package org.chromium.content_public.browser.test.mock;
 
 import org.chromium.base.Callback;
+import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.PermissionsPolicyFeature;
@@ -68,9 +69,9 @@ public class MockRenderFrameHost implements RenderFrameHost {
     }
 
     @Override
-    public int performGetAssertionWebAuthSecurityChecks(
+    public WebAuthSecurityChecksResults performGetAssertionWebAuthSecurityChecks(
             String relyingPartyId, Origin effectiveOrigin) {
-        return 0;
+        return new WebAuthSecurityChecksResults(AuthenticatorStatus.SUCCESS, false);
     }
 
     @Override
