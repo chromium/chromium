@@ -59,7 +59,7 @@ struct PLATFORM_EXPORT PaintChunk {
         background_color(other.background_color),
         background_color_area(other.background_color_area),
         id(other.id),
-        properties(std::move(other.properties)),
+        properties(other.properties),
         hit_test_data(std::move(other.hit_test_data)),
         layer_selection_data(std::move(other.layer_selection_data)),
         bounds(other.bounds),
