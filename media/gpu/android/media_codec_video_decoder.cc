@@ -224,8 +224,10 @@ MediaCodecVideoDecoder::MediaCodecVideoDecoder(
     std::unique_ptr<AndroidVideoSurfaceChooser> surface_chooser,
     AndroidOverlayMojoFactoryCB overlay_factory_cb,
     RequestOverlayInfoCB request_overlay_info_cb,
-    std::unique_ptr<VideoFrameFactory> video_frame_factory)
-    : media_log_(std::move(media_log)),
+    std::unique_ptr<VideoFrameFactory> video_frame_factory,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock)
+    : gpu::RefCountedLockHelperDrDc(std::move(drdc_lock)),
+      media_log_(std::move(media_log)),
       codec_allocator_(codec_allocator),
       request_overlay_info_cb_(std::move(request_overlay_info_cb)),
       is_surface_control_enabled_(IsSurfaceControlEnabled(gpu_feature_info)),
@@ -259,12 +261,13 @@ std::unique_ptr<VideoDecoder> MediaCodecVideoDecoder::Create(
     std::unique_ptr<AndroidVideoSurfaceChooser> surface_chooser,
     AndroidOverlayMojoFactoryCB overlay_factory_cb,
     RequestOverlayInfoCB request_overlay_info_cb,
-    std::unique_ptr<VideoFrameFactory> video_frame_factory) {
+    std::unique_ptr<VideoFrameFactory> video_frame_factory,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock) {
   auto* decoder = new MediaCodecVideoDecoder(
       gpu_preferences, gpu_feature_info, std::move(media_log), device_info,
       codec_allocator, std::move(surface_chooser),
       std::move(overlay_factory_cb), std::move(request_overlay_info_cb),
-      std::move(video_frame_factory));
+      std::move(video_frame_factory), std::move(drdc_lock));
   return std::make_unique<AsyncDestroyVideoDecoder<MediaCodecVideoDecoder>>(
       base::WrapUnique(decoder));
 }
@@ -526,7 +529,8 @@ void MediaCodecVideoDecoder::OnVideoFrameFactoryInitialized(
     EnterTerminalState(State::kError, "Could not allocated TextureOwner");
     return;
   }
-  texture_owner_bundle_ = new CodecSurfaceBundle(std::move(texture_owner));
+  texture_owner_bundle_ =
+      new CodecSurfaceBundle(std::move(texture_owner), GetDrDcLock());
 
   // This is for A/B power testing only.  Turn off Dialog-based overlays in
   // power testing mode, unless we need them for L1 content.

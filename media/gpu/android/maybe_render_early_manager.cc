@@ -41,7 +41,11 @@ class GpuMaybeRenderEarlyImpl {
     image_group_->AddCodecImage(codec_image_holder->codec_image_raw());
   }
 
-  void MaybeRenderEarly() { internal::MaybeRenderEarly(&images_); }
+  void MaybeRenderEarly(scoped_refptr<gpu::RefCountedLock> drdc_lock) {
+    base::AutoLockMaybe auto_lock(drdc_lock ? drdc_lock->GetDrDcLockPtr()
+                                            : nullptr);
+    internal::MaybeRenderEarly(&images_);
+  }
 
  private:
   void OnImageUnused(CodecImage* image) {
@@ -67,11 +71,14 @@ class GpuMaybeRenderEarlyImpl {
 
 // Default implementation of MaybeRenderEarlyManager.  Lives on whatever thread
 // you like, but will hop to the gpu thread to do real work.
-class MaybeRenderEarlyManagerImpl : public MaybeRenderEarlyManager {
+class MaybeRenderEarlyManagerImpl : public MaybeRenderEarlyManager,
+                                    public gpu::RefCountedLockHelperDrDc {
  public:
   MaybeRenderEarlyManagerImpl(
-      scoped_refptr<base::SequencedTaskRunner> gpu_task_runner)
-      : gpu_task_runner_(gpu_task_runner),
+      scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
+      scoped_refptr<gpu::RefCountedLock> drdc_lock)
+      : gpu::RefCountedLockHelperDrDc(std::move(drdc_lock)),
+        gpu_task_runner_(gpu_task_runner),
         gpu_impl_(std::move(gpu_task_runner)) {}
   ~MaybeRenderEarlyManagerImpl() override = default;
 
@@ -86,7 +93,7 @@ class MaybeRenderEarlyManagerImpl : public MaybeRenderEarlyManager {
     // easier if we do it this way, since the image group is constructed on the
     // proper thread to talk to the overlay.
     auto image_group = base::MakeRefCounted<CodecImageGroup>(
-        gpu_task_runner_, std::move(surface_bundle));
+        gpu_task_runner_, std::move(surface_bundle), GetDrDcLock());
 
     // Give the image group to |gpu_impl_|.  Note that we don't drop our ref to
     // |image_group| on this thread.  It can only be constructed here.
@@ -101,7 +108,8 @@ class MaybeRenderEarlyManagerImpl : public MaybeRenderEarlyManager {
   }
 
   void MaybeRenderEarly() override {
-    gpu_impl_.AsyncCall(&GpuMaybeRenderEarlyImpl::MaybeRenderEarly);
+    gpu_impl_.AsyncCall(&GpuMaybeRenderEarlyImpl::MaybeRenderEarly)
+        .WithArgs(GetDrDcLock());
   }
 
  private:
@@ -115,8 +123,10 @@ class MaybeRenderEarlyManagerImpl : public MaybeRenderEarlyManager {
 
 // static
 std::unique_ptr<MaybeRenderEarlyManager> MaybeRenderEarlyManager::Create(
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  return std::make_unique<MaybeRenderEarlyManagerImpl>(std::move(task_runner));
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    scoped_refptr<gpu::RefCountedLock> lock) {
+  return std::make_unique<MaybeRenderEarlyManagerImpl>(std::move(task_runner),
+                                                       std::move(lock));
 }
 
 }  // namespace media

@@ -31,7 +31,9 @@ class MaybeRenderEarlyManager;
 // decoder as soon as possible. It's not thread safe; it should be created, used
 // and destructed on a single sequence. It's implemented by proxying calls
 // to a helper class hosted on the gpu thread.
-class MEDIA_GPU_EXPORT VideoFrameFactoryImpl : public VideoFrameFactory {
+class MEDIA_GPU_EXPORT VideoFrameFactoryImpl
+    : public VideoFrameFactory,
+      public gpu::RefCountedLockHelperDrDc {
  public:
   // Callback used to return a mailbox and release callback for an image. The
   // release callback may be dropped without being run, and the image will be
@@ -51,7 +53,8 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl : public VideoFrameFactory {
       const gpu::GpuPreferences& gpu_preferences,
       std::unique_ptr<SharedImageVideoProvider> image_provider,
       std::unique_ptr<MaybeRenderEarlyManager> mre_manager,
-      std::unique_ptr<FrameInfoHelper> frame_info_helper);
+      std::unique_ptr<FrameInfoHelper> frame_info_helper,
+      scoped_refptr<gpu::RefCountedLock> drdc_lock);
   ~VideoFrameFactoryImpl() override;
 
   void Initialize(OverlayMode overlay_mode, InitCB init_cb) override;

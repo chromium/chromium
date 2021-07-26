@@ -451,6 +451,8 @@ target(link_target_type, "gles2_sources") {
       "ahardwarebuffer_utils.h",
       "image_reader_gl_owner.cc",
       "image_reader_gl_owner.h",
+      "ref_counted_lock.cc",
+      "ref_counted_lock.h",
       "shared_image_backing_android.cc",
       "shared_image_backing_android.h",
       "shared_image_backing_egl_image.cc",

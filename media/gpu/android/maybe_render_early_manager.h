@@ -43,7 +43,8 @@ class MEDIA_GPU_EXPORT MaybeRenderEarlyManager {
   // Note that the returned object should be accessed from the thread that
   // created it.
   static std::unique_ptr<MaybeRenderEarlyManager> Create(
-      scoped_refptr<base::SequencedTaskRunner> gpu_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
+      scoped_refptr<gpu::RefCountedLock> drdc_lock);
 
   DISALLOW_COPY_AND_ASSIGN(MaybeRenderEarlyManager);
 };

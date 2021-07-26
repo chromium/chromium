@@ -151,7 +151,7 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
         base::BindRepeating(&CreateAndroidOverlayCb),
         base::BindRepeating(&MediaCodecVideoDecoderTest::RequestOverlayInfoCb,
                             base::Unretained(this)),
-        std::move(video_frame_factory));
+        std::move(video_frame_factory), /*lock=*/nullptr);
     mcvd_ = std::make_unique<AsyncDestroyVideoDecoder<MediaCodecVideoDecoder>>(
         base::WrapUnique(mcvd));
     mcvd_raw_ = mcvd;

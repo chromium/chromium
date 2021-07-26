@@ -267,7 +267,6 @@ gl::ScopedJavaSurface ImageReaderGLOwner::CreateJavaSurface() const {
 }
 
 void ImageReaderGLOwner::UpdateTexImage() {
-  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   base::AutoLock auto_lock(lock_);
 
   // If we've lost the texture, then do nothing.
@@ -503,9 +502,8 @@ void ImageReaderGLOwner::RunWhenBufferIsAvailable(base::OnceClosure callback) {
     // and acquire updated image and hence will use FrameInfo of the previous
     // image which will result in wrong coded size for all future frames. To
     // avoid, this no other threads should try to UpdateTexImage() when this
-    // callback is run.
-    // TODO(vikassoni) : Fix this issue when MCVD path is made thread safe using
-    // global locks. For MediaPlayer path we never call this method.
+    // callback is run. lock held by the caller (GetFrameInfo()) of this
+    // method ensures that this never happens.
     std::move(callback).Run();
   } else {
     base::AutoLock auto_lock(lock_);

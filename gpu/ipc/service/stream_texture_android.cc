@@ -327,7 +327,7 @@ gpu::Mailbox StreamTexture::CreateSharedImage(const gfx::Size& coded_size) {
   auto shared_image = std::make_unique<SharedImageVideo>(
       mailbox, coded_size, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, this, context_state_,
-      false);
+      /*is_thread_safe=*/true, /*lock=*/nullptr);
   channel_->shared_image_stub()->factory()->RegisterBacking(
       std::move(shared_image), /*allow_legacy_mailbox=*/false);
 

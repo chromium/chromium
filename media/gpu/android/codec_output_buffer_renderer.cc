@@ -43,15 +43,17 @@ std::unique_ptr<ui::ScopedMakeCurrent> MakeCurrentIfNeeded(
 
 CodecOutputBufferRenderer::CodecOutputBufferRenderer(
     std::unique_ptr<CodecOutputBuffer> output_buffer,
-    scoped_refptr<CodecBufferWaitCoordinator> codec_buffer_wait_coordinator)
-    : output_buffer_(std::move(output_buffer)),
+    scoped_refptr<CodecBufferWaitCoordinator> codec_buffer_wait_coordinator,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock)
+    : RefCountedLockHelperDrDc(std::move(drdc_lock)),
+      output_buffer_(std::move(output_buffer)),
       codec_buffer_wait_coordinator_(std::move(codec_buffer_wait_coordinator)) {
-
 }
 
 CodecOutputBufferRenderer::~CodecOutputBufferRenderer() = default;
 
 bool CodecOutputBufferRenderer::RenderToTextureOwnerBackBuffer() {
+  AssertAcquiredDrDcLock();
   DCHECK_NE(phase_, Phase::kInFrontBuffer);
   if (phase_ == Phase::kInBackBuffer)
     return true;
@@ -83,6 +85,7 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerBackBuffer() {
 bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer(
     BindingsMode bindings_mode,
     GLuint service_id) {
+  AssertAcquiredDrDcLock();
   // Normally, we should have a wait coordinator if we're called.  However, if
   // the renderer is torn down (either VideoFrameSubmitter or the whole process)
   // before we get returns back from viz, then we can be notified that we're
@@ -152,6 +155,7 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer(
 
 void CodecOutputBufferRenderer::EnsureBoundIfNeeded(BindingsMode mode,
                                                     GLuint service_id) {
+  AssertAcquiredDrDcLock();
   DCHECK(codec_buffer_wait_coordinator_);
 
   if (codec_buffer_wait_coordinator_->texture_owner()
@@ -174,6 +178,7 @@ void CodecOutputBufferRenderer::EnsureBoundIfNeeded(BindingsMode mode,
 }
 
 bool CodecOutputBufferRenderer::RenderToOverlay() {
+  AssertAcquiredDrDcLock();
   if (phase_ == Phase::kInFrontBuffer)
     return true;
   if (phase_ == Phase::kInvalidated)
@@ -188,6 +193,8 @@ bool CodecOutputBufferRenderer::RenderToOverlay() {
 }
 
 bool CodecOutputBufferRenderer::RenderToFrontBuffer() {
+  AssertAcquiredDrDcLock();
+
   // This code is used to trigger early rendering of the image before it is used
   // for compositing, there is no need to bind the image. Hence pass texture
   // service_id as 0.

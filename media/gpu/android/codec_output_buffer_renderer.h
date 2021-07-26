@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/command_buffer/service/stream_texture_shared_image_interface.h"
 #include "media/gpu/android/codec_buffer_wait_coordinator.h"
 #include "media/gpu/android/codec_wrapper.h"
@@ -18,14 +19,18 @@ namespace media {
 
 // A class that holds CodecOutputBuffer and renders it to TextureOwner or
 // overlay as necessary. Unit tests for this class are part of CodecImage unit
-// tests.
-class MEDIA_GPU_EXPORT CodecOutputBufferRenderer {
+// tests. Note that when DrDc is enabled(kEnableDrDc),
+// a per codec dr-dc lock is expected to be held while calling methods of this
+// class. This is ensured by adding AssertAcquiredDrDcLock() to those methods.
+class MEDIA_GPU_EXPORT CodecOutputBufferRenderer
+    : public gpu::RefCountedLockHelperDrDc {
  public:
   using BindingsMode = gpu::StreamTextureSharedImageInterface::BindingsMode;
 
   CodecOutputBufferRenderer(
       std::unique_ptr<CodecOutputBuffer> output_buffer,
-      scoped_refptr<CodecBufferWaitCoordinator> codec_buffer_wait_coordinator);
+      scoped_refptr<CodecBufferWaitCoordinator> codec_buffer_wait_coordinator,
+      scoped_refptr<gpu::RefCountedLock> drdc_lock);
   ~CodecOutputBufferRenderer();
 
   CodecOutputBufferRenderer(const CodecOutputBufferRenderer&) = delete;
@@ -60,6 +65,7 @@ class MEDIA_GPU_EXPORT CodecOutputBufferRenderer {
 
   // Whether the codec buffer has been rendered to the front buffer.
   bool was_rendered_to_front_buffer() const {
+    AssertAcquiredDrDcLock();
     return phase_ == Phase::kInFrontBuffer;
   }
 

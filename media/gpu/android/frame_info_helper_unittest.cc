@@ -27,8 +27,8 @@ std::unique_ptr<FrameInfoHelper> CreateHelper() {
   auto task_runner = base::ThreadTaskRunnerHandle::Get();
   auto get_stub_cb =
       base::BindRepeating([]() -> gpu::CommandBufferStub* { return nullptr; });
-  return FrameInfoHelper::Create(std::move(task_runner),
-                                 std::move(get_stub_cb));
+  return FrameInfoHelper::Create(std::move(task_runner), std::move(get_stub_cb),
+                                 /*lock=*/nullptr);
 }
 }  // namespace
 
@@ -57,12 +57,12 @@ class FrameInfoHelperTest : public testing::Test {
       gfx::Size size,
       scoped_refptr<gpu::TextureOwner> texture_owner) {
     auto codec_buffer_wait_coordinator =
-        texture_owner
-            ? base::MakeRefCounted<CodecBufferWaitCoordinator>(texture_owner)
-            : nullptr;
+        texture_owner ? base::MakeRefCounted<CodecBufferWaitCoordinator>(
+                            texture_owner, /*lock=*/nullptr)
+                      : nullptr;
     auto buffer = CodecOutputBuffer::CreateForTesting(0, size);
     auto buffer_renderer = std::make_unique<CodecOutputBufferRenderer>(
-        std::move(buffer), codec_buffer_wait_coordinator);
+        std::move(buffer), codec_buffer_wait_coordinator, /*lock=*/nullptr);
 
     // We don't have codec, so releasing test buffer is not possible. Mark it as
     // rendered for test purpose.

@@ -9,6 +9,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/command_buffer/service/texture_owner.h"
 #include "media/base/tuneable.h"
 #include "media/gpu/media_gpu_export.h"
@@ -19,12 +20,17 @@ struct FrameAvailableEvent;
 
 // This class supports waiting for codec buffers to be released/rendered before
 // using them. This class is RefCountedThreadSafe to make sure it's safe to
-// keep and drop refptrs to it on any thread.
+// keep and drop refptrs to it on any thread. Note that when DrDc is
+// enabled(kEnableDrDc), a per codec dr-dc lock is expected to be held while
+// calling methods of this class. This is ensured by adding
+// AssertAcquiredDrDcLock() to those methods.
 class MEDIA_GPU_EXPORT CodecBufferWaitCoordinator
-    : public base::RefCountedThreadSafe<CodecBufferWaitCoordinator> {
+    : public base::RefCountedThreadSafe<CodecBufferWaitCoordinator>,
+      public gpu::RefCountedLockHelperDrDc {
  public:
   explicit CodecBufferWaitCoordinator(
-      scoped_refptr<gpu::TextureOwner> texture_owner);
+      scoped_refptr<gpu::TextureOwner> texture_owner,
+      scoped_refptr<gpu::RefCountedLock> drdc_lock);
 
   scoped_refptr<gpu::TextureOwner> texture_owner() const {
     DCHECK(texture_owner_);
@@ -55,6 +61,7 @@ class MEDIA_GPU_EXPORT CodecBufferWaitCoordinator
   friend class base::RefCountedThreadSafe<CodecBufferWaitCoordinator>;
 
   scoped_refptr<gpu::TextureOwner> texture_owner_;
+
   base::TimeTicks release_time_;
   scoped_refptr<FrameAvailableEvent> frame_available_event_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

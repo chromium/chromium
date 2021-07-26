@@ -5,6 +5,8 @@
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
 #include "base/memory/ptr_util.h"
+#include "gpu/command_buffer/service/ref_counted_lock.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "media/base/android/android_cdm_factory.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
@@ -29,22 +31,37 @@ namespace media {
 
 std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
     const VideoDecoderTraits& traits) {
+  scoped_refptr<gpu::RefCountedLock> ref_counted_lock;
+
+  // When this feature is enabled, CodecImage, CodecBufferWaitCorrdinator and
+  // other media classes used in MCVD path will be accessed by multiple gpu
+  // threads. To implement thread safetyness, we are using a global ref
+  // counted lock here. CodecImage, CodecOutputBufferRenderer,
+  // CodecBufferWaitCoordinator expects this ref counted lock to be held by the
+  // classes which are accessing them (SharedImageVideo, MRE, FrameInfoHelper
+  // etc.)
+  if (features::IsDrDcEnabled()) {
+    ref_counted_lock = base::MakeRefCounted<gpu::RefCountedLock>();
+  }
+
   std::unique_ptr<SharedImageVideoProvider> image_provider =
       std::make_unique<DirectSharedImageVideoProvider>(
-          traits.gpu_task_runner, traits.get_command_buffer_stub_cb);
+          traits.gpu_task_runner, traits.get_command_buffer_stub_cb,
+          ref_counted_lock);
 
   if (base::FeatureList::IsEnabled(kUsePooledSharedImageVideoProvider)) {
     // Wrap |image_provider| in a pool.
     image_provider = PooledSharedImageVideoProvider::Create(
         traits.gpu_task_runner, traits.get_command_buffer_stub_cb,
-        std::move(image_provider));
+        std::move(image_provider), ref_counted_lock);
   }
   // TODO(liberato): Create this only if we're using Vulkan, else it's
   // ignored.  If we can tell that here, then VideoFrameFactory can use it
   // as a signal about whether it's supposed to get YCbCrInfo rather than
   // requiring the provider to set |is_vulkan| in the ImageRecord.
   auto frame_info_helper = FrameInfoHelper::Create(
-      traits.gpu_task_runner, traits.get_command_buffer_stub_cb);
+      traits.gpu_task_runner, traits.get_command_buffer_stub_cb,
+      ref_counted_lock);
 
   return MediaCodecVideoDecoder::Create(
       traits.gpu_preferences, traits.gpu_feature_info,
@@ -57,8 +74,10 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
       std::make_unique<VideoFrameFactoryImpl>(
           traits.gpu_task_runner, traits.gpu_preferences,
           std::move(image_provider),
-          MaybeRenderEarlyManager::Create(traits.gpu_task_runner),
-          std::move(frame_info_helper)));
+          MaybeRenderEarlyManager::Create(traits.gpu_task_runner,
+                                          ref_counted_lock),
+          std::move(frame_info_helper), ref_counted_lock),
+      ref_counted_lock);
 }
 
 SupportedVideoDecoderConfigs GetPlatformSupportedVideoDecoderConfigs(

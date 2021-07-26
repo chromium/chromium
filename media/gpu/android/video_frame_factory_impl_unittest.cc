@@ -68,12 +68,12 @@ class VideoFrameFactoryImplTest : public testing::Test {
 
     impl_ = std::make_unique<VideoFrameFactoryImpl>(
         task_runner_, gpu_preferences_, std::move(image_provider),
-        std::move(mre_manager), std::move(info_helper));
+        std::move(mre_manager), std::move(info_helper), /*lock=*/nullptr);
     auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
         0, nullptr, nullptr, true);
     auto codec_buffer_wait_coordinator =
         base::MakeRefCounted<CodecBufferWaitCoordinator>(
-            std::move(texture_owner));
+            std::move(texture_owner), /*lock=*/nullptr);
 
     // Provide a non-null |codec_buffer_wait_coordinator| to |impl_|.
     impl_->SetCodecBufferWaitCorrdinatorForTesting(
@@ -170,7 +170,8 @@ TEST_F(VideoFrameFactoryImplTest,
   scoped_refptr<CodecSurfaceBundle> surface_bundle =
       base::MakeRefCounted<CodecSurfaceBundle>(
           base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(0, nullptr,
-                                                                nullptr, true));
+                                                                nullptr, true),
+          /*lock=*/nullptr);
   EXPECT_CALL(*mre_manager_raw_, SetSurfaceBundle(surface_bundle));
   impl_->SetSurfaceBundle(surface_bundle);
   base::RunLoop().RunUntilIdle();

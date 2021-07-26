@@ -90,9 +90,10 @@ class CodecImageTest : public testing::Test {
     auto codec_buffer_wait_coordinator =
         kind == kTextureOwner ? codec_buffer_wait_coordinator_ : nullptr;
     auto buffer_renderer = std::make_unique<CodecOutputBufferRenderer>(
-        std::move(buffer), codec_buffer_wait_coordinator);
+        std::move(buffer), codec_buffer_wait_coordinator, /*lock=*/nullptr);
 
-    scoped_refptr<CodecImage> image = new CodecImage(buffer_renderer->size());
+    scoped_refptr<CodecImage> image =
+        new CodecImage(buffer_renderer->size(), /*lock=*/nullptr);
     image->Initialize(
         std::move(buffer_renderer), kind == kTextureOwner,
         base::BindRepeating(&PromotionHintReceiver::OnPromotionHint,
@@ -374,10 +375,11 @@ TEST_F(CodecImageTest, CodedSizeVsVisibleSize) {
   const gfx::Size coded_size(128, 128);
   const gfx::Size visible_size(100, 100);
   auto buffer = CodecOutputBuffer::CreateForTesting(0, visible_size);
-  auto buffer_renderer =
-      std::make_unique<CodecOutputBufferRenderer>(std::move(buffer), nullptr);
+  auto buffer_renderer = std::make_unique<CodecOutputBufferRenderer>(
+      std::move(buffer), nullptr, /*lock=*/nullptr);
 
-  scoped_refptr<CodecImage> image = new CodecImage(coded_size);
+  scoped_refptr<CodecImage> image =
+      new CodecImage(coded_size, /*lock=*/nullptr);
   image->Initialize(std::move(buffer_renderer), false,
                     PromotionHintAggregator::NotifyPromotionHintCB());
 

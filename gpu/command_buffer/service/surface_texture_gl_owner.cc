@@ -17,6 +17,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/scoped_make_current.h"
 
@@ -33,6 +34,7 @@ SurfaceTextureGLOwner::SurfaceTextureGLOwner(
       surface_(gl::GLSurface::GetCurrent()) {
   DCHECK(context_);
   DCHECK(surface_);
+  DCHECK(!features::IsDrDcEnabled());
 }
 
 SurfaceTextureGLOwner::~SurfaceTextureGLOwner() {

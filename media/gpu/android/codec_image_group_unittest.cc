@@ -29,7 +29,9 @@ class CodecImageGroupWithDestructionHook : public CodecImageGroup {
   CodecImageGroupWithDestructionHook(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       scoped_refptr<CodecSurfaceBundle> surface_bundle)
-      : CodecImageGroup(std::move(task_runner), std::move(surface_bundle)) {}
+      : CodecImageGroup(std::move(task_runner),
+                        std::move(surface_bundle),
+                        /*lock=*/nullptr) {}
 
   void SetDestructionCallback(base::OnceClosure cb) {
     destruction_cb_ = std::move(cb);
@@ -111,7 +113,8 @@ TEST_F(CodecImageGroupTest, SurfaceBundleWithoutOverlayDoesntCrash) {
   scoped_refptr<CodecSurfaceBundle> surface_bundle =
       base::MakeRefCounted<CodecSurfaceBundle>();
   scoped_refptr<CodecImageGroup> image_group =
-      base::MakeRefCounted<CodecImageGroup>(gpu_task_runner_, surface_bundle);
+      base::MakeRefCounted<CodecImageGroup>(gpu_task_runner_, surface_bundle,
+                                            /*lock=*/nullptr);
   // TODO(liberato): we should also make sure that adding an image doesn't call
   // ReleaseCodecBuffer when it's added.
 }
