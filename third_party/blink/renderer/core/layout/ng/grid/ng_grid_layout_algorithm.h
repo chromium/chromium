@@ -151,6 +151,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   };
 
   using GridItemVector = Vector<GridItemData*, 16>;
+  using GridItemStorageVector = Vector<GridItemData, 4>;
 
   struct CORE_EXPORT GridItems {
     DISALLOW_NEW();
@@ -160,7 +161,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
         : public std::iterator<std::input_iterator_tag, GridItemData> {
       STACK_ALLOCATED();
      public:
-      Iterator(Vector<GridItemData>* item_data,
+      Iterator(GridItemStorageVector* item_data,
                Vector<wtf_size_t>::const_iterator current_index)
           : item_data_(item_data), current_index_(current_index) {
         DCHECK(item_data_);
@@ -187,7 +188,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       }
 
      private:
-      Vector<GridItemData>* item_data_;
+      GridItemStorageVector* item_data_;
       Vector<wtf_size_t>::const_iterator current_index_;
     };
 
@@ -202,7 +203,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     // Grid items are appended in document order, but we want to rearrange them
     // in order-modified document order since auto-placement and painting rely
     // on it later in the algorithm.
-    Vector<GridItemData> item_data;
+    GridItemStorageVector item_data;
     Vector<wtf_size_t> reordered_item_indices;
   };
 
@@ -326,7 +327,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   void ConstructAndAppendGridItems(
       GridItems* grid_items,
-      Vector<GridItemData>* out_of_flow_items = nullptr) const;
+      GridItemStorageVector* out_of_flow_items = nullptr) const;
 
   static GridItemData MeasureGridItem(const NGBlockNode node,
                                       const ComputedStyle& container_style,
@@ -449,7 +450,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   void PlaceOutOfFlowItems(
       const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
       const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
-      const Vector<GridItemData>& out_of_flow_items,
+      const GridItemStorageVector& out_of_flow_items,
       const GridGeometry& grid_geometry,
       LayoutUnit block_size);
 

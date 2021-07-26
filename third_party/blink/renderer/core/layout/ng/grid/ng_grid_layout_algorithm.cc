@@ -130,7 +130,7 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
 
   // Measure items.
   GridItems grid_items;
-  Vector<GridItemData> out_of_flow_items;
+  GridItemStorageVector out_of_flow_items;
   ConstructAndAppendGridItems(&grid_items, &out_of_flow_items);
 
   const auto& container_style = Style();
@@ -1294,7 +1294,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
 
 void NGGridLayoutAlgorithm::ConstructAndAppendGridItems(
     GridItems* grid_items,
-    Vector<GridItemData>* out_of_flow_items) const {
+    GridItemStorageVector* out_of_flow_items) const {
   DCHECK(grid_items);
 
   const auto& container_style = Style();
@@ -3417,7 +3417,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
 void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
     const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
     const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
-    const Vector<GridItemData>& out_of_flow_items,
+    const GridItemStorageVector& out_of_flow_items,
     const GridGeometry& grid_geometry,
     LayoutUnit block_size) {
   const LogicalSize fragment_size(container_builder_.InlineSize(), block_size);

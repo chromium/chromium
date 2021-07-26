@@ -191,7 +191,7 @@ class NGGridLayoutAlgorithmTest
   }
 
   NGGridLayoutAlgorithm::GridItems grid_items_;
-  Vector<NGGridLayoutAlgorithm::GridItemData> out_of_flow_items_;
+  NGGridLayoutAlgorithm::GridItemStorageVector out_of_flow_items_;
 
   NGGridLayoutAlgorithmTrackCollection column_track_collection_;
   NGGridLayoutAlgorithmTrackCollection row_track_collection_;
