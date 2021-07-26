@@ -9,7 +9,10 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/mojom/data_pipe_getter.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_share_target {
 
@@ -23,6 +26,9 @@ scoped_refptr<network::ResourceRequestBody> ComputeMultipartBody(
     const std::vector<bool>& is_value_file_uris,
     const std::vector<std::string>& filenames,
     const std::vector<std::string>& types,
+    absl::optional<
+        std::vector<mojo::PendingRemote<network::mojom::DataPipeGetter>>>
+        data_pipe_getters,
     const std::string& boundary);
 
 // Compute and return application/x-www-form-urlencoded POST body for share

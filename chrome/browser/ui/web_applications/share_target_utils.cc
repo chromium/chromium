@@ -139,7 +139,8 @@ NavigateParams NavigateParamsForShareTarget(
     nav_params.extra_headers = base::StringPrintf(
         "Content-Type: multipart/form-data; boundary=%s\r\n", boundary.c_str());
     nav_params.post_data = web_share_target::ComputeMultipartBody(
-        names, values, is_value_file_uris, filenames, types, boundary);
+        names, values, is_value_file_uris, filenames, types,
+        /*data_pipe_getters=*/absl::nullopt, boundary);
   } else {
     const std::string serialization =
         web_share_target::ComputeUrlEncodedBody(names, values);

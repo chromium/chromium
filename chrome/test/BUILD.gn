@@ -1037,6 +1037,7 @@ if (!is_android) {
       "//chrome/browser/web_applications:browser_tests",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/web_applications/extensions",
+      "//chrome/browser/web_share_target:browser_tests",
       "//chrome/browser/webaudio:browser_tests",
       "//chrome/common:version_header",
       "//chrome/common/privacy_budget:test_support",
