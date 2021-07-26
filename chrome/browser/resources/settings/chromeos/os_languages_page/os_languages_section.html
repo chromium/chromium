@@ -59,9 +59,7 @@
 
       <!-- "Languages" page. -->
       <template is="dom-if" route-path="/osLanguages/languages">
-        <settings-subpage
-            associated-control="[[$$('#languagesPageTrigger')]]"
-            page-title="$i18n{languagesPageTitle}">
+        <settings-subpage page-title="$i18n{languagesPageTitle}">
           <os-settings-languages-page-v2
               language-helper="[[languageHelper]]"
               languages="[[languages]]"
@@ -72,9 +70,7 @@
 
       <!-- "Input" page. -->
       <template is="dom-if" route-path="/osLanguages/input">
-        <settings-subpage
-            associated-control="[[$$('#inputPageTrigger')]]"
-            page-title="[[inputPageTitle_]]">
+        <settings-subpage page-title="[[inputPageTitle_]]">
           <os-settings-input-page language-helper="[[languageHelper]]"
               languages="[[languages]]" prefs="{{prefs}}"
               focus-config="[[focusConfig_]]">
@@ -84,9 +80,7 @@
 
       <!-- "Smart inputs" sub-page. -->
       <template is="dom-if" route-path="/osLanguages/smartInputs">
-        <settings-subpage
-            associated-control="[[$$('#smartInputsSubpageTrigger')]]"
-            page-title="$i18n{smartInputsTitle}">
+        <settings-subpage page-title="$i18n{smartInputsTitle}">
           <os-settings-smart-inputs-page prefs="{{prefs}}">
           </os-settings-smart-inputs-page>
         </settings-subpage>
@@ -94,10 +88,7 @@
 
       <!-- "Input method settings" sub-sub-page. -->
       <template is="dom-if" route-path="/osLanguages/inputMethodOptions">
-        <!-- TODO(crbug.com/950007): Associate control with the sub-subpage
-              trigger button from os-settings-language-page's shadow dom. -->
-        <settings-subpage
-            associated-control="[[$$('#languagesSubpageTrigger')]]">
+        <settings-subpage>
           <settings-input-method-options-page
               language-helper="[[languageHelper]]"
               prefs="{{prefs}}">
@@ -107,9 +98,7 @@
 
       <!-- "Customize spell check" sub-sub-page. -->
       <template is="dom-if" route-path="/osLanguages/editDictionary">
-        <settings-subpage
-            associated-control="[[$$('#editDictionarySubpageTrigger')]]"
-            page-title="$i18n{editDictionaryLabel}">
+        <settings-subpage page-title="$i18n{editDictionaryLabel}">
           <os-settings-edit-dictionary-page></os-settings-edit-dictionary-page>
         </settings-subpage>
       </template>

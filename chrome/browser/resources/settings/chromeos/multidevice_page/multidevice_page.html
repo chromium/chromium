@@ -187,8 +187,7 @@
         </template>
       </div>
       <template is="dom-if" route-path="/multidevice/features" restamp>
-        <settings-subpage associated-control="[[$$('#multidevice-item')]]"
-            page-title="[[getLabelText_(pageContentData)]]">
+        <settings-subpage page-title="[[getLabelText_(pageContentData)]]">
           <settings-multidevice-subpage
               page-content-data="[[pageContentData]]">
           </settings-multidevice-subpage>
@@ -196,9 +195,7 @@
       </template>
       <template is="dom-if" route-path="/multidevice/features/smartLock"
           restamp>
-        <settings-subpage
-            associated-control="[[$$('#multidevice-item')]]"
-            page-title="$i18n{easyUnlockSectionTitle}">
+        <settings-subpage page-title="$i18n{easyUnlockSectionTitle}">
           <settings-multidevice-smartlock-subpage
               prefs="{{prefs}}"
               page-content-data="[[pageContentData]]">
@@ -207,8 +204,7 @@
       </template>
       <template is="dom-if" if="[[isNearbyShareSupported_]]" restamp>
         <template is="dom-if" route-path="/multidevice/nearbyshare" restamp>
-          <settings-subpage associated-control="[[$$('#nearbyshare-item')]]"
-              page-title="$i18n{nearbyShareTitle}">
+          <settings-subpage page-title="$i18n{nearbyShareTitle}">
             <settings-nearby-share-subpage prefs="{{prefs}}">
             </settings-nearby-share-subpage>
           </settings-subpage>

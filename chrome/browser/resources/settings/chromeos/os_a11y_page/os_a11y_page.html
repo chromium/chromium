@@ -50,32 +50,25 @@
       </div>
 
       <template is="dom-if" route-path="/manageAccessibility">
-        <settings-subpage
-            associated-control="[[$$('#subpage-trigger')]]"
-            page-title="$i18n{manageAccessibilityFeatures}"
+        <settings-subpage page-title="$i18n{manageAccessibilityFeatures}"
             hide-close-button="[[isKioskModeActive_]]">
           <settings-manage-a11y-page prefs="{{prefs}}">
           </settings-manage-a11y-page>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/manageAccessibility/tts">
-        <settings-subpage
-            associated-control="[[$$('#subpage-trigger')]]"
-            page-title="$i18n{manageTtsSettings}">
+        <settings-subpage page-title="$i18n{manageTtsSettings}">
           <settings-tts-subpage prefs="{{prefs}}">
           </settings-tts-subpage>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/manageAccessibility/captions">
-        <settings-subpage
-            associated-control="[[$$('#subpage-trigger')]]"
-            page-title="$i18n{captionsTitle}">
+        <settings-subpage page-title="$i18n{captionsTitle}">
           <settings-captions prefs="{{prefs}}"></settings-captions>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/manageAccessibility/switchAccess">
-        <settings-subpage associated-control="[[$$('#subpage-trigger')]]"
-            page-title="$i18n{manageSwitchAccessSettings}">
+        <settings-subpage page-title="$i18n{manageSwitchAccessSettings}">
           <settings-switch-access-subpage prefs="{{prefs}}">
           </settings-switch-access-subpage>
         </settings-subpage>

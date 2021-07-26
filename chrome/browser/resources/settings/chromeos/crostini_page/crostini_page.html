@@ -66,45 +66,35 @@
       </div>
 
       <template is="dom-if" route-path="/crostini/details">
-        <settings-subpage
-            associated-control="[[$$('#crostini')]]"
-            page-title="$i18n{crostiniPageLabel}">
+        <settings-subpage page-title="$i18n{crostiniPageLabel}">
           <settings-crostini-subpage prefs="{{prefs}}">
           </settings-crostini-subpage>
         </settings-subpage>
       </template>
 
       <template is="dom-if" route-path="/crostini/androidAdb">
-        <settings-subpage
-            associated-control="[[$$('#crostini')]]"
-            page-title="$i18n{crostiniArcAdbTitle}">
+        <settings-subpage page-title="$i18n{crostiniArcAdbTitle}">
           <settings-crostini-arc-adb prefs="{{prefs}}">
           </settings-crostini-arc-adb>
         </settings-subpage>
       </template>
 
       <template is="dom-if" route-path="/crostini/portForwarding">
-        <settings-subpage
-            associated-control="[[$$('#crostini')]]"
-            page-title="$i18n{crostiniPortForwarding}">
+        <settings-subpage page-title="$i18n{crostiniPortForwarding}">
           <settings-crostini-port-forwarding prefs="{{prefs}}">
           </settings-crostini-port-forwarding>
         </settings-subpage>
       </template>
 
       <template is="dom-if" route-path="/crostini/exportImport">
-        <settings-subpage
-            associated-control="[[$$('#crostini')]]"
-            page-title="$i18n{crostiniExportImportTitle}">
+        <settings-subpage page-title="$i18n{crostiniExportImportTitle}">
           <settings-crostini-export-import prefs="{{prefs}}">
           </settings-crostini-export-import>
         </settings-subpage>
       </template>
 
       <template is="dom-if" route-path="/crostini/sharedPaths">
-        <settings-subpage
-            associated-control="[[$$('#crostini')]]"
-            page-title="$i18n{guestOsSharedPaths}">
+        <settings-subpage page-title="$i18n{guestOsSharedPaths}">
           <settings-guest-os-shared-paths
               guest-os-type="crostini" prefs="{{prefs}}">
           </settings-guest-os-shared-paths>
@@ -112,9 +102,7 @@
       </template>
 
       <template is="dom-if" route-path="/crostini/sharedUsbDevices">
-        <settings-subpage
-            associated-control="[[$$('#crostini')]]"
-            page-title="$i18n{guestOsSharedUsbDevicesLabel}">
+        <settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
           <settings-guest-os-shared-usb-devices guest-os-type="crostini">
           </settings-guest-os-shared-usb-devices>
         </settings-subpage>

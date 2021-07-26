@@ -110,9 +110,7 @@
 
   <template is="dom-if" if="[[shouldShowSubsections_]]" restamp>
     <template is="dom-if" route-path="/osPrivacy/lockScreen">
-      <settings-subpage
-          page-title="[[selectLockScreenTitleString_(hasPinLogin)]]"
-          associated-control="[[$$('#lockScreenSubpageTrigger')]]">
+      <settings-subpage page-title="[[selectLockScreenTitleString_(hasPinLogin)]]">
         <settings-lock-screen id="lockScreen" set-modes="[[setModes_]]"
             prefs="{{prefs}}" auth-token="[[authToken_]]"
             on-invalidate-auth-token-requested="onInvalidateTokenRequested_"
@@ -121,8 +119,7 @@
       </settings-subpage>
     </template>
     <template is="dom-if" if="[[fingerprintUnlockEnabled_]]">
-      <template is="dom-if" route-path="/osPrivacy/lockScreen/fingerprint"
-          no-search>
+      <template is="dom-if" route-path="/osPrivacy/lockScreen/fingerprint">
         <settings-subpage page-title="$i18n{lockScreenFingerprintTitle}">
           <settings-fingerprint-list id="fingerprint-list"
               auth-token="[[authToken_.token]]"
@@ -133,9 +130,7 @@
       </template>
     </template>
     <template is="dom-if" route-path="/osPrivacy/accounts">
-      <settings-subpage
-          associated-control="[[$$('#manageOtherPeopleSubpageTrigger')]]"
-          page-title="$i18n{manageOtherPeople}">
+      <settings-subpage page-title="$i18n{manageOtherPeople}">
         <settings-users-page prefs="{{prefs}}">
         </settings-users-page>
       </settings-subpage>

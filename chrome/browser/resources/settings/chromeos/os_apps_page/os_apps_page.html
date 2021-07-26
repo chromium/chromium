@@ -111,7 +111,7 @@
     </div>
 
     <!-- APP NOTIFICATIONS -->
-    <template is="dom-if" route-path="/app-notifications" no-search>
+    <template is="dom-if" route-path="/app-notifications">
       <settings-subpage page-title="$i18n{appNotificationsTitle}">
         <settings-app-notifications-subpage>
         </settings-app-notifications-subpage>
@@ -119,7 +119,7 @@
     </template>
 
     <!-- APP MANAGEMENT -->
-    <template is="dom-if" route-path="/app-management" no-search>
+    <template is="dom-if" route-path="/app-management">
       <settings-subpage
           page-title="$i18n{appManagementTitle}"
           search-label="$i18n{appManagementSearchPrompt}"
@@ -129,7 +129,7 @@
       </settings-subpage>
     </template>
 
-    <template is="dom-if" route-path="/app-management/detail" no-search>
+    <template is="dom-if" route-path="/app-management/detail">
       <settings-subpage
           page-title="[[app_.title]]"
           title-icon="[[iconUrlFromId_(app_)]]">
@@ -143,9 +143,7 @@
     <!-- ANDROID APPS -->
     <template is="dom-if" if="[[showAndroidApps]]" restamp>
       <template is="dom-if" route-path="/androidAppsDetails">
-        <settings-subpage
-            associated-control="[[$$('#android-apps')]]"
-            page-title="$i18n{androidAppsPageLabel}">
+        <settings-subpage page-title="$i18n{androidAppsPageLabel}">
           <settings-android-apps-subpage
               android-apps-info="[[androidAppsInfo]]" prefs="{{prefs}}">
           </settings-android-apps-subpage>

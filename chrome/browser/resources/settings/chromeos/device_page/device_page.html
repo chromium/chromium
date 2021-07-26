@@ -52,7 +52,6 @@
       </div>
       <template is="dom-if" route-path="/pointer-overlay">
         <settings-subpage
-            associated-control="[[$$('#pointersRow')]]"
             page-title="[[getPointersTitle_(hasMouse_, hasPointingStick_,
                                             hasTouchpad_)]]">
           <settings-pointers prefs="{{prefs}}"
@@ -63,32 +62,23 @@
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/keyboard-overlay">
-        <settings-subpage
-            associated-control="[[$$('#keyboardRow')]]"
-            page-title="$i18n{keyboardTitle}">
+        <settings-subpage page-title="$i18n{keyboardTitle}">
           <settings-keyboard prefs="{{prefs}}" focus-config="[[focusConfig_]]">
           </settings-keyboard>
         </settings-subpage>
       </template>
-      <template is="dom-if" route-path="/stylus" no-search="[[!hasStylus_]]">
-        <settings-subpage
-            associated-control="[[$$('#stylusRow')]]"
-            page-title="$i18n{stylusTitle}"
-            no-search$="[[!hasStylus_]]">
+      <template is="dom-if" route-path="/stylus">
+        <settings-subpage page-title="$i18n{stylusTitle}">
           <settings-stylus prefs="{{prefs}}"></settings-stylus>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/display">
-        <settings-subpage
-            associated-control="[[$$('#displayRow')]]"
-            page-title="$i18n{displayTitle}">
+        <settings-subpage page-title="$i18n{displayTitle}">
           <settings-display prefs="{{prefs}}"></settings-display>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/storage">
-        <settings-subpage
-            associated-control="[[$$('#storageRow')]]"
-            page-title="$i18n{storageTitle}">
+        <settings-subpage page-title="$i18n{storageTitle}">
           <settings-storage prefs="{{prefs}}"
               show-crostini="[[showCrostini]]"
               android-enabled="[[androidEnabled_]]">
@@ -98,7 +88,6 @@
       <template is="dom-if" if="[[androidEnabled_]]">
         <template is="dom-if" route-path="/storage/externalStoragePreferences">
           <settings-subpage
-              associated-control="[[$$('#storageRow')]]"
               page-title="$i18n{storageExternal}">
             <settings-storage-external prefs="{{prefs}}">
             </settings-storage-external>
@@ -107,7 +96,6 @@
       </template>
       <template is="dom-if" route-path="/power">
         <settings-subpage
-            associated-control="[[$$('#powerRow')]]"
             page-title="$i18n{powerTitle}">
           <settings-power></settings-power>
         </settings-subpage>

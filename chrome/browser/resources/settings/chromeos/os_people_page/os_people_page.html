@@ -148,7 +148,6 @@
 
       <template is="dom-if" route-path="/syncSetup">
         <settings-subpage
-            associated-control="[[$$('#sync-setup')]]"
             page-title="$i18n{syncPageTitle}"
             learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
           <settings-sync-page
@@ -163,7 +162,6 @@
       <template is="dom-if" if="[[!splitSettingsSyncEnabled_]]">
         <template is="dom-if" route-path="/syncSetup/advanced">
           <settings-subpage page-title="$i18n{syncAdvancedPageTitle}"
-              associated-control="[[$$('#sync-setup')]]"
               learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
             <settings-sync-controls sync-status="[[syncStatus]]">
             </settings-sync-controls>
@@ -175,7 +173,6 @@
       <template is="dom-if" if="[[splitSettingsSyncEnabled_]]">
         <template is="dom-if" route-path="/osSync">
           <settings-subpage page-title="$i18n{osSyncPageTitle}"
-              associated-control="[[$$('#sync-setup')]]"
               learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
             <os-sync-controls sync-status="[[syncStatus]]"
                 profile-icon-url="[[profileIconUrl_]]"
@@ -189,8 +186,7 @@
       <template is="dom-if" if="[[!isAccountManagementFlowsV2Enabled_]]">
         <template is="dom-if" route-path="/lockScreen">
           <settings-subpage
-              page-title="[[selectLockScreenTitleString(hasPinLogin)]]"
-              associated-control="[[$$('#lock-screen-subpage-trigger')]]">
+              page-title="[[selectLockScreenTitleString(hasPinLogin)]]">
             <settings-lock-screen id="lock-screen" set-modes="[[setModes_]]"
                 prefs="{{prefs}}" auth-token="[[authToken_]]"
                 on-invalidate-auth-token-requested="onInvalidateTokenRequested_"
@@ -199,7 +195,7 @@
           </settings-subpage>
         </template>
         <template is="dom-if" if="[[fingerprintUnlockEnabled_]]">
-          <template is="dom-if" route-path="/lockScreen/fingerprint" no-search>
+          <template is="dom-if" route-path="/lockScreen/fingerprint">
             <settings-subpage page-title="$i18n{lockScreenFingerprintTitle}">
               <settings-fingerprint-list id="fingerprint-list"
                   auth-token="[[authToken_.token]]"
@@ -210,19 +206,14 @@
           </template>
         </template>
         <template is="dom-if" route-path="/accounts">
-          <settings-subpage
-              associated-control="[[
-                $$('#manage-other-people-subpage-trigger')]]"
-              page-title="$i18n{manageOtherPeople}">
+          <settings-subpage page-title="$i18n{manageOtherPeople}">
             <settings-users-page prefs="{{prefs}}">
             </settings-users-page>
           </settings-subpage>
         </template>
       </template>
       <template is="dom-if" route-path="/accountManager">
-        <settings-subpage
-            associated-control="[[$$('#account-manager-subpage-trigger')]]"
-            page-title="$i18n{accountManagerPageTitle}">
+        <settings-subpage page-title="$i18n{accountManagerPageTitle}">
           <settings-account-manager prefs="[[prefs]]">
           </settings-account-manager>
         </settings-subpage>

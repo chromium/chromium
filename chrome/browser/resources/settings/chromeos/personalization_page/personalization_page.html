@@ -65,18 +65,14 @@
       </div>
 
       <template is="dom-if" route-path="/changePicture">
-        <settings-subpage
-          associated-control="[[$$('#changePictureRow')]]"
-          page-title="$i18n{changePictureTitle}">
+        <settings-subpage page-title="$i18n{changePictureTitle}">
           <settings-change-picture></settings-change-picture>
         </settings-subpage>
       </template>
 
       <template is="dom-if" if="[[isAmbientModeEnabled_]]">
         <template is="dom-if" route-path="/ambientMode">
-          <settings-subpage
-              associated-control="[[$$('#ambientModeRow')]]"
-              page-title="$i18n{ambientModeTitle}">
+          <settings-subpage page-title="$i18n{ambientModeTitle}">
             <settings-ambient-mode-page prefs="{{prefs}}">
             </settings-ambient-mode-page>
           </settings-subpage>
@@ -92,9 +88,7 @@
       </template>
 
       <template is="dom-if" route-path="/darkMode">
-        <settings-subpage
-            associated-control="[[$$('#darkModeRow')]]"
-            page-title="$i18n{darkModeTitle}">
+        <settings-subpage page-title="$i18n{darkModeTitle}">
           <settings-dark-mode-subpage prefs="{{prefs}}">
           </settings-dark-mode-subpage>
         </settings-subpage>
