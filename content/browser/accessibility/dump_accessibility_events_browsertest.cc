@@ -749,8 +749,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("menulist-collapse-next.html"));
 }
 
+// TODO(crbug/1232295): Flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_AccessibilityEventsMenuListExpand \
+  DISABLED_AccessibilityEventsMenuListExpand
+#else
+#define MAYBE_AccessibilityEventsMenuListExpand \
+  AccessibilityEventsMenuListExpand
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsMenuListExpand) {
+                       MAYBE_AccessibilityEventsMenuListExpand) {
   RunEventTest(FILE_PATH_LITERAL("menulist-expand.html"));
 }
 
