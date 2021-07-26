@@ -150,10 +150,16 @@ ChromeAccountManagerService::ChromeAccountManagerService(
         base::BindRepeating(&ChromeAccountManagerService::UpdateRestriction,
                             base::Unretained(this)));
 
+    browser_provider_observation_.Observe(&ios::GetChromeBrowserProvider());
+    identity_service_observation_.Observe(
+        ios::GetChromeBrowserProvider().GetChromeIdentityService());
+
     // Force initialisation of `restriction_`.
     UpdateRestriction();
   }
 }
+
+ChromeAccountManagerService::~ChromeAccountManagerService() {}
 
 bool ChromeAccountManagerService::HasIdentities() {
   FunctorHasIdentities helper(restriction_);
@@ -209,6 +215,10 @@ ChromeIdentity* ChromeAccountManagerService::GetDefaultIdentity() {
 
 void ChromeAccountManagerService::UpdateRestriction() {
   restriction_ = PatternAccountRestrictionFromPreference(pref_service_);
+  // We want to notify the user that the account list has been updated. This
+  // might provide notifications with no changes (if the new restriction doesn't
+  // change the account list).
+  OnIdentityListChanged(/* need_user_approval */ true);
 }
 
 void ChromeAccountManagerService::Shutdown() {
@@ -216,4 +226,33 @@ void ChromeAccountManagerService::Shutdown() {
     registrar_.RemoveAll();
     pref_service_ = nullptr;
   }
+}
+
+void ChromeAccountManagerService::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void ChromeAccountManagerService::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+void ChromeAccountManagerService::OnIdentityListChanged(
+    bool need_user_approval) {
+  for (auto& observer : observer_list_)
+    observer.OnIdentityListChanged(need_user_approval);
+}
+
+void ChromeAccountManagerService::OnProfileUpdate(ChromeIdentity* identity) {
+  for (auto& observer : observer_list_)
+    observer.OnIdentityChanged(identity);
+}
+
+void ChromeAccountManagerService::OnChromeIdentityServiceWillBeDestroyed() {
+  identity_service_observation_.Reset();
+}
+
+void ChromeAccountManagerService::OnChromeIdentityServiceDidChange(
+    ios::ChromeIdentityService* new_service) {
+  identity_service_observation_.Observe(
+      ios::GetChromeBrowserProvider().GetChromeIdentityService());
 }
