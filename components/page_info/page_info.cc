@@ -438,39 +438,6 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
       security_state::GetSafetyTipHistogramName(
           "Security.SafetyTips.PageInfo.Action", safety_tip_info_.status),
       action, PAGE_INFO_COUNT);
-
-  std::string histogram_name;
-  if (site_url_.SchemeIsCryptographic()) {
-    if (security_level_ == security_state::SECURE) {
-      if (visible_security_state_for_metrics_.cert_status &
-          net::CERT_STATUS_IS_EV) {
-        UMA_HISTOGRAM_ENUMERATION("Security.PageInfo.Action.HttpsUrl.ValidEV",
-                                  action, PAGE_INFO_COUNT);
-      } else {
-        UMA_HISTOGRAM_ENUMERATION(
-            "Security.PageInfo.Action.HttpsUrl.ValidNonEV", action,
-            PAGE_INFO_COUNT);
-      }
-    } else if (security_level_ == security_state::NONE) {
-      UMA_HISTOGRAM_ENUMERATION("Security.PageInfo.Action.HttpsUrl.Downgraded",
-                                action, PAGE_INFO_COUNT);
-    } else if (security_level_ == security_state::DANGEROUS) {
-      UMA_HISTOGRAM_ENUMERATION("Security.PageInfo.Action.HttpsUrl.Dangerous",
-                                action, PAGE_INFO_COUNT);
-    }
-    return;
-  }
-
-  if (security_level_ == security_state::WARNING) {
-    UMA_HISTOGRAM_ENUMERATION("Security.PageInfo.Action.HttpUrl.Warning",
-                              action, PAGE_INFO_COUNT);
-  } else if (security_level_ == security_state::DANGEROUS) {
-    UMA_HISTOGRAM_ENUMERATION("Security.PageInfo.Action.HttpUrl.Dangerous",
-                              action, PAGE_INFO_COUNT);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("Security.PageInfo.Action.HttpUrl.Neutral",
-                              action, PAGE_INFO_COUNT);
-  }
 }
 
 void PageInfo::UpdatePermissions() {

@@ -35,56 +35,6 @@
 namespace content {
 
 namespace {
-const char kXFrameOptionsSameOriginHistogram[] = "Security.XFrameOptions";
-
-// This enum is used for UMA metrics. Keep these enums up to date with
-// tools/metrics/histograms/histograms.xml.
-enum XFrameOptionsHistogram {
-  // A frame is loaded without any X-Frame-Options header.
-  NONE = 0,
-
-  // X-Frame-Options: DENY.
-  DENY = 1,
-
-  // X-Frame-Options: SAMEORIGIN. The navigation proceeds and every ancestor
-  // has the same origin.
-  SAMEORIGIN = 2,
-
-  // X-Frame-Options: SAMEORIGIN. The navigation is blocked because the
-  // top-frame doesn't have the same origin.
-  SAMEORIGIN_BLOCKED = 3,
-
-  // X-Frame-Options: SAMEORIGIN. The navigation proceeds despite the fact that
-  // there is an ancestor that doesn't have the same origin.
-  SAMEORIGIN_WITH_BAD_ANCESTOR_CHAIN = 4,
-
-  // X-Frame-Options: ALLOWALL.
-  ALLOWALL = 5,
-
-  // Invalid 'X-Frame-Options' directive encountered.
-  INVALID = 6,
-
-  // The frame sets multiple 'X-Frame-Options' header with conflicting values.
-  CONFLICT = 7,
-
-  // The 'frame-ancestors' CSP directive should take effect instead.
-  BYPASS = 8,
-
-  // Navigation would have been blocked if we applied 'X-Frame-Options' to
-  // redirects.
-  //
-  // TODO(mkwst): Rename this when we make a decision around
-  // https://crbug.com/835465.
-  REDIRECT_WOULD_BE_BLOCKED = 9,
-
-  XFRAMEOPTIONS_HISTOGRAM_MAX = REDIRECT_WOULD_BE_BLOCKED
-};
-
-void RecordXFrameOptionsUsage(XFrameOptionsHistogram usage) {
-  UMA_HISTOGRAM_ENUMERATION(
-      kXFrameOptionsSameOriginHistogram, usage,
-      XFrameOptionsHistogram::XFRAMEOPTIONS_HISTOGRAM_MAX);
-}
 
 bool HeadersContainFrameAncestorsCSP(
     const network::mojom::ParsedHeadersPtr& headers) {
@@ -123,9 +73,6 @@ AncestorThrottle::WillRedirectRequest() {
   // we'll just skip the console-logging bits to collect metrics.
   NavigationThrottle::ThrottleCheckResult result = ProcessResponseImpl(
       LoggingDisposition::DO_NOT_LOG_TO_CONSOLE, false /* is_response_check */);
-
-  if (result.action() == NavigationThrottle::BLOCK_RESPONSE)
-    RecordXFrameOptionsUsage(XFrameOptionsHistogram::REDIRECT_WOULD_BE_BLOCKED);
 
   // TODO(mkwst): We need to decide whether we'll be able to get away with
   // tightening the XFO check to include redirect responses once we have a
@@ -273,7 +220,6 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(
   if (disposition != network::mojom::XFrameOptionsValue::kNone &&
       disposition != network::mojom::XFrameOptionsValue::kAllowAll &&
       HeadersContainFrameAncestorsCSP(request->response()->parsed_headers)) {
-    RecordXFrameOptionsUsage(XFrameOptionsHistogram::BYPASS);
     return CheckResult::PROCEED;
   }
 
@@ -281,13 +227,11 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(
     case network::mojom::XFrameOptionsValue::kConflict:
       if (logging == LoggingDisposition::LOG_TO_CONSOLE)
         ParseXFrameOptionsError(request->GetResponseHeaders(), disposition);
-      RecordXFrameOptionsUsage(XFrameOptionsHistogram::CONFLICT);
       return CheckResult::BLOCK;
 
     case network::mojom::XFrameOptionsValue::kInvalid:
       if (logging == LoggingDisposition::LOG_TO_CONSOLE)
         ParseXFrameOptionsError(request->GetResponseHeaders(), disposition);
-      RecordXFrameOptionsUsage(XFrameOptionsHistogram::INVALID);
       // TODO(mkwst): Consider failing here, especially if we end up shipping
       // a new default behavior which requires embedees to explicitly opt-in
       // to being embedded: https://crbug.com/1153274.
@@ -296,7 +240,6 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(
     case network::mojom::XFrameOptionsValue::kDeny:
       if (logging == LoggingDisposition::LOG_TO_CONSOLE)
         ConsoleErrorXFrameOptions(disposition);
-      RecordXFrameOptionsUsage(XFrameOptionsHistogram::DENY);
       return CheckResult::BLOCK;
 
     case network::mojom::XFrameOptionsValue::kSameOrigin: {
@@ -308,33 +251,18 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(
       while (parent) {
         if (!parent->GetLastCommittedOrigin().IsSameOriginWith(
                 current_origin)) {
-          RecordXFrameOptionsUsage(XFrameOptionsHistogram::SAMEORIGIN_BLOCKED);
           if (logging == LoggingDisposition::LOG_TO_CONSOLE)
             ConsoleErrorXFrameOptions(disposition);
-
-          // TODO(mkwst): Stop recording this metric once we convince other
-          // vendors to follow our lead with XFO: SAMEORIGIN processing.
-          //
-          // https://crbug.com/250309
-          if (parent->GetMainFrame()->GetLastCommittedOrigin().IsSameOriginWith(
-                  current_origin)) {
-            RecordXFrameOptionsUsage(
-                XFrameOptionsHistogram::SAMEORIGIN_WITH_BAD_ANCESTOR_CHAIN);
-          }
-
           return CheckResult::BLOCK;
         }
         parent = ParentOrOuterDelegate(parent);
       }
-      RecordXFrameOptionsUsage(XFrameOptionsHistogram::SAMEORIGIN);
       return CheckResult::PROCEED;
     }
 
     case network::mojom::XFrameOptionsValue::kNone:
-      RecordXFrameOptionsUsage(XFrameOptionsHistogram::NONE);
       return CheckResult::PROCEED;
     case network::mojom::XFrameOptionsValue::kAllowAll:
-      RecordXFrameOptionsUsage(XFrameOptionsHistogram::ALLOWALL);
       return CheckResult::PROCEED;
   }
 }

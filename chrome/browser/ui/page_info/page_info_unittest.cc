@@ -1125,62 +1125,6 @@ TEST_F(PageInfoTest, ReEnableWarnings) {
   page_info();
 }
 
-// Tests that metrics are recorded on a PageInfo for pages with
-// various security levels.
-TEST_F(PageInfoTest, SecurityLevelMetrics) {
-  struct TestCase {
-    const std::string url;
-    const security_state::SecurityLevel security_level;
-    const net::CertStatus cert_status;
-    const std::string histogram_name;
-  };
-  const char kGenericHistogram[] = "WebsiteSettings.Action";
-
-  const uint32_t kCertStatusNone = 0;
-  const TestCase kTestCases[] = {
-      {"https://example.test", security_state::SECURE, kCertStatusNone,
-       "Security.PageInfo.Action.HttpsUrl.ValidNonEV"},
-      {"https://example.test", security_state::SECURE, net::CERT_STATUS_IS_EV,
-       "Security.PageInfo.Action.HttpsUrl.ValidEV"},
-      {"https://example2.test", security_state::NONE, kCertStatusNone,
-       "Security.PageInfo.Action.HttpsUrl.Downgraded"},
-      {"https://example.test", security_state::DANGEROUS, kCertStatusNone,
-       "Security.PageInfo.Action.HttpsUrl.Dangerous"},
-      {"http://example.test", security_state::WARNING, kCertStatusNone,
-       "Security.PageInfo.Action.HttpUrl.Warning"},
-      {"http://example.test", security_state::DANGEROUS, kCertStatusNone,
-       "Security.PageInfo.Action.HttpUrl.Dangerous"},
-      {"http://example.test", security_state::NONE, kCertStatusNone,
-       "Security.PageInfo.Action.HttpUrl.Neutral"},
-  };
-
-  for (const auto& test : kTestCases) {
-    base::HistogramTester histograms;
-    SetURL(test.url);
-    security_level_ = test.security_level;
-    visible_security_state_.cert_status = test.cert_status;
-    ResetMockUI();
-    ClearPageInfo();
-    SetDefaultUIExpectations(mock_ui());
-
-    histograms.ExpectTotalCount(kGenericHistogram, 0);
-    histograms.ExpectTotalCount(test.histogram_name, 0);
-
-    page_info()->RecordPageInfoAction(PageInfo::PAGE_INFO_OPENED);
-
-    // RecordPageInfoAction() is called during PageInfo
-    // creation in addition to the explicit RecordPageInfoAction()
-    // call, so it is called twice in total.
-    histograms.ExpectTotalCount(kGenericHistogram, 2);
-    histograms.ExpectBucketCount(kGenericHistogram, PageInfo::PAGE_INFO_OPENED,
-                                 2);
-
-    histograms.ExpectTotalCount(test.histogram_name, 2);
-    histograms.ExpectBucketCount(test.histogram_name,
-                                 PageInfo::PAGE_INFO_OPENED, 2);
-  }
-}
-
 // Tests that the duration of time the PageInfo is open is recorded for pages
 // with various security levels.
 TEST_F(PageInfoTest, TimeOpenMetrics) {

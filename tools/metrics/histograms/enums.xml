@@ -89472,6 +89472,9 @@ Called by update_scheduler_enums.py.-->
 </enum>
 
 <enum name="XFrameOptions">
+  <obsolete>
+    Removed from the code in July 2021.
+  </obsolete>
   <int value="0" label="NONE">
     A frame is loaded without any X-Frame-Options header.
   </int>

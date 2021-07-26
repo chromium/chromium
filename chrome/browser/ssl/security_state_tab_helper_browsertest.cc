@@ -1778,20 +1778,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithAutoupgradesDisabled,
   }
 }
 
-// Tests that the Certificate Transparency compliance of the main resource is
-// recorded in a histogram.
-IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, CTComplianceHistogram) {
-  const char kHistogramName[] =
-      "Security.CertificateTransparency.MainFrameNavigationCompliance";
-  SetUpMockCertVerifierForHttpsServer(0, net::OK);
-  base::HistogramTester histograms;
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server_.GetURL("/ssl/google.html"));
-  histograms.ExpectUniqueSample(
-      kHistogramName, net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-      1);
-}
-
 // Tests that the security level form submission histogram is logged correctly.
 IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, FormSecurityLevelHistogram) {
   const char kHistogramName[] = "Security.SecurityLevel.FormSubmission";

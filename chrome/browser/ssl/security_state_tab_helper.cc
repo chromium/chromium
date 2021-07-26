@@ -186,14 +186,6 @@ void SecurityStateTabHelper::DidFinishNavigation(
     return;
   }
 
-  content::NavigationEntry* entry = navigation_handle->GetNavigationEntry();
-  if (entry) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Security.CertificateTransparency.MainFrameNavigationCompliance",
-        entry->GetSSL().ct_policy_compliance,
-        net::ct::CTPolicyCompliance::CT_POLICY_COUNT);
-  }
-
   std::unique_ptr<security_state::VisibleSecurityState> visible_security_state =
       GetVisibleSecurityState();
   if (net::IsCertStatusError(visible_security_state->cert_status) &&
