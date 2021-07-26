@@ -563,8 +563,7 @@ UIViewController* TopPresentedViewController() {
 
 // Test that the bottom toolbar is still visible after closing the last
 // incognito tab using long press. See https://crbug.com/849937.
-// TODO(crbug.com/1229034): Fix flakiness
-- (void)DISABLED_testBottomToolbarHeightAfterClosingTab {
+- (void)testBottomToolbarHeightAfterClosingTab {
   if (![ChromeEarlGrey isSplitToolbarMode])
     EARL_GREY_TEST_SKIPPED(@"This test needs a bottom toolbar.");
   // Close all tabs.
@@ -581,7 +580,7 @@ UIViewController* TopPresentedViewController() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridNewIncognitoTabButton()]
       performAction:grey_tap()];
-  GREYWaitForAppToIdleWithTimeout(2.0, @"App failed to idle");
+  GREYWaitForAppToIdleWithTimeout(5.0, @"App failed to idle");
 
   [[self class] closeAllTabs];
   [ChromeEarlGrey openNewTab];
