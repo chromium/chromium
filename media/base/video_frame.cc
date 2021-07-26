@@ -1203,6 +1203,10 @@ int VideoFrame::rows(size_t plane) const {
   return Rows(plane, format(), coded_size().height());
 }
 
+int VideoFrame::columns(size_t plane) const {
+  return Columns(plane, format(), coded_size().width());
+}
+
 const uint8_t* VideoFrame::visible_data(size_t plane) const {
   DCHECK(IsValidPlane(format(), plane));
   DCHECK(IsMappable());
