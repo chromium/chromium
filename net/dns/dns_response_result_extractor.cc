@@ -450,20 +450,10 @@ ExtractionError ExtractIntegrityResults(const DnsResponse& response,
       response, dns_protocol::kExperimentalTypeIntegrity, &records,
       &response_ttl, nullptr /* out_aliases */);
 
-  // If the response couldn't be parsed, assume no INTEGRITY records, and
-  // pretend success. This is a temporary hack to keep errors with INTEGRITY
-  // (which is only used for experiments) from affecting non-experimental
-  // results, e.g. due to a parse error being treated as fatal for the whole
-  // HostResolver request.
-  //
-  // TODO(crbug.com/1138620): Cleanup handling of fatal vs non-fatal errors and
-  // the organization responsibility for handling them so that this extractor
-  // can more sensibly return honest results rather than lying to try to be
-  // helpful to HostResolverManager.
   if (extraction_error != ExtractionError::kOk) {
-    *out_results =
-        DnsResponseResultExtractor::CreateEmptyResult(DnsQueryType::INTEGRITY);
-    return ExtractionError::kOk;
+    *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
+                                    HostCache::Entry::SOURCE_DNS);
+    return extraction_error;
   }
 
   // Condense results into a list of booleans. We do not cache the results,
@@ -474,21 +464,17 @@ ExtractionError ExtractIntegrityResults(const DnsResponse& response,
     condensed_results.push_back(rdata.IsIntact());
   }
 
-  // As another temporary hack for the experimental nature of INTEGRITY, always
-  // claim no results, even on success.  This will let it merge with address
-  // results since an address request should be considered successful overall
-  // only with A/AAAA results, not INTEGRITY results.
-  //
-  // TODO(crbug.com/1138620): Remove and handle the merging more intelligently
-  // in HostResolverManager.
-  *out_results =
-      HostCache::Entry(ERR_NAME_NOT_RESOLVED, std::move(condensed_results),
-                       HostCache::Entry::SOURCE_DNS, response_ttl);
+  *out_results = HostCache::Entry(
+      condensed_results.empty() ? ERR_NAME_NOT_RESOLVED : OK,
+      std::move(condensed_results), HostCache::Entry::SOURCE_DNS, response_ttl);
   DCHECK_EQ(extraction_error, ExtractionError::kOk);
   return extraction_error;
 }
 
+// TODO(crbug.com/1203426): Remove `malformed_record_is_fatal` and make it
+// always fatal once HTTPS queries are no longer done for pure experimental use.
 ExtractionError ExtractHttpsResults(const DnsResponse& response,
+                                    bool malformed_record_is_fatal,
                                     HostCache::Entry* out_results) {
   DCHECK(out_results);
 
@@ -498,40 +484,28 @@ ExtractionError ExtractHttpsResults(const DnsResponse& response,
       ExtractResponseRecords(response, dns_protocol::kTypeHttps, &records,
                              &response_ttl, nullptr /* out_aliases */);
 
-  // If the response couldn't be parsed, assume no HTTPS records, and pretend
-  // success. This is a temporary hack to keep errors with HTTPS (which is
-  // currently only used for experiments) from affecting non-experimental
-  // results, e.g. due to a parse error being treated as fatal for the whole
-  // HostResolver request.
-  //
-  // TODO(crbug.com/1138620): Cleanup handling of fatal vs non-fatal errors and
-  // the organization responsibility for handling them so that this extractor
-  // can more sensibly return honest results rather than lying to try to be
-  // helpful to HostResolverManager.
   if (extraction_error != ExtractionError::kOk) {
-    *out_results = DnsResponseResultExtractor::CreateEmptyResult(
-        DnsQueryType::HTTPS_EXPERIMENTAL);
-    return ExtractionError::kOk;
+    *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
+                                    HostCache::Entry::SOURCE_DNS);
+    return extraction_error;
   }
 
-  // Condense results into a list of booleans. We do not cache the results,
-  // but this enables us to write some unit tests.
+  // Record experimental result bools for each record.
   std::vector<bool> condensed_results;
   for (const auto& record : records) {
     const HttpsRecordRdata& rdata = *record->rdata<HttpsRecordRdata>();
+    if (rdata.IsMalformed() && malformed_record_is_fatal) {
+      *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
+                                      HostCache::Entry::SOURCE_DNS);
+      return ExtractionError::kMalformedRecord;
+    }
     condensed_results.push_back(!rdata.IsMalformed());
   }
 
-  // As another temporary hack for experimental usage of HTTPS, always claim no
-  // results, even on success.  This will let it merge with address results
-  // since an address request should be considered successful overall only with
-  // A/AAAA results, not HTTPS results.
-  //
-  // TODO(crbug.com/1138620): Remove and handle the merging more intelligently
-  // in HostResolverManager.
-  *out_results =
-      HostCache::Entry(ERR_NAME_NOT_RESOLVED, std::move(condensed_results),
-                       HostCache::Entry::SOURCE_DNS, response_ttl);
+  // TODO(crbug.com/1225776): Output a non-experimental result representation.
+  *out_results = HostCache::Entry(records.empty() ? ERR_NAME_NOT_RESOLVED : OK,
+                                  std::move(condensed_results),
+                                  HostCache::Entry::SOURCE_DNS, response_ttl);
   DCHECK_EQ(extraction_error, ExtractionError::kOk);
   return extraction_error;
 }
@@ -569,14 +543,12 @@ DnsResponseResultExtractor::ExtractDnsResults(
       return ExtractServiceResults(*response_, out_results);
     case DnsQueryType::INTEGRITY:
       return ExtractIntegrityResults(*response_, out_results);
-    case DnsQueryType::HTTPS_EXPERIMENTAL:
-      return ExtractHttpsResults(*response_, out_results);
     case DnsQueryType::HTTPS:
-      // TODO(crbug.com/1225776): Implement.
-      *out_results =
-          HostCache::Entry(ERR_NAME_NOT_RESOLVED, std::vector<bool>(),
-                           HostCache::Entry::SOURCE_DNS);
-      return ExtractionError::kOk;
+      return ExtractHttpsResults(*response_, /*malformed_record_is_fatal=*/true,
+                                 out_results);
+    case DnsQueryType::HTTPS_EXPERIMENTAL:
+      return ExtractHttpsResults(
+          *response_, /*malformed_record_is_fatal=*/false, out_results);
   }
 }
 

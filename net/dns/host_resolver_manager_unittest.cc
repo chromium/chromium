@@ -9349,13 +9349,14 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery) {
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
       parameters, resolve_context_.get(), resolve_context_->host_cache()));
-  // TODO(crbug.com/1225776): Expect results once HTTPS-specific results are
-  // implemented.
-  EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_FALSE(response.request()->GetAddressResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetTextResults());
-  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+  // TODO(crbug.com/1225776): Check non-experimental HTTPS output once
+  // available.
+  EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
+              testing::Optional(testing::ElementsAre(true)));
 }
 
 TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery) {
@@ -9378,13 +9379,12 @@ TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery) {
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
       parameters, resolve_context_.get(), resolve_context_->host_cache()));
-  // Experimental type, so does not affect overall result.
-  EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_FALSE(response.request()->GetAddressResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetTextResults());
-  // Results never saved when overall result not OK.
-  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+  EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
+              testing::Optional(testing::ElementsAre(true)));
 }
 
 TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQueryRejectsIpLiteral) {
@@ -9469,12 +9469,12 @@ TEST_F(HostResolverManagerDnsTest,
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
       parameters, resolve_context_.get(), resolve_context_->host_cache()));
   // Experimental type, so does not affect overall result.
-  EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_FALSE(response.request()->GetAddressResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetTextResults());
-  // Results never saved when overall result not OK.
-  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+  EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
+              testing::Optional(testing::ElementsAre(true)));
 }
 
 TEST_F(HostResolverManagerDnsTest,
@@ -9535,13 +9535,12 @@ TEST_F(HostResolverManagerDnsTest,
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
       parameters, resolve_context_.get(), resolve_context_->host_cache()));
-  // Experimental type, so does not affect overall result.
-  EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_FALSE(response.request()->GetAddressResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetTextResults());
-  // Results never saved when overall result not OK.
-  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+  EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
+              testing::Optional(testing::ElementsAre(true)));
 }
 
 TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_MultipleResults) {
@@ -9565,13 +9564,12 @@ TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_MultipleResults) {
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
       parameters, resolve_context_.get(), resolve_context_->host_cache()));
-  // Experimental type, so does not affect overall result.
-  EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_FALSE(response.request()->GetAddressResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetTextResults());
-  // Results never saved when overall result not OK.
-  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+  EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
+              testing::Optional(testing::ElementsAre(true, true)));
 }
 
 TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_InvalidConfig) {
@@ -9672,7 +9670,6 @@ TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_Timeout) {
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
       parameters, resolve_context_.get(), resolve_context_->host_cache()));
-  // Experimental type, so expect errors to be ignored.
   EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_FALSE(response.request()->GetAddressResults());
   EXPECT_FALSE(response.request()->GetTextResults());
@@ -9734,12 +9731,10 @@ TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_Malformed) {
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
       parameters, resolve_context_.get(), resolve_context_->host_cache()));
-  // Experimental type, so does not affect overall result.
   EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_FALSE(response.request()->GetAddressResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetTextResults());
-  // Results never saved when overall result not OK.
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 
   // Expect result not cached.
@@ -9766,12 +9761,10 @@ TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_MismatchedName) {
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
       parameters, resolve_context_.get(), resolve_context_->host_cache()));
-  // Experimental type, so does not affect overall result.
   EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_FALSE(response.request()->GetAddressResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetTextResults());
-  // Results never saved when overall result not OK.
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 
   // Expect result not cached.
@@ -9802,13 +9795,13 @@ TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_AdditionalRecords) {
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
       parameters, resolve_context_.get(), resolve_context_->host_cache()));
-  // Experimental type, so does not affect overall result.
-  EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_FALSE(response.request()->GetAddressResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetTextResults());
-  // Results never saved when overall result not OK.
-  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+  // Additional records aren't currently used in results.
+  EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
+              testing::Optional(testing::ElementsAre(true)));
 }
 
 TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_WrongType) {
@@ -9833,12 +9826,10 @@ TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery_WrongType) {
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
       parameters, resolve_context_.get(), resolve_context_->host_cache()));
-  // Experimental type, so does not affect overall result.
   EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_FALSE(response.request()->GetAddressResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetTextResults());
-  // Results never saved when overall result not OK.
   EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 
   // Expect result not cached.
@@ -9870,13 +9861,12 @@ TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsDnsQuery) {
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
       parameters, resolve_context_.get(), resolve_context_->host_cache()));
-  // Experimental type, so does not affect overall result.
-  EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_FALSE(response.request()->GetAddressResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetTextResults());
-  // Results never saved when overall result not OK.
-  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+  EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
+              testing::Optional(testing::ElementsAre(true)));
 }
 
 // Same as ExperimentalHttpsInsecureQueryDisallowedWhenAdditionalTypesDisallowed

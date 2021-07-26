@@ -528,6 +528,15 @@ absl::variant<url::SchemeHostPort, std::string> CreateHostForJobKey(
   return std::string(GetHostname(input));
 }
 
+DnsResponse CreateFakeEmptyResponse(base::StringPiece hostname,
+                                    DnsQueryType query_type) {
+  std::string qname;
+  CHECK(DNSDomainFromDot(hostname, &qname));
+  return DnsResponse::CreateEmptyNoDataResponse(
+      /*id=*/0u, /*is_authoritative=*/true, qname,
+      DnsQueryTypeToQtype(query_type));
+}
+
 }  // namespace
 
 //-----------------------------------------------------------------------------
@@ -1154,7 +1163,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   class Delegate {
    public:
     virtual void OnDnsTaskComplete(base::TimeTicks start_time,
-                                   const HostCache::Entry& results,
+                                   HostCache::Entry results,
                                    bool secure) = 0;
 
     // Called when a job succeeds and there are more transactions needed.  If
@@ -1368,32 +1377,45 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       }
     }
 
-    HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
-    // Parse NOERROR results or NXDOMAIN (signified from DnsTransaction by
-    // ERR_NAME_NOT_RESOLVED) results with a valid response to parse.
-    if (net_error == OK || (net_error == ERR_NAME_NOT_RESOLVED && response &&
-                            response->IsValid())) {
-      DnsResponseResultExtractor extractor(response);
-      DnsResponseResultExtractor::ExtractionError extraction_error =
-          extractor.ExtractDnsResults(dns_query_type, &results);
-      DCHECK_NE(extraction_error,
-                DnsResponseResultExtractor::ExtractionError::kUnexpected);
+    // Handle network errors. Note that for NXDOMAIN, DnsTransaction returns
+    // ERR_NAME_NOT_RESOLVED, so that is not a network error if received with a
+    // valid response.
+    absl::optional<DnsResponse> fake_response;
+    if (net_error != OK && !(net_error == ERR_NAME_NOT_RESOLVED && response &&
+                             response->IsValid())) {
+      if (dns_query_type == DnsQueryType::INTEGRITY ||
+          dns_query_type == DnsQueryType::HTTPS_EXPERIMENTAL) {
+        // Do not allow an experimental query to fail the whole DnsTask. Instead
+        // synthesize an empty NODATA response.
+        fake_response =
+            CreateFakeEmptyResponse(GetHostname(host_), dns_query_type);
+        response = &fake_response.value();
+      } else {
+        // Fail completely on network failure.
+        OnFailure(net_error, DnsResponseResultExtractor::ExtractionError::kOk,
+                  absl::nullopt);
+        return;
+      }
+    }
 
-      if (results.error() != OK && results.error() != ERR_NAME_NOT_RESOLVED) {
+    HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+    DnsResponseResultExtractor extractor(response);
+    DnsResponseResultExtractor::ExtractionError extraction_error =
+        extractor.ExtractDnsResults(dns_query_type, &results);
+    DCHECK_NE(extraction_error,
+              DnsResponseResultExtractor::ExtractionError::kUnexpected);
+
+    if (results.error() != OK && results.error() != ERR_NAME_NOT_RESOLVED) {
+      if (dns_query_type == DnsQueryType::INTEGRITY ||
+          dns_query_type == DnsQueryType::HTTPS_EXPERIMENTAL) {
+        // Do not allow an experimental query to fail the whole DnsTask. Instead
+        // synthesize an empty result that can be cleanly merged with address
+        // results.
+        results = DnsResponseResultExtractor::CreateEmptyResult(dns_query_type);
+      } else {
         OnFailure(results.error(), extraction_error, results.GetOptionalTtl());
         return;
       }
-    } else if (dns_query_type == DnsQueryType::INTEGRITY ||
-               dns_query_type == DnsQueryType::HTTPS_EXPERIMENTAL) {
-      // Do not allow an experimental query to fail the whole DnsTask. Instead
-      // pretend an empty result that can be cleanly merged with address
-      // results.
-      results = DnsResponseResultExtractor::CreateEmptyResult(dns_query_type);
-    } else {
-      // Fail completely on network failure.
-      OnFailure(net_error, DnsResponseResultExtractor::ExtractionError::kOk,
-                absl::nullopt);
-      return;
     }
 
     if (httpssvc_metrics_) {
@@ -1499,7 +1521,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       return;
     }
 
-    OnSuccess(results);
+    OnSuccess(std::move(results));
   }
 
   void OnSortComplete(base::TimeTicks sort_start_time,
@@ -1527,7 +1549,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       return;
     }
 
-    OnSuccess(results);
+    OnSuccess(std::move(results));
   }
 
   void OnFailure(int net_error,
@@ -1544,13 +1566,13 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
                                        static_cast<int>(extraction_error));
     });
 
-    delegate_->OnDnsTaskComplete(task_start_time_, results, secure_);
+    delegate_->OnDnsTaskComplete(task_start_time_, std::move(results), secure_);
   }
 
-  void OnSuccess(const HostCache::Entry& results) {
+  void OnSuccess(HostCache::Entry results) {
     NetLogHostCacheEntry(net_log_, NetLogEventType::HOST_RESOLVER_IMPL_DNS_TASK,
                          NetLogEventPhase::END, results);
-    delegate_->OnDnsTaskComplete(task_start_time_, results, secure_);
+    delegate_->OnDnsTaskComplete(task_start_time_, std::move(results), secure_);
   }
 
   // Returns whether all transactions left to execute are of transaction type
@@ -2212,9 +2234,17 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // HostResolverManager::DnsTask::Delegate implementation:
 
   void OnDnsTaskComplete(base::TimeTicks start_time,
-                         const HostCache::Entry& results,
+                         HostCache::Entry results,
                          bool secure) override {
     DCHECK(dns_task_);
+
+    // `UNSPECIFIED`-type queries are only considered successful overall if they
+    // find address results, but DnsTask may claim success if any transaction,
+    // e.g. a supplemental HTTPS transaction, finds results.
+    if (key_.query_type == DnsQueryType::UNSPECIFIED && results.error() == OK &&
+        (!results.addresses() || results.addresses().value().empty())) {
+      results.set_error(ERR_NAME_NOT_RESOLVED);
+    }
 
     base::TimeDelta duration = tick_clock_->NowTicks() - start_time;
     if (results.error() != OK) {

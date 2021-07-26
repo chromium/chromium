@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/time/time.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -45,6 +46,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsSingleARecord) {
   EXPECT_EQ(results.addresses().value().GetCanonicalName(), kName);
   EXPECT_THAT(results.addresses().value().dns_aliases(),
               testing::ElementsAre(kName));
+  EXPECT_TRUE(results.has_ttl());
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsSingleAAAARecord) {
@@ -124,11 +126,14 @@ TEST(DnsResponseResultExtractorTest, ExtractsARecordsWithCname) {
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNxdomainAResponses) {
+  constexpr auto kTtl = base::TimeDelta::FromHours(2);
+
   DnsResponse response = BuildTestDnsResponse(
-      "address.test", dns_protocol::kTypeA, {} /* answers */,
-      {BuildTestDnsRecord("address.test", dns_protocol::kTypeSOA,
-                          "fake rdata")} /* authority */,
-      {} /* additional */, dns_protocol::kRcodeNOERROR);
+      "address.test", dns_protocol::kTypeA, /*answers=*/{},
+      /*authority=*/
+      {BuildTestDnsRecord("address.test", dns_protocol::kTypeSOA, "fake rdata",
+                          kTtl)},
+      /*additional=*/{}, dns_protocol::kRcodeNXDOMAIN);
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -140,11 +145,19 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainAResponses) {
   EXPECT_TRUE(results.addresses().value().empty());
   EXPECT_EQ(results.addresses().value().GetCanonicalName(), "");
   EXPECT_TRUE(results.addresses().value().dns_aliases().empty());
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNodataAResponses) {
+  constexpr auto kTtl = base::TimeDelta::FromMinutes(15);
+
   DnsResponse response = BuildTestDnsResponse(
-      "address.test", dns_protocol::kTypeA, {} /* answers */);
+      "address.test", dns_protocol::kTypeA, /*answers=*/{},
+      /*authority=*/
+      {BuildTestDnsRecord("address.test", dns_protocol::kTypeSOA, "fake rdata",
+                          kTtl)});
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -156,6 +169,9 @@ TEST(DnsResponseResultExtractorTest, ExtractsNodataAResponses) {
   EXPECT_TRUE(results.addresses().value().empty());
   EXPECT_EQ(results.addresses().value().GetCanonicalName(), "");
   EXPECT_TRUE(results.addresses().value().dns_aliases().empty());
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
 }
 
 TEST(DnsResponseResultExtractorTest, RejectsMalformedARecord) {
@@ -170,6 +186,7 @@ TEST(DnsResponseResultExtractorTest, RejectsMalformedARecord) {
             DnsResponseResultExtractor::ExtractionError::kMalformedRecord);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+  EXPECT_FALSE(results.has_ttl());
 }
 
 TEST(DnsResponseResultExtractorTest, RejectsWrongNameARecord) {
@@ -182,6 +199,7 @@ TEST(DnsResponseResultExtractorTest, RejectsWrongNameARecord) {
             DnsResponseResultExtractor::ExtractionError::kNameMismatch);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+  EXPECT_FALSE(results.has_ttl());
 }
 
 TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeRecordsInAResponse) {
@@ -199,16 +217,19 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeRecordsInAResponse) {
   EXPECT_TRUE(results.addresses().value().empty());
   EXPECT_EQ(results.addresses().value().GetCanonicalName(), "");
   EXPECT_TRUE(results.addresses().value().dns_aliases().empty());
+  EXPECT_FALSE(results.has_ttl());
 }
 
 TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeRecordsMixedWithARecords) {
   constexpr char kName[] = "address.test";
   const IPAddress kExpected(8, 8, 8, 8);
+  constexpr auto kTtl = base::TimeDelta::FromDays(3);
 
-  DnsResponse response = BuildTestDnsResponse(
-      kName, dns_protocol::kTypeA,
-      {BuildTestTextRecord(kName, {"foo"} /* text_strings */),
-       BuildTestAddressRecord(kName, kExpected)});
+  DnsResponse response =
+      BuildTestDnsResponse(kName, dns_protocol::kTypeA,
+                           {BuildTestTextRecord(kName, /*text_strings=*/{"foo"},
+                                                base::TimeDelta::FromHours(2)),
+                            BuildTestAddressRecord(kName, kExpected, kTtl)});
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -223,6 +244,9 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeRecordsMixedWithARecords) {
   EXPECT_EQ(results.addresses().value().GetCanonicalName(), kName);
   EXPECT_THAT(results.addresses().value().dns_aliases(),
               testing::ElementsAre(kName));
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsMinATtl) {
@@ -278,11 +302,14 @@ TEST(DnsResponseResultExtractorTest, ExtractsTxtResponses) {
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNxdomainTxtResponses) {
+  constexpr auto kTtl = base::TimeDelta::FromDays(4);
+
   DnsResponse response = BuildTestDnsResponse(
-      "name.test", dns_protocol::kTypeTXT, {} /* answers */,
-      {BuildTestDnsRecord("name.test", dns_protocol::kTypeSOA,
-                          "fake rdata")} /* authority */,
-      {} /* additional */, dns_protocol::kRcodeNOERROR);
+      "name.test", dns_protocol::kTypeTXT, /*answers=*/{},
+      /*authority=*/
+      {BuildTestDnsRecord("name.test", dns_protocol::kTypeSOA, "fake rdata",
+                          kTtl)},
+      /*additional=*/{}, dns_protocol::kRcodeNXDOMAIN);
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -291,11 +318,19 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainTxtResponses) {
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(results.text_records(), testing::Optional(testing::IsEmpty()));
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNodataTxtResponses) {
-  DnsResponse response =
-      BuildTestDnsTextResponse("name.test", {} /* text_records */);
+  constexpr auto kTtl = base::TimeDelta::FromMinutes(42);
+
+  DnsResponse response = BuildTestDnsResponse(
+      "name.test", dns_protocol::kTypeTXT,
+      /*answers=*/{}, /*authority=*/
+      {BuildTestDnsRecord("name.test", dns_protocol::kTypeSOA, "fake rdata",
+                          kTtl)});
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -304,6 +339,9 @@ TEST(DnsResponseResultExtractorTest, ExtractsNodataTxtResponses) {
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(results.text_records(), testing::Optional(testing::IsEmpty()));
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
 }
 
 TEST(DnsResponseResultExtractorTest, RejectsMalformedTxtRecord) {
@@ -318,6 +356,7 @@ TEST(DnsResponseResultExtractorTest, RejectsMalformedTxtRecord) {
             DnsResponseResultExtractor::ExtractionError::kMalformedRecord);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+  EXPECT_FALSE(results.has_ttl());
 }
 
 TEST(DnsResponseResultExtractorTest, RejectsWrongNameTxtRecord) {
@@ -330,6 +369,7 @@ TEST(DnsResponseResultExtractorTest, RejectsWrongNameTxtRecord) {
             DnsResponseResultExtractor::ExtractionError::kNameMismatch);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+  EXPECT_FALSE(results.has_ttl());
 }
 
 TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeTxtResponses) {
@@ -344,6 +384,7 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeTxtResponses) {
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(results.text_records(), testing::Optional(testing::IsEmpty()));
+  EXPECT_FALSE(results.has_ttl());
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsMinTxtTtl) {
@@ -383,11 +424,14 @@ TEST(DnsResponseResultExtractorTest, ExtractsPtrResponses) {
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNxdomainPtrResponses) {
+  constexpr auto kTtl = base::TimeDelta::FromHours(5);
+
   DnsResponse response = BuildTestDnsResponse(
-      "name.test", dns_protocol::kTypePTR, {} /* answers */,
-      {BuildTestDnsRecord("name.test", dns_protocol::kTypeSOA,
-                          "fake rdata")} /* authority */,
-      {} /* additional */, dns_protocol::kRcodeNOERROR);
+      "name.test", dns_protocol::kTypePTR, /*answers=*/{},
+      /*authority=*/
+      {BuildTestDnsRecord("name.test", dns_protocol::kTypeSOA, "fake rdata",
+                          kTtl)},
+      /*additional=*/{}, dns_protocol::kRcodeNXDOMAIN);
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -396,11 +440,19 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainPtrResponses) {
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(results.hostnames(), testing::Optional(testing::IsEmpty()));
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNodataPtrResponses) {
-  DnsResponse response =
-      BuildTestDnsPointerResponse("name.test", {} /* pointer_names */);
+  constexpr auto kTtl = base::TimeDelta::FromMinutes(50);
+
+  DnsResponse response = BuildTestDnsResponse(
+      "name.test", dns_protocol::kTypePTR, /*answers=*/{},
+      /*authority=*/
+      {BuildTestDnsRecord("name.test", dns_protocol::kTypeSOA, "fake rdata",
+                          kTtl)});
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -409,6 +461,9 @@ TEST(DnsResponseResultExtractorTest, ExtractsNodataPtrResponses) {
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(results.hostnames(), testing::Optional(testing::IsEmpty()));
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
 }
 
 TEST(DnsResponseResultExtractorTest, RejectsMalformedPtrRecord) {
@@ -423,6 +478,7 @@ TEST(DnsResponseResultExtractorTest, RejectsMalformedPtrRecord) {
             DnsResponseResultExtractor::ExtractionError::kMalformedRecord);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+  EXPECT_FALSE(results.has_ttl());
 }
 
 TEST(DnsResponseResultExtractorTest, RejectsWrongNamePtrRecord) {
@@ -435,6 +491,7 @@ TEST(DnsResponseResultExtractorTest, RejectsWrongNamePtrRecord) {
             DnsResponseResultExtractor::ExtractionError::kNameMismatch);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+  EXPECT_FALSE(results.has_ttl());
 }
 
 TEST(DnsResponseResultExtractorTest, IgnoresWrongTypePtrResponses) {
@@ -449,6 +506,7 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypePtrResponses) {
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(results.hostnames(), testing::Optional(testing::IsEmpty()));
+  EXPECT_FALSE(results.has_ttl());
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsSrvResponses) {
@@ -509,11 +567,14 @@ TEST(DnsResponseResultExtractorTest, ExtractsZeroWeightSrvResponses) {
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNxdomainSrvResponses) {
+  constexpr auto kTtl = base::TimeDelta::FromDays(7);
+
   DnsResponse response = BuildTestDnsResponse(
-      "name.test", dns_protocol::kTypeSRV, {} /* answers */,
-      {BuildTestDnsRecord("name.test", dns_protocol::kTypeSOA,
-                          "fake rdata")} /* authority */,
-      {} /* additional */, dns_protocol::kRcodeNOERROR);
+      "name.test", dns_protocol::kTypeSRV, /*answers=*/{},
+      /*authority=*/
+      {BuildTestDnsRecord("name.test", dns_protocol::kTypeSOA, "fake rdata",
+                          kTtl)},
+      /*additional=*/{}, dns_protocol::kRcodeNXDOMAIN);
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -522,11 +583,19 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainSrvResponses) {
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(results.hostnames(), testing::Optional(testing::IsEmpty()));
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNodataSrvResponses) {
-  DnsResponse response =
-      BuildTestDnsServiceResponse("name.test", {} /* service_records */);
+  constexpr auto kTtl = base::TimeDelta::FromHours(12);
+
+  DnsResponse response = BuildTestDnsResponse(
+      "name.test", dns_protocol::kTypeSRV, /*answers=*/{},
+      /*authority=*/
+      {BuildTestDnsRecord("name.test", dns_protocol::kTypeSOA, "fake rdata",
+                          kTtl)});
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -535,6 +604,9 @@ TEST(DnsResponseResultExtractorTest, ExtractsNodataSrvResponses) {
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(results.hostnames(), testing::Optional(testing::IsEmpty()));
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
 }
 
 TEST(DnsResponseResultExtractorTest, RejectsMalformedSrvRecord) {
@@ -549,6 +621,7 @@ TEST(DnsResponseResultExtractorTest, RejectsMalformedSrvRecord) {
             DnsResponseResultExtractor::ExtractionError::kMalformedRecord);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+  EXPECT_FALSE(results.has_ttl());
 }
 
 TEST(DnsResponseResultExtractorTest, RejectsWrongNameSrvRecord) {
@@ -562,6 +635,7 @@ TEST(DnsResponseResultExtractorTest, RejectsWrongNameSrvRecord) {
             DnsResponseResultExtractor::ExtractionError::kNameMismatch);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+  EXPECT_FALSE(results.has_ttl());
 }
 
 TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeSrvResponses) {
@@ -576,12 +650,15 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeSrvResponses) {
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(results.hostnames(), testing::Optional(testing::IsEmpty()));
+  EXPECT_FALSE(results.has_ttl());
 }
 
-TEST(DnsResponseResultExtractorTest, ExtractsHttpsResponses) {
+TEST(DnsResponseResultExtractorTest, ExtractsExperimentalHttpsResponses) {
+  constexpr auto kTtl = base::TimeDelta::FromMinutes(31);
+
   DnsResponse response = BuildTestDnsResponse(
       "https.test", dns_protocol::kTypeHttps,
-      {BuildTestHttpsAliasRecord("https.test", "alias.test")});
+      {BuildTestHttpsAliasRecord("https.test", "alias.test", kTtl)});
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -589,19 +666,24 @@ TEST(DnsResponseResultExtractorTest, ExtractsHttpsResponses) {
       extractor.ExtractDnsResults(DnsQueryType::HTTPS_EXPERIMENTAL, &results),
       DnsResponseResultExtractor::ExtractionError::kOk);
 
-  // Experimental type, so does not affect overall result.
-  EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-
+  EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(results.experimental_results(),
               testing::Optional(testing::ElementsAre(true)));
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
 }
 
-TEST(DnsResponseResultExtractorTest, ExtractsNxdomainHttpsResponses) {
+TEST(DnsResponseResultExtractorTest,
+     ExtractsNxdomainExperimentalHttpsResponses) {
+  constexpr auto kTtl = base::TimeDelta::FromHours(8);
+
   DnsResponse response = BuildTestDnsResponse(
-      "https.test", dns_protocol::kTypeHttps, {} /* answers */,
-      {BuildTestDnsRecord("name.test", dns_protocol::kTypeSOA,
-                          "fake rdata")} /* authority */,
-      {} /* additional */, dns_protocol::kRcodeNOERROR);
+      "https.test", dns_protocol::kTypeHttps, /*answers=*/{},
+      /*authority=*/
+      {BuildTestDnsRecord("https.test", dns_protocol::kTypeSOA, "fake rdata",
+                          kTtl)},
+      /*additional=*/{}, dns_protocol::kRcodeNXDOMAIN);
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -612,11 +694,19 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainHttpsResponses) {
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(results.experimental_results(),
               testing::Optional(testing::IsEmpty()));
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
 }
 
-TEST(DnsResponseResultExtractorTest, ExtractsNodataHttpsResponses) {
+TEST(DnsResponseResultExtractorTest, ExtractsNodataExperimentalHttpsResponses) {
+  constexpr auto kTtl = base::TimeDelta::FromDays(3);
+
   DnsResponse response = BuildTestDnsResponse(
-      "https.test", dns_protocol::kTypeHttps, {} /* answers */);
+      "https.test", dns_protocol::kTypeHttps, /*answers=*/{},
+      /*authority=*/
+      {BuildTestDnsRecord("https.test", dns_protocol::kTypeSOA, "fake rdata",
+                          kTtl)});
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -627,9 +717,13 @@ TEST(DnsResponseResultExtractorTest, ExtractsNodataHttpsResponses) {
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(results.experimental_results(),
               testing::Optional(testing::IsEmpty()));
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
 }
 
-TEST(DnsResponseResultExtractorTest, RecognizesMalformedHttpsRecord) {
+TEST(DnsResponseResultExtractorTest,
+     RecognizesMalformedExperimentalHttpsRecord) {
   DnsResponse response = BuildTestDnsResponse(
       "https.test", dns_protocol::kTypeHttps,
       {BuildTestDnsRecord("https.test", dns_protocol::kTypeHttps,
@@ -641,12 +735,14 @@ TEST(DnsResponseResultExtractorTest, RecognizesMalformedHttpsRecord) {
       extractor.ExtractDnsResults(DnsQueryType::HTTPS_EXPERIMENTAL, &results),
       DnsResponseResultExtractor::ExtractionError::kOk);
 
-  EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
+  // HTTPS_EXPERIMENTAL continues on finding malformed records to allow metrics
+  // to be recorded about them.
+  EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(results.experimental_results(),
               testing::Optional(testing::ElementsAre(false)));
 }
 
-TEST(DnsResponseResultExtractorTest, IgnoresWrongNameHttpsRecord) {
+TEST(DnsResponseResultExtractorTest, RejectsWrongNameExperimentalHttpsRecord) {
   DnsResponse response = BuildTestDnsResponse(
       "https.test", dns_protocol::kTypeHttps,
       {BuildTestHttpsAliasRecord("different.test", "alias.test")});
@@ -655,19 +751,14 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongNameHttpsRecord) {
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
   EXPECT_EQ(
       extractor.ExtractDnsResults(DnsQueryType::HTTPS_EXPERIMENTAL, &results),
-      DnsResponseResultExtractor::ExtractionError::kOk);
+      DnsResponseResultExtractor::ExtractionError::kNameMismatch);
 
-  EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-
-  HostCache::Entry default_results =
-      DnsResponseResultExtractor::CreateEmptyResult(
-          DnsQueryType::HTTPS_EXPERIMENTAL);
-  EXPECT_EQ(results.error(), default_results.error());
-  EXPECT_EQ(results.experimental_results(),
-            default_results.experimental_results());
+  EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+  EXPECT_FALSE(results.has_ttl());
 }
 
-TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeHttpsResponses) {
+TEST(DnsResponseResultExtractorTest,
+     IgnoresWrongTypeExperimentalHttpsResponses) {
   DnsResponse response = BuildTestDnsResponse(
       "https.test", dns_protocol::kTypeHttps,
       {BuildTestAddressRecord("https.test", IPAddress(1, 2, 3, 4))});
@@ -681,16 +772,22 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeHttpsResponses) {
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(results.experimental_results(),
               testing::Optional(testing::IsEmpty()));
+  EXPECT_FALSE(results.has_ttl());
 }
 
-TEST(DnsResponseResultExtractorTest, IgnoresAdditionalHttpsRecords) {
+TEST(DnsResponseResultExtractorTest,
+     IgnoresAdditionalExperimentalHttpsRecords) {
+  constexpr auto kTtl = base::TimeDelta::FromDays(3);
+
   DnsResponse response = BuildTestDnsResponse(
       "https.test", dns_protocol::kTypeHttps,
-      {BuildTestHttpsAliasRecord("https.test", "alias.test")} /* answers */,
-      {} /* authority */,
-      {BuildTestHttpsServiceRecord("https.test", 3u, "service1.test", {}),
-       BuildTestHttpsServiceRecord("https.test", 2u, "service2.test",
-                                   {})} /* additional */);
+      /*answers=*/{BuildTestHttpsAliasRecord("https.test", "alias.test", kTtl)},
+      /*authority=*/{},
+      /*additional=*/
+      {BuildTestHttpsServiceRecord("https.test", 3u, "service1.test", {},
+                                   base::TimeDelta::FromMinutes(44)),
+       BuildTestHttpsServiceRecord("https.test", 2u, "service2.test", {},
+                                   base::TimeDelta::FromMinutes(30))});
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -698,11 +795,148 @@ TEST(DnsResponseResultExtractorTest, IgnoresAdditionalHttpsRecords) {
       extractor.ExtractDnsResults(DnsQueryType::HTTPS_EXPERIMENTAL, &results),
       DnsResponseResultExtractor::ExtractionError::kOk);
 
-  // Experimental type, so does not affect overall result.
-  EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-
+  EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(results.experimental_results(),
               testing::Optional(testing::ElementsAre(true)));
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
+}
+
+TEST(DnsResponseResultExtractorTest, ExtractsHttpsResponses) {
+  constexpr auto kTtl = base::TimeDelta::FromHours(12);
+
+  DnsResponse response = BuildTestDnsResponse(
+      "https.test", dns_protocol::kTypeHttps,
+      /*answers=*/
+      {BuildTestHttpsAliasRecord("https.test", "alias.test", kTtl)});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::HTTPS, &results),
+            DnsResponseResultExtractor::ExtractionError::kOk);
+
+  EXPECT_THAT(results.error(), test::IsOk());
+  EXPECT_THAT(results.experimental_results(),
+              testing::Optional(testing::ElementsAre(true)));
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
+}
+
+TEST(DnsResponseResultExtractorTest, ExtractsNxdomainHttpsResponses) {
+  constexpr auto kTtl = base::TimeDelta::FromMinutes(45);
+
+  DnsResponse response = BuildTestDnsResponse(
+      "https.test", dns_protocol::kTypeHttps, /*answers=*/{},
+      /*authority=*/
+      {BuildTestDnsRecord("name.test", dns_protocol::kTypeSOA, "fake rdata",
+                          kTtl)},
+      /*additional=*/{}, dns_protocol::kRcodeNXDOMAIN);
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::HTTPS, &results),
+            DnsResponseResultExtractor::ExtractionError::kOk);
+
+  EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(results.experimental_results(),
+              testing::Optional(testing::IsEmpty()));
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
+}
+
+TEST(DnsResponseResultExtractorTest, ExtractsNodataHttpsResponses) {
+  constexpr auto kTtl = base::TimeDelta::FromHours(36);
+
+  DnsResponse response = BuildTestDnsResponse(
+      "https.test", dns_protocol::kTypeHttps, /*answers=*/{},
+      /*authority=*/
+      {BuildTestDnsRecord("name.test", dns_protocol::kTypeSOA, "fake rdata",
+                          kTtl)});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::HTTPS, &results),
+            DnsResponseResultExtractor::ExtractionError::kOk);
+
+  EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(results.experimental_results(),
+              testing::Optional(testing::IsEmpty()));
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
+}
+
+TEST(DnsResponseResultExtractorTest, RejectsMalformedHttpsRecord) {
+  DnsResponse response = BuildTestDnsResponse(
+      "https.test", dns_protocol::kTypeHttps,
+      {BuildTestDnsRecord("https.test", dns_protocol::kTypeHttps,
+                          "malformed rdata")} /* answers */);
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::HTTPS, &results),
+            DnsResponseResultExtractor::ExtractionError::kMalformedRecord);
+
+  EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+  EXPECT_FALSE(results.has_ttl());
+}
+
+TEST(DnsResponseResultExtractorTest, RejectsWrongNameHttpsRecord) {
+  DnsResponse response = BuildTestDnsResponse(
+      "https.test", dns_protocol::kTypeHttps,
+      {BuildTestHttpsAliasRecord("different.test", "alias.test")});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::HTTPS, &results),
+            DnsResponseResultExtractor::ExtractionError::kNameMismatch);
+
+  EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+  EXPECT_FALSE(results.has_ttl());
+}
+
+TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeHttpsResponses) {
+  DnsResponse response = BuildTestDnsResponse(
+      "https.test", dns_protocol::kTypeHttps,
+      {BuildTestAddressRecord("https.test", IPAddress(1, 2, 3, 4))});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::HTTPS, &results),
+            DnsResponseResultExtractor::ExtractionError::kOk);
+
+  EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(results.experimental_results(),
+              testing::Optional(testing::IsEmpty()));
+}
+
+TEST(DnsResponseResultExtractorTest, IgnoresAdditionalHttpsRecords) {
+  constexpr auto kTtl = base::TimeDelta::FromDays(5);
+
+  DnsResponse response = BuildTestDnsResponse(
+      "https.test", dns_protocol::kTypeHttps,
+      /*answers=*/{BuildTestHttpsAliasRecord("https.test", "alias.test", kTtl)},
+      /*authority=*/{},
+      /*additional=*/
+      {BuildTestHttpsServiceRecord("https.test", 3u, "service1.test", {},
+                                   base::TimeDelta::FromMinutes(30)),
+       BuildTestHttpsServiceRecord("https.test", 2u, "service2.test", {},
+                                   base::TimeDelta::FromMinutes(45))});
+  DnsResponseResultExtractor extractor(&response);
+
+  HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+  EXPECT_EQ(extractor.ExtractDnsResults(DnsQueryType::HTTPS, &results),
+            DnsResponseResultExtractor::ExtractionError::kOk);
+
+  EXPECT_THAT(results.error(), test::IsOk());
+  EXPECT_THAT(results.experimental_results(),
+              testing::Optional(testing::ElementsAre(true)));
+
+  ASSERT_TRUE(results.has_ttl());
+  EXPECT_EQ(results.ttl(), kTtl);
 }
 
 TEST(DnsResponseResultExtractorTest, IgnoresUnsolicitedHttpsRecords) {
