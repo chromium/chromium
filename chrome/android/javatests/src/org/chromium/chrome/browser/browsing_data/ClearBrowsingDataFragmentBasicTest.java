@@ -4,19 +4,13 @@
 
 package org.chromium.chrome.browser.browsing_data;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.preference.CheckBoxPreference;
-import androidx.preference.PreferenceScreen;
 import androidx.test.filters.LargeTest;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,7 +26,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment.DialogOption;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -76,10 +69,6 @@ public class ClearBrowsingDataFragmentBasicTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
-
-    private static final String GOOGLE_ACCOUNT = "Google Account";
-    private static final String OTHER_ACTIVITY = "other forms of browsing history";
-    private static final String SYNCED_DEVICES = "synced devices";
 
     @Mock
     private SyncService mMockSyncService;
@@ -129,99 +118,10 @@ public class ClearBrowsingDataFragmentBasicTest {
                 .getDefaultSearchEngineTemplateUrl();
     }
 
-    private String getCheckboxSummary(PreferenceScreen screen, String preference) {
-        CheckBoxPreference checkbox = (CheckBoxPreference) screen.findPreference(preference);
-        return new StringBuilder(checkbox.getSummary()).toString();
-    }
-
     private void waitForOptionsMenu() {
-        // TODO(crbug.com/1227122): find a better solution that doesn't involve waiting for a single
-        // button to be displayed but instead waits for all the views to finish getting drawn.
         CriteriaHelper.pollUiThread(() -> {
             return mSettingsActivityTestRule.getActivity().findViewById(R.id.menu_id_general_help)
                     != null;
-        });
-    }
-
-    /**
-     * Tests that for users who are not signed in, only the general information is shown.
-     */
-    @Test
-    @SmallTest
-    public void testCheckBoxTextNotSignedIn() {
-        mSettingsActivityTestRule.startSettingsActivity();
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ClearBrowsingDataFragmentBasic fragment = mSettingsActivityTestRule.getFragment();
-            PreferenceScreen screen = fragment.getPreferenceScreen();
-
-            String cookiesSummary = getCheckboxSummary(screen,
-                    ClearBrowsingDataFragment.getPreferenceKey(
-                            DialogOption.CLEAR_COOKIES_AND_SITE_DATA));
-            String historySummary = getCheckboxSummary(
-                    screen, ClearBrowsingDataFragment.getPreferenceKey(DialogOption.CLEAR_HISTORY));
-
-            assertThat(cookiesSummary, not(containsString(GOOGLE_ACCOUNT)));
-            assertThat(historySummary, not(containsString(OTHER_ACTIVITY)));
-            assertThat(historySummary, not(containsString(SYNCED_DEVICES)));
-        });
-    }
-
-    /**
-     * Tests that for users who are signed in with a primary account but have
-     * sync disabled, only "google account" and "other activity" are shown.
-     */
-    @Test
-    @SmallTest
-    public void testCheckBoxTextSignedInButNotSyncing() {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
-        // Simulate that Sync was stopped but the primary account remained.
-        setSyncable(false);
-
-        mSettingsActivityTestRule.startSettingsActivity();
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ClearBrowsingDataFragmentBasic fragment = mSettingsActivityTestRule.getFragment();
-            PreferenceScreen screen = fragment.getPreferenceScreen();
-
-            String cookiesSummary = getCheckboxSummary(screen,
-                    ClearBrowsingDataFragment.getPreferenceKey(
-                            DialogOption.CLEAR_COOKIES_AND_SITE_DATA));
-            String historySummary = getCheckboxSummary(
-                    screen, ClearBrowsingDataFragment.getPreferenceKey(DialogOption.CLEAR_HISTORY));
-
-            assertThat(cookiesSummary, containsString(GOOGLE_ACCOUNT));
-            assertThat(historySummary, containsString(OTHER_ACTIVITY));
-            assertThat(historySummary, not(containsString(SYNCED_DEVICES)));
-        });
-    }
-
-    /**
-     * Tests that users who are signed in, and have sync enabled see information
-     * about their "google account", "other activity" and history on "signed in
-     * devices".
-     */
-    @Test
-    @SmallTest
-    public void testCheckBoxTextSignedInAndSyncing() {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
-        setSyncable(true);
-
-        mSettingsActivityTestRule.startSettingsActivity();
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ClearBrowsingDataFragmentBasic fragment = mSettingsActivityTestRule.getFragment();
-            PreferenceScreen screen = fragment.getPreferenceScreen();
-
-            String cookiesSummary = getCheckboxSummary(screen,
-                    ClearBrowsingDataFragment.getPreferenceKey(
-                            DialogOption.CLEAR_COOKIES_AND_SITE_DATA));
-            String historySummary = getCheckboxSummary(
-                    screen, ClearBrowsingDataFragment.getPreferenceKey(DialogOption.CLEAR_HISTORY));
-
-            assertThat(cookiesSummary, containsString(GOOGLE_ACCOUNT));
-            assertThat(historySummary, containsString(OTHER_ACTIVITY));
-            assertThat(historySummary, containsString(SYNCED_DEVICES));
         });
     }
 
