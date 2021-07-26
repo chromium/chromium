@@ -990,6 +990,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSchedulerConfiguration,
     prefs::kSchedulerConfiguration,
     base::Value::Type::STRING },
+  { key::kExternalPrintServersAllowlist,
+    prefs::kExternalPrintServersAllowlist,
+    base::Value::Type::LIST },
   { key::kDeviceExternalPrintServersAllowlist,
     prefs::kDeviceExternalPrintServersAllowlist,
     base::Value::Type::LIST },
@@ -1956,9 +1959,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
   handlers->AddHandler(
       std::make_unique<SystemFeaturesDisableListPolicyHandler>());
-  handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kExternalPrintServersAllowlist,
-      prefs::kExternalPrintServersAllowlist, base::Value::Type::LIST));
   handlers->AddHandler(std::make_unique<BooleanDisablingPolicyHandler>(
       key::kNearbyShareAllowed, prefs::kNearbySharingEnabledPrefName));
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(

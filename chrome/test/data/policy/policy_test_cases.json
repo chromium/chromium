@@ -954,15 +954,44 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "native_printing.external_print_servers_whitelist": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "ExternalPrintServersWhitelist": [
-            "id4",
-            "id7",
-            "id10"
+            "id4", "id7", "id10"
           ]
         },
         "prefs": {
-          "native_printing.external_print_servers_whitelist": {}
+          "native_printing.external_print_servers_whitelist": {
+            "value": [
+              "id4", "id7", "id10"
+            ]
+          }
+        }
+      },
+      {
+        "note": "ExternalPrintServersAllowlist has higher precedence.",
+        "policies": {
+          "ExternalPrintServersWhitelist": [
+            "id1", "id2", "id3"
+          ],
+          "ExternalPrintServersAllowlist": [
+            "id44", "id55"
+          ]
+        },
+        "prefs": {
+          "native_printing.external_print_servers_whitelist": {
+            "value": [
+              "id44", "id55"
+            ]
+          }
         }
       }
     ]
@@ -973,15 +1002,44 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "native_printing.external_print_servers_whitelist": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "ExternalPrintServersAllowlist": [
-            "id4",
-            "id7",
-            "id10"
+            "id1", "id2", "id3"
           ]
         },
         "prefs": {
-          "native_printing.external_print_servers_whitelist": {}
+          "native_printing.external_print_servers_whitelist": {
+            "value": [
+              "id1", "id2", "id3"
+            ]
+          }
+        }
+      },
+      {
+        "note": "ExternalPrintServersWhitelist has lower precedence.",
+        "policies": {
+          "ExternalPrintServersAllowlist": [
+            "id1", "id2"
+          ],
+          "ExternalPrintServersWhitelist": [
+            "id100", "id200"
+          ]
+        },
+        "prefs": {
+          "native_printing.external_print_servers_whitelist": {
+            "value": [
+              "id1", "id2"
+            ]
+          }
         }
       }
     ]
@@ -11066,6 +11124,15 @@
       "chromeos"
     ],
     "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "native_printing.device_external_print_servers_allowlist": {
+            "location": "local_state",
+            "default_value": []
+          }
+        }
+      },
       {
         "policies": {
           "DeviceExternalPrintServersAllowlist": [
