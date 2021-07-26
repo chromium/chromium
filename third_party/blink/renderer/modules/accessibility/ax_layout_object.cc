@@ -387,9 +387,17 @@ AXObjectInclusion AXLayoutObject::DefaultObjectInclusion(
 static bool HasLineBox(const LayoutBlockFlow& block_flow) {
   if (!block_flow.IsLayoutNGMixin())
     return block_flow.FirstLineBox();
-  if (block_flow.HasNGInlineNodeData())
-    return !block_flow.GetNGInlineNodeData()->IsEmptyInline();
+
   // TODO(layout-dev): We should call this function after layout completion.
+  NGInlineCursor cursor(block_flow);
+  if (!cursor.HasRoot())
+    return false;
+
+  for (cursor.MoveToFirstLine(); cursor; cursor.MoveToNextLine()) {
+    if (!cursor.CurrentItem()->IsEmptyLineBox())
+      return true;
+  }
+
   return false;
 }
 
