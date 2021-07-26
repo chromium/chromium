@@ -1028,27 +1028,6 @@ public class NetworkChangeNotifierTest {
     }
 
     /**
-     * Tests NetworkChangeNotifier.isProcessBoundToNetwork().
-     */
-    @Test
-    @MediumTest
-    @Feature({"Android-AppBase"})
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    public void testIsProcessBoundToNetwork() {
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) InstrumentationRegistry.getTargetContext().getSystemService(
-                        Context.CONNECTIVITY_SERVICE);
-        Network network = connectivityManager.getActiveNetwork();
-        Assert.assertFalse(NetworkChangeNotifier.isProcessBoundToNetwork());
-        if (network != null) {
-            ConnectivityManager.setProcessDefaultNetwork(network);
-            Assert.assertTrue(NetworkChangeNotifier.isProcessBoundToNetwork());
-        }
-        ConnectivityManager.setProcessDefaultNetwork(null);
-        Assert.assertFalse(NetworkChangeNotifier.isProcessBoundToNetwork());
-    }
-
-    /**
      * Regression test for crbug.com/805424 where ConnectivityManagerDelegate.vpnAccessible() was
      * found to leak.
      */

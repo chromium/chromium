@@ -386,9 +386,4 @@ void NetworkChangeNotifierDelegateAndroid::FakeConnectionSubtypeChanged(
   Java_NetworkChangeNotifier_fakeConnectionSubtypeChanged(env, subtype);
 }
 
-bool NetworkChangeNotifierDelegateAndroid::IsProcessBoundToNetwork() {
-  return Java_NetworkChangeNotifier_isProcessBoundToNetwork(
-      base::android::AttachCurrentThread());
-}
-
 }  // namespace net
