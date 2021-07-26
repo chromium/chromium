@@ -34,6 +34,15 @@ function hasImagePrefix(entry) {
 }
 
 /**
+ * Checks if the entry's name has the pdf suffix.
+ * @param {!FileAccessEntry} entry File entry.
+ * @return {boolean} Has the pdf suffix or not.
+ */
+export function hasPdfSuffix(entry) {
+  return entry.name.endsWith('.pdf');
+}
+
+/**
  * Temporary directory in the internal file system.
  * @type {?DirectoryAccessEntry}
  */

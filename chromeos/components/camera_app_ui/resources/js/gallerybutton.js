@@ -14,7 +14,7 @@ import {
 import {ResultSaver} from './models/result_saver.js';
 import {VideoSaver} from './models/video_saver.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
-import {scaleImage, scaleVideo} from './thumbnailer.js';
+import {scaleImage, scalePdfImage, scaleVideo} from './thumbnailer.js';
 import {
   ErrorLevel,
   ErrorType,
@@ -83,9 +83,15 @@ class CoverPhoto {
     }
 
     try {
-      const thumbnail = filesystem.hasVideoPrefix(file) ?
-          await scaleVideo(blob, THUMBNAIL_WIDTH) :
-          await scaleImage(blob, THUMBNAIL_WIDTH);
+      const thumbnail = await (async () => {
+        if (filesystem.hasVideoPrefix(file)) {
+          return await scaleVideo(blob, THUMBNAIL_WIDTH);
+        }
+        if (filesystem.hasPdfSuffix(file)) {
+          return await scalePdfImage(blob, THUMBNAIL_WIDTH);
+        }
+        return await scaleImage(blob, THUMBNAIL_WIDTH);
+      })();
       return new CoverPhoto(file, URL.createObjectURL(thumbnail));
     } catch (e) {
       reportError(

@@ -136,3 +136,91 @@ export async function scaleImage(blob, width, height = undefined) {
   }
   return elementToJpegBlob(el, width, height);
 }
+
+/**
+ * Failed to find image in pdf error.
+ */
+class NoImageInPdfError extends Error {
+  /**
+   * @param {string=} message
+   * @public
+   */
+  constructor(message = 'Failed to find image in pdf') {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
+
+/**
+ * Gets image embedded in a PDF.
+ * @param {!Blob} blob Blob of PDF.
+ * @return {!Promise<!Blob>} Promise resolved to image blob inside PDF.
+ */
+async function getImageFromPdf(blob) {
+  const buf = await blob.arrayBuffer();
+  const view = new Uint8Array(buf);
+  let i = 0;
+  /**
+   * Finds |patterns| in view starting from |i| and moves |i| to end of found
+   * pattern index.
+   * @param {...number} patterns
+   * @return {number} Returns begin of found pattern index or -1 for no further
+   *     pattern is found.
+   */
+  const findPattern = (...patterns) => {
+    for (; i + patterns.length < view.length; i++) {
+      if (patterns.every((b, index) => b === view[i + index])) {
+        const ret = i;
+        i += patterns.length;
+        return ret;
+      }
+    }
+    return -1;
+  };
+  // Parse object contains /Subtype /Image name and field from pdf format:
+  // <</Name1 /Field1... \n/Name2... >>...<<...>>
+  // The jpeg stream will follow the target object with length in field of
+  // /Length.
+  while (i < view.length) {
+    const start = findPattern(0x3c, 0x3c);  // <<
+    if (start === -1) {
+      throw new NoImageInPdfError();
+    }
+    const end = findPattern(0x3e, 0x3e);  // >>
+    if (end === -1) {
+      throw new NoImageInPdfError();
+    }
+    const s = String.fromCharCode(...view.slice(start + 2, end));
+    const objs = s.split('\n');
+    let isImage = false;
+    let length = 0;
+    for (const obj of objs) {
+      const [name, field] = obj.split(' ');
+      switch (name) {
+        case '/Subtype':
+          isImage = field === '/Image';
+          break;
+        case '/Length':
+          length = Number(field);
+          break;
+      }
+    }
+    if (isImage) {
+      i += ' stream\n'.length;
+      return new Blob([buf.slice(i, i + length)]);
+    }
+  }
+  throw new NoImageInPdfError();
+}
+
+/**
+ * Creates a thumbnail of image in pdf by scaling it to the target size.
+ * @param {!Blob} blob Blob of pdf.
+ * @param {number} width Target width.
+ * @param {number=} height Target height. Preserve the aspect ratio if not set.
+ * @return {!Promise<!Blob>} Promise of the thumbnail as a jpeg blob.
+ */
+export async function scalePdfImage(blob, width, height = undefined) {
+  blob = await getImageFromPdf(blob);
+  return scaleImage(blob, width, height);
+}
