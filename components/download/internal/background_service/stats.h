@@ -6,7 +6,7 @@
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_STATS_H_
 
 #include "base/files/file.h"
-#include "components/download/internal/background_service/controller.h"
+#include "components/download/internal/background_service/constants.h"
 #include "components/download/internal/background_service/download_blockage_status.h"
 #include "components/download/internal/background_service/driver_entry.h"
 #include "components/download/public/background_service/clients.h"

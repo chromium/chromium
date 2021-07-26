@@ -11,6 +11,7 @@
 #include "base/time/default_clock.h"
 #include "components/download/internal/background_service/client_set.h"
 #include "components/download/internal/background_service/download_store.h"
+#include "components/download/internal/background_service/file_monitor_impl.h"
 #include "components/download/internal/background_service/ios/background_download_service_impl.h"
 #include "components/download/internal/background_service/ios/background_download_task_helper.h"
 #include "components/download/internal/background_service/model_impl.h"
@@ -70,9 +71,11 @@ BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
       storage_dir.Append(kEntryDBStorageDir), background_task_runner);
   auto store = std::make_unique<download::DownloadStore>(std::move(entry_db));
   auto model = std::make_unique<download::ModelImpl>(std::move(store));
+  base::FilePath files_storage_dir = storage_dir.Append(kFilesStorageDir);
+  auto file_monitor = std::make_unique<download::FileMonitorImpl>(
+      files_storage_dir, background_task_runner);
   return std::make_unique<download::BackgroundDownloadServiceImpl>(
       std::move(client_set), std::move(model),
-      download::BackgroundDownloadTaskHelper::Create(
-          storage_dir.Append(kFilesStorageDir)),
-      base::DefaultClock::GetInstance());
+      download::BackgroundDownloadTaskHelper::Create(files_storage_dir),
+      std::move(file_monitor), base::DefaultClock::GetInstance());
 }

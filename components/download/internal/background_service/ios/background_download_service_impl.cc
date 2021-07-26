@@ -13,6 +13,7 @@
 #include "components/download/internal/background_service/client_set.h"
 #include "components/download/internal/background_service/config.h"
 #include "components/download/internal/background_service/entry.h"
+#include "components/download/internal/background_service/file_monitor.h"
 #include "components/download/internal/background_service/ios/background_download_task_helper.h"
 #include "components/download/internal/background_service/ios/entry_utils.h"
 #include "components/download/public/background_service/client.h"
@@ -40,12 +41,14 @@ BackgroundDownloadServiceImpl::BackgroundDownloadServiceImpl(
     std::unique_ptr<ClientSet> clients,
     std::unique_ptr<Model> model,
     std::unique_ptr<BackgroundDownloadTaskHelper> download_helper,
+    std::unique_ptr<FileMonitor> file_monitor,
     base::Clock* clock)
     : config_(std::make_unique<Configuration>()),
       service_config_(config_.get()),
       clients_(std::move(clients)),
       model_(std::move(model)),
       download_helper_(std::move(download_helper)),
+      file_monitor_(std::move(file_monitor)),
       clock_(clock) {
   model_->Initialize(this);
 }
@@ -100,7 +103,12 @@ void BackgroundDownloadServiceImpl::StartDownload(
 
   start_callbacks_.emplace(download_params.guid,
                            std::move(download_params.callback));
-  model_->Add(Entry(download_params));
+  // TODO(xingliu): Write target path to entry, and generate the path here. Also
+  // write the state change.
+  Entry entry(download_params);
+  entry.create_time = clock_->Now();
+  entry.state = Entry::State::ACTIVE;
+  model_->Add(entry);
 }
 
 void BackgroundDownloadServiceImpl::PauseDownload(const std::string& guid) {
@@ -125,13 +133,48 @@ Logger* BackgroundDownloadServiceImpl::GetLogger() {
 }
 
 void BackgroundDownloadServiceImpl::OnModelReady(bool success) {
-  init_success_ = success;
   if (!success) {
-    // Report service failure to clients.
-    for (DownloadClient client_id : clients_->GetRegisteredClients())
-      clients_->GetClient(client_id)->OnServiceUnavailable();
+    init_success_ = false;
+    NotifyServiceUnavailable();
     return;
   }
+
+  // Clean up expired entries or entries without a client, disregard whether
+  // they are completed.
+  std::set<std::string> entries_to_remove;
+  for (Entry* entry : model_->PeekEntries()) {
+    download::Client* client = clients_->GetClient(entry->client);
+    // TODO(xingliu): Ask client whether we can delete the file?
+    if (!client || base::Time::Now() - entry->create_time >
+                       config_->file_keep_alive_time) {
+      entries_to_remove.insert(entry->guid);
+    }
+  }
+
+  for (const auto& guid : entries_to_remove)
+    model_->Remove(guid);
+
+  file_monitor_->Initialize(
+      base::BindOnce(&BackgroundDownloadServiceImpl::OnFileMonitorInitialized,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BackgroundDownloadServiceImpl::OnFileMonitorInitialized(bool success) {
+  if (!success) {
+    init_success_ = false;
+    NotifyServiceUnavailable();
+    return;
+  }
+
+  // Clean up the download file directory on a background thread.
+  file_monitor_->DeleteUnknownFiles(
+      model_->PeekEntries(), {},
+      base::BindOnce(&BackgroundDownloadServiceImpl::OnFilesPruned,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BackgroundDownloadServiceImpl::OnFilesPruned() {
+  init_success_ = true;
 
   // Report download metadata to clients.
   auto metadata_map = util::MapEntriesToMetadataForClients(
@@ -139,6 +182,11 @@ void BackgroundDownloadServiceImpl::OnModelReady(bool success) {
   for (DownloadClient client_id : clients_->GetRegisteredClients())
     clients_->GetClient(client_id)->OnServiceInitialized(
         /*state_lost=*/false, metadata_map[client_id]);
+}
+
+void BackgroundDownloadServiceImpl::NotifyServiceUnavailable() {
+  for (DownloadClient client_id : clients_->GetRegisteredClients())
+    clients_->GetClient(client_id)->OnServiceUnavailable();
 }
 
 void BackgroundDownloadServiceImpl::OnModelHardRecoverComplete(bool success) {}
@@ -202,6 +250,8 @@ void BackgroundDownloadServiceImpl::OnDownloadFinished(
     return;
 
   entry->bytes_downloaded = base::saturated_cast<uint64_t>(file_size);
+  entry->completion_time = clock_->Now();
+  entry->state = Entry::State::COMPLETE;
   model_->Update(*entry);
 
   CompletionInfo completion_info;

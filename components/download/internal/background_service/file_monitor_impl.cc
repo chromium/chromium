@@ -145,10 +145,8 @@ bool HardRecoverOnFileThread(const base::FilePath& directory) {
 
 FileMonitorImpl::FileMonitorImpl(
     const base::FilePath& download_file_dir,
-    const scoped_refptr<base::SequencedTaskRunner>& file_thread_task_runner,
-    base::TimeDelta file_keep_alive_time)
+    const scoped_refptr<base::SequencedTaskRunner>& file_thread_task_runner)
     : download_file_dir_(download_file_dir),
-      file_keep_alive_time_(file_keep_alive_time),
       file_thread_task_runner_(file_thread_task_runner) {}
 
 FileMonitorImpl::~FileMonitorImpl() = default;
@@ -162,7 +160,8 @@ void FileMonitorImpl::Initialize(InitCallback callback) {
 
 void FileMonitorImpl::DeleteUnknownFiles(
     const Model::EntryList& known_entries,
-    const std::vector<DriverEntry>& known_driver_entries) {
+    const std::vector<DriverEntry>& known_driver_entries,
+    base::OnceClosure completion_callback) {
   std::set<base::FilePath> download_file_paths;
   for (Entry* entry : known_entries) {
     download_file_paths.insert(entry->target_file_path);
@@ -172,9 +171,11 @@ void FileMonitorImpl::DeleteUnknownFiles(
     download_file_paths.insert(driver_entry.current_file_path);
   }
 
-  file_thread_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&DeleteUnknownFilesOnFileThread,
-                                download_file_dir_, download_file_paths));
+  file_thread_task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&DeleteUnknownFilesOnFileThread, download_file_dir_,
+                     download_file_paths),
+      std::move(completion_callback));
 }
 
 void FileMonitorImpl::CleanupFilesForCompletedEntries(

@@ -119,8 +119,8 @@ std::unique_ptr<BackgroundDownloadService> BuildDownloadService(
   auto store = std::make_unique<DownloadStore>(std::move(entry_db));
 
   auto files_storage_dir = storage_dir.Append(kFilesStorageDir);
-  auto file_monitor = std::make_unique<FileMonitorImpl>(
-      files_storage_dir, background_task_runner, config->file_keep_alive_time);
+  auto file_monitor = std::make_unique<FileMonitorImpl>(files_storage_dir,
+                                                        background_task_runner);
 
   return CreateDownloadServiceInternal(
       simple_factory_key, std::move(clients), std::move(config),

@@ -22,9 +22,9 @@ class EmptyFileMonitor : public FileMonitor {
  private:
   // FileMonitor implementation.
   void Initialize(InitCallback callback) override;
-  void DeleteUnknownFiles(
-      const Model::EntryList& known_entries,
-      const std::vector<DriverEntry>& known_driver_entries) override;
+  void DeleteUnknownFiles(const Model::EntryList& known_entries,
+                          const std::vector<DriverEntry>& known_driver_entries,
+                          base::OnceClosure completion_callback) override;
   void CleanupFilesForCompletedEntries(
       const Model::EntryList& entries,
       base::OnceClosure completion_callback) override;

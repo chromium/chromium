@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "components/download/internal/background_service/constants.h"
 #include "components/download/internal/background_service/log_sink.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/download/public/background_service/logger.h"

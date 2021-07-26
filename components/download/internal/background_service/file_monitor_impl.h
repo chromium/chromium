@@ -27,15 +27,14 @@ class FileMonitorImpl : public FileMonitor {
  public:
   FileMonitorImpl(
       const base::FilePath& download_file_dir,
-      const scoped_refptr<base::SequencedTaskRunner>& file_thread_task_runner,
-      base::TimeDelta file_keep_alive_time);
+      const scoped_refptr<base::SequencedTaskRunner>& file_thread_task_runner);
   ~FileMonitorImpl() override;
 
   // FileMonitor implementation.
   void Initialize(InitCallback callback) override;
-  void DeleteUnknownFiles(
-      const Model::EntryList& known_entries,
-      const std::vector<DriverEntry>& known_driver_entries) override;
+  void DeleteUnknownFiles(const Model::EntryList& known_entries,
+                          const std::vector<DriverEntry>& known_driver_entries,
+                          base::OnceClosure completion_callback) override;
   void CleanupFilesForCompletedEntries(
       const Model::EntryList& entries,
       base::OnceClosure completion_callback) override;

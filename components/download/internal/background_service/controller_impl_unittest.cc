@@ -28,6 +28,7 @@
 #include "components/download/internal/background_service/stats.h"
 #include "components/download/internal/background_service/test/black_hole_log_sink.h"
 #include "components/download/internal/background_service/test/entry_utils.h"
+#include "components/download/internal/background_service/test/mock_file_monitor.h"
 #include "components/download/internal/background_service/test/test_device_status_listener.h"
 #include "components/download/internal/background_service/test/test_download_driver.h"
 #include "components/download/internal/background_service/test/test_store.h"
@@ -118,44 +119,6 @@ class MockScheduler : public Scheduler {
   MOCK_METHOD1(Reschedule, void(const Model::EntryList&));
   MOCK_METHOD2(Next, Entry*(const Model::EntryList&, const DeviceStatus&));
 };
-
-class MockFileMonitor : public FileMonitor {
- public:
-  MockFileMonitor() = default;
-  ~MockFileMonitor() override = default;
-
-  void TriggerInit(bool success);
-  void TriggerHardRecover(bool success);
-
-  void Initialize(FileMonitor::InitCallback callback) override;
-  MOCK_METHOD2(DeleteUnknownFiles,
-               void(const Model::EntryList&, const std::vector<DriverEntry>&));
-  MOCK_METHOD2(CleanupFilesForCompletedEntries,
-               void(const Model::EntryList&, base::OnceClosure));
-  MOCK_METHOD2(DeleteFiles,
-               void(const std::set<base::FilePath>&, stats::FileCleanupReason));
-  void HardRecover(FileMonitor::InitCallback) override;
-
- private:
-  FileMonitor::InitCallback init_callback_;
-  FileMonitor::InitCallback recover_callback_;
-};
-
-void MockFileMonitor::TriggerInit(bool success) {
-  std::move(init_callback_).Run(success);
-}
-
-void MockFileMonitor::TriggerHardRecover(bool success) {
-  std::move(recover_callback_).Run(success);
-}
-
-void MockFileMonitor::Initialize(FileMonitor::InitCallback callback) {
-  init_callback_ = std::move(callback);
-}
-
-void MockFileMonitor::HardRecover(FileMonitor::InitCallback callback) {
-  recover_callback_ = std::move(callback);
-}
 
 class DownloadServiceControllerImplTest : public testing::Test {
  public:
@@ -470,7 +433,7 @@ TEST_F(DownloadServiceControllerImplTest, UnknownFileDeletion) {
       BuildDriverEntry(entry3, DriverEntry::State::IN_PROGRESS);
   std::vector<DriverEntry> dentries = {dentry1, dentry3};
 
-  EXPECT_CALL(*file_monitor_, DeleteUnknownFiles(_, _)).Times(1);
+  EXPECT_CALL(*file_monitor_, DeleteUnknownFiles(_, _, _));
 
   driver_->AddTestData(dentries);
   InitializeController();

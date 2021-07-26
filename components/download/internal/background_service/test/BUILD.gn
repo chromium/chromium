@@ -15,6 +15,8 @@ source_set("test_support") {
   sources = [
     "entry_utils.cc",
     "entry_utils.h",
+    "mock_file_monitor.cc",
+    "mock_file_monitor.h",
     "test_store.cc",
     "test_store.h",
   ]
@@ -42,6 +44,7 @@ source_set("test_support") {
 
   public_deps = [
     "//base",
+    "//components/download/internal/background_service:common",
     "//components/download/public/background_service:public",
     "//testing/gmock",
   ]

@@ -772,7 +772,7 @@ void ControllerImpl::CleanupUnknownFiles() {
       driver_entries.push_back(driver_entry.value());
   }
 
-  file_monitor_->DeleteUnknownFiles(entries, driver_entries);
+  file_monitor_->DeleteUnknownFiles(entries, driver_entries, base::DoNothing());
 }
 
 void ControllerImpl::ResolveInitialRequestStates() {

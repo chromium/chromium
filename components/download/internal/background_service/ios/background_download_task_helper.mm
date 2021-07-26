@@ -42,6 +42,8 @@ using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
                                      guid:(std::string)guid
                         completionHandler:(CompletionCallback)completionHandler
                             updateHandler:(UpdateCallback)updateHandler {
+  // TODO(xingliu): Pass in the target download path instead of download
+  // directory. File monitor will create the directory.
   _downloadDir = downloadDir;
   _guid = guid;
   _completionCallback = std::move(completionHandler);

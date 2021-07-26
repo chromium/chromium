@@ -24,18 +24,9 @@ if (!is_ios) {
       "controller.h",
       "controller_impl.cc",
       "controller_impl.h",
-      "download_blockage_status.cc",
-      "download_blockage_status.h",
       "download_driver.h",
-      "driver_entry.cc",
-      "driver_entry.h",
-      "empty_file_monitor.cc",
-      "empty_file_monitor.h",
       "entry_utils.cc",
       "entry_utils.h",
-      "file_monitor.h",
-      "file_monitor_impl.cc",
-      "file_monitor_impl.h",
       "in_memory_download.cc",
       "in_memory_download.h",
       "in_memory_download_driver.cc",
@@ -56,10 +47,6 @@ if (!is_ios) {
       "scheduler/scheduler.h",
       "scheduler/scheduler_impl.cc",
       "scheduler/scheduler_impl.h",
-      "startup_status.cc",
-      "startup_status.h",
-      "stats.cc",
-      "stats.h",
     ]
 
     deps = [
@@ -113,25 +100,46 @@ source_set("common") {
     "client_set.h",
     "config.cc",
     "config.h",
+    "constants.h",
     "debugging_client.cc",
     "debugging_client.h",
+    "download_blockage_status.cc",
+    "download_blockage_status.h",
+    "driver_entry.cc",
+    "driver_entry.h",
+    "empty_file_monitor.cc",
+    "empty_file_monitor.h",
+    "file_monitor.h",
+    "file_monitor_impl.cc",
+    "file_monitor_impl.h",
     "service_config_impl.cc",
     "service_config_impl.h",
+    "startup_status.cc",
+    "startup_status.h",
+    "stats.cc",
+    "stats.h",
   ]
 
   visibility = [
     ":*",
     "//components/download/content/factory",
+    "//components/download/content/internal",
     "//components/download/internal/background_service/ios:background_service",
     "//components/download/internal/background_service/ios:unit_tests",
+    "//components/download/internal/background_service/test:test_support",
     "//ios/chrome/browser/download/background_service:background_service",
   ]
 
   deps = [
+    ":storage",
     "//base",
     "//components/download/public/background_service:public",
     "//services/network/public/cpp",
   ]
+
+  if (!is_ios) {
+    deps += [ "//storage/browser" ]
+  }
 }
 
 source_set("storage") {
@@ -172,7 +180,10 @@ source_set("storage") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "service_config_impl_unittest.cc" ]
+  sources = [
+    "file_monitor_unittest.cc",
+    "service_config_impl_unittest.cc",
+  ]
 
   if (!is_ios) {
     sources += [
@@ -181,7 +192,6 @@ source_set("unit_tests") {
       "controller_impl_unittest.cc",
       "download_store_unittest.cc",
       "entry_utils_unittest.cc",
-      "file_monitor_unittest.cc",
       "in_memory_download_driver_unittest.cc",
       "in_memory_download_unittest.cc",
       "model_impl_unittest.cc",
@@ -195,6 +205,8 @@ source_set("unit_tests") {
   deps = [
     ":common",
     ":storage",
+    "//base/test:test_support",
+    "//components/download/internal/background_service/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -202,9 +214,7 @@ source_set("unit_tests") {
   if (!is_ios) {
     deps += [
       ":internal",
-      "//base/test:test_support",
       "//components/download/internal/background_service/proto",
-      "//components/download/internal/background_service/test:test_support",
       "//components/download/network",
       "//components/download/public/background_service/test:test_support",
       "//components/leveldb_proto:test_support",

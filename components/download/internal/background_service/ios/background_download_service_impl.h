@@ -21,6 +21,7 @@ namespace download {
 
 class BackgroundDownloadTaskHelper;
 class ClientSet;
+class FileMonitor;
 class Model;
 struct Configuration;
 struct DownloadParams;
@@ -33,6 +34,7 @@ class BackgroundDownloadServiceImpl : public BackgroundDownloadService,
       std::unique_ptr<ClientSet> clients,
       std::unique_ptr<Model> model,
       std::unique_ptr<BackgroundDownloadTaskHelper> download_helper,
+      std::unique_ptr<FileMonitor> file_monitor,
       base::Clock* clock);
   ~BackgroundDownloadServiceImpl() override;
 
@@ -64,6 +66,10 @@ class BackgroundDownloadServiceImpl : public BackgroundDownloadService,
                      DownloadClient client,
                      const std::string& guid) override;
 
+  void OnFileMonitorInitialized(bool success);
+  void OnFilesPruned();
+  void NotifyServiceUnavailable();
+
   void OnDownloadFinished(DownloadClient download_client,
                           const std::string& guid,
                           bool success,
@@ -80,6 +86,7 @@ class BackgroundDownloadServiceImpl : public BackgroundDownloadService,
   std::unique_ptr<ClientSet> clients_;
   std::unique_ptr<Model> model_;
   std::unique_ptr<BackgroundDownloadTaskHelper> download_helper_;
+  std::unique_ptr<FileMonitor> file_monitor_;
   absl::optional<bool> init_success_;
   std::map<std::string, DownloadParams::StartCallback> start_callbacks_;
   base::Time update_time_;
