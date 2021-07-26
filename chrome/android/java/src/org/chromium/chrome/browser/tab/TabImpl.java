@@ -438,8 +438,12 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     public boolean isThemingAllowed() {
         // Do not apply the theme color if there are any security issues on the page.
         int securityLevel = SecurityStateModel.getSecurityLevelForWebContents(getWebContents());
-        return securityLevel != ConnectionSecurityLevel.DANGEROUS
-                && securityLevel != ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT;
+        boolean hasSecurityIssue = securityLevel == ConnectionSecurityLevel.DANGEROUS
+            || securityLevel == ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT;
+        // If chrome is showing an error page, allow theming so the system UI can match the page.
+        // This is considered acceptable since chrome is in control of the error page. Otherwise, if
+        // the page has a security issue, disable theming.
+        return isShowingErrorPage() || !hasSecurityIssue;
     }
 
     @Override
