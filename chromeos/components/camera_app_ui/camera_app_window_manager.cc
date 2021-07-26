@@ -203,11 +203,13 @@ void CameraAppWindowManager::ResumeNextOrIdle() {
   pending_transfer_ = absl::nullopt;
   if (next_owner.has_value()) {
     owner_ = *next_owner;
-    if (owner_ != nullptr) {
-      ResumeCameraUsage();
-    }
   } else {
     owner_ = nullptr;
+  }
+
+  if (owner_ != nullptr) {
+    ResumeCameraUsage();
+  } else {
     transfer_state_ = TransferState::kIdle;
   }
 }
