@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/full_restore/arc_app_launch_handler.h"
 #include "chrome/browser/chromeos/full_restore/arc_window_handler.h"
 #include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
@@ -33,9 +34,19 @@ FullRestoreArcTaskHandler::FullRestoreArcTaskHandler(Profile* profile) {
 #endif
 
   arc_app_launch_handler_ = std::make_unique<ArcAppLaunchHandler>();
+
+  arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
+  // arc::ArcSessionManager might not be set in tests.
+  if (arc_session_manager)
+    arc_session_manager->AddObserver(this);
 }
 
-FullRestoreArcTaskHandler::~FullRestoreArcTaskHandler() = default;
+FullRestoreArcTaskHandler::~FullRestoreArcTaskHandler() {
+  arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
+  // arc::ArcSessionManager may be released first.
+  if (arc_session_manager)
+    arc_session_manager->RemoveObserver(this);
+}
 
 void FullRestoreArcTaskHandler::OnTaskCreated(int32_t task_id,
                                               const std::string& package_name,
@@ -72,6 +83,11 @@ void FullRestoreArcTaskHandler::OnAppConnectionReady() {
 
 void FullRestoreArcTaskHandler::OnArcAppListPrefsDestroyed() {
   arc_prefs_observer_.Reset();
+}
+
+void FullRestoreArcTaskHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
+  if (arc_app_launch_handler_)
+    arc_app_launch_handler_->OnArcPlayStoreEnabledChanged(enabled);
 }
 
 void FullRestoreArcTaskHandler::OnShelfReady() {

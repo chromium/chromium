@@ -94,6 +94,8 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   // Invoked when ChromeShelfController is created.
   void OnShelfReady();
 
+  void OnArcPlayStoreEnabledChanged(bool enabled);
+
   void LaunchApp(const std::string& app_id);
 
   // wm::ActivationChangeObserver:

@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/chromeos/full_restore/arc_window_handler.h"
 #include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_app_launch_handler.h"
@@ -109,6 +110,9 @@ void ArcAppLaunchHandler::RestoreArcApps(
     FullRestoreAppLaunchHandler* app_launch_handler) {
   DCHECK(app_launch_handler);
   handler_ = app_launch_handler;
+
+  if (!arc::IsArcPlayStoreEnabledForProfile(handler_->profile_))
+    return;
 
   DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
       handler_->profile_));
@@ -206,6 +210,27 @@ void ArcAppLaunchHandler::OnShelfReady() {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&ArcAppLaunchHandler::PrepareLaunchApps,
                                 weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcAppLaunchHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
+  if (enabled)
+    return;
+
+  StopRestore();
+
+#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
+  if (window_handler_) {
+    std::set<int32_t> session_ids;
+    for (const auto& it : session_id_to_window_id_)
+      session_ids.insert(it.first);
+    for (auto session_id : session_ids)
+      window_handler_->CloseWindow(session_id);
+  }
+#endif
+
+  app_ids_.clear();
+  windows_.clear();
+  no_stack_windows_.clear();
 }
 
 void ArcAppLaunchHandler::LaunchApp(const std::string& app_id) {
@@ -347,9 +372,6 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
     return;
   }
 
-  auto* arc_handler =
-      FullRestoreArcTaskHandler::GetForProfile(handler_->profile_);
-
   for (const auto& data_it : it->second) {
     handler_->RecordRestoredAppLaunch(apps::AppTypeName::kArc);
 
@@ -370,8 +392,8 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
     if (window_handler_ && (data_it.second->bounds_in_root.has_value() ||
                             data_it.second->current_bounds.has_value())) {
       RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/true);
-      arc_handler->window_handler()->LaunchArcGhostWindow(
-          app_id, arc_session_id, data_it.second.get());
+      window_handler_->LaunchArcGhostWindow(app_id, arc_session_id,
+                                            data_it.second.get());
       launch_ghost_window = true;
     } else {
       RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/false);

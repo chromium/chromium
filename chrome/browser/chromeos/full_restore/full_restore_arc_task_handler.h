@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/common/buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -27,7 +28,8 @@ class ArcWindowHandler;
 // FullRestoreArcTaskHandler is an independent KeyedService so that it could be
 // created along with ARC system rather than with FullRestoreService.
 class FullRestoreArcTaskHandler : public KeyedService,
-                                  public ArcAppListPrefs::Observer {
+                                  public ArcAppListPrefs::Observer,
+                                  public arc::ArcSessionManagerObserver {
  public:
   static FullRestoreArcTaskHandler* GetForProfile(Profile* profile);
 
@@ -60,6 +62,9 @@ class FullRestoreArcTaskHandler : public KeyedService,
                                 uint32_t status_bar_color) override;
   void OnAppConnectionReady() override;
   void OnArcAppListPrefsDestroyed() override;
+
+  // arc::ArcSessionManagerObserver:
+  void OnArcPlayStoreEnabledChanged(bool enabled) override;
 
   // Invoked when ChromeShelfController is created.
   void OnShelfReady();
