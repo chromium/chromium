@@ -161,10 +161,6 @@ class PasswordStore : public PasswordStoreInterface {
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate();
 
-  // Sets |deletion_notifier_|. Must not pass a nullptr.
-  virtual void SetUnsyncedCredentialsDeletionNotifier(
-      std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier);
-
  protected:
   using LoginsTask = base::OnceCallback<LoginsResult()>;
   using LoginsResultProcessor =

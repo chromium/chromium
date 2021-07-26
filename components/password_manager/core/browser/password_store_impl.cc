@@ -43,20 +43,20 @@ PasswordStoreImpl::PasswordStoreImpl(std::unique_ptr<LoginDatabase> login_db)
   backend_ = this;
 }
 
+PasswordStoreImpl::PasswordStoreImpl(
+    std::unique_ptr<LoginDatabase> login_db,
+    std::unique_ptr<UnsyncedCredentialsDeletionNotifier> notifier)
+    : PasswordStoreImpl(std::move(login_db)) {
+  DCHECK(notifier);
+  deletion_notifier_ = std::move(notifier);
+}
+
 PasswordStoreImpl::~PasswordStoreImpl() = default;
 
 void PasswordStoreImpl::ShutdownOnUIThread() {
   PasswordStore::ShutdownOnUIThread();
   ScheduleTask(
       base::BindOnce(&PasswordStoreImpl::DestroyOnBackgroundSequence, this));
-}
-
-void PasswordStoreImpl::SetUnsyncedCredentialsDeletionNotifier(
-    std::unique_ptr<PasswordStore::UnsyncedCredentialsDeletionNotifier>
-        notifier) {
-  DCHECK(!deletion_notifier_);
-  DCHECK(notifier);
-  deletion_notifier_ = std::move(notifier);
 }
 
 void PasswordStoreImpl::ReportMetricsImpl(const std::string& sync_username,

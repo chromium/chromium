@@ -193,8 +193,15 @@ AccountPasswordStoreFactory::BuildServiceInstanceFor(
       password_manager::CreateLoginDatabaseForAccountStorage(
           profile->GetPath()));
 
-  scoped_refptr<PasswordStore> ps =
+  scoped_refptr<password_manager::PasswordStore> ps =
+#if !defined(OS_ANDROID)
+      new password_manager::PasswordStoreImpl(
+          std::move(login_db),
+          std::make_unique<UnsyncedCredentialsDeletionNotifierImpl>(profile));
+#else
       new password_manager::PasswordStoreImpl(std::move(login_db));
+#endif
+
   if (!ps->Init(profile->GetPrefs(),
                 base::BindRepeating(&SyncEnabledOrDisabled, profile))) {
     // TODO(crbug.com/479725): Remove the LOG once this error is visible in the
@@ -214,11 +221,6 @@ AccountPasswordStoreFactory::BuildServiceInstanceFor(
       CredentialsCleanerRunnerFactory::GetForProfile(profile), ps,
       profile->GetPrefs(), base::TimeDelta::FromSeconds(60),
       network_context_getter);
-
-#if !defined(OS_ANDROID)
-  ps->SetUnsyncedCredentialsDeletionNotifier(
-      std::make_unique<UnsyncedCredentialsDeletionNotifierImpl>(profile));
-#endif  // !defined(OS_ANDROID)
 
   return ps;
 }

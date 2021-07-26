@@ -410,11 +410,6 @@ PasswordStore::CreateSyncControllerDelegate() {
           base::Unretained(this)));
 }
 
-void PasswordStore::SetUnsyncedCredentialsDeletionNotifier(
-    std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier) {
-  NOTREACHED() << "Platform doesn't support sync!";
-}
-
 PasswordStore::~PasswordStore() {
   DCHECK(shutdown_called_);
 }

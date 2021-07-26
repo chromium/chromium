@@ -32,6 +32,10 @@ class PasswordStoreImpl : protected PasswordStoreSync,
   // a deferred manner on the background sequence.
   explicit PasswordStoreImpl(std::unique_ptr<LoginDatabase> login_db);
 
+  PasswordStoreImpl(
+      std::unique_ptr<LoginDatabase> login_db,
+      std::unique_ptr<UnsyncedCredentialsDeletionNotifier> notifier);
+
   void ShutdownOnUIThread() override;
 
   // To be used only for testing or in subclasses.
@@ -41,9 +45,6 @@ class PasswordStoreImpl : protected PasswordStoreSync,
   ~PasswordStoreImpl() override;
 
   // Implements PasswordStore interface.
-  void SetUnsyncedCredentialsDeletionNotifier(
-      std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier)
-      override;
   void ReportMetricsImpl(const std::string& sync_username,
                          bool custom_passphrase_sync_enabled,
                          BulkCheckDone bulk_check_done) override;

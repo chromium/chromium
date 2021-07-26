@@ -310,11 +310,6 @@ TestPasswordStore::GetMatchingInsecureCredentialsImpl(
   return result;
 }
 
-void TestPasswordStore::SetUnsyncedCredentialsDeletionNotifier(
-    std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier) {
-  NOTIMPLEMENTED();
-}
-
 bool TestPasswordStore::IsAccountStore() const {
   return is_account_store_.value();
 }

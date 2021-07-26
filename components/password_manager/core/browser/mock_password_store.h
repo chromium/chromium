@@ -92,11 +92,6 @@ class MockPasswordStore : public PasswordStore {
               GetAllLoginsWithAffiliationAndBrandingInformation,
               (PasswordStoreConsumer*),
               (override));
-  void SetUnsyncedCredentialsDeletionNotifier(
-      std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier)
-      override {
-    NOTIMPLEMENTED();
-  }
 
   MOCK_METHOD(bool, IsAbleToSavePasswords, (), (override, const));
 
