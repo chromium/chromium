@@ -203,6 +203,10 @@ class ContentAutofillDriver : public AutofillDriver,
   // mojom::AutofillDriver functions called by the renderer.
   // These events are forwarded to ContentAutofillRouter.
   // Their implementations (*Impl()) call into AutofillManager.
+  //
+  // We do not expect to receive autofill related messages from a prerendered
+  // page, so we will validate calls accordingly. If we receive an unexpected
+  // call, we will shut down the renderer and log the bad message.
   void SetFormToBeProbablySubmitted(
       const absl::optional<FormData>& form) override;
   void FormsSeen(const std::vector<FormData>& forms) override;
@@ -379,11 +383,17 @@ class ContentAutofillDriver : public AutofillDriver,
   void ShowOfferNotificationIfApplicable(
       content::NavigationHandle* navigation_handle);
 
+  // Returns the autofill router and confirms that it may be accessed (we should
+  // not be using the router if we're prerendering).
+  ContentAutofillRouter& GetAutofillRouter();
+
   // Weak ref to the RenderFrameHost the driver is associated with. Should
   // always be non-NULL and valid for lifetime of |this|.
   content::RenderFrameHost* const render_frame_host_ = nullptr;
 
-  // Weak ref to the AutofillRouter associated with the WebContents.
+  // Weak ref to the AutofillRouter associated with the WebContents. Please
+  // access this via GetAutofillRouter() above as it also confirms that the
+  // router may be accessed.
   ContentAutofillRouter* autofill_router_ = nullptr;
 
   // The form pushed from the AutofillAgent to the AutofillDriver. When the

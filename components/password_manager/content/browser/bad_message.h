@@ -39,6 +39,7 @@ enum class BadMessageReason {
   CPMD_BAD_ORIGIN_SHOW_MANUAL_PASSWORD_GENERATION_POPUP = 11,
   CPMD_BAD_ORIGIN_SHOW_PASSWORD_EDITING_POPUP = 12,
   CPMD_BAD_ORIGIN_GENERATION_AVAILABLE_FOR_FORM = 13,
+  CPMD_BAD_ORIGIN_PRERENDERING = 14,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. ContentPasswordManagerDriver becomes CPMD) plus a unique
@@ -75,6 +76,10 @@ bool CheckChildProcessSecurityPolicy(
     content::RenderFrameHost* frame,
     const std::vector<autofill::FormData>& forms_data,
     BadMessageReason reason);
+
+// Returns true if frame is not prerendering (when password manager updates
+// are disallowed). Kills the renderer if we are prerendering.
+bool CheckFrameNotPrerendering(content::RenderFrameHost* frame);
 
 }  // namespace bad_message
 }  // namespace password_manager

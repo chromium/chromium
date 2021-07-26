@@ -135,6 +135,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Stability.BadMessageTerminated.Autofill"
+    enum="BadMessageReasonAutofill" expires_after="M95">
+  <owner>vollick@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Count of processes killed because they sent a bad IPC that couldn't be
+    properly handled. Categories are the reasons (code locations) for the kills.
+  </summary>
+</histogram>
+
 <histogram name="Stability.BadMessageTerminated.Chrome"
     enum="BadMessageReasonChrome" expires_after="2021-12-12">
   <owner>creis@chromium.org</owner>

@@ -8,6 +8,8 @@ static_library("browser") {
   sources = [
     "autofill_log_router_factory.cc",
     "autofill_log_router_factory.h",
+    "bad_message.cc",
+    "bad_message.h",
     "content_autofill_driver.cc",
     "content_autofill_driver.h",
     "content_autofill_driver_factory.cc",

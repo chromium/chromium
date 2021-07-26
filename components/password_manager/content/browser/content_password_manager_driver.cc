@@ -215,6 +215,9 @@ void ContentPasswordManagerDriver::GeneratePassword(
 
 void ContentPasswordManagerDriver::PasswordFormsParsed(
     const std::vector<autofill::FormData>& forms_data) {
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_))
+    return;
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicy(
           render_frame_host_, forms_data,
           BadMessageReason::CPMD_BAD_ORIGIN_FORMS_PARSED))
@@ -225,6 +228,9 @@ void ContentPasswordManagerDriver::PasswordFormsParsed(
 void ContentPasswordManagerDriver::PasswordFormsRendered(
     const std::vector<autofill::FormData>& visible_forms_data,
     bool did_stop_loading) {
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_))
+    return;
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicy(
           render_frame_host_, visible_forms_data,
           BadMessageReason::CPMD_BAD_ORIGIN_FORMS_RENDERED))
@@ -235,6 +241,9 @@ void ContentPasswordManagerDriver::PasswordFormsRendered(
 
 void ContentPasswordManagerDriver::PasswordFormSubmitted(
     const autofill::FormData& form_data) {
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_))
+    return;
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
           render_frame_host_, form_data.url,
           BadMessageReason::CPMD_BAD_ORIGIN_FORM_SUBMITTED))
@@ -246,6 +255,9 @@ void ContentPasswordManagerDriver::PasswordFormSubmitted(
 
 void ContentPasswordManagerDriver::InformAboutUserInput(
     const autofill::FormData& form_data) {
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_))
+    return;
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
           render_frame_host_, form_data.url,
           BadMessageReason::CPMD_BAD_ORIGIN_UPON_USER_INPUT_CHANGE))
@@ -269,6 +281,9 @@ void ContentPasswordManagerDriver::InformAboutUserInput(
 
 void ContentPasswordManagerDriver::DynamicFormSubmission(
     autofill::mojom::SubmissionIndicatorEvent submission_indication_event) {
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_))
+    return;
   GetPasswordManager()->OnDynamicFormSubmission(this,
                                                 submission_indication_event);
   LogSiteIsolationMetricsForSubmittedForm(render_frame_host_);
@@ -276,11 +291,17 @@ void ContentPasswordManagerDriver::DynamicFormSubmission(
 
 void ContentPasswordManagerDriver::PasswordFormCleared(
     const autofill::FormData& form_data) {
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_))
+    return;
   GetPasswordManager()->OnPasswordFormCleared(this, form_data);
 }
 
 void ContentPasswordManagerDriver::RecordSavePasswordProgress(
     const std::string& log) {
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_))
+    return;
   // Skip messages from chrome:// URLs as they are just noise for
   // chrome://password-manager-internals based debugging.
   if (GetLastCommittedURL().SchemeIs(content::kChromeUIScheme))
@@ -289,6 +310,9 @@ void ContentPasswordManagerDriver::RecordSavePasswordProgress(
 }
 
 void ContentPasswordManagerDriver::UserModifiedPasswordField() {
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_))
+    return;
   if (client_->GetMetricsRecorder())
     client_->GetMetricsRecorder()->RecordUserModifiedPasswordField();
 }
@@ -297,6 +321,9 @@ void ContentPasswordManagerDriver::UserModifiedNonPasswordField(
     autofill::FieldRendererId renderer_id,
     const std::u16string& field_name,
     const std::u16string& value) {
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_))
+    return;
   GetPasswordManager()->OnUserModifiedNonPasswordField(this, renderer_id,
                                                        field_name, value);
 }
@@ -306,18 +333,27 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
     const std::u16string& typed_username,
     int options,
     const gfx::RectF& bounds) {
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_))
+    return;
   GetPasswordAutofillManager()->OnShowPasswordSuggestions(
       text_direction, typed_username, options,
       TransformToRootCoordinates(render_frame_host_, bounds));
 }
 
 void ContentPasswordManagerDriver::ShowTouchToFill() {
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_))
+    return;
   client_->ShowTouchToFill(this);
 }
 
 void ContentPasswordManagerDriver::CheckSafeBrowsingReputation(
     const GURL& form_action,
     const GURL& frame_url) {
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_))
+    return;
   // Despite the name, this method is only called on password fields.
   // (See PasswordAutofillAgent::MaybeCheckSafeBrowsingReputation())
   if (client_->GetMetricsRecorder()) {
@@ -331,12 +367,18 @@ void ContentPasswordManagerDriver::CheckSafeBrowsingReputation(
 void ContentPasswordManagerDriver::FocusedInputChanged(
     autofill::FieldRendererId focused_field_id,
     FocusedFieldType focused_field_type) {
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_))
+    return;
   client_->FocusedInputChanged(this, focused_field_id, focused_field_type);
 }
 
 void ContentPasswordManagerDriver::LogFirstFillingResult(
     autofill::FormRendererId form_renderer_id,
     int32_t result) {
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_))
+    return;
   GetPasswordManager()->LogFirstFillingResult(this, form_renderer_id, result);
 }
 
@@ -371,6 +413,9 @@ ContentPasswordManagerDriver::GetAutofillAgent() {
 
 const mojo::AssociatedRemote<autofill::mojom::PasswordAutofillAgent>&
 ContentPasswordManagerDriver::GetPasswordAutofillAgent() {
+  DCHECK(!password_autofill_agent_ ||
+         (content::RenderFrameHost::LifecycleState::kPrerendering !=
+          render_frame_host_->GetLifecycleState()));
   if (!password_autofill_agent_) {
     // Some test environments may have no remote interface support.
     if (render_frame_host_->GetRemoteAssociatedInterfaces()) {
@@ -384,6 +429,9 @@ ContentPasswordManagerDriver::GetPasswordAutofillAgent() {
 
 const mojo::AssociatedRemote<autofill::mojom::PasswordGenerationAgent>&
 ContentPasswordManagerDriver::GetPasswordGenerationAgent() {
+  DCHECK(!password_gen_agent_ ||
+         (content::RenderFrameHost::LifecycleState::kPrerendering !=
+          render_frame_host_->GetLifecycleState()));
   if (!password_gen_agent_) {
     render_frame_host_->GetRemoteAssociatedInterfaces()->GetInterface(
         &password_gen_agent_);

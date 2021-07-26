@@ -71,10 +71,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<mojom::AutofillAgent> pending_receiver);
 
-  const mojo::AssociatedRemote<mojom::AutofillDriver>& GetAutofillDriver();
-
-  const mojo::AssociatedRemote<mojom::PasswordManagerDriver>&
-  GetPasswordManagerDriver();
+  mojom::AutofillDriver& GetAutofillDriver();
+  mojom::PasswordManagerDriver& GetPasswordManagerDriver();
 
   // mojom::AutofillAgent:
   void TriggerReparse() override;
@@ -138,11 +136,14 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   void SelectWasUpdated(const blink::WebFormControlElement& element);
 
+  bool IsPrerendering() const;
+
  protected:
   // blink::WebAutofillClient:
   void DidAssociateFormControlsDynamically() override;
 
  private:
+  class DeferringAutofillDriver;
   friend class FormControlClickDetectionTest;
 
   // Flags passed to ShowSuggestions.
@@ -364,6 +365,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   mojo::AssociatedReceiver<mojom::AutofillAgent> receiver_{this};
 
   mojo::AssociatedRemote<mojom::AutofillDriver> autofill_driver_;
+
+  // For deferring messages to the browser process while prerendering.
+  std::unique_ptr<DeferringAutofillDriver> deferring_autofill_driver_;
 
   bool was_last_action_fill_ = false;
 

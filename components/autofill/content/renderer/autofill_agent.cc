@@ -50,6 +50,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
@@ -107,6 +108,101 @@ ExtractMask GetExtractDatalistMask() {
 }
 
 }  // namespace
+
+// During prerendering, we do not want the renderer to send messages to the
+// corresponding driver. Since we use a channel associated interface, we still
+// need to set up the mojo connection as before (i.e., we can't defer binding
+// the interface). Instead, we enqueue our messages here as post-activation
+// tasks. See post-prerendering activation steps here:
+// https://jeremyroman.github.io/alternate-loading-modes/#prerendering-bcs-subsection
+class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
+ public:
+  explicit DeferringAutofillDriver(AutofillAgent* agent) : agent_(agent) {}
+  ~DeferringAutofillDriver() override = default;
+
+ private:
+  template <typename F, typename... Args>
+  void SendMsg(F fn, Args&&... args) {
+    DCHECK(agent_->autofill_driver_);
+    (agent_->autofill_driver_.get()->*fn)(std::forward<Args>(args)...);
+  }
+  template <typename F, typename... Args>
+  void DeferMsg(F fn, Args... args) {
+    DCHECK(agent_->IsPrerendering());
+    agent_->render_frame()
+        ->GetWebFrame()
+        ->GetDocument()
+        .AddPostPrerenderingActivationStep(base::BindOnce(
+            &DeferringAutofillDriver::SendMsg<F, Args...>,
+            weak_ptr_factory_.GetWeakPtr(), fn, std::forward<Args>(args)...));
+  }
+  void SetFormToBeProbablySubmitted(
+      const absl::optional<FormData>& form) override {
+    DeferMsg(&mojom::AutofillDriver::SetFormToBeProbablySubmitted, form);
+  }
+  void FormsSeen(const std::vector<FormData>& forms) override {
+    DeferMsg(&mojom::AutofillDriver::FormsSeen, forms);
+  }
+  void FormSubmitted(const FormData& form,
+                     bool known_success,
+                     mojom::SubmissionSource source) override {
+    DeferMsg(&mojom::AutofillDriver::FormSubmitted, form, known_success,
+             source);
+  }
+  void TextFieldDidChange(const FormData& form,
+                          const FormFieldData& field,
+                          const gfx::RectF& bounding_box,
+                          base::TimeTicks timestamp) override {
+    DeferMsg(&mojom::AutofillDriver::TextFieldDidChange, form, field,
+             bounding_box, timestamp);
+  }
+  void TextFieldDidScroll(const FormData& form,
+                          const FormFieldData& field,
+                          const gfx::RectF& bounding_box) override {
+    DeferMsg(&mojom::AutofillDriver::TextFieldDidScroll, form, field,
+             bounding_box);
+  }
+  void SelectControlDidChange(const FormData& form,
+                              const FormFieldData& field,
+                              const gfx::RectF& bounding_box) override {
+    DeferMsg(&mojom::AutofillDriver::SelectControlDidChange, form, field,
+             bounding_box);
+  }
+  void SelectFieldOptionsDidChange(const FormData& form) override {
+    DeferMsg(&mojom::AutofillDriver::SelectFieldOptionsDidChange, form);
+  }
+  void AskForValuesToFill(int32_t id,
+                          const FormData& form,
+                          const FormFieldData& field,
+                          const gfx::RectF& bounding_box,
+                          bool autoselect_first_suggestion) override {
+    DeferMsg(&mojom::AutofillDriver::AskForValuesToFill, id, form, field,
+             bounding_box, autoselect_first_suggestion);
+  }
+  void HidePopup() override { DeferMsg(&mojom::AutofillDriver::HidePopup); }
+  void FocusNoLongerOnForm(bool had_interacted_form) override {
+    DeferMsg(&mojom::AutofillDriver::FocusNoLongerOnForm, had_interacted_form);
+  }
+  void FocusOnFormField(const FormData& form,
+                        const FormFieldData& field,
+                        const gfx::RectF& bounding_box) override {
+    DeferMsg(&mojom::AutofillDriver::FocusOnFormField, form, field,
+             bounding_box);
+  }
+  void DidFillAutofillFormData(const FormData& form,
+                               base::TimeTicks timestamp) override {
+    DeferMsg(&mojom::AutofillDriver::DidFillAutofillFormData, form, timestamp);
+  }
+  void DidPreviewAutofillFormData() override {
+    DeferMsg(&mojom::AutofillDriver::DidPreviewAutofillFormData);
+  }
+  void DidEndTextFieldEditing() override {
+    DeferMsg(&mojom::AutofillDriver::DidEndTextFieldEditing);
+  }
+
+  AutofillAgent* agent_ = nullptr;
+  base::WeakPtrFactory<DeferringAutofillDriver> weak_ptr_factory_{this};
+};
 
 AutofillAgent::ShowSuggestionsOptions::ShowSuggestionsOptions()
     : autofill_on_empty_values(false),
@@ -203,7 +299,7 @@ void AutofillAgent::DidChangeScrollOffsetImpl(
           static_cast<ExtractMask>(form_util::EXTRACT_BOUNDS |
                                    GetExtractDatalistMask()),
           &form, &field)) {
-    GetAutofillDriver()->TextFieldDidScroll(form, field, field.bounds);
+    GetAutofillDriver().TextFieldDidScroll(form, field, field.bounds);
   }
 
   // Ignore subsequent scroll offset changes.
@@ -216,7 +312,7 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
   if (element.IsNull()) {
     // Focus moved away from the last interacted form (if any) to somewhere else
     // on the page.
-    GetAutofillDriver()->FocusNoLongerOnForm(!last_interacted_form_.IsNull());
+    GetAutofillDriver().FocusNoLongerOnForm(!last_interacted_form_.IsNull());
     return;
   }
 
@@ -227,7 +323,7 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
       (!input || last_interacted_form_ != input->Form())) {
     // The focused element is not part of the last interacted form (could be
     // in a different form).
-    GetAutofillDriver()->FocusNoLongerOnForm(/*had_interacted_form=*/true);
+    GetAutofillDriver().FocusNoLongerOnForm(/*had_interacted_form=*/true);
     focus_moved_to_new_form = true;
   }
 
@@ -259,7 +355,7 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
           static_cast<ExtractMask>(form_util::EXTRACT_BOUNDS |
                                    GetExtractDatalistMask()),
           &form, &field)) {
-    GetAutofillDriver()->FocusOnFormField(form, field, field.bounds);
+    GetAutofillDriver().FocusOnFormField(form, field, field.bounds);
   }
 }
 
@@ -292,7 +388,7 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
     return;
   }
 
-  GetAutofillDriver()->FormSubmitted(form_data, known_success, source);
+  GetAutofillDriver().FormSubmitted(form_data, known_success, source);
 }
 
 void AutofillAgent::Shutdown() {
@@ -307,7 +403,7 @@ void AutofillAgent::TextFieldDidEndEditing(const WebInputElement& element) {
       password_generation_agent_->ShouldIgnoreBlur()) {
     return;
   }
-  GetAutofillDriver()->DidEndTextFieldEditing();
+  GetAutofillDriver().DidEndTextFieldEditing();
   password_autofill_agent_->DidEndTextFieldEditing();
   if (password_generation_agent_)
     password_generation_agent_->DidEndTextFieldEditing(element);
@@ -347,8 +443,8 @@ void AutofillAgent::OnTextFieldDidChange(const WebInputElement& element) {
           static_cast<ExtractMask>(form_util::EXTRACT_BOUNDS |
                                    GetExtractDatalistMask()),
           &form, &field)) {
-    GetAutofillDriver()->TextFieldDidChange(form, field, field.bounds,
-                                            AutofillTickClock::NowTicks());
+    GetAutofillDriver().TextFieldDidChange(form, field, field.bounds,
+                                           AutofillTickClock::NowTicks());
   }
 }
 
@@ -396,7 +492,7 @@ void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
     forms.push_back(updated_form);
     // Always communicate to browser process for topmost frame.
     if (!forms.empty() || !frame->Parent()) {
-      GetAutofillDriver()->FormsSeen(forms);
+      GetAutofillDriver().FormsSeen(forms);
     }
   }
 }
@@ -430,7 +526,7 @@ void AutofillAgent::FillOrPreviewForm(int32_t id,
     query_node_autofill_state_ = element_.GetAutofillState();
     previewed_elements_ = form_util::FillOrPreviewForm(form, element_, action);
 
-    GetAutofillDriver()->DidPreviewAutofillFormData();
+    GetAutofillDriver().DidPreviewAutofillFormData();
   } else {
     was_last_action_fill_ = true;
 
@@ -447,8 +543,8 @@ void AutofillAgent::FillOrPreviewForm(int32_t id,
     // TODO(crbug.com/1198811): Inform the BrowserAutofillManager about the
     // fields that were actually filled. It's possible that the form has changed
     // since the time filling was triggered.
-    GetAutofillDriver()->DidFillAutofillFormData(form,
-                                                 AutofillTickClock::NowTicks());
+    GetAutofillDriver().DidFillAutofillFormData(form,
+                                                AutofillTickClock::NowTicks());
 
     TriggerRefillIfNeeded(form);
     SendPotentiallySubmittedFormToBrowser();
@@ -821,9 +917,9 @@ void AutofillAgent::QueryAutofillSuggestions(
   }
 
   is_popup_possibly_visible_ = true;
-  GetAutofillDriver()->AskForValuesToFill(autofill_query_id_, form, field,
-                                          field.bounds,
-                                          autoselect_first_suggestion);
+  GetAutofillDriver().AskForValuesToFill(autofill_query_id_, form, field,
+                                         field.bounds,
+                                         autoselect_first_suggestion);
 }
 
 void AutofillAgent::DoFillFieldWithValue(const std::u16string& value,
@@ -860,7 +956,7 @@ void AutofillAgent::ProcessForms() {
 
   // Always communicate to browser process for topmost frame.
   if (!forms.empty() || !frame->Parent()) {
-    GetAutofillDriver()->FormsSeen(forms);
+    GetAutofillDriver().FormsSeen(forms);
   }
 }
 
@@ -874,7 +970,7 @@ void AutofillAgent::HidePopup() {
   if (IsKeyboardAccessoryEnabled())
     return;
 
-  GetAutofillDriver()->HidePopup();
+  GetAutofillDriver().HidePopup();
 }
 
 void AutofillAgent::DidAssociateFormControlsDynamically() {
@@ -971,8 +1067,13 @@ void AutofillAgent::SelectWasUpdated(
   if (FindFormAndFieldForFormControlElement(element, field_data_manager_.get(),
                                             &form, &field) &&
       !field.options.empty()) {
-    GetAutofillDriver()->SelectFieldOptionsDidChange(form);
+    GetAutofillDriver().SelectFieldOptionsDidChange(form);
   }
+}
+
+bool AutofillAgent::IsPrerendering() const {
+  return blink::features::IsPrerender2Enabled() &&
+         render_frame()->GetWebFrame()->GetDocument().IsPrerendering();
 }
 
 void AutofillAgent::FormControlElementClicked(
@@ -1077,7 +1178,7 @@ void AutofillAgent::OnProvisionallySaveForm(
               static_cast<ExtractMask>(form_util::EXTRACT_BOUNDS |
                                        GetExtractDatalistMask()),
               &form, &field)) {
-        GetAutofillDriver()->SelectControlDidChange(form, field, field.bounds);
+        GetAutofillDriver().SelectControlDidChange(form, field, field.bounds);
       }
     }
   }
@@ -1175,7 +1276,7 @@ absl::optional<FormData> AutofillAgent::GetSubmittedForm() const {
 }
 
 void AutofillAgent::SendPotentiallySubmittedFormToBrowser() {
-  GetAutofillDriver()->SetFormToBeProbablySubmitted(GetSubmittedForm());
+  GetAutofillDriver().SetFormToBeProbablySubmitted(GetSubmittedForm());
 }
 
 void AutofillAgent::ResetLastInteractedElements() {
@@ -1320,18 +1421,24 @@ void AutofillAgent::ReplaceElementIfNowInvalid(const FormData& original_form) {
   }
 }
 
-const mojo::AssociatedRemote<mojom::AutofillDriver>&
-AutofillAgent::GetAutofillDriver() {
+mojom::AutofillDriver& AutofillAgent::GetAutofillDriver() {
   if (!autofill_driver_) {
     render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
         &autofill_driver_);
   }
 
-  return autofill_driver_;
+  if (IsPrerendering()) {
+    if (!deferring_autofill_driver_) {
+      deferring_autofill_driver_ =
+          std::make_unique<DeferringAutofillDriver>(this);
+    }
+    return *deferring_autofill_driver_;
+  }
+
+  return *autofill_driver_;
 }
 
-const mojo::AssociatedRemote<mojom::PasswordManagerDriver>&
-AutofillAgent::GetPasswordManagerDriver() {
+mojom::PasswordManagerDriver& AutofillAgent::GetPasswordManagerDriver() {
   DCHECK(password_autofill_agent_);
   return password_autofill_agent_->GetPasswordManagerDriver();
 }

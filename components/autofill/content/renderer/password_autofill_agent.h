@@ -123,8 +123,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   void SetPasswordGenerationAgent(PasswordGenerationAgent* generation_agent);
 
-  const mojo::AssociatedRemote<mojom::PasswordManagerDriver>&
-  GetPasswordManagerDriver();
+  mojom::PasswordManagerDriver& GetPasswordManagerDriver();
 
   // mojom::PasswordAutofillAgent:
   void FillPasswordForm(const PasswordFormFillData& form_data) override;
@@ -251,8 +250,12 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     return field_data_manager_;
   }
 
+  bool IsPrerendering() const;
+
  private:
   using OnPasswordField = base::StrongAlias<class OnPasswordFieldTag, bool>;
+
+  class DeferringPasswordManagerDriver;
 
   // Enumeration representing possible Touch To Fill states. This is used to
   // make sure that Touch To Fill will only be shown in response to the first
@@ -549,6 +552,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 #endif
 
   mojo::AssociatedRemote<mojom::PasswordManagerDriver> password_manager_driver_;
+
+  // Used for deferring messages while prerendering.
+  std::unique_ptr<DeferringPasswordManagerDriver>
+      deferring_password_manager_driver_;
 
   mojo::AssociatedReceiver<mojom::PasswordAutofillAgent> receiver_{this};
 

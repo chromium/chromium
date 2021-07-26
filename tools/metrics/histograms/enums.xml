@@ -7294,6 +7294,13 @@ others/histograms.xml -->
       label="Mixed. Some steps failed, but transaction committed successfully"/>
 </enum>
 
+<enum name="BadMessageReasonAutofill">
+<!-- Generated from components/autofill/content/browser/bad_message.h.
+Called by update_bad_message_reasons.py.-->
+
+  <int value="1" label="Prerendering"/>
+</enum>
+
 <enum name="BadMessageReasonChrome">
 <!-- Generated from chrome/browser/bad_message.h.
 Called by update_bad_message_reasons.py.-->
@@ -7637,6 +7644,7 @@ Called by update_bad_message_reasons.py.-->
       label="CPMD_BAD_ORIGIN_SHOW_MANUAL_PASSWORD_GENERATION_POPUP"/>
   <int value="12" label="CPMD_BAD_ORIGIN_SHOW_PASSWORD_EDITING_POPUP"/>
   <int value="13" label="CPMD_BAD_ORIGIN_GENERATION_AVAILABLE_FOR_FORM"/>
+  <int value="14" label="CPMD_BAD_ORIGIN_PRERENDERING"/>
 </enum>
 
 <enum name="BadSyncDataReason">

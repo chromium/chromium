@@ -147,14 +147,20 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
   ContentAutofillDriver* driver =
       static_cast<ContentAutofillDriver*>(DriverForKey(render_frame_host));
   if (driver) {
-    driver->MaybeReportAutofillWebOTPMetrics();
-    // If the popup menu has been triggered from within an iframe and that frame
-    // is deleted, hide the popup. This is necessary because the popup may
-    // actually be shown by the AutofillExternalDelegate of an ancestor frame,
-    // which is not notified about |render_frame_host|'s destruction and
-    // therefore won't close the popup.
+    if (render_frame_host->GetLifecycleState() !=
+        content::RenderFrameHost::LifecycleState::kPrerendering) {
+      driver->MaybeReportAutofillWebOTPMetrics();
+    }
+
+    // If the popup menu has been triggered from within an iframe and that
+    // frame is deleted, hide the popup. This is necessary because the popup
+    // may actually be shown by the AutofillExternalDelegate of an ancestor
+    // frame, which is not notified about |render_frame_host|'s destruction
+    // and therefore won't close the popup.
     if (render_frame_host->GetParent() &&
         router_.last_queried_source() == driver) {
+      DCHECK_NE(content::RenderFrameHost::LifecycleState::kPrerendering,
+                render_frame_host->GetLifecycleState());
       router_.HidePopup(driver);
     }
     if (!render_frame_host->GetParent()) {
@@ -230,6 +236,11 @@ void ContentAutofillDriverFactory::ReadyToCommitNavigation(
   // everywhere.
   if (render_frame_host_id !=
       navigation_handle->GetPreviousRenderFrameHostId()) {
+    return;
+  }
+  // Do not report metrics if prerendering.
+  if (render_frame_host->GetLifecycleState() ==
+      content::RenderFrameHost::LifecycleState::kPrerendering) {
     return;
   }
   AutofillDriver* driver = DriverForFrame(render_frame_host);

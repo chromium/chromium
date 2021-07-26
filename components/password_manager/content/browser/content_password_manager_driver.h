@@ -98,11 +98,21 @@ class ContentPasswordManagerDriver
       const content::RenderWidgetHost::KeyPressEventCallback& handler);
   void UnsetKeyPressHandler();
 
+#if defined(UNIT_TEST)
+  // Exposed to allow browser tests to hook the driver.
+  mojo::AssociatedReceiver<autofill::mojom::PasswordManagerDriver>&
+  ReceiverForTesting() {
+    return password_manager_receiver_;
+  }
+#endif
+
  protected:
   // autofill::mojom::PasswordManagerDriver:
   // Note that these messages received from a potentially compromised renderer.
   // For that reason, any access to form data should be validated via
-  // bad_message::CheckChildProcessSecurityPolicy.
+  // bad_message::CheckChildProcessSecurityPolicy. Further, messages should not
+  // be sent from a prerendered page, so we will similarly validate calls to
+  // ensure that this is not the case.
   void PasswordFormsParsed(
       const std::vector<autofill::FormData>& forms_data) override;
   void PasswordFormsRendered(

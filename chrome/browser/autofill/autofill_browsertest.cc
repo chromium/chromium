@@ -42,11 +42,13 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -54,6 +56,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -106,6 +109,45 @@ class WindowedPersonalDataManagerObserver : public PersonalDataManagerObserver {
   bool alerted_;
   bool has_run_message_loop_;
   Browser* browser_;
+};
+
+// Upon construction, and in response to ReadyToCommitNavigation, installs a
+// mock browser autofill manager of type |T|.
+template <typename T>
+class MockAutofillManagerInjector : public content::WebContentsObserver {
+ public:
+  explicit MockAutofillManagerInjector(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {
+    Inject(web_contents->GetMainFrame());
+  }
+  ~MockAutofillManagerInjector() override = default;
+
+  T* GetForFrame(content::RenderFrameHost* rfh) {
+    ContentAutofillDriverFactory* driver_factory =
+        ContentAutofillDriverFactory::FromWebContents(web_contents());
+    return static_cast<T*>(
+        driver_factory->DriverForFrame(rfh)->browser_autofill_manager());
+  }
+
+ protected:
+  // content::WebContentsObserver:
+  void ReadyToCommitNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    if (!navigation_handle->IsPrerenderedPageActivation() &&
+        !navigation_handle->IsSameDocument()) {
+      Inject(navigation_handle->GetRenderFrameHost());
+    }
+  }
+
+  void Inject(content::RenderFrameHost* rfh) {
+    ContentAutofillDriverFactory* driver_factory =
+        ContentAutofillDriverFactory::FromWebContents(web_contents());
+    AutofillClient* client = driver_factory->client();
+    ContentAutofillDriver* driver = driver_factory->DriverForFrame(rfh);
+    std::unique_ptr<T> mock_autofill_manager =
+        std::make_unique<T>(driver, client, rfh);
+    driver->SetBrowserAutofillManager(std::move(mock_autofill_manager));
+  }
 };
 
 class AutofillTest : public InProcessBrowserTest {
@@ -775,23 +817,129 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, TestAutocompleteState) {
   ASSERT_TRUE(AutocompleteIsAvailable(node_data));
 }
 
+// Test fixture for prerendering tests. In general, these tests aim to check
+// that we avoid unexpected behavior while the prerendered page is inactive and
+// that the page operates as expected, post-activation.
+class PrerenderAutofillTest : public InProcessBrowserTest {
+ protected:
+  class MockPrerenderBrowserAutofillManager : public BrowserAutofillManager {
+   public:
+    MockPrerenderBrowserAutofillManager(AutofillDriver* driver,
+                                        AutofillClient* client,
+                                        content::RenderFrameHost* rfh)
+        : BrowserAutofillManager(
+              driver,
+              client,
+              "en-US",
+              BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER) {
+      // We need to set these expectations immediately to catch any premature
+      // calls while prerendering.
+      if (rfh->GetLifecycleState() ==
+          content::RenderFrameHost::LifecycleState::kPrerendering) {
+        EXPECT_CALL(*this, OnFormsSeen(_)).Times(0);
+        EXPECT_CALL(*this, OnFocusOnFormFieldImpl(_, _, _)).Times(0);
+      }
+    }
+    MOCK_METHOD(void, OnFormsSeen, (const std::vector<FormData>&), (override));
+    MOCK_METHOD(void,
+                OnFocusOnFormFieldImpl,
+                (const FormData&,
+                 const FormFieldData&,
+                 const gfx::RectF& bounding_box),
+                (override));
+  };
+
+  PrerenderAutofillTest()
+      : prerender_helper_(
+            base::BindRepeating(&PrerenderAutofillTest::web_contents,
+                                base::Unretained(this))) {}
+
+  void SetUpOnMainThread() override {
+    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // Slower test bots (chromeos, debug, etc) are flaky
+    // due to slower loading interacting with deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
+
+  void TearDownOnMainThread() override {}
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+// Ensures that the prerendered renderer does not attempt to communicate with
+// the browser in response to RenderFrameObserver messages. Specifically, it
+// checks that it does not alert the browser that a form has been seen prior to
+// activation and that it does alert the browser after activation. Also ensures
+// that programmatic input on the prerendered page does not result in unexpected
+// messages prior to activation and that things work correctly post-activation.
+IN_PROC_BROWSER_TEST_F(PrerenderAutofillTest, DeferWhilePrerendering) {
+  MockAutofillManagerInjector<MockPrerenderBrowserAutofillManager> injector(
+      web_contents());
+  GURL prerender_url =
+      embedded_test_server()->GetURL("/autofill/prerendered.html");
+  GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  prerender_helper().NavigatePrimaryPage(initial_url);
+
+  int host_id = prerender_helper().AddPrerender(prerender_url);
+  auto* rfh = prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  ignore_result(
+      content::ExecJs(rfh, "document.querySelector('#NAME_FIRST').focus();",
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Since the initial prerender page load has finished at this point and we
+  // have issued our programmatic focus, we need to check that the expectations
+  // we set up during render frame creation have been met (i.e., that we did not
+  // issue a calls to the driver for either the forms being seen nor the focus
+  // update).
+  auto* mock = injector.GetForFrame(rfh);
+  testing::Mock::VerifyAndClearExpectations(mock);
+  // Next, we ensure that once we activate, we issue the deferred calls.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock, OnFocusOnFormFieldImpl(_, _, _)).Times(1);
+  EXPECT_CALL(*mock, OnFormsSeen(_))
+      .Times(1)
+      .WillRepeatedly(
+          testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+  EXPECT_EQ(prerender_helper().GetRequestCount(prerender_url), 1);
+  run_loop.Run();
+}
+
 // Test fixture for testing that that appropriate form submission events are
 // fired in BrowserAutofillManager.
 class FormSubmissionDetectionTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  protected:
-  class MockBrowserAutofillManager : public BrowserAutofillManager {
+  class MockFormSubmissionAutofillManager : public BrowserAutofillManager {
    public:
-    MockBrowserAutofillManager(AutofillDriver* driver, AutofillClient* client)
+    MockFormSubmissionAutofillManager(AutofillDriver* driver,
+                                      AutofillClient* client,
+                                      content::RenderFrameHost* rhf)
         : BrowserAutofillManager(
               driver,
               client,
               "en-US",
               BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER) {}
-
-    MOCK_METHOD3(OnFormSubmittedImpl,
-                 void(const FormData&, bool, mojom::SubmissionSource));
+    MOCK_METHOD(void,
+                OnFormSubmittedImpl,
+                (const FormData&, bool, mojom::SubmissionSource),
+                (override));
   };
 
   FormSubmissionDetectionTest() { InitializeFeatures(); }
@@ -799,7 +947,6 @@ class FormSubmissionDetectionTest
   void SetUpOnMainThread() override {
     SetUpServer();
     NavigateToPage("/form.html");
-    Mock();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -822,7 +969,9 @@ class FormSubmissionDetectionTest
         blink::WebMouseEvent::Button::kLeft);
   }
 
-  MockBrowserAutofillManager* autofill_manager_ = nullptr;
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
 
  private:
   void InitializeFeatures() {
@@ -888,34 +1037,17 @@ class FormSubmissionDetectionTest
     ui_test_utils::NavigateToURL(&params);
   }
 
-  // TODO(crbug/1119526) This dependency injection is wonky because it only
-  // mocks the current ContentAutofillDriver's BrowserAutofillManager, not the
-  // future ones' BrowserAutofillManagers.
-  void Mock() {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    ContentAutofillDriverFactory* driver_factory =
-        ContentAutofillDriverFactory::FromWebContents(web_contents);
-    AutofillClient* client = driver_factory->client();
-    ContentAutofillDriver* driver =
-        driver_factory->DriverForFrame(web_contents->GetMainFrame());
-
-    std::unique_ptr<MockBrowserAutofillManager> mock_autofill_manager =
-        std::make_unique<MockBrowserAutofillManager>(driver, client);
-    autofill_manager_ = mock_autofill_manager.get();
-
-    driver->SetBrowserAutofillManager(std::move(mock_autofill_manager));
-  }
-
   base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that user-triggered submission triggers a submission event in
 // BrowserAutofillManager.
 IN_PROC_BROWSER_TEST_P(FormSubmissionDetectionTest, Submission) {
+  MockAutofillManagerInjector<MockFormSubmissionAutofillManager> injector(
+      web_contents());
   base::RunLoop run_loop;
   EXPECT_CALL(
-      *autofill_manager_,
+      *injector.GetForFrame(web_contents()->GetMainFrame()),
       OnFormSubmittedImpl(_, _, mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
       .WillRepeatedly(
@@ -930,8 +1062,10 @@ IN_PROC_BROWSER_TEST_P(FormSubmissionDetectionTest, Submission) {
 // Tests that non-link-click, renderer-inititiated navigation triggers a
 // submission event in BrowserAutofillManager.
 IN_PROC_BROWSER_TEST_P(FormSubmissionDetectionTest, ProbableSubmission) {
+  MockAutofillManagerInjector<MockFormSubmissionAutofillManager> injector(
+      web_contents());
   base::RunLoop run_loop;
-  EXPECT_CALL(*autofill_manager_,
+  EXPECT_CALL(*injector.GetForFrame(web_contents()->GetMainFrame()),
               OnFormSubmittedImpl(
                   _, _, mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED))
       .Times(1)
