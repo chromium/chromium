@@ -217,3 +217,25 @@ fuzzer_test("cast_message_util_fuzzer") {
     "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
   ]
 }
+
+fuzzer_test("openscreen_message_framer_deserialize_fuzzer") {
+  sources = [ "openscreen_message_framer_deserialize_fuzzer.cc" ]
+  deps = [
+    "//components/openscreen_platform",
+    "//third_party/openscreen/src/cast/common:channel",
+  ]
+  seed_corpus = "fuzz_corpus"
+
+  # NOTE: Max message size is 65536 + 4, so this allows some overhang.
+  libfuzzer_options = [ "max_len=65600" ]
+}
+
+fuzzer_test("openscreen_message_framer_serialize_fuzzer") {
+  sources = [ "openscreen_message_framer_serialize_fuzzer.cc" ]
+  deps = [
+    ":cast_channel_fuzzer_inputs",
+    "//components/openscreen_platform",
+    "//third_party/libprotobuf-mutator",
+    "//third_party/openscreen/src/cast/common:channel",
+  ]
+}
