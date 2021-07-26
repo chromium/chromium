@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL minsize assert_approx_equals: attach expected 100 +/- 1 but got 25
-FAIL maxsize assert_approx_equals: attach expected 100 +/- 1 but got 150
-PASS largeop
-PASS symmetric
-PASS stretchy
-Harness: the test ran to completion.
-

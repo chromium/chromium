@@ -142,7 +142,9 @@ void MathMLOperatorElement::ParseAttribute(
     SetOperatorPropertyDirtyFlagIfNeeded(
         param, MathMLOperatorElement::kMovableLimits, needs_layout);
   } else if (param.name == mathml_names::kLspaceAttr ||
-             param.name == mathml_names::kRspaceAttr) {
+             param.name == mathml_names::kRspaceAttr ||
+             param.name == mathml_names::kMinsizeAttr ||
+             param.name == mathml_names::kMaxsizeAttr) {
     needs_layout = param.new_value != param.old_value;
     if (needs_layout && GetLayoutObject()) {
       // TODO(crbug.com/1121113): Isn't it enough to set needs style recalc and

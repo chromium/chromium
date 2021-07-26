@@ -79,7 +79,40 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
         target_stretch_ascent = half_target_stretch_size + axis;
         target_stretch_descent = half_target_stretch_size - axis;
       }
-      // TODO(http://crbug.com/1124301) Implement minsize, maxsize attributes.
+      operator_target_size = target_stretch_ascent + target_stretch_descent;
+      // "If minsize < 0 then set minsize to 0."
+      LayoutUnit min_size =
+          (Style().GetMathMinSize().GetType() == Length::kAuto
+               ? LayoutUnit(Style().FontSize())
+               : ValueForLength(Style().GetMathMinSize(), operator_target_size))
+              .ClampNegativeToZero();
+      // "If maxsize < minsize then set maxsize to minsize."
+      LayoutUnit max_size = std::max<LayoutUnit>(
+          (Style().GetMathMaxSize().GetType() == Length::kAuto
+               ? LayoutUnit(kIntMaxForLayoutUnit)
+               : ValueForLength(Style().GetMathMaxSize(),
+                                operator_target_size)),
+          min_size);
+      // "Then 0 ≤ minsize ≤ maxsize:"
+      DCHECK(LayoutUnit() <= min_size && min_size <= max_size);
+      if (operator_target_size <= LayoutUnit()) {
+        // "If T ≤ 0 then set Tascent to minsize/2 and then set Tdescent to
+        // minsize - Tascent."
+        target_stretch_ascent = min_size / 2;
+        target_stretch_descent = min_size - target_stretch_ascent;
+      } else if (operator_target_size < min_size) {
+        // "Otherwise, if 0 < T < minsize then first multiply Tascent by
+        // minsize / T and then set Tdescent to minsize - Tascent."
+        target_stretch_ascent =
+            target_stretch_ascent.MulDiv(min_size, operator_target_size);
+        target_stretch_descent = min_size - target_stretch_ascent;
+      } else if (max_size < operator_target_size) {
+        // "Otherwise, if maxsize < T then first multiply Tascent by maxsize /
+        // T and then set Tdescent to maxsize − Tascent."
+        target_stretch_ascent =
+            target_stretch_descent.MulDiv(max_size, operator_target_size);
+        target_stretch_descent = max_size - target_stretch_ascent;
+      }
       operator_target_size = target_stretch_ascent + target_stretch_descent;
     }
   } else {
