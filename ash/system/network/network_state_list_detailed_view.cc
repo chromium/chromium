@@ -361,16 +361,19 @@ void NetworkStateListDetailedView::ShowSettings() {
       list_type_ == LIST_TYPE_VPN ? UMA_STATUS_AREA_VPN_SETTINGS_OPENED
                                   : UMA_STATUS_AREA_NETWORK_SETTINGS_OPENED);
 
+  const std::string guid = model_->default_network()
+                               ? model_->default_network()->guid
+                               : std::string();
+
+  // Showing network settings window may close the bubble (and destroy this
+  // view). Explicitly request bubble closure here, before showing network
+  // settings.
+  CloseBubble();  // Deletes |this|.
+
   SystemTrayClient* system_tray_client =
       Shell::Get()->system_tray_model()->client();
-
-  if (system_tray_client) {
-    system_tray_client->ShowNetworkSettings(
-        model_->default_network() ? model_->default_network()->guid
-                                  : std::string());
-  }
-
-  CloseBubble();  // Deletes |this|.
+  if (system_tray_client)
+    system_tray_client->ShowNetworkSettings(guid);
 }
 
 void NetworkStateListDetailedView::UpdateHeaderButtons() {
