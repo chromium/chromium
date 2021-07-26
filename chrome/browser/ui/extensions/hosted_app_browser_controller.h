@@ -26,8 +26,8 @@ namespace extensions {
 
 class Extension;
 
-// Class to encapsulate logic to control the browser UI for extension based web
-// apps.
+// Class to encapsulate logic to control the browser UI for extension based
+// Chrome Apps (platform apps and legacy packaged apps).
 class HostedAppBrowserController : public web_app::AppBrowserController,
                                    public ExtensionUninstallDialog::Delegate {
  public:
