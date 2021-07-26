@@ -3336,7 +3336,10 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
 
   // Toggle fullscreen mode; move the window between displays as needed.
   // TODO(crbug.com/1034783): Implement at lower layers to avoid transitions.
+#if defined(OS_MAC)
   bool entering_cross_screen_fullscreen = false;
+  bool swapping_screens_during_fullscreen = false;
+#endif  // OS_MAC
   if (fullscreen && display_id != display::kInvalidDisplayId) {
     display::Screen* screen = display::Screen::GetScreen();
     display::Display display;
@@ -3344,11 +3347,17 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
         screen->GetDisplayNearestWindow(GetNativeWindow());
     if (screen && screen->GetDisplayWithDisplayId(display_id, &display) &&
         current_display.id() != display_id) {
+#if defined(OS_MAC)
       entering_cross_screen_fullscreen = true;
+#endif  // OS_MAC
 
       // Fullscreen windows must exit fullscreen to move to another display.
-      if (IsFullscreen())
+      if (IsFullscreen()) {
+#if defined(OS_MAC)
+        swapping_screens_during_fullscreen = true;
+#endif  // OS_MAC
         frame_->SetFullscreen(false);
+      }
 
       // Maximized windows must be restored to move to another display.
       const bool was_maximized = frame_->IsMaximized();
@@ -3383,7 +3392,12 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
 #if defined(OS_MAC)
   // On Mac, the fullscreen state change must be requested with a delay after
   // moving the window to the target display; see http://crbug.com/1210548
-  frame_->SetFullscreen(fullscreen, entering_cross_screen_fullscreen);
+  base::TimeDelta delay;
+  if (swapping_screens_during_fullscreen)
+    delay = base::TimeDelta::FromMilliseconds(1000);
+  else if (entering_cross_screen_fullscreen)
+    delay = base::TimeDelta::FromMilliseconds(1);
+  frame_->SetFullscreen(fullscreen, delay);
 #else   // OS_MAC
   frame_->SetFullscreen(fullscreen);
   // On Mac, the pre-fullscreen bounds must be restored after an asynchronous

@@ -146,9 +146,9 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void SetBoundsInScreen(const gfx::Rect& bounds);
 
   // Tell the window to transition to being fullscreen or not-fullscreen.
-  // If `delay` is true, this will set the target fullscreen state and then post
-  // a delayed task to request the window transition. See crbug.com/1210548
-  void SetFullscreen(bool fullscreen, bool delay = false);
+  // If `delay` is given, this sets the target fullscreen state and then posts
+  // a delayed task to request the window transition. See crbug.com/1210548.
+  void SetFullscreen(bool fullscreen, base::TimeDelta delay = {});
 
   // The ultimate fullscreen state that is being targeted (irrespective of any
   // active transitions).
@@ -234,6 +234,10 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   void UpdateCompositorProperties();
   void DestroyCompositor();
+
+  // This is used to request a delayed fullscreen window transition after some
+  // other window placement occurs; see SetFullscreen() and crbug.com/1210548.
+  static void SetFullscreenAfterDelay(uint64_t bridged_native_widget_id);
 
   // Sort |attached_native_view_host_views_| by the order in which their
   // NSViews should appear as subviews. This does a recursive pre-order
